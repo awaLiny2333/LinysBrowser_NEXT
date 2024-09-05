@@ -1,5 +1,5 @@
-# This is a browser for HarmonyOS NEXT (API 12).
+# Linys Browser
+ A browser for HarmonyOS NEXT (API12)
 
-### Features:
-1. Vertical tabs;
-2. Some animations.
+# Examples
+![Shot](Examples/Screenshot.png)
