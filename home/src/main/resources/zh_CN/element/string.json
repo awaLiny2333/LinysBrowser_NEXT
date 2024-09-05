@@ -1,0 +1,20 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "浏览器的主页"
+    },
+    {
+      "name": "HomeAbility_desc",
+      "value": "浏览器的主页"
+    },
+    {
+      "name": "HomeAbility_label",
+      "value": "冲浪喵"
+    },
+    {
+      "name": "permission_reason_INTERNET",
+      "value": "用于网页浏览"
+    }
+  ]
+}
