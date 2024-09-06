@@ -30,6 +30,11 @@ struct LinysWebView {
           controller: this.bunch_of_tabs.Tabs[Label.index_key] !== undefined ?
           this.bunch_of_tabs.Tabs[Label.index_key].controller : undefined
         })// Main WEB
+          .databaseAccess(true)
+          .onlineImageAccess(true)
+          .javaScriptAccess(true)
+          .fileAccess(true)
+          .domStorageAccess(true)
           .width("100%")
           .height("100%")
           .visibility(this.current_tab_index == Label.index_key ? Visibility.Visible : Visibility.None)

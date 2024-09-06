@@ -45,7 +45,7 @@ struct Index {
           .backgroundColor($r('app.color.block_color'))
 
         Row() {
-          Column({ space: 10 }) {
+          Column() {
             LinysTabs({
               tablet_mode: this.tablet_mode,
               show_webViews: this.show_webViews,

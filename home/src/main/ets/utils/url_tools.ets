@@ -137,11 +137,22 @@ let built_ins: string[] = [
 
 export function url_resource_to_meow(input: string) {
   let result: string = input;
+
+  if (input == undefined) {
+    return result;
+  }
+  if (input == null) {
+    return result;
+  }
+  // No process for empty inputs
+
   if (input.length > 11) {
     if (input.substring(0, 11) == "resource://") {
       let index = urls.indexOf(input)
       if (index != -1) {
         result = built_ins[index]
+      } else {
+        // If input is a non-existing resource:// url
       }
     }
   }
@@ -150,6 +161,15 @@ export function url_resource_to_meow(input: string) {
 
 export function url_meow_to_resource(input: string) {
   let result: string = input;
+
+  if (input == undefined) {
+    return result;
+  }
+  if (input == null) {
+    return result;
+  }
+  // No process for empty inputs
+
   if (input.length > 7) {
     if (input.substring(0, 7) == "meow://") {
       // if is meow:// scheme
