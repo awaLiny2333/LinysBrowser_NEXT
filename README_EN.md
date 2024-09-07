@@ -4,7 +4,7 @@
 
 ## Ideas
 
-Liny's Browser is a basic browser built for HarmonyOS NEXT (API12),
+Liny's Browser is a basic browser built for HarmonyOS NEXT,
 aiming in providing a light-weight solution for users
 with devices at any performance level.
 
@@ -14,7 +14,7 @@ the cutest cyber fox [Firefox](https://firefox.com/) from Mozilla,
 and helped by source codes from OpenHarmony's
 [Browser Demo](https://gitee.com/openharmony/applications_app_samples/tree/master/code/BasicFeature/Web/Browser)
 & Westinyang's fork [Browser CE](https://gitee.com/westinyang/browser-ce).
-Thank you all with your works!!
+Thank you all with your works!! (*￣3￣)╭
 
 ## Previews
 

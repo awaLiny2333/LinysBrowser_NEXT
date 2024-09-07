@@ -4,12 +4,12 @@
 
 ## 启发
 
-Liny 的浏览器兼容 HarmonyOS NEXT API12，旨在为各种性能水平的设备提供一个轻量的浏览器的选择。
+Liny 的浏览器为 HarmonyOS NEXT 而构建，旨在为各种性能水平的设备提供一个浏览器的轻量之选。
 
 这个项目受 tuyafeng 大佬传奇之作 [Via](https://viayoo.com/)、
 来自 Mozilla 的最可爱赛博小狐狸 [Firefox](https://firefox.com/) 之启发，
 以及来自开源鸿蒙的 [浏览器](https://gitee.com/openharmony/applications_app_samples/tree/master/code/BasicFeature/Web/Browser)
-及其定制增强版分支 [🌐 浏览器CE（社区版）](https://gitee.com/westinyang/browser-ce) 开放代码的帮助（解惑），最终得以呈现。感谢你们！！
+及其定制增强版分支 [🌐 浏览器CE（社区版）](https://gitee.com/westinyang/browser-ce) 开放代码的帮助（解惑），最终得以呈现。感谢你们！！(*￣3￣)╭
 
 ## 预览
 
