@@ -28,6 +28,7 @@ struct LinysTabs {
   @State extension_area: number[] = [];
   @State offset_area: number[] = [];
   @State count_down_for_switching_back_to_spring: number = 0;
+  @State count_down_for_scrolling_to_bottom: number = 0;
   // Animation info
   tab_height_default: number = 46;
   scroll_controller: Scroller = new Scroller();
@@ -90,6 +91,7 @@ struct LinysTabs {
         }
         .width("100%")
       } // Tab Buttons List
+      .direction(Direction.Rtl)
       .align(Alignment.Bottom)
       .edgeEffect(this.count_down_for_switching_back_to_spring == 0 ? EdgeEffect.Spring : EdgeEffect.None)
       .width("100%")
@@ -118,14 +120,7 @@ struct LinysTabs {
       }
       // Init extension_area
       setInterval(() => {
-        for (let index = 0; index < this.extension_area.length; index++) {
-          this.extension_area[index] += (0 - this.extension_area[index]) / 6;
-          this.offset_area[index] += (0 - this.offset_area[index]) / 5;
-          // Shrink areas
-        }
-        if (this.count_down_for_switching_back_to_spring > 0) {
-          this.count_down_for_switching_back_to_spring -= 1;
-        }
+        this.on_timer()
       }, 10)
       // Set Task to calculate animation
       console.log("[Meow][LinysTabs] Tabs Panel READY")
@@ -135,7 +130,7 @@ struct LinysTabs {
   // Tab controls
 
   new_tab() {
-    this.current_tab_index = this.bunch_of_tabs.newTab()
+    this.current_tab_index = this.bunch_of_tabs.newTab(this.home_url())
     this.extension_area.push(0)
     for (let index = 0; index < this.offset_area.length; index++) {
       this.offset_area[index] += this.tab_height_default + 5;
@@ -143,10 +138,7 @@ struct LinysTabs {
     }
     this.offset_area.push(this.tab_height_default + 1000)
     // Set offset for the new tab
-    setTimeout(() => {
-      this.scroll_controller.scrollEdge(Edge.Bottom)
-    }, 20)
-    // Update timestamps
+    this.count_down_for_scrolling_to_bottom = 20;
   }
 
   switch_tab(target: number) {
@@ -161,8 +153,11 @@ struct LinysTabs {
   }
 
   close_tab(target: number) {
-    this.bunch_of_tabs.workingTab().controller.stop();
-    // Stop first
+    if (!(target < this.offset_area.length)) {
+      // Some kind of bug, idk why but this is essential when closing tabs quickly
+      console.log("[Meow][LinysTabs] Ran into the weird bug of target == this.offset_area.length")
+      return;
+    }
 
     if (target != 0) {
       this.extension_area[target-1] += this.tab_height_default + this.extension_area[target];
@@ -232,6 +227,24 @@ struct LinysTabs {
 
   home_url() {
     return this.is_dark_mode() ? 'meow://home_dark' : 'meow://home_light'
+  }
+
+  on_timer() {
+    for (let index = 0; index < this.extension_area.length; index++) {
+      this.extension_area[index] += (0 - this.extension_area[index]) / 6;
+      this.offset_area[index] += (0 - this.offset_area[index]) / 5;
+      // Shrink areas
+    }
+    if (this.count_down_for_switching_back_to_spring > 0) {
+      this.count_down_for_switching_back_to_spring -= 1;
+    }
+    if (this.count_down_for_scrolling_to_bottom > 0) {
+      this.count_down_for_scrolling_to_bottom -= 1;
+      if (this.count_down_for_scrolling_to_bottom == 1) {
+        this.scroll_controller.scrollEdge(Edge.Bottom)
+        // Execute
+      }
+    }
   }
 }
 

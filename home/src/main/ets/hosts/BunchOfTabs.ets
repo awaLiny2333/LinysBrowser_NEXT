@@ -19,10 +19,10 @@ export class TabInfoPacked {
   is_loading: boolean;
   loading_progress: number;
 
-  constructor() {
+  constructor(title: string, url: string) {
     this.controller = new webview.WebviewController();
-    this.title = "Meow";
-    this.url = "url";
+    this.title = title;
+    this.url = url;
     this.is_loading = true;
     this.loading_progress = 0;
   }
@@ -45,7 +45,7 @@ export class TabInfoPacked {
 }
 
 export class BunchOfTabs {
-  Tabs: Array<TabInfoPacked> = [new TabInfoPacked()];
+  Tabs: Array<TabInfoPacked> = [new TabInfoPacked("Meow", "url")];
   Labels: Array<TabLabel> = [new TabLabel(Date.now(), 0)];
   current_working_tab_index: number = 0;
 
@@ -79,12 +79,14 @@ export class BunchOfTabs {
     return target;
   }
 
-  newTab() {
-    let new_TabInfo: TabInfoPacked = new TabInfoPacked();
+  newTab(home_url: string) {
+    let new_TabInfo: TabInfoPacked = new TabInfoPacked("Meow", home_url);
     let new_TabLabel: TabLabel = new TabLabel(Date.now(), this.Tabs.length);
     this.Tabs.push(new_TabInfo);
     this.Labels.push(new_TabLabel);
-    return this.switchToTab(this.Tabs.length - 1) as number;
+    this.current_working_tab_index = this.Tabs.length - 1;
+    return this.Tabs.length - 1 as number;
+    // return this.switchToTab(this.Tabs.length - 1) as number;
   }
 
   closeTab(target: number, home_url: string) {
