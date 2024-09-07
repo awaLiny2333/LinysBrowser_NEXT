@@ -27,7 +27,6 @@ struct LinysTabs {
   // Other Info / Statuses
   @State extension_area: number[] = [];
   @State offset_area: number[] = [];
-  @State timestamp_lists: number[] = [];
   @State count_down_for_switching_back_to_spring: number = 0;
   // Animation info
   tab_height_default: number = 46;
@@ -113,7 +112,6 @@ struct LinysTabs {
     .onAppear(() => {
       this.extension_area = [];
       this.offset_area = [];
-      this.timestamp_lists = this.bunch_of_tabs.get_all_time_stamps();
       for (let i = 0; i < this.bunch_of_tabs.Tabs.length; i++) {
         this.extension_area.push(0);
         this.offset_area.push(0);
@@ -122,7 +120,7 @@ struct LinysTabs {
       setInterval(() => {
         for (let index = 0; index < this.extension_area.length; index++) {
           this.extension_area[index] += (0 - this.extension_area[index]) / 6;
-          this.offset_area[index] += (0 - this.offset_area[index]) / 6;
+          this.offset_area[index] += (0 - this.offset_area[index]) / 5;
           // Shrink areas
         }
         if (this.count_down_for_switching_back_to_spring > 0) {
@@ -148,7 +146,6 @@ struct LinysTabs {
     setTimeout(() => {
       this.scroll_controller.scrollEdge(Edge.Bottom)
     }, 20)
-    this.timestamp_lists = this.bunch_of_tabs.get_all_time_stamps()
     // Update timestamps
   }
 
@@ -164,6 +161,9 @@ struct LinysTabs {
   }
 
   close_tab(target: number) {
+    this.bunch_of_tabs.workingTab().controller.stop();
+    // Stop first
+
     if (target != 0) {
       this.extension_area[target-1] += this.tab_height_default + this.extension_area[target];
       // If isn't closing the top most tab
@@ -193,8 +193,6 @@ struct LinysTabs {
     // Set CURRENT variables
     this.update_search_box_text(this.current_url)
     // Update Input Search Box
-    this.timestamp_lists = this.bunch_of_tabs.get_all_time_stamps()
-    // Update timestamps
   }
 
   // Utils
