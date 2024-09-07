@@ -169,4 +169,13 @@ export class BunchOfTabs {
     }
     return progress;
   }
+
+  get_all_time_stamps() {
+    let stamps: number[] = [];
+
+    for (let index = 0; index < this.Tabs.length; index++) {
+      stamps.push(this.Labels[index].timestamp);
+    }
+    return stamps;
+  }
 }

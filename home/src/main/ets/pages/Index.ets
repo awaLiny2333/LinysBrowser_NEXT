@@ -346,6 +346,9 @@ struct Index {
     }
     .height("100%")
     .width("100%")
+    .onAppear(()=>{
+      console.log("[Meow][Index] Home Index READY")
+    })
   }
 
   // the page

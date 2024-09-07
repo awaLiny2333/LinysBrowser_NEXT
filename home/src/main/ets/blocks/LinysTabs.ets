@@ -1,5 +1,5 @@
 import LinysSymbol from './LinysSymbol';
-import { BunchOfTabs } from '../hosts/BunchOfTabs';
+import { BunchOfTabs, TabLabel } from '../hosts/BunchOfTabs';
 import { url_resource_to_meow } from '../utils/url_tools';
 
 @Component
@@ -27,6 +27,7 @@ struct LinysTabs {
   // Other Info / Statuses
   @State extension_area: number[] = [];
   @State offset_area: number[] = [];
+  @State timestamp_lists: number[] = [];
   @State count_down_for_switching_back_to_spring: number = 0;
   // Animation info
   tab_height_default: number = 46;
@@ -36,10 +37,10 @@ struct LinysTabs {
     Column({ space: 10 }) {
       Scroll(this.scroll_controller) {
         Column({ space: 5 }) {
-          ForEach(this.tab_titles, (title: string, key: number) => {
+          ForEach(this.bunch_of_tabs.Labels, (Label: TabLabel) => {
             RelativeContainer() {
               Row() {
-                Text(title == "" ? "Meow" : title)
+                Text(this.tab_titles[Label.index_key] == "" ? "Meow" : this.tab_titles[Label.index_key])
                   .padding({ left: 2 })
                   .fontSize(20)
                   .fontColor($r('app.color.font_color_title'))
@@ -47,7 +48,7 @@ struct LinysTabs {
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
                   .layoutWeight(1)
                   .onClick(() => {
-                    this.switch_tab(key)
+                    this.switch_tab(Label.index_key)
                   })
 
                 SymbolGlyph($r('sys.symbol.xmark'))
@@ -56,20 +57,21 @@ struct LinysTabs {
                   .fontWeight(FontWeight.Medium)
 
               } // Title and xmark
-              .width("100%")
-              .height(this.tab_height_default)
               .border({
                 radius: 10,
                 width: 2,
-                color: this.current_tab_index == key ? $r('app.color.font_color_title') : "transparent"
+                color: this.current_tab_index == Label.index_key ? $r('app.color.font_color_title') : "transparent"
               })
+              .animation({ duration: 120 })
+              .width("100%")
+              .height(this.tab_height_default)
               .padding(10)
               .backgroundColor($r('app.color.block_color'))
               .alignRules({
                 middle: { anchor: "__container__", align: HorizontalAlign.Center },
                 top: { anchor: "__container__", align: VerticalAlign.Top }
               })
-              .offset({ y: this.offset_area[key] })
+              .offset({ y: this.offset_area[Label.index_key] })
 
               Column() {
               } // The True Tab Closer
@@ -80,16 +82,15 @@ struct LinysTabs {
                 center: { anchor: "__container__", align: VerticalAlign.Center }
               })
               .onClick(() => {
-                this.close_tab(key)
+                this.close_tab(Label.index_key)
               })
             }
             .width("100%")
-            .height(this.tab_height_default + this.extension_area[key])
-          })
+            .height(this.tab_height_default + this.extension_area[Label.index_key])
+          }, (item: TabLabel) => item.timestamp.toString())
         }
         .width("100%")
       } // Tab Buttons List
-      .direction(Direction.Rtl)
       .align(Alignment.Bottom)
       .edgeEffect(this.count_down_for_switching_back_to_spring == 0 ? EdgeEffect.Spring : EdgeEffect.None)
       .width("100%")
@@ -105,12 +106,14 @@ struct LinysTabs {
       .width("100%")
 
     } // Tabs Panel
+    .justifyContent(FlexAlign.End)
     .padding(10)
     .width("100%")
     .height("100%")
     .onAppear(() => {
       this.extension_area = [];
       this.offset_area = [];
+      this.timestamp_lists = this.bunch_of_tabs.get_all_time_stamps();
       for (let i = 0; i < this.bunch_of_tabs.Tabs.length; i++) {
         this.extension_area.push(0);
         this.offset_area.push(0);
@@ -126,6 +129,8 @@ struct LinysTabs {
           this.count_down_for_switching_back_to_spring -= 1;
         }
       }, 10)
+      // Set Task to calculate animation
+      console.log("[Meow][LinysTabs] Tabs Panel READY")
     })
   }
 
@@ -138,10 +143,13 @@ struct LinysTabs {
       this.offset_area[index] += this.tab_height_default + 5;
       // Move downward for up going animation
     }
-    this.offset_area.push(this.tab_height_default + 400)
+    this.offset_area.push(this.tab_height_default + 1000)
+    // Set offset for the new tab
     setTimeout(() => {
-      this.scroll_controller.scrollBy(0, Number.MAX_VALUE)
+      this.scroll_controller.scrollEdge(Edge.Bottom)
     }, 20)
+    this.timestamp_lists = this.bunch_of_tabs.get_all_time_stamps()
+    // Update timestamps
   }
 
   switch_tab(target: number) {
@@ -162,7 +170,7 @@ struct LinysTabs {
     }
     if (this.offset_area.length == 1) {
       // If closing the last tab
-      this.offset_area[0] = this.tab_height_default + 400;
+      this.offset_area[0] = this.tab_height_default + 1000;
     } else {
       // If not closing the last tab
       this.extension_area.splice(target, 1)
@@ -170,10 +178,13 @@ struct LinysTabs {
     }
 
     this.count_down_for_switching_back_to_spring += 10;
+    // Set Scroll spring on edge effect off
+    // So that when closing the last tab, it is always stuck at the bottom
+    // Or we'll have to wait for the spring animation to finish, bringing the last tab button down.
 
     // Delete this area length
     this.current_tab_index = this.bunch_of_tabs.closeTab(target, this.home_url())
-    //Close
+    // Close
     this.update_backward_forward_access()
     // Update history
     this.sync_list_info()
@@ -182,6 +193,8 @@ struct LinysTabs {
     // Set CURRENT variables
     this.update_search_box_text(this.current_url)
     // Update Input Search Box
+    this.timestamp_lists = this.bunch_of_tabs.get_all_time_stamps()
+    // Update timestamps
   }
 
   // Utils

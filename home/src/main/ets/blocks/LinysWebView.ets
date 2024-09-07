@@ -39,13 +39,13 @@ struct LinysWebView {
           .height("100%")
           .visibility(this.current_tab_index == Label.index_key ? Visibility.Visible : Visibility.None)
           .onErrorReceive((e) => {
-            console.log("[ArkWeb][ERROR] "
+            console.log("[Meow][ArkWeb][ERROR] "
               + e.error.getErrorCode() + ", " + e.error.getErrorInfo()
               + " @ " + this.tab_urls[Label.index_key])
             // Log web errors
           })
           .onPageBegin(() => {
-            console.log("[ArkWeb] on page begin")
+            console.log("[Meow][ArkWeb] on page begin")
             this.current_accessBackward = this.bunch_of_tabs.workingTab().controller.accessBackward()
             this.current_accessForward = this.bunch_of_tabs.workingTab().controller.accessForward()
             // Update History
@@ -61,14 +61,14 @@ struct LinysWebView {
             // Update Input Search Box
           })
           .onPageEnd(() => {
-            console.log("[ArkWeb] on page end")
+            console.log("[Meow][ArkWeb] on page end")
             this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(false);
             this.tab_is_loading = this.bunch_of_tabs.get_all_is_loading();
             this.update_current_info();
           })
           .onProgressChange((event) => {
-            console.log("[ArkWeb] on progress change")
             let progress: number = event.newProgress;
+            console.log("[Meow][ArkWeb] on progress change: " + progress.toString())
             // Update current loading progress
             if (progress == 0) {
               return;
@@ -86,9 +86,13 @@ struct LinysWebView {
       }, (item: TabLabel) => item.timestamp.toString())
 
     }
+    .visibility(this.show_webViews ? Visibility.Visible : Visibility.Hidden)
+    .backgroundColor("green")
     .width("100%")
     .height("100%")
-    .visibility(this.show_webViews ? Visibility.Visible : Visibility.Hidden)
+    .onAppear(() => {
+      console.log("[Meow][LinysWebView] WebViews READY")
+    })
   }
 
   update_current_info() {
