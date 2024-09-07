@@ -1,5 +1,7 @@
 # Liny’s Browser!
 
+[中文](README.md) | [English](README_EN.md)
+
 ## Ideas
 
 Liny's Browser is a basic browser built for HarmonyOS NEXT (API12),

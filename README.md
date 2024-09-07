@@ -1,5 +1,7 @@
 # Liny 的浏览器！
 
+[中文](README.md) | [English](README_EN.md)
+
 ## 启发
 
 Liny 的浏览器兼容 HarmonyOS NEXT API12，旨在为各种性能水平的设备提供一个轻量的浏览器的选择。
