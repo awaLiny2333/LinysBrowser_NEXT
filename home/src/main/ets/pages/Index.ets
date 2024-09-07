@@ -37,316 +37,320 @@ struct Index {
   }
 
   build() {
-    RelativeContainer() {
-      Column() {
-        Row()// Top Bar Avoid
-          .width("100%")
-          .height(px2vp(this.topAvoidHeight))
-          .backgroundColor($r('app.color.block_color'))
-
-        Row() {
-          Column() {
-            LinysTabs({
-              tablet_mode: this.tablet_mode,
-              show_webViews: this.show_webViews,
-              showing_tabs: this.showing_tabs,
-              animation_default: this.animation_default(),
-              // Environment
-              bunch_of_tabs: this.bunch_of_tabs,
-              // HOST
-              current_tab_index: this.current_tab_index,
-              tab_titles: this.tab_titles,
-              tab_urls: this.tab_urls,
-              tab_loading_progresses: this.tab_loading_progresses,
-              tab_is_loading: this.tab_is_loading,
-              current_title: this.current_title,
-              current_url: this.current_url,
-              current_loading_progress: this.current_loading_progress,
-              current_is_loading: this.current_is_loading,
-              // Statuses
-              current_accessForward: this.current_accessForward,
-              current_accessBackward: this.current_accessBackward,
-              search_input: this.search_input
-              // Other statuses
-            })
-          } // Tabs Panel
-          .width(this.tablet_mode ? 250 : "90%")
-          .height("100%")
-          .visibility(this.showing_tabs ? Visibility.Visible : Visibility.None)
-          .animation(this.animation_default())
-
-          Row() {
-            LinysWebView({
-              tablet_mode: this.tablet_mode,
-              show_webViews: this.show_webViews,
-              // Environment
-              bunch_of_tabs: this.bunch_of_tabs,
-              // HOST
-              current_tab_index: this.current_tab_index,
-              tab_titles: this.tab_titles,
-              tab_urls: this.tab_urls,
-              tab_loading_progresses: this.tab_loading_progresses,
-              tab_is_loading: this.tab_is_loading,
-              current_title: this.current_title,
-              current_url: this.current_url,
-              current_loading_progress: this.current_loading_progress,
-              current_is_loading: this.current_is_loading,
-              // Statuses
-              current_accessForward: this.current_accessForward,
-              current_accessBackward: this.current_accessBackward,
-              search_input: this.search_input
-              // Other statuses
-            })
-          }
-          .width("100%")
-          .backgroundColor($r('app.color.start_window_background'))
-          .layoutWeight(this.tablet_mode ? 1 : 0)
-
-        } // Main Web
-        .direction(this.tablet_mode ? Direction.Ltr : Direction.Rtl)
-        .layoutWeight(1)
-
-        Column()// Bottom Avoid
-          .height(px2vp(this.bottomAvoidHeight) + 55 + (this.tablet_mode ? 0 : 47))
-
-      } // Webview Base
-      .alignRules({
-        middle: { anchor: "__container__", align: HorizontalAlign.Center },
-        center: { anchor: "__container__", align: VerticalAlign.Center }
-      })
-      .height("100%")
-      .width("100%")
-      .backgroundColor($r('app.color.start_window_background'))
-      .onAreaChange((_o, n) => {
-        this.screen_width = n.width as number
-        this.tablet_mode = this.screen_width > 500
-      })
-
-      Column() {
-        LinysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
-        Column() {
-        } // Bottom Avoid
-        .height(px2vp(this.bottomAvoidHeight) + 55 + (this.tablet_mode ? 0 : 47))
-      } // Loading Bar
-      .alignRules({
-        middle: { anchor: "__container__", align: HorizontalAlign.Center },
-        bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
-      })
-      .width("100%")
-
-      Column() {
-        Row() {
-          Text("→ " + (this.search_input_unified == "" ? "(　o=^•ェ•)o ?" : this.search_input_unified))
-            .fontColor($r('app.color.font_color_title'))
-            .fontWeight(FontWeight.Medium)
-            .fontSize(18)
-            .maxLines(4)
-            .textOverflow({ overflow: TextOverflow.Ellipsis })
-        } // Bottom Bar for estimated destination indication
-        .visibility(this.visible_when_typing())
-        .padding({ top: 15, left: 15, right: 15 })
+    Column() {
+      Row()// Top Bar Avoid
         .width("100%")
+        .height(px2vp(this.topAvoidHeight))
         .backgroundColor($r('app.color.block_color'))
-        .animation(this.animation_default())
 
-        Row({ space: 15 }) {
-          Column({ space: 5 }) {
-            Text(this.current_title)
-              .fontColor($r('app.color.font_color_title'))
-              .fontWeight(FontWeight.Medium)
-              .fontSize(22)
-              .maxLines(2)
-              .textOverflow({ overflow: TextOverflow.Ellipsis })
-            Text(this.current_url)
+      RelativeContainer() {
+
+        Column() {
+          Row() {
+            Column() {
+              LinysTabs({
+                tablet_mode: this.tablet_mode,
+                show_webViews: this.show_webViews,
+                showing_tabs: this.showing_tabs,
+                animation_default: this.animation_default(),
+                // Environment
+                bunch_of_tabs: this.bunch_of_tabs,
+                // HOST
+                current_tab_index: this.current_tab_index,
+                tab_titles: this.tab_titles,
+                tab_urls: this.tab_urls,
+                tab_loading_progresses: this.tab_loading_progresses,
+                tab_is_loading: this.tab_is_loading,
+                current_title: this.current_title,
+                current_url: this.current_url,
+                current_loading_progress: this.current_loading_progress,
+                current_is_loading: this.current_is_loading,
+                // Statuses
+                current_accessForward: this.current_accessForward,
+                current_accessBackward: this.current_accessBackward,
+                search_input: this.search_input
+                // Other statuses
+              })
+            } // Tabs Panel
+            .width(this.tablet_mode ? 250 : "90%")
+            .height("100%")
+            .visibility(this.showing_tabs ? Visibility.Visible : Visibility.None)
+            .animation(this.animation_default())
+
+            Row() {
+              LinysWebView({
+                tablet_mode: this.tablet_mode,
+                show_webViews: this.show_webViews,
+                // Environment
+                bunch_of_tabs: this.bunch_of_tabs,
+                // HOST
+                current_tab_index: this.current_tab_index,
+                tab_titles: this.tab_titles,
+                tab_urls: this.tab_urls,
+                tab_loading_progresses: this.tab_loading_progresses,
+                tab_is_loading: this.tab_is_loading,
+                current_title: this.current_title,
+                current_url: this.current_url,
+                current_loading_progress: this.current_loading_progress,
+                current_is_loading: this.current_is_loading,
+                // Statuses
+                current_accessForward: this.current_accessForward,
+                current_accessBackward: this.current_accessBackward,
+                search_input: this.search_input
+                // Other statuses
+              })
+            }
+            .width("100%")
+            .backgroundColor($r('app.color.start_window_background'))
+            .layoutWeight(this.tablet_mode ? 1 : 0)
+
+          } // Main Web
+          .direction(this.tablet_mode ? Direction.Ltr : Direction.Rtl)
+          .layoutWeight(1)
+
+          Column()// Bottom Avoid
+            .height(55 + (this.tablet_mode ? 0 : 47))
+
+        } // Webview Base
+        .alignRules({
+          middle: { anchor: "__container__", align: HorizontalAlign.Center },
+          center: { anchor: "__container__", align: VerticalAlign.Center }
+        })
+        .height("100%")
+        .width("100%")
+        .backgroundColor($r('app.color.start_window_background'))
+        .onAreaChange((_o, n) => {
+          this.screen_width = n.width as number
+          this.tablet_mode = this.screen_width > 500
+        })
+
+        Column() {
+          LinysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
+          Column() {
+          } // Bottom Avoid
+          .height(55 + (this.tablet_mode ? 0 : 47))
+        } // Loading Bar
+        .alignRules({
+          middle: { anchor: "__container__", align: HorizontalAlign.Center },
+          bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
+        })
+        .width("100%")
+
+        Column() {
+          Row() {
+            Text("→ " + (this.search_input_unified == "" ? "(　o=^•ェ•)o ?" : this.search_input_unified))
               .fontColor($r('app.color.font_color_title'))
               .fontWeight(FontWeight.Medium)
               .fontSize(18)
-              .opacity(0.7)
               .maxLines(4)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
-          }
-          .alignItems(HorizontalAlign.Start)
-          .layoutWeight(1)
+          } // Bottom Bar for estimated destination indication
+          .visibility(this.visible_when_typing())
+          .padding({ top: 15, left: 15, right: 15 })
+          .width("100%")
+          .backgroundColor($r('app.color.block_color'))
+          .animation(this.animation_default())
 
-          LinysSymbol({ symbol_glyph_target: 'sys.symbol.share' })
-        } // Bottom Bar for This Page Info display
-        .padding({ top: 15, left: 16, right: 15 })
-        .width("100%")
-        .backgroundColor($r('app.color.block_color'))
-        .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
-        .animation(this.animation_default())
-
-        Row({ space: 15 }) {
-          LinysSymbol({
-            symbol_glyph_target: 'sys.symbol.arrow_left'
-          })
-            .enabled(this.current_accessBackward)
-            .opacity(this.current_accessBackward ? 1 : 0.5)
-            .onClick(() => {
-              this.go_backward()
-            })
-
-          LinysSymbol({
-            symbol_glyph_target: 'sys.symbol.arrow_right'
-          })
-            .enabled(this.current_accessForward)
-            .opacity(this.current_accessForward ? 1 : 0.5)
-            .onClick(() => {
-              this.go_forward()
-            })
-
-          SymbolGlyph(!this.current_is_loading ? $r('sys.symbol.arrow_clockwise') : $r('sys.symbol.xmark'))
-            .fontSize(32)
-            .fontColor([$r('app.color.font_color_title')])
-            .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.current_is_loading)
-            .onClick(() => {
-              if (this.current_is_loading) {
-                this.stop_page()
-              } else {
-                this.refresh_page()
-              }
-            })
-
-          LinysSymbol({
-            symbol_glyph_target: 'sys.symbol.house'
-          })
-            .onClick(() => {
-              this.go_home()
-            })
-
-          TextInput({ text: this.search_input })
+          Row({ space: 15 }) {
+            Column({ space: 5 }) {
+              Text(this.current_title)
+                .fontColor($r('app.color.font_color_title'))
+                .fontWeight(FontWeight.Medium)
+                .fontSize(22)
+                .maxLines(2)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+              Text(this.current_url)
+                .fontColor($r('app.color.font_color_title'))
+                .fontWeight(FontWeight.Medium)
+                .fontSize(18)
+                .opacity(0.7)
+                .maxLines(4)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+            }
+            .alignItems(HorizontalAlign.Start)
             .layoutWeight(1)
-            .fontWeight(FontWeight.Regular)
-            .caretColor($r('app.color.font_color_title'))
-            .onFocus(() => {
-              this.is_search_input_typing = true;
-            })
-            .onBlur(() => {
-              this.is_search_input_typing = false;
-            })
-            .visibility(this.visible_in_tablet_mode())
-            .fontColor($r('app.color.font_color_title'))
-            .onChange((content) => {
-              this.update_search_input(content)
-            })
-            .onSubmit(() => {
-              this.submit_searching()
-            })
-            .selectAll(true)
-            .selectedBackgroundColor($r('app.color.font_color_title'))
 
-          Blank()
-            .visibility(this.visible_in_normal_mode())
+            LinysSymbol({ symbol_glyph_target: 'sys.symbol.share' })
+          } // Bottom Bar for This Page Info display
+          .padding({ top: 15, left: 16, right: 15 })
+          .width("100%")
+          .backgroundColor($r('app.color.block_color'))
+          .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
+          .animation(this.animation_default())
 
-          LinysSymbol({
-            symbol_glyph_target: 'sys.symbol.magnifyingglass'
-          })
-            .visibility(this.visible_when_typing_in_tablet_mode())
-            .onClick(() => {
-              this.submit_searching()
-            })
-
-          LinysSymbol({
-            symbol_glyph_target: 'sys.symbol.square_grid_2x2'
-          })
-            .onClick(() => {
-              this.show_tabs()
-            })
-
-          SymbolGlyph(this.showing_more_options ? $r('sys.symbol.chevron_down') : $r('sys.symbol.dot_grid_2x2'))
-            .fontSize(32)
-            .fontColor([$r('app.color.font_color_title')])
-            .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.showing_more_options)
-            .onClick(() => {
-              this.show_more()
-            })
-
-        } // Bottom Bar of controls
-        .padding({ top: 15, left: 15, right: 15 })
-        .width("100%")
-        .backgroundColor($r('app.color.block_color'))
-
-        Row({ space: 15 }) {
-          TextInput({ text: this.search_input })
-            .layoutWeight(1)
-            .fontWeight(FontWeight.Regular)
-            .caretColor($r('app.color.font_color_title'))
-            .onFocus(() => {
-              this.is_search_input_typing = true;
-            })
-            .onBlur(() => {
-              this.is_search_input_typing = false;
-            })
-            .fontColor($r('app.color.font_color_title'))
-            .onChange((content) => {
-              this.update_search_input(content)
-            })
-            .onSubmit(() => {
-              this.submit_searching()
-            })
-            .selectAll(true)
-            .selectedBackgroundColor($r('app.color.font_color_title'))
-
-          LinysSymbol({
-            symbol_glyph_target: 'sys.symbol.magnifyingglass'
-          })
-            .visibility(this.visible_when_typing())
-            .onClick(() => {
-              this.submit_searching()
-            })
-        } // Bottom Bar of extended searching bar
-        .visibility(this.visible_in_normal_mode())
-        .padding({ top: 15, left: 15, right: 15 })
-        .width("100%")
-        .backgroundColor($r('app.color.block_color'))
-        .animation(this.animation_default())
-
-        WaterFlow() {
-          FlowItem() {
+          Row({ space: 15 }) {
             LinysSymbol({
-              symbol_glyph_target: 'sys.symbol.qrcode'
+              symbol_glyph_target: 'sys.symbol.arrow_left'
+            })
+              .enabled(this.current_accessBackward)
+              .opacity(this.current_accessBackward ? 1 : 0.5)
+              .onClick(() => {
+                this.go_backward()
+              })
+
+            LinysSymbol({
+              symbol_glyph_target: 'sys.symbol.arrow_right'
+            })
+              .enabled(this.current_accessForward)
+              .opacity(this.current_accessForward ? 1 : 0.5)
+              .onClick(() => {
+                this.go_forward()
+              })
+
+            SymbolGlyph(!this.current_is_loading ? $r('sys.symbol.arrow_clockwise') : $r('sys.symbol.xmark'))
+              .fontSize(32)
+              .fontColor([$r('app.color.font_color_title')])
+              .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.current_is_loading)
+              .onClick(() => {
+                if (this.current_is_loading) {
+                  this.stop_page()
+                } else {
+                  this.refresh_page()
+                }
+              })
+
+            LinysSymbol({
+              symbol_glyph_target: 'sys.symbol.house'
             })
               .onClick(() => {
-
+                this.go_home()
               })
-          }
 
-          FlowItem() {
+            TextInput({ text: this.search_input })
+              .layoutWeight(1)
+              .fontWeight(FontWeight.Regular)
+              .caretColor($r('app.color.font_color_title'))
+              .onFocus(() => {
+                this.is_search_input_typing = true;
+              })
+              .onBlur(() => {
+                this.is_search_input_typing = false;
+              })
+              .visibility(this.visible_in_tablet_mode())
+              .fontColor($r('app.color.font_color_title'))
+              .onChange((content) => {
+                this.update_search_input(content)
+              })
+              .onSubmit(() => {
+                this.submit_searching()
+              })
+              .selectAll(true)
+              .selectedBackgroundColor($r('app.color.font_color_title'))
+
+            Blank()
+              .visibility(this.visible_in_normal_mode())
+
             LinysSymbol({
-              symbol_glyph_target: 'sys.symbol.bookmark'
+              symbol_glyph_target: 'sys.symbol.magnifyingglass'
+            })
+              .visibility(this.visible_when_typing_in_tablet_mode())
+              .onClick(() => {
+                this.submit_searching()
+              })
+
+            LinysSymbol({
+              symbol_glyph_target: 'sys.symbol.square_grid_2x2'
             })
               .onClick(() => {
-
+                this.show_tabs()
               })
-          }
-        } // Bottom Bar of More Options
-        .rowsGap(15)
-        .columnsTemplate("1fr ".repeat(Math.floor(this.screen_width / 47)))
-        .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
-        .padding({ top: 16, left: 15, right: 15 })
+
+            SymbolGlyph(this.showing_more_options ? $r('sys.symbol.chevron_down') : $r('sys.symbol.dot_grid_2x2'))
+              .fontSize(32)
+              .fontColor([$r('app.color.font_color_title')])
+              .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.showing_more_options)
+              .onClick(() => {
+                this.show_more()
+              })
+
+          } // Bottom Bar of controls
+          .padding({ top: 15, left: 15, right: 15 })
+          .width("100%")
+          .backgroundColor($r('app.color.block_color'))
+
+          Row({ space: 15 }) {
+            TextInput({ text: this.search_input })
+              .layoutWeight(1)
+              .fontWeight(FontWeight.Regular)
+              .caretColor($r('app.color.font_color_title'))
+              .onFocus(() => {
+                this.is_search_input_typing = true;
+              })
+              .onBlur(() => {
+                this.is_search_input_typing = false;
+              })
+              .fontColor($r('app.color.font_color_title'))
+              .onChange((content) => {
+                this.update_search_input(content)
+              })
+              .onSubmit(() => {
+                this.submit_searching()
+              })
+              .selectAll(true)
+              .selectedBackgroundColor($r('app.color.font_color_title'))
+
+            LinysSymbol({
+              symbol_glyph_target: 'sys.symbol.magnifyingglass'
+            })
+              .visibility(this.visible_when_typing())
+              .onClick(() => {
+                this.submit_searching()
+              })
+          } // Bottom Bar of extended searching bar
+          .visibility(this.visible_in_normal_mode())
+          .padding({ top: 15, left: 15, right: 15 })
+          .width("100%")
+          .backgroundColor($r('app.color.block_color'))
+          .animation(this.animation_default())
+
+          WaterFlow() {
+            FlowItem() {
+              LinysSymbol({
+                symbol_glyph_target: 'sys.symbol.qrcode'
+              })
+                .onClick(() => {
+
+                })
+            }
+
+            FlowItem() {
+              LinysSymbol({
+                symbol_glyph_target: 'sys.symbol.bookmark'
+              })
+                .onClick(() => {
+
+                })
+            }
+          } // Bottom Bar of More Options
+          .rowsGap(15)
+          .columnsTemplate("1fr ".repeat(Math.floor(this.screen_width / 47)))
+          .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
+          .padding({ top: 16, left: 15, right: 15 })
+          .width("100%")
+          .height(Math.ceil(3 / Math.floor(this.screen_width / 47)) * 47)
+          .backgroundColor($r('app.color.block_color'))
+          .animation(this.animation_default())
+
+        } // Bottom Bars
         .width("100%")
-        .height(Math.ceil(3 / Math.floor(this.screen_width / 47)) * 47)
         .backgroundColor($r('app.color.block_color'))
         .animation(this.animation_default())
+        .alignRules({
+          bottom: { anchor: "__container__", align: VerticalAlign.Bottom },
+          middle: { anchor: "__container__", align: HorizontalAlign.Center }
+        })
+      }
+      .layoutWeight(1)
+      .width("100%")
 
-        Row() {
-
-        } // Bottom Bar Avoid
+      Row()// Bottom Bar Avoid
         .width("100%")
         .height(px2vp(this.bottomAvoidHeight))
-
-      } // Bottom Bars
-      .width("100%")
-      .backgroundColor($r('app.color.block_color'))
-      .animation(this.animation_default())
-      .alignRules({
-        bottom: { anchor: "__container__", align: VerticalAlign.Bottom },
-        middle: { anchor: "__container__", align: HorizontalAlign.Center }
-      })
+        .backgroundColor($r('app.color.block_color'))
     }
     .height("100%")
     .width("100%")
-    .onAppear(()=>{
+    .onAppear(() => {
       console.log("[Meow][Index] Home Index READY")
     })
   }
