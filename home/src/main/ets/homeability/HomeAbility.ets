@@ -48,10 +48,19 @@ export default class HomeAbility extends UIAbility {
       let topAvoidHeight = avoidArea.topRect.height; // 获取到导航条区域的高度
       AppStorage.setOrCreate('topAvoidHeight', topAvoidHeight);
     });
+    windowStage.getMainWindow((err: BusinessError, win) => {
+      const errCode: number = err.code;
+      if (errCode) {
+        console.error(`Failed to obtain the main window. Cause code: ${err.code}, message: ${err.message}`);
+        return;
+      }
+      win.setPreferredOrientation(window.Orientation.AUTO_ROTATION_RESTRICTED)
+      // Set window orientation
+    })
   }
 
   onConfigurationUpdate(newConfig: Configuration): void {
-      AppStorage.setOrCreate('currentColorMode', newConfig.colorMode);
+    AppStorage.setOrCreate('currentColorMode', newConfig.colorMode);
   }
 
   onWindowStageDestroy(): void {
