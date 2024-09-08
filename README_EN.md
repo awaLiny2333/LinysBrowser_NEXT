@@ -49,7 +49,7 @@ click again to collapse the panel.
 
 ## Constraints and limits
 
-This project is still far from stable and finished.
+Long way ahead.
 
 1. Perhaps due to performance issues on Windows x86-64 Emulators,
    quickly opening plenty of new tabs may cause crashes due to error
@@ -58,9 +58,11 @@ This project is still far from stable and finished.
 2. Quickly closing plenty of tabs may cause tabs to disappear.
    This is because in some extreme occasions,
    the tab button is trying to close the last+1 index of the tab list. 
-   An if statement has been added before the operarion 
+   An if statement has been added before the operation 
    in order to make sure the index is in the legal range.
    (Seems to be solved, still under observation)
 3. HarmonyOS UA can't be understood by plenty of websites.
-4. The vertical tabs panel animations may seem weird when the scroll is longer than the screen.
-5. This project requires HarmonyOS NEXT API12 to run.
+4. The animation of Tabs panel is wrong when opening the panel for the first time after launching the app,
+   collapsing and reopening it would temporally fix that.
+5. The vertical tabs panel animations may seem weird when the scroll is longer than the screen.
+6. This project requires HarmonyOS NEXT API12 to run.

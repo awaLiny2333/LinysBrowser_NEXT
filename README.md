@@ -41,7 +41,7 @@ Liny 的浏览器为 HarmonyOS NEXT 而构建，旨在为各种性能水平的�
 
 ## 约束和限制
 
-这个项目至成尚道阻且长。
+道阻且长。
 
 1. 也许是因为 Windows x86-64 模拟器的性能问题，快速打开大量新标签页会导致错误 17100001
    (Init error. The WebviewController must be associated with a Web component)
@@ -52,5 +52,6 @@ Liny 的浏览器为 HarmonyOS NEXT 而构建，旨在为各种性能水平的�
    一个判断语句已经被添加，用于检测请求关掉的页面是否合法。
    （似乎解决了，但是仍有待观察）
 3. HarmonyOS UA 不被很多网站所理解，并且常常会导致不正确的网站呈现。
-4. 当垂直标签页高度超过屏幕高度，并且启用滚动（Scroll）时，关闭、新建标签页动画效果可能会很奇怪。
-5. 这个项目要求 HarmonyOS NEXT API12 以运行。
+4. 打开 App 后的第一次打开标签页面板的动画会乱飞，收起来再打开就暂时好了。
+5. 当垂直标签页高度超过屏幕高度，并且启用滚动（Scroll）时，关闭、新建标签页动画效果可能会很奇怪。
+6. 这个项目要求 HarmonyOS NEXT API12 以运行。
