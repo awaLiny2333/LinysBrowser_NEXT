@@ -86,7 +86,6 @@ struct LinysWebView {
       }, (item: TabLabel) => item.timestamp.toString())
 
     }
-    .visibility(this.show_webViews ? Visibility.Visible : Visibility.Hidden)
     .backgroundColor("green")
     .width("100%")
     .height("100%")

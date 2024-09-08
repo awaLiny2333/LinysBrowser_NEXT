@@ -114,8 +114,12 @@ export class BunchOfTabs {
         landing_destination = target - 1;
         // If in the middle
       }
+    } else {
+
     }
 
+    this.switchToTab(0)
+    // Forces LinysTabs to refresh For Each loop to render
     this.switchToTab(landing_destination)
 
     this.Tabs.splice(target, 1)

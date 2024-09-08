@@ -32,6 +32,8 @@ struct LinysTabs {
   // Animation info
   tab_height_default: number = 46;
   scroll_controller: Scroller = new Scroller();
+  @State scroll_area_height: number = this.tab_height_default;
+  @State scroll_animation_enabled: boolean = true;
 
   build() {
     Column({ space: 10 }) {
@@ -62,7 +64,7 @@ struct LinysTabs {
                 width: 2,
                 color: this.current_tab_index == Label.index_key ? $r('app.color.font_color_title') : "transparent"
               })
-              .animation({ duration: 120 })
+              .animation({ duration: 100 })
               .width("100%")
               .height(this.tab_height_default)
               .padding(10)
@@ -90,12 +92,25 @@ struct LinysTabs {
           }, (item: TabLabel) => item.timestamp.toString())
         }
         .width("100%")
+        .onAreaChange((_o, n) => {
+          let my_height = n.height as number;
+          if (my_height > this.scroll_area_height) {
+            // Scroll Enabled, animation disabled
+            this.scroll_animation_enabled = false;
+          } else {
+            // Scroll Disabled, animation enabled
+            this.scroll_animation_enabled = true;
+          }
+        })
       } // Tab Buttons List
       .direction(Direction.Rtl)
       .align(Alignment.Bottom)
       .edgeEffect(this.count_down_for_switching_back_to_spring == 0 ? EdgeEffect.Spring : EdgeEffect.None)
       .width("100%")
       .layoutWeight(1)
+      .onAreaChange((_o, n) => {
+        this.scroll_area_height = n.height as number;
+      })
 
       Row({ space: 10 }) {
         Blank()
@@ -132,13 +147,18 @@ struct LinysTabs {
   new_tab() {
     this.current_tab_index = this.bunch_of_tabs.newTab(this.home_url())
     this.extension_area.push(0)
-    for (let index = 0; index < this.offset_area.length; index++) {
-      this.offset_area[index] += this.tab_height_default + 5;
-      // Move downward for up going animation
+
+    if (this.scroll_animation_enabled) {
+      for (let index = 0; index < this.offset_area.length; index++) {
+        this.offset_area[index] += this.tab_height_default + 5;
+        // Move downward for up going animation
+      }
     }
+
     this.offset_area.push(this.tab_height_default + 1000)
     // Set offset for the new tab
     this.count_down_for_scrolling_to_bottom = 20;
+    // Scroll to the new tab later
   }
 
   switch_tab(target: number) {
@@ -153,9 +173,10 @@ struct LinysTabs {
   }
 
   close_tab(target: number) {
-    if (!(target < this.offset_area.length)) {
+    console.log(target.toString() + " / " + this.offset_area.length.toString())
+    if (target >= this.offset_area.length) {
       // Some kind of bug, idk why but this is essential when closing tabs quickly
-      console.log("[Meow][LinysTabs] Ran into the weird bug of target == this.offset_area.length")
+      console.log("[Meow][LinysTabs][ERROR] Ran into the weird bug of target >= this.offset_area.length")
       return;
     }
 
