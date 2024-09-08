@@ -41,7 +41,7 @@ Liny 的浏览器为 HarmonyOS NEXT 而构建，旨在为各种性能水平的�
 
 ## 约束和限制
 
-这个项目至离稳定和完成道阻且长。
+这个项目至成尚道阻且长。
 
 1. 也许是因为 Windows x86-64 模拟器的性能问题，快速打开大量新标签页会导致错误 17100001
    (Init error. The WebviewController must be associated with a Web component)
