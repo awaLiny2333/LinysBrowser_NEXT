@@ -20,8 +20,7 @@ struct Index {
   @State screen_width: number = 0;
   @State current_accessForward: boolean = false;
   @State current_accessBackward: boolean = false;
-  @State show_webViews: boolean = false;
-  @State show_tabViews: boolean = false;
+  @State webViews_ready: boolean = false;
   @State current_tab_index: number = 0;
   @State bunch_of_tabs: BunchOfTabs = new BunchOfTabs();
   // HOST
@@ -51,7 +50,7 @@ struct Index {
             Column() {
               LinysTabs({
                 tablet_mode: this.tablet_mode,
-                show_webViews: this.show_webViews,
+                show_webViews: this.webViews_ready,
                 showing_tabs: this.showing_tabs,
                 animation_default: this.animation_default(),
                 // Environment
@@ -75,21 +74,15 @@ struct Index {
             } // Tabs Panel
             .width(this.tablet_mode ? 250 : "90%")
             .height("100%")
-            .visibility(this.show_tabViews ?
-              (this.showing_tabs ? Visibility.Visible : Visibility.None) : Visibility.Hidden)
+            .visibility((this.showing_tabs ? Visibility.Visible : Visibility.None))
             .animation(this.animation_default())
             .onAppear(() => {
-              setTimeout(() => {
-                this.show_tabViews = true;
-              }, 10)
-              // Wait for some time after being rendered as Visibility.Hidden
-              // then hide as Visibility.None to avoid animation errors
             })
 
             Row() {
               LinysWebView({
                 tablet_mode: this.tablet_mode,
-                show_webViews: this.show_webViews,
+                show_webViews: this.webViews_ready,
                 // Environment
                 bunch_of_tabs: this.bunch_of_tabs,
                 // HOST
@@ -108,7 +101,7 @@ struct Index {
                 search_input: this.search_input
                 // Other statuses
               })
-                .visibility(this.show_webViews ? Visibility.Visible : Visibility.Hidden)
+                .visibility(this.webViews_ready ? Visibility.Visible : Visibility.Hidden)
             }
             .width("100%")
             .backgroundColor($r('app.color.start_window_background'))
@@ -400,7 +393,7 @@ struct Index {
   // other statuses
 
   submit_searching() {
-    this.show_webViews = true;
+    this.webViews_ready = true;
 
     if (this.search_input_unified != "") {
       let unified_url: string = unify_search_input_into_url(this.search_input)

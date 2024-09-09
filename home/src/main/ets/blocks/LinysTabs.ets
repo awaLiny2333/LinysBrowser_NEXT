@@ -32,7 +32,7 @@ struct LinysTabs {
   // Animation info
   tab_height_default: number = 46;
   scroll_controller: Scroller = new Scroller();
-  @State scroll_area_height: number = this.tab_height_default;
+  @State scroll_area_height: number = 0;
   @State scroll_animation_enabled: boolean = true;
 
   build() {
@@ -49,9 +49,6 @@ struct LinysTabs {
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
                   .layoutWeight(1)
-                  .onClick(() => {
-                    this.switch_tab(Label.index_key)
-                  })
 
                 SymbolGlyph($r('sys.symbol.xmark'))
                   .fontSize(20)
@@ -69,11 +66,14 @@ struct LinysTabs {
               .height(this.tab_height_default)
               .padding(10)
               .backgroundColor($r('app.color.block_color'))
+              .offset({ y: this.offset_area[Label.index_key] })
               .alignRules({
                 middle: { anchor: "__container__", align: HorizontalAlign.Center },
                 top: { anchor: "__container__", align: VerticalAlign.Top }
               })
-              .offset({ y: this.offset_area[Label.index_key] })
+              .onClick(() => {
+                this.switch_tab(Label.index_key)
+              })
 
               Column() {
               } // The True Tab Closer
@@ -86,9 +86,11 @@ struct LinysTabs {
               .onClick(() => {
                 this.close_tab(Label.index_key)
               })
+
             }
             .width("100%")
             .height(this.tab_height_default + this.extension_area[Label.index_key])
+
           }, (item: TabLabel) => item.timestamp.toString())
         }
         .width("100%")
@@ -102,15 +104,13 @@ struct LinysTabs {
             this.scroll_animation_enabled = true;
           }
         })
+
       } // Tab Buttons List
       .direction(Direction.Rtl)
       .align(Alignment.Bottom)
       .edgeEffect(this.count_down_for_switching_back_to_spring == 0 ? EdgeEffect.Spring : EdgeEffect.None)
       .width("100%")
-      .layoutWeight(1)
-      .onAreaChange((_o, n) => {
-        this.scroll_area_height = n.height as number;
-      })
+      .height(this.scroll_area_height)
 
       Row({ space: 10 }) {
         Blank()
@@ -140,6 +140,10 @@ struct LinysTabs {
       // Set Task to calculate animation
       console.log("[Meow][LinysTabs] Tabs Panel READY")
     })
+    .onAreaChange((_o, n) => {
+      this.scroll_area_height = n.height as number - 60;
+    })
+
   }
 
   // Tab controls
