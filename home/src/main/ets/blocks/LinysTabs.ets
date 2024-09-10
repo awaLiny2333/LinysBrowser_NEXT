@@ -39,59 +39,62 @@ struct LinysTabs {
     Column({ space: 10 }) {
       Scroll(this.scroll_controller) {
         Column({ space: 5 }) {
-          ForEach(this.bunch_of_tabs.Labels, (Label: TabLabel) => {
-            RelativeContainer() {
-              Row() {
-                Text(this.tab_titles[Label.index_key] == "" ? "Meow" : this.tab_titles[Label.index_key])
-                  .padding({ left: 2 })
-                  .fontSize(20)
-                  .fontColor($r('app.color.font_color_title'))
-                  .maxLines(1)
-                  .textOverflow({ overflow: TextOverflow.Ellipsis })
-                  .layoutWeight(1)
+          ForEach(
+            this.bunch_of_tabs.Labels,
+            (Label: TabLabel) => {
+              RelativeContainer() {
+                Row() {
+                  Text(this.tab_titles[Label.index_key] == "" ? "Meow" : this.tab_titles[Label.index_key])
+                    .padding({ left: 2 })
+                    .fontSize(20)
+                    .fontColor($r('app.color.font_color_title'))
+                    .maxLines(1)
+                    .textOverflow({ overflow: TextOverflow.Ellipsis })
+                    .layoutWeight(1)
 
-                SymbolGlyph($r('sys.symbol.xmark'))
-                  .fontSize(20)
-                  .fontColor([$r('app.color.font_color_title')])
-                  .fontWeight(FontWeight.Medium)
+                  SymbolGlyph($r('sys.symbol.xmark'))
+                    .fontSize(20)
+                    .fontColor([$r('app.color.font_color_title')])
+                    .fontWeight(FontWeight.Medium)
 
-              } // Title and xmark
-              .border({
-                radius: 10,
-                width: 2,
-                color: this.current_tab_index == Label.index_key ? $r('app.color.font_color_title') : "transparent"
-              })
-              .animation({ duration: 100 })
+                } // Title and xmark
+                .border({
+                  radius: 10,
+                  width: 2,
+                  color: this.current_tab_index == Label.index_key ? $r('app.color.font_color_title') : "transparent"
+                })
+                .animation({ duration: 100 })
+                .width("100%")
+                .height(this.tab_height_default)
+                .padding(10)
+                .backgroundColor($r('app.color.block_color'))
+                .offset({ y: this.offset_area[Label.index_key] })
+                .alignRules({
+                  middle: { anchor: "__container__", align: HorizontalAlign.Center },
+                  top: { anchor: "__container__", align: VerticalAlign.Top }
+                })
+                .onClick(() => {
+                  this.switch_tab(Label.index_key)
+                })
+
+                Column() {
+                } // The True Tab Closer
+                .width(70)
+                .height("100%")
+                .alignRules({
+                  middle: { anchor: "__container__", align: HorizontalAlign.End },
+                  center: { anchor: "__container__", align: VerticalAlign.Center }
+                })
+                .onClick(() => {
+                  this.close_tab(Label.index_key)
+                })
+
+              }
               .width("100%")
-              .height(this.tab_height_default)
-              .padding(10)
-              .backgroundColor($r('app.color.block_color'))
-              .offset({ y: this.offset_area[Label.index_key] })
-              .alignRules({
-                middle: { anchor: "__container__", align: HorizontalAlign.Center },
-                top: { anchor: "__container__", align: VerticalAlign.Top }
-              })
-              .onClick(() => {
-                this.switch_tab(Label.index_key)
-              })
-
-              Column() {
-              } // The True Tab Closer
-              .width(70)
-              .height("100%")
-              .alignRules({
-                middle: { anchor: "__container__", align: HorizontalAlign.End },
-                center: { anchor: "__container__", align: VerticalAlign.Center }
-              })
-              .onClick(() => {
-                this.close_tab(Label.index_key)
-              })
-
-            }
-            .width("100%")
-            .height(this.tab_height_default + this.extension_area[Label.index_key])
-
-          }, (item: TabLabel) => item.timestamp.toString())
+              .height(this.tab_height_default + this.extension_area[Label.index_key])
+            },
+            (Label: TabLabel) => Label.timestamp.toString()
+          )
         }
         .width("100%")
         .onAreaChange((_o, n) => {
