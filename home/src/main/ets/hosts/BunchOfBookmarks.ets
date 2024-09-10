@@ -1,18 +1,13 @@
-
 export class bookmark {
   private label: string;
   private link: string;
-  private icon_uri: string | undefined;
   private add_date: number | undefined;
-  private last_modified: number | undefined;
 
-  constructor(label: string, link: string, icon_uri?: string, add_date?: number, last_modified?: number) {
+  constructor(label: string, link: string, add_date?: number) {
     let date = new Date();
     this.label = label;
     this.link = link;
-    this.icon_uri = icon_uri;
     this.add_date = add_date !== undefined ? add_date : date.getTime();
-    this.last_modified = last_modified !== undefined ? add_date : date.getTime();
   }
 
   get_label() {
@@ -23,16 +18,8 @@ export class bookmark {
     return this.link;
   }
 
-  get_icon_uri() {
-    return this.icon_uri;
-  }
-
   get_add_date() {
     return this.add_date;
-  }
-
-  get_last_modified() {
-    return this.last_modified;
   }
 
   get_type() {
@@ -74,6 +61,10 @@ export class folder {
     this.contents.push(item);
   }
 
+  del_content(index: number) {
+    this.contents.splice(index, 1);
+  }
+
   get_content() {
     return this.contents as unified_item[];
   }
@@ -81,7 +72,7 @@ export class folder {
   test_print_contents() {
     let type: string = "";
     let item: bookmark | folder;
-    console.log("[Meow][BunchOfBookmarks][TEST] Folder: " + this.label)
+    console.log("[Meow][BunchOfBookmarks][TEST] Folder: " + this.label + " START")
     for (let index = 0; index < this.contents.length; index++) {
       item = this.contents[index].get_item();
       type = item.get_type();
@@ -94,6 +85,7 @@ export class folder {
         item.test_print_contents();
       }
     }
+    console.log("[Meow][BunchOfBookmarks][TEST] Folder: " + this.label + " END")
   }
 }
 
@@ -143,6 +135,13 @@ export class bookmark_manager {
     }
   }
 
+  // add_folder(new folder("honk"),"")
+  // add_bookmark(new bookmark("bili","bilibili.com"),"") // adding in the root directory
+  // add_bookmark(new bookmark("github","github.com"),"honk") // adding in root/honk directory
+  // add_folder(new folder("second"),"honk")
+  // add_folder(new folder("third"),"honk/second")
+  // add_bookmark(new bookmark("gitee","gitee.com"),"honk/second/third") // adding in root/honk/second/third directory
+
   add_folder(item: folder, path: string) {
     if (this.get_folder(path + "/" + item.get_label())) {
       // already exist
@@ -151,6 +150,10 @@ export class bookmark_manager {
       return this.add_folder_process(item, path);
     }
   }
+
+  // add_folder(new folder("honk"),"")
+  // add_folder(new folder("second"),"honk")
+  // add_folder(new folder("third"),"honk/second")
 
   get_bookmark(path: string, base_folder?: folder): bookmark | undefined {
     if (base_folder === undefined) {
@@ -183,6 +186,8 @@ export class bookmark_manager {
     }
   }
 
+  // get_bookmark("honk/second/third/gitee") // returns the bookmark with label "gitee"
+
   get_folder(path: string, base_folder?: folder): folder | undefined {
     if (base_folder === undefined) {
       base_folder = this.root;
@@ -211,6 +216,112 @@ export class bookmark_manager {
         }
       }
       return undefined;
+    }
+  }
+
+  // get_folder("honk/second/third") // returns the folder with label "third"
+
+  del_bookmark(path: string) {
+    if (!this.get_bookmark(path)) {
+      // bookmark doesn't exist
+      return false;
+    }
+    return this.delete_bookmark_process(path);
+  }
+
+  // del_bookmark("honk/github") // deletes the bookmark with label "github"
+
+  del_folder(path: string) {
+    if (!this.get_folder(path)) {
+      // folder doesn't exist
+      return false;
+    }
+    return this.delete_folder_process(path);
+  }
+
+  // del_folder("honk/second/third") // deletes the folder with label "third"
+
+  private delete_bookmark_process(path: string, base_folder?: folder): boolean {
+    if (base_folder === undefined) {
+      base_folder = this.root;
+      // use root as default;
+    }
+
+    if (!path.includes("/")) {
+      // Directly delete in this folder
+      let dir: unified_item[] = base_folder.get_content();
+      let target: number = -1;
+
+      for (let index = 0; index < dir.length; index++) {
+        if (dir[index].get_item().get_type() == "bookmark") {
+          if (dir[index].get_item().get_label() == path) {
+            target = index;
+          }
+        }
+      }
+      if (target == -1) {
+        return false;
+      } else {
+        base_folder.del_content(target);
+        return true;
+      }
+
+    } else {
+      // Continue to open
+      let rest_path = path.split("/").slice(1).join("/");
+      let base_content = base_folder.get_content()
+
+      for (let index = 0; index < base_content.length; index++) {
+        let item = base_content[index].get_item()
+        if (item.get_type() == "folder" && item.get_label() == path.split("/")[0]) {
+          item = item as folder;
+          return this.delete_bookmark_process(rest_path, item);
+        }
+      }
+      return false;
+      // if next path part is not found in this directory;
+    }
+  }
+
+  private delete_folder_process(path: string, base_folder?: folder): boolean {
+    if (base_folder === undefined) {
+      base_folder = this.root;
+      // use root as default;
+    }
+
+    if (!path.includes("/")) {
+      // Directly delete in this folder
+      let dir: unified_item[] = base_folder.get_content();
+      let target: number = -1;
+
+      for (let index = 0; index < dir.length; index++) {
+        if (dir[index].get_item().get_type() == "folder") {
+          if (dir[index].get_item().get_label() == path) {
+            target = index;
+          }
+        }
+      }
+      if (target == -1) {
+        return false;
+      } else {
+        base_folder.del_content(target);
+        return true;
+      }
+
+    } else {
+      // Continue to open
+      let rest_path = path.split("/").slice(1).join("/");
+      let base_content = base_folder.get_content()
+
+      for (let index = 0; index < base_content.length; index++) {
+        let item = base_content[index].get_item()
+        if (item.get_type() == "folder" && item.get_label() == path.split("/")[0]) {
+          item = item as folder;
+          return this.delete_folder_process(rest_path, item);
+        }
+      }
+      return false;
+      // if next path part is not found in this directory;
     }
   }
 
