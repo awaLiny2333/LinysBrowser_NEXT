@@ -7,15 +7,19 @@ struct LinysBookmarks {
   @Link bunch_of_bookmarks: BunchOfBookmarks;
   @Link bunch_of_tabs: BunchOfTabs;
   @Link webViews_ready: boolean;
-  @Prop animation_default: AnimateParam;
   @State viewing_contents: unified_item[] = this.bunch_of_bookmarks.root.get_content();
   @State @Watch('refresh_root_content') looking_at_path: string = "";
-  @State add_label: string = "";
-  @State add_link: string = "";
+  // Environments
   @State adding_folder: boolean = false;
   @State adding_bookmark: boolean = false;
+  @State add_label: string = "";
+  @State add_link: string = "";
+  // Input interactions
   scroll_controller: Scroller = new Scroller();
+  @Prop animation_default: AnimateParam;
   @State scroll_area_height: number = 0;
+
+  // Visual effects related
 
   build() {
     Column() {
@@ -25,18 +29,16 @@ struct LinysBookmarks {
             this.viewing_contents,
             (item: unified_item, key: number) => {
               BookmarkItem({
-                viewing_contents: this.viewing_contents,
-                bunch_of_bookmarks: this.bunch_of_bookmarks,
-                bunch_of_tabs: this.bunch_of_tabs,
-                webViews_ready: this.webViews_ready,
-                height_of_panel: this.scroll_area_height,
-                parent_path: this.looking_at_path,
-                looking_at_path: this.looking_at_path,
-                animation_default: this.animation_default,
-                my_index: key
+                my_index: key,
+                bunch_of_tabs: this.bunch_of_tabs, // For loadUrl
+                viewing_contents: this.viewing_contents, // For editing
+                looking_at_path: this.looking_at_path, // the path of now showing list (directory) on the panel
+                webViews_ready: this.webViews_ready, // To ask webViews to show
+                height_of_panel: this.scroll_area_height, // for animation params
+                parent_path: this.looking_at_path, // for get_my_path()
+                animation_default: this.animation_default, // default stuffs
               });
             },
-            // (Label: unified_item) => Label.get_item().get_add_date().toString()
           )
         }
         .width("100%")
@@ -49,28 +51,29 @@ struct LinysBookmarks {
       .margin({ bottom: 10 })
       .onAreaChange((_o, n) => {
         this.scroll_area_height = n.height as number;
+        // Update height of scroll area
+        // So that bookmark buttons will know if they are out of visible area
+        // and reduce their appearance animation time.
       })
 
       Row({ space: 10 }) {
         LinysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left' })
-          .onClick(() => {
-            this.back();
-          })
           .visibility(this.looking_at_path == "" ? Visibility.None : Visibility.Visible)
           .animation(this.animation_default)
-        // Go back
-
+          .onClick(() => {
+            this.go_back();
+          }) // Go back button
         Blank()
         LinysSymbol({ symbol_glyph_target: 'sys.symbol.folder_badge_plus' })
           .onClick(() => {
             this.adding_bookmark = false;
             this.adding_folder = !this.adding_folder;
-          })
+          }) // Add folder button
         LinysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
           .onClick(() => {
             this.adding_folder = false;
             this.adding_bookmark = !this.adding_bookmark;
-          })
+          }) // Add bookmark button
       } // Operation buttons
       .width("100%")
       .margin({ bottom: 5 })
@@ -88,12 +91,12 @@ struct LinysBookmarks {
               .caretColor($r('app.color.font_color_title'))
               .selectedBackgroundColor($r('app.color.font_color_title'))
               .layoutWeight(1)
-              .onSubmit(()=>{
+              .onSubmit(() => {
                 if (this.adding_folder) {
                   this.new_folder();
                 }
               })
-          } // Label
+          } // Edit Label TextInput
           .width("100%")
 
           Row({ space: 10 }) {
@@ -107,17 +110,17 @@ struct LinysBookmarks {
               .caretColor($r('app.color.font_color_title'))
               .selectedBackgroundColor($r('app.color.font_color_title'))
               .layoutWeight(1)
-              .onSubmit(()=>{
+              .onSubmit(() => {
                 this.new_bookmark();
               })
-          } // link
+          } // Edit link TextInput
           .width("100%")
           .visibility(this.adding_bookmark ? Visibility.Visible : Visibility.None)
           .animation(this.animation_default)
 
           Row() {
             Blank()
-            Button("  󰀻  ")
+            Button("  󰀓  ")
               .type(ButtonType.Capsule)
               .backgroundColor($r("app.color.font_color_title"))
               .fontColor($r('app.color.start_window_background'))
@@ -130,11 +133,11 @@ struct LinysBookmarks {
                   this.new_bookmark()
                 }
               })
-          } // Submit creation
+          } // Submit add button
           .width("100%")
         }
         .width("100%")
-      } // Blanks
+      } // Edit controls
       .height((this.adding_bookmark ? 150 : 0) + (this.adding_folder ? 100 : 0))
       .animation(this.animation_default)
       .scrollBar(BarState.Off)
@@ -143,11 +146,11 @@ struct LinysBookmarks {
         .fontColor($r('app.color.font_color_title'))
         .fontWeight(FontWeight.Medium)
         .fontSize(18)
-        .animation(this.animation_default)
         .textAlign(TextAlign.End)
         .width("100%")
         .margin({ top: 5 })
-    }
+      // Path indicator
+    } // List of directory, Operation buttons and edit TextInputs
     .justifyContent(FlexAlign.End)
     .padding(10)
     .width("100%")
@@ -172,7 +175,7 @@ struct LinysBookmarks {
     this.refresh_root_content();
   }
 
-  back() {
+  go_back() {
     if (this.looking_at_path.includes("/")) {
       let upper_path = this.looking_at_path.split("/");
       upper_path.pop()
@@ -207,34 +210,35 @@ export default LinysBookmarks;
 struct BookmarkItem {
   @Prop my_index: number = 0;
   @Link bunch_of_tabs: BunchOfTabs;
-  @Link bunch_of_bookmarks: BunchOfBookmarks;
   @Link webViews_ready: boolean;
   @Link looking_at_path: string;
   @Link viewing_contents: unified_item[];
-  @Prop contents: unified_item[] = this.get_contents();
-  @State item: unified_item = this.viewing_contents[this.my_index];
   @Prop parent_path: string;
   @Prop height_of_panel: number;
   @Prop animation_default: AnimateParam;
   // Public stuffs
-  @State label: string = this.item.get_item().get_label();
+  @State item: unified_item = this.viewing_contents[this.my_index];
   @State type: string = this.item.get_item().get_type();
+  @State label: string = this.item.get_item().get_label();
   @State link: string = this.type == "bookmark" ? (this.item.get_item() as bookmark).get_link() : "";
+  // Basic this properties
   @State pressing: boolean = false;
   @State show: Visibility = Visibility.Hidden;
   @State offset_y: number = 50;
   @State editing: boolean = false;
-  press_timing: number = 0;
   @State press_timing_ok: boolean = false;
+  press_timing: number = 0;
   bookmark_height_default: number = 46;
   // Animations statuses
   @State edit_label: string = this.label;
   @State edit_link: string = this.link;
 
+  // Edit inputs
+
   build() {
     Column() {
       Row() {
-        Text(this.label)
+        Text(this.label)// Title
           .fontColor(!this.pressing ? $r('app.color.font_color_title') : $r('app.color.block_color'))
           .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
           .animation(this.animation_default)
@@ -249,18 +253,18 @@ struct BookmarkItem {
             .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
             .fontColor([!this.pressing ? $r('app.color.font_color_title') : $r('app.color.block_color')])
             .animation(this.animation_default)
-        }
+        } // Folder Icon
         Scroll() {
           SymbolGlyph($r('sys.symbol.square_and_pencil'))
             .fontSize(24)
             .fontColor([$r('app.color.block_color')])
-        }
+        } // Edit Icon
         .scrollable(ScrollDirection.Horizontal)
         .width(this.press_timing_ok ? 26 : 0)
         .margin({ left: this.press_timing_ok ? 10 : 0 })
         .animation(this.animation_default)
 
-      } // Title
+      } // Bookmark button
       .border({
         radius: 10,
         width: 2,
@@ -283,20 +287,17 @@ struct BookmarkItem {
         }
       })
       .onClick(() => {
-        // console.log("[Meow][LinysBookmarks][INFO] My parent path:" + this.parent_path)
         if (this.press_timing_ok) {
-          // Edit
           this.editing = !this.editing;
           return;
-        }
+        } // Toggle Edit Panel
         if (this.type == "folder") {
           this.looking_at_path = this.get_my_path();
+          // Will automatically cause LinysBookmarks to update the UI list (@Watch)
         } else {
-          // is bookmark
-          // access web
           this.webViews_ready = true;
           this.bunch_of_tabs.loadUrl_onWorkingTab((this.item.get_item() as bookmark).get_link())
-        }
+        } // Open folder or load web
       })
 
       Scroll() {
@@ -312,7 +313,7 @@ struct BookmarkItem {
               .caretColor($r('app.color.font_color_title'))
               .selectedBackgroundColor($r('app.color.font_color_title'))
               .layoutWeight(1)
-          } // Label
+          } // Edit label
           .width("100%")
 
           Row({ space: 10 }) {
@@ -326,7 +327,7 @@ struct BookmarkItem {
               .caretColor($r('app.color.font_color_title'))
               .selectedBackgroundColor($r('app.color.font_color_title'))
               .layoutWeight(1)
-          } // link
+          } // Edit link
           .width("100%")
           .visibility(this.type == "bookmark" ? Visibility.Visible : Visibility.None)
           .animation(this.animation_default)
@@ -341,7 +342,6 @@ struct BookmarkItem {
               .onClick(() => {
                 this.delete_myself()
               })
-
             Button("  󰀻  ")// Save
               .type(ButtonType.Capsule)
               .backgroundColor($r("app.color.font_color_title"))
@@ -356,11 +356,11 @@ struct BookmarkItem {
                 }
                 this.editing = false;
               })
-          } // Buttons
+          } // Buttons of operations
           .width("100%")
         }
         .width("100%")
-      } // Edit
+      } // Edit panel
       .margin({ top: 5 })
       .padding(10)
       .height((this.type == "bookmark" ? 170 : 0) + (this.type == "folder" ? 120 : 0))
@@ -373,7 +373,6 @@ struct BookmarkItem {
         width: 2,
         color: "transparent"
       })
-
     }
     .width("100%")
     .visibility(this.show)
@@ -397,10 +396,6 @@ struct BookmarkItem {
     })
   }
 
-  get_contents() {
-    return (this.type == "folder") ? (this.item.get_item() as folder).get_content() : []
-  }
-
   get_my_path() {
     if (this.parent_path == "") {
       return this.label;
@@ -410,17 +405,14 @@ struct BookmarkItem {
   }
 
   delete_myself() {
-    if (this.type == "bookmark") {
-      this.bunch_of_bookmarks.del_bookmark(this.get_my_path());
-    } else {
-      this.bunch_of_bookmarks.del_folder(this.get_my_path());
-    }
+    this.viewing_contents.splice(this.my_index, 1)
+    // Delete myself from this.viewing_contents
 
     let temp = this.looking_at_path;
     this.looking_at_path = "/refresh";
     this.looking_at_path = temp;
     // Refresh root content
-    // Weird but works, fine.
+    // Weird as hell but works, fine.
   }
 
   save_changes_folder() {
@@ -431,7 +423,6 @@ struct BookmarkItem {
   save_changes_bookmark() {
     this.item.get_item().set_label(this.edit_label);
     (this.item.get_item() as bookmark).set_link(this.edit_link);
-
     this.label = this.edit_label;
     this.link = this.edit_link;
   }
