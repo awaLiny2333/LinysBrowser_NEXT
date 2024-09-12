@@ -10,6 +10,14 @@ export class bookmark {
     this.add_date = add_date !== undefined ? add_date : date.getTime();
   }
 
+  set_label(set: string) {
+    this.label = set;
+  }
+
+  set_link(set: string) {
+    this.link = set;
+  }
+
   get_label() {
     return this.label;
   }
@@ -40,6 +48,11 @@ export class folder {
     this.label = label;
     this.add_date = add_date !== undefined ? add_date : date.getTime();
     this.last_modified = last_modified !== undefined ? last_modified : date.getTime();
+  }
+
+  set_label(set: string) {
+    this.label = set;
+    this.last_modified = (new Date()).getTime();
   }
 
   get_add_date() {

@@ -8,10 +8,9 @@ struct LinysBookmarks {
   @Link bunch_of_tabs: BunchOfTabs;
   @Link webViews_ready: boolean;
   @Prop animation_default: AnimateParam;
-  @State root_contents: unified_item[] = this.bunch_of_bookmarks.root.get_content();
+  @State viewing_contents: unified_item[] = this.bunch_of_bookmarks.root.get_content();
   @State @Watch('refresh_root_content') looking_at_path: string = "";
   @State add_label: string = "";
-  @State add_bookmark_label: string = "";
   @State add_link: string = "";
   @State adding_folder: boolean = false;
   @State adding_bookmark: boolean = false;
@@ -23,10 +22,11 @@ struct LinysBookmarks {
       Scroll(this.scroll_controller) {
         Column({ space: 5 }) {
           ForEach(
-            this.root_contents,
+            this.viewing_contents,
             (item: unified_item, key: number) => {
               BookmarkItem({
-                item: item,
+                viewing_contents: this.viewing_contents,
+                bunch_of_bookmarks: this.bunch_of_bookmarks,
                 bunch_of_tabs: this.bunch_of_tabs,
                 webViews_ready: this.webViews_ready,
                 height_of_panel: this.scroll_area_height,
@@ -88,6 +88,11 @@ struct LinysBookmarks {
               .caretColor($r('app.color.font_color_title'))
               .selectedBackgroundColor($r('app.color.font_color_title'))
               .layoutWeight(1)
+              .onSubmit(()=>{
+                if (this.adding_folder) {
+                  this.new_folder();
+                }
+              })
           } // Label
           .width("100%")
 
@@ -102,6 +107,9 @@ struct LinysBookmarks {
               .caretColor($r('app.color.font_color_title'))
               .selectedBackgroundColor($r('app.color.font_color_title'))
               .layoutWeight(1)
+              .onSubmit(()=>{
+                this.new_bookmark();
+              })
           } // link
           .width("100%")
           .visibility(this.adding_bookmark ? Visibility.Visible : Visibility.None)
@@ -147,11 +155,19 @@ struct LinysBookmarks {
   }
 
   new_folder() {
+    if (this.add_label == "") {
+      // Cannot add for no label.
+      return;
+    }
     this.bunch_of_bookmarks.add_folder(new folder(this.add_label), this.looking_at_path);
     this.refresh_root_content();
   }
 
   new_bookmark() {
+    if (this.add_label == "" || this.add_link == "") {
+      // Cannot add for no label or no link.
+      return;
+    }
     this.bunch_of_bookmarks.add_bookmark(new bookmark(this.add_label, this.add_link), this.looking_at_path);
     this.refresh_root_content();
   }
@@ -173,12 +189,12 @@ struct LinysBookmarks {
 
   refresh_root_content() {
     if (this.looking_at_path == "") {
-      this.root_contents = this.bunch_of_bookmarks.root.get_content();
+      this.viewing_contents = this.bunch_of_bookmarks.root.get_content();
       return;
     } else {
       let got_folder = this.bunch_of_bookmarks.get_folder(this.looking_at_path);
       if (got_folder !== undefined) {
-        this.root_contents = got_folder.get_content();
+        this.viewing_contents = got_folder.get_content();
         return;
       }
     }
@@ -189,21 +205,31 @@ export default LinysBookmarks;
 
 @Component
 struct BookmarkItem {
+  @Prop my_index: number = 0;
   @Link bunch_of_tabs: BunchOfTabs;
+  @Link bunch_of_bookmarks: BunchOfBookmarks;
   @Link webViews_ready: boolean;
   @Link looking_at_path: string;
+  @Link viewing_contents: unified_item[];
   @Prop contents: unified_item[] = this.get_contents();
-  @Prop item: unified_item;
+  @State item: unified_item = this.viewing_contents[this.my_index];
   @Prop parent_path: string;
   @Prop height_of_panel: number;
   @Prop animation_default: AnimateParam;
-  @State my_index: number = 0;
+  // Public stuffs
   @State label: string = this.item.get_item().get_label();
   @State type: string = this.item.get_item().get_type();
+  @State link: string = this.type == "bookmark" ? (this.item.get_item() as bookmark).get_link() : "";
   @State pressing: boolean = false;
   @State show: Visibility = Visibility.Hidden;
   @State offset_y: number = 50;
+  @State editing: boolean = false;
+  press_timing: number = 0;
+  @State press_timing_ok: boolean = false;
   bookmark_height_default: number = 46;
+  // Animations statuses
+  @State edit_label: string = this.label;
+  @State edit_link: string = this.link;
 
   build() {
     Column() {
@@ -224,6 +250,16 @@ struct BookmarkItem {
             .fontColor([!this.pressing ? $r('app.color.font_color_title') : $r('app.color.block_color')])
             .animation(this.animation_default)
         }
+        Scroll() {
+          SymbolGlyph($r('sys.symbol.square_and_pencil'))
+            .fontSize(24)
+            .fontColor([$r('app.color.block_color')])
+        }
+        .scrollable(ScrollDirection.Horizontal)
+        .width(this.press_timing_ok ? 26 : 0)
+        .margin({ left: this.press_timing_ok ? 10 : 0 })
+        .animation(this.animation_default)
+
       } // Title
       .border({
         radius: 10,
@@ -248,12 +284,13 @@ struct BookmarkItem {
       })
       .onClick(() => {
         // console.log("[Meow][LinysBookmarks][INFO] My parent path:" + this.parent_path)
+        if (this.press_timing_ok) {
+          // Edit
+          this.editing = !this.editing;
+          return;
+        }
         if (this.type == "folder") {
-          if (this.parent_path == "") {
-            this.looking_at_path = this.label;
-          } else {
-            this.looking_at_path = this.parent_path + "/" + this.label;
-          }
+          this.looking_at_path = this.get_my_path();
         } else {
           // is bookmark
           // access web
@@ -261,6 +298,82 @@ struct BookmarkItem {
           this.bunch_of_tabs.loadUrl_onWorkingTab((this.item.get_item() as bookmark).get_link())
         }
       })
+
+      Scroll() {
+        Column({ space: 10 }) {
+          Row({ space: 10 }) {
+            LinysSymbol({ symbol_glyph_target: "sys.symbol.rename" })
+            TextInput({ text: this.edit_label })
+              .onChange((value) => {
+                this.edit_label = value;
+              })
+              .fontWeight(FontWeight.Regular)
+              .fontColor($r('app.color.font_color_title'))
+              .caretColor($r('app.color.font_color_title'))
+              .selectedBackgroundColor($r('app.color.font_color_title'))
+              .layoutWeight(1)
+          } // Label
+          .width("100%")
+
+          Row({ space: 10 }) {
+            LinysSymbol({ symbol_glyph_target: "sys.symbol.paperclip" })
+            TextInput({ text: this.edit_link })
+              .onChange((value) => {
+                this.edit_link = value;
+              })
+              .fontWeight(FontWeight.Regular)
+              .fontColor($r('app.color.font_color_title'))
+              .caretColor($r('app.color.font_color_title'))
+              .selectedBackgroundColor($r('app.color.font_color_title'))
+              .layoutWeight(1)
+          } // link
+          .width("100%")
+          .visibility(this.type == "bookmark" ? Visibility.Visible : Visibility.None)
+          .animation(this.animation_default)
+
+          Row({ space: 10 }) {
+            Blank()
+            Button("  󰀁  ")// Delete
+              .type(ButtonType.Capsule)
+              .backgroundColor($r("app.color.font_color_title"))
+              .fontColor($r('app.color.start_window_background'))
+              .fontSize(26)
+              .onClick(() => {
+                this.delete_myself()
+              })
+
+            Button("  󰀻  ")// Save
+              .type(ButtonType.Capsule)
+              .backgroundColor($r("app.color.font_color_title"))
+              .fontColor($r('app.color.start_window_background'))
+              .fontSize(26)
+              .onClick(() => {
+                if (this.type == "folder") {
+                  this.save_changes_folder()
+                }
+                if (this.type == "bookmark") {
+                  this.save_changes_bookmark()
+                }
+                this.editing = false;
+              })
+          } // Buttons
+          .width("100%")
+        }
+        .width("100%")
+      } // Edit
+      .margin({ top: 5 })
+      .padding(10)
+      .height((this.type == "bookmark" ? 170 : 0) + (this.type == "folder" ? 120 : 0))
+      .visibility(this.editing ? Visibility.Visible : Visibility.None)
+      .animation(this.animation_default)
+      .scrollBar(BarState.Off)
+      .backgroundColor($r('app.color.block_color'))
+      .border({
+        radius: 10,
+        width: 2,
+        color: "transparent"
+      })
+
     }
     .width("100%")
     .visibility(this.show)
@@ -270,11 +383,56 @@ struct BookmarkItem {
       setTimeout(() => {
         this.show = Visibility.Visible;
         this.offset_y = 0;
+        // Animation of floating up
       }, Math.min(this.my_index, this.height_of_panel / this.bookmark_height_default) * 60)
+      setInterval(() => {
+        if (this.pressing) {
+          this.press_timing += 1;
+        } else {
+          this.press_timing = 0;
+        }
+        this.press_timing_ok = this.press_timing > 16;
+        // Count press time
+      }, 10)
     })
   }
 
   get_contents() {
     return (this.type == "folder") ? (this.item.get_item() as folder).get_content() : []
+  }
+
+  get_my_path() {
+    if (this.parent_path == "") {
+      return this.label;
+    } else {
+      return this.parent_path + "/" + this.label;
+    }
+  }
+
+  delete_myself() {
+    if (this.type == "bookmark") {
+      this.bunch_of_bookmarks.del_bookmark(this.get_my_path());
+    } else {
+      this.bunch_of_bookmarks.del_folder(this.get_my_path());
+    }
+
+    let temp = this.looking_at_path;
+    this.looking_at_path = "/refresh";
+    this.looking_at_path = temp;
+    // Refresh root content
+    // Weird but works, fine.
+  }
+
+  save_changes_folder() {
+    this.item.get_item().set_label(this.edit_label);
+    this.label = this.edit_label;
+  }
+
+  save_changes_bookmark() {
+    this.item.get_item().set_label(this.edit_label);
+    (this.item.get_item() as bookmark).set_link(this.edit_link);
+
+    this.label = this.edit_label;
+    this.link = this.edit_link;
   }
 }
