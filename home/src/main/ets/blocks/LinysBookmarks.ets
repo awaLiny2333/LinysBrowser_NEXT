@@ -1,0 +1,280 @@
+import { bookmark, BunchOfBookmarks, folder, unified_item } from '../hosts/BunchOfBookmarks';
+import { BunchOfTabs } from '../hosts/BunchOfTabs';
+import LinysSymbol from './LinysSymbol';
+
+@Component
+struct LinysBookmarks {
+  @Link bunch_of_bookmarks: BunchOfBookmarks;
+  @Link bunch_of_tabs: BunchOfTabs;
+  @Link webViews_ready: boolean;
+  @Prop animation_default: AnimateParam;
+  @State root_contents: unified_item[] = this.bunch_of_bookmarks.root.get_content();
+  @State @Watch('refresh_root_content') looking_at_path: string = "";
+  @State add_label: string = "";
+  @State add_bookmark_label: string = "";
+  @State add_link: string = "";
+  @State adding_folder: boolean = false;
+  @State adding_bookmark: boolean = false;
+  scroll_controller: Scroller = new Scroller();
+  @State scroll_area_height: number = 0;
+
+  build() {
+    Column() {
+      Scroll(this.scroll_controller) {
+        Column({ space: 5 }) {
+          ForEach(
+            this.root_contents,
+            (item: unified_item, key: number) => {
+              BookmarkItem({
+                item: item,
+                bunch_of_tabs: this.bunch_of_tabs,
+                webViews_ready: this.webViews_ready,
+                height_of_panel: this.scroll_area_height,
+                parent_path: this.looking_at_path,
+                looking_at_path: this.looking_at_path,
+                animation_default: this.animation_default,
+                my_index: key
+              });
+            },
+            // (Label: unified_item) => Label.get_item().get_add_date().toString()
+          )
+        }
+        .width("100%")
+      }
+      .direction(Direction.Rtl)
+      .align(Alignment.Bottom)
+      .edgeEffect(EdgeEffect.Spring)
+      .width("100%")
+      .layoutWeight(1)
+      .margin({ bottom: 10 })
+      .onAreaChange((_o, n) => {
+        this.scroll_area_height = n.height as number;
+      })
+
+      Row({ space: 10 }) {
+        LinysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left' })
+          .onClick(() => {
+            this.back();
+          })
+          .visibility(this.looking_at_path == "" ? Visibility.None : Visibility.Visible)
+          .animation(this.animation_default)
+        // Go back
+
+        Blank()
+        LinysSymbol({ symbol_glyph_target: 'sys.symbol.folder_badge_plus' })
+          .onClick(() => {
+            this.adding_bookmark = false;
+            this.adding_folder = !this.adding_folder;
+          })
+        LinysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
+          .onClick(() => {
+            this.adding_folder = false;
+            this.adding_bookmark = !this.adding_bookmark;
+          })
+      } // Operation buttons
+      .width("100%")
+      .margin({ bottom: 5 })
+
+      Scroll() {
+        Column({ space: 10 }) {
+          Row({ space: 10 }) {
+            LinysSymbol({ symbol_glyph_target: "sys.symbol.rename" })
+            TextInput({ text: this.add_label })
+              .onChange((value) => {
+                this.add_label = value;
+              })
+              .fontWeight(FontWeight.Regular)
+              .fontColor($r('app.color.font_color_title'))
+              .caretColor($r('app.color.font_color_title'))
+              .selectedBackgroundColor($r('app.color.font_color_title'))
+              .layoutWeight(1)
+          } // Label
+          .width("100%")
+
+          Row({ space: 10 }) {
+            LinysSymbol({ symbol_glyph_target: "sys.symbol.paperclip" })
+            TextInput({ text: this.add_link })
+              .onChange((value) => {
+                this.add_link = value;
+              })
+              .fontWeight(FontWeight.Regular)
+              .fontColor($r('app.color.font_color_title'))
+              .caretColor($r('app.color.font_color_title'))
+              .selectedBackgroundColor($r('app.color.font_color_title'))
+              .layoutWeight(1)
+          } // link
+          .width("100%")
+          .visibility(this.adding_bookmark ? Visibility.Visible : Visibility.None)
+          .animation(this.animation_default)
+
+          Row() {
+            Blank()
+            Button("  󰀻  ")
+              .type(ButtonType.Capsule)
+              .backgroundColor($r("app.color.font_color_title"))
+              .fontColor($r('app.color.start_window_background'))
+              .fontSize(26)
+              .onClick(() => {
+                if (this.adding_folder) {
+                  this.new_folder()
+                }
+                if (this.adding_bookmark) {
+                  this.new_bookmark()
+                }
+              })
+          } // Submit creation
+          .width("100%")
+        }
+        .width("100%")
+      } // Blanks
+      .height((this.adding_bookmark ? 150 : 0) + (this.adding_folder ? 100 : 0))
+      .animation(this.animation_default)
+      .scrollBar(BarState.Off)
+
+      Text("@ " + (this.looking_at_path == "" ? "(～o￣3￣)～" : this.looking_at_path + "/"))
+        .fontColor($r('app.color.font_color_title'))
+        .fontWeight(FontWeight.Medium)
+        .fontSize(18)
+        .animation(this.animation_default)
+        .textAlign(TextAlign.End)
+        .width("100%")
+        .margin({ top: 5 })
+    }
+    .justifyContent(FlexAlign.End)
+    .padding(10)
+    .width("100%")
+    .height("100%")
+  }
+
+  new_folder() {
+    this.bunch_of_bookmarks.add_folder(new folder(this.add_label), this.looking_at_path);
+    this.refresh_root_content();
+  }
+
+  new_bookmark() {
+    this.bunch_of_bookmarks.add_bookmark(new bookmark(this.add_label, this.add_link), this.looking_at_path);
+    this.refresh_root_content();
+  }
+
+  back() {
+    if (this.looking_at_path.includes("/")) {
+      let upper_path = this.looking_at_path.split("/");
+      upper_path.pop()
+      // Pop current folder class
+      this.looking_at_path = upper_path.join("/")
+    } else {
+      this.looking_at_path = "";
+      // If current folder is sitting in root folder
+      // or if current folder is exactly the root folder
+    }
+    // Since change of this.looking_at_path will automatically pull up refresh_root_content()
+    // There is no need to add this.refresh_root_content() here manually
+  }
+
+  refresh_root_content() {
+    if (this.looking_at_path == "") {
+      this.root_contents = this.bunch_of_bookmarks.root.get_content();
+      return;
+    } else {
+      let got_folder = this.bunch_of_bookmarks.get_folder(this.looking_at_path);
+      if (got_folder !== undefined) {
+        this.root_contents = got_folder.get_content();
+        return;
+      }
+    }
+  }
+}
+
+export default LinysBookmarks;
+
+@Component
+struct BookmarkItem {
+  @Link bunch_of_tabs: BunchOfTabs;
+  @Link webViews_ready: boolean;
+  @Link looking_at_path: string;
+  @Prop contents: unified_item[] = this.get_contents();
+  @Prop item: unified_item;
+  @Prop parent_path: string;
+  @Prop height_of_panel: number;
+  @Prop animation_default: AnimateParam;
+  @State my_index: number = 0;
+  @State label: string = this.item.get_item().get_label();
+  @State type: string = this.item.get_item().get_type();
+  @State pressing: boolean = false;
+  @State show: Visibility = Visibility.Hidden;
+  @State offset_y: number = 50;
+  bookmark_height_default: number = 46;
+
+  build() {
+    Column() {
+      Row() {
+        Text(this.label)
+          .fontColor(!this.pressing ? $r('app.color.font_color_title') : $r('app.color.block_color'))
+          .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
+          .animation(this.animation_default)
+          .padding({ left: 2 })
+          .fontSize(20)
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+          .layoutWeight(1)
+        if (this.type == "folder") {
+          SymbolGlyph($r(!this.pressing ? 'sys.symbol.folder' : 'sys.symbol.chevron_right'))
+            .fontSize(24)
+            .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
+            .fontColor([!this.pressing ? $r('app.color.font_color_title') : $r('app.color.block_color')])
+            .animation(this.animation_default)
+        }
+      } // Title
+      .border({
+        radius: 10,
+        width: 2,
+        color: "transparent"
+      })
+      .backgroundColor(this.pressing ? $r('app.color.font_color_title') : $r('app.color.block_color'))
+      .animation(this.animation_default)
+      .padding(10)
+      .alignRules({
+        middle: { anchor: "__container__", align: HorizontalAlign.Center },
+        top: { anchor: "__container__", align: VerticalAlign.Top }
+      })
+      .onTouch((event) => {
+        if (event.type == TouchType.Up) {
+          this.pressing = false;
+          // If touch ends
+        } else {
+          this.pressing = true;
+          // If touching
+        }
+      })
+      .onClick(() => {
+        // console.log("[Meow][LinysBookmarks][INFO] My parent path:" + this.parent_path)
+        if (this.type == "folder") {
+          if (this.parent_path == "") {
+            this.looking_at_path = this.label;
+          } else {
+            this.looking_at_path = this.parent_path + "/" + this.label;
+          }
+        } else {
+          // is bookmark
+          // access web
+          this.webViews_ready = true;
+          this.bunch_of_tabs.loadUrl_onWorkingTab((this.item.get_item() as bookmark).get_link())
+        }
+      })
+    }
+    .width("100%")
+    .visibility(this.show)
+    .offset({ y: this.offset_y })
+    .animation(this.animation_default)
+    .onAppear(() => {
+      setTimeout(() => {
+        this.show = Visibility.Visible;
+        this.offset_y = 0;
+      }, Math.min(this.my_index, this.height_of_panel / this.bookmark_height_default) * 60)
+    })
+  }
+
+  get_contents() {
+    return (this.type == "folder") ? (this.item.get_item() as folder).get_content() : []
+  }
+}

@@ -3,7 +3,9 @@ import LinysSymbol from '../blocks/LinysSymbol';
 import LinysTabs from '../blocks/LinysTabs';
 import LinysWebView from '../blocks/LinysWebView';
 import { BunchOfTabs } from '../hosts/BunchOfTabs';
+import { BunchOfBookmarks } from '../hosts/BunchOfBookmarks';
 import { unify_search_input_into_url, url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
+import LinysBookmarks from '../blocks/LinysBookmarks';
 
 @Entry
 @Component
@@ -17,12 +19,14 @@ struct Index {
   @State search_input_unified: string = "";
   @State showing_more_options: boolean = false;
   @State showing_tabs: boolean = false;
+  @State showing_bookmarks: boolean = false;
   @State screen_width: number = 0;
   @State current_accessForward: boolean = false;
   @State current_accessBackward: boolean = false;
   @State webViews_ready: boolean = false;
   @State current_tab_index: number = 0;
   @State bunch_of_tabs: BunchOfTabs = new BunchOfTabs();
+  @State bunch_of_bookmarks: BunchOfBookmarks = new BunchOfBookmarks("Bookmarks");
   // HOST
   @State tab_titles: string[] = []
   @State current_title: string = "=￣ω￣=";
@@ -76,8 +80,19 @@ struct Index {
             .height("100%")
             .visibility((this.showing_tabs ? Visibility.Visible : Visibility.None))
             .animation(this.animation_default())
-            .onAppear(() => {
-            })
+
+            Column() {
+              LinysBookmarks({
+                bunch_of_tabs: this.bunch_of_tabs,
+                bunch_of_bookmarks: this.bunch_of_bookmarks,
+                animation_default: this.animation_default(),
+                webViews_ready: this.webViews_ready
+              });
+            } // Bookmarks Panel
+            .width(this.tablet_mode ? 400 : "90%")
+            .height("100%")
+            .visibility((this.showing_bookmarks ? Visibility.Visible : Visibility.None))
+            .animation(this.animation_default())
 
             Row() {
               LinysWebView({
@@ -222,7 +237,6 @@ struct Index {
             TextInput({ text: this.search_input })
               .layoutWeight(1)
               .fontWeight(FontWeight.Regular)
-              .caretColor($r('app.color.font_color_title'))
               .onFocus(() => {
                 this.is_search_input_typing = true;
               })
@@ -238,10 +252,18 @@ struct Index {
                 this.submit_searching()
               })
               .selectAll(true)
+              .caretColor($r('app.color.font_color_title'))
               .selectedBackgroundColor($r('app.color.font_color_title'))
 
             Blank()
               .visibility(this.visible_in_normal_mode())
+
+            LinysSymbol({
+              symbol_glyph_target: 'sys.symbol.bookmark'
+            })
+              .onClick(() => {
+                this.show_bookmarks();
+              })
 
             LinysSymbol({
               symbol_glyph_target: 'sys.symbol.magnifyingglass'
@@ -310,15 +332,6 @@ struct Index {
             FlowItem() {
               LinysSymbol({
                 symbol_glyph_target: 'sys.symbol.qrcode'
-              })
-                .onClick(() => {
-
-                })
-            }
-
-            FlowItem() {
-              LinysSymbol({
-                symbol_glyph_target: 'sys.symbol.bookmark'
               })
                 .onClick(() => {
 
@@ -405,29 +418,27 @@ struct Index {
   }
 
   show_tabs() {
-    if (!this.tablet_mode) {
-      this.showing_more_options = false;
-    }
-    // Close all other panels
+    this.showing_more_options = false;
+    this.showing_bookmarks = false;
 
-    if (this.showing_tabs) {
-      this.showing_tabs = false;
-    } else {
-      this.showing_tabs = true;
-    }
+    this.showing_tabs = !this.showing_tabs;
   }
 
   show_more() {
     if (!this.tablet_mode) {
       this.showing_tabs = false;
+      this.showing_bookmarks = false;
     }
     // Close all other panels
 
-    if (this.showing_more_options) {
-      this.showing_more_options = false;
-    } else {
-      this.showing_more_options = true;
-    }
+    this.showing_more_options = !this.showing_more_options;
+  }
+
+  show_bookmarks() {
+    this.showing_tabs = false;
+    this.showing_more_options = false;
+
+    this.showing_bookmarks = !this.showing_bookmarks;
   }
 
   go_backward() {

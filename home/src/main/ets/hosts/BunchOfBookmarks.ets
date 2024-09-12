@@ -1,7 +1,7 @@
 export class bookmark {
   private label: string;
   private link: string;
-  private add_date: number | undefined;
+  private add_date: number;
 
   constructor(label: string, link: string, add_date?: number) {
     let date = new Date();
@@ -29,16 +29,17 @@ export class bookmark {
 
 export class folder {
   // bookmark: bookmark = new bookmark("bilibili","bilibili.com")
+
   private contents: unified_item[] = [];
-  private add_date: number | undefined;
-  private last_modified: number | undefined;
+  private add_date: number;
+  private last_modified: number;
   private label: string;
 
   constructor(label: string, add_date?: number, last_modified?: number) {
     let date = new Date();
     this.label = label;
     this.add_date = add_date !== undefined ? add_date : date.getTime();
-    this.last_modified = last_modified !== undefined ? add_date : date.getTime();
+    this.last_modified = last_modified !== undefined ? last_modified : date.getTime();
   }
 
   get_add_date() {
@@ -69,27 +70,38 @@ export class folder {
     return this.contents as unified_item[];
   }
 
-  test_print_contents() {
+  print_contents_in_html() {
     let type: string = "";
     let item: bookmark | folder;
-    console.log("[Meow][BunchOfBookmarks][TEST] Folder: " + this.label + " START")
+    let result: string[] = [];
+    console.log("[Meow][BunchOfBookmarks][TEST] Folder: " + this.label + " START");
+    result.push("" +
+      "<DT><H3 ADD_DATE=\"" + this.add_date.toString() + "\" LAST_MODIFIED=\"" + this.last_modified.toString() + "\">"
+      + this.label + "</H3>\n<DL><p>\n");
+    // Head of folder
     for (let index = 0; index < this.contents.length; index++) {
       item = this.contents[index].get_item();
       type = item.get_type();
       // Get item data
       if (type == "bookmark") {
         item = item as bookmark;
-        console.log("[Meow][BunchOfBookmarks][TEST] Bookmark: " + item.get_label())
+        console.log("[Meow][BunchOfBookmarks][TEST] Bookmark: " + item.get_label());
+        result.push("<DT><A HREF=\"" + item.get_link() +
+          "\" ADD_DATE=\"" + item.get_add_date().toString() + "\">" + item.get_label() + "</A>\n");
       } else if (type == "folder") {
         item = item as folder;
-        item.test_print_contents();
+        result.concat(item.print_contents_in_html());
       }
     }
     console.log("[Meow][BunchOfBookmarks][TEST] Folder: " + this.label + " END")
+    result.push("</DL><p>\n\n");
+    // END of folder
+    return result;
   }
 }
 
-class unified_item {
+@Observed
+export class unified_item {
   private bookmark: bookmark | undefined;
   private folder: folder | undefined;
 
@@ -119,7 +131,7 @@ class unified_item {
   }
 }
 
-export class bookmark_manager {
+export class BunchOfBookmarks {
   root: folder;
 
   constructor(root_label: string) {
@@ -127,7 +139,13 @@ export class bookmark_manager {
   }
 
   add_bookmark(item: bookmark, path: string) {
-    if (this.get_bookmark(path + "/" + item.get_label())) {
+    let check_path = "";
+    if (path == "") {
+      check_path = item.get_label()
+    } else {
+      check_path = path + "/" + item.get_label()
+    }
+    if (this.get_bookmark(check_path)) {
       // already exist
       return false;
     } else {
@@ -143,7 +161,13 @@ export class bookmark_manager {
   // add_bookmark(new bookmark("gitee","gitee.com"),"honk/second/third") // adding in root/honk/second/third directory
 
   add_folder(item: folder, path: string) {
-    if (this.get_folder(path + "/" + item.get_label())) {
+    let check_path = "";
+    if (path == "") {
+      check_path = item.get_label()
+    } else {
+      check_path = path + "/" + item.get_label()
+    }
+    if (this.get_folder(check_path)) {
       // already exist
       return false;
     } else {
@@ -240,6 +264,23 @@ export class bookmark_manager {
   }
 
   // del_folder("honk/second/third") // deletes the folder with label "third"
+
+  export_html() {
+    let result: string[] = [];
+    let head: string = "<!DOCTYPE NETSCAPE-Bookmark-file-1>\n" +
+      "<!-- This is an automatically generated file.\n" +
+      "     It will be read and overwritten.\n" +
+      "     DO NOT EDIT! -->\n" +
+      "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=UTF-8\">\n" +
+      "<TITLE>Bookmarks Meow</TITLE>\n" +
+      "<H1>Bookmarks Meow</H1>\n" +
+      "\n"
+    result.push(head);
+    result.push("<DL><p>\n")
+    result.concat(this.root.print_contents_in_html());
+    result.push("</DL><p>\n")
+    return result;
+  }
 
   private delete_bookmark_process(path: string, base_folder?: folder): boolean {
     if (base_folder === undefined) {
