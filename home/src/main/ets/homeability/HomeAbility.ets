@@ -2,12 +2,16 @@ import { AbilityConstant, Configuration, UIAbility, Want } from '@kit.AbilityKit
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { MMKV } from '@tencent/mmkv';
 
 export default class HomeAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
-    AppStorage.setOrCreate('currentColorMode', this.context.config.colorMode);
     // save current color mode
+    AppStorage.setOrCreate('currentColorMode', this.context.config.colorMode);
+    let appCtx = this.context.getApplicationContext();
+    let mmkvRootDir = MMKV.initialize(appCtx);
+    console.info('mmkv rootDir: ', mmkvRootDir);
   }
 
   onDestroy(): void {

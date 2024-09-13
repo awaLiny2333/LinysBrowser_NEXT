@@ -1,5 +1,8 @@
 import { BunchOfTabs, TabLabel } from '../hosts/BunchOfTabs';
 import { url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
+import { MMKV } from '@tencent/mmkv';
+
+let mmkv = MMKV.defaultMMKV();
 
 @Component
 struct LinysWebView {
@@ -126,7 +129,7 @@ struct LinysWebView {
   }
 
   home_url() {
-    return this.is_dark_mode() ? 'meow://home_dark' : 'meow://home_light'
+    return mmkv.decodeString('homepage', '') ?? (this.is_dark_mode() ? 'meow://home_dark' : 'meow://home_light')
   }
 }
 

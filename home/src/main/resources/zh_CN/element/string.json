@@ -15,6 +15,10 @@
     {
       "name": "permission_reason_INTERNET",
       "value": "用于网页浏览"
+    },
+    {
+      "name": "settings_homepage",
+      "value": "主页"
     }
   ]
 }

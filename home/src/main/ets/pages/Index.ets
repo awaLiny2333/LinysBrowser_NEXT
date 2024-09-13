@@ -6,6 +6,12 @@ import { BunchOfTabs } from '../hosts/BunchOfTabs';
 import { BunchOfBookmarks } from '../hosts/BunchOfBookmarks';
 import { unify_search_input_into_url, url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
 import LinysBookmarks from '../blocks/LinysBookmarks';
+import { curves } from '@kit.ArkUI';
+import { MMKV } from '@tencent/mmkv';
+import { DEFAULT } from '@ohos/hypium/src/main/Constant';
+import sendableColorSpaceManager from '@ohos.graphics.sendableColorSpaceManager';
+
+let mmkv = MMKV.defaultMMKV();
 
 @Entry
 @Component
@@ -20,10 +26,11 @@ struct Index {
   @State showing_more_options: boolean = false;
   @State showing_tabs: boolean = false;
   @State showing_bookmarks: boolean = false;
+  @State showing_settings: boolean = false;
   @State screen_width: number = 0;
   @State current_accessForward: boolean = false;
   @State current_accessBackward: boolean = false;
-  @State webViews_ready: boolean = false;
+  @State webViews_ready: boolean = true;
   @State current_tab_index: number = 0;
   @State bunch_of_tabs: BunchOfTabs = new BunchOfTabs();
   @State bunch_of_bookmarks: BunchOfBookmarks = new BunchOfBookmarks("Bookmarks");
@@ -37,7 +44,14 @@ struct Index {
   @State tab_is_loading: boolean[] = [true]
   @State current_is_loading: boolean = true
 
+  @State notify_settings_homepage: boolean = false;
+  @State notify_settings_border_width: number = 0;
+
   aboutToAppear(): void {
+    if (!mmkv.containsKey('homepage')) {
+      console.log("set new homepage")
+      mmkv.encodeString('homepage', 'meow://home_light')
+    }
   }
 
   build() {
@@ -328,24 +342,57 @@ struct Index {
           .backgroundColor($r('app.color.block_color'))
           .animation(this.animation_default())
 
-          WaterFlow() {
-            FlowItem() {
-              LinysSymbol({
-                symbol_glyph_target: 'sys.symbol.qrcode'
-              })
-                .onClick(() => {
-
+          Column() {
+            WaterFlow() {
+              FlowItem() {
+                LinysSymbol({
+                  symbol_glyph_target: 'sys.symbol.qrcode'
                 })
+                  .onClick(() => {
+
+                  })
+              }
+
+              FlowItem() {
+                LinysSymbol({
+                  symbol_glyph_target: 'sys.symbol.gearshape'
+                })
+                  .onClick(() => {
+                    this.showing_settings = !this.showing_settings;
+                  })
+              }
+            } // Bottom Bar of More Options
+            .rowsGap(15)
+            .columnsTemplate("1fr ".repeat(Math.floor(this.screen_width / 47)))
+
+            .padding({ top: 16, left: 15, right: 15 })
+            .width("100%")
+            .height(Math.ceil(3 / Math.floor(this.screen_width / 47)) * 47)
+            .backgroundColor($r('app.color.block_color'))
+
+
+            if (this.showing_settings) {
+              Column() {
+                Text($r('app.string.settings_homepage'))
+                TextInput({ placeholder: mmkv.decodeString('homepage') })
+                  .onSubmit((key, evt) => {
+                    mmkv.encodeString('homepage', evt.text)
+                    this.notify_settings_homepage = true;
+                    setInterval(() => {
+                      this.notify_settings_homepage = false;
+                    }, 2000)
+                  })
+                  .transition(TransitionEffect.OPACITY.animation({ curve: curves.springMotion() }))
+                  .borderWidth(2)
+                  .borderColor(this.notify_settings_homepage ? Color.Green : $r('app.color.block_color'))
+              }
+              .width('100%')
+              .padding(15)
+              .transition(TransitionEffect.translate({ y: 100 }).animation({ curve: curves.springMotion(0.6, 0.8) }))
             }
-          } // Bottom Bar of More Options
-          .rowsGap(15)
-          .columnsTemplate("1fr ".repeat(Math.floor(this.screen_width / 47)))
-          .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
-          .padding({ top: 16, left: 15, right: 15 })
-          .width("100%")
-          .height(Math.ceil(3 / Math.floor(this.screen_width / 47)) * 47)
-          .backgroundColor($r('app.color.block_color'))
+          }
           .animation(this.animation_default())
+          .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
 
         } // Bottom Bars
         .width("100%")
@@ -473,7 +520,7 @@ struct Index {
   }
 
   home_url() {
-    return this.is_dark_mode() ? 'meow://home_dark' : 'meow://home_light'
+    return mmkv.decodeString('homepage', '') ?? (this.is_dark_mode() ? 'meow://home_dark' : 'meow://home_light')
   }
 
   // default stuffs

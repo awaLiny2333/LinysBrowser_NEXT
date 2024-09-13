@@ -15,6 +15,10 @@
     {
       "name": "permission_reason_INTERNET",
       "value": "For web browsing"
+    },
+    {
+      "name": "settings_homepage",
+      "value": "Home Page"
     }
   ]
 }
