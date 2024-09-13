@@ -1,6 +1,8 @@
 import { bookmark, BunchOfBookmarks, folder, unified_item } from '../hosts/BunchOfBookmarks';
 import { BunchOfTabs } from '../hosts/BunchOfTabs';
+import { url_resource_to_meow } from '../utils/url_tools';
 import LinysSymbol from './LinysSymbol';
+import { document_save } from '../utils/document_saver';
 
 @Component
 struct LinysBookmarks {
@@ -18,6 +20,7 @@ struct LinysBookmarks {
   scroll_controller: Scroller = new Scroller();
   @Prop animation_default: AnimateParam;
   @State scroll_area_height: number = 0;
+  @StorageLink('pathDir') pathDir: string = "";
 
   // Visual effects related
 
@@ -42,7 +45,7 @@ struct LinysBookmarks {
           )
         }
         .width("100%")
-      }
+      } // List of this directory
       .direction(Direction.Rtl)
       .align(Alignment.Bottom)
       .edgeEffect(EdgeEffect.Spring)
@@ -64,13 +67,20 @@ struct LinysBookmarks {
             this.go_back();
           }) // Go back button
         Blank()
+        LinysSymbol({ symbol_glyph_target: 'sys.symbol.rectangle_and_arrowshape_turn_up_right' })
+          .onClick(() => {
+            this.save_bookmarks_html();
+          }) // Export bookmarks button
         LinysSymbol({ symbol_glyph_target: 'sys.symbol.folder_badge_plus' })
           .onClick(() => {
+            this.add_label = "";
             this.adding_bookmark = false;
             this.adding_folder = !this.adding_folder;
           }) // Add folder button
         LinysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
           .onClick(() => {
+            this.add_label = this.bunch_of_tabs.workingTab().title;
+            this.add_link = url_resource_to_meow(this.bunch_of_tabs.workingTab().url);
             this.adding_folder = false;
             this.adding_bookmark = !this.adding_bookmark;
           }) // Add bookmark button
@@ -90,6 +100,7 @@ struct LinysBookmarks {
               .fontColor($r('app.color.font_color_title'))
               .caretColor($r('app.color.font_color_title'))
               .selectedBackgroundColor($r('app.color.font_color_title'))
+              .selectAll(true)
               .layoutWeight(1)
               .onSubmit(() => {
                 if (this.adding_folder) {
@@ -109,6 +120,7 @@ struct LinysBookmarks {
               .fontColor($r('app.color.font_color_title'))
               .caretColor($r('app.color.font_color_title'))
               .selectedBackgroundColor($r('app.color.font_color_title'))
+              .selectAll(true)
               .layoutWeight(1)
               .onSubmit(() => {
                 this.new_bookmark();
@@ -137,7 +149,7 @@ struct LinysBookmarks {
           .width("100%")
         }
         .width("100%")
-      } // Edit controls
+      } // Edit panel
       .height((this.adding_bookmark ? 150 : 0) + (this.adding_folder ? 100 : 0))
       .animation(this.animation_default)
       .scrollBar(BarState.Off)
@@ -171,7 +183,8 @@ struct LinysBookmarks {
       // Cannot add for no label or no link.
       return;
     }
-    this.bunch_of_bookmarks.add_bookmark(new bookmark(this.add_label, this.add_link), this.looking_at_path);
+    this.bunch_of_bookmarks.add_bookmark(
+      new bookmark(this.add_label, this.add_link), this.looking_at_path);
     this.refresh_root_content();
   }
 
@@ -201,6 +214,11 @@ struct LinysBookmarks {
         return;
       }
     }
+  }
+
+  save_bookmarks_html() {
+    document_save("Bookmarks_" + new Date().getTime() + ".html", this.bunch_of_bookmarks.export_html().join("\n"))
+    // this.bunch_of_bookmarks.export_html()
   }
 }
 
@@ -313,6 +331,14 @@ struct BookmarkItem {
               .caretColor($r('app.color.font_color_title'))
               .selectedBackgroundColor($r('app.color.font_color_title'))
               .layoutWeight(1)
+              .onSubmit(() => {
+                if (this.type == "folder") {
+                  this.save_changes_folder();
+                } else {
+                  this.save_changes_bookmark();
+                }
+                this.editing = false;
+              })
           } // Edit label
           .width("100%")
 
@@ -327,6 +353,10 @@ struct BookmarkItem {
               .caretColor($r('app.color.font_color_title'))
               .selectedBackgroundColor($r('app.color.font_color_title'))
               .layoutWeight(1)
+              .onSubmit(() => {
+                this.save_changes_bookmark();
+                this.editing = false;
+              })
           } // Edit link
           .width("100%")
           .visibility(this.type == "bookmark" ? Visibility.Visible : Visibility.None)

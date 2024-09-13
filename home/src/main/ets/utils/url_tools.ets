@@ -7,14 +7,14 @@ export function unify_search_input_into_url(search_input: string) {
   }
 
   if (is_legal_ipv4(url)) {
-    return url
+    return ensure_scheme_or_https(encodeURI(url)) as string
   }
 
   if (is_legal_url(url)) {
-    return url
+    return ensure_scheme_or_https(encodeURI(url)) as string
   }
 
-  return "bing.com/search?q=" + url
+  return encodeURI("https://bing.com/search?q=" + url) as string
 }
 
 function is_pure_number(input: string) {
@@ -49,6 +49,19 @@ function eliminate_protocol_scheme(input: string) {
     }
   }
   return [scheme, url];
+}
+
+export function ensure_scheme_or_https(input: string) {
+  let url = input
+  if (url.includes("://")) {
+    let url_split = url.split("/")
+    if ((url_split[0].substring(url_split[0].length - 1) == ":") && (url_split[1] == "")) {
+      // if input has a valid scheme
+      return url;
+    }
+  }
+  // if input needs a scheme
+  return "https://" + url
 }
 
 function is_legal_ipv4(input: string) {

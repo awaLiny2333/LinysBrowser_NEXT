@@ -1,3 +1,6 @@
+import { encode_string_to_html_code } from '../utils/html_tools';
+import { ensure_scheme_or_https } from '../utils/url_tools';
+
 export class bookmark {
   private label: string;
   private link: string;
@@ -5,13 +8,13 @@ export class bookmark {
 
   constructor(label: string, link: string, add_date?: number) {
     let date = new Date();
-    this.label = label;
+    this.label = label.replaceAll("/", "／");
     this.link = link;
     this.add_date = add_date !== undefined ? add_date : date.getTime();
   }
 
   set_label(set: string) {
-    this.label = set;
+    this.label = set.replaceAll("/", "／");
   }
 
   set_link(set: string) {
@@ -45,13 +48,13 @@ export class folder {
 
   constructor(label: string, add_date?: number, last_modified?: number) {
     let date = new Date();
-    this.label = label;
+    this.label = label.replaceAll("/", "／");
     this.add_date = add_date !== undefined ? add_date : date.getTime();
     this.last_modified = last_modified !== undefined ? last_modified : date.getTime();
   }
 
   set_label(set: string) {
-    this.label = set;
+    this.label = set.replaceAll("/", "／");
     this.last_modified = (new Date()).getTime();
   }
 
@@ -87,33 +90,29 @@ export class folder {
     let type: string = "";
     let item: bookmark | folder;
     let result: string[] = [];
-    console.log("[Meow][BunchOfBookmarks][TEST] Folder: " + this.label + " START");
     result.push("" +
       "<DT><H3 ADD_DATE=\"" + this.add_date.toString() + "\" LAST_MODIFIED=\"" + this.last_modified.toString() + "\">"
-      + this.label + "</H3>\n<DL><p>\n");
-    // Head of folder
+      + encode_string_to_html_code(this.label) + "</H3>\n<DL><p>\n"); // Head of folder
     for (let index = 0; index < this.contents.length; index++) {
       item = this.contents[index].get_item();
       type = item.get_type();
       // Get item data
       if (type == "bookmark") {
         item = item as bookmark;
-        console.log("[Meow][BunchOfBookmarks][TEST] Bookmark: " + item.get_label());
-        result.push("<DT><A HREF=\"" + item.get_link() +
-          "\" ADD_DATE=\"" + item.get_add_date().toString() + "\">" + item.get_label() + "</A>\n");
+        result.push(
+          "<DT><A HREF=\"" + ensure_scheme_or_https(item.get_link()) + "\" ADD_DATE=\"" +
+          item.get_add_date().toString() + "\">"
+            + encode_string_to_html_code(item.get_label()) + "</A>\n"); // Push bookmark
       } else if (type == "folder") {
         item = item as folder;
-        result.concat(item.print_contents_in_html());
+        result = result.concat(item.print_contents_in_html());
       }
     }
-    console.log("[Meow][BunchOfBookmarks][TEST] Folder: " + this.label + " END")
-    result.push("</DL><p>\n\n");
-    // END of folder
+    result.push("</DL><p>\n\n"); // END of folder
     return result;
   }
 }
 
-@Observed
 export class unified_item {
   private bookmark: bookmark | undefined;
   private folder: folder | undefined;
@@ -290,7 +289,8 @@ export class BunchOfBookmarks {
       "\n"
     result.push(head);
     result.push("<DL><p>\n")
-    result.concat(this.root.print_contents_in_html());
+    result = result.concat(this.root.print_contents_in_html());
+    console.log(this.root.print_contents_in_html().join("\n"))
     result.push("</DL><p>\n")
     return result;
   }
