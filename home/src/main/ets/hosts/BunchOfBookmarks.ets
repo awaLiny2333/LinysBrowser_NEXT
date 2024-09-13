@@ -91,7 +91,8 @@ export class folder {
     let item: bookmark | folder;
     let result: string[] = [];
     result.push("" +
-      "<DT><H3 ADD_DATE=\"" + this.add_date.toString() + "\" LAST_MODIFIED=\"" + this.last_modified.toString() + "\">"
+      "<DT><H3 ADD_DATE=\"" + Math.round(this.add_date * 1000).toString()
+      + "\" LAST_MODIFIED=\"" + Math.round(this.last_modified * 1000).toString() + "\">"
       + encode_string_to_html_code(this.label) + "</H3>\n<DL><p>\n"); // Head of folder
     for (let index = 0; index < this.contents.length; index++) {
       item = this.contents[index].get_item();
@@ -101,14 +102,14 @@ export class folder {
         item = item as bookmark;
         result.push(
           "<DT><A HREF=\"" + ensure_scheme_or_https(item.get_link()) + "\" ADD_DATE=\"" +
-          item.get_add_date().toString() + "\">"
+          Math.round(item.get_add_date() * 1000).toString() + "\">"
             + encode_string_to_html_code(item.get_label()) + "</A>\n"); // Push bookmark
       } else if (type == "folder") {
         item = item as folder;
         result = result.concat(item.print_contents_in_html());
       }
     }
-    result.push("</DL><p>\n\n"); // END of folder
+    result.push("</DL><p>\n"); // END of folder
     return result;
   }
 }
