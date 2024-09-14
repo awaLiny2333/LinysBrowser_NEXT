@@ -176,7 +176,7 @@ struct Index {
             Text("→ " + (this.search_input_unified == "" ? "(　o=^•ェ•)o ?" : this.search_input_unified))
               .fontColor($r('app.color.font_color_title'))
               .fontWeight(FontWeight.Medium)
-              .fontSize(18)
+              .fontSize(16)
               .maxLines(4)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
           } // Bottom Bar for estimated destination indication
@@ -191,13 +191,13 @@ struct Index {
               Text(this.current_title)
                 .fontColor($r('app.color.font_color_title'))
                 .fontWeight(FontWeight.Medium)
-                .fontSize(22)
+                .fontSize(20)
                 .maxLines(2)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
               Text(this.current_url)
                 .fontColor($r('app.color.font_color_title'))
                 .fontWeight(FontWeight.Medium)
-                .fontSize(18)
+                .fontSize(16)
                 .opacity(0.7)
                 .maxLines(4)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -233,7 +233,7 @@ struct Index {
               })
 
             SymbolGlyph(!this.current_is_loading ? $r('sys.symbol.arrow_clockwise') : $r('sys.symbol.xmark'))
-              .fontSize(32)
+              .fontSize(28)
               .fontColor([$r('app.color.font_color_title')])
               .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.current_is_loading)
               .onClick(() => {
@@ -254,14 +254,14 @@ struct Index {
             TextInput({ text: this.search_input })
               .layoutWeight(1)
               .fontWeight(FontWeight.Regular)
+              .fontColor($r('app.color.font_color_title'))
+              .visibility(this.visible_in_tablet_mode())
               .onFocus(() => {
                 this.is_search_input_typing = true;
               })
               .onBlur(() => {
                 this.is_search_input_typing = false;
               })
-              .visibility(this.visible_in_tablet_mode())
-              .fontColor($r('app.color.font_color_title'))
               .onChange((content) => {
                 this.update_search_input(content)
               })
@@ -298,7 +298,7 @@ struct Index {
               })
 
             SymbolGlyph(this.showing_more_options ? $r('sys.symbol.chevron_down') : $r('sys.symbol.dot_grid_2x2'))
-              .fontSize(32)
+              .fontSize(28)
               .fontColor([$r('app.color.font_color_title')])
               .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.showing_more_options)
               .onClick(() => {
@@ -306,14 +306,15 @@ struct Index {
               })
 
           } // Bottom Bar of controls
-          .padding({ top: 15, left: 15, right: 15 })
+          .padding({ top: 12, left: 10, right: 10 })
           .width("100%")
           .backgroundColor($r('app.color.block_color'))
 
-          Row({ space: 15 }) {
+          Row({ space: 10 }) {
             TextInput({ text: this.search_input })
               .layoutWeight(1)
               .fontWeight(FontWeight.Regular)
+              .fontColor($r('app.color.font_color_title'))
               .caretColor($r('app.color.font_color_title'))
               .onFocus(() => {
                 this.is_search_input_typing = true;
@@ -321,7 +322,6 @@ struct Index {
               .onBlur(() => {
                 this.is_search_input_typing = false;
               })
-              .fontColor($r('app.color.font_color_title'))
               .onChange((content) => {
                 this.update_search_input(content)
               })

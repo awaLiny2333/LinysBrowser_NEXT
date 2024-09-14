@@ -1,4 +1,4 @@
-import { encode_string_to_html_code } from '../utils/html_tools';
+import { decode_html_code_to_string, encode_string_to_html_code } from '../utils/html_tools';
 import { ensure_scheme_or_https } from '../utils/url_tools';
 
 export class bookmark {
@@ -10,7 +10,7 @@ export class bookmark {
     let date = new Date();
     this.label = label.replaceAll("/", "／");
     this.link = link;
-    this.add_date = add_date !== undefined ? add_date : date.getTime();
+    this.add_date = add_date !== undefined ? add_date : Math.round(date.getTime() / 1000);
   }
 
   set_label(set: string) {
@@ -49,13 +49,13 @@ export class folder {
   constructor(label: string, add_date?: number, last_modified?: number) {
     let date = new Date();
     this.label = label.replaceAll("/", "／");
-    this.add_date = add_date !== undefined ? add_date : date.getTime();
-    this.last_modified = last_modified !== undefined ? last_modified : date.getTime();
+    this.add_date = add_date !== undefined ? add_date : Math.round(date.getTime() / 1000);
+    this.last_modified = last_modified !== undefined ? last_modified : Math.round(date.getTime() / 1000);
   }
 
   set_label(set: string) {
     this.label = set.replaceAll("/", "／");
-    this.last_modified = (new Date()).getTime();
+    this.last_modified = Math.round((new Date()).getTime() / 1000);
   }
 
   get_add_date() {
@@ -86,29 +86,31 @@ export class folder {
     return this.contents as unified_item[];
   }
 
-  print_contents_in_html() {
+  print_contents_in_html(number_of_spaces: number) {
+    let spaces: number = number_of_spaces;
     let type: string = "";
     let item: bookmark | folder;
     let result: string[] = [];
-    result.push("" +
-      "<DT><H3 ADD_DATE=\"" + this.add_date.toString() + "\" LAST_MODIFIED=\"" + this.last_modified.toString() + "\">"
-      + encode_string_to_html_code(this.label) + "</H3>\n<DL><p>\n"); // Head of folder
+    result.push(" ".repeat(spaces) +
+      "<DT><H3 ADD_DATE=\"" + this.add_date.toString()
+      + "\" LAST_MODIFIED=\"" + this.last_modified.toString() + "\">"
+      + encode_string_to_html_code(this.label) + "</H3>\n" + " ".repeat(spaces) + "<DL><p>"); // Head of folder
     for (let index = 0; index < this.contents.length; index++) {
       item = this.contents[index].get_item();
       type = item.get_type();
       // Get item data
       if (type == "bookmark") {
         item = item as bookmark;
-        result.push(
+        result.push(" ".repeat(spaces + 4) +
           "<DT><A HREF=\"" + ensure_scheme_or_https(item.get_link()) + "\" ADD_DATE=\"" +
-          item.get_add_date().toString() + "\">"
-            + encode_string_to_html_code(item.get_label()) + "</A>\n"); // Push bookmark
+        Math.round(item.get_add_date() / 1000).toString() + "\">"
+          + encode_string_to_html_code(item.get_label()) + "</A>"); // Push bookmark
       } else if (type == "folder") {
         item = item as folder;
-        result = result.concat(item.print_contents_in_html());
+        result = result.concat(item.print_contents_in_html(spaces + 4));
       }
     }
-    result.push("</DL><p>\n\n"); // END of folder
+    result.push(" ".repeat(spaces) + "</DL><p>"); // END of folder
     return result;
   }
 }
@@ -285,14 +287,113 @@ export class BunchOfBookmarks {
       "     DO NOT EDIT! -->\n" +
       "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=UTF-8\">\n" +
       "<TITLE>Bookmarks Meow</TITLE>\n" +
-      "<H1>Bookmarks Meow</H1>\n" +
-      "\n"
+      "<H1>Bookmarks Meow</H1>\n"
     result.push(head);
-    result.push("<DL><p>\n")
-    result = result.concat(this.root.print_contents_in_html());
-    console.log(this.root.print_contents_in_html().join("\n"))
-    result.push("</DL><p>\n")
+    result.push("<!-- Meow, Meow, Meow -->\n")
+    result.push("<DL><p>")
+    result = result.concat(this.root.print_contents_in_html(0));
+    console.log(this.root.print_contents_in_html(4).join("\n"))
+    result.push("</DL><p>")
     return result;
+  }
+
+  /**
+   * @param html: The string of .html format bookmarks
+   * @returns a code of status:
+   * @returns -1 for no <H3> error
+   * @returns 0 for SUCCESS
+   * @returns 1 for no label
+   * @returns 2 for no link
+   * @returns 3 for add_folder method fail (Perhaps because label collision)
+   * */
+  import_html(html: string) {
+    let one_line_data: string = html.replace(/\s*\n+\s*/g, "") // Eliminate all returns
+    one_line_data = one_line_data.replace(/<p>/g, "") // Eliminate all <p>
+    one_line_data = one_line_data.replace(/<DT>/g, "") // Eliminate all <DT>
+    one_line_data = one_line_data.replace(/<DL>/g, "") // Eliminate all <DL>
+    one_line_data = one_line_data.replace(/<\/A>/g, "") // Eliminate all </A>
+    one_line_data = one_line_data.replace(/<\/H3>/g, "") // Eliminate all </H3>
+    one_line_data = one_line_data.replace(/</g, "\n<") // Put returns
+    let first_H3 = one_line_data.indexOf("<H3")
+    if (first_H3 == -1) {
+      return -1; // -1 for no <H3> error
+    }
+
+    one_line_data = one_line_data.substring(first_H3)
+    let lines_split = one_line_data.split("\n")
+    // Split Into lines
+
+    let new_bunch_of_bookmarks: BunchOfBookmarks = new BunchOfBookmarks(new Date().toLocaleString());
+    let now_path_stack: string[] = [];
+    // Set new bookmarks bundle
+
+    for (let index = 0; index < lines_split.length; index++) {
+      let line = lines_split[index]; // For each line
+
+      if (line.length == 0) {
+        continue;
+      }
+      let now_path_string = now_path_stack.join("/"); // Connect now path
+
+      let position_of_label = line.indexOf(">");
+      if (position_of_label == -1) {
+        return 1; // 1 for no label error
+      }
+      // if (position_of_label + 1 == line.length) {
+      //   return 1;
+      // }
+      let label = line.substring(position_of_label + 1);
+      label = decode_html_code_to_string(label);
+      // Extract Label
+
+      let add_date = Number.parseInt(this.import_html_get_key("ADD_DATE=\"", line));
+      let last_modified = Number.parseInt(this.import_html_get_key("LAST_MODIFIED=\"", line));
+      if (last_modified == Number.NaN) {
+        // No last_modified value, set new default
+        last_modified = Math.round(new Date().getTime() / 1000)
+      }
+      // Extract dates
+
+      if (line.includes("<H3 ")) {
+        // is a folder
+        new_bunch_of_bookmarks.add_folder(new folder(label, add_date, last_modified), now_path_string);
+        now_path_stack.push(label)
+      } else if (line.includes("<A HREF=\"")) {
+        // is a bookmark
+        let link = this.import_html_get_key("<A HREF=\"", line);
+        if (link == "") {
+          return 2; // 2 for empty link error
+        }
+        new_bunch_of_bookmarks.add_bookmark(new bookmark(label, link, add_date), now_path_string);
+      } else if (line.includes("</DL>")) {
+        // is a closing mark
+        // go back to upper class folder
+        now_path_stack.pop();
+      }
+
+    }
+
+    let final_add_result = this.add_folder(new_bunch_of_bookmarks.root, "") as boolean;
+    if (final_add_result) {
+      return 0; // 0 for a successful import
+    } else {
+      return 3; // 3 for add_folder errors
+    }
+  }
+
+  private import_html_get_key(key: string, from: string) {
+    let start: number = from.indexOf(key) + key.length;
+    let end: number = from.length;
+    if (start == -1) {
+      return "";
+    }
+    for (let index = start; index < from.length; index++) {
+      if (from[index] == "\"") {
+        end = index;
+        break;
+      }
+    }
+    return from.substring(start, end);
   }
 
   private delete_bookmark_process(path: string, base_folder?: folder): boolean {

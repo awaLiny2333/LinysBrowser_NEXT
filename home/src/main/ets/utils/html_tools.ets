@@ -1,8 +1,8 @@
 let chars: string[] =
-  ["\"", "&", "<", ">", String.fromCharCode(8194), String.fromCharCode(8195), String.fromCharCode(160),
+  ["\"", "\'", "&", "<", ">", String.fromCharCode(8194), String.fromCharCode(8195), String.fromCharCode(160),
     "©", "®", "™", "×", "÷"]
 let codes: string[] =
-  ["&quot;", "&amp;", "&lt;", "&gt;", "&ensp;", "&emsp;", "&nbsp;",
+  ["&quot;", "&#39;", "&amp;", "&lt;", "&gt;", "&ensp;", "&emsp;", "&nbsp;",
     "&copy;", "&reg;", "&trade;", "&times;", "&divide;"]
 
 export function encode_string_to_html_code(input: string) {
@@ -24,7 +24,7 @@ export function encode_string_to_html_code(input: string) {
 export function decode_html_code_to_string(input: string) {
   let result = input;
   for (let index = 0; index < codes.length; index++) {
-    result.replace("/" + codes[index] + "/g", chars[index]);
+    result = result.replaceAll(codes[index], chars[index]);
   }
   return result;
 }

@@ -2,7 +2,7 @@ import { bookmark, BunchOfBookmarks, folder, unified_item } from '../hosts/Bunch
 import { BunchOfTabs } from '../hosts/BunchOfTabs';
 import { url_resource_to_meow } from '../utils/url_tools';
 import LinysSymbol from './LinysSymbol';
-import { document_save } from '../utils/document_saver';
+import { document_open, document_save } from '../utils/storage_tools';
 
 @Component
 struct LinysBookmarks {
@@ -20,7 +20,6 @@ struct LinysBookmarks {
   scroll_controller: Scroller = new Scroller();
   @Prop animation_default: AnimateParam;
   @State scroll_area_height: number = 0;
-  @StorageLink('pathDir') pathDir: string = "";
 
   // Visual effects related
 
@@ -59,7 +58,7 @@ struct LinysBookmarks {
         // and reduce their appearance animation time.
       })
 
-      Row({ space: 10 }) {
+      Row({ space: 12.5 }) {
         LinysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left' })
           .visibility(this.looking_at_path == "" ? Visibility.None : Visibility.Visible)
           .animation(this.animation_default)
@@ -67,9 +66,13 @@ struct LinysBookmarks {
             this.go_back();
           }) // Go back button
         Blank()
-        LinysSymbol({ symbol_glyph_target: 'sys.symbol.rectangle_and_arrowshape_turn_up_right' })
+        LinysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_down_and_rectangle_on_rectangle' })
           .onClick(() => {
-            this.save_bookmarks_html();
+            this.import_bookmarks_html();
+          }) // Import bookmarks button
+        LinysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right_up_and_square' })
+          .onClick(() => {
+            this.export_bookmarks_html();
           }) // Export bookmarks button
         LinysSymbol({ symbol_glyph_target: 'sys.symbol.folder_badge_plus' })
           .onClick(() => {
@@ -136,7 +139,7 @@ struct LinysBookmarks {
               .type(ButtonType.Capsule)
               .backgroundColor($r("app.color.font_color_title"))
               .fontColor($r('app.color.start_window_background'))
-              .fontSize(26)
+              .fontSize(22)
               .onClick(() => {
                 if (this.adding_folder) {
                   this.new_folder()
@@ -161,6 +164,7 @@ struct LinysBookmarks {
         .textAlign(TextAlign.End)
         .width("100%")
         .margin({ top: 5 })
+        .opacity(0.7)
       // Path indicator
     } // List of directory, Operation buttons and edit TextInputs
     .justifyContent(FlexAlign.End)
@@ -216,9 +220,17 @@ struct LinysBookmarks {
     }
   }
 
-  save_bookmarks_html() {
-    document_save("Bookmarks_" + new Date().getTime() + ".html", this.bunch_of_bookmarks.export_html().join("\n"))
-    // this.bunch_of_bookmarks.export_html()
+  export_bookmarks_html() {
+    document_save("Bookmarks_" + Math.round(new Date().getTime() / 1000) + ".html",
+      this.bunch_of_bookmarks.export_html().join("\n"))
+  }
+
+  import_bookmarks_html() {
+    document_open().then(result => {
+      let import_result: number = this.bunch_of_bookmarks.import_html(result);
+      this.refresh_root_content();
+      console.log("[Meow][LinysBookmarks] Import result: " + import_result.toString())
+    })
   }
 }
 
@@ -261,7 +273,7 @@ struct BookmarkItem {
           .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
           .animation(this.animation_default)
           .padding({ left: 2 })
-          .fontSize(20)
+          .fontSize(18)
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
           .layoutWeight(1)
@@ -278,7 +290,7 @@ struct BookmarkItem {
             .fontColor([$r('app.color.block_color')])
         } // Edit Icon
         .scrollable(ScrollDirection.Horizontal)
-        .width(this.press_timing_ok ? 26 : 0)
+        .width(this.press_timing_ok ? 22 : 0)
         .margin({ left: this.press_timing_ok ? 10 : 0 })
         .animation(this.animation_default)
 
@@ -314,6 +326,7 @@ struct BookmarkItem {
           // Will automatically cause LinysBookmarks to update the UI list (@Watch)
         } else {
           this.webViews_ready = true;
+          this.bunch_of_tabs.stop_onWorkingTab()
           this.bunch_of_tabs.loadUrl_onWorkingTab((this.item.get_item() as bookmark).get_link())
         } // Open folder or load web
       })
@@ -368,7 +381,7 @@ struct BookmarkItem {
               .type(ButtonType.Capsule)
               .backgroundColor($r("app.color.font_color_title"))
               .fontColor($r('app.color.start_window_background'))
-              .fontSize(26)
+              .fontSize(22)
               .onClick(() => {
                 this.delete_myself()
               })
@@ -376,7 +389,7 @@ struct BookmarkItem {
               .type(ButtonType.Capsule)
               .backgroundColor($r("app.color.font_color_title"))
               .fontColor($r('app.color.start_window_background'))
-              .fontSize(26)
+              .fontSize(22)
               .onClick(() => {
                 if (this.type == "folder") {
                   this.save_changes_folder()

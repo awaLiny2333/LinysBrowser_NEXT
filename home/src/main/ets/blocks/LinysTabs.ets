@@ -30,7 +30,7 @@ struct LinysTabs {
   @State count_down_for_switching_back_to_spring: number = 0;
   @State count_down_for_scrolling_to_bottom: number = 0;
   // Animation info
-  tab_height_default: number = 46;
+  tab_height_default: number = 42;
   scroll_controller: Scroller = new Scroller();
   @State scroll_area_height: number = 0;
   @State scroll_animation_enabled: boolean = true;
@@ -46,14 +46,14 @@ struct LinysTabs {
                 Row() {
                   Text(this.tab_titles[Label.index_key] == "" ? "Meow" : this.tab_titles[Label.index_key])
                     .padding({ left: 2 })
-                    .fontSize(20)
+                    .fontSize(18)
                     .fontColor($r('app.color.font_color_title'))
                     .maxLines(1)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
                     .layoutWeight(1)
 
                   SymbolGlyph($r('sys.symbol.xmark'))
-                    .fontSize(20)
+                    .fontSize(18)
                     .fontColor([$r('app.color.font_color_title')])
                     .fontWeight(FontWeight.Medium)
 
