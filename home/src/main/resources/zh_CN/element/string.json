@@ -19,6 +19,30 @@
     {
       "name": "settings_homepage",
       "value": "主页"
+    },
+    {
+      "name": "settings_user_agent",
+      "value": "用户代理"
+    },
+    {
+      "name": "settings_ua_default",
+      "value": "默认"
+    },
+    {
+      "name": "settings_ua_android",
+      "value": "Android"
+    },
+    {
+      "name": "settings_ua_iphone",
+      "value": "iPhone"
+    },
+    {
+      "name": "settings_ua_ipad",
+      "value": "iPad"
+    },
+    {
+      "name": "settings_ua_windows",
+      "value": "Windows"
     }
   ]
 }

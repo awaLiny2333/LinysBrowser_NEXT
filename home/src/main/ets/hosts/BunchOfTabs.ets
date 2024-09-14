@@ -42,12 +42,17 @@ export class TabInfoPacked {
   update_loading_progress(progress: number) {
     this.loading_progress = progress;
   }
+
+  update_user_agent(ua: string): void {
+    this.controller.setCustomUserAgent(ua)
+  }
 }
 
 export class BunchOfTabs {
   Tabs: Array<TabInfoPacked> = [new TabInfoPacked("Meow", "url")];
   Labels: Array<TabLabel> = [new TabLabel(Date.now(), 0)];
   current_working_tab_index: number = 0;
+  user_agent: string = ''
 
   loadUrl_onWorkingTab(url: string) {
     url = url_meow_to_resource(url);
@@ -183,5 +188,12 @@ export class BunchOfTabs {
       stamps.push(this.Labels[index].timestamp);
     }
     return stamps;
+  }
+
+  set_all_user_agent(ua: string) {
+    this.user_agent = ua;
+    for (let index = 0; index < this.Tabs.length; index++) {
+      this.Tabs[index].controller.setCustomUserAgent(this.user_agent)
+    }
   }
 }

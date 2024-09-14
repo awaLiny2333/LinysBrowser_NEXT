@@ -8,8 +8,6 @@ import { unify_search_input_into_url, url_meow_to_resource, url_resource_to_meow
 import LinysBookmarks from '../blocks/LinysBookmarks';
 import { curves } from '@kit.ArkUI';
 import { MMKV } from '@tencent/mmkv';
-import { DEFAULT } from '@ohos/hypium/src/main/Constant';
-import sendableColorSpaceManager from '@ohos.graphics.sendableColorSpaceManager';
 
 let mmkv = MMKV.defaultMMKV();
 
@@ -45,13 +43,18 @@ struct Index {
   @State current_is_loading: boolean = true
 
   @State notify_settings_homepage: boolean = false;
-  @State notify_settings_border_width: number = 0;
+  @State settings_user_agent: number = mmkv.decodeInt32('settings_user_agent') ?? 0;
+
+  private web_user_agents: string[] = [
+    'Mozilla/5.0 (Phone; OpenHarmony5.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 ArkWeb/4.1.6.1 Mobile',
+    'Mozilla/5.0 (Linux; Android 14; SAMSUNG SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/23.0 Chrome/115.0.0.0 Mobile Safari/537.3',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) GSA/300.0.598994205 Mobile/15E148 Safari/604.',
+    'Mozilla/5.0 (iPad; CPU OS 17_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Mobile/15E148 Safari/604.1',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246'
+  ]
 
   aboutToAppear(): void {
-    if (!mmkv.containsKey('homepage')) {
-      console.log("set new homepage")
-      mmkv.encodeString('homepage', 'meow://home_light')
-    }
+    this.bunch_of_tabs.user_agent = this.web_user_agents[this.settings_user_agent]
   }
 
   build() {
@@ -372,19 +375,92 @@ struct Index {
 
 
             if (this.showing_settings) {
-              Column() {
-                Text($r('app.string.settings_homepage'))
-                TextInput({ placeholder: mmkv.decodeString('homepage') })
-                  .onSubmit((key, evt) => {
-                    mmkv.encodeString('homepage', evt.text)
-                    this.notify_settings_homepage = true;
-                    setInterval(() => {
-                      this.notify_settings_homepage = false;
-                    }, 2000)
-                  })
-                  .transition(TransitionEffect.OPACITY.animation({ curve: curves.springMotion() }))
-                  .borderWidth(2)
-                  .borderColor(this.notify_settings_homepage ? Color.Green : $r('app.color.block_color'))
+              Column({ space: 5 }) {
+                Row() {
+                  Text($r('app.string.settings_homepage'))
+                  Blank()
+                  TextInput({ placeholder: mmkv.decodeString('settings_homepage') })
+                    .onSubmit((_, evt) => {
+                      mmkv.encodeString('settings_homepage', evt.text)
+                      this.notify_settings_homepage = true;
+                      setInterval(() => {
+                        this.notify_settings_homepage = false;
+                      }, 1500)
+                    })
+                    .width('60%')
+                    .height(40)
+                    .transition(TransitionEffect.OPACITY.animation({ curve: curves.springMotion() }))
+                    .borderWidth(2)
+                    .borderColor(this.notify_settings_homepage ? Color.Green : $r('app.color.block_color'))
+                }
+                .backgroundColor($r('app.color.setting_menu_color'))
+                .borderRadius(15)
+                .width('100%')
+                .height(50)
+                .padding(15)
+                .justifyContent(FlexAlign.SpaceBetween)
+                Row() {
+                  Text($r('app.string.settings_user_agent'))
+                  Blank()
+                  Row() {
+                    Text([
+                      $r('app.string.settings_ua_default'),
+                      $r('app.string.settings_ua_android'),
+                      $r('app.string.settings_ua_iphone'),
+                      $r('app.string.settings_ua_ipad'),
+                      $r('app.string.settings_ua_windows'),
+                    ][this.settings_user_agent])
+                      .fontColor(Color.Gray)
+                    SymbolGlyph($r('sys.symbol.chevron_right'))
+                      .fontSize(20)
+                      .fontColor([Color.Gray])
+                  }
+                  .width('30%')
+                  .justifyContent(FlexAlign.SpaceBetween)
+                  .bindMenu([
+                    {
+                      value: $r('app.string.settings_ua_default'),
+                      action: () => {
+                        mmkv.encodeInt32('settings_user_agent', 0)
+                        this.update_user_agent()
+                      }
+                    },
+                    {
+                      value: $r('app.string.settings_ua_android'),
+                      action: () => {
+                        mmkv.encodeInt32('settings_user_agent', 1)
+                        this.update_user_agent()
+                      }
+                    },
+                    {
+                      value: $r('app.string.settings_ua_iphone'),
+                      action: () => {
+                        mmkv.encodeInt32('settings_user_agent', 2)
+                        this.update_user_agent()
+                      }
+                    },
+                    {
+                      value: $r('app.string.settings_ua_ipad'),
+                      action: () => {
+                        mmkv.encodeInt32('settings_user_agent', 3)
+                        this.update_user_agent()
+                      }
+                    },
+                    {
+                      value: $r('app.string.settings_ua_windows'),
+                      action: () => {
+                        mmkv.encodeInt32('settings_user_agent', 4)
+                        this.update_user_agent()
+                      }
+                    }
+                  ])
+                }
+                .backgroundColor($r('app.color.setting_menu_color'))
+                .padding(15)
+                .width('100%')
+                .borderRadius(15)
+                .justifyContent(FlexAlign.SpaceBetween)
+
               }
               .width('100%')
               .padding(15)
@@ -520,7 +596,7 @@ struct Index {
   }
 
   home_url() {
-    return mmkv.decodeString('homepage', '') ?? (this.is_dark_mode() ? 'meow://home_dark' : 'meow://home_light')
+    return mmkv.decodeString('settings_homepage', '') ?? (this.is_dark_mode() ? 'meow://home_dark' : 'meow://home_light')
   }
 
   // default stuffs
@@ -544,6 +620,11 @@ struct Index {
     this.current_loading_progress = this.tab_loading_progresses[this.current_tab_index];
     this.current_is_loading = this.tab_is_loading[this.current_tab_index];
     // Set loading progress
+  }
+
+  update_user_agent() {
+    this.settings_user_agent = mmkv.decodeInt32('settings_user_agent') ?? 0;
+    this.bunch_of_tabs.set_all_user_agent(this.web_user_agents[this.settings_user_agent])
   }
 
   sync_list_info() {

@@ -19,6 +19,30 @@
     {
       "name": "settings_homepage",
       "value": "Home Page"
+    },
+    {
+      "name": "settings_user_agent",
+      "value": "User Agent"
+    },
+    {
+      "name": "settings_ua_default",
+      "value": "Default"
+    },
+    {
+      "name": "settings_ua_android",
+      "value": "Android"
+    },
+    {
+      "name": "settings_ua_iphone",
+      "value": "iPhone"
+    },
+    {
+      "name": "settings_ua_ipad",
+      "value": "iPad"
+    },
+    {
+      "name": "settings_ua_windows",
+      "value": "Windows"
     }
   ]
 }

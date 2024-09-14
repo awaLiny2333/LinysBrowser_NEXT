@@ -11,6 +11,10 @@
     {
       "name": "font_color_title",
       "value": "#FF243B24"
+    },
+    {
+      "name": "setting_menu_color",
+      "value": "#20000000"
     }
   ]
 }

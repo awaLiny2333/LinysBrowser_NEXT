@@ -63,6 +63,9 @@ struct LinysWebView {
             this.update_search_box_text(this.current_url)
             // Update Input Search Box
           })
+          .onControllerAttached(() => {
+            this.bunch_of_tabs.Tabs[Label.index_key].controller.setCustomUserAgent(this.bunch_of_tabs.user_agent)
+          })
           .onPageEnd(() => {
             console.log("[Meow][ArkWeb] on page end")
             this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(false);
@@ -129,7 +132,7 @@ struct LinysWebView {
   }
 
   home_url() {
-    return mmkv.decodeString('homepage', '') ?? (this.is_dark_mode() ? 'meow://home_dark' : 'meow://home_light')
+    return mmkv.decodeString('settings_homepage', '') ?? (this.is_dark_mode() ? 'meow://home_dark' : 'meow://home_light')
   }
 }
 
