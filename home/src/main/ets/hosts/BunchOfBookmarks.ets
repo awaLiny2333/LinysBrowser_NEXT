@@ -103,7 +103,7 @@ export class folder {
         item = item as bookmark;
         result.push(" ".repeat(spaces + 4) +
           "<DT><A HREF=\"" + ensure_scheme_or_https(item.get_link()) + "\" ADD_DATE=\"" +
-        Math.round(item.get_add_date() / 1000).toString() + "\">"
+        item.get_add_date().toString() + "\">"
           + encode_string_to_html_code(item.get_label()) + "</A>"); // Push bookmark
       } else if (type == "folder") {
         item = item as folder;

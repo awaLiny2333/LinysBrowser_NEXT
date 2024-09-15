@@ -3,6 +3,7 @@ import { BunchOfTabs } from '../hosts/BunchOfTabs';
 import { url_resource_to_meow } from '../utils/url_tools';
 import LinysSymbol from './LinysSymbol';
 import { document_open, document_save } from '../utils/storage_tools';
+import { fontSize_Large, fontSize_Normal } from '../hosts/BunchOfSettings';
 
 @Component
 struct LinysBookmarks {
@@ -139,7 +140,7 @@ struct LinysBookmarks {
               .type(ButtonType.Capsule)
               .backgroundColor($r("app.color.font_color_title"))
               .fontColor($r('app.color.start_window_background'))
-              .fontSize(22)
+              .fontSize(fontSize_Large())
               .onClick(() => {
                 if (this.adding_folder) {
                   this.new_folder()
@@ -160,11 +161,13 @@ struct LinysBookmarks {
       Text("@ " + (this.looking_at_path == "" ? "(～o￣3￣)～" : this.looking_at_path + "/"))
         .fontColor($r('app.color.font_color_title'))
         .fontWeight(FontWeight.Medium)
-        .fontSize(18)
+        .fontSize(fontSize_Normal())
         .textAlign(TextAlign.End)
         .width("100%")
         .margin({ top: 5 })
         .opacity(0.7)
+        .animation(this.animation_default)
+
       // Path indicator
     } // List of directory, Operation buttons and edit TextInputs
     .justifyContent(FlexAlign.End)
@@ -179,6 +182,7 @@ struct LinysBookmarks {
       return;
     }
     this.bunch_of_bookmarks.add_folder(new folder(this.add_label), this.looking_at_path);
+    this.adding_folder = false;
     this.refresh_root_content();
   }
 
@@ -189,6 +193,7 @@ struct LinysBookmarks {
     }
     this.bunch_of_bookmarks.add_bookmark(
       new bookmark(this.add_label, this.add_link), this.looking_at_path);
+    this.adding_bookmark = false;
     this.refresh_root_content();
   }
 
@@ -273,20 +278,20 @@ struct BookmarkItem {
           .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
           .animation(this.animation_default)
           .padding({ left: 2 })
-          .fontSize(18)
+          .fontSize(fontSize_Normal())
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
           .layoutWeight(1)
         if (this.type == "folder") {
           SymbolGlyph($r(!this.pressing ? 'sys.symbol.folder' : 'sys.symbol.chevron_right'))
-            .fontSize(20)
+            .fontSize(fontSize_Large())
             .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
             .fontColor([!this.pressing ? $r('app.color.font_color_title') : $r('app.color.block_color')])
             .animation(this.animation_default)
         } // Folder Icon
         Scroll() {
           SymbolGlyph($r('sys.symbol.square_and_pencil'))
-            .fontSize(20)
+            .fontSize(fontSize_Large())
             .fontColor([$r('app.color.block_color')])
         } // Edit Icon
         .scrollable(ScrollDirection.Horizontal)
@@ -382,7 +387,7 @@ struct BookmarkItem {
               .type(ButtonType.Capsule)
               .backgroundColor($r("app.color.font_color_title"))
               .fontColor($r('app.color.start_window_background'))
-              .fontSize(22)
+              .fontSize(fontSize_Large())
               .onClick(() => {
                 this.delete_myself()
               })
@@ -390,7 +395,7 @@ struct BookmarkItem {
               .type(ButtonType.Capsule)
               .backgroundColor($r("app.color.font_color_title"))
               .fontColor($r('app.color.start_window_background'))
-              .fontSize(22)
+              .fontSize(fontSize_Large())
               .onClick(() => {
                 if (this.type == "folder") {
                   this.save_changes_folder()
@@ -432,7 +437,7 @@ struct BookmarkItem {
         this.show = Visibility.Visible;
         this.offset_y = 0;
         // Animation of floating up
-      }, Math.min(this.my_index, this.height_of_panel / this.bookmark_height_default) * 60)
+      }, this.get_animation_timeout())
       setInterval(() => {
         if (this.pressing) {
           this.press_timing += 1;
@@ -443,6 +448,19 @@ struct BookmarkItem {
         // Count press time
       }, 10)
     })
+  }
+
+  get_animation_timeout() {
+    let unit_interval = 60;
+    let load_length = this.viewing_contents.length;
+    if (load_length < 5) {
+      unit_interval = 100;
+    } else if (load_length < 10) {
+      unit_interval = 60;
+    } else {
+      unit_interval = 40;
+    }
+    return Math.min(this.my_index, this.height_of_panel / this.bookmark_height_default) * unit_interval;
   }
 
   get_my_path() {

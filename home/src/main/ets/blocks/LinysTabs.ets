@@ -1,6 +1,7 @@
 import LinysSymbol from './LinysSymbol';
 import { BunchOfTabs, TabLabel } from '../hosts/BunchOfTabs';
 import { url_resource_to_meow } from '../utils/url_tools';
+import { fontSize_Normal } from '../hosts/BunchOfSettings';
 
 @Component
 struct LinysTabs {
@@ -46,14 +47,15 @@ struct LinysTabs {
                 Row() {
                   Text(this.tab_titles[Label.index_key] == "" ? "Meow" : this.tab_titles[Label.index_key])
                     .padding({ left: 2 })
-                    .fontSize(18)
+                    .fontSize(fontSize_Normal())
                     .fontColor($r('app.color.font_color_title'))
+                    .fontWeight(Label.index_key == this.current_tab_index ? FontWeight.Medium : undefined)
                     .maxLines(1)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
                     .layoutWeight(1)
 
                   SymbolGlyph($r('sys.symbol.xmark'))
-                    .fontSize(18)
+                    .fontSize(fontSize_Normal())
                     .fontColor([$r('app.color.font_color_title')])
                     .fontWeight(FontWeight.Medium)
 

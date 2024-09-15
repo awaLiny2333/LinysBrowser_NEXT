@@ -2,10 +2,11 @@ import LinysProgress from '../blocks/LinysProgress';
 import LinysSymbol from '../blocks/LinysSymbol';
 import LinysTabs from '../blocks/LinysTabs';
 import LinysWebView from '../blocks/LinysWebView';
+import LinysBookmarks from '../blocks/LinysBookmarks';
 import { BunchOfTabs } from '../hosts/BunchOfTabs';
 import { BunchOfBookmarks } from '../hosts/BunchOfBookmarks';
 import { unify_search_input_into_url, url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
-import LinysBookmarks from '../blocks/LinysBookmarks';
+import { animation_default, fontSize_Icon_Button, fontSize_Large, fontSize_Normal } from '../hosts/BunchOfSettings';
 
 @Entry
 @Component
@@ -59,16 +60,16 @@ struct Index {
                     LinysBookmarks({
                       bunch_of_tabs: this.bunch_of_tabs,
                       bunch_of_bookmarks: this.bunch_of_bookmarks,
-                      animation_default: this.animation_default(),
+                      animation_default: animation_default(),
                       webViews_ready: this.webViews_ready
                     });
                   } // Bookmarks Panel
-                  .width(this.tablet_mode ? 400 : 0.9 * this.screen_width)
+                  .width(this.tablet_mode ? 350 : 0.9 * this.screen_width)
                   .height("100%")
                 }
                 .height("100%")
                 .width(this.showing_bookmarks ? "100%" : 0)
-                .animation(this.animation_default())
+                .animation(animation_default())
                 .scrollable(ScrollDirection.Horizontal)
                 .scrollBar(BarState.Off)
 
@@ -78,7 +79,7 @@ struct Index {
                       tablet_mode: this.tablet_mode,
                       show_webViews: this.webViews_ready,
                       showing_tabs: this.showing_tabs,
-                      animation_default: this.animation_default(),
+                      animation_default: animation_default(),
                       // Environment
                       bunch_of_tabs: this.bunch_of_tabs,
                       // HOST
@@ -103,7 +104,7 @@ struct Index {
                 }
                 .height("100%")
                 .width(this.showing_tabs ? "100%" : 0)
-                .animation(this.animation_default())
+                .animation(animation_default())
                 .scrollable(ScrollDirection.Horizontal)
                 .scrollBar(BarState.Off)
 
@@ -114,9 +115,9 @@ struct Index {
             .width(
               !this.tablet_mode ?
                 (this.showing_tabs || this.showing_bookmarks ? 0.9 * this.screen_width : 0) :
-                ((this.showing_tabs ? 250 : 0) + (this.showing_bookmarks ? 400 : 0))
+                ((this.showing_tabs ? 250 : 0) + (this.showing_bookmarks ? 350 : 0))
             )
-            .animation(this.animation_default())
+            .animation(animation_default())
             .scrollable(ScrollDirection.Horizontal)
             .scrollBar(BarState.Off)
             .height("100%")
@@ -154,7 +155,7 @@ struct Index {
           .layoutWeight(1)
 
           Column()// Bottom Avoid
-            .height(52 + (this.tablet_mode ? 0 : 44))
+            .height(50 + (this.tablet_mode ? 0 : 40))
 
         } // Webview Base
         .alignRules({
@@ -173,7 +174,7 @@ struct Index {
           LinysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
           Column() {
           } // Bottom Avoid
-          .height(52 + (this.tablet_mode ? 0 : 44))
+          .height(50 + (this.tablet_mode ? 0 : 40))
         } // Loading Bar
         .alignRules({
           middle: { anchor: "__container__", align: HorizontalAlign.Center },
@@ -186,7 +187,7 @@ struct Index {
             Text("→ " + (this.search_input_unified == "" ? "(　o=^•ェ•)o ?" : this.search_input_unified))
               .fontColor($r('app.color.font_color_title'))
               .fontWeight(FontWeight.Medium)
-              .fontSize(16)
+              .fontSize(fontSize_Normal())
               .maxLines(4)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
           } // Bottom Bar for estimated destination indication
@@ -194,20 +195,20 @@ struct Index {
           .padding({ top: 15, left: 15, right: 15 })
           .width("100%")
           .backgroundColor($r('app.color.block_color'))
-          .animation(this.animation_default())
+          .animation(animation_default())
 
           Row({ space: 15 }) {
             Column({ space: 5 }) {
               Text(this.current_title)
                 .fontColor($r('app.color.font_color_title'))
                 .fontWeight(FontWeight.Medium)
-                .fontSize(20)
+                .fontSize(fontSize_Large())
                 .maxLines(2)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
               Text(this.current_url)
                 .fontColor($r('app.color.font_color_title'))
                 .fontWeight(FontWeight.Medium)
-                .fontSize(16)
+                .fontSize(fontSize_Normal())
                 .opacity(0.7)
                 .maxLines(4)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -221,7 +222,7 @@ struct Index {
           .width("100%")
           .backgroundColor($r('app.color.block_color'))
           .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
-          .animation(this.animation_default())
+          .animation(animation_default())
 
           Row({ space: 12 }) {
             LinysSymbol({
@@ -243,7 +244,7 @@ struct Index {
               })
 
             SymbolGlyph(!this.current_is_loading ? $r('sys.symbol.arrow_clockwise') : $r('sys.symbol.xmark'))
-              .fontSize(26)
+              .fontSize(fontSize_Icon_Button())
               .fontColor([$r('app.color.font_color_title')])
               .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.current_is_loading)
               .onClick(() => {
@@ -308,7 +309,7 @@ struct Index {
               })
 
             SymbolGlyph(this.showing_more_options ? $r('sys.symbol.chevron_down') : $r('sys.symbol.dot_grid_2x2'))
-              .fontSize(26)
+              .fontSize(fontSize_Icon_Button())
               .fontColor([$r('app.color.font_color_title')])
               .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.showing_more_options)
               .onClick(() => {
@@ -353,7 +354,7 @@ struct Index {
           .padding({ top: 15, left: 15, right: 15 })
           .width("100%")
           .backgroundColor($r('app.color.block_color'))
-          .animation(this.animation_default())
+          .animation(animation_default())
 
           WaterFlow() {
             FlowItem() {
@@ -372,12 +373,12 @@ struct Index {
           .width("100%")
           .height(Math.ceil(3 / Math.floor(this.screen_width / 47)) * 47)
           .backgroundColor($r('app.color.block_color'))
-          .animation(this.animation_default())
+          .animation(animation_default())
 
         } // Bottom Bars
         .width("100%")
         .backgroundColor($r('app.color.block_color'))
-        .animation(this.animation_default())
+        .animation(animation_default())
         .alignRules({
           bottom: { anchor: "__container__", align: VerticalAlign.Bottom },
           middle: { anchor: "__container__", align: HorizontalAlign.Center }
@@ -393,6 +394,7 @@ struct Index {
     }
     .height("100%")
     .width("100%")
+    .backgroundColor($r('app.color.block_color'))
     .onAppear(() => {
       console.log("[Meow][Index] Home Index READY")
     })
@@ -493,11 +495,6 @@ struct Index {
   }
 
   // control events
-
-  animation_default() {
-    let ap: AnimateParam = { duration: 250, curve: Curve.ExtremeDeceleration };
-    return ap;
-  }
 
   home_url() {
     return this.is_dark_mode() ? 'meow://home_dark' : 'meow://home_light'
