@@ -434,7 +434,6 @@ struct BookmarkItem {
           } // Buttons of operations
           .width("100%")
         }
-        // .margin({ top: this.editing ? 1 : 0 })
         .padding({
           top: 4,
           left: 14,
@@ -451,6 +450,7 @@ struct BookmarkItem {
         !this.editing ? 0 :
           (this.type == "bookmark" ? 157 : 0) + (this.type == "folder" ? 107 : 0)
       )
+      .visibility(this.editing ? Visibility.Visible : Visibility.None)
       .animation(this.animation_default)
       .scrollBar(BarState.Off)
     }

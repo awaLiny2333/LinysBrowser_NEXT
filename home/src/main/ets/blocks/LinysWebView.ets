@@ -5,9 +5,10 @@ import { url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
 struct LinysWebView {
   @StorageProp('currentColorMode') current_color_mode: number = 0;
   @Link bunch_of_tabs: BunchOfTabs;
+  @Link current_tab_index: number;
+  @Link universal_new_tab_gateway: string | undefined;
   @Prop show_webViews: boolean;
   @Prop tablet_mode: boolean;
-  @Link current_tab_index: number;
   // Controls and environments
   @Link tab_titles: string[];
   @Link current_title: string;
@@ -26,7 +27,8 @@ struct LinysWebView {
     Row() {
       ForEach(this.bunch_of_tabs.Labels, (Label: TabLabel) => {
         Web({
-          src: url_meow_to_resource(this.home_url()),
+          src: url_meow_to_resource(this.bunch_of_tabs.Tabs[Label.index_key] !== undefined ?
+          this.bunch_of_tabs.Tabs[Label.index_key].url : ""),
           controller: this.bunch_of_tabs.Tabs[Label.index_key] !== undefined ?
           this.bunch_of_tabs.Tabs[Label.index_key].controller : undefined
         })// Main WEB
@@ -35,6 +37,12 @@ struct LinysWebView {
           .javaScriptAccess(true)
           .fileAccess(true)
           .domStorageAccess(true)
+          .multiWindowAccess(true)
+          .onWindowNew((event) => {
+            let new_target_url = event.targetUrl;
+            this.universal_new_tab_gateway = new_target_url;
+            event.handler.setWebController(null);
+          })
           .width("100%")
           .height("100%")
           .visibility(this.current_tab_index == Label.index_key ? Visibility.Visible : Visibility.None)

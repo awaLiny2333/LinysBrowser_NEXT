@@ -1,5 +1,6 @@
 import { webview } from '@kit.ArkWeb';
 import { url_meow_to_resource } from '../utils/url_tools';
+import { home_url } from './BunchOfSettings';
 
 @Observed
 export class TabLabel {
@@ -45,9 +46,10 @@ export class TabInfoPacked {
 }
 
 export class BunchOfTabs {
-  Tabs: Array<TabInfoPacked> = [new TabInfoPacked("Meow", "url")];
+  Tabs: Array<TabInfoPacked> = [new TabInfoPacked("Meow", home_url())];
   Labels: Array<TabLabel> = [new TabLabel(Date.now(), 0)];
   current_working_tab_index: number = 0;
+  current_color_mode: number = AppStorage.get('currentColorMode') as number;
 
   loadUrl_onWorkingTab(url: string) {
     url = url_meow_to_resource(url);

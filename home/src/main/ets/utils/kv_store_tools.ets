@@ -54,7 +54,7 @@ export function kv_store_put(key_name: string, put_content: string) {
   if (kvStore !== undefined) {
     kvStore.put(key_name, put_content, (err) => {
       if (err !== undefined) {
-        console.error(`[Meow][kv_store_tools][ERROR] Failed to put data. Code: ${err.code},message:${err.message}`);
+        console.error(`[Meow][kv_store_tools][ERROR] Failed to put data. Code: ${err.code},message: ${err.message}`);
       } else {
         console.log("[Meow][kv_store_tools] Succeeded in putting data, key: " + key_name + ".")
       }
@@ -71,7 +71,7 @@ export function kv_store_delete(key_name: string) {
   if (kvStore !== undefined) {
     kvStore.delete(key_name, (err) => {
       if (err !== undefined) {
-        console.error(`[Meow][kv_store_tools][ERROR] Failed to delete data. Code:${err.code},message:${err.message}`);
+        console.error(`[Meow][kv_store_tools][ERROR] Failed to delete data. Code: ${err.code},message: ${err.message}`);
       } else {
         console.info("[Meow][kv_store_tools] Succeeded in deleting data, key: " + key_name + ".");
       }

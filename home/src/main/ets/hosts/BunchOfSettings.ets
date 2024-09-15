@@ -14,3 +14,8 @@ export function animation_default() {
   let ap: AnimateParam = { duration: 250, curve: Curve.ExtremeDeceleration };
   return ap;
 }
+
+export function home_url() {
+  let is_dark_mode = AppStorage.get('currentColorMode') as number == 0;
+  return is_dark_mode ? 'meow://home_dark' : 'meow://home_light'
+}

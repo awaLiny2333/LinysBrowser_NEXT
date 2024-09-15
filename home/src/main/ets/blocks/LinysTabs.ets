@@ -1,17 +1,18 @@
 import LinysSymbol from './LinysSymbol';
 import { BunchOfTabs, TabLabel } from '../hosts/BunchOfTabs';
 import { url_resource_to_meow } from '../utils/url_tools';
-import { fontSize_Normal } from '../hosts/BunchOfSettings';
+import { fontSize_Normal, home_url } from '../hosts/BunchOfSettings';
+
 
 @Component
 struct LinysTabs {
-  @StorageProp('currentColorMode') current_color_mode: number = 0;
   @Link bunch_of_tabs: BunchOfTabs;
   @Prop show_webViews: boolean;
   @Prop tablet_mode: boolean;
   @Prop showing_tabs: boolean;
   @Prop animation_default: AnimateParam;
   @Link current_tab_index: number;
+  @Link @Watch('universal_new_tab') universal_new_tab_gateway: string | undefined;
   // Controls and environments
   @Link tab_titles: string[];
   @Link current_title: string;
@@ -121,7 +122,7 @@ struct LinysTabs {
         Blank()
         LinysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
           .onClick(() => {
-            this.new_tab()
+            this.new_tab(home_url())
           })
       } // New Tab Button
       .width("100%")
@@ -153,8 +154,8 @@ struct LinysTabs {
 
   // Tab controls
 
-  new_tab() {
-    this.current_tab_index = this.bunch_of_tabs.newTab(this.home_url())
+  new_tab(url: string) {
+    this.current_tab_index = this.bunch_of_tabs.newTab(url)
     this.extension_area.push(0)
 
     if (this.scroll_animation_enabled) {
@@ -168,6 +169,13 @@ struct LinysTabs {
     // Set offset for the new tab
     this.count_down_for_scrolling_to_bottom = 20;
     // Scroll to the new tab later
+  }
+
+  universal_new_tab() {
+    if (this.universal_new_tab_gateway !== undefined) {
+      this.new_tab(this.universal_new_tab_gateway);
+      this.universal_new_tab_gateway = undefined;
+    }
   }
 
   switch_tab(target: number) {
@@ -208,7 +216,7 @@ struct LinysTabs {
     // Or we'll have to wait for the spring animation to finish, bringing the last tab button down.
 
     // Delete this area length
-    this.current_tab_index = this.bunch_of_tabs.closeTab(target, this.home_url())
+    this.current_tab_index = this.bunch_of_tabs.closeTab(target, home_url())
     // Close
     this.update_backward_forward_access()
     // Update history
@@ -247,16 +255,6 @@ struct LinysTabs {
   update_search_box_text(text: string) {
     this.search_input = url_resource_to_meow(text)
     // Update Input Search Box
-  }
-
-  // Environment
-
-  is_dark_mode() {
-    return this.current_color_mode == 0;
-  }
-
-  home_url() {
-    return this.is_dark_mode() ? 'meow://home_dark' : 'meow://home_light'
   }
 
   on_timer() {

@@ -6,7 +6,8 @@ import LinysBookmarks from '../blocks/LinysBookmarks';
 import { BunchOfTabs } from '../hosts/BunchOfTabs';
 import { BunchOfBookmarks } from '../hosts/BunchOfBookmarks';
 import { unify_search_input_into_url, url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
-import { animation_default, fontSize_Icon_Button, fontSize_Large, fontSize_Normal } from '../hosts/BunchOfSettings';
+import { animation_default, fontSize_Icon_Button, fontSize_Large, fontSize_Normal,
+  home_url } from '../hosts/BunchOfSettings';
 
 @Entry
 @Component
@@ -37,6 +38,8 @@ struct Index {
   @State current_loading_progress: number = 0
   @State tab_is_loading: boolean[] = [true]
   @State current_is_loading: boolean = true
+  // Tabs
+  @State universal_new_tab_gateway: string | undefined = undefined;
 
   aboutToAppear(): void {
 
@@ -83,6 +86,7 @@ struct Index {
                       animation_default: animation_default(),
                       // Environment
                       bunch_of_tabs: this.bunch_of_tabs,
+                      universal_new_tab_gateway: this.universal_new_tab_gateway,
                       // HOST
                       current_tab_index: this.current_tab_index,
                       tab_titles: this.tab_titles,
@@ -129,6 +133,7 @@ struct Index {
                 show_webViews: this.webViews_ready,
                 // Environment
                 bunch_of_tabs: this.bunch_of_tabs,
+                universal_new_tab_gateway: this.universal_new_tab_gateway,
                 // HOST
                 current_tab_index: this.current_tab_index,
                 tab_titles: this.tab_titles,
@@ -492,16 +497,10 @@ struct Index {
   }
 
   go_home() {
-    this.bunch_of_tabs.loadUrl_onWorkingTab(this.home_url())
+    this.bunch_of_tabs.loadUrl_onWorkingTab(home_url())
   }
 
   // control events
-
-  home_url() {
-    return this.is_dark_mode() ? 'meow://home_dark' : 'meow://home_light'
-  }
-
-  // default stuffs
 
   update_search_input(content: string) {
     this.search_input = content
