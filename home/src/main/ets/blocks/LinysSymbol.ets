@@ -5,7 +5,7 @@ struct LinysSymbol {
 
   build() {
     SymbolGlyph($r(this.symbol_glyph_target))
-      .fontSize(28)
+      .fontSize(26)
       .fontColor([this.color])
   }
 }

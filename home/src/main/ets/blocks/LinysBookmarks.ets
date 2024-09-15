@@ -258,7 +258,7 @@ struct BookmarkItem {
   @State editing: boolean = false;
   @State press_timing_ok: boolean = false;
   press_timing: number = 0;
-  bookmark_height_default: number = 46;
+  bookmark_height_default: number = 42;
   // Animations statuses
   @State edit_label: string = this.label;
   @State edit_link: string = this.link;
@@ -279,14 +279,14 @@ struct BookmarkItem {
           .layoutWeight(1)
         if (this.type == "folder") {
           SymbolGlyph($r(!this.pressing ? 'sys.symbol.folder' : 'sys.symbol.chevron_right'))
-            .fontSize(24)
+            .fontSize(20)
             .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
             .fontColor([!this.pressing ? $r('app.color.font_color_title') : $r('app.color.block_color')])
             .animation(this.animation_default)
         } // Folder Icon
         Scroll() {
           SymbolGlyph($r('sys.symbol.square_and_pencil'))
-            .fontSize(24)
+            .fontSize(20)
             .fontColor([$r('app.color.block_color')])
         } // Edit Icon
         .scrollable(ScrollDirection.Horizontal)
@@ -296,7 +296,7 @@ struct BookmarkItem {
 
       } // Bookmark button
       .border({
-        radius: 10,
+        radius: this.editing ? { topLeft: 10, topRight: 10 } : 10,
         width: 2,
         color: "transparent"
       })
@@ -330,6 +330,7 @@ struct BookmarkItem {
           this.bunch_of_tabs.loadUrl_onWorkingTab((this.item.get_item() as bookmark).get_link())
         } // Open folder or load web
       })
+      .height(this.bookmark_height_default)
 
       Scroll() {
         Column({ space: 10 }) {
@@ -402,20 +403,25 @@ struct BookmarkItem {
           } // Buttons of operations
           .width("100%")
         }
-        .width("100%")
+        // .margin({ top: this.editing ? 1 : 0 })
+        .padding({
+          top: 4,
+          left: 14,
+          right: 14,
+          bottom: 14
+        })
+        .backgroundColor($r('app.color.block_color'))
+        .border({
+          radius: { bottomLeft: 10, bottomRight: 10 }
+        })
+
       } // Edit panel
-      .margin({ top: 5 })
-      .padding(10)
-      .height((this.type == "bookmark" ? 170 : 0) + (this.type == "folder" ? 120 : 0))
-      .visibility(this.editing ? Visibility.Visible : Visibility.None)
+      .height(
+        !this.editing ? 0 :
+          (this.type == "bookmark" ? 157 : 0) + (this.type == "folder" ? 107 : 0)
+      )
       .animation(this.animation_default)
       .scrollBar(BarState.Off)
-      .backgroundColor($r('app.color.block_color'))
-      .border({
-        radius: 10,
-        width: 2,
-        color: "transparent"
-      })
     }
     .width("100%")
     .visibility(this.show)

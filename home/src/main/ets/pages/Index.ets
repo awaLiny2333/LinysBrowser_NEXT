@@ -51,48 +51,75 @@ struct Index {
 
         Column() {
           Row() {
-            Column() {
-              LinysTabs({
-                tablet_mode: this.tablet_mode,
-                show_webViews: this.webViews_ready,
-                showing_tabs: this.showing_tabs,
-                animation_default: this.animation_default(),
-                // Environment
-                bunch_of_tabs: this.bunch_of_tabs,
-                // HOST
-                current_tab_index: this.current_tab_index,
-                tab_titles: this.tab_titles,
-                tab_urls: this.tab_urls,
-                tab_loading_progresses: this.tab_loading_progresses,
-                tab_is_loading: this.tab_is_loading,
-                current_title: this.current_title,
-                current_url: this.current_url,
-                current_loading_progress: this.current_loading_progress,
-                current_is_loading: this.current_is_loading,
-                // Statuses
-                current_accessForward: this.current_accessForward,
-                current_accessBackward: this.current_accessBackward,
-                search_input: this.search_input
-                // Other statuses
-              })
-            } // Tabs Panel
-            .width(this.tablet_mode ? 250 : "90%")
-            .height("100%")
-            .visibility((this.showing_tabs ? Visibility.Visible : Visibility.None))
-            .animation(this.animation_default())
+            Scroll() {
+              Row() {
 
-            Column() {
-              LinysBookmarks({
-                bunch_of_tabs: this.bunch_of_tabs,
-                bunch_of_bookmarks: this.bunch_of_bookmarks,
-                animation_default: this.animation_default(),
-                webViews_ready: this.webViews_ready
-              });
-            } // Bookmarks Panel
-            .width(this.tablet_mode ? 400 : "90%")
-            .height("100%")
-            .visibility((this.showing_bookmarks ? Visibility.Visible : Visibility.None))
+                Scroll() {
+                  Column() {
+                    LinysBookmarks({
+                      bunch_of_tabs: this.bunch_of_tabs,
+                      bunch_of_bookmarks: this.bunch_of_bookmarks,
+                      animation_default: this.animation_default(),
+                      webViews_ready: this.webViews_ready
+                    });
+                  } // Bookmarks Panel
+                  .width(this.tablet_mode ? 400 : 0.9 * this.screen_width)
+                  .height("100%")
+                }
+                .height("100%")
+                .width(this.showing_bookmarks ? "100%" : 0)
+                .animation(this.animation_default())
+                .scrollable(ScrollDirection.Horizontal)
+                .scrollBar(BarState.Off)
+
+                Scroll() {
+                  Column() {
+                    LinysTabs({
+                      tablet_mode: this.tablet_mode,
+                      show_webViews: this.webViews_ready,
+                      showing_tabs: this.showing_tabs,
+                      animation_default: this.animation_default(),
+                      // Environment
+                      bunch_of_tabs: this.bunch_of_tabs,
+                      // HOST
+                      current_tab_index: this.current_tab_index,
+                      tab_titles: this.tab_titles,
+                      tab_urls: this.tab_urls,
+                      tab_loading_progresses: this.tab_loading_progresses,
+                      tab_is_loading: this.tab_is_loading,
+                      current_title: this.current_title,
+                      current_url: this.current_url,
+                      current_loading_progress: this.current_loading_progress,
+                      current_is_loading: this.current_is_loading,
+                      // Statuses
+                      current_accessForward: this.current_accessForward,
+                      current_accessBackward: this.current_accessBackward,
+                      search_input: this.search_input
+                      // Other statuses
+                    })
+                  } // Tabs Panel
+                  .width(this.tablet_mode ? 250 : 0.9 * this.screen_width)
+                  .height("100%")
+                }
+                .height("100%")
+                .width(this.showing_tabs ? "100%" : 0)
+                .animation(this.animation_default())
+                .scrollable(ScrollDirection.Horizontal)
+                .scrollBar(BarState.Off)
+
+              }
+              .width("100%")
+              .height("100%")
+            }
+            .width(
+              !this.tablet_mode ?
+                (this.showing_tabs || this.showing_bookmarks ? 0.9 * this.screen_width : 0) :
+                ((this.showing_tabs ? 250 : 0) + (this.showing_bookmarks ? 400 : 0))
+            )
             .animation(this.animation_default())
+            .scrollable(ScrollDirection.Horizontal)
+            .scrollBar(BarState.Off)
+            .height("100%")
 
             Row() {
               LinysWebView({
@@ -117,7 +144,7 @@ struct Index {
                 // Other statuses
               })
                 .visibility(this.webViews_ready ? Visibility.Visible : Visibility.Hidden)
-            }
+            } // WebViews
             .width("100%")
             .backgroundColor($r('app.color.start_window_background'))
             .layoutWeight(this.tablet_mode ? 1 : 0)
@@ -127,7 +154,7 @@ struct Index {
           .layoutWeight(1)
 
           Column()// Bottom Avoid
-            .height(55 + (this.tablet_mode ? 0 : 47))
+            .height(52 + (this.tablet_mode ? 0 : 44))
 
         } // Webview Base
         .alignRules({
@@ -146,7 +173,7 @@ struct Index {
           LinysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
           Column() {
           } // Bottom Avoid
-          .height(55 + (this.tablet_mode ? 0 : 47))
+          .height(52 + (this.tablet_mode ? 0 : 44))
         } // Loading Bar
         .alignRules({
           middle: { anchor: "__container__", align: HorizontalAlign.Center },
@@ -196,7 +223,7 @@ struct Index {
           .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
           .animation(this.animation_default())
 
-          Row({ space: 15 }) {
+          Row({ space: 12 }) {
             LinysSymbol({
               symbol_glyph_target: 'sys.symbol.arrow_left'
             })
@@ -216,7 +243,7 @@ struct Index {
               })
 
             SymbolGlyph(!this.current_is_loading ? $r('sys.symbol.arrow_clockwise') : $r('sys.symbol.xmark'))
-              .fontSize(28)
+              .fontSize(26)
               .fontColor([$r('app.color.font_color_title')])
               .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.current_is_loading)
               .onClick(() => {
@@ -281,7 +308,7 @@ struct Index {
               })
 
             SymbolGlyph(this.showing_more_options ? $r('sys.symbol.chevron_down') : $r('sys.symbol.dot_grid_2x2'))
-              .fontSize(28)
+              .fontSize(26)
               .fontColor([$r('app.color.font_color_title')])
               .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.showing_more_options)
               .onClick(() => {
@@ -289,7 +316,7 @@ struct Index {
               })
 
           } // Bottom Bar of controls
-          .padding({ top: 12, left: 10, right: 10 })
+          .padding({ top: 10, left: 15, right: 15 })
           .width("100%")
           .backgroundColor($r('app.color.block_color'))
 
