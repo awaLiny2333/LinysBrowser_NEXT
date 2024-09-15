@@ -39,6 +39,7 @@ struct Index {
   @State current_is_loading: boolean = true
 
   aboutToAppear(): void {
+
   }
 
   build() {

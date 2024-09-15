@@ -4,6 +4,7 @@ import { url_resource_to_meow } from '../utils/url_tools';
 import LinysSymbol from './LinysSymbol';
 import { document_open, document_save } from '../utils/storage_tools';
 import { fontSize_Large, fontSize_Normal } from '../hosts/BunchOfSettings';
+import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 
 @Component
 struct LinysBookmarks {
@@ -21,8 +22,22 @@ struct LinysBookmarks {
   scroll_controller: Scroller = new Scroller();
   @Prop animation_default: AnimateParam;
   @State scroll_area_height: number = 0;
+  @State bookmark_load_from_disk_ok: boolean = false;
 
   // Visual effects related
+
+  aboutToAppear(): void {
+    kv_store_get("html_bookmarks").then(result => {
+      if (result as string == "undefined") {
+        // First use bookmarks
+      } else {
+        let html_bookmarks = result as string;
+        this.bunch_of_bookmarks.import_html(html_bookmarks, true);
+        this.refresh_root_content();
+        this.bookmark_load_from_disk_ok = true;
+      }
+    })
+  }
 
   build() {
     Column() {
@@ -33,6 +48,7 @@ struct LinysBookmarks {
             (item: unified_item, key: number) => {
               BookmarkItem({
                 my_index: key,
+                bunch_of_bookmarks: this.bunch_of_bookmarks,
                 bunch_of_tabs: this.bunch_of_tabs, // For loadUrl
                 viewing_contents: this.viewing_contents, // For editing
                 looking_at_path: this.looking_at_path, // the path of now showing list (directory) on the panel
@@ -184,6 +200,7 @@ struct LinysBookmarks {
     this.bunch_of_bookmarks.add_folder(new folder(this.add_label), this.looking_at_path);
     this.adding_folder = false;
     this.refresh_root_content();
+    this.save_html_to_kv_store();
   }
 
   new_bookmark() {
@@ -195,6 +212,7 @@ struct LinysBookmarks {
       new bookmark(this.add_label, this.add_link), this.looking_at_path);
     this.adding_bookmark = false;
     this.refresh_root_content();
+    this.save_html_to_kv_store();
   }
 
   go_back() {
@@ -235,7 +253,14 @@ struct LinysBookmarks {
       let import_result: number = this.bunch_of_bookmarks.import_html(result);
       this.refresh_root_content();
       console.log("[Meow][LinysBookmarks] Import result: " + import_result.toString())
+      this.save_html_to_kv_store();
     })
+  }
+
+  save_html_to_kv_store() {
+    console.log("[Meow][LinysBookmarks] Started to save HTML to KVStore!")
+    let html_bookmark: string[] = this.bunch_of_bookmarks.export_html();
+    kv_store_put("html_bookmarks", html_bookmark.join("\n"));
   }
 }
 
@@ -244,6 +269,7 @@ export default LinysBookmarks;
 @Component
 struct BookmarkItem {
   @Prop my_index: number = 0;
+  @Link bunch_of_bookmarks: BunchOfBookmarks;
   @Link bunch_of_tabs: BunchOfTabs;
   @Link webViews_ready: boolean;
   @Link looking_at_path: string;
@@ -472,7 +498,17 @@ struct BookmarkItem {
   }
 
   delete_myself() {
-    this.viewing_contents.splice(this.my_index, 1)
+    let my_position = "";
+    if (this.parent_path == "") {
+      my_position = this.label;
+    } else {
+      my_position = this.parent_path + "/" + this.label
+    }
+    if (this.type == "bookmark") {
+      this.bunch_of_bookmarks.del_bookmark(my_position)
+    } else {
+      this.bunch_of_bookmarks.del_folder(my_position)
+    }
     // Delete myself from this.viewing_contents
 
     let temp = this.looking_at_path;
@@ -480,11 +516,14 @@ struct BookmarkItem {
     this.looking_at_path = temp;
     // Refresh root content
     // Weird as hell but works, fine.
+
+    this.save_html_to_kv_store();
   }
 
   save_changes_folder() {
     this.item.get_item().set_label(this.edit_label);
     this.label = this.edit_label;
+    this.save_html_to_kv_store();
   }
 
   save_changes_bookmark() {
@@ -492,5 +531,12 @@ struct BookmarkItem {
     (this.item.get_item() as bookmark).set_link(this.edit_link);
     this.label = this.edit_label;
     this.link = this.edit_link;
+    this.save_html_to_kv_store();
+  }
+
+  save_html_to_kv_store() {
+    console.log("[Meow][LinysBookmarks] Started to save HTML to KVStore!")
+    let html_bookmark: string[] = this.bunch_of_bookmarks.export_html();
+    kv_store_put("html_bookmarks", html_bookmark.join("\n"));
   }
 }

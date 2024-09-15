@@ -92,19 +92,22 @@ export class folder {
     let item: bookmark | folder;
     let result: string[] = [];
     result.push(" ".repeat(spaces) +
-      "<DT><H3 ADD_DATE=\"" + this.add_date.toString()
-      + "\" LAST_MODIFIED=\"" + this.last_modified.toString() + "\">"
-      + encode_string_to_html_code(this.label) + "</H3>\n" + " ".repeat(spaces) + "<DL><p>"); // Head of folder
+      "<DT><H3 ADD_DATE=\"" + this.add_date.toString() +
+      "\" LAST_MODIFIED=\"" + this.last_modified.toString() +
+      "\">" + encode_string_to_html_code(this.label) +
+      "</H3>\n" + " ".repeat(spaces) + "<DL><p>"); // Head of folder
     for (let index = 0; index < this.contents.length; index++) {
       item = this.contents[index].get_item();
       type = item.get_type();
       // Get item data
       if (type == "bookmark") {
         item = item as bookmark;
-        result.push(" ".repeat(spaces + 4) +
-          "<DT><A HREF=\"" + ensure_scheme_or_https(item.get_link()) + "\" ADD_DATE=\"" +
-        item.get_add_date().toString() + "\">"
-          + encode_string_to_html_code(item.get_label()) + "</A>"); // Push bookmark
+        result.push(
+          " ".repeat(spaces + 4) +
+            "<DT><A HREF=\"" + ensure_scheme_or_https(item.get_link()) +
+            "\" ADD_DATE=\"" + item.get_add_date().toString() +
+            "\">" + encode_string_to_html_code(item.get_label()) + "</A>"
+        ); // Push bookmark
       } else if (type == "folder") {
         item = item as folder;
         result = result.concat(item.print_contents_in_html(spaces + 4));
@@ -145,11 +148,15 @@ export class unified_item {
   }
 }
 
+/**
+ * @param root_label The label of root folder.
+ */
 export class BunchOfBookmarks {
   root: folder;
 
   constructor(root_label: string) {
     this.root = new folder(root_label);
+
   }
 
   add_bookmark(item: bookmark, path: string) {
@@ -163,7 +170,9 @@ export class BunchOfBookmarks {
       // already exist
       return false;
     } else {
-      return this.add_bookmark_process(item, path);
+      let add_result = this.add_bookmark_process(item, path);
+
+      return add_result;
     }
   }
 
@@ -185,7 +194,9 @@ export class BunchOfBookmarks {
       // already exist
       return false;
     } else {
-      return this.add_folder_process(item, path);
+      let add_result = this.add_folder_process(item, path);
+
+      return add_result;
     }
   }
 
@@ -264,7 +275,8 @@ export class BunchOfBookmarks {
       // bookmark doesn't exist
       return false;
     }
-    return this.delete_bookmark_process(path);
+    let delete_result = this.delete_bookmark_process(path);
+    return delete_result;
   }
 
   // del_bookmark("honk/github") // deletes the bookmark with label "github"
@@ -274,7 +286,9 @@ export class BunchOfBookmarks {
       // folder doesn't exist
       return false;
     }
-    return this.delete_folder_process(path);
+    let delete_result = this.delete_folder_process(path);
+
+    return delete_result;
   }
 
   // del_folder("honk/second/third") // deletes the folder with label "third"
@@ -292,13 +306,14 @@ export class BunchOfBookmarks {
     result.push("<!-- Meow, Meow, Meow -->\n")
     result.push("<DL><p>")
     result = result.concat(this.root.print_contents_in_html(0));
-    console.log(this.root.print_contents_in_html(4).join("\n"))
+    // console.log(this.root.print_contents_in_html(4).join("\n"))
     result.push("</DL><p>")
     return result;
   }
 
   /**
-   * @param html: The string of .html format bookmarks
+   * @param html The string of .html format bookmarks.
+   * @param overwrite Set false in default.
    * @returns a code of status:
    * @returns -1 for no <H3> error
    * @returns 0 for SUCCESS
@@ -306,7 +321,13 @@ export class BunchOfBookmarks {
    * @returns 2 for no link
    * @returns 3 for add_folder method fail (Perhaps because label collision)
    * */
-  import_html(html: string) {
+  import_html(html: string, overwrite?: boolean) {
+    let overwrite_data = false;
+    if (overwrite !== undefined) {
+      overwrite_data = overwrite;
+    }
+    // Set overwrite options
+
     let one_line_data: string = html.replace(/\s*\n+\s*/g, "") // Eliminate all returns
     one_line_data = one_line_data.replace(/<p>/g, "") // Eliminate all <p>
     one_line_data = one_line_data.replace(/<DT>/g, "") // Eliminate all <DT>
@@ -323,7 +344,8 @@ export class BunchOfBookmarks {
     let lines_split = one_line_data.split("\n")
     // Split Into lines
 
-    let new_bunch_of_bookmarks: BunchOfBookmarks = new BunchOfBookmarks(new Date().toLocaleString());
+    let new_bunch_of_bookmarks_label = new Date().toLocaleString()
+    let new_bunch_of_bookmarks: BunchOfBookmarks = new BunchOfBookmarks(new_bunch_of_bookmarks_label);
     let now_path_stack: string[] = [];
     // Set new bookmarks bundle
 
@@ -331,9 +353,11 @@ export class BunchOfBookmarks {
       let line = lines_split[index]; // For each line
 
       if (line.length == 0) {
+        // Skip empty lines
         continue;
       }
-      let now_path_string = now_path_stack.join("/"); // Connect now path
+      let now_path_string = now_path_stack.join("/");
+      // Connect now path
 
       let position_of_label = line.indexOf(">");
       if (position_of_label == -1) {
@@ -358,6 +382,7 @@ export class BunchOfBookmarks {
         // is a folder
         new_bunch_of_bookmarks.add_folder(new folder(label, add_date, last_modified), now_path_string);
         now_path_stack.push(label)
+
       } else if (line.includes("<A HREF=\"")) {
         // is a bookmark
         let link = this.import_html_get_key("<A HREF=\"", line);
@@ -365,15 +390,23 @@ export class BunchOfBookmarks {
           return 2; // 2 for empty link error
         }
         new_bunch_of_bookmarks.add_bookmark(new bookmark(label, link, add_date), now_path_string);
+
       } else if (line.includes("</DL>")) {
         // is a closing mark
-        // go back to upper class folder
         now_path_stack.pop();
+        // go back to upper class folder
       }
 
     }
 
-    let final_add_result = this.add_folder(new_bunch_of_bookmarks.root, "") as boolean;
+    let final_add_result = false;
+    if (overwrite_data) {
+      let root_contents: folder = (new_bunch_of_bookmarks.root.get_content()[0].get_item() as folder);
+      this.root = root_contents;
+    } else {
+      final_add_result = this.add_folder(new_bunch_of_bookmarks.root, "") as boolean;
+    }
+
     if (final_add_result) {
       return 0; // 0 for a successful import
     } else {
