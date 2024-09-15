@@ -15,6 +15,26 @@
     {
       "name": "permission_reason_INTERNET",
       "value": "用于网页浏览"
+    },
+    {
+      "name": "Index_tabs_title",
+      "value": "标签页"
+    },
+    {
+      "name": "Index_bookmarks_title",
+      "value": "书签"
+    },
+    {
+      "name": "Index_more_title",
+      "value": "更多"
+    },
+    {
+      "name": "Index_add_bookmark_title",
+      "value": "新建书签"
+    },
+    {
+      "name": "Index_add_folder_title",
+      "value": "新建文件夹"
     }
   ]
 }

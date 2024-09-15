@@ -6,8 +6,14 @@ import LinysBookmarks from '../blocks/LinysBookmarks';
 import { BunchOfTabs } from '../hosts/BunchOfTabs';
 import { BunchOfBookmarks } from '../hosts/BunchOfBookmarks';
 import { unify_search_input_into_url, url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
-import { animation_default, fontSize_Icon_Button, fontSize_Large, fontSize_Normal,
-  home_url } from '../hosts/BunchOfSettings';
+import {
+  animation_default,
+  fontSize_Icon_Button,
+  fontSize_Large,
+  fontSize_Normal,
+  home_url
+} from '../hosts/BunchOfSettings';
+import LinysShowButton from '../blocks/LinysShowButton';
 
 @Entry
 @Component
@@ -39,7 +45,10 @@ struct Index {
   @State tab_is_loading: boolean[] = [true]
   @State current_is_loading: boolean = true
   // Tabs
+
   @State universal_new_tab_gateway: string | undefined = undefined;
+
+  // Misc weird methods but it just works ¯\_(ツ)_/¯
 
   aboutToAppear(): void {
 
@@ -58,7 +67,6 @@ struct Index {
           Row() {
             Scroll() {
               Row() {
-
                 Scroll() {
                   Column() {
                     LinysBookmarks({
@@ -161,7 +169,7 @@ struct Index {
           .layoutWeight(1)
 
           Column()// Bottom Avoid
-            .height(50 + (this.tablet_mode ? 0 : 40))
+            .height(48 + (this.tablet_mode ? 0 : 48))
 
         } // Webview Base
         .alignRules({
@@ -180,7 +188,7 @@ struct Index {
           LinysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
           Column() {
           } // Bottom Avoid
-          .height(50 + (this.tablet_mode ? 0 : 40))
+          .height(48 + (this.tablet_mode ? 0 : 48))
         } // Loading Bar
         .alignRules({
           middle: { anchor: "__container__", align: HorizontalAlign.Center },
@@ -230,7 +238,7 @@ struct Index {
           .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
 
-          Row({ space: 12 }) {
+          Row({ space: 10 }) {
             LinysSymbol({
               symbol_glyph_target: 'sys.symbol.arrow_left'
             })
@@ -292,7 +300,9 @@ struct Index {
             Blank()
               .visibility(this.visible_in_normal_mode())
 
-            LinysSymbol({
+            LinysShowButton({
+              show: this.showing_bookmarks,
+              text: $r('app.string.Index_bookmarks_title'),
               symbol_glyph_target: 'sys.symbol.bookmark'
             })
               .onClick(() => {
@@ -307,23 +317,25 @@ struct Index {
                 this.submit_searching()
               })
 
-            LinysSymbol({
-              symbol_glyph_target: 'sys.symbol.square_grid_2x2'
+            LinysShowButton({
+              show: this.showing_tabs
             })
               .onClick(() => {
                 this.show_tabs()
               })
 
-            SymbolGlyph(this.showing_more_options ? $r('sys.symbol.chevron_down') : $r('sys.symbol.dot_grid_2x2'))
-              .fontSize(fontSize_Icon_Button())
-              .fontColor([$r('app.color.font_color_title')])
-              .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.showing_more_options)
+            LinysShowButton({
+              show: this.showing_more_options,
+              text: $r('app.string.Index_more_title'),
+              symbol_glyph_target: this.showing_more_options ? 'sys.symbol.chevron_down' : 'sys.symbol.dot_grid_2x2'
+            })
               .onClick(() => {
                 this.show_more()
               })
 
           } // Bottom Bar of controls
-          .padding({ top: 10, left: 15, right: 15 })
+          .padding({ top: 12, left: 15, right: 15 })
+          .height(48)
           .width("100%")
           .backgroundColor($r('app.color.block_color'))
 
@@ -357,7 +369,7 @@ struct Index {
               })
           } // Bottom Bar of extended searching bar
           .visibility(this.visible_in_normal_mode())
-          .padding({ top: 15, left: 15, right: 15 })
+          .padding({ top: 8, left: 15, right: 15 })
           .width("100%")
           .backgroundColor($r('app.color.block_color'))
           .animation(animation_default())
@@ -453,7 +465,9 @@ struct Index {
   }
 
   show_tabs() {
-    this.showing_more_options = false;
+    if (!this.tablet_mode) {
+      this.showing_more_options = false;
+    }
     this.showing_bookmarks = false;
 
     this.showing_tabs = !this.showing_tabs;
@@ -470,8 +484,10 @@ struct Index {
   }
 
   show_bookmarks() {
+    if (!this.tablet_mode) {
+      this.showing_more_options = false;
+    }
     this.showing_tabs = false;
-    this.showing_more_options = false;
 
     this.showing_bookmarks = !this.showing_bookmarks;
   }

@@ -15,6 +15,26 @@
     {
       "name": "permission_reason_INTERNET",
       "value": "For web browsing"
+    },
+    {
+      "name": "Index_tabs_title",
+      "value": "Tabs"
+    },
+    {
+      "name": "Index_bookmarks_title",
+      "value": "Bookmarks"
+    },
+    {
+      "name": "Index_more_title",
+      "value": "More"
+    },
+    {
+      "name": "Index_add_bookmark_title",
+      "value": "New Bookmark"
+    },
+    {
+      "name": "Index_add_folder_title",
+      "value": "New Folder"
     }
   ]
 }

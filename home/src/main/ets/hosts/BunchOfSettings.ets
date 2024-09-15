@@ -15,6 +15,11 @@ export function animation_default() {
   return ap;
 }
 
+export function click_effect_default() {
+  let ce: ClickEffect = { level: ClickEffectLevel.LIGHT };
+  return ce;
+}
+
 export function home_url() {
   let is_dark_mode = AppStorage.get('currentColorMode') as number == 0;
   return is_dark_mode ? 'meow://home_dark' : 'meow://home_light'

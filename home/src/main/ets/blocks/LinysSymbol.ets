@@ -1,4 +1,4 @@
-import { fontSize_Icon_Button } from '../hosts/BunchOfSettings';
+import { animation_default, click_effect_default, fontSize_Icon_Button } from '../hosts/BunchOfSettings';
 
 @Component
 struct LinysSymbol {
@@ -9,6 +9,8 @@ struct LinysSymbol {
     SymbolGlyph($r(this.symbol_glyph_target))
       .fontSize(fontSize_Icon_Button())
       .fontColor([this.color])
+      .animation(animation_default())
+      .clickEffect(click_effect_default())
   }
 }
 

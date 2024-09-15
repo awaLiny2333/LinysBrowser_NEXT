@@ -3,8 +3,9 @@ import { BunchOfTabs } from '../hosts/BunchOfTabs';
 import { url_resource_to_meow } from '../utils/url_tools';
 import LinysSymbol from './LinysSymbol';
 import { document_open, document_save } from '../utils/storage_tools';
-import { fontSize_Large, fontSize_Normal } from '../hosts/BunchOfSettings';
+import { click_effect_default, fontSize_Large, fontSize_Normal } from '../hosts/BunchOfSettings';
 import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
+import LinysShowButton from './LinysShowButton';
 
 @Component
 struct LinysBookmarks {
@@ -91,19 +92,30 @@ struct LinysBookmarks {
           .onClick(() => {
             this.export_bookmarks_html();
           }) // Export bookmarks button
-        LinysSymbol({ symbol_glyph_target: 'sys.symbol.folder_badge_plus' })
+
+        LinysShowButton({
+          show: this.adding_folder,
+          symbol_glyph_target: 'sys.symbol.folder_badge_plus',
+          text: $r('app.string.Index_add_folder_title')
+        })
           .onClick(() => {
             this.add_label = "";
             this.adding_bookmark = false;
             this.adding_folder = !this.adding_folder;
           }) // Add folder button
-        LinysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
+
+        LinysShowButton({
+          show: this.adding_bookmark,
+          symbol_glyph_target: 'sys.symbol.plus_square',
+          text: $r('app.string.Index_add_bookmark_title')
+        })
           .onClick(() => {
             this.add_label = this.bunch_of_tabs.workingTab().title;
             this.add_link = url_resource_to_meow(this.bunch_of_tabs.workingTab().url);
             this.adding_folder = false;
             this.adding_bookmark = !this.adding_bookmark;
           }) // Add bookmark button
+
       } // Operation buttons
       .width("100%")
       .margin({ bottom: 5 })
@@ -165,6 +177,7 @@ struct LinysBookmarks {
                   this.new_bookmark()
                 }
               })
+              .clickEffect(click_effect_default())
           } // Submit add button
           .width("100%")
         }
@@ -417,6 +430,8 @@ struct BookmarkItem {
               .onClick(() => {
                 this.delete_myself()
               })
+              .clickEffect(click_effect_default())
+
             Button("  󰀻  ")// Save
               .type(ButtonType.Capsule)
               .backgroundColor($r("app.color.font_color_title"))
@@ -431,6 +446,8 @@ struct BookmarkItem {
                 }
                 this.editing = false;
               })
+              .clickEffect(click_effect_default())
+
           } // Buttons of operations
           .width("100%")
         }
