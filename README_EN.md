@@ -47,6 +47,24 @@ click again to collapse the panel.
 
 [ohos.permission.INTERNET](https://gitee.com/openharmony/docs/blob/master/zh-cn/application-dev/security/permission-list.md#ohospermissioninternet)
 
+## Plans & Developments
+
+May cost unimaginably long time to bring all these into the reality, 
+or some of them will even lie on the table for ever... (ง •_•)ง
+
+### Features
+
+- [x] Respond to webpages' request of opening in new tab.
+- [ ] Downloads from web.
+- [ ] Right click or long press menu on web links. (For preview and operations)
+- [ ] UA Switching and customizations. (UA related settings)
+
+### Experience
+
+- [ ] Customizable position for title bar. (Top or Bottom)
+- [ ] Customizable position for Tabs bar. (Side or Top)
+- [ ] Customizable themes. (Colors)
+
 ## Constraints and limits
 
 Long way ahead.

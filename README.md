@@ -9,7 +9,8 @@ Liny 的浏览器为 HarmonyOS NEXT 而构建，旨在为各种性能水平的�
 这个项目受 tuyafeng 大佬传奇之作 [Via](https://viayoo.com/)、
 来自 Mozilla 的最可爱赛博小狐狸 [Firefox](https://firefox.com/) 之启发，
 以及来自开源鸿蒙的 [浏览器](https://gitee.com/openharmony/applications_app_samples/tree/master/code/BasicFeature/Web/Browser)
-及其定制增强版分支 [🌐 浏览器CE（社区版）](https://gitee.com/westinyang/browser-ce) 开放代码的帮助（解惑），最终得以呈现。感谢你们！！(*￣3￣)╭
+及其定制增强版分支 [🌐 浏览器CE（社区版）](https://gitee.com/westinyang/browser-ce)
+开放代码的帮助（解惑），最终得以呈现。感谢你们！！(*￣3￣)╭
 
 ## 预览
 
@@ -38,6 +39,23 @@ Liny 的浏览器为 HarmonyOS NEXT 而构建，旨在为各种性能水平的�
 ## 相关权限
 
 [ohos.permission.INTERNET](https://gitee.com/openharmony/docs/blob/master/zh-cn/application-dev/security/permission-list.md#ohospermissioninternet)
+
+## 计划和开发
+
+可能需要很多时间，也可能有些东西会永远被搁置。(ง •_•)ง
+
+### 功能
+
+- [x] 响应网页的新标签页打开要求
+- [ ] 网页内下载功能
+- [ ] 网页链接右键／长按菜单（预览、操作）
+- [ ] UA 切换与自定义（UA 相关设置）
+
+### 体验
+
+- [ ] 标题栏自定义上下
+- [ ] 标签页栏自定义横竖
+- [ ] 自定义主题（配色）
 
 ## 约束和限制
 
