@@ -1,8 +1,10 @@
 import LinysProgress from '../blocks/LinysProgress';
-import LinysSymbol from '../blocks/LinysSymbol';
-import LinysTabs from '../blocks/LinysTabs';
+import LinysSymbol from '../components/LinysSymbol';
+import LinysShowButton from '../components/LinysShowButton';
+import LinysTabs from '../components/LinysTabs';
 import LinysWebView from '../blocks/LinysWebView';
 import LinysBookmarks from '../blocks/LinysBookmarks';
+import LinysAppSettings from '../blocks/LinysAppSettings';
 import { BunchOfTabs } from '../hosts/BunchOfTabs';
 import { BunchOfBookmarks } from '../hosts/BunchOfBookmarks';
 import { unify_search_input_into_url, url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
@@ -13,7 +15,6 @@ import {
   fontSize_Normal,
   home_url
 } from '../hosts/BunchOfSettings';
-import LinysShowButton from '../blocks/LinysShowButton';
 
 @Entry
 @Component
@@ -26,6 +27,7 @@ struct Index {
   @State search_input: string = "";
   @State search_input_unified: string = "";
   @State showing_more_options: boolean = false;
+  @State showing_app_settings: boolean = false;
   @State showing_tabs: boolean = false;
   @State showing_bookmarks: boolean = false;
   @State screen_width: number = 0;
@@ -63,137 +65,123 @@ struct Index {
 
       RelativeContainer() {
 
-        Column() {
-          Row() {
-            Scroll() {
-              Row() {
-                Scroll() {
-                  Column() {
-                    LinysBookmarks({
-                      bunch_of_tabs: this.bunch_of_tabs,
-                      bunch_of_bookmarks: this.bunch_of_bookmarks,
-                      webViews_ready: this.webViews_ready
-                    });
-                  } // Bookmarks Panel
-                  .width(this.tablet_mode ? 350 : 0.9 * this.screen_width)
-                  .height("100%")
-                }
-                .height("100%")
-                .width(this.showing_bookmarks ? "100%" : 0)
-                .animation(animation_default())
-                .scrollable(ScrollDirection.Horizontal)
-                .scrollBar(BarState.Off)
-
-                Scroll() {
-                  Column() {
-                    LinysTabs({
-                      tablet_mode: this.tablet_mode,
-                      show_webViews: this.webViews_ready,
-                      showing_tabs: this.showing_tabs,
-                      animation_default: animation_default(),
-                      // Environment
-                      bunch_of_tabs: this.bunch_of_tabs,
-                      universal_new_tab_gateway: this.universal_new_tab_gateway,
-                      // HOST
-                      current_tab_index: this.current_tab_index,
-                      tab_titles: this.tab_titles,
-                      tab_urls: this.tab_urls,
-                      tab_loading_progresses: this.tab_loading_progresses,
-                      tab_is_loading: this.tab_is_loading,
-                      current_title: this.current_title,
-                      current_url: this.current_url,
-                      current_loading_progress: this.current_loading_progress,
-                      current_is_loading: this.current_is_loading,
-                      // Statuses
-                      current_accessForward: this.current_accessForward,
-                      current_accessBackward: this.current_accessBackward,
-                      search_input: this.search_input
-                      // Other statuses
-                    })
-                  } // Tabs Panel
-                  .width(this.tablet_mode ? 250 : 0.9 * this.screen_width)
-                  .height("100%")
-                }
-                .height("100%")
-                .width(this.showing_tabs ? "100%" : 0)
-                .animation(animation_default())
-                .scrollable(ScrollDirection.Horizontal)
-                .scrollBar(BarState.Off)
-
-              }
-              .width("100%")
-              .height("100%")
-            }
-            .width(
-              !this.tablet_mode ?
-                (this.showing_tabs || this.showing_bookmarks ? 0.9 * this.screen_width : 0) :
-                ((this.showing_tabs ? 250 : 0) + (this.showing_bookmarks ? 350 : 0))
-            )
-            .animation(animation_default())
-            .scrollable(ScrollDirection.Horizontal)
-            .scrollBar(BarState.Off)
-            .height("100%")
-
+        Row() {
+          Scroll() {
             Row() {
-              LinysWebView({
-                tablet_mode: this.tablet_mode,
-                show_webViews: this.webViews_ready,
-                // Environment
-                bunch_of_tabs: this.bunch_of_tabs,
-                universal_new_tab_gateway: this.universal_new_tab_gateway,
-                // HOST
-                current_tab_index: this.current_tab_index,
-                tab_titles: this.tab_titles,
-                tab_urls: this.tab_urls,
-                tab_loading_progresses: this.tab_loading_progresses,
-                tab_is_loading: this.tab_is_loading,
-                current_title: this.current_title,
-                current_url: this.current_url,
-                current_loading_progress: this.current_loading_progress,
-                current_is_loading: this.current_is_loading,
-                // Statuses
-                current_accessForward: this.current_accessForward,
-                current_accessBackward: this.current_accessBackward,
-                search_input: this.search_input
-                // Other statuses
-              })
-                .visibility(this.webViews_ready ? Visibility.Visible : Visibility.Hidden)
-            } // WebViews
+              Scroll() {
+                Column() {
+                  LinysBookmarks({
+                    bunch_of_tabs: this.bunch_of_tabs,
+                    bunch_of_bookmarks: this.bunch_of_bookmarks,
+                    webViews_ready: this.webViews_ready
+                  });
+                } // Bookmarks Panel
+                .width(this.tablet_mode ? 350 : 0.9 * this.screen_width)
+                .height("100%")
+              }
+              .height("100%")
+              .width(this.showing_bookmarks ? "100%" : 0)
+              .animation(animation_default())
+              .scrollable(ScrollDirection.Horizontal)
+              .scrollBar(BarState.Off)
+
+              Scroll() {
+                Column() {
+                  LinysTabs({
+                    tablet_mode: this.tablet_mode,
+                    show_webViews: this.webViews_ready,
+                    showing_tabs: this.showing_tabs,
+                    animation_default: animation_default(),
+                    // Environment
+                    bunch_of_tabs: this.bunch_of_tabs,
+                    universal_new_tab_gateway: this.universal_new_tab_gateway,
+                    // HOST
+                    current_tab_index: this.current_tab_index,
+                    tab_titles: this.tab_titles,
+                    tab_urls: this.tab_urls,
+                    tab_loading_progresses: this.tab_loading_progresses,
+                    tab_is_loading: this.tab_is_loading,
+                    current_title: this.current_title,
+                    current_url: this.current_url,
+                    current_loading_progress: this.current_loading_progress,
+                    current_is_loading: this.current_is_loading,
+                    // Statuses
+                    current_accessForward: this.current_accessForward,
+                    current_accessBackward: this.current_accessBackward,
+                    search_input: this.search_input
+                    // Other statuses
+                  })
+                } // Tabs Panel
+                .width(this.tablet_mode ? 250 : 0.9 * this.screen_width)
+                .height("100%")
+              }
+              .height("100%")
+              .width(this.showing_tabs ? "100%" : 0)
+              .animation(animation_default())
+              .scrollable(ScrollDirection.Horizontal)
+              .scrollBar(BarState.Off)
+
+            }
             .width("100%")
-            .backgroundColor($r('app.color.start_window_background'))
-            .layoutWeight(this.tablet_mode ? 1 : 0)
+            .height("100%")
+          }
+          .width(
+            !this.tablet_mode ?
+              (this.showing_tabs || this.showing_bookmarks ? 0.9 * this.screen_width : 0) :
+              ((this.showing_tabs ? 250 : 0) + (this.showing_bookmarks ? 350 : 0))
+          )
+          .animation(animation_default())
+          .scrollable(ScrollDirection.Horizontal)
+          .scrollBar(BarState.Off)
+          .height("100%")
 
-          } // Main Web
-          .direction(this.tablet_mode ? Direction.Ltr : Direction.Rtl)
-          .layoutWeight(1)
+          Row() {
+            LinysWebView({
+              tablet_mode: this.tablet_mode,
+              show_webViews: this.webViews_ready,
+              // Environment
+              bunch_of_tabs: this.bunch_of_tabs,
+              universal_new_tab_gateway: this.universal_new_tab_gateway,
+              // HOST
+              current_tab_index: this.current_tab_index,
+              tab_titles: this.tab_titles,
+              tab_urls: this.tab_urls,
+              tab_loading_progresses: this.tab_loading_progresses,
+              tab_is_loading: this.tab_is_loading,
+              current_title: this.current_title,
+              current_url: this.current_url,
+              current_loading_progress: this.current_loading_progress,
+              current_is_loading: this.current_is_loading,
+              // Statuses
+              current_accessForward: this.current_accessForward,
+              current_accessBackward: this.current_accessBackward,
+              search_input: this.search_input
+              // Other statuses
+            })
+              .visibility(this.webViews_ready ? Visibility.Visible : Visibility.Hidden)
+          } // WebViews
+          .width("100%")
+          .backgroundColor($r('app.color.start_window_background'))
+          .layoutWeight(this.tablet_mode ? 1 : 0)
 
-          Column()// Bottom Avoid
-            .height(48 + (this.tablet_mode ? 0 : 48))
-
-        } // Webview Base
-        .alignRules({
-          middle: { anchor: "__container__", align: HorizontalAlign.Center },
-          center: { anchor: "__container__", align: VerticalAlign.Center }
-        })
-        .height("100%")
+        } // Main Web
+        .direction(this.tablet_mode ? Direction.Ltr : Direction.Rtl)
+        .alignRules(this.web_and_stuff_alignRules())
+        .layoutWeight(1)
         .width("100%")
         .backgroundColor($r('app.color.start_window_background'))
         .onAreaChange((_o, n) => {
           this.screen_width = n.width as number
           this.tablet_mode = this.screen_width > 500
         })
+        .margin(this.web_and_stuff_margin())
 
         Column() {
           LinysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
-          Column() {
-          } // Bottom Avoid
-          .height(48 + (this.tablet_mode ? 0 : 48))
         } // Loading Bar
-        .alignRules({
-          middle: { anchor: "__container__", align: HorizontalAlign.Center },
-          bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
-        })
+        .alignRules(this.web_and_stuff_alignRules())
         .width("100%")
+        .margin(this.web_and_stuff_margin())
 
         Column() {
           Row() {
@@ -236,20 +224,25 @@ struct Index {
           .animation(animation_default())
 
           Row({ space: 10 }) {
+
             LinysSymbol({
               symbol_glyph_target: 'sys.symbol.arrow_left'
-            })
+            })// Backward
               .enabled(this.current_accessBackward)
               .opacity(this.current_accessBackward ? 1 : 0.5)
+              .visibility(this.visible_when_no_panels_open_in_normal_mode())
+              .animation(animation_default())
               .onClick(() => {
                 this.go_backward()
               })
 
             LinysSymbol({
               symbol_glyph_target: 'sys.symbol.arrow_right'
-            })
+            })// Forward
               .enabled(this.current_accessForward)
               .opacity(this.current_accessForward ? 1 : 0.5)
+              .visibility(this.visible_when_no_panels_open_in_normal_mode())
+              .animation(animation_default())
               .onClick(() => {
                 this.go_forward()
               })
@@ -258,6 +251,8 @@ struct Index {
               .fontSize(fontSize_Icon_Button())
               .fontColor([$r('app.color.font_color_title')])
               .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.current_is_loading)
+              .visibility(this.visible_when_no_panels_open_in_normal_mode())
+              .animation(animation_default())
               .onClick(() => {
                 if (this.current_is_loading) {
                   this.stop_page()
@@ -268,7 +263,9 @@ struct Index {
 
             LinysSymbol({
               symbol_glyph_target: 'sys.symbol.house'
-            })
+            })// Home
+              .visibility(this.visible_when_no_panels_open_in_normal_mode())
+              .animation(animation_default())
               .onClick(() => {
                 this.go_home()
               })
@@ -297,37 +294,47 @@ struct Index {
             Blank()
               .visibility(this.visible_in_normal_mode())
 
-            LinysShowButton({
-              show: this.showing_bookmarks,
-              text: $r('app.string.Index_bookmarks_title'),
-              symbol_glyph_target: 'sys.symbol.bookmark'
-            })
-              .onClick(() => {
-                this.show_bookmarks();
-              })
-
             LinysSymbol({
               symbol_glyph_target: 'sys.symbol.magnifyingglass'
-            })
+            })// Search
               .visibility(this.visible_when_typing_in_tablet_mode())
               .onClick(() => {
                 this.submit_searching()
               })
 
             LinysShowButton({
+              show: this.showing_more_options,
+              text: $r('app.string.Index_more_title'),
+              symbol_glyph_target: this.showing_more_options ? 'sys.symbol.chevron_down' : 'sys.symbol.dot_grid_2x2'
+            })// More options
+              .onClick(() => {
+                this.show_more()
+              })
+
+            LinysShowButton({
+              show: this.showing_bookmarks,
+              text: $r('app.string.Index_bookmarks_title'),
+              symbol_glyph_target: 'sys.symbol.bookmark'
+            })// Bookmarks
+              .onClick(() => {
+                this.show_bookmarks();
+              })
+
+            LinysShowButton({
+              symbol_glyph_target: 'sys.symbol.rectangle_stack',
               show: this.showing_tabs
-            })
+            })// Tabs
               .onClick(() => {
                 this.show_tabs()
               })
 
             LinysShowButton({
-              show: this.showing_more_options,
-              text: $r('app.string.Index_more_title'),
-              symbol_glyph_target: this.showing_more_options ? 'sys.symbol.chevron_down' : 'sys.symbol.dot_grid_2x2'
-            })
+              show: this.showing_app_settings,
+              text: $r('app.string.Index_app_settings_title'),
+              symbol_glyph_target: this.showing_app_settings ? 'sys.symbol.chevron_down' : 'sys.symbol.gearshape'
+            })// Settings
               .onClick(() => {
-                this.show_more()
+                this.show_settings()
               })
 
           } // Bottom Bar of controls
@@ -369,35 +376,33 @@ struct Index {
           .width("100%")
           .animation(animation_default())
 
-          WaterFlow() {
-            FlowItem() {
-              LinysSymbol({
-                symbol_glyph_target: 'sys.symbol.qrcode'
-              })
-                .onClick(() => {
+          Row() {
+            LinysSymbol({
+              symbol_glyph_target: 'sys.symbol.qrcode'
+            })
+              .onClick(() => {
 
-                })
-            }
+              })
           } // Bottom Bar of More Options
-          .rowsGap(15)
-          .columnsTemplate("1fr ".repeat(Math.floor(this.screen_width / 47)))
           .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
-          .padding({ top: 16, left: 15, right: 15 })
+          .padding({ top: 8, left: 15, right: 15 })
           .width("100%")
-          .height(Math.ceil(3 / Math.floor(this.screen_width / 47)) * 47)
           .animation(animation_default())
+
+          LinysAppSettings({
+            screen_width: this.screen_width,
+            show: this.showing_app_settings
+          })
 
         } // Bottom Bars
         .width("100%")
-        // .backgroundEffect({ radius: 40 })
         .backgroundColor($r('app.color.block_color'))
         .animation(animation_default())
-        .alignRules({
-          bottom: { anchor: "__container__", align: VerticalAlign.Bottom },
-          middle: { anchor: "__container__", align: HorizontalAlign.Center }
-        })
+        .alignRules(this.web_and_stuff_alignRules())
+
       }
       .layoutWeight(1)
+      .backgroundColor($r('app.color.block_color'))
       .width("100%")
 
       Row()// Bottom Bar Avoid
@@ -438,6 +443,16 @@ struct Index {
     return this.tablet_mode && this.is_search_input_typing ? Visibility.Visible : Visibility.None;
   }
 
+  visible_when_no_panels_open_in_normal_mode() {
+    let result: Visibility = Visibility.Visible;
+    if (this.showing_more_options || this.showing_app_settings || this.showing_tabs || this.showing_bookmarks) {
+      if (this.tablet_mode == false) {
+        result = Visibility.None;
+      }
+    }
+    return result;
+  }
+
   // visible statuses
 
   is_dark_mode() {
@@ -467,16 +482,6 @@ struct Index {
     this.showing_tabs = !this.showing_tabs;
   }
 
-  show_more() {
-    if (!this.tablet_mode) {
-      this.showing_tabs = false;
-      this.showing_bookmarks = false;
-    }
-    // Close all other panels
-
-    this.showing_more_options = !this.showing_more_options;
-  }
-
   show_bookmarks() {
     if (!this.tablet_mode) {
       this.showing_more_options = false;
@@ -484,6 +489,28 @@ struct Index {
     this.showing_tabs = false;
 
     this.showing_bookmarks = !this.showing_bookmarks;
+  }
+
+  show_more() {
+    if (!this.tablet_mode) {
+      this.showing_tabs = false;
+      this.showing_bookmarks = false;
+    }
+    // Close all other panels
+
+    this.showing_app_settings = false;
+    this.showing_more_options = !this.showing_more_options;
+  }
+
+  show_settings() {
+    if (!this.tablet_mode) {
+      this.showing_tabs = false;
+      this.showing_bookmarks = false;
+    }
+    // Close all other panels
+
+    this.showing_more_options = false;
+    this.showing_app_settings = !this.showing_app_settings;
   }
 
   go_backward() {
@@ -538,5 +565,20 @@ struct Index {
     this.tab_urls = this.bunch_of_tabs.get_all_urls()
     this.tab_is_loading = this.bunch_of_tabs.get_all_is_loading();
     this.tab_loading_progresses = this.bunch_of_tabs.get_all_loading_progress()
+  }
+
+  // UI params
+
+  web_and_stuff_margin() {
+    let options_bottom: Padding = { bottom: 48 + (this.tablet_mode ? 0 : 48) };
+    return options_bottom;
+  }
+
+  web_and_stuff_alignRules() {
+    let rules_bottom: AlignRuleOption = {
+      middle: { anchor: "__container__", align: HorizontalAlign.Center },
+      bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
+    };
+    return rules_bottom;
   }
 }

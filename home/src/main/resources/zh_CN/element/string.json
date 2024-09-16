@@ -51,6 +51,26 @@
     {
       "name": "Button_click_again",
       "value": "确认"
+    },
+    {
+      "name": "Index_app_settings_title",
+      "value": "设置"
+    },
+    {
+      "name": "Settings_start_up",
+      "value": "启动时"
+    },
+    {
+      "name": "Settings_general",
+      "value": "通用"
+    },
+    {
+      "name": "Settings_appearance",
+      "value": "外观"
+    },
+    {
+      "name": "Settings_about",
+      "value": "关于"
     }
   ]
 }

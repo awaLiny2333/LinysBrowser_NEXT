@@ -1,7 +1,7 @@
 import { bookmark, BunchOfBookmarks, folder, unified_item } from '../hosts/BunchOfBookmarks';
 import { BunchOfTabs } from '../hosts/BunchOfTabs';
 import { url_resource_to_meow } from '../utils/url_tools';
-import LinysSymbol from './LinysSymbol';
+import LinysSymbol from '../components/LinysSymbol';
 import { document_open, document_save } from '../utils/storage_tools';
 import {
   animation_default,
@@ -11,7 +11,7 @@ import {
   fontSize_Normal
 } from '../hosts/BunchOfSettings';
 import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
-import LinysShowButton from './LinysShowButton';
+import LinysShowButton from '../components/LinysShowButton';
 
 @Component
 struct LinysBookmarks {

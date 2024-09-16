@@ -51,6 +51,26 @@
     {
       "name": "Button_click_again",
       "value": "Confirm"
+    },
+    {
+      "name": "Index_app_settings_title",
+      "value": "Settings"
+    },
+    {
+      "name": "Settings_start_up",
+      "value": "On Start Up"
+    },
+    {
+      "name": "Settings_general",
+      "value": "General"
+    },
+    {
+      "name": "Settings_appearance",
+      "value": "Appearance"
+    },
+    {
+      "name": "Settings_about",
+      "value": "About"
     }
   ]
 }
