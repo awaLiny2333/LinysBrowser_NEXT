@@ -35,6 +35,22 @@
     {
       "name": "Index_add_folder_title",
       "value": "新建文件夹"
+    },
+    {
+      "name": "Index_import_bookmarks_title",
+      "value": "导入书签"
+    },
+    {
+      "name": "Index_export_bookmarks_title",
+      "value": "导出书签"
+    },
+    {
+      "name": "Index_select_file",
+      "value": "浏览"
+    },
+    {
+      "name": "Button_click_again",
+      "value": "确认"
     }
   ]
 }

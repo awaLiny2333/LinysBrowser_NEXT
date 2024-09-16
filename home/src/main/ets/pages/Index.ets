@@ -72,7 +72,6 @@ struct Index {
                     LinysBookmarks({
                       bunch_of_tabs: this.bunch_of_tabs,
                       bunch_of_bookmarks: this.bunch_of_bookmarks,
-                      animation_default: animation_default(),
                       webViews_ready: this.webViews_ready
                     });
                   } // Bookmarks Panel
@@ -208,7 +207,6 @@ struct Index {
           .visibility(this.visible_when_typing())
           .padding({ top: 15, left: 15, right: 15 })
           .width("100%")
-          .backgroundColor($r('app.color.block_color'))
           .animation(animation_default())
 
           Row({ space: 15 }) {
@@ -234,7 +232,6 @@ struct Index {
           } // Bottom Bar for This Page Info display
           .padding({ top: 15, left: 16, right: 15 })
           .width("100%")
-          .backgroundColor($r('app.color.block_color'))
           .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
 
@@ -337,7 +334,6 @@ struct Index {
           .padding({ top: 12, left: 15, right: 15 })
           .height(48)
           .width("100%")
-          .backgroundColor($r('app.color.block_color'))
 
           Row({ space: 10 }) {
             TextInput({ text: this.search_input })
@@ -371,7 +367,6 @@ struct Index {
           .visibility(this.visible_in_normal_mode())
           .padding({ top: 8, left: 15, right: 15 })
           .width("100%")
-          .backgroundColor($r('app.color.block_color'))
           .animation(animation_default())
 
           WaterFlow() {
@@ -390,11 +385,11 @@ struct Index {
           .padding({ top: 16, left: 15, right: 15 })
           .width("100%")
           .height(Math.ceil(3 / Math.floor(this.screen_width / 47)) * 47)
-          .backgroundColor($r('app.color.block_color'))
           .animation(animation_default())
 
         } // Bottom Bars
         .width("100%")
+        // .backgroundEffect({ radius: 40 })
         .backgroundColor($r('app.color.block_color'))
         .animation(animation_default())
         .alignRules({
@@ -412,7 +407,6 @@ struct Index {
     }
     .height("100%")
     .width("100%")
-    .backgroundColor($r('app.color.block_color'))
     .onAppear(() => {
       console.log("[Meow][Index] Home Index READY")
     })

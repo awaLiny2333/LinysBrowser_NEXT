@@ -1,4 +1,4 @@
-import { animation_default, click_effect_default, fontSize_Normal } from '../hosts/BunchOfSettings';
+import { animation_default, click_effect_default, fontSize_Large } from '../hosts/BunchOfSettings';
 import LinysSymbol from './LinysSymbol';
 
 @Component
@@ -19,9 +19,9 @@ struct LinysShowButton {
 
       Scroll() {
         Text(this.text)
-          .fontSize(fontSize_Normal())
+          .fontSize(fontSize_Large() - 2)
           .fontColor($r('app.color.start_window_background'))
-          .margin({ left: 5, right: 5 })
+          .margin({ left: 4, right: 3 })
       }
       .width(this.show ? undefined : 0)
       .scrollable(ScrollDirection.Horizontal)
@@ -33,6 +33,7 @@ struct LinysShowButton {
     .borderRadius(10)
     .clickEffect(click_effect_default())
     .animation(animation_default())
+
   }
 }
 

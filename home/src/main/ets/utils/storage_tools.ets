@@ -11,6 +11,7 @@ export async function document_save(file_name: string, content: string) {
   try {
     let documentSaveOptions = new picker.DocumentSaveOptions();
     documentSaveOptions.newFileNames = [file_name];
+    documentSaveOptions.fileSuffixChoices = [".html"]
     let documentPicker = new picker.DocumentViewPicker(context);
 
     documentPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
@@ -39,7 +40,7 @@ export async function document_open() { // 需确保 context 由 UIAbilityContex
   try {
     let documentPicker = new picker.DocumentViewPicker(context);
     let contents: string = "";
-    await documentPicker.select({ maxSelectNumber: 1 }).then((documentSelectResult) => {
+    await documentPicker.select({ maxSelectNumber: 1, fileSuffixFilters: [".html"] }).then((documentSelectResult) => {
       target_uri = documentSelectResult;
       console.info('[Meow][document_reader] DocumentViewPicker.select successfully, documentSelectResult uri: ' +
       target_uri[0])

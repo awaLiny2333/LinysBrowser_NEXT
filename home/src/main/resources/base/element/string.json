@@ -35,6 +35,22 @@
     {
       "name": "Index_add_folder_title",
       "value": "New Folder"
+    },
+    {
+      "name": "Index_import_bookmarks_title",
+      "value": "Import Bookmakrs"
+    },
+    {
+      "name": "Index_export_bookmarks_title",
+      "value": "Export Bookmarks"
+    },
+    {
+      "name": "Index_select_file",
+      "value": "Browse"
+    },
+    {
+      "name": "Button_click_again",
+      "value": "Confirm"
     }
   ]
 }
