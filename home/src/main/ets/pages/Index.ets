@@ -1,7 +1,7 @@
 import LinysProgress from '../blocks/LinysProgress';
 import LinysSymbol from '../components/LinysSymbol';
 import LinysShowButton from '../components/LinysShowButton';
-import LinysTabs from '../components/LinysTabs';
+import LinysTabs from '../blocks/LinysTabs';
 import LinysWebView from '../blocks/LinysWebView';
 import LinysBookmarks from '../blocks/LinysBookmarks';
 import LinysAppSettings from '../blocks/LinysAppSettings';
@@ -10,6 +10,7 @@ import { BunchOfBookmarks } from '../hosts/BunchOfBookmarks';
 import { unify_search_input_into_url, url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
 import {
   animation_default,
+  capsule_bar_height,
   fontSize_Icon_Button,
   fontSize_Large,
   fontSize_Normal,
@@ -49,11 +50,16 @@ struct Index {
   // Tabs
 
   @State universal_new_tab_gateway: string | undefined = undefined;
-
   // Misc weird methods but it just works ¯\_(ツ)_/¯
 
-  aboutToAppear(): void {
+  @State bottom_bar_height: number = 0;
+  @State @Watch('on_title_bar_position_change') settings_title_bar_position: string = "";
+  @State web_and_stuff_alignRules: AlignRuleOption = {
+    middle: { anchor: "__container__", align: HorizontalAlign.Center },
+    bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
+  };
 
+  aboutToAppear(): void {
   }
 
   build() {
@@ -166,7 +172,7 @@ struct Index {
 
         } // Main Web
         .direction(this.tablet_mode ? Direction.Ltr : Direction.Rtl)
-        .alignRules(this.web_and_stuff_alignRules())
+        .alignRules(this.web_and_stuff_alignRules)
         .layoutWeight(1)
         .width("100%")
         .backgroundColor($r('app.color.start_window_background'))
@@ -174,16 +180,19 @@ struct Index {
           this.screen_width = n.width as number
           this.tablet_mode = this.screen_width > 500
         })
-        .margin(this.web_and_stuff_margin())
+        .margin(this.settings_title_bar_position == "bottom" ?
+          { bottom: this.bottom_bar_height } : { top: this.bottom_bar_height })
 
         Column() {
           LinysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
         } // Loading Bar
-        .alignRules(this.web_and_stuff_alignRules())
+        .alignRules(this.web_and_stuff_alignRules)
         .width("100%")
-        .margin(this.web_and_stuff_margin())
+        .margin(this.settings_title_bar_position == "bottom" ?
+          { bottom: this.bottom_bar_height } : { top: this.bottom_bar_height })
 
         Column() {
+
           Row() {
             Text("→ " + (this.search_input_unified == "" ? "(　o=^•ェ•)o ?" : this.search_input_unified))
               .fontColor($r('app.color.font_color_title'))
@@ -193,7 +202,12 @@ struct Index {
               .textOverflow({ overflow: TextOverflow.Ellipsis })
           } // Bottom Bar for estimated destination indication
           .visibility(this.visible_when_typing())
-          .padding({ top: 15, left: 15, right: 15 })
+          .padding({
+            top: this.settings_title_bar_position == "bottom" ? 10 : 0,
+            bottom: this.settings_title_bar_position == "bottom" ? 0 : 10,
+            left: 15,
+            right: 15
+          })
           .width("100%")
           .animation(animation_default())
 
@@ -218,7 +232,11 @@ struct Index {
 
             LinysSymbol({ symbol_glyph_target: 'sys.symbol.share' })
           } // Bottom Bar for This Page Info display
-          .padding({ top: 15, left: 16, right: 15 })
+          .padding({
+            top: this.settings_title_bar_position == "bottom" ? 15 : 0,
+            left: 16,
+            right: 15
+          })
           .width("100%")
           .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
@@ -271,6 +289,7 @@ struct Index {
               })
 
             TextInput({ text: this.search_input })
+              .height(capsule_bar_height())
               .layoutWeight(1)
               .fontWeight(FontWeight.Regular)
               .fontColor($r('app.color.font_color_title'))
@@ -338,12 +357,19 @@ struct Index {
               })
 
           } // Bottom Bar of controls
-          .padding({ top: 12, left: 15, right: 15 })
-          .height(48)
+          .padding({
+            top: this.settings_title_bar_position == "bottom" ? 12 : 0,
+            bottom: !this.showing_app_settings && this.settings_title_bar_position == "top" && this.tablet_mode ?
+              10 : 0,
+            left: 15,
+            right: 15
+          })
           .width("100%")
+          .animation(animation_default())
 
           Row({ space: 10 }) {
             TextInput({ text: this.search_input })
+              .height(capsule_bar_height())
               .layoutWeight(1)
               .fontWeight(FontWeight.Regular)
               .fontColor($r('app.color.font_color_title'))
@@ -372,7 +398,12 @@ struct Index {
               })
           } // Bottom Bar of extended searching bar
           .visibility(this.visible_in_normal_mode())
-          .padding({ top: 8, left: 15, right: 15 })
+          .padding({
+            top: 10,
+            bottom: !this.showing_app_settings && this.settings_title_bar_position == "top" ? 10 : 0,
+            left: 15,
+            right: 15
+          })
           .width("100%")
           .animation(animation_default())
 
@@ -385,25 +416,41 @@ struct Index {
               })
           } // Bottom Bar of More Options
           .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
-          .padding({ top: 8, left: 15, right: 15 })
+          .padding({
+            top: this.settings_title_bar_position == "top" ? 5 : 10,
+            bottom: this.settings_title_bar_position == "top" ? 15 : 0,
+            left: 15,
+            right: 15
+          })
           .width("100%")
           .animation(animation_default())
 
           LinysAppSettings({
             screen_width: this.screen_width,
-            show: this.showing_app_settings
+            show: this.showing_app_settings,
+            settings_title_bar_position: this.settings_title_bar_position
           })
+            .padding({ top: 10 })
+            .visibility(this.showing_app_settings ? Visibility.Visible : Visibility.None)
+            .animation(animation_default())
 
         } // Bottom Bars
         .width("100%")
         .backgroundColor($r('app.color.block_color'))
-        .animation(animation_default())
-        .alignRules(this.web_and_stuff_alignRules())
+        .alignRules(this.web_and_stuff_alignRules)
+        .onAreaChange((_o, n) => {
+          if (!this.showing_more_options && !this.is_search_input_typing && !this.showing_app_settings) {
+            this.bottom_bar_height = n.height as number;
+          }
+        })
+        .visibility(this.settings_title_bar_position == "" ? Visibility.Hidden : Visibility.Visible)
+        .animation(this.showing_app_settings ? animation_default() : undefined)
 
       }
       .layoutWeight(1)
       .backgroundColor($r('app.color.block_color'))
       .width("100%")
+      .animation(animation_default())
 
       Row()// Bottom Bar Avoid
         .width("100%")
@@ -569,16 +616,17 @@ struct Index {
 
   // UI params
 
-  web_and_stuff_margin() {
-    let options_bottom: Padding = { bottom: 48 + (this.tablet_mode ? 0 : 48) };
-    return options_bottom;
-  }
-
-  web_and_stuff_alignRules() {
-    let rules_bottom: AlignRuleOption = {
-      middle: { anchor: "__container__", align: HorizontalAlign.Center },
-      bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
-    };
-    return rules_bottom;
+  on_title_bar_position_change() {
+    if (this.settings_title_bar_position == "bottom") {
+      this.web_and_stuff_alignRules = {
+        middle: { anchor: "__container__", align: HorizontalAlign.Center },
+        bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
+      }
+    } else {
+      this.web_and_stuff_alignRules = {
+        middle: { anchor: "__container__", align: HorizontalAlign.Center },
+        top: { anchor: "__container__", align: VerticalAlign.Top }
+      }
+    }
   }
 }

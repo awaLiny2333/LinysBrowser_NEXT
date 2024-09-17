@@ -2,6 +2,7 @@ import { AbilityConstant, Configuration, UIAbility, Want } from '@kit.AbilityKit
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 
 export default class HomeAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -53,6 +54,7 @@ export default class HomeAbility extends UIAbility {
       avoidArea = windowClass.getWindowAvoidArea(type);
       let topAvoidHeight = avoidArea.topRect.height; // 获取到导航条区域的高度
       AppStorage.setOrCreate('topAvoidHeight', topAvoidHeight);
+
     });
     windowStage.getMainWindow((err: BusinessError, win) => {
       const errCode: number = err.code;

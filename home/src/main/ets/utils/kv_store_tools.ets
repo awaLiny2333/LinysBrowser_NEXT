@@ -1,6 +1,7 @@
 import { distributedKVStore } from '@kit.ArkData';
+import { common } from '@kit.AbilityKit';
 
-let context = getContext(this);
+let context = AppStorage.get('context') as common.UIAbilityContext;
 const kvManagerConfig: distributedKVStore.KVManagerConfig = {
   context: context,
   bundleName: "com.next.liny.linysbrowserNEXT"

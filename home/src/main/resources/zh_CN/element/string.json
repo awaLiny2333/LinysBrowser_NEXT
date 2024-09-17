@@ -71,6 +71,10 @@
     {
       "name": "Settings_about",
       "value": "关于"
+    },
+    {
+      "name": "Settings_appearance_title_bar_position",
+      "value": "标题栏位置"
     }
   ]
 }

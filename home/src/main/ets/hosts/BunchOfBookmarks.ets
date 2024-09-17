@@ -528,7 +528,7 @@ export class BunchOfBookmarks {
     if (path == "") {
       // if at root of this base_folder
       base_folder.add_content(new unified_item(item));
-      console.log("[Meow][BunchOfBookmarks] Added bookmark [" + item.get_label() + "]!")
+      // console.log("[Meow][BunchOfBookmarks] Added bookmark [" + item.get_label() + "]!")
       return true;
       // Directly add
     } else {
@@ -562,7 +562,7 @@ export class BunchOfBookmarks {
     if (path == "") {
       // if at root of this base_folder
       base_folder.add_content(new unified_item(undefined, item));
-      console.log("[Meow][BunchOfBookmarks] Added folder [" + item.get_label() + "]!")
+      // console.log("[Meow][BunchOfBookmarks] Added folder [" + item.get_label() + "]!")
       return true;
       // Directly add
     } else {

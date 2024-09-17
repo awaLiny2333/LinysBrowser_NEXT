@@ -1,4 +1,4 @@
-import LinysSymbol from './LinysSymbol';
+import LinysSymbol from '../components/LinysSymbol';
 import { BunchOfTabs, TabLabel } from '../hosts/BunchOfTabs';
 import { url_resource_to_meow } from '../utils/url_tools';
 import { fontSize_Normal, home_url } from '../hosts/BunchOfSettings';

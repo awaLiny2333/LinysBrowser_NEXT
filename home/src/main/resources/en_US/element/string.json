@@ -71,6 +71,10 @@
     {
       "name": "Settings_about",
       "value": "About"
+    },
+    {
+      "name": "Settings_appearance_title_bar_position",
+      "value": "Title Bar Position"
     }
   ]
 }
