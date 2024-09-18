@@ -1,7 +1,7 @@
-import { bookmark, BunchOfBookmarks, folder, unified_item } from '../hosts/BunchOfBookmarks';
-import { BunchOfTabs } from '../hosts/BunchOfTabs';
+import { bookmark, bunch_of_bookmarks, folder, unified_item } from '../hosts/bunch_of_bookmarks';
+import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { url_resource_to_meow } from '../utils/url_tools';
-import LinysSymbol from '../components/LinysSymbol';
+import linysSymbol from '../components/linysSymbol';
 import { document_open, document_save } from '../utils/storage_tools';
 import {
   animation_default,
@@ -9,14 +9,14 @@ import {
   click_effect_default,
   fontSize_Large,
   fontSize_Normal
-} from '../hosts/BunchOfSettings';
+} from '../hosts/bunch_of_settings';
 import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
-import LinysShowButton from '../components/LinysShowButton';
+import linysShowButton from '../components/linysShowButton';
 
 @Component
-struct LinysBookmarks {
-  @Link bunch_of_bookmarks: BunchOfBookmarks;
-  @Link bunch_of_tabs: BunchOfTabs;
+struct meowBookmarks {
+  @Link bunch_of_bookmarks: bunch_of_bookmarks;
+  @Link bunch_of_tabs: bunch_of_tabs;
   @Link webViews_ready: boolean;
   @State viewing_contents: unified_item[] = this.bunch_of_bookmarks.root.get_content();
   @State @Watch('refresh_root_content') looking_at_path: string = "";
@@ -54,7 +54,7 @@ struct LinysBookmarks {
           ForEach(
             this.viewing_contents,
             (item: unified_item, key: number) => {
-              BookmarkItem({
+              bookmarkItem({
                 my_index: key,
                 bunch_of_bookmarks: this.bunch_of_bookmarks,
                 bunch_of_tabs: this.bunch_of_tabs, // For loadUrl
@@ -83,14 +83,14 @@ struct LinysBookmarks {
       })
 
       Row({ space: 12.5 }) {
-        LinysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left' })
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left' })
           .visibility(this.looking_at_path == "" ? Visibility.None : Visibility.Visible)
           .animation(animation_default())
           .onClick(() => {
             this.go_back();
           }) // Go back button
         Blank()
-        LinysShowButton({
+        linysShowButton({
           show: this.importing_bookmarks,
           symbol_glyph_target: 'sys.symbol.arrow_down_and_rectangle_on_rectangle',
           text: $r('app.string.Index_import_bookmarks_title')
@@ -102,7 +102,7 @@ struct LinysBookmarks {
             this.importing_bookmarks = !this.importing_bookmarks;
             // this.import_bookmarks_html();
           }) // Import bookmarks button
-        LinysShowButton({
+        linysShowButton({
           show: this.exporting_bookmarks,
           symbol_glyph_target: 'sys.symbol.arrow_right_up_and_square',
           text: $r('app.string.Index_export_bookmarks_title')
@@ -115,7 +115,7 @@ struct LinysBookmarks {
             // this.export_bookmarks_html();
           }) // Export bookmarks button
 
-        LinysShowButton({
+        linysShowButton({
           show: this.adding_folder,
           symbol_glyph_target: 'sys.symbol.folder_badge_plus',
           text: $r('app.string.Index_add_folder_title')
@@ -128,7 +128,7 @@ struct LinysBookmarks {
             this.adding_folder = !this.adding_folder;
           }) // Add folder button
 
-        LinysShowButton({
+        linysShowButton({
           show: this.adding_bookmark,
           symbol_glyph_target: 'sys.symbol.plus_square',
           text: $r('app.string.Index_add_bookmark_title')
@@ -149,7 +149,7 @@ struct LinysBookmarks {
       Scroll() {
         Column({ space: 10 }) {
           Row({ space: 10 }) {
-            LinysSymbol({ symbol_glyph_target: "sys.symbol.rename" })
+            linysSymbol({ symbol_glyph_target: "sys.symbol.rename" })
             TextInput({ text: this.add_label })
               .onChange((value) => {
                 this.add_label = value;
@@ -173,7 +173,7 @@ struct LinysBookmarks {
           .animation(animation_default())
 
           Row({ space: 10 }) {
-            LinysSymbol({ symbol_glyph_target: "sys.symbol.paperclip" })
+            linysSymbol({ symbol_glyph_target: "sys.symbol.paperclip" })
             TextInput({ text: this.add_link })
               .onChange((value) => {
                 this.add_link = value;
@@ -338,13 +338,13 @@ struct LinysBookmarks {
   }
 }
 
-export default LinysBookmarks;
+export default meowBookmarks;
 
 @Component
-struct BookmarkItem {
+struct bookmarkItem {
   @Prop my_index: number = 0;
-  @Link bunch_of_bookmarks: BunchOfBookmarks;
-  @Link bunch_of_tabs: BunchOfTabs;
+  @Link bunch_of_bookmarks: bunch_of_bookmarks;
+  @Link bunch_of_tabs: bunch_of_tabs;
   @Link webViews_ready: boolean;
   @Link looking_at_path: string;
   @Link viewing_contents: unified_item[];
@@ -441,7 +441,7 @@ struct BookmarkItem {
       Scroll() {
         Column({ space: 10 }) {
           Row({ space: 10 }) {
-            LinysSymbol({ symbol_glyph_target: "sys.symbol.rename" })
+            linysSymbol({ symbol_glyph_target: "sys.symbol.rename" })
             TextInput({ text: this.edit_label })
               .onChange((value) => {
                 this.edit_label = value;
@@ -465,7 +465,7 @@ struct BookmarkItem {
           .width("100%")
 
           Row({ space: 10 }) {
-            LinysSymbol({ symbol_glyph_target: "sys.symbol.paperclip" })
+            linysSymbol({ symbol_glyph_target: "sys.symbol.paperclip" })
             TextInput({ text: this.edit_link })
               .onChange((value) => {
                 this.edit_link = value;

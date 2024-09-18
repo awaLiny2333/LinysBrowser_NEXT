@@ -1,8 +1,8 @@
-import { animation_default, click_effect_default, fontSize_Large } from '../hosts/BunchOfSettings';
-import LinysSymbol from './LinysSymbol';
+import { animation_default, click_effect_default, fontSize_Large } from '../hosts/bunch_of_settings';
+import linysSymbol from './linysSymbol';
 
 @Component
-struct LinysShowButton {
+struct linysShowButton {
   @Prop show: boolean = false;
   @Prop symbol_glyph_target: string = "sys.symbol.square_grid_2x2";
   @Prop color_false: ResourceStr = $r('app.color.font_color_title');
@@ -11,7 +11,7 @@ struct LinysShowButton {
 
   build() {
     Row() {
-      LinysSymbol({
+      linysSymbol({
         symbol_glyph_target: this.symbol_glyph_target,
         color: this.show ?
         this.color_true : this.color_false
@@ -37,4 +37,4 @@ struct LinysShowButton {
   }
 }
 
-export default LinysShowButton;
+export default linysShowButton;

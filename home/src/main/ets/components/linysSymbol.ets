@@ -1,7 +1,7 @@
-import { animation_default, click_effect_default, fontSize_Icon_Button } from '../hosts/BunchOfSettings';
+import { animation_default, click_effect_default, fontSize_Icon_Button } from '../hosts/bunch_of_settings';
 
 @Component
-struct LinysSymbol {
+struct linysSymbol {
   @Prop symbol_glyph_target: string = 'sys.symbol.arrow_left';
   @Prop color: ResourceStr = $r('app.color.font_color_title');
 
@@ -14,4 +14,4 @@ struct LinysSymbol {
   }
 }
 
-export default LinysSymbol
+export default linysSymbol

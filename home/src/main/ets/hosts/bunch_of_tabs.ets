@@ -1,9 +1,9 @@
 import { webview } from '@kit.ArkWeb';
 import { url_meow_to_resource } from '../utils/url_tools';
-import { home_url } from './BunchOfSettings';
+import { home_url } from './bunch_of_settings';
 
 @Observed
-export class TabLabel {
+export class tab_label {
   timestamp: number;
   index_key: number;
 
@@ -13,7 +13,7 @@ export class TabLabel {
   }
 }
 
-export class TabInfoPacked {
+export class tab_info_packed {
   controller: WebviewController;
   title: string;
   url: string;
@@ -45,9 +45,9 @@ export class TabInfoPacked {
   }
 }
 
-export class BunchOfTabs {
-  Tabs: Array<TabInfoPacked> = [new TabInfoPacked("Meow", home_url())];
-  Labels: Array<TabLabel> = [new TabLabel(Date.now(), 0)];
+export class bunch_of_tabs {
+  Tabs: Array<tab_info_packed> = [new tab_info_packed("Meow", home_url())];
+  Labels: Array<tab_label> = [new tab_label(Date.now(), 0)];
   current_working_tab_index: number = 0;
   current_color_mode: number = AppStorage.get('currentColorMode') as number;
 
@@ -82,8 +82,8 @@ export class BunchOfTabs {
   }
 
   newTab(home_url: string) {
-    let new_TabInfo: TabInfoPacked = new TabInfoPacked("Meow", home_url);
-    let new_TabLabel: TabLabel = new TabLabel(Date.now(), this.Tabs.length);
+    let new_TabInfo: tab_info_packed = new tab_info_packed("Meow", home_url);
+    let new_TabLabel: tab_label = new tab_label(Date.now(), this.Tabs.length);
     this.Tabs.push(new_TabInfo);
     this.Labels.push(new_TabLabel);
     this.current_working_tab_index = this.Tabs.length - 1;

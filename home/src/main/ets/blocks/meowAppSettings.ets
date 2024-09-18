@@ -1,6 +1,6 @@
-import { animation_default } from '../hosts/BunchOfSettings';
-import LinysTitleText from '../components/LinysTitleText';
-import LinysText from '../components/LinysText';
+import { animation_default } from '../hosts/bunch_of_settings';
+import linysTitleText from '../components/linysTitleText';
+import linysText from '../components/linysText';
 import bundleManager from '@ohos.bundle.bundleManager';
 import {
   ItemRestriction,
@@ -11,7 +11,7 @@ import {
 import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 
 @Component
-struct LinysAppSettings {
+struct meowAppSettings {
   // Generals
   @Prop @Watch('on_open_or_close_panel') show: boolean = false;
   @Prop screen_width: number;
@@ -49,7 +49,7 @@ struct LinysAppSettings {
     WaterFlow() {
       FlowItem() {
         Column({ space: 15 }) {
-          LinysTitleText({ text: $r('app.string.Settings_start_up') })
+          linysTitleText({ text: $r('app.string.Settings_start_up') })
         }
         .padding(15)
         .alignItems(HorizontalAlign.Start)
@@ -62,7 +62,7 @@ struct LinysAppSettings {
 
       FlowItem() {
         Column({ space: 15 }) {
-          LinysTitleText({ text: $r('app.string.Settings_general') })
+          linysTitleText({ text: $r('app.string.Settings_general') })
         }
         .padding(15)
         .alignItems(HorizontalAlign.Start)
@@ -75,8 +75,8 @@ struct LinysAppSettings {
 
       FlowItem() {
         Column({ space: 15 }) {
-          LinysTitleText({ text: $r('app.string.Settings_appearance') })
-          LinysText({ text: $r('app.string.Settings_appearance_title_bar_position') })
+          linysTitleText({ text: $r('app.string.Settings_appearance') })
+          linysText({ text: $r('app.string.Settings_appearance_title_bar_position') })
           SegmentButton({
             options: this.title_bar_position_tabOptions,
             selectedIndexes: $title_bar_position_selected
@@ -93,9 +93,9 @@ struct LinysAppSettings {
 
       FlowItem() {
         Column({ space: 15 }) {
-          LinysTitleText({ text: $r('app.string.Settings_about') })
-          LinysText({ text: "（ฅ＾・ﻌ・＾）ฅ" })
-          LinysText({ text: this.versionName + " - " + this.versionNo })
+          linysTitleText({ text: $r('app.string.Settings_about') })
+          linysText({ text: "（ฅ＾・ﻌ・＾）ฅ" })
+          linysText({ text: this.versionName + " - " + this.versionNo })
 
         }
         .padding(15)
@@ -152,4 +152,4 @@ struct LinysAppSettings {
   }
 }
 
-export default LinysAppSettings
+export default meowAppSettings

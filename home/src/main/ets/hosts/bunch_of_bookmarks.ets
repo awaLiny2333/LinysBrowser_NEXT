@@ -151,7 +151,7 @@ export class unified_item {
 /**
  * @param root_label The label of root folder.
  */
-export class BunchOfBookmarks {
+export class bunch_of_bookmarks {
   root: folder;
 
   constructor(root_label: string) {
@@ -345,7 +345,7 @@ export class BunchOfBookmarks {
     // Split Into lines
 
     let new_bunch_of_bookmarks_label = new Date().toLocaleString()
-    let new_bunch_of_bookmarks: BunchOfBookmarks = new BunchOfBookmarks(new_bunch_of_bookmarks_label);
+    let new_bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks(new_bunch_of_bookmarks_label);
     let now_path_stack: string[] = [];
     // Set new bookmarks bundle
 

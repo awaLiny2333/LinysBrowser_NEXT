@@ -1,10 +1,10 @@
-import { BunchOfTabs, TabLabel } from '../hosts/BunchOfTabs';
+import { bunch_of_tabs, tab_label } from '../hosts/bunch_of_tabs';
 import { url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
 
 @Component
-struct LinysWebView {
+struct meowWebView {
   @StorageProp('currentColorMode') current_color_mode: number = 0;
-  @Link bunch_of_tabs: BunchOfTabs;
+  @Link bunch_of_tabs: bunch_of_tabs;
   @Link current_tab_index: number;
   @Link universal_new_tab_gateway: string | undefined;
   @Prop show_webViews: boolean;
@@ -25,7 +25,7 @@ struct LinysWebView {
 
   build() {
     Row() {
-      ForEach(this.bunch_of_tabs.Labels, (Label: TabLabel) => {
+      ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
         Web({
           src: url_meow_to_resource(this.bunch_of_tabs.Tabs[Label.index_key] !== undefined ?
           this.bunch_of_tabs.Tabs[Label.index_key].url : ""),
@@ -91,7 +91,7 @@ struct LinysWebView {
             this.update_search_box_text(this.current_url)
             // Update Input Search Box
           })
-      }, (item: TabLabel) => item.timestamp.toString())
+      }, (item: tab_label) => item.timestamp.toString())
 
     }
     .backgroundColor("green")
@@ -138,4 +138,4 @@ struct LinysWebView {
   }
 }
 
-export default LinysWebView;
+export default meowWebView;

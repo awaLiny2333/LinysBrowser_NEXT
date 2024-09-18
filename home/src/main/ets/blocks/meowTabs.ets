@@ -1,12 +1,12 @@
-import LinysSymbol from '../components/LinysSymbol';
-import { BunchOfTabs, TabLabel } from '../hosts/BunchOfTabs';
+import linysSymbol from '../components/linysSymbol';
+import { bunch_of_tabs, tab_label } from '../hosts/bunch_of_tabs';
 import { url_resource_to_meow } from '../utils/url_tools';
-import { fontSize_Normal, home_url } from '../hosts/BunchOfSettings';
+import { fontSize_Normal, home_url } from '../hosts/bunch_of_settings';
 
 
 @Component
-struct LinysTabs {
-  @Link bunch_of_tabs: BunchOfTabs;
+struct meowTabs {
+  @Link bunch_of_tabs: bunch_of_tabs;
   @Prop show_webViews: boolean;
   @Prop tablet_mode: boolean;
   @Prop showing_tabs: boolean;
@@ -43,7 +43,7 @@ struct LinysTabs {
         Column({ space: 5 }) {
           ForEach(
             this.bunch_of_tabs.Labels,
-            (Label: TabLabel) => {
+            (Label: tab_label) => {
               RelativeContainer() {
                 Row() {
                   Text(this.tab_titles[Label.index_key] == "" ? "Meow" : this.tab_titles[Label.index_key])
@@ -96,7 +96,7 @@ struct LinysTabs {
               .width("100%")
               .height(this.tab_height_default + this.extension_area[Label.index_key])
             },
-            (Label: TabLabel) => Label.timestamp.toString()
+            (Label: tab_label) => Label.timestamp.toString()
           )
         }
         .width("100%")
@@ -120,7 +120,7 @@ struct LinysTabs {
 
       Row({ space: 10 }) {
         Blank()
-        LinysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
           .onClick(() => {
             this.new_tab(home_url())
           })
@@ -276,4 +276,4 @@ struct LinysTabs {
   }
 }
 
-export default LinysTabs;
+export default meowTabs;

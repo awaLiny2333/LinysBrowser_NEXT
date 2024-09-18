@@ -1,5 +1,5 @@
 @Component
-struct LinysProgress {
+struct linysProgress {
   @State bar_height: Length = 8;
   @State bar_width: Length = "100%";
   @Watch('on_update') @Prop is_loading: boolean = false;
@@ -46,4 +46,4 @@ struct LinysProgress {
   }
 }
 
-export default LinysProgress
+export default linysProgress

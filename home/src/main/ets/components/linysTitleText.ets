@@ -1,15 +1,16 @@
-import { fontSize_Normal } from '../hosts/BunchOfSettings';
+import { fontSize_Large } from '../hosts/bunch_of_settings';
 
 @Component
-struct LinysText {
+struct linysTitleText {
   @Prop text: ResourceStr = $r('app.string.HomeAbility_label');
   @Prop color: ResourceStr = $r('app.color.font_color_title');
 
   build() {
     Text(this.text)
       .fontColor(this.color)
-      .fontSize(fontSize_Normal())
+      .fontSize(fontSize_Large())
+      .fontWeight(FontWeight.Medium)
   }
 }
 
-export default LinysText
+export default linysTitleText
