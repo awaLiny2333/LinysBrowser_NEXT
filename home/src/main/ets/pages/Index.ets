@@ -1,4 +1,4 @@
-import LinysProgress from '../blocks/LinysProgress';
+import LinysProgress from '../components/LinysProgress';
 import LinysSymbol from '../components/LinysSymbol';
 import LinysShowButton from '../components/LinysShowButton';
 import LinysTabs from '../blocks/LinysTabs';
@@ -191,7 +191,12 @@ struct Index {
         .margin(this.settings_title_bar_position == "bottom" ?
           { bottom: this.bottom_bar_height } : { top: this.bottom_bar_height })
 
-        Column() {
+        Column({ space: 10 }) {
+
+          Column()// Placeholder
+            .height(this.showing_more_options ? 4 : 0)
+            .visibility(this.visible_when_title_bar_on_bottom())
+            .animation(animation_default())
 
           Row() {
             Text("→ " + (this.search_input_unified == "" ? "(　o=^•ェ•)o ?" : this.search_input_unified))
@@ -202,17 +207,12 @@ struct Index {
               .textOverflow({ overflow: TextOverflow.Ellipsis })
           } // Bottom Bar for estimated destination indication
           .visibility(this.visible_when_typing())
-          .padding({
-            top: this.settings_title_bar_position == "bottom" ? 10 : 0,
-            bottom: this.settings_title_bar_position == "bottom" ? 0 : 10,
-            left: 15,
-            right: 15
-          })
+          .padding({ left: 15, right: 15 })
           .width("100%")
           .animation(animation_default())
 
-          Row({ space: 15 }) {
-            Column({ space: 5 }) {
+          Row() {
+            Column({ space: 2.5 }) {
               Text(this.current_title)
                 .fontColor($r('app.color.font_color_title'))
                 .fontWeight(FontWeight.Medium)
@@ -232,11 +232,7 @@ struct Index {
 
             LinysSymbol({ symbol_glyph_target: 'sys.symbol.share' })
           } // Bottom Bar for This Page Info display
-          .padding({
-            top: this.settings_title_bar_position == "bottom" ? 15 : 0,
-            left: 16,
-            right: 15
-          })
+          .padding({ left: 16, right: 15 })
           .width("100%")
           .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
@@ -357,14 +353,9 @@ struct Index {
               })
 
           } // Bottom Bar of controls
-          .padding({
-            top: this.settings_title_bar_position == "bottom" ? 12 : 0,
-            bottom: !this.showing_app_settings && this.settings_title_bar_position == "top" && this.tablet_mode ?
-              10 : 0,
-            left: 15,
-            right: 15
-          })
+          .padding({ left: 15, right: 15 })
           .width("100%")
+          .constraintSize({ minHeight: 36 })
           .animation(animation_default())
 
           Row({ space: 10 }) {
@@ -398,12 +389,7 @@ struct Index {
               })
           } // Bottom Bar of extended searching bar
           .visibility(this.visible_in_normal_mode())
-          .padding({
-            top: 10,
-            bottom: !this.showing_app_settings && this.settings_title_bar_position == "top" ? 10 : 0,
-            left: 15,
-            right: 15
-          })
+          .padding({ left: 15, right: 15 })
           .width("100%")
           .animation(animation_default())
 
@@ -417,21 +403,24 @@ struct Index {
           } // Bottom Bar of More Options
           .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
           .padding({
-            top: this.settings_title_bar_position == "top" ? 5 : 10,
-            bottom: this.settings_title_bar_position == "top" ? 15 : 0,
             left: 15,
-            right: 15
+            right: 15,
           })
           .width("100%")
+          .direction(Direction.Rtl)
           .animation(animation_default())
 
           LinysAppSettings({
             screen_width: this.screen_width,
             show: this.showing_app_settings,
             settings_title_bar_position: this.settings_title_bar_position
-          })
-            .padding({ top: 10 })
+          })// Settings
             .visibility(this.showing_app_settings ? Visibility.Visible : Visibility.None)
+            .animation(animation_default())
+
+          Column()// Placeholder
+            .height(this.showing_more_options ? 5 : 0)
+            .visibility(this.visible_when_title_bar_on_top())
             .animation(animation_default())
 
         } // Bottom Bars
@@ -484,6 +473,14 @@ struct Index {
 
   visible_in_normal_mode() {
     return !this.tablet_mode ? Visibility.Visible : Visibility.None;
+  }
+
+  visible_when_title_bar_on_top() {
+    return this.settings_title_bar_position == "top" ? Visibility.Visible : Visibility.None;
+  }
+
+  visible_when_title_bar_on_bottom() {
+    return this.settings_title_bar_position == "bottom" ? Visibility.Visible : Visibility.None;
   }
 
   visible_when_typing_in_tablet_mode() {
