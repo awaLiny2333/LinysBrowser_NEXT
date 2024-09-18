@@ -50,13 +50,16 @@ export class bunch_of_tabs {
   Labels: Array<tab_label> = [new tab_label(Date.now(), 0)];
   current_working_tab_index: number = 0;
   current_color_mode: number = AppStorage.get('currentColorMode') as number;
+  private UA: string | undefined = undefined;
 
   loadUrl_onWorkingTab(url: string) {
     url = url_meow_to_resource(url);
+    this.apply_global_ua_onWorkingTab();
     this.Tabs[this.current_working_tab_index].controller.loadUrl(url);
   }
 
   refresh_onWorkingTab() {
+    this.apply_global_ua_onWorkingTab();
     this.Tabs[this.current_working_tab_index].controller.refresh();
   }
 
@@ -65,14 +68,28 @@ export class bunch_of_tabs {
   }
 
   goForward_onWorkingTab() {
+    this.apply_global_ua_onWorkingTab();
     if (this.Tabs[this.current_working_tab_index].controller.accessForward()) {
       this.Tabs[this.current_working_tab_index].controller.forward();
     }
   }
 
   goBackward_onWorkingTab() {
+    this.apply_global_ua_onWorkingTab();
     if (this.Tabs[this.current_working_tab_index].controller.accessBackward()) {
       this.Tabs[this.current_working_tab_index].controller.backward();
+    }
+  }
+
+  set_global_UA(ua: string | undefined) {
+    this.UA = ua;
+  }
+
+  get_global_UA() {
+    if (this.UA == undefined) {
+      return this.Tabs[this.current_working_tab_index].controller.getUserAgent();
+    } else {
+      return this.UA;
     }
   }
 
@@ -185,5 +202,11 @@ export class bunch_of_tabs {
       stamps.push(this.Labels[index].timestamp);
     }
     return stamps;
+  }
+
+  private apply_global_ua_onWorkingTab() {
+    if (this.UA !== undefined) {
+      this.Tabs[this.current_working_tab_index].controller.setCustomUserAgent(this.UA);
+    }
   }
 }

@@ -5,7 +5,7 @@ import meowBookmarks from '../blocks/meowBookmarks';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
 import { animation_default } from '../hosts/bunch_of_settings';
-import meowBottomBar from '../blocks/meowBottomBar';
+import meowTitleBar from '../blocks/meowTitleBar';
 
 @Entry
 @Component
@@ -50,6 +50,7 @@ struct Index {
   };
 
   aboutToAppear(): void {
+
   }
 
   build() {
@@ -167,19 +168,18 @@ struct Index {
         .margin(this.settings_title_bar_position == "bottom" ?
           { bottom: this.bottom_bar_height } : { top: this.bottom_bar_height })
 
-        Column() {
-          linysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
-        } // Loading Bar
-        .alignRules(this.web_and_stuff_alignRules)
-        .width("100%")
-        .margin(this.settings_title_bar_position == "bottom" ?
-          { bottom: this.bottom_bar_height } : { top: this.bottom_bar_height })
 
-        meowBottomBar({
+        linysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
+          .alignRules(this.web_and_stuff_alignRules)
+          .margin(this.settings_title_bar_position == "bottom" ?
+            { bottom: this.bottom_bar_height } : { top: this.bottom_bar_height })
+
+
+        meowTitleBar({
           bunch_of_tabs: this.bunch_of_tabs,
           tablet_mode: this.tablet_mode,
           screen_width: this.screen_width,
-          bottom_bar_height: this.bottom_bar_height,
+          bar_height: this.bottom_bar_height,
           webViews_ready: this.webViews_ready,
           // Environments
           search_input: this.search_input,

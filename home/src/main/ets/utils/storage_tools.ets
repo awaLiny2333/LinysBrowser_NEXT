@@ -5,7 +5,7 @@ import { buffer } from '@kit.ArkTS';
 
 let context = AppStorage.get("context") as common.UIAbilityContext;
 
-export async function document_save(file_name: string, content: string) {
+export function document_save(file_name: string, content: string) {
   let target_uri: string[] = [];
 
   try {

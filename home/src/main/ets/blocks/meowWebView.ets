@@ -32,6 +32,9 @@ struct meowWebView {
           controller: this.bunch_of_tabs.Tabs[Label.index_key] !== undefined ?
           this.bunch_of_tabs.Tabs[Label.index_key].controller : undefined
         })// Main WEB
+          .width("100%")
+          .height("100%")
+          .visibility(this.current_tab_index == Label.index_key ? Visibility.Visible : Visibility.None)
           .databaseAccess(true)
           .onlineImageAccess(true)
           .javaScriptAccess(true)
@@ -43,9 +46,6 @@ struct meowWebView {
             this.universal_new_tab_gateway = new_target_url;
             event.handler.setWebController(null);
           })
-          .width("100%")
-          .height("100%")
-          .visibility(this.current_tab_index == Label.index_key ? Visibility.Visible : Visibility.None)
           .onErrorReceive((e) => {
             console.log("[Meow][ArkWeb][ERROR] "
               + e.error.getErrorCode() + ", " + e.error.getErrorInfo()
@@ -98,7 +98,7 @@ struct meowWebView {
     .width("100%")
     .height("100%")
     .onAppear(() => {
-      console.log("[Meow][LinysWebView] WebViews READY")
+      console.log("[Meow][meowWebView] WebViews READY")
     })
   }
 
@@ -119,22 +119,9 @@ struct meowWebView {
     this.tab_loading_progresses = this.bunch_of_tabs.get_all_loading_progress()
   }
 
-  update_backward_forward_access() {
-    this.current_accessBackward = this.bunch_of_tabs.workingTab().controller.accessBackward()
-    this.current_accessForward = this.bunch_of_tabs.workingTab().controller.accessForward()
-  }
-
   update_search_box_text(text: string) {
     this.search_input = url_resource_to_meow(text)
     // Update Input Search Box
-  }
-
-  is_dark_mode() {
-    return this.current_color_mode == 0;
-  }
-
-  home_url() {
-    return this.is_dark_mode() ? 'meow://home_dark' : 'meow://home_light'
   }
 }
 

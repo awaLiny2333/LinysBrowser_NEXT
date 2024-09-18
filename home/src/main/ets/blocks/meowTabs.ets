@@ -12,7 +12,7 @@ struct meowTabs {
   @Prop showing_tabs: boolean;
   @Prop animation_default: AnimateParam;
   @Link current_tab_index: number;
-  @Link @Watch('universal_new_tab') universal_new_tab_gateway: string | undefined;
+  @Link @Watch('targeted_new_tab') universal_new_tab_gateway: string | undefined;
   // Controls and environments
   @Link tab_titles: string[];
   @Link current_title: string;
@@ -144,7 +144,7 @@ struct meowTabs {
         this.on_timer()
       }, 10)
       // Set Task to calculate animation
-      console.log("[Meow][LinysTabs] Tabs Panel READY")
+      console.log("[Meow][meowTabs] Tabs Panel READY")
     })
     .onAreaChange((_o, n) => {
       this.scroll_area_height = n.height as number - 60;
@@ -171,7 +171,7 @@ struct meowTabs {
     // Scroll to the new tab later
   }
 
-  universal_new_tab() {
+  targeted_new_tab() {
     if (this.universal_new_tab_gateway !== undefined) {
       this.new_tab(this.universal_new_tab_gateway);
       this.universal_new_tab_gateway = undefined;

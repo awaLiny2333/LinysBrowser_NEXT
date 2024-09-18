@@ -2,13 +2,38 @@ import { AbilityConstant, Configuration, UIAbility, Want } from '@kit.AbilityKit
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
+import { distributedKVStore } from '@kit.ArkData';
+
+let kvManager: distributedKVStore.KVManager;
 
 export default class HomeAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
+    console.log('want bundle name: ' + want.bundleName);
+    console.log('launchParam launchReason: ' + launchParam.launchReason);
+
+    AppStorage.setOrCreate('context', this.context);
+    AppStorage.setOrCreate('pathDir', this.context.filesDir);
     AppStorage.setOrCreate('currentColorMode', this.context.config.colorMode);
-    // save current color mode
+    // save environment
+
+    const kvManagerConfig: distributedKVStore.KVManagerConfig = {
+      context: this.context,
+      bundleName: 'com.next.liny.linysbrowserNEXT',
+    }
+    try {
+      kvManager = distributedKVStore.createKVManager(kvManagerConfig);
+      console.info("Succeeded in creating KVManager");
+    } catch (e) {
+      let error = e as BusinessError;
+      console.error(`Failed to create KVManager.code is ${error.code},message is ${error.message}`);
+    }
+    if (kvManager !== undefined) {
+      kvManager = kvManager as distributedKVStore.KVManager;
+      AppStorage.setOrCreate("kvManager", kvManager)
+    }
+    // Get kvManager
+
   }
 
   onDestroy(): void {
@@ -18,12 +43,6 @@ export default class HomeAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
-
-    let context = this.context;
-    let pathDir = context.filesDir;
-
-    AppStorage.setOrCreate('context', context);
-    AppStorage.setOrCreate('pathDir', pathDir);
 
     windowStage.loadContent('pages/Index', (err) => {
       if (err.code) {

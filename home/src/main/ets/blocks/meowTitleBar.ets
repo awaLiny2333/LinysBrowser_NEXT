@@ -13,11 +13,11 @@ import {
 } from '../hosts/bunch_of_settings';
 
 @Component
-struct meowBottomBar {
+struct meowTitleBar {
   @Link bunch_of_tabs: bunch_of_tabs;
   @Link tablet_mode: boolean;
   @Link screen_width: number;
-  @Link bottom_bar_height: number;
+  @Link bar_height: number;
   @Link webViews_ready: boolean;
   // Environments
   @Link search_input: string;
@@ -35,16 +35,19 @@ struct meowBottomBar {
   @Link current_url: string;
   @Link current_is_loading: boolean;
   @Link current_loading_progress: number;
-  // Data
   @Link current_accessBackward: boolean;
   @Link current_accessForward: boolean;
-  // Web actions
+  // Web statuses
   @Link showing_tabs: boolean;
   @Link showing_bookmarks: boolean;
   @Link showing_more_options: boolean;
   @Link showing_app_settings: boolean;
 
   // UI control actions
+
+  aboutToAppear(): void {
+
+  }
 
   build() {
     Column({ space: 10 }) {
@@ -62,7 +65,7 @@ struct meowBottomBar {
           .fontSize(fontSize_Normal())
           .maxLines(4)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
-      } // Bottom Bar for estimated destination indication
+      } // Title Bar for estimated destination indication
       .visibility(this.visible_when_typing())
       .padding({ left: 15, right: 15 })
       .width("100%")
@@ -88,7 +91,7 @@ struct meowBottomBar {
         .layoutWeight(1)
 
         linysSymbol({ symbol_glyph_target: 'sys.symbol.share' })
-      } // Bottom Bar for This Page Info display
+      } // Title Bar for This Page Info display
       .padding({ left: 16, right: 15 })
       .width("100%")
       .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
@@ -180,7 +183,7 @@ struct meowBottomBar {
           symbol_glyph_target: this.showing_more_options ? 'sys.symbol.chevron_down' : 'sys.symbol.dot_grid_2x2'
         })// More options
           .onClick(() => {
-            this.show_more()
+            this.show_more_options()
           })
 
         linysShowButton({
@@ -206,10 +209,10 @@ struct meowBottomBar {
           symbol_glyph_target: this.showing_app_settings ? 'sys.symbol.chevron_down' : 'sys.symbol.gearshape'
         })// Settings
           .onClick(() => {
-            this.show_settings()
+            this.show_app_settings()
           })
 
-      } // Bottom Bar of controls
+      } // Title Bar of controls
       .padding({ left: 15, right: 15 })
       .width("100%")
       .constraintSize({ minHeight: 36 })
@@ -244,7 +247,7 @@ struct meowBottomBar {
           .onClick(() => {
             this.submit_searching()
           })
-      } // Bottom Bar of extended searching bar
+      } // Title Bar of extended searching bar
       .visibility(this.visible_in_normal_mode())
       .padding({ left: 15, right: 15 })
       .width("100%")
@@ -257,7 +260,7 @@ struct meowBottomBar {
           .onClick(() => {
 
           })
-      } // Bottom Bar of More Options
+      } // Title Bar of More Options
       .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
       .padding({
         left: 15,
@@ -281,17 +284,20 @@ struct meowBottomBar {
       .visibility(this.visible_when_title_bar_on_top())
       .animation(animation_default())
 
-    } // Bottom Bars
+    } // Title Bars
     .width("100%")
     .backgroundColor($r('app.color.block_color'))
     .alignRules(this.web_and_stuff_alignRules)
     .onAreaChange((_o, n) => {
       if (!this.showing_more_options && !this.is_search_input_typing && !this.showing_app_settings) {
-        this.bottom_bar_height = n.height as number;
+        this.bar_height = n.height as number;
       }
     })
     .visibility(this.settings_title_bar_position == "" ? Visibility.Hidden : Visibility.Visible)
     .animation(this.showing_app_settings ? animation_default() : undefined)
+    .onAppear(()=>{
+      console.log("[Meow][meowTitleBar] Title Bar READY")
+    })
   }
 
   // UI
@@ -340,18 +346,6 @@ struct meowBottomBar {
 
   // Visibility
 
-  submit_searching() {
-    this.webViews_ready = true;
-
-    if (this.search_input_unified != "") {
-      let unified_url: string = unify_search_input_into_url(this.search_input)
-      // unify input into a legal link
-      unified_url = url_meow_to_resource(unified_url)
-      // translate "meow://" into "resource://"
-      this.bunch_of_tabs.loadUrl_onWorkingTab(unified_url)
-    }
-  }
-
   show_tabs() {
     if (!this.tablet_mode) {
       this.showing_more_options = false;
@@ -370,7 +364,7 @@ struct meowBottomBar {
     this.showing_bookmarks = !this.showing_bookmarks;
   }
 
-  show_more() {
+  show_more_options() {
     if (!this.tablet_mode) {
       this.showing_tabs = false;
       this.showing_bookmarks = false;
@@ -381,7 +375,7 @@ struct meowBottomBar {
     this.showing_more_options = !this.showing_more_options;
   }
 
-  show_settings() {
+  show_app_settings() {
     if (!this.tablet_mode) {
       this.showing_tabs = false;
       this.showing_bookmarks = false;
@@ -392,12 +386,30 @@ struct meowBottomBar {
     this.showing_app_settings = !this.showing_app_settings;
   }
 
+  // UI controls
+
+  submit_searching() {
+    this.webViews_ready = true;
+
+    if (this.search_input_unified != "") {
+      let unified_url: string = unify_search_input_into_url(this.search_input)
+      // unify input into a legal link
+      unified_url = url_meow_to_resource(unified_url)
+      // translate "meow://" into "resource://"
+      this.bunch_of_tabs.loadUrl_onWorkingTab(unified_url)
+    }
+  }
+
   go_backward() {
     this.bunch_of_tabs.goBackward_onWorkingTab()
   }
 
   go_forward() {
     this.bunch_of_tabs.goForward_onWorkingTab()
+  }
+
+  go_home() {
+    this.bunch_of_tabs.loadUrl_onWorkingTab(home_url())
   }
 
   refresh_page() {
@@ -410,10 +422,6 @@ struct meowBottomBar {
     this.bunch_of_tabs.workingTab().update_is_loading(false)
     this.sync_list_info()
     this.update_current_info()
-  }
-
-  go_home() {
-    this.bunch_of_tabs.loadUrl_onWorkingTab(home_url())
   }
 
   // Web control events
@@ -449,4 +457,4 @@ struct meowBottomBar {
   // Data synchronizing
 }
 
-export default meowBottomBar;
+export default meowTitleBar;

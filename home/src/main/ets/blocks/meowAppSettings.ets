@@ -27,24 +27,6 @@ struct meowAppSettings {
   @State @Watch('on_title_bar_position_changed') title_bar_position_selected: number[] = [0];
   @Link settings_title_bar_position: string;
 
-  aboutToAppear(): void {
-    bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION).then((bundleInfo) => {
-      this.versionName = bundleInfo.versionName; //应用版本名
-      this.versionNo = bundleInfo.versionCode; //应用版本号
-    })
-    // Get app version info
-    kv_store_get('settings_title_bar_position').then((result) => {
-      if (result == "undefined") {
-        // First open
-        kv_store_put('settings_title_bar_position', "bottom");
-        this.settings_title_bar_position = "bottom";
-      } else {
-        this.settings_title_bar_position = result;
-      }
-    })
-    // Get settings of title bar position
-  }
-
   build() {
     WaterFlow() {
       FlowItem() {
@@ -116,6 +98,10 @@ struct meowAppSettings {
     .width("100%")
     .edgeEffect(EdgeEffect.Spring)
     .animation(animation_default())
+    .onAppear(() => {
+      console.log("[Meow][meowAppSettings] App Settings READY")
+      this.on_appear();
+    })
   }
 
   on_title_bar_position_changed() {
@@ -149,6 +135,23 @@ struct meowAppSettings {
 
   on_panel_close() {
 
+  }
+
+  async on_appear() {
+    bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION).then((bundleInfo) => {
+      this.versionName = bundleInfo.versionName; //应用版本名
+      this.versionNo = bundleInfo.versionCode; //应用版本号
+    })
+    // Get app version info
+
+    this.settings_title_bar_position = await kv_store_get('settings_title_bar_position')
+    console.log("[Meow][meowAppSettings] Got settings for Title Bar position: " + this.settings_title_bar_position)
+    if (this.settings_title_bar_position == ("undefined" || "error")) {
+      kv_store_put('settings_title_bar_position', "bottom");
+      this.settings_title_bar_position = "bottom";
+      // First open
+    }
+    // Get settings of title bar position
   }
 }
 
