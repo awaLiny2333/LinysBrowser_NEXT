@@ -12,11 +12,14 @@ import {
   home_url
 } from '../hosts/bunch_of_settings';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
+import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
+import meowDownloads from './meowDownloads';
 
 @Component
 struct meowTitleBar {
   @Link bunch_of_user_agents: bunch_of_user_agents;
   @Link bunch_of_tabs: bunch_of_tabs;
+  @Link bunch_of_downloads: bunch_of_downloads;
   @Link tablet_mode: boolean;
   @Link screen_width: number;
   @Link bar_height: number;
@@ -45,6 +48,7 @@ struct meowTitleBar {
   @Link showing_bookmarks: boolean;
   @Link showing_more_options: boolean;
   @Link showing_app_settings: boolean;
+  @Link showing_downloads: boolean;
 
   // UI control actions
 
@@ -203,6 +207,15 @@ struct meowTitleBar {
           })
 
         linysShowButton({
+          text: $r('app.string.Index_downloads_title'),
+          symbol_glyph_target: 'sys.symbol.doc_text_badge_checkmark',
+          show: this.showing_downloads
+        })// Downloads
+          .onClick(() => {
+            this.show_downloads()
+          })
+
+        linysShowButton({
           show: this.showing_app_settings,
           text: $r('app.string.Index_app_settings_title'),
           symbol_glyph_target: this.showing_app_settings ? 'sys.symbol.chevron_down' : 'sys.symbol.gearshape'
@@ -279,6 +292,14 @@ struct meowTitleBar {
         .visibility(this.showing_app_settings ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
 
+      meowDownloads({
+        bunch_of_downloads: this.bunch_of_downloads,
+        screen_width: this.screen_width,
+        showing_downloads: this.showing_downloads,
+      })
+        .visibility(this.showing_downloads ? Visibility.Visible : Visibility.None)
+        .animation(animation_default())
+
       Column() {
       } // Placeholder
       .height(this.showing_more_options ? 5 : 0)
@@ -290,13 +311,14 @@ struct meowTitleBar {
     .backgroundColor($r('app.color.block_color'))
     .alignRules(this.web_and_stuff_alignRules)
     .onAreaChange((_o, n) => {
-      if (!this.showing_more_options && !this.is_search_input_typing && !this.showing_app_settings) {
+      if (!this.showing_more_options && !this.is_search_input_typing &&
+        !this.showing_app_settings && !this.showing_downloads) {
         this.bar_height = n.height as number;
       }
     })
     .visibility(this.settings_title_bar_position == "" ? Visibility.Hidden : Visibility.Visible)
     .animation(this.showing_app_settings ? animation_default() : undefined)
-    .onAppear(()=>{
+    .onAppear(() => {
       console.log("[Meow][meowTitleBar] Title Bar READY")
     })
   }
@@ -337,7 +359,8 @@ struct meowTitleBar {
 
   visible_when_no_panels_open_in_normal_mode() {
     let result: Visibility = Visibility.Visible;
-    if (this.showing_more_options || this.showing_app_settings || this.showing_tabs || this.showing_bookmarks) {
+    if (this.showing_more_options || this.showing_downloads || this.showing_app_settings || this.showing_tabs ||
+    this.showing_bookmarks) {
       if (this.tablet_mode == false) {
         result = Visibility.None;
       }
@@ -351,9 +374,10 @@ struct meowTitleBar {
     if (!this.tablet_mode) {
       this.showing_more_options = false;
       this.showing_app_settings = false;
+      this.showing_downloads = false;
     }
-    this.showing_bookmarks = false;
 
+    this.showing_bookmarks = false;
     this.showing_tabs = !this.showing_tabs;
   }
 
@@ -361,9 +385,10 @@ struct meowTitleBar {
     if (!this.tablet_mode) {
       this.showing_more_options = false;
       this.showing_app_settings = false;
+      this.showing_downloads = false;
     }
-    this.showing_tabs = false;
 
+    this.showing_tabs = false;
     this.showing_bookmarks = !this.showing_bookmarks;
   }
 
@@ -374,6 +399,7 @@ struct meowTitleBar {
     }
     // Close all other panels
 
+    this.showing_downloads = false;
     this.showing_app_settings = false;
     this.showing_more_options = !this.showing_more_options;
   }
@@ -385,8 +411,21 @@ struct meowTitleBar {
     }
     // Close all other panels
 
+    this.showing_downloads = false;
     this.showing_more_options = false;
     this.showing_app_settings = !this.showing_app_settings;
+  }
+
+  show_downloads() {
+    if (!this.tablet_mode) {
+      this.showing_tabs = false;
+      this.showing_bookmarks = false;
+    }
+    // Close all other panels
+
+    this.showing_more_options = false;
+    this.showing_app_settings = false;
+    this.showing_downloads = !this.showing_downloads;
   }
 
   // UI controls

@@ -31,7 +31,9 @@ export class bunch_of_user_agents {
     // Clear
     let import_list: string[] = imp.split("\n");
     for (let index = 0; index < import_list.length; index += 2) {
-      this.add_user_agent(new user_agent(import_list[index], import_list[index+1]));
+      if (import_list[index] != "") {
+        this.add_user_agent(new user_agent(import_list[index], import_list[index+1]));
+      }
     }
   }
 }

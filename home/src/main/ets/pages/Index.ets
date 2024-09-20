@@ -7,6 +7,7 @@ import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
 import { animation_default } from '../hosts/bunch_of_settings';
 import meowTitleBar from '../blocks/meowTitleBar';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
+import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 
 @Entry
 @Component
@@ -19,6 +20,7 @@ struct Index {
   @State search_input: string = "";
   @State search_input_unified: string = "";
   // UI Statuses
+  @State showing_downloads: boolean = false;
   @State showing_more_options: boolean = false;
   @State showing_app_settings: boolean = false;
   @State showing_tabs: boolean = false;
@@ -34,6 +36,7 @@ struct Index {
   @State bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
   @State bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("Bookmarks");
   @State bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
+  @State bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads();
   // Web Statuses
   @State tab_titles: string[] = []
   @State current_title: string = "=￣ω￣=";
@@ -135,6 +138,7 @@ struct Index {
               tablet_mode: this.tablet_mode,
               show_webViews: this.webViews_ready,
               // Environment
+              bunch_of_downloads: this.bunch_of_downloads,
               bunch_of_tabs: this.bunch_of_tabs,
               universal_new_tab_gateway: this.universal_new_tab_gateway,
               // HOST
@@ -181,6 +185,7 @@ struct Index {
 
 
         meowTitleBar({
+          bunch_of_downloads: this.bunch_of_downloads,
           bunch_of_user_agents: this.bunch_of_user_agents,
           bunch_of_tabs: this.bunch_of_tabs,
           tablet_mode: this.tablet_mode,
@@ -212,6 +217,7 @@ struct Index {
           showing_bookmarks: this.showing_bookmarks,
           showing_more_options: this.showing_more_options,
           showing_app_settings: this.showing_app_settings,
+          showing_downloads: this.showing_downloads,
         }) // Bottom Bar
 
       }

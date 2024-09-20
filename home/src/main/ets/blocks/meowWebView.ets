@@ -1,9 +1,11 @@
+import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_tabs, tab_label } from '../hosts/bunch_of_tabs';
 import { url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
 
 @Component
 struct meowWebView {
   @StorageProp('currentColorMode') current_color_mode: number = 0;
+  @Link bunch_of_downloads: bunch_of_downloads;
   @Link bunch_of_tabs: bunch_of_tabs;
   @Link current_tab_index: number;
   @Link universal_new_tab_gateway: string | undefined;
@@ -92,6 +94,17 @@ struct meowWebView {
             this.update_search_box_text(this.current_url)
             // Update Input Search Box
           })
+          .onDownloadStart((event) => {
+            if (event) {
+              console.log('url:' + event.url)
+              console.log('userAgent:' + event.userAgent)
+              console.log('contentDisposition:' + event.contentDisposition)
+              console.log('contentLength:' + event.contentLength)
+              console.log('mimetype:' + event.mimetype)
+
+              this.bunch_of_downloads.start_download_task(event.url)
+            }
+          })
           .onAppear(() => {
             if (this.now_global_custom_UA.length != 0) {
               this.bunch_of_tabs.Tabs[Label.index_key].controller.setCustomUserAgent(this.now_global_custom_UA);
@@ -128,7 +141,7 @@ struct meowWebView {
 
   update_search_box_text(text: string) {
     this.search_input = url_resource_to_meow(text)
-    // Update Input Search Box
+    // Update Input Search Box when new page loaded
   }
 }
 
