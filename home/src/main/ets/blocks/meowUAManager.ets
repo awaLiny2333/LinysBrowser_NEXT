@@ -144,8 +144,7 @@ struct meowUAManager {
 
   save_user_agents_to_kv_store() {
     console.log("[Meow][meowUAManager] Started to save custom user-agents to KVStore!")
-    let user_agents_export: string = this.bunch_of_user_agents.export_string();
-    kv_store_put("custom_user_agents", user_agents_export);
+    kv_store_put("custom_user_agents", this.bunch_of_user_agents.export_string());
     kv_store_put("custom_user_agents_selected_index", this.selected_index.toString());
   }
 }
@@ -358,6 +357,20 @@ struct meowUAButton {
 
   }
 
+  set_global_UA_to_mine() {
+    this.selected_index = this.my_index;
+  }
+
+  save_changes() {
+    this.edit_content = this.edit_content.replaceAll("\n", "");
+
+    this.my_label = this.edit_label;
+    this.my_content = this.edit_content;
+    this.my_ua.label = this.edit_label;
+    this.my_ua.content = this.edit_content;
+    this.save_user_agents_to_kv_store();
+  }
+
   delete_myself() {
     this.delete_confirm += 300;
     if (this.delete_confirm >= 301) {
@@ -376,23 +389,8 @@ struct meowUAButton {
     }
   }
 
-  save_changes() {
-    this.edit_content = this.edit_content.replaceAll("\n", "");
-
-    this.my_label = this.edit_label;
-    this.my_content = this.edit_content;
-    this.my_ua.label = this.edit_label;
-    this.my_ua.content = this.edit_content;
-    this.save_user_agents_to_kv_store();
-  }
-
-  set_global_UA_to_mine() {
-    this.selected_index = this.my_index;
-  }
-
   save_user_agents_to_kv_store() {
     console.log("[Meow][meowUAManager] Started to save custom user-agents to KVStore!")
-    let user_agents_export: string = this.bunch_of_user_agents.export_string();
-    kv_store_put("custom_user_agents", user_agents_export);
+    kv_store_put("custom_user_agents", this.bunch_of_user_agents.export_string());
   }
 }

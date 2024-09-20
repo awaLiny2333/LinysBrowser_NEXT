@@ -57,7 +57,7 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 - [x] Respond to webpages' request of opening in new tab.
 - [ ] Downloads from web.
 - [ ] Right click or long press menu on web links. (For preview and operations)
-- [ ] UA Switching and customizations. (UA related settings)
+- [x] UA Switching and customizations. (UA related settings)
 
 ### Experience
 

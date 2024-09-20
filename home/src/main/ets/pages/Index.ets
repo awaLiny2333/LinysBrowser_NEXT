@@ -13,24 +13,28 @@ import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 struct Index {
   @StorageLink('bottomAvoidHeight') bottomAvoidHeight: number = 1;
   @StorageLink('topAvoidHeight') topAvoidHeight: number = 1;
-  @StorageProp('currentColorMode') current_color_mode: number = 0;
+  // Interactions
   @State is_search_input_typing: boolean = false;
   @State tablet_mode: boolean = false;
   @State search_input: string = "";
   @State search_input_unified: string = "";
+  // UI Statuses
   @State showing_more_options: boolean = false;
   @State showing_app_settings: boolean = false;
   @State showing_tabs: boolean = false;
   @State showing_bookmarks: boolean = false;
-  @State screen_width: number = 0;
-  @State current_accessForward: boolean = false;
-  @State current_accessBackward: boolean = false;
   @State webViews_ready: boolean = false;
-  @State current_tab_index: number = 0;
+  @State screen_width: number = 0;
+  @State title_bar_height: number = 0;
+  @State web_and_stuff_alignRules: AlignRuleOption = {
+    middle: { anchor: "__container__", align: HorizontalAlign.Center },
+    bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
+  };
+  // HOSTs
   @State bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
   @State bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("Bookmarks");
   @State bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
-  // HOST
+  // Web Statuses
   @State tab_titles: string[] = []
   @State current_title: string = "=￣ω￣=";
   @State tab_urls: string[] = []
@@ -39,17 +43,14 @@ struct Index {
   @State current_loading_progress: number = 0
   @State tab_is_loading: boolean[] = [true]
   @State current_is_loading: boolean = true
-  // Tabs
-
-  @State universal_new_tab_gateway: string | undefined = undefined;
+  // Web control statuses
+  @State current_tab_index: number = 0;
+  @State current_accessForward: boolean = false;
+  @State current_accessBackward: boolean = false;
   // Misc weird methods but it just works ¯\_(ツ)_/¯
-
-  @State bottom_bar_height: number = 0;
+  @State universal_new_tab_gateway: string | undefined = undefined;
+  // Settings
   @State @Watch('on_title_bar_position_change') settings_title_bar_position: string = "";
-  @State web_and_stuff_alignRules: AlignRuleOption = {
-    middle: { anchor: "__container__", align: HorizontalAlign.Center },
-    bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
-  };
   @State @Watch('on_global_custom_UA_change') now_global_custom_UA: string = "";
 
   aboutToAppear(): void {
@@ -170,13 +171,13 @@ struct Index {
           this.tablet_mode = this.screen_width > 500
         })
         .margin(this.settings_title_bar_position == "bottom" ?
-          { bottom: this.bottom_bar_height } : { top: this.bottom_bar_height })
+          { bottom: this.title_bar_height } : { top: this.title_bar_height })
 
 
         linysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
           .alignRules(this.web_and_stuff_alignRules)
           .margin(this.settings_title_bar_position == "bottom" ?
-            { bottom: this.bottom_bar_height } : { top: this.bottom_bar_height })
+            { bottom: this.title_bar_height } : { top: this.title_bar_height })
 
 
         meowTitleBar({
@@ -184,7 +185,7 @@ struct Index {
           bunch_of_tabs: this.bunch_of_tabs,
           tablet_mode: this.tablet_mode,
           screen_width: this.screen_width,
-          bar_height: this.bottom_bar_height,
+          bar_height: this.title_bar_height,
           webViews_ready: this.webViews_ready,
           // Environments
           search_input: this.search_input,
@@ -231,13 +232,7 @@ struct Index {
     })
   }
 
-  // visible statuses
-
-  is_dark_mode() {
-    return this.current_color_mode == 0;
-  }
-
-  // UI params
+  // @Watch Reactions
 
   on_title_bar_position_change() {
     if (this.settings_title_bar_position == "bottom") {

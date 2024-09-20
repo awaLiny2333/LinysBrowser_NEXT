@@ -52,6 +52,8 @@ export class bunch_of_tabs {
   current_color_mode: number = AppStorage.get('currentColorMode') as number;
   global_custom_UA: string = "";
 
+  // Operations and Actions
+
   loadUrl_onWorkingTab(url: string) {
     url = url_meow_to_resource(url);
     this.Tabs[this.current_working_tab_index].controller.loadUrl(url);
@@ -76,6 +78,8 @@ export class bunch_of_tabs {
       this.Tabs[this.current_working_tab_index].controller.backward();
     }
   }
+
+  // UA Stuff
 
   set_global_custom_UA(ua: string) {
     console.log("[bunch_of_tabs][UA] Set global_custom_UA! ua: " + ua)
@@ -109,6 +113,8 @@ export class bunch_of_tabs {
   get_global_default_UA() {
     return this.Tabs[0].controller.getUserAgent();
   }
+
+  // General Tab Controls
 
   switchToTab(target: number) {
     this.current_working_tab_index = target;
@@ -174,6 +180,8 @@ export class bunch_of_tabs {
   workingTab() {
     return this.Tabs[this.current_working_tab_index];
   }
+
+  // Data Syncing
 
   get_all_titles() {
     let titles: string[] = [];
