@@ -22,6 +22,7 @@ struct meowWebView {
   @Link current_accessForward: boolean;
   @Link current_accessBackward: boolean;
   @Link search_input: string;
+  @Link now_global_custom_UA: string;
 
   build() {
     Row() {
@@ -90,6 +91,12 @@ struct meowWebView {
             this.update_current_info()
             this.update_search_box_text(this.current_url)
             // Update Input Search Box
+          })
+          .onAppear(() => {
+            if (this.now_global_custom_UA.length != 0) {
+              this.bunch_of_tabs.Tabs[Label.index_key].controller.setCustomUserAgent(this.now_global_custom_UA);
+              // set ua
+            }
           })
       }, (item: tab_label) => item.timestamp.toString())
 

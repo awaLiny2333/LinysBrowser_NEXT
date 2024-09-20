@@ -75,6 +75,14 @@
     {
       "name": "Settings_appearance_title_bar_position",
       "value": "Title Bar Position"
+    },
+    {
+      "name": "Settings_general_custom_ua",
+      "value": "Custom User-Agent"
+    },
+    {
+      "name": "Settings_general_custom_ua_default",
+      "value": "System Default"
     }
   ]
 }

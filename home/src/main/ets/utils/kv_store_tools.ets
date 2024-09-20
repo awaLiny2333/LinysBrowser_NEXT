@@ -1,10 +1,11 @@
 import { distributedKVStore } from '@kit.ArkData';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { common } from '@kit.AbilityKit';
 
 export async function kv_store_get(key_name: string) {
   if (AppStorage.get('kvStore') == undefined) {
     console.log("[Meow][kv_store_tools][GET] First launch of app, now getting kvStore")
-    await get_kv_store();
+    await get_kv_store_into_app_storage();
   }
   let kvStore = AppStorage.get('kvStore') as distributedKVStore.DeviceKVStore;
 
@@ -30,7 +31,7 @@ export async function kv_store_get(key_name: string) {
 export async function kv_store_put(key_name: string, put_content: string) {
   if (AppStorage.get('kvStore') == undefined) {
     console.log("[Meow][kv_store_tools][GET] First launch of app, now getting kvStore")
-    await get_kv_store();
+    await get_kv_store_into_app_storage();
   }
   let kvStore = AppStorage.get('kvStore') as distributedKVStore.DeviceKVStore;
 
@@ -47,7 +48,7 @@ export async function kv_store_put(key_name: string, put_content: string) {
 export async function kv_store_delete(key_name: string) {
   if (AppStorage.get('kvStore') == undefined) {
     console.log("[Meow][kv_store_tools][GET] First launch of app, now getting kvStore")
-    await get_kv_store();
+    await get_kv_store_into_app_storage();
   }
   let kvStore = AppStorage.get('kvStore') as distributedKVStore.DeviceKVStore;
 
@@ -61,25 +62,39 @@ export async function kv_store_delete(key_name: string) {
 
 }
 
-async function get_kv_store() {
-  let kvManager = AppStorage.get('kvManager') as distributedKVStore.KVManager;
-  let kvStore: distributedKVStore.DeviceKVStore | undefined = undefined;
-  const options: distributedKVStore.Options = {
-    createIfMissing: true,
-    encrypt: false,
-    backup: false,
-    autoSync: false,
-    kvStoreType: distributedKVStore.KVStoreType.DEVICE_COLLABORATION,
-    securityLevel: distributedKVStore.SecurityLevel.S2,
-  };
-  await kvManager.getKVStore<distributedKVStore.DeviceKVStore>('storeId', options)
-    .then((store: distributedKVStore.DeviceKVStore) => {
-      console.info("Succeeded in getting KVStore");
-      kvStore = store;
-      AppStorage.setOrCreate("kvStore", kvStore)
-      // Got kvStore
-    }).catch((err: BusinessError) => {
-      console.error(`Failed to get KVStore.code is ${err.code},message is ${err.message}`);
-    });
-  // Get kvStore
+async function get_kv_store_into_app_storage() {
+
+  const kvManagerConfig: distributedKVStore.KVManagerConfig = {
+    context: AppStorage.get('context') as common.UIAbilityContext,
+    bundleName: 'com.next.liny.linysbrowserNEXT',
+  }
+
+  try {
+    let kvManager = distributedKVStore.createKVManager(kvManagerConfig);
+    console.info("[Meow][kv_store_tools] Succeeded in creating KVManager");
+    // Get kvManager
+
+    const options: distributedKVStore.Options = {
+      createIfMissing: true,
+      encrypt: false,
+      backup: false,
+      autoSync: false,
+      kvStoreType: distributedKVStore.KVStoreType.DEVICE_COLLABORATION,
+      securityLevel: distributedKVStore.SecurityLevel.S2,
+    };
+
+    await kvManager.getKVStore<distributedKVStore.DeviceKVStore>('storeId', options)
+      .then((store: distributedKVStore.DeviceKVStore) => {
+        console.info("[Meow][kv_store_tools] Succeeded in getting KVStore and storing it to AppStorage");
+        AppStorage.setOrCreate("kvStore", store)
+        // Got kvStore
+      }).catch((err: BusinessError) => {
+        console.error(`[Meow][kv_store_tools][ERROR] Failed to get KVStore.code is ${err.code},message is ${err.message}`);
+      });
+    // Get kvStore
+
+  } catch (e) {
+    let error = e as BusinessError;
+    console.error(`[Meow][kv_store_tools][ERROR] Failed to create KVManager.code is ${error.code},message is ${error.message}`);
+  }
 }

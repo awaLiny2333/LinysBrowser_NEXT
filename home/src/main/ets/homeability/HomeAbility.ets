@@ -2,9 +2,6 @@ import { AbilityConstant, Configuration, UIAbility, Want } from '@kit.AbilityKit
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { distributedKVStore } from '@kit.ArkData';
-
-let kvManager: distributedKVStore.KVManager;
 
 export default class HomeAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -16,24 +13,6 @@ export default class HomeAbility extends UIAbility {
     AppStorage.setOrCreate('pathDir', this.context.filesDir);
     AppStorage.setOrCreate('currentColorMode', this.context.config.colorMode);
     // save environment
-
-    const kvManagerConfig: distributedKVStore.KVManagerConfig = {
-      context: this.context,
-      bundleName: 'com.next.liny.linysbrowserNEXT',
-    }
-    try {
-      kvManager = distributedKVStore.createKVManager(kvManagerConfig);
-      console.info("Succeeded in creating KVManager");
-    } catch (e) {
-      let error = e as BusinessError;
-      console.error(`Failed to create KVManager.code is ${error.code},message is ${error.message}`);
-    }
-    if (kvManager !== undefined) {
-      kvManager = kvManager as distributedKVStore.KVManager;
-      AppStorage.setOrCreate("kvManager", kvManager)
-    }
-    // Get kvManager
-
   }
 
   onDestroy(): void {
@@ -43,6 +22,16 @@ export default class HomeAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
+
+    windowStage.getMainWindow((err: BusinessError, win) => {
+      const errCode: number = err.code;
+      if (errCode) {
+        console.error(`Failed to obtain the main window. Cause code: ${err.code}, message: ${err.message}`);
+        return;
+      }
+      win.setPreferredOrientation(window.Orientation.AUTO_ROTATION_RESTRICTED)
+      // Set window orientation
+    })
 
     windowStage.loadContent('pages/Index', (err) => {
       if (err.code) {
@@ -75,15 +64,6 @@ export default class HomeAbility extends UIAbility {
       AppStorage.setOrCreate('topAvoidHeight', topAvoidHeight);
 
     });
-    windowStage.getMainWindow((err: BusinessError, win) => {
-      const errCode: number = err.code;
-      if (errCode) {
-        console.error(`Failed to obtain the main window. Cause code: ${err.code}, message: ${err.message}`);
-        return;
-      }
-      win.setPreferredOrientation(window.Orientation.AUTO_ROTATION_RESTRICTED)
-      // Set window orientation
-    })
   }
 
   onConfigurationUpdate(newConfig: Configuration): void {

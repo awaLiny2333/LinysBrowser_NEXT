@@ -6,6 +6,7 @@ import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
 import { animation_default } from '../hosts/bunch_of_settings';
 import meowTitleBar from '../blocks/meowTitleBar';
+import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 
 @Entry
 @Component
@@ -28,6 +29,7 @@ struct Index {
   @State current_tab_index: number = 0;
   @State bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
   @State bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("Bookmarks");
+  @State bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
   // HOST
   @State tab_titles: string[] = []
   @State current_title: string = "=￣ω￣=";
@@ -48,6 +50,7 @@ struct Index {
     middle: { anchor: "__container__", align: HorizontalAlign.Center },
     bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
   };
+  @State @Watch('on_global_custom_UA_change') now_global_custom_UA: string = "";
 
   aboutToAppear(): void {
 
@@ -146,7 +149,8 @@ struct Index {
               // Statuses
               current_accessForward: this.current_accessForward,
               current_accessBackward: this.current_accessBackward,
-              search_input: this.search_input
+              search_input: this.search_input,
+              now_global_custom_UA: this.now_global_custom_UA
               // Other statuses
             })
               .visibility(this.webViews_ready ? Visibility.Visible : Visibility.Hidden)
@@ -176,6 +180,7 @@ struct Index {
 
 
         meowTitleBar({
+          bunch_of_user_agents: this.bunch_of_user_agents,
           bunch_of_tabs: this.bunch_of_tabs,
           tablet_mode: this.tablet_mode,
           screen_width: this.screen_width,
@@ -187,6 +192,7 @@ struct Index {
           is_search_input_typing: this.is_search_input_typing,
           settings_title_bar_position: this.settings_title_bar_position,
           web_and_stuff_alignRules: this.web_and_stuff_alignRules,
+          now_global_custom_UA: this.now_global_custom_UA,
           // Current statuses
           current_tab_index: this.current_tab_index,
           tab_titles: this.tab_titles,
@@ -245,5 +251,9 @@ struct Index {
         top: { anchor: "__container__", align: VerticalAlign.Top }
       }
     }
+  }
+
+  on_global_custom_UA_change() {
+    this.bunch_of_tabs.set_global_custom_UA(this.now_global_custom_UA);
   }
 }

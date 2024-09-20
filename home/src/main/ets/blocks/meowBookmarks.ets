@@ -34,19 +34,6 @@ struct meowBookmarks {
 
   // Visual effects related
 
-  aboutToAppear(): void {
-    kv_store_get("html_bookmarks").then(result => {
-      if (result as string == "undefined") {
-        // First use bookmarks
-      } else {
-        let html_bookmarks = result as string;
-        this.bunch_of_bookmarks.import_html(html_bookmarks, true);
-        this.refresh_root_content();
-        this.bookmark_load_from_disk_ok = true;
-      }
-    })
-  }
-
   build() {
     Column() {
       Scroll(this.scroll_controller) {
@@ -253,9 +240,23 @@ struct meowBookmarks {
     .padding(10)
     .width("100%")
     .height("100%")
-    .onAppear(()=>{
+    .onAppear(() => {
       console.log("[Meow][meowBookmarks] Bookmarks READY")
+      this.on_appear();
     })
+  }
+
+  async on_appear() {
+    let result = await kv_store_get("html_bookmarks");
+    if (result as string == "undefined") {
+      // First use bookmarks
+    } else {
+      let html_bookmarks = result as string;
+      this.bunch_of_bookmarks.import_html(html_bookmarks, true);
+      this.refresh_root_content();
+    }
+    this.bookmark_load_from_disk_ok = true;
+    // Get bookmarks
   }
 
   new_folder() {
@@ -339,6 +340,7 @@ struct meowBookmarks {
     let html_bookmark: string[] = this.bunch_of_bookmarks.export_html();
     kv_store_put("html_bookmarks", html_bookmark.join("\n"));
   }
+
 }
 
 export default meowBookmarks;

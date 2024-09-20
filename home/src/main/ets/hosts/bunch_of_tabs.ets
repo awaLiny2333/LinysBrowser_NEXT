@@ -50,16 +50,14 @@ export class bunch_of_tabs {
   Labels: Array<tab_label> = [new tab_label(Date.now(), 0)];
   current_working_tab_index: number = 0;
   current_color_mode: number = AppStorage.get('currentColorMode') as number;
-  private UA: string | undefined = undefined;
+  global_custom_UA: string = "";
 
   loadUrl_onWorkingTab(url: string) {
     url = url_meow_to_resource(url);
-    this.apply_global_ua_onWorkingTab();
     this.Tabs[this.current_working_tab_index].controller.loadUrl(url);
   }
 
   refresh_onWorkingTab() {
-    this.apply_global_ua_onWorkingTab();
     this.Tabs[this.current_working_tab_index].controller.refresh();
   }
 
@@ -68,29 +66,48 @@ export class bunch_of_tabs {
   }
 
   goForward_onWorkingTab() {
-    this.apply_global_ua_onWorkingTab();
     if (this.Tabs[this.current_working_tab_index].controller.accessForward()) {
       this.Tabs[this.current_working_tab_index].controller.forward();
     }
   }
 
   goBackward_onWorkingTab() {
-    this.apply_global_ua_onWorkingTab();
     if (this.Tabs[this.current_working_tab_index].controller.accessBackward()) {
       this.Tabs[this.current_working_tab_index].controller.backward();
     }
   }
 
-  set_global_UA(ua: string | undefined) {
-    this.UA = ua;
+  set_global_custom_UA(ua: string) {
+    console.log("[bunch_of_tabs][UA] Set global_custom_UA! ua: " + ua)
+    this.global_custom_UA = ua;
+
+    if (this.global_custom_UA == "") {
+      this.reset_global_custom_UA();
+      return;
+      // Reset default if no input
+    }
+
+    for (let index = 0; index < this.Tabs.length; index++) {
+      this.Tabs[index].controller.setCustomUserAgent(this.global_custom_UA)
+    }
+
   }
 
-  get_global_UA() {
-    if (this.UA == undefined) {
-      return this.Tabs[this.current_working_tab_index].controller.getUserAgent();
-    } else {
-      return this.UA;
+  reset_global_custom_UA() {
+    console.log("[bunch_of_tabs][UA] Reset global_custom_UA!")
+    let default_ua = this.get_global_default_UA();
+
+    for (let index = 0; index < this.Tabs.length; index++) {
+      this.Tabs[index].controller.setCustomUserAgent(default_ua)
     }
+  }
+
+  get_global_custom_UA() {
+    return this.Tabs[0].controller.getCustomUserAgent();
+  }
+
+  get_global_default_UA() {
+    return this.Tabs[0].controller.getUserAgent();
   }
 
   switchToTab(target: number) {
@@ -98,14 +115,13 @@ export class bunch_of_tabs {
     return target;
   }
 
-  newTab(home_url: string) {
-    let new_TabInfo: tab_info_packed = new tab_info_packed("Meow", home_url);
+  newTab(target_url: string) {
+    let new_TabInfo: tab_info_packed = new tab_info_packed("Meow", target_url);
     let new_TabLabel: tab_label = new tab_label(Date.now(), this.Tabs.length);
     this.Tabs.push(new_TabInfo);
     this.Labels.push(new_TabLabel);
     this.current_working_tab_index = this.Tabs.length - 1;
-    return this.Tabs.length - 1 as number;
-    // return this.switchToTab(this.Tabs.length - 1) as number;
+    return this.current_working_tab_index as number;
   }
 
   closeTab(target: number, home_url: string) {
@@ -202,11 +218,5 @@ export class bunch_of_tabs {
       stamps.push(this.Labels[index].timestamp);
     }
     return stamps;
-  }
-
-  private apply_global_ua_onWorkingTab() {
-    if (this.UA !== undefined) {
-      this.Tabs[this.current_working_tab_index].controller.setCustomUserAgent(this.UA);
-    }
   }
 }

@@ -11,9 +11,11 @@ import {
   fontSize_Normal,
   home_url
 } from '../hosts/bunch_of_settings';
+import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 
 @Component
 struct meowTitleBar {
+  @Link bunch_of_user_agents: bunch_of_user_agents;
   @Link bunch_of_tabs: bunch_of_tabs;
   @Link tablet_mode: boolean;
   @Link screen_width: number;
@@ -25,6 +27,7 @@ struct meowTitleBar {
   @Link is_search_input_typing: boolean;
   @Link settings_title_bar_position: string;
   @Link web_and_stuff_alignRules: AlignRuleOption;
+  @Link now_global_custom_UA: string;
   // Current statuses
   @Link current_tab_index: number;
   @Link tab_titles: string[];
@@ -44,10 +47,6 @@ struct meowTitleBar {
   @Link showing_app_settings: boolean;
 
   // UI control actions
-
-  aboutToAppear(): void {
-
-  }
 
   build() {
     Column({ space: 10 }) {
@@ -271,6 +270,8 @@ struct meowTitleBar {
       .animation(animation_default())
 
       meowAppSettings({
+        now_global_custom_UA: this.now_global_custom_UA,
+        bunch_of_user_agents: this.bunch_of_user_agents,
         screen_width: this.screen_width,
         show: this.showing_app_settings,
         settings_title_bar_position: this.settings_title_bar_position
@@ -349,6 +350,7 @@ struct meowTitleBar {
   show_tabs() {
     if (!this.tablet_mode) {
       this.showing_more_options = false;
+      this.showing_app_settings = false;
     }
     this.showing_bookmarks = false;
 
@@ -358,6 +360,7 @@ struct meowTitleBar {
   show_bookmarks() {
     if (!this.tablet_mode) {
       this.showing_more_options = false;
+      this.showing_app_settings = false;
     }
     this.showing_tabs = false;
 

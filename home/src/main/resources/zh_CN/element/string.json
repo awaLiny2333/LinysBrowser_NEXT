@@ -75,6 +75,14 @@
     {
       "name": "Settings_appearance_title_bar_position",
       "value": "标题栏位置"
+    },
+    {
+      "name": "Settings_general_custom_ua",
+      "value": "自定义用户代理（UA）"
+    },
+    {
+      "name": "Settings_general_custom_ua_default",
+      "value": "系统默认"
     }
   ]
 }
