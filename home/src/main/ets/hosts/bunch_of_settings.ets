@@ -1,3 +1,5 @@
+import Curves from '@ohos.curves';
+
 export function fontSize_Large() {
   return 20;
 }
@@ -15,7 +17,9 @@ export function capsule_bar_height() {
 }
 
 export function animation_default() {
-  let ap: AnimateParam = { duration: 250, curve: Curve.ExtremeDeceleration };
+  let spring = Curves.springMotion(0.36, 0.76);
+  // let ap: AnimateParam = { duration: 300, curve: Curve.ExtremeDeceleration };
+  let ap: AnimateParam = { curve: spring };
   return ap;
 }
 

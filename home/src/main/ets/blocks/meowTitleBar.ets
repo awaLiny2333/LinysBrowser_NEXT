@@ -175,10 +175,10 @@ struct meowTitleBar {
         linysSymbol({
           symbol_glyph_target: 'sys.symbol.magnifyingglass'
         })// Search
-          .visibility(this.visible_when_typing_in_tablet_mode())
           .onClick(() => {
             this.submit_searching()
           })
+          .visibility(this.visible_when_typing_in_tablet_mode())
 
         linysShowButton({
           show: this.showing_more_options,
@@ -259,6 +259,7 @@ struct meowTitleBar {
           .onClick(() => {
             this.submit_searching()
           })
+
       } // Title Bar of extended searching bar
       .visibility(this.visible_in_normal_mode())
       .padding({ left: 15, right: 15 })

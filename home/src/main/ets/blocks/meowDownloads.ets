@@ -52,6 +52,7 @@ struct meowDownloads {
     .padding({ left: 15, right: 15 })
     .width("100%")
     .edgeEffect(EdgeEffect.Spring)
+    .scrollBar(BarState.Auto)
     .animation(animation_default())
     .onAppear(() => {
       console.log("[Meow][meowDownloads] Downloads READY")
@@ -74,20 +75,36 @@ export default meowDownloads
 struct meowDownloadsButton {
   @Prop my_index: number;
   @Link @Watch('update_progress') bunch_of_downloads: bunch_of_downloads;
+  // Statuses
   @State my_progress: number = 0;
   @State my_file_name: string = "";
   @State my_full_download_size: number = 0;
   @State my_current_download_size: number = 0;
   @State my_paused: boolean = false;
+  @State my_link: string = "";
+  // Display info
   @State formatted_download_progress: string = "／";
   @State formatted_download_percentage: string = "%";
+  // UI Effects
+  @State y_off_set: number = 50;
+  @State visible: Visibility = Visibility.Hidden;
+  @State exporting: boolean = false;
+  @State delete_confirm: number = 0;
 
   build() {
     FlowItem() {
       Column({ space: 15 }) {
         linysTitleText({
           text: this.my_file_name,
+          max_lines: 4,
         })
+
+        linysText({
+          text: this.my_link,
+          max_lines: 4,
+        })
+          .opacity(0.7)
+
         Row({ space: 5 }) {
           linysText({
             text: this.formatted_download_percentage,
@@ -100,6 +117,27 @@ struct meowDownloadsButton {
 
         Row({ space: 10 }) {
           Blank()
+
+          Button("  󰀁  ")// Delete
+            .type(ButtonType.Capsule)
+            .backgroundColor(this.delete_confirm > 0 ? $r('app.color.start_window_background') :
+            $r("app.color.font_color_title"))
+            .fontColor(this.delete_confirm > 0 ? $r('app.color.font_color_title') :
+            $r('app.color.start_window_background'))
+            .border({
+              width: 2,
+              color: this.delete_confirm > 0 ? $r('app.color.font_color_title') : "transparent"
+            })
+            .fontSize(fontSize_Large())
+            .fontWeight(FontWeight.Medium)
+            .height(capsule_bar_height())
+            .onClick(() => {
+              this.delete_task()
+            })
+            .enabled(!this.exporting)// .visibility(this.my_paused ? Visibility.Visible : Visibility.None)
+            .clickEffect(click_effect_default())
+            .animation(animation_default())
+
           Button(this.my_paused ? "  󰂴  " : "  󰂱  ")// Pause Continue
             .type(ButtonType.Capsule)
             .backgroundColor($r("app.color.font_color_title"))
@@ -108,11 +146,13 @@ struct meowDownloadsButton {
             .fontWeight(FontWeight.Medium)
             .height(capsule_bar_height())
             .onClick(() => {
-              this.pause_or_continue();
+              this.pause_or_continue_task();
             })
             .clickEffect(click_effect_default())
+            .enabled(!this.exporting)
             .visibility(this.formatted_download_percentage == "100%" ? Visibility.None : Visibility.Visible)
             .animation(animation_default())
+
           Button("  󰀻  ")// Save
             .type(ButtonType.Capsule)
             .backgroundColor($r("app.color.font_color_title"))
@@ -121,8 +161,10 @@ struct meowDownloadsButton {
             .fontWeight(FontWeight.Medium)
             .height(capsule_bar_height())
             .onClick(() => {
+              this.exporting = true;
               this.export_file();
             })
+            .enabled(!this.exporting)
             .clickEffect(click_effect_default())
             .visibility(this.formatted_download_percentage == "100%" ? Visibility.Visible : Visibility.None)
             .animation(animation_default())
@@ -135,16 +177,27 @@ struct meowDownloadsButton {
       .width("100%")
       .borderRadius(10)
       .backgroundColor($r('app.color.start_window_background'))
+      .visibility(this.visible)
+      .offset({ y: this.y_off_set })
+      .animation(animation_default())
     } // Start up
     .width("100%")
     .onAppear(async () => {
       // Init download information
       this.update_progress();
-    })
-  }
+      setTimeout(() => {
+        this.y_off_set = 0;
+        this.visible = Visibility.Visible;
+        // Animation
+      }, 10)
 
-  export_file() {
-    this.bunch_of_downloads.save_downloaded_item_to_local(this.my_index);
+      setInterval(() => {
+        if (this.delete_confirm > 0) {
+          this.delete_confirm -= 1;
+        }
+        // Reset delete confirm
+      }, 10)
+    })
   }
 
   async update_progress() {
@@ -153,17 +206,32 @@ struct meowDownloadsButton {
     this.my_current_download_size = this.bunch_of_downloads.list_of_downloaded_size[this.my_index];
     this.my_progress = Number.parseFloat((this.my_current_download_size / this.my_full_download_size * 100).toFixed(2));
     this.my_paused = this.bunch_of_downloads.list_of_paused[this.my_index];
+    this.my_link = this.bunch_of_downloads.list_of_urls[this.my_index];
 
     this.set_formatted_download_progress();
     this.set_formatted_download_percentage();
   }
 
-  pause_or_continue() {
+  pause_or_continue_task() {
     if (this.my_paused) {
       this.bunch_of_downloads.continue_task(this.my_index)
     } else {
       this.bunch_of_downloads.pause_task(this.my_index)
     }
+  }
+
+  delete_task() {
+    this.delete_confirm += 300;
+    if (this.delete_confirm >= 301) {
+      // Delete
+      this.bunch_of_downloads.delete_task(this.my_index);
+    }
+  }
+
+  export_file() {
+    this.bunch_of_downloads.save_downloaded_item_to_local(this.my_index).then(()=>{
+      this.exporting = false;
+    })
   }
 
   private set_formatted_download_progress() {
@@ -187,7 +255,7 @@ struct meowDownloadsButton {
       this.formatted_download_progress = downloaded;
     } else {
       // Defined end
-      this.formatted_download_progress = downloaded + "/" + total;
+      this.formatted_download_progress = downloaded + " / " + total;
     }
   }
 
