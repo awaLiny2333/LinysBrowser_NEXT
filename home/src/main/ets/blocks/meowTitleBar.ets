@@ -54,13 +54,6 @@ struct meowTitleBar {
 
   build() {
     Column({ space: 10 }) {
-
-      Column() {
-      } // Placeholder
-      .height(this.showing_more_options ? 4 : 0)
-      .visibility(this.visible_when_title_bar_on_bottom())
-      .animation(animation_default())
-
       Row() {
         Text("→ " + (this.search_input_unified == "" ? "(　o=^•ェ•)o ?" : this.search_input_unified))
           .fontColor($r('app.color.font_color_title'))
@@ -301,12 +294,6 @@ struct meowTitleBar {
         .visibility(this.showing_downloads ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
 
-      Column() {
-      } // Placeholder
-      .height(this.showing_more_options ? 5 : 0)
-      .visibility(this.visible_when_title_bar_on_top())
-      .animation(animation_default())
-
     } // Title Bars
     .width("100%")
     .backgroundColor($r('app.color.block_color'))
@@ -318,6 +305,7 @@ struct meowTitleBar {
       }
     })
     .visibility(this.settings_title_bar_position == "" ? Visibility.Hidden : Visibility.Visible)
+    .padding(this.settings_title_bar_position == "bottom" ? { top: 8 } : { bottom: 8 })
     .animation(this.showing_app_settings ? animation_default() : undefined)
     .onAppear(() => {
       console.log("[Meow][meowTitleBar] Title Bar READY")

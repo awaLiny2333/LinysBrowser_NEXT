@@ -87,6 +87,14 @@
     {
       "name": "Index_downloads_title",
       "value": "Downloads"
+    },
+    {
+      "name": "permission_reason_READ_PASTEPOARD",
+      "value": "For suggesting shortcuts to urls in clipboard"
+    },
+    {
+      "name": "Downloads_copied",
+      "value": "Copied ψ(｀∇´)ψ !"
     }
   ]
 }

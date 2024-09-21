@@ -23,6 +23,7 @@
         "startWindowIcon": "$media:startIcon",
         "startWindowBackground": "$color:start_window_background",
         "exported": true,
+        "orientation": "auto_rotation_restricted",
         "skills": [
           {
             "entities": [
@@ -59,7 +60,17 @@
             "HomeAbility"
           ]
         }
-      }
+      },
+//      {
+//        "name" : "ohos.permission.READ_PASTEBOARD",
+//        "reason": "$string:permission_reason_READ_PASTEPOARD",
+//        "usedScene": {
+//          "when": "inuse",
+//          "abilities": [
+//            "HomeAbility"
+//          ]
+//        }
+//      }
     ]
   }
 }

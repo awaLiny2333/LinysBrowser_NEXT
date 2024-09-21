@@ -9,7 +9,7 @@ struct meowTabs {
   @Link bunch_of_tabs: bunch_of_tabs;
   @Prop show_webViews: boolean;
   @Prop tablet_mode: boolean;
-  @Prop showing_tabs: boolean;
+  @Link showing_tabs: boolean;
   @Prop animation_default: AnimateParam;
   @Link current_tab_index: number;
   @Link @Watch('targeted_new_tab') universal_new_tab_gateway: string | undefined;
@@ -179,6 +179,10 @@ struct meowTabs {
   }
 
   switch_tab(target: number) {
+    if (this.current_tab_index == target) {
+      this.showing_tabs = false;
+    }
+
     this.current_tab_index = this.bunch_of_tabs.switchToTab(target)
     // Switch
     this.update_backward_forward_access()

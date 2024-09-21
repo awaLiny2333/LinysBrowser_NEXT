@@ -87,6 +87,14 @@
     {
       "name": "Index_downloads_title",
       "value": "下载"
+    },
+    {
+      "name": "permission_reason_READ_PASTEPOARD",
+      "value": "以供快速跳转剪贴板链接"
+    },
+    {
+      "name": "Downloads_copied",
+      "value": "已复制 ψ(｀∇´)ψ ！"
     }
   ]
 }

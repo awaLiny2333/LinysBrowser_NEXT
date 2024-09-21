@@ -8,6 +8,7 @@ import {
 } from '../hosts/bunch_of_settings';
 import { request } from '@kit.BasicServicesKit';
 import linysText from '../components/linysText';
+import { copy } from '../utils/clipboard_tools';
 
 @Component
 struct meowDownloads {
@@ -90,6 +91,7 @@ struct meowDownloadsButton {
   @State visible: Visibility = Visibility.Hidden;
   @State exporting: boolean = false;
   @State delete_confirm: number = 0;
+  @State copied: number = 0;
 
   build() {
     FlowItem() {
@@ -97,13 +99,26 @@ struct meowDownloadsButton {
         linysTitleText({
           text: this.my_file_name,
           max_lines: 4,
-        })
+        }) // File name
 
         linysText({
           text: this.my_link,
           max_lines: 4,
-        })
+        })// FIle link
+          .clickEffect(click_effect_default())
+          .onClick(() => {
+            copy(this.my_link);
+            this.copied = 200;
+          })
           .opacity(0.7)
+
+        linysText({
+          text: $r('app.string.Downloads_copied'),
+        })
+          .offset({ y: this.copied > 0 ? -5 : -50 })
+          .opacity(0.7)
+          .visibility(this.copied > 0 ? Visibility.Visible : Visibility.None)
+          .animation(animation_default())
 
         Row({ space: 5 }) {
           linysText({
@@ -113,7 +128,7 @@ struct meowDownloadsButton {
           linysText({
             text: this.formatted_download_progress,
           })
-        }
+        } // Progress
 
         Row({ space: 10 }) {
           Blank()
@@ -168,7 +183,7 @@ struct meowDownloadsButton {
             .clickEffect(click_effect_default())
             .visibility(this.formatted_download_percentage == "100%" ? Visibility.Visible : Visibility.None)
             .animation(animation_default())
-        }
+        } // Control Buttons
         .width("100%")
       }
       .padding(15)
@@ -196,6 +211,10 @@ struct meowDownloadsButton {
           this.delete_confirm -= 1;
         }
         // Reset delete confirm
+        if (this.copied > 0) {
+          this.copied -= 1;
+        }
+        // Reset copy
       }, 10)
     })
   }
@@ -229,7 +248,7 @@ struct meowDownloadsButton {
   }
 
   export_file() {
-    this.bunch_of_downloads.save_downloaded_item_to_local(this.my_index).then(()=>{
+    this.bunch_of_downloads.save_downloaded_item_to_local(this.my_index).then(() => {
       this.exporting = false;
     })
   }

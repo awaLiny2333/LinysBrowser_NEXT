@@ -9,7 +9,7 @@ export function fontSize_Normal() {
 }
 
 export function fontSize_Icon_Button() {
-  return 26;
+  return 25;
 }
 
 export function capsule_bar_height() {
@@ -17,8 +17,13 @@ export function capsule_bar_height() {
 }
 
 export function animation_default() {
-  let spring = Curves.springMotion(0.36, 0.76);
-  // let ap: AnimateParam = { duration: 300, curve: Curve.ExtremeDeceleration };
+  let spring = Curves.springMotion(0.36, 0.8);
+  let ap: AnimateParam = { curve: spring };
+  return ap;
+}
+
+export function animation_default_spring_more() {
+  let spring = Curves.springMotion(0.35, 0.6);
   let ap: AnimateParam = { curve: spring };
   return ap;
 }
