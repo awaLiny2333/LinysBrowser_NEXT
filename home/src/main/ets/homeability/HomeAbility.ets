@@ -12,6 +12,9 @@ export default class HomeAbility extends UIAbility {
     AppStorage.setOrCreate('context', this.context);
     AppStorage.setOrCreate('pathDir', this.context.filesDir);
     AppStorage.setOrCreate('currentColorMode', this.context.config.colorMode);
+    AppStorage.setOrCreate('universal_new_tab_gateway', "");
+    AppStorage.setOrCreate('tablet_mode', false);
+    AppStorage.setOrCreate('screen_width', 0);
     // save environment
   }
 

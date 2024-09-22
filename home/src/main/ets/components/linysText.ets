@@ -1,4 +1,5 @@
 import { fontSize_Normal } from '../hosts/bunch_of_settings';
+import { LengthMetrics } from '@kit.ArkUI';
 
 @Component
 struct linysText {
@@ -13,6 +14,7 @@ struct linysText {
       .fontSize(fontSize_Normal())
       .fontWeight(this.font_weight)
       .maxLines(this.max_lines)
+      .lineSpacing(LengthMetrics.vp(4))
       .textOverflow({ overflow: TextOverflow.Ellipsis })
   }
 }

@@ -5,7 +5,8 @@ import {
   animation_popup_duration,
   capsule_bar_height,
   click_effect_default,
-  fontSize_Large
+  fontSize_Large,
+  minimum_block_width
 } from '../hosts/bunch_of_settings';
 import { request } from '@kit.BasicServicesKit';
 import linysText from '../components/linysText';
@@ -19,7 +20,7 @@ struct meowDownloads {
 
   build() {
     Column({ space: 10 }) {
-      Column({ space: 15 }) {
+      Column({ space: 5 }) {
         linysTitleText({
           text: $r('app.string.Downloads_notice_title')
         })
@@ -56,7 +57,7 @@ struct meowDownloads {
 
         ForEach(
           this.bunch_of_downloads.list_of_on_going_tasks,
-          (item: request.DownloadTask, key: number) => {
+          (_request_task: request.DownloadTask, key: number) => {
             meowDownloadsButton({
               bunch_of_downloads: this.bunch_of_downloads,
               my_index: key,
@@ -65,7 +66,7 @@ struct meowDownloads {
         )
       }
       .columnsTemplate(this.bunch_of_downloads.list_of_on_going_tasks.length == 0 ?
-        "1fr" : "1fr ".repeat(Math.ceil(this.screen_width / 430)))
+        "1fr" : "1fr ".repeat(Math.ceil(this.screen_width / minimum_block_width())))
       .rowsGap(10)
       .columnsGap(10)
       .width("100%")
@@ -172,7 +173,7 @@ struct meowDownloadsButton {
             .onClick(() => {
               this.delete_task()
             })
-            .enabled(!this.exporting)// .visibility(this.my_paused ? Visibility.Visible : Visibility.None)
+            .enabled(!this.exporting)
             .clickEffect(click_effect_default())
             .animation(animation_default())
 

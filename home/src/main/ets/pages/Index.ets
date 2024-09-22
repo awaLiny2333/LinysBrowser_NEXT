@@ -16,17 +16,17 @@ struct Index {
   @StorageLink('topAvoidHeight') topAvoidHeight: number = 1;
   // Interactions
   @State is_search_input_typing: boolean = false;
-  @State tablet_mode: boolean = false;
   @State search_input: string = "";
   @State search_input_unified: string = "";
   // UI Statuses
+  @StorageLink('tablet_mode') tablet_mode: boolean = false;
+  @StorageLink('screen_width') screen_width: number = 0;
   @State showing_downloads: boolean = false;
   @State showing_more_options: boolean = false;
   @State showing_app_settings: boolean = false;
   @State showing_tabs: boolean = false;
   @State showing_bookmarks: boolean = false;
   @State webViews_ready: boolean = false;
-  @State screen_width: number = 0;
   @State title_bar_height: number = 0;
   @State web_and_stuff_alignRules: AlignRuleOption = {
     middle: { anchor: "__container__", align: HorizontalAlign.Center },
@@ -34,7 +34,7 @@ struct Index {
   };
   // HOSTs
   @State bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
-  @State bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("Bookmarks");
+  @State bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("Bookmarks Meow");
   @State bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
   @State bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads();
   // Web Statuses
@@ -51,7 +51,7 @@ struct Index {
   @State current_accessForward: boolean = false;
   @State current_accessBackward: boolean = false;
   // Misc weird methods but it just works ¯\_(ツ)_/¯
-  @State universal_new_tab_gateway: string | undefined = undefined;
+  @StorageLink('universal_new_tab_gateway') universal_new_tab_gateway: string = "";
   // Settings
   @State @Watch('on_title_bar_position_change') settings_title_bar_position: string = "";
   @State @Watch('on_global_custom_UA_change') now_global_custom_UA: string = "";
@@ -72,13 +72,11 @@ struct Index {
             Row() {
               Scroll() {
                 meowTabs({
-                  tablet_mode: this.tablet_mode,
                   webViews_ready: this.webViews_ready,
                   showing_tabs: this.showing_tabs,
                   animation_default: animation_default(),
                   // Environment
                   bunch_of_tabs: this.bunch_of_tabs,
-                  universal_new_tab_gateway: this.universal_new_tab_gateway,
                   // HOST
                   current_tab_index: this.current_tab_index,
                   tab_titles: this.tab_titles,
@@ -133,12 +131,10 @@ struct Index {
 
           Row() {
             meowWebView({
-              tablet_mode: this.tablet_mode,
               webViews_ready: this.webViews_ready,
               // Environment
               bunch_of_downloads: this.bunch_of_downloads,
               bunch_of_tabs: this.bunch_of_tabs,
-              universal_new_tab_gateway: this.universal_new_tab_gateway,
               // HOST
               current_tab_index: this.current_tab_index,
               tab_titles: this.tab_titles,
@@ -175,19 +171,15 @@ struct Index {
         .margin(this.settings_title_bar_position == "bottom" ?
           { bottom: this.title_bar_height } : { top: this.title_bar_height })
 
-
         linysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
           .alignRules(this.web_and_stuff_alignRules)
           .margin(this.settings_title_bar_position == "bottom" ?
             { bottom: this.title_bar_height } : { top: this.title_bar_height })
 
-
         meowTitleBar({
           bunch_of_downloads: this.bunch_of_downloads,
           bunch_of_user_agents: this.bunch_of_user_agents,
           bunch_of_tabs: this.bunch_of_tabs,
-          tablet_mode: this.tablet_mode,
-          screen_width: this.screen_width,
           bar_height: this.title_bar_height,
           webViews_ready: this.webViews_ready,
           // Environments

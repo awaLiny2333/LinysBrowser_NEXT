@@ -1,6 +1,6 @@
 import { webview } from '@kit.ArkWeb';
 import { url_meow_to_resource } from '../utils/url_tools';
-import { home_url } from './bunch_of_settings';
+import { home_url_default_blank } from './bunch_of_settings';
 
 @Observed
 export class tab_label {
@@ -52,12 +52,24 @@ export class bunch_of_tabs {
   current_color_mode: number = AppStorage.get('currentColorMode') as number;
   global_custom_UA: string = "";
   new_tab_url: string | undefined = undefined;
+  home_url: string | undefined = undefined;
+  start_up: string | undefined = undefined;
 
   // Operations and Actions
 
   loadUrl_onWorkingTab(url: string) {
     url = url_meow_to_resource(url);
     this.Tabs[this.current_working_tab_index].controller.loadUrl(url);
+  }
+
+  go_home_onWorkingTab() {
+    let going_home_url = "";
+    if (this.home_url == undefined || this.home_url == "") {
+      going_home_url = home_url_default_blank();
+    } else {
+      going_home_url = this.home_url;
+    }
+    this.loadUrl_onWorkingTab(going_home_url);
   }
 
   refresh_onWorkingTab() {
@@ -123,13 +135,13 @@ export class bunch_of_tabs {
   }
 
   /** @param target_url If url is "", then load the default new_tab_url set in this object.
-   * @abstract  While if new_tab_url is also not set ("" or undefined), then load default home_url().
+   * @abstract While if new_tab_url is also not set ("" or undefined), then load default home_url().
    * */
   newTab(target_url: string) {
     if (target_url == "") {
       // If newing an empty tab
       if (this.new_tab_url == "" || this.new_tab_url == undefined) {
-        target_url = home_url();
+        target_url = home_url_default_blank();
         // If new tab not specified
       } else {
         target_url = this.new_tab_url;

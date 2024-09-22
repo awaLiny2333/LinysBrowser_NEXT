@@ -1,3 +1,4 @@
+import linysCapsuleButton from '../components/linysCapsuleButton';
 import linysSymbol from '../components/linysSymbol';
 import {
   animation_default,
@@ -36,7 +37,7 @@ struct meowUAManager {
         }
         .width("100%")
         .height("100%")
-        .borderRadius(8)
+        .borderRadius(6)
         .backgroundColor(this.pressing ? $r('app.color.font_color_title') : $r('app.color.start_window_background'))
         .animation(animation_default())
 
@@ -48,7 +49,6 @@ struct meowUAManager {
         color: -1 == this.selected_index ? $r('app.color.font_color_title') : "transparent",
         // color: "red"
       })
-      .animation(animation_default())
       .alignRules({
         middle: { anchor: "__container__", align: HorizontalAlign.Center },
         top: { anchor: "__container__", align: VerticalAlign.Top }
@@ -66,11 +66,12 @@ struct meowUAManager {
         this.selected_index = -1;
         // Set UA
       })
-      .height(42)
+      .height(46)
+      .animation(animation_default())
 
       ForEach(
         this.list_of_user_agents,
-        (item: user_agent, key: number) => {
+        (_user_agent: user_agent, key: number) => {
           meowUAButton({
             bunch_of_user_agents: this.bunch_of_user_agents,
             selected_index: this.selected_index,
@@ -198,7 +199,7 @@ struct meowUAButton {
           .animation(animation_default())
 
         } // Bookmark button
-        .borderRadius(this.editing ? { topLeft: 8, topRight: 8 } : 8)
+        .borderRadius(this.editing ? { topLeft: 6, topRight: 6 } : 6)
         .backgroundColor(this.pressing ? $r('app.color.font_color_title') : $r('app.color.start_window_background'))
         .animation(animation_default())
         .padding(10)
@@ -293,18 +294,11 @@ struct meowUAButton {
                 .clickEffect(click_effect_default())
                 .animation(animation_default())
 
-              Button("  󰀻  ")// Save
-                .type(ButtonType.Capsule)
-                .backgroundColor($r("app.color.font_color_title"))
-                .fontColor($r('app.color.start_window_background'))
-                .fontSize(fontSize_Large())
-                .fontWeight(FontWeight.Medium)
-                .height(capsule_bar_height())
+              linysCapsuleButton({ text: "  󰀻  " })
                 .onClick(() => {
                   this.save_changes();
                   this.editing = false;
                 })
-                .clickEffect(click_effect_default())
 
             } // Buttons of operations
             .width("100%")
@@ -385,7 +379,7 @@ struct meowUAButton {
       } else {
         let previous_selected = this.selected_index;
         this.selected_index = -2;
-        this.selected_index = previous_selected;
+        this.selected_index = Math.min(this.bunch_of_user_agents.list_of_user_agents.length - 1, previous_selected);
         // Refresh
       }
 

@@ -5,11 +5,12 @@ import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { unify_search_input_into_url, url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
 import {
   animation_default,
+  animation_popup_duration,
   capsule_bar_height,
+  click_effect_default,
   fontSize_Icon_Button,
   fontSize_Large,
-  fontSize_Normal,
-  home_url
+  fontSize_Normal
 } from '../hosts/bunch_of_settings';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
@@ -17,21 +18,26 @@ import meowDownloads from './meowDownloads';
 
 @Component
 struct meowTitleBar {
+  // Environments
   @Link bunch_of_user_agents: bunch_of_user_agents;
   @Link bunch_of_tabs: bunch_of_tabs;
   @Link bunch_of_downloads: bunch_of_downloads;
-  @Link tablet_mode: boolean;
-  @Link screen_width: number;
+  @StorageProp('tablet_mode') tablet_mode: boolean = false;
+  @StorageProp('screen_width') screen_width: number = 0;
+  @StorageProp('universal_new_download_gateway') @Watch('on_download_start') universal_new_download_gateway: string =
+    "";
   @Link bar_height: number;
   @Link webViews_ready: boolean;
-  // Environments
+  // Current statuses
+
   @Link search_input: string;
   @Link search_input_unified: string;
   @Link is_search_input_typing: boolean;
   @Link settings_title_bar_position: string;
   @Link web_and_stuff_alignRules: AlignRuleOption;
   @Link now_global_custom_UA: string;
-  // Current statuses
+  // Web statuses
+
   @Link current_tab_index: number;
   @Link tab_titles: string[];
   @Link tab_urls: string[];
@@ -43,14 +49,15 @@ struct meowTitleBar {
   @Link current_loading_progress: number;
   @Link current_accessBackward: boolean;
   @Link current_accessForward: boolean;
-  // Web statuses
+  // UI control actions
+
   @Link showing_tabs: boolean;
   @Link showing_bookmarks: boolean;
   @Link showing_more_options: boolean;
   @Link showing_app_settings: boolean;
   @Link showing_downloads: boolean;
-
-  // UI control actions
+  // UI Effects
+  @State download_started_popup: boolean = false;
 
   build() {
     Column({ space: 10 }) {
@@ -66,7 +73,7 @@ struct meowTitleBar {
       .padding({ left: 15, right: 15 })
       .width("100%")
       .animation(animation_default())
-      .constraintSize({minHeight:30})
+      .constraintSize({ minHeight: 30 })
 
       Row() {
         Column({ space: 2.5 }) {
@@ -89,7 +96,7 @@ struct meowTitleBar {
 
         linysSymbol({ symbol_glyph_target: 'sys.symbol.share' })
       } // Title Bar for This Page Info display
-      .padding({ left: 16, right: 15 })
+      .padding({ left: 16, right: 15, top: 6 })
       .width("100%")
       .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
       .animation(animation_default())
@@ -200,14 +207,37 @@ struct meowTitleBar {
             this.show_bookmarks();
           })
 
-        linysShowButton({
-          text: $r('app.string.Index_downloads_title'),
-          symbol_glyph_target: 'sys.symbol.download',
-          show: this.showing_downloads
-        })// Downloads
-          .onClick(() => {
-            this.show_downloads()
+        Row() {
+          linysShowButton({
+            text: $r('app.string.Index_downloads_title'),
+            symbol_glyph_target: 'sys.symbol.download',
+            show: this.showing_downloads,
+            color_false: !this.showing_downloads && this.download_started_popup ?
+            $r('app.color.start_window_background') : $r('app.color.font_color_title')
           })
+          Scroll() {
+            Text($r('app.string.Index_download_task_start'))
+              .fontSize(fontSize_Large() - 2)
+              .fontColor($r('app.color.start_window_background'))
+              .margin({ right: this.showing_downloads ? 5 : 0 })
+          }
+          .width(this.download_started_popup ? undefined : 0)
+          .scrollable(ScrollDirection.Horizontal)
+          .scrollBar(BarState.Off)
+          .animation(animation_default())
+        } // Downloads
+        .padding(!this.showing_downloads && this.download_started_popup ? 5 : 0)
+        .backgroundColor(this.download_started_popup ? $r('app.color.font_color_title') : "transparent")
+        .borderRadius(10)
+        .clickEffect(click_effect_default())
+        .animation(animation_default())
+        .onClick(() => {
+          if (this.download_started_popup) {
+            this.download_started_popup = false;
+          } else {
+            this.show_downloads()
+          }
+        })
 
         linysShowButton({
           show: this.showing_app_settings,
@@ -269,10 +299,7 @@ struct meowTitleBar {
           })
       } // Title Bar of More Options
       .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
-      .padding({
-        left: 15,
-        right: 15,
-      })
+      .padding({ left: 15, right: 15, bottom: 6 })
       .width("100%")
       .direction(Direction.Rtl)
       .animation(animation_default())
@@ -351,12 +378,19 @@ struct meowTitleBar {
   visible_when_no_panels_open_in_normal_mode() {
     let result: Visibility = Visibility.Visible;
     if (this.showing_more_options || this.showing_downloads || this.showing_app_settings || this.showing_tabs ||
-    this.showing_bookmarks) {
+    this.showing_bookmarks || this.download_started_popup) {
       if (this.tablet_mode == false) {
         result = Visibility.None;
       }
     }
     return result;
+  }
+
+  on_download_start() {
+    this.download_started_popup = true;
+    setTimeout(() => {
+      this.download_started_popup = false;
+    }, animation_popup_duration() * 10)
   }
 
   // Visibility
@@ -434,23 +468,28 @@ struct meowTitleBar {
   }
 
   go_backward() {
+    this.webViews_ready = true;
     this.bunch_of_tabs.goBackward_onWorkingTab()
   }
 
   go_forward() {
+    this.webViews_ready = true;
     this.bunch_of_tabs.goForward_onWorkingTab()
   }
 
   go_home() {
-    this.bunch_of_tabs.loadUrl_onWorkingTab(home_url())
+    this.webViews_ready = true;
+    this.bunch_of_tabs.go_home_onWorkingTab();
   }
 
   refresh_page() {
+    this.webViews_ready = true;
     this.bunch_of_tabs.refresh_onWorkingTab()
     this.bunch_of_tabs.workingTab().update_is_loading(true)
   }
 
   stop_page() {
+    this.webViews_ready = true;
     this.bunch_of_tabs.stop_onWorkingTab()
     this.bunch_of_tabs.workingTab().update_is_loading(false)
     this.sync_list_info()

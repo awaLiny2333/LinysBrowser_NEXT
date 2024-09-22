@@ -1,4 +1,9 @@
-import { animation_default, animation_popup_duration, capsule_bar_height, home_url } from '../hosts/bunch_of_settings';
+import {
+  animation_default,
+  capsule_bar_height,
+  home_url_default_blank,
+  minimum_block_width
+} from '../hosts/bunch_of_settings';
 import linysTitleText from '../components/linysTitleText';
 import linysText from '../components/linysText';
 import bundleManager from '@ohos.bundle.bundleManager';
@@ -12,6 +17,7 @@ import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 import meowUAManager from './meowUAManager';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
+import linysCapsuleButton from '../components/linysCapsuleButton';
 
 @Component
 struct meowAppSettings {
@@ -32,16 +38,30 @@ struct meowAppSettings {
     selectedBackgroundColor: $r('app.color.font_color_title'),
     selectedFontColor: $r('app.color.start_window_background')
   })
+  @State start_up_page_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
+    buttons: [
+      { text: $r('app.string.Settings_start_up_new_tab') },
+      { text: $r('app.string.Settings_start_up_home') },
+      { text: $r('app.string.Settings_start_up_continue') }
+    ] as ItemRestriction<SegmentButtonTextItem>,
+    selectedBackgroundColor: $r('app.color.font_color_title'),
+    selectedFontColor: $r('app.color.start_window_background')
+  })
   @State @Watch('on_title_bar_position_changed') title_bar_position_selected: number[] = [0];
+  @State @Watch('on_start_up_page_changed') start_up_page_selected: number[] = [0];
   @State new_tab_url_edit: string = "";
-  @State save_new_tab_url_count_down: number = 0;
-  @State new_tab_url_saved_popup: number = 0;
+  @State home_url_edit: string = "";
 
   build() {
     WaterFlow() {
       FlowItem() {
         Column({ space: 15 }) {
           linysTitleText({ text: $r('app.string.Settings_start_up') })
+          linysText({ text: $r('app.string.Settings_start_up_page') })
+          SegmentButton({
+            options: this.start_up_page_tabOptions,
+            selectedIndexes: $start_up_page_selected
+          })
         }
         .padding(15)
         .alignItems(HorizontalAlign.Start)
@@ -49,38 +69,73 @@ struct meowAppSettings {
         .width("100%")
         .borderRadius(10)
         .backgroundColor($r('app.color.start_window_background'))
+
       } // Start up
       .width("100%")
 
       FlowItem() {
         Column({ space: 15 }) {
           linysTitleText({ text: $r('app.string.Settings_general') })
+
+          // UA
           linysText({ text: $r('app.string.Settings_general_custom_ua') })
           meowUAManager({
             now_global_custom_UA: this.now_global_custom_UA,
             bunch_of_user_agents: this.bunch_of_user_agents,
           })
+
+          // New tab URL
           linysText({ text: $r('app.string.Settings_general_new_tab_url') })
           TextInput({
             text: this.new_tab_url_edit,
-            placeholder: home_url(),
+            placeholder: home_url_default_blank(),
           })
             .onChange((value) => {
               this.new_tab_url_edit = value;
-              this.save_new_tab_url_count_down = 100;
             })
             .fontWeight(FontWeight.Regular)
             .fontColor($r('app.color.font_color_title'))
             .caretColor($r('app.color.font_color_title'))
             .selectedBackgroundColor($r('app.color.font_color_title'))
             .onSubmit(() => {
-              this.save_new_tab_url_count_down = 3;
+              this.set_new_tab_url_and_kv_store();
             })
             .height(capsule_bar_height())
 
-          linysText({ text: $r('app.string.Settings_general_new_tab_url_saved') })
-            .visibility(this.new_tab_url_saved_popup > 0 ? Visibility.Visible : Visibility.None)
+          linysCapsuleButton({ text: "  󰀻  " })
+            .visibility(this.new_tab_url_edit != this.bunch_of_tabs.new_tab_url ? Visibility.Visible : Visibility.None)
+            .onClick(() => {
+              this.set_new_tab_url_and_kv_store();
+            })
+            .alignSelf(ItemAlign.End)
             .animation(animation_default())
+
+          // Home URL
+          linysText({ text: $r('app.string.Settings_general_home_url') })
+          TextInput({
+            text: this.home_url_edit,
+            placeholder: home_url_default_blank(),
+          })
+            .onChange((value) => {
+              this.home_url_edit = value;
+            })
+            .fontWeight(FontWeight.Regular)
+            .fontColor($r('app.color.font_color_title'))
+            .caretColor($r('app.color.font_color_title'))
+            .selectedBackgroundColor($r('app.color.font_color_title'))
+            .onSubmit(() => {
+              this.set_home_url_and_kv_store();
+            })
+            .height(capsule_bar_height())
+
+          linysCapsuleButton({ text: "  󰀻  " })
+            .visibility(this.home_url_edit != this.bunch_of_tabs.home_url ? Visibility.Visible : Visibility.None)
+            .onClick(() => {
+              this.set_home_url_and_kv_store();
+            })
+            .alignSelf(ItemAlign.End)
+            .animation(animation_default())
+
         }
         .padding(15)
         .alignItems(HorizontalAlign.Start)
@@ -88,6 +143,7 @@ struct meowAppSettings {
         .width("100%")
         .borderRadius(10)
         .backgroundColor($r('app.color.start_window_background'))
+
       } // General
       .width("100%")
 
@@ -106,6 +162,7 @@ struct meowAppSettings {
         .width("100%")
         .borderRadius(10)
         .backgroundColor($r('app.color.start_window_background'))
+
       } // Appearance
       .width("100%")
 
@@ -122,17 +179,19 @@ struct meowAppSettings {
         .width("100%")
         .borderRadius(10)
         .backgroundColor($r('app.color.start_window_background'))
+
       } // About
       .width("100%")
 
     } // Bottom Bar of App Settings
-    .columnsTemplate("1fr ".repeat(Math.ceil(this.screen_width / 430)))
+    .columnsTemplate("1fr ".repeat(Math.ceil(this.screen_width / minimum_block_width())))
     .rowsGap(10)
     .columnsGap(10)
     .height(this.show ? "75%" : 0)
     .padding({ left: 15, right: 15 })
     .width("100%")
     .edgeEffect(EdgeEffect.Spring)
+    .scrollBar(BarState.Auto)
     .animation(animation_default())
     .onAppear(() => {
       console.log("[Meow][meowAppSettings] App Settings READY")
@@ -160,38 +219,10 @@ struct meowAppSettings {
       this.settings_title_bar_position = "bottom";
     }
     // Get settings of title bar position
-
-    let new_tab_url_got = await kv_store_get('new_tab_url');
-    if (new_tab_url_got == "undefined" || "error") {
-
-    } else {
-      this.new_tab_url_edit = new_tab_url_got;
-    }
-    // Get new tab url
   }
 
   on_interval() {
-    if (this.save_new_tab_url_count_down > 0) {
-      this.save_new_tab_url_count_down -= 1;
-    }
-    if (this.new_tab_url_saved_popup > 0) {
-      this.new_tab_url_saved_popup -= 1;
-    }
-    if (this.save_new_tab_url_count_down == 1) {
-      // Save
-      this.set_new_tab_url();
-    }
-  }
 
-  on_title_bar_position_changed() {
-    let result: string = "";
-    if (this.title_bar_position_selected[0] == 0) {
-      result = 'top';
-    } else {
-      result = 'bottom';
-    }
-    this.settings_title_bar_position = result;
-    kv_store_put('settings_title_bar_position', result);
   }
 
   on_open_or_close_panel() {
@@ -213,6 +244,21 @@ struct meowAppSettings {
     if (this.bunch_of_tabs.new_tab_url !== undefined) {
       this.new_tab_url_edit = this.bunch_of_tabs.new_tab_url;
     }
+    if (this.bunch_of_tabs.home_url !== undefined) {
+      this.home_url_edit = this.bunch_of_tabs.home_url;
+    }
+    if (this.bunch_of_tabs.start_up !== undefined) {
+      let start_up = this.bunch_of_tabs.start_up;
+      if (start_up == "new tab") {
+        this.start_up_page_selected = [0];
+      }
+      if (start_up == "home") {
+        this.start_up_page_selected = [1];
+      }
+      if (start_up == "continue") {
+        this.start_up_page_selected = [2];
+      }
+    }
     // Sync Data
   }
 
@@ -220,12 +266,43 @@ struct meowAppSettings {
 
   }
 
+  // On settings changed
+
+  on_title_bar_position_changed() {
+    let result: string = "";
+    if (this.title_bar_position_selected[0] == 0) {
+      result = 'top';
+    } else {
+      result = 'bottom';
+    }
+    this.settings_title_bar_position = result;
+    kv_store_put('settings_title_bar_position', result);
+  }
+
+  on_start_up_page_changed() {
+    let result: string = "";
+    if (this.start_up_page_selected[0] == 0) {
+      result = "new tab";
+    } else if (this.start_up_page_selected[0] == 1) {
+      result = "home";
+    } else {
+      result = "continue";
+      // Need modify after update
+    }
+    this.bunch_of_tabs.start_up = result;
+    kv_store_put("start_up_option", result);
+  }
+
   // Operations
 
-  set_new_tab_url() {
+  set_new_tab_url_and_kv_store() {
     this.bunch_of_tabs.new_tab_url = this.new_tab_url_edit;
-    this.new_tab_url_saved_popup = animation_popup_duration();
     kv_store_put("new_tab_url", this.new_tab_url_edit);
+  }
+
+  set_home_url_and_kv_store() {
+    this.bunch_of_tabs.home_url = this.home_url_edit;
+    kv_store_put("home_url", this.home_url_edit);
   }
 }
 

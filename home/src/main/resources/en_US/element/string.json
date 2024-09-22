@@ -102,15 +102,35 @@
     },
     {
       "name": "Downloads_notice_content",
-      "value": "Due to security issues, all downloads are TEMPORARILY stored here. You have to manually save them to a local storage before exiting this app!"
+      "value": "Due to security issues, all downloads are temporarily stored here. You have to manually save them to local storage before exiting this app!"
     },
     {
       "name": "Settings_general_new_tab_url",
       "value": "New Tabs URL"
     },
     {
-      "name": "Settings_general_new_tab_url_saved",
-      "value": "Saved (～o￣3￣)～!"
+      "name": "Settings_start_up_new_tab",
+      "value": "New Tab"
+    },
+    {
+      "name": "Settings_start_up_home",
+      "value": "Home"
+    },
+    {
+      "name": "Settings_start_up_continue",
+      "value": "Last Progress"
+    },
+    {
+      "name": "Settings_general_home_url",
+      "value": "Home URL"
+    },
+    {
+      "name": "Settings_start_up_page",
+      "value": "Start Up Page"
+    },
+    {
+      "name": "Index_download_task_start",
+      "value": "ヾ(⌐■_■)ノ♪"
     }
   ]
 }

@@ -12,9 +12,11 @@ import {
 } from '../hosts/bunch_of_settings';
 import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 import linysShowButton from '../components/linysShowButton';
+import linysCapsuleButton from '../components/linysCapsuleButton';
 
 @Component
 struct meowBookmarks {
+  @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @Link bunch_of_bookmarks: bunch_of_bookmarks;
   @Link bunch_of_tabs: bunch_of_tabs;
   @Link webViews_ready: boolean;
@@ -69,14 +71,18 @@ struct meowBookmarks {
         // and reduce their appearance animation time.
       })
 
-      Row({ space: 12.5 }) {
-        linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left' })
-          .visibility(this.looking_at_path == "" ? Visibility.None : Visibility.Visible)
-          .animation(animation_default())
-          .onClick(() => {
-            this.go_back();
-          }) // Go back button
-        Blank()
+      Row({ space: this.tablet_mode ? 12 : 9 }) {
+        Column() {
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left' })
+            .onClick(() => {
+              this.go_back();
+            })
+            .visibility(this.looking_at_path == "" ? Visibility.None : this.visible_when_no_operating())
+            .animation(animation_default())
+        } // Go back button
+        .alignItems(HorizontalAlign.Start)
+        .layoutWeight(1)
+
         linysShowButton({
           show: this.importing_bookmarks,
           symbol_glyph_target: 'sys.symbol.arrow_down_and_rectangle_on_rectangle',
@@ -132,6 +138,7 @@ struct meowBookmarks {
       } // Operation buttons
       .width("100%")
       .margin({ bottom: 5 })
+      .justifyContent(FlexAlign.End)
 
       Scroll() {
         Column({ space: 10 }) {
@@ -188,13 +195,8 @@ struct meowBookmarks {
               .fontColor($r('app.color.font_color_title'))
               .visibility(this.exporting_bookmarks || this.importing_bookmarks ? Visibility.Visible : Visibility.None)
               .margin({ right: 10 })
-            Button(this.adding_folder || this.adding_bookmark ? "  󰀓  " : "  󰃟  ")
-              .type(ButtonType.Capsule)
-              .backgroundColor($r("app.color.font_color_title"))
-              .fontColor($r('app.color.start_window_background'))
-              .fontSize(fontSize_Large())
-              .fontWeight(FontWeight.Medium)
-              .height(capsule_bar_height())
+
+            linysCapsuleButton({ text: this.adding_folder || this.adding_bookmark ? "  󰀓  " : "  󰃟  " })
               .onClick(() => {
                 if (this.adding_folder) {
                   this.new_folder()
@@ -209,7 +211,6 @@ struct meowBookmarks {
                   this.export_bookmarks_html()
                 }
               })
-              .clickEffect(click_effect_default())
 
           } // Submit add button
           .width("100%")
@@ -246,6 +247,8 @@ struct meowBookmarks {
     })
   }
 
+  // Event
+
   async on_appear() {
     let result = await kv_store_get("html_bookmarks");
     if (result as string == "undefined") {
@@ -258,6 +261,39 @@ struct meowBookmarks {
     this.bookmark_load_from_disk_ok = true;
     // Get bookmarks
   }
+
+  // Misc
+
+  get_edit_area_height() {
+    let area_height = 0;
+    area_height += this.adding_bookmark ? 145 : 0;
+    area_height += this.adding_folder ? 100 : 0;
+    area_height += this.importing_bookmarks || this.exporting_bookmarks ? 54 : 0;
+    return area_height;
+  }
+
+  refresh_root_content() {
+    if (this.looking_at_path == "") {
+      this.viewing_contents = this.bunch_of_bookmarks.root.get_content();
+      return;
+    } else {
+      let got_folder = this.bunch_of_bookmarks.get_folder(this.looking_at_path);
+      if (got_folder !== undefined) {
+        this.viewing_contents = got_folder.get_content();
+        return;
+      }
+    }
+  }
+
+  visible_when_no_operating() {
+    if (this.exporting_bookmarks || this.adding_folder || this.adding_bookmark || this.importing_bookmarks) {
+      return Visibility.None;
+    } else {
+      return Visibility.Visible;
+    }
+  }
+
+  // Operations
 
   new_folder() {
     if (this.add_label == "") {
@@ -297,27 +333,6 @@ struct meowBookmarks {
     // There is no need to add this.refresh_root_content() here manually
   }
 
-  refresh_root_content() {
-    if (this.looking_at_path == "") {
-      this.viewing_contents = this.bunch_of_bookmarks.root.get_content();
-      return;
-    } else {
-      let got_folder = this.bunch_of_bookmarks.get_folder(this.looking_at_path);
-      if (got_folder !== undefined) {
-        this.viewing_contents = got_folder.get_content();
-        return;
-      }
-    }
-  }
-
-  get_edit_area_height() {
-    let area_height = 0;
-    area_height += this.adding_bookmark ? 145 : 0;
-    area_height += this.adding_folder ? 100 : 0;
-    area_height += this.importing_bookmarks || this.exporting_bookmarks ? 54 : 0;
-    return area_height;
-  }
-
   export_bookmarks_html() {
     this.exporting_bookmarks = false;
 
@@ -340,7 +355,6 @@ struct meowBookmarks {
     let html_bookmark: string[] = this.bunch_of_bookmarks.export_html();
     kv_store_put("html_bookmarks", html_bookmark.join("\n"));
   }
-
 }
 
 export default meowBookmarks;
@@ -512,13 +526,7 @@ struct bookmarkItem {
               .clickEffect(click_effect_default())
               .animation(animation_default())
 
-            Button("  󰀻  ")// Save
-              .type(ButtonType.Capsule)
-              .backgroundColor($r("app.color.font_color_title"))
-              .fontColor($r('app.color.start_window_background'))
-              .fontSize(fontSize_Large())
-              .fontWeight(FontWeight.Medium)
-              .height(capsule_bar_height())
+            linysCapsuleButton({ text: "  󰀻  " })// Save
               .onClick(() => {
                 if (this.type == "folder") {
                   this.save_changes_folder()
@@ -528,7 +536,6 @@ struct bookmarkItem {
                 }
                 this.editing = false;
               })
-              .clickEffect(click_effect_default())
 
           } // Buttons of operations
           .width("100%")

@@ -1,7 +1,7 @@
 import linysSymbol from '../components/linysSymbol';
 import { bunch_of_tabs, tab_label } from '../hosts/bunch_of_tabs';
 import { url_resource_to_meow } from '../utils/url_tools';
-import { fontSize_Normal, home_url } from '../hosts/bunch_of_settings';
+import { fontSize_Normal, home_url_default_blank } from '../hosts/bunch_of_settings';
 import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 
 
@@ -9,11 +9,12 @@ import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 struct meowTabs {
   @Link bunch_of_tabs: bunch_of_tabs;
   @Link webViews_ready: boolean;
-  @Prop tablet_mode: boolean;
   @Link showing_tabs: boolean;
   @Prop animation_default: AnimateParam;
   @Link current_tab_index: number;
-  @Link @Watch('targeted_new_tab') universal_new_tab_gateway: string | undefined;
+  @StorageProp('tablet_mode') tablet_mode: boolean = false;
+  @StorageLink('universal_new_tab_gateway') @Watch('targeted_new_tab') universal_new_tab_gateway: string = "";
+  @State start_up: string = "new tab";
   // Controls and environments
   @Link tab_titles: string[];
   @Link current_title: string;
@@ -38,23 +39,57 @@ struct meowTabs {
   @State scroll_area_height: number = 0;
   @State scroll_animation_enabled: boolean = true;
 
-  aboutToAppear() {
-    kv_store_get("new_tab_url").then((result) => {
-      console.log("[Meow][meowWebView] Got new_tab_url: " + result)
+  async aboutToAppear() {
 
-      if (result == "undefined") {
-        kv_store_put("new_tab_url", "");
-        this.new_tab(home_url());
-        result = "";
-      } else if (result == "") {
-        this.new_tab(home_url());
-        result = "";
-      } else {
-        this.new_tab(result);
+    let start_up_option = await kv_store_get("start_up_option")
+    let new_tab_url = await kv_store_get("new_tab_url")
+    let got_home_url = await kv_store_get("home_url")
+
+    console.log("[Meow][meowWebView] Got start_up configuration: " + start_up_option)
+    console.log("[Meow][meowWebView] Got new_tab_url: " + new_tab_url)
+    console.log("[Meow][meowWebView] Got home_url: " + got_home_url)
+
+
+    if (got_home_url == "undefined") {
+      kv_store_put("home_url", "");
+      got_home_url = "";
+    }
+    this.bunch_of_tabs.home_url = got_home_url;
+
+    if (new_tab_url == "undefined") {
+      kv_store_put("new_tab_url", "");
+      new_tab_url = "";
+    }
+    this.bunch_of_tabs.new_tab_url = new_tab_url;
+
+    if (start_up_option == "undefined") {
+      start_up_option = "new tab";
+      kv_store_put("start_up_option", "new tab");
+    }
+    this.bunch_of_tabs.start_up = start_up_option;
+
+    if (start_up_option == "new tab") {
+      this.new_tab(new_tab_url);
+      if (new_tab_url != "") {
         this.webViews_ready = true;
       }
-      this.bunch_of_tabs.new_tab_url = result;
-    });
+
+    } else if (start_up_option == "home") {
+      if (got_home_url != "") {
+        this.webViews_ready = true;
+      }
+      if (got_home_url == "") {
+        this.new_tab(home_url_default_blank());
+      } else {
+        this.new_tab(got_home_url);
+      }
+
+    } else {
+      // continue
+      this.webViews_ready = true;
+      this.new_tab(got_home_url);
+    }
+
   }
 
   build() {
@@ -193,9 +228,9 @@ struct meowTabs {
   }
 
   targeted_new_tab() {
-    if (this.universal_new_tab_gateway !== undefined) {
+    if (this.universal_new_tab_gateway != "") {
       this.new_tab(this.universal_new_tab_gateway);
-      this.universal_new_tab_gateway = undefined;
+      this.universal_new_tab_gateway = "";
     }
   }
 
@@ -241,7 +276,7 @@ struct meowTabs {
     // Or we'll have to wait for the spring animation to finish, bringing the last tab button down.
 
     // Delete this area length
-    this.current_tab_index = this.bunch_of_tabs.closeTab(target, home_url())
+    this.current_tab_index = this.bunch_of_tabs.closeTab(target, home_url_default_blank())
     // Close
     this.update_backward_forward_access()
     // Update history

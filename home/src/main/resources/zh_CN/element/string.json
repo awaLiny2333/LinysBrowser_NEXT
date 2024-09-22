@@ -109,8 +109,28 @@
       "value": "新标签页地址"
     },
     {
-      "name": "Settings_general_new_tab_url_saved",
-      "value": "已保存 (～o￣3￣)～！"
+      "name": "Settings_start_up_new_tab",
+      "value": "新标签页"
+    },
+    {
+      "name": "Settings_start_up_home",
+      "value": "主页"
+    },
+    {
+      "name": "Settings_start_up_continue",
+      "value": "上次的浏览"
+    },
+    {
+      "name": "Settings_general_home_url",
+      "value": "主页地址"
+    },
+    {
+      "name": "Settings_start_up_page",
+      "value": "启动时呈现"
+    },
+    {
+      "name": "Index_download_task_start",
+      "value": "ヾ(⌐■_■)ノ♪"
     }
   ]
 }

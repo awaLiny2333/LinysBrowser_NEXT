@@ -1,17 +1,15 @@
 import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_tabs, tab_label } from '../hosts/bunch_of_tabs';
-import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 import { url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
 
 @Component
 struct meowWebView {
   @StorageProp('currentColorMode') current_color_mode: number = 0;
+  @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @Link bunch_of_downloads: bunch_of_downloads;
   @Link bunch_of_tabs: bunch_of_tabs;
   @Link current_tab_index: number;
-  @Link universal_new_tab_gateway: string | undefined;
   @Prop webViews_ready: boolean;
-  @Prop tablet_mode: boolean;
   // Controls and environments
   @Link tab_titles: string[];
   @Link current_title: string;
@@ -26,8 +24,7 @@ struct meowWebView {
   @Link current_accessBackward: boolean;
   @Link search_input: string;
   @Link now_global_custom_UA: string;
-
-  // Defaults
+  // Misc
 
   build() {
     Row() {
@@ -49,7 +46,7 @@ struct meowWebView {
           .multiWindowAccess(true)
           .onWindowNew((event) => {
             let new_target_url = event.targetUrl;
-            this.universal_new_tab_gateway = new_target_url;
+            AppStorage.setOrCreate('universal_new_tab_gateway', new_target_url);
             event.handler.setWebController(null);
           })
           .onErrorReceive((e) => {
