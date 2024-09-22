@@ -22,7 +22,7 @@ export async function kv_store_get(key_name: string) {
 
   } else {
     let get_result = "error"
-    console.log("[Meow][kv_store_tools][GET][ERROR] Undefined KVStore! ")
+    console.error("[Meow][kv_store_tools][GET][ERROR] Undefined KVStore! ")
     return get_result;
 
   }

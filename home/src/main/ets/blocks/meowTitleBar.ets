@@ -66,6 +66,7 @@ struct meowTitleBar {
       .padding({ left: 15, right: 15 })
       .width("100%")
       .animation(animation_default())
+      .constraintSize({minHeight:30})
 
       Row() {
         Column({ space: 2.5 }) {
@@ -93,7 +94,7 @@ struct meowTitleBar {
       .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
       .animation(animation_default())
 
-      Row({ space: 10 }) {
+      Row({ space: this.tablet_mode ? 10 : 7 }) {
 
         linysSymbol({
           symbol_glyph_target: 'sys.symbol.arrow_left'
@@ -183,6 +184,14 @@ struct meowTitleBar {
           })
 
         linysShowButton({
+          symbol_glyph_target: 'sys.symbol.rectangle_stack',
+          show: this.showing_tabs
+        })// Tabs
+          .onClick(() => {
+            this.show_tabs()
+          })
+
+        linysShowButton({
           show: this.showing_bookmarks,
           text: $r('app.string.Index_bookmarks_title'),
           symbol_glyph_target: 'sys.symbol.bookmark'
@@ -192,16 +201,8 @@ struct meowTitleBar {
           })
 
         linysShowButton({
-          symbol_glyph_target: 'sys.symbol.rectangle_stack',
-          show: this.showing_tabs
-        })// Tabs
-          .onClick(() => {
-            this.show_tabs()
-          })
-
-        linysShowButton({
           text: $r('app.string.Index_downloads_title'),
-          symbol_glyph_target: 'sys.symbol.doc_text_badge_checkmark',
+          symbol_glyph_target: 'sys.symbol.download',
           show: this.showing_downloads
         })// Downloads
           .onClick(() => {
@@ -279,6 +280,7 @@ struct meowTitleBar {
       meowAppSettings({
         now_global_custom_UA: this.now_global_custom_UA,
         bunch_of_user_agents: this.bunch_of_user_agents,
+        bunch_of_tabs: this.bunch_of_tabs,
         screen_width: this.screen_width,
         show: this.showing_app_settings,
         settings_title_bar_position: this.settings_title_bar_position

@@ -1,5 +1,6 @@
 import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_tabs, tab_label } from '../hosts/bunch_of_tabs';
+import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 import { url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
 
 @Component
@@ -9,7 +10,7 @@ struct meowWebView {
   @Link bunch_of_tabs: bunch_of_tabs;
   @Link current_tab_index: number;
   @Link universal_new_tab_gateway: string | undefined;
-  @Prop show_webViews: boolean;
+  @Prop webViews_ready: boolean;
   @Prop tablet_mode: boolean;
   // Controls and environments
   @Link tab_titles: string[];
@@ -25,6 +26,8 @@ struct meowWebView {
   @Link current_accessBackward: boolean;
   @Link search_input: string;
   @Link now_global_custom_UA: string;
+
+  // Defaults
 
   build() {
     Row() {
@@ -50,7 +53,7 @@ struct meowWebView {
             event.handler.setWebController(null);
           })
           .onErrorReceive((e) => {
-            console.log("[Meow][ArkWeb][ERROR] "
+            console.error("[Meow][ArkWeb][ERROR] "
               + e.error.getErrorCode() + ", " + e.error.getErrorInfo()
               + " @ " + this.tab_urls[Label.index_key])
             // Log web errors
@@ -114,7 +117,6 @@ struct meowWebView {
       }, (item: tab_label) => item.timestamp.toString())
 
     }
-    .backgroundColor("green")
     .width("100%")
     .height("100%")
     .onAppear(() => {

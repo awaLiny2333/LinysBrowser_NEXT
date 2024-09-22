@@ -95,6 +95,22 @@
     {
       "name": "Downloads_copied",
       "value": "Copied ψ(｀∇´)ψ !"
+    },
+    {
+      "name": "Downloads_notice_title",
+      "value": "Attention Please ੭ ᐕ)੭"
+    },
+    {
+      "name": "Downloads_notice_content",
+      "value": "Due to security issues, all downloads are TEMPORARILY stored here. You have to manually save them to local storage before exiting this app!"
+    },
+    {
+      "name": "Settings_general_new_tab_url",
+      "value": "New Tabs URL"
+    },
+    {
+      "name": "Settings_general_new_tab_url_saved",
+      "value": "Saved (～o￣3￣)～!"
     }
   ]
 }

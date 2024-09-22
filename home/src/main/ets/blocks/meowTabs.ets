@@ -2,12 +2,13 @@ import linysSymbol from '../components/linysSymbol';
 import { bunch_of_tabs, tab_label } from '../hosts/bunch_of_tabs';
 import { url_resource_to_meow } from '../utils/url_tools';
 import { fontSize_Normal, home_url } from '../hosts/bunch_of_settings';
+import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 
 
 @Component
 struct meowTabs {
   @Link bunch_of_tabs: bunch_of_tabs;
-  @Prop show_webViews: boolean;
+  @Link webViews_ready: boolean;
   @Prop tablet_mode: boolean;
   @Link showing_tabs: boolean;
   @Prop animation_default: AnimateParam;
@@ -36,6 +37,25 @@ struct meowTabs {
   scroll_controller: Scroller = new Scroller();
   @State scroll_area_height: number = 0;
   @State scroll_animation_enabled: boolean = true;
+
+  aboutToAppear() {
+    kv_store_get("new_tab_url").then((result) => {
+      console.log("[Meow][meowWebView] Got new_tab_url: " + result)
+
+      if (result == "undefined") {
+        kv_store_put("new_tab_url", "");
+        this.new_tab(home_url());
+        result = "";
+      } else if (result == "") {
+        this.new_tab(home_url());
+        result = "";
+      } else {
+        this.new_tab(result);
+        this.webViews_ready = true;
+      }
+      this.bunch_of_tabs.new_tab_url = result;
+    });
+  }
 
   build() {
     Column({ space: 10 }) {
@@ -122,7 +142,8 @@ struct meowTabs {
         Blank()
         linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
           .onClick(() => {
-            this.new_tab(home_url())
+            this.webViews_ready = true;
+            this.new_tab("")
           })
       } // New Tab Button
       .width("100%")
@@ -155,8 +176,8 @@ struct meowTabs {
   // Tab controls
 
   new_tab(url: string) {
-    this.current_tab_index = this.bunch_of_tabs.newTab(url)
-    this.extension_area.push(0)
+    this.current_tab_index = this.bunch_of_tabs.newTab(url);
+    this.extension_area.push(0);
 
     if (this.scroll_animation_enabled) {
       for (let index = 0; index < this.offset_area.length; index++) {
@@ -194,10 +215,10 @@ struct meowTabs {
   }
 
   close_tab(target: number) {
-    console.log(target.toString() + " / " + this.offset_area.length.toString())
+    // console.log(target.toString() + " / " + this.offset_area.length.toString())
     if (target >= this.offset_area.length) {
       // Some kind of bug, idk why but this is essential when closing tabs quickly
-      console.log("[Meow][LinysTabs][ERROR] Ran into the weird bug of target >= this.offset_area.length")
+      console.error("[Meow][LinysTabs][ERROR] Ran into the weird bug of target >= this.offset_area.length")
       return;
     }
 
@@ -270,6 +291,7 @@ struct meowTabs {
     if (this.count_down_for_switching_back_to_spring > 0) {
       this.count_down_for_switching_back_to_spring -= 1;
     }
+    // Count down
     if (this.count_down_for_scrolling_to_bottom > 0) {
       this.count_down_for_scrolling_to_bottom -= 1;
       if (this.count_down_for_scrolling_to_bottom == 1) {

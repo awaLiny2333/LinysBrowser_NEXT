@@ -28,6 +28,12 @@ export function animation_default_spring_more() {
   return ap;
 }
 
+/** @abstract for intervals of 10
+ * */
+export function animation_popup_duration() {
+  return 200;
+}
+
 export function click_effect_default() {
   let ce: ClickEffect = { level: ClickEffectLevel.LIGHT };
   return ce;

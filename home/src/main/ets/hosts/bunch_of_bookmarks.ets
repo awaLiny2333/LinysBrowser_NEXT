@@ -126,7 +126,7 @@ export class unified_item {
     if (bm === undefined && fd === undefined) {
       this.bookmark = new bookmark("Liny's Browser", "https://github.com/awaLiny2333/LinysBrowser_NEXT");
       // If is creating an empty one, then set default
-      console.log("[Meow][BunchOfBookmarks][ERROR] Creating an empty unified_item, set default.")
+      console.error("[Meow][BunchOfBookmarks][ERROR] Creating an empty unified_item, set default.")
     } else {
       // at least one of them is not undefined
       if (bm !== undefined) {

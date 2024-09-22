@@ -16,7 +16,6 @@ export class bunch_of_downloads {
   context = AppStorage.get('context') as common.UIAbilityContext;
 
   /**
-   *
    * @param url The https:// proxy url of the download target
    * */
   start_download_task(url: string) {
@@ -89,7 +88,7 @@ export class bunch_of_downloads {
 
     } catch (error) {
       let err: BusinessError = error as BusinessError;
-      console.error(`[bunch_of_downloads][Error] Invoke downloadFile failed, code is ${err.code}, message is ${err.message}`);
+      console.error(`[bunch_of_downloads][ERROR] Invoke downloadFile failed, code is ${err.code}, message is ${err.message}`);
     }
   }
 

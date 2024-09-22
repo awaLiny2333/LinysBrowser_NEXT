@@ -95,6 +95,22 @@
     {
       "name": "Downloads_copied",
       "value": "已复制 ψ(｀∇´)ψ ！"
+    },
+    {
+      "name": "Downloads_notice_title",
+      "value": "看这里！੭ ᐕ)੭"
+    },
+    {
+      "name": "Downloads_notice_content",
+      "value": "由于安全性原因，所有的下载内容都被暂时安置在这里。在离开前，你需要把他们手动搬出去！"
+    },
+    {
+      "name": "Settings_general_new_tab_url",
+      "value": "新标签页地址"
+    },
+    {
+      "name": "Settings_general_new_tab_url_saved",
+      "value": "已保存 (～o￣3￣)～！"
     }
   ]
 }

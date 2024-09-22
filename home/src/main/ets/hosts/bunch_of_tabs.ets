@@ -46,11 +46,12 @@ export class tab_info_packed {
 }
 
 export class bunch_of_tabs {
-  Tabs: Array<tab_info_packed> = [new tab_info_packed("Meow", home_url())];
-  Labels: Array<tab_label> = [new tab_label(Date.now(), 0)];
+  Tabs: Array<tab_info_packed> = [];
+  Labels: Array<tab_label> = [];
   current_working_tab_index: number = 0;
   current_color_mode: number = AppStorage.get('currentColorMode') as number;
   global_custom_UA: string = "";
+  new_tab_url: string | undefined = undefined;
 
   // Operations and Actions
 
@@ -121,7 +122,21 @@ export class bunch_of_tabs {
     return target;
   }
 
+  /** @param target_url If url is "", then load the default new_tab_url set in this object.
+   * @abstract  While if new_tab_url is also not set ("" or undefined), then load default home_url().
+   * */
   newTab(target_url: string) {
+    if (target_url == "") {
+      // If newing an empty tab
+      if (this.new_tab_url == "" || this.new_tab_url == undefined) {
+        target_url = home_url();
+        // If new tab not specified
+      } else {
+        target_url = this.new_tab_url;
+        // If new tab is specified
+      }
+    }
+
     let new_TabInfo: tab_info_packed = new tab_info_packed("Meow", target_url);
     let new_TabLabel: tab_label = new tab_label(Date.now(), this.Tabs.length);
     this.Tabs.push(new_TabInfo);

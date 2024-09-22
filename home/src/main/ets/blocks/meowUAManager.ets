@@ -369,6 +369,10 @@ struct meowUAButton {
     this.my_ua.label = this.edit_label;
     this.my_ua.content = this.edit_content;
     this.save_user_agents_to_kv_store();
+
+    if (this.selected_index == this.my_index) {
+      this.set_global_UA_to_mine();
+    }
   }
 
   delete_myself() {

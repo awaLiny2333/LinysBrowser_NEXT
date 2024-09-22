@@ -2,6 +2,7 @@ import linysTitleText from '../components/linysTitleText';
 import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import {
   animation_default,
+  animation_popup_duration,
   capsule_bar_height,
   click_effect_default,
   fontSize_Large
@@ -17,48 +18,70 @@ struct meowDownloads {
   @Link screen_width: number;
 
   build() {
-    WaterFlow() {
-      if (this.bunch_of_downloads.list_of_on_going_tasks.length == 0) {
-        FlowItem() {
-          linysTitleText({
-            text: "¯\\_(ツ)_/¯"
-          })
-            .alignRules({
-              center: { anchor: "__container__", align: VerticalAlign.Center },
-              middle: { anchor: "__container__", align: HorizontalAlign.Center },
-            })
-        }
-        .opacity(0.5)
-        .width("100%")
-        .height("100%")
-        // .visibility(this.bunch_of_downloads.list_of_on_going_tasks.length == 0 ? Visibility.Visible : Visibility.None)
-        .animation(animation_default())
+    Column({ space: 10 }) {
+      Column({ space: 15 }) {
+        linysTitleText({
+          text: $r('app.string.Downloads_notice_title')
+        })
+        linysText({
+          text: $r('app.string.Downloads_notice_content'),
+          max_lines: 5
+        })
       }
+      .padding(15)
+      .alignItems(HorizontalAlign.Start)
+      .justifyContent(FlexAlign.Start)
+      .width("100%")
+      .borderRadius(10)
+      .backgroundColor($r('app.color.start_window_background'))
+      .animation(animation_default())
 
-      ForEach(
-        this.bunch_of_downloads.list_of_on_going_tasks,
-        (item: request.DownloadTask, key: number) => {
-          meowDownloadsButton({
-            bunch_of_downloads: this.bunch_of_downloads,
-            my_index: key,
-          })
-        },
-      )
+      WaterFlow() {
+        if (this.bunch_of_downloads.list_of_on_going_tasks.length == 0) {
+          FlowItem() {
+            linysTitleText({
+              text: "¯\\_(ツ)_/¯"
+            })
+              .alignRules({
+                center: { anchor: "__container__", align: VerticalAlign.Center },
+                middle: { anchor: "__container__", align: HorizontalAlign.Center },
+              })
+          }
+          .opacity(0.5)
+          .width("100%")
+          .height("100%")
+          // .visibility(this.bunch_of_downloads.list_of_on_going_tasks.length == 0 ? Visibility.Visible : Visibility.None)
+          .animation(animation_default())
+        }
+
+        ForEach(
+          this.bunch_of_downloads.list_of_on_going_tasks,
+          (item: request.DownloadTask, key: number) => {
+            meowDownloadsButton({
+              bunch_of_downloads: this.bunch_of_downloads,
+              my_index: key,
+            })
+          },
+        )
+      }
+      .columnsTemplate(this.bunch_of_downloads.list_of_on_going_tasks.length == 0 ?
+        "1fr" : "1fr ".repeat(Math.ceil(this.screen_width / 430)))
+      .rowsGap(10)
+      .columnsGap(10)
+      .width("100%")
+      .edgeEffect(EdgeEffect.Spring)
+      .scrollBar(BarState.Auto)
+      .layoutWeight(1)
+      .animation(animation_default())
+      .onAppear(() => {
+        console.log("[Meow][meowDownloads] Downloads READY")
+        this.on_appear();
+      })
     }
-    .columnsTemplate(this.bunch_of_downloads.list_of_on_going_tasks.length == 0 ?
-      "1fr" : "1fr ".repeat(Math.ceil(this.screen_width / 430)))
-    .rowsGap(10)
-    .columnsGap(10)
     .height(this.showing_downloads ? "75%" : 0)
-    .padding({ left: 15, right: 15 })
-    .width("100%")
-    .edgeEffect(EdgeEffect.Spring)
-    .scrollBar(BarState.Auto)
+    .margin({ left: 15, right: 15 })
     .animation(animation_default())
-    .onAppear(() => {
-      console.log("[Meow][meowDownloads] Downloads READY")
-      this.on_appear();
-    })
+
   }
 
   on_appear() {
@@ -108,7 +131,7 @@ struct meowDownloadsButton {
           .clickEffect(click_effect_default())
           .onClick(() => {
             copy(this.my_link);
-            this.copied = 200;
+            this.copied = animation_popup_duration();
           })
           .opacity(0.7)
 

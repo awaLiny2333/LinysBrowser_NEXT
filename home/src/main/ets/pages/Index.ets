@@ -56,8 +56,7 @@ struct Index {
   @State @Watch('on_title_bar_position_change') settings_title_bar_position: string = "";
   @State @Watch('on_global_custom_UA_change') now_global_custom_UA: string = "";
 
-  aboutToAppear(): void {
-
+  aboutToAppear() {
   }
 
   build() {
@@ -65,7 +64,6 @@ struct Index {
       Row()// Top Bar Avoid
         .width("100%")
         .height(px2vp(this.topAvoidHeight))
-        .backgroundColor($r('app.color.block_color'))
 
       RelativeContainer() {
 
@@ -73,23 +71,9 @@ struct Index {
           Scroll() {
             Row() {
               Scroll() {
-                meowBookmarks({
-                  bunch_of_tabs: this.bunch_of_tabs,
-                  bunch_of_bookmarks: this.bunch_of_bookmarks,
-                  webViews_ready: this.webViews_ready
-                })// Bookmarks Panel
-                  .width(this.tablet_mode ? 350 : 0.9 * this.screen_width)
-              }
-              .height("100%")
-              .width(this.showing_bookmarks ? "100%" : 0)
-              .animation(animation_default())
-              .scrollable(ScrollDirection.Horizontal)
-              .scrollBar(BarState.Off)
-
-              Scroll() {
                 meowTabs({
                   tablet_mode: this.tablet_mode,
-                  show_webViews: this.webViews_ready,
+                  webViews_ready: this.webViews_ready,
                   showing_tabs: this.showing_tabs,
                   animation_default: animation_default(),
                   // Environment
@@ -119,6 +103,20 @@ struct Index {
               .scrollable(ScrollDirection.Horizontal)
               .scrollBar(BarState.Off)
 
+              Scroll() {
+                meowBookmarks({
+                  bunch_of_tabs: this.bunch_of_tabs,
+                  bunch_of_bookmarks: this.bunch_of_bookmarks,
+                  webViews_ready: this.webViews_ready
+                })// Bookmarks Panel
+                  .width(this.tablet_mode ? 350 : 0.9 * this.screen_width)
+              }
+              .height("100%")
+              .width(this.showing_bookmarks ? "100%" : 0)
+              .animation(animation_default())
+              .scrollable(ScrollDirection.Horizontal)
+              .scrollBar(BarState.Off)
+
             }
             .width("100%")
             .height("100%")
@@ -136,7 +134,7 @@ struct Index {
           Row() {
             meowWebView({
               tablet_mode: this.tablet_mode,
-              show_webViews: this.webViews_ready,
+              webViews_ready: this.webViews_ready,
               // Environment
               bunch_of_downloads: this.bunch_of_downloads,
               bunch_of_tabs: this.bunch_of_tabs,
@@ -229,10 +227,10 @@ struct Index {
       Row()// Bottom Bar Avoid
         .width("100%")
         .height(px2vp(this.bottomAvoidHeight))
-        .backgroundColor($r('app.color.block_color'))
     }
     .height("100%")
     .width("100%")
+    .backgroundColor($r('app.color.block_color'))
     .onAppear(() => {
       console.log("[Meow][Index] Home Index READY")
     })
