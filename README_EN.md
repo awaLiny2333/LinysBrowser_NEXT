@@ -49,7 +49,7 @@ click again to collapse the panel.
 
 ## Plans & Developments
 
-May cost unimaginably long time to bring all these into the reality, 
+May cost unimaginably long time to bring all these into the reality,
 or some of them will even lie on the table for ever... (ง •_•)ง
 
 ### Features
@@ -57,7 +57,8 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 - [x] Respond to webpages' request of opening in new tab.
 - [x] Downloads from web.
 - [ ] Right click or long press menu on web links. (For preview and operations)
-- [x] UA Switching and customizations. (UA related settings)
+- [x] UA switching and customizations. (UA related settings)
+- [x] Reopen tabs when launching.
 
 ### Experience
 
@@ -69,16 +70,18 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 
 Long way ahead.
 
-1. Perhaps due to performance issues on Windows x86-64 Emulators,
+1. In some cases reopening tabs function won't work, and no new tabs are shown.
+   (Still under investigation)
+2. Perhaps due to performance issues on Windows x86-64 Emulators,
    quickly opening plenty of new tabs may cause crashes due to error
    17100001 (Init error. The WebviewController must be associated with a Web component).
    (Seems to be solved, still under observation)
-2. Quickly closing plenty of tabs may cause tabs to disappear.
+3. Quickly closing plenty of tabs may cause tabs to disappear.
    This is because in some extreme occasions,
    the tab button is trying to close the last+1 index of the tab list.
    An if statement has been added before the operation
    in order to make sure the index is in the legal range.
    (Seems to be solved, still under observation)
-3. HarmonyOS UA can't be understood by plenty of websites.
-4. The vertical tabs panel animations may seem weird when the scroll is longer than the screen.
-5. This project requires HarmonyOS NEXT API12 to run.
+4. HarmonyOS UA is not understood by plenty of websites (But UA is customizable now).
+5. The vertical tabs panel animations may seem weird when the scroll is longer than the screen.
+6. This project requires HarmonyOS NEXT API12 to run.

@@ -19,13 +19,19 @@ export class tab_info_packed {
   url: string;
   is_loading: boolean;
   loading_progress: number;
+  recovery: boolean = false;
+  web_state_array: Uint8Array = new Uint8Array();
 
-  constructor(title: string, url: string) {
+  constructor(title: string, url: string, recover_on_creation?: boolean) {
     this.controller = new webview.WebviewController();
     this.title = title;
     this.url = url;
     this.is_loading = true;
     this.loading_progress = 0;
+
+    if (recover_on_creation) {
+      this.recovery = true;
+    }
   }
 
   update_title() {
@@ -54,6 +60,7 @@ export class bunch_of_tabs {
   new_tab_url: string | undefined = undefined;
   home_url: string | undefined = undefined;
   start_up: string | undefined = undefined;
+  private used_date_ids: number[] = [];
 
   // Operations and Actions
 
@@ -137,20 +144,26 @@ export class bunch_of_tabs {
   /** @param target_url If url is "", then load the default new_tab_url set in this object.
    * @abstract While if new_tab_url is also not set ("" or undefined), then load default home_url().
    * */
-  newTab(target_url: string) {
+  newTab(target_url: string, recover_on_creation?: boolean) {
     if (target_url == "") {
       // If newing an empty tab
       if (this.new_tab_url == "" || this.new_tab_url == undefined) {
-        target_url = home_url_default_blank();
         // If new tab not specified
+        target_url = home_url_default_blank();
       } else {
-        target_url = this.new_tab_url;
         // If new tab is specified
+        target_url = this.new_tab_url;
       }
     }
 
-    let new_TabInfo: tab_info_packed = new tab_info_packed("Meow", target_url);
-    let new_TabLabel: tab_label = new tab_label(Date.now(), this.Tabs.length);
+    let new_TabInfo: tab_info_packed = new tab_info_packed("Meow", target_url, recover_on_creation);
+    let Date_ID = Date.now();
+    while (this.used_date_ids.includes(Date_ID)) {
+      // Car crash prevention
+      Date_ID += 1;
+    }
+    let new_TabLabel: tab_label = new tab_label(Date_ID, this.Tabs.length);
+    this.used_date_ids.push(Date_ID)
     this.Tabs.push(new_TabInfo);
     this.Labels.push(new_TabLabel);
     this.current_working_tab_index = this.Tabs.length - 1;
@@ -253,5 +266,39 @@ export class bunch_of_tabs {
       stamps.push(this.Labels[index].timestamp);
     }
     return stamps;
+  }
+
+  // Web states
+
+  get_all_web_states() {
+    let result: Uint8Array[] = [];
+    for (let index = 0; index < this.Tabs.length; index++) {
+      // result.push(this.Tabs[index].controller.serializeWebState());
+      result.push(this.Tabs[index].web_state_array);
+    }
+    return result;
+  }
+
+  restore_all_web_states(web_state_arrays: Uint8Array[]) {
+    // Restore Web State
+    for (let index_key = 0; index_key < this.Tabs.length; index_key++) {
+      this.restore_web_state(web_state_arrays, index_key);
+    }
+  }
+
+  restore_web_state(web_state_arrays: Uint8Array[], index_key: number) {
+    if (this.Tabs[index_key].recovery) {
+      let web_state = web_state_arrays[index_key];
+      if (web_state !== undefined) {
+        console.log("[Meow][meowWebView] Restore web " + index_key.toString() +
+          ", state Length: " + web_state.length.toString())
+        // this.bunch_of_tabs.Tabs[Label.index_key].controller.loadUrl("");
+        this.Tabs[index_key].controller.clearHistory();
+        this.Tabs[index_key].controller.restoreWebState(web_state);
+        this.Tabs[index_key].recovery = false;
+      }
+    } else {
+      console.log("[Meow][meowWebView] No Need to restore web " + index_key.toString())
+    }
   }
 }

@@ -2,6 +2,7 @@ import { AbilityConstant, Configuration, UIAbility, Want } from '@kit.AbilityKit
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { kv_store_put_uint_8_array } from '../utils/kv_store_tools';
 
 export default class HomeAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -9,13 +10,16 @@ export default class HomeAbility extends UIAbility {
     console.log('want bundle name: ' + want.bundleName);
     console.log('launchParam launchReason: ' + launchParam.launchReason);
 
+    // save environment
     AppStorage.setOrCreate('context', this.context);
     AppStorage.setOrCreate('pathDir', this.context.filesDir);
     AppStorage.setOrCreate('currentColorMode', this.context.config.colorMode);
     AppStorage.setOrCreate('universal_new_tab_gateway', "");
     AppStorage.setOrCreate('tablet_mode', false);
     AppStorage.setOrCreate('screen_width', 0);
-    // save environment
+    // For Reopening Closed tabs
+    let web_state_arrays: Uint8Array[] = [];
+    AppStorage.setOrCreate('web_state_arrays', web_state_arrays);
   }
 
   onDestroy(): void {

@@ -59,3 +59,22 @@ export async function document_open() { // 需确保 context 由 UIAbilityContex
     return "";
   }
 }
+
+export function sandbox_save(file_path_name: string, content: ArrayBuffer) {
+  let file = fs.openSync(file_path_name, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
+  let writeLen = fs.writeSync(file.fd, content);
+  console.info("[Meow][sandbox_save] write data to file succeed and size is:" + writeLen + " @ " + file_path_name);
+  fs.closeSync(file);
+}
+
+export async function sandbox_open(file_path_name: string) {
+  let file = fs.openSync(file_path_name, fs.OpenMode.READ_WRITE);
+  let stat = fs.statSync(file_path_name);
+  let size = stat.size;
+  let buf = new ArrayBuffer(size);
+  let readLen = await fs.read(file.fd, buf);
+  console.info("[Meow][sandbox_open] read file data succeed, Length: " + readLen.toString());
+  let result = buf.slice(0, readLen);
+  fs.closeSync(file);
+  return result;
+}

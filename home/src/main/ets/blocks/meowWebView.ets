@@ -1,11 +1,13 @@
 import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_tabs, tab_label } from '../hosts/bunch_of_tabs';
+import { kv_store_put_uint_8_array } from '../utils/kv_store_tools';
 import { url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
 
 @Component
 struct meowWebView {
   @StorageProp('currentColorMode') current_color_mode: number = 0;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
+  @StorageLink('web_state_arrays') web_state_arrays: Uint8Array[] = [];
   @Link bunch_of_downloads: bunch_of_downloads;
   @Link bunch_of_tabs: bunch_of_tabs;
   @Link current_tab_index: number;
@@ -24,15 +26,16 @@ struct meowWebView {
   @Link current_accessBackward: boolean;
   @Link search_input: string;
   @Link now_global_custom_UA: string;
+
   // Misc
 
   build() {
     Row() {
       ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
         Web({
-          src: url_meow_to_resource(this.bunch_of_tabs.Tabs[Label.index_key] !== undefined ?
-          this.bunch_of_tabs.Tabs[Label.index_key].url : ""),
-          controller: this.bunch_of_tabs.Tabs[Label.index_key] !== undefined ?
+          src: this.initial_src_of_tab_index(Label.index_key),
+          controller:
+          this.bunch_of_tabs.Tabs[Label.index_key] !== undefined ?
           this.bunch_of_tabs.Tabs[Label.index_key].controller : undefined
         })// Main WEB
           .width("100%")
@@ -56,7 +59,13 @@ struct meowWebView {
             // Log web errors
           })
           .onPageBegin(() => {
-            console.log("[Meow][ArkWeb] on page begin")
+            // console.log("[Meow][ArkWeb] on page begin")
+
+            if (Label.index_key >= this.bunch_of_tabs.Tabs.length) {
+              // If not synced, idk why but o(=•ェ•=)m
+              return;
+            }
+
             this.current_accessBackward = this.bunch_of_tabs.Tabs[Label.index_key].controller.accessBackward()
             this.current_accessForward = this.bunch_of_tabs.Tabs[Label.index_key].controller.accessForward()
             // Update History
@@ -70,20 +79,27 @@ struct meowWebView {
             this.update_current_info()
             this.update_search_box_text(this.current_url)
             // Update Input Search Box
+
           })
           .onPageEnd(() => {
-            console.log("[Meow][ArkWeb] on page end")
+            // console.log("[Meow][ArkWeb] on page end")
             this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(false);
             this.tab_is_loading = this.bunch_of_tabs.get_all_is_loading();
             this.update_current_info();
           })
           .onProgressChange((event) => {
             let progress: number = event.newProgress;
-            console.log("[Meow][ArkWeb] on progress change: " + progress.toString())
+            // console.log("[Meow][ArkWeb] on progress change: " + progress.toString())
             // Update current loading progress
             if (progress == 0) {
               return;
             }
+
+            if (Label.index_key >= this.bunch_of_tabs.Tabs.length) {
+              // If not synced, idk why but o(=•ェ•=)m
+              return;
+            }
+
             this.bunch_of_tabs.Tabs[Label.index_key].update_title()
             this.bunch_of_tabs.Tabs[Label.index_key].update_url()
             this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(progress)
@@ -91,8 +107,19 @@ struct meowWebView {
             this.sync_list_info()
             // Get synced lists
             this.update_current_info()
-            this.update_search_box_text(this.current_url)
             // Update Input Search Box
+            this.update_search_box_text(this.current_url)
+
+            // Sync to bunch_of_tabs
+            let web_state = this.bunch_of_tabs.Tabs[Label.index_key].controller.serializeWebState();
+            this.bunch_of_tabs.Tabs[Label.index_key].web_state_array = web_state;
+            // Sync to AppStorage
+            this.web_state_arrays = this.bunch_of_tabs.get_all_web_states();
+            // kv_store web state
+            for (let index = 0; index < this.web_state_arrays.length; index++) {
+              const element = this.web_state_arrays[index];
+              kv_store_put_uint_8_array("continue_tabs_web_state_array_" + index.toString(), element);
+            }
           })
           .onDownloadStart((event) => {
             if (event) {
@@ -106,10 +133,14 @@ struct meowWebView {
             }
           })
           .onAppear(() => {
+            // console.log("Web on_appear!")
+            // Set ua
             if (this.now_global_custom_UA.length != 0) {
               this.bunch_of_tabs.Tabs[Label.index_key].controller.setCustomUserAgent(this.now_global_custom_UA);
-              // set ua
             }
+
+            // Restore Web State
+            this.bunch_of_tabs.restore_web_state(this.web_state_arrays, Label.index_key);
           })
       }, (item: tab_label) => item.timestamp.toString())
 
@@ -141,6 +172,21 @@ struct meowWebView {
   update_search_box_text(text: string) {
     this.search_input = url_resource_to_meow(text)
     // Update Input Search Box when new page loaded
+  }
+
+  // Ladders
+
+  private initial_src_of_tab_index(index: number): string {
+    let target_packed_tab_info = this.bunch_of_tabs.Tabs[index];
+    if (target_packed_tab_info == undefined) {
+      return "";
+    } else {
+      if (target_packed_tab_info.recovery) {
+        return "";
+      } else {
+        return url_meow_to_resource(target_packed_tab_info.url);
+      }
+    }
   }
 }
 

@@ -16,7 +16,7 @@ struct Index {
   @StorageLink('topAvoidHeight') topAvoidHeight: number = 1;
   // Interactions
   @State is_search_input_typing: boolean = false;
-  @State search_input: string = "";
+  @State search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
   @State search_input_unified: string = "";
   // UI Statuses
   @StorageLink('tablet_mode') tablet_mode: boolean = false;

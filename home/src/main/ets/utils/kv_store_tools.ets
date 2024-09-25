@@ -45,6 +45,56 @@ export async function kv_store_put(key_name: string, put_content: string) {
 
 }
 
+/**
+ *
+ * @param key_name The name of key stored in kvStore.
+ * @returns The Uint8Array.
+ * @returns An Empty Uint8Array if the key is not found.
+ * @returns An Uint8Array containing -1 if kvStore is undefined.
+ * */
+export async function kv_store_get_uint_8_array(key_name: string) {
+  if (AppStorage.get('kvStore') == undefined) {
+    console.log("[Meow][kv_store_tools][GET] First launch of app, now getting kvStore")
+    await get_kv_store_into_app_storage();
+  }
+  let kvStore = AppStorage.get('kvStore') as distributedKVStore.DeviceKVStore;
+
+  if (kvStore !== undefined) {
+    // If kvStore already got
+    let get_result:Uint8Array = new Uint8Array();
+    await kvStore.get(key_name).then((value) => {
+      console.log("[Meow][kv_store_tools] Succeeded in getting data, key: " + key_name + ".")
+      get_result = value as Uint8Array;
+    }).catch(() => {
+      get_result = new Uint8Array();
+    })
+    return get_result;
+
+  } else {
+    let get_result = new Uint8Array(-1);
+    console.error("[Meow][kv_store_tools][GET][ERROR] Undefined KVStore! ")
+    return get_result;
+
+  }
+}
+
+export async function kv_store_put_uint_8_array(key_name: string, put_content: Uint8Array) {
+  if (AppStorage.get('kvStore') == undefined) {
+    console.log("[Meow][kv_store_tools][GET] First launch of app, now getting kvStore")
+    await get_kv_store_into_app_storage();
+  }
+  let kvStore = AppStorage.get('kvStore') as distributedKVStore.DeviceKVStore;
+
+  kvStore.put(key_name, put_content, (err) => {
+    if (err !== undefined) {
+      console.error(`[Meow][kv_store_tools][ERROR] Failed to put data. Code: ${err.code},message: ${err.message}`);
+    } else {
+      // console.log("[Meow][kv_store_tools] Succeeded in putting data, key: " + key_name + ".")
+    }
+  });
+
+}
+
 export async function kv_store_delete(key_name: string) {
   if (AppStorage.get('kvStore') == undefined) {
     console.log("[Meow][kv_store_tools][GET] First launch of app, now getting kvStore")
