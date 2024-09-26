@@ -554,7 +554,7 @@ struct bookmarkItem {
       } // Edit panel
       .height(
         !this.editing ? 0 :
-          (this.type == "bookmark" ? 145 : 0) + (this.type == "folder" ? 100 : 0)
+          (this.type == "bookmark" ? 142 : 0) + (this.type == "folder" ? 98 : 0)
       )
       .visibility(this.editing ? Visibility.Visible : Visibility.None)
       .animation(animation_default())
@@ -638,6 +638,7 @@ struct bookmarkItem {
   save_changes_folder() {
     this.item.get_item().set_label(this.edit_label);
     this.label = this.edit_label;
+    this.bunch_of_bookmarks.reconstruct_cached_plain_bookmarks();
     this.save_html_to_kv_store();
   }
 
@@ -646,6 +647,7 @@ struct bookmarkItem {
     (this.item.get_item() as bookmark).set_link(this.edit_link);
     this.label = this.edit_label;
     this.link = this.edit_link;
+    this.bunch_of_bookmarks.reconstruct_cached_plain_bookmarks();
     this.save_html_to_kv_store();
   }
 

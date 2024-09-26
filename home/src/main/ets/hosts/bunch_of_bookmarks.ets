@@ -86,6 +86,25 @@ export class folder {
     return this.contents as unified_item[];
   }
 
+  get_plain_bookmarks() {
+    let type: string = "";
+    let item: bookmark | folder;
+    let result: string[][] = [];
+    for (let index = 0; index < this.contents.length; index++) {
+      item = this.contents[index].get_item();
+      type = item.get_type();
+      // Get item data
+      if (type == "bookmark") {
+        item = item as bookmark;
+        result.push([item.get_label(), item.get_link()]); // Push bookmark
+      } else if (type == "folder") {
+        item = item as folder;
+        result = result.concat(item.get_plain_bookmarks());
+      }
+    }
+    return result;
+  }
+
   print_contents_in_html(number_of_spaces: number) {
     let spaces: number = number_of_spaces;
     let type: string = "";
@@ -153,13 +172,20 @@ export class unified_item {
  */
 export class bunch_of_bookmarks {
   root: folder;
+  caches_plain_bookmarks: string[][] = [];
 
   constructor(root_label: string) {
     this.root = new folder(root_label);
 
   }
 
-  add_bookmark(item: bookmark, path: string) {
+  reconstruct_cached_plain_bookmarks() {
+    this.caches_plain_bookmarks = this.root.get_plain_bookmarks();
+    console.log("[bunch_of_bookmarks][plain_bookmarks] Reconstructed plain bookmarks! length: " +
+    this.caches_plain_bookmarks.length.toString());
+  }
+
+  add_bookmark(item: bookmark, path: string, no_reconstruct_plain_bookmarks?: boolean) {
     let check_path = "";
     if (path == "") {
       check_path = item.get_label()
@@ -172,6 +198,11 @@ export class bunch_of_bookmarks {
     } else {
       let add_result = this.add_bookmark_process(item, path);
 
+      if (no_reconstruct_plain_bookmarks) {
+        return add_result;
+      }
+      // Update plain_bookmarks
+      this.reconstruct_cached_plain_bookmarks();
       return add_result;
     }
   }
@@ -183,21 +214,28 @@ export class bunch_of_bookmarks {
   // add_folder(new folder("third"),"honk/second")
   // add_bookmark(new bookmark("gitee","gitee.com"),"honk/second/third") // adding in root/honk/second/third directory
 
-  add_folder(item: folder, path: string) {
+  add_folder(item: folder, path: string, no_reconstruct_plain_bookmarks?: boolean) {
     let check_path = "";
     if (path == "") {
       check_path = item.get_label()
     } else {
       check_path = path + "/" + item.get_label()
     }
+
+    let add_result: boolean;
     if (this.get_folder(check_path)) {
       // already exist
-      return false;
+      add_result = false;
     } else {
-      let add_result = this.add_folder_process(item, path);
+      add_result = this.add_folder_process(item, path);
+    }
 
+    if (no_reconstruct_plain_bookmarks) {
       return add_result;
     }
+    // Update plain_bookmarks
+    this.reconstruct_cached_plain_bookmarks();
+    return add_result;
   }
 
   // add_folder(new folder("honk"),"")
@@ -276,6 +314,9 @@ export class bunch_of_bookmarks {
       return false;
     }
     let delete_result = this.delete_bookmark_process(path);
+
+    // Update plain_bookmarks
+    this.reconstruct_cached_plain_bookmarks();
     return delete_result;
   }
 
@@ -288,6 +329,8 @@ export class bunch_of_bookmarks {
     }
     let delete_result = this.delete_folder_process(path);
 
+    // Update plain_bookmarks
+    this.reconstruct_cached_plain_bookmarks();
     return delete_result;
   }
 
@@ -380,7 +423,7 @@ export class bunch_of_bookmarks {
 
       if (line.includes("<H3 ")) {
         // is a folder
-        new_bunch_of_bookmarks.add_folder(new folder(label, add_date, last_modified), now_path_string);
+        new_bunch_of_bookmarks.add_folder(new folder(label, add_date, last_modified), now_path_string, true);
         now_path_stack.push(label)
 
       } else if (line.includes("<A HREF=\"")) {
@@ -389,7 +432,7 @@ export class bunch_of_bookmarks {
         if (link == "") {
           return 2; // 2 for empty link error
         }
-        new_bunch_of_bookmarks.add_bookmark(new bookmark(label, link, add_date), now_path_string);
+        new_bunch_of_bookmarks.add_bookmark(new bookmark(label, link, add_date), now_path_string, true);
 
       } else if (line.includes("</DL>")) {
         // is a closing mark
@@ -404,14 +447,21 @@ export class bunch_of_bookmarks {
       let root_contents: folder = (new_bunch_of_bookmarks.root.get_content()[0].get_item() as folder);
       this.root = root_contents;
     } else {
-      final_add_result = this.add_folder(new_bunch_of_bookmarks.root, "") as boolean;
+      final_add_result = this.add_folder(new_bunch_of_bookmarks.root, "", true) as boolean;
     }
+
+    // Update plain_bookmarks
+    this.reconstruct_cached_plain_bookmarks();
 
     if (final_add_result) {
       return 0; // 0 for a successful import
     } else {
       return 3; // 3 for add_folder errors
     }
+  }
+
+  get_all_plain_bookmarks(): string[][] {
+    return this.caches_plain_bookmarks;
   }
 
   private import_html_get_key(key: string, from: string) {

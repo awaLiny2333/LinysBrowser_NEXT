@@ -15,10 +15,14 @@ import {
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import meowDownloads from './meowDownloads';
+import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
+import { get_relations } from '../utils/bookmark_relation_tools';
+import meowBookmarkRelations from './meowBookmarkRelations';
 
 @Component
 struct meowTitleBar {
   // Environments
+  @Link bunch_of_bookmarks: bunch_of_bookmarks;
   @Link bunch_of_user_agents: bunch_of_user_agents;
   @Link bunch_of_tabs: bunch_of_tabs;
   @Link bunch_of_downloads: bunch_of_downloads;
@@ -58,9 +62,21 @@ struct meowTitleBar {
   @Link showing_downloads: boolean;
   // UI Effects
   @State download_started_popup: boolean = false;
+  @State search_input_relations: string[][] = [];
+  @State update_search_input_relations_count_down: number = 0;
 
   build() {
     Column({ space: 10 }) {
+      if (this.settings_title_bar_position == "bottom") {
+        meowBookmarkRelations({
+          relations: this.search_input_relations,
+        })
+          .margin({ top: 10 })
+          .visibility(this.search_input_relations.length == 0 || this.search_input == "" ?
+          Visibility.None : this.visible_when_typing())
+          .animation(animation_default())
+      }
+
       Row() {
         Text("→ " + (this.search_input_unified == "" ? "(　o=^•ェ•)o ?" : this.search_input_unified))
           .fontColor($r('app.color.font_color_title'))
@@ -290,6 +306,15 @@ struct meowTitleBar {
       .width("100%")
       .animation(animation_default())
 
+      if (this.settings_title_bar_position == "top") {
+        meowBookmarkRelations({
+          relations: this.search_input_relations,
+        })
+          .visibility(this.search_input_relations.length == 0 || this.search_input == "" ?
+          Visibility.None : this.visible_when_typing())
+          .animation(animation_default())
+      }
+
       Row() {
         linysSymbol({
           symbol_glyph_target: 'sys.symbol.qrcode'
@@ -338,10 +363,13 @@ struct meowTitleBar {
     .animation(this.showing_app_settings ? animation_default() : undefined)
     .onAppear(() => {
       console.log("[Meow][meowTitleBar] Title Bar READY")
+      setInterval(() => {
+        this.on_interval();
+      }, 10)
     })
   }
 
-  // UI
+  // Visibility
 
   visible_when_search_input_is_not_blank() {
     return this.search_input == "" ? Visibility.None : Visibility.Visible
@@ -393,7 +421,7 @@ struct meowTitleBar {
     }, animation_popup_duration() * 10)
   }
 
-  // Visibility
+  // UI controls
 
   show_tabs() {
     if (!this.tablet_mode) {
@@ -453,7 +481,7 @@ struct meowTitleBar {
     this.showing_downloads = !this.showing_downloads;
   }
 
-  // UI controls
+  // Web control events
 
   submit_searching() {
     this.webViews_ready = true;
@@ -496,17 +524,13 @@ struct meowTitleBar {
     this.update_current_info()
   }
 
-  // Web control events
+  // Data synchronizing
 
   update_search_input(content: string) {
-    this.search_input = content
-    this.search_input_unified = unify_search_input_into_url(content)
-    this.search_input_unified = url_resource_to_meow(this.search_input_unified)
-  }
-
-  update_search_box_text(text: string) {
-    this.search_input = url_resource_to_meow(text)
-    // Update Input Search Box
+    this.search_input = content;
+    this.search_input_unified = unify_search_input_into_url(content);
+    this.search_input_unified = url_resource_to_meow(this.search_input_unified);
+    this.update_search_input_relations_count_down = 15;
   }
 
   update_current_info() {
@@ -526,7 +550,15 @@ struct meowTitleBar {
     this.tab_loading_progresses = this.bunch_of_tabs.get_all_loading_progress()
   }
 
-  // Data synchronizing
+  // Misc
+  on_interval() {
+    if (this.update_search_input_relations_count_down > 0) {
+      this.update_search_input_relations_count_down -= 1;
+      if (this.update_search_input_relations_count_down == 1) {
+        this.search_input_relations = get_relations(this.bunch_of_bookmarks, this.search_input);
+      }
+    }
+  }
 }
 
 export default meowTitleBar;

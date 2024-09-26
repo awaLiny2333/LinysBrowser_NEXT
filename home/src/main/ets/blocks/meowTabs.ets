@@ -18,8 +18,7 @@ struct meowTabs {
   @Prop animation_default: AnimateParam;
   @Link @Watch('on_did_switch_tab') current_tab_index: number;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
-  @StorageLink('universal_new_tab_gateway') @Watch('on_targeted_new_tab') universal_new_tab_gateway: string = "";
-  @State start_up: string = "new tab";
+  @StorageLink('universal_new_tab_gateway') @Watch('on_new_targeted_tab') universal_new_tab_gateway: string = "";
   // Controls and environments
   @Link tab_titles: string[];
   @Link current_title: string;
@@ -281,14 +280,15 @@ struct meowTabs {
 
     if (this.recover_tabs_ok) {
       let store_tabs_count = this.offset_area.length.toString();
-      console.log("[Meow][meowTabs] Store Tabs Count: " + store_tabs_count)
+      console.log("[Meow][meowTabs] Stored Tabs Count: " + store_tabs_count)
       // Store tabs count
       kv_store_put("continue_tabs_count", store_tabs_count);
     }
   }
 
-  on_targeted_new_tab() {
+  on_new_targeted_tab() {
     if (this.universal_new_tab_gateway != "") {
+      this.webViews_ready = true;
       this.new_tab(this.universal_new_tab_gateway);
       this.universal_new_tab_gateway = "";
     }

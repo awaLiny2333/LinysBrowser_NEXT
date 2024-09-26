@@ -21,12 +21,12 @@ struct Index {
   // UI Statuses
   @StorageLink('tablet_mode') tablet_mode: boolean = false;
   @StorageLink('screen_width') screen_width: number = 0;
+  @State webViews_ready: boolean = false;
   @State showing_downloads: boolean = false;
   @State showing_more_options: boolean = false;
   @State showing_app_settings: boolean = false;
   @State showing_tabs: boolean = false;
   @State showing_bookmarks: boolean = false;
-  @State webViews_ready: boolean = false;
   @State title_bar_height: number = 0;
   @State web_and_stuff_alignRules: AlignRuleOption = {
     middle: { anchor: "__container__", align: HorizontalAlign.Center },
@@ -177,6 +177,7 @@ struct Index {
             { bottom: this.title_bar_height } : { top: this.title_bar_height })
 
         meowTitleBar({
+          bunch_of_bookmarks: this.bunch_of_bookmarks,
           bunch_of_downloads: this.bunch_of_downloads,
           bunch_of_user_agents: this.bunch_of_user_agents,
           bunch_of_tabs: this.bunch_of_tabs,
