@@ -1,5 +1,6 @@
 import { animation_default } from '../hosts/bunch_of_settings';
 import linysText from '../components/linysText';
+import linysTitleText from '../components/linysTitleText';
 
 @Component
 struct meowBookmarkRelations {
@@ -14,11 +15,15 @@ struct meowBookmarkRelations {
         })
       })
     }
-    .height(this.relations.length * 48)
+    .height(this.relations.length * 50 + 20)
     .alignItems(HorizontalAlign.Start)
-    .padding({ left: 15, right: 15 })
-    .width("100%")
+    .margin({ left: 15, right: 15 })
+    .padding(15)
+    // .layoutWeight(1)
+    .borderRadius(10)
+    .backgroundColor($r('app.color.start_window_background'))
     .animation(animation_default())
+
   }
 }
 
@@ -33,9 +38,9 @@ struct meowRelation {
   @StorageLink('universal_new_tab_gateway') universal_new_tab_gateway: string = "";
 
   build() {
-    Column({ space: 0 }) {
+    Column({ space: 2 }) {
       linysText({
-        text: this.relation[0]
+        text: this.relation[0].length == 0 ? "　" : this.relation[0]
       })
       linysText({
         text: this.relation[1]
@@ -54,7 +59,7 @@ struct meowRelation {
       setTimeout(() => {
         this.offset_y = 0;
         this.this_visibility = Visibility.Visible;
-      }, (this.index + 0) * 60)
+      }, (this.index) * 60)
     })
   }
 }

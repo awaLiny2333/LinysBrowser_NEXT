@@ -56,9 +56,6 @@ struct Index {
   @State @Watch('on_title_bar_position_change') settings_title_bar_position: string = "";
   @State @Watch('on_global_custom_UA_change') now_global_custom_UA: string = "";
 
-  aboutToAppear() {
-  }
-
   build() {
     Column() {
       Row()// Top Bar Avoid

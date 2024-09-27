@@ -102,11 +102,11 @@ export class bunch_of_tabs {
   // UA Stuff
 
   set_global_custom_UA(ua: string) {
-    console.log("[bunch_of_tabs][UA] Set global_custom_UA! ua: " + ua)
     this.global_custom_UA = ua;
 
     if (this.global_custom_UA == "") {
       this.reset_global_custom_UA();
+      console.log("[bunch_of_tabs][UA] Set global_custom_UA! ua: " + this.get_global_default_UA())
       return;
       // Reset default if no input
     }
@@ -114,11 +114,11 @@ export class bunch_of_tabs {
     for (let index = 0; index < this.Tabs.length; index++) {
       this.Tabs[index].controller.setCustomUserAgent(this.global_custom_UA)
     }
-
+    console.log("[bunch_of_tabs][UA] Set global_custom_UA! ua: " + ua)
   }
 
   reset_global_custom_UA() {
-    console.log("[bunch_of_tabs][UA] Reset global_custom_UA!")
+    // console.log("[bunch_of_tabs][UA] Reset global_custom_UA!")
     let default_ua = this.get_global_default_UA();
 
     for (let index = 0; index < this.Tabs.length; index++) {
