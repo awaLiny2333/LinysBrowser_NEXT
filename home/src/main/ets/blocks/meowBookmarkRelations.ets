@@ -1,10 +1,19 @@
 import { animation_default } from '../hosts/bunch_of_defaults';
 import linysText from '../components/linysText';
-import linysTitleText from '../components/linysTitleText';
+import { get_relations } from '../utils/bookmark_relation_tools';
+import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
 
 @Component
 struct meowBookmarkRelations {
-  @Prop relations: string[][];
+  // Environments or settings
+  @Prop is_search_input_typing: boolean;
+  @Prop top_margin: number = 0;
+  @Prop bottom_margin: number = 0;
+  @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
+  @Prop @Watch('get_relations') search_input: string = "";
+  @Prop @Watch('get_relations') settings_max_bookmark_suggestions: number = 5;
+  // Myself
+  @State relations: string[][] = [];
 
   build() {
     Column({ space: 8 }) {
@@ -17,13 +26,33 @@ struct meowBookmarkRelations {
     }
     .height(this.relations.length * 50 + 20)
     .alignItems(HorizontalAlign.Start)
-    .margin({ left: 15, right: 15 })
+    .margin({
+      left: 15,
+      right: 15,
+      top: this.top_margin,
+      bottom: this.bottom_margin
+    })
     .padding(15)
     // .layoutWeight(1)
     .borderRadius(10)
     .backgroundColor($r('app.color.start_window_background'))
+    .visibility(this.relations.length == 0 || this.search_input == "" ?
+    Visibility.None : this.visible_when_typing())
     .animation(animation_default())
 
+  }
+
+  visible_when_typing() {
+    return this.is_search_input_typing ? Visibility.Visible : Visibility.None
+  }
+
+  get_relations() {
+    if (this.search_input === undefined) {
+      this.relations = [];
+    } else {
+      this.relations =
+        get_relations(this.bunch_of_bookmarks, this.search_input, this.settings_max_bookmark_suggestions);
+    }
   }
 }
 

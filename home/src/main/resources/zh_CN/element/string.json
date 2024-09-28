@@ -118,7 +118,7 @@
     },
     {
       "name": "Settings_start_up_continue",
-      "value": "上次的浏览"
+      "value": "上次的进度"
     },
     {
       "name": "Settings_general_home_url",
@@ -131,6 +131,14 @@
     {
       "name": "Index_download_task_start",
       "value": "ヾ(⌐■_■)ノ♪"
+    },
+    {
+      "name": "Settings_Experience",
+      "value": "体验"
+    },
+    {
+      "name": "Settings_experience_max_bookmark_advice",
+      "value": "最大书签建议数量"
     }
   ]
 }

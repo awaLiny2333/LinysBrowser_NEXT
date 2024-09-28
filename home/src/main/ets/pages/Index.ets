@@ -53,6 +53,7 @@ struct Index {
       Row()// Top Bar Avoid
         .width("100%")
         .height(px2vp(this.topAvoidHeight))
+        .animation(animation_default())
 
       RelativeContainer() {
 
@@ -160,7 +161,6 @@ struct Index {
           webViews_ready: this.webViews_ready,
           // Environments
           search_input: this.search_input,
-          is_search_input_typing: this.is_search_input_typing,
           settings_title_bar_position: this.settings_title_bar_position,
           web_and_stuff_alignRules: this.web_and_stuff_alignRules,
           // Current statuses
@@ -193,10 +193,12 @@ struct Index {
       Row()// Bottom Bar Avoid
         .width("100%")
         .height(px2vp(this.bottomAvoidHeight))
+        .animation(animation_default())
     }
     .height("100%")
     .width("100%")
     .backgroundColor($r('app.color.block_color'))
+    .animation(animation_default())
     .onAppear(() => {
       console.log("[Meow][Index] Home Index READY")
     })

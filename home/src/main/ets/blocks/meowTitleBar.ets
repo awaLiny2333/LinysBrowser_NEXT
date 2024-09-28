@@ -16,7 +16,6 @@ import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import meowDownloads from './meowDownloads';
 import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
-import { get_relations } from '../utils/bookmark_relation_tools';
 import meowBookmarkRelations from './meowBookmarkRelations';
 
 @Component
@@ -34,7 +33,7 @@ struct meowTitleBar {
   // Current statuses
   @Link search_input: string;
   @State search_input_unified: string = "";
-  @Link is_search_input_typing: boolean;
+  @State is_search_input_typing: boolean = false;
   @Link settings_title_bar_position: string;
   @Link web_and_stuff_alignRules: AlignRuleOption;
   // Web statuses
@@ -57,18 +56,18 @@ struct meowTitleBar {
   @Link showing_downloads: boolean;
   // UI Effects
   @State download_started_popup: boolean = false;
-  @State search_input_relations: string[][] = [];
   @State update_search_input_relations_count_down: number = 0;
+  @State settings_max_bookmark_advice: number = 5;
 
   build() {
     Column({ space: 10 }) {
       if (this.settings_title_bar_position == "bottom") {
         meowBookmarkRelations({
-          relations: this.search_input_relations,
+          settings_max_bookmark_suggestions: this.settings_max_bookmark_advice,
+          top_margin: 15,
+          is_search_input_typing: this.is_search_input_typing,
+          search_input: this.search_input,
         })
-          .margin({ top: 10 })
-          .visibility(this.search_input_relations.length == 0 || this.search_input == "" ?
-          Visibility.None : this.visible_when_typing())
           .animation(animation_default())
       }
 
@@ -303,10 +302,11 @@ struct meowTitleBar {
 
       if (this.settings_title_bar_position == "top") {
         meowBookmarkRelations({
-          relations: this.search_input_relations,
+          settings_max_bookmark_suggestions: this.settings_max_bookmark_advice,
+          bottom_margin: 15,
+          is_search_input_typing: this.is_search_input_typing,
+          search_input: this.search_input,
         })
-          .visibility(this.search_input_relations.length == 0 || this.search_input == "" ?
-          Visibility.None : this.visible_when_typing())
           .animation(animation_default())
       }
 
@@ -325,7 +325,7 @@ struct meowTitleBar {
       .animation(animation_default())
 
       meowAppSettings({
-        screen_width: this.screen_width,
+        settings_max_bookmark_advice: this.settings_max_bookmark_advice,
         show: this.showing_app_settings,
         settings_title_bar_position: this.settings_title_bar_position
       })// Settings
@@ -343,6 +343,7 @@ struct meowTitleBar {
     } // Title Bars
     .width("100%")
     .backgroundColor($r('app.color.block_color'))
+    // .backdropBlur(100)
     .alignRules(this.web_and_stuff_alignRules)
     .onAreaChange((_o, n) => {
       if (!this.showing_more_options && !this.is_search_input_typing &&
@@ -351,7 +352,7 @@ struct meowTitleBar {
       }
     })
     .visibility(this.settings_title_bar_position == "" ? Visibility.Hidden : Visibility.Visible)
-    .padding(this.settings_title_bar_position == "bottom" ? { top: 8 } : { bottom: 8 })
+    // .padding(this.settings_title_bar_position == "bottom" ? { top: 8 } : { bottom: 8 })
     .animation(this.showing_app_settings ? animation_default() : undefined)
     .onAppear(() => {
       console.log("[Meow][meowTitleBar] Title Bar READY")
@@ -544,12 +545,7 @@ struct meowTitleBar {
 
   // Misc
   on_interval() {
-    if (this.update_search_input_relations_count_down > 0) {
-      this.update_search_input_relations_count_down -= 1;
-      if (this.update_search_input_relations_count_down == 1) {
-        this.search_input_relations = get_relations(this.bunch_of_bookmarks, this.search_input);
-      }
-    }
+
   }
 }
 

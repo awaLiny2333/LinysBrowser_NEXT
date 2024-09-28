@@ -74,11 +74,11 @@
     },
     {
       "name": "Settings_appearance_title_bar_position",
-      "value": "Title Bar Position"
+      "value": "Title bar position"
     },
     {
       "name": "Settings_general_custom_ua",
-      "value": "Custom User-Agent"
+      "value": "Custom user-agent"
     },
     {
       "name": "Settings_general_custom_ua_default",
@@ -106,7 +106,7 @@
     },
     {
       "name": "Settings_general_new_tab_url",
-      "value": "New Tabs URL"
+      "value": "New tabs URL"
     },
     {
       "name": "Settings_start_up_new_tab",
@@ -118,7 +118,7 @@
     },
     {
       "name": "Settings_start_up_continue",
-      "value": "Last Progress"
+      "value": "Reopen"
     },
     {
       "name": "Settings_general_home_url",
@@ -126,11 +126,19 @@
     },
     {
       "name": "Settings_start_up_page",
-      "value": "Start Up Page"
+      "value": "Start up page"
     },
     {
       "name": "Index_download_task_start",
       "value": "ヾ(⌐■_■)ノ♪"
+    },
+    {
+      "name": "Settings_Experience",
+      "value": "Experience"
+    },
+    {
+      "name": "Settings_experience_max_bookmark_advice",
+      "value": "Max bookmark suggestions number"
     }
   ]
 }
