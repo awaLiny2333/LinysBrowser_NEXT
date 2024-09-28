@@ -9,6 +9,7 @@ struct linysTitleText {
   build() {
     Text(this.text)
       .fontColor(this.color)
+      .textAlign(TextAlign.Start)
       .fontSize(fontSize_Large())
       .fontWeight(FontWeight.Medium)
       .maxLines(this.max_lines)

@@ -1,0 +1,38 @@
+import linysText from '../components/linysText';
+import linysTitleText from '../components/linysTitleText';
+
+@CustomDialog
+struct woofQR {
+  controller: CustomDialogController;
+  @Prop link: string = '';
+  @Prop title: string = '';
+
+  build() {
+    Column({ space: 10 }) {
+      QRCode(this.link)
+        .color($r('app.color.font_color_title'))
+        .backgroundColor("transparent")
+        .padding({ bottom: 20 })
+
+      linysTitleText({
+        text: this.title,
+        max_lines: 3
+      })
+        .width("100%")
+      linysText({
+        text: this.link,
+        max_lines: 5
+      })
+        .width("100%")
+        .opacity(0.7)
+    }
+    .padding(40)
+    .alignItems(HorizontalAlign.Center)
+    .justifyContent(FlexAlign.Center)
+    .width("100%")
+    .borderRadius(10)
+    .backgroundColor($r('app.color.start_window_background'))
+  }
+}
+
+export default woofQR;

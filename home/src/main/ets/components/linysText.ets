@@ -13,6 +13,7 @@ struct linysText {
       .fontColor(this.color)
       .fontSize(fontSize_Normal())
       .fontWeight(this.font_weight)
+      .textAlign(TextAlign.Start)
       .maxLines(this.max_lines)
       .lineSpacing(LengthMetrics.vp(4))
       .textOverflow({ overflow: TextOverflow.Ellipsis })

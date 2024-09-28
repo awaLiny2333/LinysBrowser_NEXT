@@ -49,7 +49,7 @@ struct meowAppSettings {
   })
   @State @Watch('on_title_bar_position_changed') title_bar_position_selected: number[] = [0];
   @State @Watch('on_start_up_page_changed') start_up_page_selected: number[] = [0];
-  @Link settings_max_bookmark_advice: number;
+  @Link settings_max_bookmark_suggestions: number;
   // Edits
   @State new_tab_url_edit: string = "";
   @State home_url_edit: string = "";
@@ -150,19 +150,23 @@ struct meowAppSettings {
         Column({ space: 15 }) {
           linysTitleText({ text: $r('app.string.Settings_Experience') })
           linysText({ text: $r('app.string.Settings_experience_max_bookmark_advice'), max_lines: 2 })
-          Slider({
-            min: 0,
-            max: 5,
-            value: this.settings_max_bookmark_advice,
-            style: SliderStyle.InSet,
-          })
-            .blockColor($r('app.color.start_window_background'))
-            .selectedColor($r('app.color.font_color_title'))
-            .onChange((value) => {
-              AppStorage.setOrCreate('settings_max_bookmark_advice', value);
-              kv_store_put('settings_max_bookmark_suggestions', value.toString());
-              this.settings_max_bookmark_advice = value;
+          Row({ space: 5 }) {
+            Slider({
+              min: 0,
+              max: 5,
+              value: this.settings_max_bookmark_suggestions,
+              style: SliderStyle.InSet,
             })
+              .layoutWeight(1)
+              .blockColor($r('app.color.start_window_background'))
+              .selectedColor($r('app.color.font_color_title'))
+              .onChange((value) => {
+                this.settings_max_bookmark_suggestions = value;
+                kv_store_put('settings_max_bookmark_suggestions', value.toString());
+              })
+            linysText({ text: this.settings_max_bookmark_suggestions.toString() })
+              .margin({ right: 5 })
+          } // Slider and display of max_bookmark_suggestions
         }
         .padding(15)
         .alignItems(HorizontalAlign.Start)
@@ -171,7 +175,7 @@ struct meowAppSettings {
         .borderRadius(10)
         .backgroundColor($r('app.color.start_window_background'))
 
-      } // General
+      } // Experience
       .width("100%")
 
       FlowItem() {
@@ -233,8 +237,8 @@ struct meowAppSettings {
 
   async on_appear() {
     bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION).then((bundleInfo) => {
-      this.versionName = bundleInfo.versionName; //应用版本名
-      this.versionNo = bundleInfo.versionCode; //应用版本号
+      this.versionName = bundleInfo.versionName;
+      this.versionNo = bundleInfo.versionCode;
     })
     // Get app version info
 
@@ -255,7 +259,8 @@ struct meowAppSettings {
       kv_store_put('settings_max_bookmark_suggestions', "5");
       got = "5";
     }
-    this.settings_max_bookmark_advice = Number.parseInt(got);
+    this.settings_max_bookmark_suggestions = Number.parseInt(got);
+    // Get number of max bookmarks suggestions
   }
 
   on_interval() {

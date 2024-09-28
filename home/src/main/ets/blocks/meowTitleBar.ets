@@ -17,14 +17,16 @@ import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import meowDownloads from './meowDownloads';
 import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
 import meowBookmarkRelations from './meowBookmarkRelations';
+import woofQR from '../dialogs/woofQR';
 
 @Component
 struct meowTitleBar {
-  // Environments
+  // Hosts
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
   @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads();
+  // Environments
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageProp('screen_width') screen_width: number = 0;
   @StorageProp('universal_new_download_gateway') @Watch('on_download_start') uni_new_download_gateway: string = "";
@@ -54,10 +56,17 @@ struct meowTitleBar {
   @Link showing_more_options: boolean;
   @Link showing_app_settings: boolean;
   @Link showing_downloads: boolean;
-  // UI Effects
+  // UI Effects and settings
   @State download_started_popup: boolean = false;
-  @State update_search_input_relations_count_down: number = 0;
   @State settings_max_bookmark_advice: number = 5;
+  // Dialogs
+  woofQR_control: CustomDialogController = new CustomDialogController({
+    builder: woofQR({
+      title: this.current_title,
+      link: this.current_url
+    }),
+    alignment: DialogAlignment.Center,
+  })
 
   build() {
     Column({ space: 10 }) {
@@ -300,22 +309,12 @@ struct meowTitleBar {
       .width("100%")
       .animation(animation_default())
 
-      if (this.settings_title_bar_position == "top") {
-        meowBookmarkRelations({
-          settings_max_bookmark_suggestions: this.settings_max_bookmark_advice,
-          bottom_margin: 15,
-          is_search_input_typing: this.is_search_input_typing,
-          search_input: this.search_input,
-        })
-          .animation(animation_default())
-      }
-
       Row() {
         linysSymbol({
           symbol_glyph_target: 'sys.symbol.qrcode'
-        })
+        })// QRcode
           .onClick(() => {
-
+            this.woofQR_control.open();
           })
       } // Title Bar of More Options
       .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
@@ -325,7 +324,7 @@ struct meowTitleBar {
       .animation(animation_default())
 
       meowAppSettings({
-        settings_max_bookmark_advice: this.settings_max_bookmark_advice,
+        settings_max_bookmark_suggestions: this.settings_max_bookmark_advice,
         show: this.showing_app_settings,
         settings_title_bar_position: this.settings_title_bar_position
       })// Settings
@@ -339,6 +338,16 @@ struct meowTitleBar {
       })
         .visibility(this.showing_downloads ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
+
+      if (this.settings_title_bar_position == "top") {
+        meowBookmarkRelations({
+          settings_max_bookmark_suggestions: this.settings_max_bookmark_advice,
+          bottom_margin: 15,
+          is_search_input_typing: this.is_search_input_typing,
+          search_input: this.search_input,
+        })
+          .animation(animation_default())
+      }
 
     } // Title Bars
     .width("100%")
@@ -356,9 +365,6 @@ struct meowTitleBar {
     .animation(this.showing_app_settings ? animation_default() : undefined)
     .onAppear(() => {
       console.log("[Meow][meowTitleBar] Title Bar READY")
-      setInterval(() => {
-        this.on_interval();
-      }, 10)
     })
   }
 
@@ -523,7 +529,6 @@ struct meowTitleBar {
     this.search_input = content;
     this.search_input_unified = unify_search_input_into_url(content);
     this.search_input_unified = url_resource_to_meow(this.search_input_unified);
-    this.update_search_input_relations_count_down = 15;
   }
 
   update_current_info() {
@@ -541,11 +546,6 @@ struct meowTitleBar {
     this.tab_urls = this.bunch_of_tabs.get_all_urls()
     this.tab_is_loading = this.bunch_of_tabs.get_all_is_loading();
     this.tab_loading_progresses = this.bunch_of_tabs.get_all_loading_progress()
-  }
-
-  // Misc
-  on_interval() {
-
   }
 }
 
