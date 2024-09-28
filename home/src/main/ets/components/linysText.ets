@@ -1,4 +1,4 @@
-import { fontSize_Normal } from '../hosts/bunch_of_settings';
+import { fontSize_Normal } from '../hosts/bunch_of_defaults';
 import { LengthMetrics } from '@kit.ArkUI';
 
 @Component

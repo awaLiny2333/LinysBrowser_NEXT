@@ -1,4 +1,4 @@
-import { animation_default } from '../hosts/bunch_of_settings';
+import { animation_default } from '../hosts/bunch_of_defaults';
 import linysText from '../components/linysText';
 import linysTitleText from '../components/linysTitleText';
 

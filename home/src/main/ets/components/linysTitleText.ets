@@ -1,4 +1,4 @@
-import { fontSize_Large } from '../hosts/bunch_of_settings';
+import { fontSize_Large } from '../hosts/bunch_of_defaults';
 
 @Component
 struct linysTitleText {

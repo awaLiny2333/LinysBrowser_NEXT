@@ -11,7 +11,7 @@ import {
   fontSize_Icon_Button,
   fontSize_Large,
   fontSize_Normal
-} from '../hosts/bunch_of_settings';
+} from '../hosts/bunch_of_defaults';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import meowDownloads from './meowDownloads';
@@ -22,26 +22,22 @@ import meowBookmarkRelations from './meowBookmarkRelations';
 @Component
 struct meowTitleBar {
   // Environments
-  @Link bunch_of_bookmarks: bunch_of_bookmarks;
-  @Link bunch_of_user_agents: bunch_of_user_agents;
-  @Link bunch_of_tabs: bunch_of_tabs;
-  @Link bunch_of_downloads: bunch_of_downloads;
+  @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
+  @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
+  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
+  @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads();
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageProp('screen_width') screen_width: number = 0;
-  @StorageProp('universal_new_download_gateway') @Watch('on_download_start') universal_new_download_gateway: string =
-    "";
+  @StorageProp('universal_new_download_gateway') @Watch('on_download_start') uni_new_download_gateway: string = "";
   @Link bar_height: number;
   @Link webViews_ready: boolean;
   // Current statuses
-
   @Link search_input: string;
-  @Link search_input_unified: string;
+  @State search_input_unified: string = "";
   @Link is_search_input_typing: boolean;
   @Link settings_title_bar_position: string;
   @Link web_and_stuff_alignRules: AlignRuleOption;
-  @Link now_global_custom_UA: string;
   // Web statuses
-
   @Link current_tab_index: number;
   @Link tab_titles: string[];
   @Link tab_urls: string[];
@@ -54,7 +50,6 @@ struct meowTitleBar {
   @Link current_accessBackward: boolean;
   @Link current_accessForward: boolean;
   // UI control actions
-
   @Link showing_tabs: boolean;
   @Link showing_bookmarks: boolean;
   @Link showing_more_options: boolean;
@@ -330,9 +325,6 @@ struct meowTitleBar {
       .animation(animation_default())
 
       meowAppSettings({
-        now_global_custom_UA: this.now_global_custom_UA,
-        bunch_of_user_agents: this.bunch_of_user_agents,
-        bunch_of_tabs: this.bunch_of_tabs,
         screen_width: this.screen_width,
         show: this.showing_app_settings,
         settings_title_bar_position: this.settings_title_bar_position

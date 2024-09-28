@@ -1,6 +1,6 @@
 import { webview } from '@kit.ArkWeb';
 import { url_meow_to_resource } from '../utils/url_tools';
-import { home_url_default_blank } from './bunch_of_settings';
+import { home_url_default_blank } from './bunch_of_defaults';
 
 @Observed
 export class tab_label {

@@ -6,26 +6,26 @@ import {
   click_effect_default,
   fontSize_Large,
   fontSize_Normal
-} from '../hosts/bunch_of_settings';
+} from '../hosts/bunch_of_defaults';
 import { bunch_of_user_agents, user_agent } from '../hosts/bunch_of_user_agents';
 import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 
 @Component
 struct meowUAManager {
-  @Link bunch_of_user_agents: bunch_of_user_agents;
+  @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
+  @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
   @State @Watch('on_select') selected_index: number = -1; // -1 for system default
-  @Link now_global_custom_UA: string;
   @State list_of_user_agents: user_agent[] = this.bunch_of_user_agents.list_of_user_agents;
-  @State pressing: boolean = false;
-  @State UA_load_from_disk_ok: boolean = false;
+  @State default_pressing: boolean = false;
+  @State UA_loaded_from_disk: boolean = false;
 
   build() {
     Column({ space: 2.5 }) {
       Row() {
         Row() {
           Text($r('app.string.Settings_general_custom_ua_default'))// Title
-            .fontColor(!this.pressing ? $r('app.color.font_color_title') : $r('app.color.block_color'))
-            .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
+            .fontColor(!this.default_pressing ? $r('app.color.font_color_title') : $r('app.color.block_color'))
+            .fontWeight(!this.default_pressing ? FontWeight.Normal : FontWeight.Medium)
             .padding({ left: 2 })
             .fontSize(fontSize_Normal())
             .maxLines(1)
@@ -38,7 +38,8 @@ struct meowUAManager {
         .width("100%")
         .height("100%")
         .borderRadius(6)
-        .backgroundColor(this.pressing ? $r('app.color.font_color_title') : $r('app.color.start_window_background'))
+        .backgroundColor(this.default_pressing ? $r('app.color.font_color_title') :
+        $r('app.color.start_window_background'))
         .animation(animation_default())
 
       } // Default
@@ -55,10 +56,10 @@ struct meowUAManager {
       })
       .onTouch((event) => {
         if (event.type == TouchType.Up) {
-          this.pressing = false;
+          this.default_pressing = false;
           // If touch ends
         } else {
-          this.pressing = true;
+          this.default_pressing = true;
           // If touching
         }
       })
@@ -73,7 +74,6 @@ struct meowUAManager {
         this.list_of_user_agents,
         (_user_agent: user_agent, key: number) => {
           meowUAButton({
-            bunch_of_user_agents: this.bunch_of_user_agents,
             selected_index: this.selected_index,
             my_index: key,
           })
@@ -118,7 +118,7 @@ struct meowUAManager {
     } else {
       this.selected_index = Number.parseInt(result_index);
     }
-    this.UA_load_from_disk_ok = true;
+    this.UA_loaded_from_disk = true;
     // Get bookmarks
   }
 
@@ -139,6 +139,8 @@ struct meowUAManager {
     this.save_user_agents_to_kv_store();
   }
 
+  // Data utils
+
   sync_list_of_user_agents() {
     this.list_of_user_agents = this.bunch_of_user_agents.list_of_user_agents;
   }
@@ -156,21 +158,21 @@ export default meowUAManager;
 struct meowUAButton {
   @Link selected_index: number;
   @Prop my_index: number;
-  @Link bunch_of_user_agents: bunch_of_user_agents;
+  @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
   @State my_ua: user_agent = this.bunch_of_user_agents.list_of_user_agents[this.my_index];
   @State my_label: string = this.my_ua.label;
   @State my_content: string = this.my_ua.content;
+  // statuses
   @State pressing: boolean = false;
   @State editing: boolean = false;
   @State press_timing_ok: boolean = false;
   press_timing: number = 0;
   button_height_default: number = 42;
-  // Animations statuses
+  // Edit inputs
   @State edit_label: string = this.my_label;
   @State edit_content: string = this.my_content;
   @State delete_confirm: number = 0;
-  // Edit inputs
-
+  // UI effects
   @State height_of_text_area: number = 42;
   @State visible: Visibility = Visibility.Hidden;
 
@@ -352,6 +354,7 @@ struct meowUAButton {
   }
 
   set_global_UA_to_mine() {
+    this.selected_index = -1;
     this.selected_index = this.my_index;
   }
 

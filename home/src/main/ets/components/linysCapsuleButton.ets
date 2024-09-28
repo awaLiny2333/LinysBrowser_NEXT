@@ -1,6 +1,6 @@
 import {
   animation_default,
-  capsule_bar_height, click_effect_default, fontSize_Large } from '../hosts/bunch_of_settings';
+  capsule_bar_height, click_effect_default, fontSize_Large } from '../hosts/bunch_of_defaults';
 
 @Component
 struct linysCapsuleButton {

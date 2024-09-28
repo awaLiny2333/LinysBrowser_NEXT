@@ -1,4 +1,3 @@
-import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_tabs, tab_label } from '../hosts/bunch_of_tabs';
 import { kv_store_put_uint_8_array } from '../utils/kv_store_tools';
 import { url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
@@ -8,8 +7,7 @@ struct meowWebView {
   @StorageProp('currentColorMode') current_color_mode: number = 0;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageLink('web_state_arrays') web_state_arrays: Uint8Array[] = [];
-  @Link bunch_of_downloads: bunch_of_downloads;
-  @Link bunch_of_tabs: bunch_of_tabs;
+  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
   @Link current_tab_index: number;
   @Prop webViews_ready: boolean;
   // Controls and environments
@@ -21,13 +19,12 @@ struct meowWebView {
   @Link current_loading_progress: number;
   @Link tab_is_loading: boolean[];
   @Link current_is_loading: boolean;
-  // Info or Statuses of bunch of tabs
   @Link current_accessForward: boolean;
   @Link current_accessBackward: boolean;
   @Link search_input: string;
-  @Link now_global_custom_UA: string;
-
-  // Misc
+  // Stuffs
+  @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
+  @StorageLink('universal_new_download_gateway') new_download_gateway: string = "";
 
   build() {
     Row() {
@@ -129,12 +126,13 @@ struct meowWebView {
               console.log('contentLength:' + event.contentLength)
               console.log('mimetype:' + event.mimetype)
 
-              this.bunch_of_downloads.start_download_task(event.url)
+              this.new_download_gateway = event.url;
+              // this.bunch_of_downloads.start_download_task(event.url)
             }
           })
           .onAppear(() => {
             // console.log("Web on_appear!")
-            // Set ua
+            // Set ua on initial tabs (on start up)
             if (this.now_global_custom_UA.length != 0) {
               this.bunch_of_tabs.Tabs[Label.index_key].controller.setCustomUserAgent(this.now_global_custom_UA);
             }

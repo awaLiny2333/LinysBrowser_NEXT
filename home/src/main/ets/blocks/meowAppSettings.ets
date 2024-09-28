@@ -3,7 +3,7 @@ import {
   capsule_bar_height,
   home_url_default_blank,
   minimum_block_width
-} from '../hosts/bunch_of_settings';
+} from '../hosts/bunch_of_defaults';
 import linysTitleText from '../components/linysTitleText';
 import linysText from '../components/linysText';
 import bundleManager from '@ohos.bundle.bundleManager';
@@ -23,9 +23,9 @@ import linysCapsuleButton from '../components/linysCapsuleButton';
 struct meowAppSettings {
   // Functions
   @Link settings_title_bar_position: string;
-  @Link now_global_custom_UA: string;
-  @Link bunch_of_user_agents: bunch_of_user_agents;
-  @Link bunch_of_tabs: bunch_of_tabs;
+  @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
+  @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
+  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
   // Generals
   @Prop @Watch('on_open_or_close_panel') show: boolean = false;
   @Prop screen_width: number;
@@ -49,6 +49,7 @@ struct meowAppSettings {
   })
   @State @Watch('on_title_bar_position_changed') title_bar_position_selected: number[] = [0];
   @State @Watch('on_start_up_page_changed') start_up_page_selected: number[] = [0];
+  // Edits
   @State new_tab_url_edit: string = "";
   @State home_url_edit: string = "";
 
@@ -79,10 +80,7 @@ struct meowAppSettings {
 
           // UA
           linysText({ text: $r('app.string.Settings_general_custom_ua') })
-          meowUAManager({
-            now_global_custom_UA: this.now_global_custom_UA,
-            bunch_of_user_agents: this.bunch_of_user_agents,
-          })
+          meowUAManager()
 
           // New tab URL
           linysText({ text: $r('app.string.Settings_general_new_tab_url') })

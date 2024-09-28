@@ -1,4 +1,4 @@
-import { animation_default, click_effect_default, fontSize_Large } from '../hosts/bunch_of_settings';
+import { animation_default, click_effect_default, fontSize_Large } from '../hosts/bunch_of_defaults';
 import linysSymbol from './linysSymbol';
 
 @Component

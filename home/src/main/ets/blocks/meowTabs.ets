@@ -1,7 +1,7 @@
 import linysSymbol from '../components/linysSymbol';
 import { bunch_of_tabs, tab_label } from '../hosts/bunch_of_tabs';
 import { url_resource_to_meow } from '../utils/url_tools';
-import { fontSize_Normal, home_url_default_blank } from '../hosts/bunch_of_settings';
+import { fontSize_Normal, home_url_default_blank } from '../hosts/bunch_of_defaults';
 import {
   kv_store_get,
   kv_store_get_uint_8_array,
@@ -12,13 +12,11 @@ import {
 
 @Component
 struct meowTabs {
-  @Link bunch_of_tabs: bunch_of_tabs;
+  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
   @Link webViews_ready: boolean;
   @Link showing_tabs: boolean;
-  @Prop animation_default: AnimateParam;
   @Link @Watch('on_did_switch_tab') current_tab_index: number;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
-  @StorageLink('universal_new_tab_gateway') @Watch('on_new_targeted_tab') universal_new_tab_gateway: string = "";
   // Controls and environments
   @Link tab_titles: string[];
   @Link current_title: string;
@@ -42,7 +40,10 @@ struct meowTabs {
   scroll_controller: Scroller = new Scroller();
   @State scroll_area_height: number = 0;
   @State scroll_animation_enabled: boolean = true;
-  @State recover_tabs_ok: boolean = false;
+  @State recover_tabs_finished: boolean = false;
+  // Gateways
+  @StorageLink('universal_new_tab_gateway') @Watch('on_new_targeted_tab') new_tab_gateway: string = "";
+  @StorageLink('universal_global_custom_ua_gateway') @Watch('on_global_custom_UA_change') global_custom_UA: string = "";
 
   async aboutToAppear() {
 
@@ -138,7 +139,7 @@ struct meowTabs {
         console.log(e)
       }
     }
-    this.recover_tabs_ok = true;
+    this.recover_tabs_finished = true;
   }
 
   build() {
@@ -278,7 +279,7 @@ struct meowTabs {
     // Scroll to the new tab later
     this.count_down_for_scrolling_to_bottom = 20;
 
-    if (this.recover_tabs_ok) {
+    if (this.recover_tabs_finished) {
       let store_tabs_count = this.offset_area.length.toString();
       console.log("[Meow][meowTabs] Stored Tabs Count: " + store_tabs_count)
       // Store tabs count
@@ -287,15 +288,15 @@ struct meowTabs {
   }
 
   on_new_targeted_tab() {
-    if (this.universal_new_tab_gateway != "") {
+    if (this.new_tab_gateway != "") {
       this.webViews_ready = true;
-      this.new_tab(this.universal_new_tab_gateway);
-      this.universal_new_tab_gateway = "";
+      this.new_tab(this.new_tab_gateway);
+      this.new_tab_gateway = "";
     }
   }
 
   on_did_switch_tab() {
-    if (this.recover_tabs_ok) {
+    if (this.recover_tabs_finished) {
       // Store where am I
       let where_am_i = this.current_tab_index.toString();
       console.log("[Meow][meowTabs] Stored Where Am I: " + where_am_i)
@@ -310,7 +311,7 @@ struct meowTabs {
 
     // Switch
     this.current_tab_index = this.bunch_of_tabs.switchToTab(target)
-    if (this.recover_tabs_ok) {
+    if (this.recover_tabs_finished) {
       // Update history
       this.update_backward_forward_access()
     }
@@ -357,7 +358,7 @@ struct meowTabs {
     // Update Input Search Box
     this.update_search_box_text(this.current_url)
 
-    if (this.recover_tabs_ok) {
+    if (this.recover_tabs_finished) {
       let store_tabs_count = this.offset_area.length.toString();
       console.log("[Meow][meowTabs] Store Tabs Count: " + store_tabs_count)
       // Store tabs count
@@ -422,6 +423,12 @@ struct meowTabs {
       const element = web_state_arrays[index];
       kv_store_put_uint_8_array("continue_tabs_web_state_array_" + index.toString(), element);
     }
+  }
+
+  // Events
+
+  on_global_custom_UA_change() {
+    this.bunch_of_tabs.set_global_custom_UA(this.global_custom_UA);
   }
 }
 

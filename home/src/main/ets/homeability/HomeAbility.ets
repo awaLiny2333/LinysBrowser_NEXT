@@ -2,7 +2,10 @@ import { AbilityConstant, Configuration, UIAbility, Want } from '@kit.AbilityKit
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { kv_store_put_uint_8_array } from '../utils/kv_store_tools';
+import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
+import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
+import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
+import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 
 export default class HomeAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -14,12 +17,10 @@ export default class HomeAbility extends UIAbility {
     AppStorage.setOrCreate('context', this.context);
     AppStorage.setOrCreate('pathDir', this.context.filesDir);
     AppStorage.setOrCreate('currentColorMode', this.context.config.colorMode);
-    AppStorage.setOrCreate('universal_new_tab_gateway', "");
-    AppStorage.setOrCreate('tablet_mode', false);
-    AppStorage.setOrCreate('screen_width', 0);
-    // For Reopening Closed tabs
-    let web_state_arrays: Uint8Array[] = [];
-    AppStorage.setOrCreate('web_state_arrays', web_state_arrays);
+    AppStorage.setOrCreate('bunch_of_tabs', new bunch_of_tabs());
+    AppStorage.setOrCreate('bunch_of_bookmarks', new bunch_of_bookmarks("Bookmarks Meow"));
+    AppStorage.setOrCreate('bunch_of_user_agents', new bunch_of_user_agents());
+    AppStorage.setOrCreate('bunch_of_downloads', new bunch_of_downloads());
   }
 
   onDestroy(): void {

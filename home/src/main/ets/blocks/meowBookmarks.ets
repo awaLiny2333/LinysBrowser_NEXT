@@ -9,7 +9,7 @@ import {
   click_effect_default,
   fontSize_Large,
   fontSize_Normal
-} from '../hosts/bunch_of_settings';
+} from '../hosts/bunch_of_defaults';
 import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 import linysShowButton from '../components/linysShowButton';
 import linysCapsuleButton from '../components/linysCapsuleButton';
@@ -17,8 +17,8 @@ import linysCapsuleButton from '../components/linysCapsuleButton';
 @Component
 struct meowBookmarks {
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
-  @Link bunch_of_bookmarks: bunch_of_bookmarks;
-  @Link bunch_of_tabs: bunch_of_tabs;
+  @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
+  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
   @Link webViews_ready: boolean;
   @State viewing_contents: unified_item[] = this.bunch_of_bookmarks.root.get_content();
   @State @Watch('refresh_root_content') looking_at_path: string = "";
@@ -42,11 +42,9 @@ struct meowBookmarks {
         Column({ space: 5 }) {
           ForEach(
             this.viewing_contents,
-            (item: unified_item, key: number) => {
+            (_unified_item: unified_item, key: number) => {
               bookmarkItem({
                 my_index: key,
-                bunch_of_bookmarks: this.bunch_of_bookmarks,
-                bunch_of_tabs: this.bunch_of_tabs, // For loadUrl
                 viewing_contents: this.viewing_contents, // For editing
                 looking_at_path: this.looking_at_path, // the path of now showing list (directory) on the panel
                 webViews_ready: this.webViews_ready, // To ask webViews to show
@@ -362,8 +360,8 @@ export default meowBookmarks;
 @Component
 struct bookmarkItem {
   @Prop my_index: number = 0;
-  @Link bunch_of_bookmarks: bunch_of_bookmarks;
-  @Link bunch_of_tabs: bunch_of_tabs;
+  @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
+  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
   @Link webViews_ready: boolean;
   @Link looking_at_path: string;
   @Link viewing_contents: unified_item[];

@@ -25,11 +25,6 @@ export class bunch_of_downloads {
     let file_name = file_name_question_mark_split[0];
     let download_target_path = filesDir + '/' + file_name;
 
-    AppStorage.setOrCreate("universal_new_download_gateway", "");
-    AppStorage.setOrCreate("universal_new_download_gateway", file_name);
-    // Let popup pop up
-    // :D
-
     let config: request.DownloadConfig = {
       url: url,
       filePath: download_target_path,

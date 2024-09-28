@@ -7,7 +7,7 @@ import {
   click_effect_default,
   fontSize_Large,
   minimum_block_width
-} from '../hosts/bunch_of_settings';
+} from '../hosts/bunch_of_defaults';
 import { request } from '@kit.BasicServicesKit';
 import linysText from '../components/linysText';
 import { copy } from '../utils/clipboard_tools';
@@ -15,6 +15,7 @@ import { copy } from '../utils/clipboard_tools';
 @Component
 struct meowDownloads {
   @Link @Watch('on_download_state_change') bunch_of_downloads: bunch_of_downloads;
+  @StorageLink('universal_new_download_gateway') @Watch('on_new_download') uni_new_download_gateway: string = "";
   @Link showing_downloads: boolean;
   @Link screen_width: number;
 
@@ -91,6 +92,13 @@ struct meowDownloads {
 
   on_download_state_change() {
 
+  }
+
+  on_new_download() {
+    if (!(this.uni_new_download_gateway == "")) {
+      this.bunch_of_downloads.start_download_task(this.uni_new_download_gateway);
+      this.uni_new_download_gateway = "";
+    }
   }
 }
 
