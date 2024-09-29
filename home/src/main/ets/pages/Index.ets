@@ -17,6 +17,7 @@ struct Index {
   @StorageLink('topAvoidHeight') topAvoidHeight: number = 1;
   @StorageLink('tablet_mode') tablet_mode: boolean = false;
   @StorageLink('screen_width') screen_width: number = 0;
+  @StorageLink('screen_height') screen_height: number = 0;
   // UI Statuses
   @State webViews_ready: boolean = false;
   @State showing_downloads: boolean = false;
@@ -145,8 +146,9 @@ struct Index {
         .width("100%")
         .backgroundColor($r('app.color.start_window_background'))
         .onAreaChange((_o, n) => {
-          this.screen_width = n.width as number
-          this.tablet_mode = this.screen_width > 500
+          this.screen_width = n.width as number;
+          this.screen_height = n.height as number;
+          this.tablet_mode = this.screen_width > 500;
         })
         .margin(this.settings_title_bar_position == "bottom" ?
           { bottom: this.title_bar_height } : { top: this.title_bar_height })

@@ -1,5 +1,7 @@
+import { bunch_of_history, history_record } from '../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_label } from '../hosts/bunch_of_tabs';
 import { kv_store_put_uint_8_array } from '../utils/kv_store_tools';
+import { sandbox_save } from '../utils/storage_tools';
 import { url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
 
 @Component
@@ -8,6 +10,7 @@ struct meowWebView {
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageLink('web_state_arrays') web_state_arrays: Uint8Array[] = [];
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
+  @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history();
   @Link current_tab_index: number;
   @Prop webViews_ready: boolean;
   // Controls and environments
@@ -63,19 +66,19 @@ struct meowWebView {
               return;
             }
 
+            // Update History
             this.current_accessBackward = this.bunch_of_tabs.Tabs[Label.index_key].controller.accessBackward()
             this.current_accessForward = this.bunch_of_tabs.Tabs[Label.index_key].controller.accessForward()
-            // Update History
+            // Ask tab to update its info (Reset)
             this.bunch_of_tabs.Tabs[Label.index_key].update_title()
             this.bunch_of_tabs.Tabs[Label.index_key].update_url()
             this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(true)
             this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(0)
-            // Ask tab to update its info (Reset)
-            this.sync_list_info()
             // Get synced lists
+            this.sync_list_info()
+            // Update Input Search Box
             this.update_current_info()
             this.update_search_box_text(this.current_url)
-            // Update Input Search Box
 
           })
           .onPageEnd(() => {
@@ -83,6 +86,17 @@ struct meowWebView {
             this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(false);
             this.tab_is_loading = this.bunch_of_tabs.get_all_is_loading();
             this.update_current_info();
+
+            // Save browse history if is neither new tab nor a recovery tab
+            if (!this.bunch_of_tabs.Tabs[Label.index_key].recovery &&
+              !this.tab_urls[Label.index_key].includes("resource://")) {
+              let new_record = new history_record(this.tab_titles[Label.index_key], this.tab_urls[Label.index_key])
+              this.bunch_of_history.add_history(new_record);
+              sandbox_save("history.txt", this.bunch_of_history.export_string());
+            } else {
+              console.log("[Meow][meowWebView] Didn't save history for a recovery process in progress");
+              this.bunch_of_tabs.Tabs[Label.index_key].recovery = false;
+            }
           })
           .onProgressChange((event) => {
             let progress: number = event.newProgress;

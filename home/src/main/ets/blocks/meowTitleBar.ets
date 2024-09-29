@@ -13,10 +13,9 @@ import {
   fontSize_Normal
 } from '../hosts/bunch_of_defaults';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
-import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import meowDownloads from './meowDownloads';
 import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
-import meowBookmarkRelations from './meowBookmarkRelations';
+import meowBookmarkRelations from './meowSuggestions';
 import woofQR from '../dialogs/woofQR';
 
 @Component
@@ -25,7 +24,6 @@ struct meowTitleBar {
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
-  @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads();
   // Environments
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageProp('screen_width') screen_width: number = 0;
@@ -59,6 +57,7 @@ struct meowTitleBar {
   // UI Effects and settings
   @State download_started_popup: boolean = false;
   @State settings_max_bookmark_advice: number = 5;
+  @State settings_max_history_advice: number = 5;
   // Dialogs
   woofQR_control: CustomDialogController = new CustomDialogController({
     builder: woofQR({
@@ -66,12 +65,14 @@ struct meowTitleBar {
       link: this.current_url
     }),
     alignment: DialogAlignment.Center,
+    cornerRadius: 12
   })
 
   build() {
     Column({ space: 10 }) {
       if (this.settings_title_bar_position == "bottom") {
         meowBookmarkRelations({
+          settings_max_history_suggestions: this.settings_max_history_advice,
           settings_max_bookmark_suggestions: this.settings_max_bookmark_advice,
           top_margin: 15,
           is_search_input_typing: this.is_search_input_typing,
@@ -325,6 +326,7 @@ struct meowTitleBar {
 
       meowAppSettings({
         settings_max_bookmark_suggestions: this.settings_max_bookmark_advice,
+        settings_max_history_suggestions: this.settings_max_history_advice,
         show: this.showing_app_settings,
         settings_title_bar_position: this.settings_title_bar_position
       })// Settings
@@ -332,7 +334,6 @@ struct meowTitleBar {
         .animation(animation_default())
 
       meowDownloads({
-        bunch_of_downloads: this.bunch_of_downloads,
         screen_width: this.screen_width,
         showing_downloads: this.showing_downloads,
       })
@@ -341,6 +342,7 @@ struct meowTitleBar {
 
       if (this.settings_title_bar_position == "top") {
         meowBookmarkRelations({
+          settings_max_history_suggestions: this.settings_max_history_advice,
           settings_max_bookmark_suggestions: this.settings_max_bookmark_advice,
           bottom_margin: 15,
           is_search_input_typing: this.is_search_input_typing,
@@ -519,8 +521,8 @@ struct meowTitleBar {
     this.webViews_ready = true;
     this.bunch_of_tabs.stop_onWorkingTab()
     this.bunch_of_tabs.workingTab().update_is_loading(false)
-    this.sync_list_info()
-    this.update_current_info()
+    this.sync_tabs_list_info()
+    this.update_tabs_current_info()
   }
 
   // Data synchronizing
@@ -531,7 +533,7 @@ struct meowTitleBar {
     this.search_input_unified = url_resource_to_meow(this.search_input_unified);
   }
 
-  update_current_info() {
+  update_tabs_current_info() {
     this.current_title = this.tab_titles[this.current_tab_index];
     this.current_url = this.tab_urls[this.current_tab_index];
     this.current_url = url_resource_to_meow(this.current_url);
@@ -541,7 +543,7 @@ struct meowTitleBar {
     // Set loading progress
   }
 
-  sync_list_info() {
+  sync_tabs_list_info() {
     this.tab_titles = this.bunch_of_tabs.get_all_titles()
     this.tab_urls = this.bunch_of_tabs.get_all_urls()
     this.tab_is_loading = this.bunch_of_tabs.get_all_is_loading();

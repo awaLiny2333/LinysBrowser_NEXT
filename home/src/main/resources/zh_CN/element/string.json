@@ -139,6 +139,50 @@
     {
       "name": "Settings_experience_max_bookmark_advice",
       "value": "最大书签建议数量"
+    },
+    {
+      "name": "Settings_experience_history",
+      "value": "历史"
+    },
+    {
+      "name": "Settings_experience_history_view",
+      "value": "浏览历史"
+    },
+    {
+      "name": "Settings_experience_history_today",
+      "value": "今日"
+    },
+    {
+      "name": "Settings_experience_history_this_month",
+      "value": "今月"
+    },
+    {
+      "name": "Settings_experience_history_this_year",
+      "value": "今年"
+    },
+    {
+      "name": "Settings_experience_history_before",
+      "value": "更久以前"
+    },
+    {
+      "name": "Settings_experience_history_from",
+      "value": "自"
+    },
+    {
+      "name": "Settings_experience_history_to",
+      "value": "至"
+    },
+    {
+      "name": "Settings_experience_history_selecting",
+      "value": "选中"
+    },
+    {
+      "name": "Settings_experience_history_selecting_items",
+      "value": "个项目"
+    },
+    {
+      "name": "Settings_experience_max_history_advice",
+      "value": "最大历史建议数量"
     }
   ]
 }

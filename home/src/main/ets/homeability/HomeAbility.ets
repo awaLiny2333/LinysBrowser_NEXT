@@ -6,6 +6,7 @@ import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
 import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
+import { bunch_of_history } from '../hosts/bunch_of_history';
 
 export default class HomeAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -21,6 +22,7 @@ export default class HomeAbility extends UIAbility {
     AppStorage.setOrCreate('bunch_of_bookmarks', new bunch_of_bookmarks("Bookmarks Meow"));
     AppStorage.setOrCreate('bunch_of_user_agents', new bunch_of_user_agents());
     AppStorage.setOrCreate('bunch_of_downloads', new bunch_of_downloads());
+    AppStorage.setOrCreate('bunch_of_history', new bunch_of_history());
   }
 
   onDestroy(): void {

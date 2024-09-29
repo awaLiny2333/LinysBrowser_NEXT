@@ -172,7 +172,7 @@ export class unified_item {
  */
 export class bunch_of_bookmarks {
   root: folder;
-  caches_plain_bookmarks: string[][] = [];
+  cached_plain_bookmarks: string[][] = [];
 
   constructor(root_label: string) {
     this.root = new folder(root_label);
@@ -180,9 +180,9 @@ export class bunch_of_bookmarks {
   }
 
   reconstruct_cached_plain_bookmarks() {
-    this.caches_plain_bookmarks = this.root.get_plain_bookmarks();
+    this.cached_plain_bookmarks = this.root.get_plain_bookmarks();
     console.log("[bunch_of_bookmarks][plain_bookmarks] Reconstructed plain bookmarks! length: " +
-    this.caches_plain_bookmarks.length.toString());
+    this.cached_plain_bookmarks.length.toString());
   }
 
   add_bookmark(item: bookmark, path: string, no_reconstruct_plain_bookmarks?: boolean) {
@@ -460,8 +460,8 @@ export class bunch_of_bookmarks {
     }
   }
 
-  get_all_plain_bookmarks(): string[][] {
-    return this.caches_plain_bookmarks;
+  get_all_plain_label_link(): string[][] {
+    return this.cached_plain_bookmarks;
   }
 
   private import_html_get_key(key: string, from: string) {

@@ -139,6 +139,50 @@
     {
       "name": "Settings_experience_max_bookmark_advice",
       "value": "Max bookmark suggestions number"
+    },
+    {
+      "name": "Settings_experience_history",
+      "value": "History"
+    },
+    {
+      "name": "Settings_experience_history_view",
+      "value": "View history"
+    },
+    {
+      "name": "Settings_experience_history_today",
+      "value": "Today"
+    },
+    {
+      "name": "Settings_experience_history_this_month",
+      "value": "This month"
+    },
+    {
+      "name": "Settings_experience_history_this_year",
+      "value": "This year"
+    },
+    {
+      "name": "Settings_experience_history_before",
+      "value": "Before"
+    },
+    {
+      "name": "Settings_experience_history_from",
+      "value": "Since"
+    },
+    {
+      "name": "Settings_experience_history_to",
+      "value": "Before"
+    },
+    {
+      "name": "Settings_experience_history_selecting",
+      "value": "Selecting"
+    },
+    {
+      "name": "Settings_experience_history_selecting_items",
+      "value": "items"
+    },
+    {
+      "name": "Settings_experience_max_history_advice",
+      "value": "Max history suggestions number"
     }
   ]
 }

@@ -14,7 +14,8 @@ import { copy } from '../utils/clipboard_tools';
 
 @Component
 struct meowDownloads {
-  @Link @Watch('on_download_state_change') bunch_of_downloads: bunch_of_downloads;
+  @StorageLink('bunch_of_downloads') @Watch('on_download_state_change') bunch_of_downloads: bunch_of_downloads =
+    new bunch_of_downloads();
   @StorageLink('universal_new_download_gateway') @Watch('on_new_download') uni_new_download_gateway: string = "";
   @Link showing_downloads: boolean;
   @Link screen_width: number;

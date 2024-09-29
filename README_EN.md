@@ -59,12 +59,14 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 - [ ] Right click or long press menu on web links. (For preview and operations)
 - [x] UA switching and customizations. (UA related settings)
 - [x] Reopen tabs when launching.
+- [ ] Multi-view parallel browsing.
 
 ### Experience
 
 - [x] Customizable position for title bar. (Top or Bottom)
 - [ ] Customizable position for Tabs bar. (Side or Top)
 - [ ] Customizable themes. (Colors)
+- [ ] Adapt to system Back operations.
 
 ## Constraints and limits
 

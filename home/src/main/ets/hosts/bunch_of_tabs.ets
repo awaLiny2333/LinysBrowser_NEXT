@@ -295,7 +295,6 @@ export class bunch_of_tabs {
         // this.bunch_of_tabs.Tabs[Label.index_key].controller.loadUrl("");
         this.Tabs[index_key].controller.clearHistory();
         this.Tabs[index_key].controller.restoreWebState(web_state);
-        this.Tabs[index_key].recovery = false;
       }
     } else {
       console.log("[Meow][meowWebView] No Need to restore web " + index_key.toString())

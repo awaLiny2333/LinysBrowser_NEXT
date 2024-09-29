@@ -60,14 +60,22 @@ export async function document_open() { // 需确保 context 由 UIAbilityContex
   }
 }
 
-export function sandbox_save(file_path_name: string, content: ArrayBuffer) {
-  let file = fs.openSync(file_path_name, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
+export function sandbox_save(file_path_name: string, content: string | ArrayBuffer) {
+  let filesDir = getContext().filesDir;
+  fs.unlinkSync(filesDir + '/' + file_path_name);
+  let file = fs.openSync(filesDir + '/' + file_path_name, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
   let writeLen = fs.writeSync(file.fd, content);
   console.info("[Meow][sandbox_save] write data to file succeed and size is:" + writeLen + " @ " + file_path_name);
   fs.closeSync(file);
 }
 
 export async function sandbox_open(file_path_name: string) {
+  let filesDir = getContext().filesDir;
+  file_path_name = filesDir + "/" + file_path_name
+  if (!(await fs.access(file_path_name))) {
+    // file doesn't exist
+    return "undefined";
+  }
   let file = fs.openSync(file_path_name, fs.OpenMode.READ_WRITE);
   let stat = fs.statSync(file_path_name);
   let size = stat.size;
@@ -76,5 +84,5 @@ export async function sandbox_open(file_path_name: string) {
   console.info("[Meow][sandbox_open] read file data succeed, Length: " + readLen.toString());
   let result = buf.slice(0, readLen);
   fs.closeSync(file);
-  return result;
+  return buffer.from(result).toString();
 }

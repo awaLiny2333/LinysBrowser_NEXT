@@ -183,11 +183,13 @@ export class bunch_of_downloads {
 
   delete_all_downloaded_files() {
     try {
-      let list = fs.listFileSync("/data/storage/el2/base/haps/home/files/");
       let filesDir = getContext().filesDir;
+      let list = fs.listFileSync(filesDir + "/");
 
       for (let index = 0; index < list.length; index++) {
-        fs.unlink(filesDir + "/" + list[index]);
+        if (!list[index].includes("history")) {
+          fs.unlink(filesDir + "/" + list[index]);
+        }
       }
       // Delete all downloaded files
     } catch (e) {

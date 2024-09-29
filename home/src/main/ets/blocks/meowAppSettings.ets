@@ -18,6 +18,9 @@ import meowUAManager from './meowUAManager';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import linysCapsuleButton from '../components/linysCapsuleButton';
+import { bunch_of_history } from '../hosts/bunch_of_history';
+import { sandbox_open } from '../utils/storage_tools';
+import woofHistory from '../dialogs/woofHistory';
 
 @Component
 struct meowAppSettings {
@@ -26,9 +29,11 @@ struct meowAppSettings {
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
   @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
+  @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history();
   // Generals
   @StorageLink('screen_width') screen_width: number = 0;
-  @Prop @Watch('on_open_or_close_panel') show: boolean = false;
+  @StorageLink('tablet_mode') tablet_mode: boolean = false;
+  @Link @Watch('on_open_or_close_panel') show: boolean;
   // Information
   @State versionName: string = "Version Name";
   @State versionNo: number = 0;
@@ -50,9 +55,17 @@ struct meowAppSettings {
   @State @Watch('on_title_bar_position_changed') title_bar_position_selected: number[] = [0];
   @State @Watch('on_start_up_page_changed') start_up_page_selected: number[] = [0];
   @Link settings_max_bookmark_suggestions: number;
+  @Link settings_max_history_suggestions: number;
   // Edits
   @State new_tab_url_edit: string = "";
   @State home_url_edit: string = "";
+  // Dialogs
+  woofHistory_control: CustomDialogController = new CustomDialogController({
+    builder: woofHistory({ showing_settings: this.show }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 12,
+    width: "90%",
+  })
 
   build() {
     WaterFlow() {
@@ -149,6 +162,7 @@ struct meowAppSettings {
       FlowItem() {
         Column({ space: 15 }) {
           linysTitleText({ text: $r('app.string.Settings_Experience') })
+
           linysText({ text: $r('app.string.Settings_experience_max_bookmark_advice'), max_lines: 2 })
           Row({ space: 5 }) {
             Slider({
@@ -167,6 +181,38 @@ struct meowAppSettings {
             linysText({ text: this.settings_max_bookmark_suggestions.toString() })
               .margin({ right: 5 })
           } // Slider and display of max_bookmark_suggestions
+
+          linysText({ text: $r('app.string.Settings_experience_max_history_advice'), max_lines: 2 })
+          Row({ space: 5 }) {
+            Slider({
+              min: 0,
+              max: 5,
+              value: this.settings_max_history_suggestions,
+              style: SliderStyle.InSet,
+            })
+              .layoutWeight(1)
+              .blockColor($r('app.color.start_window_background'))
+              .selectedColor($r('app.color.font_color_title'))
+              .onChange((value) => {
+                this.settings_max_history_suggestions = value;
+                kv_store_put('settings_max_history_suggestions', value.toString());
+              })
+            linysText({ text: this.settings_max_history_suggestions.toString() })
+              .margin({ right: 5 })
+          } // Slider and display of max_history_suggestions
+
+          linysText({ text: $r('app.string.Settings_experience_history') })
+          Row({ space: 10 }) {
+            linysTitleText({ text: "󰏕 " + this.bunch_of_history.history_list.length.toString() })
+            Blank()
+            linysText({ text: $r('app.string.Settings_experience_history_view') })
+            linysCapsuleButton({ text: "  󰀩  " })
+              .onClick(() => {
+                this.woofHistory_control.open();
+              })
+          }
+          .width("100%")
+
         }
         .padding(15)
         .alignItems(HorizontalAlign.Start)
@@ -227,9 +273,6 @@ struct meowAppSettings {
     .onAppear(() => {
       console.log("[Meow][meowAppSettings] App Settings READY")
       this.on_appear();
-      setInterval(() => {
-        this.on_interval();
-      }, 10)
     })
   }
 
@@ -252,8 +295,8 @@ struct meowAppSettings {
     // Get settings of title bar position
 
     let got: string = "";
-    got = await kv_store_get('settings_max_bookmark_suggestions')
-    console.log("[Meow][meowBookmarkRelations] Got max bookmark suggestions: " + got)
+    got = await kv_store_get('settings_max_bookmark_suggestions');
+    console.log("[Meow][meowAppSettings] Got max bookmark suggestions: " + got);
     if (got == ("undefined")) {
       // First open
       kv_store_put('settings_max_bookmark_suggestions', "5");
@@ -261,10 +304,26 @@ struct meowAppSettings {
     }
     this.settings_max_bookmark_suggestions = Number.parseInt(got);
     // Get number of max bookmarks suggestions
-  }
 
-  on_interval() {
+    got = "";
+    got = await kv_store_get('settings_max_history_suggestions');
+    console.log("[Meow][meowAppSettings] Got max history suggestions: " + got);
+    if (got == ("undefined")) {
+      // First open
+      kv_store_put('settings_max_history_suggestions', "5");
+      got = "5";
+    }
+    this.settings_max_history_suggestions = Number.parseInt(got);
+    // Get number of max bookmarks suggestions
 
+    let result = await sandbox_open("history.txt");
+    if (result as string == "undefined") {
+      // no history before
+      console.log("[Meow][meowAppSettings] NO HISTORY BEFORE")
+    } else {
+      this.bunch_of_history.import_string(result as string);
+      console.log("[Meow][meowAppSettings] Recovered History, length: " + result.length.toString())
+    }
   }
 
   on_open_or_close_panel() {
