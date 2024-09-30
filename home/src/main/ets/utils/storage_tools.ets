@@ -62,8 +62,11 @@ export async function document_open() { // 需确保 context 由 UIAbilityContex
 
 export function sandbox_save(file_path_name: string, content: string | ArrayBuffer) {
   let filesDir = getContext().filesDir;
-  fs.unlinkSync(filesDir + '/' + file_path_name);
-  let file = fs.openSync(filesDir + '/' + file_path_name, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
+  let full_file_directory = filesDir + '/' + file_path_name;
+  if (fs.accessSync(full_file_directory)) {
+    fs.unlinkSync(full_file_directory);
+  }
+  let file = fs.openSync(full_file_directory, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
   let writeLen = fs.writeSync(file.fd, content);
   console.info("[Meow][sandbox_save] write data to file succeed and size is:" + writeLen + " @ " + file_path_name);
   fs.closeSync(file);

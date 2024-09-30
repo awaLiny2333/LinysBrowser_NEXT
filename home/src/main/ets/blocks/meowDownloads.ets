@@ -53,7 +53,6 @@ struct meowDownloads {
           .opacity(0.5)
           .width("100%")
           .height("100%")
-          // .visibility(this.bunch_of_downloads.list_of_on_going_tasks.length == 0 ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
         }
 
@@ -95,8 +94,10 @@ struct meowDownloads {
 
   }
 
+  // Gateway
+
   on_new_download() {
-    if (!(this.uni_new_download_gateway == "")) {
+    if (this.uni_new_download_gateway != "") {
       this.bunch_of_downloads.start_download_task(this.uni_new_download_gateway);
       this.uni_new_download_gateway = "";
     }

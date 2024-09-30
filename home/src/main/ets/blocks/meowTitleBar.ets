@@ -36,6 +36,7 @@ struct meowTitleBar {
   @State is_search_input_typing: boolean = false;
   @Link settings_title_bar_position: string;
   @Link web_and_stuff_alignRules: AlignRuleOption;
+  @Link settings_collect_new_history: boolean;
   // Web statuses
   @Link current_tab_index: number;
   @Link tab_titles: string[];
@@ -325,6 +326,7 @@ struct meowTitleBar {
       .animation(animation_default())
 
       meowAppSettings({
+        settings_collect_new_history:this.settings_collect_new_history,
         settings_max_bookmark_suggestions: this.settings_max_bookmark_advice,
         settings_max_history_suggestions: this.settings_max_history_advice,
         show: this.showing_app_settings,

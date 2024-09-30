@@ -27,7 +27,7 @@ struct woofHistory {
   @State stamp_today: number = new Date().setHours(0, 0, 0, 0);
   @State stamp_this_month: number = new Date(this.stamp_today).setDate(1);
   @State stamp_this_year: number = new Date(this.stamp_this_month).setMonth(0, 1);
-  @State selected_history_list: history_record[] = this.bunch_of_history.get_history_slice(this.stamp_today).reverse();
+  @State selected_history_list: history_record[] = this.bunch_of_history.get_history_slice_from_time_to_time(this.stamp_today).reverse();
   @State time_period: string = new Date(this.stamp_today).toLocaleString();
   // Manage
   @State @Watch('on_select_change') selected: boolean[] = this.all_false(this.selected_history_list.length);
@@ -65,6 +65,14 @@ struct woofHistory {
               })
                 .width("100%")
             }) // Items
+            if (this.selected_history_list.length == 0) {
+              linysTitleText({
+                text: "¯\\_(ツ)_/¯"
+              })
+                .margin(30)
+                .opacity(0.7)
+                .animation(animation_default())
+            }
           }
           .width("100%")
         }
@@ -202,6 +210,8 @@ struct woofHistory {
     })
   }
 
+  // Utils
+
   all_false(length: number) {
     let result: boolean[] = [];
     for (let index = 0; index < length; index++) {
@@ -210,26 +220,7 @@ struct woofHistory {
     return result;
   }
 
-  refresh_selected_history_list() {
-    if (this.showing_today) {
-      this.selected_history_list = this.bunch_of_history.get_history_slice(this.stamp_today);
-      this.time_period = new Date(this.stamp_today).toLocaleString();
-    }
-    if (this.showing_this_month) {
-      this.selected_history_list = this.bunch_of_history.get_history_slice(this.stamp_this_month);
-      this.time_period = new Date(this.stamp_this_month).toLocaleString();
-    }
-    if (this.showing_this_year) {
-      this.selected_history_list = this.bunch_of_history.get_history_slice(this.stamp_this_year);
-      this.time_period = new Date(this.stamp_this_year).toLocaleString();
-    }
-    if (this.showing_before) {
-      this.selected_history_list = this.bunch_of_history.get_history_slice(0, this.stamp_this_year);
-      this.time_period = new Date(this.stamp_this_year).toLocaleString();
-    }
-    this.selected_number = 0;
-    this.selected = this.all_false(this.selected_history_list.length);
-  }
+  // Select Events and operations
 
   on_select_change() {
     if (this.selected.includes(true)) {
@@ -240,7 +231,26 @@ struct woofHistory {
     this.delete_confirm = 0;
   }
 
-  // Select
+  refresh_selected_history_list() {
+    if (this.showing_today) {
+      this.selected_history_list = this.bunch_of_history.get_history_slice_from_time_to_time(this.stamp_today);
+      this.time_period = new Date(this.stamp_today).toLocaleString();
+    }
+    if (this.showing_this_month) {
+      this.selected_history_list = this.bunch_of_history.get_history_slice_from_time_to_time(this.stamp_this_month);
+      this.time_period = new Date(this.stamp_this_month).toLocaleString();
+    }
+    if (this.showing_this_year) {
+      this.selected_history_list = this.bunch_of_history.get_history_slice_from_time_to_time(this.stamp_this_year);
+      this.time_period = new Date(this.stamp_this_year).toLocaleString();
+    }
+    if (this.showing_before) {
+      this.selected_history_list = this.bunch_of_history.get_history_slice_from_time_to_time(0, this.stamp_this_year);
+      this.time_period = new Date(this.stamp_this_year).toLocaleString();
+    }
+    this.selected_number = 0;
+    this.selected = this.all_false(this.selected_history_list.length);
+  }
 
   select_all() {
     if (this.selected.includes(false)) {
@@ -265,7 +275,7 @@ struct woofHistory {
     }
     for (let index = 0; index < this.selected_history_list.length; index++) {
       if (this.selected[index]) {
-        this.bunch_of_history.remove_history(this.bunch_of_history.history_list.length - 1 - index - bias);
+        this.bunch_of_history.remove_history(this.bunch_of_history.history_list.length - 1 - index - bias, true);
       }
     }
     this.refresh_selected_history_list();

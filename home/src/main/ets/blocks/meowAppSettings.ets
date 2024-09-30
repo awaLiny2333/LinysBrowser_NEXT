@@ -56,6 +56,7 @@ struct meowAppSettings {
   @State @Watch('on_start_up_page_changed') start_up_page_selected: number[] = [0];
   @Link settings_max_bookmark_suggestions: number;
   @Link settings_max_history_suggestions: number;
+  @Link settings_collect_new_history: boolean;
   // Edits
   @State new_tab_url_edit: string = "";
   @State home_url_edit: string = "";
@@ -202,6 +203,24 @@ struct meowAppSettings {
           } // Slider and display of max_history_suggestions
 
           linysText({ text: $r('app.string.Settings_experience_history') })
+
+          Row() {
+            linysText({ text: $r('app.string.Settings_experience_history_record_new') })
+            Blank()
+            Toggle({ isOn: this.settings_collect_new_history, type: ToggleType.Switch })
+              .switchPointColor($r('app.color.block_color'))
+              .selectedColor($r('app.color.font_color_title'))
+              .onChange(isOn => {
+                this.settings_collect_new_history = isOn;
+                let settings = "false";
+                if (isOn) {
+                  settings = "true";
+                }
+                kv_store_put('settings_collect_new_history', settings);
+              })
+          } // Toggle History
+          .width("100%")
+
           Row({ space: 10 }) {
             linysTitleText({ text: "󰏕 " + this.bunch_of_history.history_list.length.toString() })
             Blank()
@@ -210,7 +229,7 @@ struct meowAppSettings {
               .onClick(() => {
                 this.woofHistory_control.open();
               })
-          }
+          } // History management
           .width("100%")
 
         }
@@ -314,7 +333,18 @@ struct meowAppSettings {
       got = "5";
     }
     this.settings_max_history_suggestions = Number.parseInt(got);
-    // Get number of max bookmarks suggestions
+    // Get number of max history suggestions
+
+    got = "";
+    got = await kv_store_get('settings_collect_new_history');
+    console.log("[Meow][meowAppSettings] Got whether to collect new history: " + got);
+    if (got == ("undefined")) {
+      // First open
+      kv_store_put('settings_collect_new_history', "true");
+      got = "true";
+    }
+    this.settings_collect_new_history = (got == "true") ? true : false;
+    // Get whether to continue to collect new history
 
     let result = await sandbox_open("history.txt");
     if (result as string == "undefined") {

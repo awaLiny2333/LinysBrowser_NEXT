@@ -183,6 +183,10 @@
     {
       "name": "Settings_experience_max_history_advice",
       "value": "Max history suggestions number"
+    },
+    {
+      "name": "Settings_experience_history_record_new",
+      "value": "Record new history"
     }
   ]
 }

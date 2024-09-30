@@ -10,10 +10,11 @@ struct meowBookmarkRelations {
   @Prop top_margin: number = 0;
   @Prop bottom_margin: number = 0;
   @StorageProp('screen_height') screen_height: number = 0;
-  @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
-  @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history();
   @Prop @Watch('refresh_suggestions') search_input: string = "";
   @Prop is_search_input_typing: boolean;
+  // Hosts
+  @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
+  @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history();
   // Settings
   @Prop @Watch('refresh_suggestions') settings_max_bookmark_suggestions: number = 5;
   @Prop @Watch('refresh_suggestions') settings_max_history_suggestions: number = 5;
@@ -59,6 +60,7 @@ struct meowBookmarkRelations {
       .alignItems(HorizontalAlign.Start)
       .animation(animation_default())
     }
+    .scrollBar(BarState.Off)
     .margin({
       left: 15,
       right: 15,
@@ -109,7 +111,7 @@ struct meowRelation {
   @Prop index: number;
   @State offset_y: number = 50;
   @State this_visibility: Visibility = Visibility.Hidden;
-  @StorageLink('universal_new_tab_gateway') universal_new_tab_gateway: string = "";
+  @StorageLink('universal_load_url_gateway') load_url_gateway: string = "";
 
   build() {
     Column({ space: 2 }) {
@@ -127,7 +129,7 @@ struct meowRelation {
     .offset({ y: this.offset_y })
     .animation(animation_default())
     .onClick(() => {
-      this.universal_new_tab_gateway = this.relation[1];
+      this.load_url_gateway = this.relation[1];
     })
     .onAppear(() => {
       setTimeout(() => {

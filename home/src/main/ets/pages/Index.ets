@@ -2,12 +2,8 @@ import linysProgress from '../components/linysProgress';
 import meowTabs from '../blocks/meowTabs';
 import meowWebView from '../blocks/meowWebView';
 import meowBookmarks from '../blocks/meowBookmarks';
-import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
-import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
 import { animation_default } from '../hosts/bunch_of_defaults';
 import meowTitleBar from '../blocks/meowTitleBar';
-import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
-import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 
 @Entry
 @Component
@@ -48,6 +44,7 @@ struct Index {
   @State current_accessBackward: boolean = false;
   // Settings
   @State @Watch('on_title_bar_position_change') settings_title_bar_position: string = "";
+  @State settings_collect_new_history: boolean = true;
 
   build() {
     Column() {
@@ -118,6 +115,7 @@ struct Index {
           Row() {
             meowWebView({
               webViews_ready: this.webViews_ready,
+              settings_collect_new_history: this.settings_collect_new_history,
               // Statuses
               current_tab_index: this.current_tab_index,
               tab_titles: this.tab_titles,
@@ -165,6 +163,7 @@ struct Index {
           search_input: this.search_input,
           settings_title_bar_position: this.settings_title_bar_position,
           web_and_stuff_alignRules: this.web_and_stuff_alignRules,
+          settings_collect_new_history: this.settings_collect_new_history,
           // Current statuses
           current_tab_index: this.current_tab_index,
           tab_titles: this.tab_titles,

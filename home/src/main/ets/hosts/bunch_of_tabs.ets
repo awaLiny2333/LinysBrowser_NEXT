@@ -292,9 +292,10 @@ export class bunch_of_tabs {
       if (web_state !== undefined) {
         console.log("[Meow][meowWebView] Restore web " + index_key.toString() +
           ", state Length: " + web_state.length.toString())
-        // this.bunch_of_tabs.Tabs[Label.index_key].controller.loadUrl("");
         this.Tabs[index_key].controller.clearHistory();
         this.Tabs[index_key].controller.restoreWebState(web_state);
+      } else {
+        console.log("[Meow][meowWebView] Restore web state undefined!")
       }
     } else {
       console.log("[Meow][meowWebView] No Need to restore web " + index_key.toString())

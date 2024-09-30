@@ -15,6 +15,7 @@ export class history_record {
 export class bunch_of_history {
   history_list: history_record[] = [];
   cached_plain_history: string[][] = [];
+  plain_history_default_max_length: number = 1000;
 
   add_history(history: history_record, no_reconstruct_plain_history?: boolean) {
     let insert_position = this.find_index_of_first_not_smaller_than_timestamp(history.accessed_time);
@@ -26,26 +27,17 @@ export class bunch_of_history {
     if (no_reconstruct_plain_history) {
       return;
     }
-    // get only 10000 records
-    let slice: history_record[];
-    if (this.history_list.length > 10000) {
-      slice = this.history_list.slice(this.history_list.length - 10000);
-    } else {
-      slice = this.history_list;
-    }
-    this.reconstruct_cached_plain_history(slice);
+    // get only 1000 records
+    this.reconstruct_cached_plain_history();
   }
 
-  remove_history(index: number) {
+  remove_history(index: number, no_reconstruct_plain_history?: boolean) {
     this.history_list.splice(index, 1);
-    // get only 10000 records
-    let slice: history_record[];
-    if (this.history_list.length > 10000) {
-      slice = this.history_list.slice(this.history_list.length - 10000);
-    } else {
-      slice = this.history_list;
+    if (no_reconstruct_plain_history) {
+      return;
     }
-    this.reconstruct_cached_plain_history(slice);
+    // get only 1000 records
+    this.reconstruct_cached_plain_history();
   }
 
   /**
@@ -94,13 +86,51 @@ export class bunch_of_history {
     return mid;
   }
 
+  get_latest_slice_of_max_length(max_length: number) {
+    // get only 10000 records
+    let slice: history_record[];
+    if (this.history_list.length > max_length) {
+      slice = this.history_list.slice(this.history_list.length - max_length);
+    } else {
+      slice = this.history_list;
+    }
+    return slice;
+  }
+
+  set_plain_max_length(max_length: number) {
+    this.plain_history_default_max_length = max_length;
+    this.reconstruct_cached_plain_history();
+  }
+
+  reconstruct_cached_plain_history(from_history_list?: history_record[]) {
+    // Default fall back
+    if (from_history_list === undefined) {
+      from_history_list = this.get_latest_slice_of_max_length(1000);
+    }
+
+    this.cached_plain_history = [];
+    for (let index = 0; index < from_history_list.length; index++) {
+      let history_item = from_history_list[index];
+      this.cached_plain_history.push([history_item.label, history_item.link]);
+    }
+    console.log("[bunch_of_history][plain_history] Reconstructed plain history! length: " +
+    this.cached_plain_history.length.toString());
+  }
+
+  get_plain_label_link(): string[][] {
+    if (this.cached_plain_history.length == 0) {
+      this.reconstruct_cached_plain_history();
+    }
+    return this.cached_plain_history;
+  }
+
   /**
    *
    * @param from The earliest timestamp.
    * @param to The most recent timestamp.
    * @returns The list of history[] in this period.
    * */
-  get_history_slice(from?: number, to?: number) {
+  get_history_slice_from_time_to_time(from?: number, to?: number) {
     if (this.history_list.length == 0) {
       return [];
     }
@@ -159,29 +189,5 @@ export class bunch_of_history {
       }
     }
     console.log("[Meow][bunch_of_history] Import history success, length: " + this.history_list.length.toString())
-  }
-
-  reconstruct_cached_plain_history(from_history_list: history_record[]) {
-    this.cached_plain_history = [];
-    for (let index = 0; index < from_history_list.length; index++) {
-      let history_item = from_history_list[index];
-      this.cached_plain_history.push([history_item.label, history_item.link]);
-    }
-    console.log("[bunch_of_history][plain_history] Reconstructed plain history! length: " +
-    this.cached_plain_history.length.toString());
-  }
-
-  get_plain_label_link(): string[][] {
-    if (this.cached_plain_history.length == 0) {
-      // get only 10000 records
-      let slice: history_record[];
-      if (this.history_list.length > 10000) {
-        slice = this.history_list.slice(this.history_list.length - 10000);
-      } else {
-        slice = this.history_list;
-      }
-      this.reconstruct_cached_plain_history(slice);
-    }
-    return this.cached_plain_history;
   }
 }

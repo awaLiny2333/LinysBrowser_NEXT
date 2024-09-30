@@ -25,6 +25,8 @@ struct meowWebView {
   @Link current_accessForward: boolean;
   @Link current_accessBackward: boolean;
   @Link search_input: string;
+  // Settings
+  @Prop settings_collect_new_history: boolean;
   // Stuffs
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
   @StorageLink('universal_new_download_gateway') new_download_gateway: string = "";
@@ -88,14 +90,21 @@ struct meowWebView {
             this.update_current_info();
 
             // Save browse history if is neither new tab nor a recovery tab
-            if (!this.bunch_of_tabs.Tabs[Label.index_key].recovery &&
-              !this.tab_urls[Label.index_key].includes("resource://")) {
+            if (this.settings_collect_new_history
+              && !this.bunch_of_tabs.Tabs[Label.index_key].recovery
+              && !this.tab_urls[Label.index_key].includes("resource://")
+            ) {
               let new_record = new history_record(this.tab_titles[Label.index_key], this.tab_urls[Label.index_key])
               this.bunch_of_history.add_history(new_record);
               sandbox_save("history.txt", this.bunch_of_history.export_string());
             } else {
-              console.log("[Meow][meowWebView] Didn't save history for a recovery process in progress");
               this.bunch_of_tabs.Tabs[Label.index_key].recovery = false;
+              // log
+              if (!this.settings_collect_new_history) {
+                console.log("[Meow][meowWebView] Didn't save history for settings disabled.");
+              } else {
+                console.log("[Meow][meowWebView] Didn't save history for a recovery process in progress");
+              }
             }
           })
           .onProgressChange((event) => {
@@ -121,6 +130,9 @@ struct meowWebView {
             // Update Input Search Box
             this.update_search_box_text(this.current_url)
 
+            if (this.bunch_of_tabs.Tabs[Label.index_key].recovery) {
+              return;
+            }
             // Sync to bunch_of_tabs
             let web_state = this.bunch_of_tabs.Tabs[Label.index_key].controller.serializeWebState();
             this.bunch_of_tabs.Tabs[Label.index_key].web_state_array = web_state;
@@ -145,12 +157,9 @@ struct meowWebView {
             }
           })
           .onAppear(() => {
-            // console.log("Web on_appear!")
-            // Set ua on initial tabs (on start up)
-            if (this.now_global_custom_UA.length != 0) {
+            if (this.now_global_custom_UA != "") {
               this.bunch_of_tabs.Tabs[Label.index_key].controller.setCustomUserAgent(this.now_global_custom_UA);
             }
-
             // Restore Web State
             this.bunch_of_tabs.restore_web_state(this.web_state_arrays, Label.index_key);
           })
@@ -161,6 +170,7 @@ struct meowWebView {
     .height("100%")
     .onAppear(() => {
       console.log("[Meow][meowWebView] WebViews READY")
+      console.log("[Meow][meowWebView] Restore tabs length: " + this.bunch_of_tabs.Tabs.length.toString())
     })
   }
 

@@ -183,6 +183,10 @@
     {
       "name": "Settings_experience_max_history_advice",
       "value": "最大历史建议数量"
+    },
+    {
+      "name": "Settings_experience_history_record_new",
+      "value": "记录新的历史"
     }
   ]
 }

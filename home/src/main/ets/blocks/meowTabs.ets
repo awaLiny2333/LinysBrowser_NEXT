@@ -42,6 +42,7 @@ struct meowTabs {
   @State scroll_animation_enabled: boolean = true;
   @State recover_tabs_finished: boolean = false;
   // Gateways
+  @StorageLink('universal_load_url_gateway') @Watch('on_current_load_url') load_url_gateway: string = "";
   @StorageLink('universal_new_tab_gateway') @Watch('on_new_targeted_tab') new_tab_gateway: string = "";
   @StorageLink('universal_global_custom_ua_gateway') @Watch('on_global_custom_UA_change') global_custom_UA: string = "";
 
@@ -121,7 +122,7 @@ struct meowTabs {
         web_state_arrays.push(web_state_array);
       }
       // Set to AppStorage
-      AppStorage.setOrCreate("web_state_arrays", web_state_arrays);
+      AppStorage.setOrCreate('web_state_arrays', web_state_arrays);
       // Create new tabs
       for (let index = 0; index < web_state_arrays.length; index++) {
         let web_state_array = web_state_arrays[index];
@@ -287,14 +288,6 @@ struct meowTabs {
     }
   }
 
-  on_new_targeted_tab() {
-    if (this.new_tab_gateway != "") {
-      this.webViews_ready = true;
-      this.new_tab(this.new_tab_gateway);
-      this.new_tab_gateway = "";
-    }
-  }
-
   on_did_switch_tab() {
     if (this.recover_tabs_finished) {
       // Store where am I
@@ -429,6 +422,22 @@ struct meowTabs {
 
   on_global_custom_UA_change() {
     this.bunch_of_tabs.set_global_custom_UA(this.global_custom_UA);
+  }
+
+  on_new_targeted_tab() {
+    if (this.new_tab_gateway != "") {
+      this.webViews_ready = true;
+      this.new_tab(this.new_tab_gateway);
+      this.new_tab_gateway = "";
+    }
+  }
+
+  on_current_load_url() {
+    if (this.load_url_gateway != "") {
+      this.webViews_ready = true;
+      this.bunch_of_tabs.loadUrl_onWorkingTab(this.load_url_gateway);
+      this.load_url_gateway = "";
+    }
   }
 }
 
