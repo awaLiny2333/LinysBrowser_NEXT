@@ -4,16 +4,20 @@ import meowWebView from '../blocks/meowWebView';
 import meowBookmarks from '../blocks/meowBookmarks';
 import { animation_default } from '../hosts/bunch_of_defaults';
 import meowTitleBar from '../blocks/meowTitleBar';
+import { bunch_of_settings } from '../hosts/bunch_of_settings';
 
 @Entry
 @Component
 struct Index {
-  // UI Settings
+  // UI Environment
   @StorageLink('bottomAvoidHeight') bottomAvoidHeight: number = 1;
   @StorageLink('topAvoidHeight') topAvoidHeight: number = 1;
   @StorageLink('tablet_mode') tablet_mode: boolean = false;
   @StorageLink('screen_width') screen_width: number = 0;
   @StorageLink('screen_height') screen_height: number = 0;
+  @StorageLink('animation_response') animation_response: number = 0.36;
+  @StorageLink('animation_damping_coefficient') animation_damping_coefficient: number = 0.8;
+  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
   // UI Statuses
   @State webViews_ready: boolean = false;
   @State showing_downloads: boolean = false;
@@ -46,12 +50,45 @@ struct Index {
   @State @Watch('on_title_bar_position_change') settings_title_bar_position: string = "";
   @State settings_collect_new_history: boolean = true;
 
+  async aboutToAppear(): Promise<void> {
+    this.animation_response = await this.bunch_of_settings.get_setting_key('animation_response') as number;
+    this.animation_damping_coefficient =
+      await this.bunch_of_settings.get_setting_key('animation_damping_coefficient') as number;
+  }
+
+  onBackPress(): boolean | void {
+    let stop_system_back = false;
+
+    // I know this is stupid but ¯\_(ツ)_/¯ it just works
+    if (this.tablet_mode) {
+      if (this.showing_downloads || this.showing_more_options || this.showing_app_settings) {
+        this.showing_downloads = false;
+        this.showing_more_options = false;
+        this.showing_app_settings = false;
+        stop_system_back = true;
+      }
+    } else {
+      if (this.showing_downloads || this.showing_more_options || this.showing_app_settings
+        || this.showing_bookmarks || this.showing_tabs) {
+        this.showing_downloads = false;
+        this.showing_more_options = false;
+        this.showing_app_settings = false;
+        this.showing_tabs = false;
+        this.showing_bookmarks = false;
+        stop_system_back = true;
+      }
+    }
+
+    return stop_system_back;
+  }
+
   build() {
     Column() {
       Row()// Top Bar Avoid
         .width("100%")
         .height(px2vp(this.topAvoidHeight))
         .animation(animation_default())
+        .backgroundColor($r('app.color.block_color'))
 
       RelativeContainer() {
 
@@ -187,7 +224,6 @@ struct Index {
 
       }
       .layoutWeight(1)
-      .backgroundColor($r('app.color.block_color'))
       .width("100%")
       .animation(animation_default())
 
@@ -195,11 +231,15 @@ struct Index {
         .width("100%")
         .height(px2vp(this.bottomAvoidHeight))
         .animation(animation_default())
+        .backgroundColor(this.settings_title_bar_position == "bottom" ?
+          "transparent" : $r('app.color.block_color'))
+
     }
     .height("100%")
     .width("100%")
-    .backgroundColor($r('app.color.block_color'))
     .animation(animation_default())
+    .backgroundColor(this.settings_title_bar_position == "bottom" ?
+    $r('app.color.block_color') : $r('app.color.start_window_background'))
     .onAppear(() => {
       console.log("[Meow][Index] Home Index READY")
     })

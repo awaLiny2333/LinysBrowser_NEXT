@@ -13,7 +13,7 @@ export async function kv_store_get(key_name: string) {
     // If kvStore already got
     let get_result = "";
     await kvStore.get(key_name).then((value) => {
-      console.log("[Meow][kv_store_tools] Succeeded in getting data, key: " + key_name + ".")
+      // console.log("[Meow][kv_store_tools] Succeeded in getting data, key: " + key_name + ".")
       get_result = value as string;
     }).catch(() => {
       get_result = "undefined"

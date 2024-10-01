@@ -21,7 +21,9 @@ export function minimum_block_width() {
 }
 
 export function animation_default() {
-  let spring = Curves.springMotion(0.36, 0.8);
+  let animation_damping_coefficient = AppStorage.get('animation_damping_coefficient') as number;
+  let animation_response = AppStorage.get('animation_response') as number;
+  let spring = Curves.springMotion(animation_response / 100, (100 - animation_damping_coefficient) / 100);
   let ap: AnimateParam = { curve: spring };
   return ap;
 }

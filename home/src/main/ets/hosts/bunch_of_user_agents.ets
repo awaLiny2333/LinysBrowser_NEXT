@@ -27,8 +27,12 @@ export class bunch_of_user_agents {
    * @abstract In default overwrites whatever was in this bunch_of_user_agents
    * */
   import_string(imp: string) {
-    this.list_of_user_agents = [];
     // Clear
+    this.list_of_user_agents = [];
+    if (imp == "") {
+      return;
+    }
+    // Import
     let import_list: string[] = imp.split("\n");
     for (let index = 0; index < import_list.length; index += 2) {
       if (import_list[index] != "") {

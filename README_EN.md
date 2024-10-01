@@ -66,7 +66,8 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 - [x] Customizable position for title bar. (Top or Bottom)
 - [ ] Customizable position for Tabs bar. (Side or Top)
 - [ ] Customizable themes. (Colors)
-- [ ] Adapt to system Back operations.
+- [x] Adapt to system Back operations.
+- [x] Customizable global animation curve.
 
 ## Constraints and limits
 

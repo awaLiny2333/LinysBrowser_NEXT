@@ -77,9 +77,9 @@ struct meowBookmarkRelations {
 
   get_area_height() {
     let height = 0;
-    height += (this.bookmark_suggestions.length + this.history_suggestions.length) * 50;
-    height += this.bookmark_suggestions.length > 0 ? 22 : 0;
-    height += this.history_suggestions.length > 0 ? 32 : 0;
+    height += (this.bookmark_suggestions.length + this.history_suggestions.length) * 52;
+    height += this.bookmark_suggestions.length > 0 ? 15 : 0;
+    height += this.history_suggestions.length > 0 ? 15 : 0;
     return height;
   }
 

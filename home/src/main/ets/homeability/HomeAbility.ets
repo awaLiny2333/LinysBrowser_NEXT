@@ -7,9 +7,10 @@ import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
 import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_history } from '../hosts/bunch_of_history';
+import { bunch_of_settings } from '../hosts/bunch_of_settings';
 
 export default class HomeAbility extends UIAbility {
-  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+  async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): Promise<void> {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
     console.log('want bundle name: ' + want.bundleName);
     console.log('launchParam launchReason: ' + launchParam.launchReason);
@@ -23,6 +24,7 @@ export default class HomeAbility extends UIAbility {
     AppStorage.setOrCreate('bunch_of_user_agents', new bunch_of_user_agents());
     AppStorage.setOrCreate('bunch_of_downloads', new bunch_of_downloads());
     AppStorage.setOrCreate('bunch_of_history', new bunch_of_history());
+    AppStorage.setOrCreate('bunch_of_settings', new bunch_of_settings());
   }
 
   onDestroy(): void {

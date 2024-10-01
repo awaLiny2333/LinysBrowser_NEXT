@@ -1,18 +1,20 @@
 import linysCapsuleButton from '../components/linysCapsuleButton';
 import linysSymbol from '../components/linysSymbol';
 import {
-  animation_default,
-  capsule_bar_height,
-  click_effect_default,
-  fontSize_Large,
-  fontSize_Normal
+    animation_default,
+    capsule_bar_height,
+    click_effect_default,
+    fontSize_Large,
+    fontSize_Normal
 } from '../hosts/bunch_of_defaults';
+import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { bunch_of_user_agents, user_agent } from '../hosts/bunch_of_user_agents';
-import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
+import { kv_store_put } from '../utils/kv_store_tools';
 
 @Component
 struct meowUAManager {
   @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
+  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
   @State @Watch('on_select') selected_index: number = -1; // -1 for system default
   @State list_of_user_agents: user_agent[] = this.bunch_of_user_agents.list_of_user_agents;
@@ -101,25 +103,15 @@ struct meowUAManager {
   }
 
   async on_appear() {
-    console.log("[Meow][meowUAManager] UA Manager READY");
+    let custom_user_agents = await this.bunch_of_settings.get_setting_key('custom_user_agents') as string;
+    this.bunch_of_user_agents.import_string(custom_user_agents);
+    this.sync_list_of_user_agents();
+    this.selected_index = await this.bunch_of_settings.get_setting_key('custom_user_agents_selected_index') as number;
 
-    let result = await kv_store_get("custom_user_agents");
-    if (result as string == "undefined") {
-      // First use user-agent
-    } else {
-      this.bunch_of_user_agents.import_string(result as string);
-      this.sync_list_of_user_agents();
-    }
-
-    let result_index = await kv_store_get("custom_user_agents_selected_index");
-    if (result_index as string == "undefined") {
-      // First use user-agent
-      this.save_user_agents_to_kv_store();
-    } else {
-      this.selected_index = Number.parseInt(result_index);
-    }
     this.UA_loaded_from_disk = true;
-    // Get bookmarks
+    // Get UA
+
+    console.log("[Meow][meowUAManager] UA Manager READY");
   }
 
   on_select() {
@@ -146,9 +138,8 @@ struct meowUAManager {
   }
 
   save_user_agents_to_kv_store() {
-    console.log("[Meow][meowUAManager] Started to save custom user-agents to KVStore!")
-    kv_store_put("custom_user_agents", this.bunch_of_user_agents.export_string());
-    kv_store_put("custom_user_agents_selected_index", this.selected_index.toString());
+    this.bunch_of_settings.set_setting_value_of_key('custom_user_agents', this.bunch_of_user_agents.export_string());
+    this.bunch_of_settings.set_setting_value_of_key('custom_user_agents_selected_index', this.selected_index);
   }
 }
 

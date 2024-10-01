@@ -187,6 +187,14 @@
     {
       "name": "Settings_experience_history_record_new",
       "value": "记录新的历史"
+    },
+    {
+      "name": "Settings_appearance_animation_response",
+      "value": "动画响应时长"
+    },
+    {
+      "name": "Settings_appearance_animation_damping_coefficient",
+      "value": "动画弹力"
     }
   ]
 }

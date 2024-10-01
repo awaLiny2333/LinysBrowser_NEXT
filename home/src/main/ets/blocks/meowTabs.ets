@@ -8,11 +8,13 @@ import {
   kv_store_put,
   kv_store_put_uint_8_array
 } from '../utils/kv_store_tools';
+import { bunch_of_settings } from '../hosts/bunch_of_settings';
 
 
 @Component
 struct meowTabs {
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
+  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
   @Link webViews_ready: boolean;
   @Link showing_tabs: boolean;
   @Link @Watch('on_did_switch_tab') current_tab_index: number;
@@ -48,32 +50,18 @@ struct meowTabs {
 
   async aboutToAppear() {
 
-    let got_home_url = await kv_store_get("home_url")
-    let new_tab_url = await kv_store_get("new_tab_url")
-    let continue_tabs_count_string = await kv_store_get("continue_tabs_count")
-    let continue_tabs_on_string = await kv_store_get("continue_tabs_on")
-    let continue_tabs_count = 1
-    let continue_tabs_on = 0
-    let start_up_option = await kv_store_get("start_up_option")
-
-    console.log("[Meow][meowTabs] Got home_url: " + got_home_url)
-    console.log("[Meow][meowTabs] Got new_tab_url: " + new_tab_url)
-    console.log("[Meow][meowTabs] Got continue_tabs_count: " + continue_tabs_count_string)
-    console.log("[Meow][meowTabs] Got continue_tabs_on: " + continue_tabs_on_string)
-    console.log("[Meow][meowTabs] Got start_up configuration: " + start_up_option)
-
     // Get Data
-    if (got_home_url == "undefined") {
-      kv_store_put("home_url", "");
-      got_home_url = "";
-    }
-    this.bunch_of_tabs.home_url = got_home_url;
+    let home_url = await this.bunch_of_settings.get_setting_key('home_url') as string;
+    let new_tab_url = await this.bunch_of_settings.get_setting_key('new_tab_url') as string;
+    let start_up_option = await this.bunch_of_settings.get_setting_key('start_up_option') as string;
+    let continue_tabs_count_string = await kv_store_get("continue_tabs_count");
+    let continue_tabs_on_string = await kv_store_get("continue_tabs_on");
+    let continue_tabs_count = 1;
+    let continue_tabs_on = 0;
 
-    if (new_tab_url == "undefined") {
-      kv_store_put("new_tab_url", "");
-      new_tab_url = "";
-    }
+    this.bunch_of_tabs.start_up = start_up_option;
     this.bunch_of_tabs.new_tab_url = new_tab_url;
+    this.bunch_of_tabs.home_url = home_url;
 
     if (continue_tabs_count_string == "undefined") {
       kv_store_put("continue_tabs_count", "1");
@@ -89,11 +77,9 @@ struct meowTabs {
       continue_tabs_on = Number.parseInt(continue_tabs_on_string);
     }
 
-    if (start_up_option == "undefined") {
-      start_up_option = "new tab";
-      kv_store_put("start_up_option", "new tab");
-    }
-    this.bunch_of_tabs.start_up = start_up_option;
+    // Log
+    console.log("[Meow][meowTabs] Got continue_tabs_count: " + continue_tabs_count_string);
+    console.log("[Meow][meowTabs] Got continue_tabs_on: " + continue_tabs_on_string);
 
     // Start Up
     if (start_up_option == "new tab") {
@@ -103,13 +89,11 @@ struct meowTabs {
       }
 
     } else if (start_up_option == "home") {
-      if (got_home_url != "") {
-      }
-      if (got_home_url == "") {
+      if (home_url == "") {
         this.new_tab(home_url_default_blank());
       } else {
         this.webViews_ready = true;
-        this.new_tab(got_home_url);
+        this.new_tab(home_url);
       }
 
     } else {
@@ -134,11 +118,7 @@ struct meowTabs {
         }
       }
       // Try switch tab
-      try {
-        this.switch_tab(continue_tabs_on);
-      } catch (e) {
-        console.log(e)
-      }
+      this.switch_tab(continue_tabs_on);
     }
     this.recover_tabs_finished = true;
   }
@@ -298,6 +278,7 @@ struct meowTabs {
   }
 
   switch_tab(target: number) {
+    console.log('switch tab to ' + target.toString())
     if (this.current_tab_index == target) {
       this.showing_tabs = false;
     }

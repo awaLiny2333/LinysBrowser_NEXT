@@ -13,7 +13,6 @@ import {
   SegmentButtonOptions,
   SegmentButtonTextItem
 } from '@ohos.arkui.advanced.SegmentButton';
-import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 import meowUAManager from './meowUAManager';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
@@ -21,6 +20,7 @@ import linysCapsuleButton from '../components/linysCapsuleButton';
 import { bunch_of_history } from '../hosts/bunch_of_history';
 import { sandbox_open } from '../utils/storage_tools';
 import woofHistory from '../dialogs/woofHistory';
+import { bunch_of_settings } from '../hosts/bunch_of_settings';
 
 @Component
 struct meowAppSettings {
@@ -30,10 +30,13 @@ struct meowAppSettings {
   @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history();
+  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
   // Generals
   @StorageLink('screen_width') screen_width: number = 0;
   @StorageLink('tablet_mode') tablet_mode: boolean = false;
   @Link @Watch('on_open_or_close_panel') show: boolean;
+  @StorageLink('animation_response') animation_response: number = 0;
+  @StorageLink('animation_damping_coefficient') animation_damping_coefficient: number = 0;
   // Information
   @State versionName: string = "Version Name";
   @State versionNo: number = 0;
@@ -177,7 +180,7 @@ struct meowAppSettings {
               .selectedColor($r('app.color.font_color_title'))
               .onChange((value) => {
                 this.settings_max_bookmark_suggestions = value;
-                kv_store_put('settings_max_bookmark_suggestions', value.toString());
+                this.bunch_of_settings.set_setting_value_of_key('settings_max_bookmark_suggestions', value);
               })
             linysText({ text: this.settings_max_bookmark_suggestions.toString() })
               .margin({ right: 5 })
@@ -196,7 +199,7 @@ struct meowAppSettings {
               .selectedColor($r('app.color.font_color_title'))
               .onChange((value) => {
                 this.settings_max_history_suggestions = value;
-                kv_store_put('settings_max_history_suggestions', value.toString());
+                this.bunch_of_settings.set_setting_value_of_key('settings_max_history_suggestions', value);
               })
             linysText({ text: this.settings_max_history_suggestions.toString() })
               .margin({ right: 5 })
@@ -212,11 +215,7 @@ struct meowAppSettings {
               .selectedColor($r('app.color.font_color_title'))
               .onChange(isOn => {
                 this.settings_collect_new_history = isOn;
-                let settings = "false";
-                if (isOn) {
-                  settings = "true";
-                }
-                kv_store_put('settings_collect_new_history', settings);
+                this.bunch_of_settings.set_setting_value_of_key('settings_collect_new_history', isOn);
               })
           } // Toggle History
           .width("100%")
@@ -251,6 +250,53 @@ struct meowAppSettings {
             options: this.title_bar_position_tabOptions,
             selectedIndexes: $title_bar_position_selected
           })
+
+          linysText({ text: $r('app.string.Settings_appearance_animation_response') })
+          Row({ space: 5 }) {
+            Slider({
+              min: 1,
+              max: 100,
+              value: this.animation_response,
+              style: SliderStyle.InSet,
+            })
+              .layoutWeight(1)
+              .blockColor($r('app.color.start_window_background'))
+              .selectedColor($r('app.color.font_color_title'))
+              .onChange((value) => {
+                this.animation_response = value;
+              })
+              .onTouch(e => {
+                if (e.type == TouchType.Up) {
+                  this.bunch_of_settings.set_setting_value_of_key('animation_response', this.animation_response);
+                }
+              })
+            linysText({ text: (this.animation_response / 100).toFixed(2) })
+              .margin({ right: 5 })
+          } // Slider and display of animation_response
+
+          linysText({ text: $r('app.string.Settings_appearance_animation_damping_coefficient') })
+          Row({ space: 5 }) {
+            Slider({
+              min: 0,
+              max: 75,
+              value: this.animation_damping_coefficient,
+              style: SliderStyle.InSet,
+            })
+              .layoutWeight(1)
+              .blockColor($r('app.color.start_window_background'))
+              .selectedColor($r('app.color.font_color_title'))
+              .onChange((value) => {
+                this.animation_damping_coefficient = value;
+              })
+              .onTouch(e => {
+                if (e.type == TouchType.Up) {
+                  this.bunch_of_settings.set_setting_value_of_key('animation_damping_coefficient',
+                    this.animation_damping_coefficient);
+                }
+              })
+            linysText({ text: (this.animation_damping_coefficient / 100).toFixed(2) })
+              .margin({ right: 5 })
+          } // Slider and display of animation damping coefficient
         }
         .padding(15)
         .alignItems(HorizontalAlign.Start)
@@ -298,53 +344,27 @@ struct meowAppSettings {
   // Events
 
   async on_appear() {
+    // Get app version info
     bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION).then((bundleInfo) => {
       this.versionName = bundleInfo.versionName;
       this.versionNo = bundleInfo.versionCode;
     })
-    // Get app version info
 
-    this.settings_title_bar_position = await kv_store_get('settings_title_bar_position')
-    console.log("[Meow][meowAppSettings] Got settings for Title Bar position: " + this.settings_title_bar_position)
-    if (this.settings_title_bar_position == ("undefined")) {
-      // First open
-      kv_store_put('settings_title_bar_position', "bottom");
-      this.settings_title_bar_position = "bottom";
-    }
     // Get settings of title bar position
+    this.settings_title_bar_position =
+      await this.bunch_of_settings.get_setting_key('settings_title_bar_position') as string;
 
-    let got: string = "";
-    got = await kv_store_get('settings_max_bookmark_suggestions');
-    console.log("[Meow][meowAppSettings] Got max bookmark suggestions: " + got);
-    if (got == ("undefined")) {
-      // First open
-      kv_store_put('settings_max_bookmark_suggestions', "5");
-      got = "5";
-    }
-    this.settings_max_bookmark_suggestions = Number.parseInt(got);
     // Get number of max bookmarks suggestions
+    this.settings_max_bookmark_suggestions =
+      await this.bunch_of_settings.get_setting_key('settings_max_bookmark_suggestions') as number;
 
-    got = "";
-    got = await kv_store_get('settings_max_history_suggestions');
-    console.log("[Meow][meowAppSettings] Got max history suggestions: " + got);
-    if (got == ("undefined")) {
-      // First open
-      kv_store_put('settings_max_history_suggestions', "5");
-      got = "5";
-    }
-    this.settings_max_history_suggestions = Number.parseInt(got);
     // Get number of max history suggestions
+    this.settings_max_history_suggestions =
+      await this.bunch_of_settings.get_setting_key('settings_max_history_suggestions') as number;
 
-    got = "";
-    got = await kv_store_get('settings_collect_new_history');
-    console.log("[Meow][meowAppSettings] Got whether to collect new history: " + got);
-    if (got == ("undefined")) {
-      // First open
-      kv_store_put('settings_collect_new_history', "true");
-      got = "true";
-    }
-    this.settings_collect_new_history = (got == "true") ? true : false;
     // Get whether to continue to collect new history
+    this.settings_collect_new_history =
+      await this.bunch_of_settings.get_setting_key('settings_collect_new_history') as boolean;
 
     let result = await sandbox_open("history.txt");
     if (result as string == "undefined") {
@@ -407,7 +427,7 @@ struct meowAppSettings {
       result = 'bottom';
     }
     this.settings_title_bar_position = result;
-    kv_store_put('settings_title_bar_position', result);
+    this.bunch_of_settings.set_setting_value_of_key('settings_title_bar_position', result);
   }
 
   on_start_up_page_changed() {
@@ -421,19 +441,22 @@ struct meowAppSettings {
       // Need modify after update
     }
     this.bunch_of_tabs.start_up = result;
-    kv_store_put("start_up_option", result);
+    // kv_store_put("start_up_option", result);
+    this.bunch_of_settings.set_setting_value_of_key('start_up_option', result);
   }
 
   // Operations
 
   set_new_tab_url_and_kv_store() {
     this.bunch_of_tabs.new_tab_url = this.new_tab_url_edit;
-    kv_store_put("new_tab_url", this.new_tab_url_edit);
+    // kv_store_put("new_tab_url", this.new_tab_url_edit);
+    this.bunch_of_settings.set_setting_value_of_key('new_tab_url', this.new_tab_url_edit);
   }
 
   set_home_url_and_kv_store() {
     this.bunch_of_tabs.home_url = this.home_url_edit;
-    kv_store_put("home_url", this.home_url_edit);
+    // kv_store_put("home_url", this.home_url_edit);
+    this.bunch_of_settings.set_setting_value_of_key('home_url', this.home_url_edit);
   }
 }
 
