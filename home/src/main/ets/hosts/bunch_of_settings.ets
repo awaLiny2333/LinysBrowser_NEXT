@@ -6,11 +6,14 @@ export class bunch_of_settings {
   settings_defaults_key: string[] =
     ['settings_title_bar_position', 'settings_max_bookmark_suggestions', 'settings_max_history_suggestions',
       'settings_collect_new_history', 'home_url', 'new_tab_url', 'start_up_option', 'custom_user_agents',
-      'custom_user_agents_selected_index', 'animation_response', 'animation_damping_coefficient'];
+      'custom_user_agents_selected_index', 'animation_response', 'animation_damping_coefficient',
+      'custom_search_engines',
+      'custom_search_engines_selected_index'];
   settings_defaults_value: string[] =
-    ['bottom', '5', '5', 'true', '', '', 'new tab', '', '-1', '36', '20'];
+    ['bottom', '5', '5', 'true', '', '', 'new tab', '', '-1', '36', '20', "", "-1"];
   settings_defaults_type: string[] =
-    ['string', 'number', 'number', 'boolean', 'string', 'string', 'string', 'string', 'number', 'number', 'number'];
+    ['string', 'number', 'number', 'boolean', 'string', 'string', 'string', 'string', 'number', 'number', 'number',
+      "string", "number"];
 
   async get_setting_key(key: string) {
     for (let index = 0; index < this.settings_list.length; index++) {

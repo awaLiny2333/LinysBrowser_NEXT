@@ -8,6 +8,7 @@ import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_history } from '../hosts/bunch_of_history';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
+import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 
 export default class HomeAbility extends UIAbility {
   async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): Promise<void> {
@@ -22,6 +23,7 @@ export default class HomeAbility extends UIAbility {
     AppStorage.setOrCreate('bunch_of_tabs', new bunch_of_tabs());
     AppStorage.setOrCreate('bunch_of_bookmarks', new bunch_of_bookmarks("Bookmarks Meow"));
     AppStorage.setOrCreate('bunch_of_user_agents', new bunch_of_user_agents());
+    AppStorage.setOrCreate('bunch_of_search_engines', new bunch_of_search_engines());
     AppStorage.setOrCreate('bunch_of_downloads', new bunch_of_downloads());
     AppStorage.setOrCreate('bunch_of_history', new bunch_of_history());
     AppStorage.setOrCreate('bunch_of_settings', new bunch_of_settings());

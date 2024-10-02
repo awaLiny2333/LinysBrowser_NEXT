@@ -195,6 +195,10 @@
     {
       "name": "Settings_appearance_animation_damping_coefficient",
       "value": "Animation elasticity"
+    },
+    {
+      "name": "Settings_general_custom_search_engine",
+      "value": "Custom search engine"
     }
   ]
 }

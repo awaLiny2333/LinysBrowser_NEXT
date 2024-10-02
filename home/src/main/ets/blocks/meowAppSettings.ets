@@ -21,6 +21,7 @@ import { bunch_of_history } from '../hosts/bunch_of_history';
 import { sandbox_open } from '../utils/storage_tools';
 import woofHistory from '../dialogs/woofHistory';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
+import meowSEManager from './meowSEManager';
 
 @Component
 struct meowAppSettings {
@@ -99,6 +100,10 @@ struct meowAppSettings {
           // UA
           linysText({ text: $r('app.string.Settings_general_custom_ua') })
           meowUAManager()
+
+          // UA
+          linysText({ text: $r('app.string.Settings_general_custom_search_engine') })
+          meowSEManager()
 
           // New tab URL
           linysText({ text: $r('app.string.Settings_general_new_tab_url') })

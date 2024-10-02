@@ -14,7 +14,12 @@ export function unify_search_input_into_url(search_input: string) {
     return ensure_scheme_or_https(encodeURI(url)) as string
   }
 
-  return encodeURI("https://bing.com/search?q=" + url) as string
+  let search_engine = AppStorage.get('search_engine') as string;
+  if (search_engine === undefined) {
+    search_engine = "https://bing.com/search?q=%s";
+  }
+  let url_processed = search_engine.replace("%s", url);
+  return encodeURI(url_processed) as string;
 }
 
 function is_pure_number(input: string) {
