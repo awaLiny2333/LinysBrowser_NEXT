@@ -199,6 +199,14 @@
     {
       "name": "Settings_general_custom_search_engine",
       "value": "自定义搜索引擎"
+    },
+    {
+      "name": "Paralleow",
+      "value": "平行浏览"
+    },
+    {
+      "name": "Paralleow_choose_a_tab",
+      "value": "选一个标签页"
     }
   ]
 }

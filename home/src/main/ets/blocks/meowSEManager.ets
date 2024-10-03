@@ -17,7 +17,7 @@ struct meowSEManager {
     new bunch_of_search_engines();
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
   @StorageLink('search_engine') search_engine: string = "";
-  @State @Watch('on_select') selected_index: number = -1; // -1 for system default
+  @State @Watch('on_select') selected_index: number = -2; // -1 for system default
   @State list_of_search_engines: search_engine[] = this.bunch_of_search_engines.list_of_search_engines;
   @State default_pressing: boolean = false;
   @State UA_loaded_from_disk: boolean = false;

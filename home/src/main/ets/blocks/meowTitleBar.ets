@@ -38,7 +38,8 @@ struct meowTitleBar {
   @Link web_and_stuff_alignRules: AlignRuleOption;
   @Link settings_collect_new_history: boolean;
   // Web statuses
-  @Link current_tab_index: number;
+  @Link current_main_tab_index: number;
+  @Link current_sub_tab_index: number;
   @Link tab_titles: string[];
   @Link tab_urls: string[];
   @Link tab_loading_progresses: number[];
@@ -536,12 +537,12 @@ struct meowTitleBar {
   }
 
   update_tabs_current_info() {
-    this.current_title = this.tab_titles[this.current_tab_index];
-    this.current_url = this.tab_urls[this.current_tab_index];
+    this.current_title = this.tab_titles[this.current_main_tab_index];
+    this.current_url = this.tab_urls[this.current_main_tab_index];
     this.current_url = url_resource_to_meow(this.current_url);
     // translate "resource://" into "meow://"
-    this.current_loading_progress = this.tab_loading_progresses[this.current_tab_index];
-    this.current_is_loading = this.tab_is_loading[this.current_tab_index];
+    this.current_loading_progress = this.tab_loading_progresses[this.current_main_tab_index];
+    this.current_is_loading = this.tab_is_loading[this.current_main_tab_index];
     // Set loading progress
   }
 

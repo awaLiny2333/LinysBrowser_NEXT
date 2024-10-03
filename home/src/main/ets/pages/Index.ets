@@ -43,7 +43,8 @@ struct Index {
   @State tab_is_loading: boolean[] = [true]
   @State current_is_loading: boolean = true
   // Web control statuses
-  @State current_tab_index: number = 0;
+  @State current_main_tab_index: number = 0;
+  @State current_sub_tab_index: number = -1;
   @State current_accessForward: boolean = false;
   @State current_accessBackward: boolean = false;
   // Settings
@@ -101,7 +102,8 @@ struct Index {
                   webViews_ready: this.webViews_ready,
                   showing_tabs: this.showing_tabs,
                   // Statuses
-                  current_tab_index: this.current_tab_index,
+                  current_main_tab_index: this.current_main_tab_index,
+                  current_sub_tab_index: this.current_sub_tab_index,
                   tab_titles: this.tab_titles,
                   tab_urls: this.tab_urls,
                   tab_loading_progresses: this.tab_loading_progresses,
@@ -154,7 +156,8 @@ struct Index {
               webViews_ready: this.webViews_ready,
               settings_collect_new_history: this.settings_collect_new_history,
               // Statuses
-              current_tab_index: this.current_tab_index,
+              current_main_tab_index: this.current_main_tab_index,
+              current_sub_tab_index: this.current_sub_tab_index,
               tab_titles: this.tab_titles,
               tab_urls: this.tab_urls,
               tab_loading_progresses: this.tab_loading_progresses,
@@ -202,7 +205,8 @@ struct Index {
           web_and_stuff_alignRules: this.web_and_stuff_alignRules,
           settings_collect_new_history: this.settings_collect_new_history,
           // Current statuses
-          current_tab_index: this.current_tab_index,
+          current_main_tab_index: this.current_main_tab_index,
+          current_sub_tab_index: this.current_sub_tab_index,
           tab_titles: this.tab_titles,
           tab_urls: this.tab_urls,
           tab_loading_progresses: this.tab_loading_progresses,

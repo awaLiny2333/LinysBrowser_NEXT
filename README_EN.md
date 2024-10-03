@@ -59,7 +59,7 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 - [ ] Right click or long press menu on web links. (For preview and operations)
 - [x] UA switching and customizations. (UA related settings)
 - [x] Reopen tabs when launching.
-- [ ] Multi-view parallel browsing.
+- [x] Multi-view parallel browsing.
 
 ### Experience
 

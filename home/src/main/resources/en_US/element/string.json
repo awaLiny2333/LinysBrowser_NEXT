@@ -199,6 +199,14 @@
     {
       "name": "Settings_general_custom_search_engine",
       "value": "Custom search engine"
+    },
+    {
+      "name": "Paralleow",
+      "value": "Paralleow"
+    },
+    {
+      "name": "Paralleow_choose_a_tab",
+      "value": "Select a tab"
     }
   ]
 }

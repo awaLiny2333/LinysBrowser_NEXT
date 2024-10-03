@@ -1,3 +1,4 @@
+import { animation_default } from '../hosts/bunch_of_defaults';
 import { bunch_of_history, history_record } from '../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_label } from '../hosts/bunch_of_tabs';
 import { kv_store_put_uint_8_array } from '../utils/kv_store_tools';
@@ -11,7 +12,8 @@ struct meowWebView {
   @StorageLink('web_state_arrays') web_state_arrays: Uint8Array[] = [];
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history();
-  @Link current_tab_index: number;
+  @Link @Watch('on_tab_info_change') current_main_tab_index: number;
+  @Link @Watch('on_tab_info_change') current_sub_tab_index: number;
   @Prop webViews_ready: boolean;
   // Controls and environments
   @Link tab_titles: string[];
@@ -30,9 +32,11 @@ struct meowWebView {
   // Stuffs
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
   @StorageLink('universal_new_download_gateway') new_download_gateway: string = "";
+  @StorageProp('web_animation') web_animation: AnimateParam = animation_default();
+  @State last_time_out_id: number | undefined = undefined;
 
   build() {
-    Row() {
+    RelativeContainer() {
       ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
         Web({
           src: this.initial_src_of_tab_index(Label.index_key),
@@ -40,9 +44,15 @@ struct meowWebView {
           this.bunch_of_tabs.Tabs[Label.index_key] !== undefined ?
           this.bunch_of_tabs.Tabs[Label.index_key].controller : undefined
         })// Main WEB
-          .width("100%")
-          .height("100%")
-          .visibility(this.current_tab_index == Label.index_key ? Visibility.Visible : Visibility.None)
+          .width(this.current_sub_tab_index < 0 ? "100%" : this.width_tab())
+          .height(this.current_sub_tab_index < 0 ? "100%" : this.height_tab())
+          .alignRules(this.current_sub_tab_index == Label.index_key
+            ? this.align_rules_sub_tab() : this.align_rules_main_tab())
+          .visibility((this.current_main_tab_index == Label.index_key || this.current_sub_tab_index == Label.index_key)
+            ? Visibility.Visible : Visibility.None)
+          .borderColor($r('app.color.block_color'))
+          .borderWidth(this.border_width_tab(this.current_sub_tab_index == Label.index_key))
+          .animation(this.web_animation)
           .databaseAccess(true)
           .onlineImageAccess(true)
           .javaScriptAccess(true)
@@ -175,12 +185,12 @@ struct meowWebView {
   }
 
   update_current_info() {
-    this.current_title = this.tab_titles[this.current_tab_index];
-    this.current_url = this.tab_urls[this.current_tab_index];
+    this.current_title = this.tab_titles[this.current_main_tab_index];
+    this.current_url = this.tab_urls[this.current_main_tab_index];
     this.current_url = url_resource_to_meow(this.current_url);
     // translate "resource://" into "meow://"
-    this.current_loading_progress = this.tab_loading_progresses[this.current_tab_index];
-    this.current_is_loading = this.tab_is_loading[this.current_tab_index];
+    this.current_loading_progress = this.tab_loading_progresses[this.current_main_tab_index];
+    this.current_is_loading = this.tab_is_loading[this.current_main_tab_index];
     // Set loading progress
   }
 
@@ -194,6 +204,63 @@ struct meowWebView {
   update_search_box_text(text: string) {
     this.search_input = url_resource_to_meow(text)
     // Update Input Search Box when new page loaded
+  }
+
+  on_tab_info_change() {
+    if (this.last_time_out_id) {
+      clearTimeout(this.last_time_out_id);
+    }
+    this.last_time_out_id = setTimeout(() => {
+      this.web_animation = animation_default();
+    }, 50)
+  }
+
+  // Kind of constants
+
+  align_rules_main_tab() {
+    let align: AlignRuleOption;
+    if (this.tablet_mode) {
+      align = { left: { anchor: "__container__", align: HorizontalAlign.Start } }
+    } else {
+      align = { top: { anchor: "__container__", align: VerticalAlign.Top } }
+    }
+    return align;
+  }
+
+  align_rules_sub_tab() {
+    let align: AlignRuleOption;
+    if (this.tablet_mode) {
+      align = { right: { anchor: "__container__", align: HorizontalAlign.End } }
+    } else {
+      align = { bottom: { anchor: "__container__", align: VerticalAlign.Bottom } }
+    }
+    return align;
+  }
+
+  width_tab() {
+    if (this.tablet_mode) {
+      return "50%";
+    } else {
+      return "100%";
+    }
+  }
+
+  height_tab() {
+    if (this.tablet_mode) {
+      return "100%";
+    } else {
+      return "50%";
+    }
+  }
+
+  border_width_tab(is_sub: boolean) {
+    let border_width: EdgeWidths;
+    if (this.tablet_mode) {
+      border_width = { left: is_sub ? 2 : 0, top: 0 };
+    } else {
+      border_width = { top: is_sub ? 2 : 0, left: 0 };
+    }
+    return border_width;
   }
 
   // Ladders
