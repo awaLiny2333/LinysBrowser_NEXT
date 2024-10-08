@@ -65,10 +65,12 @@ struct meowWebView {
             event.handler.setWebController(null);
           })
           .onErrorReceive((e) => {
-            console.error("[Meow][ArkWeb][ERROR] "
-              + e.error.getErrorCode() + ", " + e.error.getErrorInfo()
-              + " @ " + this.tab_urls[Label.index_key])
-            // Log web errors
+            if (e) {
+              console.error("[Meow][ArkWeb][ERROR] "
+                + e.error.getErrorCode() + ", " + e.error.getErrorInfo()
+                + " @ " + this.tab_urls[Label.index_key])
+              // Log web errors
+            }
           })
           .onPageBegin(() => {
             // console.log("[Meow][ArkWeb] on page begin")
@@ -118,6 +120,10 @@ struct meowWebView {
             }
           })
           .onProgressChange((event) => {
+            if (!event) {
+              return;
+            }
+
             let progress: number = event.newProgress;
             // console.log("[Meow][ArkWeb] on progress change: " + progress.toString())
             // Update current loading progress

@@ -5,10 +5,8 @@
     "description": "$string:module_desc",
     "mainElement": "HomeAbility",
     "deviceTypes": [
-      "phone",
-      "tablet",
-      "2in1",
-      "car"
+      "default",
+      "tablet"
     ],
     "deliveryWithInstall": true,
     "installationFree": false,
@@ -47,7 +45,7 @@
             "name": "ohos.extension.backup",
             "resource": "$profile:backup_config"
           }
-        ],
+        ]
       }
     ],
     "requestPermissions":[
@@ -60,7 +58,7 @@
             "HomeAbility"
           ]
         }
-      },
+      }
 //      {
 //        "name" : "ohos.permission.READ_PASTEBOARD",
 //        "reason": "$string:permission_reason_READ_PASTEPOARD",
