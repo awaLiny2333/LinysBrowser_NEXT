@@ -207,6 +207,10 @@
     {
       "name": "Paralleow_choose_a_tab",
       "value": "选一个标签页"
+    },
+    {
+      "name": "Paralleow_description",
+      "value": "可以同时浏览两个标签页的神奇喵喵功能！"
     }
   ]
 }

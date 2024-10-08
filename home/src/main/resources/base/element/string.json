@@ -207,6 +207,10 @@
     {
       "name": "Paralleow_choose_a_tab",
       "value": "Select a tab"
+    },
+    {
+      "name": "Paralleow_description",
+      "value": "Meowing feature to browse two tabs at the same time!"
     }
   ]
 }

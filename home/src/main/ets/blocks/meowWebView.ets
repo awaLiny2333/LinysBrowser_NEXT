@@ -1,13 +1,13 @@
 import { animation_default } from '../hosts/bunch_of_defaults';
 import { bunch_of_history, history_record } from '../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_label } from '../hosts/bunch_of_tabs';
-import { kv_store_put_uint_8_array } from '../utils/kv_store_tools';
 import { sandbox_save } from '../utils/storage_tools';
 import { url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
 
 @Component
 struct meowWebView {
   @StorageProp('currentColorMode') current_color_mode: number = 0;
+  @StorageProp('pathDir') pathDir: string = "";
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageLink('web_state_arrays') web_state_arrays: Uint8Array[] = [];
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
@@ -46,8 +46,8 @@ struct meowWebView {
         })// Main WEB
           .width(this.current_sub_tab_index < 0 ? "100%" : this.width_tab())
           .height(this.current_sub_tab_index < 0 ? "100%" : this.height_tab())
-          .alignRules(this.current_sub_tab_index == Label.index_key
-            ? this.align_rules_sub_tab() : this.align_rules_main_tab())
+          .alignRules(this.current_main_tab_index == Label.index_key
+            ? this.align_rules_main_tab() : this.align_rules_sub_tab())
           .visibility((this.current_main_tab_index == Label.index_key || this.current_sub_tab_index == Label.index_key)
             ? Visibility.Visible : Visibility.None)
           .borderColor($r('app.color.block_color'))
@@ -151,7 +151,11 @@ struct meowWebView {
             // kv_store web state
             for (let index = 0; index < this.web_state_arrays.length; index++) {
               const element = this.web_state_arrays[index];
-              kv_store_put_uint_8_array("continue_tabs_web_state_array_" + index.toString(), element);
+              let identifier = "continue_tabs_web_state_array_" + index.toString();
+              // kv_store_put_uint_8_array(identifier, element);
+              if (element) {
+                sandbox_save(identifier, element.buffer);
+              }
             }
           })
           .onDownloadStart((event) => {

@@ -4,13 +4,13 @@ import meowAppSettings from './meowAppSettings';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { unify_search_input_into_url, url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
 import {
-  animation_default,
-  animation_popup_duration,
-  capsule_bar_height,
-  click_effect_default,
-  fontSize_Icon_Button,
-  fontSize_Large,
-  fontSize_Normal
+    animation_default,
+    animation_popup_duration,
+    capsule_bar_height,
+    click_effect_default,
+    fontSize_Icon_Button,
+    fontSize_Large,
+    fontSize_Normal
 } from '../hosts/bunch_of_defaults';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import meowDownloads from './meowDownloads';
@@ -327,7 +327,7 @@ struct meowTitleBar {
       .animation(animation_default())
 
       meowAppSettings({
-        settings_collect_new_history:this.settings_collect_new_history,
+        settings_collect_new_history: this.settings_collect_new_history,
         settings_max_bookmark_suggestions: this.settings_max_bookmark_advice,
         settings_max_history_suggestions: this.settings_max_history_advice,
         show: this.showing_app_settings,
@@ -491,22 +491,22 @@ struct meowTitleBar {
     this.webViews_ready = true;
 
     if (this.search_input_unified != "") {
-      let unified_url: string = unify_search_input_into_url(this.search_input)
+      let unified_url: string = unify_search_input_into_url(this.search_input);
       // unify input into a legal link
-      unified_url = url_meow_to_resource(unified_url)
+      unified_url = url_meow_to_resource(unified_url);
       // translate "meow://" into "resource://"
-      this.bunch_of_tabs.loadUrl_onWorkingTab(unified_url)
+      this.bunch_of_tabs.loadUrl_onWorkingTab(unified_url);
     }
   }
 
   go_backward() {
     this.webViews_ready = true;
-    this.bunch_of_tabs.goBackward_onWorkingTab()
+    this.bunch_of_tabs.goBackward_onWorkingTab();
   }
 
   go_forward() {
     this.webViews_ready = true;
-    this.bunch_of_tabs.goForward_onWorkingTab()
+    this.bunch_of_tabs.goForward_onWorkingTab();
   }
 
   go_home() {
@@ -522,10 +522,10 @@ struct meowTitleBar {
 
   stop_page() {
     this.webViews_ready = true;
-    this.bunch_of_tabs.stop_onWorkingTab()
-    this.bunch_of_tabs.workingTab().update_is_loading(false)
-    this.sync_tabs_list_info()
-    this.update_tabs_current_info()
+    this.bunch_of_tabs.stop_onWorkingTab();
+    this.bunch_of_tabs.workingTab().update_is_loading(false);
+    this.sync_tabs_list_info();
+    this.update_tabs_current_info();
   }
 
   // Data synchronizing

@@ -20,10 +20,16 @@ export class bunch_of_downloads {
    * */
   start_download_task(url: string) {
     let filesDir = getContext().filesDir;
+    try {
+      fs.mkdirSync(filesDir + '/downloads');
+    } catch (e) {
+      console.log('[Meow][bunch_of_downloads] E: /downloads already exists.')
+    }
+
     let file_url_split = url.split("/");
     let file_name_question_mark_split = file_url_split[file_url_split.length-1].split("?");
     let file_name = file_name_question_mark_split[0];
-    let download_target_path = filesDir + '/' + file_name;
+    let download_target_path = filesDir + '/downloads/' + file_name;
 
     let config: request.DownloadConfig = {
       url: url,
@@ -184,12 +190,10 @@ export class bunch_of_downloads {
   delete_all_downloaded_files() {
     try {
       let filesDir = getContext().filesDir;
-      let list = fs.listFileSync(filesDir + "/");
+      let list = fs.listFileSync(filesDir + "/downloads");
 
       for (let index = 0; index < list.length; index++) {
-        if (!list[index].includes("history")) {
-          fs.unlink(filesDir + "/" + list[index]);
-        }
+        fs.unlink(filesDir + "/downloads/" + list[index]);
       }
       // Delete all downloaded files
     } catch (e) {

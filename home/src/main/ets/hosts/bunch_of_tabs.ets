@@ -138,6 +138,9 @@ export class bunch_of_tabs {
 
   switchToTab(target: number) {
     // Switch
+    if (target >= this.Tabs.length) {
+      target = this.Tabs.length - 1;
+    }
     this.current_working_tab_index = target;
     return target;
   }

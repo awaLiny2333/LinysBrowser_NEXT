@@ -3,13 +3,13 @@ import { bunch_of_tabs, tab_label } from '../hosts/bunch_of_tabs';
 import { url_resource_to_meow } from '../utils/url_tools';
 import { animation_default, fontSize_Large, fontSize_Normal, home_url_default_blank } from '../hosts/bunch_of_defaults';
 import {
-  kv_store_get,
-  kv_store_get_uint_8_array,
-  kv_store_put,
-  kv_store_put_uint_8_array
+    kv_store_get, kv_store_put,
+    kv_store_put_uint_8_array
 } from '../utils/kv_store_tools';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import linysShowButton from '../components/linysShowButton';
+import linysText from '../components/linysText';
+import { sandbox_open_array } from '../utils/storage_tools';
 
 
 @Component
@@ -21,6 +21,7 @@ struct meowTabs {
   @Link @Watch('on_did_switch_tab') current_main_tab_index: number;
   @Link @Watch('on_did_switch_tab') current_sub_tab_index: number;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
+  @StorageProp('pathDir') pathDir: string = "";
   // Controls and environments
   @Link tab_titles: string[];
   @Link current_title: string;
@@ -46,6 +47,7 @@ struct meowTabs {
   @State count_down_for_scrolling_to_bottom: number = 0;
   @State scroll_area_height: number = 0;
   @State scroll_animation_enabled: boolean = true;
+  @State paralleow_description_height: number = 0;
   @StorageLink('web_animation') web_animation: AnimateParam = animation_default();
   // Gateways
   @StorageLink('universal_load_url_gateway') @Watch('on_current_load_url') load_url_gateway: string = "";
@@ -116,8 +118,13 @@ struct meowTabs {
       let web_state_arrays: Uint8Array[] = []
       for (let index = 0; index < continue_tabs_count; index++) {
         let key = "continue_tabs_web_state_array_" + index.toString();
-        let web_state_array = await kv_store_get_uint_8_array(key);
-        web_state_arrays.push(web_state_array);
+        // let web_state_array = await kv_store_get_uint_8_array(key);
+
+        let array_buffer = await sandbox_open_array(key);
+        if (array_buffer) {
+          let web_state_array = new Uint8Array(array_buffer);
+          web_state_arrays.push(web_state_array);
+        }
       }
       // Set to AppStorage
       AppStorage.setOrCreate('web_state_arrays', web_state_arrays);
@@ -136,7 +143,10 @@ struct meowTabs {
       this.web_animation = { duration: 0 };
       this.switch_tab(continue_tabs_main_on);
       setTimeout(() => {
-        this.current_sub_tab_index = continue_tabs_sub_on;
+        this.sync_list_info();
+        if (continue_tabs_sub_on < this.tab_titles.length) {
+          this.current_sub_tab_index = continue_tabs_sub_on;
+        }
       }, 50)
     }
     this.recover_tabs_finished = true;
@@ -252,7 +262,9 @@ struct meowTabs {
       .align(Alignment.Bottom)
       .edgeEffect(this.count_down_for_switching_back_to_spring == 0 ? EdgeEffect.Spring : EdgeEffect.None)
       .width("100%")
-      .height(this.scroll_area_height)
+      .height(this.scroll_area_height -
+        (this.choosing_paralleow || this.current_sub_tab_index >= 0 ? this.paralleow_description_height : 0))
+      .animation(animation_default())
 
       Row({ space: 10 }) {
         Blank()
@@ -274,8 +286,22 @@ struct meowTabs {
             this.webViews_ready = true;
             this.new_tab("")
           })
-      } // New Tab Button
+      } // New Tab and Paralleow Button
       .width("100%")
+
+      Scroll() {
+        linysText({ text: $r('app.string.Paralleow_description'), max_lines: 4 })
+          .onAreaChange((_o, n) => {
+            this.paralleow_description_height = n.height as number + 16;
+          })
+      } // Edit panel
+      .align(Alignment.TopStart)
+      .width("100%")
+      .height(this.choosing_paralleow || this.current_sub_tab_index >= 0 ? this.paralleow_description_height : 0)
+      .visibility(this.choosing_paralleow || this.current_sub_tab_index >= 0 ? Visibility.Visible : Visibility.None)
+      .animation(animation_default())
+      .scrollBar(BarState.Off)
+      .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.PARENT_FIRST })
 
     } // Tabs Panel
     .justifyContent(FlexAlign.End)
@@ -334,7 +360,7 @@ struct meowTabs {
   }
 
   switch_tab(target: number) {
-    console.log('switch tab to ' + target.toString())
+    // console.log('switch tab to ' + target.toString())
     if (this.current_main_tab_index == target) {
       this.showing_tabs = false;
       this.choosing_paralleow = false;
@@ -362,7 +388,8 @@ struct meowTabs {
       return;
     }
 
-    if (target == this.current_sub_tab_index || target == this.current_sub_tab_index) {
+    if (target == this.current_sub_tab_index || target == this.current_main_tab_index) {
+      // Turn paralleow off if closing any of the two
       this.current_sub_tab_index = -1;
     }
 
@@ -404,11 +431,12 @@ struct meowTabs {
     }
 
     if (this.current_main_tab_index == this.current_sub_tab_index) {
+      // if Paralleow crash then turn off
       this.current_sub_tab_index = -1;
     }
 
     if (this.tab_titles.length == 1) {
-      // if only 1 tab left then reset this function
+      // if only 1 tab left then reset Paralleow stuff
       this.current_sub_tab_index = -1;
       this.choosing_paralleow = false;
     }
