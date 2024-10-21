@@ -336,6 +336,48 @@ export class bunch_of_bookmarks {
 
   // del_folder("honk/second/third") // deletes the folder with label "third"
 
+  move_bookmark(bookmark_path: string, to_path: string) {
+    if (bookmark_path == "") {
+      return;
+    }
+    let item_bookmark = this.get_bookmark(bookmark_path);
+
+    let target_folder : folder | undefined;
+    if (to_path == "") {
+      target_folder = this.root;
+    } else {
+      target_folder = this.get_folder(to_path);
+    }
+
+    if (item_bookmark && target_folder) {
+      target_folder.add_content(new unified_item(item_bookmark, undefined));
+      this.del_bookmark(bookmark_path);
+    }
+  }
+
+  move_folder(folder_path: string, to_path: string) {
+    if (folder_path == "") {
+      return;
+    }
+    if (to_path.indexOf(folder_path) == 0) {
+      console.log("[Meow][bunch_of_bookmarks] Cannot move myself to my sub folder!")
+      return;
+    }
+    let item_folder = this.get_folder(folder_path);
+
+    let target_folder : folder | undefined;
+    if (to_path == "") {
+      target_folder = this.root;
+    } else {
+      target_folder = this.get_folder(to_path);
+    }
+
+    if (item_folder && target_folder) {
+      target_folder.add_content(new unified_item(undefined, item_folder));
+      this.del_folder(folder_path);
+    }
+  }
+
   export_html() {
     let result: string[] = [];
     let head: string = "<!DOCTYPE NETSCAPE-Bookmark-file-1>\n" +

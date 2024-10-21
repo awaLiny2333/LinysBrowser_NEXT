@@ -223,6 +223,10 @@
     {
       "name": "Settings_appearance_tabs_style_horizontal",
       "value": "Horizontal"
+    },
+    {
+      "name": "Bookmarks_move_title",
+      "value": "Move to"
     }
   ]
 }

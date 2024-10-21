@@ -13,6 +13,7 @@ import {
 import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 import linysShowButton from '../components/linysShowButton';
 import linysCapsuleButton from '../components/linysCapsuleButton';
+import woofBookmarksPathSelector from '../dialogs/woofBookmarksMove';
 
 @Component
 struct meowBookmarks {
@@ -30,7 +31,6 @@ struct meowBookmarks {
   @State importing_bookmarks: boolean = false;
   @State exporting_bookmarks: boolean = false;
   // Input interactions
-  scroll_controller: Scroller = new Scroller();
   @State scroll_area_height: number = 0;
   @State bookmark_load_from_disk_ok: boolean = false;
 
@@ -38,7 +38,7 @@ struct meowBookmarks {
 
   build() {
     Column() {
-      Scroll(this.scroll_controller) {
+      Scroll() {
         Column({ space: 5 }) {
           ForEach(
             this.viewing_contents,
@@ -384,8 +384,17 @@ struct bookmarkItem {
   @State edit_label: string = this.label;
   @State edit_link: string = this.link;
   @State delete_confirm: number = 0;
-
   // Edit inputs
+  @State @Watch('on_select_change') select_result: string | undefined = undefined;
+  @State moving_type: string = "";
+  woofBookmarksPathSelector_control: CustomDialogController = new CustomDialogController({
+    builder: woofBookmarksPathSelector({
+      select: this.select_result
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 12,
+    width: "90%",
+  })
 
   build() {
     Column() {
@@ -505,6 +514,17 @@ struct bookmarkItem {
 
           Row({ space: 10 }) {
             Blank()
+            linysCapsuleButton({ text: "  󰂺  " })// Move
+              .onClick(() => {
+                if (this.type == "folder") {
+                  this.move_folder();
+                }
+                if (this.type == "bookmark") {
+                  this.move_bookmark();
+                }
+                this.editing = false;
+              })
+
             Button("  󰀁  ")// Delete
               .type(ButtonType.Capsule)
               .backgroundColor(this.delete_confirm > 0 ? $r('app.color.start_window_background') :
@@ -647,6 +667,42 @@ struct bookmarkItem {
     this.link = this.edit_link;
     this.bunch_of_bookmarks.reconstruct_cached_plain_bookmarks();
     this.save_html_to_kv_store();
+  }
+
+  on_select_change() {
+    if (this.select_result === undefined) {
+      return;
+    }
+
+    if (this.moving_type == "folder") {
+      this.bunch_of_bookmarks.move_folder(this.get_my_path(), this.select_result);
+
+    } else if (this.moving_type == "bookmark") {
+      this.bunch_of_bookmarks.move_bookmark(this.get_my_path(), this.select_result);
+
+    } else {
+      return;
+    }
+
+    let temp = this.looking_at_path;
+    this.looking_at_path = "/refresh";
+    this.looking_at_path = temp;
+    // Refresh root content
+    // Weird as hell but works, fine.
+
+    this.save_html_to_kv_store();
+
+    this.select_result = undefined;
+  }
+
+  move_folder() {
+    this.moving_type = "folder";
+    this.woofBookmarksPathSelector_control.open();
+  }
+
+  move_bookmark() {
+    this.moving_type = "bookmark";
+    this.woofBookmarksPathSelector_control.open();
   }
 
   save_html_to_kv_store() {

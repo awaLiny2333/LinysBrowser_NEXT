@@ -223,6 +223,10 @@
     {
       "name": "Settings_appearance_tabs_style_horizontal",
       "value": "水平的"
+    },
+    {
+      "name": "Bookmarks_move_title",
+      "value": "移动到"
     }
   ]
 }
