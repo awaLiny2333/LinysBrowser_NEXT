@@ -23,20 +23,21 @@ export class bunch_of_history {
       insert_position = this.history_list.length;
     }
     this.history_list.splice(insert_position, 0, history);
-    // console.log("[Meow][bunch_of_history] Added History @" + insert_position.toString() + ", link: " + history.link);
+
     if (no_reconstruct_plain_history) {
       return;
     }
-    // get only 1000 records
+    // reconstruct plain from only part of the records
     this.reconstruct_cached_plain_history();
   }
 
   remove_history(index: number, no_reconstruct_plain_history?: boolean) {
     this.history_list.splice(index, 1);
+
     if (no_reconstruct_plain_history) {
       return;
     }
-    // get only 1000 records
+    // reconstruct plain from only part of the records
     this.reconstruct_cached_plain_history();
   }
 
@@ -105,7 +106,7 @@ export class bunch_of_history {
   reconstruct_cached_plain_history(from_history_list?: history_record[]) {
     // Default fall back
     if (from_history_list === undefined) {
-      from_history_list = this.get_latest_slice_of_max_length(1000);
+      from_history_list = this.get_latest_slice_of_max_length(this.plain_history_default_max_length);
     }
 
     this.cached_plain_history = [];

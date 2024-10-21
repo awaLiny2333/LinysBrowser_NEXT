@@ -211,6 +211,18 @@
     {
       "name": "Paralleow_description",
       "value": "Meowing feature to browse two tabs at the same time!"
+    },
+    {
+      "name": "Settings_appearance_tabs_style",
+      "value": "Tabs style (landscape／tablet)"
+    },
+    {
+      "name": "Settings_appearance_tabs_style_vertical",
+      "value": "Vertical"
+    },
+    {
+      "name": "Settings_appearance_tabs_style_horizontal",
+      "value": "Horizontal"
     }
   ]
 }

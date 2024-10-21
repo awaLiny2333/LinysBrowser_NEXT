@@ -211,6 +211,18 @@
     {
       "name": "Paralleow_description",
       "value": "可以同时浏览两个标签页的神奇喵喵功能！"
+    },
+    {
+      "name": "Settings_appearance_tabs_style",
+      "value": "标签页栏样式（横屏／平板）"
+    },
+    {
+      "name": "Settings_appearance_tabs_style_vertical",
+      "value": "垂直的"
+    },
+    {
+      "name": "Settings_appearance_tabs_style_horizontal",
+      "value": "水平的"
     }
   ]
 }

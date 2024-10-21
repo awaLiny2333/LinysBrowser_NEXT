@@ -5,7 +5,7 @@ import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
 import { bunch_of_history } from '../hosts/bunch_of_history';
 
 @Component
-struct meowBookmarkRelations {
+struct meowSuggestions {
   // Environments or settings
   @Prop top_margin: number = 0;
   @Prop bottom_margin: number = 0;
@@ -103,7 +103,7 @@ struct meowBookmarkRelations {
   }
 }
 
-export default meowBookmarkRelations;
+export default meowSuggestions;
 
 @Component
 struct meowRelation {

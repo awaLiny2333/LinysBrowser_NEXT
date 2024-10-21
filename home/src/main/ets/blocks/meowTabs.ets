@@ -2,15 +2,11 @@ import linysSymbol from '../components/linysSymbol';
 import { bunch_of_tabs, tab_label } from '../hosts/bunch_of_tabs';
 import { url_resource_to_meow } from '../utils/url_tools';
 import { animation_default, fontSize_Large, fontSize_Normal, home_url_default_blank } from '../hosts/bunch_of_defaults';
-import {
-    kv_store_get, kv_store_put,
-    kv_store_put_uint_8_array
-} from '../utils/kv_store_tools';
+import { kv_store_get, kv_store_put, kv_store_put_uint_8_array } from '../utils/kv_store_tools';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import linysShowButton from '../components/linysShowButton';
 import linysText from '../components/linysText';
 import { sandbox_open_array } from '../utils/storage_tools';
-
 
 @Component
 struct meowTabs {
@@ -18,26 +14,27 @@ struct meowTabs {
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
   @Link webViews_ready: boolean;
   @Link showing_tabs: boolean;
-  @Link @Watch('on_did_switch_tab') current_main_tab_index: number;
-  @Link @Watch('on_did_switch_tab') current_sub_tab_index: number;
+  @StorageLink('current_main_tab_index') @Watch('on_did_switch_tab') current_main_tab_index: number = 0;
+  @StorageLink('current_sub_tab_index') @Watch('on_did_switch_tab') current_sub_tab_index: number = -1;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageProp('pathDir') pathDir: string = "";
   // Controls and environments
-  @Link tab_titles: string[];
-  @Link current_title: string;
-  @Link tab_urls: string[];
-  @Link current_url: string;
-  @Link tab_loading_progresses: number[];
-  @Link current_loading_progress: number;
-  @Link tab_is_loading: boolean[];
-  @Link current_is_loading: boolean;
-  // Info / Statuses of bunch of tabs
-  @Link current_accessForward: boolean;
-  @Link current_accessBackward: boolean;
+  @StorageLink('tab_titles') tab_titles: string[] = []
+  @StorageLink('current_title') current_title: string = "=￣ω￣=";
+  @StorageLink('tab_urls') tab_urls: string[] = []
+  @StorageLink('current_url') current_url: string = "=￣ω￣=";
+  @StorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0]
+  @StorageLink('current_loading_progress') current_loading_progress: number = 0
+  @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]
+  @StorageLink('current_is_loading') current_is_loading: boolean = true
+  // Web control statuses
+  @StorageLink('current_accessForward') current_accessForward: boolean = false;
+  @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
   @Link search_input: string;
   // Other Info / Statuses
   @State recover_tabs_finished: boolean = false;
-  @State choosing_paralleow: boolean = false;
+  @StorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
+  @Link settings_tabs_style: string;
   // Animation info
   tab_height_default: number = 42;
   scroll_controller: Scroller = new Scroller();
@@ -52,6 +49,9 @@ struct meowTabs {
   // Gateways
   @StorageLink('universal_load_url_gateway') @Watch('on_current_load_url') load_url_gateway: string = "";
   @StorageLink('universal_new_tab_gateway') @Watch('on_new_targeted_tab') new_tab_gateway: string = "";
+  @StorageLink('universal_close_tab_gateway') @Watch('on_targeted_close_tab') close_tab_gateway: number = -1;
+  @StorageLink('universal_tab_button_clicked_gateway') @Watch('on_uni_tab_button_clicked') uni_tab_button_clicked:
+    number = -1;
   @StorageLink('universal_global_custom_ua_gateway') @Watch('on_global_custom_UA_change') global_custom_UA: string = "";
 
   async aboutToAppear() {
@@ -189,7 +189,8 @@ struct meowTabs {
               .border({
                 radius: 10,
                 width: 2,
-                color: (this.current_main_tab_index == Label.index_key || this.current_sub_tab_index == Label.index_key)
+                color: (this.current_main_tab_index == Label.index_key ||
+                  this.current_sub_tab_index == Label.index_key)
                   ? $r('app.color.font_color_title') : "transparent"
               })
               .animation({ duration: 100 })
@@ -203,28 +204,7 @@ struct meowTabs {
                 top: { anchor: "__container__", align: VerticalAlign.Top }
               })
               .onClick(() => {
-                if (this.choosing_paralleow && this.current_main_tab_index != Label.index_key) {
-                  // if choosing and is not main web then set as sub view (Paralleow)
-                  this.choosing_paralleow = false;
-                  this.current_sub_tab_index = Label.index_key;
-                } else {
-                  if (this.current_sub_tab_index >= 0) {
-                    // Paralleow enabled
-                    if (this.current_sub_tab_index == Label.index_key) {
-                      // if paralleowing this tab
-                      this.switch_paralleow();
-                    } else if (this.current_main_tab_index == Label.index_key) {
-                      // if is main this tab
-                      this.switch_paralleow();
-                    } else {
-                      this.web_animation = { duration: 0 };
-                      this.switch_tab(Label.index_key)
-                    }
-                  } else {
-                    this.web_animation = { duration: 0 };
-                    this.switch_tab(Label.index_key)
-                  }
-                }
+                this.click_tab_button(Label.index_key);
               })
 
               Column() {
@@ -294,7 +274,7 @@ struct meowTabs {
           .onAreaChange((_o, n) => {
             this.paralleow_description_height = n.height as number + 16;
           })
-      } // Edit panel
+      } // Paralleow Introduction
       .align(Alignment.TopStart)
       .width("100%")
       .height(this.choosing_paralleow || this.current_sub_tab_index >= 0 ? this.paralleow_description_height : 0)
@@ -325,7 +305,6 @@ struct meowTabs {
     .onAreaChange((_o, n) => {
       this.scroll_area_height = n.height as number - 60;
     })
-
   }
 
   // Tab controls
@@ -360,14 +339,14 @@ struct meowTabs {
   }
 
   switch_tab(target: number) {
-    // console.log('switch tab to ' + target.toString())
+    console.log('switch tab to ' + target.toString())
     if (this.current_main_tab_index == target) {
       this.showing_tabs = false;
       this.choosing_paralleow = false;
     }
 
     // Switch
-    this.current_main_tab_index = this.bunch_of_tabs.switchToTab(target)
+    this.current_main_tab_index = this.bunch_of_tabs.switchToTab(target);
     if (this.recover_tabs_finished) {
       // Update history
       this.update_backward_forward_access()
@@ -484,8 +463,10 @@ struct meowTabs {
   }
 
   update_backward_forward_access() {
-    this.current_accessBackward = this.bunch_of_tabs.workingTab().controller.accessBackward()
-    this.current_accessForward = this.bunch_of_tabs.workingTab().controller.accessForward()
+    if (this.bunch_of_tabs.workingTab()) {
+      this.current_accessBackward = this.bunch_of_tabs.workingTab().controller.accessBackward()
+      this.current_accessForward = this.bunch_of_tabs.workingTab().controller.accessForward()
+    }
   }
 
   update_search_box_text(text: string) {
@@ -522,7 +503,44 @@ struct meowTabs {
     }
   }
 
+  click_tab_button(index: number) {
+    if (index < 0) {
+      return;
+    }
+
+    if (this.choosing_paralleow && this.current_main_tab_index != index) {
+      // if choosing and is not main web then set as sub view (Paralleow)
+      this.choosing_paralleow = false;
+      this.current_sub_tab_index = index;
+    } else {
+      if (this.current_sub_tab_index >= 0) {
+        // Paralleow enabled
+        if (this.current_sub_tab_index == index) {
+          // if paralleowing this tab
+          this.switch_paralleow();
+        } else if (this.current_main_tab_index == index) {
+          // if is main this tab
+          this.switch_paralleow();
+        } else {
+          this.web_animation = { duration: 0 };
+          this.switch_tab(index)
+        }
+      } else {
+        this.web_animation = { duration: 0 };
+        this.switch_tab(index)
+      }
+    }
+  }
+
   // Events
+
+  on_uni_tab_button_clicked() {
+    if (this.uni_tab_button_clicked >= 0) {
+      this.click_tab_button(this.uni_tab_button_clicked);
+    }
+    // Reset
+    this.uni_tab_button_clicked = -1;
+  }
 
   on_did_switch_tab() {
     if (this.recover_tabs_finished) {
@@ -543,9 +561,19 @@ struct meowTabs {
 
   on_new_targeted_tab() {
     if (this.new_tab_gateway != "") {
+      if (this.new_tab_gateway == "new_tab") {
+        this.new_tab_gateway = ""
+      }
       this.webViews_ready = true;
       this.new_tab(this.new_tab_gateway);
       this.new_tab_gateway = "";
+    }
+  }
+
+  on_targeted_close_tab() {
+    if (this.close_tab_gateway >= 0) {
+      this.close_tab(this.close_tab_gateway);
+      this.close_tab_gateway = -1;
     }
   }
 

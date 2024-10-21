@@ -27,6 +27,7 @@ import meowSEManager from './meowSEManager';
 struct meowAppSettings {
   // Functions
   @Link settings_title_bar_position: string;
+  @Link settings_tabs_style: string;
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
   @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
@@ -41,9 +42,16 @@ struct meowAppSettings {
   // Information
   @State versionName: string = "Version Name";
   @State versionNo: number = 0;
+  @State history_length: number = this.bunch_of_history.history_list.length;
   // Settings
   @State title_bar_position_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [{ text: '  󰀐  ' }, { text: '  󰃐  ' }] as ItemRestriction<SegmentButtonTextItem>,
+    selectedBackgroundColor: $r('app.color.font_color_title'),
+    selectedFontColor: $r('app.color.start_window_background')
+  })
+  @State tabs_style_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
+    buttons: [{ text: $r('app.string.Settings_appearance_tabs_style_vertical') },
+      { text: $r('app.string.Settings_appearance_tabs_style_horizontal') }] as ItemRestriction<SegmentButtonTextItem>,
     selectedBackgroundColor: $r('app.color.font_color_title'),
     selectedFontColor: $r('app.color.start_window_background')
   })
@@ -57,6 +65,7 @@ struct meowAppSettings {
     selectedFontColor: $r('app.color.start_window_background')
   })
   @State @Watch('on_title_bar_position_changed') title_bar_position_selected: number[] = [0];
+  @State @Watch('on_tabs_style_changed') tabs_style_selected: number[] = [0];
   @State @Watch('on_start_up_page_changed') start_up_page_selected: number[] = [0];
   @Link settings_max_bookmark_suggestions: number;
   @Link settings_max_history_suggestions: number;
@@ -226,7 +235,7 @@ struct meowAppSettings {
           .width("100%")
 
           Row({ space: 10 }) {
-            linysTitleText({ text: "󰏕 " + this.bunch_of_history.history_list.length.toString() })
+            linysTitleText({ text: "󰏕 " + this.history_length.toString() })
             Blank()
             linysText({ text: $r('app.string.Settings_experience_history_view') })
             linysCapsuleButton({ text: "  󰀩  " })
@@ -254,6 +263,12 @@ struct meowAppSettings {
           SegmentButton({
             options: this.title_bar_position_tabOptions,
             selectedIndexes: $title_bar_position_selected
+          })
+
+          linysText({ text: $r('app.string.Settings_appearance_tabs_style') })
+          SegmentButton({
+            options: this.tabs_style_tabOptions,
+            selectedIndexes: $tabs_style_selected
           })
 
           linysText({ text: $r('app.string.Settings_appearance_animation_response') })
@@ -359,6 +374,10 @@ struct meowAppSettings {
     this.settings_title_bar_position =
       await this.bunch_of_settings.get_setting_key('settings_title_bar_position') as string;
 
+    // Get settings of title bar position
+    this.settings_tabs_style =
+      await this.bunch_of_settings.get_setting_key('settings_tabs_style') as string;
+
     // Get number of max bookmarks suggestions
     this.settings_max_bookmark_suggestions =
       await this.bunch_of_settings.get_setting_key('settings_max_bookmark_suggestions') as number;
@@ -392,10 +411,16 @@ struct meowAppSettings {
   }
 
   on_panel_open() {
+    // Sync Data
     if (this.settings_title_bar_position == "top") {
       this.title_bar_position_selected = [0];
     } else {
       this.title_bar_position_selected = [1];
+    }
+    if (this.settings_tabs_style == "vertical") {
+      this.tabs_style_selected = [0];
+    } else {
+      this.tabs_style_selected = [1];
     }
     if (this.bunch_of_tabs.new_tab_url !== undefined) {
       this.new_tab_url_edit = this.bunch_of_tabs.new_tab_url;
@@ -415,7 +440,8 @@ struct meowAppSettings {
         this.start_up_page_selected = [2];
       }
     }
-    // Sync Data
+    // Get length properties
+    this.history_length = this.bunch_of_history.history_list.length;
   }
 
   on_panel_close() {
@@ -448,6 +474,17 @@ struct meowAppSettings {
     this.bunch_of_tabs.start_up = result;
     // kv_store_put("start_up_option", result);
     this.bunch_of_settings.set_setting_value_of_key('start_up_option', result);
+  }
+
+  on_tabs_style_changed() {
+    let result: string = "";
+    if (this.tabs_style_selected[0] == 0) {
+      result = 'vertical';
+    } else {
+      result = 'horizontal';
+    }
+    this.settings_tabs_style = result;
+    this.bunch_of_settings.set_setting_value_of_key('settings_tabs_style', result);
   }
 
   // Operations

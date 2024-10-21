@@ -587,14 +587,14 @@ struct bookmarkItem {
   }
 
   get_animation_timeout() {
-    let unit_interval = 60;
+    let unit_interval = 40;
     let load_length = this.viewing_contents.length;
     if (load_length < 5) {
-      unit_interval = 100;
-    } else if (load_length < 10) {
       unit_interval = 60;
-    } else {
+    } else if (load_length < 10) {
       unit_interval = 40;
+    } else {
+      unit_interval = 30;
     }
     return Math.min(this.my_index, this.height_of_panel / this.bookmark_height_default) * unit_interval;
   }

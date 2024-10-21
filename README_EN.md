@@ -64,7 +64,7 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 ### Experience
 
 - [x] Customizable position for title bar. (Top or Bottom)
-- [ ] Customizable position for Tabs bar. (Side or Top)
+- [x] Customizable position for Tabs bar. (Side or Top)
 - [ ] Customizable themes. (Colors)
 - [x] Adapt to system Back operations.
 - [x] Customizable global animation curve.

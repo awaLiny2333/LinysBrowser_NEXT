@@ -4,19 +4,20 @@ import meowAppSettings from './meowAppSettings';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { unify_search_input_into_url, url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
 import {
-    animation_default,
-    animation_popup_duration,
-    capsule_bar_height,
-    click_effect_default,
-    fontSize_Icon_Button,
-    fontSize_Large,
-    fontSize_Normal
+  animation_default,
+  animation_popup_duration,
+  capsule_bar_height,
+  click_effect_default,
+  fontSize_Icon_Button,
+  fontSize_Large,
+  fontSize_Normal
 } from '../hosts/bunch_of_defaults';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import meowDownloads from './meowDownloads';
 import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
-import meowBookmarkRelations from './meowSuggestions';
+import meowSuggestions from './meowSuggestions';
 import woofQR from '../dialogs/woofQR';
+import meowTabsHorizontal from './meowTabsHorizontal';
 
 @Component
 struct meowTitleBar {
@@ -35,21 +36,23 @@ struct meowTitleBar {
   @State search_input_unified: string = "";
   @State is_search_input_typing: boolean = false;
   @Link settings_title_bar_position: string;
+  @Link settings_tabs_style: string;
   @Link web_and_stuff_alignRules: AlignRuleOption;
   @Link settings_collect_new_history: boolean;
   // Web statuses
-  @Link current_main_tab_index: number;
-  @Link current_sub_tab_index: number;
-  @Link tab_titles: string[];
-  @Link tab_urls: string[];
-  @Link tab_loading_progresses: number[];
-  @Link tab_is_loading: boolean[];
-  @Link current_title: string;
-  @Link current_url: string;
-  @Link current_is_loading: boolean;
-  @Link current_loading_progress: number;
-  @Link current_accessBackward: boolean;
-  @Link current_accessForward: boolean;
+  @StorageLink('tab_titles') tab_titles: string[] = []
+  @StorageLink('current_title') current_title: string = "=￣ω￣=";
+  @StorageLink('tab_urls') tab_urls: string[] = []
+  @StorageLink('current_url') current_url: string = "=￣ω￣=";
+  @StorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0]
+  @StorageLink('current_loading_progress') current_loading_progress: number = 0
+  @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]
+  @StorageLink('current_is_loading') current_is_loading: boolean = true
+  // Web control statuses
+  @StorageLink('current_main_tab_index') current_main_tab_index: number = 0;
+  @StorageLink('current_sub_tab_index') current_sub_tab_index: number = -1;
+  @StorageLink('current_accessForward') current_accessForward: boolean = false;
+  @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
   // UI control actions
   @Link showing_tabs: boolean;
   @Link showing_bookmarks: boolean;
@@ -71,9 +74,9 @@ struct meowTitleBar {
   })
 
   build() {
-    Column({ space: 10 }) {
+    Column({ space: 8 }) {
       if (this.settings_title_bar_position == "bottom") {
-        meowBookmarkRelations({
+        meowSuggestions({
           settings_max_history_suggestions: this.settings_max_history_advice,
           settings_max_bookmark_suggestions: this.settings_max_bookmark_advice,
           top_margin: 15,
@@ -82,6 +85,14 @@ struct meowTitleBar {
         })
           .animation(animation_default())
       }
+
+      meowTabsHorizontal({
+        webViews_ready: this.webViews_ready,
+        showing_tabs: this.showing_tabs,
+      })
+        .visibility(this.showing_tabs && this.settings_tabs_style == "horizontal" && this.tablet_mode ?
+        Visibility.Visible : Visibility.None)
+        .animation(animation_default())
 
       Row() {
         Text("→ " + (this.search_input_unified == "" ? "(　o=^•ェ•)o ?" : this.search_input_unified))
@@ -232,7 +243,7 @@ struct meowTitleBar {
         Row() {
           linysShowButton({
             text: $r('app.string.Index_downloads_title'),
-            symbol_glyph_target: 'sys.symbol.download',
+            symbol_glyph_target: this.showing_downloads ? 'sys.symbol.chevron_down' : 'sys.symbol.download',
             show: this.showing_downloads,
             color_false: !this.showing_downloads && this.download_started_popup ?
             $r('app.color.start_window_background') : $r('app.color.font_color_title')
@@ -331,7 +342,8 @@ struct meowTitleBar {
         settings_max_bookmark_suggestions: this.settings_max_bookmark_advice,
         settings_max_history_suggestions: this.settings_max_history_advice,
         show: this.showing_app_settings,
-        settings_title_bar_position: this.settings_title_bar_position
+        settings_title_bar_position: this.settings_title_bar_position,
+        settings_tabs_style: this.settings_tabs_style
       })// Settings
         .visibility(this.showing_app_settings ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
@@ -344,7 +356,7 @@ struct meowTitleBar {
         .animation(animation_default())
 
       if (this.settings_title_bar_position == "top") {
-        meowBookmarkRelations({
+        meowSuggestions({
           settings_max_history_suggestions: this.settings_max_history_advice,
           settings_max_bookmark_suggestions: this.settings_max_bookmark_advice,
           bottom_margin: 15,
@@ -357,7 +369,6 @@ struct meowTitleBar {
     } // Title Bars
     .width("100%")
     .backgroundColor($r('app.color.block_color'))
-    // .backdropBlur(100)
     .alignRules(this.web_and_stuff_alignRules)
     .onAreaChange((_o, n) => {
       if (!this.showing_more_options && !this.is_search_input_typing &&

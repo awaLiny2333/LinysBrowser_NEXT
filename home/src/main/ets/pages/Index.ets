@@ -9,6 +9,8 @@ import { bunch_of_settings } from '../hosts/bunch_of_settings';
 @Entry
 @Component
 struct Index {
+  // Hosts
+  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
   // UI Environment
   @StorageLink('bottomAvoidHeight') bottomAvoidHeight: number = 1;
   @StorageLink('topAvoidHeight') topAvoidHeight: number = 1;
@@ -17,7 +19,6 @@ struct Index {
   @StorageLink('screen_height') screen_height: number = 0;
   @StorageLink('animation_response') animation_response: number = 0.36;
   @StorageLink('animation_damping_coefficient') animation_damping_coefficient: number = 0.8;
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
   // UI Statuses
   @State webViews_ready: boolean = false;
   @State showing_downloads: boolean = false;
@@ -34,21 +35,22 @@ struct Index {
   @State is_search_input_typing: boolean = false;
   @State search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
   // Web Statuses
-  @State tab_titles: string[] = []
-  @State current_title: string = "=￣ω￣=";
-  @State tab_urls: string[] = []
-  @State current_url: string = "=￣ω￣=";
-  @State tab_loading_progresses: number[] = [0]
-  @State current_loading_progress: number = 0
-  @State tab_is_loading: boolean[] = [true]
-  @State current_is_loading: boolean = true
+  @StorageLink('tab_titles') tab_titles: string[] = []
+  @StorageLink('current_title') current_title: string = "=￣ω￣=";
+  @StorageLink('tab_urls') tab_urls: string[] = []
+  @StorageLink('current_url') current_url: string = "=￣ω￣=";
+  @StorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0]
+  @StorageLink('current_loading_progress') current_loading_progress: number = 0
+  @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]
+  @StorageLink('current_is_loading') current_is_loading: boolean = true
   // Web control statuses
-  @State current_main_tab_index: number = 0;
-  @State current_sub_tab_index: number = -1;
-  @State current_accessForward: boolean = false;
-  @State current_accessBackward: boolean = false;
+  @StorageLink('current_main_tab_index') current_main_tab_index: number = 0;
+  @StorageLink('current_sub_tab_index') current_sub_tab_index: number = -1;
+  @StorageLink('current_accessForward') current_accessForward: boolean = false;
+  @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
   // Settings
   @State @Watch('on_title_bar_position_change') settings_title_bar_position: string = "";
+  @State settings_tabs_style: string = "";
   @State settings_collect_new_history: boolean = true;
 
   async aboutToAppear(): Promise<void> {
@@ -101,26 +103,14 @@ struct Index {
                   // Environment
                   webViews_ready: this.webViews_ready,
                   showing_tabs: this.showing_tabs,
+                  settings_tabs_style: this.settings_tabs_style,
                   // Statuses
-                  current_main_tab_index: this.current_main_tab_index,
-                  current_sub_tab_index: this.current_sub_tab_index,
-                  tab_titles: this.tab_titles,
-                  tab_urls: this.tab_urls,
-                  tab_loading_progresses: this.tab_loading_progresses,
-                  tab_is_loading: this.tab_is_loading,
-                  current_title: this.current_title,
-                  current_url: this.current_url,
-                  current_loading_progress: this.current_loading_progress,
-                  current_is_loading: this.current_is_loading,
-                  // Other Statuses
-                  current_accessForward: this.current_accessForward,
-                  current_accessBackward: this.current_accessBackward,
-                  search_input: this.search_input
+                  search_input: this.search_input,
                 })// Tabs Panel
-                  .width(this.tablet_mode ? 250 : 0.9 * this.screen_width)
+                  .width((this.tablet_mode ? 250 : 0.9 * this.screen_width))
               }
               .height("100%")
-              .width(this.showing_tabs ? "100%" : 0)
+              .width((this.showing_tabs ? "100%" : 0))
               .animation(animation_default())
               .scrollable(ScrollDirection.Horizontal)
               .scrollBar(BarState.Off)
@@ -142,9 +132,11 @@ struct Index {
             .height("100%")
           } // Bookmarks and Tabs
           .width(
+            // THIS IS POOP, NEEDS CLEAN UP :((((((
             !this.tablet_mode ?
               (this.showing_tabs || this.showing_bookmarks ? 0.9 * this.screen_width : 0) :
-              ((this.showing_tabs ? 250 : 0) + (this.showing_bookmarks ? 350 : 0))
+              ((this.showing_tabs && (this.settings_tabs_style != 'horizontal') ? 250 : 0) +
+                (this.showing_bookmarks ? 350 : 0))
           )
           .animation(animation_default())
           .scrollable(ScrollDirection.Horizontal)
@@ -155,20 +147,6 @@ struct Index {
             meowWebView({
               webViews_ready: this.webViews_ready,
               settings_collect_new_history: this.settings_collect_new_history,
-              // Statuses
-              current_main_tab_index: this.current_main_tab_index,
-              current_sub_tab_index: this.current_sub_tab_index,
-              tab_titles: this.tab_titles,
-              tab_urls: this.tab_urls,
-              tab_loading_progresses: this.tab_loading_progresses,
-              tab_is_loading: this.tab_is_loading,
-              current_title: this.current_title,
-              current_url: this.current_url,
-              current_loading_progress: this.current_loading_progress,
-              current_is_loading: this.current_is_loading,
-              // Other statuses
-              current_accessForward: this.current_accessForward,
-              current_accessBackward: this.current_accessBackward,
               search_input: this.search_input,
             })
               .visibility(this.webViews_ready ? Visibility.Visible : Visibility.Hidden)
@@ -190,6 +168,7 @@ struct Index {
         })
         .margin(this.settings_title_bar_position == "bottom" ?
           { bottom: this.title_bar_height } : { top: this.title_bar_height })
+        .animation(animation_default())
 
         linysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
           .alignRules(this.web_and_stuff_alignRules)
@@ -201,23 +180,10 @@ struct Index {
           webViews_ready: this.webViews_ready,
           // Environments
           search_input: this.search_input,
-          settings_title_bar_position: this.settings_title_bar_position,
-          web_and_stuff_alignRules: this.web_and_stuff_alignRules,
           settings_collect_new_history: this.settings_collect_new_history,
-          // Current statuses
-          current_main_tab_index: this.current_main_tab_index,
-          current_sub_tab_index: this.current_sub_tab_index,
-          tab_titles: this.tab_titles,
-          tab_urls: this.tab_urls,
-          tab_loading_progresses: this.tab_loading_progresses,
-          tab_is_loading: this.tab_is_loading,
-          current_title: this.current_title,
-          current_url: this.current_url,
-          current_is_loading: this.current_is_loading,
-          current_loading_progress: this.current_loading_progress,
-          // Data
-          current_accessBackward: this.current_accessBackward,
-          current_accessForward: this.current_accessForward,
+          settings_title_bar_position: this.settings_title_bar_position,
+          settings_tabs_style: this.settings_tabs_style,
+          web_and_stuff_alignRules: this.web_and_stuff_alignRules,
           // Web actions
           showing_tabs: this.showing_tabs,
           showing_bookmarks: this.showing_bookmarks,
