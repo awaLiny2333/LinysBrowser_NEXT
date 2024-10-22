@@ -48,7 +48,7 @@ struct meowTabsHorizontal {
                 .animation(animation_default())
 
               linysText({ text: title == "" ? "Meow" : title })
-                .constraintSize({ maxWidth: 150 })
+                .layoutWeight(1)
 
               SymbolGlyph($r('sys.symbol.xmark'))
                 .fontSize(fontSize_Normal())
@@ -59,8 +59,10 @@ struct meowTabsHorizontal {
                   this.close_tab_gateway = index;
                   // Close tab
                 })
+                .visibility(this.max_tab_width() < 130 ? this.visibility_visible_on_chosen(index) : Visibility.Visible)
+                .animation(animation_default())
             }
-            .constraintSize({ maxWidth: 200 })
+            .width(this.max_tab_width())
             .onClick(() => {
               this.uni_tab_button_clicked = index;
             })
@@ -135,6 +137,24 @@ struct meowTabsHorizontal {
         this.current_sub_tab_index = -1;
       }
     }
+  }
+
+  max_tab_width() {
+    let result = this.full_area_width / (this.tab_titles.length) - 5;
+    if (result > 200) {
+      return 200;
+    }
+    if (result < 120) {
+      return 120;
+    }
+    return result;
+  }
+
+  visibility_visible_on_chosen(index: number) {
+    if (this.current_main_tab_index == index || this.current_sub_tab_index == index) {
+      return Visibility.Visible;
+    }
+    return Visibility.None;
   }
 }
 
