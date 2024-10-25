@@ -31,14 +31,12 @@ struct meowTitleBar {
   @StorageProp('universal_new_download_gateway') @Watch('on_download_start') uni_new_download_gateway: string = "";
   @Link bar_height: number;
   @Link webViews_ready: boolean;
-  // Current statuses
+  // Current environment
+  @Link web_and_stuff_alignRules: AlignRuleOption;
   @Link search_input: string;
   @State search_input_unified: string = "";
   @State is_search_input_typing: boolean = false;
-  @Link settings_title_bar_position: string;
-  @Link settings_tabs_style: string;
-  @Link web_and_stuff_alignRules: AlignRuleOption;
-  @Link settings_collect_new_history: boolean;
+  @State download_started_popup: boolean = false;
   // Web statuses
   @StorageLink('tab_titles') tab_titles: string[] = []
   @StorageLink('current_title') current_title: string = "=￣ω￣=";
@@ -59,8 +57,10 @@ struct meowTitleBar {
   @Link showing_more_options: boolean;
   @Link showing_app_settings: boolean;
   @Link showing_downloads: boolean;
-  // UI Effects and settings
-  @State download_started_popup: boolean = false;
+  // settings
+  @Link settings_title_bar_position: string;
+  @Link settings_tabs_style: string;
+  @Link settings_collect_new_history: boolean;
   @State settings_max_bookmark_advice: number = 5;
   @State settings_max_history_advice: number = 5;
   // Dialogs
@@ -74,7 +74,7 @@ struct meowTitleBar {
   })
 
   build() {
-    Column({ space: 8 }) {
+    Column({ space: 10 }) {
       if (this.settings_title_bar_position == "bottom") {
         meowSuggestions({
           settings_max_history_suggestions: this.settings_max_history_advice,
@@ -135,7 +135,6 @@ struct meowTitleBar {
       .animation(animation_default())
 
       Row({ space: this.tablet_mode ? 10 : 7 }) {
-
         linysSymbol({
           symbol_glyph_target: 'sys.symbol.arrow_left'
         })// Backward
@@ -144,7 +143,7 @@ struct meowTitleBar {
           .visibility(this.visible_when_no_panels_open_in_normal_mode())
           .animation(animation_default())
           .onClick(() => {
-            this.go_backward()
+            this.go_backward();
           })
 
         linysSymbol({
@@ -155,7 +154,7 @@ struct meowTitleBar {
           .visibility(this.visible_when_no_panels_open_in_normal_mode())
           .animation(animation_default())
           .onClick(() => {
-            this.go_forward()
+            this.go_forward();
           })
 
         SymbolGlyph(!this.current_is_loading ? $r('sys.symbol.arrow_clockwise') : $r('sys.symbol.xmark'))
@@ -341,9 +340,9 @@ struct meowTitleBar {
         settings_collect_new_history: this.settings_collect_new_history,
         settings_max_bookmark_suggestions: this.settings_max_bookmark_advice,
         settings_max_history_suggestions: this.settings_max_history_advice,
-        show: this.showing_app_settings,
         settings_title_bar_position: this.settings_title_bar_position,
-        settings_tabs_style: this.settings_tabs_style
+        settings_tabs_style: this.settings_tabs_style,
+        show: this.showing_app_settings,
       })// Settings
         .visibility(this.showing_app_settings ? Visibility.Visible : Visibility.None)
         .animation(animation_default())

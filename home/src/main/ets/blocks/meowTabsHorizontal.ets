@@ -54,7 +54,7 @@ struct meowTabsHorizontal {
         .animation(animation_default())
       } // Scroll of tab buttons
       .scrollBarWidth(5)
-      .scrollBar(this.max_tab_width() == 60 ? BarState.On : BarState.Off)
+      .scrollBar(this.tab_width() == 60 ? BarState.On : BarState.Off)
       .scrollable(ScrollDirection.Horizontal)
       .edgeEffect(EdgeEffect.Spring)
       .align(Alignment.Start)
@@ -108,7 +108,7 @@ struct meowTabsHorizontal {
     }
   }
 
-  max_tab_width() {
+  tab_width() {
     let result = this.full_area_width / (this.tab_titles.length) - 5;
     if (result > 200) {
       return 200;
@@ -158,11 +158,11 @@ struct HorizontalTabButton {
           this.close_tab_gateway = this.index;
           // Close tab
         })
-        .visibility(this.max_tab_width() < 80 ? this.visibility_visible_on_chosen(this.index) : Visibility.Visible)
+        .visibility(this.tab_width() < 80 ? this.visibility_visible_on_chosen(this.index) : Visibility.Visible)
         .animation(animation_default())
     }
     .offset({ y: this.offset_y })
-    .width(this.max_tab_width())
+    .width(this.tab_width())
     .onClick(() => {
       this.uni_tab_button_clicked = this.index;
     })
@@ -183,7 +183,7 @@ struct HorizontalTabButton {
     })
   }
 
-  max_tab_width() {
+  tab_width() {
     let result = this.full_area_width / (this.tab_titles.length) - 5;
     if (result > 200) {
       return 200;

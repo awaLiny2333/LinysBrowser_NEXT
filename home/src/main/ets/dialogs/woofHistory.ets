@@ -27,7 +27,7 @@ struct woofHistory {
   @State stamp_today: number = new Date().setHours(0, 0, 0, 0);
   @State stamp_this_month: number = new Date(this.stamp_today).setDate(1);
   @State stamp_this_year: number = new Date(this.stamp_this_month).setMonth(0, 1);
-  @State selected_history_list: history_record[] = this.bunch_of_history.get_history_slice_from_time_to_time(this.stamp_today).reverse();
+  @State selected_history_list: history_record[] = this.bunch_of_history.get_part_slice(this.stamp_today).reverse();
   @State time_period: string = new Date(this.stamp_today).toLocaleString();
   // Manage
   @State @Watch('on_select_change') selected: boolean[] = this.all_false(this.selected_history_list.length);
@@ -233,19 +233,19 @@ struct woofHistory {
 
   refresh_selected_history_list() {
     if (this.showing_today) {
-      this.selected_history_list = this.bunch_of_history.get_history_slice_from_time_to_time(this.stamp_today);
+      this.selected_history_list = this.bunch_of_history.get_part_slice(this.stamp_today);
       this.time_period = new Date(this.stamp_today).toLocaleString();
     }
     if (this.showing_this_month) {
-      this.selected_history_list = this.bunch_of_history.get_history_slice_from_time_to_time(this.stamp_this_month);
+      this.selected_history_list = this.bunch_of_history.get_part_slice(this.stamp_this_month);
       this.time_period = new Date(this.stamp_this_month).toLocaleString();
     }
     if (this.showing_this_year) {
-      this.selected_history_list = this.bunch_of_history.get_history_slice_from_time_to_time(this.stamp_this_year);
+      this.selected_history_list = this.bunch_of_history.get_part_slice(this.stamp_this_year);
       this.time_period = new Date(this.stamp_this_year).toLocaleString();
     }
     if (this.showing_before) {
-      this.selected_history_list = this.bunch_of_history.get_history_slice_from_time_to_time(0, this.stamp_this_year);
+      this.selected_history_list = this.bunch_of_history.get_part_slice(0, this.stamp_this_year);
       this.time_period = new Date(this.stamp_this_year).toLocaleString();
     }
     this.selected_number = 0;
@@ -271,7 +271,7 @@ struct woofHistory {
     if (this.showing_before) {
       // bias = the number of items in this year
       bias = this.bunch_of_history.history_list.length -
-      this.bunch_of_history.find_index_of_first_not_smaller_than_timestamp(this.stamp_this_year);
+      this.bunch_of_history.index_of_record_after_time(this.stamp_this_year);
     }
     for (let index = 0; index < this.selected_history_list.length; index++) {
       if (this.selected[index]) {

@@ -168,7 +168,6 @@ struct meowWebView {
                 console.log('mimetype:' + event.mimetype)
 
                 this.new_download_gateway = event.url;
-                // this.bunch_of_downloads.start_download_task(event.url)
               }
             })
             .onAppear(() => {

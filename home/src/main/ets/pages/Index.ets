@@ -90,8 +90,8 @@ struct Index {
       Row()// Top Bar Avoid
         .width("100%")
         .height(px2vp(this.topAvoidHeight))
-        .animation(animation_default())
         .backgroundColor($r('app.color.block_color'))
+        .animation(animation_default())
 
       RelativeContainer() {
 
@@ -192,7 +192,7 @@ struct Index {
           showing_downloads: this.showing_downloads,
         }) // Bottom Bar
 
-      }
+      } // Web, progress, and bottom bar
       .layoutWeight(1)
       .width("100%")
       .animation(animation_default())
@@ -203,7 +203,6 @@ struct Index {
         .animation(animation_default())
         .backgroundColor(this.settings_title_bar_position == "bottom" ?
           "transparent" : $r('app.color.block_color'))
-
     }
     .height("100%")
     .width("100%")

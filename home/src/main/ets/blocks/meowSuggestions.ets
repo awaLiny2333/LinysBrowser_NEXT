@@ -96,7 +96,7 @@ struct meowSuggestions {
       this.bookmark_suggestions =
         get_relations(label_link_bookmark, this.search_input, this.settings_max_bookmark_suggestions);
 
-      let label_link_history = this.bunch_of_history.get_plain_label_link();
+      let label_link_history = this.bunch_of_history.get_plain_history();
       this.history_suggestions =
         get_relations(label_link_history, this.search_input, this.settings_max_history_suggestions);
     }

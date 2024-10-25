@@ -15,10 +15,28 @@ export class history_record {
 export class bunch_of_history {
   history_list: history_record[] = [];
   cached_plain_history: string[][] = [];
-  plain_history_default_max_length: number = 1000;
+  plain_history_default_max_length: number = 100;
+
+  constructor(plain_history_max_length?: number) {
+    if (plain_history_max_length) {
+      this.plain_history_default_max_length = plain_history_max_length;
+    }
+  }
+
+  // Settings
+
+  /**
+   * @param max_length The default max length of plain history reconstruction.
+   * */
+  set_plain_max_length(max_length: number) {
+    this.plain_history_default_max_length = max_length;
+    this.reconstruct_plain_history();
+  }
+
+  // Use
 
   add_history(history: history_record, no_reconstruct_plain_history?: boolean) {
-    let insert_position = this.find_index_of_first_not_smaller_than_timestamp(history.accessed_time);
+    let insert_position = this.index_of_record_after_time(history.accessed_time);
     if (insert_position < 0) {
       insert_position = this.history_list.length;
     }
@@ -28,7 +46,7 @@ export class bunch_of_history {
       return;
     }
     // reconstruct plain from only part of the records
-    this.reconstruct_cached_plain_history();
+    this.reconstruct_plain_history();
   }
 
   remove_history(index: number, no_reconstruct_plain_history?: boolean) {
@@ -38,8 +56,10 @@ export class bunch_of_history {
       return;
     }
     // reconstruct plain from only part of the records
-    this.reconstruct_cached_plain_history();
+    this.reconstruct_plain_history();
   }
+
+  // Internal functions
 
   /**
    *
@@ -48,7 +68,7 @@ export class bunch_of_history {
    * @returns -1 if list is empty;
    * @returns -2 if Target is bigger than all histories。
    * */
-  find_index_of_first_not_smaller_than_timestamp(timestamp: number) {
+  index_of_record_after_time(timestamp: number) {
     if (this.history_list.length == 0) {
       return -1;
     }
@@ -87,9 +107,14 @@ export class bunch_of_history {
     return mid;
   }
 
-  get_latest_slice_of_max_length(max_length: number) {
-    // get only 10000 records
+  /**
+   *
+   * @returns The list of history[] being less or equal than plain_history_default_max_length in length.
+   * */
+  get_latest_slice() {
+    let max_length = this.plain_history_default_max_length;
     let slice: history_record[];
+
     if (this.history_list.length > max_length) {
       slice = this.history_list.slice(this.history_list.length - max_length);
     } else {
@@ -98,15 +123,46 @@ export class bunch_of_history {
     return slice;
   }
 
-  set_plain_max_length(max_length: number) {
-    this.plain_history_default_max_length = max_length;
-    this.reconstruct_cached_plain_history();
+  /**
+   *
+   * @param from_time The earliest timestamp.
+   * @param to_time The most recent timestamp.
+   * @returns The list of history[] in this period.
+   * */
+  get_part_slice(from_time?: number, to_time?: number) {
+    if (this.history_list.length == 0) {
+      return [];
+    }
+    if (from_time == undefined) {
+      from_time = 0;
+    }
+    if (to_time == undefined) {
+      to_time = this.history_list[this.history_list.length-1].accessed_time + 1;
+    }
+    if (from_time > to_time) {
+      return [];
+    }
+    let from_index = this.index_of_record_after_time(from_time);
+    let to_index = this.index_of_record_after_time(to_time);
+    // Slice
+    if (from_index < 0) {
+      return [];
+    }
+    if (to_index < 0) {
+      return this.history_list.slice(from_index);
+    }
+    return this.history_list.slice(from_index, to_index);
   }
 
-  reconstruct_cached_plain_history(from_history_list?: history_record[]) {
-    // Default fall back
+  /**
+   *
+   * @param from_history_list The source of history records.
+   * @abstract Sets / refreshes cached_plain_history: string[][].
+   * */
+  reconstruct_plain_history(from_history_list?: history_record[]) {
+    // Default fallback
     if (from_history_list === undefined) {
-      from_history_list = this.get_latest_slice_of_max_length(this.plain_history_default_max_length);
+      from_history_list = this.get_latest_slice();
     }
 
     this.cached_plain_history = [];
@@ -118,44 +174,23 @@ export class bunch_of_history {
     this.cached_plain_history.length.toString());
   }
 
-  get_plain_label_link(): string[][] {
+  /**
+   * @returns cached_plain_history.
+   * @abstract if no cached history constructed, then reconstruct
+   * */
+  get_plain_history(): string[][] {
     if (this.cached_plain_history.length == 0) {
-      this.reconstruct_cached_plain_history();
+      this.reconstruct_plain_history();
     }
     return this.cached_plain_history;
   }
 
-  /**
-   *
-   * @param from The earliest timestamp.
-   * @param to The most recent timestamp.
-   * @returns The list of history[] in this period.
-   * */
-  get_history_slice_from_time_to_time(from?: number, to?: number) {
-    if (this.history_list.length == 0) {
-      return [];
-    }
-    if (from == undefined) {
-      from = 0;
-    }
-    if (to == undefined) {
-      to = this.history_list[this.history_list.length-1].accessed_time + 1;
-    }
-    if (from > to) {
-      return [];
-    }
-    let from_index = this.find_index_of_first_not_smaller_than_timestamp(from);
-    let to_index = this.find_index_of_first_not_smaller_than_timestamp(to);
-    // Slice
-    if (from_index < 0) {
-      return [];
-    }
-    if (to_index < 0) {
-      return this.history_list.slice(from_index);
-    }
-    return this.history_list.slice(from_index, to_index);
-  }
+  // External interaction
 
+  /**
+   * @returns "\n" connected string of history records in the format of:
+   * @returns [label] [link] [accessed_time]
+   * */
   export_string() {
     let export_list: string[] = []
     for (let index = 0; index < this.history_list.length; index++) {
