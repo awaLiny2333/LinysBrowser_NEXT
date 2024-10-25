@@ -26,9 +26,7 @@ struct meowTabsHorizontal {
   @StorageLink('current_is_loading') current_is_loading: boolean = true
   // Gateways
   @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
-  @StorageLink('universal_close_tab_gateway') close_tab_gateway: number = -1;
   @StorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
-  @StorageLink('universal_tab_button_clicked_gateway') uni_tab_button_clicked: number = -1;
   // UI statuses
   @State length_width_of_tabs: number = 0;
   @State full_area_width: number = 10;
@@ -38,44 +36,15 @@ struct meowTabsHorizontal {
       Scroll() {
         Row({ space: 5 }) {
           ForEach(this.tab_titles, (title: string, index: number) => {
-            Row({ space: 8 }) {
-              Text("󰇀")
-                .fontSize(fontSize_Large())
-                .fontColor($r('app.color.font_color_title'))
-                .fontWeight((this.current_main_tab_index == index || this.current_sub_tab_index == index) ?
-                FontWeight.Medium : undefined)
-                .visibility(this.current_sub_tab_index == index ? Visibility.Visible : Visibility.None)
-                .animation(animation_default())
-
-              linysText({ text: title == "" ? "Meow" : title })
-                .layoutWeight(1)
-
-              SymbolGlyph($r('sys.symbol.xmark'))
-                .fontSize(fontSize_Normal())
-                .fontColor([$r('app.color.font_color_title')])
-                .fontWeight(FontWeight.Medium)
-                .onClick(() => {
-                  this.webViews_ready = true;
-                  this.close_tab_gateway = index;
-                  // Close tab
-                })
-                .visibility(this.max_tab_width() < 130 ? this.visibility_visible_on_chosen(index) : Visibility.Visible)
-                .animation(animation_default())
-            }
-            .width(this.max_tab_width())
-            .onClick(() => {
-              this.uni_tab_button_clicked = index;
+            HorizontalTabButton({
+              current_main_tab_index: this.current_main_tab_index,
+              current_sub_tab_index: this.current_sub_tab_index,
+              index: index,
+              title: title,
+              webViews_ready: this.webViews_ready,
+              full_area_width: this.full_area_width,
+              tab_titles: this.tab_titles
             })
-            .padding(10)
-            .height("100%")
-            .border({
-              radius: 10,
-              width: 2,
-              color: (this.current_main_tab_index == index || this.current_sub_tab_index == index)
-                ? $r('app.color.font_color_title') : "transparent"
-            })
-            .backgroundColor($r('app.color.start_window_background'))
-            .animation(animation_default())
           })
         }
         .onAreaChange((_old, n) => {
@@ -85,7 +54,7 @@ struct meowTabsHorizontal {
         .animation(animation_default())
       } // Scroll of tab buttons
       .scrollBarWidth(5)
-      .scrollBar(BarState.On)
+      .scrollBar(this.max_tab_width() == 60 ? BarState.On : BarState.Off)
       .scrollable(ScrollDirection.Horizontal)
       .edgeEffect(EdgeEffect.Spring)
       .align(Alignment.Start)
@@ -100,7 +69,7 @@ struct meowTabsHorizontal {
         symbol_glyph_target: 'sys.symbol.map',
         show: this.choosing_paralleow || this.current_sub_tab_index >= 0,
         text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
-      })
+      })// Paralleow entrance
         .onClick(() => {
           this.webViews_ready = true;
           this.choose_paralleow();
@@ -109,7 +78,7 @@ struct meowTabsHorizontal {
         .margin({ left: 4, bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0 })
         .animation(animation_default())
 
-      linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
+      linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })// New tab
         .onClick(() => {
           this.webViews_ready = true;
           this.new_tab_gateway = "new_tab";
@@ -144,8 +113,83 @@ struct meowTabsHorizontal {
     if (result > 200) {
       return 200;
     }
-    if (result < 120) {
-      return 120;
+    if (result < 60) {
+      return 60;
+    }
+    return result;
+  }
+}
+
+export default meowTabsHorizontal;
+
+@Component
+struct HorizontalTabButton {
+  @Link current_main_tab_index: number;
+  @Link current_sub_tab_index: number;
+  @Prop index: number;
+  @Prop title: string;
+  @Link webViews_ready: boolean;
+  @Link full_area_width: number;
+  @Link tab_titles: string[];
+  // Gateways
+  @StorageLink('universal_close_tab_gateway') close_tab_gateway: number = -1;
+  @StorageLink('universal_tab_button_clicked_gateway') uni_tab_button_clicked: number = -1;
+  @State offset_y: number = 100;
+
+  build() {
+    Row({ space: 8 }) {
+      Text("󰇀")// Paralleow icon
+        .fontSize(fontSize_Large())
+        .fontColor($r('app.color.font_color_title'))
+        .fontWeight((this.current_main_tab_index == this.index || this.current_sub_tab_index == this.index) ?
+        FontWeight.Medium : undefined)
+        .visibility(this.current_sub_tab_index == this.index ? Visibility.Visible : Visibility.None)
+        .animation(animation_default())
+
+      linysText({ text: this.title == "" ? "Meow" : this.title })// Web title text
+        .layoutWeight(1)
+
+      SymbolGlyph($r('sys.symbol.xmark'))// Close icon
+        .fontSize(fontSize_Normal())
+        .fontColor([$r('app.color.font_color_title')])
+        .fontWeight(FontWeight.Medium)
+        .onClick(() => {
+          this.webViews_ready = true;
+          this.close_tab_gateway = this.index;
+          // Close tab
+        })
+        .visibility(this.max_tab_width() < 80 ? this.visibility_visible_on_chosen(this.index) : Visibility.Visible)
+        .animation(animation_default())
+    }
+    .offset({ y: this.offset_y })
+    .width(this.max_tab_width())
+    .onClick(() => {
+      this.uni_tab_button_clicked = this.index;
+    })
+    .padding(10)
+    .height("100%")
+    .border({
+      radius: 10,
+      width: 2,
+      color: (this.current_main_tab_index == this.index || this.current_sub_tab_index == this.index)
+        ? $r('app.color.font_color_title') : "transparent"
+    })
+    .backgroundColor($r('app.color.start_window_background'))
+    .animation(animation_default())
+    .onAppear(() => {
+      setTimeout(() => {
+        this.offset_y = 0;
+      }, 50)
+    })
+  }
+
+  max_tab_width() {
+    let result = this.full_area_width / (this.tab_titles.length) - 5;
+    if (result > 200) {
+      return 200;
+    }
+    if (result < 60) {
+      return 60;
     }
     return result;
   }
@@ -157,5 +201,3 @@ struct meowTabsHorizontal {
     return Visibility.None;
   }
 }
-
-export default meowTabsHorizontal;

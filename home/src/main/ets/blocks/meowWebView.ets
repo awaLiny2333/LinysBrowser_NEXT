@@ -45,11 +45,9 @@ struct meowWebView {
             controller:
             this.bunch_of_tabs.Tabs[Label.index_key] !== undefined ?
             this.bunch_of_tabs.Tabs[Label.index_key].controller : undefined
-          })// Main WEB
+          }) // Main WEB
             .width("100%")
             .height("100%")
-            .visibility((this.current_main_tab_index == Label.index_key || this.current_sub_tab_index == Label.index_key)
-              ? Visibility.Visible : Visibility.None)
             .databaseAccess(true)
             .onlineImageAccess(true)
             .javaScriptAccess(true)
@@ -181,6 +179,8 @@ struct meowWebView {
               this.bunch_of_tabs.restore_web_state(this.web_state_arrays, Label.index_key);
             })
         }
+        .visibility((this.current_main_tab_index == Label.index_key || this.current_sub_tab_index == Label.index_key)
+          ? Visibility.Visible : Visibility.None)
         .borderColor($r('app.color.block_color'))
         .borderWidth(this.border_width_tab(this.current_sub_tab_index == Label.index_key))
         .width(this.current_sub_tab_index < 0 ? "100%" : this.width_tab())
