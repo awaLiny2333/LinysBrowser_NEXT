@@ -82,7 +82,7 @@
     },
     {
       "name": "Settings_general_custom_ua_default",
-      "value": "系统默认"
+      "value": "默认的那个 ᐡ ᐧ ﻌ ᐧ ᐡ"
     },
     {
       "name": "Index_downloads_title",
@@ -102,7 +102,7 @@
     },
     {
       "name": "Downloads_notice_content",
-      "value": "由于安全性原因，所有的下载内容都被暂时安置在这里。在离开前，你需要把他们手动搬出去！"
+      "value": "由于安全性原因，所有的下载内容都被暂时安置在这里。在离开前，你需要把他们手动搬出去！——下一次启动的时候，它们全部都会被清理掉！"
     },
     {
       "name": "Settings_general_new_tab_url",
@@ -227,6 +227,18 @@
     {
       "name": "Bookmarks_move_title",
       "value": "移动到"
+    },
+    {
+      "name": "About_GitHub",
+      "value": "→ GitHub 仓库"
+    },
+    {
+      "name": "About_Gitee",
+      "value": "→ Gitee 仓库"
+    },
+    {
+      "name": "About_bilibili",
+      "value": "→ Liny 的哔哩哔哩主页"
     }
   ]
 }

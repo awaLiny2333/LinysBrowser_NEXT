@@ -31,6 +31,7 @@ struct meowTabs {
   @StorageLink('current_accessForward') current_accessForward: boolean = false;
   @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
   @Link search_input: string;
+  @Link is_search_input_typing: boolean;
   // Other Info / Statuses
   @State recover_tabs_finished: boolean = false;
   @StorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
@@ -141,8 +142,9 @@ struct meowTabs {
       // Try switch tab
       this.webViews_ready = true;
       this.web_animation = { duration: 0 };
-      this.switch_tab(continue_tabs_main_on);
+      this.switch_tab(continue_tabs_main_on, true);
       setTimeout(() => {
+        // This code is poop
         this.sync_list_info();
         if (continue_tabs_sub_on < this.tab_titles.length) {
           this.current_sub_tab_index = continue_tabs_sub_on;
@@ -338,10 +340,12 @@ struct meowTabs {
     }
   }
 
-  switch_tab(target: number) {
+  switch_tab(target: number, dont_close_tabs_panel?: boolean) {
     console.log('switch tab to ' + target.toString())
     if (this.current_main_tab_index == target) {
-      this.showing_tabs = false;
+      if (!dont_close_tabs_panel == true && !this.tablet_mode) {
+        this.showing_tabs = false;
+      }
       this.choosing_paralleow = false;
     }
 
@@ -470,8 +474,10 @@ struct meowTabs {
   }
 
   update_search_box_text(text: string) {
-    this.search_input = url_resource_to_meow(text)
-    // Update Input Search Box
+    if (!this.is_search_input_typing) {
+      this.search_input = url_resource_to_meow(text)
+      // Update Input Search Box
+    }
   }
 
   on_timer() {

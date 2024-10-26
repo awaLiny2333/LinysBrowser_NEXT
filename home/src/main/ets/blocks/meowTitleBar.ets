@@ -32,10 +32,10 @@ struct meowTitleBar {
   @Link bar_height: number;
   @Link webViews_ready: boolean;
   // Current environment
-  @Link web_and_stuff_alignRules: AlignRuleOption;
+  @Link title_bar_alignRules: AlignRuleOption;
   @Link search_input: string;
   @State search_input_unified: string = "";
-  @State is_search_input_typing: boolean = false;
+  @Link is_search_input_typing: boolean;
   @State download_started_popup: boolean = false;
   // Web statuses
   @StorageLink('tab_titles') tab_titles: string[] = []
@@ -337,6 +337,7 @@ struct meowTitleBar {
       .animation(animation_default())
 
       meowAppSettings({
+        showing_app_settings: this.showing_app_settings,
         settings_collect_new_history: this.settings_collect_new_history,
         settings_max_bookmark_suggestions: this.settings_max_bookmark_advice,
         settings_max_history_suggestions: this.settings_max_history_advice,
@@ -368,7 +369,7 @@ struct meowTitleBar {
     } // Title Bars
     .width("100%")
     .backgroundColor($r('app.color.block_color'))
-    .alignRules(this.web_and_stuff_alignRules)
+    .alignRules(this.title_bar_alignRules)
     .onAreaChange((_o, n) => {
       if (!this.showing_more_options && !this.is_search_input_typing &&
         !this.showing_app_settings && !this.showing_downloads) {
@@ -444,7 +445,10 @@ struct meowTitleBar {
       this.showing_downloads = false;
     }
 
-    this.showing_bookmarks = false;
+    if (!this.tablet_mode) {
+      // allow bookmarks and tabs coexist in tablet mode
+      this.showing_bookmarks = false;
+    }
     this.showing_tabs = !this.showing_tabs;
   }
 
@@ -454,8 +458,10 @@ struct meowTitleBar {
       this.showing_app_settings = false;
       this.showing_downloads = false;
     }
-
-    this.showing_tabs = false;
+    if (!this.tablet_mode) {
+      // allow bookmarks and tabs coexist in tablet mode
+      this.showing_tabs = false;
+    }
     this.showing_bookmarks = !this.showing_bookmarks;
   }
 

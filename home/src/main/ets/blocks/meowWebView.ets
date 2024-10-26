@@ -28,6 +28,7 @@ struct meowWebView {
   @StorageLink('current_accessForward') current_accessForward: boolean = false;
   @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
   @Link search_input: string;
+  @Link is_search_input_typing: boolean;
   // Settings
   @Prop settings_collect_new_history: boolean;
   // Stuffs
@@ -218,7 +219,10 @@ struct meowWebView {
   }
 
   update_search_box_text(text: string) {
-    this.search_input = url_resource_to_meow(text)
+    if (!this.is_search_input_typing) {
+      this.search_input = url_resource_to_meow(text)
+      // Update Input Search Box
+    }
     // Update Input Search Box when new page loaded
   }
 

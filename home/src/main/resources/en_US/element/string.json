@@ -82,7 +82,7 @@
     },
     {
       "name": "Settings_general_custom_ua_default",
-      "value": "System Default"
+      "value": "The Default One ᐡ ᐧ ﻌ ᐧ ᐡ"
     },
     {
       "name": "Index_downloads_title",
@@ -102,7 +102,7 @@
     },
     {
       "name": "Downloads_notice_content",
-      "value": "Due to security issues, all downloads are temporarily stored here. You have to manually save them to local storage before exiting this app!"
+      "value": "Due to security issues, all downloads are temporarily stored here. You have to manually save them to local storage before exiting this app! - Next time when the app is launched, they will be deleted!"
     },
     {
       "name": "Settings_general_new_tab_url",
@@ -227,6 +227,18 @@
     {
       "name": "Bookmarks_move_title",
       "value": "Move to"
+    },
+    {
+      "name": "About_GitHub",
+      "value": "→ GitHub Repo"
+    },
+    {
+      "name": "About_Gitee",
+      "value": "→ Gitee Repo"
+    },
+    {
+      "name": "About_bilibili",
+      "value": "→ Liny's bilibili Page"
     }
   ]
 }

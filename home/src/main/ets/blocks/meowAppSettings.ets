@@ -22,10 +22,12 @@ import { sandbox_open } from '../utils/storage_tools';
 import woofHistory from '../dialogs/woofHistory';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import meowSEManager from './meowSEManager';
+import linysLink from '../components/linysLink';
 
 @Component
 struct meowAppSettings {
   // Functions
+  @Link showing_app_settings: boolean;
   @Link settings_title_bar_position: string;
   @Link settings_tabs_style: string;
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
@@ -331,9 +333,22 @@ struct meowAppSettings {
       FlowItem() {
         Column({ space: 15 }) {
           linysTitleText({ text: $r('app.string.Settings_about') })
-          linysText({ text: "（ฅ＾・ﻌ・＾）ฅ" })
-          linysText({ text: this.versionName + " - " + this.versionNo })
-
+          linysText({ text: "（ฅ＾・ﻌ・＾）ฅ  - " + this.versionName + " - " + this.versionNo })
+          linysLink({
+            will_be_reversed_boolean: this.showing_app_settings,
+            text: $r('app.string.About_bilibili'),
+            link: "https://space.bilibili.com/678438347",
+          })
+          linysLink({
+            will_be_reversed_boolean: this.showing_app_settings,
+            text: $r('app.string.About_GitHub'),
+            link: "https://github.com/awaLiny2333/LinysBrowser_NEXT",
+          })
+          linysLink({
+            will_be_reversed_boolean: this.showing_app_settings,
+            text: $r('app.string.About_Gitee'),
+            link: "https://gitee.com/awa_Liny/LinysBrowser_NEXT",
+          })
         }
         .padding(15)
         .alignItems(HorizontalAlign.Start)

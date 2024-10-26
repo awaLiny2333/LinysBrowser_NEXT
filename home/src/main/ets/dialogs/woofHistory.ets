@@ -91,7 +91,7 @@ struct woofHistory {
         Row({ space: 10 }) {
           linysShowButton({
             text: $r('app.string.Settings_experience_history_before'),
-            symbol_glyph_target: 'sys.symbol.worldclock_fill_2',
+            symbol_glyph_target: 'sys.symbol.worldclock',
             show: this.showing_before
           })
             .onClick(() => {
@@ -103,7 +103,7 @@ struct woofHistory {
             })
           linysShowButton({
             text: $r('app.string.Settings_experience_history_this_year'),
-            symbol_glyph_target: 'sys.symbol.worldclock',
+            symbol_glyph_target: 'sys.symbol.calendar_badge_clock',
             show: this.showing_this_year
           })
             .onClick(() => {
@@ -115,7 +115,7 @@ struct woofHistory {
             })
           linysShowButton({
             text: $r('app.string.Settings_experience_history_this_month'),
-            symbol_glyph_target: 'sys.symbol.calendar_badge_clock',
+            symbol_glyph_target: 'sys.symbol.calendar_31',
             show: this.showing_this_month
           })
             .onClick(() => {
@@ -127,7 +127,7 @@ struct woofHistory {
             })
           linysShowButton({
             text: $r('app.string.Settings_experience_history_today'),
-            symbol_glyph_target: 'sys.symbol.clock',
+            symbol_glyph_target: 'sys.symbol.calendar_01',
             show: this.showing_today
           })
             .onClick(() => {

@@ -24,10 +24,10 @@ struct Index {
   @State showing_downloads: boolean = false;
   @State showing_more_options: boolean = false;
   @State showing_app_settings: boolean = false;
-  @State showing_tabs: boolean = false;
+  @State @Watch('on_showing_tabs_change') showing_tabs: boolean = false;
   @State showing_bookmarks: boolean = false;
   @State title_bar_height: number = 0;
-  @State web_and_stuff_alignRules: AlignRuleOption = {
+  @State title_bar_alignRules: AlignRuleOption = {
     middle: { anchor: "__container__", align: HorizontalAlign.Center },
     bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
   };
@@ -57,6 +57,7 @@ struct Index {
     this.animation_response = await this.bunch_of_settings.get_setting_key('animation_response') as number;
     this.animation_damping_coefficient =
       await this.bunch_of_settings.get_setting_key('animation_damping_coefficient') as number;
+    this.showing_tabs = await this.bunch_of_settings.get_setting_key('settings_tabs_open') as boolean;
   }
 
   onBackPress(): boolean | void {
@@ -106,11 +107,12 @@ struct Index {
                   settings_tabs_style: this.settings_tabs_style,
                   // Statuses
                   search_input: this.search_input,
-                })// Tabs Panel
-                  .width((this.tablet_mode ? 250 : 0.9 * this.screen_width))
-              }
+                  is_search_input_typing: this.is_search_input_typing,
+                })
+                  .width(this.width_of_Tabs())
+              } // Tabs Panel
               .height("100%")
-              .width((this.showing_tabs ? "100%" : 0))
+              .width(this.showing_tabs ? this.width_of_Tabs() : 0)
               .animation(animation_default())
               .scrollable(ScrollDirection.Horizontal)
               .scrollBar(BarState.Off)
@@ -118,11 +120,11 @@ struct Index {
               Scroll() {
                 meowBookmarks({
                   webViews_ready: this.webViews_ready
-                })// Bookmarks Panel
-                  .width(this.tablet_mode ? 350 : 0.9 * this.screen_width)
-              }
+                })
+                  .width(this.width_of_Bookmarks())
+              } // Bookmarks Panel
               .height("100%")
-              .width(this.showing_bookmarks ? "100%" : 0)
+              .width(this.showing_bookmarks ? this.width_of_Bookmarks() : 0)
               .animation(animation_default())
               .scrollable(ScrollDirection.Horizontal)
               .scrollBar(BarState.Off)
@@ -131,13 +133,7 @@ struct Index {
             .width("100%")
             .height("100%")
           } // Bookmarks and Tabs
-          .width(
-            // THIS IS POOP, NEEDS CLEAN UP :((((((
-            !this.tablet_mode ?
-              (this.showing_tabs || this.showing_bookmarks ? 0.9 * this.screen_width : 0) :
-              ((this.showing_tabs && (this.settings_tabs_style != 'horizontal') ? 250 : 0) +
-                (this.showing_bookmarks ? 350 : 0))
-          )
+          .width(this.width_of_Bookmarks_and_Tabs())
           .animation(animation_default())
           .scrollable(ScrollDirection.Horizontal)
           .scrollBar(BarState.Off)
@@ -148,6 +144,7 @@ struct Index {
               webViews_ready: this.webViews_ready,
               settings_collect_new_history: this.settings_collect_new_history,
               search_input: this.search_input,
+              is_search_input_typing: this.is_search_input_typing,
             })
               .visibility(this.webViews_ready ? Visibility.Visible : Visibility.Hidden)
           } // WebViews
@@ -157,21 +154,19 @@ struct Index {
 
         } // Main Web
         .direction(this.tablet_mode ? Direction.Ltr : Direction.Rtl)
-        .alignRules(this.web_and_stuff_alignRules)
+        .alignRules(this.title_bar_alignRules)
         .layoutWeight(1)
         .width("100%")
         .backgroundColor($r('app.color.start_window_background'))
-        .onAreaChange((_o, n) => {
-          this.screen_width = n.width as number;
-          this.screen_height = n.height as number;
-          this.tablet_mode = this.screen_width > 500;
+        .onAreaChange((o, n) => {
+          this.on_main_area_change(o, n);
         })
         .margin(this.settings_title_bar_position == "bottom" ?
           { bottom: this.title_bar_height } : { top: this.title_bar_height })
         .animation(animation_default())
 
         linysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
-          .alignRules(this.web_and_stuff_alignRules)
+          .alignRules(this.title_bar_alignRules)
           .margin(this.settings_title_bar_position == "bottom" ?
             { bottom: this.title_bar_height } : { top: this.title_bar_height })
 
@@ -180,10 +175,11 @@ struct Index {
           webViews_ready: this.webViews_ready,
           // Environments
           search_input: this.search_input,
+          is_search_input_typing: this.is_search_input_typing,
           settings_collect_new_history: this.settings_collect_new_history,
           settings_title_bar_position: this.settings_title_bar_position,
           settings_tabs_style: this.settings_tabs_style,
-          web_and_stuff_alignRules: this.web_and_stuff_alignRules,
+          title_bar_alignRules: this.title_bar_alignRules,
           // Web actions
           showing_tabs: this.showing_tabs,
           showing_bookmarks: this.showing_bookmarks,
@@ -218,15 +214,68 @@ struct Index {
 
   on_title_bar_position_change() {
     if (this.settings_title_bar_position == "bottom") {
-      this.web_and_stuff_alignRules = {
+      this.title_bar_alignRules = {
         middle: { anchor: "__container__", align: HorizontalAlign.Center },
         bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
       }
     } else {
-      this.web_and_stuff_alignRules = {
+      this.title_bar_alignRules = {
         middle: { anchor: "__container__", align: HorizontalAlign.Center },
         top: { anchor: "__container__", align: VerticalAlign.Top }
       }
     }
+  }
+
+  on_main_area_change(o: Area, n: Area) {
+    this.screen_width = n.width as number;
+    this.screen_height = n.height as number;
+    this.tablet_mode = this.screen_width > 500;
+    if (!this.tablet_mode) {
+      if (this.showing_tabs && this.showing_bookmarks) {
+        // If showing both tabs and bookmarks,
+        // then close tabs when switched to non-tablet mode
+        this.showing_tabs = false;
+      }
+    }
+  }
+
+  on_showing_tabs_change() {
+    console.log(this.showing_tabs ? "a" : "b")
+    this.bunch_of_settings.set_setting_value_of_key('settings_tabs_open', this.showing_tabs);
+  }
+
+  // kinds of params
+
+  width_of_Bookmarks_and_Tabs() {
+    let result = 0;
+    if (this.tablet_mode) {
+      if (this.showing_tabs && this.settings_tabs_style != 'horizontal') {
+        result += 250;
+      }
+      if (this.showing_bookmarks) {
+        result += 350;
+      }
+    } else if (this.showing_tabs || this.showing_bookmarks) {
+      result += 0.9 * this.screen_width;
+    }
+    return result;
+  }
+
+  width_of_Bookmarks() {
+    if (this.tablet_mode) {
+      return 350;
+    }
+    return 0.9 * this.screen_width;
+  }
+
+  width_of_Tabs() {
+    if (this.tablet_mode) {
+      if (this.settings_tabs_style != 'horizontal') {
+        return 250;
+      } else {
+        return 0;
+      }
+    }
+    return 0.9 * this.screen_width;
   }
 }
