@@ -18,7 +18,7 @@ struct Index {
   @StorageLink('screen_width') screen_width: number = 0;
   @StorageLink('screen_height') screen_height: number = 0;
   @StorageLink('animation_response') animation_response: number = 0.36;
-  @StorageLink('animation_damping_coefficient') animation_damping_coefficient: number = 0.8;
+  @StorageLink('animation_damping_coefficient') animation_damping: number = 0.8;
   // UI Statuses
   @State webViews_ready: boolean = false;
   @State showing_downloads: boolean = false;
@@ -26,6 +26,7 @@ struct Index {
   @State showing_app_settings: boolean = false;
   @State @Watch('on_showing_tabs_change') showing_tabs: boolean = false;
   @State showing_bookmarks: boolean = false;
+  @State showing_drop_panel: boolean = false;
   @State title_bar_height: number = 0;
   @State title_bar_alignRules: AlignRuleOption = {
     middle: { anchor: "__container__", align: HorizontalAlign.Center },
@@ -55,8 +56,7 @@ struct Index {
 
   async aboutToAppear(): Promise<void> {
     this.animation_response = await this.bunch_of_settings.get_setting_key('animation_response') as number;
-    this.animation_damping_coefficient =
-      await this.bunch_of_settings.get_setting_key('animation_damping_coefficient') as number;
+    this.animation_damping = await this.bunch_of_settings.get_setting_key('animation_damping_coefficient') as number;
     this.showing_tabs = await this.bunch_of_settings.get_setting_key('settings_tabs_open') as boolean;
   }
 
@@ -65,21 +65,24 @@ struct Index {
 
     // I know this is stupid but ¯\_(ツ)_/¯ it just works
     if (this.tablet_mode) {
-      if (this.showing_downloads || this.showing_more_options || this.showing_app_settings) {
+      if (this.showing_downloads || this.showing_more_options || this.showing_app_settings || this.showing_drop_panel) {
+        stop_system_back = true;
         this.showing_downloads = false;
         this.showing_more_options = false;
         this.showing_app_settings = false;
-        stop_system_back = true;
+        this.showing_drop_panel = false;
       }
     } else {
-      if (this.showing_downloads || this.showing_more_options || this.showing_app_settings
+      if (this.showing_downloads || this.showing_more_options || this.showing_app_settings || this.showing_drop_panel
         || this.showing_bookmarks || this.showing_tabs) {
+        stop_system_back = true;
         this.showing_downloads = false;
         this.showing_more_options = false;
         this.showing_app_settings = false;
+        this.showing_drop_panel = false;
+        // Specials
         this.showing_tabs = false;
         this.showing_bookmarks = false;
-        stop_system_back = true;
       }
     }
 
@@ -186,6 +189,7 @@ struct Index {
           showing_more_options: this.showing_more_options,
           showing_app_settings: this.showing_app_settings,
           showing_downloads: this.showing_downloads,
+          showing_scratching_board: this.showing_drop_panel
         }) // Bottom Bar
 
       } // Web, progress, and bottom bar

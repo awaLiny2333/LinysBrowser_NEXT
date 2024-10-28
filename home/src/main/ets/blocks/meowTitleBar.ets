@@ -18,6 +18,8 @@ import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
 import meowSuggestions from './meowSuggestions';
 import woofQR from '../dialogs/woofQR';
 import meowTabsHorizontal from './meowTabsHorizontal';
+import { unifiedDataChannel, uniformTypeDescriptor } from '@kit.ArkData';
+import meowDrops from './meowDrops';
 
 @Component
 struct meowTitleBar {
@@ -28,6 +30,7 @@ struct meowTitleBar {
   // Environments
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageProp('screen_width') screen_width: number = 0;
+  @StorageProp('screen_height') screen_height: number = 0;
   @StorageProp('universal_new_download_gateway') @Watch('on_download_start') uni_new_download_gateway: string = "";
   @Link bar_height: number;
   @Link webViews_ready: boolean;
@@ -37,6 +40,7 @@ struct meowTitleBar {
   @State search_input_unified: string = "";
   @Link is_search_input_typing: boolean;
   @State download_started_popup: boolean = false;
+  @State drop_result_string: string[] = [];
   // Web statuses
   @StorageLink('tab_titles') tab_titles: string[] = []
   @StorageLink('current_title') current_title: string = "=￣ω￣=";
@@ -57,6 +61,8 @@ struct meowTitleBar {
   @Link showing_more_options: boolean;
   @Link showing_app_settings: boolean;
   @Link showing_downloads: boolean;
+  @Link showing_scratching_board: boolean;
+  @State show_feed_prompt: boolean = true;
   // settings
   @Link settings_title_bar_position: string;
   @Link settings_tabs_style: string;
@@ -181,13 +187,18 @@ struct meowTitleBar {
           })
 
         TextInput({ text: this.search_input })
+          .allowDrop(null)
+          .visibility(this.showing_scratching_board ? Visibility.Hidden : this.visible_in_tablet_mode())
           .height(capsule_bar_height())
           .layoutWeight(1)
           .fontWeight(FontWeight.Regular)
           .fontColor($r('app.color.font_color_title'))
-          .visibility(this.visible_in_tablet_mode())
-          .onFocus(() => {
+          .animation(animation_default())
+          .onClick(() => {
             this.is_search_input_typing = true;
+          })
+          .onDragEnter(() => {
+            this.showing_scratching_board = true;
           })
           .onBlur(() => {
             this.is_search_input_typing = false;
@@ -212,6 +223,17 @@ struct meowTitleBar {
             this.submit_searching()
           })
           .visibility(this.visible_when_typing_in_tablet_mode())
+
+        linysShowButton({
+          show: this.showing_scratching_board,
+          text: $r('app.string.Index_drop_scratching_board'),
+          symbol_glyph_target: this.showing_scratching_board ? 'sys.symbol.chevron_down' : 'sys.symbol.doc_rectify'
+        })// Scratching board
+          .visibility(this.drop_result_string.length > 0 ? Visibility.Visible : Visibility.None)
+          .animation(animation_default())
+          .onClick(() => {
+            this.showing_scratching_board = !this.showing_scratching_board;
+          })
 
         linysShowButton({
           show: this.showing_more_options,
@@ -288,13 +310,17 @@ struct meowTitleBar {
 
       Row({ space: 10 }) {
         TextInput({ text: this.search_input })
+          .allowDrop(null)
           .height(capsule_bar_height())
           .layoutWeight(1)
           .fontWeight(FontWeight.Regular)
           .fontColor($r('app.color.font_color_title'))
           .caretColor($r('app.color.font_color_title'))
-          .onFocus(() => {
+          .onClick(() => {
             this.is_search_input_typing = true;
+          })
+          .onDragEnter(() => {
+            this.showing_scratching_board = true;
           })
           .onBlur(() => {
             this.is_search_input_typing = false;
@@ -317,7 +343,7 @@ struct meowTitleBar {
           })
 
       } // Title Bar of extended searching bar
-      .visibility(this.visible_in_normal_mode())
+      .visibility(this.showing_scratching_board ? Visibility.None : this.visible_in_normal_mode())
       .padding({ left: 15, right: 15 })
       .width("100%")
       .animation(animation_default())
@@ -355,6 +381,13 @@ struct meowTitleBar {
         .visibility(this.showing_downloads ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
 
+      meowDrops({
+        data_list: this.drop_result_string,
+        showing_scratching_board: this.showing_scratching_board,
+      })
+        .visibility(this.showing_scratching_board ? Visibility.Visible : Visibility.None)
+        .animation(animation_default())
+
       if (this.settings_title_bar_position == "top") {
         meowSuggestions({
           settings_max_history_suggestions: this.settings_max_history_advice,
@@ -367,17 +400,28 @@ struct meowTitleBar {
       }
 
     } // Title Bars
+    .allowDrop([uniformTypeDescriptor.UniformDataType.TEXT,
+      uniformTypeDescriptor.UniformDataType.HYPERLINK,
+      uniformTypeDescriptor.UniformDataType.PLAIN_TEXT])
+    .onDrop((e) => {
+      this.on_drop(e);
+    })
+    .onDragEnter(() => {
+      this.showing_scratching_board = true;
+    })
+    .onDragLeave(() => {
+      this.showing_scratching_board = false;
+    })
     .width("100%")
     .backgroundColor($r('app.color.block_color'))
     .alignRules(this.title_bar_alignRules)
     .onAreaChange((_o, n) => {
       if (!this.showing_more_options && !this.is_search_input_typing &&
-        !this.showing_app_settings && !this.showing_downloads) {
+        !this.showing_app_settings && !this.showing_downloads && !this.showing_scratching_board) {
         this.bar_height = n.height as number;
       }
     })
     .visibility(this.settings_title_bar_position == "" ? Visibility.Hidden : Visibility.Visible)
-    // .padding(this.settings_title_bar_position == "bottom" ? { top: 8 } : { bottom: 8 })
     .animation(this.showing_app_settings ? animation_default() : undefined)
     .onAppear(() => {
       console.log("[Meow][meowTitleBar] Title Bar READY")
@@ -421,12 +465,45 @@ struct meowTitleBar {
   visible_when_no_panels_open_in_normal_mode() {
     let result: Visibility = Visibility.Visible;
     if (this.showing_more_options || this.showing_downloads || this.showing_app_settings || this.showing_tabs ||
-    this.showing_bookmarks || this.download_started_popup) {
+    this.showing_bookmarks || this.download_started_popup || this.showing_scratching_board) {
       if (this.tablet_mode == false) {
         result = Visibility.None;
       }
     }
     return result;
+  }
+
+  // Events
+
+  on_drop(e: DragEvent) {
+    let drop_data = e.getData().getRecords();
+    let result_list: string[] = [];
+    for (let i = 0; i < drop_data.length; i++) {
+      let record = drop_data[i]
+      if (record.getType() == uniformTypeDescriptor.UniformDataType.HYPERLINK) {
+        let desc = (record as unifiedDataChannel.Hyperlink).description;
+        let url = (record as unifiedDataChannel.Hyperlink).url;
+
+        if (desc && !result_list.includes(desc)) {
+          // Push link description
+          result_list.push(desc);
+        }
+        if (!result_list.includes(url)) {
+          // Push link
+          result_list.push(url);
+        }
+
+      } else if (record.getType() == uniformTypeDescriptor.UniformDataType.PLAIN_TEXT) {
+        let textContent = (record as unifiedDataChannel.PlainText).textContent;
+
+        if (!result_list.includes(textContent)) {
+          // Push text
+          result_list.push(textContent);
+        }
+      }
+    }
+    this.drop_result_string = result_list.concat(this.drop_result_string);
+    e.setResult(DragResult.DRAG_SUCCESSFUL);
   }
 
   on_download_start() {

@@ -10,6 +10,7 @@ struct meowSuggestions {
   @Prop top_margin: number = 0;
   @Prop bottom_margin: number = 0;
   @StorageProp('screen_height') screen_height: number = 0;
+  @State content_height: number = 0;
   @Prop @Watch('refresh_suggestions') search_input: string = "";
   @Prop is_search_input_typing: boolean;
   // Hosts
@@ -56,7 +57,10 @@ struct meowSuggestions {
         .animation(animation_default())
 
       }
-      .height(this.get_area_height())
+      .onAreaChange((_o,n)=>{
+        this.content_height = n.height as number;
+      })
+      // .height(this.get_area_height())
       .alignItems(HorizontalAlign.Start)
       .animation(animation_default())
     }
@@ -67,20 +71,12 @@ struct meowSuggestions {
       top: this.top_margin,
       bottom: this.bottom_margin
     })
-    .height(Math.min(this.get_area_height(), 0.4 * this.screen_height))
+    .height(Math.min(this.content_height, 0.4 * this.screen_height))
     .visibility((this.bookmark_suggestions.length + this.history_suggestions.length == 0) || this.search_input == "" ?
     Visibility.None : this.visible_when_typing())
     .edgeEffect(EdgeEffect.Spring)
     .animation(animation_default())
 
-  }
-
-  get_area_height() {
-    let height = 0;
-    height += (this.bookmark_suggestions.length + this.history_suggestions.length) * 52;
-    height += this.bookmark_suggestions.length > 0 ? 15 : 0;
-    height += this.history_suggestions.length > 0 ? 15 : 0;
-    return height;
   }
 
   visible_when_typing() {

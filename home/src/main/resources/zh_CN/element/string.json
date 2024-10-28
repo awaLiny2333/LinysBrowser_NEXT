@@ -239,6 +239,22 @@
     {
       "name": "About_bilibili",
       "value": "→ Liny 的哔哩哔哩主页"
+    },
+    {
+      "name": "Index_drop_please",
+      "value": "投喂文本或者链接！"
+    },
+    {
+      "name": "Index_drop_ok",
+      "value": "/ᐠ. ｡.ᐟ\\ᵐᵉᵒʷˎˊ˗ 链接提取！"
+    },
+    {
+      "name": "Index_drop_scratching_board",
+      "value": "猫抓板"
+    },
+    {
+      "name": "Index_drop_scratching_board_scratch",
+      "value": "挠挠挠挠挠……"
     }
   ]
 }

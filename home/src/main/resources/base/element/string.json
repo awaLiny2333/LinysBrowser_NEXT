@@ -239,6 +239,22 @@
     {
       "name": "About_bilibili",
       "value": "→ Liny's bilibili Page"
+    },
+    {
+      "name": "Index_drop_please",
+      "value": "Feed me texts and links!!"
+    },
+    {
+      "name": "Index_drop_ok",
+      "value": "/ᐠ. ｡.ᐟ\\ᵐᵉᵒʷˎˊ˗ Links extraction!"
+    },
+    {
+      "name": "Index_drop_scratching_board",
+      "value": "Scratching Board"
+    },
+    {
+      "name": "Index_drop_scratching_board_scratch",
+      "value": "Scraaaaatchh..."
     }
   ]
 }

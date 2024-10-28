@@ -299,7 +299,7 @@ struct meowTabs {
       }
       // Init extension_area
       setInterval(() => {
-        this.on_timer()
+        this.on_timer();
       }, 10)
       // Set Task to calculate animation
       console.log("[Meow][meowTabs] Tabs Panel READY")
@@ -585,9 +585,11 @@ struct meowTabs {
 
   on_current_load_url() {
     if (this.load_url_gateway != "") {
+      setTimeout(() => {
+        this.bunch_of_tabs.loadUrl_onWorkingTab(this.load_url_gateway);
+        this.load_url_gateway = "";
+      }, this.webViews_ready ? 0 : 100)
       this.webViews_ready = true;
-      this.bunch_of_tabs.loadUrl_onWorkingTab(this.load_url_gateway);
-      this.load_url_gateway = "";
     }
   }
 }
