@@ -67,6 +67,7 @@ struct meowTitleBar {
   @Link settings_title_bar_position: string;
   @Link settings_tabs_style: string;
   @Link settings_collect_new_history: boolean;
+  @Link sys_back_to_access_backward: boolean;
   @State settings_max_bookmark_advice: number = 5;
   @State settings_max_history_advice: number = 5;
   // Dialogs
@@ -365,6 +366,7 @@ struct meowTitleBar {
       meowAppSettings({
         showing_app_settings: this.showing_app_settings,
         settings_collect_new_history: this.settings_collect_new_history,
+        sys_back_to_access_backward: this.sys_back_to_access_backward,
         settings_max_bookmark_suggestions: this.settings_max_bookmark_advice,
         settings_max_history_suggestions: this.settings_max_history_advice,
         settings_title_bar_position: this.settings_title_bar_position,

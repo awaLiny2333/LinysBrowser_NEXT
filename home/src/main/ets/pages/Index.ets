@@ -5,12 +5,14 @@ import meowBookmarks from '../blocks/meowBookmarks';
 import { animation_default } from '../hosts/bunch_of_defaults';
 import meowTitleBar from '../blocks/meowTitleBar';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
+import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 
 @Entry
 @Component
 struct Index {
   // Hosts
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
+  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
   // UI Environment
   @StorageLink('bottomAvoidHeight') bottomAvoidHeight: number = 1;
   @StorageLink('topAvoidHeight') topAvoidHeight: number = 1;
@@ -51,6 +53,7 @@ struct Index {
   @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
   // Settings
   @State @Watch('on_title_bar_position_change') settings_title_bar_position: string = "";
+  @State sys_back_to_access_backward: boolean = false;
   @State settings_tabs_style: string = "";
   @State settings_collect_new_history: boolean = true;
 
@@ -64,18 +67,18 @@ struct Index {
     let stop_system_back = false;
 
     // I know this is stupid but ¯\_(ツ)_/¯ it just works
+    // Prioritize closing UI panels
     if (this.tablet_mode) {
       if (this.showing_downloads || this.showing_more_options || this.showing_app_settings || this.showing_drop_panel) {
-        stop_system_back = true;
         this.showing_downloads = false;
         this.showing_more_options = false;
         this.showing_app_settings = false;
         this.showing_drop_panel = false;
+        return true;
       }
     } else {
       if (this.showing_downloads || this.showing_more_options || this.showing_app_settings || this.showing_drop_panel
         || this.showing_bookmarks || this.showing_tabs) {
-        stop_system_back = true;
         this.showing_downloads = false;
         this.showing_more_options = false;
         this.showing_app_settings = false;
@@ -83,6 +86,14 @@ struct Index {
         // Specials
         this.showing_tabs = false;
         this.showing_bookmarks = false;
+        return true;
+      }
+    }
+
+    // Other
+    if (this.sys_back_to_access_backward) {
+      if (this.go_back_if_possible()) {
+        stop_system_back = true;
       }
     }
 
@@ -180,6 +191,7 @@ struct Index {
           search_input: this.search_input,
           is_search_input_typing: this.is_search_input_typing,
           settings_collect_new_history: this.settings_collect_new_history,
+          sys_back_to_access_backward: this.sys_back_to_access_backward,
           settings_title_bar_position: this.settings_title_bar_position,
           settings_tabs_style: this.settings_tabs_style,
           title_bar_alignRules: this.title_bar_alignRules,
@@ -281,5 +293,15 @@ struct Index {
       }
     }
     return 0.9 * this.screen_width;
+  }
+
+  // Operations
+
+  other_on_back_presses() {
+
+  }
+
+  go_back_if_possible(): boolean {
+    return this.bunch_of_tabs.goBackward_onWorkingTab();
   }
 }

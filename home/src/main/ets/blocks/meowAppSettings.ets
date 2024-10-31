@@ -71,6 +71,7 @@ struct meowAppSettings {
   @State @Watch('on_start_up_page_changed') start_up_page_selected: number[] = [0];
   @Link settings_max_bookmark_suggestions: number;
   @Link settings_max_history_suggestions: number;
+  @Link sys_back_to_access_backward: boolean;
   @Link settings_collect_new_history: boolean;
   // Edits
   @State new_tab_url_edit: string = "";
@@ -182,6 +183,19 @@ struct meowAppSettings {
       FlowItem() {
         Column({ space: 15 }) {
           linysTitleText({ text: $r('app.string.Settings_Experience') })
+
+          Row() {
+            linysText({ text: $r('app.string.Settings_experience_sys_back_to_access_backward'), max_lines: 3 })
+              .layoutWeight(1)
+            Toggle({ isOn: this.sys_back_to_access_backward, type: ToggleType.Switch })
+              .switchPointColor($r('app.color.block_color'))
+              .selectedColor($r('app.color.font_color_title'))
+              .onChange(isOn => {
+                this.sys_back_to_access_backward = isOn;
+                this.bunch_of_settings.set_setting_value_of_key('sys_back_to_access_backward', isOn);
+              })
+          } // Toggle History
+          .width("100%")
 
           linysText({ text: $r('app.string.Settings_experience_max_bookmark_advice'), max_lines: 2 })
           Row({ space: 5 }) {
@@ -404,6 +418,10 @@ struct meowAppSettings {
     // Get whether to continue to collect new history
     this.settings_collect_new_history =
       await this.bunch_of_settings.get_setting_key('settings_collect_new_history') as boolean;
+
+    // Get whether to use system back to access backward
+    this.sys_back_to_access_backward =
+      await this.bunch_of_settings.get_setting_key('sys_back_to_access_backward') as boolean;
 
     let result = await sandbox_open("history.txt");
     if (result as string == "undefined") {

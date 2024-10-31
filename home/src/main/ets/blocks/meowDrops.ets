@@ -153,6 +153,7 @@ struct meowDrops {
     if (this.delete_confirm >= 301) {
       this.data_list = [];
       this.showing_scratching_board = false;
+      this.delete_confirm = 0;
     }
   }
 }

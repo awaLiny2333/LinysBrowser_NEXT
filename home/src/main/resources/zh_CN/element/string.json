@@ -255,6 +255,10 @@
     {
       "name": "Index_drop_scratching_board_scratch",
       "value": "挠挠挠挠挠……"
+    },
+    {
+      "name": "Settings_experience_sys_back_to_access_backward",
+      "value": "使用系统返回返回上一页"
     }
   ]
 }

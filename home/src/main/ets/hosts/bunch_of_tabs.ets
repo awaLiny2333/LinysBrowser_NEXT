@@ -96,7 +96,9 @@ export class bunch_of_tabs {
   goBackward_onWorkingTab() {
     if (this.Tabs[this.current_working_tab_index].controller.accessBackward()) {
       this.Tabs[this.current_working_tab_index].controller.backward();
+      return true;
     }
+    return false;
   }
 
   // UA Stuff

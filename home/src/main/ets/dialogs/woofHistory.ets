@@ -361,11 +361,7 @@ struct meowRelation {
   }
 
   appear_time() {
-    let use_index = this.index;
-    if (use_index * 50 > this.scroll_area_height) {
-      use_index = Math.ceil(this.scroll_area_height / 50)
-    }
-    return (use_index) * 60;
+    return Math.min((this.index) * 60, 800);
   }
 
   select_unselect() {

@@ -53,19 +53,24 @@ May cost unimaginably long time to bring all these into the reality,
 or some of them will even lie on the table for ever... (ง •_•)ง
 
 ### Features
-
+- [ ] Cookies management (clear cookies)
+- [ ] Private mode
+- [ ] Disable JavaScript
+- [ ] Right click or long press menu on web links. (For preview and operations)
+- [ ] No picture mode
+- [ ] Reading mode
+- [ ] Plugins / custom scripts
 - [x] Respond to webpages' request of opening in new tab.
 - [x] Downloads from web.
-- [ ] Right click or long press menu on web links. (For preview and operations)
 - [x] UA switching and customizations. (UA related settings)
 - [x] Reopen tabs when launching.
 - [x] Multi-view parallel browsing.
 
 ### Experience
 
+- [ ] Customizable themes. (Colors)
 - [x] Customizable position for title bar. (Top or Bottom)
 - [x] Customizable position for Tabs bar. (Side or Top)
-- [ ] Customizable themes. (Colors)
 - [x] Adapt to system Back operations.
 - [x] Customizable global animation curve.
 

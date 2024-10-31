@@ -255,6 +255,10 @@
     {
       "name": "Index_drop_scratching_board_scratch",
       "value": "Scraaaaatchh..."
+    },
+    {
+      "name": "Settings_experience_sys_back_to_access_backward",
+      "value": "Use system back to access backward"
     }
   ]
 }
