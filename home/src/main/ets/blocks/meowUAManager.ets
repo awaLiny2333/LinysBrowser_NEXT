@@ -1,11 +1,11 @@
 import linysCapsuleButton from '../components/linysCapsuleButton';
 import linysSymbol from '../components/linysSymbol';
 import {
-    animation_default,
-    capsule_bar_height,
-    click_effect_default,
-    fontSize_Large,
-    fontSize_Normal
+  animation_default,
+  capsule_bar_height,
+  click_effect_default,
+  fontSize_Large,
+  fontSize_Normal
 } from '../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { bunch_of_user_agents, user_agent } from '../hosts/bunch_of_user_agents';
@@ -126,7 +126,8 @@ struct meowUAManager {
   }
 
   add_new_custom_ua() {
-    this.bunch_of_user_agents.add_user_agent(new user_agent(new Date().toLocaleString(), ""));
+    this.bunch_of_user_agents.add_user_agent(new user_agent(new Date().toLocaleString(),
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0"));
     this.sync_list_of_user_agents();
     this.save_user_agents_to_kv_store();
   }

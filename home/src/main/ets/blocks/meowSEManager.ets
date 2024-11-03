@@ -1,11 +1,11 @@
 import linysCapsuleButton from '../components/linysCapsuleButton';
 import linysSymbol from '../components/linysSymbol';
 import {
-    animation_default,
-    capsule_bar_height,
-    click_effect_default,
-    fontSize_Large,
-    fontSize_Normal
+  animation_default,
+  capsule_bar_height,
+  click_effect_default,
+  fontSize_Large,
+  fontSize_Normal
 } from '../hosts/bunch_of_defaults';
 import { bunch_of_search_engines, search_engine } from '../hosts/bunch_of_search_engines';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
@@ -87,7 +87,7 @@ struct meowSEManager {
         Blank()
         linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
           .onClick(() => {
-            this.add_new_custom_ua();
+            this.add_new_custom_search_engine();
           })
       } // Add Button
       .width("100%")
@@ -107,7 +107,8 @@ struct meowSEManager {
     let custom_search_engine = await this.bunch_of_settings.get_setting_key('custom_search_engines') as string;
     this.bunch_of_search_engines.import_string(custom_search_engine);
     this.sync_list_of_search_engines();
-    this.selected_index = await this.bunch_of_settings.get_setting_key('custom_search_engines_selected_index') as number;
+    this.selected_index =
+      await this.bunch_of_settings.get_setting_key('custom_search_engines_selected_index') as number;
 
     this.UA_loaded_from_disk = true;
     // Get UA
@@ -126,8 +127,9 @@ struct meowSEManager {
     this.sync_list_of_search_engines();
   }
 
-  add_new_custom_ua() {
-    this.bunch_of_search_engines.add_search_engine(new search_engine(new Date().toLocaleString(), ""));
+  add_new_custom_search_engine() {
+    this.bunch_of_search_engines.add_search_engine(new search_engine(new Date().toLocaleString(),
+      "https://bing.com/search?q=%s"));
     this.sync_list_of_search_engines();
     this.save_search_engines_to_kv_store();
   }
@@ -139,7 +141,8 @@ struct meowSEManager {
   }
 
   save_search_engines_to_kv_store() {
-    this.bunch_of_settings.set_setting_value_of_key('custom_search_engines', this.bunch_of_search_engines.export_string());
+    this.bunch_of_settings.set_setting_value_of_key('custom_search_engines',
+      this.bunch_of_search_engines.export_string());
     this.bunch_of_settings.set_setting_value_of_key('custom_search_engines_selected_index', this.selected_index);
   }
 }

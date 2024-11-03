@@ -78,7 +78,7 @@
     },
     {
       "name": "Settings_general_custom_ua",
-      "value": "Custom user-agent"
+      "value": "User-agent"
     },
     {
       "name": "Settings_general_custom_ua_default",
@@ -198,7 +198,7 @@
     },
     {
       "name": "Settings_general_custom_search_engine",
-      "value": "Custom search engine"
+      "value": "Search engine"
     },
     {
       "name": "Paralleow",
