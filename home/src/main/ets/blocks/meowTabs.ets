@@ -142,7 +142,7 @@ struct meowTabs {
       // Try switch tab
       this.webViews_ready = true;
       this.web_animation = { duration: 0 };
-      this.switch_tab(continue_tabs_main_on, true);
+      this.switch_tab(continue_tabs_main_on);
       setTimeout(() => {
         // This code is poop
         this.sync_list_info();
@@ -340,14 +340,12 @@ struct meowTabs {
     }
   }
 
-  switch_tab(target: number, dont_close_tabs_panel?: boolean) {
+  switch_tab(target: number) {
     console.log('switch tab to ' + target.toString())
-    if (this.current_main_tab_index == target) {
-      if (!dont_close_tabs_panel == true && !this.tablet_mode) {
-        this.showing_tabs = false;
-      }
-      this.choosing_paralleow = false;
+    if (!this.tablet_mode) {
+      this.showing_tabs = false;
     }
+    this.choosing_paralleow = false;
 
     // Switch
     this.current_main_tab_index = this.bunch_of_tabs.switchToTab(target);
