@@ -220,7 +220,7 @@ struct meowSEButton {
             this.editing = !this.editing;
             return;
           } // Toggle Edit Panel
-          this.set_global_UA_to_mine();
+          this.set_global_SE_to_mine();
           // Set UA
         })
         .height(this.button_height_default)
@@ -349,7 +349,7 @@ struct meowSEButton {
 
   }
 
-  set_global_UA_to_mine() {
+  set_global_SE_to_mine() {
     this.selected_index = -1;
     this.selected_index = this.my_index;
   }
@@ -364,7 +364,7 @@ struct meowSEButton {
     this.save_search_engine_to_kv_store();
 
     if (this.selected_index == this.my_index) {
-      this.set_global_UA_to_mine();
+      this.set_global_SE_to_mine();
     }
   }
 

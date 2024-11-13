@@ -43,3 +43,20 @@ export function home_url_default_blank() {
   let is_dark_mode = AppStorage.get('currentColorMode') as number == 0;
   return is_dark_mode ? 'meow://home_dark' : 'meow://home_light'
 }
+
+export function default_search_engines() {
+  let result = [
+    "Baidu\nhttps://www.baidu.com/s?wd=%s",
+    "Google\nhttps://www.google.com/search?q=%s",
+  ];
+  return result.join("\n");
+}
+
+export function default_user_agents() {
+  let result = [
+    "Firefox Windows 132\nMozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0",
+    "Chrome Windows 130\nMozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+    "Edge Windows 130\nMozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0",
+  ];
+  return result.join("\n");
+}

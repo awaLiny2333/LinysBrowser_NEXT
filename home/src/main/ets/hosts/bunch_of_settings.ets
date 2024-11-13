@@ -1,4 +1,5 @@
 import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
+import { default_search_engines, default_user_agents } from './bunch_of_defaults';
 
 export class bunch_of_settings {
   settings_list: settings_item[] = [];
@@ -11,7 +12,8 @@ export class bunch_of_settings {
       'custom_search_engines', 'custom_search_engines_selected_index',
       'settings_tabs_style', 'settings_tabs_open', 'sys_back_to_access_backward'];
   settings_defaults_value: string[] =
-    ['bottom', '5', '5', 'true', '', '', 'new tab', '', '-1', '36', '20', '', '-1', 'vertical', 'false', 'false'];
+    ['bottom', '5', '5', 'true', '', '', 'new tab', default_user_agents(), '-1', '36', '20', default_search_engines(),
+      '-1', 'vertical', 'false', 'false'];
   settings_defaults_type: string[] =
     ['string', 'number', 'number', 'boolean', 'string', 'string', 'string', 'string', 'number', 'number', 'number',
       'string', 'number', 'string', 'boolean', 'boolean'];
