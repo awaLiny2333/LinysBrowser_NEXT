@@ -279,6 +279,7 @@ struct woofHistory {
       }
     }
     this.refresh_selected_history_list();
+    this.bunch_of_history.reconstruct_plain_history();
     sandbox_save("history.txt", this.bunch_of_history.export_string());
     this.delete_confirm = 0;
   }
@@ -297,8 +298,6 @@ struct meowRelation {
   @Link selected_number: number;
   @Prop selecting: boolean;
   // UI Effects
-  @State offset_y: number = 50;
-  @State this_visibility: Visibility = Visibility.Hidden;
   @Prop scroll_area_height: number;
   @Prop human_time: string = new Date(this.label_link.accessed_time).toLocaleString();
   // Gateways
@@ -329,8 +328,6 @@ struct meowRelation {
     })
     .alignItems(HorizontalAlign.Start)
     .width("100%")
-    .visibility(this.this_visibility)
-    .offset({ y: this.offset_y })
     .backgroundColor(this.selected[this.index] ? $r('app.color.font_color_title') : $r('app.color.block_color'))
     .animation(animation_default())
     .onClick(() => {
@@ -345,12 +342,6 @@ struct meowRelation {
         this.controller.close();
       }
     })
-    .onAppear(() => {
-      setTimeout(() => {
-        this.offset_y = 0;
-        this.this_visibility = Visibility.Visible;
-      }, this.appear_time())
-    })
     .clickEffect(click_effect_default())
     .gesture(
       LongPressGesture({ repeat: false })
@@ -358,10 +349,6 @@ struct meowRelation {
           this.select_unselect();
         })
     )
-  }
-
-  appear_time() {
-    return Math.min((this.index) * 60, 800);
   }
 
   select_unselect() {

@@ -259,6 +259,22 @@
     {
       "name": "Settings_experience_sys_back_to_access_backward",
       "value": "使用系统返回返回上一页"
+    },
+    {
+      "name": "Settings_experience_use_adblock",
+      "value": "广告拦截"
+    },
+    {
+      "name": "Settings_experience_manage_adblock",
+      "value": "管理广告拦截"
+    },
+    {
+      "name": "Ads_block_dont_block_sites",
+      "value": "白名单（允许广告显示于）"
+    },
+    {
+      "name": "Ads_block_add_exception_domain",
+      "value": "添加一个例外域名"
     }
   ]
 }

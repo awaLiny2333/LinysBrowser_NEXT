@@ -259,6 +259,22 @@
     {
       "name": "Settings_experience_sys_back_to_access_backward",
       "value": "Use system back to access backward"
+    },
+    {
+      "name": "Settings_experience_use_adblock",
+      "value": "Ads blocker"
+    },
+    {
+      "name": "Settings_experience_manage_adblock",
+      "value": "Manage ads blocker"
+    },
+    {
+      "name": "Ads_block_dont_block_sites",
+      "value": "Exceptions (Allow ads on)"
+    },
+    {
+      "name": "Ads_block_add_exception_domain",
+      "value": "Add an exception domain"
     }
   ]
 }

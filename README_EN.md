@@ -54,12 +54,16 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 
 ### Features
 - [ ] Cookies management (clear cookies)
+- [ ] Cache management and clear
+- [x] Ads blocking
 - [ ] Private mode
 - [ ] Disable JavaScript
 - [ ] Right click or long press menu on web links. (For preview and operations)
 - [ ] No picture mode
 - [ ] Reading mode
+- [ ] Search suggestion
 - [ ] Plugins / custom scripts
+- [ ] DRM Content support
 - [x] Respond to webpages' request of opening in new tab.
 - [x] Downloads from web.
 - [x] UA switching and customizations. (UA related settings)
@@ -78,18 +82,25 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 
 Long way ahead.
 
-1. In some cases reopening tabs function won't work, and no new tabs are shown.
+1. As a result of Liny's unsystematic programming thoughts and rubbish codes, 
+   this application may contain performance problems.
+   Liny would appreciate that so much if you wish to report a problem, big or small!
+2. Due to a mysterious problem and a temporary but necessary compromise,
+   sometimes the AD blocking whitelist may not take effect in time after launching,
+   resulting in ads on the web page being blocked. 
+   (Trying to solve)
+3. In some cases reopening tabs function won't work, and no new tabs are shown.
    (Still under investigation)
-2. Perhaps due to performance issues on Windows x86-64 Emulators,
+4. Perhaps due to performance issues on Windows x86-64 Emulators,
    quickly opening plenty of new tabs may cause crashes due to error
    17100001 (Init error. The WebviewController must be associated with a Web component).
    (Seems to be solved, still under observation)
-3. Quickly closing plenty of tabs may cause tabs to disappear.
+5. Quickly closing plenty of tabs may cause tabs to disappear.
    This is because in some extreme occasions,
    the tab button is trying to close the last+1 index of the tab list.
    An if statement has been added before the operation
    in order to make sure the index is in the legal range.
    (Seems to be solved, still under observation)
-4. HarmonyOS UA is not understood by plenty of websites (But UA is customizable now).
-5. The vertical tabs panel animations may seem weird when the scroll is longer than the screen.
-6. This project requires HarmonyOS NEXT API12 to run.
+6. HarmonyOS UA is not understood by plenty of websites (But UA is customizable now).
+7. The vertical tabs panel animations may seem weird when the scroll is longer than the screen.
+8. This project requires HarmonyOS NEXT API12 to run.

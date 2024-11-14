@@ -202,3 +202,13 @@ export function url_meow_to_resource(input: string) {
   }
   return result;
 }
+
+export function match_domain(input: string) {
+  if (input.includes("//")) {
+    let split_list = input.split("\/");
+    if (split_list.length > 2) {
+      input = split_list[2];
+    }
+  }
+  return input;
+}

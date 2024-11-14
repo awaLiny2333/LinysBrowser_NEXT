@@ -3,20 +3,32 @@ import { default_search_engines, default_user_agents } from './bunch_of_defaults
 
 export class bunch_of_settings {
   settings_list: settings_item[] = [];
-  // Defaults
   // These codes are dumb :(((((
-  settings_defaults_key: string[] =
-    ['settings_title_bar_position', 'settings_max_bookmark_suggestions', 'settings_max_history_suggestions',
-      'settings_collect_new_history', 'home_url', 'new_tab_url', 'start_up_option', 'custom_user_agents',
-      'custom_user_agents_selected_index', 'animation_response', 'animation_damping_coefficient',
-      'custom_search_engines', 'custom_search_engines_selected_index',
-      'settings_tabs_style', 'settings_tabs_open', 'sys_back_to_access_backward'];
-  settings_defaults_value: string[] =
-    ['bottom', '5', '5', 'true', '', '', 'new tab', default_user_agents(), '-1', '36', '20', default_search_engines(),
-      '-1', 'vertical', 'false', 'false'];
-  settings_defaults_type: string[] =
-    ['string', 'number', 'number', 'boolean', 'string', 'string', 'string', 'string', 'number', 'number', 'number',
-      'string', 'number', 'string', 'boolean', 'boolean'];
+  settings_defaults_key: string[] = [];
+  // Defaults
+  settings_defaults_type: string[] = [];
+  settings_defaults_value: string[] = [];
+
+  constructor() {
+    this.add_setting('settings_title_bar_position', 'string', 'bottom');
+    this.add_setting('settings_max_bookmark_suggestions', 'number', '5');
+    this.add_setting('settings_max_history_suggestions', 'number', '5');
+    this.add_setting('settings_collect_new_history', 'boolean', 'true');
+    this.add_setting('home_url', 'string', '');
+    this.add_setting('new_tab_url', 'string', '');
+    this.add_setting('start_up_option', 'string', 'new tab');
+    this.add_setting('custom_user_agents', 'string', default_user_agents());
+    this.add_setting('custom_user_agents_selected_index', 'number', '-1');
+    this.add_setting('animation_response', 'number', '36');
+    this.add_setting('animation_damping_coefficient', 'number', '20');
+    this.add_setting('custom_search_engines', 'string', default_search_engines());
+    this.add_setting('custom_search_engines_selected_index', 'number', '-1');
+    this.add_setting('settings_tabs_style', 'string', 'vertical');
+    this.add_setting('settings_tabs_open', 'boolean', 'false');
+    this.add_setting('sys_back_to_access_backward', 'boolean', 'true');
+    this.add_setting('use_adblock', 'boolean', 'true');
+    this.add_setting('adblock_exceptions', 'string', 'bilibili.com');
+  }
 
   async get_setting_key(key: string) {
     for (let index = 0; index < this.settings_list.length; index++) {
@@ -63,6 +75,12 @@ export class bunch_of_settings {
     } else if (key_default_type == 'boolean') {
       kv_store_put(key, this.boolean_to_string(value as boolean));
     }
+  }
+
+  private add_setting(name: string, type: string, value: string) {
+    this.settings_defaults_key.push(name);
+    this.settings_defaults_type.push(type);
+    this.settings_defaults_value.push(value);
   }
 
   private async get_settings_string(key: string, default_404_fall_back: string) {

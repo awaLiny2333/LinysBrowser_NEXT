@@ -69,14 +69,23 @@ export default class HomeAbility extends UIAbility {
       // 2. 获取布局避让遮挡的区域
       let type = window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR; // 以导航条避让为例
       let avoidArea = windowClass.getWindowAvoidArea(type);
-      let bottomAvoidHeight = avoidArea.bottomRect.height; // 获取到导航条区域的高度
-      AppStorage.setOrCreate('bottomAvoidHeight', bottomAvoidHeight);
+      let avoid = avoidArea.bottomRect.height; // 获取到导航条区域的高度
+      AppStorage.setOrCreate('bottomAvoidHeight', avoid);
 
-      type = window.AvoidAreaType.TYPE_SYSTEM; // 以导航条避让为例
+      type = window.AvoidAreaType.TYPE_SYSTEM;
       avoidArea = windowClass.getWindowAvoidArea(type);
-      let topAvoidHeight = avoidArea.topRect.height; // 获取到导航条区域的高度
-      AppStorage.setOrCreate('topAvoidHeight', topAvoidHeight);
+      avoid = avoidArea.topRect.height;
+      AppStorage.setOrCreate('topAvoidHeight', avoid);
 
+      type = window.AvoidAreaType.TYPE_CUTOUT;
+      avoidArea = windowClass.getWindowAvoidArea(type);
+      avoid = avoidArea.leftRect.width;
+      AppStorage.setOrCreate('leftAvoidWidth', avoid);
+
+      type = window.AvoidAreaType.TYPE_CUTOUT;
+      avoidArea = windowClass.getWindowAvoidArea(type);
+      avoid = avoidArea.rightRect.width;
+      AppStorage.setOrCreate('rightAvoidWidth', avoid);
     });
   }
 

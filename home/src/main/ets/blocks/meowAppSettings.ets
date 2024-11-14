@@ -25,6 +25,8 @@ import woofHistory from '../dialogs/woofHistory';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import meowSEManager from './meowSEManager';
 import linysLink from '../components/linysLink';
+import woofAdsBlocker from '../dialogs/woofAdsBlocker';
+import { webview } from '@kit.ArkWeb';
 
 @Component
 struct meowAppSettings {
@@ -73,6 +75,8 @@ struct meowAppSettings {
   @Link settings_max_bookmark_suggestions: number;
   @Link settings_max_history_suggestions: number;
   @Link sys_back_to_access_backward: boolean;
+  @Link use_adblock: boolean | undefined;
+  @Link adblock_exceptions: string[];
   @Link settings_collect_new_history: boolean;
   // Edits
   @State new_tab_url_edit: string = "";
@@ -82,13 +86,19 @@ struct meowAppSettings {
   @State scroll_first: number = 0;
   @State scroll_last: number = 0;
   @State menu_text: string[] =
-    ['Settings_start_up', 'Settings_general', 'Settings_experience_history', 'Settings_Experience',
+    ['Settings_start_up', 'Settings_general', 'Settings_Experience', 'Settings_experience_history',
       'Settings_appearance', 'Settings_about'];
   // Dialogs
   woofHistory_control: CustomDialogController = new CustomDialogController({
     builder: woofHistory({ showing_settings: this.show }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 12,
+    cornerRadius: 16,
+    width: "90%",
+  });
+  adsBlocker_control: CustomDialogController = new CustomDialogController({
+    builder: woofAdsBlocker({ adblock_exceptions: this.adblock_exceptions }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16,
     width: "90%",
   });
   waterFlow_control: Scroller = new Scroller();
@@ -103,7 +113,7 @@ struct meowAppSettings {
           menu_text: this.menu_text,
         })
           .margin({ left: 15 })
-      }
+      } // Quick access on the left
       Column({ space: 10 }) {
         if (!this.tablet_mode) {
           menuScrollHorizontal({
@@ -113,7 +123,7 @@ struct meowAppSettings {
             menu_text: this.menu_text,
           })
             .margin({ left: 15, right: 15 })
-        }
+        } // Quick access on the top
         WaterFlow({ scroller: this.waterFlow_control }) {
           FlowItem() {
             Column({ space: 15 }) {
@@ -142,7 +152,7 @@ struct meowAppSettings {
               linysText({ text: $r('app.string.Settings_general_custom_ua') })
               meowUAManager()
 
-              // UA
+              // Search Engine
               linysText({ text: $r('app.string.Settings_general_custom_search_engine') })
               meowSEManager()
 
@@ -212,45 +222,6 @@ struct meowAppSettings {
 
           FlowItem() {
             Column({ space: 15 }) {
-
-              linysTitleText({ text: $r('app.string.Settings_experience_history') }) // History
-
-              Row() {
-                linysText({ text: $r('app.string.Settings_experience_history_record_new') })
-                Blank()
-                Toggle({ isOn: this.settings_collect_new_history, type: ToggleType.Switch })
-                  .switchPointColor($r('app.color.block_color'))
-                  .selectedColor($r('app.color.font_color_title'))
-                  .onChange(isOn => {
-                    this.settings_collect_new_history = isOn;
-                    this.bunch_of_settings.set_setting_value_of_key('settings_collect_new_history', isOn);
-                  })
-              } // Toggle History
-              .width("100%")
-
-              Row({ space: 10 }) {
-                linysTitleText({ text: "󰏕 " + this.history_length.toString() })
-                Blank()
-                linysText({ text: $r('app.string.Settings_experience_history_view') })
-                linysCapsuleButton({ text: "  󰀩  " })
-                  .onClick(() => {
-                    this.woofHistory_control.open();
-                  })
-              } // History management
-              .width("100%")
-            }
-            .padding(15)
-            .alignItems(HorizontalAlign.Start)
-            .justifyContent(FlexAlign.Start)
-            .width("100%")
-            .borderRadius(10)
-            .backgroundColor($r('app.color.start_window_background'))
-
-          } // History
-          .width("100%")
-
-          FlowItem() {
-            Column({ space: 15 }) {
               linysTitleText({ text: $r('app.string.Settings_Experience') })
 
               Row() {
@@ -304,6 +275,28 @@ struct meowAppSettings {
                   .margin({ right: 5 })
               } // Slider and display of max_history_suggestions
 
+              Row() {
+                linysText({ text: $r('app.string.Settings_experience_use_adblock'), max_lines: 1 })
+                  .layoutWeight(1)
+                Toggle({ isOn: this.use_adblock, type: ToggleType.Switch })
+                  .switchPointColor($r('app.color.block_color'))
+                  .selectedColor($r('app.color.font_color_title'))
+                  .onChange(isOn => {
+                    this.use_adblock = isOn;
+                    this.bunch_of_settings.set_setting_value_of_key('use_adblock', isOn);
+                  })
+              } // Use adblock
+              .width("100%")
+
+              Row({ space: 10 }) {
+                Blank()
+                linysText({ text: $r('app.string.Settings_experience_manage_adblock') })
+                linysCapsuleButton({ text: "  󰀠  " })
+                  .onClick(() => {
+                    this.adsBlocker_control.open();
+                  })
+              } // Ads Blocker management
+              .width("100%")
             }
             .padding(15)
             .alignItems(HorizontalAlign.Start)
@@ -313,6 +306,45 @@ struct meowAppSettings {
             .backgroundColor($r('app.color.start_window_background'))
 
           } // Experience
+          .width("100%")
+
+          FlowItem() {
+            Column({ space: 15 }) {
+
+              linysTitleText({ text: $r('app.string.Settings_experience_history') }) // History
+
+              Row() {
+                linysText({ text: $r('app.string.Settings_experience_history_record_new') })
+                Blank()
+                Toggle({ isOn: this.settings_collect_new_history, type: ToggleType.Switch })
+                  .switchPointColor($r('app.color.block_color'))
+                  .selectedColor($r('app.color.font_color_title'))
+                  .onChange(isOn => {
+                    this.settings_collect_new_history = isOn;
+                    this.bunch_of_settings.set_setting_value_of_key('settings_collect_new_history', isOn);
+                  })
+              } // Toggle History
+              .width("100%")
+
+              Row({ space: 10 }) {
+                linysTitleText({ text: "󰏕 " + this.history_length.toString() })
+                Blank()
+                linysText({ text: $r('app.string.Settings_experience_history_view') })
+                linysCapsuleButton({ text: "  󰀩  " })
+                  .onClick(() => {
+                    this.woofHistory_control.open();
+                  })
+              } // History management
+              .width("100%")
+            }
+            .padding(15)
+            .alignItems(HorizontalAlign.Start)
+            .justifyContent(FlexAlign.Start)
+            .width("100%")
+            .borderRadius(10)
+            .backgroundColor($r('app.color.start_window_background'))
+
+          } // History
           .width("100%")
 
           FlowItem() {
@@ -478,6 +510,37 @@ struct meowAppSettings {
     this.sys_back_to_access_backward =
       await this.bunch_of_settings.get_setting_key('sys_back_to_access_backward') as boolean;
 
+    // Get whether ads blocker is enabled
+    this.use_adblock = await this.bunch_of_settings.get_setting_key('use_adblock') as boolean;
+
+    // Get adblock exceptions
+    let exceptions_got = await this.bunch_of_settings.get_setting_key('adblock_exceptions') as string;
+    this.adblock_exceptions = exceptions_got.split('\n');
+    
+    console.log("awa " + this.adblock_exceptions.join(", "));
+
+    // If directly use addAdsBlockDisallowedList(this.adblock_exceptions)
+    // would cause Error: BusinessError 401: Parameter error. The type of domainSuffixes must be an array of string.
+    // So a copy of string[] is necessary so far
+    // WEIRD 눈_눈
+
+    let exceptions: string[] = [];
+    for (let i = 0; i < this.adblock_exceptions.length; i++) {
+      if (this.adblock_exceptions[i] != "" && this.adblock_exceptions[i] != " ") {
+        exceptions.push(this.adblock_exceptions[i]);
+      }
+    }
+    this.adblock_exceptions = exceptions;
+
+    setTimeout(() => {
+      // Idk why but without a timeout this doesn't work
+      try {
+        webview.AdsBlockManager.addAdsBlockDisallowedList(exceptions);
+      } catch (e) {
+        console.log(e);
+      }
+    }, 150)
+
     let result = await sandbox_open("history.txt");
     if (result as string == "undefined") {
       // no history before
@@ -499,6 +562,11 @@ struct meowAppSettings {
   }
 
   on_panel_open() {
+    try {
+      webview.AdsBlockManager.addAdsBlockDisallowedList(this.adblock_exceptions);
+    } catch (e) {
+      console.log(e);
+    }
     // Sync Data
     if (this.settings_title_bar_position == "top") {
       this.title_bar_position_selected = [0];
@@ -625,6 +693,7 @@ struct menuScrollHorizontal {
     .edgeEffect(EdgeEffect.Spring)
     .width("100%")
     .scrollable(ScrollDirection.Horizontal)
+    .scrollBar(BarState.Off)
   }
 
   border_radius(index: number) {
@@ -648,6 +717,7 @@ struct menuScrollVertical {
   @Link on_index_first: number;
   @Link on_index_last: number;
   @Link scroll_to_gateway: number;
+  @State max_width: number | undefined = undefined;
   @State menu_text: string[] = [];
 
   build() {
@@ -673,6 +743,7 @@ struct menuScrollVertical {
     .edgeEffect(EdgeEffect.Spring)
     .height("100%")
     .scrollable(ScrollDirection.Vertical)
+    .scrollBar(BarState.Off)
   }
 
   border_radius(index: number) {
@@ -703,16 +774,15 @@ struct menuItem {
     Row() {
       Text(this.my_text)
         .fontColor(this.on_index_first <= this.my_index && this.my_index <= this.on_index_last ?
-        $r('app.color.block_color') : $r('app.color.font_color_title'))
-        .fontWeight(this.on_index_first <= this.my_index && this.my_index <= this.on_index_last ?
-        FontWeight.Medium : FontWeight.Normal)
+        $r('app.color.block_color') :
+        $r('app.color.font_color_title'))// .fontWeight(this.on_index_first <= this.my_index && this.my_index <= this.on_index_last ?
+          // FontWeight.Medium : FontWeight.Normal)
         .fontSize(fontSize_Large() - 2)
     }
     .clickEffect(click_effect_default())
     .padding(7)
     .animation(animation_default())
     .onClick(() => {
-      // this.on_index_first = this.my_index;
       this.scroll_to_gateway = this.my_index;
     })
   }

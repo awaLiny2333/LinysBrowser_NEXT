@@ -2,7 +2,12 @@ import linysSymbol from '../components/linysSymbol';
 import linysShowButton from '../components/linysShowButton';
 import meowAppSettings from './meowAppSettings';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
-import { unify_search_input_into_url, url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
+import {
+  match_domain,
+  unify_search_input_into_url,
+  url_meow_to_resource,
+  url_resource_to_meow
+} from '../utils/url_tools';
 import {
   animation_default,
   animation_popup_duration,
@@ -20,6 +25,7 @@ import woofQR from '../dialogs/woofQR';
 import meowTabsHorizontal from './meowTabsHorizontal';
 import { unifiedDataChannel, uniformTypeDescriptor } from '@kit.ArkData';
 import meowDrops from './meowDrops';
+import woofAdsBlocker from '../dialogs/woofAdsBlocker';
 
 @Component
 struct meowTitleBar {
@@ -68,6 +74,8 @@ struct meowTitleBar {
   @Link settings_tabs_style: string;
   @Link settings_collect_new_history: boolean;
   @Link sys_back_to_access_backward: boolean;
+  @Link use_adblock: boolean;
+  @Link adblock_exceptions: string[];
   @State settings_max_bookmark_advice: number = 5;
   @State settings_max_history_advice: number = 5;
   // Dialogs
@@ -77,7 +85,17 @@ struct meowTitleBar {
       link: this.current_url
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 12
+    cornerRadius: 16
+  })
+  woofAdsBlocker_control: CustomDialogController = new CustomDialogController({
+    builder: woofAdsBlocker({
+      adblock_exceptions: this.adblock_exceptions,
+      add_exception_domain_edit: match_domain(this.search_input),
+      showing_add_panel: true
+    }),
+    width: "90%",
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16
   })
 
   build() {
@@ -349,12 +367,18 @@ struct meowTitleBar {
       .width("100%")
       .animation(animation_default())
 
-      Row() {
+      Row({ space: 10 }) {
         linysSymbol({
           symbol_glyph_target: 'sys.symbol.qrcode'
         })// QRcode
           .onClick(() => {
             this.woofQR_control.open();
+          })
+        linysSymbol({
+          symbol_glyph_target: 'sys.symbol.ad_rectangle_fill'
+        })// Enable ads
+          .onClick(() => {
+            this.woofAdsBlocker_control.open();
           })
       } // Title Bar of More Options
       .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
@@ -366,6 +390,8 @@ struct meowTitleBar {
       meowAppSettings({
         showing_app_settings: this.showing_app_settings,
         settings_collect_new_history: this.settings_collect_new_history,
+        use_adblock: this.use_adblock,
+        adblock_exceptions: this.adblock_exceptions,
         sys_back_to_access_backward: this.sys_back_to_access_backward,
         settings_max_bookmark_suggestions: this.settings_max_bookmark_advice,
         settings_max_history_suggestions: this.settings_max_history_advice,

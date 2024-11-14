@@ -16,13 +16,15 @@ struct Index {
   // UI Environment
   @StorageLink('bottomAvoidHeight') bottomAvoidHeight: number = 1;
   @StorageLink('topAvoidHeight') topAvoidHeight: number = 1;
+  @StorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
+  @StorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
   @StorageLink('tablet_mode') tablet_mode: boolean = false;
   @StorageLink('screen_width') screen_width: number = 0;
   @StorageLink('screen_height') screen_height: number = 0;
   @StorageLink('animation_response') animation_response: number = 0.36;
   @StorageLink('animation_damping_coefficient') animation_damping: number = 0.8;
   // UI Statuses
-  @State webViews_ready: boolean = false;
+  @State webViews_ready: boolean | undefined = undefined;
   @State showing_downloads: boolean = false;
   @State showing_more_options: boolean = false;
   @State showing_app_settings: boolean = false;
@@ -56,6 +58,8 @@ struct Index {
   @State sys_back_to_access_backward: boolean = false;
   @State settings_tabs_style: string = "";
   @State settings_collect_new_history: boolean = true;
+  @State use_adblock: boolean = false;
+  @State adblock_exceptions: string[] = [];
 
   async aboutToAppear(): Promise<void> {
     this.animation_response = await this.bunch_of_settings.get_setting_key('animation_response') as number;
@@ -159,6 +163,7 @@ struct Index {
               settings_collect_new_history: this.settings_collect_new_history,
               search_input: this.search_input,
               is_search_input_typing: this.is_search_input_typing,
+              use_adblock: this.use_adblock
             })
               .visibility(this.webViews_ready ? Visibility.Visible : Visibility.Hidden)
           } // WebViews
@@ -195,6 +200,8 @@ struct Index {
           settings_title_bar_position: this.settings_title_bar_position,
           settings_tabs_style: this.settings_tabs_style,
           title_bar_alignRules: this.title_bar_alignRules,
+          use_adblock: this.use_adblock,
+          adblock_exceptions: this.adblock_exceptions,
           // Web actions
           showing_tabs: this.showing_tabs,
           showing_bookmarks: this.showing_bookmarks,
@@ -206,8 +213,8 @@ struct Index {
 
       } // Web, progress, and bottom bar
       .layoutWeight(1)
-      .width("100%")
       .animation(animation_default())
+      // .margin({ left: px2vp(this.leftAvoidWidth), right: px2vp(this.rightAvoidWidth) })
 
       Row()// Bottom Bar Avoid
         .width("100%")
@@ -242,7 +249,7 @@ struct Index {
     }
   }
 
-  on_main_area_change(o: Area, n: Area) {
+  on_main_area_change(_old: Area, n: Area) {
     this.screen_width = n.width as number;
     this.screen_height = n.height as number;
     this.tablet_mode = this.screen_width > 500;

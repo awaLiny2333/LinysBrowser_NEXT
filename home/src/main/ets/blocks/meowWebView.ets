@@ -14,7 +14,7 @@ struct meowWebView {
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history();
   @StorageLink('current_main_tab_index') @Watch('on_tab_info_change') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') @Watch('on_tab_info_change') current_sub_tab_index: number = -1;
-  @Prop webViews_ready: boolean;
+  @Prop webViews_ready: boolean | undefined;
   // Controls and environments
   @StorageLink('tab_titles') tab_titles: string[] = []
   @StorageLink('current_title') current_title: string = "=￣ω￣=";
@@ -31,6 +31,8 @@ struct meowWebView {
   @Link is_search_input_typing: boolean;
   // Settings
   @Prop settings_collect_new_history: boolean;
+  @Prop @Watch('on_use_adblock_state_change') use_adblock: boolean;
+  @State last_use_adblock: boolean | undefined = undefined;
   // Stuffs
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
   @StorageLink('universal_new_download_gateway') new_download_gateway: string = "";
@@ -175,6 +177,9 @@ struct meowWebView {
               if (this.now_global_custom_UA != "") {
                 this.bunch_of_tabs.Tabs[Label.index_key].controller.setCustomUserAgent(this.now_global_custom_UA);
               }
+              if (this.use_adblock) {
+                this.bunch_of_tabs.Tabs[Label.index_key].controller.enableAdsBlock(true);
+              }
               // Restore Web State
               this.bunch_of_tabs.restore_web_state(this.web_state_arrays, Label.index_key);
             })
@@ -233,6 +238,19 @@ struct meowWebView {
     this.last_time_out_id = setTimeout(() => {
       this.web_animation = animation_default();
     }, 50)
+  }
+
+  on_use_adblock_state_change() {
+    // Enable ads block for all tabs
+    if (this.last_use_adblock === undefined) {
+      this.last_use_adblock = this.use_adblock;
+      return;
+    }
+    for (let index = 0; index < this.bunch_of_tabs.Tabs.length; index++) {
+      if (this.bunch_of_tabs.Tabs[index].controller) {
+        this.bunch_of_tabs.Tabs[index].controller.enableAdsBlock(this.use_adblock);
+      }
+    }
   }
 
   // Kind of constants
