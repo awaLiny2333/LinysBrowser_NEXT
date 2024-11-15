@@ -31,13 +31,13 @@ struct meowWebView {
   @Link is_search_input_typing: boolean;
   // Settings
   @Prop settings_collect_new_history: boolean;
-  @Prop @Watch('on_use_adblock_state_change') use_adblock: boolean;
+  @Link @Watch('on_use_adblock_state_change') use_adblock: boolean;
   @State last_use_adblock: boolean | undefined = undefined;
   // Stuffs
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
   @StorageLink('universal_new_download_gateway') new_download_gateway: string = "";
   @StorageProp('web_animation') web_animation: AnimateParam = animation_default();
-  @State last_time_out_id: number | undefined = undefined;
+  @State last_timeout_id: number | undefined = undefined;
 
   build() {
     RelativeContainer() {
@@ -48,7 +48,7 @@ struct meowWebView {
             controller:
             this.bunch_of_tabs.Tabs[Label.index_key] !== undefined ?
             this.bunch_of_tabs.Tabs[Label.index_key].controller : undefined
-          }) // Main WEB
+          })// Main WEB
             .width("100%")
             .height("100%")
             .databaseAccess(true)
@@ -177,6 +177,7 @@ struct meowWebView {
               if (this.now_global_custom_UA != "") {
                 this.bunch_of_tabs.Tabs[Label.index_key].controller.setCustomUserAgent(this.now_global_custom_UA);
               }
+              console.log('[Meow][meowWebView] enableAdsBlock: ' + (this.use_adblock ? 'true' : 'false'))
               if (this.use_adblock) {
                 this.bunch_of_tabs.Tabs[Label.index_key].controller.enableAdsBlock(true);
               }
@@ -232,17 +233,20 @@ struct meowWebView {
   }
 
   on_tab_info_change() {
-    if (this.last_time_out_id) {
-      clearTimeout(this.last_time_out_id);
+    if (this.last_timeout_id) {
+      clearTimeout(this.last_timeout_id);
     }
-    this.last_time_out_id = setTimeout(() => {
+    this.last_timeout_id = setTimeout(() => {
       this.web_animation = animation_default();
     }, 50)
   }
 
   on_use_adblock_state_change() {
+    console.log('[Meow][meowWebView] enableAdsBlock: ' + (this.use_adblock ? 'true' : 'false'))
+
     // Enable ads block for all tabs
     if (this.last_use_adblock === undefined) {
+      // Prevent: Init error. The WebviewController must be associated with a Web component
       this.last_use_adblock = this.use_adblock;
       return;
     }

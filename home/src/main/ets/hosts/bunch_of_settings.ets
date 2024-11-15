@@ -3,29 +3,32 @@ import { default_search_engines, default_user_agents } from './bunch_of_defaults
 
 export class bunch_of_settings {
   settings_list: settings_item[] = [];
-  // These codes are dumb :(((((
-  settings_defaults_key: string[] = [];
   // Defaults
+  settings_defaults_key: string[] = [];
   settings_defaults_type: string[] = [];
   settings_defaults_value: string[] = [];
 
   constructor() {
+    // Settings
     this.add_setting('settings_title_bar_position', 'string', 'bottom');
     this.add_setting('settings_max_bookmark_suggestions', 'number', '5');
     this.add_setting('settings_max_history_suggestions', 'number', '5');
     this.add_setting('settings_collect_new_history', 'boolean', 'true');
-    this.add_setting('home_url', 'string', '');
-    this.add_setting('new_tab_url', 'string', '');
-    this.add_setting('start_up_option', 'string', 'new tab');
-    this.add_setting('custom_user_agents', 'string', default_user_agents());
-    this.add_setting('custom_user_agents_selected_index', 'number', '-1');
-    this.add_setting('animation_response', 'number', '36');
-    this.add_setting('animation_damping_coefficient', 'number', '20');
-    this.add_setting('custom_search_engines', 'string', default_search_engines());
-    this.add_setting('custom_search_engines_selected_index', 'number', '-1');
     this.add_setting('settings_tabs_style', 'string', 'vertical');
     this.add_setting('settings_tabs_open', 'boolean', 'false');
     this.add_setting('sys_back_to_access_backward', 'boolean', 'true');
+
+    this.add_setting('home_url', 'string', '');
+    this.add_setting('new_tab_url', 'string', '');
+    this.add_setting('start_up_option', 'string', 'new tab');
+    this.add_setting('animation_response', 'number', '36');
+    this.add_setting('animation_damping_coefficient', 'number', '20');
+
+    this.add_setting('custom_user_agents', 'string', default_user_agents());
+    this.add_setting('custom_user_agents_selected_index', 'number', '-1');
+    this.add_setting('custom_search_engines', 'string', default_search_engines());
+    this.add_setting('custom_search_engines_selected_index', 'number', '-1');
+
     this.add_setting('use_adblock', 'boolean', 'true');
     this.add_setting('adblock_exceptions', 'string', '');
   }
@@ -45,7 +48,8 @@ export class bunch_of_settings {
       result = await this.get_settings_string(key, key_default_value);
     } else if (key_default_type == 'number') {
       result = await this.get_settings_number(key, key_default_value);
-    } else { // Boolean
+    } else {
+      // Boolean
       result = await this.get_settings_boolean(key, key_default_value);
     }
     let item: settings_item = new settings_item(key, result);

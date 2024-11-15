@@ -178,7 +178,7 @@
     },
     {
       "name": "Settings_experience_history_selecting_items",
-      "value": "items"
+      "value": "item(s)"
     },
     {
       "name": "Settings_experience_max_history_advice",
@@ -214,7 +214,7 @@
     },
     {
       "name": "Settings_appearance_tabs_style",
-      "value": "Tabs style (landscape／tablet)"
+      "value": "(For landscape / tablets) Tabs style"
     },
     {
       "name": "Settings_appearance_tabs_style_vertical",

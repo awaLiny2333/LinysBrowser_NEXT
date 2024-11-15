@@ -76,7 +76,7 @@ struct meowAppSettings {
   @Link settings_max_bookmark_suggestions: number;
   @Link settings_max_history_suggestions: number;
   @Link sys_back_to_access_backward: boolean;
-  @Link use_adblock: boolean | undefined;
+  @Link use_adblock: boolean;
   @Link adblock_exceptions: string[];
   @Link settings_collect_new_history: boolean;
   // Edits
@@ -518,7 +518,7 @@ struct meowAppSettings {
     let exceptions_got = await this.bunch_of_settings.get_setting_key('adblock_exceptions') as string;
     this.adblock_exceptions = exceptions_got.split('\n');
 
-    console.log("awa " + this.adblock_exceptions.join(", "));
+    console.log("[Meow][meowAppSettings] AdsBlocker exceptions: " + this.adblock_exceptions.join(", "));
 
     // If directly use addAdsBlockDisallowedList(this.adblock_exceptions)
     // would cause Error: BusinessError 401: Parameter error. The type of domainSuffixes must be an array of string.

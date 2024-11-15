@@ -58,7 +58,7 @@ struct Index {
   @State sys_back_to_access_backward: boolean = false;
   @State settings_tabs_style: string = "";
   @State settings_collect_new_history: boolean = true;
-  @State use_adblock: boolean = false;
+  @State use_adblock: boolean = true;
   @State adblock_exceptions: string[] = [];
 
   async aboutToAppear(): Promise<void> {

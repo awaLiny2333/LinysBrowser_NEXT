@@ -89,18 +89,22 @@ Long way ahead.
    sometimes the AD blocking whitelist may not take effect in time after launching,
    resulting in ads on the web page being blocked. 
    (Trying to solve)
-3. In some cases reopening tabs function won't work, and no new tabs are shown.
+3. Due to a mysterious problem and a temporary but necessary compromise,
+   sometimes the AD blocking function itself may not take effect in time after launching,
+   resulting in ads on the web page not being blocked.
+   (Trying to solve)
+4. In some cases reopening tabs function won't work, and no new tabs are shown.
    (Still under investigation)
-4. Perhaps due to performance issues on Windows x86-64 Emulators,
+5. Perhaps due to performance issues on Windows x86-64 Emulators,
    quickly opening plenty of new tabs may cause crashes due to error
    17100001 (Init error. The WebviewController must be associated with a Web component).
    (Seems to be solved, still under observation)
-5. Quickly closing plenty of tabs may cause tabs to disappear.
+6. Quickly closing plenty of tabs may cause tabs to disappear.
    This is because in some extreme occasions,
    the tab button is trying to close the last+1 index of the tab list.
    An if statement has been added before the operation
    in order to make sure the index is in the legal range.
    (Seems to be solved, still under observation)
-6. HarmonyOS UA is not understood by plenty of websites (But UA is customizable now).
-7. The vertical tabs panel animations may seem weird when the scroll is longer than the screen.
-8. This project requires HarmonyOS NEXT API13 to run.
+7. HarmonyOS UA is not understood by plenty of websites (But UA is customizable now).
+8. The vertical tabs panel animations may seem weird when the scroll is longer than the screen.
+9. This project requires HarmonyOS NEXT API13 to run.

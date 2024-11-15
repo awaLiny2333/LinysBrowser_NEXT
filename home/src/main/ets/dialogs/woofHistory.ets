@@ -91,6 +91,7 @@ struct woofHistory {
       .padding({ top: 5, bottom: 10, right: this.tablet_mode ? 10 : 0 })
       .width(this.tablet_mode ? "35%" : "100%")
       .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
+      .animation(animation_default())
       .id("title_history")
 
       Column({ space: 10 }) {
@@ -255,6 +256,7 @@ struct woofHistory {
       .alignItems(HorizontalAlign.End)
       .id("controls_history")
       .alignRules(this.alignRules_foot)
+      .animation(animation_default())
       .width(this.tablet_mode ? "35%" : "100%")
 
     }
