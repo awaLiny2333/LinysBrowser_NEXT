@@ -274,7 +274,31 @@
     },
     {
       "name": "Ads_block_add_exception_domain",
-      "value": "添加一个例外域名"
+      "value": "添加例外域名"
+    },
+    {
+      "name": "Ads_block_desc_1",
+      "value": "一旦启用广告拦截器，所有网站上，所有识别到的广告都会消失！"
+    },
+    {
+      "name": "Ads_block_desc_2",
+      "value": "不过，如果一些网站的域名被添加到了白名单，那么这些网站上出现的广告就会被赦免。"
+    },
+    {
+      "name": "Have_a_Nice_Surf",
+      "value": "冲浪愉快！(～o￣3￣)～"
+    },
+    {
+      "name": "History_desc_1",
+      "value": "按时间顺序，所有浏览历史记录都显示在这里。"
+    },
+    {
+      "name": "History_desc_2",
+      "value": "长按一条记录以开始选择，进入选择模式后点击其他记录就可以多选。"
+    },
+    {
+      "name": "Ads_block_desc_3",
+      "value": "长按一条域名以开始选择，进入选择模式后点击其他域名就可以多选。"
     }
   ]
 }

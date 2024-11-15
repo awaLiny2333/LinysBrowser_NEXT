@@ -274,7 +274,31 @@
     },
     {
       "name": "Ads_block_add_exception_domain",
-      "value": "Add an exception domain"
+      "value": "Add an exception"
+    },
+    {
+      "name": "Ads_block_desc_1",
+      "value": "If Ads Blocker is enabled, ads identified on all sites would be blocked."
+    },
+    {
+      "name": "Ads_block_desc_2",
+      "value": "However, if some sites' domains is added to this whitelist, ads on those sites would be allowed."
+    },
+    {
+      "name": "Have_a_Nice_Surf",
+      "value": "Have a nice Surf! (～o￣3￣)～"
+    },
+    {
+      "name": "History_desc_1",
+      "value": "All browse history will be shown here, in time order."
+    },
+    {
+      "name": "History_desc_2",
+      "value": "Long press a record to select. After entering selecting mode, tap on other records to multi-select."
+    },
+    {
+      "name": "Ads_block_desc_3",
+      "value": "Long press a domain to select. After entering selecting mode, tap on other domains to multi-select."
     }
   ]
 }

@@ -48,7 +48,7 @@ struct meowAppSettings {
   @State versionName: string = "Version Name";
   @State versionNo: number = 0;
   @State history_length: number = this.bunch_of_history.history_list.length;
-  // Settings
+  // Segment Button Options
   @State title_bar_position_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [{ text: '  󰀐  ' }, { text: '  󰃐  ' }] as ItemRestriction<SegmentButtonTextItem>,
     selectedBackgroundColor: $r('app.color.font_color_title'),
@@ -69,6 +69,7 @@ struct meowAppSettings {
     selectedBackgroundColor: $r('app.color.font_color_title'),
     selectedFontColor: $r('app.color.start_window_background')
   })
+  // Settings
   @State @Watch('on_title_bar_position_changed') title_bar_position_selected: number[] = [0];
   @State @Watch('on_tabs_style_changed') tabs_style_selected: number[] = [0];
   @State @Watch('on_start_up_page_changed') start_up_page_selected: number[] = [0];
@@ -516,13 +517,14 @@ struct meowAppSettings {
     // Get adblock exceptions
     let exceptions_got = await this.bunch_of_settings.get_setting_key('adblock_exceptions') as string;
     this.adblock_exceptions = exceptions_got.split('\n');
-    
+
     console.log("awa " + this.adblock_exceptions.join(", "));
 
     // If directly use addAdsBlockDisallowedList(this.adblock_exceptions)
     // would cause Error: BusinessError 401: Parameter error. The type of domainSuffixes must be an array of string.
     // So a copy of string[] is necessary so far
     // WEIRD 눈_눈
+    // TODO: Find out why "401: The type of domainSuffixes must be an array of string"
 
     let exceptions: string[] = [];
     for (let i = 0; i < this.adblock_exceptions.length; i++) {
@@ -533,7 +535,8 @@ struct meowAppSettings {
     this.adblock_exceptions = exceptions;
 
     setTimeout(() => {
-      // Idk why but without a timeout this doesn't work
+      // Idk why but without a proper timeout this doesn't work
+      // TODO: Find out why addAdsBlockDisallowedList fails
       try {
         webview.AdsBlockManager.addAdsBlockDisallowedList(exceptions);
       } catch (e) {
@@ -717,8 +720,8 @@ struct menuScrollVertical {
   @Link on_index_first: number;
   @Link on_index_last: number;
   @Link scroll_to_gateway: number;
-  @State max_width: number | undefined = undefined;
   @State menu_text: string[] = [];
+  @State button_Lengths: number[] = new Array(this.menu_text.length).fill(0);
 
   build() {
     Scroll() {
@@ -731,6 +734,10 @@ struct menuScrollVertical {
             on_index_last: this.on_index_last,
             scroll_to_gateway: this.scroll_to_gateway,
           })
+            .onAreaChange((_old, n) => {
+              // Record button
+              this.button_Lengths[index] = n.width as number;
+            })
             .backgroundColor(this.on_index_first <= index && index <= this.on_index_last ?
             $r('app.color.font_color_title') : "transparent")
             .borderRadius(this.border_radius(index))
@@ -748,17 +755,41 @@ struct menuScrollVertical {
 
   border_radius(index: number) {
     if (index == this.on_index_first && index == this.on_index_last) {
+      // If I am the only one in range
       return 10;
     }
+
+    let topLeft = 0;
+    let topRight = 0;
+    let bottomLeft = 0;
+    let bottomRight = 0;
+
     if (index == this.on_index_first) {
-      let ra: BorderRadiuses = { topLeft: 10, topRight: 10 };
-      return ra;
+      topLeft = 10;
+      topRight = 10;
     }
     if (index == this.on_index_last) {
-      let ra: BorderRadiuses = { bottomLeft: 10, bottomRight: 10 };
-      return ra;
+      bottomLeft = 10;
+      bottomRight = 10;
     }
-    return 0;
+    if (index + 1 < this.menu_text.length) {
+      if (this.button_Lengths[index] > this.button_Lengths[index + 1]) {
+        bottomLeft = 10;
+      }
+    }
+    if (index - 1 >= 0) {
+      if (this.button_Lengths[index] > this.button_Lengths[index - 1]) {
+        topLeft = 10;
+      }
+    }
+
+    let ra: BorderRadiuses = {
+      topLeft: topLeft,
+      topRight: topRight,
+      bottomLeft: bottomLeft,
+      bottomRight: bottomRight
+    };
+    return ra;
   }
 }
 
@@ -774,9 +805,7 @@ struct menuItem {
     Row() {
       Text(this.my_text)
         .fontColor(this.on_index_first <= this.my_index && this.my_index <= this.on_index_last ?
-        $r('app.color.block_color') :
-        $r('app.color.font_color_title'))// .fontWeight(this.on_index_first <= this.my_index && this.my_index <= this.on_index_last ?
-          // FontWeight.Medium : FontWeight.Normal)
+        $r('app.color.block_color') : $r('app.color.font_color_title'))
         .fontSize(fontSize_Large() - 2)
     }
     .clickEffect(click_effect_default())

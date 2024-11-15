@@ -58,7 +58,7 @@
             "HomeAbility"
           ]
         }
-      }
+      },
 //      {
 //        "name" : "ohos.permission.READ_PASTEBOARD",
 //        "reason": "$string:permission_reason_READ_PASTEPOARD",

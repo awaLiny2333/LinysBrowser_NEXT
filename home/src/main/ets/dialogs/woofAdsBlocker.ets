@@ -16,6 +16,7 @@ import linysCapsuleButton from '../components/linysCapsuleButton';
 struct woofAdsBlocker {
   controller: CustomDialogController;
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
+  @StorageLink('tablet_mode') tablet_mode: boolean = false;
   @Link adblock_exceptions: string[];
   @State add_exception_domain_edit: string = "";
   @State showing_add_panel: boolean = false;
@@ -24,22 +25,81 @@ struct woofAdsBlocker {
   @State selecting: boolean = false;
   @State selected_number: number = 0;
   @State delete_confirm: number = 0;
+  // alignRules
+  alignRules_head_non_tablet: AlignRuleOption = {
+    top: { anchor: "__container__", align: VerticalAlign.Top },
+    left: { anchor: "__container__", align: HorizontalAlign.Start }
+  };
+  alignRules_head_tablet: AlignRuleOption = {
+    top: { anchor: "__container__", align: VerticalAlign.Top },
+    bottom: { anchor: "controls_ads_blocker", align: VerticalAlign.Top },
+    left: { anchor: "__container__", align: HorizontalAlign.Start },
+  };
+  alignRules_foot: AlignRuleOption = {
+    bottom: { anchor: "__container__", align: VerticalAlign.Bottom },
+    left: { anchor: "__container__", align: HorizontalAlign.Start }
+  };
+  alignRules_body_tablet: AlignRuleOption = {
+    top: { anchor: "__container__", align: VerticalAlign.Top },
+    right: { anchor: "__container__", align: HorizontalAlign.End }
+  };
+  alignRules_body_non_tablet: AlignRuleOption = {
+    top: { anchor: "title_ads_blocker", align: VerticalAlign.Bottom },
+    bottom: { anchor: "controls_ads_blocker", align: VerticalAlign.Top },
+    right: { anchor: "__container__", align: HorizontalAlign.End }
+  };
 
   build() {
-    Column() {
-      Column({ space: 10 }) {
-        linysTitleText({
-          text: $r('app.string.Settings_experience_manage_adblock'),
-          max_lines: 1
-        })
-          .padding({ top: 5 })
-          .width("100%")
+    RelativeContainer() {
+      Scroll() {
+        Column({ space: 10 }) {
+          linysTitleText({
+            text: $r('app.string.Settings_experience_manage_adblock'),
+            max_lines: 1
+          })
+            .width("100%")
+            .padding({ bottom: 5 })
+          linysText({
+            text: $r('app.string.Ads_block_desc_1'),
+            max_lines: 6
+          })
+            .width("100%")
+            .opacity(0.9)
+          linysText({
+            text: $r('app.string.Ads_block_desc_2'),
+            max_lines: 6
+          })
+            .width("100%")
+            .opacity(0.9)
+          linysText({
+            text: $r('app.string.Ads_block_desc_3'),
+            max_lines: 6
+          })
+            .width("100%")
+            .opacity(0.9)
+          linysText({
+            text: $r('app.string.Have_a_Nice_Surf'),
+            max_lines: 2
+          })
+            .width("100%")
+            .opacity(0.9)
+        } // Title
+        .width("100%")
+      }
+      .align(Alignment.TopStart)
+      .edgeEffect(EdgeEffect.Spring)
+      .padding({ top: 5, bottom: 10, right: this.tablet_mode ? 10 : 0 })
+      .width(this.tablet_mode ? "35%" : "100%")
+      .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
+      .id("title_ads_blocker")
 
+      Column() {
         linysText({
           text: $r('app.string.Ads_block_dont_block_sites'),
           max_lines: 3
         })
           .width("100%")
+          .padding({ bottom: 10 })
 
         Scroll() {
           Column() {
@@ -67,112 +127,117 @@ struct woofAdsBlocker {
         .scrollable(ScrollDirection.Vertical)
         .edgeEffect(EdgeEffect.Spring)
         .align(Alignment.Top)
-        .layoutWeight(1)
-        .margin({ top: 3, bottom: 3 })
-        .width("100%")
         .borderRadius(10)
         .backgroundColor($r('app.color.block_color'))
+        .width("100%")
+        .layoutWeight(1)
+      } // Whitelist
+      .width(this.tablet_mode ? "65%" : "100%")
+      .height(this.tablet_mode ? "100%" : undefined)
+      .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)
+      .animation(animation_default())
 
+      Column() {
         linysShowButton({
           show: this.showing_add_panel,
           symbol_glyph_target: "sys.symbol.plus",
           text: $r('app.string.Ads_block_add_exception_domain')
-        })
+        })// Add Button
           .onClick(() => {
             this.showing_add_panel = !this.showing_add_panel;
           })
-      } // List
-      .alignItems(HorizontalAlign.End)
-      .layoutWeight(1)
-      .animation(animation_default())
 
-      Scroll() {
-        Column({ space: 8 }) {
-          TextInput({ text: this.add_exception_domain_edit })// Input domain
-            .onChange((value) => {
-              this.add_exception_domain_edit = value;
-            })
-            .fontWeight(FontWeight.Regular)
-            .fontColor($r('app.color.font_color_title'))
-            .caretColor($r('app.color.font_color_title'))
-            .selectedBackgroundColor($r('app.color.font_color_title'))
-            .width("100%")
-            .onSubmit(() => {
-              this.add_exception(this.add_exception_domain_edit);
-              this.add_exception_domain_edit = "";
-              this.showing_add_panel = false;
-            })
-            .height(capsule_bar_height())
-            .animation(animation_default())
-
-          linysCapsuleButton({ text: "  󰀓  " })
-            .animation(animation_default())
-            .onClick(() => {
-              this.add_exception(this.add_exception_domain_edit);
-              this.add_exception_domain_edit = "";
-              this.showing_add_panel = false;
-            })
-        }
-        .padding({ top: 10 })
-        .alignItems(HorizontalAlign.End)
-        .width("100%")
-      } // Add
-      .scrollBar(BarState.Off)
-      .width("100%")
-      .height(this.showing_add_panel ? 90 : 0)
-      .animation(animation_default())
-
-      Scroll() {
-        Column({ space: 10 }) {
-          Row() {
-            linysTitleText({ text: $r('app.string.Settings_experience_history_selecting') })
-            linysTitleText({ text: " " + this.selected_number.toString() + " " })
-            linysTitleText({ text: $r('app.string.Settings_experience_history_selecting_items') })
-          }
-
-          Row() {
-            linysSymbol({ symbol_glyph_target: 'sys.symbol.list_checkmask' })
-              .onClick(() => {
-                this.select_all();
+        Scroll() {
+          Column({ space: 8 }) {
+            TextInput({ text: this.add_exception_domain_edit })// Input domain
+              .onChange((value) => {
+                this.add_exception_domain_edit = value;
               })
-            Blank()
-            Button("  󰀁  ")// Delete
-              .type(ButtonType.Capsule)
-              .backgroundColor(this.delete_confirm > 0 ? $r('app.color.start_window_background') :
-              $r("app.color.font_color_title"))
-              .fontColor(this.delete_confirm > 0 ? $r('app.color.font_color_title') :
-              $r('app.color.start_window_background'))
-              .border({
-                width: 2,
-                color: this.delete_confirm > 0 ? $r('app.color.font_color_title') : "transparent"
+              .fontWeight(FontWeight.Regular)
+              .fontColor($r('app.color.font_color_title'))
+              .caretColor($r('app.color.font_color_title'))
+              .selectedBackgroundColor($r('app.color.font_color_title'))
+              .width("100%")
+              .onSubmit(() => {
+                this.add_exception(this.add_exception_domain_edit);
+                this.add_exception_domain_edit = "";
+                this.showing_add_panel = false;
               })
-              .fontSize(fontSize_Large())
-              .fontWeight(FontWeight.Medium)
               .height(capsule_bar_height())
-              .onClick(() => {
-                this.delete_confirm += 300;
-                if (this.delete_confirm >= 301) {
-                  // Delete
-                  this.delete_selected();
-                }
-              })
-              .clickEffect(click_effect_default())
               .animation(animation_default())
+
+            linysCapsuleButton({ text: "  󰀓  " })
+              .animation(animation_default())
+              .onClick(() => {
+                this.add_exception(this.add_exception_domain_edit);
+                this.add_exception_domain_edit = "";
+                this.showing_add_panel = false;
+              })
           }
+          .padding({ top: 10 })
+          .alignItems(HorizontalAlign.End)
           .width("100%")
-        }
-        .alignItems(HorizontalAlign.Start)
+        } // Add
+        .scrollBar(BarState.Off)
         .width("100%")
+        .height(this.showing_add_panel ? 90 : 0)
         .animation(animation_default())
-      } // Select controls
-      .scrollBar(BarState.Off)
-      .width("100%")
-      .height(this.selecting ? 80 : 0)
-      .animation(animation_default())
+
+        Scroll() {
+          Column({ space: 10 }) {
+            Row() {
+              linysTitleText({ text: $r('app.string.Settings_experience_history_selecting') })
+              linysTitleText({ text: " " + this.selected_number.toString() + " " })
+              linysTitleText({ text: $r('app.string.Settings_experience_history_selecting_items') })
+            }
+
+            Row() {
+              linysSymbol({ symbol_glyph_target: 'sys.symbol.list_checkmask' })
+                .onClick(() => {
+                  this.select_all();
+                })
+              Blank()
+              Button("  󰀁  ")// Delete
+                .type(ButtonType.Capsule)
+                .backgroundColor(this.delete_confirm > 0 ? $r('app.color.start_window_background') :
+                $r("app.color.font_color_title"))
+                .fontColor(this.delete_confirm > 0 ? $r('app.color.font_color_title') :
+                $r('app.color.start_window_background'))
+                .border({
+                  width: 2,
+                  color: this.delete_confirm > 0 ? $r('app.color.font_color_title') : "transparent"
+                })
+                .fontSize(fontSize_Large())
+                .fontWeight(FontWeight.Medium)
+                .height(capsule_bar_height())
+                .onClick(() => {
+                  this.delete_confirm += 300;
+                  if (this.delete_confirm >= 301) {
+                    // Delete
+                    this.delete_selected();
+                  }
+                })
+                .clickEffect(click_effect_default())
+                .animation(animation_default())
+            }
+            .width("100%")
+          }
+          .alignItems(HorizontalAlign.Start)
+          .width("100%")
+          .animation(animation_default())
+        } // Select controls
+        .scrollBar(BarState.Off)
+        .width("100%")
+        .height(this.selecting ? 70 : 0)
+        .animation(animation_default())
+      } // Controls
+      .padding({ top: 10, right: this.tablet_mode ? 10 : 0 })
+      .alignItems(HorizontalAlign.End)
+      .id("controls_ads_blocker")
+      .alignRules(this.alignRules_foot)
+      .width(this.tablet_mode ? "35%" : "100%")
     }
     .padding(15)
-    .alignItems(HorizontalAlign.Start)
-    .justifyContent(FlexAlign.Start)
     .width("100%")
     .height("100%")
     .backgroundColor($r('app.color.start_window_background'))

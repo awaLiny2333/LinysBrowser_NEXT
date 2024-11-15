@@ -103,4 +103,4 @@ Long way ahead.
    (Seems to be solved, still under observation)
 6. HarmonyOS UA is not understood by plenty of websites (But UA is customizable now).
 7. The vertical tabs panel animations may seem weird when the scroll is longer than the screen.
-8. This project requires HarmonyOS NEXT API12 to run.
+8. This project requires HarmonyOS NEXT API13 to run.

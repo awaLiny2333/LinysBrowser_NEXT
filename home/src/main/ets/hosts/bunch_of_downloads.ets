@@ -89,7 +89,7 @@ export class bunch_of_downloads {
 
       })
         .catch((err: BusinessError) => {
-          console.error(`[bunch_of_downloads][ERROR] Invoke downloadTask failed, code is ${err.code}, message is ${err.message}`);
+          console.error(`[bunch_of_downloads][ERROR] Meow Invoke downloadTask failed, code is ${err.code}, message is ${err.message}`);
         });
 
     } catch (error) {

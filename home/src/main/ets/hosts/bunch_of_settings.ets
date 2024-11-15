@@ -27,7 +27,7 @@ export class bunch_of_settings {
     this.add_setting('settings_tabs_open', 'boolean', 'false');
     this.add_setting('sys_back_to_access_backward', 'boolean', 'true');
     this.add_setting('use_adblock', 'boolean', 'true');
-    this.add_setting('adblock_exceptions', 'string', 'bilibili.com');
+    this.add_setting('adblock_exceptions', 'string', '');
   }
 
   async get_setting_key(key: string) {

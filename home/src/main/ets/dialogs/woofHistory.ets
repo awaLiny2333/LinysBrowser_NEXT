@@ -15,6 +15,7 @@ import { sandbox_save } from '../utils/storage_tools';
 struct woofHistory {
   controller: CustomDialogController;
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history();
+  @StorageLink('tablet_mode') tablet_mode: boolean = false;
   @State scroll_area_height: number = 0;
   @Link showing_settings: boolean;
   // Interactions
@@ -33,12 +34,67 @@ struct woofHistory {
   @State @Watch('on_select_change') selected: boolean[] = this.all_false(this.selected_history_list.length);
   @State selecting: boolean = false;
   @State selected_number: number = 0;
+  // alignRules
+  alignRules_head_non_tablet: AlignRuleOption = {
+    top: { anchor: "__container__", align: VerticalAlign.Top },
+    left: { anchor: "__container__", align: HorizontalAlign.Start },
+  };
+  alignRules_head_tablet: AlignRuleOption = {
+    top: { anchor: "__container__", align: VerticalAlign.Top },
+    bottom: { anchor: "controls_history", align: VerticalAlign.Top },
+    left: { anchor: "__container__", align: HorizontalAlign.Start },
+  };
+  alignRules_foot: AlignRuleOption = {
+    bottom: { anchor: "__container__", align: VerticalAlign.Bottom },
+    left: { anchor: "__container__", align: HorizontalAlign.Start }
+  };
+  alignRules_body_tablet: AlignRuleOption = {
+    top: { anchor: "__container__", align: VerticalAlign.Top },
+    right: { anchor: "__container__", align: HorizontalAlign.End }
+  };
+  alignRules_body_non_tablet: AlignRuleOption = {
+    top: { anchor: "title_history", align: VerticalAlign.Bottom },
+    bottom: { anchor: "controls_history", align: VerticalAlign.Top },
+    right: { anchor: "__container__", align: HorizontalAlign.End }
+  };
 
   build() {
-    Column() {
+    RelativeContainer() {
+      Scroll() {
+        Column({ space: 15 }) {
+          linysTitleText({ text: $r('app.string.Settings_experience_history_view') })
+            .padding({ top: 5 })
+            .width("100%")
+          linysText({
+            text: $r('app.string.History_desc_1'),
+            max_lines: 6
+          })
+            .width("100%")
+            .opacity(0.9)
+          linysText({
+            text: $r('app.string.History_desc_2'),
+            max_lines: 6
+          })
+            .width("100%")
+            .opacity(0.9)
+          linysText({
+            text: $r('app.string.Have_a_Nice_Surf'),
+            max_lines: 2
+          })
+            .width("100%")
+            .opacity(0.9)
+        } // Title
+        .width("100%")
+      }
+      .align(Alignment.TopStart)
+      .edgeEffect(EdgeEffect.Spring)
+      .padding({ top: 5, bottom: 10, right: this.tablet_mode ? 10 : 0 })
+      .width(this.tablet_mode ? "35%" : "100%")
+      .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
+      .id("title_history")
+
       Column({ space: 10 }) {
-        linysTitleText({ text: $r('app.string.Settings_experience_history_view') })
-          .padding({ top: 5 })
+
         Row() {
           linysText({
             text: this.showing_before ?
@@ -49,7 +105,8 @@ struct woofHistory {
             .opacity(0.7)
           linysText({ text: " (" + this.selected_history_list.length.toString() + ")" })
             .opacity(0.7)
-        }
+        } // Time elapse description
+        .width("100%")
 
         Scroll() {
           Column() {
@@ -87,7 +144,12 @@ struct woofHistory {
         .width("100%")
         .borderRadius(10)
         .backgroundColor($r('app.color.block_color'))
+      } // List
+      .width(this.tablet_mode ? "65%" : "100%")
+      .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)
+      .animation(animation_default())
 
+      Column() {
         Row({ space: 10 }) {
           linysShowButton({
             text: $r('app.string.Settings_experience_history_before'),
@@ -137,68 +199,68 @@ struct woofHistory {
               this.showing_before = false;
               this.refresh_selected_history_list();
             })
-        } // Tab selectors
+        } // Time selectors
         .width("100%")
         .justifyContent(FlexAlign.End)
-      }
-      .alignItems(HorizontalAlign.Start)
-      .width("100%")
-      .layoutWeight(1)
-      .animation(animation_default())
 
-      Scroll() {
-        Column({ space: 10 }) {
-          Row() {
-            linysTitleText({ text: $r('app.string.Settings_experience_history_selecting') })
-            linysTitleText({ text: " " + this.selected_number.toString() + " " })
-            linysTitleText({ text: $r('app.string.Settings_experience_history_selecting_items') })
-          }
+        Scroll() {
+          Column({ space: 10 }) {
+            Row() {
+              linysTitleText({ text: $r('app.string.Settings_experience_history_selecting') })
+              linysTitleText({ text: " " + this.selected_number.toString() + " " })
+              linysTitleText({ text: $r('app.string.Settings_experience_history_selecting_items') })
+            }
 
-          Row() {
-            linysSymbol({ symbol_glyph_target: 'sys.symbol.list_checkmask' })
-              .onClick(() => {
-                this.select_all();
-              })
-            Blank()
-            Button("  󰀁  ")// Delete
-              .type(ButtonType.Capsule)
-              .backgroundColor(this.delete_confirm > 0 ? $r('app.color.start_window_background') :
-              $r("app.color.font_color_title"))
-              .fontColor(this.delete_confirm > 0 ? $r('app.color.font_color_title') :
-              $r('app.color.start_window_background'))
-              .border({
-                width: 2,
-                color: this.delete_confirm > 0 ? $r('app.color.font_color_title') : "transparent"
-              })
-              .fontSize(fontSize_Large())
-              .fontWeight(FontWeight.Medium)
-              .height(capsule_bar_height())
-              .onClick(() => {
-                this.delete_confirm += 300;
-                if (this.delete_confirm >= 301) {
-                  // Delete
-                  this.delete_selected();
-                }
-              })
-              .clickEffect(click_effect_default())
-              .animation(animation_default())
+            Row() {
+              linysSymbol({ symbol_glyph_target: 'sys.symbol.list_checkmask' })
+                .onClick(() => {
+                  this.select_all();
+                })
+              Blank()
+              Button("  󰀁  ")// Delete
+                .type(ButtonType.Capsule)
+                .backgroundColor(this.delete_confirm > 0 ? $r('app.color.start_window_background') :
+                $r("app.color.font_color_title"))
+                .fontColor(this.delete_confirm > 0 ? $r('app.color.font_color_title') :
+                $r('app.color.start_window_background'))
+                .border({
+                  width: 2,
+                  color: this.delete_confirm > 0 ? $r('app.color.font_color_title') : "transparent"
+                })
+                .fontSize(fontSize_Large())
+                .fontWeight(FontWeight.Medium)
+                .height(capsule_bar_height())
+                .onClick(() => {
+                  this.delete_confirm += 300;
+                  if (this.delete_confirm >= 301) {
+                    // Delete
+                    this.delete_selected();
+                  }
+                })
+                .clickEffect(click_effect_default())
+                .animation(animation_default())
+            }
+            .width("100%")
           }
+          .alignItems(HorizontalAlign.Start)
           .width("100%")
-        }
-        .alignItems(HorizontalAlign.Start)
+          .animation(animation_default())
+        } // Select controls
+        .scrollBar(BarState.Off)
         .width("100%")
+        .height(this.selecting ? 80 : 0)
         .animation(animation_default())
-      } // Select controls
-      .scrollBar(BarState.Off)
-      .width("100%")
-      .height(this.selecting ? 80 : 0)
-      .animation(animation_default())
+      }
+      .padding({ top: 10, right: this.tablet_mode ? 10 : 0 })
+      .alignItems(HorizontalAlign.End)
+      .id("controls_history")
+      .alignRules(this.alignRules_foot)
+      .width(this.tablet_mode ? "35%" : "100%")
 
     }
     .padding(15)
-    .alignItems(HorizontalAlign.Start)
-    .justifyContent(FlexAlign.End)
     .width("100%")
+    .height("100%")
     .backgroundColor($r('app.color.start_window_background'))
     .onAppear(() => {
       setInterval(() => {
