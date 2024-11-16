@@ -143,6 +143,7 @@ export class bunch_of_tabs {
     if (target >= this.Tabs.length) {
       target = this.Tabs.length - 1;
     }
+    this.current_working_tab_index = -1;
     this.current_working_tab_index = target;
     return target;
   }
@@ -169,10 +170,12 @@ export class bunch_of_tabs {
       Date_ID += 1;
     }
     let new_TabLabel: tab_label = new tab_label(Date_ID, this.Tabs.length);
+
     this.used_date_ids.push(Date_ID)
     this.Tabs.push(new_TabInfo);
     this.Labels.push(new_TabLabel);
     this.current_working_tab_index = this.Tabs.length - 1;
+
     return this.current_working_tab_index as number;
   }
 
@@ -201,8 +204,6 @@ export class bunch_of_tabs {
         landing_destination = target - 1;
         // If in the middle
       }
-    } else {
-
     }
 
     this.switchToTab(-1)

@@ -262,11 +262,11 @@
     },
     {
       "name": "Settings_experience_use_adblock",
-      "value": "广告拦截"
+      "value": "广告过滤"
     },
     {
       "name": "Settings_experience_manage_adblock",
-      "value": "管理广告拦截"
+      "value": "管理广告过滤"
     },
     {
       "name": "Ads_block_dont_block_sites",
@@ -278,7 +278,7 @@
     },
     {
       "name": "Ads_block_desc_1",
-      "value": "一旦启用广告拦截器，所有网站上，所有识别到的广告都会消失！"
+      "value": "一旦启用广告过滤，所有网站上，所有识别到的广告都会消失！"
     },
     {
       "name": "Ads_block_desc_2",

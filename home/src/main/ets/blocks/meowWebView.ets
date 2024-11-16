@@ -3,6 +3,8 @@ import { bunch_of_history, history_record } from '../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_label } from '../hosts/bunch_of_tabs';
 import { sandbox_save } from '../utils/storage_tools';
 import { url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
+import { webview } from '@kit.ArkWeb';
+import { bunch_of_settings } from '../hosts/bunch_of_settings';
 
 @Component
 struct meowWebView {
@@ -12,6 +14,7 @@ struct meowWebView {
   @StorageLink('web_state_arrays') web_state_arrays: Uint8Array[] = [];
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history();
+  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
   @StorageLink('current_main_tab_index') @Watch('on_tab_info_change') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') @Watch('on_tab_info_change') current_sub_tab_index: number = -1;
   @Prop webViews_ready: boolean | undefined;
@@ -32,12 +35,44 @@ struct meowWebView {
   // Settings
   @Prop settings_collect_new_history: boolean;
   @Link @Watch('on_use_adblock_state_change') use_adblock: boolean;
-  @State last_use_adblock: boolean | undefined = undefined;
+  @Link adblock_exceptions: string[];
   // Stuffs
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
   @StorageLink('universal_new_download_gateway') new_download_gateway: string = "";
   @StorageProp('web_animation') web_animation: AnimateParam = animation_default();
   @State last_timeout_id: number | undefined = undefined;
+
+  async aboutToAppear(): Promise<void> {
+
+    // Get whether ads blocker is enabled
+    this.use_adblock = await this.bunch_of_settings.get_setting_key('use_adblock') as boolean;
+
+    // Get adblock exceptions
+    let exceptions_got = await this.bunch_of_settings.get_setting_key('adblock_exceptions') as string;
+    this.adblock_exceptions = exceptions_got.split('\n');
+
+    // If directly use addAdsBlockDisallowedList(this.adblock_exceptions)
+    // would cause Error: BusinessError 401: Parameter error. The type of domainSuffixes must be an array of string.
+    // So a manual copy of string[] is unavoidable so far
+    // WEIRD 눈_눈
+    // TODO: Find out why "401: The type of domainSuffixes must be an array of string" if don't manually copy this array
+
+    let exceptions: string[] = [];
+    for (let i = 0; i < this.adblock_exceptions.length; i++) {
+      if (this.adblock_exceptions[i] != "" && this.adblock_exceptions[i] != " ") {
+        exceptions.push(this.adblock_exceptions[i]);
+      }
+    }
+
+    // Set
+    this.adblock_exceptions = exceptions;
+    console.log("[Meow][meowAppSettings] AdsBlocker exceptions: " + this.adblock_exceptions.join(", "));
+
+    // TODO: Find out why this doesn't work here
+    // Set Ads Blocker exception list
+    // webview.AdsBlockManager.addAdsBlockDisallowedList(this.adblock_exceptions);
+
+  }
 
   build() {
     RelativeContainer() {
@@ -64,8 +99,7 @@ struct meowWebView {
             })
             .onErrorReceive((e) => {
               if (e) {
-                console.error("[ArkWeb][ERROR] "
-                  + e.error.getErrorCode() + ", " + e.error.getErrorInfo()
+                console.error("[ArkWeb][ERROR] " + e.error.getErrorCode() + ", " + e.error.getErrorInfo()
                   + " @ " + this.tab_urls[Label.index_key])
                 // Log web errors
               }
@@ -111,9 +145,9 @@ struct meowWebView {
                 this.bunch_of_tabs.Tabs[Label.index_key].recovery = false;
                 // log
                 if (!this.settings_collect_new_history) {
-                  console.log("[Meow][meowWebView] Didn't save history for settings disabled.");
+                  console.log("[meowWebView] Didn't save history for settings disabled.");
                 } else {
-                  console.log("[Meow][meowWebView] Didn't save history for a recovery process in progress");
+                  console.log("[meowWebView] Didn't save history for a recovery process in progress");
                 }
               }
             })
@@ -178,9 +212,18 @@ struct meowWebView {
                 this.bunch_of_tabs.Tabs[Label.index_key].controller.setCustomUserAgent(this.now_global_custom_UA);
               }
               console.log('[Meow][meowWebView] enableAdsBlock: ' + (this.use_adblock ? 'true' : 'false'))
-              if (this.use_adblock) {
-                this.bunch_of_tabs.Tabs[Label.index_key].controller.enableAdsBlock(true);
+              this.bunch_of_tabs.Tabs[Label.index_key].controller.enableAdsBlock(this.use_adblock);
+
+              // Set Ads Blocker exception list
+              try {
+                console.log('[Meow][meowTabs] add Ads Blocker Exceptions success. Operated by tab No.' +
+                Label.index_key.toString())
+                webview.AdsBlockManager.addAdsBlockDisallowedList(this.adblock_exceptions);
+              } catch (e) {
+                console.error('[ERROR][Meow][meowTabs] add Ads Blocker Exceptions error: ')
+                console.error(e);
               }
+
               // Restore Web State
               this.bunch_of_tabs.restore_web_state(this.web_state_arrays, Label.index_key);
             })

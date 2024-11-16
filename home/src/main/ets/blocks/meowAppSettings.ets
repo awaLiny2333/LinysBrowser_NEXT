@@ -488,39 +488,6 @@ struct meowAppSettings {
       this.versionNo = bundleInfo.versionCode;
     })
 
-    // Get whether ads blocker is enabled
-    this.use_adblock = await this.bunch_of_settings.get_setting_key('use_adblock') as boolean;
-
-    // Get adblock exceptions
-    let exceptions_got = await this.bunch_of_settings.get_setting_key('adblock_exceptions') as string;
-    this.adblock_exceptions = exceptions_got.split('\n');
-
-    console.log("[Meow][meowAppSettings] AdsBlocker exceptions: " + this.adblock_exceptions.join(", "));
-
-    // If directly use addAdsBlockDisallowedList(this.adblock_exceptions)
-    // would cause Error: BusinessError 401: Parameter error. The type of domainSuffixes must be an array of string.
-    // So a copy of string[] is necessary so far
-    // WEIRD 눈_눈
-    // TODO: Find out why "401: The type of domainSuffixes must be an array of string"
-
-    let exceptions: string[] = [];
-    for (let i = 0; i < this.adblock_exceptions.length; i++) {
-      if (this.adblock_exceptions[i] != "" && this.adblock_exceptions[i] != " ") {
-        exceptions.push(this.adblock_exceptions[i]);
-      }
-    }
-    this.adblock_exceptions = exceptions;
-
-    setTimeout(() => {
-      // Idk why but without a proper timeout this doesn't work
-      // TODO: Find out why addAdsBlockDisallowedList fails
-      try {
-        webview.AdsBlockManager.addAdsBlockDisallowedList(exceptions);
-      } catch (e) {
-        console.error(e);
-      }
-    }, 150)
-
     // Get settings of title bar position
     this.settings_title_bar_position =
       await this.bunch_of_settings.get_setting_key('settings_title_bar_position') as string;

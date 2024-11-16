@@ -286,12 +286,12 @@ struct woofAdsBlocker {
   }
 
   add_exception(domain: string) {
+    webview.AdsBlockManager.addAdsBlockDisallowedList([domain]);
     if (this.adblock_exceptions.includes(domain)) {
       // don't add same domains
       return;
     }
     this.adblock_exceptions.push(domain);
-    webview.AdsBlockManager.addAdsBlockDisallowedList([domain]);
     this.bunch_of_settings.set_setting_value_of_key('adblock_exceptions', this.adblock_exceptions.join("\n"))
   }
 

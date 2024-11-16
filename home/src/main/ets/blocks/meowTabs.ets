@@ -7,6 +7,7 @@ import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import linysShowButton from '../components/linysShowButton';
 import linysText from '../components/linysText';
 import { sandbox_open_array } from '../utils/storage_tools';
+import { webview } from '@kit.ArkWeb';
 
 @Component
 struct meowTabs {
@@ -36,6 +37,8 @@ struct meowTabs {
   @State recover_tabs_finished: boolean = false;
   @StorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
   @Link settings_tabs_style: string;
+  @Link use_adblock: boolean;
+  @Link adblock_exceptions: string[];
   // Animation info
   tab_height_default: number = 42;
   scroll_controller: Scroller = new Scroller();
@@ -64,7 +67,7 @@ struct meowTabs {
     let continue_tabs_count_string = await kv_store_get("continue_tabs_count");
     let continue_tabs_main_on_string = await kv_store_get("continue_tabs_main_on");
     let continue_tabs_sub_on_string = await kv_store_get("continue_tabs_sub_on");
-    let continue_tabs_count = 1;
+    let continue_tabs_count = 0;
     let continue_tabs_main_on = 0;
     let continue_tabs_sub_on = 0;
 
@@ -73,8 +76,8 @@ struct meowTabs {
     this.bunch_of_tabs.home_url = home_url;
 
     if (continue_tabs_count_string == "undefined") {
-      kv_store_put("continue_tabs_count", "1");
-      continue_tabs_count = 1;
+      kv_store_put("continue_tabs_count", "0");
+      continue_tabs_count = 0;
     } else {
       continue_tabs_count = Number.parseInt(continue_tabs_count_string);
     }
@@ -98,12 +101,15 @@ struct meowTabs {
     console.log("[Meow][meowTabs] Got continue_tabs_main_on: " + continue_tabs_main_on_string);
     console.log("[Meow][meowTabs] Got continue_tabs_sub_on: " + continue_tabs_sub_on_string);
 
-    // Start Up
+    // Start Up: generate / recover tabs
     if (start_up_option == "new tab") {
       this.new_tab(new_tab_url);
-      if (new_tab_url != "") {
+      if (new_tab_url == "") {
+        // If is default blank page
+      } else {
         this.webViews_ready = true;
       }
+      this.switch_tab(0);
 
     } else if (start_up_option == "home") {
       if (home_url == "") {
@@ -112,28 +118,30 @@ struct meowTabs {
         this.webViews_ready = true;
         this.new_tab(home_url);
       }
+      this.switch_tab(0);
 
     } else {
       // continue
-      this.webViews_ready = true;
-      let web_state_arrays: Uint8Array[] = []
-      for (let index = 0; index < continue_tabs_count; index++) {
-        let key = "continue_tabs_web_state_array_" + index.toString();
-        // let web_state_array = await kv_store_get_uint_8_array(key);
 
+      // Init empty
+      let web_state_arrays: Uint8Array[] = [];
+      for (let index = 0; index < continue_tabs_count; index++) {
+        // Read continue tabs data
+        let key = "continue_tabs_web_state_array_" + index.toString();
         let array_buffer = await sandbox_open_array(key);
         if (array_buffer) {
           let web_state_array = new Uint8Array(array_buffer);
           web_state_arrays.push(web_state_array);
         }
       }
-      // Set to AppStorage
+
+      this.webViews_ready = true;
+      // Save to AppStorage
       AppStorage.setOrCreate('web_state_arrays', web_state_arrays);
       // Create new tabs
       for (let index = 0; index < web_state_arrays.length; index++) {
         let web_state_array = web_state_arrays[index];
         if (web_state_array.length > 0) {
-          // console.log(web_state_array.length.toString())
           this.new_tab("", true);
         } else {
           this.new_tab("", false);
@@ -143,14 +151,13 @@ struct meowTabs {
       this.webViews_ready = true;
       this.web_animation = { duration: 0 };
       this.switch_tab(continue_tabs_main_on);
-      setTimeout(() => {
-        // This code is poop
-        this.sync_list_info();
-        if (continue_tabs_sub_on < this.tab_titles.length) {
-          this.current_sub_tab_index = continue_tabs_sub_on;
-        }
-      }, 50)
+      this.sync_all_list_info();
+      // Recover Paralleow
+      if (continue_tabs_sub_on < this.tab_titles.length) {
+        this.current_sub_tab_index = continue_tabs_sub_on;
+      }
     }
+
     this.recover_tabs_finished = true;
   }
 
@@ -343,8 +350,10 @@ struct meowTabs {
   switch_tab(target: number) {
     console.log('switch tab to ' + target.toString())
     if (!this.tablet_mode) {
+      // Auto close panel
       this.showing_tabs = false;
     }
+
     this.choosing_paralleow = false;
 
     // Switch
@@ -398,7 +407,7 @@ struct meowTabs {
     // Update history
     this.update_backward_forward_access()
     // Get synced lists
-    this.sync_list_info()
+    this.sync_all_list_info()
     // Set CURRENT variables
     this.update_current_info()
     // Update Input Search Box
@@ -458,7 +467,7 @@ struct meowTabs {
     // Set loading progress
   }
 
-  sync_list_info() {
+  sync_all_list_info() {
     this.tab_titles = this.bunch_of_tabs.get_all_titles()
     this.tab_urls = this.bunch_of_tabs.get_all_urls()
     this.tab_is_loading = this.bunch_of_tabs.get_all_is_loading();

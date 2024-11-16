@@ -123,6 +123,8 @@ struct Index {
                   webViews_ready: this.webViews_ready,
                   showing_tabs: this.showing_tabs,
                   settings_tabs_style: this.settings_tabs_style,
+                  adblock_exceptions: this.adblock_exceptions,
+                  use_adblock: this.use_adblock,
                   // Statuses
                   search_input: this.search_input,
                   is_search_input_typing: this.is_search_input_typing,
@@ -163,7 +165,8 @@ struct Index {
               settings_collect_new_history: this.settings_collect_new_history,
               search_input: this.search_input,
               is_search_input_typing: this.is_search_input_typing,
-              use_adblock: this.use_adblock
+              use_adblock: this.use_adblock,
+              adblock_exceptions: this.adblock_exceptions
             })
               .visibility(this.webViews_ready ? Visibility.Visible : Visibility.Hidden)
           } // WebViews
@@ -214,6 +217,7 @@ struct Index {
       } // Web, progress, and bottom bar
       .layoutWeight(1)
       .animation(animation_default())
+
       // .margin({ left: px2vp(this.leftAvoidWidth), right: px2vp(this.rightAvoidWidth) })
 
       Row()// Bottom Bar Avoid
