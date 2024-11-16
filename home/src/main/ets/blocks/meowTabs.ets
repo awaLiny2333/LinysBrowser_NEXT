@@ -371,6 +371,7 @@ struct meowTabs {
 
     if (target == this.current_sub_tab_index || target == this.current_main_tab_index) {
       // Turn paralleow off if closing any of the two
+      console.log('[Meow][LinysTabs] Turn Paralleow off')
       this.current_sub_tab_index = -1;
     }
 

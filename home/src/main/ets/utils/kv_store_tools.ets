@@ -121,7 +121,7 @@ async function get_kv_store_into_app_storage() {
 
   try {
     let kvManager = distributedKVStore.createKVManager(kvManagerConfig);
-    console.info("[Meow][kv_store_tools] Succeeded in creating KVManager");
+    console.info("[kv_store_tools] Succeeded in creating KVManager");
     // Get kvManager
 
     const options: distributedKVStore.Options = {
@@ -135,16 +135,16 @@ async function get_kv_store_into_app_storage() {
 
     await kvManager.getKVStore<distributedKVStore.DeviceKVStore>('storeId', options)
       .then((store: distributedKVStore.DeviceKVStore) => {
-        console.info("[Meow][kv_store_tools] Succeeded in getting KVStore and storing it to AppStorage");
+        console.info("[kv_store_tools] Succeeded in getting KVStore and storing it to AppStorage");
         AppStorage.setOrCreate("kvStore", store)
         // Got kvStore
       }).catch((err: BusinessError) => {
-        console.error(`[Meow][kv_store_tools][ERROR] Failed to get KVStore.code is ${err.code},message is ${err.message}`);
+        console.error(`[kv_store_tools][ERROR] Failed to get KVStore.code is ${err.code},message is ${err.message}`);
       });
     // Get kvStore
 
   } catch (e) {
     let error = e as BusinessError;
-    console.error(`[Meow][kv_store_tools][ERROR] Failed to create KVManager.code is ${error.code},message is ${error.message}`);
+    console.error(`[kv_store_tools][ERROR] Failed to create KVManager.code is ${error.code},message is ${error.message}`);
   }
 }

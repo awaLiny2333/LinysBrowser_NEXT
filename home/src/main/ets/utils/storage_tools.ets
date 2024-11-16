@@ -68,7 +68,7 @@ export function sandbox_save(file_path_name: string, content: string | ArrayBuff
   }
   let file = fs.openSync(full_file_directory, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
   let writeLen = fs.writeSync(file.fd, content);
-  console.info("[Meow][sandbox_save] write data to file succeed and size is:" + writeLen + " @ " + file_path_name);
+  console.info("[sandbox_save] write data to file succeed and size is:" + writeLen + " @ " + file_path_name);
   fs.closeSync(file);
 }
 

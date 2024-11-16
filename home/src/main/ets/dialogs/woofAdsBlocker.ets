@@ -86,6 +86,7 @@ struct woofAdsBlocker {
         } // Title
         .width("100%")
       }
+      .scrollBar(BarState.Off)
       .align(Alignment.TopStart)
       .edgeEffect(EdgeEffect.Spring)
       .padding({ top: 5, bottom: 10, right: this.tablet_mode ? 10 : 0 })
@@ -223,13 +224,13 @@ struct woofAdsBlocker {
             }
             .width("100%")
           }
+          .padding({ top: 10 })
           .alignItems(HorizontalAlign.Start)
           .width("100%")
-          .animation(animation_default())
         } // Select controls
         .scrollBar(BarState.Off)
         .width("100%")
-        .height(this.selecting ? 70 : 0)
+        .height(this.selecting ? 80 : 0)
         .animation(animation_default())
       } // Controls
       .padding({ top: 10, right: this.tablet_mode ? 10 : 0 })
@@ -307,7 +308,7 @@ struct woofAdsBlocker {
     try {
       webview.AdsBlockManager.removeAdsBlockDisallowedList(delete_exceptions);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
     this.adblock_exceptions = new_exceptions;
     this.delete_confirm = 0;

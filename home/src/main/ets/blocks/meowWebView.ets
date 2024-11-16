@@ -64,7 +64,7 @@ struct meowWebView {
             })
             .onErrorReceive((e) => {
               if (e) {
-                console.error("[Meow][ArkWeb][ERROR] "
+                console.error("[ArkWeb][ERROR] "
                   + e.error.getErrorCode() + ", " + e.error.getErrorInfo()
                   + " @ " + this.tab_urls[Label.index_key])
                 // Log web errors
@@ -242,18 +242,15 @@ struct meowWebView {
   }
 
   on_use_adblock_state_change() {
-    console.log('[Meow][meowWebView] enableAdsBlock: ' + (this.use_adblock ? 'true' : 'false'))
-
     // Enable ads block for all tabs
-    if (this.last_use_adblock === undefined) {
-      // Prevent: Init error. The WebviewController must be associated with a Web component
-      this.last_use_adblock = this.use_adblock;
-      return;
-    }
+    // if (this.last_use_adblock === undefined) {
+    //   // Prevent: Init error. The WebviewController must be associated with a Web component
+    //   this.last_use_adblock = this.use_adblock;
+    //   return;
+    // }
+    console.log('[Meow][meowWebView] enableAdsBlock: ' + (this.use_adblock ? 'true' : 'false'))
     for (let index = 0; index < this.bunch_of_tabs.Tabs.length; index++) {
-      if (this.bunch_of_tabs.Tabs[index].controller) {
-        this.bunch_of_tabs.Tabs[index].controller.enableAdsBlock(this.use_adblock);
-      }
+      this.bunch_of_tabs.Tabs[index].controller.enableAdsBlock(this.use_adblock);
     }
   }
 

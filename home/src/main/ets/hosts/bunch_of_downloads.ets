@@ -197,7 +197,7 @@ export class bunch_of_downloads {
       }
       // Delete all downloaded files
     } catch (e) {
-      console.log(e)
+      console.error(e)
     }
   }
 }

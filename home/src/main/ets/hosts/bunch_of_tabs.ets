@@ -205,7 +205,7 @@ export class bunch_of_tabs {
 
     }
 
-    this.switchToTab(0)
+    this.switchToTab(-1)
     // Forces LinysTabs to refresh For Each loop to render
     this.switchToTab(landing_destination)
 

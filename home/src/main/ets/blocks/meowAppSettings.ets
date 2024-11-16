@@ -226,6 +226,29 @@ struct meowAppSettings {
               linysTitleText({ text: $r('app.string.Settings_Experience') })
 
               Row() {
+                linysText({ text: $r('app.string.Settings_experience_use_adblock'), max_lines: 1 })
+                  .layoutWeight(1)
+                Toggle({ isOn: this.use_adblock, type: ToggleType.Switch })
+                  .switchPointColor($r('app.color.block_color'))
+                  .selectedColor($r('app.color.font_color_title'))
+                  .onChange(isOn => {
+                    this.use_adblock = isOn;
+                    this.bunch_of_settings.set_setting_value_of_key('use_adblock', isOn);
+                  })
+              } // Use adblock
+              .width("100%")
+
+              Row({ space: 10 }) {
+                Blank()
+                linysText({ text: $r('app.string.Settings_experience_manage_adblock') })
+                linysCapsuleButton({ text: "  󰀠  " })
+                  .onClick(() => {
+                    this.adsBlocker_control.open();
+                  })
+              } // Ads Blocker management
+              .width("100%")
+
+              Row() {
                 linysText({ text: $r('app.string.Settings_experience_sys_back_to_access_backward'), max_lines: 3 })
                   .layoutWeight(1)
                 Toggle({ isOn: this.sys_back_to_access_backward, type: ToggleType.Switch })
@@ -276,28 +299,6 @@ struct meowAppSettings {
                   .margin({ right: 5 })
               } // Slider and display of max_history_suggestions
 
-              Row() {
-                linysText({ text: $r('app.string.Settings_experience_use_adblock'), max_lines: 1 })
-                  .layoutWeight(1)
-                Toggle({ isOn: this.use_adblock, type: ToggleType.Switch })
-                  .switchPointColor($r('app.color.block_color'))
-                  .selectedColor($r('app.color.font_color_title'))
-                  .onChange(isOn => {
-                    this.use_adblock = isOn;
-                    this.bunch_of_settings.set_setting_value_of_key('use_adblock', isOn);
-                  })
-              } // Use adblock
-              .width("100%")
-
-              Row({ space: 10 }) {
-                Blank()
-                linysText({ text: $r('app.string.Settings_experience_manage_adblock') })
-                linysCapsuleButton({ text: "  󰀠  " })
-                  .onClick(() => {
-                    this.adsBlocker_control.open();
-                  })
-              } // Ads Blocker management
-              .width("100%")
             }
             .padding(15)
             .alignItems(HorizontalAlign.Start)
@@ -464,7 +465,7 @@ struct meowAppSettings {
           this.scroll_first = first;
           this.scroll_last = last;
         })
-      }
+      } // Main
       .layoutWeight(1)
       .height("100%")
       .animation(animation_default())
@@ -486,30 +487,6 @@ struct meowAppSettings {
       this.versionName = bundleInfo.versionName;
       this.versionNo = bundleInfo.versionCode;
     })
-
-    // Get settings of title bar position
-    this.settings_title_bar_position =
-      await this.bunch_of_settings.get_setting_key('settings_title_bar_position') as string;
-
-    // Get settings of title bar position
-    this.settings_tabs_style =
-      await this.bunch_of_settings.get_setting_key('settings_tabs_style') as string;
-
-    // Get number of max bookmarks suggestions
-    this.settings_max_bookmark_suggestions =
-      await this.bunch_of_settings.get_setting_key('settings_max_bookmark_suggestions') as number;
-
-    // Get number of max history suggestions
-    this.settings_max_history_suggestions =
-      await this.bunch_of_settings.get_setting_key('settings_max_history_suggestions') as number;
-
-    // Get whether to continue to collect new history
-    this.settings_collect_new_history =
-      await this.bunch_of_settings.get_setting_key('settings_collect_new_history') as boolean;
-
-    // Get whether to use system back to access backward
-    this.sys_back_to_access_backward =
-      await this.bunch_of_settings.get_setting_key('sys_back_to_access_backward') as boolean;
 
     // Get whether ads blocker is enabled
     this.use_adblock = await this.bunch_of_settings.get_setting_key('use_adblock') as boolean;
@@ -540,9 +517,32 @@ struct meowAppSettings {
       try {
         webview.AdsBlockManager.addAdsBlockDisallowedList(exceptions);
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     }, 150)
+
+    // Get settings of title bar position
+    this.settings_title_bar_position =
+      await this.bunch_of_settings.get_setting_key('settings_title_bar_position') as string;
+
+    // Get settings of title bar position
+    this.settings_tabs_style = await this.bunch_of_settings.get_setting_key('settings_tabs_style') as string;
+
+    // Get number of max bookmarks suggestions
+    this.settings_max_bookmark_suggestions =
+      await this.bunch_of_settings.get_setting_key('settings_max_bookmark_suggestions') as number;
+
+    // Get number of max history suggestions
+    this.settings_max_history_suggestions =
+      await this.bunch_of_settings.get_setting_key('settings_max_history_suggestions') as number;
+
+    // Get whether to continue to collect new history
+    this.settings_collect_new_history =
+      await this.bunch_of_settings.get_setting_key('settings_collect_new_history') as boolean;
+
+    // Get whether to use system back to access backward
+    this.sys_back_to_access_backward =
+      await this.bunch_of_settings.get_setting_key('sys_back_to_access_backward') as boolean;
 
     let result = await sandbox_open("history.txt");
     if (result as string == "undefined") {
@@ -568,7 +568,7 @@ struct meowAppSettings {
     try {
       webview.AdsBlockManager.addAdsBlockDisallowedList(this.adblock_exceptions);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
     // Sync Data
     if (this.settings_title_bar_position == "top") {

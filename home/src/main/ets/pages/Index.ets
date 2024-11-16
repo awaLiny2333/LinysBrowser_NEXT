@@ -263,7 +263,6 @@ struct Index {
   }
 
   on_showing_tabs_change() {
-    console.log(this.showing_tabs ? "a" : "b")
     this.bunch_of_settings.set_setting_value_of_key('settings_tabs_open', this.showing_tabs);
   }
 

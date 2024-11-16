@@ -85,7 +85,8 @@ struct woofHistory {
             .opacity(0.9)
         } // Title
         .width("100%")
-      }
+      } // Title and descriptions
+      .scrollBar(BarState.Off)
       .align(Alignment.TopStart)
       .edgeEffect(EdgeEffect.Spring)
       .padding({ top: 5, bottom: 10, right: this.tablet_mode ? 10 : 0 })
@@ -210,8 +211,7 @@ struct woofHistory {
               linysTitleText({ text: $r('app.string.Settings_experience_history_selecting') })
               linysTitleText({ text: " " + this.selected_number.toString() + " " })
               linysTitleText({ text: $r('app.string.Settings_experience_history_selecting_items') })
-            }
-
+            } // Selecting ... item(s)
             Row() {
               linysSymbol({ symbol_glyph_target: 'sys.symbol.list_checkmask' })
                 .onClick(() => {
@@ -240,9 +240,10 @@ struct woofHistory {
                 })
                 .clickEffect(click_effect_default())
                 .animation(animation_default())
-            }
+            } // Buttons
             .width("100%")
           }
+          .padding({ top: 10 })
           .alignItems(HorizontalAlign.Start)
           .width("100%")
           .animation(animation_default())
@@ -251,7 +252,7 @@ struct woofHistory {
         .width("100%")
         .height(this.selecting ? 80 : 0)
         .animation(animation_default())
-      }
+      } // Controls
       .padding({ top: 10, right: this.tablet_mode ? 10 : 0 })
       .alignItems(HorizontalAlign.End)
       .id("controls_history")
