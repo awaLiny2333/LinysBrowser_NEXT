@@ -26,7 +26,6 @@ import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import meowSEManager from './meowSEManager';
 import linysLink from '../components/linysLink';
 import woofAdsBlocker from '../dialogs/woofAdsBlocker';
-import { webview } from '@kit.ArkWeb';
 
 @Component
 struct meowAppSettings {
@@ -623,6 +622,9 @@ struct meowAppSettings {
   }
 
   scroll_settings_to() {
+    if (this.settings_scroll_to < 0) {
+      return;
+    }
     this.waterFlow_control.scrollToIndex(this.settings_scroll_to, true);
   }
 }
@@ -774,6 +776,7 @@ struct menuItem {
     .padding(7)
     .animation(animation_default())
     .onClick(() => {
+      this.scroll_to_gateway = -1;
       this.scroll_to_gateway = this.my_index;
     })
   }
