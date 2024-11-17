@@ -7,7 +7,6 @@ import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import linysShowButton from '../components/linysShowButton';
 import linysText from '../components/linysText';
 import { sandbox_open_array } from '../utils/storage_tools';
-import { webview } from '@kit.ArkWeb';
 
 @Component
 struct meowTabs {

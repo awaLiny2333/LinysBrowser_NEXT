@@ -532,11 +532,6 @@ struct meowAppSettings {
   }
 
   on_panel_open() {
-    try {
-      webview.AdsBlockManager.addAdsBlockDisallowedList(this.adblock_exceptions);
-    } catch (e) {
-      console.error(e);
-    }
     // Sync Data
     if (this.settings_title_bar_position == "top") {
       this.title_bar_position_selected = [0];
