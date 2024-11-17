@@ -17,7 +17,7 @@ struct meowDownloads {
   @StorageLink('bunch_of_downloads') @Watch('on_download_state_change') bunch_of_downloads: bunch_of_downloads =
     new bunch_of_downloads();
   @StorageLink('universal_new_download_gateway') @Watch('on_new_download') uni_new_download_gateway: string = "";
-  @Link showing_downloads: boolean;
+  @StorageLink('showing_downloads') showing_downloads: boolean = false;
   @Link screen_width: number;
 
   build() {

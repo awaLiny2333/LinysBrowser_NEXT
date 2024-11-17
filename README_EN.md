@@ -20,25 +20,22 @@ Thank you all with your works!! (*￣3￣)╭
 
 On Large screens (Light Mode):
 
-![Tablet_light](Examples/Tablet_light.png)
+![Tablet_light](Examples/gallery_4.png)
 
 On Foldables (Dark Mode):
 
-![Foldable_Dark](Examples/Foldable_dark.png)
+![Foldable_Dark](Examples/gallery_1.png)
 
 On Phones (Light Mode):
 
-|                  Browsing Page                   |                      TabsView                      |
-|:------------------------------------------------:|:--------------------------------------------------:|
-| ![Phone_light_web](Examples/Phone_light_web.png) | ![Phone_light_tabs](Examples/Phone_light_tabs.png) |
+|               Browsing Page                |                  TabsView                   |
+|:------------------------------------------:|:-------------------------------------------:|
+| ![Phone_light_web](Examples/gallery_2.png) | ![Phone_light_tabs](Examples/gallery_3.png) |
 
 ## Guides
 
 Type in urls or keywords in the search box at the bottom of the app,
 then return or click the little magnifying glass to submit.
-
-Click the icon with four (2x2) little rounded squares to show all tabs,
-click again to collapse the panel.
 
 Click the icon with four (2x2) little dots to show page information and more functions,
 click again to collapse the panel.

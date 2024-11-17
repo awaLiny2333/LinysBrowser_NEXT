@@ -25,12 +25,12 @@ struct Index {
   @StorageLink('animation_damping_coefficient') animation_damping: number = 0.8;
   // UI Statuses
   @State webViews_ready: boolean | undefined = undefined;
-  @State showing_downloads: boolean = false;
-  @State showing_more_options: boolean = false;
-  @State showing_app_settings: boolean = false;
-  @State @Watch('on_showing_tabs_change') showing_tabs: boolean = false;
-  @State showing_bookmarks: boolean = false;
-  @State showing_drop_panel: boolean = false;
+  @StorageLink('showing_downloads') showing_downloads: boolean = false;
+  @StorageLink('showing_more_options') showing_more_options: boolean = false;
+  @StorageLink('showing_app_settings') showing_app_settings: boolean = false;
+  @StorageLink('showing_tabs') @Watch('on_showing_tabs_change') showing_tabs: boolean = false;
+  @StorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
+  @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   @State title_bar_height: number = 0;
   @State title_bar_alignRules: AlignRuleOption = {
     middle: { anchor: "__container__", align: HorizontalAlign.Center },
@@ -73,20 +73,20 @@ struct Index {
     // I know this is stupid but ¯\_(ツ)_/¯ it just works
     // Prioritize closing UI panels
     if (this.tablet_mode) {
-      if (this.showing_downloads || this.showing_more_options || this.showing_app_settings || this.showing_drop_panel) {
+      if (this.showing_downloads || this.showing_more_options || this.showing_app_settings || this.showing_scratching_board) {
         this.showing_downloads = false;
         this.showing_more_options = false;
         this.showing_app_settings = false;
-        this.showing_drop_panel = false;
+        this.showing_scratching_board = false;
         return true;
       }
     } else {
-      if (this.showing_downloads || this.showing_more_options || this.showing_app_settings || this.showing_drop_panel
+      if (this.showing_downloads || this.showing_more_options || this.showing_app_settings || this.showing_scratching_board
         || this.showing_bookmarks || this.showing_tabs) {
         this.showing_downloads = false;
         this.showing_more_options = false;
         this.showing_app_settings = false;
-        this.showing_drop_panel = false;
+        this.showing_scratching_board = false;
         // Specials
         this.showing_tabs = false;
         this.showing_bookmarks = false;
@@ -121,7 +121,6 @@ struct Index {
                 meowTabs({
                   // Environment
                   webViews_ready: this.webViews_ready,
-                  showing_tabs: this.showing_tabs,
                   settings_tabs_style: this.settings_tabs_style,
                   adblock_exceptions: this.adblock_exceptions,
                   use_adblock: this.use_adblock,
@@ -206,12 +205,6 @@ struct Index {
           use_adblock: this.use_adblock,
           adblock_exceptions: this.adblock_exceptions,
           // Web actions
-          showing_tabs: this.showing_tabs,
-          showing_bookmarks: this.showing_bookmarks,
-          showing_more_options: this.showing_more_options,
-          showing_app_settings: this.showing_app_settings,
-          showing_downloads: this.showing_downloads,
-          showing_scratching_board: this.showing_drop_panel
         }) // Bottom Bar
 
       } // Web, progress, and bottom bar

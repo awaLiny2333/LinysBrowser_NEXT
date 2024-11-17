@@ -299,6 +299,50 @@
     {
       "name": "Ads_block_desc_3",
       "value": "Long press a domain to select. After entering selecting mode, tap on other domains to multi-select."
+    },
+    {
+      "name": "Success",
+      "value": "Success!（＾・ﻌ・＾✿）"
+    },
+    {
+      "name": "Fail",
+      "value": "Failed... (´；ω；`)"
+    },
+    {
+      "name": "OK",
+      "value": " Confirm "
+    },
+    {
+      "name": "Fail_desc_import_bookmarks",
+      "value": "The HTML file picked may be broken, the file format is not yet supported... Or you have picked, nothing?"
+    },
+    {
+      "name": "Fail_tips_general_call_liny",
+      "value": "If you believe that this is not your fault, please contact Liny to report a bug or for help!"
+    },
+    {
+      "name": "Fail_desc_move_bookmarks_folders",
+      "value": "The destination directory chosen may be right inside the folder we are moving!"
+    },
+    {
+      "name": "Fail_desc_new_bookmark",
+      "value": "The name or link may be empty... Or the name may be duplicate with another bookmark here!"
+    },
+    {
+      "name": "Fail_desc_new_folder",
+      "value": "You may forgot to give it a name... Or the name may be duplicate with another folder here!"
+    },
+    {
+      "name": "Whats_new",
+      "value": "What's new?"
+    },
+    {
+      "name": "Whats_new_content_1",
+      "value": "1. Prompts when operations failed! Try to create a new bookmark with no name?"
+    },
+    {
+      "name": "Whats_new_content_2",
+      "value": "2. And this \"What's New\" block!"
     }
   ]
 }

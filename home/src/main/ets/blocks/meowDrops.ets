@@ -12,11 +12,10 @@ import {
 @Component
 struct meowDrops {
   // Links
-  @Link showing_scratching_board: boolean;
+  @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   @Link @Watch('on_data_change') data_list: string[];
   // UI
   @Prop show_feed_prompt: boolean = true;
-  @Prop show_scratch_prompt: boolean = false;
   @State area_height: number = 200;
   @StorageProp('screen_height') screen_height: number = 0;
   @State delete_confirm: number = 0;

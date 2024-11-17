@@ -26,6 +26,7 @@ import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import meowSEManager from './meowSEManager';
 import linysLink from '../components/linysLink';
 import woofAdsBlocker from '../dialogs/woofAdsBlocker';
+import meowWhatsNew from './meowWhatsNew';
 
 @Component
 struct meowAppSettings {
@@ -93,12 +94,14 @@ struct meowAppSettings {
     builder: woofHistory({ showing_settings: this.show }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
+    showInSubWindow: true,
     width: "90%",
   });
   adsBlocker_control: CustomDialogController = new CustomDialogController({
     builder: woofAdsBlocker({ adblock_exceptions: this.adblock_exceptions }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
+    showInSubWindow: true,
     width: "90%",
   });
   waterFlow_control: Scroller = new Scroller();
@@ -423,7 +426,6 @@ struct meowAppSettings {
           FlowItem() {
             Column({ space: 15 }) {
               linysTitleText({ text: $r('app.string.Settings_about') })
-              linysText({ text: "（ฅ＾・ﻌ・＾）ฅ  - " + this.versionName + " - " + this.versionNo })
               linysLink({
                 will_be_reversed_boolean: this.showing_app_settings,
                 text: $r('app.string.About_bilibili'),
@@ -439,6 +441,8 @@ struct meowAppSettings {
                 text: $r('app.string.About_Gitee'),
                 link: "https://gitee.com/awa_Liny/LinysBrowser_NEXT",
               })
+              linysText({ text: "（ฅ＾・ﻌ・＾）ฅ  - " + this.versionName + " - " + this.versionNo }) // Version Info
+              meowWhatsNew()
             }
             .padding(15)
             .alignItems(HorizontalAlign.Start)

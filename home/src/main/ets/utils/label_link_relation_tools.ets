@@ -1,5 +1,3 @@
-import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
-
 export function get_relations(label_link_array: string[][], key: string, max_result_number?: number) {
   if (key.length == 0) {
     return [];

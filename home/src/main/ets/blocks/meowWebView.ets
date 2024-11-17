@@ -39,7 +39,7 @@ struct meowWebView {
   // Stuffs
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
   @StorageLink('universal_new_download_gateway') new_download_gateway: string = "";
-  @StorageProp('web_animation') web_animation: AnimateParam = animation_default();
+  @StorageProp('tab_animation') tab_animation: AnimateParam = animation_default();
   @State last_timeout_id: number | undefined = undefined;
 
   async aboutToAppear(): Promise<void> {
@@ -236,7 +236,7 @@ struct meowWebView {
         .height(this.current_sub_tab_index < 0 ? "100%" : this.height_tab())
         .alignRules(this.current_main_tab_index == Label.index_key
           ? this.align_rules_main_tab() : this.align_rules_sub_tab())
-        .animation(this.web_animation)
+        .animation(this.tab_animation)
       }, (item: tab_label) => item.timestamp.toString())
 
     }
@@ -280,7 +280,7 @@ struct meowWebView {
       clearTimeout(this.last_timeout_id);
     }
     this.last_timeout_id = setTimeout(() => {
-      this.web_animation = animation_default();
+      this.tab_animation = animation_default();
     }, 50)
   }
 

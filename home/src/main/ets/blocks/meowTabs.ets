@@ -13,7 +13,7 @@ struct meowTabs {
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
   @Link webViews_ready: boolean;
-  @Link showing_tabs: boolean;
+  @StorageLink('showing_tabs') showing_tabs: boolean = false;
   @StorageLink('current_main_tab_index') @Watch('on_did_switch_tab') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') @Watch('on_did_switch_tab') current_sub_tab_index: number = -1;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
@@ -48,7 +48,7 @@ struct meowTabs {
   @State scroll_area_height: number = 0;
   @State scroll_animation_enabled: boolean = true;
   @State paralleow_description_height: number = 0;
-  @StorageLink('web_animation') web_animation: AnimateParam = animation_default();
+  @StorageLink('tab_animation') tab_animation: AnimateParam = animation_default();
   // Gateways
   @StorageLink('universal_load_url_gateway') @Watch('on_current_load_url') load_url_gateway: string = "";
   @StorageLink('universal_new_tab_gateway') @Watch('on_new_targeted_tab') new_tab_gateway: string = "";
@@ -148,7 +148,7 @@ struct meowTabs {
       }
       // Try switch tab
       this.webViews_ready = true;
-      this.web_animation = { duration: 0 };
+      this.tab_animation = { duration: 0 };
       this.switch_tab(continue_tabs_main_on);
       this.sync_all_list_info();
       // Recover Paralleow
@@ -321,7 +321,7 @@ struct meowTabs {
    * @abstract While if new_tab_url is also not set ("" or undefined), then load default home_url().
    * */
   new_tab(url: string, recover_on_creation?: boolean) {
-    this.web_animation = { duration: 0 };
+    this.tab_animation = { duration: 0 };
 
     this.current_main_tab_index = this.bunch_of_tabs.newTab(url, recover_on_creation);
     this.extension_area.push(0);
@@ -368,7 +368,7 @@ struct meowTabs {
   }
 
   close_tab(target: number) {
-    this.web_animation = { duration: 0 };
+    this.tab_animation = { duration: 0 };
 
     // console.log(target.toString() + " / " + this.offset_area.length.toString())
     if (target >= this.offset_area.length) {
@@ -535,11 +535,11 @@ struct meowTabs {
           // if is main this tab
           this.switch_paralleow();
         } else {
-          this.web_animation = { duration: 0 };
+          this.tab_animation = { duration: 0 };
           this.switch_tab(index)
         }
       } else {
-        this.web_animation = { duration: 0 };
+        this.tab_animation = { duration: 0 };
         this.switch_tab(index)
       }
     }

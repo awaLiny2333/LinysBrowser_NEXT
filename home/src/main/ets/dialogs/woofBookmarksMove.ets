@@ -70,14 +70,14 @@ struct woofBookmarksPathSelector {
               this.select = this.looking_at_path;
               this.controller.close();
             }
-          })
+          }) // Submit
 
         linysCapsuleButton({ text: "  󰁖  " })
           .onClick(() => {
             if (this.controller) {
               this.controller.close();
             }
-          })
+          }) // Cancel
       } // Buttons of submit and cancel
       .width("100%")
 
@@ -136,7 +136,6 @@ struct woofBookmarksPathSelector {
 }
 
 export default woofBookmarksPathSelector;
-
 
 @Component
 struct bookmarkItem {

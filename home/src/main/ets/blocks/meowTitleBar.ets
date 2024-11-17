@@ -62,12 +62,12 @@ struct meowTitleBar {
   @StorageLink('current_accessForward') current_accessForward: boolean = false;
   @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
   // UI control actions
-  @Link showing_tabs: boolean;
-  @Link showing_bookmarks: boolean;
-  @Link showing_more_options: boolean;
-  @Link showing_app_settings: boolean;
-  @Link showing_downloads: boolean;
-  @Link showing_scratching_board: boolean;
+  @StorageLink('showing_tabs') showing_tabs: boolean = false;
+  @StorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
+  @StorageLink('showing_more_options') showing_more_options: boolean = false;
+  @StorageLink('showing_app_settings') showing_app_settings: boolean = false;
+  @StorageLink('showing_downloads') showing_downloads: boolean = false;
+  @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   @State show_feed_prompt: boolean = true;
   // settings
   @Link settings_title_bar_position: string;
@@ -93,6 +93,7 @@ struct meowTitleBar {
       add_exception_domain_edit: match_domain(this.search_input),
       showing_add_panel: true
     }),
+    showInSubWindow: true,
     width: "90%",
     alignment: DialogAlignment.Center,
     cornerRadius: 16
@@ -404,14 +405,12 @@ struct meowTitleBar {
 
       meowDownloads({
         screen_width: this.screen_width,
-        showing_downloads: this.showing_downloads,
       })
         .visibility(this.showing_downloads ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
 
       meowDrops({
         data_list: this.drop_result_string,
-        showing_scratching_board: this.showing_scratching_board,
       })
         .visibility(this.showing_scratching_board ? Visibility.Visible : Visibility.None)
         .animation(animation_default())

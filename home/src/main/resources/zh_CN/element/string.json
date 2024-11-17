@@ -299,6 +299,50 @@
     {
       "name": "Ads_block_desc_3",
       "value": "长按一条域名以开始选择，进入选择模式后点击其他域名就可以多选。"
+    },
+    {
+      "name": "Success",
+      "value": "搞定!（＾・ﻌ・＾✿）"
+    },
+    {
+      "name": "Fail",
+      "value": "失败了... (´；ω；`)"
+    },
+    {
+      "name": "OK",
+      "value": " 确认 "
+    },
+    {
+      "name": "Fail_desc_import_bookmarks",
+      "value": "选择的 HTML 文件可能坏掉了，或者它的格式还没有被支持……也，可能是你什么也没有选？"
+    },
+    {
+      "name": "Fail_tips_general_call_liny",
+      "value": "如果你相信这不是你的错……请联系 Liny 以报告这个问题，或是获取帮助！"
+    },
+    {
+      "name": "Fail_desc_move_bookmarks_folders",
+      "value": "我们没有办法把一个文件夹放进它自己里面！"
+    },
+    {
+      "name": "Fail_desc_new_bookmark",
+      "value": "名字或者链接可能是空的……或者名字和这里其他的书签重复了！"
+    },
+    {
+      "name": "Fail_desc_new_folder",
+      "value": "可能忘记起名了……或者起的名字和这里其他的文件夹重复了！"
+    },
+    {
+      "name": "Whats_new",
+      "value": "更新了什么？"
+    },
+    {
+      "name": "Whats_new_content_1",
+      "value": "1. 操作失败的时候会弹窗了！试试去创建一个没有名字的书签？"
+    },
+    {
+      "name": "Whats_new_content_2",
+      "value": "2. 以及这个 “更新了什么” 区域！"
     }
   ]
 }

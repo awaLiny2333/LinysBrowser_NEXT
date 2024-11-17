@@ -14,6 +14,7 @@ import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 import linysShowButton from '../components/linysShowButton';
 import linysCapsuleButton from '../components/linysCapsuleButton';
 import woofBookmarksPathSelector from '../dialogs/woofBookmarksMove';
+import woofFailPrompt from '../dialogs/woofFailPrompt';
 
 @Component
 struct meowBookmarks {
@@ -33,6 +34,34 @@ struct meowBookmarks {
   // Input interactions
   @State scroll_area_height: number = 0;
   @State bookmark_load_from_disk_ok: boolean = false;
+  // Dialogs
+  importFailPrompt_control: CustomDialogController = new CustomDialogController({
+    builder: woofFailPrompt({
+      desc: $r('app.string.Fail_desc_import_bookmarks')
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16,
+    showInSubWindow: true,
+    width: "90%",
+  });
+  addFolderFailPrompt_control: CustomDialogController = new CustomDialogController({
+    builder: woofFailPrompt({
+      desc: $r('app.string.Fail_desc_new_folder')
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16,
+    showInSubWindow: true,
+    width: "90%",
+  });
+  addBookmarkFailPrompt_control: CustomDialogController = new CustomDialogController({
+    builder: woofFailPrompt({
+      desc: $r('app.string.Fail_desc_new_bookmark')
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16,
+    showInSubWindow: true,
+    width: "90%",
+  });
 
   // Visual effects related
 
@@ -296,9 +325,18 @@ struct meowBookmarks {
   new_folder() {
     if (this.add_label == "") {
       // Cannot add for no label.
+      this.addFolderFailPrompt_control.open();
       return;
     }
-    this.bunch_of_bookmarks.add_folder(new folder(this.add_label), this.looking_at_path);
+    let result = this.bunch_of_bookmarks.add_folder(new folder(this.add_label), this.looking_at_path);
+
+    if (!result) {
+      // If add failed
+      // Perhaps due to a name crash
+      this.addFolderFailPrompt_control.open();
+      return;
+    }
+
     this.adding_folder = false;
     this.refresh_root_content();
     this.save_html_to_kv_store();
@@ -307,10 +345,19 @@ struct meowBookmarks {
   new_bookmark() {
     if (this.add_label == "" || this.add_link == "") {
       // Cannot add for no label or no link.
+      this.addBookmarkFailPrompt_control.open();
       return;
     }
-    this.bunch_of_bookmarks.add_bookmark(
-      new bookmark(this.add_label, this.add_link), this.looking_at_path);
+
+    let rest = this.bunch_of_bookmarks.add_bookmark(new bookmark(this.add_label, this.add_link), this.looking_at_path);
+
+    if (!rest) {
+      // If add failed
+      // Perhaps due to a name crash
+      this.addBookmarkFailPrompt_control.open();
+      return;
+    }
+
     this.adding_bookmark = false;
     this.refresh_root_content();
     this.save_html_to_kv_store();
@@ -341,10 +388,19 @@ struct meowBookmarks {
   import_bookmarks_html() {
     this.importing_bookmarks = false;
     document_open().then(result => {
+      // if (result == "") {
+      //   // Selected an empty file or cancelled selection
+      //   return;
+      // }
       let import_result: number = this.bunch_of_bookmarks.import_html(result);
       this.refresh_root_content();
       console.log("[Meow][LinysBookmarks] Import result: " + import_result.toString())
       this.save_html_to_kv_store();
+
+      if (import_result != 0) {
+        // Show Fail Prompt
+        this.importFailPrompt_control.open();
+      }
     })
   }
 
@@ -387,12 +443,22 @@ struct bookmarkItem {
   // Edit inputs
   @State @Watch('on_select_change') select_result: string | undefined = undefined;
   @State moving_type: string = "";
+  // Dialogs
+  moveFailPrompt_control: CustomDialogController = new CustomDialogController({
+    builder: woofFailPrompt({
+      desc: $r('app.string.Fail_desc_move_bookmarks_folders')
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16,
+    showInSubWindow: true,
+    width: "90%",
+  });
   woofBookmarksPathSelector_control: CustomDialogController = new CustomDialogController({
     builder: woofBookmarksPathSelector({
       select: this.select_result
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 12,
+    cornerRadius: 16,
     width: "90%",
   })
 
@@ -670,28 +736,33 @@ struct bookmarkItem {
   }
 
   on_select_change() {
+    // Move folder or bookmark
+
     if (this.select_result === undefined) {
       return;
     }
 
+    let operation_result = 0;
     if (this.moving_type == "folder") {
-      this.bunch_of_bookmarks.move_folder(this.get_my_path(), this.select_result);
-
-    } else if (this.moving_type == "bookmark") {
-      this.bunch_of_bookmarks.move_bookmark(this.get_my_path(), this.select_result);
-
+      operation_result = this.bunch_of_bookmarks.move_folder(this.get_my_path(), this.select_result);
     } else {
-      return;
+      // if (this.moving_type == "bookmark")
+      operation_result = this.bunch_of_bookmarks.move_bookmark(this.get_my_path(), this.select_result);
+    }
+
+    if (operation_result != 0) {
+      // Show Fail Prompt
+      this.moveFailPrompt_control.open();
     }
 
     let temp = this.looking_at_path;
     this.looking_at_path = "/refresh";
     this.looking_at_path = temp;
+
     // Refresh root content
     // Weird as hell but works, fine.
 
     this.save_html_to_kv_store();
-
     this.select_result = undefined;
   }
 
