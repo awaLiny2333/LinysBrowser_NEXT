@@ -104,4 +104,14 @@ Long way ahead.
    (Seems to be solved, still under observation)
 7. HarmonyOS UA is not understood by plenty of websites (But UA is customizable now).
 8. The vertical tabs panel animations may seem weird when the scroll is longer than the screen.
-9. This project requires HarmonyOS NEXT API13 to run.
+9. This project requires HarmonyOS NEXT API12 to run.
+
+## What are the commit lables for?
+All the commit information so far since the birth of this project have been so chaotic that Liny decides to have some self-constraints...
+
+fix: Fix updates, used to mark a bug fix;
+feat: Feature updates, usually used to mark a new feature introduced in this commit；
+improve: Improvement updates, usually used to mark changes on existing stuffs, like changes on logics interfaces or wordings;
+code: Code updates, used to mark code optimizations, like code clean ups and logic clean ups; 
+version: Version code changes, used to mark changes in version codes;
+api: API level changes, used to mark changes in required API level.
