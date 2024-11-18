@@ -314,7 +314,11 @@
     },
     {
       "name": "Fail_desc_import_bookmarks",
-      "value": "The HTML file picked may be broken, the file format is not yet supported... Or you have picked, nothing?"
+      "value": "The HTML file picked may be broken, the file format is not yet supported... "
+    },
+    {
+      "name": "Fail_desc_empty_picked_file",
+      "value": "The HTML file picked may be empty... Or you have picked, nothing?"
     },
     {
       "name": "Fail_tips_general_call_liny",
@@ -331,6 +335,30 @@
     {
       "name": "Fail_desc_new_folder",
       "value": "You may forgot to give it a name... Or the name may be duplicate with another folder here!"
+    },
+    {
+      "name": "Fail_desc_no_name",
+      "value": "Forgot to give it a name!"
+    },
+    {
+      "name": "Fail_desc_no_link",
+      "value": "Forgot to fill the link field!"
+    },
+    {
+      "name": "Fail_desc_folder_current_name_crash",
+      "value": "There is a folder with a duplicate name in the current directory!"
+    },
+    {
+      "name": "Fail_desc_bookmark_current_name_crash",
+      "value": "There is a bookmark with a duplicate name in the current directory!"
+    },
+    {
+      "name": "Fail_desc_folder_destination_name_crash",
+      "value": "There is a folder with a duplicate name in the destination directory!"
+    },
+    {
+      "name": "Fail_desc_bookmark_destination_name_crash",
+      "value": "There is a bookmark with a duplicate name in the destination directory!"
     },
     {
       "name": "Whats_new",

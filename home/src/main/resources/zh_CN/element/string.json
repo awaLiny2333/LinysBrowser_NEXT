@@ -314,7 +314,11 @@
     },
     {
       "name": "Fail_desc_import_bookmarks",
-      "value": "选择的 HTML 文件可能坏掉了，或者它的格式还没有被支持……也，可能是你什么也没有选？"
+      "value": "选择的 HTML 文件可能坏掉了，或者它的格式还没有被支持……"
+    },
+    {
+      "name": "Fail_desc_empty_picked_file",
+      "value": "选择的 HTML 文件是空的……或者，你什么也没有选？"
     },
     {
       "name": "Fail_tips_general_call_liny",
@@ -331,6 +335,30 @@
     {
       "name": "Fail_desc_new_folder",
       "value": "可能忘记起名了……或者起的名字和这里其他的文件夹重复了！"
+    },
+    {
+      "name": "Fail_desc_no_name",
+      "value": "忘记起名了！"
+    },
+    {
+      "name": "Fail_desc_no_link",
+      "value": "没有填链接！"
+    },
+    {
+      "name": "Fail_desc_folder_current_name_crash",
+      "value": "当前位置里有一个重名的文件夹！"
+    },
+    {
+      "name": "Fail_desc_bookmark_current_name_crash",
+      "value": "当前位置里有一个重名的书签！"
+    },
+    {
+      "name": "Fail_desc_folder_destination_name_crash",
+      "value": "目标位置里有一个重名的文件夹！"
+    },
+    {
+      "name": "Fail_desc_bookmark_destination_name_crash",
+      "value": "目标位置里有一个重名的书签！"
     },
     {
       "name": "Whats_new",

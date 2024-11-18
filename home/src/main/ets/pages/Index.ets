@@ -6,6 +6,7 @@ import { animation_default } from '../hosts/bunch_of_defaults';
 import meowTitleBar from '../blocks/meowTitleBar';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
+import woofFailPrompt from '../dialogs/woofFailPrompt';
 
 @Entry
 @Component
@@ -60,6 +61,19 @@ struct Index {
   @State settings_collect_new_history: boolean = true;
   @State use_adblock: boolean = true;
   @State adblock_exceptions: string[] = [];
+  // Dialogs
+  @StorageLink('universal_fail_prompt_desc_gateway') @Watch('on_fail_prompt_gateway') universal_fail_prompt_desc_gateway: ResourceStr =
+    "";
+  @State fail_prompt_desc: ResourceStr = '';
+  moveFailPrompt_control: CustomDialogController = new CustomDialogController({
+    builder: woofFailPrompt({
+      desc: this.fail_prompt_desc,
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16,
+    showInSubWindow: true,
+    width: "90%",
+  });
 
   async aboutToAppear(): Promise<void> {
     this.animation_response = await this.bunch_of_settings.get_setting_key('animation_response') as number;
@@ -73,7 +87,8 @@ struct Index {
     // I know this is stupid but ¯\_(ツ)_/¯ it just works
     // Prioritize closing UI panels
     if (this.tablet_mode) {
-      if (this.showing_downloads || this.showing_more_options || this.showing_app_settings || this.showing_scratching_board) {
+      if (this.showing_downloads || this.showing_more_options || this.showing_app_settings ||
+      this.showing_scratching_board) {
         this.showing_downloads = false;
         this.showing_more_options = false;
         this.showing_app_settings = false;
@@ -81,7 +96,8 @@ struct Index {
         return true;
       }
     } else {
-      if (this.showing_downloads || this.showing_more_options || this.showing_app_settings || this.showing_scratching_board
+      if (this.showing_downloads || this.showing_more_options || this.showing_app_settings ||
+      this.showing_scratching_board
         || this.showing_bookmarks || this.showing_tabs) {
         this.showing_downloads = false;
         this.showing_more_options = false;
@@ -230,7 +246,7 @@ struct Index {
     })
   }
 
-  // @Watch Reactions
+  // @Watch or environment Reactions
 
   on_title_bar_position_change() {
     if (this.settings_title_bar_position == "bottom") {
@@ -261,6 +277,14 @@ struct Index {
 
   on_showing_tabs_change() {
     this.bunch_of_settings.set_setting_value_of_key('settings_tabs_open', this.showing_tabs);
+  }
+
+  on_fail_prompt_gateway() {
+    if (this.universal_fail_prompt_desc_gateway != "") {
+      this.fail_prompt_desc = this.universal_fail_prompt_desc_gateway;
+      this.moveFailPrompt_control.open();
+      this.universal_fail_prompt_desc_gateway = "";
+    }
   }
 
   // kinds of params

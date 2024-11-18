@@ -14,7 +14,6 @@ import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 import linysShowButton from '../components/linysShowButton';
 import linysCapsuleButton from '../components/linysCapsuleButton';
 import woofBookmarksPathSelector from '../dialogs/woofBookmarksMove';
-import woofFailPrompt from '../dialogs/woofFailPrompt';
 
 @Component
 struct meowBookmarks {
@@ -35,33 +34,7 @@ struct meowBookmarks {
   @State scroll_area_height: number = 0;
   @State bookmark_load_from_disk_ok: boolean = false;
   // Dialogs
-  importFailPrompt_control: CustomDialogController = new CustomDialogController({
-    builder: woofFailPrompt({
-      desc: $r('app.string.Fail_desc_import_bookmarks')
-    }),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 16,
-    showInSubWindow: true,
-    width: "90%",
-  });
-  addFolderFailPrompt_control: CustomDialogController = new CustomDialogController({
-    builder: woofFailPrompt({
-      desc: $r('app.string.Fail_desc_new_folder')
-    }),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 16,
-    showInSubWindow: true,
-    width: "90%",
-  });
-  addBookmarkFailPrompt_control: CustomDialogController = new CustomDialogController({
-    builder: woofFailPrompt({
-      desc: $r('app.string.Fail_desc_new_bookmark')
-    }),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 16,
-    showInSubWindow: true,
-    width: "90%",
-  });
+  @StorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
 
   // Visual effects related
 
@@ -325,7 +298,7 @@ struct meowBookmarks {
   new_folder() {
     if (this.add_label == "") {
       // Cannot add for no label.
-      this.addFolderFailPrompt_control.open();
+      this.uni_fail_prompt_gateway = $r('app.string.Fail_desc_no_name');
       return;
     }
     let result = this.bunch_of_bookmarks.add_folder(new folder(this.add_label), this.looking_at_path);
@@ -333,7 +306,7 @@ struct meowBookmarks {
     if (!result) {
       // If add failed
       // Perhaps due to a name crash
-      this.addFolderFailPrompt_control.open();
+      this.uni_fail_prompt_gateway = $r("app.string.Fail_desc_folder_current_name_crash");
       return;
     }
 
@@ -343,9 +316,14 @@ struct meowBookmarks {
   }
 
   new_bookmark() {
-    if (this.add_label == "" || this.add_link == "") {
+    if (this.add_label == "" ) {
       // Cannot add for no label or no link.
-      this.addBookmarkFailPrompt_control.open();
+      this.uni_fail_prompt_gateway = $r('app.string.Fail_desc_no_name');
+      return;
+    }
+    if (this.add_link == "") {
+      // Cannot add for no label or no link.
+      this.uni_fail_prompt_gateway = $r('app.string.Fail_desc_no_link');
       return;
     }
 
@@ -354,7 +332,7 @@ struct meowBookmarks {
     if (!rest) {
       // If add failed
       // Perhaps due to a name crash
-      this.addBookmarkFailPrompt_control.open();
+      this.uni_fail_prompt_gateway = $r('app.string.Fail_desc_bookmark_current_name_crash');
       return;
     }
 
@@ -388,10 +366,11 @@ struct meowBookmarks {
   import_bookmarks_html() {
     this.importing_bookmarks = false;
     document_open().then(result => {
-      // if (result == "") {
-      //   // Selected an empty file or cancelled selection
-      //   return;
-      // }
+      if (result == "") {
+        // Selected an empty file or cancelled selection
+        this.uni_fail_prompt_gateway = $r('app.string.Fail_desc_empty_picked_file');
+        return;
+      }
       let import_result: number = this.bunch_of_bookmarks.import_html(result);
       this.refresh_root_content();
       console.log("[Meow][LinysBookmarks] Import result: " + import_result.toString())
@@ -399,7 +378,7 @@ struct meowBookmarks {
 
       if (import_result != 0) {
         // Show Fail Prompt
-        this.importFailPrompt_control.open();
+        this.uni_fail_prompt_gateway = $r('app.string.Fail_desc_import_bookmarks');
       }
     })
   }
@@ -444,20 +423,13 @@ struct bookmarkItem {
   @State @Watch('on_select_change') select_result: string | undefined = undefined;
   @State moving_type: string = "";
   // Dialogs
-  moveFailPrompt_control: CustomDialogController = new CustomDialogController({
-    builder: woofFailPrompt({
-      desc: $r('app.string.Fail_desc_move_bookmarks_folders')
-    }),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 16,
-    showInSubWindow: true,
-    width: "90%",
-  });
+  @StorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
   woofBookmarksPathSelector_control: CustomDialogController = new CustomDialogController({
     builder: woofBookmarksPathSelector({
       select: this.select_result
     }),
     alignment: DialogAlignment.Center,
+    showInSubWindow: true,
     cornerRadius: 16,
     width: "90%",
   })
@@ -752,7 +724,19 @@ struct bookmarkItem {
 
     if (operation_result != 0) {
       // Show Fail Prompt
-      this.moveFailPrompt_control.open();
+      if (this.moving_type == "folder") {
+        if (operation_result == 2) {
+          this.uni_fail_prompt_gateway = $r("app.string.Fail_desc_folder_destination_name_crash"); // name crash
+        }
+        if (operation_result == 3) {
+          this.uni_fail_prompt_gateway =
+            $r('app.string.Fail_desc_move_bookmarks_folders'); // sub folder in myself
+        }
+      } else { // if is a bookmark
+        if (operation_result == 2) {
+          this.uni_fail_prompt_gateway = $r("app.string.Fail_desc_bookmark_destination_name_crash"); // name crash
+        }
+      }
     }
 
     let temp = this.looking_at_path;

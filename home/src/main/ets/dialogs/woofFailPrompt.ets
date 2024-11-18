@@ -20,7 +20,7 @@ struct woofFailPrompt {
         text: $r('app.string.Fail'),
         max_lines: 1
       })
-        .padding({ top: 5 })
+        .padding({ top: 5, bottom: 3 })
         .width("100%")
 
       linysText({

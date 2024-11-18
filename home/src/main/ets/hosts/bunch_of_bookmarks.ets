@@ -342,21 +342,37 @@ export class bunch_of_bookmarks {
    * @param to_path directory of destination
    * @returns 0 if success
    * @returns 1 if no bookmark selected
+   * @returns 2 if name crash
    * */
   move_bookmark(bookmark_path: string, to_path: string) {
     if (bookmark_path == "") {
+      console.log("[ERROR][Meow][bunch_of_bookmarks] Empty bookmark_path!")
       return 1;
     }
+    // Get objects
     let item_bookmark = this.get_bookmark(bookmark_path);
-
-    let target_folder : folder | undefined;
+    let target_folder: folder | undefined;
     if (to_path == "") {
       target_folder = this.root;
     } else {
       target_folder = this.get_folder(to_path);
     }
 
+    // If Objects got
     if (item_bookmark && target_folder) {
+      // Check name crash
+      let check_path = "";
+      if (to_path == "") {
+        check_path = item_bookmark.get_label()
+      } else {
+        check_path = to_path + "/" + item_bookmark.get_label()
+      }
+      if (this.get_bookmark(check_path)) {
+        // name crash
+        console.log("[ERROR][Meow][bunch_of_bookmarks] Duplicate bookmark name @ \"" + check_path + "\"!")
+        return 2;
+      }
+      // All OK
       target_folder.add_content(new unified_item(item_bookmark, undefined));
       this.del_bookmark(bookmark_path);
     }
@@ -370,27 +386,43 @@ export class bunch_of_bookmarks {
    * @param to_path directory of destination
    * @returns 0 if success
    * @returns 1 if no folder selected
-   * @returns 2 if moving a folder to its sub folder
+   * @returns 2 if name crash
+   * @returns 3 if moving a folder to its sub folder
    * */
   move_folder(folder_path: string, to_path: string) {
     if (folder_path == "") {
+      console.log("[ERROR][Meow][bunch_of_bookmarks] Empty folder_path!")
       return 1;
     }
     if (to_path.indexOf(folder_path) == 0) {
-      console.log("[Meow][bunch_of_bookmarks] Cannot move myself to my sub folder!")
-      return 2;
+      console.log("[ERROR][bunch_of_bookmarks] Cannot move myself to my sub folder!")
+      return 3;
     }
 
+    // Get objects
     let item_folder = this.get_folder(folder_path);
-
-    let target_folder : folder | undefined;
+    let target_folder: folder | undefined;
     if (to_path == "") {
       target_folder = this.root;
     } else {
       target_folder = this.get_folder(to_path);
     }
 
+    // If Objects got
     if (item_folder && target_folder) {
+      // Check name crash
+      let check_path = "";
+      if (to_path == "") {
+        check_path = item_folder.get_label()
+      } else {
+        check_path = to_path + "/" + item_folder.get_label()
+      }
+      if (this.get_folder(check_path)) {
+        // name crash
+        console.log("[ERROR][Meow][bunch_of_bookmarks] Duplicate folder name @ \"" + check_path + "\"!")
+        return 2;
+      }
+      // All OK
       target_folder.add_content(new unified_item(undefined, item_folder));
       this.del_folder(folder_path);
     }
