@@ -1,20 +1,27 @@
 import linysText from '../components/linysText';
 import { animation_default } from '../hosts/bunch_of_defaults';
+import { resource_to_string } from '../utils/resource_tools';
 
 @Component
 struct meowWhatsNew {
+  @State new_things_resource: Resource = $r("app.string.Whats_new_content");
+  @State new_things: string = resource_to_string(this.new_things_resource);
+  @State new_things_list: string[] = this.new_things.split('\n');
+
   build() {
     Column({ space: 8 }) {
       linysText({
         text: $r('app.string.Whats_new')
       })
-      linysText({
-        text: $r('app.string.Whats_new_content_1'),
-        max_lines: 6
+      ForEach(this.new_things_list, (text: string, index: number) => {
+        linysText({
+          text: text,
+          max_lines: 48
+        })
+          .opacity(0.8)
       })
-        .opacity(0.8)
       linysText({
-        text: $r('app.string.Whats_new_content_2'),
+        text: $r("app.string.Whats_new_content_extra"),
         max_lines: 6
       })
         .opacity(0.8)
@@ -25,6 +32,19 @@ struct meowWhatsNew {
     .backgroundColor($r('sys.color.comp_background_tertiary'))
     .width("100%")
     .animation(animation_default())
+    .onAreaChange(()=>{
+      this.update_resource_string();
+    })
+  }
+
+  /**
+   * Convert the Resource to string again.
+   *
+   * Usually called to deal with the change of language.
+   * */
+  update_resource_string() {
+    this.new_things = resource_to_string(this.new_things_resource);
+    this.new_things_list = this.new_things.split('\n');
   }
 }
 

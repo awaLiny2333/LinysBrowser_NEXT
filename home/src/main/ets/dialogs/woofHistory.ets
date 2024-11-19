@@ -28,10 +28,10 @@ struct woofHistory {
   @State stamp_today: number = new Date().setHours(0, 0, 0, 0);
   @State stamp_this_month: number = new Date(this.stamp_today).setDate(1);
   @State stamp_this_year: number = new Date(this.stamp_this_month).setMonth(0, 1);
-  @State selected_history_list: history_record[] = this.bunch_of_history.get_part_slice(this.stamp_today).reverse();
+  @State history_list: history_record[] = this.bunch_of_history.get_part_slice(this.stamp_today).reverse();
   @State time_period: string = new Date(this.stamp_today).toLocaleString();
   // Manage
-  @State @Watch('on_select_change') selected: boolean[] = this.all_false(this.selected_history_list.length);
+  @State @Watch('on_select_change') selected: boolean[] = this.all_false(this.history_list.length);
   @State selecting: boolean = false;
   @State selected_number: number = 0;
   // alignRules
@@ -105,14 +105,14 @@ struct woofHistory {
             .opacity(0.7)
           linysText({ text: " " + this.time_period })
             .opacity(0.7)
-          linysText({ text: " (" + this.selected_history_list.length.toString() + ")" })
+          linysText({ text: " (" + this.history_list.length.toString() + ")" })
             .opacity(0.7)
         } // Time elapse description
         .width("100%")
 
         Scroll() {
           Column() {
-            ForEach(this.selected_history_list.reverse(), (item: history_record, key: number) => {
+            ForEach(this.history_list.reverse(), (item: history_record, key: number) => {
               meowRelation({
                 index: key,
                 show: this.showing_settings,
@@ -124,7 +124,7 @@ struct woofHistory {
               })
                 .width("100%")
             }) // Items
-            if (this.selected_history_list.length == 0) {
+            if (this.history_list.length == 0) {
               linysTitleText({
                 text: "¯\\_(ツ)_/¯"
               })
@@ -163,7 +163,7 @@ struct woofHistory {
               this.showing_this_month = false;
               this.showing_this_year = false;
               this.showing_today = false;
-              this.refresh_selected_history_list();
+              this.refresh_current_history_list();
             })
           linysShowButton({
             text: $r('app.string.Settings_experience_history_this_year'),
@@ -175,11 +175,11 @@ struct woofHistory {
               this.showing_this_month = false;
               this.showing_today = false;
               this.showing_before = false;
-              this.refresh_selected_history_list();
+              this.refresh_current_history_list();
             })
           linysShowButton({
             text: $r('app.string.Settings_experience_history_this_month'),
-            symbol_glyph_target: 'sys.symbol.calendar_31',
+            symbol_glyph_target: this.get_this_month_calendar_symbol(),
             show: this.showing_this_month
           })
             .onClick(() => {
@@ -187,7 +187,7 @@ struct woofHistory {
               this.showing_today = false;
               this.showing_this_year = false;
               this.showing_before = false;
-              this.refresh_selected_history_list();
+              this.refresh_current_history_list();
             })
           linysShowButton({
             text: $r('app.string.Settings_experience_history_today'),
@@ -199,7 +199,7 @@ struct woofHistory {
               this.showing_this_month = false;
               this.showing_this_year = false;
               this.showing_before = false;
-              this.refresh_selected_history_list();
+              this.refresh_current_history_list();
             })
         } // Time selectors
         .width("100%")
@@ -277,6 +277,11 @@ struct woofHistory {
 
   // Utils
 
+  /**
+   * Constructs and returns a boolean list of specified length consists of false.
+   * @param length A number, the length of the list.
+   * @returns A boolean[] array, all elements are false.
+   * */
   all_false(length: number) {
     let result: boolean[] = [];
     for (let index = 0; index < length; index++) {
@@ -285,8 +290,31 @@ struct woofHistory {
     return result;
   }
 
+  /**
+   * Gets the calendar symbol with a correct number of days in this month.
+   * @returns A string, a resource address.
+   * @example 'sys.symbol.calendar_29'
+   * */
+  get_this_month_calendar_symbol() {
+    let month = new Date().getMonth();
+    let year: number = new Date().getFullYear();
+    let is_leap_year = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+    let look_up = ['31', is_leap_year ? '29' : '28', '31', '30', '31', '30', '31', '31', '30', '31', '30', '31'];
+    let symbol = 'sys.symbol.calendar_' + look_up[month];
+    return symbol;
+  }
+
   // Select Events and operations
 
+  /**
+   * Triggered when selecting or unselecting a history.
+   *
+   * Sets this.selecting to true, if is selecting something.
+   *
+   * Otherwise set it to false.
+   *
+   * @abstract Also resets this.delete_confirm.
+   * */
   on_select_change() {
     if (this.selected.includes(true)) {
       this.selecting = true;
@@ -296,27 +324,36 @@ struct woofHistory {
     this.delete_confirm = 0;
   }
 
-  refresh_selected_history_list() {
+  /**
+   * Refreshes this.history_list according to the time range selected.
+   * */
+  refresh_current_history_list() {
     if (this.showing_today) {
-      this.selected_history_list = this.bunch_of_history.get_part_slice(this.stamp_today);
+      this.history_list = this.bunch_of_history.get_part_slice(this.stamp_today);
       this.time_period = new Date(this.stamp_today).toLocaleString();
     }
     if (this.showing_this_month) {
-      this.selected_history_list = this.bunch_of_history.get_part_slice(this.stamp_this_month);
+      this.history_list = this.bunch_of_history.get_part_slice(this.stamp_this_month);
       this.time_period = new Date(this.stamp_this_month).toLocaleString();
     }
     if (this.showing_this_year) {
-      this.selected_history_list = this.bunch_of_history.get_part_slice(this.stamp_this_year);
+      this.history_list = this.bunch_of_history.get_part_slice(this.stamp_this_year);
       this.time_period = new Date(this.stamp_this_year).toLocaleString();
     }
     if (this.showing_before) {
-      this.selected_history_list = this.bunch_of_history.get_part_slice(0, this.stamp_this_year);
+      this.history_list = this.bunch_of_history.get_part_slice(0, this.stamp_this_year);
       this.time_period = new Date(this.stamp_this_year).toLocaleString();
     }
     this.selected_number = 0;
-    this.selected = this.all_false(this.selected_history_list.length);
+    this.selected = this.all_false(this.history_list.length);
   }
 
+  /**
+   * One click to select or unselect all history records.
+   *
+   * @abstract If there is still items unselected, then selects all.
+   * If all items are already selected, then unselect all.
+   * */
   select_all() {
     if (this.selected.includes(false)) {
       for (let index = 0; index < this.selected.length; index++) {
@@ -331,6 +368,11 @@ struct woofHistory {
     }
   }
 
+  /**
+   * Deletes all items selected, and refreshes the current history list according to time range specified.
+   *
+   * @abstract Also reconstructs the plain history cache and saves the operated history to sandbox storage.
+   * */
   delete_selected() {
     let bias = 0;
     if (this.showing_before) {
@@ -338,12 +380,12 @@ struct woofHistory {
       bias = this.bunch_of_history.history_list.length -
       this.bunch_of_history.index_of_record_after_time(this.stamp_this_year);
     }
-    for (let index = 0; index < this.selected_history_list.length; index++) {
+    for (let index = 0; index < this.history_list.length; index++) {
       if (this.selected[index]) {
         this.bunch_of_history.remove_history(this.bunch_of_history.history_list.length - 1 - index - bias, true);
       }
     }
-    this.refresh_selected_history_list();
+    this.refresh_current_history_list();
     this.bunch_of_history.reconstruct_plain_history();
     sandbox_save("history.txt", this.bunch_of_history.export_string());
     this.delete_confirm = 0;
@@ -416,6 +458,9 @@ struct meowRelation {
     )
   }
 
+  /**
+   * Selects or unselects myself, usually called when onClick.
+   * */
   select_unselect() {
     if (this.selected[this.index]) {
       this.selected_number -= 1;

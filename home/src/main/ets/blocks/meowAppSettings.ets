@@ -3,8 +3,8 @@ import {
   capsule_bar_height,
   click_effect_default,
   fontSize_Large,
-  home_url_default_blank,
-  minimum_block_width
+  url_default_blank,
+  minimum_card_width
 } from '../hosts/bunch_of_defaults';
 import linysTitleText from '../components/linysTitleText';
 import linysText from '../components/linysText';
@@ -20,7 +20,7 @@ import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import linysCapsuleButton from '../components/linysCapsuleButton';
 import { bunch_of_history } from '../hosts/bunch_of_history';
-import { sandbox_open } from '../utils/storage_tools';
+import { sandbox_open_sync } from '../utils/storage_tools';
 import woofHistory from '../dialogs/woofHistory';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import meowSEManager from './meowSEManager';
@@ -163,7 +163,7 @@ struct meowAppSettings {
               linysText({ text: $r('app.string.Settings_general_new_tab_url') })
               TextInput({
                 text: this.new_tab_url_edit,
-                placeholder: home_url_default_blank(),
+                placeholder: url_default_blank(),
               })
                 .onChange((value) => {
                   this.new_tab_url_edit = value;
@@ -190,7 +190,7 @@ struct meowAppSettings {
               linysText({ text: $r('app.string.Settings_general_home_url') })
               TextInput({
                 text: this.home_url_edit,
-                placeholder: home_url_default_blank(),
+                placeholder: url_default_blank(),
               })
                 .onChange((value) => {
                   this.home_url_edit = value;
@@ -235,7 +235,7 @@ struct meowAppSettings {
                   .selectedColor($r('app.color.font_color_title'))
                   .onChange(isOn => {
                     this.use_adblock = isOn;
-                    this.bunch_of_settings.set_setting_value_of_key('use_adblock', isOn);
+                    this.bunch_of_settings.set('use_adblock', isOn);
                   })
               } // Use adblock
               .width("100%")
@@ -258,7 +258,7 @@ struct meowAppSettings {
                   .selectedColor($r('app.color.font_color_title'))
                   .onChange(isOn => {
                     this.sys_back_to_access_backward = isOn;
-                    this.bunch_of_settings.set_setting_value_of_key('sys_back_to_access_backward', isOn);
+                    this.bunch_of_settings.set('sys_back_to_access_backward', isOn);
                   })
               } // Use sys back
               .width("100%")
@@ -276,7 +276,7 @@ struct meowAppSettings {
                   .selectedColor($r('app.color.font_color_title'))
                   .onChange((value) => {
                     this.settings_max_bookmark_suggestions = value;
-                    this.bunch_of_settings.set_setting_value_of_key('settings_max_bookmark_suggestions', value);
+                    this.bunch_of_settings.set('settings_max_bookmark_suggestions', value);
                   })
                 linysText({ text: this.settings_max_bookmark_suggestions.toString() })
                   .margin({ right: 5 })
@@ -295,7 +295,7 @@ struct meowAppSettings {
                   .selectedColor($r('app.color.font_color_title'))
                   .onChange((value) => {
                     this.settings_max_history_suggestions = value;
-                    this.bunch_of_settings.set_setting_value_of_key('settings_max_history_suggestions', value);
+                    this.bunch_of_settings.set('settings_max_history_suggestions', value);
                   })
                 linysText({ text: this.settings_max_history_suggestions.toString() })
                   .margin({ right: 5 })
@@ -325,7 +325,7 @@ struct meowAppSettings {
                   .selectedColor($r('app.color.font_color_title'))
                   .onChange(isOn => {
                     this.settings_collect_new_history = isOn;
-                    this.bunch_of_settings.set_setting_value_of_key('settings_collect_new_history', isOn);
+                    this.bunch_of_settings.set('settings_collect_new_history', isOn);
                   })
               } // Toggle History
               .width("100%")
@@ -382,7 +382,7 @@ struct meowAppSettings {
                   })
                   .onTouch(e => {
                     if (e.type == TouchType.Up) {
-                      this.bunch_of_settings.set_setting_value_of_key('animation_response', this.animation_response);
+                      this.bunch_of_settings.set('animation_response', this.animation_response);
                     }
                   })
                 linysText({ text: (this.animation_response / 100).toFixed(2) })
@@ -405,7 +405,7 @@ struct meowAppSettings {
                   })
                   .onTouch(e => {
                     if (e.type == TouchType.Up) {
-                      this.bunch_of_settings.set_setting_value_of_key('animation_damping_coefficient',
+                      this.bunch_of_settings.set('animation_damping_coefficient',
                         this.animation_damping_coefficient);
                     }
                   })
@@ -455,7 +455,7 @@ struct meowAppSettings {
           .width("100%")
 
         } // Bottom Bar of App Settings
-        .columnsTemplate("1fr ".repeat(Math.ceil(this.screen_width / minimum_block_width())))
+        .columnsTemplate("1fr ".repeat(Math.ceil(this.screen_width / minimum_card_width())))
         .rowsGap(10)
         .columnsGap(10)
         .padding({ left: 15, right: 15 })
@@ -493,28 +493,29 @@ struct meowAppSettings {
 
     // Get settings of title bar position
     this.settings_title_bar_position =
-      await this.bunch_of_settings.get_setting_key('settings_title_bar_position') as string;
+      await this.bunch_of_settings.get('settings_title_bar_position') as string;
 
     // Get settings of title bar position
-    this.settings_tabs_style = await this.bunch_of_settings.get_setting_key('settings_tabs_style') as string;
+    this.settings_tabs_style = await this.bunch_of_settings.get('settings_tabs_style') as string;
 
     // Get number of max bookmarks suggestions
     this.settings_max_bookmark_suggestions =
-      await this.bunch_of_settings.get_setting_key('settings_max_bookmark_suggestions') as number;
+      await this.bunch_of_settings.get('settings_max_bookmark_suggestions') as number;
 
     // Get number of max history suggestions
     this.settings_max_history_suggestions =
-      await this.bunch_of_settings.get_setting_key('settings_max_history_suggestions') as number;
+      await this.bunch_of_settings.get('settings_max_history_suggestions') as number;
 
     // Get whether to continue to collect new history
     this.settings_collect_new_history =
-      await this.bunch_of_settings.get_setting_key('settings_collect_new_history') as boolean;
+      await this.bunch_of_settings.get('settings_collect_new_history') as boolean;
 
     // Get whether to use system back to access backward
     this.sys_back_to_access_backward =
-      await this.bunch_of_settings.get_setting_key('sys_back_to_access_backward') as boolean;
+      await this.bunch_of_settings.get('sys_back_to_access_backward') as boolean;
 
-    let result = await sandbox_open("history.txt");
+    // Read history
+    let result = sandbox_open_sync("history.txt");
     if (result as string == "undefined") {
       // no history before
       console.log("[Meow][meowAppSettings] NO HISTORY BEFORE")
@@ -582,7 +583,7 @@ struct meowAppSettings {
       result = 'bottom';
     }
     this.settings_title_bar_position = result;
-    this.bunch_of_settings.set_setting_value_of_key('settings_title_bar_position', result);
+    this.bunch_of_settings.set('settings_title_bar_position', result);
   }
 
   on_start_up_page_changed() {
@@ -597,7 +598,7 @@ struct meowAppSettings {
     }
     this.bunch_of_tabs.start_up = result;
     // kv_store_put("start_up_option", result);
-    this.bunch_of_settings.set_setting_value_of_key('start_up_option', result);
+    this.bunch_of_settings.set('start_up_option', result);
   }
 
   on_tabs_style_changed() {
@@ -608,7 +609,7 @@ struct meowAppSettings {
       result = 'horizontal';
     }
     this.settings_tabs_style = result;
-    this.bunch_of_settings.set_setting_value_of_key('settings_tabs_style', result);
+    this.bunch_of_settings.set('settings_tabs_style', result);
   }
 
   // Operations
@@ -616,13 +617,13 @@ struct meowAppSettings {
   set_new_tab_url_and_kv_store() {
     this.bunch_of_tabs.new_tab_url = this.new_tab_url_edit;
     // kv_store_put("new_tab_url", this.new_tab_url_edit);
-    this.bunch_of_settings.set_setting_value_of_key('new_tab_url', this.new_tab_url_edit);
+    this.bunch_of_settings.set('new_tab_url', this.new_tab_url_edit);
   }
 
   set_home_url_and_kv_store() {
     this.bunch_of_tabs.home_url = this.home_url_edit;
     // kv_store_put("home_url", this.home_url_edit);
-    this.bunch_of_settings.set_setting_value_of_key('home_url', this.home_url_edit);
+    this.bunch_of_settings.set('home_url', this.home_url_edit);
   }
 
   scroll_settings_to() {

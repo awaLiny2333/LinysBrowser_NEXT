@@ -3,6 +3,12 @@ export class history_record {
   label: string;
   link: string;
 
+  /**
+   * history_record item, consists of a label, a link and an accessed timestamp.
+   * @param label A string, the name of this bookmark.
+   * @param link A string, the link of this bookmark.
+   * @param accessed_time A number, the access time of this history (timestamp in milliseconds)
+   * */
   constructor(label: string, link: string, accessed_time?: number) {
     if (accessed_time !== undefined) {
       this.accessed_time = accessed_time;
@@ -14,9 +20,13 @@ export class history_record {
 
 export class bunch_of_history {
   history_list: history_record[] = [];
-  cached_plain_history: string[][] = [];
-  plain_history_default_max_length: number = 100;
+  private cached_plain_history: string[][] | undefined = undefined;
+  private plain_history_default_max_length: number = 500;
 
+  /**
+   * A class holding a history_record[] array, in which there stores history_record objects.
+   * @param plain_history_max_length The default max length of plain history reconstruction.
+   */
   constructor(plain_history_max_length?: number) {
     if (plain_history_max_length) {
       this.plain_history_default_max_length = plain_history_max_length;
@@ -26,6 +36,7 @@ export class bunch_of_history {
   // Settings
 
   /**
+   * Set the max length of cached_plain_history reconstruction products.
    * @param max_length The default max length of plain history reconstruction.
    * */
   set_plain_max_length(max_length: number) {
@@ -59,14 +70,13 @@ export class bunch_of_history {
     this.reconstruct_plain_history();
   }
 
-  // Internal functions
 
   /**
-   *
-   * @param timestamp The target of timestamp.
-   * @returns The first index of history item whose access_time is not smaller than Target;
-   * @returns -1 if list is empty;
-   * @returns -2 if Target is bigger than all histories。
+   * Get the index of the first history item whose access_time is not smaller than Target.
+   * @param timestamp The limit of earliest timestamp.
+   * @returns A positive number, the index.
+   * @returns -1 if list is empty.
+   * @returns -2 if Target is bigger than all histories.
    * */
   index_of_record_after_time(timestamp: number) {
     if (this.history_list.length == 0) {
@@ -108,7 +118,9 @@ export class bunch_of_history {
   }
 
   /**
-   *
+   * Get the latest slice of history[] array,
+   * of a certain length set equal to plain_history_default_max_length,
+   * a member variable of bunch_of_history class.
    * @returns The list of history[] being less or equal than plain_history_default_max_length in length.
    * */
   get_latest_slice() {
@@ -124,9 +136,9 @@ export class bunch_of_history {
   }
 
   /**
-   *
-   * @param from_time The earliest timestamp.
-   * @param to_time The most recent timestamp.
+   * Get the slice of history[] array in a required time period.
+   * @param from_time The earliest timestamp. Default 0.
+   * @param to_time The most recent timestamp. Default the last (most recent) timestamp in history_list.
    * @returns The list of history[] in this period.
    * */
   get_part_slice(from_time?: number, to_time?: number) {
@@ -155,9 +167,9 @@ export class bunch_of_history {
   }
 
   /**
-   *
-   * @param from_history_list The source of history records.
-   * @abstract Sets / refreshes cached_plain_history: string[][].
+   * Reconstruct the plain history list.
+   * @example [['bing', 'www.bing.com'], ['loading', 'www.google.com']]
+   * @param from_history_list The source of history records. Would reconstruct the whole bunch_of_history if not given.
    * */
   reconstruct_plain_history(from_history_list?: history_record[]) {
     // Default fallback
@@ -175,21 +187,23 @@ export class bunch_of_history {
   }
 
   /**
-   * @returns cached_plain_history.
-   * @abstract if no cached history constructed, then reconstruct
+   * Get the plain label link array from the cached array.
+   * @returns A string[][] array, cached_plain_history, which consists of plain label and link pairs.
+   * @example [['bing', 'www.bing.com'], ['loading', 'www.google.com']]
    * */
   get_plain_history(): string[][] {
-    if (this.cached_plain_history.length == 0) {
+    if (!this.cached_plain_history) {
       this.reconstruct_plain_history();
     }
-    return this.cached_plain_history;
+    return this.cached_plain_history as string[][];
   }
 
   // External interaction
 
   /**
+   * Export history records in a specific plain text format.
    * @returns "\n" connected string of history records in the format of:
-   * @returns [label] [link] [accessed_time]
+   * @example 'bing\nbing.com\n127771721'
    * */
   export_string() {
     let export_list: string[] = []
@@ -203,14 +217,19 @@ export class bunch_of_history {
   }
 
   /**
-   * @param imp store string
-   * @abstract In default overwrites whatever was in this history_list
+   * Import history records in a specific plain text format.
+   *
+   * In default overwrites whatever was in this history_list.
+   * @param imp The string in the correct format:
+   * @example 'bing\nbing.com\n127771721'
    * */
   import_string(imp: string) {
-    // console.log("[Meow][debug] Import " + imp.replaceAll("\n", " "));
 
     if (imp.split("\n").length % 3 > 0) {
-      console.log("[Meow][bunch_of_history] Import Error: not 3*n length: " + imp)
+      // Incorrect format, log an error.
+      // Though this is not very likely to happen so often
+      // since all the txt files are generated by a fixed algorithm.
+      console.error("[ERROR][Meow][bunch_of_history] Import Error: not 3*n length: " + imp)
       return;
     }
 

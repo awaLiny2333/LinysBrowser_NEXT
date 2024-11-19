@@ -292,7 +292,7 @@ struct woofAdsBlocker {
       return;
     }
     this.adblock_exceptions.push(domain);
-    this.bunch_of_settings.set_setting_value_of_key('adblock_exceptions', this.adblock_exceptions.join("\n"))
+    this.bunch_of_settings.set('adblock_exceptions', this.adblock_exceptions.join("\n"))
   }
 
   delete_selected() {
@@ -315,7 +315,7 @@ struct woofAdsBlocker {
     this.selecting = false;
     this.selected_number = 0;
     this.selected = this.all_false(this.adblock_exceptions.length);
-    this.bunch_of_settings.set_setting_value_of_key('adblock_exceptions', this.adblock_exceptions.join("\n"))
+    this.bunch_of_settings.set('adblock_exceptions', this.adblock_exceptions.join("\n"))
   }
 }
 

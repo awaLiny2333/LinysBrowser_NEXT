@@ -76,9 +76,9 @@ struct Index {
   });
 
   async aboutToAppear(): Promise<void> {
-    this.animation_response = await this.bunch_of_settings.get_setting_key('animation_response') as number;
-    this.animation_damping = await this.bunch_of_settings.get_setting_key('animation_damping_coefficient') as number;
-    this.showing_tabs = await this.bunch_of_settings.get_setting_key('settings_tabs_open') as boolean;
+    this.animation_response = await this.bunch_of_settings.get('animation_response') as number;
+    this.animation_damping = await this.bunch_of_settings.get('animation_damping_coefficient') as number;
+    this.showing_tabs = await this.bunch_of_settings.get('settings_tabs_open') as boolean;
   }
 
   onBackPress(): boolean | void {
@@ -276,7 +276,7 @@ struct Index {
   }
 
   on_showing_tabs_change() {
-    this.bunch_of_settings.set_setting_value_of_key('settings_tabs_open', this.showing_tabs);
+    this.bunch_of_settings.set('settings_tabs_open', this.showing_tabs);
   }
 
   on_fail_prompt_gateway() {

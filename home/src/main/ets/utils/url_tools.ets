@@ -180,10 +180,7 @@ export function url_resource_to_meow(input: string) {
 export function url_meow_to_resource(input: string) {
   let result: string = input;
 
-  if (input == undefined) {
-    return result;
-  }
-  if (input == null) {
+  if (input == undefined || input == null) {
     return result;
   }
   // No process for empty inputs
@@ -191,10 +188,10 @@ export function url_meow_to_resource(input: string) {
   if (input.length > 7) {
     if (input.substring(0, 7) == "meow://") {
       // if is meow:// scheme
-      let index = built_ins.indexOf(input)
+      let index = built_ins.indexOf(input);
       if (index != -1) {
         // if this link exists
-        result = urls[index]
+        result = urls[index];
       } else {
         // if this link of meow:// scheme doesn't exist
       }

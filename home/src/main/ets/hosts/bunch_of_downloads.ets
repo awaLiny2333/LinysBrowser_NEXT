@@ -1,6 +1,3 @@
-// 方式一:request.downloadFile
-// pages/xxx.ets
-// 将网络资源文件下载到应用文件目录并读取一段内容
 import { common } from '@kit.AbilityKit';
 import { BusinessError, request } from '@kit.BasicServicesKit';
 import { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
@@ -16,6 +13,13 @@ export class bunch_of_downloads {
   context = AppStorage.get('context') as common.UIAbilityContext;
 
   /**
+   * A class to handle download tasks.
+   */
+  constructor() {
+  }
+
+  /**
+   * Start a download task in this bunch_of_downloads.
    * @param url The https:// proxy url of the download target
    * */
   start_download_task(url: string) {
@@ -98,16 +102,28 @@ export class bunch_of_downloads {
     }
   }
 
+  /**
+   * Pause a download task in this bunch_of_downloads.
+   * @param index The index of target task in the tasks list to be paused.
+   * */
   pause_task(index: number) {
     this.list_of_on_going_tasks[index].suspend();
     this.list_of_paused[index] = true;
   }
 
+  /**
+   * Resume a download task in this bunch_of_downloads.
+   * @param index The index of target task in the tasks list to be resumed.
+   * */
   continue_task(index: number) {
     this.list_of_on_going_tasks[index].restore();
     this.list_of_paused[index] = false;
   }
 
+  /**
+   * Delete a download task in this bunch_of_downloads.
+   * @param index The index of target task in the tasks list to be deleted.
+   * */
   async delete_task(index: number) {
 
     let file_path = (await this.list_of_on_going_tasks[index].getTaskInfo()).filePath
@@ -115,7 +131,7 @@ export class bunch_of_downloads {
     try {
       fs.unlink(file_path)
     } catch (e) {
-      console.log("[bunch_of_downloads][delete_task] Unlink file failed. " + e)
+      console.error("[ERROR][bunch_of_downloads][delete_task] Unlink file failed. " + e)
     }
 
     this.list_of_on_going_tasks[index].delete();
@@ -130,6 +146,10 @@ export class bunch_of_downloads {
     this.last_action = Date.now();
   }
 
+  /**
+   * Move a downloaded item, specified by the index, from sandbox directory to a device directory.
+   * @param index The index of target file in the tasks list to be moved.
+   * */
   async save_downloaded_item_to_local(index: number) {
     let info = await this.list_of_on_going_tasks[index].getTaskInfo()
 
@@ -143,6 +163,7 @@ export class bunch_of_downloads {
     let file_size = info.downloadTotalBytes;
     let target_uri: string[] = [];
 
+    // Save
     try {
       let documentSaveOptions = new picker.DocumentSaveOptions();
       documentSaveOptions.newFileNames = [file_name];
@@ -152,15 +173,6 @@ export class bunch_of_downloads {
         target_uri = documentSaveResult
         console.log("[bunch_of_downloads][Export] from: " + file_path)
         console.log("[bunch_of_downloads][Export] to: " + target_uri[0])
-
-        // let file_from = fs.openSync(file_path, fs.OpenMode.READ_WRITE);
-        // let array_buffer = new ArrayBuffer(file_size + 256);
-        // fs.readSync(file_from.fd, array_buffer);
-        // fs.closeSync(file_from);
-        // // Read
-        // let file = fs.openSync(target_uri[0], fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
-        // let writeLen = fs.writeSync(file.fd, array_buffer);
-        // fs.closeSync(file);
 
         let target_path = (new fileUri.FileUri(target_uri[0])).path;
         let writeLen = file_size;
@@ -183,10 +195,12 @@ export class bunch_of_downloads {
       let err: BusinessError = error as BusinessError;
       console.error('[bunch_of_downloads][ERROR] DocumentViewPicker failed with err: ' + JSON.stringify(err));
     }
-    // Save
-
   }
 
+  /**
+   * Delete all downloaded files in sandbox storage,
+   * usually executed when the app launches.
+   * */
   delete_all_downloaded_files() {
     try {
       let filesDir = getContext().filesDir;

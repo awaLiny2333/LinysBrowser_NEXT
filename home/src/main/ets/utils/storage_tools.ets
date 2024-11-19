@@ -1,17 +1,22 @@
 import { BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
-import { fileIo as fs, picker } from '@kit.CoreFileKit';
+import { fileIo as fs, fileUri, picker } from '@kit.CoreFileKit';
 import { buffer } from '@kit.ArkTS';
 
 let context = AppStorage.get("context") as common.UIAbilityContext;
 
+/**
+ * Save a text file to device storage, pulling up a DocumentViewPicker.
+ * @param file_name A string, setting the file's name.
+ * @param content A string, fills the file's content.
+ * */
 export function document_save(file_name: string, content: string) {
   let target_uri: string[] = [];
 
   try {
     let documentSaveOptions = new picker.DocumentSaveOptions();
     documentSaveOptions.newFileNames = [file_name];
-    documentSaveOptions.fileSuffixChoices = [".html"]
+    documentSaveOptions.fileSuffixChoices = [".html", ".txt"];
     let documentPicker = new picker.DocumentViewPicker(context);
 
     documentPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
@@ -34,66 +39,90 @@ export function document_save(file_name: string, content: string) {
   }
 }
 
-export async function document_open() { // 需确保 context 由 UIAbilityContext 转换而来
+/**
+ * Pick a text file from device storage, pulling up a DocumentViewPicker.
+ * @returns A string, of the chosen file's content.
+ * */
+export async function document_open() {
   let target_uri: string[] = [];
 
   try {
     let documentPicker = new picker.DocumentViewPicker(context);
     let contents: string = "";
-    await documentPicker.select({ maxSelectNumber: 1, fileSuffixFilters: [".html"] }).then((documentSelectResult) => {
-      target_uri = documentSelectResult;
-      console.info('[Meow][document_reader] DocumentViewPicker.select successfully, documentSelectResult uri: ' +
-      target_uri[0])
-      let file = fs.openSync(target_uri[0], fs.OpenMode.READ_WRITE);
-      let array_buffer = new ArrayBuffer(4194304);
-      fs.readSync(file.fd, array_buffer);
-      fs.closeSync(file);
-      contents = buffer.from(array_buffer).toString();
-    }).catch((err: BusinessError) => {
-      console.error('[Meow][document_reader] DocumentViewPicker.select failed with err: ' + JSON.stringify(err));
-    });
+    await documentPicker.select({ maxSelectNumber: 1, fileSuffixFilters: [".html", ".txt"] })
+      .then((documentSelectResult) => {
+        target_uri = documentSelectResult;
+        let file = fs.openSync(target_uri[0], fs.OpenMode.READ_WRITE);
+        console.info('[Meow][document_reader] DocumentViewPicker.select successfully, documentSelectResult uri: ' +
+        target_uri[0])
+        let target_path = (new fileUri.FileUri(target_uri[0])).path;
+        let stat = fs.statSync(target_path);
+        let size = stat.size;
+        let buf = new ArrayBuffer(size);
+        let readLen = fs.readSync(file.fd, buf);
+        fs.closeSync(file);
+        let result = buf.slice(0, readLen);
+        console.info("[Meow][document_reader] read file data succeed, Length: " + readLen.toString());
+        contents = buffer.from(result).toString();
+      })
+      .catch((err: BusinessError) => {
+        console.error('[Meow][document_reader] DocumentViewPicker.select failed with err: ' + JSON.stringify(err));
+      });
     return contents;
   } catch (error) {
     let err: BusinessError = error as BusinessError;
-    console.error('[Meow][document_opener][ERROR] DocumentViewPicker failed with err: ' + JSON.stringify(err));
+    console.error('[ERROR][Meow][document_reader] DocumentViewPicker failed with err: ' + JSON.stringify(err));
     return "";
   }
 }
 
-export function sandbox_save(file_path_name: string, content: string | ArrayBuffer) {
+/**
+ * Save a text file or ArrayBuffer to sandbox storage, overwrites whatever that was at that place.
+ * @param file_name A string, setting the file's name.
+ * @param content A string or an ArrayBuffer, fills the file's content.
+ * */
+export function sandbox_save(file_name: string, content: string | ArrayBuffer) {
   let filesDir = getContext().filesDir;
-  let full_file_directory = filesDir + '/' + file_path_name;
+  let full_file_directory = filesDir + '/' + file_name;
   if (fs.accessSync(full_file_directory)) {
     fs.unlinkSync(full_file_directory);
   }
   let file = fs.openSync(full_file_directory, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
   let writeLen = fs.writeSync(file.fd, content);
-  console.info("[sandbox_save] write data to file succeed and size is:" + writeLen + " @ " + file_path_name);
+  console.info("[sandbox_save] write data to file succeed and size is:" + writeLen + " @ " + file_name);
   fs.closeSync(file);
 }
 
-export async function sandbox_open(file_path_name: string) {
+/**
+ * Read a text file from sandbox storage.
+ * @returns A string, of the requested file's content.
+ * */
+export function sandbox_open_sync(file_name: string) {
   let filesDir = getContext().filesDir;
-  file_path_name = filesDir + "/" + file_path_name
-  if (!(await fs.access(file_path_name))) {
+  file_name = filesDir + "/" + file_name
+  if (!(fs.accessSync(file_name))) {
     // file doesn't exist
     return "undefined";
   }
-  let file = fs.openSync(file_path_name, fs.OpenMode.READ_WRITE);
-  let stat = fs.statSync(file_path_name);
+  let file = fs.openSync(file_name, fs.OpenMode.READ_WRITE);
+  let stat = fs.statSync(file_name);
   let size = stat.size;
   let buf = new ArrayBuffer(size);
-  let readLen = await fs.read(file.fd, buf);
-  console.info("[Meow][sandbox_open] read file data succeed, Length: " + readLen.toString());
-  let result = buf.slice(0, readLen);
+  let readLen = fs.readSync(file.fd, buf);
   fs.closeSync(file);
+  let result = buf.slice(0, readLen);
+  console.info("[Meow][sandbox_open] read file data succeed, Length: " + readLen.toString());
   return buffer.from(result).toString();
 }
 
-export async function sandbox_open_array(file_path_name: string) {
+/**
+ * Read an ArrayBuffer file from sandbox storage.
+ * @returns An ArrayBuffer, of the requested file's content.
+ * */
+export function sandbox_open_array_sync(file_path_name: string) {
   let filesDir = getContext().filesDir;
   file_path_name = filesDir + "/" + file_path_name
-  if (!(await fs.access(file_path_name))) {
+  if (!(fs.accessSync(file_path_name))) {
     // file doesn't exist
     return undefined;
   }
@@ -101,9 +130,9 @@ export async function sandbox_open_array(file_path_name: string) {
   let stat = fs.statSync(file_path_name);
   let size = stat.size;
   let buf = new ArrayBuffer(size);
-  let readLen = await fs.read(file.fd, buf);
+  let readLen = fs.readSync(file.fd, buf);
   console.info("[Meow][sandbox_open] read file data succeed, Length: " + readLen.toString());
-  let result = buf.slice(0, readLen);
   fs.closeSync(file);
+  let result = buf.slice(0, readLen);
   return result;
 }

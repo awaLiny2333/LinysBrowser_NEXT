@@ -104,11 +104,11 @@ struct meowSEManager {
   }
 
   async on_appear() {
-    let custom_search_engine = await this.bunch_of_settings.get_setting_key('custom_search_engines') as string;
+    let custom_search_engine = await this.bunch_of_settings.get('custom_search_engines') as string;
     this.bunch_of_search_engines.import_string(custom_search_engine);
     this.sync_list_of_search_engines();
     this.selected_index =
-      await this.bunch_of_settings.get_setting_key('custom_search_engines_selected_index') as number;
+      await this.bunch_of_settings.get('custom_search_engines_selected_index') as number;
 
     this.UA_loaded_from_disk = true;
     // Get UA
@@ -121,7 +121,7 @@ struct meowSEManager {
       // If set back to default
       this.search_engine = "https://bing.com/search?q=%s";
     } else {
-      this.search_engine = this.bunch_of_search_engines.list_of_search_engines[this.selected_index].content;
+      this.search_engine = this.bunch_of_search_engines.list_of_search_engines[this.selected_index].url;
     }
     this.save_search_engines_to_kv_store();
     this.sync_list_of_search_engines();
@@ -141,9 +141,9 @@ struct meowSEManager {
   }
 
   save_search_engines_to_kv_store() {
-    this.bunch_of_settings.set_setting_value_of_key('custom_search_engines',
+    this.bunch_of_settings.set('custom_search_engines',
       this.bunch_of_search_engines.export_string());
-    this.bunch_of_settings.set_setting_value_of_key('custom_search_engines_selected_index', this.selected_index);
+    this.bunch_of_settings.set('custom_search_engines_selected_index', this.selected_index);
   }
 }
 
@@ -157,7 +157,7 @@ struct meowSEButton {
     new bunch_of_search_engines();
   @State my_ua: search_engine = this.bunch_of_search_engines.list_of_search_engines[this.my_index];
   @State my_label: string = this.my_ua.label;
-  @State my_content: string = this.my_ua.content;
+  @State my_content: string = this.my_ua.url;
   // statuses
   @State pressing: boolean = false;
   @State editing: boolean = false;
@@ -360,7 +360,7 @@ struct meowSEButton {
     this.my_label = this.edit_label;
     this.my_content = this.edit_content;
     this.my_ua.label = this.edit_label;
-    this.my_ua.content = this.edit_content;
+    this.my_ua.url = this.edit_content;
     this.save_search_engine_to_kv_store();
 
     if (this.selected_index == this.my_index) {

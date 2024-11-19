@@ -229,6 +229,14 @@
       "value": "Move to"
     },
     {
+      "name": "Bookmarks_root_path",
+      "value": "@ (～o￣3￣)～ Click me to expand"
+    },
+    {
+      "name": "Bookmarks_root_path_expanded",
+      "value": "@ (=｀ω´=) Yes!"
+    },
+    {
       "name": "About_GitHub",
       "value": "→ GitHub Repo"
     },
@@ -365,12 +373,12 @@
       "value": "What's new?"
     },
     {
-      "name": "Whats_new_content_1",
-      "value": "1. Prompts when operations failed! Try to create a new bookmark with no name?"
+      "name": "Whats_new_content",
+      "value": "1. Prompts when operations failed! Try to create a new bookmark with no name?\n2. Clicking on the path text in Bookmarks panel now opens a navigation list!"
     },
     {
-      "name": "Whats_new_content_2",
-      "value": "2. And this \"What's New\" block!"
+      "name": "Whats_new_content_extra",
+      "value": "Of course, and this \"What's New\" block!"
     }
   ]
 }

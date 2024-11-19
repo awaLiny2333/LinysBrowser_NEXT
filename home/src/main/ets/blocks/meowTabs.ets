@@ -1,12 +1,12 @@
 import linysSymbol from '../components/linysSymbol';
 import { bunch_of_tabs, tab_label } from '../hosts/bunch_of_tabs';
 import { url_resource_to_meow } from '../utils/url_tools';
-import { animation_default, fontSize_Large, fontSize_Normal, home_url_default_blank } from '../hosts/bunch_of_defaults';
+import { animation_default, fontSize_Large, fontSize_Normal, url_default_blank } from '../hosts/bunch_of_defaults';
 import { kv_store_get, kv_store_put, kv_store_put_uint_8_array } from '../utils/kv_store_tools';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import linysShowButton from '../components/linysShowButton';
 import linysText from '../components/linysText';
-import { sandbox_open_array } from '../utils/storage_tools';
+import { sandbox_open_array_sync } from '../utils/storage_tools';
 
 @Component
 struct meowTabs {
@@ -60,9 +60,9 @@ struct meowTabs {
   async aboutToAppear() {
 
     // Get Data
-    let home_url = await this.bunch_of_settings.get_setting_key('home_url') as string;
-    let new_tab_url = await this.bunch_of_settings.get_setting_key('new_tab_url') as string;
-    let start_up_option = await this.bunch_of_settings.get_setting_key('start_up_option') as string;
+    let home_url = await this.bunch_of_settings.get('home_url') as string;
+    let new_tab_url = await this.bunch_of_settings.get('new_tab_url') as string;
+    let start_up_option = await this.bunch_of_settings.get('start_up_option') as string;
     let continue_tabs_count_string = await kv_store_get("continue_tabs_count");
     let continue_tabs_main_on_string = await kv_store_get("continue_tabs_main_on");
     let continue_tabs_sub_on_string = await kv_store_get("continue_tabs_sub_on");
@@ -112,7 +112,7 @@ struct meowTabs {
 
     } else if (start_up_option == "home") {
       if (home_url == "") {
-        this.new_tab(home_url_default_blank());
+        this.new_tab(url_default_blank());
       } else {
         this.webViews_ready = true;
         this.new_tab(home_url);
@@ -121,36 +121,38 @@ struct meowTabs {
 
     } else {
       // continue
+      this.webViews_ready = true;
 
-      // Init empty
-      let web_state_arrays: Uint8Array[] = [];
+      // Prepare web states
+      let web_state_arrays_to_restore: Uint8Array[] = [];
       for (let index = 0; index < continue_tabs_count; index++) {
         // Read continue tabs data
         let key = "continue_tabs_web_state_array_" + index.toString();
-        let array_buffer = await sandbox_open_array(key);
+        let array_buffer = sandbox_open_array_sync(key);
         if (array_buffer) {
-          let web_state_array = new Uint8Array(array_buffer);
-          web_state_arrays.push(web_state_array);
+          web_state_arrays_to_restore.push(new Uint8Array(array_buffer));
         }
       }
 
-      this.webViews_ready = true;
-      // Save to AppStorage
-      AppStorage.setOrCreate('web_state_arrays', web_state_arrays);
+      // Save to AppStorage for restoration use
+      AppStorage.setOrCreate('restore_web_state_arrays', web_state_arrays_to_restore);
+
       // Create new tabs
-      for (let index = 0; index < web_state_arrays.length; index++) {
-        let web_state_array = web_state_arrays[index];
+      for (let index = 0; index < web_state_arrays_to_restore.length; index++) {
+        let web_state_array = web_state_arrays_to_restore[index];
         if (web_state_array.length > 0) {
           this.new_tab("", true);
         } else {
           this.new_tab("", false);
         }
       }
-      // Try switch tab
+
+      // Try to switch tab
       this.webViews_ready = true;
       this.tab_animation = { duration: 0 };
       this.switch_tab(continue_tabs_main_on);
       this.sync_all_list_info();
+
       // Recover Paralleow
       if (continue_tabs_sub_on < this.tab_titles.length) {
         this.current_sub_tab_index = continue_tabs_sub_on;
@@ -317,13 +319,16 @@ struct meowTabs {
 
   // Tab controls
 
-  /** @param target_url If url is "", then load the default new_tab_url set in this object.
-   * @abstract While if new_tab_url is also not set ("" or undefined), then load default home_url().
+  /**
+   * Creates a new tab.
+   * @param target_url A string, if url is "", then load the default new_tab_url set in this object.
+   * @param do_recovery A boolean, if set true, then the tab will restore the serialized web state in
+   * @description While if new_tab_url is also not set ("" or undefined), then will load the url_default_blank().
    * */
-  new_tab(url: string, recover_on_creation?: boolean) {
+  new_tab(target_url: string, do_recovery?: boolean) {
     this.tab_animation = { duration: 0 };
 
-    this.current_main_tab_index = this.bunch_of_tabs.newTab(url, recover_on_creation);
+    this.current_main_tab_index = this.bunch_of_tabs.newTab(target_url, do_recovery);
     this.extension_area.push(0);
 
     if (this.scroll_animation_enabled) {
@@ -402,7 +407,7 @@ struct meowTabs {
     // Or we'll have to wait for the spring animation to finish, bringing the last tab button down.
 
     // Close
-    this.current_main_tab_index = this.bunch_of_tabs.closeTab(target, home_url_default_blank())
+    this.current_main_tab_index = this.bunch_of_tabs.closeTab(target, url_default_blank())
     // Update history
     this.update_backward_forward_access()
     // Get synced lists
@@ -417,7 +422,6 @@ struct meowTabs {
       console.log("[Meow][meowTabs] Store Tabs Count: " + store_tabs_count)
       // Store tabs count
       kv_store_put("continue_tabs_count", store_tabs_count);
-      this.web_states_set_app_storage_and_put_kv_store();
     }
 
     if (this.current_main_tab_index == this.current_sub_tab_index) {
@@ -474,9 +478,9 @@ struct meowTabs {
   }
 
   update_backward_forward_access() {
-    if (this.bunch_of_tabs.workingTab()) {
-      this.current_accessBackward = this.bunch_of_tabs.workingTab().controller.accessBackward()
-      this.current_accessForward = this.bunch_of_tabs.workingTab().controller.accessForward()
+    if (this.bunch_of_tabs.workingMainTab()) {
+      this.current_accessBackward = this.bunch_of_tabs.workingMainTab().controller.accessBackward()
+      this.current_accessForward = this.bunch_of_tabs.workingMainTab().controller.accessForward()
     }
   }
 
@@ -503,16 +507,6 @@ struct meowTabs {
         this.scroll_controller.scrollEdge(Edge.Bottom)
         // Execute
       }
-    }
-  }
-
-  web_states_set_app_storage_and_put_kv_store() {
-    // Store tabs web states
-    let web_state_arrays = this.bunch_of_tabs.get_all_web_states();
-    AppStorage.setOrCreate("web_state_arrays", web_state_arrays);
-    for (let index = 0; index < web_state_arrays.length; index++) {
-      const element = web_state_arrays[index];
-      kv_store_put_uint_8_array("continue_tabs_web_state_array_" + index.toString(), element);
     }
   }
 

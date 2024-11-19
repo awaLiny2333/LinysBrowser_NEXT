@@ -8,70 +8,101 @@ export class bunch_of_settings {
   settings_defaults_type: string[] = [];
   settings_defaults_value: string[] = [];
 
+  /**
+   * A class holding a settings_list[] array, in which there stores settings_list objects.
+   * Provides get and set functions to access app settings.
+   */
   constructor() {
-    // Settings
-    this.add_setting('settings_title_bar_position', 'string', 'bottom');
-    this.add_setting('settings_max_bookmark_suggestions', 'number', '5');
-    this.add_setting('settings_max_history_suggestions', 'number', '5');
-    this.add_setting('settings_collect_new_history', 'boolean', 'true');
-    this.add_setting('settings_tabs_style', 'string', 'vertical');
-    this.add_setting('settings_tabs_open', 'boolean', 'false');
-    this.add_setting('sys_back_to_access_backward', 'boolean', 'true');
+    // Register the default Settings
+    this.register_setting('settings_title_bar_position', 'string', 'bottom');
+    this.register_setting('settings_max_bookmark_suggestions', 'number', '5');
+    this.register_setting('settings_max_history_suggestions', 'number', '5');
+    this.register_setting('settings_collect_new_history', 'boolean', 'true');
+    this.register_setting('settings_tabs_style', 'string', 'vertical');
+    this.register_setting('settings_tabs_open', 'boolean', 'false');
+    this.register_setting('sys_back_to_access_backward', 'boolean', 'true');
 
-    this.add_setting('home_url', 'string', '');
-    this.add_setting('new_tab_url', 'string', '');
-    this.add_setting('start_up_option', 'string', 'new tab');
-    this.add_setting('animation_response', 'number', '36');
-    this.add_setting('animation_damping_coefficient', 'number', '20');
+    this.register_setting('home_url', 'string', '');
+    this.register_setting('new_tab_url', 'string', '');
+    this.register_setting('start_up_option', 'string', 'new tab');
+    this.register_setting('animation_response', 'number', '36');
+    this.register_setting('animation_damping_coefficient', 'number', '20');
 
-    this.add_setting('custom_user_agents', 'string', default_user_agents());
-    this.add_setting('custom_user_agents_selected_index', 'number', '-1');
-    this.add_setting('custom_search_engines', 'string', default_search_engines());
-    this.add_setting('custom_search_engines_selected_index', 'number', '-1');
+    this.register_setting('custom_user_agents', 'string', default_user_agents());
+    this.register_setting('custom_user_agents_selected_index', 'number', '-1');
+    this.register_setting('custom_search_engines', 'string', default_search_engines());
+    this.register_setting('custom_search_engines_selected_index', 'number', '-1');
 
-    this.add_setting('use_adblock', 'boolean', 'true');
-    this.add_setting('adblock_exceptions', 'string', '');
+    this.register_setting('use_adblock', 'boolean', 'true');
+    this.register_setting('adblock_exceptions', 'string', '');
   }
 
-  async get_setting_key(key: string) {
+  /**
+   * Gets the corresponding value of key.
+   *
+   * Retrieve from the settings_list cache if this key is already read from KvStore.
+   *
+   * Otherwise read from KvStore and cache it in the settings_list.
+   * @param key A string, the key of the setting.
+   * @returns A string | boolean | number, the corresponding value got for requested key.
+   * @returns 'unregistered' if the requested key is not registered.
+   * */
+  async get(key: string) {
     for (let index = 0; index < this.settings_list.length; index++) {
       if (this.settings_list[index].key == key) {
         return this.settings_list[index].value;
       }
     }
-    // if not found
+
+    // if not found in read cached results.
     let key_default_index = this.settings_defaults_key.indexOf(key);
+    if (key_default_index == -1) {
+      // unregistered setting
+      console.error('[Error][Meow][bunch_of_settings][get] Unregistered setting key: ' + key);
+      return 'unregistered';
+    }
     let key_default_value = this.settings_defaults_value[key_default_index];
     let key_default_type = this.settings_defaults_type[key_default_index];
+
     let result: string | boolean | number;
     if (key_default_type == 'string') {
       result = await this.get_settings_string(key, key_default_value);
     } else if (key_default_type == 'number') {
       result = await this.get_settings_number(key, key_default_value);
-    } else {
-      // Boolean
+    } else { // Boolean
       result = await this.get_settings_boolean(key, key_default_value);
     }
+
     let item: settings_item = new settings_item(key, result);
     this.settings_list.push(item);
     return result;
   }
 
-  set_setting_value_of_key(key: string, value: string | boolean | number) {
+  /**
+   * Sets the corresponding value of key, and save it in the KvStore.
+   * @param key A string, the key of the setting.
+   * @param value A string | boolean | number, the corresponding value of key to be set.
+   * @returns true if success.
+   * @returns false if fails, perhaps due to an unregistered setting key.
+   * */
+  set(key: string, value: string | boolean | number) {
     let key_default_index = this.settings_defaults_key.indexOf(key);
+    if (key_default_index == -1) {
+      // unregistered setting
+      console.error('[Error][Meow][bunch_of_settings][get] Unregistered setting key: ' + key);
+      return false;
+    }
     let key_default_type = this.settings_defaults_type[key_default_index];
+
     // Sequential search
     for (let index = 0; index < this.settings_list.length; index++) {
       if (this.settings_list[index].key == key) {
-        if (this.settings_list[index].value == value) {
-          // No change
-          return;
-        }
         this.settings_list[index].value = value;
         break;
       }
     }
-    // Save
+
+    // Save to KvStore
     if (key_default_type == 'string') {
       kv_store_put(key, value as string);
     } else if (key_default_type == 'number') {
@@ -79,56 +110,89 @@ export class bunch_of_settings {
     } else if (key_default_type == 'boolean') {
       kv_store_put(key, this.boolean_to_string(value as boolean));
     }
+    return true;
   }
 
-  private add_setting(name: string, type: string, value: string) {
-    this.settings_defaults_key.push(name);
+  // Private functions
+
+  /**
+   * Registers a setting
+   * @param key A string, the key of the setting.
+   * @param type A string, indicating the data type of the setting. Allow 'string' | 'number' | 'boolean'.
+   * @param value A string, sets the default (initial) value of the setting.
+   * @example this.register_setting('sys_back_to_access_backward', 'boolean', 'true');
+   * */
+  private register_setting(key: string, type: string, value: string) {
+    this.settings_defaults_key.push(key);
     this.settings_defaults_type.push(type);
     this.settings_defaults_value.push(value);
   }
 
+  /**
+   * Gets the string value of a setting.
+   * @param key A string, the key of the setting.
+   * @param default_404_fall_back A string, who will be returned if this key is not found in KvStore.
+   * @returns A string, the value of this key.
+   * @returns A string, default_404_fall_back, if the key is not found in KvStore.
+   * */
   private async get_settings_string(key: string, default_404_fall_back: string) {
     let value = await kv_store_get(key);
-    console.log('[Meow][bunch_of_settings][Uni] Got settings for ' + key + ': ' + value)
     if (value == ('undefined')) {
-      // First open
-      kv_store_put(key, default_404_fall_back);
       value = default_404_fall_back;
     }
+    console.log('[Meow][bunch_of_settings][Uni] Got settings for ' + key + ': ' + value)
     return value;
   }
 
+  /**
+   * Gets the string value of a setting.
+   * @param key A string, the key of the setting.
+   * @param default_404_fall_back A string, who will be returned if this key is not found in KvStore.
+   * @returns A number, the value of this key.
+   * @returns A number, Number.parseFloat(default_404_fall_back), if the key is not found in KvStore.
+   * */
   private async get_settings_number(key: string, default_404_fall_back: string) {
     let value = await kv_store_get(key);
-    console.log('[Meow][bunch_of_settings][Uni] Got settings for ' + key + ': ' + value)
     if (value == ('undefined')) {
-      // First open
-      kv_store_put(key, default_404_fall_back);
       value = default_404_fall_back;
     }
+    console.log('[Meow][bunch_of_settings][Uni] Got settings for ' + key + ': ' + value)
     return Number.parseFloat(value);
   }
 
-  private async get_settings_boolean(key: string, default_404_fall_back: string) {
+  /**
+   * Gets the string value of a setting.
+   * @param key A string, the key of the setting.
+   * @param default_404_fall_back A string, who will be returned if this key is not found in KvStore.
+   * @returns A number, the value of this key.
+   * @returns A boolean, string_to_boolean(default_404_fall_back), if the key is not found in KvStore.
+   * */
+  private async get_settings_boolean(key: string, default_404_fall_back: string): Promise<boolean> {
     let value = await kv_store_get(key);
-    console.log('[Meow][bunch_of_settings][Uni] Got settings for ' + key + ': ' + value)
     if (value == ('undefined')) {
-      // First open
-      kv_store_put(key, default_404_fall_back);
       value = default_404_fall_back;
     }
-    if (value == 'true') {
-      return true;
-    }
-    return false;
+    console.log('[Meow][bunch_of_settings][Uni] Got settings for ' + key + ': ' + value)
+    return this.string_to_boolean(value);
   }
 
+  /**
+   * Converts a boolean to string.
+   * @param bool A boolean.
+   * @returns A string form of the boolean: 'true' | 'false'.
+   * */
   private boolean_to_string(bool: boolean) {
-    if (bool) {
-      return 'true';
-    } else {
-      return 'false';
-    }
+    return bool ? 'true' : 'false';
+  }
+
+  /**
+   * Converts a boolean to string.
+   * @param str A string form of the boolean: 'true' | 'false'.
+   * @returns A boolean, true if the str is exactly 'true'.
+   * @returns A boolean, false if otherwise.
+   * */
+  private string_to_boolean(str: string) {
+    return (str == 'true') ? true : false;
   }
 }
 
@@ -136,6 +200,11 @@ class settings_item {
   key: string;
   value: string | boolean | number;
 
+  /**
+   * A settings_item item, consists of a key and its value.
+   * @param key A string, the key of this setting.
+   * @param value A string | boolean | number, the value of this setting.
+   * */
   constructor(key: string, value: string | boolean | number) {
     this.key = key;
     this.value = value;

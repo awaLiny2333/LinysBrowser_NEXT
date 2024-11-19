@@ -537,7 +537,7 @@ struct meowTitleBar {
     this.download_started_popup = true;
     setTimeout(() => {
       this.download_started_popup = false;
-    }, animation_popup_duration() * 10)
+    }, animation_popup_duration())
   }
 
   // UI controls
@@ -637,13 +637,13 @@ struct meowTitleBar {
   refresh_page() {
     this.webViews_ready = true;
     this.bunch_of_tabs.refresh_onWorkingTab()
-    this.bunch_of_tabs.workingTab().update_is_loading(true)
+    this.bunch_of_tabs.workingMainTab().update_is_loading(true)
   }
 
   stop_page() {
     this.webViews_ready = true;
     this.bunch_of_tabs.stop_onWorkingTab();
-    this.bunch_of_tabs.workingTab().update_is_loading(false);
+    this.bunch_of_tabs.workingMainTab().update_is_loading(false);
     this.sync_tabs_list_info();
     this.update_tabs_current_info();
   }

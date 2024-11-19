@@ -229,6 +229,14 @@
       "value": "移动到"
     },
     {
+      "name": "Bookmarks_root_path",
+      "value": "@ (～o￣3￣)～ 点我可以展开"
+    },
+    {
+      "name": "Bookmarks_root_path_expanded",
+      "value": "@ (=｀ω´=) 诶～"
+    },
+    {
       "name": "About_GitHub",
       "value": "→ GitHub 仓库"
     },
@@ -346,31 +354,31 @@
     },
     {
       "name": "Fail_desc_folder_current_name_crash",
-      "value": "当前位置里有一个重名的文件夹！"
+      "value": "当前位置有一个重名的文件夹！"
     },
     {
       "name": "Fail_desc_bookmark_current_name_crash",
-      "value": "当前位置里有一个重名的书签！"
+      "value": "当前位置有一个重名的书签！"
     },
     {
       "name": "Fail_desc_folder_destination_name_crash",
-      "value": "目标位置里有一个重名的文件夹！"
+      "value": "目标位置有一个重名的文件夹！"
     },
     {
       "name": "Fail_desc_bookmark_destination_name_crash",
-      "value": "目标位置里有一个重名的书签！"
+      "value": "目标位置有一个重名的书签！"
     },
     {
       "name": "Whats_new",
       "value": "更新了什么？"
     },
     {
-      "name": "Whats_new_content_1",
-      "value": "1. 操作失败的时候会弹窗了！试试去创建一个没有名字的书签？"
+      "name": "Whats_new_content",
+      "value": "1. 操作失败的时候会弹窗了！试试去创建一个没有名字的书签？\n2. 点击书签面板的路径文字，会打开一个跳转面板！"
     },
     {
-      "name": "Whats_new_content_2",
-      "value": "2. 以及这个 “更新了什么” 区域！"
+      "name": "Whats_new_content_extra",
+      "value": "当然，还有这个更新说明区域！"
     }
   ]
 }

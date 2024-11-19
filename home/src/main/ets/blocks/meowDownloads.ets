@@ -6,7 +6,7 @@ import {
   capsule_bar_height,
   click_effect_default,
   fontSize_Large,
-  minimum_block_width
+  minimum_card_width
 } from '../hosts/bunch_of_defaults';
 import { request } from '@kit.BasicServicesKit';
 import linysText from '../components/linysText';
@@ -67,7 +67,7 @@ struct meowDownloads {
         )
       }
       .columnsTemplate(this.bunch_of_downloads.list_of_on_going_tasks.length == 0 ?
-        "1fr" : "1fr ".repeat(Math.ceil(this.screen_width / minimum_block_width())))
+        "1fr" : "1fr ".repeat(Math.ceil(this.screen_width / minimum_card_width())))
       .rowsGap(10)
       .columnsGap(10)
       .width("100%")
@@ -246,7 +246,7 @@ struct meowDownloadsButton {
         }
         // Reset delete confirm
         if (this.copied > 0) {
-          this.copied -= 1;
+          this.copied -= 10;
         }
         // Reset copy
       }, 10)

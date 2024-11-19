@@ -14,6 +14,7 @@ import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 import linysShowButton from '../components/linysShowButton';
 import linysCapsuleButton from '../components/linysCapsuleButton';
 import woofBookmarksPathSelector from '../dialogs/woofBookmarksMove';
+import linysPathDisplay from '../components/linysPathDisplay';
 
 @Component
 struct meowBookmarks {
@@ -22,12 +23,14 @@ struct meowBookmarks {
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
   @Link webViews_ready: boolean;
   @State viewing_contents: unified_item[] = this.bunch_of_bookmarks.root.get_content();
-  @State @Watch('refresh_root_content') looking_at_path: string = "";
+  @State @Watch('refresh_content_view') looking_at_path: string = "";
+  @State current_folder: folder | undefined = undefined;
   // Environments
   @State add_label: string = "";
   @State add_link: string = "";
   @State adding_folder: boolean = false;
   @State adding_bookmark: boolean = false;
+  @State showing_navigator: boolean = false;
   @State importing_bookmarks: boolean = false;
   @State exporting_bookmarks: boolean = false;
   // Input interactions
@@ -36,24 +39,21 @@ struct meowBookmarks {
   // Dialogs
   @StorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
 
-  // Visual effects related
-
   build() {
     Column() {
       Scroll() {
         Column({ space: 5 }) {
-          ForEach(
-            this.viewing_contents,
-            (_unified_item: unified_item, key: number) => {
-              bookmarkItem({
-                my_index: key,
-                viewing_contents: this.viewing_contents, // For editing
-                looking_at_path: this.looking_at_path, // the path of now showing list (directory) on the panel
-                webViews_ready: this.webViews_ready, // To ask webViews to show
-                height_of_panel: this.scroll_area_height, // for animation params
-                parent_path: this.looking_at_path, // for get_my_path()
-              });
-            },
+          ForEach(this.viewing_contents, (_unified_item: unified_item, key: number) => {
+            bookmarkItem({
+              // Generals
+              my_index: key,
+              viewing_contents: this.viewing_contents, // For editing
+              looking_at_path: this.looking_at_path, // the path of now showing list (directory) on the panel
+              webViews_ready: this.webViews_ready, // To ask webViews to show
+              height_of_panel: this.scroll_area_height, // for animation params
+              parent_path: this.looking_at_path, // for get_my_path()
+            });
+          },
           )
         }
         .width("100%")
@@ -95,6 +95,7 @@ struct meowBookmarks {
             this.importing_bookmarks = !this.importing_bookmarks;
             // this.import_bookmarks_html();
           }) // Import bookmarks button
+
         linysShowButton({
           show: this.exporting_bookmarks,
           symbol_glyph_target: 'sys.symbol.arrow_right_up_and_square',
@@ -130,8 +131,8 @@ struct meowBookmarks {
             this.adding_folder = false;
             this.exporting_bookmarks = false;
             this.importing_bookmarks = false;
-            this.add_label = this.bunch_of_tabs.workingTab().title;
-            this.add_link = url_resource_to_meow(this.bunch_of_tabs.workingTab().url);
+            this.add_label = this.bunch_of_tabs.workingMainTab().title;
+            this.add_link = url_resource_to_meow(this.bunch_of_tabs.workingMainTab().url);
             this.adding_bookmark = !this.adding_bookmark;
           }) // Add bookmark button
 
@@ -225,16 +226,27 @@ struct meowBookmarks {
       .animation(animation_default())
       .scrollBar(BarState.Off)
 
-      Text("@ " + (this.looking_at_path == "" ? "(～o￣3￣)～" : this.looking_at_path + "/"))
+      Text(this.looking_at_path == "" ?
+        this.showing_navigator ? $r('app.string.Bookmarks_root_path_expanded') : $r('app.string.Bookmarks_root_path')
+        : "@ " + this.looking_at_path + "/")
         .fontColor($r('app.color.font_color_title'))
         .fontWeight(FontWeight.Medium)
         .fontSize(fontSize_Normal())
         .textAlign(TextAlign.End)
         .width("100%")
-        .margin({ top: 5 })
+        .margin({ top: 5, bottom: 5 })
         .opacity(0.7)
         .animation(animation_default())
+        .clickEffect(click_effect_default())
+        .onClick(() => {
+          this.showing_navigator = !this.showing_navigator;
+        })
 
+      linysPathDisplay({
+        current_viewing_path: this.looking_at_path,
+      })
+        .height(this.showing_navigator ? undefined: 0)
+        .animation(animation_default())
       // Path indicator
     } // List of directory, Operation buttons and edit TextInputs
     .justifyContent(FlexAlign.End)
@@ -256,7 +268,7 @@ struct meowBookmarks {
     } else {
       let html_bookmarks = result as string;
       this.bunch_of_bookmarks.import_html(html_bookmarks, true);
-      this.refresh_root_content();
+      this.refresh_content_view();
     }
     this.bookmark_load_from_disk_ok = true;
     // Get bookmarks
@@ -272,15 +284,15 @@ struct meowBookmarks {
     return area_height;
   }
 
-  refresh_root_content() {
+  refresh_content_view() {
     if (this.looking_at_path == "") {
+      // Go to root
       this.viewing_contents = this.bunch_of_bookmarks.root.get_content();
-      return;
     } else {
-      let got_folder = this.bunch_of_bookmarks.get_folder(this.looking_at_path);
-      if (got_folder !== undefined) {
-        this.viewing_contents = got_folder.get_content();
-        return;
+      // Go to a directory
+      this.current_folder = this.bunch_of_bookmarks.get_folder(this.looking_at_path);
+      if (this.current_folder !== undefined) {
+        this.viewing_contents = this.current_folder.get_content();
       }
     }
   }
@@ -311,12 +323,12 @@ struct meowBookmarks {
     }
 
     this.adding_folder = false;
-    this.refresh_root_content();
+    this.refresh_content_view();
     this.save_html_to_kv_store();
   }
 
   new_bookmark() {
-    if (this.add_label == "" ) {
+    if (this.add_label == "") {
       // Cannot add for no label or no link.
       this.uni_fail_prompt_gateway = $r('app.string.Fail_desc_no_name');
       return;
@@ -337,15 +349,16 @@ struct meowBookmarks {
     }
 
     this.adding_bookmark = false;
-    this.refresh_root_content();
+    this.refresh_content_view();
     this.save_html_to_kv_store();
   }
 
   go_back() {
     if (this.looking_at_path.includes("/")) {
+      // Pop current folder class
       let upper_path = this.looking_at_path.split("/");
       upper_path.pop()
-      // Pop current folder class
+      // Modify looking_at_path to trigger auto update
       this.looking_at_path = upper_path.join("/")
     } else {
       this.looking_at_path = "";
@@ -359,8 +372,8 @@ struct meowBookmarks {
   export_bookmarks_html() {
     this.exporting_bookmarks = false;
 
-    document_save("Bookmarks_" + Math.round(new Date().getTime() / 1000) + ".html",
-      this.bunch_of_bookmarks.export_html().join("\n"))
+    document_save("Bookmarks_" + Math.round(new Date().getTime() / 1000),
+      this.bunch_of_bookmarks.get_export_html().join("\n"))
   }
 
   import_bookmarks_html() {
@@ -372,7 +385,7 @@ struct meowBookmarks {
         return;
       }
       let import_result: number = this.bunch_of_bookmarks.import_html(result);
-      this.refresh_root_content();
+      this.refresh_content_view();
       console.log("[Meow][LinysBookmarks] Import result: " + import_result.toString())
       this.save_html_to_kv_store();
 
@@ -385,7 +398,7 @@ struct meowBookmarks {
 
   save_html_to_kv_store() {
     console.log("[Meow][LinysBookmarks] Started to save HTML to KVStore!")
-    let html_bookmark: string[] = this.bunch_of_bookmarks.export_html();
+    let html_bookmark: string[] = this.bunch_of_bookmarks.get_export_html();
     kv_store_put("html_bookmarks", html_bookmark.join("\n"));
   }
 }
@@ -478,27 +491,15 @@ struct bookmarkItem {
       })
       .onTouch((event) => {
         if (event.type == TouchType.Up) {
-          this.pressing = false;
           // If touch ends
+          this.pressing = false;
         } else {
-          this.pressing = true;
           // If touching
+          this.pressing = true;
         }
       })
       .onClick(() => {
-        if (this.press_timing_ok) {
-          this.delete_confirm = 0;
-          this.editing = !this.editing;
-          return;
-        } // Toggle Edit Panel
-        if (this.type == "folder") {
-          this.looking_at_path = this.get_my_path();
-          // Will automatically cause LinysBookmarks to update the UI list (@Watch)
-        } else {
-          this.webViews_ready = true;
-          this.bunch_of_tabs.stop_onWorkingTab()
-          this.bunch_of_tabs.loadUrl_onWorkingTab((this.item.get_item() as bookmark).get_link())
-        } // Open folder or load web
+        this.on_item_click();
       })
       .height(this.bookmark_height_default)
 
@@ -623,6 +624,7 @@ struct bookmarkItem {
     .offset({ y: this.offset_y })
     .animation(animation_default())
     .onAppear(() => {
+      this.pressing = false;
       setTimeout(() => {
         this.show = Visibility.Visible;
         this.offset_y = 0;
@@ -634,7 +636,7 @@ struct bookmarkItem {
         } else {
           this.press_timing = 0;
         }
-        this.press_timing_ok = this.press_timing > 16;
+        this.press_timing_ok = this.press_timing > 20;
         // Count press time
         if (this.delete_confirm > 0) {
           this.delete_confirm -= 1;
@@ -642,6 +644,24 @@ struct bookmarkItem {
         // Reset delete confirm
       }, 10)
     })
+  }
+
+  on_item_click() {
+    if (this.press_timing_ok) {
+      this.delete_confirm = 0;
+      this.editing = !this.editing;
+      return;
+    } // Toggle Edit Panel
+    if (this.type == "folder") {
+      // Open folder
+      this.looking_at_path = this.get_my_path();
+      // Will automatically cause meowBookmarks to update the UI list (@Watch)
+    } else {
+      // Load web
+      this.webViews_ready = true;
+      this.bunch_of_tabs.stop_onWorkingTab()
+      this.bunch_of_tabs.loadUrl_onWorkingTab((this.item.get_item() as bookmark).get_link())
+    }
   }
 
   get_animation_timeout() {
@@ -762,7 +782,7 @@ struct bookmarkItem {
 
   save_html_to_kv_store() {
     console.log("[Meow][LinysBookmarks] Started to save HTML to KVStore!")
-    let html_bookmark: string[] = this.bunch_of_bookmarks.export_html();
+    let html_bookmark: string[] = this.bunch_of_bookmarks.get_export_html();
     kv_store_put("html_bookmarks", html_bookmark.join("\n"));
   }
 }

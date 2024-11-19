@@ -1,4 +1,5 @@
 import linysCapsuleButton from '../components/linysCapsuleButton';
+import linysPathDisplay from '../components/linysPathDisplay';
 import linysSymbol from '../components/linysSymbol';
 import linysTitleText from '../components/linysTitleText';
 import { bookmark, bunch_of_bookmarks, folder, unified_item } from '../hosts/bunch_of_bookmarks';
@@ -12,6 +13,7 @@ struct woofBookmarksPathSelector {
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @State viewing_contents: unified_item[] = this.filter_only_folders(this.bunch_of_bookmarks.root.get_content());
   @State @Watch('refresh_dir_content') looking_at_path: string = "";
+  @State showing_navigator: boolean = false;
 
   build() {
     Column({ space: 5 }) {
@@ -81,7 +83,9 @@ struct woofBookmarksPathSelector {
       } // Buttons of submit and cancel
       .width("100%")
 
-      Text("@ " + (this.looking_at_path == "" ? "(～o￣3￣)～" : this.looking_at_path + "/"))
+      Text(this.looking_at_path == "" ?
+        this.showing_navigator ? $r('app.string.Bookmarks_root_path_expanded') : $r('app.string.Bookmarks_root_path')
+        : "@ " + this.looking_at_path + "/")
         .fontColor($r('app.color.font_color_title'))
         .fontWeight(FontWeight.Medium)
         .fontSize(fontSize_Normal())
@@ -89,6 +93,16 @@ struct woofBookmarksPathSelector {
         .width("100%")
         .margin({ top: 5 })
         .opacity(0.7)
+        .animation(animation_default())
+        .onClick(() => {
+          this.showing_navigator = !this.showing_navigator;
+        })
+
+      linysPathDisplay({
+        current_viewing_path: this.looking_at_path,
+        max_height_screen_percentage: 0.2,
+      })
+        .height(this.showing_navigator ? undefined : 0)
         .animation(animation_default())
     }
     .backgroundColor($r('app.color.start_window_background'))

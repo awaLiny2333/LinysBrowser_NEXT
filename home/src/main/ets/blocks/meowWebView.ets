@@ -11,7 +11,7 @@ struct meowWebView {
   @StorageProp('currentColorMode') current_color_mode: number = 0;
   @StorageProp('pathDir') pathDir: string = "";
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
-  @StorageLink('web_state_arrays') web_state_arrays: Uint8Array[] = [];
+  @StorageLink('restore_web_state_arrays') restore_web_state_arrays: Uint8Array[] = [];
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history();
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
@@ -45,10 +45,10 @@ struct meowWebView {
   async aboutToAppear(): Promise<void> {
 
     // Get whether ads blocker is enabled
-    this.use_adblock = await this.bunch_of_settings.get_setting_key('use_adblock') as boolean;
+    this.use_adblock = await this.bunch_of_settings.get('use_adblock') as boolean;
 
     // Get adblock exceptions
-    let exceptions_got = await this.bunch_of_settings.get_setting_key('adblock_exceptions') as string;
+    let exceptions_got = await this.bunch_of_settings.get('adblock_exceptions') as string;
     this.adblock_exceptions = exceptions_got.split('\n');
 
     // If directly use addAdsBlockDisallowedList(this.adblock_exceptions)
@@ -135,14 +135,14 @@ struct meowWebView {
 
               // Save browse history if is neither new tab nor a recovery tab
               if (this.settings_collect_new_history
-                && !this.bunch_of_tabs.Tabs[Label.index_key].recovery
+                && !this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation
                 && !this.tab_urls[Label.index_key].includes("resource://")
               ) {
                 let new_record = new history_record(this.tab_titles[Label.index_key], this.tab_urls[Label.index_key])
                 this.bunch_of_history.add_history(new_record);
                 sandbox_save("history.txt", this.bunch_of_history.export_string());
               } else {
-                this.bunch_of_tabs.Tabs[Label.index_key].recovery = false;
+                this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation = false;
                 // log
                 if (!this.settings_collect_new_history) {
                   console.log("[meowWebView] Didn't save history for settings disabled.");
@@ -178,22 +178,18 @@ struct meowWebView {
               // Update Input Search Box
               this.update_search_box_text(this.current_url)
 
-              if (this.bunch_of_tabs.Tabs[Label.index_key].recovery) {
+              if (this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation) {
                 return;
               }
+
+              // Get web_state
+              const web_state = this.bunch_of_tabs.Tabs[Label.index_key].controller.serializeWebState();
               // Sync to bunch_of_tabs
-              let web_state = this.bunch_of_tabs.Tabs[Label.index_key].controller.serializeWebState();
               this.bunch_of_tabs.Tabs[Label.index_key].web_state_array = web_state;
-              // Sync to AppStorage
-              this.web_state_arrays = this.bunch_of_tabs.get_all_web_states();
-              // kv_store web state
-              for (let index = 0; index < this.web_state_arrays.length; index++) {
-                const element = this.web_state_arrays[index];
-                let identifier = "continue_tabs_web_state_array_" + index.toString();
-                // kv_store_put_uint_8_array(identifier, element);
-                if (element) {
-                  sandbox_save(identifier, element.buffer);
-                }
+              // save web state to sandbox storage
+              if (web_state) {
+                let identifier = "continue_tabs_web_state_array_" + Label.index_key.toString();
+                sandbox_save(identifier, web_state.buffer);
               }
             })
             .onDownloadStart((event) => {
@@ -216,16 +212,23 @@ struct meowWebView {
 
               // Set Ads Blocker exception list
               try {
-                console.log('[Meow][meowTabs] add Ads Blocker Exceptions success. Operated by tab No.' +
+                console.log('[Meow][meowWebView] add Ads Blocker Exceptions success. Operated by tab No.' +
                 Label.index_key.toString())
                 webview.AdsBlockManager.addAdsBlockDisallowedList(this.adblock_exceptions);
               } catch (e) {
-                console.error('[ERROR][Meow][meowTabs] add Ads Blocker Exceptions error: ')
+                console.error('[ERROR][Meow][meowWebView] add Ads Blocker Exceptions error: ')
                 console.error(e);
               }
 
               // Restore Web State
-              this.bunch_of_tabs.restore_web_state(this.web_state_arrays, Label.index_key);
+              if (this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation) {
+                if (Label.index_key < this.restore_web_state_arrays.length) {
+                  this.bunch_of_tabs.restore_web_state(this.restore_web_state_arrays[Label.index_key], Label.index_key);
+                } else {
+                  console.error('[ERROR][Meow][meowWebView] Restore web state failed ' +
+                    'for an out-of-bound index in restore_web_state_arrays.')
+                }
+              }
             })
         }
         .visibility((this.current_main_tab_index == Label.index_key || this.current_sub_tab_index == Label.index_key)
@@ -352,7 +355,7 @@ struct meowWebView {
     if (target_packed_tab_info == undefined) {
       return "";
     } else {
-      if (target_packed_tab_info.recovery) {
+      if (target_packed_tab_info.restore_on_creation) {
         return "";
       } else {
         return url_meow_to_resource(target_packed_tab_info.url);

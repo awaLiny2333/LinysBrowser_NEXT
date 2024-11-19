@@ -103,10 +103,10 @@ struct meowUAManager {
   }
 
   async on_appear() {
-    let custom_user_agents = await this.bunch_of_settings.get_setting_key('custom_user_agents') as string;
+    let custom_user_agents = await this.bunch_of_settings.get('custom_user_agents') as string;
     this.bunch_of_user_agents.import_string(custom_user_agents);
     this.sync_list_of_user_agents();
-    this.selected_index = await this.bunch_of_settings.get_setting_key('custom_user_agents_selected_index') as number;
+    this.selected_index = await this.bunch_of_settings.get('custom_user_agents_selected_index') as number;
 
     this.UA_loaded_from_disk = true;
     // Get UA
@@ -119,7 +119,7 @@ struct meowUAManager {
       // If set back to default
       this.now_global_custom_UA = "";
     } else {
-      this.now_global_custom_UA = this.bunch_of_user_agents.list_of_user_agents[this.selected_index].content;
+      this.now_global_custom_UA = this.bunch_of_user_agents.list_of_user_agents[this.selected_index].user_agent_content;
     }
     this.save_user_agents_to_kv_store();
     this.sync_list_of_user_agents();
@@ -139,8 +139,8 @@ struct meowUAManager {
   }
 
   save_user_agents_to_kv_store() {
-    this.bunch_of_settings.set_setting_value_of_key('custom_user_agents', this.bunch_of_user_agents.export_string());
-    this.bunch_of_settings.set_setting_value_of_key('custom_user_agents_selected_index', this.selected_index);
+    this.bunch_of_settings.set('custom_user_agents', this.bunch_of_user_agents.export_string());
+    this.bunch_of_settings.set('custom_user_agents_selected_index', this.selected_index);
   }
 }
 
@@ -153,7 +153,7 @@ struct meowUAButton {
   @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
   @State my_ua: user_agent = this.bunch_of_user_agents.list_of_user_agents[this.my_index];
   @State my_label: string = this.my_ua.label;
-  @State my_content: string = this.my_ua.content;
+  @State my_content: string = this.my_ua.user_agent_content;
   // statuses
   @State pressing: boolean = false;
   @State editing: boolean = false;
@@ -356,7 +356,7 @@ struct meowUAButton {
     this.my_label = this.edit_label;
     this.my_content = this.edit_content;
     this.my_ua.label = this.edit_label;
-    this.my_ua.content = this.edit_content;
+    this.my_ua.user_agent_content = this.edit_content;
     this.save_user_agents_to_kv_store();
 
     if (this.selected_index == this.my_index) {

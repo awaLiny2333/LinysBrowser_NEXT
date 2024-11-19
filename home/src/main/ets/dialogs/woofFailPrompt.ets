@@ -33,6 +33,7 @@ struct woofFailPrompt {
         text: $r('app.string.Fail_tips_general_call_liny'),
         max_lines: 10
       })
+        .opacity(0.8)
         .width("100%")
 
       linysText({
@@ -41,23 +42,26 @@ struct woofFailPrompt {
       })
         .width("100%")
 
-      visitLink({
+      goodByeLink({
         meow: this.meow,
         text: $r('app.string.About_bilibili'),
         link: "https://space.bilibili.com/678438347",
       })
+        .opacity(0.8)
 
-      visitLink({
+      goodByeLink({
         meow: this.meow,
         text: $r('app.string.About_GitHub'),
         link: "https://github.com/awaLiny2333/LinysBrowser_NEXT",
       })
+        .opacity(0.8)
 
-      visitLink({
+      goodByeLink({
         meow: this.meow,
         text: $r('app.string.About_Gitee'),
         link: "https://gitee.com/awa_Liny/LinysBrowser_NEXT",
       })
+        .opacity(0.8)
 
       Button($r('app.string.OK'))
         .type(ButtonType.Capsule)
@@ -93,7 +97,7 @@ struct woofFailPrompt {
 export default woofFailPrompt;
 
 @Component
-struct visitLink {
+struct goodByeLink {
   // Environment
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
