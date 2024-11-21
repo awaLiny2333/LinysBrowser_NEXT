@@ -355,17 +355,19 @@ struct woofHistory {
    * If all items are already selected, then unselect all.
    * */
   select_all() {
+    let new_selected: boolean[] = [];
     if (this.selected.includes(false)) {
       for (let index = 0; index < this.selected.length; index++) {
-        this.selected[index] = true;
+        new_selected.push(true);
       }
       this.selected_number = this.selected.length;
     } else {
       for (let index = 0; index < this.selected.length; index++) {
-        this.selected[index] = false;
+        new_selected.push(false);
       }
       this.selected_number = 0;
     }
+    this.selected = new_selected;
   }
 
   /**
@@ -380,7 +382,7 @@ struct woofHistory {
       bias = this.bunch_of_history.history_list.length -
       this.bunch_of_history.index_of_record_after_time(this.stamp_this_year);
     }
-    for (let index = 0; index < this.history_list.length; index++) {
+    for (let index = this.history_list.length - 1; index >= 0; index--) {
       if (this.selected[index]) {
         this.bunch_of_history.remove_history(this.bunch_of_history.history_list.length - 1 - index - bias, true);
       }

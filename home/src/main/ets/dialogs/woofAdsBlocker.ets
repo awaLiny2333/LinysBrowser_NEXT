@@ -272,17 +272,19 @@ struct woofAdsBlocker {
   }
 
   select_all() {
+    let new_selected: boolean[] = [];
     if (this.selected.includes(false)) {
       for (let index = 0; index < this.selected.length; index++) {
-        this.selected[index] = true;
+        new_selected.push(true);
       }
       this.selected_number = this.selected.length;
     } else {
       for (let index = 0; index < this.selected.length; index++) {
-        this.selected[index] = false;
+        new_selected.push(false);
       }
       this.selected_number = 0;
     }
+    this.selected = new_selected;
   }
 
   add_exception(domain: string) {

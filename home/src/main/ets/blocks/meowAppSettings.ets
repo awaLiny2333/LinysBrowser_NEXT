@@ -3,8 +3,8 @@ import {
   capsule_bar_height,
   click_effect_default,
   fontSize_Large,
-  url_default_blank,
-  minimum_card_width
+  minimum_card_width,
+  url_default_blank
 } from '../hosts/bunch_of_defaults';
 import linysTitleText from '../components/linysTitleText';
 import linysText from '../components/linysText';
@@ -533,6 +533,8 @@ struct meowAppSettings {
       // Close panel
       this.on_panel_close();
     }
+    // Get length properties
+    this.history_length = this.bunch_of_history.history_list.length;
   }
 
   on_panel_open() {
@@ -565,8 +567,6 @@ struct meowAppSettings {
         this.start_up_page_selected = [2];
       }
     }
-    // Get length properties
-    this.history_length = this.bunch_of_history.history_list.length;
   }
 
   on_panel_close() {
