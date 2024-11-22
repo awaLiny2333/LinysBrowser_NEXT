@@ -382,13 +382,18 @@ struct woofHistory {
       bias = this.bunch_of_history.history_list.length -
       this.bunch_of_history.index_of_record_after_time(this.stamp_this_year);
     }
+
+    let selected: number[] = [];
     for (let index = this.history_list.length - 1; index >= 0; index--) {
       if (this.selected[index]) {
-        this.bunch_of_history.remove_history(this.bunch_of_history.history_list.length - 1 - index - bias, true);
+        // TODO: May be a performance bottleneck due to too many splice for arrays.
+        selected.push(this.bunch_of_history.history_list.length - 1 - index - bias);
+        // this.bunch_of_history.remove_history(this.bunch_of_history.history_list.length - 1 - index - bias, true);
       }
     }
+    this.bunch_of_history.remove_selected_history(selected)
+
     this.refresh_current_history_list();
-    this.bunch_of_history.reconstruct_plain_history();
     sandbox_save("history.txt", this.bunch_of_history.export_string());
     this.delete_confirm = 0;
   }

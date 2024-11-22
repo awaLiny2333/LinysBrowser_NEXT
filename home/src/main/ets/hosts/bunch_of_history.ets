@@ -46,6 +46,11 @@ export class bunch_of_history {
 
   // Use
 
+  /**
+   * Adds a history, automatically puts it in the order of time.
+   * @param history A history_record object.
+   * @param no_reconstruct_plain_history A boolean, will not reconstruct plain history cache if set true.
+   * */
   add_history(history: history_record, no_reconstruct_plain_history?: boolean) {
     let insert_position = this.index_of_record_after_time(history.accessed_time);
     if (insert_position < 0) {
@@ -60,6 +65,13 @@ export class bunch_of_history {
     this.reconstruct_plain_history();
   }
 
+  /**
+   * Removes the history record at the index given.
+   *
+   * Not recommended when deleting a lot of history records.
+   * @param index A number, the index of the target item in the grand history_list.
+   * @param no_reconstruct_plain_history A boolean, will not reconstruct plain history cache if set true.
+   * */
   remove_history(index: number, no_reconstruct_plain_history?: boolean) {
     this.history_list.splice(index, 1);
 
@@ -70,6 +82,43 @@ export class bunch_of_history {
     this.reconstruct_plain_history();
   }
 
+  /**
+   * Removes some selected histories, according to a given array of indices.
+   *
+   * Should be preferred when deleting a lot of history records.
+   * @param selections A number[] array, indicating the indices of the items to be deleted.
+   * @param no_reconstruct_plain_history A boolean, will not reconstruct plain history cache if set true.
+   * */
+  remove_selected_history(selections: number[], no_reconstruct_plain_history?: boolean) {
+
+    selections.sort((a, b) => {
+      return a - b;
+    });
+
+    let selected = new Array<boolean>(this.history_list.length);
+
+    let result_history: history_record[] = [];
+
+    for (let i = 0; i < selections.length; i++) {
+      selected[selections[i]] = true;
+    }
+
+    for (let i = 0; i < this.history_list.length; i++) {
+      if (selected[i] == true) {
+        // Marked to be deleted
+      } else {
+        result_history.push(this.history_list[i]);
+      }
+    }
+
+    this.history_list = result_history;
+
+    if (no_reconstruct_plain_history) {
+      return;
+    }
+    // reconstruct plain from only part of the records
+    this.reconstruct_plain_history();
+  }
 
   /**
    * Get the index of the first history item whose access_time is not smaller than Target.
