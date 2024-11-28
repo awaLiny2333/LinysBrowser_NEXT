@@ -10,6 +10,7 @@ import {
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { bunch_of_user_agents, user_agent } from '../hosts/bunch_of_user_agents';
 import { kv_store_put } from '../utils/kv_store_tools';
+import { default_user_agents } from '../hosts/bunch_of_defaults';
 
 @Component
 struct meowUAManager {
@@ -83,6 +84,10 @@ struct meowUAManager {
       )
 
       Row() {
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.clean' })
+          .onClick(() => {
+            this.clean_and_reset_ua();
+          })
         Blank()
         linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
           .onClick(() => {
@@ -128,6 +133,12 @@ struct meowUAManager {
   add_new_custom_ua() {
     this.bunch_of_user_agents.add_user_agent(new user_agent(new Date().toLocaleString(),
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0"));
+    this.sync_list_of_user_agents();
+    this.save_user_agents_to_kv_store();
+  }
+
+  clean_and_reset_ua() {
+    this.bunch_of_user_agents.import_string(default_user_agents());
     this.sync_list_of_user_agents();
     this.save_user_agents_to_kv_store();
   }
