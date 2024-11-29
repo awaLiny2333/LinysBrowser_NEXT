@@ -19,6 +19,10 @@ struct meowDownloads {
   @StorageLink('universal_new_download_gateway') @Watch('on_new_download') uni_new_download_gateway: string = "";
   @StorageLink('showing_downloads') showing_downloads: boolean = false;
   @Link screen_width: number;
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     Column({ space: 10 }) {
@@ -36,7 +40,7 @@ struct meowDownloads {
       .justifyContent(FlexAlign.Start)
       .width("100%")
       .borderRadius(10)
-      .backgroundColor($r('app.color.start_window_background'))
+      .backgroundColor(this.color_current_primary)
       .animation(animation_default())
 
       WaterFlow() {
@@ -126,6 +130,10 @@ struct meowDownloadsButton {
   @State exporting: boolean = false;
   @State delete_confirm: number = 0;
   @State copied: number = 0;
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     FlowItem() {
@@ -169,13 +177,13 @@ struct meowDownloadsButton {
 
           Button("  󰀁  ")// Delete
             .type(ButtonType.Capsule)
-            .backgroundColor(this.delete_confirm > 0 ? $r('app.color.start_window_background') :
+            .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
             $r("app.color.font_color_title"))
-            .fontColor(this.delete_confirm > 0 ? $r('app.color.font_color_title') :
-            $r('app.color.start_window_background'))
+            .fontColor(this.delete_confirm > 0 ? this.color_current_font :
+            this.color_current_primary)
             .border({
               width: 2,
-              color: this.delete_confirm > 0 ? $r('app.color.font_color_title') : "transparent"
+              color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
             })
             .fontSize(fontSize_Large())
             .fontWeight(FontWeight.Medium)
@@ -190,7 +198,7 @@ struct meowDownloadsButton {
           Button(this.my_paused ? "  󰂴  " : "  󰂱  ")// Pause Continue
             .type(ButtonType.Capsule)
             .backgroundColor($r("app.color.font_color_title"))
-            .fontColor($r('app.color.start_window_background'))
+            .fontColor(this.color_current_primary)
             .fontSize(fontSize_Large())
             .fontWeight(FontWeight.Medium)
             .height(capsule_bar_height())
@@ -205,7 +213,7 @@ struct meowDownloadsButton {
           Button("  󰀻  ")// Save
             .type(ButtonType.Capsule)
             .backgroundColor($r("app.color.font_color_title"))
-            .fontColor($r('app.color.start_window_background'))
+            .fontColor(this.color_current_primary)
             .fontSize(fontSize_Large())
             .fontWeight(FontWeight.Medium)
             .height(capsule_bar_height())
@@ -225,7 +233,7 @@ struct meowDownloadsButton {
       .justifyContent(FlexAlign.Start)
       .width("100%")
       .borderRadius(10)
-      .backgroundColor($r('app.color.start_window_background'))
+      .backgroundColor(this.color_current_primary)
       .visibility(this.visible)
       .offset({ y: this.y_off_set })
       .animation(animation_default())

@@ -48,6 +48,10 @@ struct woofAdsBlocker {
     bottom: { anchor: "controls_ads_blocker", align: VerticalAlign.Top },
     right: { anchor: "__container__", align: HorizontalAlign.End }
   };
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     RelativeContainer() {
@@ -130,7 +134,7 @@ struct woofAdsBlocker {
         .edgeEffect(EdgeEffect.Spring)
         .align(Alignment.Top)
         .borderRadius(10)
-        .backgroundColor($r('app.color.block_color'))
+        .backgroundColor(this.color_current_secondary)
         .width("100%")
         .layoutWeight(1)
       } // Whitelist
@@ -156,9 +160,9 @@ struct woofAdsBlocker {
                 this.add_exception_domain_edit = value;
               })
               .fontWeight(FontWeight.Regular)
-              .fontColor($r('app.color.font_color_title'))
-              .caretColor($r('app.color.font_color_title'))
-              .selectedBackgroundColor($r('app.color.font_color_title'))
+              .fontColor(this.color_current_font)
+              .caretColor(this.color_current_font)
+              .selectedBackgroundColor(this.color_current_font)
               .width("100%")
               .onSubmit(() => {
                 this.add_exception(this.add_exception_domain_edit);
@@ -201,13 +205,13 @@ struct woofAdsBlocker {
               Blank()
               Button("  󰀁  ")// Delete
                 .type(ButtonType.Capsule)
-                .backgroundColor(this.delete_confirm > 0 ? $r('app.color.start_window_background') :
+                .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
                 $r("app.color.font_color_title"))
-                .fontColor(this.delete_confirm > 0 ? $r('app.color.font_color_title') :
-                $r('app.color.start_window_background'))
+                .fontColor(this.delete_confirm > 0 ? this.color_current_font :
+                this.color_current_primary)
                 .border({
                   width: 2,
-                  color: this.delete_confirm > 0 ? $r('app.color.font_color_title') : "transparent"
+                  color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
                 })
                 .fontSize(fontSize_Large())
                 .fontWeight(FontWeight.Medium)
@@ -243,7 +247,7 @@ struct woofAdsBlocker {
     .padding(15)
     .width("100%")
     .height("100%")
-    .backgroundColor($r('app.color.start_window_background'))
+    .backgroundColor(this.color_current_primary)
     .onAppear(() => {
       setInterval(() => {
         if (this.delete_confirm > 0) {
@@ -330,17 +334,20 @@ struct Domain {
   @Link selected: boolean[];
   @Link selected_number: number;
   @Prop selecting: boolean;
+  // Color
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     Column() {
       linysText({
-        color: this.selected[this.index] ? $r('app.color.block_color') : $r('app.color.font_color_title'),
+        color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
         text: this.domain
       })
     }
     .alignItems(HorizontalAlign.Start)
     .width("100%")
-    .backgroundColor(this.selected[this.index] ? $r('app.color.font_color_title') : $r('app.color.block_color'))
+    .backgroundColor(this.selected[this.index] ? this.color_current_font : this.color_current_secondary)
     .animation(animation_default())
     .padding(5)
     .clickEffect(click_effect_default())

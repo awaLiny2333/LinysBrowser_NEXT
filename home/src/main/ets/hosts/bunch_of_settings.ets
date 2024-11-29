@@ -35,6 +35,14 @@ export class bunch_of_settings {
 
     this.register_setting('use_adblock', 'boolean', 'true');
     this.register_setting('adblock_exceptions', 'string', '');
+
+    // Colors
+    this.register_setting('color_light_primary', 'string', '#E1E9E3');
+    this.register_setting('color_light_secondary', 'string', '#CDD7CD');
+    this.register_setting('color_light_font', 'string', '#243B24');
+    this.register_setting('color_dark_primary', 'string', '#0F1A0F');
+    this.register_setting('color_dark_secondary', 'string', '#2A392A');
+    this.register_setting('color_dark_font', 'string', '#E1E9E3');
   }
 
   /**
@@ -111,6 +119,14 @@ export class bunch_of_settings {
       kv_store_put(key, this.boolean_to_string(value as boolean));
     }
     return true;
+  }
+
+  reset(key: string) {
+    let index = this.settings_defaults_key.indexOf(key)
+    let def_value = this.settings_defaults_value[index]
+    if (index >= 0) {
+      this.set(key, def_value);
+    }
   }
 
   // Private functions

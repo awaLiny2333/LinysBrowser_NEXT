@@ -27,6 +27,7 @@ import meowSEManager from './meowSEManager';
 import linysLink from '../components/linysLink';
 import woofAdsBlocker from '../dialogs/woofAdsBlocker';
 import meowWhatsNew from './meowWhatsNew';
+import woofColorSelect from '../dialogs/woofColorSelect';
 
 @Component
 struct meowAppSettings {
@@ -38,6 +39,19 @@ struct meowAppSettings {
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history();
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
+  // Colors
+  @StorageProp('color_current_primary') @Watch('on_color_change') color_current_primary: ResourceColor =
+    $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') @Watch('on_color_change') color_current_secondary: ResourceColor =
+    $r('app.color.block_color');
+  @StorageProp('color_current_font') @Watch('on_color_change') color_current_font: ResourceColor =
+    $r('app.color.font_color_title');
+  @StorageLink('color_light_primary') color_light_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_light_secondary') color_light_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_light_font') color_light_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_dark_primary') color_dark_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_dark_secondary') color_dark_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_dark_font') color_dark_font: ResourceColor = $r('app.color.font_color_title');
   // Generals
   @StorageLink('screen_width') screen_width: number = 0;
   @StorageLink('tablet_mode') tablet_mode: boolean = false;
@@ -51,14 +65,14 @@ struct meowAppSettings {
   // Segment Button Options
   @State title_bar_position_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [{ text: '  󰀐  ' }, { text: '  󰃐  ' }] as ItemRestriction<SegmentButtonTextItem>,
-    selectedBackgroundColor: $r('app.color.font_color_title'),
-    selectedFontColor: $r('app.color.start_window_background')
+    selectedBackgroundColor: this.color_current_font,
+    selectedFontColor: this.color_current_primary
   })
   @State tabs_style_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [{ text: $r('app.string.Settings_appearance_tabs_style_vertical') },
       { text: $r('app.string.Settings_appearance_tabs_style_horizontal') }] as ItemRestriction<SegmentButtonTextItem>,
-    selectedBackgroundColor: $r('app.color.font_color_title'),
-    selectedFontColor: $r('app.color.start_window_background')
+    selectedBackgroundColor: this.color_current_font,
+    selectedFontColor: this.color_current_primary
   })
   @State start_up_page_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [
@@ -66,8 +80,8 @@ struct meowAppSettings {
       { text: $r('app.string.Settings_start_up_home') },
       { text: $r('app.string.Settings_start_up_continue') }
     ] as ItemRestriction<SegmentButtonTextItem>,
-    selectedBackgroundColor: $r('app.color.font_color_title'),
-    selectedFontColor: $r('app.color.start_window_background')
+    selectedBackgroundColor: this.color_current_font,
+    selectedFontColor: this.color_current_primary
   })
   // Settings
   @State @Watch('on_title_bar_position_changed') title_bar_position_selected: number[] = [0];
@@ -105,6 +119,8 @@ struct meowAppSettings {
     width: "90%",
   });
   waterFlow_control: Scroller = new Scroller();
+  // Color editing
+  @State delete_confirm: number = 0;
 
   build() {
     Row() {
@@ -142,7 +158,7 @@ struct meowAppSettings {
             .justifyContent(FlexAlign.Start)
             .width("100%")
             .borderRadius(10)
-            .backgroundColor($r('app.color.start_window_background'))
+            .backgroundColor(this.color_current_primary)
 
           } // Start up
           .width("100%")
@@ -169,9 +185,9 @@ struct meowAppSettings {
                   this.new_tab_url_edit = value;
                 })
                 .fontWeight(FontWeight.Regular)
-                .fontColor($r('app.color.font_color_title'))
-                .caretColor($r('app.color.font_color_title'))
-                .selectedBackgroundColor($r('app.color.font_color_title'))
+                .fontColor(this.color_current_font)
+                .caretColor(this.color_current_font)
+                .selectedBackgroundColor(this.color_current_font)
                 .onSubmit(() => {
                   this.set_new_tab_url_and_kv_store();
                 })
@@ -196,9 +212,9 @@ struct meowAppSettings {
                   this.home_url_edit = value;
                 })
                 .fontWeight(FontWeight.Regular)
-                .fontColor($r('app.color.font_color_title'))
-                .caretColor($r('app.color.font_color_title'))
-                .selectedBackgroundColor($r('app.color.font_color_title'))
+                .fontColor(this.color_current_font)
+                .caretColor(this.color_current_font)
+                .selectedBackgroundColor(this.color_current_font)
                 .onSubmit(() => {
                   this.set_home_url_and_kv_store();
                 })
@@ -218,7 +234,7 @@ struct meowAppSettings {
             .justifyContent(FlexAlign.Start)
             .width("100%")
             .borderRadius(10)
-            .backgroundColor($r('app.color.start_window_background'))
+            .backgroundColor(this.color_current_primary)
 
           } // General
           .width("100%")
@@ -231,8 +247,8 @@ struct meowAppSettings {
                 linysText({ text: $r('app.string.Settings_experience_use_adblock'), max_lines: 1 })
                   .layoutWeight(1)
                 Toggle({ isOn: this.use_adblock, type: ToggleType.Switch })
-                  .switchPointColor($r('app.color.block_color'))
-                  .selectedColor($r('app.color.font_color_title'))
+                  .switchPointColor(this.color_current_secondary)
+                  .selectedColor(this.color_current_font)
                   .onChange(isOn => {
                     this.use_adblock = isOn;
                     this.bunch_of_settings.set('use_adblock', isOn);
@@ -254,8 +270,8 @@ struct meowAppSettings {
                 linysText({ text: $r('app.string.Settings_experience_sys_back_to_access_backward'), max_lines: 3 })
                   .layoutWeight(1)
                 Toggle({ isOn: this.sys_back_to_access_backward, type: ToggleType.Switch })
-                  .switchPointColor($r('app.color.block_color'))
-                  .selectedColor($r('app.color.font_color_title'))
+                  .switchPointColor(this.color_current_secondary)
+                  .selectedColor(this.color_current_font)
                   .onChange(isOn => {
                     this.sys_back_to_access_backward = isOn;
                     this.bunch_of_settings.set('sys_back_to_access_backward', isOn);
@@ -272,8 +288,8 @@ struct meowAppSettings {
                   style: SliderStyle.InSet,
                 })
                   .layoutWeight(1)
-                  .blockColor($r('app.color.start_window_background'))
-                  .selectedColor($r('app.color.font_color_title'))
+                  .blockColor(this.color_current_primary)
+                  .selectedColor(this.color_current_font)
                   .onChange((value) => {
                     this.settings_max_bookmark_suggestions = value;
                     this.bunch_of_settings.set('settings_max_bookmark_suggestions', value);
@@ -291,8 +307,8 @@ struct meowAppSettings {
                   style: SliderStyle.InSet,
                 })
                   .layoutWeight(1)
-                  .blockColor($r('app.color.start_window_background'))
-                  .selectedColor($r('app.color.font_color_title'))
+                  .blockColor(this.color_current_primary)
+                  .selectedColor(this.color_current_font)
                   .onChange((value) => {
                     this.settings_max_history_suggestions = value;
                     this.bunch_of_settings.set('settings_max_history_suggestions', value);
@@ -307,7 +323,7 @@ struct meowAppSettings {
             .justifyContent(FlexAlign.Start)
             .width("100%")
             .borderRadius(10)
-            .backgroundColor($r('app.color.start_window_background'))
+            .backgroundColor(this.color_current_primary)
 
           } // Experience
           .width("100%")
@@ -321,8 +337,8 @@ struct meowAppSettings {
                 linysText({ text: $r('app.string.Settings_experience_history_record_new') })
                 Blank()
                 Toggle({ isOn: this.settings_collect_new_history, type: ToggleType.Switch })
-                  .switchPointColor($r('app.color.block_color'))
-                  .selectedColor($r('app.color.font_color_title'))
+                  .switchPointColor(this.color_current_secondary)
+                  .selectedColor(this.color_current_font)
                   .onChange(isOn => {
                     this.settings_collect_new_history = isOn;
                     this.bunch_of_settings.set('settings_collect_new_history', isOn);
@@ -346,27 +362,30 @@ struct meowAppSettings {
             .justifyContent(FlexAlign.Start)
             .width("100%")
             .borderRadius(10)
-            .backgroundColor($r('app.color.start_window_background'))
+            .backgroundColor(this.color_current_primary)
 
           } // History
           .width("100%")
 
           FlowItem() {
             Column({ space: 15 }) {
-              linysTitleText({ text: $r('app.string.Settings_appearance') })
-              linysText({ text: $r('app.string.Settings_appearance_title_bar_position') })
+              linysTitleText({ text: $r('app.string.Settings_appearance') }) // Appearance Title
+
+              linysText({ text: $r('app.string.Settings_appearance_title_bar_position') }) // Title bar position
               SegmentButton({
                 options: this.title_bar_position_tabOptions,
                 selectedIndexes: $title_bar_position_selected
               })
 
-              linysText({ text: $r('app.string.Settings_appearance_tabs_style') })
+              linysText({ text: $r('app.string.Settings_appearance_tabs_style') }) // Tabs Style
               SegmentButton({
                 options: this.tabs_style_tabOptions,
                 selectedIndexes: $tabs_style_selected
               })
 
-              linysText({ text: $r('app.string.Settings_appearance_animation_response') })
+              linysText({
+                text: $r('app.string.Settings_appearance_animation_response')
+              }) // Slider and display of animation_response
               Row({ space: 5 }) {
                 Slider({
                   min: 1,
@@ -375,8 +394,8 @@ struct meowAppSettings {
                   style: SliderStyle.InSet,
                 })
                   .layoutWeight(1)
-                  .blockColor($r('app.color.start_window_background'))
-                  .selectedColor($r('app.color.font_color_title'))
+                  .blockColor(this.color_current_primary)
+                  .selectedColor(this.color_current_font)
                   .onChange((value) => {
                     this.animation_response = value;
                   })
@@ -387,9 +406,11 @@ struct meowAppSettings {
                   })
                 linysText({ text: (this.animation_response / 100).toFixed(2) })
                   .margin({ right: 5 })
-              } // Slider and display of animation_response
+              }
 
-              linysText({ text: $r('app.string.Settings_appearance_animation_damping_coefficient') })
+              linysText({
+                text: $r('app.string.Settings_appearance_animation_damping_coefficient')
+              }) // Slider and display of animation damping coefficient
               Row({ space: 5 }) {
                 Slider({
                   min: 0,
@@ -398,8 +419,8 @@ struct meowAppSettings {
                   style: SliderStyle.InSet,
                 })
                   .layoutWeight(1)
-                  .blockColor($r('app.color.start_window_background'))
-                  .selectedColor($r('app.color.font_color_title'))
+                  .blockColor(this.color_current_primary)
+                  .selectedColor(this.color_current_font)
                   .onChange((value) => {
                     this.animation_damping_coefficient = value;
                   })
@@ -411,14 +432,120 @@ struct meowAppSettings {
                   })
                 linysText({ text: (this.animation_damping_coefficient / 100).toFixed(2) })
                   .margin({ right: 5 })
-              } // Slider and display of animation damping coefficient
+              }
+
+              Column({ space: 10 }) {
+                linysText({ text: $r('app.string.Appearance_color_scheme_Light') })// Light
+                  .width("100%")
+                Row({ space: 5 }) {
+                  colorBlock({
+                    color: this.color_light_primary,
+                    color_theme_id: 'color_light_primary',
+                    my_color_mode: 1,
+                  })
+                  colorBlock({
+                    color: this.color_light_secondary,
+                    color_theme_id: 'color_light_secondary',
+                    my_color_mode: 1,
+                  })
+                  colorBlock({
+                    color: this.color_light_font,
+                    color_theme_id: 'color_light_font',
+                    my_color_mode: 1,
+                  })
+                }
+                .padding(6)
+                .borderRadius(13.5)
+                .backgroundColor($r('sys.color.comp_background_secondary'))
+                .width("100%")
+                .animation(animation_default())
+
+                linysText({ text: $r('app.string.Appearance_color_scheme_Dark') })// Dark
+                  .width("100%")
+                Row({ space: 5 }) {
+                  colorBlock({
+                    color: this.color_dark_primary,
+                    color_theme_id: 'color_dark_primary',
+                    my_color_mode: 0,
+                  })
+                  colorBlock({
+                    color: this.color_dark_secondary,
+                    color_theme_id: 'color_dark_secondary',
+                    my_color_mode: 0,
+                  })
+                  colorBlock({
+                    color: this.color_dark_font,
+                    color_theme_id: 'color_dark_font',
+                    my_color_mode: 0,
+                  })
+                }
+                .padding(6)
+                .borderRadius(13.5)
+                .backgroundColor($r('sys.color.comp_background_secondary'))
+                .width("100%")
+                .animation(animation_default())
+
+                Row() {
+                  linysText({
+                    text: $r("app.string.Color_reset")
+                  })
+                  Blank()
+                  Button('  󰃈  ')// Delete
+                    .type(ButtonType.Capsule)
+                    .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
+                    this.color_current_font)
+                    .fontColor(this.delete_confirm > 0 ? this.color_current_font :
+                    this.color_current_primary)
+                    .border({
+                      width: 2,
+                      color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
+                    })
+                    .fontSize(fontSize_Large())
+                    .fontWeight(FontWeight.Medium)
+                    .height(capsule_bar_height())
+                    .onClick(async () => {
+                      this.delete_confirm += 300;
+                      if (this.delete_confirm >= 301) {
+                        // Reset
+                        this.bunch_of_settings.reset('color_light_font');
+                        this.bunch_of_settings.reset('color_light_primary');
+                        this.bunch_of_settings.reset('color_light_secondary');
+                        this.bunch_of_settings.reset('color_dark_font');
+                        this.bunch_of_settings.reset('color_dark_primary');
+                        this.bunch_of_settings.reset('color_dark_secondary');
+
+                        // Figure out what color should i use
+                        this.color_light_primary = await this.bunch_of_settings.get('color_light_primary') as string;
+                        this.color_light_secondary =
+                          await this.bunch_of_settings.get('color_light_secondary') as string;
+                        this.color_light_font = await this.bunch_of_settings.get('color_light_font') as string;
+                        this.color_dark_primary = await this.bunch_of_settings.get('color_dark_primary') as string;
+                        this.color_dark_secondary = await this.bunch_of_settings.get('color_dark_secondary') as string;
+                        this.color_dark_font = await this.bunch_of_settings.get('color_dark_font') as string;
+                        this.delete_confirm = 0;
+                      }
+                    })
+                    .clickEffect(click_effect_default())
+                    .animation(animation_default())
+                    .onAppear(() => {
+                      setInterval(() => {
+                        if (this.delete_confirm > 0) {
+                          this.delete_confirm -= 1;
+                        }
+                        // Reset delete confirm
+                      }, 10)
+                    })
+                }
+                .width("100%")
+              } // Colors
+
             }
             .padding(15)
             .alignItems(HorizontalAlign.Start)
             .justifyContent(FlexAlign.Start)
             .width("100%")
             .borderRadius(10)
-            .backgroundColor($r('app.color.start_window_background'))
+            .backgroundColor(this.color_current_primary)
 
           } // Appearance
           .width("100%")
@@ -449,7 +576,7 @@ struct meowAppSettings {
             .justifyContent(FlexAlign.Start)
             .width("100%")
             .borderRadius(10)
-            .backgroundColor($r('app.color.start_window_background'))
+            .backgroundColor(this.color_current_primary)
 
           } // About
           .width("100%")
@@ -612,6 +739,29 @@ struct meowAppSettings {
     this.bunch_of_settings.set('settings_tabs_style', result);
   }
 
+  on_color_change() {
+    this.title_bar_position_tabOptions = SegmentButtonOptions.tab({
+      buttons: [{ text: '  󰀐  ' }, { text: '  󰃐  ' }] as ItemRestriction<SegmentButtonTextItem>,
+      selectedBackgroundColor: this.color_current_font,
+      selectedFontColor: this.color_current_primary
+    })
+    this.tabs_style_tabOptions = SegmentButtonOptions.tab({
+      buttons: [{ text: $r('app.string.Settings_appearance_tabs_style_vertical') },
+        { text: $r('app.string.Settings_appearance_tabs_style_horizontal') }] as ItemRestriction<SegmentButtonTextItem>,
+      selectedBackgroundColor: this.color_current_font,
+      selectedFontColor: this.color_current_primary
+    })
+    this.start_up_page_tabOptions = SegmentButtonOptions.tab({
+      buttons: [
+        { text: $r('app.string.Settings_start_up_new_tab') },
+        { text: $r('app.string.Settings_start_up_home') },
+        { text: $r('app.string.Settings_start_up_continue') }
+      ] as ItemRestriction<SegmentButtonTextItem>,
+      selectedBackgroundColor: this.color_current_font,
+      selectedFontColor: this.color_current_primary
+    })
+  }
+
   // Operations
 
   set_new_tab_url_and_kv_store() {
@@ -637,11 +787,61 @@ struct meowAppSettings {
 export default meowAppSettings
 
 @Component
+struct colorBlock {
+  @Link @Watch('on_color_set') color: ResourceColor;
+  @State color_theme_id: string = 'color_light_font';
+  @State my_color_mode: number = 0;
+  @StorageProp('currentColorMode') current_color_mode: number = 0;
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
+  woofColorSelect_control: CustomDialogController = new CustomDialogController({
+    builder: woofColorSelect({ color: this.color, dark_mode_color: false, color_theme_id: this.color_theme_id }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16,
+    showInSubWindow: true,
+    width: "90%",
+  });
+
+  build() {
+    Column()
+      .layoutWeight(1)
+      .backgroundColor(this.color)
+      .height(80)
+      .border(this.current_color_mode == this.my_color_mode ? { width: 2, color: this.color_current_font } :
+        { width: 0 })
+      .borderRadius(10)
+      .clickEffect(click_effect_default())
+      .onClick(() => {
+        this.woofColorSelect_control = new CustomDialogController({
+          builder: woofColorSelect({
+            color: this.color,
+            dark_mode_color: this.color_theme_id.includes('dark'),
+            color_theme_id: this.color_theme_id
+          }),
+          alignment: DialogAlignment.Center,
+          cornerRadius: 16,
+          showInSubWindow: true,
+          width: "90%",
+        });
+        this.woofColorSelect_control.open();
+      })
+  }
+
+  on_color_set() {
+    this.bunch_of_settings.set(this.color_theme_id, this.color as string);
+  }
+}
+
+@Component
 struct menuScrollHorizontal {
   @Link on_index_first: number;
   @Link on_index_last: number;
   @Link scroll_to_gateway: number;
   @State menu_text: string[] = [];
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     Scroll() {
@@ -655,7 +855,7 @@ struct menuScrollHorizontal {
             scroll_to_gateway: this.scroll_to_gateway,
           })
             .backgroundColor(this.on_index_first <= index && index <= this.on_index_last ?
-            $r('app.color.font_color_title') : "transparent")
+            this.color_current_font : "transparent")
             .borderRadius(this.border_radius(index))
             .animation(animation_default())
         })
@@ -691,6 +891,10 @@ struct menuScrollVertical {
   @Link scroll_to_gateway: number;
   @State menu_text: string[] = [];
   @State button_Lengths: number[] = new Array(this.menu_text.length).fill(0);
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     Scroll() {
@@ -708,7 +912,7 @@ struct menuScrollVertical {
               this.button_Lengths[index] = n.width as number;
             })
             .backgroundColor(this.on_index_first <= index && index <= this.on_index_last ?
-            $r('app.color.font_color_title') : "transparent")
+            this.color_current_font : "transparent")
             .borderRadius(this.border_radius(index))
             .animation(animation_default())
         })
@@ -769,12 +973,16 @@ struct menuItem {
   @Link on_index_first: number;
   @Link on_index_last: number;
   @Link scroll_to_gateway: number;
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     Row() {
       Text(this.my_text)
         .fontColor(this.on_index_first <= this.my_index && this.my_index <= this.on_index_last ?
-        $r('app.color.block_color') : $r('app.color.font_color_title'))
+        this.color_current_secondary : this.color_current_font)
         .fontSize(fontSize_Large() - 2)
     }
     .clickEffect(click_effect_default())

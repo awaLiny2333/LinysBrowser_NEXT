@@ -25,6 +25,11 @@ struct meowDrops {
   @State extracted_type: string[] = [];
   // Else
   scroll_controller: Scroller = new Scroller();
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+
 
   build() {
     Column({ space: 10 }) {
@@ -64,13 +69,13 @@ struct meowDrops {
       Row({ space: 10 }) {
         Button("  󰀁  ")// Delete
           .type(ButtonType.Capsule)
-          .backgroundColor(this.delete_confirm > 0 ? $r('app.color.start_window_background') :
+          .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
           $r("app.color.font_color_title"))
-          .fontColor(this.delete_confirm > 0 ? $r('app.color.font_color_title') :
-          $r('app.color.start_window_background'))
+          .fontColor(this.delete_confirm > 0 ? this.color_current_font :
+          this.color_current_primary)
           .border({
             width: 2,
-            color: this.delete_confirm > 0 ? $r('app.color.font_color_title') : "transparent"
+            color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
           })
           .fontSize(fontSize_Large())
           .fontWeight(FontWeight.Medium)
@@ -168,6 +173,11 @@ struct raw_data_display {
   @State offset_y: number = 50;
   @State this_visibility: Visibility = Visibility.Hidden;
   @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+
 
   build() {
     Row({ space: 10 }) {
@@ -185,7 +195,7 @@ struct raw_data_display {
     }
     .padding(15)
     .borderRadius(10)
-    .backgroundColor($r('app.color.start_window_background'))
+    .backgroundColor(this.color_current_primary)
     .justifyContent(FlexAlign.Start)
     .width("100%")
     .visibility(this.this_visibility)

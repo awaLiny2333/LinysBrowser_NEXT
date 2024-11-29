@@ -1,8 +1,8 @@
 import linysShowButton from '../components/linysShowButton';
 import linysSymbol from '../components/linysSymbol';
-import linysText from '../components/linysText';
 import { animation_default, fontSize_Large, fontSize_Normal } from '../hosts/bunch_of_defaults';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
+import { LengthMetrics } from '@kit.ArkUI';
 
 @Component
 struct meowTabsHorizontal {
@@ -135,23 +135,34 @@ struct HorizontalTabButton {
   @StorageLink('universal_close_tab_gateway') close_tab_gateway: number = -1;
   @StorageLink('universal_tab_button_clicked_gateway') uni_tab_button_clicked: number = -1;
   @State offset_y: number = 100;
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     Row({ space: 8 }) {
       Text("󰇀")// Paralleow icon
         .fontSize(fontSize_Large())
-        .fontColor($r('app.color.font_color_title'))
+        .fontColor(this.color_current_font)
         .fontWeight((this.current_main_tab_index == this.index || this.current_sub_tab_index == this.index) ?
         FontWeight.Medium : undefined)
         .visibility(this.current_sub_tab_index == this.index ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
+        .offset({ y: -2 })
 
-      linysText({ text: this.title == "" ? "Meow" : this.title })// Web title text
+      Text(this.title == "" ? "Meow" : this.title)
+        .fontColor(this.color_current_font)
+        .fontSize(fontSize_Normal())
+        .fontWeight(FontWeight.Normal)
+        .textAlign(TextAlign.Start)
+        .maxLines(1)
+        .lineSpacing(LengthMetrics.vp(4))
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
         .layoutWeight(1)
 
       SymbolGlyph($r('sys.symbol.xmark'))// Close icon
         .fontSize(fontSize_Normal())
-        .fontColor([$r('app.color.font_color_title')])
+        .fontColor([this.color_current_font])
         .fontWeight(FontWeight.Medium)
         .onClick(() => {
           this.webViews_ready = true;
@@ -172,9 +183,9 @@ struct HorizontalTabButton {
       radius: 10,
       width: 2,
       color: (this.current_main_tab_index == this.index || this.current_sub_tab_index == this.index)
-        ? $r('app.color.font_color_title') : "transparent"
+        ? this.color_current_font : "transparent"
     })
-    .backgroundColor($r('app.color.start_window_background'))
+    .backgroundColor(this.color_current_primary)
     .animation(animation_default())
     .onAppear(() => {
       setTimeout(() => {
@@ -188,8 +199,8 @@ struct HorizontalTabButton {
     if (result > 200) {
       return 200;
     }
-    if (result < 60) {
-      return 60;
+    if (result < 80) {
+      return 80;
     }
     return result;
   }

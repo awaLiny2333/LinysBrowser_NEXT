@@ -374,11 +374,71 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "1. Prompts when operations failed! Try to create a new bookmark with no name?\n2. Clicking on the path text in Bookmarks panel now opens a navigation list!"
+      "value": "1. Prompts when operations failed! Try to create a new bookmark with no name?\n2. Clicking on the path text in Bookmarks panel now opens a navigation list!\n3. Customizable theme color (may contain bugs)!"
     },
     {
       "name": "Whats_new_content_extra",
       "value": "Of course, and this \"What's New\" block!"
+    },
+    {
+      "name": "Appearance_color_scheme_Light",
+      "value": "Light theme"
+    },
+    {
+      "name": "Appearance_color_scheme_Dark",
+      "value": "Dark theme"
+    },
+    {
+      "name": "Appearance_color_panel",
+      "value": "Pick a color"
+    },
+    {
+      "name": "Example_text",
+      "value": "Three hundred and fifty-eight thousand llamas crossed the Hulunbuir Grassland!"
+    },
+    {
+      "name": "Color_hue",
+      "value": "Hue"
+    },
+    {
+      "name": "Color_saturation",
+      "value": "Saturation"
+    },
+    {
+      "name": "Color_value",
+      "value": "Value (Brightness)"
+    },
+    {
+      "name": "Color_hex",
+      "value": "Color code"
+    },
+    {
+      "name": "Color_desc_color_light_primary",
+      "value": "Light mode background color"
+    },
+    {
+      "name": "Color_desc_color_light_secondary",
+      "value": "Light mode secondary color"
+    },
+    {
+      "name": "Color_desc_color_light_font",
+      "value": "Light mode major color"
+    },
+    {
+      "name": "Color_desc_color_dark_primary",
+      "value": "Dark mode background color"
+    },
+    {
+      "name": "Color_desc_color_dark_secondary",
+      "value": "Dark mode secondary color"
+    },
+    {
+      "name": "Color_desc_color_dark_font",
+      "value": "Dark mode major color"
+    },
+    {
+      "name": "Color_reset",
+      "value": "Reset colors to default"
     }
   ]
 }

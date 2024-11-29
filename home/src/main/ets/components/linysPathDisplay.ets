@@ -9,6 +9,8 @@ struct linysPathDisplay {
   @State path_stack: string[] = [];
   @State label_stack: string[] = [];
   scroller: Scroller = new Scroller();
+  // Colors
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
 
   build() {
     Scroll(this.scroller) {
@@ -18,7 +20,7 @@ struct linysPathDisplay {
         }
         .borderRadius(10)
         .padding(10)
-        .backgroundColor($r('app.color.block_color'))
+        .backgroundColor(this.color_current_secondary)
         .animation(animation_default())
         .clickEffect(click_effect_default())
         .onClick(() => {
@@ -76,6 +78,8 @@ struct linysPathButton {
   @Prop label: string = "label";
   @Prop my_directory: string = "label";
   @Link current_viewing_path: string;
+  // Colors
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
 
   build() {
     Row() {
@@ -83,7 +87,7 @@ struct linysPathButton {
     }
     .borderRadius(10)
     .padding(10)
-    .backgroundColor($r('app.color.block_color'))
+    .backgroundColor(this.color_current_secondary)
     .animation(animation_default())
     .clickEffect(click_effect_default())
     .onClick(() => {

@@ -22,6 +22,11 @@ struct meowSuggestions {
   // Myself
   @State bookmark_suggestions: string[][] = [];
   @State history_suggestions: string[][] = [];
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+
 
   build() {
     Scroll() {
@@ -36,7 +41,7 @@ struct meowSuggestions {
         }
         .padding(15)
         .width("100%")
-        .backgroundColor($r('app.color.start_window_background'))
+        .backgroundColor(this.color_current_primary)
         .borderRadius(10)
         .visibility(this.bookmark_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
@@ -51,7 +56,7 @@ struct meowSuggestions {
         }
         .padding(15)
         .width("100%")
-        .backgroundColor($r('app.color.start_window_background'))
+        .backgroundColor(this.color_current_primary)
         .borderRadius(10)
         .visibility(this.history_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
         .animation(animation_default())

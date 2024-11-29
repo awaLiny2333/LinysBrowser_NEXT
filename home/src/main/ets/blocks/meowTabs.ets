@@ -2,7 +2,7 @@ import linysSymbol from '../components/linysSymbol';
 import { bunch_of_tabs, tab_label } from '../hosts/bunch_of_tabs';
 import { url_resource_to_meow } from '../utils/url_tools';
 import { animation_default, fontSize_Large, fontSize_Normal, url_default_blank } from '../hosts/bunch_of_defaults';
-import { kv_store_get, kv_store_put, kv_store_put_uint_8_array } from '../utils/kv_store_tools';
+import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import linysShowButton from '../components/linysShowButton';
 import linysText from '../components/linysText';
@@ -56,6 +56,9 @@ struct meowTabs {
   @StorageLink('universal_tab_button_clicked_gateway') @Watch('on_uni_tab_button_clicked') uni_tab_button_clicked:
     number = -1;
   @StorageLink('universal_global_custom_ua_gateway') @Watch('on_global_custom_UA_change') global_custom_UA: string = "";
+  // Colors
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   async aboutToAppear() {
 
@@ -172,17 +175,18 @@ struct meowTabs {
                 Text("󰇀")
                   .padding({ right: 5 })
                   .fontSize(fontSize_Large())
-                  .fontColor($r('app.color.font_color_title'))
+                  .fontColor(this.color_current_font)
                   .fontWeight((this.current_main_tab_index == Label.index_key ||
                     this.current_sub_tab_index == Label.index_key)
                     ? FontWeight.Medium : undefined)
                   .visibility(this.current_sub_tab_index == Label.index_key ? Visibility.Visible : Visibility.None)
                   .animation(animation_default())
+                  .offset({ y: -2 })
 
                 Text(this.tab_titles[Label.index_key] == "" ? "Meow" : this.tab_titles[Label.index_key])
                   .padding({ left: 2 })
                   .fontSize(fontSize_Normal())
-                  .fontColor($r('app.color.font_color_title'))
+                  .fontColor(this.color_current_font)
                   .fontWeight((this.current_main_tab_index == Label.index_key ||
                     this.current_sub_tab_index == Label.index_key)
                     ? FontWeight.Medium : undefined)
@@ -192,7 +196,7 @@ struct meowTabs {
 
                 SymbolGlyph($r('sys.symbol.xmark'))
                   .fontSize(fontSize_Normal())
-                  .fontColor([$r('app.color.font_color_title')])
+                  .fontColor([this.color_current_font])
                   .fontWeight(FontWeight.Medium)
 
               } // Title and xmark
@@ -201,13 +205,13 @@ struct meowTabs {
                 width: 2,
                 color: (this.current_main_tab_index == Label.index_key ||
                   this.current_sub_tab_index == Label.index_key)
-                  ? $r('app.color.font_color_title') : "transparent"
+                  ? this.color_current_font : "transparent"
               })
               .animation({ duration: 100 })
               .width("100%")
               .height(this.tab_height_default)
               .padding(10)
-              .backgroundColor($r('app.color.block_color'))
+              .backgroundColor(this.color_current_secondary)
               .offset({ y: this.offset_area[Label.index_key] })
               .alignRules({
                 middle: { anchor: "__container__", align: HorizontalAlign.Center },

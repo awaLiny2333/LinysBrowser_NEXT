@@ -3,14 +3,16 @@ import { LengthMetrics } from '@kit.ArkUI';
 
 @Component
 struct linysText {
+  // Colors
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @Prop text: ResourceStr = $r('app.string.HomeAbility_label');
-  @Prop color: ResourceStr = $r('app.color.font_color_title');
+  @Prop color: ResourceColor = "";
   @Prop max_lines: number = 1;
   @Prop font_weight: FontWeight = FontWeight.Normal;
 
   build() {
     Text(this.text)
-      .fontColor(this.color)
+      .fontColor(this.color == "" ? this.color_current_font : this.color)
       .fontSize(fontSize_Normal())
       .fontWeight(this.font_weight)
       .textAlign(TextAlign.Start)

@@ -98,6 +98,11 @@ struct meowTitleBar {
     alignment: DialogAlignment.Center,
     cornerRadius: 16
   })
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+
 
   build() {
     Column({ space: 10 }) {
@@ -122,7 +127,7 @@ struct meowTitleBar {
 
       Row() {
         Text("→ " + (this.search_input_unified == "" ? "(　o=^•ェ•)o ?" : this.search_input_unified))
-          .fontColor($r('app.color.font_color_title'))
+          .fontColor(this.color_current_font)
           .fontWeight(FontWeight.Medium)
           .fontSize(fontSize_Normal())
           .maxLines(4)
@@ -137,13 +142,13 @@ struct meowTitleBar {
       Row() {
         Column({ space: 2.5 }) {
           Text(this.current_title)
-            .fontColor($r('app.color.font_color_title'))
+            .fontColor(this.color_current_font)
             .fontWeight(FontWeight.Medium)
             .fontSize(fontSize_Large())
             .maxLines(2)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
           Text(this.current_url)
-            .fontColor($r('app.color.font_color_title'))
+            .fontColor(this.color_current_font)
             .fontWeight(FontWeight.Medium)
             .fontSize(fontSize_Normal())
             .opacity(0.7)
@@ -185,7 +190,7 @@ struct meowTitleBar {
 
         SymbolGlyph(!this.current_is_loading ? $r('sys.symbol.arrow_clockwise') : $r('sys.symbol.xmark'))
           .fontSize(fontSize_Icon_Button())
-          .fontColor([$r('app.color.font_color_title')])
+          .fontColor([this.color_current_font])
           .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.current_is_loading)
           .visibility(this.visible_when_no_panels_open_in_normal_mode())
           .animation(animation_default())
@@ -212,7 +217,7 @@ struct meowTitleBar {
           .height(capsule_bar_height())
           .layoutWeight(1)
           .fontWeight(FontWeight.Regular)
-          .fontColor($r('app.color.font_color_title'))
+          .fontColor(this.color_current_font)
           .animation(animation_default())
           .onClick(() => {
             this.is_search_input_typing = true;
@@ -230,8 +235,8 @@ struct meowTitleBar {
             this.submit_searching()
           })
           .selectAll(true)
-          .caretColor($r('app.color.font_color_title'))
-          .selectedBackgroundColor($r('app.color.font_color_title'))
+          .caretColor(this.color_current_font)
+          .selectedBackgroundColor(this.color_current_font)
 
         Blank()
           .visibility(this.visible_in_normal_mode())
@@ -287,12 +292,12 @@ struct meowTitleBar {
             symbol_glyph_target: this.showing_downloads ? 'sys.symbol.chevron_down' : 'sys.symbol.download',
             show: this.showing_downloads,
             color_false: !this.showing_downloads && this.download_started_popup ?
-            $r('app.color.start_window_background') : $r('app.color.font_color_title')
+            this.color_current_primary : this.color_current_font
           })
           Scroll() {
             Text($r('app.string.Index_download_task_start'))
               .fontSize(fontSize_Large() - 2)
-              .fontColor($r('app.color.start_window_background'))
+              .fontColor(this.color_current_primary)
               .margin({ right: this.showing_downloads ? 5 : 0 })
           }
           .width(this.download_started_popup ? undefined : 0)
@@ -301,7 +306,7 @@ struct meowTitleBar {
           .animation(animation_default())
         } // Downloads
         .padding(!this.showing_downloads && this.download_started_popup ? 5 : 0)
-        .backgroundColor(this.download_started_popup ? $r('app.color.font_color_title') : "transparent")
+        .backgroundColor(this.download_started_popup ? this.color_current_font : "transparent")
         .borderRadius(10)
         .clickEffect(click_effect_default())
         .animation(animation_default())
@@ -334,8 +339,8 @@ struct meowTitleBar {
           .height(capsule_bar_height())
           .layoutWeight(1)
           .fontWeight(FontWeight.Regular)
-          .fontColor($r('app.color.font_color_title'))
-          .caretColor($r('app.color.font_color_title'))
+          .fontColor(this.color_current_font)
+          .caretColor(this.color_current_font)
           .onClick(() => {
             this.is_search_input_typing = true;
           })
@@ -352,7 +357,7 @@ struct meowTitleBar {
             this.submit_searching()
           })
           .selectAll(true)
-          .selectedBackgroundColor($r('app.color.font_color_title'))
+          .selectedBackgroundColor(this.color_current_font)
 
         linysSymbol({
           symbol_glyph_target: 'sys.symbol.magnifyingglass'
@@ -440,7 +445,7 @@ struct meowTitleBar {
       this.showing_scratching_board = false;
     })
     .width("100%")
-    .backgroundColor($r('app.color.block_color'))
+    .backgroundColor(this.color_current_secondary)
     .alignRules(this.title_bar_alignRules)
     .onAreaChange((_o, n) => {
       if (!this.showing_more_options && !this.is_search_input_typing &&

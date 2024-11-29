@@ -374,11 +374,71 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "1. 操作失败的时候会弹窗了！试试去创建一个没有名字的书签？\n2. 点击书签面板的路径文字，会打开一个跳转面板！"
+      "value": "1. 操作失败的时候会弹窗了！试试去创建一个没有名字的书签？\n2. 点击书签面板的路径文字，会打开一个跳转面板！\n3. 自定义配色（可能还有 Bug）！"
     },
     {
       "name": "Whats_new_content_extra",
       "value": "当然，还有这个更新说明区域！"
+    },
+    {
+      "name": "Appearance_color_scheme_Light",
+      "value": "浅色主题"
+    },
+    {
+      "name": "Appearance_color_scheme_Dark",
+      "value": "深色主题"
+    },
+    {
+      "name": "Appearance_color_panel",
+      "value": "选取颜色"
+    },
+    {
+      "name": "Example_text",
+      "value": "三十五点八万只白绒绒的大羊驼驰过呼伦贝尔大草原！"
+    },
+    {
+      "name": "Color_hue",
+      "value": "色相"
+    },
+    {
+      "name": "Color_saturation",
+      "value": "饱和度"
+    },
+    {
+      "name": "Color_value",
+      "value": "亮度"
+    },
+    {
+      "name": "Color_hex",
+      "value": "颜色代码"
+    },
+    {
+      "name": "Color_desc_color_light_primary",
+      "value": "浅色模式背景色"
+    },
+    {
+      "name": "Color_desc_color_light_secondary",
+      "value": "浅色模式次要色"
+    },
+    {
+      "name": "Color_desc_color_light_font",
+      "value": "浅色模式强调色"
+    },
+    {
+      "name": "Color_desc_color_dark_primary",
+      "value": "深色模式背景色"
+    },
+    {
+      "name": "Color_desc_color_dark_secondary",
+      "value": "深色模式次要色"
+    },
+    {
+      "name": "Color_desc_color_dark_font",
+      "value": "深色模式强调色"
+    },
+    {
+      "name": "Color_reset",
+      "value": "恢复默认颜色主题"
     }
   ]
 }

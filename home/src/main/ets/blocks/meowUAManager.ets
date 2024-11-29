@@ -20,13 +20,18 @@ struct meowUAManager {
   @State list_of_user_agents: user_agent[] = this.bunch_of_user_agents.list_of_user_agents;
   @State default_pressing: boolean = false;
   @State UA_loaded_from_disk: boolean = false;
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+
 
   build() {
     Column({ space: 2.5 }) {
       Row() {
         Row() {
           Text($r('app.string.Settings_general_custom_ua_default'))// Title
-            .fontColor(!this.default_pressing ? $r('app.color.font_color_title') : $r('app.color.block_color'))
+            .fontColor(!this.default_pressing ? this.color_current_font : this.color_current_secondary)
             .fontWeight(!this.default_pressing ? FontWeight.Normal : FontWeight.Medium)
             .padding({ left: 2 })
             .fontSize(fontSize_Normal())
@@ -40,8 +45,8 @@ struct meowUAManager {
         .width("100%")
         .height("100%")
         .borderRadius(6)
-        .backgroundColor(this.default_pressing ? $r('app.color.font_color_title') :
-        $r('app.color.start_window_background'))
+        .backgroundColor(this.default_pressing ? this.color_current_font :
+        this.color_current_primary)
         .animation(animation_default())
 
       } // Default
@@ -49,7 +54,7 @@ struct meowUAManager {
       .border({
         radius: 10,
         width: 2,
-        color: -1 == this.selected_index ? $r('app.color.font_color_title') : "transparent",
+        color: -1 == this.selected_index ? this.color_current_font : "transparent",
         // color: "red"
       })
       .alignRules({
@@ -167,13 +172,18 @@ struct meowUAButton {
   // UI effects
   @State height_of_text_area: number = 42;
   @State visible: Visibility = Visibility.Hidden;
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+
 
   build() {
     Column() {
       Column() {
         Row() {
           Text(this.my_label)// Title
-            .fontColor(!this.pressing ? $r('app.color.font_color_title') : $r('app.color.block_color'))
+            .fontColor(!this.pressing ? this.color_current_font : this.color_current_secondary)
             .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
             .animation(animation_default())
             .padding({ left: 2 })
@@ -185,7 +195,7 @@ struct meowUAButton {
           Scroll() {
             SymbolGlyph($r('sys.symbol.square_and_pencil'))
               .fontSize(fontSize_Large())
-              .fontColor([$r('app.color.block_color')])
+              .fontColor([this.color_current_secondary])
           } // Edit Icon
           .scrollable(ScrollDirection.Horizontal)
           .width(this.press_timing_ok ? 22 : 0)
@@ -194,7 +204,7 @@ struct meowUAButton {
 
         } // Bookmark button
         .borderRadius(this.editing ? { topLeft: 6, topRight: 6 } : 6)
-        .backgroundColor(this.pressing ? $r('app.color.font_color_title') : $r('app.color.start_window_background'))
+        .backgroundColor(this.pressing ? this.color_current_font : this.color_current_primary)
         .animation(animation_default())
         .padding(10)
         .alignRules({
@@ -230,9 +240,9 @@ struct meowUAButton {
                   this.edit_label = value;
                 })
                 .fontWeight(FontWeight.Regular)
-                .fontColor($r('app.color.font_color_title'))
-                .caretColor($r('app.color.font_color_title'))
-                .selectedBackgroundColor($r('app.color.font_color_title'))
+                .fontColor(this.color_current_font)
+                .caretColor(this.color_current_font)
+                .selectedBackgroundColor(this.color_current_font)
                 .layoutWeight(1)
                 .onSubmit(() => {
                   this.save_changes();
@@ -250,9 +260,9 @@ struct meowUAButton {
                   this.edit_content = value;
                 })
                 .fontWeight(FontWeight.Regular)
-                .fontColor($r('app.color.font_color_title'))
-                .caretColor($r('app.color.font_color_title'))
-                .selectedBackgroundColor($r('app.color.font_color_title'))
+                .fontColor(this.color_current_font)
+                .caretColor(this.color_current_font)
+                .selectedBackgroundColor(this.color_current_font)
                 .layoutWeight(1)
                 .onSubmit(() => {
                   this.save_changes();
@@ -271,13 +281,13 @@ struct meowUAButton {
               Blank()
               Button("  󰀁  ")// Delete
                 .type(ButtonType.Capsule)
-                .backgroundColor(this.delete_confirm > 0 ? $r('app.color.start_window_background') :
-                $r("app.color.font_color_title"))
-                .fontColor(this.delete_confirm > 0 ? $r('app.color.font_color_title') :
-                $r('app.color.start_window_background'))
+                .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
+                this.color_current_font)
+                .fontColor(this.delete_confirm > 0 ? this.color_current_font :
+                this.color_current_primary)
                 .border({
                   width: 2,
-                  color: this.delete_confirm > 0 ? $r('app.color.font_color_title') : "transparent"
+                  color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
                 })
                 .fontSize(fontSize_Large())
                 .fontWeight(FontWeight.Medium)
@@ -303,7 +313,7 @@ struct meowUAButton {
             right: 14,
             bottom: 14
           })
-          .backgroundColor($r('app.color.start_window_background'))
+          .backgroundColor(this.color_current_primary)
           .border({
             radius: { bottomLeft: 10, bottomRight: 10 }
           })
@@ -318,7 +328,7 @@ struct meowUAButton {
       .border({
         radius: 10,
         width: 2,
-        color: this.my_index == this.selected_index ? $r('app.color.font_color_title') : "transparent"
+        color: this.my_index == this.selected_index ? this.color_current_font : "transparent"
       })
     }
     .width("100%")

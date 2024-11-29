@@ -14,6 +14,12 @@ struct woofBookmarksPathSelector {
   @State viewing_contents: unified_item[] = this.filter_only_folders(this.bunch_of_bookmarks.root.get_content());
   @State @Watch('refresh_dir_content') looking_at_path: string = "";
   @State showing_navigator: boolean = false;
+  // Colors
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+
 
   build() {
     Column({ space: 5 }) {
@@ -86,7 +92,7 @@ struct woofBookmarksPathSelector {
       Text(this.looking_at_path == "" ?
         this.showing_navigator ? $r('app.string.Bookmarks_root_path_expanded') : $r('app.string.Bookmarks_root_path')
         : "@ " + this.looking_at_path + "/")
-        .fontColor($r('app.color.font_color_title'))
+        .fontColor(this.color_current_font)
         .fontWeight(FontWeight.Medium)
         .fontSize(fontSize_Normal())
         .textAlign(TextAlign.End)
@@ -105,7 +111,7 @@ struct woofBookmarksPathSelector {
         .height(this.showing_navigator ? undefined : 0)
         .animation(animation_default())
     }
-    .backgroundColor($r('app.color.start_window_background'))
+    .backgroundColor(this.color_current_primary)
     .padding(15)
     .height("80%")
   }
@@ -176,6 +182,10 @@ struct bookmarkItem {
   @State edit_label: string = this.label;
   @State edit_link: string = this.link;
   @State delete_confirm: number = 0;
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   // Edit inputs
 
@@ -183,7 +193,7 @@ struct bookmarkItem {
     Column() {
       Row() {
         Text(this.label)// Title
-          .fontColor(!this.pressing ? $r('app.color.font_color_title') : $r('app.color.block_color'))
+          .fontColor(!this.pressing ? this.color_current_font : this.color_current_secondary)
           .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
           .animation(animation_default())
           .padding({ left: 2 })
@@ -195,13 +205,13 @@ struct bookmarkItem {
           SymbolGlyph($r('sys.symbol.folder'))
             .fontSize(fontSize_Large())
             .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
-            .fontColor([!this.pressing ? $r('app.color.font_color_title') : $r('app.color.block_color')])
+            .fontColor([!this.pressing ? this.color_current_font : this.color_current_secondary])
             .animation(animation_default())
         } // Folder Icon
         Scroll() {
           SymbolGlyph($r('sys.symbol.square_and_pencil'))
             .fontSize(fontSize_Large())
-            .fontColor([$r('app.color.block_color')])
+            .fontColor([this.color_current_secondary])
         } // Edit Icon
         .scrollable(ScrollDirection.Horizontal)
         .width(this.press_timing_ok ? 22 : 0)
@@ -214,7 +224,7 @@ struct bookmarkItem {
         width: 2,
         color: "transparent"
       })
-      .backgroundColor(this.pressing ? $r('app.color.font_color_title') : $r('app.color.block_color'))
+      .backgroundColor(this.pressing ? this.color_current_font : this.color_current_secondary)
       .animation(animation_default())
       .padding(10)
       .alignRules({

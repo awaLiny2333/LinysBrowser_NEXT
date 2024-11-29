@@ -6,12 +6,18 @@ struct woofQR {
   controller: CustomDialogController;
   @Prop link: string = '';
   @Prop title: string = '';
+  // Colors
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+
 
   build() {
     Scroll() {
       Column({ space: 10 }) {
         QRCode(this.link)
-          .color($r('app.color.font_color_title'))
+          .color(this.color_current_font)
           .backgroundColor("transparent")
           .padding({ bottom: 20 })
 
@@ -32,7 +38,7 @@ struct woofQR {
       .justifyContent(FlexAlign.Center)
       .width("100%")
     }
-    .backgroundColor($r('app.color.start_window_background'))
+    .backgroundColor(this.color_current_primary)
     .edgeEffect(EdgeEffect.Spring)
   }
 }

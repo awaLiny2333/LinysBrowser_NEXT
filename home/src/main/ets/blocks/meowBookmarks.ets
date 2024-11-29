@@ -38,6 +38,10 @@ struct meowBookmarks {
   @State bookmark_load_from_disk_ok: boolean = false;
   // Dialogs
   @StorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     Column() {
@@ -150,9 +154,9 @@ struct meowBookmarks {
                 this.add_label = value;
               })
               .fontWeight(FontWeight.Regular)
-              .fontColor($r('app.color.font_color_title'))
-              .caretColor($r('app.color.font_color_title'))
-              .selectedBackgroundColor($r('app.color.font_color_title'))
+              .fontColor(this.color_current_font)
+              .caretColor(this.color_current_font)
+              .selectedBackgroundColor(this.color_current_font)
               .selectAll(true)
               .layoutWeight(1)
               .onSubmit(() => {
@@ -174,9 +178,9 @@ struct meowBookmarks {
                 this.add_link = value;
               })
               .fontWeight(FontWeight.Regular)
-              .fontColor($r('app.color.font_color_title'))
-              .caretColor($r('app.color.font_color_title'))
-              .selectedBackgroundColor($r('app.color.font_color_title'))
+              .fontColor(this.color_current_font)
+              .caretColor(this.color_current_font)
+              .selectedBackgroundColor(this.color_current_font)
               .selectAll(true)
               .layoutWeight(1)
               .onSubmit(() => {
@@ -193,7 +197,7 @@ struct meowBookmarks {
             Blank()
             Text($r('app.string.Index_select_file'))
               .fontSize(fontSize_Large() - 2)
-              .fontColor($r('app.color.font_color_title'))
+              .fontColor(this.color_current_font)
               .visibility(this.exporting_bookmarks || this.importing_bookmarks ? Visibility.Visible : Visibility.None)
               .margin({ right: 10 })
 
@@ -229,7 +233,7 @@ struct meowBookmarks {
       Text(this.looking_at_path == "" ?
         this.showing_navigator ? $r('app.string.Bookmarks_root_path_expanded') : $r('app.string.Bookmarks_root_path')
         : "@ " + this.looking_at_path + "/")
-        .fontColor($r('app.color.font_color_title'))
+        .fontColor(this.color_current_font)
         .fontWeight(FontWeight.Medium)
         .fontSize(fontSize_Normal())
         .textAlign(TextAlign.End)
@@ -446,12 +450,17 @@ struct bookmarkItem {
     cornerRadius: 16,
     width: "90%",
   })
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+
 
   build() {
     Column() {
       Row() {
         Text(this.label)// Title
-          .fontColor(!this.pressing ? $r('app.color.font_color_title') : $r('app.color.block_color'))
+          .fontColor(!this.pressing ? this.color_current_font : this.color_current_secondary)
           .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
           .animation(animation_default())
           .padding({ left: 2 })
@@ -463,13 +472,13 @@ struct bookmarkItem {
           SymbolGlyph($r(!this.pressing ? 'sys.symbol.folder' : 'sys.symbol.chevron_right'))
             .fontSize(fontSize_Large())
             .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
-            .fontColor([!this.pressing ? $r('app.color.font_color_title') : $r('app.color.block_color')])
+            .fontColor([!this.pressing ? this.color_current_font : this.color_current_secondary])
             .animation(animation_default())
         } // Folder Icon
         Scroll() {
           SymbolGlyph($r('sys.symbol.square_and_pencil'))
             .fontSize(fontSize_Large())
-            .fontColor([$r('app.color.block_color')])
+            .fontColor([this.color_current_secondary])
         } // Edit Icon
         .scrollable(ScrollDirection.Horizontal)
         .width(this.press_timing_ok ? 22 : 0)
@@ -482,7 +491,7 @@ struct bookmarkItem {
         width: 2,
         color: "transparent"
       })
-      .backgroundColor(this.pressing ? $r('app.color.font_color_title') : $r('app.color.block_color'))
+      .backgroundColor(this.pressing ? this.color_current_font : this.color_current_secondary)
       .animation(animation_default())
       .padding(10)
       .alignRules({
@@ -512,9 +521,9 @@ struct bookmarkItem {
                 this.edit_label = value;
               })
               .fontWeight(FontWeight.Regular)
-              .fontColor($r('app.color.font_color_title'))
-              .caretColor($r('app.color.font_color_title'))
-              .selectedBackgroundColor($r('app.color.font_color_title'))
+              .fontColor(this.color_current_font)
+              .caretColor(this.color_current_font)
+              .selectedBackgroundColor(this.color_current_font)
               .layoutWeight(1)
               .onSubmit(() => {
                 if (this.type == "folder") {
@@ -536,9 +545,9 @@ struct bookmarkItem {
                 this.edit_link = value;
               })
               .fontWeight(FontWeight.Regular)
-              .fontColor($r('app.color.font_color_title'))
-              .caretColor($r('app.color.font_color_title'))
-              .selectedBackgroundColor($r('app.color.font_color_title'))
+              .fontColor(this.color_current_font)
+              .caretColor(this.color_current_font)
+              .selectedBackgroundColor(this.color_current_font)
               .layoutWeight(1)
               .onSubmit(() => {
                 this.save_changes_bookmark();
@@ -566,13 +575,13 @@ struct bookmarkItem {
 
             Button("  󰀁  ")// Delete
               .type(ButtonType.Capsule)
-              .backgroundColor(this.delete_confirm > 0 ? $r('app.color.start_window_background') :
+              .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
               $r("app.color.font_color_title"))
-              .fontColor(this.delete_confirm > 0 ? $r('app.color.font_color_title') :
-              $r('app.color.start_window_background'))
+              .fontColor(this.delete_confirm > 0 ? this.color_current_font :
+              this.color_current_primary)
               .border({
                 width: 2,
-                color: this.delete_confirm > 0 ? $r('app.color.font_color_title') : "transparent"
+                color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
               })
               .fontSize(fontSize_Large())
               .fontWeight(FontWeight.Medium)
@@ -603,7 +612,7 @@ struct bookmarkItem {
           right: 14,
           bottom: 14
         })
-        .backgroundColor($r('app.color.block_color'))
+        .backgroundColor(this.color_current_secondary)
         .border({
           radius: { bottomLeft: 10, bottomRight: 10 }
         })

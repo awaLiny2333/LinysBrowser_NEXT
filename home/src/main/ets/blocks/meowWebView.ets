@@ -41,6 +41,8 @@ struct meowWebView {
   @StorageLink('universal_new_download_gateway') new_download_gateway: string = "";
   @StorageProp('tab_animation') tab_animation: AnimateParam = animation_default();
   @State last_timeout_id: number | undefined = undefined;
+  // Colors
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
 
   async aboutToAppear(): Promise<void> {
 
@@ -233,7 +235,7 @@ struct meowWebView {
         }
         .visibility((this.current_main_tab_index == Label.index_key || this.current_sub_tab_index == Label.index_key)
           ? Visibility.Visible : Visibility.None)
-        .borderColor($r('app.color.block_color'))
+        .borderColor(this.color_current_secondary)
         .borderWidth(this.border_width_tab(this.current_sub_tab_index == Label.index_key))
         .width(this.current_sub_tab_index < 0 ? "100%" : this.width_tab())
         .height(this.current_sub_tab_index < 0 ? "100%" : this.height_tab())

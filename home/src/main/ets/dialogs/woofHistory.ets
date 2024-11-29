@@ -57,6 +57,11 @@ struct woofHistory {
     bottom: { anchor: "controls_history", align: VerticalAlign.Top },
     right: { anchor: "__container__", align: HorizontalAlign.End }
   };
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+
 
   build() {
     RelativeContainer() {
@@ -145,7 +150,7 @@ struct woofHistory {
         .margin({ top: 3, bottom: 3 })
         .width("100%")
         .borderRadius(10)
-        .backgroundColor($r('app.color.block_color'))
+        .backgroundColor(this.color_current_secondary)
       } // List
       .width(this.tablet_mode ? "65%" : "100%")
       .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)
@@ -220,13 +225,13 @@ struct woofHistory {
               Blank()
               Button("  󰀁  ")// Delete
                 .type(ButtonType.Capsule)
-                .backgroundColor(this.delete_confirm > 0 ? $r('app.color.start_window_background') :
+                .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
                 $r("app.color.font_color_title"))
-                .fontColor(this.delete_confirm > 0 ? $r('app.color.font_color_title') :
-                $r('app.color.start_window_background'))
+                .fontColor(this.delete_confirm > 0 ? this.color_current_font :
+                this.color_current_primary)
                 .border({
                   width: 2,
-                  color: this.delete_confirm > 0 ? $r('app.color.font_color_title') : "transparent"
+                  color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
                 })
                 .fontSize(fontSize_Large())
                 .fontWeight(FontWeight.Medium)
@@ -264,7 +269,7 @@ struct woofHistory {
     .padding(15)
     .width("100%")
     .height("100%")
-    .backgroundColor($r('app.color.start_window_background'))
+    .backgroundColor(this.color_current_primary)
     .onAppear(() => {
       setInterval(() => {
         if (this.delete_confirm > 0) {
@@ -386,12 +391,10 @@ struct woofHistory {
     let selected: number[] = [];
     for (let index = this.history_list.length - 1; index >= 0; index--) {
       if (this.selected[index]) {
-        // TODO: May be a performance bottleneck due to too many splice for arrays.
         selected.push(this.bunch_of_history.history_list.length - 1 - index - bias);
-        // this.bunch_of_history.remove_history(this.bunch_of_history.history_list.length - 1 - index - bias, true);
       }
     }
-    this.bunch_of_history.remove_selected_history(selected)
+    this.bunch_of_history.remove_selected_history(selected);
 
     this.refresh_current_history_list();
     sandbox_save("history.txt", this.bunch_of_history.export_string());
@@ -416,20 +419,24 @@ struct meowRelation {
   @Prop human_time: string = new Date(this.label_link.accessed_time).toLocaleString();
   // Gateways
   @StorageLink('universal_new_tab_gateway') universal_new_tab_gateway: string = "";
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     Column({ space: 2 }) {
       linysText({
-        color: this.selected[this.index] ? $r('app.color.block_color') : $r('app.color.font_color_title'),
+        color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
         text: this.label_link.label.length == 0 ? "　" : this.label_link.label,
         font_weight: this.selected[this.index] ? FontWeight.Medium : FontWeight.Regular
       })
       linysText({
-        color: this.selected[this.index] ? $r('app.color.block_color') : $r('app.color.font_color_title'),
+        color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
         text: this.label_link.link
       })
       linysText({
-        color: this.selected[this.index] ? $r('app.color.block_color') : $r('app.color.font_color_title'),
+        color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
         text: this.human_time
       })
         .opacity(0.7)
@@ -442,7 +449,7 @@ struct meowRelation {
     })
     .alignItems(HorizontalAlign.Start)
     .width("100%")
-    .backgroundColor(this.selected[this.index] ? $r('app.color.font_color_title') : $r('app.color.block_color'))
+    .backgroundColor(this.selected[this.index] ? this.color_current_font : this.color_current_secondary)
     .animation(animation_default())
     .onClick(() => {
       if (this.selecting) {

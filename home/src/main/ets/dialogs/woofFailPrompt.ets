@@ -13,6 +13,12 @@ struct woofFailPrompt {
   controller: CustomDialogController;
   @Prop desc: ResourceStr = 'Desc';
   @State @Watch('on_meow_reversed') meow: boolean = false;
+  // Colors
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+
 
   build() {
     Column({ space: 10 }) {
@@ -65,8 +71,8 @@ struct woofFailPrompt {
 
       Button($r('app.string.OK'))
         .type(ButtonType.Capsule)
-        .backgroundColor($r("app.color.font_color_title"))
-        .fontColor($r('app.color.start_window_background'))
+        .backgroundColor(this.color_current_font)
+        .fontColor(this.color_current_primary)
         .fontSize(fontSize_Normal() + 2)
         .fontWeight(FontWeight.Medium)
         .height(capsule_bar_height())
@@ -80,7 +86,7 @@ struct woofFailPrompt {
         })
     }
     .padding(15)
-    .backgroundColor($r('app.color.start_window_background'))
+    .backgroundColor(this.color_current_primary)
     .alignItems(HorizontalAlign.Center)
     .justifyContent(FlexAlign.Center)
     .width("100%")
@@ -106,9 +112,13 @@ struct goodByeLink {
   @StorageLink('showing_app_settings') showing_app_settings: boolean = false;
   @StorageLink('showing_downloads') showing_downloads: boolean = false;
   @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Internal stuff
   @Prop text: ResourceStr = $r('app.string.HomeAbility_label');
-  @Prop color: ResourceStr = $r('app.color.font_color_title');
+  @Prop color: ResourceColor = this.color_current_font;
   @Prop max_lines: number = 1;
   @Prop font_weight: FontWeight = FontWeight.Normal;
   @State link: string = "huawei.com";

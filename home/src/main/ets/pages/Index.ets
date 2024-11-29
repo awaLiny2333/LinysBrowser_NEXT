@@ -7,6 +7,7 @@ import meowTitleBar from '../blocks/meowTitleBar';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import woofFailPrompt from '../dialogs/woofFailPrompt';
+import { ConfigurationConstant } from '@kit.AbilityKit';
 
 @Entry
 @Component
@@ -24,6 +25,7 @@ struct Index {
   @StorageLink('screen_height') screen_height: number = 0;
   @StorageLink('animation_response') animation_response: number = 0.36;
   @StorageLink('animation_damping_coefficient') animation_damping: number = 0.8;
+  @StorageProp('currentColorMode') @Watch('on_color_mode_change') current_color_mode: number = 0;
   // UI Statuses
   @State webViews_ready: boolean | undefined = undefined;
   @StorageLink('showing_downloads') showing_downloads: boolean = false;
@@ -74,11 +76,36 @@ struct Index {
     showInSubWindow: true,
     width: "90%",
   });
+  // Colors
+  @StorageLink('color_light_primary') @Watch('on_color_change') color_light_primary: ResourceColor =
+    $r('app.color.start_window_background');
+  @StorageLink('color_light_secondary') @Watch('on_color_change') color_light_secondary: ResourceColor =
+    $r('app.color.block_color');
+  @StorageLink('color_light_font') @Watch('on_color_change') color_light_font: ResourceColor =
+    $r('app.color.font_color_title');
+  @StorageLink('color_dark_primary') @Watch('on_color_change') color_dark_primary: ResourceColor =
+    $r('app.color.start_window_background');
+  @StorageLink('color_dark_secondary') @Watch('on_color_change') color_dark_secondary: ResourceColor =
+    $r('app.color.block_color');
+  @StorageLink('color_dark_font') @Watch('on_color_change') color_dark_font: ResourceColor =
+    $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   async aboutToAppear(): Promise<void> {
     this.animation_response = await this.bunch_of_settings.get('animation_response') as number;
     this.animation_damping = await this.bunch_of_settings.get('animation_damping_coefficient') as number;
     this.showing_tabs = await this.bunch_of_settings.get('settings_tabs_open') as boolean;
+
+    // Figure out what color should i use
+    this.color_light_primary = await this.bunch_of_settings.get('color_light_primary') as string;
+    this.color_light_secondary = await this.bunch_of_settings.get('color_light_secondary') as string;
+    this.color_light_font = await this.bunch_of_settings.get('color_light_font') as string;
+    this.color_dark_primary = await this.bunch_of_settings.get('color_dark_primary') as string;
+    this.color_dark_secondary = await this.bunch_of_settings.get('color_dark_secondary') as string;
+    this.color_dark_font = await this.bunch_of_settings.get('color_dark_font') as string;
+
   }
 
   onBackPress(): boolean | void {
@@ -125,7 +152,7 @@ struct Index {
       Row()// Top Bar Avoid
         .width("100%")
         .height(px2vp(this.topAvoidHeight))
-        .backgroundColor($r('app.color.block_color'))
+        .backgroundColor(this.color_current_secondary)
         .animation(animation_default())
 
       RelativeContainer() {
@@ -186,7 +213,7 @@ struct Index {
               .visibility(this.webViews_ready ? Visibility.Visible : Visibility.Hidden)
           } // WebViews
           .width("100%")
-          .backgroundColor($r('app.color.start_window_background'))
+          .backgroundColor(this.color_current_primary)
           .layoutWeight(this.tablet_mode ? 1 : 0)
 
         } // Main Web
@@ -194,7 +221,7 @@ struct Index {
         .alignRules(this.title_bar_alignRules)
         .layoutWeight(1)
         .width("100%")
-        .backgroundColor($r('app.color.start_window_background'))
+        .backgroundColor(this.color_current_primary)
         .onAreaChange((o, n) => {
           this.on_main_area_change(o, n);
         })
@@ -234,13 +261,13 @@ struct Index {
         .height(px2vp(this.bottomAvoidHeight))
         .animation(animation_default())
         .backgroundColor(this.settings_title_bar_position == "bottom" ?
-          "transparent" : $r('app.color.block_color'))
+          "transparent" : this.color_current_secondary)
     }
     .height("100%")
     .width("100%")
     .animation(animation_default())
     .backgroundColor(this.settings_title_bar_position == "bottom" ?
-    $r('app.color.block_color') : $r('app.color.start_window_background'))
+    this.color_current_secondary : this.color_current_primary)
     .onAppear(() => {
       console.log("[Meow][Index] Home Index READY")
     })
@@ -284,6 +311,34 @@ struct Index {
       this.fail_prompt_desc = this.universal_fail_prompt_desc_gateway;
       this.moveFailPrompt_control.open();
       this.universal_fail_prompt_desc_gateway = "";
+    }
+  }
+
+  on_color_mode_change() {
+    if (this.current_color_mode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK) {
+      // Is dark mode
+      this.color_current_primary = this.color_dark_primary;
+      this.color_current_secondary = this.color_dark_secondary;
+      this.color_current_font = this.color_dark_font;
+    } else {
+      this.color_current_primary = this.color_light_primary;
+      this.color_current_secondary = this.color_light_secondary;
+      this.color_current_font = this.color_light_font;
+    }
+  }
+
+  on_color_change() {
+    console.log('[Meow][Index] Color theme changed!');
+    // Refresh current color
+    if (this.current_color_mode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK) {
+      // Is dark mode
+      this.color_current_primary = this.color_dark_primary;
+      this.color_current_secondary = this.color_dark_secondary;
+      this.color_current_font = this.color_dark_font;
+    } else {
+      this.color_current_primary = this.color_light_primary;
+      this.color_current_secondary = this.color_light_secondary;
+      this.color_current_font = this.color_light_font;
     }
   }
 
