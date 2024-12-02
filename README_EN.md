@@ -69,7 +69,7 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 
 ### Experience
 
-- [ ] Customizable themes. (Colors)
+- [x] Customizable themes. (Colors)
 - [x] Customizable position for title bar. (Top or Bottom)
 - [x] Customizable position for Tabs bar. (Side or Top)
 - [x] Adapt to system Back operations.
@@ -82,29 +82,31 @@ Long way ahead.
 1. As a result of Liny's unsystematic programming thoughts and rubbish codes, 
    this application may contain performance problems.
    Liny would appreciate that so much if you wish to report a problem, big or small!
-2. Due to a mysterious problem and a temporary but necessary compromise,
+2. Some mysterious problems causing the selected options not displayed in the first opening
+   of the Settings Panel after app launch.
+3. Due to a mysterious problem and a temporary but necessary compromise,
    sometimes the AD blocking whitelist may not take effect in time after launching,
    resulting in ads on the web page being blocked. 
    (Trying to solve)
-3. Due to a mysterious problem and a temporary but necessary compromise,
+4. Due to a mysterious problem and a temporary but necessary compromise,
    sometimes the AD blocking function itself may not take effect in time after launching,
    resulting in ads on the web page not being blocked.
    (Trying to solve)
-4. In some cases reopening tabs function won't work, and no new tabs are shown.
+5. In some cases reopening tabs function won't work, and no new tabs are shown.
    (Still under investigation)
-5. Perhaps due to performance issues on Windows x86-64 Emulators,
+6. Perhaps due to performance issues on Windows x86-64 Emulators,
    quickly opening plenty of new tabs may cause crashes due to error
    17100001 (Init error. The WebviewController must be associated with a Web component).
    (Seems to be solved, still under observation)
-6. Quickly closing plenty of tabs may cause tabs to disappear.
+7. Quickly closing plenty of tabs may cause tabs to disappear.
    This is because in some extreme occasions,
    the tab button is trying to close the last+1 index of the tab list.
    An if statement has been added before the operation
    in order to make sure the index is in the legal range.
    (Seems to be solved, still under observation)
-7. HarmonyOS UA is not understood by plenty of websites (But UA is customizable now).
-8. The vertical tabs panel animations may seem weird when the scroll is longer than the screen.
-9. This project requires HarmonyOS NEXT API12 to run.
+8. HarmonyOS UA is not understood by plenty of websites (But UA is customizable now).
+9. The vertical tabs panel animations may seem weird when the scroll is longer than the screen.
+10. This project requires HarmonyOS NEXT API12 to run.
 
 ## What are the commit labels for?
 All the commit information so far since the birth of this project have been so chaotic 

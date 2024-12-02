@@ -195,10 +195,10 @@ struct woofColorSelect {
           })
             .width("100%")
           TextInput({ text: this.color_input })
-            .onClick(()=>{
+            .onClick(() => {
               this.focus_on_code_input = true;
             })
-            .onBlur(()=>{
+            .onBlur(() => {
               this.focus_on_code_input = false;
             })
             .onChange((value) => {

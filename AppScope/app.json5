@@ -2,8 +2,8 @@
   "app": {
     "bundleName": "com.next.liny.linysbrowserNEXT",
     "vendor": "example",
-    "versionCode": 1000011,
-    "versionName": "1.6.1",
+    "versionCode": 1000012,
+    "versionName": "1.6.2",
     "icon": "$media:app_icon",
     "label": "$string:app_name"
   }
