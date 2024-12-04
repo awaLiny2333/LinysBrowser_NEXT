@@ -3,23 +3,25 @@ import linysPathDisplay from '../components/linysPathDisplay';
 import linysSymbol from '../components/linysSymbol';
 import linysTitleText from '../components/linysTitleText';
 import { bookmark, bunch_of_bookmarks, folder, unified_item } from '../hosts/bunch_of_bookmarks';
-import { animation_default, fontSize_Large, fontSize_Normal } from '../hosts/bunch_of_defaults';
+import { animation_default, click_effect_default, fontSize_Large, fontSize_Normal } from '../hosts/bunch_of_defaults';
 
 @CustomDialog
 struct woofBookmarksPathSelector {
   controller: CustomDialogController;
-  @Link select: string;
+  @Link select: string | undefined;
   @State scroll_area_height: number = 0;
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @State viewing_contents: unified_item[] = this.filter_only_folders(this.bunch_of_bookmarks.root.get_content());
-  @State @Watch('refresh_dir_content') looking_at_path: string = "";
+  @Prop @Watch('refresh_dir_content') looking_at_path: string;
   @State showing_navigator: boolean = false;
-  // Colors
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
+  aboutToAppear(): void {
+    this.refresh_dir_content();
+  }
 
   build() {
     Column({ space: 5 }) {
@@ -100,6 +102,7 @@ struct woofBookmarksPathSelector {
         .margin({ top: 5 })
         .opacity(0.7)
         .animation(animation_default())
+        .clickEffect(click_effect_default())
         .onClick(() => {
           this.showing_navigator = !this.showing_navigator;
         })
@@ -122,9 +125,11 @@ struct woofBookmarksPathSelector {
       got_folder = this.bunch_of_bookmarks.root;
     } else {
       got_folder = this.bunch_of_bookmarks.get_folder(this.looking_at_path);
+      console.log('[Meow][woofBookmarksMove] Got Folder ' + got_folder?.get_label());
     }
     if (got_folder !== undefined) {
       this.viewing_contents = this.filter_only_folders(got_folder.get_content());
+      console.log('[Meow][woofBookmarksMove] Got Folder contents, length: ' + this.viewing_contents.length.toString());
     }
   }
 

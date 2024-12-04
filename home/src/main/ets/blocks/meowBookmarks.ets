@@ -437,13 +437,14 @@ struct bookmarkItem {
   @State edit_link: string = this.link;
   @State delete_confirm: number = 0;
   // Edit inputs
-  @State @Watch('on_select_change') select_result: string | undefined = undefined;
+  @State @Watch('on_select_change') select_path_result: string | undefined = undefined;
   @State moving_type: string = "";
   // Dialogs
   @StorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
   woofBookmarksPathSelector_control: CustomDialogController = new CustomDialogController({
     builder: woofBookmarksPathSelector({
-      select: this.select_result
+      select: this.select_path_result,
+      looking_at_path: this.looking_at_path
     }),
     alignment: DialogAlignment.Center,
     showInSubWindow: true,
@@ -739,16 +740,16 @@ struct bookmarkItem {
   on_select_change() {
     // Move folder or bookmark
 
-    if (this.select_result === undefined) {
+    if (this.select_path_result === undefined) {
       return;
     }
 
     let operation_result = 0;
     if (this.moving_type == "folder") {
-      operation_result = this.bunch_of_bookmarks.move_folder(this.get_my_path(), this.select_result);
+      operation_result = this.bunch_of_bookmarks.move_folder(this.get_my_path(), this.select_path_result);
     } else {
       // if (this.moving_type == "bookmark")
-      operation_result = this.bunch_of_bookmarks.move_bookmark(this.get_my_path(), this.select_result);
+      operation_result = this.bunch_of_bookmarks.move_bookmark(this.get_my_path(), this.select_path_result);
     }
 
     if (operation_result != 0) {
@@ -776,7 +777,7 @@ struct bookmarkItem {
     // Weird as hell but works, fine.
 
     this.save_html_to_kv_store();
-    this.select_result = undefined;
+    this.select_path_result = undefined;
   }
 
   move_folder() {
