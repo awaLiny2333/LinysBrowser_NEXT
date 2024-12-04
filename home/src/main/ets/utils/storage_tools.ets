@@ -171,5 +171,5 @@ export function add_units_to_size(size_in_bytes: number) {
     result /= 1024;
     unit += 1;
   }
-  return result.toFixed(3) + units[unit];
+  return result.toFixed(3) + " " + units[unit];
 }

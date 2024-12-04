@@ -447,6 +447,10 @@
     {
       "name": "Settings_storage_clear_webview",
       "value": "清理所有网页（Webview）的缓存"
+    },
+    {
+      "name": "Settings_storage_clear_webview_desc",
+      "value": "以下统计可能（往往）是过时的。如果你需要一个准确的信息，请点击 \uDB80\uDCC8 以刷新。"
     }
   ]
 }
