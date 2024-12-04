@@ -1,6 +1,6 @@
 import { BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
-import { fileIo as fs, fileUri, picker } from '@kit.CoreFileKit';
+import { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
 import { buffer } from '@kit.ArkTS';
 
 let context = AppStorage.get("context") as common.UIAbilityContext;
@@ -135,4 +135,41 @@ export function sandbox_open_array_sync(file_path_name: string) {
   fs.closeSync(file);
   let result = buf.slice(0, readLen);
   return result;
+}
+
+/**
+ * Calculate the size of a folder and its containing items recursively in a sync way.
+ * @param path A string, the path of the folder.
+ * @returns A number, the size of that folder.
+ * */
+export function get_folder_size_Sync(path: string, log: boolean) {
+  let sum = fs.statSync(path).size;
+  try {
+    let dir_list = fs.listFileSync(path);
+    for (let index = 0; index < dir_list.length; index++) {
+      sum += get_folder_size_Sync(path + '/' + dir_list[index], false)
+    }
+  } catch (e) {
+
+  }
+  if (log) {
+    console.log('[Meow][storage_tools] Calculated folder size: ' + sum.toString())
+  }
+  return sum;
+}
+
+/**
+ * Adds a unit to a size in bytes.
+ * @param size_in_bytes A number, the size in bytes.
+ * @returns A string, the connected result of a number of size and its unit.
+ * */
+export function add_units_to_size(size_in_bytes: number) {
+  let units = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB']
+  let result = size_in_bytes;
+  let unit = 0;
+  while (result > 1024) {
+    result /= 1024;
+    unit += 1;
+  }
+  return result.toFixed(3) + units[unit];
 }

@@ -43,6 +43,9 @@ export class bunch_of_settings {
     this.register_setting('color_dark_primary', 'string', '#0F1A0F');
     this.register_setting('color_dark_secondary', 'string', '#2A392A');
     this.register_setting('color_dark_font', 'string', '#E1E9E3');
+
+    // Cached size of webview cache
+    this.register_setting('webview_cache_size', 'number', '-1');
   }
 
   /**

@@ -69,6 +69,10 @@
       "value": "外观"
     },
     {
+      "name": "Settings_storage",
+      "value": "存储"
+    },
+    {
       "name": "Settings_about",
       "value": "关于"
     },
@@ -439,6 +443,10 @@
     {
       "name": "Color_reset",
       "value": "恢复默认颜色主题"
+    },
+    {
+      "name": "Settings_storage_clear_webview",
+      "value": "清理所有网页（Webview）的缓存"
     }
   ]
 }

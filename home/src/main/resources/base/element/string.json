@@ -69,6 +69,10 @@
       "value": "Appearance"
     },
     {
+      "name": "Settings_storage",
+      "value": "Storage"
+    },
+    {
       "name": "Settings_about",
       "value": "About"
     },
@@ -439,6 +443,10 @@
     {
       "name": "Color_reset",
       "value": "Reset colors to default"
+    },
+    {
+      "name": "Settings_storage_clear_webview",
+      "value": "Clear all webview cache"
     }
   ]
 }

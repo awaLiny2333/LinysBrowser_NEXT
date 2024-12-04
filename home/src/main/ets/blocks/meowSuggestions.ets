@@ -13,6 +13,7 @@ struct meowSuggestions {
   @State content_height: number = 0;
   @Prop @Watch('refresh_suggestions') search_input: string = "";
   @Prop is_search_input_typing: boolean;
+  @StorageProp('tablet_mode') tablet_mode: boolean = false;
   // Hosts
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history();
@@ -27,47 +28,41 @@ struct meowSuggestions {
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
-
   build() {
     Scroll() {
-      Column({ space: 10 }) {
-        Column({ space: 8 }) {
-          ForEach(this.bookmark_suggestions, (item: string[], index: number) => {
-            meowRelation({
-              relation: item,
-              index: index
-            })
-          })
+      if (this.tablet_mode) {
+        Row({ space: 10 }) {
+            suggestionList({ suggestions: this.bookmark_suggestions })
+              .layoutWeight(1)
+              .visibility(this.bookmark_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
+              .animation(animation_default())
+            suggestionList({ suggestions: this.history_suggestions })
+              .layoutWeight(1)
+              .visibility(this.history_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
+              .animation(animation_default())
         }
-        .padding(15)
-        .width("100%")
-        .backgroundColor(this.color_current_primary)
-        .borderRadius(10)
-        .visibility(this.bookmark_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
+        .alignItems(VerticalAlign.Top)
+        .onAreaChange((_o, n) => {
+          this.content_height = n.height as number;
+        })
         .animation(animation_default())
-
-        Column({ space: 8 }) {
-          ForEach(this.history_suggestions, (item: string[], index: number) => {
-            meowRelation({
-              relation: item,
-              index: index + this.bookmark_suggestions.length
-            })
-          })
+      } else {
+        Column({ space: 10 }) {
+            suggestionList({ suggestions: this.bookmark_suggestions })
+              .width("100%")
+              .visibility(this.bookmark_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
+              .animation(animation_default())
+          suggestionList({ suggestions: this.history_suggestions })
+            .width("100%")
+            .visibility(this.history_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
+            .animation(animation_default())
         }
-        .padding(15)
-        .width("100%")
-        .backgroundColor(this.color_current_primary)
-        .borderRadius(10)
-        .visibility(this.history_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
+        .onAreaChange((_o, n) => {
+          this.content_height = n.height as number;
+        })
+        .alignItems(HorizontalAlign.Start)
         .animation(animation_default())
-
       }
-      .onAreaChange((_o,n)=>{
-        this.content_height = n.height as number;
-      })
-      // .height(this.get_area_height())
-      .alignItems(HorizontalAlign.Start)
-      .animation(animation_default())
     }
     .scrollBar(BarState.Off)
     .margin({
@@ -138,5 +133,27 @@ struct meowRelation {
         this.this_visibility = Visibility.Visible;
       }, (this.index) * 60)
     })
+  }
+}
+
+@Component
+struct suggestionList {
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @Prop suggestions: string[][] = [];
+
+  build() {
+    Column({ space: 8 }) {
+      ForEach(this.suggestions, (item: string[], index: number) => {
+        meowRelation({
+          relation: item,
+          index: index
+        })
+      })
+    }
+    .padding(15)
+    .backgroundColor(this.color_current_primary)
+    .borderRadius(10)
+    .visibility(this.suggestions.length > 0 ? Visibility.Visible : Visibility.None)
+    .animation(animation_default())
   }
 }

@@ -20,7 +20,7 @@ import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import linysCapsuleButton from '../components/linysCapsuleButton';
 import { bunch_of_history } from '../hosts/bunch_of_history';
-import { sandbox_open_sync } from '../utils/storage_tools';
+import { add_units_to_size, get_folder_size_Sync, sandbox_open_sync } from '../utils/storage_tools';
 import woofHistory from '../dialogs/woofHistory';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import meowSEManager from './meowSEManager';
@@ -28,6 +28,7 @@ import linysLink from '../components/linysLink';
 import woofAdsBlocker from '../dialogs/woofAdsBlocker';
 import meowWhatsNew from './meowWhatsNew';
 import meowColorsManager from './meowColorsManager';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 @Component
 struct meowAppSettings {
@@ -47,8 +48,8 @@ struct meowAppSettings {
   @StorageProp('color_current_font') @Watch('on_color_change') color_current_font: ResourceColor =
     $r('app.color.font_color_title');
   // Generals
-  @StorageLink('screen_width') screen_width: number = 0;
-  @StorageLink('tablet_mode') tablet_mode: boolean = false;
+  @StorageProp('screen_width') screen_width: number = 0;
+  @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @Link @Watch('on_open_or_close_panel') show: boolean;
   @StorageLink('animation_response') animation_response: number = 0;
   @StorageLink('animation_damping_coefficient') animation_damping_coefficient: number = 0;
@@ -96,7 +97,7 @@ struct meowAppSettings {
   @State scroll_last: number = 0;
   @State menu_text: string[] =
     ['Settings_start_up', 'Settings_general', 'Settings_Experience', 'Settings_experience_history',
-      'Settings_appearance', 'Settings_about'];
+      'Settings_appearance', 'Settings_storage', 'Settings_about'];
   // Dialogs
   woofHistory_control: CustomDialogController = new CustomDialogController({
     builder: woofHistory({ showing_settings: this.show }),
@@ -113,6 +114,9 @@ struct meowAppSettings {
     width: "90%",
   });
   waterFlow_control: Scroller = new Scroller();
+  // Else
+  @State clear_web_cache_confirm: number = 0;
+  @State web_cache_size: number = 0;
 
   build() {
     Row() {
@@ -440,6 +444,74 @@ struct meowAppSettings {
 
           FlowItem() {
             Column({ space: 15 }) {
+              linysTitleText({ text: $r('app.string.Settings_storage') }) // Storage Title
+
+              linysText({ text: $r('app.string.Settings_storage_clear_webview') })
+
+              Row({ space: 10 }) {
+                linysTitleText({ text: "󰂼 " + add_units_to_size(this.web_cache_size) })
+                  .layoutWeight(1)
+
+                linysCapsuleButton({ text: '  󰃈  ' })
+                  .onClick(() => {
+                    this.web_cache_size = get_folder_size_Sync('/data/storage/el2/base/cache/web/Cache', true);
+                    this.bunch_of_settings.set('webview_cache_size', this.web_cache_size);
+                  })
+
+                Button('  󰀖  ')// Delete
+                  .type(ButtonType.Capsule)
+                  .backgroundColor(this.clear_web_cache_confirm > 0 ? this.color_current_primary :
+                  this.color_current_font)
+                  .fontColor(this.clear_web_cache_confirm > 0 ? this.color_current_font :
+                  this.color_current_primary)
+                  .border({
+                    width: 2,
+                    color: this.clear_web_cache_confirm > 0 ? this.color_current_font : "transparent"
+                  })
+                  .fontSize(fontSize_Large())
+                  .fontWeight(FontWeight.Medium)
+                  .height(capsule_bar_height())
+                  .onClick(() => {
+                    this.clear_web_cache_confirm += 300;
+                    if (this.clear_web_cache_confirm >= 301) {
+                      try {
+                        this.bunch_of_tabs.Tabs[0].controller.removeCache(true);
+                        console.log('[Meow][meowAppSettings] Clear webview cache!')
+                      } catch (error) {
+                        console.error(`[Meow][meowAppSettings] Clear webview cache.
+                      ErrorCode: ${(error as BusinessError).code},
+                      Message: ${(error as BusinessError).message}`);
+                      }
+                      this.clear_web_cache_confirm = 0;
+                      this.web_cache_size = get_folder_size_Sync('/data/storage/el2/base/cache/web/Cache', true);
+                      this.bunch_of_settings.set('webview_cache_size', this.web_cache_size);
+                    }
+                  })
+                  .clickEffect(click_effect_default())
+                  .animation(animation_default())
+                  .onAppear(() => {
+                    setInterval(() => {
+                      if (this.clear_web_cache_confirm > 0) {
+                        this.clear_web_cache_confirm -= 1;
+                      }
+                      // Reset delete confirm
+                    }, 10)
+                  })
+              } // Clear webview cache
+              .width("100%")
+
+            }
+            .padding(15)
+            .alignItems(HorizontalAlign.Start)
+            .justifyContent(FlexAlign.Start)
+            .width("100%")
+            .borderRadius(10)
+            .backgroundColor(this.color_current_primary)
+          } // Storage
+          .width("100%")
+
+          FlowItem() {
+            Column({ space: 15 }) {
               linysTitleText({ text: $r('app.string.Settings_about') })
               linysLink({
                 will_be_reversed_boolean: this.showing_app_settings,
@@ -538,6 +610,13 @@ struct meowAppSettings {
       this.bunch_of_history.import_string(result as string);
       console.log("[Meow][meowAppSettings] Recovered History, length: " + result.length.toString())
     }
+
+    // Read webview cache
+    this.web_cache_size = await this.bunch_of_settings.get('webview_cache_size') as number;
+    if (this.web_cache_size == -1) {
+      this.web_cache_size = get_folder_size_Sync('/data/storage/el2/base/cache/web/Cache', true);
+      this.bunch_of_settings.set('webview_cache_size', this.web_cache_size);
+    }
   }
 
   on_open_or_close_panel() {
@@ -582,6 +661,8 @@ struct meowAppSettings {
         this.start_up_page_selected = [2];
       }
     }
+    // Calculate web cache size
+    // this.web_cache_size = get_folder_size_Sync('/data/storage/el2/base/cache/web/Cache', true)
   }
 
   on_panel_close() {

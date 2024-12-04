@@ -38,7 +38,7 @@ struct woofBookmarksPathSelector {
                 viewing_contents: this.viewing_contents, // For editing
                 looking_at_path: this.looking_at_path, // the path of now showing list (directory) on the panel
                 height_of_panel: this.scroll_area_height, // for animation params
-                parent_path: this.looking_at_path, // for get_my_path()
+                my_parent_path: this.looking_at_path, // for get_my_path()
               });
             },
           )
@@ -164,28 +164,28 @@ export default woofBookmarksPathSelector;
 
 @Component
 struct bookmarkItem {
-  @Prop my_index: number = 0;
+  // Public stuffs
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @Link looking_at_path: string;
   @Link viewing_contents: unified_item[];
-  @Prop parent_path: string;
   @Prop height_of_panel: number;
-  // Public stuffs
-  @State item: unified_item = this.viewing_contents[this.my_index];
-  @State type: string = this.item.get_item().get_type();
-  @State label: string = this.item.get_item().get_label();
-  @State link: string = this.type == "bookmark" ? (this.item.get_item() as bookmark).get_link() : "";
   // Basic this properties
+  @Prop my_index: number = 0;
+  @Prop my_parent_path: string;
+  @State my_item: unified_item = this.viewing_contents[this.my_index];
+  @State my_type: string = this.my_item.get_item().get_type();
+  @State my_label: string = this.my_item.get_item().get_label();
+  @State my_link: string = this.my_type == "bookmark" ? (this.my_item.get_item() as bookmark).get_link() : "";
+  bookmark_height_default: number = 42;
+  // Animations statuses
   @State pressing: boolean = false;
+  @State press_timing_ok: boolean = false;
   @State show: Visibility = Visibility.Hidden;
   @State offset_y: number = 50;
   @State editing: boolean = false;
-  @State press_timing_ok: boolean = false;
-  press_timing: number = 0;
-  bookmark_height_default: number = 42;
-  // Animations statuses
-  @State edit_label: string = this.label;
-  @State edit_link: string = this.link;
+  // Edit
+  @State edit_label: string = this.my_label;
+  @State edit_link: string = this.my_link;
   @State delete_confirm: number = 0;
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
@@ -197,7 +197,7 @@ struct bookmarkItem {
   build() {
     Column() {
       Row() {
-        Text(this.label)// Title
+        Text(this.my_label)// Title
           .fontColor(!this.pressing ? this.color_current_font : this.color_current_secondary)
           .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
           .animation(animation_default())
@@ -206,7 +206,7 @@ struct bookmarkItem {
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
           .layoutWeight(1)
-        if (this.type == "folder") {
+        if (this.my_type == "folder") {
           SymbolGlyph($r('sys.symbol.folder'))
             .fontSize(fontSize_Large())
             .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
@@ -246,7 +246,7 @@ struct bookmarkItem {
         }
       })
       .onClick(() => {
-        if (this.type == "folder") {
+        if (this.my_type == "folder") {
           this.looking_at_path = this.get_my_path();
           // Will automatically cause LinysBookmarks to update the UI list (@Watch)
         }
@@ -280,10 +280,10 @@ struct bookmarkItem {
   }
 
   get_my_path() {
-    if (this.parent_path == "") {
-      return this.label;
+    if (this.my_parent_path == "") {
+      return this.my_label;
     } else {
-      return this.parent_path + "/" + this.label;
+      return this.my_parent_path + "/" + this.my_label;
     }
   }
 }
