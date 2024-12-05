@@ -583,7 +583,6 @@ struct meowTabs {
   }
 
   on_targeted_close_tab() {
-    console.log('close' + this.close_tab_gateway.toString())
     if (this.close_tab_gateway >= 0) {
       this.close_tab(this.close_tab_gateway);
       this.close_tab_gateway = -1;
