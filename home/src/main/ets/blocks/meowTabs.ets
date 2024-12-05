@@ -366,6 +366,7 @@ struct meowTabs {
 
     // Switch
     this.current_main_tab_index = this.bunch_of_tabs.switchToTab(target);
+    console.log('[Meow][meowTabs] Switch to tab ' + this.current_main_tab_index.toString())
     if (this.recover_tabs_finished) {
       // Update history
       this.update_backward_forward_access()
@@ -582,6 +583,7 @@ struct meowTabs {
   }
 
   on_targeted_close_tab() {
+    console.log('close' + this.close_tab_gateway.toString())
     if (this.close_tab_gateway >= 0) {
       this.close_tab(this.close_tab_gateway);
       this.close_tab_gateway = -1;

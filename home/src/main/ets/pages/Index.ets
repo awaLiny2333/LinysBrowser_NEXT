@@ -51,11 +51,12 @@ struct Index {
   @StorageLink('current_loading_progress') current_loading_progress: number = 0
   @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]
   @StorageLink('current_is_loading') current_is_loading: boolean = true
-  // Web control statuses
+  // Web control
   @StorageLink('current_main_tab_index') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') current_sub_tab_index: number = -1;
   @StorageLink('current_accessForward') current_accessForward: boolean = false;
   @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
+  @StorageLink('universal_close_tab_gateway') uni_close_tab_gateway: number = -1;
   // Settings
   @State @Watch('on_title_bar_position_change') settings_title_bar_position: string = "";
   @State sys_back_to_access_backward: boolean = false;
@@ -141,6 +142,12 @@ struct Index {
     if (this.sys_back_to_access_backward) {
       if (this.go_back_if_possible()) {
         stop_system_back = true;
+      } else {
+        if (this.bunch_of_tabs.Tabs.length > 1) {
+          // Can close something
+          this.uni_close_tab_gateway = this.current_main_tab_index;
+          stop_system_back = true;
+        }
       }
     }
 
