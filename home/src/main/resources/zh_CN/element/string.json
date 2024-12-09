@@ -274,7 +274,7 @@
     },
     {
       "name": "Settings_experience_web_force_dark_mode",
-      "value": "强制（那些不想深色的）网站使用深色模式"
+      "value": "强制（无深色适配的）网站使用深色模式"
     },
     {
       "name": "Settings_experience_use_adblock",
@@ -377,20 +377,24 @@
       "value": "目标位置有一个重名的书签！"
     },
     {
+      "name": "Update_record",
+      "value": "更新历史 OwO"
+    },
+    {
       "name": "Whats_new",
       "value": "更新了什么？"
     },
     {
       "name": "Whats_new_content",
-      "value": "1. 操作失败的时候会弹窗了！试试去创建一个没有名字的书签？\n2. 点击书签面板的路径文字，会打开一个跳转面板！\n3. 自定义配色（可能还有 Bug）！\n4. Webview 的缓存清理～"
+      "value": "1. 网页的深色模式；\n2. 现在空白页会以设置的主题色为背景；\n3. 可以从猫抓板点击复制文字了！\n4. 致谢～"
     },
     {
       "name": "Whats_new_content_extra",
-      "value": "当然，还有这个更新说明区域！"
+      "value": "也许还修复了一些问题？懒惰的 Liny 估计没有写上来…… (～o￣3￣)～"
     },
     {
       "name": "Credits",
-      "value": "致谢！"
+      "value": "致谢"
     },
     {
       "name": "Credits_issues",
@@ -398,11 +402,11 @@
     },
     {
       "name": "Credits_repos_and_projs",
-      "value": "Via（tuyafeng 大佬传奇之作！）\nFirefox（来自 Mozilla 的最可爱赛博小狐狸！）\n浏览器（来自开源鸿蒙！）\n以及\uD83C\uDF10 浏览器CE（社区版）（Westinyang 大佬的分支！）"
+      "value": "Via（tuyafeng 大佬传奇之作！）\nFirefox（来自 Mozilla 的最可爱赛博小狐狸！）\n浏览器（来自开源鸿蒙！）\n以及 \uD83C\uDF10 浏览器 CE 社区版（Westinyang 大佬的分支！）"
     },
     {
       "name": "Credits_devs_and_users",
-      "value": "sseaan（#2 横向标签页和自定义 UA）\nSolidFaker（#3 错误的背景颜色）\nlsxuan12138（#6 移动书签功能）\nxymeng16（#8 劫持系统返回; #11 更多搜索引擎）\nLuxcis（#12 自动收起标签页）\n000wbh000（#22 网页深色模式）～"
+      "value": "sseaan（#2 横向标签页和自定义 UA）\nSolidFaker（#3 错误的背景颜色）\nlsxuan12138（#6 移动书签功能）\nxymeng16（#8 劫持返回；#11 更多搜索引擎）\nLuxcis（#12 自动收起标签页）\n000wbh000（#22 网页深色模式）～"
     },
     {
       "name": "Credits_extra",

@@ -10,7 +10,7 @@ struct meowTabsHorizontal {
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
   // Environments
   @Link showing_tabs: boolean;
-  @Link webViews_ready: boolean;
+
   @StorageLink('current_main_tab_index') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') current_sub_tab_index: number = -1;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
@@ -41,7 +41,7 @@ struct meowTabsHorizontal {
               current_sub_tab_index: this.current_sub_tab_index,
               index: index,
               title: title,
-              webViews_ready: this.webViews_ready,
+
               full_area_width: this.full_area_width,
               tab_titles: this.tab_titles
             })
@@ -71,7 +71,7 @@ struct meowTabsHorizontal {
         text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
       })// Paralleow entrance
         .onClick(() => {
-          this.webViews_ready = true;
+
           this.choose_paralleow();
         })
         .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden)
@@ -80,7 +80,7 @@ struct meowTabsHorizontal {
 
       linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })// New tab
         .onClick(() => {
-          this.webViews_ready = true;
+
           this.new_tab_gateway = "new_tab";
         })
         .margin({ bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0 })
@@ -128,7 +128,7 @@ struct HorizontalTabButton {
   @Link current_sub_tab_index: number;
   @Prop index: number;
   @Prop title: string;
-  @Link webViews_ready: boolean;
+
   @Link full_area_width: number;
   @Link tab_titles: string[];
   // Gateways
@@ -165,7 +165,7 @@ struct HorizontalTabButton {
         .fontColor([this.color_current_font])
         .fontWeight(FontWeight.Medium)
         .onClick(() => {
-          this.webViews_ready = true;
+
           this.close_tab_gateway = this.index;
           // Close tab
         })

@@ -12,7 +12,7 @@ import { sandbox_open_array_sync } from '../utils/storage_tools';
 struct meowTabs {
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
-  @Link webViews_ready: boolean;
+
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
   @StorageLink('current_main_tab_index') @Watch('on_did_switch_tab') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') @Watch('on_did_switch_tab') current_sub_tab_index: number = -1;
@@ -109,7 +109,7 @@ struct meowTabs {
       if (new_tab_url == "") {
         // If is default blank page
       } else {
-        this.webViews_ready = true;
+
       }
       this.switch_tab(0);
 
@@ -117,14 +117,14 @@ struct meowTabs {
       if (home_url == "") {
         this.new_tab(url_default_blank());
       } else {
-        this.webViews_ready = true;
+
         this.new_tab(home_url);
       }
       this.switch_tab(0);
 
     } else {
       // continue
-      this.webViews_ready = true;
+
 
       // Prepare web states
       let web_state_arrays_to_restore: Uint8Array[] = [];
@@ -151,7 +151,7 @@ struct meowTabs {
       }
 
       // Try to switch tab
-      this.webViews_ready = true;
+
       this.tab_animation = { duration: 0 };
       this.switch_tab(continue_tabs_main_on);
       this.sync_all_list_info();
@@ -269,7 +269,7 @@ struct meowTabs {
           text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
         })
           .onClick(() => {
-            this.webViews_ready = true;
+
             this.choose_paralleow();
           })
           .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden)
@@ -277,7 +277,7 @@ struct meowTabs {
 
         linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
           .onClick(() => {
-            this.webViews_ready = true;
+
             this.new_tab("")
           })
       } // New Tab and Paralleow Button
@@ -576,7 +576,7 @@ struct meowTabs {
       if (this.new_tab_gateway == "new_tab") {
         this.new_tab_gateway = ""
       }
-      this.webViews_ready = true;
+
       this.new_tab(this.new_tab_gateway);
       this.new_tab_gateway = "";
     }
@@ -591,11 +591,9 @@ struct meowTabs {
 
   on_current_load_url() {
     if (this.load_url_gateway != "") {
-      setTimeout(() => {
-        this.bunch_of_tabs.loadUrl_onWorkingTab(this.load_url_gateway);
-        this.load_url_gateway = "";
-      }, this.webViews_ready ? 0 : 100)
-      this.webViews_ready = true;
+      this.bunch_of_tabs.loadUrl_onWorkingTab(this.load_url_gateway);
+      this.load_url_gateway = "";
+
     }
   }
 }

@@ -377,24 +377,28 @@
       "value": "There is a bookmark with a duplicate name in the destination directory!"
     },
     {
+      "name": "Update_record",
+      "value": "Update history OwO"
+    },
+    {
       "name": "Whats_new",
       "value": "What's new?"
     },
     {
       "name": "Whats_new_content",
-      "value": "1. Prompts when operations failed! Try to create a new bookmark with no name?\n2. Clicking on the path text in Bookmarks panel now opens a navigation list!\n3. Customizable theme color (may contain bugs)!\n4. Clearing webview cache~"
+      "value": "1. Dark mode for webs;\n2. Now blank pages are in the set theme color;\n3. Copying text from the Scratching Board;\n4. Credits~"
     },
     {
       "name": "Whats_new_content_extra",
-      "value": "Of course, and this \"What's New\" block!"
+      "value": "Perhaps also some bugfix? Liny the lazy didn't put them here, maybe... (～o￣3￣)～"
     },
     {
       "name": "Credits",
-      "value": "Credits!"
+      "value": "Credits"
     },
     {
       "name": "Credits_issues",
-      "value": "And you who raised issues!"
+      "value": "And you, along with those who opened really important issues:"
     },
     {
       "name": "Credits_repos_and_projs",

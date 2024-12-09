@@ -24,7 +24,7 @@ import meowSuggestions from './meowSuggestions';
 import woofQR from '../dialogs/woofQR';
 import meowTabsHorizontal from './meowTabsHorizontal';
 import { unifiedDataChannel, uniformTypeDescriptor } from '@kit.ArkData';
-import meowDrops from './meowDrops';
+import meowScratchingBoard from './meowScratchingBoard';
 import woofAdsBlocker from '../dialogs/woofAdsBlocker';
 
 @Component
@@ -39,7 +39,7 @@ struct meowTitleBar {
   @StorageProp('screen_height') screen_height: number = 0;
   @StorageProp('universal_new_download_gateway') @Watch('on_download_start') uni_new_download_gateway: string = "";
   @Link bar_height: number;
-  @Link webViews_ready: boolean;
+
   // Current environment
   @Link title_bar_alignRules: AlignRuleOption;
   @Link search_input: string;
@@ -119,7 +119,7 @@ struct meowTitleBar {
       }
 
       meowTabsHorizontal({
-        webViews_ready: this.webViews_ready,
+
         showing_tabs: this.showing_tabs,
       })
         .visibility(this.showing_tabs && this.settings_tabs_style == "horizontal" && this.tablet_mode ?
@@ -416,7 +416,7 @@ struct meowTitleBar {
         .visibility(this.showing_downloads ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
 
-      meowDrops({
+      meowScratchingBoard({
         data_list: this.drop_result_string,
       })
         .visibility(this.showing_scratching_board ? Visibility.Visible : Visibility.None)
@@ -615,7 +615,7 @@ struct meowTitleBar {
   // Web control events
 
   submit_searching() {
-    this.webViews_ready = true;
+
 
     if (this.search_input_unified != "") {
       let unified_url: string = unify_search_input_into_url(this.search_input);
@@ -627,28 +627,28 @@ struct meowTitleBar {
   }
 
   go_backward() {
-    this.webViews_ready = true;
+
     this.bunch_of_tabs.goBackward_onWorkingTab();
   }
 
   go_forward() {
-    this.webViews_ready = true;
+
     this.bunch_of_tabs.goForward_onWorkingTab();
   }
 
   go_home() {
-    this.webViews_ready = true;
+
     this.bunch_of_tabs.go_home_onWorkingTab();
   }
 
   refresh_page() {
-    this.webViews_ready = true;
+
     this.bunch_of_tabs.refresh_onWorkingTab()
     this.bunch_of_tabs.workingMainTab().update_is_loading(true)
   }
 
   stop_page() {
-    this.webViews_ready = true;
+
     this.bunch_of_tabs.stop_onWorkingTab();
     this.bunch_of_tabs.workingMainTab().update_is_loading(false);
     this.sync_tabs_list_info();

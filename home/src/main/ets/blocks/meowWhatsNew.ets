@@ -1,4 +1,6 @@
+import linysCapsuleButton from '../components/linysCapsuleButton';
 import linysText from '../components/linysText';
+import woofUpdateRecord from '../dialogs/woofUpdateRecord';
 import { animation_default } from '../hosts/bunch_of_defaults';
 import { resource_to_string } from '../utils/resource_tools';
 
@@ -7,6 +9,13 @@ struct meowWhatsNew {
   @State new_things_resource: Resource = $r("app.string.Whats_new_content");
   @State new_things: string = resource_to_string(this.new_things_resource);
   @State new_things_list: string[] = this.new_things.split('\n');
+  update_history: CustomDialogController = new CustomDialogController({
+    builder: woofUpdateRecord(),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16,
+    showInSubWindow: true,
+    width: "90%",
+  });
 
   build() {
     Column({ space: 8 }) {
@@ -25,6 +34,15 @@ struct meowWhatsNew {
         max_lines: 6
       })
         .opacity(0.8)
+      Row({ space: 10 }) {
+        Blank()
+        linysText({ text: $r('app.string.Update_record') })
+        linysCapsuleButton({ text: "  󰀩  " })
+          .onClick(() => {
+            this.update_history.open();
+          })
+      } // Update history
+      .width("100%")
     }
     .alignItems(HorizontalAlign.Start)
     .padding(10)

@@ -27,7 +27,6 @@ struct Index {
   @StorageLink('animation_damping_coefficient') animation_damping: number = 0.8;
   @StorageProp('currentColorMode') @Watch('on_color_mode_change') current_color_mode: number = 0;
   // UI Statuses
-  @State webViews_ready: boolean | undefined = undefined;
   @StorageLink('showing_downloads') showing_downloads: boolean = false;
   @StorageLink('showing_more_options') showing_more_options: boolean = false;
   @StorageLink('showing_app_settings') showing_app_settings: boolean = false;
@@ -171,7 +170,7 @@ struct Index {
               Scroll() {
                 meowTabs({
                   // Environment
-                  webViews_ready: this.webViews_ready,
+
                   settings_tabs_style: this.settings_tabs_style,
                   adblock_exceptions: this.adblock_exceptions,
                   use_adblock: this.use_adblock,
@@ -189,7 +188,6 @@ struct Index {
 
               Scroll() {
                 meowBookmarks({
-                  webViews_ready: this.webViews_ready
                 })
                   .width(this.width_of_Bookmarks())
               } // Bookmarks Panel
@@ -211,7 +209,7 @@ struct Index {
 
           Row() {
             meowWebView({
-              webViews_ready: this.webViews_ready,
+
               settings_collect_new_history: this.settings_collect_new_history,
               web_force_dark_mode: this.web_force_dark_mode,
               search_input: this.search_input,
@@ -219,7 +217,6 @@ struct Index {
               use_adblock: this.use_adblock,
               adblock_exceptions: this.adblock_exceptions
             })
-              .visibility(this.webViews_ready ? Visibility.Visible : Visibility.Hidden)
           } // WebViews
           .width("100%")
           .backgroundColor(this.color_current_primary)
@@ -245,7 +242,7 @@ struct Index {
 
         meowTitleBar({
           bar_height: this.title_bar_height,
-          webViews_ready: this.webViews_ready,
+
           // Environments
           search_input: this.search_input,
           is_search_input_typing: this.is_search_input_typing,

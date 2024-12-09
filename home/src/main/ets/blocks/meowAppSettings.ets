@@ -29,7 +29,8 @@ import woofAdsBlocker from '../dialogs/woofAdsBlocker';
 import meowWhatsNew from './meowWhatsNew';
 import meowColorsManager from './meowColorsManager';
 import { BusinessError } from '@kit.BasicServicesKit';
-import meowCredits from './meowCredits';
+import meowCreditsRepos from './meowCreditsRepos';
+import meowCreditsUsers from './meowCreditsUsers';
 
 @Component
 struct meowAppSettings {
@@ -242,6 +243,19 @@ struct meowAppSettings {
               linysTitleText({ text: $r('app.string.Settings_Experience') })
 
               Row() {
+                linysText({ text: $r('app.string.Settings_experience_web_force_dark_mode'), max_lines: 3 })
+                  .layoutWeight(1)
+                Toggle({ isOn: this.web_force_dark_mode, type: ToggleType.Switch })
+                  .switchPointColor(this.color_current_secondary)
+                  .selectedColor(this.color_current_font)
+                  .onChange(isOn => {
+                    this.web_force_dark_mode = isOn;
+                    this.bunch_of_settings.set('web_force_dark_mode', isOn);
+                  })
+              } // Force dark mode
+              .width("100%")
+
+              Row() {
                 linysText({ text: $r('app.string.Settings_experience_use_adblock'), max_lines: 1 })
                   .layoutWeight(1)
                 Toggle({ isOn: this.use_adblock, type: ToggleType.Switch })
@@ -275,19 +289,6 @@ struct meowAppSettings {
                     this.bunch_of_settings.set('sys_back_access_backward', isOn);
                   })
               } // Use sys back
-              .width("100%")
-
-              Row() {
-                linysText({ text: $r('app.string.Settings_experience_web_force_dark_mode'), max_lines: 3 })
-                  .layoutWeight(1)
-                Toggle({ isOn: this.web_force_dark_mode, type: ToggleType.Switch })
-                  .switchPointColor(this.color_current_secondary)
-                  .selectedColor(this.color_current_font)
-                  .onChange(isOn => {
-                    this.web_force_dark_mode = isOn;
-                    this.bunch_of_settings.set('web_force_dark_mode', isOn);
-                  })
-              } // Force dark mode
               .width("100%")
 
               linysText({ text: $r('app.string.Settings_experience_max_bookmark_advice'), max_lines: 2 })
@@ -533,20 +534,21 @@ struct meowAppSettings {
                 will_be_reversed_boolean: this.showing_app_settings,
                 text: $r('app.string.About_bilibili'),
                 link: "https://space.bilibili.com/678438347",
-              })
+              }) // bili
               linysLink({
                 will_be_reversed_boolean: this.showing_app_settings,
                 text: $r('app.string.About_GitHub'),
                 link: "https://github.com/awaLiny2333/LinysBrowser_NEXT",
-              })
+              }) // GitHub
               linysLink({
                 will_be_reversed_boolean: this.showing_app_settings,
                 text: $r('app.string.About_Gitee'),
                 link: "https://gitee.com/awa_Liny/LinysBrowser_NEXT",
-              })
+              }) // Gitee
               linysText({ text: "（ฅ＾・ﻌ・＾）ฅ  - " + this.versionName + " - " + this.versionNo }) // Version Info
               meowWhatsNew()
-              meowCredits()
+              meowCreditsRepos()
+              meowCreditsUsers()
             }
             .padding(15)
             .alignItems(HorizontalAlign.Start)

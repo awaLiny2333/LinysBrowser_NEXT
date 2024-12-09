@@ -17,7 +17,6 @@ struct meowWebView {
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
   @StorageLink('current_main_tab_index') @Watch('on_tab_info_change') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') @Watch('on_tab_info_change') current_sub_tab_index: number = -1;
-  @Prop webViews_ready: boolean | undefined;
   // Controls and environments
   @StorageLink('tab_titles') tab_titles: string[] = []
   @StorageLink('current_title') current_title: string = "=￣ω￣=";
@@ -236,14 +235,13 @@ struct meowWebView {
             .darkMode(WebDarkMode.Auto) // Dark mode!
             .forceDarkAccess(this.web_force_dark_mode) // Force dark mode
         }
-        .visibility((this.current_main_tab_index == Label.index_key || this.current_sub_tab_index == Label.index_key)
-          ? Visibility.Visible : Visibility.None)
         .borderColor(this.color_current_secondary)
         .borderWidth(this.border_width_tab(this.current_sub_tab_index == Label.index_key))
         .width(this.current_sub_tab_index < 0 ? "100%" : this.width_tab())
         .height(this.current_sub_tab_index < 0 ? "100%" : this.height_tab())
         .alignRules(this.current_main_tab_index == Label.index_key
           ? this.align_rules_main_tab() : this.align_rules_sub_tab())
+        .visibility(this.my_visibility(Label.index_key))
         .animation(this.tab_animation)
       }, (item: tab_label) => item.timestamp.toString())
 
@@ -351,6 +349,20 @@ struct meowWebView {
       border_width = { top: is_sub ? 2 : 0, left: 0 };
     }
     return border_width;
+  }
+
+  my_visibility(index: number) {
+    if (!(this.current_main_tab_index == index || this.current_sub_tab_index == index)) {
+      // Not present
+      return Visibility.None;
+    }
+    // Present, determine is home
+    if (this.tab_urls[index]) {
+      console.log(this.tab_urls[index])
+      return this.tab_urls[index].includes('resource://rawfile/home') ? Visibility.Hidden : Visibility.Visible;
+    }
+    // Not initialized
+    return Visibility.Hidden;
   }
 
   // Ladders

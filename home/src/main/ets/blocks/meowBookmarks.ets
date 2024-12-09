@@ -21,7 +21,6 @@ struct meowBookmarks {
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
-  @Link webViews_ready: boolean;
   @State viewing_contents: unified_item[] = this.bunch_of_bookmarks.root.get_content();
   @State @Watch('refresh_content_view') looking_at_path: string = "";
   @State current_folder: folder | undefined = undefined;
@@ -53,7 +52,7 @@ struct meowBookmarks {
               my_index: key,
               viewing_contents: this.viewing_contents, // For editing
               looking_at_path: this.looking_at_path, // the path of now showing list (directory) on the panel
-              webViews_ready: this.webViews_ready, // To ask webViews to show
+               // To ask webViews to show
               height_of_panel: this.scroll_area_height, // for animation params
               parent_path: this.looking_at_path, // for get_my_path()
             });
@@ -414,7 +413,7 @@ struct bookmarkItem {
   @Prop my_index: number = 0;
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
-  @Link webViews_ready: boolean;
+
   @Link looking_at_path: string;
   @Link viewing_contents: unified_item[];
   @Prop parent_path: string;
@@ -668,7 +667,7 @@ struct bookmarkItem {
       // Will automatically cause meowBookmarks to update the UI list (@Watch)
     } else {
       // Load web
-      this.webViews_ready = true;
+
       this.bunch_of_tabs.stop_onWorkingTab()
       this.bunch_of_tabs.loadUrl_onWorkingTab((this.item.get_item() as bookmark).get_link())
     }

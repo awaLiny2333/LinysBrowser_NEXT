@@ -146,7 +146,7 @@ struct meowDownloadsButton {
         linysText({
           text: this.my_link,
           max_lines: 4,
-        })// FIle link
+        }) // FIle link
           .clickEffect(click_effect_default())
           .onClick(() => {
             copy(this.my_link);
@@ -195,7 +195,7 @@ struct meowDownloadsButton {
             .clickEffect(click_effect_default())
             .animation(animation_default())
 
-          Button(this.my_paused ? "  󰂴  " : "  󰂱  ")// Pause Continue
+          Button(this.my_paused ? "  󰂴  " : "  󰂱  ") // Pause Continue
             .type(ButtonType.Capsule)
             .backgroundColor($r("app.color.font_color_title"))
             .fontColor(this.color_current_primary)

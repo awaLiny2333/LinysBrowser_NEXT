@@ -4,13 +4,15 @@ import linysText from '../components/linysText';
 import linysTitleText from '../components/linysTitleText';
 import {
   animation_default,
+  animation_popup_duration,
   capsule_bar_height,
   click_effect_default,
   fontSize_Large
 } from '../hosts/bunch_of_defaults';
+import { copy } from '../utils/clipboard_tools';
 
 @Component
-struct meowDrops {
+struct meowScratchingBoard {
   // Links
   @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   @Link @Watch('on_data_change') data_list: string[];
@@ -29,7 +31,6 @@ struct meowDrops {
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
-
 
   build() {
     Column({ space: 10 }) {
@@ -162,7 +163,7 @@ struct meowDrops {
   }
 }
 
-export default meowDrops;
+export default meowScratchingBoard;
 
 @Component
 struct raw_data_display {
@@ -177,7 +178,8 @@ struct raw_data_display {
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
-
+  // Status
+  @State copied: number = 0;
 
   build() {
     Row({ space: 10 }) {
@@ -185,13 +187,21 @@ struct raw_data_display {
         symbol_glyph_target: this.type == "url" ? 'sys.symbol.link' : 'sys.symbol.text_and_t',
         font_weight: this.type == "url" ? FontWeight.Medium : FontWeight.Normal,
       })
-      // linysTitleText({ text: this.type })
       linysText({
         text: this.text,
         max_lines: 10,
         font_weight: this.type == "url" ? FontWeight.Medium : FontWeight.Normal,
       })
         .layoutWeight(1)
+
+      linysText({
+        text: $r('app.string.Downloads_copied'),
+      })
+        .offset({ x: this.copied > 0 ? 5 : 50 })
+        .opacity(0.7)
+        .visibility(this.copied > 0 ? Visibility.Visible : Visibility.Hidden)
+        .animation(animation_default())
+
     }
     .padding(15)
     .borderRadius(10)
@@ -206,11 +216,21 @@ struct raw_data_display {
         this.offset_y = 0;
         this.this_visibility = Visibility.Visible;
       }, Math.min((this.index) * 60, 600))
+
+      setInterval(() => {
+        if (this.copied > 0) {
+          this.copied -= 10;
+        }
+        // Reset copy
+      }, 10)
     })
     .onClick(() => {
       if (this.type == "url") {
         this.new_tab_gateway = this.text;
         this.showing_scratching_board = false;
+      } else {
+        copy(this.text);
+        this.copied = animation_popup_duration();
       }
     })
     .clickEffect(click_effect_default())
