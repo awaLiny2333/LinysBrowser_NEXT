@@ -60,6 +60,7 @@ struct Index {
   // Settings
   @State @Watch('on_title_bar_position_change') settings_title_bar_position: string = "";
   @State sys_back_to_access_backward: boolean = false;
+  @State web_force_dark_mode: boolean = false;
   @State settings_tabs_style: string = "";
   @State settings_collect_new_history: boolean = true;
   @State use_adblock: boolean = true;
@@ -97,7 +98,7 @@ struct Index {
   async aboutToAppear(): Promise<void> {
     this.animation_response = await this.bunch_of_settings.get('animation_response') as number;
     this.animation_damping = await this.bunch_of_settings.get('animation_damping_coefficient') as number;
-    this.showing_tabs = await this.bunch_of_settings.get('settings_tabs_open') as boolean;
+    this.showing_tabs = await this.bunch_of_settings.get('status_tabs_open') as boolean;
 
     // Figure out what color should i use
     this.color_light_primary = await this.bunch_of_settings.get('color_light_primary') as string;
@@ -138,7 +139,7 @@ struct Index {
       }
     }
 
-    // Other
+    // Other returns
     if (this.sys_back_to_access_backward) {
       if (this.go_back_if_possible()) {
         stop_system_back = true;
@@ -212,6 +213,7 @@ struct Index {
             meowWebView({
               webViews_ready: this.webViews_ready,
               settings_collect_new_history: this.settings_collect_new_history,
+              web_force_dark_mode: this.web_force_dark_mode,
               search_input: this.search_input,
               is_search_input_typing: this.is_search_input_typing,
               use_adblock: this.use_adblock,
@@ -249,6 +251,7 @@ struct Index {
           is_search_input_typing: this.is_search_input_typing,
           settings_collect_new_history: this.settings_collect_new_history,
           sys_back_to_access_backward: this.sys_back_to_access_backward,
+          web_force_dark_mode: this.web_force_dark_mode,
           settings_title_bar_position: this.settings_title_bar_position,
           settings_tabs_style: this.settings_tabs_style,
           title_bar_alignRules: this.title_bar_alignRules,
@@ -310,7 +313,7 @@ struct Index {
   }
 
   on_showing_tabs_change() {
-    this.bunch_of_settings.set('settings_tabs_open', this.showing_tabs);
+    this.bunch_of_settings.set('status_tabs_open', this.showing_tabs);
   }
 
   on_fail_prompt_gateway() {
@@ -385,10 +388,6 @@ struct Index {
   }
 
   // Operations
-
-  other_on_back_presses() {
-
-  }
 
   go_back_if_possible(): boolean {
     return this.bunch_of_tabs.goBackward_onWorkingTab();

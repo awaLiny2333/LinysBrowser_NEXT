@@ -29,6 +29,7 @@ import woofAdsBlocker from '../dialogs/woofAdsBlocker';
 import meowWhatsNew from './meowWhatsNew';
 import meowColorsManager from './meowColorsManager';
 import { BusinessError } from '@kit.BasicServicesKit';
+import meowCredits from './meowCredits';
 
 @Component
 struct meowAppSettings {
@@ -85,6 +86,7 @@ struct meowAppSettings {
   @Link settings_max_bookmark_suggestions: number;
   @Link settings_max_history_suggestions: number;
   @Link sys_back_to_access_backward: boolean;
+  @Link web_force_dark_mode: boolean;
   @Link use_adblock: boolean;
   @Link adblock_exceptions: string[];
   @Link settings_collect_new_history: boolean;
@@ -270,9 +272,22 @@ struct meowAppSettings {
                   .selectedColor(this.color_current_font)
                   .onChange(isOn => {
                     this.sys_back_to_access_backward = isOn;
-                    this.bunch_of_settings.set('sys_back_to_access_backward', isOn);
+                    this.bunch_of_settings.set('sys_back_access_backward', isOn);
                   })
               } // Use sys back
+              .width("100%")
+
+              Row() {
+                linysText({ text: $r('app.string.Settings_experience_web_force_dark_mode'), max_lines: 3 })
+                  .layoutWeight(1)
+                Toggle({ isOn: this.web_force_dark_mode, type: ToggleType.Switch })
+                  .switchPointColor(this.color_current_secondary)
+                  .selectedColor(this.color_current_font)
+                  .onChange(isOn => {
+                    this.web_force_dark_mode = isOn;
+                    this.bunch_of_settings.set('web_force_dark_mode', isOn);
+                  })
+              } // Force dark mode
               .width("100%")
 
               linysText({ text: $r('app.string.Settings_experience_max_bookmark_advice'), max_lines: 2 })
@@ -288,7 +303,7 @@ struct meowAppSettings {
                   .selectedColor(this.color_current_font)
                   .onChange((value) => {
                     this.settings_max_bookmark_suggestions = value;
-                    this.bunch_of_settings.set('settings_max_bookmark_suggestions', value);
+                    this.bunch_of_settings.set('max_bookmark_suggest', value);
                   })
                 linysText({ text: this.settings_max_bookmark_suggestions.toString() })
                   .margin({ right: 5 })
@@ -307,7 +322,7 @@ struct meowAppSettings {
                   .selectedColor(this.color_current_font)
                   .onChange((value) => {
                     this.settings_max_history_suggestions = value;
-                    this.bunch_of_settings.set('settings_max_history_suggestions', value);
+                    this.bunch_of_settings.set('max_history_suggest', value);
                   })
                 linysText({ text: this.settings_max_history_suggestions.toString() })
                   .margin({ right: 5 })
@@ -337,7 +352,7 @@ struct meowAppSettings {
                   .selectedColor(this.color_current_font)
                   .onChange(isOn => {
                     this.settings_collect_new_history = isOn;
-                    this.bunch_of_settings.set('settings_collect_new_history', isOn);
+                    this.bunch_of_settings.set('collect_new_history', isOn);
                   })
               } // Toggle History
               .width("100%")
@@ -531,6 +546,7 @@ struct meowAppSettings {
               })
               linysText({ text: "（ฅ＾・ﻌ・＾）ฅ  - " + this.versionName + " - " + this.versionNo }) // Version Info
               meowWhatsNew()
+              meowCredits()
             }
             .padding(15)
             .alignItems(HorizontalAlign.Start)
@@ -581,26 +597,30 @@ struct meowAppSettings {
 
     // Get settings of title bar position
     this.settings_title_bar_position =
-      await this.bunch_of_settings.get('settings_title_bar_position') as string;
+      await this.bunch_of_settings.get('title_bar_position') as string;
 
     // Get settings of title bar position
-    this.settings_tabs_style = await this.bunch_of_settings.get('settings_tabs_style') as string;
+    this.settings_tabs_style = await this.bunch_of_settings.get('tabs_style') as string;
 
     // Get number of max bookmarks suggestions
     this.settings_max_bookmark_suggestions =
-      await this.bunch_of_settings.get('settings_max_bookmark_suggestions') as number;
+      await this.bunch_of_settings.get('max_bookmark_suggest') as number;
 
     // Get number of max history suggestions
     this.settings_max_history_suggestions =
-      await this.bunch_of_settings.get('settings_max_history_suggestions') as number;
+      await this.bunch_of_settings.get('max_history_suggest') as number;
 
     // Get whether to continue to collect new history
     this.settings_collect_new_history =
-      await this.bunch_of_settings.get('settings_collect_new_history') as boolean;
+      await this.bunch_of_settings.get('collect_new_history') as boolean;
 
     // Get whether to use system back to access backward
     this.sys_back_to_access_backward =
-      await this.bunch_of_settings.get('sys_back_to_access_backward') as boolean;
+      await this.bunch_of_settings.get('sys_back_access_backward') as boolean;
+
+    // Get whether to enable forced webs dark mode
+    this.web_force_dark_mode =
+      await this.bunch_of_settings.get('web_force_dark_mode') as boolean;
 
     // Read history
     let result = sandbox_open_sync("history.txt");
@@ -680,7 +700,7 @@ struct meowAppSettings {
       result = 'bottom';
     }
     this.settings_title_bar_position = result;
-    this.bunch_of_settings.set('settings_title_bar_position', result);
+    this.bunch_of_settings.set('title_bar_position', result);
   }
 
   on_start_up_page_changed() {
@@ -706,7 +726,7 @@ struct meowAppSettings {
       result = 'horizontal';
     }
     this.settings_tabs_style = result;
-    this.bunch_of_settings.set('settings_tabs_style', result);
+    this.bunch_of_settings.set('tabs_style', result);
   }
 
   on_color_change() {

@@ -36,6 +36,7 @@ struct meowWebView {
   @Prop settings_collect_new_history: boolean;
   @Link @Watch('on_use_adblock_state_change') use_adblock: boolean;
   @Link adblock_exceptions: string[];
+  @Link web_force_dark_mode: boolean;
   // Stuffs
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
   @StorageLink('universal_new_download_gateway') new_download_gateway: string = "";
@@ -232,6 +233,8 @@ struct meowWebView {
                 }
               }
             })
+            .darkMode(WebDarkMode.Auto) // Dark mode!
+            .forceDarkAccess(this.web_force_dark_mode) // Force dark mode
         }
         .visibility((this.current_main_tab_index == Label.index_key || this.current_sub_tab_index == Label.index_key)
           ? Visibility.Visible : Visibility.None)

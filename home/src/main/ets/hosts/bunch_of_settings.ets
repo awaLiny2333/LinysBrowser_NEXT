@@ -14,27 +14,38 @@ export class bunch_of_settings {
    */
   constructor() {
     // Register the default Settings
-    this.register_setting('settings_title_bar_position', 'string', 'bottom');
-    this.register_setting('settings_max_bookmark_suggestions', 'number', '5');
-    this.register_setting('settings_max_history_suggestions', 'number', '5');
-    this.register_setting('settings_collect_new_history', 'boolean', 'true');
-    this.register_setting('settings_tabs_style', 'string', 'vertical');
-    this.register_setting('settings_tabs_open', 'boolean', 'false');
-    this.register_setting('sys_back_to_access_backward', 'boolean', 'true');
+    // Customization
+    this.register_setting('title_bar_position', 'string', 'bottom');
+    this.register_setting('collect_new_history', 'boolean', 'true');
+    this.register_setting('tabs_style', 'string', 'vertical');
+    this.register_setting('sys_back_access_backward', 'boolean', 'true');
+    this.register_setting('max_bookmark_suggest', 'number', '5');
+    this.register_setting('max_history_suggest', 'number', '5');
 
+    // Statuses
+    this.register_setting('status_tabs_open', 'boolean', 'false');
+
+    // General defaults
     this.register_setting('home_url', 'string', '');
     this.register_setting('new_tab_url', 'string', '');
     this.register_setting('start_up_option', 'string', 'new tab');
+
+    // Animation defaults
     this.register_setting('animation_response', 'number', '36');
     this.register_setting('animation_damping_coefficient', 'number', '20');
 
+    // UA and Search Engines
     this.register_setting('custom_user_agents', 'string', default_user_agents());
     this.register_setting('custom_user_agents_selected_index', 'number', '-1');
     this.register_setting('custom_search_engines', 'string', default_search_engines());
     this.register_setting('custom_search_engines_selected_index', 'number', '-1');
 
+    // Ad blocker
     this.register_setting('use_adblock', 'boolean', 'true');
     this.register_setting('adblock_exceptions', 'string', '');
+
+    // Dark mode
+    this.register_setting('web_force_dark_mode', 'boolean', 'false');
 
     // Colors
     this.register_setting('color_light_primary', 'string', '#E1E9E3');
@@ -124,6 +135,10 @@ export class bunch_of_settings {
     return true;
   }
 
+  /**
+   * Resets a setting to default value.
+   * @param key A string, the key of the setting.
+   * */
   reset(key: string) {
     let index = this.settings_defaults_key.indexOf(key)
     let def_value = this.settings_defaults_value[index]
@@ -132,14 +147,12 @@ export class bunch_of_settings {
     }
   }
 
-  // Private functions
-
   /**
    * Registers a setting
    * @param key A string, the key of the setting.
    * @param type A string, indicating the data type of the setting. Allow 'string' | 'number' | 'boolean'.
    * @param value A string, sets the default (initial) value of the setting.
-   * @example this.register_setting('sys_back_to_access_backward', 'boolean', 'true');
+   * @example this.register_setting('sys_back_access_backward', 'boolean', 'true');
    * */
   private register_setting(key: string, type: string, value: string) {
     this.settings_defaults_key.push(key);

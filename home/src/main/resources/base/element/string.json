@@ -273,6 +273,10 @@
       "value": "Use system back to access backward"
     },
     {
+      "name": "Settings_experience_web_force_dark_mode",
+      "value": "Force websites to be in dark mode"
+    },
+    {
       "name": "Settings_experience_use_adblock",
       "value": "Ads Blocker"
     },
@@ -383,6 +387,26 @@
     {
       "name": "Whats_new_content_extra",
       "value": "Of course, and this \"What's New\" block!"
+    },
+    {
+      "name": "Credits",
+      "value": "Credits!"
+    },
+    {
+      "name": "Credits_issues",
+      "value": "And you who raised issues!"
+    },
+    {
+      "name": "Credits_repos_and_projs",
+      "value": "Via (tuyafeng's marvelous work!)\nFirefox (The cutest cyber fox from Mozilla!)\nBrowser Demo (From OpenHarmony!)\nand Browser CE (Westinyang's Fork!)"
+    },
+    {
+      "name": "Credits_devs_and_users",
+      "value": "sseaan (#2 Horizontal Tabs & Custom UA)\nSolidFaker (#3 Unintentional color)\nlsxuan12138 (#6 Moving bookmarks)\nxymeng16 (#8 System back; #11 More search engines)\nLuxcis (#12 Auto collapse tabs)\n000wbh000 (#22 Web dark mode)~"
+    },
+    {
+      "name": "Credits_extra",
+      "value": "Thank you all (*ˊᗜˋ*)/ !!!"
     },
     {
       "name": "Appearance_color_scheme_Light",

@@ -74,6 +74,7 @@ struct meowTitleBar {
   @Link settings_tabs_style: string;
   @Link settings_collect_new_history: boolean;
   @Link sys_back_to_access_backward: boolean;
+  @Link web_force_dark_mode: boolean;
   @Link use_adblock: boolean;
   @Link adblock_exceptions: string[];
   @State settings_max_bookmark_advice: number = 5;
@@ -399,6 +400,7 @@ struct meowTitleBar {
         use_adblock: this.use_adblock,
         adblock_exceptions: this.adblock_exceptions,
         sys_back_to_access_backward: this.sys_back_to_access_backward,
+        web_force_dark_mode: this.web_force_dark_mode,
         settings_max_bookmark_suggestions: this.settings_max_bookmark_advice,
         settings_max_history_suggestions: this.settings_max_history_advice,
         settings_title_bar_position: this.settings_title_bar_position,
