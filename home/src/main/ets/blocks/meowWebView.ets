@@ -88,6 +88,7 @@ struct meowWebView {
           })// Main WEB
             .width("100%")
             .height("100%")
+            .backgroundColor('transparent')
             .databaseAccess(true)
             .onlineImageAccess(true)
             .javaScriptAccess(true)
@@ -356,13 +357,7 @@ struct meowWebView {
       // Not present
       return Visibility.None;
     }
-    // Present, determine is home
-    if (this.tab_urls[index]) {
-      console.log(this.tab_urls[index])
-      return this.tab_urls[index].includes('resource://rawfile/home') ? Visibility.Hidden : Visibility.Visible;
-    }
-    // Not initialized
-    return Visibility.Hidden;
+    return Visibility.Visible;
   }
 
   // Ladders

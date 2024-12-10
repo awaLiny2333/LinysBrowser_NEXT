@@ -144,13 +144,11 @@ function is_legal_url(input: string) {
 }
 
 let urls: string[] = [
-  "resource://rawfile/home_light.html",
-  "resource://rawfile/home_dark.html"
+  "resource://rawfile/home.html"
 ]
 
 let built_ins: string[] = [
-  "meow://home_light",
-  "meow://home_dark"
+  "meow://home"
 ]
 
 export function url_resource_to_meow(input: string) {

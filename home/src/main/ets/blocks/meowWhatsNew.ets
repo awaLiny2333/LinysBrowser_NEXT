@@ -1,6 +1,6 @@
 import linysCapsuleButton from '../components/linysCapsuleButton';
 import linysText from '../components/linysText';
-import woofUpdateRecord from '../dialogs/woofUpdateRecord';
+import woofUpdateHistory from '../dialogs/woofUpdateHistory';
 import { animation_default } from '../hosts/bunch_of_defaults';
 import { resource_to_string } from '../utils/resource_tools';
 
@@ -10,7 +10,7 @@ struct meowWhatsNew {
   @State new_things: string = resource_to_string(this.new_things_resource);
   @State new_things_list: string[] = this.new_things.split('\n');
   update_history: CustomDialogController = new CustomDialogController({
-    builder: woofUpdateRecord(),
+    builder: woofUpdateHistory(),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
     showInSubWindow: true,

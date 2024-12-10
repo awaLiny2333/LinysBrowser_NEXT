@@ -3,13 +3,17 @@ import linysTitleText from '../components/linysTitleText';
 import { animation_default } from '../hosts/bunch_of_defaults';
 
 @CustomDialog
-struct woofUpdateRecord {
+struct woofUpdateHistory {
   controller: CustomDialogController;
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @State texts: string[] = [
+    'v1.6.4-beta',
+    'A decent release of update, bringing Web Dark Mode, Update History, Credits and a few experience optimizations into Browser Cat!',
+    '一个体面的发行版更新，将网页深色模式、更新记录、致谢和一些体验优化带入冲浪喵～',
+
     'v1.6.3-beta',
     'An early preview of a major update plan, bringing Storage Management and a few experience optimizations (and some Bugs) into Browser Cat!',
     '一个主要更新计划的早期预览，将储存管理和一些体验优化（和一些 Bug）带入冲浪喵～',
@@ -69,7 +73,7 @@ struct woofUpdateRecord {
   }
 }
 
-export default woofUpdateRecord;
+export default woofUpdateHistory;
 
 @Component
 struct release_card {
@@ -85,13 +89,13 @@ struct release_card {
         .width("100%")
       linysText({
         text: this.text_eng,
-        max_lines: 5
+        max_lines: 30
       })
         .width("100%")
         .opacity(0.7)
       linysText({
         text: this.text_chi,
-        max_lines: 5
+        max_lines: 20
       })
         .width("100%")
         .opacity(0.7)

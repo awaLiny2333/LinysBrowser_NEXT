@@ -12,7 +12,6 @@ import { sandbox_open_array_sync } from '../utils/storage_tools';
 struct meowTabs {
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
-
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
   @StorageLink('current_main_tab_index') @Watch('on_did_switch_tab') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') @Watch('on_did_switch_tab') current_sub_tab_index: number = -1;
@@ -591,9 +590,10 @@ struct meowTabs {
 
   on_current_load_url() {
     if (this.load_url_gateway != "") {
-      this.bunch_of_tabs.loadUrl_onWorkingTab(this.load_url_gateway);
-      this.load_url_gateway = "";
-
+      setTimeout(() => {
+        this.bunch_of_tabs.loadUrl_onWorkingTab(this.load_url_gateway);
+        this.load_url_gateway = "";
+      }, 50)
     }
   }
 }

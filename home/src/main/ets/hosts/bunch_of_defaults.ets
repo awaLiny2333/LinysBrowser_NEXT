@@ -87,11 +87,10 @@ export function click_effect_default() {
 
 /**
  * Default url of blank page.
- * @returns 'meow://home_dark' or 'meow://home_light'
+ * @returns 'meow://home'
  * */
 export function url_default_blank() {
-  let is_dark_mode = AppStorage.get('currentColorMode') as number == 0;
-  return is_dark_mode ? 'meow://home_dark' : 'meow://home_light'
+  return 'meow://home';
 }
 
 /**

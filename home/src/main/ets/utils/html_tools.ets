@@ -11,11 +11,11 @@ export function encode_string_to_html_code(input: string) {
     // Check each character
     let char = input.substring(index, index + 1);
     if (chars.includes(char)) {
+      // Encode special chars
       result += codes[chars.indexOf(char)];
-      // Encode
     } else {
+      // No action for else chars
       result += char;
-      // No action
     }
   }
   return result;
