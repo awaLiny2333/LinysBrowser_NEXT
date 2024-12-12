@@ -97,7 +97,10 @@ struct Index {
   async aboutToAppear(): Promise<void> {
     this.animation_response = await this.bunch_of_settings.get('animation_response') as number;
     this.animation_damping = await this.bunch_of_settings.get('animation_damping_coefficient') as number;
-    this.showing_tabs = await this.bunch_of_settings.get('status_tabs_open') as boolean;
+    let showing_tabs = await this.bunch_of_settings.get('status_tabs_open') as boolean;
+    if (this.tablet_mode) {
+      this.showing_tabs = showing_tabs;
+    }
 
     // Figure out what color should i use
     this.color_light_primary = await this.bunch_of_settings.get('color_light_primary') as string;
@@ -106,7 +109,6 @@ struct Index {
     this.color_dark_primary = await this.bunch_of_settings.get('color_dark_primary') as string;
     this.color_dark_secondary = await this.bunch_of_settings.get('color_dark_secondary') as string;
     this.color_dark_font = await this.bunch_of_settings.get('color_dark_font') as string;
-
   }
 
   onBackPress(): boolean | void {

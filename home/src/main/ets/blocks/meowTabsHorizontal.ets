@@ -9,8 +9,7 @@ struct meowTabsHorizontal {
   // HOST
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
   // Environments
-  @Link showing_tabs: boolean;
-
+  @StorageLink('showing_tabs') showing_tabs: boolean = false;
   @StorageLink('current_main_tab_index') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') current_sub_tab_index: number = -1;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;

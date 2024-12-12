@@ -233,7 +233,7 @@ struct meowWebView {
                 }
               }
             })
-            .darkMode(WebDarkMode.Auto) // Dark mode!
+            .darkMode(WebDarkMode.Auto)// Dark mode!
             .forceDarkAccess(this.web_force_dark_mode) // Force dark mode
         }
         .borderColor(this.color_current_secondary)

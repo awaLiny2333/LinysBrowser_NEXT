@@ -86,7 +86,7 @@
     },
     {
       "name": "Settings_general_custom_ua_default",
-      "value": "默认的那个 ᐡ ᐧ ﻌ ᐧ ᐡ"
+      "value": "默认的那个 :D"
     },
     {
       "name": "Index_downloads_title",
@@ -479,6 +479,14 @@
     {
       "name": "Settings_storage_clear_webview_desc",
       "value": "以下统计可能（往往）是过时的。如果你需要一个准确的信息，请点击 \uDB80\uDCC8 以刷新。"
+    },
+    {
+      "name": "Address_analyzer_address",
+      "value": "全地址"
+    },
+    {
+      "name": "Address_analyzer_keyword",
+      "value": "搜索词"
     }
   ]
 }

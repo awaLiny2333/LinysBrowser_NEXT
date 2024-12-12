@@ -184,9 +184,10 @@ struct raw_data_display {
   build() {
     Row({ space: 10 }) {
       linysSymbol({
-        symbol_glyph_target: this.type == "url" ? 'sys.symbol.link' : 'sys.symbol.text_and_t',
+        symbol_glyph_target: this.type == "url" ? 'sys.symbol.paperclip' : 'sys.symbol.text_and_t',
         font_weight: this.type == "url" ? FontWeight.Medium : FontWeight.Normal,
       })
+
       linysText({
         text: this.text,
         max_lines: 10,

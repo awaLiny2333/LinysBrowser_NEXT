@@ -3,6 +3,7 @@ import linysShowButton from '../components/linysShowButton';
 import meowAppSettings from './meowAppSettings';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import {
+  extract_search,
   match_domain,
   unify_search_input_into_url,
   url_meow_to_resource,
@@ -41,11 +42,17 @@ struct meowTitleBar {
   @Link bar_height: number;
   // Current environment
   @Link title_bar_alignRules: AlignRuleOption;
-  @Link search_input: string;
+  @Link @Watch('on_search_input_change') search_input: string;
   @State search_input_unified: string = "";
   @Link is_search_input_typing: boolean;
   @State download_started_popup: boolean = false;
   @State drop_result_string: string[] = [];
+  // Search analyze
+  @State search_extracted_keyword: string = '';
+  @State search_extracted_engine: string = '';
+  @State showing_search_extracted_field: boolean = false;
+  @State search_extracted_field_available: boolean = false;
+  @State search_input_is_address: boolean = false;
   // Web statuses
   @StorageLink('tab_titles') tab_titles: string[] = []
   @StorageLink('current_title') current_title: string = "=￣ω￣=";
@@ -67,7 +74,7 @@ struct meowTitleBar {
   @StorageLink('showing_app_settings') showing_app_settings: boolean = false;
   @StorageLink('showing_downloads') showing_downloads: boolean = false;
   @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
-  @State show_feed_prompt: boolean = true;
+  @State address_analyzers_desc_close_cd: number = 0;
   // settings
   @Link settings_title_bar_position: string;
   @Link settings_tabs_style: string;
@@ -116,10 +123,7 @@ struct meowTitleBar {
           .animation(animation_default())
       }
 
-      meowTabsHorizontal({
-
-        showing_tabs: this.showing_tabs,
-      })
+      meowTabsHorizontal()
         .visibility(this.showing_tabs && this.settings_tabs_style == "horizontal" && this.tablet_mode ?
         Visibility.Visible : Visibility.None)
         .animation(animation_default())
@@ -221,50 +225,115 @@ struct meowTitleBar {
         .id('left_controls')
 
         Row({ space: 10 }) {
-          TextInput({ text: this.search_input })
-            .allowDrop(null)
-            .height(capsule_bar_height())
-            .layoutWeight(1)
-            .fontWeight(FontWeight.Regular)
-            .fontColor(this.color_current_font)
-            .caretColor(this.color_current_font)
-            .onClick(() => {
-              this.is_search_input_typing = true;
-            })
-            .onDragEnter(() => {
-              this.showing_scratching_board = true;
-            })
-            .onBlur(() => {
-              this.is_search_input_typing = false;
-            })
-            .onChange((content) => {
-              this.update_search_input(content)
-            })
-            .onSubmit(() => {
-              this.submit_searching()
-            })
-            .selectAll(true)
-            .selectedBackgroundColor(this.color_current_font)
+          RelativeContainer() {
+            TextInput({ text: this.search_input })
+              .allowDrop(null)
+              .height(capsule_bar_height())
+              .fontWeight(FontWeight.Regular)
+              .fontColor(this.color_current_font)
+              .caretColor(this.color_current_font)
+              .offset({ y: !this.showing_search_extracted_field ? 0 : 50 })
+              .opacity(!this.showing_search_extracted_field ? 100 : 0)
+              .animation(animation_default())
+              .onDragEnter(() => {
+                this.showing_scratching_board = true;
+              })
+              .onFocus(() => {
+                this.is_search_input_typing = true;
+              })
+              .onBlur(() => {
+                this.is_search_input_typing = false;
+              })
+              .focusable(this.showing_scratching_board ? false : true)
+              .onChange((content) => {
+                this.update_search_input(content);
+              })
+              .onSubmit(() => {
+                this.submit_searching()
+              })
+              .selectAll(true)
+              .selectedBackgroundColor(this.color_current_font)
+              .id('address_bar')
 
-          linysSymbol({
-            symbol_glyph_target: 'sys.symbol.magnifyingglass'
-          })
-            .visibility(this.visible_when_typing())
-            .onClick(() => {
-              this.submit_searching()
-            })
-            .animation(animation_default())
+            TextInput({ text: this.search_extracted_keyword })
+              .allowDrop(null)
+              .height(capsule_bar_height())
+              .fontWeight(FontWeight.Regular)
+              .fontColor(this.color_current_font)
+              .caretColor(this.color_current_font)
+              .offset({ y: this.showing_search_extracted_field ? 0 : 50 })
+              .opacity(this.showing_search_extracted_field ? 100 : 0)
+              .animation(animation_default())
+              .onDragEnter(() => {
+                this.showing_scratching_board = true;
+              })
+              .onFocus(() => {
+                this.is_search_input_typing = true;
+              })
+              .onBlur(() => {
+                this.is_search_input_typing = false;
+              })
+              .focusable(this.showing_scratching_board ? false : true)
+              .onChange((content) => {
+                this.search_extracted_keyword = content;
+                if (content == '') {
+                  this.search_input_unified = this.search_extracted_engine.replaceAll('%s', 'o(=•ェ•=)m?');
+                } else {
+                  this.search_input_unified =
+                    this.search_extracted_engine.replaceAll('%s', encodeURIComponent(content));
+                  this.search_input = this.search_input_unified;
+                }
+              })
+              .onSubmit(() => {
+                this.submit_searching();
+                // After submit, as the web loads, the new url will be synced to the search_input (address bar)
+                // Then it will trigger @Watch('on_search_input_change')
+                // And the extracted keyword would be synced to its TextInput.
+              })
+              .selectAll(true)
+              .selectedBackgroundColor(this.color_current_font)
+              .id('key_bar')
+          } // Two inputs
+          .layoutWeight(1)
 
+          Row({ space: 10 }) {
+            linysShowButton({
+              symbol_glyph_target: this.showing_search_extracted_field ? 'sys.symbol.text_and_t' : 'sys.symbol.link',
+              text: $r(this.showing_search_extracted_field ?
+                'app.string.Address_analyzer_keyword' :
+                'app.string.Address_analyzer_address'),
+              show: this.address_analyzers_desc_close_cd > 0,
+            })
+              .visibility(this.search_extracted_field_available ? Visibility.Visible : Visibility.None)
+              .onClick(() => {
+                this.showing_search_extracted_field = !this.showing_search_extracted_field;
+                if (this.is_search_input_typing) {
+                  // Switch focus
+                  if (this.showing_search_extracted_field) {
+                    focusControl.requestFocus('key_bar');
+                  } else {
+                    focusControl.requestFocus('address_bar');
+                  }
+                }
+                this.address_analyzers_desc_close_cd = 1200;
+              })
+
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass' })// Search
+              .visibility(this.visible_when_typing())
+              .onClick(() => {
+                this.submit_searching()
+              })
+              .animation(animation_default())
+          }
         } // Searching bar
-        .padding(this.tablet_mode ? { left: 15, right: 15 } : {})
-        .alignRules(
-          this.tablet_mode ?
-            {
-              left: { anchor: 'left_controls', align: HorizontalAlign.End },
-              right: { anchor: 'right_controls', align: HorizontalAlign.Start },
-              bottom: { anchor: '__container__', align: VerticalAlign.Bottom }
-            } : { bottom: { anchor: '__container__', align: VerticalAlign.Bottom } }
-        )
+        .height(36)
+        .padding(this.tablet_mode ? { left: 15, right: this.search_extracted_field_available ? 10 : 0 } : {})
+        .alignRules(this.tablet_mode ?
+          {
+            left: { anchor: 'left_controls', align: HorizontalAlign.End },
+            right: { anchor: 'right_controls', align: HorizontalAlign.Start },
+            bottom: { anchor: '__container__', align: VerticalAlign.Bottom }
+          } : { bottom: { anchor: '__container__', align: VerticalAlign.Bottom } })
         .animation(animation_default())
 
         Row({ space: this.tablet_mode ? 10 : 7 }) {
@@ -355,7 +424,7 @@ struct meowTitleBar {
         .animation(animation_default())
         .id('right_controls')
 
-      }
+      } // Button controls and search
       .padding({ left: 15, right: 15 })
       .width("100%")
       .height(this.tablet_mode ? 36 : 82)
@@ -446,6 +515,11 @@ struct meowTitleBar {
     .animation(this.showing_app_settings ? animation_default() : undefined)
     .onAppear(() => {
       console.log("[Meow][meowTitleBar] Title Bar READY")
+      setInterval(() => {
+        if (this.address_analyzers_desc_close_cd > 0) {
+          this.address_analyzers_desc_close_cd -= 10;
+        }
+      }, 10)
     })
   }
 
@@ -530,6 +604,18 @@ struct meowTitleBar {
     }, animation_popup_duration())
   }
 
+  on_search_input_change() {
+    let extract: string[] = extract_search(this.search_input);
+    if (extract[1] == '' && extract[0] == '') {
+      this.showing_search_extracted_field = false;
+      this.search_extracted_field_available = false;
+    } else {
+      this.search_extracted_field_available = true;
+      this.search_extracted_engine = extract[0];
+      this.search_extracted_keyword = extract[1];
+    }
+  }
+
   // UI controls
 
   show_tabs() {
@@ -598,14 +684,15 @@ struct meowTitleBar {
   // Web control events
 
   submit_searching() {
-
-
     if (this.search_input_unified != "") {
-      let unified_url: string = unify_search_input_into_url(this.search_input);
+      let unified_url: string = this.search_input_unified;
       // unify input into a legal link
       unified_url = url_meow_to_resource(unified_url);
       // translate "meow://" into "resource://"
       this.bunch_of_tabs.loadUrl_onWorkingTab(unified_url);
+    }
+    if (!this.search_input_is_address) {
+      this.showing_search_extracted_field = true;
     }
   }
 
@@ -642,7 +729,9 @@ struct meowTitleBar {
 
   update_search_input(content: string) {
     this.search_input = content;
-    this.search_input_unified = unify_search_input_into_url(content);
+    let uni_result = unify_search_input_into_url(content);
+    this.search_input_unified = uni_result[0] as string;
+    this.search_input_is_address = uni_result[1] as boolean;
     this.search_input_unified = url_resource_to_meow(this.search_input_unified);
   }
 

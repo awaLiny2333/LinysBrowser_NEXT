@@ -60,7 +60,6 @@ struct meowTabs {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   async aboutToAppear() {
-
     // Get Data
     let home_url = await this.bunch_of_settings.get('home_url') as string;
     let new_tab_url = await this.bunch_of_settings.get('new_tab_url') as string;
@@ -123,8 +122,6 @@ struct meowTabs {
 
     } else {
       // continue
-
-
       // Prepare web states
       let web_state_arrays_to_restore: Uint8Array[] = [];
       for (let index = 0; index < continue_tabs_count; index++) {
@@ -150,7 +147,6 @@ struct meowTabs {
       }
 
       // Try to switch tab
-
       this.tab_animation = { duration: 0 };
       this.switch_tab(continue_tabs_main_on);
       this.sync_all_list_info();
@@ -268,7 +264,6 @@ struct meowTabs {
           text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
         })
           .onClick(() => {
-
             this.choose_paralleow();
           })
           .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden)
@@ -346,7 +341,7 @@ struct meowTabs {
     // Scroll to the new tab later
     this.count_down_for_scrolling_to_bottom = 20;
 
-    if (this.recover_tabs_finished) {
+    if (!do_recovery) {
       let store_tabs_count = this.offset_area.length.toString();
       console.log("[Meow][meowTabs] Stored Tabs Count: " + store_tabs_count)
       // Store tabs count
@@ -355,7 +350,6 @@ struct meowTabs {
   }
 
   switch_tab(target: number) {
-    console.log('switch tab to ' + target.toString())
     if (!this.tablet_mode) {
       // Auto close panel
       this.showing_tabs = false;
@@ -482,15 +476,25 @@ struct meowTabs {
   }
 
   update_backward_forward_access() {
-    if (this.bunch_of_tabs.workingMainTab()) {
-      this.current_accessBackward = this.bunch_of_tabs.workingMainTab().controller.accessBackward()
-      this.current_accessForward = this.bunch_of_tabs.workingMainTab().controller.accessForward()
+    try {
+      if (this.bunch_of_tabs.workingMainTab()) {
+        this.current_accessBackward = this.bunch_of_tabs.workingMainTab().controller.accessBackward()
+        this.current_accessForward = this.bunch_of_tabs.workingMainTab().controller.accessForward()
+      } else {
+        setTimeout(() => {
+          this.update_backward_forward_access();
+        }, 100)
+      }
+    } catch (e) {
+      setTimeout(() => {
+        this.update_backward_forward_access();
+      }, 100)
     }
   }
 
   update_search_box_text(text: string) {
-    if (!this.is_search_input_typing) {
-      this.search_input = url_resource_to_meow(text)
+    if (!this.is_search_input_typing && text) {
+      this.search_input = url_resource_to_meow(text);
       // Update Input Search Box
     }
   }
@@ -523,6 +527,7 @@ struct meowTabs {
       // if choosing and is not main web then set as sub view (Paralleow)
       this.choosing_paralleow = false;
       this.current_sub_tab_index = index;
+      this.showing_tabs = false;
     } else {
       if (this.current_sub_tab_index >= 0) {
         // Paralleow enabled

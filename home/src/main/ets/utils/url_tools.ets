@@ -1,25 +1,31 @@
+/**
+ * Process the search_input into a visitable address.
+ * @param search_input A string, the user input to search or visit.
+ * @returns A [string, boolean] array, string for the unified, visitable address,
+ * while the boolean for whether the input itself is an address.
+ * */
 export function unify_search_input_into_url(search_input: string) {
   let url = search_input
 
   if (url == "") {
     // if is empty
-    return ""
+    return ["", false]
   }
 
   if (is_legal_ipv4(url)) {
-    return ensure_scheme_or_https(encodeURI(url)) as string
+    return [ensure_scheme_or_https(url) as string, true]
   }
 
   if (is_legal_url(url)) {
-    return ensure_scheme_or_https(encodeURI(url)) as string
+    return [ensure_scheme_or_https(url) as string, true]
   }
 
   let search_engine = AppStorage.get('search_engine') as string;
   if (search_engine === undefined) {
     search_engine = "https://bing.com/search?q=%s";
   }
-  let url_processed = search_engine.replace("%s", url);
-  return encodeURI(url_processed) as string;
+  let url_processed = search_engine.replaceAll("%s", url);
+  return [url_processed as string, false];
 }
 
 function is_pure_number(input: string) {
@@ -160,6 +166,9 @@ export function url_resource_to_meow(input: string) {
   if (input == null) {
     return result;
   }
+  if (input == "") {
+    return result;
+  }
   // No process for empty inputs
 
   if (input.length > 11) {
@@ -212,7 +221,7 @@ export function extract_search(url: string) {
   let result: string[] = ['', ''];
 
   let keys: string[] =
-    ['q', 'query', 's', 'key', 'wd', 'searchKeyWord', 'search_text', 'keyword', 'val', 'value', 'text'];
+    ['q', 'query', 's', 'key', 'wd', 'word', 'searchKeyWord', 'search_text', 'keyword', 'val', 'value', 'text'];
   let search_keys: string[] = [];
   for (let k = 0; k < keys.length; k++) {
     search_keys.push('?' + keys[k] + '=');
@@ -236,6 +245,9 @@ export function extract_search(url: string) {
         // There is no '&' for end
         result[0] = url.substring(0, search_key_index + search_key_length) + '%s';
         result[1] = url.substring(search_key_index + search_key_length);
+      }
+      if (result[1] != '') {
+        result[1] = decodeURIComponent(result[1]);
       }
       return result;
     }
