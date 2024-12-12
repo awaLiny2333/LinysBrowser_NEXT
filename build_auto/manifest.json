@@ -1,0 +1,16 @@
+{
+  "author": "awa_Liny",
+  "tags": [
+    "Web",
+    "Browser",
+    "Utilities",
+    "Tools"
+  ],
+  "description": "Good good browser, day day crash. (plz dont)",
+  "permissions": [
+    {
+      "name": "ohos.permission.INTERNET",
+      "reason": "For web browsing. You know, this is a browser."
+    }
+  ]
+}

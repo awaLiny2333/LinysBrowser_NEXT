@@ -2,6 +2,18 @@
 
 [中文](README.md) | [English](README_EN.md)
 
+## Guides
+
+In [build_auto](build_auto) directory there are the latest build products for testing,
+which may contain some unknown issues, and are not suggested for long term use.
+However, if you have installed one of those, remember to check for updates here frequently!
+
+Type in urls or keywords in the search box at the bottom of the app,
+then return or click the little magnifying glass to submit.
+
+Click the icon with four (2x2) little dots to show page information and more functions,
+click again to collapse the panel.
+
 ## Ideas
 
 Liny's Browser is a basic browser built for HarmonyOS NEXT,
@@ -32,14 +44,6 @@ On Phones (Light Mode):
 |:------------------------------------------:|:-------------------------------------------:|
 | ![Phone_light_web](Examples/gallery_2.png) | ![Phone_light_tabs](Examples/gallery_3.png) |
 
-## Guides
-
-Type in urls or keywords in the search box at the bottom of the app,
-then return or click the little magnifying glass to submit.
-
-Click the icon with four (2x2) little dots to show page information and more functions,
-click again to collapse the panel.
-
 ## Related Permissions
 
 [ohos.permission.INTERNET](https://gitee.com/openharmony/docs/blob/master/zh-cn/application-dev/security/permission-list.md#ohospermissioninternet)
@@ -50,6 +54,7 @@ May cost unimaginably long time to bring all these into the reality,
 or some of them will even lie on the table for ever... (ง •_•)ง
 
 ### Features
+
 - [ ] Cookies management (and clearing)
 - [x] Cache management and clear
 - [x] Ads blocking
@@ -79,14 +84,14 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 
 Long way ahead.
 
-1. As a result of Liny's unsystematic programming thoughts and rubbish codes, 
+1. As a result of Liny's unsystematic programming thoughts and rubbish codes,
    this application may contain performance problems.
    Liny would appreciate that so much if you wish to report a problem, big or small!
 2. Some mysterious problems causing the selected options not displayed in the first opening
    of the Settings Panel after app launch.
 3. Due to a mysterious problem and a temporary but necessary compromise,
    sometimes the AD blocking whitelist may not take effect in time after launching,
-   resulting in ads on the web page being blocked. 
+   resulting in ads on the web page being blocked.
    (Trying to solve)
 4. Due to a mysterious problem and a temporary but necessary compromise,
    sometimes the AD blocking function itself may not take effect in time after launching,
@@ -109,13 +114,15 @@ Long way ahead.
 10. This project requires HarmonyOS NEXT API12 to run.
 
 ## What are the commit labels for?
-All the commit information so far since the birth of this project have been so chaotic 
+
+All the commit information so far since the birth of this project have been so chaotic
 that Liny decides to have some self-constraints...
 
 1. fix: Fix updates, used to mark a bug fix;
 2. feat: Feature updates, usually used to mark a new feature introduced in this commit；
-3. improve: Improvement updates, usually used to mark changes on existing stuffs, 
+3. improve: Improvement updates, usually used to mark changes on existing stuffs,
    like changes on logics, interfaces or wordings;
-4. code: Code updates, used to mark code optimizations, like code clean ups and logic clean ups; 
+4. code: Code updates, used to mark code optimizations, like code clean ups and logic clean ups;
 5. version: Version code changes, used to mark changes in version codes;
-6. api: API level changes, used to mark changes in required API level.
+6. api: API level changes, used to mark changes in required API level;
+7. other: Other uncategorized commits.
