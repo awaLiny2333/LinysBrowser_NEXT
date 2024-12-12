@@ -207,3 +207,40 @@ export function match_domain(input: string) {
   }
   return input;
 }
+
+export function extract_search(url: string) {
+  let result: string[] = ['', ''];
+
+  let keys: string[] =
+    ['q', 'query', 's', 'key', 'wd', 'searchKeyWord', 'search_text', 'keyword', 'val', 'value', 'text'];
+  let search_keys: string[] = [];
+  for (let k = 0; k < keys.length; k++) {
+    search_keys.push('?' + keys[k] + '=');
+  }
+  for (let k = 0; k < keys.length; k++) {
+    search_keys.push('&' + keys[k] + '=');
+  }
+
+  for (let s = 0; s < search_keys.length; s++) {
+    let search_key: string = search_keys[s];
+    let search_key_length: number = search_key.length;
+    let search_key_index = url.indexOf(search_key);
+    if (search_key_index > -1) {
+      // Search key match
+      let next_and_index = url.indexOf('&', search_key_index + search_key_length);
+      if (next_and_index > -1) {
+        // There is an '&' for end
+        result[0] = url.substring(0, search_key_index + search_key_length) + '%s' + url.substring(next_and_index);
+        result[1] = url.substring(search_key_index + search_key_length, next_and_index);
+      } else {
+        // There is no '&' for end
+        result[0] = url.substring(0, search_key_index + search_key_length) + '%s';
+        result[1] = url.substring(search_key_index + search_key_length);
+      }
+      return result;
+    }
+  }
+
+  // ['baidu.com/s?q=%s','awa']
+  return result;
+}

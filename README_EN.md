@@ -50,8 +50,8 @@ May cost unimaginably long time to bring all these into the reality,
 or some of them will even lie on the table for ever... (ง •_•)ง
 
 ### Features
-- [ ] Cookies management (clear cookies)
-- [ ] Cache management and clear
+- [ ] Cookies management (and clearing)
+- [x] Cache management and clear
 - [x] Ads blocking
 - [ ] Private mode
 - [ ] Disable JavaScript

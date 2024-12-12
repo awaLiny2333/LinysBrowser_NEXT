@@ -10,4 +10,5 @@
 /.clang-tidy
 **/.test
 /.appanalyzer
-/release_data
+/release_auto
+auto_build.bat

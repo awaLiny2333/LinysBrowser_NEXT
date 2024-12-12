@@ -39,7 +39,6 @@ struct meowTitleBar {
   @StorageProp('screen_height') screen_height: number = 0;
   @StorageProp('universal_new_download_gateway') @Watch('on_download_start') uni_new_download_gateway: string = "";
   @Link bar_height: number;
-
   // Current environment
   @Link title_bar_alignRules: AlignRuleOption;
   @Link search_input: string;
@@ -104,7 +103,6 @@ struct meowTitleBar {
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
-
   build() {
     Column({ space: 10 }) {
       if (this.settings_title_bar_position == "bottom") {
@@ -166,212 +164,201 @@ struct meowTitleBar {
       .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
       .animation(animation_default())
 
-      Row({ space: this.tablet_mode ? 10 : 7 }) {
-        linysSymbol({
-          symbol_glyph_target: 'sys.symbol.arrow_left'
-        })// Backward
-          .enabled(this.current_accessBackward)
-          .opacity(this.current_accessBackward ? 1 : 0.5)
-          .visibility(this.visible_when_no_panels_open_in_normal_mode())
-          .animation(animation_default())
-          .onClick(() => {
-            this.go_backward();
-          })
+      RelativeContainer() {
+        Row({ space: this.tablet_mode ? 10 : 7 }) {
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.arrow_left'
+          })// Backward
+            .enabled(this.current_accessBackward)
+            .opacity(this.current_accessBackward ? 1 : 0.5)
+            .visibility(this.visible_when_no_panels_open_in_normal_mode())
+            .animation(animation_default())
+            .onClick(() => {
+              this.go_backward();
+            })
 
-        linysSymbol({
-          symbol_glyph_target: 'sys.symbol.arrow_right'
-        })// Forward
-          .enabled(this.current_accessForward)
-          .opacity(this.current_accessForward ? 1 : 0.5)
-          .visibility(this.visible_when_no_panels_open_in_normal_mode())
-          .animation(animation_default())
-          .onClick(() => {
-            this.go_forward();
-          })
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.arrow_right'
+          })// Forward
+            .enabled(this.current_accessForward)
+            .opacity(this.current_accessForward ? 1 : 0.5)
+            .visibility(this.visible_when_no_panels_open_in_normal_mode())
+            .animation(animation_default())
+            .onClick(() => {
+              this.go_forward();
+            })
 
-        SymbolGlyph(!this.current_is_loading ? $r('sys.symbol.arrow_clockwise') : $r('sys.symbol.xmark'))
-          .fontSize(fontSize_Icon_Button())
-          .fontColor([this.color_current_font])
-          .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.current_is_loading)
-          .visibility(this.visible_when_no_panels_open_in_normal_mode())
+          SymbolGlyph(!this.current_is_loading ? $r('sys.symbol.arrow_clockwise') : $r('sys.symbol.xmark'))
+            .fontSize(fontSize_Icon_Button())
+            .fontColor([this.color_current_font])
+            .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.current_is_loading)
+            .visibility(this.visible_when_no_panels_open_in_normal_mode())
+            .animation(animation_default())
+            .onClick(() => {
+              if (this.current_is_loading) {
+                this.stop_page()
+              } else {
+                this.refresh_page()
+              }
+            })
+
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.house'
+          })// Home
+            .visibility(this.visible_when_no_panels_open_in_normal_mode())
+            .animation(animation_default())
+            .onClick(() => {
+              this.go_home()
+            })
+
+        } // Title Bar of left controls
+        .height(36)
+        .alignRules({
+          left: { anchor: '__container__', align: HorizontalAlign.Start },
+          top: { anchor: '__container__', align: VerticalAlign.Top }
+        })
+        .animation(animation_default())
+        .id('left_controls')
+
+        Row({ space: 10 }) {
+          TextInput({ text: this.search_input })
+            .allowDrop(null)
+            .height(capsule_bar_height())
+            .layoutWeight(1)
+            .fontWeight(FontWeight.Regular)
+            .fontColor(this.color_current_font)
+            .caretColor(this.color_current_font)
+            .onClick(() => {
+              this.is_search_input_typing = true;
+            })
+            .onDragEnter(() => {
+              this.showing_scratching_board = true;
+            })
+            .onBlur(() => {
+              this.is_search_input_typing = false;
+            })
+            .onChange((content) => {
+              this.update_search_input(content)
+            })
+            .onSubmit(() => {
+              this.submit_searching()
+            })
+            .selectAll(true)
+            .selectedBackgroundColor(this.color_current_font)
+
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.magnifyingglass'
+          })
+            .visibility(this.visible_when_typing())
+            .onClick(() => {
+              this.submit_searching()
+            })
+            .animation(animation_default())
+
+        } // Searching bar
+        .padding(this.tablet_mode ? { left: 15, right: 15 } : {})
+        .alignRules(
+          this.tablet_mode ?
+            {
+              left: { anchor: 'left_controls', align: HorizontalAlign.End },
+              right: { anchor: 'right_controls', align: HorizontalAlign.Start },
+              bottom: { anchor: '__container__', align: VerticalAlign.Bottom }
+            } : { bottom: { anchor: '__container__', align: VerticalAlign.Bottom } }
+        )
+        .animation(animation_default())
+
+        Row({ space: this.tablet_mode ? 10 : 7 }) {
+          linysShowButton({
+            show: this.showing_scratching_board,
+            text: $r('app.string.Index_drop_scratching_board'),
+            symbol_glyph_target: this.showing_scratching_board ? 'sys.symbol.chevron_down' : 'sys.symbol.doc_rectify'
+          })// Scratching board
+            .visibility(this.drop_result_string.length > 0 ? Visibility.Visible : Visibility.None)
+            .animation(animation_default())
+            .onClick(() => {
+              this.showing_scratching_board = !this.showing_scratching_board;
+            })
+
+          linysShowButton({
+            show: this.showing_more_options,
+            text: $r('app.string.Index_more_title'),
+            symbol_glyph_target: this.showing_more_options ? 'sys.symbol.chevron_down' : 'sys.symbol.dot_grid_2x2'
+          })// More options
+            .onClick(() => {
+              this.show_more_options()
+            })
+
+          linysShowButton({
+            symbol_glyph_target: 'sys.symbol.rectangle_stack',
+            show: this.showing_tabs
+          })// Tabs
+            .onClick(() => {
+              this.show_tabs()
+            })
+
+          linysShowButton({
+            show: this.showing_bookmarks,
+            text: $r('app.string.Index_bookmarks_title'),
+            symbol_glyph_target: 'sys.symbol.bookmark'
+          })// Bookmarks
+            .onClick(() => {
+              this.show_bookmarks();
+            })
+
+          Row() {
+            linysShowButton({
+              text: $r('app.string.Index_downloads_title'),
+              symbol_glyph_target: this.showing_downloads ? 'sys.symbol.chevron_down' : 'sys.symbol.download',
+              show: this.showing_downloads,
+              color_false: !this.showing_downloads && this.download_started_popup ?
+              this.color_current_primary : this.color_current_font
+            })
+            Scroll() {
+              Text($r('app.string.Index_download_task_start'))
+                .fontSize(fontSize_Large() - 2)
+                .fontColor(this.color_current_primary)
+                .margin({ right: this.showing_downloads ? 5 : 0 })
+            }
+            .width(this.download_started_popup ? undefined : 0)
+            .scrollable(ScrollDirection.Horizontal)
+            .scrollBar(BarState.Off)
+            .animation(animation_default())
+          } // Downloads
+          .padding(!this.showing_downloads && this.download_started_popup ? 5 : 0)
+          .backgroundColor(this.download_started_popup ? this.color_current_font : "transparent")
+          .borderRadius(10)
+          .clickEffect(click_effect_default())
           .animation(animation_default())
           .onClick(() => {
-            if (this.current_is_loading) {
-              this.stop_page()
+            if (this.download_started_popup) {
+              this.download_started_popup = false;
             } else {
-              this.refresh_page()
+              this.show_downloads()
             }
           })
 
-        linysSymbol({
-          symbol_glyph_target: 'sys.symbol.house'
-        })// Home
-          .visibility(this.visible_when_no_panels_open_in_normal_mode())
-          .animation(animation_default())
-          .onClick(() => {
-            this.go_home()
-          })
-
-        TextInput({ text: this.search_input })
-          .allowDrop(null)
-          .visibility(this.showing_scratching_board ? Visibility.Hidden : this.visible_in_tablet_mode())
-          .height(capsule_bar_height())
-          .layoutWeight(1)
-          .fontWeight(FontWeight.Regular)
-          .fontColor(this.color_current_font)
-          .animation(animation_default())
-          .onClick(() => {
-            this.is_search_input_typing = true;
-          })
-          .onDragEnter(() => {
-            this.showing_scratching_board = true;
-          })
-          .onBlur(() => {
-            this.is_search_input_typing = false;
-          })
-          .onChange((content) => {
-            this.update_search_input(content)
-          })
-          .onSubmit(() => {
-            this.submit_searching()
-          })
-          .selectAll(true)
-          .caretColor(this.color_current_font)
-          .selectedBackgroundColor(this.color_current_font)
-
-        Blank()
-          .visibility(this.visible_in_normal_mode())
-
-        linysSymbol({
-          symbol_glyph_target: 'sys.symbol.magnifyingglass'
-        })// Search
-          .onClick(() => {
-            this.submit_searching()
-          })
-          .visibility(this.visible_when_typing_in_tablet_mode())
-
-        linysShowButton({
-          show: this.showing_scratching_board,
-          text: $r('app.string.Index_drop_scratching_board'),
-          symbol_glyph_target: this.showing_scratching_board ? 'sys.symbol.chevron_down' : 'sys.symbol.doc_rectify'
-        })// Scratching board
-          .visibility(this.drop_result_string.length > 0 ? Visibility.Visible : Visibility.None)
-          .animation(animation_default())
-          .onClick(() => {
-            this.showing_scratching_board = !this.showing_scratching_board;
-          })
-
-        linysShowButton({
-          show: this.showing_more_options,
-          text: $r('app.string.Index_more_title'),
-          symbol_glyph_target: this.showing_more_options ? 'sys.symbol.chevron_down' : 'sys.symbol.dot_grid_2x2'
-        })// More options
-          .onClick(() => {
-            this.show_more_options()
-          })
-
-        linysShowButton({
-          symbol_glyph_target: 'sys.symbol.rectangle_stack',
-          show: this.showing_tabs
-        })// Tabs
-          .onClick(() => {
-            this.show_tabs()
-          })
-
-        linysShowButton({
-          show: this.showing_bookmarks,
-          text: $r('app.string.Index_bookmarks_title'),
-          symbol_glyph_target: 'sys.symbol.bookmark'
-        })// Bookmarks
-          .onClick(() => {
-            this.show_bookmarks();
-          })
-
-        Row() {
           linysShowButton({
-            text: $r('app.string.Index_downloads_title'),
-            symbol_glyph_target: this.showing_downloads ? 'sys.symbol.chevron_down' : 'sys.symbol.download',
-            show: this.showing_downloads,
-            color_false: !this.showing_downloads && this.download_started_popup ?
-            this.color_current_primary : this.color_current_font
-          })
-          Scroll() {
-            Text($r('app.string.Index_download_task_start'))
-              .fontSize(fontSize_Large() - 2)
-              .fontColor(this.color_current_primary)
-              .margin({ right: this.showing_downloads ? 5 : 0 })
-          }
-          .width(this.download_started_popup ? undefined : 0)
-          .scrollable(ScrollDirection.Horizontal)
-          .scrollBar(BarState.Off)
-          .animation(animation_default())
-        } // Downloads
-        .padding(!this.showing_downloads && this.download_started_popup ? 5 : 0)
-        .backgroundColor(this.download_started_popup ? this.color_current_font : "transparent")
-        .borderRadius(10)
-        .clickEffect(click_effect_default())
+            show: this.showing_app_settings,
+            text: $r('app.string.Index_app_settings_title'),
+            symbol_glyph_target: this.showing_app_settings ? 'sys.symbol.chevron_down' : 'sys.symbol.gearshape'
+          })// Settings
+            .onClick(() => {
+              this.show_app_settings()
+            })
+
+        } // Title Bar of right controls
+        .height(36)
+        .alignRules({
+          right: { anchor: '__container__', align: HorizontalAlign.End },
+          top: { anchor: '__container__', align: VerticalAlign.Top }
+        })
         .animation(animation_default())
-        .onClick(() => {
-          if (this.download_started_popup) {
-            this.download_started_popup = false;
-          } else {
-            this.show_downloads()
-          }
-        })
+        .id('right_controls')
 
-        linysShowButton({
-          show: this.showing_app_settings,
-          text: $r('app.string.Index_app_settings_title'),
-          symbol_glyph_target: this.showing_app_settings ? 'sys.symbol.chevron_down' : 'sys.symbol.gearshape'
-        })// Settings
-          .onClick(() => {
-            this.show_app_settings()
-          })
-
-      } // Title Bar of controls
+      }
       .padding({ left: 15, right: 15 })
       .width("100%")
-      .constraintSize({ minHeight: 36 })
-      .animation(animation_default())
-
-      Row({ space: 10 }) {
-        TextInput({ text: this.search_input })
-          .allowDrop(null)
-          .height(capsule_bar_height())
-          .layoutWeight(1)
-          .fontWeight(FontWeight.Regular)
-          .fontColor(this.color_current_font)
-          .caretColor(this.color_current_font)
-          .onClick(() => {
-            this.is_search_input_typing = true;
-          })
-          .onDragEnter(() => {
-            this.showing_scratching_board = true;
-          })
-          .onBlur(() => {
-            this.is_search_input_typing = false;
-          })
-          .onChange((content) => {
-            this.update_search_input(content)
-          })
-          .onSubmit(() => {
-            this.submit_searching()
-          })
-          .selectAll(true)
-          .selectedBackgroundColor(this.color_current_font)
-
-        linysSymbol({
-          symbol_glyph_target: 'sys.symbol.magnifyingglass'
-        })
-          .visibility(this.visible_when_typing())
-          .onClick(() => {
-            this.submit_searching()
-          })
-
-      } // Title Bar of extended searching bar
-      .visibility(this.showing_scratching_board ? Visibility.None : this.visible_in_normal_mode())
-      .padding({ left: 15, right: 15 })
-      .width("100%")
+      .height(this.tablet_mode ? 36 : 82)
       .animation(animation_default())
 
       Row({ space: 10 }) {
@@ -478,10 +465,6 @@ struct meowTitleBar {
 
   visible_in_tablet_mode() {
     return this.tablet_mode ? Visibility.Visible : Visibility.None;
-  }
-
-  visible_in_normal_mode() {
-    return !this.tablet_mode ? Visibility.Visible : Visibility.None;
   }
 
   visible_when_title_bar_on_top() {
