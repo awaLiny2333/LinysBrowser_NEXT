@@ -123,7 +123,7 @@ struct meowTitleBar {
           .animation(animation_default())
       }
 
-      meowTabsHorizontal()
+      meowTabsHorizontal()// Horizontal tabs
         .visibility(this.showing_tabs && this.settings_tabs_style == "horizontal" && this.tablet_mode ?
         Visibility.Visible : Visibility.None)
         .animation(animation_default())
@@ -327,7 +327,8 @@ struct meowTitleBar {
           }
         } // Searching bar
         .height(36)
-        .padding(this.tablet_mode ? { left: 15, right: this.search_extracted_field_available ? 10 : 0 } : {})
+        .padding(this.tablet_mode ?
+          { left: 15, right: this.search_extracted_field_available || this.is_search_input_typing ? 10 : 0 } : {})
         .alignRules(this.tablet_mode ?
           {
             left: { anchor: 'left_controls', align: HorizontalAlign.End },
