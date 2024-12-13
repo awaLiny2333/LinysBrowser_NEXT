@@ -1,4 +1,3 @@
-import { common } from '@kit.AbilityKit';
 import { BusinessError, request } from '@kit.BasicServicesKit';
 import { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
 
@@ -10,12 +9,19 @@ export class bunch_of_downloads {
   list_of_paused: boolean[] = [];
   list_of_urls: string[] = [];
   last_action: number = 0;
-  context = AppStorage.get('context') as common.UIAbilityContext;
+  context = getContext();
 
   /**
    * A class to handle download tasks.
+   * Will ENSURE there is a downloads directory in the sandbox directory on creation.
    */
   constructor() {
+    let filesDir = this.context.filesDir;
+    try {
+      fs.mkdirSync(filesDir + '/downloads');
+    } catch (e) {
+      console.log('[Meow][bunch_of_downloads] E: /downloads already exists.')
+    }
   }
 
   /**
@@ -23,17 +29,10 @@ export class bunch_of_downloads {
    * @param url The https:// proxy url of the download target
    * */
   start_download_task(url: string) {
-    let filesDir = getContext().filesDir;
-    try {
-      fs.mkdirSync(filesDir + '/downloads');
-    } catch (e) {
-      console.log('[Meow][bunch_of_downloads] E: /downloads already exists.')
-    }
-
     let file_url_split = url.split("/");
     let file_name_question_mark_split = file_url_split[file_url_split.length-1].split("?");
     let file_name = file_name_question_mark_split[0];
-    let download_target_path = filesDir + '/downloads/' + file_name;
+    let download_target_path = this.context.filesDir + '/downloads/' + file_name;
 
     let config: request.DownloadConfig = {
       url: url,

@@ -1,6 +1,8 @@
 import { webview } from '@kit.ArkWeb';
 import { url_meow_to_resource } from '../utils/url_tools';
 import { url_default_blank } from './bunch_of_defaults';
+import { fileIo as fs } from '@kit.CoreFileKit';
+import { sandbox_save } from '../utils/storage_tools';
 
 @Observed
 export class tab_label {
@@ -90,6 +92,12 @@ export class bunch_of_tabs {
    * Provides methods to operate tabs.
    */
   constructor() {
+    let filesDir = getContext().filesDir;
+    try {
+      fs.mkdirSync(filesDir + '/continue');
+    } catch (e) {
+      // console.log('[Meow][meowWebViews] E: continue folder already exists.')
+    }
   }
 
   // Operations and Actions
@@ -388,6 +396,18 @@ export class bunch_of_tabs {
       this.Tabs[index_key].controller.restoreWebState(web_state);
     } else {
       console.error("[ERROR][Meow][meowWebView] Restore web state failed for an undefined web_state!")
+    }
+  }
+
+  /**
+   * Re-save all web states, usually used to ensure the correct order of tab indices.
+   * @param start A number, all tabs with index greater or equal to start would re-save their web states to disk.
+   * */
+  re_save_web_state(start: number) {
+    for (let index = start; index < this.Tabs.length; index++) {
+      let web_state = this.Tabs[index].web_state_array;
+      let identifier = "continue/continue_tabs_web_state_array_" + index.toString();
+      sandbox_save(identifier, web_state.buffer);
     }
   }
 }

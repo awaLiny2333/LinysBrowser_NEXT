@@ -10,4 +10,3 @@
 /.clang-tidy
 **/.test
 /.appanalyzer
-auto_build.bat

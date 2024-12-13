@@ -1,6 +1,6 @@
 import linysText from '../components/linysText';
 import linysTitleText from '../components/linysTitleText';
-import { animation_default } from '../hosts/bunch_of_defaults';
+import { animation_default, click_effect_default } from '../hosts/bunch_of_defaults';
 
 @CustomDialog
 struct woofUpdateHistory {
@@ -10,6 +10,12 @@ struct woofUpdateHistory {
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @State texts: string[] = [
+    'v1.7.0-beta',
+    'A KEY release of a KEY update, bringing better History system and a few experience optimizations into Browser Cat!\n' +
+      'However, the previous History records and last status of opened tabs are not inherited. So sorry for that...',
+    '一个关键的发行版更新，将网页深色模式、更新记录、致谢和一些体验优化带入冲浪喵～\n' +
+      '不过，以前的历史浏览记录和上一次打开的标签页并没有得到继承……对不起！！！\n＞︿＜',
+
     'v1.6.4-beta',
     'A decent release of update, bringing Web Dark Mode, Update History, Credits and a few experience optimizations into Browser Cat!',
     '一个体面的发行版更新，将网页深色模式、更新记录、致谢和一些体验优化带入冲浪喵～',
@@ -100,6 +106,7 @@ struct release_card {
         .width("100%")
         .opacity(0.7)
     }
+    .clickEffect(click_effect_default())
     .alignItems(HorizontalAlign.Start)
     .padding(10)
     .borderRadius(10)

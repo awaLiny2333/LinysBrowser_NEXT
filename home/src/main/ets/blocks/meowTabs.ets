@@ -1,12 +1,19 @@
 import linysSymbol from '../components/linysSymbol';
 import { bunch_of_tabs, tab_label } from '../hosts/bunch_of_tabs';
 import { url_resource_to_meow } from '../utils/url_tools';
-import { animation_default, fontSize_Large, fontSize_Normal, url_default_blank } from '../hosts/bunch_of_defaults';
+import {
+  animation_default,
+  click_effect_default,
+  fontSize_Large,
+  fontSize_Normal,
+  url_default_blank
+} from '../hosts/bunch_of_defaults';
 import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import linysShowButton from '../components/linysShowButton';
 import linysText from '../components/linysText';
 import { sandbox_open_array_sync } from '../utils/storage_tools';
+import { fileIo as fs } from '@kit.CoreFileKit';
 
 @Component
 struct meowTabs {
@@ -126,10 +133,15 @@ struct meowTabs {
       let web_state_arrays_to_restore: Uint8Array[] = [];
       for (let index = 0; index < continue_tabs_count; index++) {
         // Read continue tabs data
-        let key = "continue_tabs_web_state_array_" + index.toString();
+        let key = "continue/continue_tabs_web_state_array_" + index.toString();
         let array_buffer = sandbox_open_array_sync(key);
         if (array_buffer) {
           web_state_arrays_to_restore.push(new Uint8Array(array_buffer));
+        } else {
+          // An unexpected error may occur.
+          web_state_arrays_to_restore.push(new Uint8Array())
+          this.current_sub_tab_index = -1;
+          this.current_main_tab_index = 0;
         }
       }
 
@@ -157,6 +169,17 @@ struct meowTabs {
       }
     }
 
+    // clear continue storage
+    for (let index = 0; index < continue_tabs_count; index++) {
+      let key = "continue/continue_tabs_web_state_array_" + index.toString();
+      let filesDir = getContext().filesDir;
+      try {
+        fs.unlink(filesDir + '/' + key);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
     this.recover_tabs_finished = true;
   }
 
@@ -165,72 +188,11 @@ struct meowTabs {
       Scroll(this.scroll_controller) {
         Column({ space: 5 }) {
           ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
-            RelativeContainer() {
-              Row() {
-                Text("󰇀")
-                  .padding({ right: 5 })
-                  .fontSize(fontSize_Large())
-                  .fontColor(this.color_current_font)
-                  .fontWeight((this.current_main_tab_index == Label.index_key ||
-                    this.current_sub_tab_index == Label.index_key)
-                    ? FontWeight.Medium : undefined)
-                  .visibility(this.current_sub_tab_index == Label.index_key ? Visibility.Visible : Visibility.None)
-                  .animation(animation_default())
-                  .offset({ y: -2 })
-
-                Text(this.tab_titles[Label.index_key] == "" ? "Meow" : this.tab_titles[Label.index_key])
-                  .padding({ left: 2 })
-                  .fontSize(fontSize_Normal())
-                  .fontColor(this.color_current_font)
-                  .fontWeight((this.current_main_tab_index == Label.index_key ||
-                    this.current_sub_tab_index == Label.index_key)
-                    ? FontWeight.Medium : undefined)
-                  .maxLines(1)
-                  .textOverflow({ overflow: TextOverflow.Ellipsis })
-                  .layoutWeight(1)
-
-                SymbolGlyph($r('sys.symbol.xmark'))
-                  .fontSize(fontSize_Normal())
-                  .fontColor([this.color_current_font])
-                  .fontWeight(FontWeight.Medium)
-
-              } // Title and xmark
-              .border({
-                radius: 10,
-                width: 2,
-                color: (this.current_main_tab_index == Label.index_key ||
-                  this.current_sub_tab_index == Label.index_key)
-                  ? this.color_current_font : "transparent"
-              })
-              .animation({ duration: 100 })
-              .width("100%")
-              .height(this.tab_height_default)
-              .padding(10)
-              .backgroundColor(this.color_current_secondary)
-              .offset({ y: this.offset_area[Label.index_key] })
-              .alignRules({
-                middle: { anchor: "__container__", align: HorizontalAlign.Center },
-                top: { anchor: "__container__", align: VerticalAlign.Top }
-              })
-              .onClick(() => {
-                this.click_tab_button(Label.index_key);
-              })
-
-              Column() {
-              } // The True Tab Closer
-              .width(70)
-              .height("100%")
-              .alignRules({
-                middle: { anchor: "__container__", align: HorizontalAlign.End },
-                center: { anchor: "__container__", align: VerticalAlign.Center }
-              })
-              .onClick(() => {
-                this.close_tab(Label.index_key)
-              })
-
-            }
-            .width("100%")
-            .height(this.tab_height_default + this.extension_area[Label.index_key])
+            TabButton({
+              Label: Label,
+              extension_area: this.extension_area,
+              offset_area: this.offset_area,
+            })
           }, (Label: tab_label) => Label.timestamp.toString())
 
         }
@@ -432,6 +394,10 @@ struct meowTabs {
       this.current_sub_tab_index = -1;
       this.choosing_paralleow = false;
     }
+    if (target < this.current_sub_tab_index) {
+      this.current_sub_tab_index -= 1;
+    }
+    this.bunch_of_tabs.re_save_web_state(target);
   }
 
   choose_paralleow() {
@@ -527,7 +493,7 @@ struct meowTabs {
       // if choosing and is not main web then set as sub view (Paralleow)
       this.choosing_paralleow = false;
       this.current_sub_tab_index = index;
-      this.showing_tabs = false;
+      // this.showing_tabs = false;
     } else {
       if (this.current_sub_tab_index >= 0) {
         // Paralleow enabled
@@ -604,3 +570,103 @@ struct meowTabs {
 }
 
 export default meowTabs;
+
+
+@Component
+struct TabButton {
+  // Sync
+  @Link offset_area: number[];
+  @Link extension_area: number[];
+  @Prop Label: tab_label;
+  tab_height_default: number = 42;
+  // Public
+  @StorageLink('current_main_tab_index') current_main_tab_index: number = 0;
+  @StorageLink('current_sub_tab_index') current_sub_tab_index: number = -1;
+  @StorageLink('tab_titles') tab_titles: string[] = []
+  // Gateways
+  @StorageLink('universal_tab_button_clicked_gateway') uni_tab_button_clicked: number = -1;
+  @StorageLink('universal_close_tab_gateway') close_tab_gateway: number = -1;
+  // Colors
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // Animation
+  @State pressing: boolean = false;
+
+  build() {
+    RelativeContainer() {
+      Row() {
+        Text("󰇀")
+          .padding({ right: 5 })
+          .fontSize(fontSize_Large())
+          .fontColor(this.color_current_font)
+          .fontWeight((this.current_main_tab_index == this.Label.index_key ||
+            this.current_sub_tab_index == this.Label.index_key)
+            ? FontWeight.Medium : undefined)
+          .visibility(this.current_sub_tab_index == this.Label.index_key ? Visibility.Visible : Visibility.None)
+          .animation(animation_default())
+          .offset({ y: -2 })
+
+        Text(this.tab_titles[this.Label.index_key] == "" ? "Meow" : this.tab_titles[this.Label.index_key])
+          .padding({ left: 2 })
+          .fontSize(fontSize_Normal())
+          .fontColor(this.color_current_font)
+          .fontWeight((this.current_main_tab_index == this.Label.index_key ||
+            this.current_sub_tab_index == this.Label.index_key)
+            ? FontWeight.Medium : undefined)
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+          .layoutWeight(1)
+
+        SymbolGlyph($r('sys.symbol.xmark'))
+          .fontSize(fontSize_Normal())
+          .fontColor([this.color_current_font])
+          .fontWeight(FontWeight.Medium)
+
+      } // Title and xmark
+      .border({
+        radius: 10,
+        width: 2,
+        color: (this.current_main_tab_index == this.Label.index_key ||
+          this.current_sub_tab_index == this.Label.index_key)
+          ? this.color_current_font : "transparent"
+      })
+      .backgroundColor(this.color_current_secondary)
+      .animation(animation_default())
+      .width("100%")
+      .height(this.tab_height_default)
+      .padding(10)
+      .offset({ y: this.offset_area[this.Label.index_key] })
+      .alignRules({
+        middle: { anchor: "__container__", align: HorizontalAlign.Center },
+        top: { anchor: "__container__", align: VerticalAlign.Top }
+      })
+      .onClick(() => {
+        this.uni_tab_button_clicked = this.Label.index_key;
+      })
+
+      Column() {
+      } // The True Tab Closer
+      .width(70)
+      .height("100%")
+      .alignRules({
+        middle: { anchor: "__container__", align: HorizontalAlign.End },
+        center: { anchor: "__container__", align: VerticalAlign.Center }
+      })
+      .onClick(() => {
+        this.close_tab_gateway = this.Label.index_key;
+      })
+    }
+    .onTouch((event) => {
+      if (event.type == TouchType.Up) {
+        this.pressing = false;
+        // If touch ends
+      } else {
+        this.pressing = true;
+        // If touching
+      }
+    })
+    .width("100%")
+    .height(this.tab_height_default + this.extension_area[this.Label.index_key])
+    .clickEffect(click_effect_default())
+  }
+}

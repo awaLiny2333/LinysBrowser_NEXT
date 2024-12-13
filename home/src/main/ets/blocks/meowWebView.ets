@@ -5,6 +5,7 @@ import { sandbox_save } from '../utils/storage_tools';
 import { url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
 import { webview } from '@kit.ArkWeb';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
+import { fileIo as fs } from '@kit.CoreFileKit';
 
 @Component
 struct meowWebView {
@@ -185,12 +186,12 @@ struct meowWebView {
               }
 
               // Get web_state
-              const web_state = this.bunch_of_tabs.Tabs[Label.index_key].controller.serializeWebState();
+              let web_state = this.bunch_of_tabs.Tabs[Label.index_key].controller.serializeWebState();
               // Sync to bunch_of_tabs
               this.bunch_of_tabs.Tabs[Label.index_key].web_state_array = web_state;
               // save web state to sandbox storage
               if (web_state) {
-                let identifier = "continue_tabs_web_state_array_" + Label.index_key.toString();
+                let identifier = "continue/continue_tabs_web_state_array_" + Label.index_key.toString();
                 sandbox_save(identifier, web_state.buffer);
               }
             })

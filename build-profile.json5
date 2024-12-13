@@ -43,7 +43,7 @@
       {
         "name": "ohos",
         "signingConfig": "ohos",
-        "compileSdkVersion": 12,
+        "compileSdkVersion": 13,
         "compatibleSdkVersion": 12,
         "runtimeOS": "OpenHarmony",
         "buildOption": {

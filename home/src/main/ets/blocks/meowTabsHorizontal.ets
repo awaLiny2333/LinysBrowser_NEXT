@@ -1,6 +1,6 @@
 import linysShowButton from '../components/linysShowButton';
 import linysSymbol from '../components/linysSymbol';
-import { animation_default, fontSize_Large, fontSize_Normal } from '../hosts/bunch_of_defaults';
+import { animation_default, click_effect_default, fontSize_Large, fontSize_Normal } from '../hosts/bunch_of_defaults';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { LengthMetrics } from '@kit.ArkUI';
 
@@ -53,7 +53,7 @@ struct meowTabsHorizontal {
         .animation(animation_default())
       } // Scroll of tab buttons
       .scrollBarWidth(5)
-      .scrollBar(this.tab_width() == 60 ? BarState.On : BarState.Off)
+      .scrollBar(this.tab_width() == 80 ? BarState.On : BarState.Off)
       .scrollable(ScrollDirection.Horizontal)
       .edgeEffect(EdgeEffect.Spring)
       .align(Alignment.Start)
@@ -112,8 +112,8 @@ struct meowTabsHorizontal {
     if (result > 200) {
       return 200;
     }
-    if (result < 60) {
-      return 60;
+    if (result < 80) {
+      return 80;
     }
     return result;
   }
@@ -127,7 +127,6 @@ struct HorizontalTabButton {
   @Link current_sub_tab_index: number;
   @Prop index: number;
   @Prop title: string;
-
   @Link full_area_width: number;
   @Link tab_titles: string[];
   // Gateways
@@ -164,11 +163,10 @@ struct HorizontalTabButton {
         .fontColor([this.color_current_font])
         .fontWeight(FontWeight.Medium)
         .onClick(() => {
-
           this.close_tab_gateway = this.index;
           // Close tab
         })
-        .visibility(this.tab_width() < 80 ? this.visibility_visible_on_chosen(this.index) : Visibility.Visible)
+        .visibility(this.tab_width() <= 80 ? this.visibility_visible_on_chosen(this.index) : Visibility.Visible)
         .animation(animation_default())
     }
     .offset({ y: this.offset_y })
@@ -191,6 +189,7 @@ struct HorizontalTabButton {
         this.offset_y = 0;
       }, 50)
     })
+    .clickEffect(click_effect_default())
   }
 
   tab_width() {

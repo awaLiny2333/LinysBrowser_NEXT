@@ -92,9 +92,11 @@ struct woofHistory {
       .animation(animation_default())
       .id("title_history")
 
-      Column({ space: 5 }) {
+      Column({ space: 10 }) {
 
         Row() {
+          linysText({ text: $r('app.string.Settings_experience_history_date_format') })
+            .opacity(0.7)
           linysText({ text: " (" + this.history_list.length.toString() + ")" })
             .opacity(0.7)
         } // Time elapse description
@@ -132,14 +134,13 @@ struct woofHistory {
         })
         .align(Alignment.Top)
         .layoutWeight(1)
-        .margin({ top: 3, bottom: 3 })
         .width("100%")
         .borderRadius(13.5)
         .backgroundColor(this.color_current_secondary)
 
         Scroll() {
           Row({ space: 5 }) {
-            ForEach(this.available_months.reverse(), (item: number[], key: number) => {
+            ForEach(this.available_months.reverse(), (item: number[], _key: number) => {
               month_button({
                 year: item[0],
                 month: item[1],
@@ -148,7 +149,7 @@ struct woofHistory {
               })
                 .onClick(() => {
                   // MEOW
-                  this.bunch_of_history.open_month_from_disk(item[0], item[1]);
+                  this.bunch_of_history.open_month_from_disk(item[0], item[1], false);
                   this.refresh_current_history_list();
                   this.viewing_year = item[0];
                   this.viewing_month = item[1];
@@ -163,7 +164,6 @@ struct woofHistory {
         })
         .padding(5)
         .align(Alignment.Start)
-        .margin({ top: 3, bottom: 3 })
         .width("100%")
         .borderRadius(13.5)
         .backgroundColor(this.color_current_secondary)
@@ -418,36 +418,23 @@ struct month_button {
   @Link viewing_month: number;
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
-  // Animation
-  @State pressing: boolean = false;
 
   build() {
     Column({ space: 0 }) {
       linysText({
         text: this.year.toString(),
         font_weight: this.selected() ? FontWeight.Medium : FontWeight.Normal,
-        color: this.pressing ? this.color_current_primary : this.color_current_font,
       })
       linysText({
         text: this.month.toString(),
         font_weight: this.selected() ? FontWeight.Medium : FontWeight.Normal,
-        color: this.pressing ? this.color_current_primary : this.color_current_font,
       })
     }
-    .onTouch((event) => {
-      if (event.type == TouchType.Up) {
-        this.pressing = false;
-        // If touch ends
-      } else {
-        this.pressing = true;
-        // If touching
-      }
-    })
     .border({ color: this.selected() ? this.color_current_font : 'transparent', width: 2, radius: 10 })
     .alignItems(HorizontalAlign.Start)
     .clickEffect(click_effect_default())
     .padding(8)
-    .backgroundColor(this.pressing ? this.color_current_font : this.color_current_primary)
+    .backgroundColor(this.color_current_primary)
     .animation(animation_default())
   }
 

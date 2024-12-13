@@ -37,7 +37,7 @@ export class bunch_of_history {
     if (plain_history_max_length) {
       this.plain_history_default_max_length = plain_history_max_length;
     }
-    this.open_month_from_disk(this.current_year, this.current_month);
+    this.open_month_from_disk(this.current_year, this.current_month, true);
   }
 
   // Settings
@@ -63,7 +63,7 @@ export class bunch_of_history {
     let month = history_date.getMonth() + 1;
 
     // Opens the month required
-    this.open_month_from_disk(year, month);
+    this.open_month_from_disk(year, month, false);
 
     let insert_position = this.index_of_record_after_time(history.accessed_time);
     if (insert_position < 0) {
@@ -86,7 +86,7 @@ export class bunch_of_history {
    * */
   remove_history(year: number, month: number, index: number, instantly_save_to_disk: boolean) {
     // Opens the month required
-    this.open_month_from_disk(year, month);
+    this.open_month_from_disk(year, month, false);
     // Delete
     this.history_this_month.splice(index, 1);
     // Save
@@ -105,7 +105,7 @@ export class bunch_of_history {
   remove_selected_history(year: number, month: number, selections: number[], instantly_save_to_disk: boolean) {
 
     // Opens the month required
-    this.open_month_from_disk(year, month);
+    this.open_month_from_disk(year, month, false);
 
     selections.sort((a, b) => {
       return a - b;
@@ -209,7 +209,7 @@ export class bunch_of_history {
    * @returns "\n" connected string of history records in the format of:
    * @example 'bing\nbing.com\n127771721'
    * */
-  export_string() {
+  private export_string() {
     let export_list: string[] = []
     for (let index = 0; index < this.history_this_month.length; index++) {
       let history_item: history_record = this.history_this_month[index];
@@ -227,7 +227,7 @@ export class bunch_of_history {
    * @param imp The string in the correct format:
    * @example 'bing\nbing.com\n127771721'
    * */
-  import_string(imp: string) {
+  private import_string(imp: string) {
     this.history_this_month = [];
 
     if (imp.split("\n").length % 3 > 0) {
@@ -253,15 +253,15 @@ export class bunch_of_history {
 
   /**
    * Check the history file structure on disk.
-   * After executing this, there will be ENSURED a History/History_year_month.txt existing for use.
+   * After executing this, there will be ENSURED a history/history_year_month.txt existing for use.
    * */
   check_disk_month(year: number, month: number) {
     let filesDir = getContext().filesDir;
     let new_history = true;
     try {
-      fs.mkdirSync(filesDir + '/History');
+      fs.mkdirSync(filesDir + '/history');
     } catch (e) {
-      console.log('[Meow][bunch_of_downloads] E: History folder already exists.')
+      console.log('[Meow][bunch_of_downloads] E: history folder already exists.')
       new_history = false;
     }
 
@@ -272,7 +272,7 @@ export class bunch_of_history {
       console.log("[Meow][meowAppSettings] NO HISTORY BEFORE!");
       sandbox_save(history_year_month_path, '');
     } else {
-      // check if this month have a History
+      // check if this month have a history
       let this_month_history = sandbox_open_sync(history_year_month_path);
       if (this_month_history as string == "undefined") {
         // This month doesn't have a history file
@@ -289,10 +289,10 @@ export class bunch_of_history {
    * Opens a month of history.
    * @param path A string, the path of the file.
    * */
-  open_month_from_disk(year: number, month: number) {
+  open_month_from_disk(year: number, month: number, construct_monthly_plain_history: boolean) {
     if (this.history_path_of_month(year, month) == this.current_opened_file_path) {
       // Already opened
-      console.log('already opened')
+      // console.log('already opened')
       return;
     }
     this.check_disk_month(year, month);
@@ -302,7 +302,9 @@ export class bunch_of_history {
     this.current_year = year;
     this.current_month = month;
     this.import_string(the_file);
-    this.construct_this_month_plain_history();
+    if (construct_monthly_plain_history) {
+      this.construct_this_month_plain_history();
+    }
   }
 
   /**
@@ -316,14 +318,14 @@ export class bunch_of_history {
    * Constructs the file name of history records in which history in [year, month] should be.
    * @param year A number, the year, like 2024.
    * @param month A number, the month, like 12.
-   * @returns A string, 'History/History_year_month.txt'
+   * @returns A string, 'history/history_year_month.txt'
    * */
   history_path_of_month(year: number, month: number) {
     let month_unified = month.toString();
     if (month_unified.length == 1) {
       month_unified = '0' + month_unified;
     }
-    return 'History/History_' + year.toString() + "_" + month_unified + '.txt';
+    return 'history/history_' + year.toString() + "_" + month_unified + '.txt';
   }
 
   /**
@@ -334,10 +336,10 @@ export class bunch_of_history {
     this.check_disk_month(new Date().getFullYear(), new Date().getMonth() + 1);
     let result: number[][] = [];
     let filesDir = getContext().filesDir;
-    let history_files = fs.listFileSync(filesDir + '/History', { recursion: false });
+    let history_files = fs.listFileSync(filesDir + '/history', { recursion: false });
     for (let index = 0; index < history_files.length; index++) {
       let f_name = history_files[index].split('.')[0];
-      // 'History_2024_2.txt'
+      // 'history_2024_2.txt'
       let f_split = f_name.split('_');
       let year = parseInt(f_split[1]);
       let month = parseInt(f_split[2]);

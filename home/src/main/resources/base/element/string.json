@@ -177,6 +177,10 @@
       "value": "Before"
     },
     {
+      "name": "Settings_experience_history_date_format",
+      "value": "Month/Date/Year, Hour:Minute:Second"
+    },
+    {
       "name": "Settings_experience_history_selecting",
       "value": "Selecting"
     },
@@ -386,7 +390,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "1. Dark mode for webs;\n2. Now blank pages are in the set theme color;\n3. Copying text from the Scratching Board;\n4. Credits~"
+      "value": "1. Better History management~"
     },
     {
       "name": "Whats_new_content_extra",

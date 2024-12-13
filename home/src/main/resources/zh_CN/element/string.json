@@ -177,6 +177,10 @@
       "value": "至"
     },
     {
+      "name": "Settings_experience_history_date_format",
+      "value": "月/日/年, 时:分:秒"
+    },
+    {
       "name": "Settings_experience_history_selecting",
       "value": "选中"
     },
@@ -386,7 +390,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "1. 网页的深色模式；\n2. 现在空白页会以设置的主题色为背景；\n3. 可以从猫抓板点击复制文字了！\n4. 致谢～"
+      "value": "1. 更好的历史管理系统～"
     },
     {
       "name": "Whats_new_content_extra",

@@ -105,7 +105,7 @@ struct meowAppSettings {
   woofHistory_control: CustomDialogController = new CustomDialogController({
     builder: woofHistory({ showing_settings: this.show }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 16,
+    cornerRadius: 22,
     showInSubWindow: true,
     width: "90%",
   });
@@ -465,7 +465,7 @@ struct meowAppSettings {
               linysText({ text: $r('app.string.Settings_storage_clear_webview') })
               linysText({ text: $r('app.string.Settings_storage_clear_webview_desc'), max_lines: 6 })
 
-              Row({ space: 10 }) {
+              Row({ space: 12 }) {
                 linysTitleText({ text: "󰂼 " + add_units_to_size(this.web_cache_size) })
                   .layoutWeight(1)
 
