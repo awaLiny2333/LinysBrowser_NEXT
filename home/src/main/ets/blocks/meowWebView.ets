@@ -142,8 +142,7 @@ struct meowWebView {
                 && !this.tab_urls[Label.index_key].includes("resource://")
               ) {
                 let new_record = new history_record(this.tab_titles[Label.index_key], this.tab_urls[Label.index_key])
-                this.bunch_of_history.add_history(new_record);
-                sandbox_save("history.txt", this.bunch_of_history.export_string());
+                this.bunch_of_history.add_history(new_record, true);
               } else {
                 this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation = false;
                 // log

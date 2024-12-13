@@ -224,7 +224,7 @@ struct meowTitleBar {
         .animation(animation_default())
         .id('left_controls')
 
-        Row({ space: 10 }) {
+        Row() {
           RelativeContainer() {
             TextInput({ text: this.search_input })
               .allowDrop(null)
@@ -296,7 +296,7 @@ struct meowTitleBar {
           } // Two inputs
           .layoutWeight(1)
 
-          Row({ space: 10 }) {
+          Row() {
             linysShowButton({
               symbol_glyph_target: this.showing_search_extracted_field ? 'sys.symbol.text_and_t' : 'sys.symbol.link',
               text: $r(this.showing_search_extracted_field ?
@@ -304,6 +304,7 @@ struct meowTitleBar {
                 'app.string.Address_analyzer_address'),
               show: this.address_analyzers_desc_close_cd > 0,
             })
+              .margin({ left: 10 })
               .visibility(this.search_extracted_field_available ? Visibility.Visible : Visibility.None)
               .onClick(() => {
                 this.showing_search_extracted_field = !this.showing_search_extracted_field;
@@ -323,12 +324,12 @@ struct meowTitleBar {
               .onClick(() => {
                 this.submit_searching()
               })
+              .margin({ left: 10 })
               .animation(animation_default())
-          }
+          } // Buttons
         } // Searching bar
         .height(36)
-        .padding(this.tablet_mode ?
-          { left: 15, right: this.search_extracted_field_available || this.is_search_input_typing ? 10 : 0 } : {})
+        .padding(this.tablet_mode ? { left: 10, right: 10 } : {})
         .alignRules(this.tablet_mode ?
           {
             left: { anchor: 'left_controls', align: HorizontalAlign.End },

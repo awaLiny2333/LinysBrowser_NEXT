@@ -20,7 +20,7 @@ import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import linysCapsuleButton from '../components/linysCapsuleButton';
 import { bunch_of_history } from '../hosts/bunch_of_history';
-import { add_units_to_size, get_folder_size_Sync, sandbox_open_sync } from '../utils/storage_tools';
+import { add_units_to_size, get_folder_size_Sync } from '../utils/storage_tools';
 import woofHistory from '../dialogs/woofHistory';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import meowSEManager from './meowSEManager';
@@ -58,7 +58,7 @@ struct meowAppSettings {
   // Information
   @State versionName: string = "Version Name";
   @State versionNo: number = 0;
-  @State history_length: number = this.bunch_of_history.history_list.length;
+  @State history_length: number = this.bunch_of_history.history_this_month.length;
   // Segment Button Options
   @State title_bar_position_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [{ text: '  󰀐  ' }, { text: '  󰃐  ' }] as ItemRestriction<SegmentButtonTextItem>,
@@ -359,7 +359,7 @@ struct meowAppSettings {
               .width("100%")
 
               Row({ space: 10 }) {
-                linysTitleText({ text: "󰏕 " + this.history_length.toString() })
+                // linysTitleText({ text: "󰏕 " + this.history_length.toString() })
                 Blank()
                 linysText({ text: $r('app.string.Settings_experience_history_view') })
                 linysCapsuleButton({ text: "  󰀩  " })
@@ -625,14 +625,7 @@ struct meowAppSettings {
       await this.bunch_of_settings.get('web_force_dark_mode') as boolean;
 
     // Read history
-    let result = sandbox_open_sync("history.txt");
-    if (result as string == "undefined") {
-      // no history before
-      console.log("[Meow][meowAppSettings] NO HISTORY BEFORE")
-    } else {
-      this.bunch_of_history.import_string(result as string);
-      console.log("[Meow][meowAppSettings] Recovered History, length: " + result.length.toString())
-    }
+    this.bunch_of_history.check_disk_month(new Date().getFullYear(), new Date().getMonth() + 1);
 
     // Read webview cache
     this.web_cache_size = await this.bunch_of_settings.get('webview_cache_size') as number;
@@ -651,7 +644,7 @@ struct meowAppSettings {
       this.on_panel_close();
     }
     // Get length properties
-    this.history_length = this.bunch_of_history.history_list.length;
+    this.history_length = this.bunch_of_history.history_this_month.length;
   }
 
   on_panel_open() {

@@ -1,3 +1,6 @@
+import { sandbox_open_sync, sandbox_save } from '../utils/storage_tools';
+import { fileIo as fs } from '@kit.CoreFileKit';
+
 export class history_record {
   accessed_time: number = Date.now();
   label: string;
@@ -19,9 +22,12 @@ export class history_record {
 }
 
 export class bunch_of_history {
-  history_list: history_record[] = [];
-  private cached_plain_history: string[][] | undefined = undefined;
+  history_this_month: history_record[] = [];
+  current_year: number = new Date().getFullYear();
+  current_month: number = new Date().getMonth() + 1;
+  private cached_plain_history: string[][] = [];
   private plain_history_default_max_length: number = 500;
+  private current_opened_file_path: string = '';
 
   /**
    * A class holding a history_record[] array, in which there stores history_record objects.
@@ -31,6 +37,7 @@ export class bunch_of_history {
     if (plain_history_max_length) {
       this.plain_history_default_max_length = plain_history_max_length;
     }
+    this.open_month_from_disk(this.current_year, this.current_month);
   }
 
   // Settings
@@ -41,7 +48,6 @@ export class bunch_of_history {
    * */
   set_plain_max_length(max_length: number) {
     this.plain_history_default_max_length = max_length;
-    this.reconstruct_plain_history();
   }
 
   // Use
@@ -51,18 +57,24 @@ export class bunch_of_history {
    * @param history A history_record object.
    * @param no_reconstruct_plain_history A boolean, will not reconstruct plain history cache if set true.
    * */
-  add_history(history: history_record, no_reconstruct_plain_history?: boolean) {
+  add_history(history: history_record, instantly_save_to_disk: boolean) {
+    let history_date = new Date(history.accessed_time);
+    let year = history_date.getFullYear();
+    let month = history_date.getMonth() + 1;
+
+    // Opens the month required
+    this.open_month_from_disk(year, month);
+
     let insert_position = this.index_of_record_after_time(history.accessed_time);
     if (insert_position < 0) {
-      insert_position = this.history_list.length;
+      insert_position = this.history_this_month.length;
     }
-    this.history_list.splice(insert_position, 0, history);
+    this.history_this_month.splice(insert_position, 0, history);
+    this.cached_plain_history.push([history.label, history.link]);
 
-    if (no_reconstruct_plain_history) {
-      return;
+    if (instantly_save_to_disk) {
+      this.save_month_to_disk();
     }
-    // reconstruct plain from only part of the records
-    this.reconstruct_plain_history();
   }
 
   /**
@@ -72,14 +84,15 @@ export class bunch_of_history {
    * @param index A number, the index of the target item in the grand history_list.
    * @param no_reconstruct_plain_history A boolean, will not reconstruct plain history cache if set true.
    * */
-  remove_history(index: number, no_reconstruct_plain_history?: boolean) {
-    this.history_list.splice(index, 1);
-
-    if (no_reconstruct_plain_history) {
-      return;
+  remove_history(year: number, month: number, index: number, instantly_save_to_disk: boolean) {
+    // Opens the month required
+    this.open_month_from_disk(year, month);
+    // Delete
+    this.history_this_month.splice(index, 1);
+    // Save
+    if (instantly_save_to_disk) {
+      this.save_month_to_disk();
     }
-    // reconstruct plain from only part of the records
-    this.reconstruct_plain_history();
   }
 
   /**
@@ -89,35 +102,36 @@ export class bunch_of_history {
    * @param selections A number[] array, indicating the indices of the items to be deleted.
    * @param no_reconstruct_plain_history A boolean, will not reconstruct plain history cache if set true.
    * */
-  remove_selected_history(selections: number[], no_reconstruct_plain_history?: boolean) {
+  remove_selected_history(year: number, month: number, selections: number[], instantly_save_to_disk: boolean) {
+
+    // Opens the month required
+    this.open_month_from_disk(year, month);
 
     selections.sort((a, b) => {
       return a - b;
     });
 
-    let selected = new Array<boolean>(this.history_list.length);
-
+    let selected = new Array<boolean>(this.history_this_month.length);
     let result_history: history_record[] = [];
 
     for (let i = 0; i < selections.length; i++) {
       selected[selections[i]] = true;
     }
 
-    for (let i = 0; i < this.history_list.length; i++) {
+    for (let i = 0; i < this.history_this_month.length; i++) {
       if (selected[i] == true) {
         // Marked to be deleted
       } else {
-        result_history.push(this.history_list[i]);
+        result_history.push(this.history_this_month[i]);
       }
     }
 
-    this.history_list = result_history;
+    this.history_this_month = result_history;
 
-    if (no_reconstruct_plain_history) {
-      return;
+    // Save
+    if (instantly_save_to_disk) {
+      this.save_month_to_disk();
     }
-    // reconstruct plain from only part of the records
-    this.reconstruct_plain_history();
   }
 
   /**
@@ -128,22 +142,22 @@ export class bunch_of_history {
    * @returns -2 if Target is bigger than all histories.
    * */
   index_of_record_after_time(timestamp: number) {
-    if (this.history_list.length == 0) {
+    if (this.history_this_month.length == 0) {
       return -1;
     }
-    if (timestamp > this.history_list[this.history_list.length - 1].accessed_time) {
+    if (timestamp > this.history_this_month[this.history_this_month.length - 1].accessed_time) {
       return -2;
     }
-    if (timestamp <= this.history_list[0].accessed_time) {
+    if (timestamp <= this.history_this_month[0].accessed_time) {
       return 0;
     }
 
     let start = 0;
-    let end = this.history_list.length - 1;
+    let end = this.history_this_month.length - 1;
     let mid = Math.floor((start + end) / 2);
     while (start <= end) {
       mid = Math.floor((start + end) / 2);
-      let mid_time = this.history_list[mid].accessed_time;
+      let mid_time = this.history_this_month[mid].accessed_time;
       if (mid_time > timestamp) {
         end = mid - 1;
       }
@@ -151,7 +165,7 @@ export class bunch_of_history {
         start = mid + 1;
       }
       if (mid_time == timestamp) {
-        while (mid > 0 && this.history_list[mid].accessed_time == timestamp) {
+        while (mid > 0 && this.history_this_month[mid].accessed_time == timestamp) {
           // in case of same access_time
           // choose the front-most
           mid -= 1;
@@ -159,80 +173,11 @@ export class bunch_of_history {
         break;
       }
     }
-    if (mid + 1 < this.history_list.length && this.history_list[mid].accessed_time < timestamp) {
+    if (mid + 1 < this.history_this_month.length && this.history_this_month[mid].accessed_time < timestamp) {
       // Make sure the history at mid has an access_time equal to or larger than Target timestamp
       mid = mid + 1;
     }
     return mid;
-  }
-
-  /**
-   * Get the latest slice of history[] array,
-   * of a certain length set equal to plain_history_default_max_length,
-   * a member variable of bunch_of_history class.
-   * @returns The list of history[] being less or equal than plain_history_default_max_length in length.
-   * */
-  get_latest_slice() {
-    let max_length = this.plain_history_default_max_length;
-    let slice: history_record[];
-
-    if (this.history_list.length > max_length) {
-      slice = this.history_list.slice(this.history_list.length - max_length);
-    } else {
-      slice = this.history_list;
-    }
-    return slice;
-  }
-
-  /**
-   * Get the slice of history[] array in a required time period.
-   * @param from_time The earliest timestamp. Default 0.
-   * @param to_time The most recent timestamp. Default the last (most recent) timestamp in history_list.
-   * @returns The list of history[] in this period.
-   * */
-  get_part_slice(from_time?: number, to_time?: number) {
-    if (this.history_list.length == 0) {
-      return [];
-    }
-    if (from_time == undefined) {
-      from_time = 0;
-    }
-    if (to_time == undefined) {
-      to_time = this.history_list[this.history_list.length-1].accessed_time + 1;
-    }
-    if (from_time > to_time) {
-      return [];
-    }
-    let from_index = this.index_of_record_after_time(from_time);
-    let to_index = this.index_of_record_after_time(to_time);
-    // Slice
-    if (from_index < 0) {
-      return [];
-    }
-    if (to_index < 0) {
-      return this.history_list.slice(from_index);
-    }
-    return this.history_list.slice(from_index, to_index);
-  }
-
-  /**
-   * Reconstruct the plain history list.
-   * @example [['bing', 'www.bing.com'], ['loading', 'www.google.com']]
-   * @param from_history_list The source of history records. Would reconstruct the whole bunch_of_history if not given.
-   * */
-  reconstruct_plain_history(from_history_list?: history_record[]) {
-    // Default fallback
-    if (from_history_list === undefined) {
-      from_history_list = this.get_latest_slice();
-    }
-
-    this.cached_plain_history = [];
-    for (let index = 0; index < from_history_list.length; index++) {
-      let history_item = from_history_list[index];
-      this.cached_plain_history.push([history_item.label, history_item.link]);
-    }
-    console.log("[bunch_of_history][plain_history] Reconstructed plain history! length: " +
-    this.cached_plain_history.length.toString());
   }
 
   /**
@@ -241,10 +186,20 @@ export class bunch_of_history {
    * @example [['bing', 'www.bing.com'], ['loading', 'www.google.com']]
    * */
   get_plain_history(): string[][] {
-    if (!this.cached_plain_history) {
-      this.reconstruct_plain_history();
+    if (this.cached_plain_history.length == 0) {
+      this.construct_this_month_plain_history();
     }
     return this.cached_plain_history as string[][];
+  }
+
+  /**
+   * Constructs the plain history of this month.
+   * */
+  construct_this_month_plain_history() {
+    for (let index = 0; index < Math.min(this.history_this_month.length, this.plain_history_default_max_length);
+      index++) {
+      this.cached_plain_history.push([this.history_this_month[index].label, this.history_this_month[index].link]);
+    }
   }
 
   // External interaction
@@ -256,8 +211,8 @@ export class bunch_of_history {
    * */
   export_string() {
     let export_list: string[] = []
-    for (let index = 0; index < this.history_list.length; index++) {
-      let history_item: history_record = this.history_list[index];
+    for (let index = 0; index < this.history_this_month.length; index++) {
+      let history_item: history_record = this.history_this_month[index];
       export_list.push(history_item.label);
       export_list.push(history_item.link);
       export_list.push(history_item.accessed_time.toString());
@@ -273,6 +228,7 @@ export class bunch_of_history {
    * @example 'bing\nbing.com\n127771721'
    * */
   import_string(imp: string) {
+    this.history_this_month = [];
 
     if (imp.split("\n").length % 3 > 0) {
       // Incorrect format, log an error.
@@ -282,16 +238,113 @@ export class bunch_of_history {
       return;
     }
 
-    this.history_list = [];
+    this.history_this_month = [];
     // Clear
     let import_list: string[] = imp.split("\n");
     for (let index = 0; index < import_list.length; index += 3) {
       if (import_list[index] != "") {
         let new_history_record =
           new history_record(import_list[index], import_list[index+1], Number.parseInt(import_list[index+2]));
-        this.add_history(new_history_record, true);
+        this.add_history(new_history_record, false);
       }
     }
-    console.log("[Meow][bunch_of_history] Import history success, length: " + this.history_list.length.toString())
+    console.log("[Meow][bunch_of_history] Import history success, length: " + this.history_this_month.length.toString())
+  }
+
+  /**
+   * Check the history file structure on disk.
+   * After executing this, there will be ENSURED a History/History_year_month.txt existing for use.
+   * */
+  check_disk_month(year: number, month: number) {
+    let filesDir = getContext().filesDir;
+    let new_history = true;
+    try {
+      fs.mkdirSync(filesDir + '/History');
+    } catch (e) {
+      console.log('[Meow][bunch_of_downloads] E: History folder already exists.')
+      new_history = false;
+    }
+
+    let history_year_month_path = this.history_path_of_month(year, month);
+
+    if (new_history) {
+      // no history before, like the first use of entire app
+      console.log("[Meow][meowAppSettings] NO HISTORY BEFORE!");
+      sandbox_save(history_year_month_path, '');
+    } else {
+      // check if this month have a History
+      let this_month_history = sandbox_open_sync(history_year_month_path);
+      if (this_month_history as string == "undefined") {
+        // This month doesn't have a history file
+        console.log("[Meow][meowAppSettings] NO HISTORY FOR " + history_year_month_path);
+        sandbox_save(history_year_month_path, '');
+      } else {
+        // This month has an existing history file
+        console.log("[Meow][meowAppSettings] Found existing history for this month, no actions meow!");
+      }
+    }
+  }
+
+  /**
+   * Opens a month of history.
+   * @param path A string, the path of the file.
+   * */
+  open_month_from_disk(year: number, month: number) {
+    if (this.history_path_of_month(year, month) == this.current_opened_file_path) {
+      // Already opened
+      console.log('already opened')
+      return;
+    }
+    this.check_disk_month(year, month);
+    let path = this.history_path_of_month(year, month);
+    let the_file = sandbox_open_sync(path);
+    this.current_opened_file_path = path;
+    this.current_year = year;
+    this.current_month = month;
+    this.import_string(the_file);
+    this.construct_this_month_plain_history();
+  }
+
+  /**
+   * Saves the current opened file to disk
+   * */
+  save_month_to_disk() {
+    sandbox_save(this.current_opened_file_path, this.export_string());
+  }
+
+  /**
+   * Constructs the file name of history records in which history in [year, month] should be.
+   * @param year A number, the year, like 2024.
+   * @param month A number, the month, like 12.
+   * @returns A string, 'History/History_year_month.txt'
+   * */
+  history_path_of_month(year: number, month: number) {
+    let month_unified = month.toString();
+    if (month_unified.length == 1) {
+      month_unified = '0' + month_unified;
+    }
+    return 'History/History_' + year.toString() + "_" + month_unified + '.txt';
+  }
+
+  /**
+   * Lists all the months with history.
+   * @returns A number[][] array, e.g. [[2024, 2], [2023, 4], ...].
+   * */
+  scan_history_months() {
+    this.check_disk_month(new Date().getFullYear(), new Date().getMonth() + 1);
+    let result: number[][] = [];
+    let filesDir = getContext().filesDir;
+    let history_files = fs.listFileSync(filesDir + '/History', { recursion: false });
+    for (let index = 0; index < history_files.length; index++) {
+      let f_name = history_files[index].split('.')[0];
+      // 'History_2024_2.txt'
+      let f_split = f_name.split('_');
+      let year = parseInt(f_split[1]);
+      let month = parseInt(f_split[2]);
+      result.push([year, month]);
+    }
+    result = result.sort((a, b) => (b[0] * 12 + b[1]) - (a[0] * 12 + a[1]));
+    // console.log(result.toString())
+    return result;
   }
 }
