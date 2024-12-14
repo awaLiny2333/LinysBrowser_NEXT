@@ -1,6 +1,6 @@
 export class bunch_of_search_engines {
   list_of_search_engines: search_engine[] = [];
-
+  last_accessed: number = 0;
   /**
    * A class holding a search_engine[] array, in which there stores search_engine objects.
    */
@@ -13,6 +13,7 @@ export class bunch_of_search_engines {
    * */
   add_search_engine(se: search_engine) {
     this.list_of_search_engines.push(se);
+    this.last_accessed = Date.now();
   }
 
   /**
@@ -21,6 +22,7 @@ export class bunch_of_search_engines {
    * */
   del_search_engine(index: number) {
     this.list_of_search_engines.splice(index, 1);
+    this.last_accessed = Date.now();
   }
 
   /**

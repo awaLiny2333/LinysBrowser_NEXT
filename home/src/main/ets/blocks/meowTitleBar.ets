@@ -27,6 +27,7 @@ import meowTabsHorizontal from './meowTabsHorizontal';
 import { unifiedDataChannel, uniformTypeDescriptor } from '@kit.ArkData';
 import meowScratchingBoard from './meowScratchingBoard';
 import woofAdsBlocker from '../dialogs/woofAdsBlocker';
+import woofAddSE from '../dialogs/woofAddSE';
 
 @Component
 struct meowTitleBar {
@@ -90,6 +91,14 @@ struct meowTitleBar {
     builder: woofQR({
       title: this.current_title,
       link: this.current_url
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16
+  })
+  woofAddSE_control: CustomDialogController = new CustomDialogController({
+    builder: woofAddSE({
+      label: this.current_title,
+      link: this.search_extracted_engine
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16
@@ -448,6 +457,16 @@ struct meowTitleBar {
           .onClick(() => {
             this.woofAdsBlocker_control.open();
           })
+        linysSymbol({
+          symbol_glyph_target: 'sys.symbol.curve_magnifyingglass'
+        })// Add Search Engine
+          .onClick(() => {
+            this.woofAddSE_control.open();
+          })
+          .opacity(this.search_extracted_field_available ? 1 : 0.5)
+          .enabled(this.search_extracted_field_available ? true : false)
+          .animation(animation_default())
+
       } // Title Bar of More Options
       .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
       .padding({ left: 15, right: 15, bottom: 6 })

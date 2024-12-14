@@ -491,6 +491,10 @@
     {
       "name": "Address_analyzer_keyword",
       "value": "Keyword"
+    },
+    {
+      "name": "AddSE_add_to_search_engines",
+      "value": "Add to Search Engines library"
     }
   ]
 }

@@ -491,6 +491,10 @@
     {
       "name": "Address_analyzer_keyword",
       "value": "搜索词"
+    },
+    {
+      "name": "AddSE_add_to_search_engines",
+      "value": "添加到搜索引擎库"
     }
   ]
 }

@@ -13,7 +13,7 @@ import { kv_store_put } from '../utils/kv_store_tools';
 
 @Component
 struct meowSEManager {
-  @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines =
+  @StorageLink('bunch_of_search_engines') @Watch('on_SE_change') bunch_of_search_engines: bunch_of_search_engines =
     new bunch_of_search_engines();
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('search_engine') search_engine: string = "";
@@ -44,7 +44,7 @@ struct meowSEManager {
         }
         .width("100%")
         .height("100%")
-        .borderRadius(6)
+        .borderRadius(7)
         .backgroundColor(this.default_pressing ? this.color_current_font :
         this.color_current_primary)
         .animation(animation_default())
@@ -78,8 +78,7 @@ struct meowSEManager {
       .animation(animation_default())
 
       ForEach(
-        this.list_of_search_engines,
-        (_user_agent: search_engine, key: number) => {
+        this.list_of_search_engines, (_user_agent: search_engine, key: number) => {
           meowSEButton({
             selected_index: this.selected_index,
             my_index: key,
@@ -120,6 +119,11 @@ struct meowSEManager {
     console.log("[Meow][meowSEManager] Search engine Manager READY");
   }
 
+  on_SE_change() {
+    console.log('[Meow][meowSEManager] Search Engine list change! Syncing data to Settings...')
+    this.sync_list_of_search_engines();
+  }
+
   on_select() {
     if (this.selected_index <= -1) {
       // If set back to default
@@ -145,8 +149,7 @@ struct meowSEManager {
   }
 
   save_search_engines_to_kv_store() {
-    this.bunch_of_settings.set('custom_search_engines',
-      this.bunch_of_search_engines.export_string());
+    this.bunch_of_settings.set('custom_search_engines', this.bunch_of_search_engines.export_string());
     this.bunch_of_settings.set('custom_search_engines_selected_index', this.selected_index);
   }
 }
@@ -205,7 +208,7 @@ struct meowSEButton {
           .animation(animation_default())
 
         } // Bookmark button
-        .borderRadius(this.editing ? { topLeft: 6, topRight: 6 } : 6)
+        .borderRadius(this.editing ? { topLeft: 7, topRight: 7 } : 7)
         .backgroundColor(this.pressing ? this.color_current_font : this.color_current_primary)
         .animation(animation_default())
         .padding(10)
@@ -284,7 +287,7 @@ struct meowSEButton {
               Button("  󰀁  ")// Delete
                 .type(ButtonType.Capsule)
                 .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
-                this.color_current_font )
+                this.color_current_font)
                 .fontColor(this.delete_confirm > 0 ? this.color_current_font :
                 this.color_current_primary)
                 .border({
@@ -358,6 +361,8 @@ struct meowSEButton {
   }
 
   set_global_SE_to_mine() {
+    // Rough but works!
+    // Forgive Liny about this OwO
     this.selected_index = -1;
     this.selected_index = this.my_index;
   }

@@ -44,7 +44,7 @@ struct meowUAManager {
         }
         .width("100%")
         .height("100%")
-        .borderRadius(6)
+        .borderRadius(7)
         .backgroundColor(this.default_pressing ? this.color_current_font :
         this.color_current_primary)
         .animation(animation_default())
@@ -203,7 +203,7 @@ struct meowUAButton {
           .animation(animation_default())
 
         } // Bookmark button
-        .borderRadius(this.editing ? { topLeft: 6, topRight: 6 } : 6)
+        .borderRadius(this.editing ? { topLeft: 7, topRight: 7 } : 7)
         .backgroundColor(this.pressing ? this.color_current_font : this.color_current_primary)
         .animation(animation_default())
         .padding(10)
