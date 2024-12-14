@@ -33,7 +33,7 @@ struct meowTitleBar {
   // Hosts
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
-  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
+  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   // Environments
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageProp('screen_width') screen_width: number = 0;
@@ -228,12 +228,13 @@ struct meowTitleBar {
           RelativeContainer() {
             TextInput({ text: this.search_input })
               .allowDrop(null)
+              .enabled(this.showing_search_extracted_field ? false : true)
               .height(capsule_bar_height())
               .fontWeight(FontWeight.Regular)
               .fontColor(this.color_current_font)
               .caretColor(this.color_current_font)
-              .offset({ y: !this.showing_search_extracted_field ? 0 : 50 })
-              .opacity(!this.showing_search_extracted_field ? 100 : 0)
+              .offset({ y: !this.showing_search_extracted_field ? 0 : -50 })
+              .opacity(this.showing_search_extracted_field ? 0 : 100)
               .animation(animation_default())
               .onDragEnter(() => {
                 this.showing_scratching_board = true;
@@ -257,6 +258,7 @@ struct meowTitleBar {
 
             TextInput({ text: this.search_extracted_keyword })
               .allowDrop(null)
+              .enabled(this.showing_search_extracted_field ? true : false)
               .height(capsule_bar_height())
               .fontWeight(FontWeight.Regular)
               .fontColor(this.color_current_font)
@@ -303,7 +305,7 @@ struct meowTitleBar {
                 'app.string.Address_analyzer_keyword' :
                 'app.string.Address_analyzer_address'),
               show: this.address_analyzers_desc_close_cd > 0,
-            })
+            })// Key Link
               .margin({ left: 10 })
               .visibility(this.search_extracted_field_available ? Visibility.Visible : Visibility.None)
               .onClick(() => {
@@ -318,6 +320,7 @@ struct meowTitleBar {
                 }
                 this.address_analyzers_desc_close_cd = 1200;
               })
+              .animation(animation_default())
 
             linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass' })// Search
               .visibility(this.visible_when_typing())

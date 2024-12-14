@@ -7,7 +7,7 @@ import { LengthMetrics } from '@kit.ArkUI';
 @Component
 struct meowTabsHorizontal {
   // HOST
-  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
+  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   // Environments
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
   @StorageLink('current_main_tab_index') current_main_tab_index: number = 0;

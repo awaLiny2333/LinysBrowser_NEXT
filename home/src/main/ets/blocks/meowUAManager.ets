@@ -14,7 +14,7 @@ import { kv_store_put } from '../utils/kv_store_tools';
 @Component
 struct meowUAManager {
   @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
+  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
   @State @Watch('on_select') selected_index: number = -1; // -1 for system default
   @State list_of_user_agents: user_agent[] = this.bunch_of_user_agents.list_of_user_agents;

@@ -15,7 +15,7 @@ import { kv_store_put } from '../utils/kv_store_tools';
 struct meowSEManager {
   @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines =
     new bunch_of_search_engines();
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
+  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('search_engine') search_engine: string = "";
   @State @Watch('on_select') selected_index: number = -2; // -1 for system default
   @State list_of_search_engines: search_engine[] = this.bunch_of_search_engines.list_of_search_engines;

@@ -11,9 +11,15 @@ export class bunch_of_settings {
   /**
    * A class holding a settings_list[] array, in which there stores settings_list objects.
    * Provides get and set functions to access app settings.
+   * @param no_init Will not register default settings nor do anything else.
+   * Usually set true if this object is only created to sit the place of StorageLink initialization.
    */
-  constructor() {
+  constructor(no_init?: boolean) {
+    if (no_init == true) {
+      return;
+    }
     // Register the default Settings
+
     // Customization
     this.register_setting('title_bar_position', 'string', 'bottom');
     this.register_setting('collect_new_history', 'boolean', 'true');
@@ -57,6 +63,7 @@ export class bunch_of_settings {
 
     // Cached size of webview cache
     this.register_setting('webview_cache_size', 'number', '-1');
+    console.log('[Meow][bunch_of_settings] Init success!')
   }
 
   /**

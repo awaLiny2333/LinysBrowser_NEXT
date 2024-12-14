@@ -131,7 +131,7 @@ export function sandbox_open_sync(file_name: string) {
   let readLen = fs.readSync(file.fd, buf);
   fs.closeSync(file);
   let result = buf.slice(0, readLen);
-  console.info("[Meow][sandbox_open] read file data succeed, Length: " + readLen.toString());
+  console.info("[sandbox_open] read file data succeed, Length: " + readLen.toString());
   return buffer.from(result).toString();
 }
 
@@ -151,7 +151,7 @@ export function sandbox_open_array_sync(file_path_name: string) {
   let size = stat.size;
   let buf = new ArrayBuffer(size);
   let readLen = fs.readSync(file.fd, buf);
-  console.info("[Meow][sandbox_open] read file data succeed, Length: " + readLen.toString());
+  console.info("[sandbox_open] read file data succeed, Length: " + readLen.toString());
   fs.closeSync(file);
   let result = buf.slice(0, readLen);
   return result;

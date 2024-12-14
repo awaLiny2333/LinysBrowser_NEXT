@@ -90,14 +90,22 @@ export class bunch_of_tabs {
   /**
    * A class holding tabs in a list.
    * Provides methods to operate tabs.
+   * @param no_init Will not check for continue folder nor do anything else.
+   * Usually set true if this object is only created to sit the place of StorageLink initialization.
    */
-  constructor() {
+  constructor(no_init?: boolean) {
+    if (no_init == true) {
+      return;
+    }
+
     let filesDir = getContext().filesDir;
     try {
       fs.mkdirSync(filesDir + '/continue');
     } catch (e) {
-      // console.log('[Meow][meowWebViews] E: continue folder already exists.')
+      console.log('[Meow][bunch_of_tabs] constructor: E: /continue folder already exists.')
     }
+
+    console.log('[Meow][bunch_of_tabs] Init success!')
   }
 
   // Operations and Actions

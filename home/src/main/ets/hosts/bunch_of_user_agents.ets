@@ -5,6 +5,7 @@ export class bunch_of_user_agents {
    * A class holding a user_agent[] array, in which there stores user_agent objects.
    */
   constructor() {
+    // console.log('[Meow][bunch_of_user_agents] Init success!')
   }
 
   /**

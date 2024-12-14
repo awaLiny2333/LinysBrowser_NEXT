@@ -16,7 +16,7 @@ struct meowSuggestions {
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   // Hosts
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
-  @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history();
+  @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
   // Settings
   @Prop @Watch('refresh_suggestions') settings_max_bookmark_suggestions: number = 5;
   @Prop @Watch('refresh_suggestions') settings_max_history_suggestions: number = 5;

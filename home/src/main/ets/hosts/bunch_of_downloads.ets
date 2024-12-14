@@ -14,14 +14,22 @@ export class bunch_of_downloads {
   /**
    * A class to handle download tasks.
    * Will ENSURE there is a downloads directory in the sandbox directory on creation.
+   * @param no_init Will not check directory existence nor do anything else.
+   * Usually set true if this object is only created to sit the place of StorageLink initialization.
    */
-  constructor() {
+  constructor(no_init?: boolean) {
+    if (no_init == true) {
+      return;
+    }
+
     let filesDir = this.context.filesDir;
     try {
       fs.mkdirSync(filesDir + '/downloads');
     } catch (e) {
-      console.log('[Meow][bunch_of_downloads] E: /downloads already exists.')
+      console.log('[Meow][bunch_of_downloads] Init: E: /downloads already exists.')
     }
+
+    console.log('[Meow][bunch_of_downloads] Init success!')
   }
 
   /**

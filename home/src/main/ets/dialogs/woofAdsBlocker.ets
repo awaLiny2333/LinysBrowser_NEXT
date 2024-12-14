@@ -15,7 +15,7 @@ import linysCapsuleButton from '../components/linysCapsuleButton';
 @CustomDialog
 struct woofAdsBlocker {
   controller: CustomDialogController;
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
+  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('tablet_mode') tablet_mode: boolean = false;
   @Link adblock_exceptions: string[];
   @State add_exception_domain_edit: string = "";

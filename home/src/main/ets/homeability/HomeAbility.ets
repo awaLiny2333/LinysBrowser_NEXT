@@ -20,13 +20,6 @@ export default class HomeAbility extends UIAbility {
     AppStorage.setOrCreate('context', this.context);
     AppStorage.setOrCreate('pathDir', this.context.filesDir);
     AppStorage.setOrCreate('currentColorMode', this.context.config.colorMode);
-    AppStorage.setOrCreate('bunch_of_tabs', new bunch_of_tabs());
-    AppStorage.setOrCreate('bunch_of_bookmarks', new bunch_of_bookmarks("Bookmarks Meow"));
-    AppStorage.setOrCreate('bunch_of_user_agents', new bunch_of_user_agents());
-    AppStorage.setOrCreate('bunch_of_search_engines', new bunch_of_search_engines());
-    AppStorage.setOrCreate('bunch_of_downloads', new bunch_of_downloads());
-    AppStorage.setOrCreate('bunch_of_history', new bunch_of_history());
-    AppStorage.setOrCreate('bunch_of_settings', new bunch_of_settings());
   }
 
   onDestroy(): void {

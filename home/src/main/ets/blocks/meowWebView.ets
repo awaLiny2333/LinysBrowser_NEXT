@@ -5,7 +5,6 @@ import { sandbox_save } from '../utils/storage_tools';
 import { url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
 import { webview } from '@kit.ArkWeb';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
-import { fileIo as fs } from '@kit.CoreFileKit';
 
 @Component
 struct meowWebView {
@@ -13,9 +12,9 @@ struct meowWebView {
   @StorageProp('pathDir') pathDir: string = "";
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageLink('restore_web_state_arrays') restore_web_state_arrays: Uint8Array[] = [];
-  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
-  @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history();
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
+  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
+  @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
+  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('current_main_tab_index') @Watch('on_tab_info_change') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') @Watch('on_tab_info_change') current_sub_tab_index: number = -1;
   // Controls and environments
@@ -69,7 +68,7 @@ struct meowWebView {
 
     // Set
     this.adblock_exceptions = exceptions;
-    console.log("[Meow][meowAppSettings] AdsBlocker exceptions: " + this.adblock_exceptions.join(", "));
+    console.log("[Meow][meowAppSettings] Set AdsBlocker exceptions: " + this.adblock_exceptions.join(", "));
 
     // TODO: Find out why this doesn't work here
     // Set Ads Blocker exception list
@@ -190,7 +189,7 @@ struct meowWebView {
               // Sync to bunch_of_tabs
               this.bunch_of_tabs.Tabs[Label.index_key].web_state_array = web_state;
               // save web state to sandbox storage
-              if (web_state) {
+              if (web_state && !this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation) {
                 let identifier = "continue/continue_tabs_web_state_array_" + Label.index_key.toString();
                 sandbox_save(identifier, web_state.buffer);
               }
@@ -216,7 +215,7 @@ struct meowWebView {
               // Set Ads Blocker exception list
               try {
                 console.log('[Meow][meowWebView] add Ads Blocker Exceptions success. Operated by tab No.' +
-                Label.index_key.toString())
+                Label.index_key.toString() + ' ~')
                 webview.AdsBlockManager.addAdsBlockDisallowedList(this.adblock_exceptions);
               } catch (e) {
                 console.error('[ERROR][Meow][meowWebView] add Ads Blocker Exceptions error: ')
@@ -251,7 +250,7 @@ struct meowWebView {
     .height("100%")
     .onAppear(() => {
       console.log("[Meow][meowWebView] WebViews READY")
-      console.log("[Meow][meowWebView] Restore tabs length: " + this.bunch_of_tabs.Tabs.length.toString())
+      // console.log("[Meow][meowWebView] Restore tabs length: " + this.bunch_of_tabs.Tabs.length.toString())
     })
   }
 

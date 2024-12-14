@@ -8,13 +8,24 @@ import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import woofFailPrompt from '../dialogs/woofFailPrompt';
 import { ConfigurationConstant } from '@kit.AbilityKit';
+import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
+import { bunch_of_history } from '../hosts/bunch_of_history';
+import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
+import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
+import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 
 @Entry
 @Component
 struct Index {
-  // Hosts
+  // Init Hosts
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
+  @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
+  @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history();
+  @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("Bookmarks~Meow");
+  @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads();
+  @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines =
+    new bunch_of_search_engines();
   // UI Environment
   @StorageLink('bottomAvoidHeight') bottomAvoidHeight: number = 1;
   @StorageLink('topAvoidHeight') topAvoidHeight: number = 1;
@@ -189,8 +200,7 @@ struct Index {
               .scrollBar(BarState.Off)
 
               Scroll() {
-                meowBookmarks({
-                })
+                meowBookmarks({})
                   .width(this.width_of_Bookmarks())
               } // Bookmarks Panel
               .height("100%")

@@ -5,7 +5,7 @@ import { bunch_of_settings } from '../hosts/bunch_of_settings'
 
 @Component
 struct meowColorsManager{
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
+  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor =
     $r('app.color.start_window_background');
@@ -140,7 +140,7 @@ struct colorBlock {
   @State my_color_mode: number = 0;
   @StorageProp('currentColorMode') current_color_mode: number = 0;
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
+  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   woofColorSelect_control: CustomDialogController = new CustomDialogController({
     builder: woofColorSelect({ color: this.color, dark_mode_color: false, color_theme_id: this.color_theme_id }),
     alignment: DialogAlignment.Center,

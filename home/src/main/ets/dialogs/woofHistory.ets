@@ -12,7 +12,7 @@ import { bunch_of_history, history_record } from '../hosts/bunch_of_history';
 @CustomDialog
 struct woofHistory {
   controller: CustomDialogController;
-  @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history();
+  @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
   @StorageLink('tablet_mode') tablet_mode: boolean = false;
   @State scroll_area_height: number = 0;
   @Link showing_settings: boolean;

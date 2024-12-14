@@ -12,13 +12,13 @@ import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import linysShowButton from '../components/linysShowButton';
 import linysText from '../components/linysText';
-import { sandbox_open_array_sync } from '../utils/storage_tools';
+import { sandbox_open_array_sync, sandbox_unlink_sync } from '../utils/storage_tools';
 import { fileIo as fs } from '@kit.CoreFileKit';
 
 @Component
 struct meowTabs {
-  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
+  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
+  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
   @StorageLink('current_main_tab_index') @Watch('on_did_switch_tab') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') @Watch('on_did_switch_tab') current_sub_tab_index: number = -1;
@@ -166,17 +166,6 @@ struct meowTabs {
       // Recover Paralleow
       if (continue_tabs_sub_on < this.tab_titles.length) {
         this.current_sub_tab_index = continue_tabs_sub_on;
-      }
-    }
-
-    // clear continue storage
-    for (let index = 0; index < continue_tabs_count; index++) {
-      let key = "continue/continue_tabs_web_state_array_" + index.toString();
-      let filesDir = getContext().filesDir;
-      try {
-        fs.unlink(filesDir + '/' + key);
-      } catch (e) {
-        console.error(e);
       }
     }
 
@@ -382,6 +371,21 @@ struct meowTabs {
       console.log("[Meow][meowTabs] Store Tabs Count: " + store_tabs_count)
       // Store tabs count
       kv_store_put("continue_tabs_count", store_tabs_count);
+
+      // clear extra continue storage
+      let index = this.tab_titles.length;
+      while(true) {
+        let key = "continue/continue_tabs_web_state_array_" + index.toString();
+        console.log('awa')
+        try {
+          sandbox_unlink_sync(key);
+        } catch (e) {
+          console.error(e);
+          console.log('qwq')
+          break;
+        }
+        index += 1;
+      }
     }
 
     if (this.current_main_tab_index == this.current_sub_tab_index) {

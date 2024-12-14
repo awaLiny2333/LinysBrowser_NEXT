@@ -4,7 +4,7 @@ import { common } from '@kit.AbilityKit';
 
 export async function kv_store_get(key_name: string) {
   if (AppStorage.get('kvStore') == undefined) {
-    console.log("[Meow][kv_store_tools][GET] First launch of app, now getting kvStore")
+    console.log("[kv_store_tools][GET] First launch of app, now getting kvStore")
     await get_kv_store_into_app_storage();
   }
   let kvStore = AppStorage.get('kvStore') as distributedKVStore.DeviceKVStore;
@@ -13,7 +13,7 @@ export async function kv_store_get(key_name: string) {
     // If kvStore already got
     let get_result = "";
     await kvStore.get(key_name).then((value) => {
-      // console.log("[Meow][kv_store_tools] Succeeded in getting data, key: " + key_name + ".")
+      // console.log("[kv_store_tools] Succeeded in getting data, key: " + key_name + ".")
       get_result = value as string;
     }).catch(() => {
       get_result = "undefined"
@@ -22,7 +22,7 @@ export async function kv_store_get(key_name: string) {
 
   } else {
     let get_result = "error"
-    console.error("[Meow][kv_store_tools][GET][ERROR] Undefined KVStore! ")
+    console.error("[kv_store_tools][GET][ERROR] Undefined KVStore! ")
     return get_result;
 
   }
@@ -30,16 +30,16 @@ export async function kv_store_get(key_name: string) {
 
 export async function kv_store_put(key_name: string, put_content: string) {
   if (AppStorage.get('kvStore') == undefined) {
-    console.log("[Meow][kv_store_tools][GET] First launch of app, now getting kvStore")
+    console.log("[kv_store_tools][GET] First launch of app, now getting kvStore")
     await get_kv_store_into_app_storage();
   }
   let kvStore = AppStorage.get('kvStore') as distributedKVStore.DeviceKVStore;
 
   kvStore.put(key_name, put_content, (err) => {
     if (err !== undefined) {
-      console.error(`[Meow][kv_store_tools][ERROR] Failed to put data. Code: ${err.code},message: ${err.message}`);
+      console.error(`[kv_store_tools][ERROR] Failed to put data. Code: ${err.code},message: ${err.message}`);
     } else {
-      console.log("[Meow][kv_store_tools] Succeeded in putting data, key: " + key_name + ".")
+      console.log("[kv_store_tools] Succeeded in putting data, key: " + key_name + ".")
     }
   });
 
@@ -54,7 +54,7 @@ export async function kv_store_put(key_name: string, put_content: string) {
  * */
 export async function kv_store_get_uint_8_array(key_name: string) {
   if (AppStorage.get('kvStore') == undefined) {
-    console.log("[Meow][kv_store_tools][GET] First launch of app, now getting kvStore")
+    console.log("[kv_store_tools][GET] First launch of app, now getting kvStore")
     await get_kv_store_into_app_storage();
   }
   let kvStore = AppStorage.get('kvStore') as distributedKVStore.DeviceKVStore;
@@ -63,7 +63,7 @@ export async function kv_store_get_uint_8_array(key_name: string) {
     // If kvStore already got
     let get_result:Uint8Array = new Uint8Array();
     await kvStore.get(key_name).then((value) => {
-      console.log("[Meow][kv_store_tools] Succeeded in getting data, key: " + key_name + ".")
+      console.log("[kv_store_tools] Succeeded in getting data, key: " + key_name + ".")
       get_result = value as Uint8Array;
     }).catch(() => {
       get_result = new Uint8Array();
@@ -72,7 +72,7 @@ export async function kv_store_get_uint_8_array(key_name: string) {
 
   } else {
     let get_result = new Uint8Array(-1);
-    console.error("[Meow][kv_store_tools][GET][ERROR] Undefined KVStore! ")
+    console.error("[kv_store_tools][GET][ERROR] Undefined KVStore! ")
     return get_result;
 
   }
@@ -80,16 +80,16 @@ export async function kv_store_get_uint_8_array(key_name: string) {
 
 export async function kv_store_put_uint_8_array(key_name: string, put_content: Uint8Array) {
   if (AppStorage.get('kvStore') == undefined) {
-    console.log("[Meow][kv_store_tools][GET] First launch of app, now getting kvStore")
+    console.log("[kv_store_tools][GET] First launch of app, now getting kvStore")
     await get_kv_store_into_app_storage();
   }
   let kvStore = AppStorage.get('kvStore') as distributedKVStore.DeviceKVStore;
 
   kvStore.put(key_name, put_content, (err) => {
     if (err !== undefined) {
-      console.error(`[Meow][kv_store_tools][ERROR] Failed to put data. Code: ${err.code},message: ${err.message}`);
+      console.error(`[kv_store_tools][ERROR] Failed to put data. Code: ${err.code},message: ${err.message}`);
     } else {
-      // console.log("[Meow][kv_store_tools] Succeeded in putting data, key: " + key_name + ".")
+      // console.log("[kv_store_tools] Succeeded in putting data, key: " + key_name + ".")
     }
   });
 
@@ -97,16 +97,16 @@ export async function kv_store_put_uint_8_array(key_name: string, put_content: U
 
 export async function kv_store_delete(key_name: string) {
   if (AppStorage.get('kvStore') == undefined) {
-    console.log("[Meow][kv_store_tools][GET] First launch of app, now getting kvStore")
+    console.log("[kv_store_tools][GET] First launch of app, now getting kvStore")
     await get_kv_store_into_app_storage();
   }
   let kvStore = AppStorage.get('kvStore') as distributedKVStore.DeviceKVStore;
 
   kvStore.delete(key_name, (err) => {
     if (err !== undefined) {
-      console.error(`[Meow][kv_store_tools][ERROR] Failed to delete data. Code: ${err.code},message: ${err.message}`);
+      console.error(`[kv_store_tools][ERROR] Failed to delete data. Code: ${err.code},message: ${err.message}`);
     } else {
-      console.info("[Meow][kv_store_tools] Succeeded in deleting data, key: " + key_name + ".");
+      console.info("[kv_store_tools] Succeeded in deleting data, key: " + key_name + ".");
     }
   });
 

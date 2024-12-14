@@ -19,8 +19,8 @@ import linysPathDisplay from '../components/linysPathDisplay';
 @Component
 struct meowBookmarks {
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
-  @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
-  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
+  @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("Bookmarks~Meow");
+  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @State viewing_contents: unified_item[] = this.bunch_of_bookmarks.root.get_content();
   @State @Watch('refresh_content_view') looking_at_path: string = "";
   @State current_folder: folder | undefined = undefined;
@@ -412,7 +412,7 @@ export default meowBookmarks;
 struct bookmarkItem {
   @Prop my_index: number = 0;
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
-  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
+  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
 
   @Link looking_at_path: string;
   @Link viewing_contents: unified_item[];

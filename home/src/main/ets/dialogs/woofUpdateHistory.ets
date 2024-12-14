@@ -10,6 +10,11 @@ struct woofUpdateHistory {
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @State texts: string[] = [
+    'v1.7.1-beta',
+    'A KEY PATCH. INTRODUCING HISTORY MIGRATION FROM OLD BROWSERCATS.\n' +
+      'So that history records on old BrowserCats would be inherited.',
+    '一个关键的补充更新，提供了历史自动迁移能力，这样老版本冲浪喵上的历史记录会被继承了！',
+
     'v1.7.0-beta',
     'A KEY release of a KEY update, bringing better History system and a few experience optimizations into Browser Cat!\n' +
       'This version is trying to solve some performance issue of parts of this project, but this requires some deep level modification.\n' +
@@ -90,7 +95,7 @@ struct release_card {
   @State text_chi: string = '';
 
   build() {
-    Column({ space: 5 }) {
+    Column({ space: 8 }) {
       linysTitleText({
         text: this.title,
       })
