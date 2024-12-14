@@ -381,6 +381,7 @@ export class bunch_of_history {
         last_month = [access_Date.getFullYear(), access_Date.getMonth() + 1];
       }
     }
+    this.save_month_to_disk();
     console.log("[Meow][bunch_of_history] Import history success, length: " + this.history_this_month.length.toString())
   }
 }
