@@ -12,9 +12,11 @@ struct woofUpdateHistory {
   @State texts: string[] = [
     'v1.7.0-beta',
     'A KEY release of a KEY update, bringing better History system and a few experience optimizations into Browser Cat!\n' +
-      'However, the previous History records and last status of opened tabs are not inherited. So sorry for that...',
+      'This version is trying to solve some performance issue of parts of this project, but this requires some deep level modification.\n' +
+      'Therefore, the previous History records and last status of opened tabs are not inherited. So sorry for that...',
     '一个关键的发行版更新，将网页深色模式、更新记录、致谢和一些体验优化带入冲浪喵～\n' +
-      '不过，以前的历史浏览记录和上一次打开的标签页并没有得到继承……对不起！！！\n＞︿＜',
+      '这个版本正在尝试优化一些组件的性能问题，但是这需要一些深层的修改。\n' +
+      '所以，以前的历史浏览记录和上一次打开的标签页并没有得到继承……对不起！！！\n＞︿＜',
 
     'v1.6.4-beta',
     'A decent release of update, bringing Web Dark Mode, Update History, Credits and a few experience optimizations into Browser Cat!',

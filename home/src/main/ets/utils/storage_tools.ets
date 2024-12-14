@@ -94,6 +94,26 @@ export function sandbox_save(file_name: string, content: string | ArrayBuffer) {
 }
 
 /**
+ * Unlink (delete) a file.
+ * @param file_name A string, the path of the file.
+ * */
+export function sandbox_unlink(file_name: string) {
+  let filesDir = getContext().filesDir;
+  let full_file_directory = filesDir + '/' + file_name;
+  fs.unlink(full_file_directory);
+}
+
+/**
+ * Unlink (delete) a file in a sync way.
+ * @param file_name A string, the path of the file.
+ * */
+export function sandbox_unlink_sync(file_name: string) {
+  let filesDir = getContext().filesDir;
+  let full_file_directory = filesDir + '/' + file_name;
+  fs.unlinkSync(full_file_directory);
+}
+
+/**
  * Read a text file from sandbox storage.
  * @returns A string, of the requested file's content.
  * */

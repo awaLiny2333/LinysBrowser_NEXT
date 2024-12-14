@@ -125,6 +125,7 @@ struct woofHistory {
                 .animation(animation_default())
             }
           }
+          .reverse(true)
           .width("100%")
         } // Main history list
         .scrollable(ScrollDirection.Vertical)
