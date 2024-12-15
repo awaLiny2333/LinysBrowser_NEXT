@@ -235,75 +235,86 @@ struct meowTitleBar {
 
         Row() {
           RelativeContainer() {
-            TextInput({ text: this.search_input })
-              .allowDrop(null)
-              .enabled(this.showing_search_extracted_field ? false : true)
-              .height(capsule_bar_height())
-              .fontWeight(FontWeight.Regular)
-              .fontColor(this.color_current_font)
-              .caretColor(this.color_current_font)
-              .offset({ y: !this.showing_search_extracted_field ? 0 : -50 })
-              .opacity(this.showing_search_extracted_field ? 0 : 100)
-              .animation(animation_default())
-              .onDragEnter(() => {
-                this.showing_scratching_board = true;
-              })
-              .onFocus(() => {
-                this.is_search_input_typing = true;
-              })
-              .onBlur(() => {
-                this.is_search_input_typing = false;
-              })
-              .focusable(this.showing_scratching_board ? false : true)
-              .onChange((content) => {
-                this.update_search_input(content);
-              })
-              .onSubmit(() => {
-                this.submit_searching()
-              })
-              .selectAll(true)
-              .selectedBackgroundColor(this.color_current_font)
-              .id('address_bar')
+            Scroll() {
+              TextInput({ text: this.search_input })
+                .allowDrop(null)// .enabled(this.showing_search_extracted_field ? false : true)
+                .height(capsule_bar_height())
+                .fontWeight(FontWeight.Regular)
+                .fontColor(this.color_current_font)
+                .caretColor(this.color_current_font)
+                .offset({ y: !this.showing_search_extracted_field ? 0 : -50 })
+                .opacity(this.showing_search_extracted_field ? 0 : 100)
+                .animation(animation_default())
+                .onDragEnter(() => {
+                  this.showing_scratching_board = true;
+                })
+                .onFocus(() => {
+                  this.is_search_input_typing = true;
+                })
+                .onBlur(() => {
+                  this.is_search_input_typing = false;
+                })
+                .focusable(this.showing_scratching_board ? false : true)
+                .onChange((content) => {
+                  this.update_search_input(content);
+                })
+                .onSubmit(() => {
+                  this.submit_searching()
+                })
+                .selectAll(true)
+                .selectedBackgroundColor(this.color_current_font)
+                .id('address_bar')
+            }
+            .scrollable(ScrollDirection.Vertical)
+            .height(this.showing_search_extracted_field ? 0 : 36)
+            .scrollBar(BarState.Off)
+            .animation(animation_default())
 
-            TextInput({ text: this.search_extracted_keyword })
-              .allowDrop(null)
-              .enabled(this.showing_search_extracted_field ? true : false)
-              .height(capsule_bar_height())
-              .fontWeight(FontWeight.Regular)
-              .fontColor(this.color_current_font)
-              .caretColor(this.color_current_font)
-              .offset({ y: this.showing_search_extracted_field ? 0 : 50 })
-              .opacity(this.showing_search_extracted_field ? 100 : 0)
-              .animation(animation_default())
-              .onDragEnter(() => {
-                this.showing_scratching_board = true;
-              })
-              .onFocus(() => {
-                this.is_search_input_typing = true;
-              })
-              .onBlur(() => {
-                this.is_search_input_typing = false;
-              })
-              .focusable(this.showing_scratching_board ? false : true)
-              .onChange((content) => {
-                this.search_extracted_keyword = content;
-                if (content == '') {
-                  this.search_input_unified = this.search_extracted_engine.replaceAll('%s', 'o(=•ェ•=)m?');
-                } else {
-                  this.search_input_unified =
-                    this.search_extracted_engine.replaceAll('%s', encodeURIComponent(content));
-                  this.search_input = this.search_input_unified;
-                }
-              })
-              .onSubmit(() => {
-                this.submit_searching();
-                // After submit, as the web loads, the new url will be synced to the search_input (address bar)
-                // Then it will trigger @Watch('on_search_input_change')
-                // And the extracted keyword would be synced to its TextInput.
-              })
-              .selectAll(true)
-              .selectedBackgroundColor(this.color_current_font)
-              .id('key_bar')
+            Scroll() {
+              TextInput({ text: this.search_extracted_keyword })
+                .allowDrop(null)// .enabled(this.showing_search_extracted_field ? true : false)
+                .height(capsule_bar_height())
+                .fontWeight(FontWeight.Regular)
+                .fontColor(this.color_current_font)
+                .caretColor(this.color_current_font)
+                .offset({ y: this.showing_search_extracted_field ? 0 : 50 })
+                .opacity(this.showing_search_extracted_field ? 100 : 0)
+                .animation(animation_default())
+                .onDragEnter(() => {
+                  this.showing_scratching_board = true;
+                })
+                .onFocus(() => {
+                  this.is_search_input_typing = true;
+                })
+                .onBlur(() => {
+                  this.is_search_input_typing = false;
+                })
+                .focusable(this.showing_scratching_board ? false : true)
+                .onChange((content) => {
+                  this.search_extracted_keyword = content;
+                  if (content == '') {
+                    this.search_input_unified = this.search_extracted_engine.replaceAll('%s', 'o(=•ェ•=)m?');
+                  } else {
+                    this.search_input_unified =
+                      this.search_extracted_engine.replaceAll('%s', encodeURIComponent(content));
+                    this.search_input = this.search_input_unified;
+                  }
+                })
+                .onSubmit(() => {
+                  this.submit_searching();
+                  // After submit, as the web loads, the new url will be synced to the search_input (address bar)
+                  // Then it will trigger @Watch('on_search_input_change')
+                  // And the extracted keyword would be synced to its TextInput.
+                })
+                .selectAll(true)
+                .selectedBackgroundColor(this.color_current_font)
+                .id('key_bar')
+            }
+            .scrollable(ScrollDirection.Vertical)
+            .scrollBar(BarState.Off)
+            .height(this.showing_search_extracted_field ? 36 : 0)
+            .animation(animation_default())
+
           } // Two inputs
           .layoutWeight(1)
 

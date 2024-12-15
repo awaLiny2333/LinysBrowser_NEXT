@@ -359,7 +359,8 @@ struct meowRelation {
       })
       linysText({
         color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
-        text: this.label_link.link
+        text: this.label_link.link,
+        max_lines: 2
       })
       linysText({
         color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,

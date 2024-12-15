@@ -20,7 +20,7 @@ struct woofAddSE {
 
   build() {
     Scroll() {
-      Column({ space: 10 }) {
+      Column({ space: 15 }) {
 
         linysTitleText({
           text: $r('app.string.AddSE_add_to_search_engines'),
