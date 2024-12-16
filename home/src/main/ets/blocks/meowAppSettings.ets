@@ -469,6 +469,7 @@ struct meowAppSettings {
                 Scroll() {
                   linysTitleText({ text: "󰂼 " + add_units_to_size(this.web_cache_size) })
                 }
+                .clickEffect(click_effect_default())
                 .align(Alignment.TopStart)
                 .scrollBar(BarState.Off)
                 .edgeEffect(EdgeEffect.Spring)

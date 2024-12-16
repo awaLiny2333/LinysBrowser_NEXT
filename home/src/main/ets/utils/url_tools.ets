@@ -1,3 +1,6 @@
+import { default_search_engine } from "../hosts/bunch_of_defaults";
+import { bunch_of_search_engines } from "../hosts/bunch_of_search_engines";
+
 /**
  * Process the search_input into a visitable address.
  * @param search_input A string, the user input to search or visit.
@@ -22,7 +25,7 @@ export function unify_search_input_into_url(search_input: string) {
 
   let search_engine = AppStorage.get('search_engine') as string;
   if (search_engine === undefined) {
-    search_engine = "https://bing.com/search?q=%s";
+    search_engine = default_search_engine();
   }
   let url_processed = search_engine.replaceAll("%s", url);
   return [url_processed as string, false];

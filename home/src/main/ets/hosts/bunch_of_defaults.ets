@@ -94,16 +94,24 @@ export function url_default_blank() {
 }
 
 /**
- * Default search engines in a specified string format.
+ * Preset search engines in a specified string format.
  * @returns Baidu and Google.
  * @example 'Bing\nhttps://www.cn.bing.com/search?q=%s'
  * */
-export function default_search_engines() {
+export function preset_search_engines() {
   let result = [
     "Baidu\nhttps://www.baidu.com/s?wd=%s",
     "Google\nhttps://www.google.com/search?q=%s",
   ];
   return result.join("\n");
+}
+
+/**
+ * The single default search engine.
+ * @returns 'https://bing.com/search?q=%s'
+ * */
+export function default_search_engine() {
+  return 'https://bing.com/search?q=%s';
 }
 
 /**

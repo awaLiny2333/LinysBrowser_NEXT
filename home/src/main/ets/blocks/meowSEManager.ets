@@ -83,8 +83,7 @@ struct meowSEManager {
             selected_index: this.selected_index,
             my_index: key,
           })
-        },
-      )
+        })
 
       Row() {
         Blank()
@@ -162,9 +161,9 @@ struct meowSEButton {
   @Prop my_index: number;
   @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines =
     new bunch_of_search_engines();
-  @State my_ua: search_engine = this.bunch_of_search_engines.list_of_search_engines[this.my_index];
-  @State my_label: string = this.my_ua.label;
-  @State my_content: string = this.my_ua.url;
+  @State my_se: search_engine = this.bunch_of_search_engines.list_of_search_engines[this.my_index];
+  @State my_label: string = this.my_se.label;
+  @State my_content: string = this.my_se.url;
   // statuses
   @State editing: boolean = false;
   @State pressing: boolean = false;
@@ -357,7 +356,6 @@ struct meowSEButton {
         // Reset delete confirm
       }, 10)
     })
-
   }
 
   set_global_SE_to_mine() {
@@ -372,8 +370,8 @@ struct meowSEButton {
 
     this.my_label = this.edit_label;
     this.my_content = this.edit_content;
-    this.my_ua.label = this.edit_label;
-    this.my_ua.url = this.edit_content;
+    this.my_se.label = this.edit_label;
+    this.my_se.url = this.edit_content;
     this.save_search_engine_to_kv_store();
 
     if (this.selected_index == this.my_index) {
@@ -384,6 +382,7 @@ struct meowSEButton {
   delete_myself() {
     this.delete_confirm += 300;
     if (this.delete_confirm >= 301) {
+      this.editing = false;
       this.bunch_of_search_engines.del_search_engine(this.my_index);
 
       if (this.selected_index == this.my_index) {
@@ -395,7 +394,6 @@ struct meowSEButton {
           Math.min(this.bunch_of_search_engines.list_of_search_engines.length - 1, previous_selected);
         // Refresh
       }
-
       this.save_search_engine_to_kv_store();
     }
   }

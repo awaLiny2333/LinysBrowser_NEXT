@@ -1,6 +1,7 @@
 export class bunch_of_search_engines {
   list_of_search_engines: search_engine[] = [];
   last_accessed: number = 0;
+
   /**
    * A class holding a search_engine[] array, in which there stores search_engine objects.
    */

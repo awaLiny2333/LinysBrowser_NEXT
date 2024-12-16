@@ -1,5 +1,5 @@
 import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
-import { default_search_engines, default_user_agents } from './bunch_of_defaults';
+import { preset_search_engines, default_user_agents } from './bunch_of_defaults';
 
 export class bunch_of_settings {
   settings_list: settings_item[] = [];
@@ -43,7 +43,7 @@ export class bunch_of_settings {
     // UA and Search Engines
     this.register_setting('custom_user_agents', 'string', default_user_agents());
     this.register_setting('custom_user_agents_selected_index', 'number', '-1');
-    this.register_setting('custom_search_engines', 'string', default_search_engines());
+    this.register_setting('custom_search_engines', 'string', preset_search_engines());
     this.register_setting('custom_search_engines_selected_index', 'number', '-1');
 
     // Ad blocker

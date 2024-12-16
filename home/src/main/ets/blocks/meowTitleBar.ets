@@ -98,7 +98,8 @@ struct meowTitleBar {
   woofAddSE_control: CustomDialogController = new CustomDialogController({
     builder: woofAddSE({
       label: this.current_title,
-      link: this.search_extracted_engine
+      link: this.search_extracted_engine,
+      keyword: this.search_extracted_keyword
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16
@@ -234,6 +235,17 @@ struct meowTitleBar {
         .id('left_controls')
 
         Row() {
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.curve_magnifyingglass'
+          })// Add Search Engine
+            .onClick(() => {
+              this.woofAddSE_control.open();
+            })
+            .margin({ right: 10 })
+            .opacity(this.search_extracted_field_available ? 1 : 0.5)
+            .enabled(this.search_extracted_field_available ? true : false)
+            .animation(animation_default())
+
           RelativeContainer() {
             Scroll() {
               TextInput({ text: this.search_input })
@@ -455,7 +467,7 @@ struct meowTitleBar {
       .height(this.tablet_mode ? 36 : 82)
       .animation(animation_default())
 
-      Row({ space: 10 }) {
+      Row({ space: this.tablet_mode ? 10 : 7 }) {
         linysSymbol({
           symbol_glyph_target: 'sys.symbol.qrcode'
         })// QRcode
@@ -468,16 +480,6 @@ struct meowTitleBar {
           .onClick(() => {
             this.woofAdsBlocker_control.open();
           })
-        linysSymbol({
-          symbol_glyph_target: 'sys.symbol.curve_magnifyingglass'
-        })// Add Search Engine
-          .onClick(() => {
-            this.woofAddSE_control.open();
-          })
-          .opacity(this.search_extracted_field_available ? 1 : 0.5)
-          .enabled(this.search_extracted_field_available ? true : false)
-          .animation(animation_default())
-
       } // Title Bar of More Options
       .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
       .padding({ left: 15, right: 15, bottom: 6 })

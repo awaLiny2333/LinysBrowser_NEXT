@@ -29,6 +29,7 @@ struct linysShowButton {
       }
       .width(this.show ? undefined : 0)
       .scrollable(ScrollDirection.Horizontal)
+      .edgeEffect(EdgeEffect.Spring)
       .scrollBar(BarState.Off)
       .animation(animation_default())
     }
