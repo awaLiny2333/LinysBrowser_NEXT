@@ -28,6 +28,7 @@ import { unifiedDataChannel, uniformTypeDescriptor } from '@kit.ArkData';
 import meowScratchingBoard from './meowScratchingBoard';
 import woofAdsBlocker from '../dialogs/woofAdsBlocker';
 import woofAddSE from '../dialogs/woofAddSE';
+import woofCookies from '../dialogs/woofCookies';
 
 @Component
 struct meowTitleBar {
@@ -116,6 +117,13 @@ struct meowTitleBar {
     alignment: DialogAlignment.Center,
     cornerRadius: 16
   })
+  cookies_control: CustomDialogController = new CustomDialogController({
+    builder: woofCookies(),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16,
+    showInSubWindow: true,
+    width: "90%",
+  });
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -479,6 +487,12 @@ struct meowTitleBar {
         })// Enable ads
           .onClick(() => {
             this.woofAdsBlocker_control.open();
+          })
+        linysSymbol({
+          symbol_glyph_target: 'sys.symbol.tracking_cookie_interception'
+        })// Enable ads
+          .onClick(() => {
+            this.cookies_control.open();
           })
       } // Title Bar of More Options
       .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)

@@ -185,11 +185,11 @@
       "value": "月/日/年, 时:分:秒"
     },
     {
-      "name": "Settings_experience_history_selecting",
+      "name": "Settings_edit_selecting",
       "value": "选中"
     },
     {
-      "name": "Settings_experience_history_selecting_items",
+      "name": "Settings_edit_selecting_items",
       "value": "个项目"
     },
     {
@@ -394,7 +394,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "1. 更好的历史管理系统～"
+      "value": "1. 智能防追踪功能～\n2. 可以设置为默认浏览器了！"
     },
     {
       "name": "Whats_new_content_extra",
@@ -418,7 +418,7 @@
     },
     {
       "name": "Credits_extra",
-      "value": "感谢你们 (*ˊᗜˋ*)/ ！！！"
+      "value": "感谢你们 :3"
     },
     {
       "name": "Appearance_color_scheme_Light",
@@ -507,6 +507,34 @@
     {
       "name": "Settings_intelligent_tracking_prevention",
       "value": "方舟智能防跟踪"
+    },
+    {
+      "name": "Settings_intelligent_tracking_prevention_desc",
+      "value": "禁止跟踪型网站（作为第三方）插入其它网页时发送携带 Cookie 的网络请求："
+    },
+    {
+      "name": "Settings_manage_cookies",
+      "value": "查看和管理 Cookies"
+    },
+    {
+      "name": "Settings_manage_cookies_this_site",
+      "value": "以下是当前页面的一些 Cookies，它们属于："
+    },
+    {
+      "name": "Settings_manage_cookies_clear_all",
+      "value": "由于一些限制，我们只能提供这样一个按钮，用来同时清除所有网站的 Cookies："
+    },
+    {
+      "name": "Settings_manage_cookies_desc_1",
+      "value": "Cookies 是一些（暂时或永久）存储在本地储存里的缓存数据。在这个 App 中是加密的。"
+    },
+    {
+      "name": "Settings_manage_cookies_desc_2",
+      "value": "它们能够记住你的账号、密码、登陆状态……等等很多信息。"
+    },
+    {
+      "name": "Settings_manage_cookies_desc_3",
+      "value": "清除 Cookies 在某些时候能够解决一些诡异的问题，但是被清理了 Cookies 的网站可能会要求你重新登陆一次。"
     }
   ]
 }

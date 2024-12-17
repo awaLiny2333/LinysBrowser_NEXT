@@ -178,9 +178,9 @@ struct woofHistory {
         Scroll() {
           Column({ space: 10 }) {
             Row() {
-              linysTitleText({ text: $r('app.string.Settings_experience_history_selecting') })
+              linysTitleText({ text: $r("app.string.Settings_edit_selecting") })
               linysTitleText({ text: " " + this.selected_number.toString() + " " })
-              linysTitleText({ text: $r('app.string.Settings_experience_history_selecting_items') })
+              linysTitleText({ text: $r("app.string.Settings_edit_selecting_items") })
             } // Selecting ... item(s)
             Row() {
               linysSymbol({ symbol_glyph_target: 'sys.symbol.list_checkmask' })

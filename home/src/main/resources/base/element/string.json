@@ -185,11 +185,11 @@
       "value": "Month/Date/Year, Hour:Minute:Second"
     },
     {
-      "name": "Settings_experience_history_selecting",
+      "name": "Settings_edit_selecting",
       "value": "Selecting"
     },
     {
-      "name": "Settings_experience_history_selecting_items",
+      "name": "Settings_edit_selecting_items",
       "value": "item(s)"
     },
     {
@@ -394,7 +394,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "1. Better History management~"
+      "value": "1. Intelligent Tracking Prevention~\n2. Can be set as default browser now!"
     },
     {
       "name": "Whats_new_content_extra",
@@ -418,7 +418,7 @@
     },
     {
       "name": "Credits_extra",
-      "value": "Thank you all (*ˊᗜˋ*)/ !!!"
+      "value": "Thank you all :3"
     },
     {
       "name": "Appearance_color_scheme_Light",
@@ -507,6 +507,34 @@
     {
       "name": "Settings_intelligent_tracking_prevention",
       "value": "ArkWeb Intelligent Tracking Prevention"
+    },
+    {
+      "name": "Settings_intelligent_tracking_prevention_desc",
+      "value": "Restrict tracker sites (as third parties) inserted into other pages from sending network requests with cookies:"
+    },
+    {
+      "name": "Settings_manage_cookies",
+      "value": "View and Manage Cookies"
+    },
+    {
+      "name": "Settings_manage_cookies_this_site",
+      "value": "Here we are viewing some Cookies of current site: "
+    },
+    {
+      "name": "Settings_manage_cookies_clear_all",
+      "value": "Due to some constraints, we could only provide such a button to clear all cookies of all sites:"
+    },
+    {
+      "name": "Settings_manage_cookies_desc_1",
+      "value": "Cookies are a series of cached data stored in local storage either temporarily or permanently, here in this app, encrypted."
+    },
+    {
+      "name": "Settings_manage_cookies_desc_2",
+      "value": "They remember your accounts, your passwords, your login statuses... Plenty of things."
+    },
+    {
+      "name": "Settings_manage_cookies_desc_3",
+      "value": "Clearing cookies may fix some weird web errors, but a site may require you to login again if its cookies are cleared."
     }
   ]
 }

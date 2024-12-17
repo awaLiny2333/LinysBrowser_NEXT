@@ -31,6 +31,7 @@ import meowColorsManager from './meowColorsManager';
 import { BusinessError } from '@kit.BasicServicesKit';
 import meowCreditsRepos from './meowCreditsRepos';
 import meowCreditsUsers from './meowCreditsUsers';
+import woofCookies from '../dialogs/woofCookies';
 
 @Component
 struct meowAppSettings {
@@ -117,6 +118,13 @@ struct meowAppSettings {
     showInSubWindow: true,
     width: "90%",
   });
+  cookies_control: CustomDialogController = new CustomDialogController({
+    builder: woofCookies(),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16,
+    showInSubWindow: true,
+    width: "90%",
+  });
   waterFlow_control: Scroller = new Scroller();
   // Else
   @State clear_web_cache_confirm: number = 0;
@@ -143,6 +151,7 @@ struct meowAppSettings {
           })
             .margin({ left: 15, right: 15 })
         } // Quick access on the top
+
         WaterFlow({ scroller: this.waterFlow_control }) {
           FlowItem() {
             Column({ space: 15 }) {
@@ -540,9 +549,13 @@ struct meowAppSettings {
             Column({ space: 15 }) {
               linysTitleText({ text: $r('app.string.Settings_security') }) // Security Title
 
+              linysText({
+                text: $r('app.string.Settings_intelligent_tracking_prevention_desc'),
+                max_lines: 10
+              })
               Row() {
                 linysText({ text: $r('app.string.Settings_intelligent_tracking_prevention'), max_lines: 4 })
-                Blank()
+                  .layoutWeight(1)
                 Toggle({ isOn: this.settings_intelligent_tracking_prevention, type: ToggleType.Switch })
                   .switchPointColor(this.color_current_secondary)
                   .selectedColor(this.color_current_font)
@@ -554,6 +567,16 @@ struct meowAppSettings {
                     }
                   })
               } // Toggle Intelligent Tracking Prevention
+              .width("100%")
+
+              Row({ space: 10 }) {
+                Blank()
+                linysText({ text: $r('app.string.Settings_manage_cookies') })
+                linysCapsuleButton({ text: '  󰀩  ' })
+                  .onClick(() => {
+                    this.cookies_control.open();
+                  })
+              } // Cookie management
               .width("100%")
             }
             .padding(15)
@@ -672,7 +695,7 @@ struct meowAppSettings {
     // Read webview cache
     this.web_cache_size = await this.bunch_of_settings.get('webview_cache_size') as number;
     if (this.web_cache_size == -1) {
-      this.web_cache_size = get_folder_size_Sync('/data/storage/el2/base/cache/web/Cache', true);
+      this.web_cache_size = get_folder_size_Sync('/data/storage/el2/base/cache/web', true);
       this.bunch_of_settings.set('webview_cache_size', this.web_cache_size);
     }
   }
