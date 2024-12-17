@@ -84,7 +84,8 @@ struct meowWebView {
             src: this.initial_src_of_tab_index(Label.index_key),
             controller:
             this.bunch_of_tabs.Tabs[Label.index_key] !== undefined ?
-            this.bunch_of_tabs.Tabs[Label.index_key].controller : undefined
+            this.bunch_of_tabs.Tabs[Label.index_key].controller : undefined,
+            // renderMode: RenderMode.SYNC_RENDER
           })// Main WEB
             .width("100%")
             .height("100%")

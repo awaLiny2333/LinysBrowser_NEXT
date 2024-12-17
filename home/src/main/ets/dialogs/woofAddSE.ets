@@ -26,8 +26,8 @@ struct woofAddSE {
     new bunch_of_search_engines();
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   // Animation UI Statuses
-  @State adding_SE: boolean = false;
-  @State height_of_add_panel: number = 150;
+  @State adding_SE: boolean = true;
+  @State height_of_add_panel: number = 0;
   button_height_default: number = 42;
   // Data
   @State list_of_search_engines: search_engine[] = this.bunch_of_search_engines.list_of_search_engines;
@@ -104,7 +104,7 @@ struct woofAddSE {
 
 
         Scroll() {
-          Column({ space: 15 }) {
+          Column({ space: 10 }) {
             Row({ space: 10 }) {
               linysSymbol({ symbol_glyph_target: "sys.symbol.rename" })
               TextInput({ text: this.label })
@@ -161,7 +161,7 @@ struct woofAddSE {
         .animation(animation_default())
         .scrollBar(BarState.Off)
       }
-      .padding(20)
+      .padding(15)
       .alignItems(HorizontalAlign.Center)
       .justifyContent(FlexAlign.Center)
       .width("100%")
@@ -170,11 +170,9 @@ struct woofAddSE {
     .backgroundColor(this.color_current_primary)
     .edgeEffect(EdgeEffect.Spring)
     .onAppear(() => {
+      // Preserve the main title only
       this.label = this.label.replace(this.keyword, '');
-      this.label = this.label.replace(' - ', '');
-      this.label = this.label.replace(' _ ', '');
-      this.label = this.label.replace('-', '');
-      this.label = this.label.replace('_', '');
+      this.label = this.label.replace(/ ?[_-] ?/g, '');
     })
   }
 

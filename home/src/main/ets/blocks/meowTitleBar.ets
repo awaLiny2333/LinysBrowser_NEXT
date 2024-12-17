@@ -235,17 +235,6 @@ struct meowTitleBar {
         .id('left_controls')
 
         Row() {
-          linysSymbol({
-            symbol_glyph_target: 'sys.symbol.curve_magnifyingglass'
-          })// Add Search Engine
-            .onClick(() => {
-              this.woofAddSE_control.open();
-            })
-            .margin({ right: 10 })
-            .opacity(this.search_extracted_field_available ? 1 : 0.5)
-            .enabled(this.search_extracted_field_available ? true : false)
-            .animation(animation_default())
-
           RelativeContainer() {
             Scroll() {
               TextInput({ text: this.search_input })
@@ -331,6 +320,14 @@ struct meowTitleBar {
           .layoutWeight(1)
 
           Row() {
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right' })// Search
+              .margin({ left: 10 })
+              .visibility(this.visible_when_typing())
+              .onClick(() => {
+                this.submit_searching()
+              })
+              .animation(animation_default())
+
             linysShowButton({
               symbol_glyph_target: this.showing_search_extracted_field ? 'sys.symbol.text_and_t' : 'sys.symbol.link',
               text: $r(this.showing_search_extracted_field ?
@@ -354,12 +351,14 @@ struct meowTitleBar {
               })
               .animation(animation_default())
 
-            linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass' })// Search
-              .visibility(this.visible_when_typing())
-              .onClick(() => {
-                this.submit_searching()
-              })
+            linysSymbol({
+              symbol_glyph_target: 'sys.symbol.curve_magnifyingglass'
+            })// Add Search Engine
               .margin({ left: 10 })
+              .visibility(this.search_extracted_field_available ? Visibility.Visible : Visibility.None)
+              .onClick(() => {
+                this.woofAddSE_control.open();
+              })
               .animation(animation_default())
           } // Buttons
         } // Searching bar

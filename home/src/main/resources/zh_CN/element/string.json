@@ -278,7 +278,7 @@
     },
     {
       "name": "Settings_experience_web_force_dark_mode",
-      "value": "强制（无深色适配的）网站使用深色模式"
+      "value": "强制（无适配的）网站使用深色模式"
     },
     {
       "name": "Settings_experience_use_adblock",

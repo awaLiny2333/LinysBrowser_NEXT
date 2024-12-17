@@ -377,6 +377,7 @@ struct meowUAButton {
   delete_myself() {
     this.delete_confirm += 300;
     if (this.delete_confirm >= 301) {
+      this.editing = false;
       this.bunch_of_user_agents.del_user_agent(this.my_index);
 
       if (this.selected_index == this.my_index) {
