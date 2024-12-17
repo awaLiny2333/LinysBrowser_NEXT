@@ -23,6 +23,7 @@ export class bunch_of_settings {
     // Customization
     this.register_setting('title_bar_position', 'string', 'bottom');
     this.register_setting('collect_new_history', 'boolean', 'true');
+    this.register_setting('intelligent_tracking_prevention', 'boolean', 'false');
     this.register_setting('tabs_style', 'string', 'vertical');
     this.register_setting('sys_back_access_backward', 'boolean', 'true');
     this.register_setting('max_bookmark_suggest', 'number', '5');

@@ -2,13 +2,6 @@ import { AbilityConstant, Configuration, UIAbility, Want } from '@kit.AbilityKit
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
-import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
-import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
-import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
-import { bunch_of_history } from '../hosts/bunch_of_history';
-import { bunch_of_settings } from '../hosts/bunch_of_settings';
-import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 
 export default class HomeAbility extends UIAbility {
   async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): Promise<void> {
@@ -20,6 +13,12 @@ export default class HomeAbility extends UIAbility {
     AppStorage.setOrCreate('context', this.context);
     AppStorage.setOrCreate('pathDir', this.context.filesDir);
     AppStorage.setOrCreate('currentColorMode', this.context.config.colorMode);
+
+    this.process_want(want);
+  }
+
+  onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    this.process_want(want);
   }
 
   onDestroy(): void {
@@ -99,5 +98,43 @@ export default class HomeAbility extends UIAbility {
   onBackground(): void {
     // Ability has back to background
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onBackground');
+  }
+
+  process_want(want: Want) {
+    AppStorage.setOrCreate('want_uri', '');
+    // want
+    let want_uri = want.uri;
+    let want_type = want.type;
+    let want_action = want.action;
+    if (want_uri == null || want_uri == undefined || want_uri.length < 1) {
+      // Invalid want
+      console.info('[Meow][HomeAbility] No or empty Want uri accepted.');
+      AppStorage.setOrCreate('want_uri', '');
+      AppStorage.setOrCreate('want_type', '');
+      AppStorage.setOrCreate('want_action', '');
+    } else {
+      // Good want
+      console.log('[Meow][HomeAbility] Want accepted!');
+      console.log('[Meow][HomeAbility] Want uri: ' + want_uri);
+
+      // Process the rest params
+      if (want_type) {
+        AppStorage.setOrCreate('want_type', want_type);
+        console.log('[Meow][HomeAbility] Want type: ' + want_type);
+      } else {
+        AppStorage.setOrCreate('want_type', '');
+        console.log('[Meow][HomeAbility] Want type is empty?');
+      }
+      if (want_action) {
+        AppStorage.setOrCreate('want_action', want_action);
+        console.log('[Meow][HomeAbility] Want action: ' + want_action);
+      } else {
+        AppStorage.setOrCreate('want_action', '');
+        console.log('[Meow][HomeAbility] Want action is empty?');
+      }
+
+      // refresh want_uri in the last place
+      AppStorage.setOrCreate('want_uri', want_uri);
+    }
   }
 }

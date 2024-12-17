@@ -33,6 +33,7 @@ struct meowWebView {
   @Link is_search_input_typing: boolean;
   // Settings
   @Prop settings_collect_new_history: boolean;
+  @Prop settings_intelligent_tracking_prevention: boolean;
   @Link @Watch('on_use_adblock_state_change') use_adblock: boolean;
   @Link adblock_exceptions: string[];
   @Link web_force_dark_mode: boolean;
@@ -231,6 +232,14 @@ struct meowWebView {
                   console.error('[ERROR][Meow][meowWebView] Restore web state failed ' +
                     'for an out-of-bound index in restore_web_state_arrays.')
                 }
+              }
+
+              if (this.settings_intelligent_tracking_prevention) {
+                this.bunch_of_tabs.Tabs[Label.index_key].controller.enableIntelligentTrackingPrevention(true);
+                console.log('[meowWebView] ArkWeb Intelligent Tracking Prevention ON!')
+              } else {
+                this.bunch_of_tabs.Tabs[Label.index_key].controller.enableIntelligentTrackingPrevention(false);
+                console.log('[meowWebView] ArkWeb Intelligent Tracking Prevention not enabled.')
               }
             })
             .darkMode(WebDarkMode.Auto)// Dark mode!

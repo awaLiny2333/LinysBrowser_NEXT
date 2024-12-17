@@ -25,13 +25,27 @@
         "skills": [
           {
             "entities": [
-              "entity.system.home"
+              "entity.system.home",
+              "entity.system.browsable"
             ],
             "actions": [
-              "action.system.home"
-            ]
+              "action.system.home",
+              "entity.system.browsable",
+              "ohos.want.action.viewData"
+            ],
+            "uris": [
+              {
+                "scheme": "https",
+                "type": "text/plain",
+                "linkFeature": "FileOpen"
+              },
+              {
+                "scheme": "http"
+              }
+            ],
+            "domainVerify": true
           }
-        ]
+        ],
       }
     ],
     "extensionAbilities": [
@@ -48,9 +62,9 @@
         ]
       }
     ],
-    "requestPermissions":[
+    "requestPermissions": [
       {
-        "name" : "ohos.permission.INTERNET",
+        "name": "ohos.permission.INTERNET",
         "reason": "$string:permission_reason_INTERNET",
         "usedScene": {
           "when": "inuse",
@@ -59,16 +73,16 @@
           ]
         }
       },
-//      {
-//        "name" : "ohos.permission.READ_PASTEBOARD",
-//        "reason": "$string:permission_reason_READ_PASTEPOARD",
-//        "usedScene": {
-//          "when": "inuse",
-//          "abilities": [
-//            "HomeAbility"
-//          ]
-//        }
-//      }
+      //      {
+      //        "name" : "ohos.permission.READ_PASTEBOARD",
+      //        "reason": "$string:permission_reason_READ_PASTEPOARD",
+      //        "usedScene": {
+      //          "when": "inuse",
+      //          "abilities": [
+      //            "HomeAbility"
+      //          ]
+      //        }
+      //      }
     ]
   }
 }

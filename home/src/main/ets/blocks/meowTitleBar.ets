@@ -80,6 +80,7 @@ struct meowTitleBar {
   @Link settings_title_bar_position: string;
   @Link settings_tabs_style: string;
   @Link settings_collect_new_history: boolean;
+  @Link settings_intelligent_tracking_prevention: boolean;
   @Link sys_back_to_access_backward: boolean;
   @Link web_force_dark_mode: boolean;
   @Link use_adblock: boolean;
@@ -489,6 +490,7 @@ struct meowTitleBar {
       meowAppSettings({
         showing_app_settings: this.showing_app_settings,
         settings_collect_new_history: this.settings_collect_new_history,
+        settings_intelligent_tracking_prevention: this.settings_intelligent_tracking_prevention,
         use_adblock: this.use_adblock,
         adblock_exceptions: this.adblock_exceptions,
         sys_back_to_access_backward: this.sys_back_to_access_backward,

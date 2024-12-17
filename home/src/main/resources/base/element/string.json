@@ -73,6 +73,10 @@
       "value": "Storage"
     },
     {
+      "name": "Settings_security",
+      "value": "Security"
+    },
+    {
       "name": "Settings_about",
       "value": "About"
     },
@@ -499,6 +503,10 @@
     {
       "name": "AddSE_search_again_on",
       "value": "Search again on..."
+    },
+    {
+      "name": "Settings_intelligent_tracking_prevention",
+      "value": "ArkWeb Intelligent Tracking Prevention"
     }
   ]
 }

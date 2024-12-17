@@ -13,7 +13,6 @@ import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import linysShowButton from '../components/linysShowButton';
 import linysText from '../components/linysText';
 import { sandbox_open_array_sync, sandbox_unlink_sync } from '../utils/storage_tools';
-import { fileIo as fs } from '@kit.CoreFileKit';
 
 @Component
 struct meowTabs {
@@ -44,6 +43,7 @@ struct meowTabs {
   @Link settings_tabs_style: string;
   @Link use_adblock: boolean;
   @Link adblock_exceptions: string[];
+  @Link settings_intelligent_tracking_prevention: boolean;
   // Animation info
   tab_height_default: number = 42;
   scroll_controller: Scroller = new Scroller();
@@ -67,6 +67,10 @@ struct meowTabs {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   async aboutToAppear() {
+    // set Intelligent Tracking Prevention
+    this.settings_intelligent_tracking_prevention =
+      await this.bunch_of_settings.get('intelligent_tracking_prevention') as boolean;
+
     // Get Data
     let home_url = await this.bunch_of_settings.get('home_url') as string;
     let new_tab_url = await this.bunch_of_settings.get('new_tab_url') as string;
@@ -150,12 +154,13 @@ struct meowTabs {
 
       // Create new tabs
       for (let index = 0; index < web_state_arrays_to_restore.length; index++) {
-        let web_state_array = web_state_arrays_to_restore[index];
-        if (web_state_array.length > 0) {
-          this.new_tab("", true);
-        } else {
-          this.new_tab("", false);
-        }
+        // let web_state_array = web_state_arrays_to_restore[index];
+        // if (web_state_array.length > 0) {
+        //   this.new_tab("", true);
+        // } else {
+        //   this.new_tab("", false);
+        // }
+        this.new_tab("", true);
       }
 
       // Try to switch tab
@@ -374,7 +379,7 @@ struct meowTabs {
 
       // clear extra continue storage
       let index = this.tab_titles.length;
-      while(true) {
+      while (true) {
         let key = "continue/continue_tabs_web_state_array_" + index.toString();
         console.log('awa')
         try {

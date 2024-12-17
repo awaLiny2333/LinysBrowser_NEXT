@@ -73,6 +73,10 @@
       "value": "存储"
     },
     {
+      "name": "Settings_security",
+      "value": "安全"
+    },
+    {
       "name": "Settings_about",
       "value": "关于"
     },
@@ -499,6 +503,10 @@
     {
       "name": "AddSE_search_again_on",
       "value": "重新搜索于……"
+    },
+    {
+      "name": "Settings_intelligent_tracking_prevention",
+      "value": "方舟智能防跟踪"
     }
   ]
 }

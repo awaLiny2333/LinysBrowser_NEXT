@@ -91,6 +91,7 @@ struct meowAppSettings {
   @Link use_adblock: boolean;
   @Link adblock_exceptions: string[];
   @Link settings_collect_new_history: boolean;
+  @Link settings_intelligent_tracking_prevention: boolean;
   // Edits
   @State new_tab_url_edit: string = "";
   @State home_url_edit: string = "";
@@ -99,8 +100,8 @@ struct meowAppSettings {
   @State scroll_first: number = 0;
   @State scroll_last: number = 0;
   @State menu_text: string[] =
-    ['Settings_start_up', 'Settings_general', 'Settings_Experience', 'Settings_experience_history',
-      'Settings_appearance', 'Settings_storage', 'Settings_about'];
+    ['Settings_start_up', 'Settings_general', 'Settings_Experience', 'Settings_appearance',
+      'Settings_experience_history', 'Settings_storage', 'Settings_security', 'Settings_about'];
   // Dialogs
   woofHistory_control: CustomDialogController = new CustomDialogController({
     builder: woofHistory({ showing_settings: this.show }),
@@ -342,45 +343,6 @@ struct meowAppSettings {
 
           FlowItem() {
             Column({ space: 15 }) {
-
-              linysTitleText({ text: $r('app.string.Settings_experience_history') }) // History
-
-              Row() {
-                linysText({ text: $r('app.string.Settings_experience_history_record_new') })
-                Blank()
-                Toggle({ isOn: this.settings_collect_new_history, type: ToggleType.Switch })
-                  .switchPointColor(this.color_current_secondary)
-                  .selectedColor(this.color_current_font)
-                  .onChange(isOn => {
-                    this.settings_collect_new_history = isOn;
-                    this.bunch_of_settings.set('collect_new_history', isOn);
-                  })
-              } // Toggle History
-              .width("100%")
-
-              Row({ space: 10 }) {
-                // linysTitleText({ text: "󰏕 " + this.history_length.toString() })
-                Blank()
-                linysText({ text: $r('app.string.Settings_experience_history_view') })
-                linysCapsuleButton({ text: "  󰀩  " })
-                  .onClick(() => {
-                    this.woofHistory_control.open();
-                  })
-              } // History management
-              .width("100%")
-            }
-            .padding(15)
-            .alignItems(HorizontalAlign.Start)
-            .justifyContent(FlexAlign.Start)
-            .width("100%")
-            .borderRadius(10)
-            .backgroundColor(this.color_current_primary)
-
-          } // History
-          .width("100%")
-
-          FlowItem() {
-            Column({ space: 15 }) {
               linysTitleText({ text: $r('app.string.Settings_appearance') }) // Appearance Title
 
               linysText({ text: $r('app.string.Settings_appearance_title_bar_position') }) // Title bar position
@@ -460,6 +422,45 @@ struct meowAppSettings {
 
           FlowItem() {
             Column({ space: 15 }) {
+
+              linysTitleText({ text: $r('app.string.Settings_experience_history') }) // History
+
+              Row() {
+                linysText({ text: $r('app.string.Settings_experience_history_record_new') })
+                Blank()
+                Toggle({ isOn: this.settings_collect_new_history, type: ToggleType.Switch })
+                  .switchPointColor(this.color_current_secondary)
+                  .selectedColor(this.color_current_font)
+                  .onChange(isOn => {
+                    this.settings_collect_new_history = isOn;
+                    this.bunch_of_settings.set('collect_new_history', isOn);
+                  })
+              } // Toggle History
+              .width("100%")
+
+              Row({ space: 10 }) {
+                // linysTitleText({ text: "󰏕 " + this.history_length.toString() })
+                Blank()
+                linysText({ text: $r('app.string.Settings_experience_history_view') })
+                linysCapsuleButton({ text: "  󰀩  " })
+                  .onClick(() => {
+                    this.woofHistory_control.open();
+                  })
+              } // History management
+              .width("100%")
+            }
+            .padding(15)
+            .alignItems(HorizontalAlign.Start)
+            .justifyContent(FlexAlign.Start)
+            .width("100%")
+            .borderRadius(10)
+            .backgroundColor(this.color_current_primary)
+
+          } // History
+          .width("100%")
+
+          FlowItem() {
+            Column({ space: 15 }) {
               linysTitleText({ text: $r('app.string.Settings_storage') }) // Storage Title
 
               linysText({ text: $r('app.string.Settings_storage_clear_webview') })
@@ -533,6 +534,35 @@ struct meowAppSettings {
             .borderRadius(10)
             .backgroundColor(this.color_current_primary)
           } // Storage
+          .width("100%")
+
+          FlowItem() {
+            Column({ space: 15 }) {
+              linysTitleText({ text: $r('app.string.Settings_security') }) // Security Title
+
+              Row() {
+                linysText({ text: $r('app.string.Settings_intelligent_tracking_prevention'), max_lines: 4 })
+                Blank()
+                Toggle({ isOn: this.settings_intelligent_tracking_prevention, type: ToggleType.Switch })
+                  .switchPointColor(this.color_current_secondary)
+                  .selectedColor(this.color_current_font)
+                  .onChange(isOn => {
+                    this.settings_intelligent_tracking_prevention = isOn;
+                    this.bunch_of_settings.set('intelligent_tracking_prevention', isOn);
+                    for (let index = 0; index < this.bunch_of_tabs.Tabs.length; index++) {
+                      this.bunch_of_tabs.Tabs[index].controller.enableIntelligentTrackingPrevention(isOn);
+                    }
+                  })
+              } // Toggle Intelligent Tracking Prevention
+              .width("100%")
+            }
+            .padding(15)
+            .alignItems(HorizontalAlign.Start)
+            .justifyContent(FlexAlign.Start)
+            .width("100%")
+            .borderRadius(10)
+            .backgroundColor(this.color_current_primary)
+          } // Security
           .width("100%")
 
           FlowItem() {
@@ -623,6 +653,10 @@ struct meowAppSettings {
     // Get whether to continue to collect new history
     this.settings_collect_new_history =
       await this.bunch_of_settings.get('collect_new_history') as boolean;
+
+    // Get whether to continue to enable intelligent_tracking_prevention
+    this.settings_intelligent_tracking_prevention =
+      await this.bunch_of_settings.get('intelligent_tracking_prevention') as boolean;
 
     // Get whether to use system back to access backward
     this.sys_back_to_access_backward =

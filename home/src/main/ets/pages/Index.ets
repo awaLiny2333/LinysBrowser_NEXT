@@ -17,6 +17,10 @@ import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 @Entry
 @Component
 struct Index {
+  // Want
+  @StorageLink('want_uri') @Watch('on_want') want_uri: string = 'want';
+  @StorageLink('want_action') want_action: string = '';
+  @StorageLink('want_type') want_type: string = '';
   // Init Hosts
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
@@ -66,15 +70,18 @@ struct Index {
   @StorageLink('current_sub_tab_index') current_sub_tab_index: number = -1;
   @StorageLink('current_accessForward') current_accessForward: boolean = false;
   @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
-  @StorageLink('universal_close_tab_gateway') uni_close_tab_gateway: number = -1;
   // Settings
   @State @Watch('on_title_bar_position_change') settings_title_bar_position: string = "";
   @State sys_back_to_access_backward: boolean = false;
   @State web_force_dark_mode: boolean = false;
   @State settings_tabs_style: string = "";
   @State settings_collect_new_history: boolean = true;
+  @State settings_intelligent_tracking_prevention: boolean = false;
   @State use_adblock: boolean = true;
   @State adblock_exceptions: string[] = [];
+  // Gateways
+  @StorageLink('universal_close_tab_gateway') uni_close_tab_gateway: number = -1;
+  @StorageLink('universal_new_tab_gateway') uni_new_tab_gateway: string = "";
   // Dialogs
   @StorageLink('universal_fail_prompt_desc_gateway') @Watch('on_fail_prompt_gateway') universal_fail_prompt_desc_gateway: ResourceStr =
     "";
@@ -120,6 +127,22 @@ struct Index {
     this.color_dark_primary = await this.bunch_of_settings.get('color_dark_primary') as string;
     this.color_dark_secondary = await this.bunch_of_settings.get('color_dark_secondary') as string;
     this.color_dark_font = await this.bunch_of_settings.get('color_dark_font') as string;
+
+    this.on_want();
+  }
+
+  on_want() {
+    if (this.want_uri.length == 0) {
+      console.log('[Meow][Index] Didn\'t load want for an empty want.')
+      return;
+    }
+    console.log('[Meow][Index] Load want with action: ' + this.want_action + ', type: ' + this.want_type);
+    if (this.want_action == "ohos.want.action.viewData") {
+      console.log('[Meow][Index] Load want uri: ' + this.want_uri);
+      this.uni_new_tab_gateway = this.want_uri;
+    }
+    // Respond to want
+    this.want_uri = "";
   }
 
   onBackPress(): boolean | void {
@@ -183,7 +206,7 @@ struct Index {
               Scroll() {
                 meowTabs({
                   // Environment
-
+                  settings_intelligent_tracking_prevention: this.settings_intelligent_tracking_prevention,
                   settings_tabs_style: this.settings_tabs_style,
                   adblock_exceptions: this.adblock_exceptions,
                   use_adblock: this.use_adblock,
@@ -221,7 +244,7 @@ struct Index {
 
           Row() {
             meowWebView({
-
+              settings_intelligent_tracking_prevention: this.settings_intelligent_tracking_prevention,
               settings_collect_new_history: this.settings_collect_new_history,
               web_force_dark_mode: this.web_force_dark_mode,
               search_input: this.search_input,
@@ -259,6 +282,7 @@ struct Index {
           search_input: this.search_input,
           is_search_input_typing: this.is_search_input_typing,
           settings_collect_new_history: this.settings_collect_new_history,
+          settings_intelligent_tracking_prevention: this.settings_intelligent_tracking_prevention,
           sys_back_to_access_backward: this.sys_back_to_access_backward,
           web_force_dark_mode: this.web_force_dark_mode,
           settings_title_bar_position: this.settings_title_bar_position,
