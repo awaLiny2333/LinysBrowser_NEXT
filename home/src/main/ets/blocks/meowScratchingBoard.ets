@@ -198,7 +198,7 @@ struct raw_data_display {
       linysText({
         text: $r('app.string.Downloads_copied'),
       })
-        .offset({ x: this.copied > 0 ? 5 : 50 })
+        .offset({ x: this.copied > 0 ? 0 : 50 })
         .opacity(0.7)
         .visibility(this.copied > 0 ? Visibility.Visible : Visibility.Hidden)
         .animation(animation_default())

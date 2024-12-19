@@ -112,7 +112,7 @@ struct meowWebView {
             .onPageBegin(() => {
               // console.log("[Meow][ArkWeb] on page begin")
 
-              if (Label.index_key >= this.bunch_of_tabs.Tabs.length) {
+              if (Label.index_key >= this.bunch_of_tabs.get_tabs_count()) {
                 // If not synced, idk why but o(=•ェ•=)m
                 return;
               }
@@ -167,7 +167,7 @@ struct meowWebView {
                 return;
               }
 
-              if (Label.index_key >= this.bunch_of_tabs.Tabs.length) {
+              if (Label.index_key >= this.bunch_of_tabs.get_tabs_count()) {
                 // If not synced, idk why but o(=•ェ•=)m
                 return;
               }
@@ -260,7 +260,6 @@ struct meowWebView {
     .height("100%")
     .onAppear(() => {
       console.log("[Meow][meowWebView] WebViews READY")
-      // console.log("[Meow][meowWebView] Restore tabs length: " + this.bunch_of_tabs.Tabs.length.toString())
     })
   }
 

@@ -131,7 +131,7 @@ struct HorizontalTabButton {
   @Link tab_titles: string[];
   // Gateways
   @StorageLink('universal_close_tab_gateway') close_tab_gateway: number = -1;
-  @StorageLink('universal_tab_button_clicked_gateway') uni_tab_button_clicked: number = -1;
+  @StorageLink('universal_tab_button_click_gateway') uni_tab_button_clicked: number = -1;
   @State offset_y: number = 100;
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');

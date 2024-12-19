@@ -478,7 +478,7 @@ struct meowAppSettings {
               Row({ space: 10 }) {
                 Scroll() {
                   linysTitleText({ text: "󰂼 " + add_units_to_size(this.web_cache_size) })
-                }
+                } // data display
                 .clickEffect(click_effect_default())
                 .align(Alignment.TopStart)
                 .scrollBar(BarState.Off)
@@ -490,7 +490,7 @@ struct meowAppSettings {
                   Blank()
                   linysCapsuleButton({ text: '  󰃈  ' })
                     .onClick(() => {
-                      this.web_cache_size = get_folder_size_Sync('/data/storage/el2/base/cache/web/Cache', true);
+                      this.web_cache_size = get_folder_size_Sync('/data/storage/el2/base/cache/web/', true);
                       this.bunch_of_settings.set('webview_cache_size', this.web_cache_size);
                     })
 
@@ -519,7 +519,7 @@ struct meowAppSettings {
                       Message: ${(error as BusinessError).message}`);
                         }
                         this.clear_web_cache_confirm = 0;
-                        this.web_cache_size = get_folder_size_Sync('/data/storage/el2/base/cache/web/Cache', true);
+                        this.web_cache_size = get_folder_size_Sync('/data/storage/el2/base/cache/web/', true);
                         this.bunch_of_settings.set('webview_cache_size', this.web_cache_size);
                       }
                     })
@@ -533,8 +533,8 @@ struct meowAppSettings {
                         // Reset delete confirm
                       }, 10)
                     })
-                }
-              }
+                } // buttons
+              } // data display and button
             }
             .padding(15)
             .alignItems(HorizontalAlign.Start)

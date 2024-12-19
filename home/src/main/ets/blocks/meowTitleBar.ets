@@ -253,7 +253,7 @@ struct meowTitleBar {
                 .fontColor(this.color_current_font)
                 .caretColor(this.color_current_font)
                 .offset({ y: !this.showing_search_extracted_field ? 0 : -50 })
-                .opacity(this.showing_search_extracted_field ? 0 : 100)
+                .opacity(this.showing_search_extracted_field ? 0 : this.showing_scratching_board ? 0.8 : 1)
                 .animation(animation_default())
                 .onDragEnter(() => {
                   this.showing_scratching_board = true;
@@ -264,7 +264,7 @@ struct meowTitleBar {
                 .onBlur(() => {
                   this.is_search_input_typing = false;
                 })
-                .focusable(this.showing_scratching_board ? false : true)
+                .enabled(this.showing_scratching_board ? false : true)
                 .onChange((content) => {
                   this.update_search_input(content);
                 })
@@ -288,7 +288,7 @@ struct meowTitleBar {
                 .fontColor(this.color_current_font)
                 .caretColor(this.color_current_font)
                 .offset({ y: this.showing_search_extracted_field ? 0 : 50 })
-                .opacity(this.showing_search_extracted_field ? 100 : 0)
+                .opacity(this.showing_search_extracted_field ? this.showing_scratching_board ? 0.8 : 1 : 0)
                 .animation(animation_default())
                 .onDragEnter(() => {
                   this.showing_scratching_board = true;
@@ -299,7 +299,7 @@ struct meowTitleBar {
                 .onBlur(() => {
                   this.is_search_input_typing = false;
                 })
-                .focusable(this.showing_scratching_board ? false : true)
+                .enabled(this.showing_scratching_board ? false : true)
                 .onChange((content) => {
                   this.search_extracted_keyword = content;
                   if (content == '') {
@@ -364,6 +364,8 @@ struct meowTitleBar {
               symbol_glyph_target: 'sys.symbol.curve_magnifyingglass'
             })// Add Search Engine
               .margin({ left: 10 })
+              .enabled(this.showing_scratching_board ? false : true)
+              .opacity(this.showing_scratching_board ? 0.4 : 1)
               .visibility(this.search_extracted_field_available ? Visibility.Visible : Visibility.None)
               .onClick(() => {
                 this.woofAddSE_control.open();
@@ -589,20 +591,12 @@ struct meowTitleBar {
     return !this.is_search_input_typing ? Visibility.Visible : Visibility.None
   }
 
-  visible_in_tablet_mode() {
-    return this.tablet_mode ? Visibility.Visible : Visibility.None;
-  }
-
   visible_when_title_bar_on_top() {
     return this.settings_title_bar_position == "top" ? Visibility.Visible : Visibility.None;
   }
 
   visible_when_title_bar_on_bottom() {
     return this.settings_title_bar_position == "bottom" ? Visibility.Visible : Visibility.None;
-  }
-
-  visible_when_typing_in_tablet_mode() {
-    return this.tablet_mode && this.is_search_input_typing ? Visibility.Visible : Visibility.None;
   }
 
   visible_when_no_panels_open_in_normal_mode() {
@@ -614,6 +608,14 @@ struct meowTitleBar {
       }
     }
     return result;
+  }
+
+  visible_in_tablet_mode() {
+    return this.tablet_mode ? Visibility.Visible : Visibility.None;
+  }
+
+  visible_when_typing_in_tablet_mode() {
+    return this.tablet_mode && this.is_search_input_typing ? Visibility.Visible : Visibility.None;
   }
 
   // Events

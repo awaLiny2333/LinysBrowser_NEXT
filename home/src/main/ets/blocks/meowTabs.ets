@@ -16,14 +16,14 @@ import { sandbox_open_array_sync, sandbox_unlink_sync } from '../utils/storage_t
 
 @Component
 struct meowTabs {
+  // Hosts and environments
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
-  @StorageLink('showing_tabs') showing_tabs: boolean = false;
-  @StorageLink('current_main_tab_index') @Watch('on_did_switch_tab') current_main_tab_index: number = 0;
-  @StorageLink('current_sub_tab_index') @Watch('on_did_switch_tab') current_sub_tab_index: number = -1;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
-  @StorageProp('pathDir') pathDir: string = "";
-  // Controls and environments
+  @StorageLink('showing_tabs') showing_tabs: boolean = false;
+  @Link search_input: string;
+  @Link is_search_input_typing: boolean;
+  // Controls
   @StorageLink('tab_titles') tab_titles: string[] = []
   @StorageLink('current_title') current_title: string = "=￣ω￣=";
   @StorageLink('tab_urls') tab_urls: string[] = []
@@ -33,10 +33,10 @@ struct meowTabs {
   @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]
   @StorageLink('current_is_loading') current_is_loading: boolean = true
   // Web control statuses
+  @StorageLink('current_main_tab_index') @Watch('on_did_switch_tab') current_main_tab_index: number = 0;
+  @StorageLink('current_sub_tab_index') @Watch('on_did_switch_tab') current_sub_tab_index: number = -1;
   @StorageLink('current_accessForward') current_accessForward: boolean = false;
   @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
-  @Link search_input: string;
-  @Link is_search_input_typing: boolean;
   // Other Info / Statuses
   @State recover_tabs_finished: boolean = false;
   @StorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
@@ -56,11 +56,10 @@ struct meowTabs {
   @State paralleow_description_height: number = 0;
   @StorageLink('tab_animation') tab_animation: AnimateParam = animation_default();
   // Gateways
-  @StorageLink('universal_load_url_gateway') @Watch('on_current_load_url') load_url_gateway: string = "";
-  @StorageLink('universal_new_tab_gateway') @Watch('on_new_targeted_tab') new_tab_gateway: string = "";
-  @StorageLink('universal_close_tab_gateway') @Watch('on_targeted_close_tab') close_tab_gateway: number = -1;
-  @StorageLink('universal_tab_button_clicked_gateway') @Watch('on_uni_tab_button_clicked') uni_tab_button_clicked:
-    number = -1;
+  @StorageLink('universal_load_url_gateway') @Watch('uni_load_url') load_url_gateway: string = "";
+  @StorageLink('universal_new_tab_gateway') @Watch('uni_new_tab') new_tab_gateway: string = "";
+  @StorageLink('universal_close_tab_gateway') @Watch('uni_close_tab') close_tab_gateway: number = -1;
+  @StorageLink('universal_tab_button_click_gateway') @Watch('uni_tab_button_click') uni_tab_button_clicked: number = -1;
   @StorageLink('universal_global_custom_ua_gateway') @Watch('on_global_custom_UA_change') global_custom_UA: string = "";
   // Colors
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -283,6 +282,15 @@ struct meowTabs {
     this.tab_animation = { duration: 0 };
 
     this.current_main_tab_index = this.bunch_of_tabs.newTab(target_url, do_recovery);
+
+    if (!do_recovery) {
+      // Store tabs count
+      let store_tabs_count = this.bunch_of_tabs.get_tabs_count().toString();
+      console.log("[Meow][meowTabs] Stored Tabs Count: " + store_tabs_count)
+      kv_store_put("continue_tabs_count", store_tabs_count);
+    }
+
+    // Animation part
     this.extension_area.push(0);
 
     if (this.scroll_animation_enabled) {
@@ -296,13 +304,6 @@ struct meowTabs {
     this.offset_area.push(this.tab_height_default + 1000)
     // Scroll to the new tab later
     this.count_down_for_scrolling_to_bottom = 20;
-
-    if (!do_recovery) {
-      let store_tabs_count = this.offset_area.length.toString();
-      console.log("[Meow][meowTabs] Stored Tabs Count: " + store_tabs_count)
-      // Store tabs count
-      kv_store_put("continue_tabs_count", store_tabs_count);
-    }
   }
 
   switch_tab(target: number) {
@@ -323,25 +324,79 @@ struct meowTabs {
     // Set CURRENT variables
     this.update_current_info()
     // Update Input Search Box
-    this.update_search_box_text(this.current_url)
+    this.set_search_box_text(this.current_url)
   }
 
   close_tab(target: number) {
-    this.tab_animation = { duration: 0 };
+    if (!this.recover_tabs_finished) {
+      return;
+    }
 
-    // console.log(target.toString() + " / " + this.offset_area.length.toString())
+    // Some kind of bug, idk why but this is essential when closing tabs quickly
     if (target >= this.offset_area.length) {
-      // Some kind of bug, idk why but this is essential when closing tabs quickly
       console.error("[Meow][LinysTabs][ERROR] Ran into the weird bug of target >= this.offset_area.length")
       return;
     }
 
+    // Set animation duration
+    // this is stupid
+    this.tab_animation = { duration: 0 };
+
+    // Turn off Paralleow
     if (target == this.current_sub_tab_index || target == this.current_main_tab_index) {
-      // Turn paralleow off if closing any of the two
-      console.log('[Meow][LinysTabs] Turn Paralleow off')
+      console.log('[Meow][LinysTabs] Paralleow off')
       this.current_sub_tab_index = -1;
     }
 
+    // Close
+    this.current_main_tab_index = this.bunch_of_tabs.closeTab(target, url_default_blank())
+    // Update history
+    this.update_backward_forward_access()
+    // Get synced lists
+    this.sync_all_list_info()
+    // Set CURRENT variables
+    this.update_current_info()
+    // Update Input Search Box
+    this.set_search_box_text(this.current_url)
+
+    // Store tabs count
+    let store_tabs_count = this.tab_titles.length.toString();
+    console.log("[Meow][meowTabs] Store Tabs Count: " + store_tabs_count)
+    kv_store_put("continue_tabs_count", store_tabs_count);
+
+    // clear extra continue storage
+    let index = this.bunch_of_tabs.Tabs.length;
+    while (true) {
+      let key = "continue/continue_tabs_web_state_array_" + index.toString();
+      // console.log('awa')
+      try {
+        sandbox_unlink_sync(key);
+      } catch (e) {
+        // console.log('qwq')
+        // console.error(e);
+        break;
+      }
+      index += 1;
+    }
+    // re-save web states
+    this.bunch_of_tabs.re_save_web_state(target);
+
+    // Paralleow
+    if (this.current_main_tab_index == this.current_sub_tab_index) {
+      // if Paralleow crash then turn off
+      this.current_sub_tab_index = -1;
+    }
+
+    // if only 1 tab left then reset Paralleow stuff
+    if (this.tab_titles.length == 1) {
+      this.current_sub_tab_index = -1;
+      this.choosing_paralleow = false;
+    }
+    if (target < this.current_sub_tab_index) {
+      this.current_sub_tab_index -= 1;
+    }
+
+    // Animation part
     if (target != 0) {
       this.extension_area[target-1] += this.tab_height_default + this.extension_area[target];
       // If isn't closing the top most tab
@@ -355,73 +410,26 @@ struct meowTabs {
       this.offset_area.splice(target, 1)
     }
 
-    this.count_down_for_switching_back_to_spring += 10;
     // Set Scroll spring on edge effect off
     // So that when closing the last tab, it is always stuck at the bottom
     // Or we'll have to wait for the spring animation to finish, bringing the last tab button down.
-
-    // Close
-    this.current_main_tab_index = this.bunch_of_tabs.closeTab(target, url_default_blank())
-    // Update history
-    this.update_backward_forward_access()
-    // Get synced lists
-    this.sync_all_list_info()
-    // Set CURRENT variables
-    this.update_current_info()
-    // Update Input Search Box
-    this.update_search_box_text(this.current_url)
-
-    if (this.recover_tabs_finished) {
-      let store_tabs_count = this.offset_area.length.toString();
-      console.log("[Meow][meowTabs] Store Tabs Count: " + store_tabs_count)
-      // Store tabs count
-      kv_store_put("continue_tabs_count", store_tabs_count);
-
-      // clear extra continue storage
-      let index = this.tab_titles.length;
-      while (true) {
-        let key = "continue/continue_tabs_web_state_array_" + index.toString();
-        console.log('awa')
-        try {
-          sandbox_unlink_sync(key);
-        } catch (e) {
-          console.error(e);
-          console.log('qwq')
-          break;
-        }
-        index += 1;
-      }
-    }
-
-    if (this.current_main_tab_index == this.current_sub_tab_index) {
-      // if Paralleow crash then turn off
-      this.current_sub_tab_index = -1;
-    }
-
-    if (this.tab_titles.length == 1) {
-      // if only 1 tab left then reset Paralleow stuff
-      this.current_sub_tab_index = -1;
-      this.choosing_paralleow = false;
-    }
-    if (target < this.current_sub_tab_index) {
-      this.current_sub_tab_index -= 1;
-    }
-    this.bunch_of_tabs.re_save_web_state(target);
+    this.count_down_for_switching_back_to_spring += 10;
   }
 
   choose_paralleow() {
     if (this.choosing_paralleow) {
       // if is choosing, cancel choosing, back to no paralleow
       this.choosing_paralleow = false;
+      return;
+    }
+
+    if (this.current_sub_tab_index < 0) {
+      // if haven't chosen one, then start to choose
+      this.choosing_paralleow = true;
     } else {
-      if (this.current_sub_tab_index < 0) {
-        // if haven't chosen one, then start to choose
-        this.choosing_paralleow = true;
-      } else {
-        // Quit Paralleow
-        this.choosing_paralleow = false;
-        this.current_sub_tab_index = -1;
-      }
+      // Quit Paralleow
+      this.choosing_paralleow = false;
+      this.current_sub_tab_index = -1;
     }
   }
 
@@ -432,6 +440,25 @@ struct meowTabs {
   }
 
   // Utils
+
+  on_timer() {
+    for (let index = 0; index < this.extension_area.length; index++) {
+      this.extension_area[index] += (0 - this.extension_area[index]) / 6;
+      this.offset_area[index] += (0 - this.offset_area[index]) / 5;
+      // Shrink areas
+    }
+    if (this.count_down_for_switching_back_to_spring > 0) {
+      this.count_down_for_switching_back_to_spring -= 1;
+    }
+    // Count down
+    if (this.count_down_for_scrolling_to_bottom > 0) {
+      this.count_down_for_scrolling_to_bottom -= 1;
+      if (this.count_down_for_scrolling_to_bottom == 1) {
+        this.scroll_controller.scrollEdge(Edge.Bottom)
+        // Execute
+      }
+    }
+  }
 
   update_current_info() {
     this.current_title = this.tab_titles[this.current_main_tab_index];
@@ -467,67 +494,38 @@ struct meowTabs {
     }
   }
 
-  update_search_box_text(text: string) {
+  set_search_box_text(text: string) {
     if (!this.is_search_input_typing && text) {
       this.search_input = url_resource_to_meow(text);
       // Update Input Search Box
     }
   }
 
-  on_timer() {
-    for (let index = 0; index < this.extension_area.length; index++) {
-      this.extension_area[index] += (0 - this.extension_area[index]) / 6;
-      this.offset_area[index] += (0 - this.offset_area[index]) / 5;
-      // Shrink areas
-    }
-    if (this.count_down_for_switching_back_to_spring > 0) {
-      this.count_down_for_switching_back_to_spring -= 1;
-    }
-    // Count down
-    if (this.count_down_for_scrolling_to_bottom > 0) {
-      this.count_down_for_scrolling_to_bottom -= 1;
-      if (this.count_down_for_scrolling_to_bottom == 1) {
-        this.scroll_controller.scrollEdge(Edge.Bottom)
-        // Execute
-      }
-    }
-  }
-
-  click_tab_button(index: number) {
-    if (index < 0) {
-      return;
-    }
-
-    if (this.choosing_paralleow && this.current_main_tab_index != index) {
-      // if choosing and is not main web then set as sub view (Paralleow)
-      this.choosing_paralleow = false;
-      this.current_sub_tab_index = index;
-      // this.showing_tabs = false;
-    } else {
-      if (this.current_sub_tab_index >= 0) {
-        // Paralleow enabled
-        if (this.current_sub_tab_index == index) {
-          // if paralleowing this tab
-          this.switch_paralleow();
-        } else if (this.current_main_tab_index == index) {
-          // if is main this tab
-          this.switch_paralleow();
-        } else {
-          this.tab_animation = { duration: 0 };
-          this.switch_tab(index)
-        }
-      } else {
-        this.tab_animation = { duration: 0 };
-        this.switch_tab(index)
-      }
-    }
-  }
-
   // Events
 
-  on_uni_tab_button_clicked() {
-    if (this.uni_tab_button_clicked >= 0) {
-      this.click_tab_button(this.uni_tab_button_clicked);
+  uni_tab_button_click() {
+    let clicked = this.uni_tab_button_clicked;
+    let sub = this.current_sub_tab_index;
+    let main = this.current_main_tab_index;
+
+    if (clicked >= 0) {
+      if (this.choosing_paralleow && main != clicked) {
+        // if choosing Paralleow
+        // and is not selected as main web
+        // (this tab is selectable to be a sub view)
+        // then set this tab as sub view
+        this.choosing_paralleow = false;
+        this.current_sub_tab_index = clicked;
+      } else if (sub >= 0 && (sub == clicked || main == clicked)) {
+        // if Paralleow enabled
+        // and this tab clicked is one of main or sub
+        // then switch the two tabs
+        this.switch_paralleow();
+      } else {
+        // simply switch tab
+        this.tab_animation = { duration: 0 };
+        this.switch_tab(clicked);
+      }
     }
     // Reset
     this.uni_tab_button_clicked = -1;
@@ -550,7 +548,7 @@ struct meowTabs {
     this.bunch_of_tabs.set_global_custom_UA(this.global_custom_UA);
   }
 
-  on_new_targeted_tab() {
+  uni_new_tab() {
     if (this.new_tab_gateway != "") {
       if (this.new_tab_gateway == "new_tab") {
         this.new_tab_gateway = ""
@@ -561,14 +559,14 @@ struct meowTabs {
     }
   }
 
-  on_targeted_close_tab() {
+  uni_close_tab() {
     if (this.close_tab_gateway >= 0) {
       this.close_tab(this.close_tab_gateway);
       this.close_tab_gateway = -1;
     }
   }
 
-  on_current_load_url() {
+  uni_load_url() {
     if (this.load_url_gateway != "") {
       setTimeout(() => {
         this.bunch_of_tabs.loadUrl_onWorkingTab(this.load_url_gateway);
@@ -579,7 +577,6 @@ struct meowTabs {
 }
 
 export default meowTabs;
-
 
 @Component
 struct TabButton {
@@ -593,7 +590,7 @@ struct TabButton {
   @StorageLink('current_sub_tab_index') current_sub_tab_index: number = -1;
   @StorageLink('tab_titles') tab_titles: string[] = []
   // Gateways
-  @StorageLink('universal_tab_button_clicked_gateway') uni_tab_button_clicked: number = -1;
+  @StorageLink('universal_tab_button_click_gateway') uni_tab_button_clicked: number = -1;
   @StorageLink('universal_close_tab_gateway') close_tab_gateway: number = -1;
   // Colors
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');

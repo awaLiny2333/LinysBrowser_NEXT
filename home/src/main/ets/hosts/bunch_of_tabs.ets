@@ -325,6 +325,14 @@ export class bunch_of_tabs {
   // Data Syncing
 
   /**
+   * Returns the number of currently opened tabs
+   * @returns A number.
+   * */
+  get_tabs_count() {
+    return this.Tabs.length;
+  }
+
+  /**
    * Gets a list of all tabs' titles of current viewing pages.
    * @returns A string[] array, the titles.
    * */

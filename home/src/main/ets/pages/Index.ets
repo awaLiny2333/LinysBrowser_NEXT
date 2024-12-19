@@ -179,7 +179,7 @@ struct Index {
       if (this.go_back_if_possible()) {
         stop_system_back = true;
       } else {
-        if (this.bunch_of_tabs.Tabs.length > 1) {
+        if (this.bunch_of_tabs.get_tabs_count() > 1) {
           // Can close something
           this.uni_close_tab_gateway = this.current_main_tab_index;
           stop_system_back = true;

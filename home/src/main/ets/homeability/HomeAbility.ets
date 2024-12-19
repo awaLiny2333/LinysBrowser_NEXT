@@ -14,6 +14,7 @@ export default class HomeAbility extends UIAbility {
     AppStorage.setOrCreate('pathDir', this.context.filesDir);
     AppStorage.setOrCreate('currentColorMode', this.context.config.colorMode);
 
+    // Process want
     this.process_want(want);
   }
 
