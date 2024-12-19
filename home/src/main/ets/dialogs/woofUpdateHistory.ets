@@ -10,12 +10,18 @@ struct woofUpdateHistory {
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @State texts: string[] = [
+    'v1.7.3-beta',
+    'A regular update, bringing Immersive Fullscreen, Cookie management, and more accurate cache size calculation into BrowserCat!\n' +
+      'What\'s more, The app can now be set as default browser of system!',
+    '一个常规更新，将沉浸式全屏、曲奇管理和更准确的缓存大小统计带入冲浪喵～\n' +
+      '并且并且，现在这个 App 可以被设置为默认浏览器了！',
+
     'v1.7.2-beta',
     'A regular update, bringing Intelligent Tracking Prevention feature into BrowserCat!\n' +
       'What\'s more, The app can now be set as default browser of system!',
     '一个常规更新，将智能防追踪功能带入冲浪喵～\n' +
       '并且并且，现在这个 App 可以被设置为默认浏览器了！',
-    
+
     'v1.7.1-beta',
     'A KEY PATCH. INTRODUCING HISTORY MIGRATION FROM OLD BROWSERCATS.\n' +
       'So that history records on old BrowserCats would be inherited.',
