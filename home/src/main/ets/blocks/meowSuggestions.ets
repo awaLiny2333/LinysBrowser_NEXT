@@ -9,17 +9,17 @@ struct meowSuggestions {
   // Environments or settings
   @Prop top_margin: number = 0;
   @Prop bottom_margin: number = 0;
-  @StorageProp('screen_height') screen_height: number = 0;
   @State content_height: number = 0;
-  @Prop @Watch('refresh_suggestions') search_input: string = "";
-  @Prop is_search_input_typing: boolean;
+  @StorageProp('is_search_input_typing') is_search_input_typing: boolean = false;
+  @StorageProp('search_input') @Watch('refresh_suggestions') search_input: string = "";
+  @StorageProp('screen_height') screen_height: number = 0;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   // Hosts
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
   // Settings
-  @Prop @Watch('refresh_suggestions') settings_max_bookmark_suggestions: number = 5;
-  @Prop @Watch('refresh_suggestions') settings_max_history_suggestions: number = 5;
+  @StorageProp('max_bookmark_advice') @Watch('refresh_suggestions') max_bookmark_advice: number = 5;
+  @StorageProp('max_history_advice') @Watch('refresh_suggestions') max_history_advice: number = 5;
   // Myself
   @State bookmark_suggestions: string[][] = [];
   @State history_suggestions: string[][] = [];
@@ -90,11 +90,11 @@ struct meowSuggestions {
     } else {
       let label_link_bookmark = this.bunch_of_bookmarks.get_all_plain_label_link();
       this.bookmark_suggestions =
-        get_relations(label_link_bookmark, this.search_input, this.settings_max_bookmark_suggestions);
+        get_relations(label_link_bookmark, this.search_input, this.max_bookmark_advice);
 
       let label_link_history = this.bunch_of_history.get_plain_history();
       this.history_suggestions =
-        get_relations(label_link_history, this.search_input, this.settings_max_history_suggestions);
+        get_relations(label_link_history, this.search_input, this.max_history_advice);
     }
   }
 }

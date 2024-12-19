@@ -18,23 +18,23 @@ import linysPathDisplay from '../components/linysPathDisplay';
 
 @Component
 struct meowBookmarks {
-  @StorageProp('tablet_mode') tablet_mode: boolean = false;
+  // Hosts
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("Bookmarks~Meow");
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @State viewing_contents: unified_item[] = this.bunch_of_bookmarks.root.get_content();
   @State @Watch('refresh_content_view') looking_at_path: string = "";
   @State current_folder: folder | undefined = undefined;
   // Environments
+  @StorageProp('tablet_mode') tablet_mode: boolean = false;
+  // Input and Interactions
   @State add_label: string = "";
   @State add_link: string = "";
+  @State scroll_area_height: number = 0;
   @State adding_folder: boolean = false;
   @State adding_bookmark: boolean = false;
   @State showing_navigator: boolean = false;
   @State importing_bookmarks: boolean = false;
   @State exporting_bookmarks: boolean = false;
-  // Input interactions
-  @State scroll_area_height: number = 0;
-  @State bookmark_load_from_disk_ok: boolean = false;
   // Dialogs
   @StorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
   // Colors
@@ -273,7 +273,6 @@ struct meowBookmarks {
       this.bunch_of_bookmarks.import_html(html_bookmarks, true);
       this.refresh_content_view();
     }
-    this.bookmark_load_from_disk_ok = true;
     // Get bookmarks
   }
 

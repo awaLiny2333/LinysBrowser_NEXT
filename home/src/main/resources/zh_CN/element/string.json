@@ -394,7 +394,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "1. 智能防追踪功能～\n2. 可以设置为默认浏览器了！"
+      "value": "1. 沉静式全屏！\n2. 智能防追踪功能～\n3. 可以设置为默认浏览器了！"
     },
     {
       "name": "Whats_new_content_extra",
@@ -505,11 +505,11 @@
       "value": "重新搜索于……"
     },
     {
-      "name": "Settings_intelligent_tracking_prevention",
+      "name": "intelligent_tracking_prevention",
       "value": "方舟智能防跟踪"
     },
     {
-      "name": "Settings_intelligent_tracking_prevention_desc",
+      "name": "intelligent_tracking_prevention_desc",
       "value": "禁止跟踪型网站（作为第三方）插入其它网页时发送携带 Cookie 的网络请求："
     },
     {

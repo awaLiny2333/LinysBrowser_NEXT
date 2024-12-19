@@ -394,7 +394,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "1. Intelligent Tracking Prevention~\n2. Can be set as default browser now!"
+      "value": "1. Immersive fullscreen!\n2. Intelligent Tracking Prevention~\n3. Can be set as default browser now!"
     },
     {
       "name": "Whats_new_content_extra",
@@ -505,11 +505,11 @@
       "value": "Search again on..."
     },
     {
-      "name": "Settings_intelligent_tracking_prevention",
+      "name": "intelligent_tracking_prevention",
       "value": "ArkWeb Intelligent Tracking Prevention"
     },
     {
-      "name": "Settings_intelligent_tracking_prevention_desc",
+      "name": "intelligent_tracking_prevention_desc",
       "value": "Restrict tracker sites (as third parties) inserted into other pages from sending network requests with cookies:"
     },
     {

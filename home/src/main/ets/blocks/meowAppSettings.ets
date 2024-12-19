@@ -35,10 +35,10 @@ import woofCookies from '../dialogs/woofCookies';
 
 @Component
 struct meowAppSettings {
-  // Functions
-  @Link showing_app_settings: boolean;
-  @Link settings_title_bar_position: string;
-  @Link settings_tabs_style: string;
+  @Link @Watch('on_open_or_close_panel') showing_app_settings: boolean;
+  // Hosts and environment
+  @StorageLink('tabs_style') tabs_style: string = "";
+  @StorageLink('title_bar_position') title_bar_position: string = "";
   @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
@@ -53,7 +53,6 @@ struct meowAppSettings {
   // Generals
   @StorageProp('screen_width') screen_width: number = 0;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
-  @Link @Watch('on_open_or_close_panel') show: boolean;
   @StorageLink('animation_response') animation_response: number = 0;
   @StorageLink('animation_damping_coefficient') animation_damping_coefficient: number = 0;
   // Information
@@ -85,14 +84,13 @@ struct meowAppSettings {
   @State @Watch('on_title_bar_position_changed') title_bar_position_selected: number[] = [0];
   @State @Watch('on_tabs_style_changed') tabs_style_selected: number[] = [0];
   @State @Watch('on_start_up_page_changed') start_up_page_selected: number[] = [0];
-  @Link settings_max_bookmark_suggestions: number;
-  @Link settings_max_history_suggestions: number;
-  @Link sys_back_to_access_backward: boolean;
-  @Link web_force_dark_mode: boolean;
-  @Link use_adblock: boolean;
-  @Link adblock_exceptions: string[];
-  @Link settings_collect_new_history: boolean;
-  @Link settings_intelligent_tracking_prevention: boolean;
+  @StorageLink('max_bookmark_advice') max_bookmark_advice: number = 5;
+  @StorageLink('max_history_advice') max_history_advice: number = 5;
+  @StorageLink('sys_back_to_access_backward') sys_back_to_access_backward: boolean = false;
+  @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
+  @StorageLink('use_adblock') use_adblock: boolean = true;
+  @StorageLink('collect_new_history') collect_new_history: boolean = true;
+  @StorageLink('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
   // Edits
   @State new_tab_url_edit: string = "";
   @State home_url_edit: string = "";
@@ -105,14 +103,14 @@ struct meowAppSettings {
       'Settings_experience_history', 'Settings_storage', 'Settings_security', 'Settings_about'];
   // Dialogs
   woofHistory_control: CustomDialogController = new CustomDialogController({
-    builder: woofHistory({ showing_settings: this.show }),
+    builder: woofHistory({ showing_settings: this.showing_app_settings }),
     alignment: DialogAlignment.Center,
     cornerRadius: 22,
     showInSubWindow: true,
     width: "90%",
   });
   adsBlocker_control: CustomDialogController = new CustomDialogController({
-    builder: woofAdsBlocker({ adblock_exceptions: this.adblock_exceptions }),
+    builder: woofAdsBlocker(),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
     showInSubWindow: true,
@@ -306,17 +304,17 @@ struct meowAppSettings {
                 Slider({
                   min: 0,
                   max: 5,
-                  value: this.settings_max_bookmark_suggestions,
+                  value: this.max_bookmark_advice,
                   style: SliderStyle.InSet,
                 })
                   .layoutWeight(1)
                   .blockColor(this.color_current_primary)
                   .selectedColor(this.color_current_font)
                   .onChange((value) => {
-                    this.settings_max_bookmark_suggestions = value;
+                    this.max_bookmark_advice = value;
                     this.bunch_of_settings.set('max_bookmark_suggest', value);
                   })
-                linysText({ text: this.settings_max_bookmark_suggestions.toString() })
+                linysText({ text: this.max_bookmark_advice.toString() })
                   .margin({ right: 5 })
               } // Slider and display of max_bookmark_suggestions
 
@@ -325,17 +323,17 @@ struct meowAppSettings {
                 Slider({
                   min: 0,
                   max: 5,
-                  value: this.settings_max_history_suggestions,
+                  value: this.max_history_advice,
                   style: SliderStyle.InSet,
                 })
                   .layoutWeight(1)
                   .blockColor(this.color_current_primary)
                   .selectedColor(this.color_current_font)
                   .onChange((value) => {
-                    this.settings_max_history_suggestions = value;
+                    this.max_history_advice = value;
                     this.bunch_of_settings.set('max_history_suggest', value);
                   })
-                linysText({ text: this.settings_max_history_suggestions.toString() })
+                linysText({ text: this.max_history_advice.toString() })
                   .margin({ right: 5 })
               } // Slider and display of max_history_suggestions
 
@@ -437,11 +435,11 @@ struct meowAppSettings {
               Row() {
                 linysText({ text: $r('app.string.Settings_experience_history_record_new') })
                 Blank()
-                Toggle({ isOn: this.settings_collect_new_history, type: ToggleType.Switch })
+                Toggle({ isOn: this.collect_new_history, type: ToggleType.Switch })
                   .switchPointColor(this.color_current_secondary)
                   .selectedColor(this.color_current_font)
                   .onChange(isOn => {
-                    this.settings_collect_new_history = isOn;
+                    this.collect_new_history = isOn;
                     this.bunch_of_settings.set('collect_new_history', isOn);
                   })
               } // Toggle History
@@ -475,16 +473,9 @@ struct meowAppSettings {
               linysText({ text: $r('app.string.Settings_storage_clear_webview') })
               linysText({ text: $r('app.string.Settings_storage_clear_webview_desc'), max_lines: 6 })
 
-              Row({ space: 10 }) {
-                Scroll() {
-                  linysTitleText({ text: "󰂼 " + add_units_to_size(this.web_cache_size) })
-                } // data display
-                .clickEffect(click_effect_default())
-                .align(Alignment.TopStart)
-                .scrollBar(BarState.Off)
-                .edgeEffect(EdgeEffect.Spring)
-                .scrollable(ScrollDirection.Horizontal)
-                .layoutWeight(1)
+              Column({ space: 10 }) {
+                linysTitleText({ text: "󰂼 " + add_units_to_size(this.web_cache_size) })// data display
+                  .clickEffect(click_effect_default())
 
                 Row({ space: 12 }) {
                   Blank()
@@ -534,7 +525,9 @@ struct meowAppSettings {
                       }, 10)
                     })
                 } // buttons
+                .width("100%")
               } // data display and button
+              .alignItems(HorizontalAlign.Start)
             }
             .padding(15)
             .alignItems(HorizontalAlign.Start)
@@ -550,17 +543,17 @@ struct meowAppSettings {
               linysTitleText({ text: $r('app.string.Settings_security') }) // Security Title
 
               linysText({
-                text: $r('app.string.Settings_intelligent_tracking_prevention_desc'),
+                text: $r('app.string.intelligent_tracking_prevention_desc'),
                 max_lines: 10
               })
               Row() {
-                linysText({ text: $r('app.string.Settings_intelligent_tracking_prevention'), max_lines: 4 })
+                linysText({ text: $r('app.string.intelligent_tracking_prevention'), max_lines: 4 })
                   .layoutWeight(1)
-                Toggle({ isOn: this.settings_intelligent_tracking_prevention, type: ToggleType.Switch })
+                Toggle({ isOn: this.intelligent_tracking_prevention, type: ToggleType.Switch })
                   .switchPointColor(this.color_current_secondary)
                   .selectedColor(this.color_current_font)
                   .onChange(isOn => {
-                    this.settings_intelligent_tracking_prevention = isOn;
+                    this.intelligent_tracking_prevention = isOn;
                     this.bunch_of_settings.set('intelligent_tracking_prevention', isOn);
                     for (let index = 0; index < this.bunch_of_tabs.Tabs.length; index++) {
                       this.bunch_of_tabs.Tabs[index].controller.enableIntelligentTrackingPrevention(isOn);
@@ -640,7 +633,7 @@ struct meowAppSettings {
       .height("100%")
       .animation(animation_default())
     }
-    .height(this.show ? "75%" : 0)
+    .height(this.showing_app_settings ? "75%" : 0)
     .width("100%")
     .animation(animation_default())
     .onAppear(() => {
@@ -659,26 +652,26 @@ struct meowAppSettings {
     })
 
     // Get settings of title bar position
-    this.settings_title_bar_position =
+    this.title_bar_position =
       await this.bunch_of_settings.get('title_bar_position') as string;
 
     // Get settings of title bar position
-    this.settings_tabs_style = await this.bunch_of_settings.get('tabs_style') as string;
+    this.tabs_style = await this.bunch_of_settings.get('tabs_style') as string;
 
     // Get number of max bookmarks suggestions
-    this.settings_max_bookmark_suggestions =
+    this.max_bookmark_advice =
       await this.bunch_of_settings.get('max_bookmark_suggest') as number;
 
     // Get number of max history suggestions
-    this.settings_max_history_suggestions =
+    this.max_history_advice =
       await this.bunch_of_settings.get('max_history_suggest') as number;
 
     // Get whether to continue to collect new history
-    this.settings_collect_new_history =
+    this.collect_new_history =
       await this.bunch_of_settings.get('collect_new_history') as boolean;
 
     // Get whether to continue to enable intelligent_tracking_prevention
-    this.settings_intelligent_tracking_prevention =
+    this.intelligent_tracking_prevention =
       await this.bunch_of_settings.get('intelligent_tracking_prevention') as boolean;
 
     // Get whether to use system back to access backward
@@ -701,7 +694,7 @@ struct meowAppSettings {
   }
 
   on_open_or_close_panel() {
-    if (this.show) {
+    if (this.showing_app_settings) {
       // Open panel
       this.on_panel_open();
     } else {
@@ -714,12 +707,12 @@ struct meowAppSettings {
 
   on_panel_open() {
     // Sync Data
-    if (this.settings_title_bar_position == "top") {
+    if (this.title_bar_position == "top") {
       this.title_bar_position_selected = [0];
     } else {
       this.title_bar_position_selected = [1];
     }
-    if (this.settings_tabs_style == "vertical") {
+    if (this.tabs_style == "vertical") {
       this.tabs_style_selected = [0];
     } else {
       this.tabs_style_selected = [1];
@@ -759,7 +752,7 @@ struct meowAppSettings {
     } else {
       result = 'bottom';
     }
-    this.settings_title_bar_position = result;
+    this.title_bar_position = result;
     this.bunch_of_settings.set('title_bar_position', result);
   }
 
@@ -785,7 +778,7 @@ struct meowAppSettings {
     } else {
       result = 'horizontal';
     }
-    this.settings_tabs_style = result;
+    this.tabs_style = result;
     this.bunch_of_settings.set('tabs_style', result);
   }
 

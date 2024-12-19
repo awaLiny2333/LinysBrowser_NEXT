@@ -29,6 +29,7 @@ import meowScratchingBoard from './meowScratchingBoard';
 import woofAdsBlocker from '../dialogs/woofAdsBlocker';
 import woofAddSE from '../dialogs/woofAddSE';
 import woofCookies from '../dialogs/woofCookies';
+import { window } from '@kit.ArkUI';
 
 @Component
 struct meowTitleBar {
@@ -37,6 +38,7 @@ struct meowTitleBar {
   @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   // Environments
+  @StorageLink('fullscreen_mode') fullscreen_mode: boolean = false;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageProp('screen_width') screen_width: number = 0;
   @StorageProp('screen_height') screen_height: number = 0;
@@ -44,9 +46,9 @@ struct meowTitleBar {
   @Link bar_height: number;
   // Current environment
   @Link title_bar_alignRules: AlignRuleOption;
-  @Link @Watch('on_search_input_change') search_input: string;
+  @StorageLink('search_input') @Watch('on_search_input_change') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
   @State search_input_unified: string = "";
-  @Link is_search_input_typing: boolean;
+  @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
   @State download_started_popup: boolean = false;
   @State drop_result_string: string[] = [];
   // Search analyze
@@ -78,16 +80,10 @@ struct meowTitleBar {
   @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   @State address_analyzers_desc_close_cd: number = 0;
   // settings
-  @Link settings_title_bar_position: string;
-  @Link settings_tabs_style: string;
-  @Link settings_collect_new_history: boolean;
-  @Link settings_intelligent_tracking_prevention: boolean;
-  @Link sys_back_to_access_backward: boolean;
-  @Link web_force_dark_mode: boolean;
-  @Link use_adblock: boolean;
-  @Link adblock_exceptions: string[];
-  @State settings_max_bookmark_advice: number = 5;
-  @State settings_max_history_advice: number = 5;
+  @StorageProp('title_bar_position') title_bar_position: string = "";
+  @StorageLink('tabs_style') tabs_style: string = "";
+  @StorageLink('max_bookmark_advice') max_bookmark_advice: number = 5;
+  @StorageLink('max_history_advice') max_history_advice: number = 5;
   // Dialogs
   woofQR_control: CustomDialogController = new CustomDialogController({
     builder: woofQR({
@@ -108,7 +104,6 @@ struct meowTitleBar {
   })
   woofAdsBlocker_control: CustomDialogController = new CustomDialogController({
     builder: woofAdsBlocker({
-      adblock_exceptions: this.adblock_exceptions,
       add_exception_domain_edit: match_domain(this.search_input),
       showing_add_panel: true
     }),
@@ -131,19 +126,13 @@ struct meowTitleBar {
 
   build() {
     Column({ space: 10 }) {
-      if (this.settings_title_bar_position == "bottom") {
-        meowSuggestions({
-          settings_max_history_suggestions: this.settings_max_history_advice,
-          settings_max_bookmark_suggestions: this.settings_max_bookmark_advice,
-          top_margin: 15,
-          is_search_input_typing: this.is_search_input_typing,
-          search_input: this.search_input,
-        })
+      if (this.title_bar_position == "bottom") {
+        meowSuggestions({ top_margin: 15 })
           .animation(animation_default())
       }
 
       meowTabsHorizontal()// Horizontal tabs
-        .visibility(this.showing_tabs && this.settings_tabs_style == "horizontal" && this.tablet_mode ?
+        .visibility(this.showing_tabs && this.tabs_style == "horizontal" && this.tablet_mode ?
         Visibility.Visible : Visibility.None)
         .animation(animation_default())
 
@@ -479,6 +468,15 @@ struct meowTitleBar {
 
       Row({ space: this.tablet_mode ? 10 : 7 }) {
         linysSymbol({
+          symbol_glyph_target: this.fullscreen_mode ?
+            'sys.symbol.arrow_down_right_and_arrow_up_left' :
+            'sys.symbol.arrow_up_left_and_arrow_down_right'
+        })// FullScreen
+          .onClick(() => {
+            this.fullscreen_mode = !this.fullscreen_mode;
+            this.showing_more_options = false;
+          })
+        linysSymbol({
           symbol_glyph_target: 'sys.symbol.qrcode'
         })// QRcode
           .onClick(() => {
@@ -492,7 +490,7 @@ struct meowTitleBar {
           })
         linysSymbol({
           symbol_glyph_target: 'sys.symbol.tracking_cookie_interception'
-        })// Enable ads
+        })// Cookies
           .onClick(() => {
             this.cookies_control.open();
           })
@@ -503,43 +501,20 @@ struct meowTitleBar {
       .direction(Direction.Rtl)
       .animation(animation_default())
 
-      meowAppSettings({
-        showing_app_settings: this.showing_app_settings,
-        settings_collect_new_history: this.settings_collect_new_history,
-        settings_intelligent_tracking_prevention: this.settings_intelligent_tracking_prevention,
-        use_adblock: this.use_adblock,
-        adblock_exceptions: this.adblock_exceptions,
-        sys_back_to_access_backward: this.sys_back_to_access_backward,
-        web_force_dark_mode: this.web_force_dark_mode,
-        settings_max_bookmark_suggestions: this.settings_max_bookmark_advice,
-        settings_max_history_suggestions: this.settings_max_history_advice,
-        settings_title_bar_position: this.settings_title_bar_position,
-        settings_tabs_style: this.settings_tabs_style,
-        show: this.showing_app_settings,
-      })// Settings
+      meowAppSettings({ showing_app_settings: this.showing_app_settings })// Settings
         .visibility(this.showing_app_settings ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
 
-      meowDownloads({
-        screen_width: this.screen_width,
-      })
+      meowDownloads({ screen_width: this.screen_width })
         .visibility(this.showing_downloads ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
 
-      meowScratchingBoard({
-        data_list: this.drop_result_string,
-      })
+      meowScratchingBoard({ data_list: this.drop_result_string })
         .visibility(this.showing_scratching_board ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
 
-      if (this.settings_title_bar_position == "top") {
-        meowSuggestions({
-          settings_max_history_suggestions: this.settings_max_history_advice,
-          settings_max_bookmark_suggestions: this.settings_max_bookmark_advice,
-          bottom_margin: 15,
-          is_search_input_typing: this.is_search_input_typing,
-          search_input: this.search_input,
-        })
+      if (this.title_bar_position == "top") {
+        meowSuggestions({ bottom_margin: 15 })
           .animation(animation_default())
       }
 
@@ -565,7 +540,8 @@ struct meowTitleBar {
         this.bar_height = n.height as number;
       }
     })
-    .visibility(this.settings_title_bar_position == "" ? Visibility.Hidden : Visibility.Visible)
+    .visibility(this.fullscreen_mode ? Visibility.None :
+      (this.title_bar_position == "" ? Visibility.Hidden : Visibility.Visible))
     .animation(this.showing_app_settings ? animation_default() : undefined)
     .onAppear(() => {
       console.log("[Meow][meowTitleBar] Title Bar READY")
@@ -592,11 +568,11 @@ struct meowTitleBar {
   }
 
   visible_when_title_bar_on_top() {
-    return this.settings_title_bar_position == "top" ? Visibility.Visible : Visibility.None;
+    return this.title_bar_position == "top" ? Visibility.Visible : Visibility.None;
   }
 
   visible_when_title_bar_on_bottom() {
-    return this.settings_title_bar_position == "bottom" ? Visibility.Visible : Visibility.None;
+    return this.title_bar_position == "bottom" ? Visibility.Visible : Visibility.None;
   }
 
   visible_when_no_panels_open_in_normal_mode() {

@@ -13,6 +13,7 @@ import { bunch_of_history } from '../hosts/bunch_of_history';
 import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
 import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
+import { window } from '@kit.ArkUI';
 
 @Entry
 @Component
@@ -36,26 +37,29 @@ struct Index {
   @StorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
   @StorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
   @StorageLink('tablet_mode') tablet_mode: boolean = false;
+  @StorageLink('fullscreen_mode') @Watch('on_fullscreen_switch') fullscreen_mode: boolean = false;
   @StorageLink('screen_width') screen_width: number = 0;
   @StorageLink('screen_height') screen_height: number = 0;
   @StorageLink('animation_response') animation_response: number = 0.36;
   @StorageLink('animation_damping_coefficient') animation_damping: number = 0.8;
   @StorageProp('currentColorMode') @Watch('on_color_mode_change') current_color_mode: number = 0;
   // UI Statuses
+  @StorageLink('fullscreen_handler') handler: FullScreenExitHandler | null = null;
   @StorageLink('showing_downloads') showing_downloads: boolean = false;
   @StorageLink('showing_more_options') showing_more_options: boolean = false;
   @StorageLink('showing_app_settings') showing_app_settings: boolean = false;
   @StorageLink('showing_tabs') @Watch('on_showing_tabs_change') showing_tabs: boolean = false;
   @StorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
   @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
+  // UI params
   @State title_bar_height: number = 0;
   @State title_bar_alignRules: AlignRuleOption = {
     middle: { anchor: "__container__", align: HorizontalAlign.Center },
     bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
   };
   // Interactions
-  @State is_search_input_typing: boolean = false;
-  @State search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
+  @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
+  @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
   // Web Statuses
   @StorageLink('tab_titles') tab_titles: string[] = []
   @StorageLink('current_title') current_title: string = "=￣ω￣=";
@@ -71,14 +75,16 @@ struct Index {
   @StorageLink('current_accessForward') current_accessForward: boolean = false;
   @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
   // Settings
-  @State @Watch('on_title_bar_position_change') settings_title_bar_position: string = "";
-  @State sys_back_to_access_backward: boolean = false;
-  @State web_force_dark_mode: boolean = false;
-  @State settings_tabs_style: string = "";
-  @State settings_collect_new_history: boolean = true;
-  @State settings_intelligent_tracking_prevention: boolean = false;
-  @State use_adblock: boolean = true;
-  @State adblock_exceptions: string[] = [];
+  @StorageLink('title_bar_position') @Watch('on_title_bar_position_change') title_bar_position: string = "";
+  @StorageLink('sys_back_to_access_backward') sys_back_to_access_backward: boolean = false;
+  @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
+  @StorageLink('tabs_style') tabs_style: string = "";
+  @StorageLink('collect_new_history') collect_new_history: boolean = true;
+  @StorageLink('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
+  @StorageLink('use_adblock') use_adblock: boolean = true;
+  @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
+  @StorageLink('max_bookmark_advice') max_bookmark_advice: number = 5;
+  @StorageLink('max_history_advice') max_history_advice: number = 5;
   // Gateways
   @StorageLink('universal_close_tab_gateway') uni_close_tab_gateway: number = -1;
   @StorageLink('universal_new_tab_gateway') uni_new_tab_gateway: string = "";
@@ -148,6 +154,14 @@ struct Index {
   onBackPress(): boolean | void {
     let stop_system_back = false;
 
+    if (this.fullscreen_mode) {
+      if (this.handler != null) {
+        this.handler.exitFullScreen();
+      }
+      this.fullscreen_mode = false;
+      return true;
+    }
+
     // I know this is stupid but ¯\_(ツ)_/¯ it just works
     // Prioritize closing UI panels
     if (this.tablet_mode) {
@@ -194,7 +208,7 @@ struct Index {
     Column() {
       Row()// Top Bar Avoid
         .width("100%")
-        .height(px2vp(this.topAvoidHeight))
+        .height(px2vp(this.fullscreen_mode ? 0 : this.topAvoidHeight))
         .backgroundColor(this.color_current_secondary)
         .animation(animation_default())
 
@@ -204,17 +218,7 @@ struct Index {
           Scroll() {
             Row() {
               Scroll() {
-                meowTabs({
-                  // Environment
-                  settings_intelligent_tracking_prevention: this.settings_intelligent_tracking_prevention,
-                  settings_tabs_style: this.settings_tabs_style,
-                  adblock_exceptions: this.adblock_exceptions,
-                  use_adblock: this.use_adblock,
-                  // Statuses
-                  search_input: this.search_input,
-                  is_search_input_typing: this.is_search_input_typing,
-                })
-                  .width(this.width_of_Tabs())
+                meowTabs().width(this.width_of_Tabs())
               } // Tabs Panel
               .height("100%")
               .width(this.showing_tabs ? this.width_of_Tabs() : 0)
@@ -243,15 +247,7 @@ struct Index {
           .height("100%")
 
           Row() {
-            meowWebView({
-              settings_intelligent_tracking_prevention: this.settings_intelligent_tracking_prevention,
-              settings_collect_new_history: this.settings_collect_new_history,
-              web_force_dark_mode: this.web_force_dark_mode,
-              search_input: this.search_input,
-              is_search_input_typing: this.is_search_input_typing,
-              use_adblock: this.use_adblock,
-              adblock_exceptions: this.adblock_exceptions
-            })
+            meowWebView()
           } // WebViews
           .width("100%")
           .backgroundColor(this.color_current_primary)
@@ -266,50 +262,34 @@ struct Index {
         .onAreaChange((o, n) => {
           this.on_main_area_change(o, n);
         })
-        .margin(this.settings_title_bar_position == "bottom" ?
+        .margin(this.title_bar_position == "bottom" ?
           { bottom: this.title_bar_height } : { top: this.title_bar_height })
         .animation(animation_default())
 
         linysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
           .alignRules(this.title_bar_alignRules)
-          .margin(this.settings_title_bar_position == "bottom" ?
+          .margin(this.title_bar_position == "bottom" ?
             { bottom: this.title_bar_height } : { top: this.title_bar_height })
 
         meowTitleBar({
           bar_height: this.title_bar_height,
-
-          // Environments
-          search_input: this.search_input,
-          is_search_input_typing: this.is_search_input_typing,
-          settings_collect_new_history: this.settings_collect_new_history,
-          settings_intelligent_tracking_prevention: this.settings_intelligent_tracking_prevention,
-          sys_back_to_access_backward: this.sys_back_to_access_backward,
-          web_force_dark_mode: this.web_force_dark_mode,
-          settings_title_bar_position: this.settings_title_bar_position,
-          settings_tabs_style: this.settings_tabs_style,
           title_bar_alignRules: this.title_bar_alignRules,
-          use_adblock: this.use_adblock,
-          adblock_exceptions: this.adblock_exceptions,
-          // Web actions
         }) // Bottom Bar
 
       } // Web, progress, and bottom bar
       .layoutWeight(1)
       .animation(animation_default())
 
-      // .margin({ left: px2vp(this.leftAvoidWidth), right: px2vp(this.rightAvoidWidth) })
-
       Row()// Bottom Bar Avoid
         .width("100%")
-        .height(px2vp(this.bottomAvoidHeight))
+        .height(px2vp(this.fullscreen_mode ? 0 : this.bottomAvoidHeight))
         .animation(animation_default())
-        .backgroundColor(this.settings_title_bar_position == "bottom" ?
-          "transparent" : this.color_current_secondary)
+        .backgroundColor(this.title_bar_position == "bottom" ? "transparent" : this.color_current_secondary)
     }
     .height("100%")
     .width("100%")
     .animation(animation_default())
-    .backgroundColor(this.settings_title_bar_position == "bottom" ?
+    .backgroundColor(this.title_bar_position == "bottom" ?
     this.color_current_secondary : this.color_current_primary)
     .onAppear(() => {
       console.log("[Meow][Index] Home Index READY")
@@ -319,7 +299,7 @@ struct Index {
   // @Watch or environment Reactions
 
   on_title_bar_position_change() {
-    if (this.settings_title_bar_position == "bottom") {
+    if (this.title_bar_position == "bottom") {
       this.title_bar_alignRules = {
         middle: { anchor: "__container__", align: HorizontalAlign.Center },
         bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
@@ -385,12 +365,23 @@ struct Index {
     }
   }
 
+  on_fullscreen_switch() {
+    window.getLastWindow(getContext()).then((win) => {
+      if (this.fullscreen_mode) {
+        win.setWindowSystemBarEnable([]);
+      } else {
+        win.setWindowSystemBarEnable(["status", "navigation"]);
+      }
+    })
+
+  }
+
   // kinds of params
 
   width_of_Bookmarks_and_Tabs() {
     let result = 0;
     if (this.tablet_mode) {
-      if (this.showing_tabs && this.settings_tabs_style != 'horizontal') {
+      if (this.showing_tabs && this.tabs_style != 'horizontal') {
         result += 250;
       }
       if (this.showing_bookmarks) {
@@ -411,7 +402,7 @@ struct Index {
 
   width_of_Tabs() {
     if (this.tablet_mode) {
-      if (this.settings_tabs_style != 'horizontal') {
+      if (this.tabs_style != 'horizontal') {
         return 250;
       } else {
         return 0;

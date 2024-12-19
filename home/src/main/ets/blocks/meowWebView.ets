@@ -11,6 +11,8 @@ struct meowWebView {
   @StorageProp('currentColorMode') current_color_mode: number = 0;
   @StorageProp('pathDir') pathDir: string = "";
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
+  @StorageLink('fullscreen_mode') fullscreen_mode: boolean = false;
+  @StorageLink('fullscreen_handler') handler: FullScreenExitHandler | null = null;
   @StorageLink('restore_web_state_arrays') restore_web_state_arrays: Uint8Array[] = [];
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
@@ -29,14 +31,14 @@ struct meowWebView {
   // Web control statuses
   @StorageLink('current_accessForward') current_accessForward: boolean = false;
   @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
-  @Link search_input: string;
-  @Link is_search_input_typing: boolean;
+  @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
+  @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
   // Settings
-  @Prop settings_collect_new_history: boolean;
-  @Prop settings_intelligent_tracking_prevention: boolean;
-  @Link @Watch('on_use_adblock_state_change') use_adblock: boolean;
-  @Link adblock_exceptions: string[];
-  @Link web_force_dark_mode: boolean;
+  @StorageProp('collect_new_history') collect_new_history: boolean = true;
+  @StorageProp('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
+  @StorageLink('use_adblock') @Watch('on_use_adblock_state_change') use_adblock: boolean = true;
+  @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
+  @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
   // Stuffs
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
   @StorageLink('universal_new_download_gateway') new_download_gateway: string = "";
@@ -139,7 +141,7 @@ struct meowWebView {
               this.update_current_info();
 
               // Save browse history if is neither new tab nor a recovery tab
-              if (this.settings_collect_new_history
+              if (this.collect_new_history
                 && !this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation
                 && !this.tab_urls[Label.index_key].includes("resource://")
               ) {
@@ -148,7 +150,7 @@ struct meowWebView {
               } else {
                 this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation = false;
                 // log
-                if (!this.settings_collect_new_history) {
+                if (!this.collect_new_history) {
                   console.log("[meowWebView] Didn't save history for settings disabled.");
                 } else {
                   console.log("[meowWebView] Didn't save history for a recovery process in progress");
@@ -207,6 +209,13 @@ struct meowWebView {
                 this.new_download_gateway = event.url;
               }
             })
+            .onFullScreenEnter((event) => {
+              this.fullscreen_mode = true;
+              this.handler = event.handler;
+            })
+            .onFullScreenExit(() => {
+              this.fullscreen_mode = false;
+            })
             .onAppear(() => {
               if (this.now_global_custom_UA != "") {
                 this.bunch_of_tabs.Tabs[Label.index_key].controller.setCustomUserAgent(this.now_global_custom_UA);
@@ -234,7 +243,7 @@ struct meowWebView {
                 }
               }
 
-              if (this.settings_intelligent_tracking_prevention) {
+              if (this.intelligent_tracking_prevention) {
                 this.bunch_of_tabs.Tabs[Label.index_key].controller.enableIntelligentTrackingPrevention(true);
                 console.log('[meowWebView] ArkWeb Intelligent Tracking Prevention ON!')
               } else {

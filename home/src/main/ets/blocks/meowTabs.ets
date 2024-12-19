@@ -21,8 +21,8 @@ struct meowTabs {
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
-  @Link search_input: string;
-  @Link is_search_input_typing: boolean;
+  @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
+  @StorageProp('is_search_input_typing') is_search_input_typing: boolean = false;
   // Controls
   @StorageLink('tab_titles') tab_titles: string[] = []
   @StorageLink('current_title') current_title: string = "=￣ω￣=";
@@ -40,10 +40,7 @@ struct meowTabs {
   // Other Info / Statuses
   @State recover_tabs_finished: boolean = false;
   @StorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
-  @Link settings_tabs_style: string;
-  @Link use_adblock: boolean;
-  @Link adblock_exceptions: string[];
-  @Link settings_intelligent_tracking_prevention: boolean;
+  @StorageLink('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
   // Animation info
   tab_height_default: number = 42;
   scroll_controller: Scroller = new Scroller();
@@ -67,7 +64,7 @@ struct meowTabs {
 
   async aboutToAppear() {
     // set Intelligent Tracking Prevention
-    this.settings_intelligent_tracking_prevention =
+    this.intelligent_tracking_prevention =
       await this.bunch_of_settings.get('intelligent_tracking_prevention') as boolean;
 
     // Get Data
