@@ -29,7 +29,6 @@ import meowScratchingBoard from './meowScratchingBoard';
 import woofAdsBlocker from '../dialogs/woofAdsBlocker';
 import woofAddSE from '../dialogs/woofAddSE';
 import woofCookies from '../dialogs/woofCookies';
-import { window } from '@kit.ArkUI';
 
 @Component
 struct meowTitleBar {
@@ -532,6 +531,7 @@ struct meowTitleBar {
       this.showing_scratching_board = false;
     })
     .width("100%")
+    .alignItems(HorizontalAlign.Start)
     .backgroundColor(this.color_current_secondary)
     .alignRules(this.title_bar_alignRules)
     .onAreaChange((_o, n) => {
@@ -540,9 +540,9 @@ struct meowTitleBar {
         this.bar_height = n.height as number;
       }
     })
-    .visibility(this.fullscreen_mode ? Visibility.None :
-      (this.title_bar_position == "" ? Visibility.Hidden : Visibility.Visible))
-    .animation(this.showing_app_settings ? animation_default() : undefined)
+    .visibility((this.title_bar_position == "" ? Visibility.Hidden : Visibility.Visible))
+    .offset({ y: !this.fullscreen_mode ? 0 : (this.title_bar_position == 'bottom' ? 1.1 : -1.1) * this.bar_height })
+    .animation(animation_default())
     .onAppear(() => {
       console.log("[Meow][meowTitleBar] Title Bar READY")
       setInterval(() => {

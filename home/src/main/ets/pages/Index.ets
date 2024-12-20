@@ -263,7 +263,8 @@ struct Index {
           this.on_main_area_change(o, n);
         })
         .margin(this.title_bar_position == "bottom" ?
-          { bottom: this.title_bar_height } : { top: this.title_bar_height })
+          { bottom: this.fullscreen_mode ? 0 : this.title_bar_height } :
+          { top: this.fullscreen_mode ? 0 : this.title_bar_height })
         .animation(animation_default())
 
         linysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
@@ -288,9 +289,9 @@ struct Index {
     }
     .height("100%")
     .width("100%")
+    .alignItems(HorizontalAlign.Start)
     .animation(animation_default())
-    .backgroundColor(this.title_bar_position == "bottom" ?
-    this.color_current_secondary : this.color_current_primary)
+    .backgroundColor(this.color_current_secondary)
     .onAppear(() => {
       console.log("[Meow][Index] Home Index READY")
     })
