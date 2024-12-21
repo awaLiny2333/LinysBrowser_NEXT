@@ -28,6 +28,9 @@ struct meowWebView {
   @StorageLink('current_loading_progress') current_loading_progress: number = 0
   @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]
   @StorageLink('current_is_loading') current_is_loading: boolean = true
+  @StorageLink('current_in_page_searching_stats_current') current_in_page_searching_stats_current: number = 0;
+  @StorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
+  @StorageLink('current_in_page_searching_keyword') current_in_page_searching_keyword: string = ''
   // Web control statuses
   @StorageLink('current_accessForward') current_accessForward: boolean = false;
   @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
@@ -44,6 +47,7 @@ struct meowWebView {
   @StorageLink('disable_js_all_sites') disable_js_all_sites: boolean = true;
   // Stuffs
   @State initialization_ok: boolean = false;
+  @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
   @StorageLink('universal_new_download_gateway') new_download_gateway: string = "";
   @StorageProp('tab_animation') tab_animation: AnimateParam = animation_default();
@@ -120,9 +124,19 @@ struct meowWebView {
             .fileAccess(true)
             .domStorageAccess(true)
             .multiWindowAccess(true)
+            .onSearchResultReceive((result) => {
+              this.current_in_page_searching_stats_current =
+                Math.min(result.numberOfMatches, result.activeMatchOrdinal + 1);
+              this.current_in_page_searching_stats_total = result.numberOfMatches;
+              this.bunch_of_tabs.workingMainTab().searching_keyword_stats_current =
+                Math.min(result.numberOfMatches, result.activeMatchOrdinal + 1);
+              this.bunch_of_tabs.workingMainTab().searching_keyword_stats_total = result.numberOfMatches;
+            })
             .onWindowNew((event) => {
+              // TODO: Find out why this triggers twice when click once
               let new_target_url = event.targetUrl;
-              AppStorage.setOrCreate('universal_new_tab_gateway', new_target_url);
+              // console.log('qwq_send_new_tab')
+              this.new_tab_gateway = new_target_url;
               event.handler.setWebController(null);
             })
             .onErrorReceive((e) => {
@@ -303,6 +317,9 @@ struct meowWebView {
     this.current_loading_progress = this.tab_loading_progresses[this.current_main_tab_index];
     this.current_is_loading = this.tab_is_loading[this.current_main_tab_index];
     // Set loading progress
+    this.current_in_page_searching_keyword = this.bunch_of_tabs.workingMainTab().searching_keyword;
+    this.current_in_page_searching_stats_current = this.bunch_of_tabs.workingMainTab().searching_keyword_stats_current;
+    this.current_in_page_searching_stats_total = this.bunch_of_tabs.workingMainTab().searching_keyword_stats_total;
   }
 
   sync_list_info() {

@@ -30,6 +30,7 @@ import woofAdsBlocker from '../dialogs/woofAdsBlocker';
 import woofAddSE from '../dialogs/woofAddSE';
 import woofCookies from '../dialogs/woofCookies';
 import woofJS from '../dialogs/woofJS';
+import linysText from '../components/linysText';
 
 @Component
 struct meowTitleBar {
@@ -51,6 +52,9 @@ struct meowTitleBar {
   @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
   @State download_started_popup: boolean = false;
   @State drop_result_string: string[] = [];
+  @StorageLink('current_in_page_searching_keyword') current_in_page_searching_keyword: string = "";
+  @StorageLink('current_in_page_searching_stats_current') current_in_page_searching_stats_current: number = 0;
+  @StorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
   // Search analyze
   @State search_extracted_keyword: string = '';
   @State search_extracted_engine: string = '';
@@ -251,6 +255,7 @@ struct meowTitleBar {
                 .fontWeight(FontWeight.Regular)
                 .fontColor(this.color_current_font)
                 .caretColor(this.color_current_font)
+                .selectedBackgroundColor(this.color_current_font)
                 .offset({ y: !this.showing_search_extracted_field ? 0 : -50 })
                 .opacity(this.showing_search_extracted_field ? 0 : this.showing_scratching_board ? 0.8 : 1)
                 .animation(animation_default())
@@ -271,7 +276,6 @@ struct meowTitleBar {
                   this.submit_searching()
                 })
                 .selectAll(true)
-                .selectedBackgroundColor(this.color_current_font)
                 .id('address_bar')
             }
             .scrollable(ScrollDirection.Vertical)
@@ -281,7 +285,7 @@ struct meowTitleBar {
 
             Scroll() {
               TextInput({ text: this.search_extracted_keyword })
-                .allowDrop(null)// .enabled(this.showing_search_extracted_field ? true : false)
+                .allowDrop(null)
                 .height(capsule_bar_height())
                 .fontWeight(FontWeight.Regular)
                 .fontColor(this.color_current_font)
@@ -476,45 +480,166 @@ struct meowTitleBar {
       .height(this.tablet_mode ? 36 : 82)
       .animation(animation_default())
 
-      Row({ space: this.tablet_mode ? 10 : 7 }) {
-        linysSymbol({
-          symbol_glyph_target: this.fullscreen_mode ?
-            'sys.symbol.arrow_down_right_and_arrow_up_left' :
-            'sys.symbol.arrow_up_left_and_arrow_down_right'
-        })// FullScreen
-          .onClick(() => {
-            this.fullscreen_mode = !this.fullscreen_mode;
-            this.showing_more_options = false;
+      Column({ space: 10 }) {
+        RelativeContainer() {
+          Row() {
+            linysSymbol({
+              symbol_glyph_target: 'sys.symbol.doc_text_badge_magnifyingglass'
+            }) // Search
+            TextInput({
+              text: this.current_in_page_searching_keyword,
+              placeholder: $r('app.string.More_in_page_search')
+            })
+              .onChange((edit) => {
+                this.current_in_page_searching_keyword = edit;
+                this.bunch_of_tabs.workingMainTab().searching_keyword = edit;
+              })
+              .margin({ left: 10 })
+              .layoutWeight(1)
+              .allowDrop(null)
+              .height(capsule_bar_height())
+              .fontWeight(FontWeight.Regular)
+              .fontColor(this.color_current_font)
+              .caretColor(this.color_current_font)
+              .selectedBackgroundColor(this.color_current_font)
+              .onDragEnter(() => {
+                this.showing_scratching_board = true;
+              })
+              .enabled(this.showing_scratching_board ? false : true)
+              .opacity(this.showing_scratching_board ? 0.8 : 1)
+              .onSubmit(() => {
+                try {
+                  this.bunch_of_tabs.workingMainTab().controller.searchAllAsync(this.current_in_page_searching_keyword);
+                } catch (e) {
+                  console.error(e);
+                }
+              })
+
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass' })
+              .onClick(() => {
+                try {
+                  this.bunch_of_tabs.workingMainTab().controller.searchAllAsync(this.current_in_page_searching_keyword);
+                } catch (e) {
+                  console.error(e);
+                }
+              })
+              .margin({ left: 10 })
+
+            Column() {
+              linysSymbol({ symbol_glyph_target: 'sys.symbol.xmark' })
+                .onClick(() => {
+                  this.current_in_page_searching_keyword = '';
+                  this.current_in_page_searching_stats_current = 0;
+                  this.current_in_page_searching_stats_total = 0;
+                  this.bunch_of_tabs.workingMainTab().searching_keyword_stats_current = 0;
+                  this.bunch_of_tabs.workingMainTab().searching_keyword_stats_total = 0;
+                  this.bunch_of_tabs.workingMainTab().searching_keyword = '';
+                  try {
+                    this.bunch_of_tabs.workingMainTab().controller.clearMatches();
+                  } catch (e) {
+                    console.error(e);
+                  }
+                })
+                .margin({ left: 10 })
+                .visibility(this.current_in_page_searching_keyword != "" ? Visibility.Visible : Visibility.None)
+                .animation(animation_default())
+            }
+          } // Search bar
+          .id('in_page_search_bar')
+          .alignRules(this.tablet_mode ? {
+            left: { anchor: "__container__", align: HorizontalAlign.Start },
+            right: { anchor: "in_page_search_operation_buttons", align: HorizontalAlign.Start }
+          } : {
+            left: { anchor: "__container__", align: HorizontalAlign.Start },
+            right: { anchor: "__container__", align: HorizontalAlign.End },
+            top: { anchor: "__container__", align: VerticalAlign.Top }
           })
-        linysSymbol({
-          symbol_glyph_target: 'sys.symbol.qrcode'
-        })// QRcode
-          .onClick(() => {
-            this.woofQR_control.open();
+          .animation(animation_default())
+
+          Row({ space: this.tablet_mode ? 10 : 7 }) {
+            linysText({
+              text: this.current_in_page_searching_stats_current.toString() + '／' +
+              this.current_in_page_searching_stats_total.toString()
+            })
+
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_up' })
+              .onClick(() => {
+                try {
+                  this.bunch_of_tabs.workingMainTab().controller.searchNext(false);
+                } catch (e) {
+                  console.error(e);
+                }
+              })
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_down' })
+              .onClick(() => {
+                try {
+                  this.bunch_of_tabs.workingMainTab().controller.searchNext(true);
+                } catch (e) {
+                  console.error(e);
+                }
+              })
+          } // Operation buttons
+          .justifyContent(FlexAlign.End)
+          .id('in_page_search_operation_buttons')
+          .padding({ left: this.tablet_mode ? 10 : 0 })
+          .alignRules(this.tablet_mode ? {
+            right: { anchor: "__container__", align: HorizontalAlign.End },
+            center: { anchor: "__container__", align: VerticalAlign.Center }
+          } : {
+            left: { anchor: "__container__", align: HorizontalAlign.Start },
+            right: { anchor: "__container__", align: HorizontalAlign.End },
+            bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
           })
-        linysSymbol({
-          symbol_glyph_target: 'sys.symbol.ad_rectangle_fill'
-        })// Enable ads
-          .onClick(() => {
-            this.woofAdsBlocker_control.open();
-          })
-        linysSymbol({
-          symbol_glyph_target: 'sys.symbol.electric_install'
-        })// JS
-          .onClick(() => {
-            this.js_manage_control.open();
-          })
-        linysSymbol({
-          symbol_glyph_target: 'sys.symbol.tracking_cookie_interception'
-        })// Cookies
-          .onClick(() => {
-            this.cookies_control.open();
-          })
+          .animation(animation_default())
+        }
+        .width("100%")
+        .height(20 + (this.tablet_mode ? capsule_bar_height() : 2 * capsule_bar_height()))
+        .backgroundColor(this.color_current_primary)
+        .borderRadius(10)
+        .padding(10)
+        .animation(animation_default())
+
+        Row({ space: this.tablet_mode ? 10 : 7 }) {
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.tracking_cookie_interception'
+          })// Cookies
+            .onClick(() => {
+              this.cookies_control.open();
+            })
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.electric_install'
+          })// JS
+            .onClick(() => {
+              this.js_manage_control.open();
+            })
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.ad_rectangle_fill'
+          })// Enable ads
+            .onClick(() => {
+              this.woofAdsBlocker_control.open();
+            })
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.qrcode'
+          })// QRcode
+            .onClick(() => {
+              this.woofQR_control.open();
+            })
+          linysSymbol({
+            symbol_glyph_target: this.fullscreen_mode ?
+              'sys.symbol.arrow_down_right_and_arrow_up_left' :
+              'sys.symbol.arrow_up_left_and_arrow_down_right'
+          })// FullScreen
+            .onClick(() => {
+              this.fullscreen_mode = !this.fullscreen_mode;
+              this.showing_more_options = false;
+            })
+        }
+        .width('100%')
+        .justifyContent(FlexAlign.End)
       } // Title Bar of More Options
       .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
       .padding({ left: 15, right: 15, bottom: 6 })
       .width("100%")
-      .direction(Direction.Rtl)
       .animation(animation_default())
 
       meowAppSettings({ showing_app_settings: this.showing_app_settings })// Settings
@@ -790,6 +915,9 @@ struct meowTitleBar {
     this.current_loading_progress = this.tab_loading_progresses[this.current_main_tab_index];
     this.current_is_loading = this.tab_is_loading[this.current_main_tab_index];
     // Set loading progress
+    this.current_in_page_searching_keyword = this.bunch_of_tabs.workingMainTab().searching_keyword;
+    this.current_in_page_searching_stats_current = this.bunch_of_tabs.workingMainTab().searching_keyword_stats_current;
+    this.current_in_page_searching_stats_total = this.bunch_of_tabs.workingMainTab().searching_keyword_stats_total;
   }
 
   sync_tabs_list_info() {

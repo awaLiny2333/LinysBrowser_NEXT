@@ -32,6 +32,9 @@ struct meowTabs {
   @StorageLink('current_loading_progress') current_loading_progress: number = 0
   @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]
   @StorageLink('current_is_loading') current_is_loading: boolean = true
+  @StorageLink('current_in_page_searching_keyword') current_in_page_searching_keyword: string = ''
+  @StorageLink('current_in_page_searching_stats_current') current_in_page_searching_stats_current: number = 0;
+  @StorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
   // Web control statuses
   @StorageLink('current_main_tab_index') @Watch('on_did_switch_tab') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') @Watch('on_did_switch_tab') current_sub_tab_index: number = -1;
@@ -465,6 +468,9 @@ struct meowTabs {
     this.current_loading_progress = this.tab_loading_progresses[this.current_main_tab_index];
     this.current_is_loading = this.tab_is_loading[this.current_main_tab_index];
     // Set loading progress
+    this.current_in_page_searching_keyword = this.bunch_of_tabs.workingMainTab().searching_keyword;
+    this.current_in_page_searching_stats_current = this.bunch_of_tabs.workingMainTab().searching_keyword_stats_current;
+    this.current_in_page_searching_stats_total = this.bunch_of_tabs.workingMainTab().searching_keyword_stats_total;
   }
 
   sync_all_list_info() {
@@ -546,13 +552,18 @@ struct meowTabs {
   }
 
   uni_new_tab() {
-    if (this.new_tab_gateway != "") {
-      if (this.new_tab_gateway == "new_tab") {
-        this.new_tab_gateway = ""
+    // console.log('qwq_new_tab')
+    let tab = this.new_tab_gateway;
+    if (tab != "") {
+      if (tab == "new_tab") {
+        tab = ""
       }
 
-      this.new_tab(this.new_tab_gateway);
-      this.new_tab_gateway = "";
+      this.new_tab(tab);
+      setTimeout(() => {
+        // Avoid opening duplicate tabs, idk why
+        this.new_tab_gateway = "";
+      }, 20)
     }
   }
 

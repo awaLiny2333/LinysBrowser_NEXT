@@ -26,6 +26,9 @@ export class tab_info_packed {
   url: string;
   is_loading: boolean;
   loading_progress: number;
+  searching_keyword: string = '';
+  searching_keyword_stats_current: number = 0;
+  searching_keyword_stats_total: number = 0;
   restore_on_creation: boolean = false;
   web_state_array: Uint8Array = new Uint8Array();
 

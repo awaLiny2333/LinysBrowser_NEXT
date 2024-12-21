@@ -575,6 +575,10 @@
     {
       "name": "Settings_js_desc_3",
       "value": "悄悄告诉你，禁用 JavaScript 会导致某些网站坏掉，也可能会有意想不到的神奇喵喵效果喔～ :P"
+    },
+    {
+      "name": "More_in_page_search",
+      "value": "页面内查找……"
     }
   ]
 }

@@ -575,6 +575,10 @@
     {
       "name": "Settings_js_desc_3",
       "value": "By the way, disabling JavaScript may cause some sites to break, while, however, causing some nice effects as well. :P"
+    },
+    {
+      "name": "More_in_page_search",
+      "value": "Search in page..."
     }
   ]
 }
