@@ -2,7 +2,7 @@ import { animation_default } from '../hosts/bunch_of_defaults';
 import { bunch_of_history, history_record } from '../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_label } from '../hosts/bunch_of_tabs';
 import { sandbox_save } from '../utils/storage_tools';
-import { url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
+import { match_domain, url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
 import { webview } from '@kit.ArkWeb';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 
@@ -39,7 +39,11 @@ struct meowWebView {
   @StorageLink('use_adblock') @Watch('on_use_adblock_state_change') use_adblock: boolean = true;
   @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
   @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
+  @StorageLink('disable_js') disable_js: boolean = false;
+  @StorageLink('disable_js_these_sites') disable_js_these_sites: string[] = [];
+  @StorageLink('disable_js_all_sites') disable_js_all_sites: boolean = true;
   // Stuffs
+  @State initialization_ok: boolean = false;
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
   @StorageLink('universal_new_download_gateway') new_download_gateway: string = "";
   @StorageProp('tab_animation') tab_animation: AnimateParam = animation_default();
@@ -49,12 +53,28 @@ struct meowWebView {
 
   async aboutToAppear(): Promise<void> {
 
+    // Get whether js is disabled
+    this.disable_js = await this.bunch_of_settings.get('disable_js') as boolean;
+    this.disable_js_all_sites = await this.bunch_of_settings.get('disable_js_all_sites') as boolean;
+
+    // Get js ban specifications
+    let sites_got = await this.bunch_of_settings.get('disable_js_these_sites') as string;
+    if (sites_got == '') {
+      this.disable_js_these_sites = [];
+    } else {
+      this.disable_js_these_sites = sites_got.split('\n');
+    }
+
     // Get whether ads blocker is enabled
     this.use_adblock = await this.bunch_of_settings.get('use_adblock') as boolean;
 
     // Get adblock exceptions
     let exceptions_got = await this.bunch_of_settings.get('adblock_exceptions') as string;
-    this.adblock_exceptions = exceptions_got.split('\n');
+    if (exceptions_got == '') {
+      this.adblock_exceptions = [];
+    } else {
+      this.adblock_exceptions = exceptions_got.split('\n');
+    }
 
     // If directly use addAdsBlockDisallowedList(this.adblock_exceptions)
     // would cause Error: BusinessError 401: Parameter error. The type of domainSuffixes must be an array of string.
@@ -77,6 +97,7 @@ struct meowWebView {
     // Set Ads Blocker exception list
     // webview.AdsBlockManager.addAdsBlockDisallowedList(this.adblock_exceptions);
 
+    this.initialization_ok = true;
   }
 
   build() {
@@ -95,7 +116,7 @@ struct meowWebView {
             .backgroundColor('transparent')
             .databaseAccess(true)
             .onlineImageAccess(true)
-            .javaScriptAccess(true)
+            .javaScriptAccess(this.my_js(Label.index_key))
             .fileAccess(true)
             .domStorageAccess(true)
             .multiWindowAccess(true)
@@ -375,6 +396,22 @@ struct meowWebView {
       return Visibility.None;
     }
     return Visibility.Visible;
+  }
+
+  my_js(index: number) {
+    if (!this.disable_js) {
+      return true;
+    }
+    // Disable js toggle ON
+    if (this.disable_js_all_sites) {
+      // Disable on all sites
+      return false;
+    }
+    // Disable on some sites
+    if (this.tab_urls[index] && this.disable_js_these_sites.includes(match_domain(this.tab_urls[index]))) {
+      return false;
+    }
+    return true;
   }
 
   // Ladders

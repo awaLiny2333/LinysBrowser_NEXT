@@ -29,6 +29,7 @@ import meowScratchingBoard from './meowScratchingBoard';
 import woofAdsBlocker from '../dialogs/woofAdsBlocker';
 import woofAddSE from '../dialogs/woofAddSE';
 import woofCookies from '../dialogs/woofCookies';
+import woofJS from '../dialogs/woofJS';
 
 @Component
 struct meowTitleBar {
@@ -113,6 +114,16 @@ struct meowTitleBar {
   })
   cookies_control: CustomDialogController = new CustomDialogController({
     builder: woofCookies(),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16,
+    showInSubWindow: true,
+    width: "90%",
+  });
+  js_manage_control: CustomDialogController = new CustomDialogController({
+    builder: woofJS({
+      add_disable_js_sites_edit: match_domain(this.search_input),
+      showing_add_panel: true
+    }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
     showInSubWindow: true,
@@ -486,6 +497,12 @@ struct meowTitleBar {
         })// Enable ads
           .onClick(() => {
             this.woofAdsBlocker_control.open();
+          })
+        linysSymbol({
+          symbol_glyph_target: 'sys.symbol.electric_install'
+        })// JS
+          .onClick(() => {
+            this.js_manage_control.open();
           })
         linysSymbol({
           symbol_glyph_target: 'sys.symbol.tracking_cookie_interception'

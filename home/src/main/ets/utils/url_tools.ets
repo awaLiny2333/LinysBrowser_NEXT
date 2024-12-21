@@ -1,5 +1,4 @@
-import { default_search_engine } from "../hosts/bunch_of_defaults";
-import { bunch_of_search_engines } from "../hosts/bunch_of_search_engines";
+import { default_search_engine } from '../hosts/bunch_of_defaults';
 
 /**
  * Process the search_input into a visitable address.
@@ -224,7 +223,7 @@ export function extract_search(url: string) {
   let result: string[] = ['', ''];
 
   let keys: string[] =
-    ['q', 'query', 's', 'key', 'wd', 'word', 'searchKeyWord', 'search_text', 'keyword', 'val', 'value', 'text'];
+    ['q', 'query', 's', 'key', 'wd', 'w', 'word', 'searchKeyWord', 'search_text', 'keyword', 'val', 'value', 'text'];
   let search_keys: string[] = [];
   for (let k = 0; k < keys.length; k++) {
     search_keys.push('?' + keys[k] + '=');

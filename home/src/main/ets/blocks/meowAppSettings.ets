@@ -32,6 +32,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import meowCreditsRepos from './meowCreditsRepos';
 import meowCreditsUsers from './meowCreditsUsers';
 import woofCookies from '../dialogs/woofCookies';
+import woofJS from '../dialogs/woofJS';
 
 @Component
 struct meowAppSettings {
@@ -91,6 +92,7 @@ struct meowAppSettings {
   @StorageLink('use_adblock') use_adblock: boolean = true;
   @StorageLink('collect_new_history') collect_new_history: boolean = true;
   @StorageLink('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
+  @StorageLink('disable_js') disable_js: boolean = false;
   // Edits
   @State new_tab_url_edit: string = "";
   @State home_url_edit: string = "";
@@ -111,6 +113,13 @@ struct meowAppSettings {
   });
   adsBlocker_control: CustomDialogController = new CustomDialogController({
     builder: woofAdsBlocker(),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16,
+    showInSubWindow: true,
+    width: "90%",
+  });
+  js_manage_control: CustomDialogController = new CustomDialogController({
+    builder: woofJS(),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
     showInSubWindow: true,
@@ -149,7 +158,6 @@ struct meowAppSettings {
           })
             .margin({ left: 15, right: 15 })
         } // Quick access on the top
-
         WaterFlow({ scroller: this.waterFlow_control }) {
           FlowItem() {
             Column({ space: 15 }) {
@@ -546,9 +554,12 @@ struct meowAppSettings {
                 text: $r('app.string.intelligent_tracking_prevention_desc'),
                 max_lines: 10
               })
-              Row() {
+                .width("100%")
+
+              Row({ space: 10 }) {
                 linysText({ text: $r('app.string.intelligent_tracking_prevention'), max_lines: 4 })
                   .layoutWeight(1)
+
                 Toggle({ isOn: this.intelligent_tracking_prevention, type: ToggleType.Switch })
                   .switchPointColor(this.color_current_secondary)
                   .selectedColor(this.color_current_font)
@@ -570,6 +581,29 @@ struct meowAppSettings {
                     this.cookies_control.open();
                   })
               } // Cookie management
+              .width("100%")
+
+              Row() {
+                linysText({ text: $r('app.string.Settings_js_disable_js'), max_lines: 4 })
+                  .layoutWeight(1)
+                Toggle({ isOn: this.disable_js, type: ToggleType.Switch })
+                  .switchPointColor(this.color_current_secondary)
+                  .selectedColor(this.color_current_font)
+                  .onChange(isOn => {
+                    this.disable_js = isOn;
+                    this.bunch_of_settings.set('disable_js', isOn);
+                  })
+              } // Toggle Disable JS
+              .width("100%")
+
+              Row({ space: 10 }) {
+                Blank()
+                linysText({ text: $r('app.string.Settings_js_manage') })
+                linysCapsuleButton({ text: '  󰀩  ' })
+                  .onClick(() => {
+                    this.js_manage_control.open();
+                  })
+              } // JS management
               .width("100%")
             }
             .padding(15)
@@ -655,7 +689,7 @@ struct meowAppSettings {
     this.title_bar_position =
       await this.bunch_of_settings.get('title_bar_position') as string;
 
-    // Get settings of title bar position
+    // Get settings of tabs style
     this.tabs_style = await this.bunch_of_settings.get('tabs_style') as string;
 
     // Get number of max bookmarks suggestions

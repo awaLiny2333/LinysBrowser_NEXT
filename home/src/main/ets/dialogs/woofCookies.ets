@@ -17,7 +17,7 @@ struct woofCookies {
   @StorageProp('current_url') current_url: string = "=￣ω￣=";
   @State domain_url: string = 'https://' + match_domain(this.current_url);
   // Interfaces
-  @State cookies_site: string[] = webview.WebCookieManager.fetchCookieSync(this.domain_url).split('; ');
+  @State cookies_site: string[] = this.get_cookies_site();
   @State delete_confirm: number = 0;
   // alignRules
   alignRules_head_non_tablet: AlignRuleOption = {
@@ -72,22 +72,29 @@ struct woofCookies {
             max_lines: 10
           })
             .width("100%")
+          linysText({
+            text: $r('app.string.Have_a_Nice_Surf'),
+            max_lines: 2
+          })
+            .width("100%")
+            .opacity(0.9)
         }
         .width("100%")
       } // Title
-      .scrollBar(BarState.Off)
       .align(Alignment.TopStart)
       .edgeEffect(EdgeEffect.Spring)
-      .padding({ top: 5, bottom: 10, right: this.tablet_mode ? 10 : 0 })
+      .padding({ top: 5, bottom: 10, right: 10 })
       .width(this.tablet_mode ? "35%" : "100%")
       .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
       .animation(animation_default())
+      .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })
       .id("title_cookies_manager")
 
       Column() {
         linysText({ text: $r('app.string.Settings_manage_cookies_this_site'), max_lines: 3 })// Cookies on
           .width("100%")
-          .padding({ bottom: 5 })
+          .padding({ top: 10, bottom: 5 })
+
         linysText({ text: this.domain_url })// domain
           .width("100%")
           .padding({ bottom: 10 })
@@ -184,7 +191,15 @@ struct woofCookies {
   }
 
   refresh_site_cookies_list() {
-    this.cookies_site = webview.WebCookieManager.fetchCookieSync(this.domain_url).split('; ');
+    this.cookies_site = this.get_cookies_site();
+  }
+
+  get_cookies_site() {
+    let list = webview.WebCookieManager.fetchCookieSync(this.domain_url).split('; ');
+    if (list[list.length-1] == '') {
+      list = list.slice(0, list.length - 1);
+    }
+    return list;
   }
 }
 

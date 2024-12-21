@@ -270,7 +270,8 @@ struct Index {
         linysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
           .alignRules(this.title_bar_alignRules)
           .margin(this.title_bar_position == "bottom" ?
-            { bottom: this.title_bar_height } : { top: this.title_bar_height })
+            { bottom: this.fullscreen_mode ? 0 : this.title_bar_height } :
+            { top: this.fullscreen_mode ? 0 : this.title_bar_height })
 
         meowTitleBar({
           bar_height: this.title_bar_height,

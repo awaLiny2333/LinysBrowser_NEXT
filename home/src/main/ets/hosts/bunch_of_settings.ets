@@ -51,6 +51,11 @@ export class bunch_of_settings {
     this.register_setting('use_adblock', 'boolean', 'true');
     this.register_setting('adblock_exceptions', 'string', '');
 
+    // JS blocker
+    this.register_setting('disable_js', 'boolean', 'true');
+    this.register_setting('disable_js_all_sites', 'boolean', 'false');
+    this.register_setting('disable_js_these_sites', 'string', '');
+
     // Dark mode
     this.register_setting('web_force_dark_mode', 'boolean', 'false');
 

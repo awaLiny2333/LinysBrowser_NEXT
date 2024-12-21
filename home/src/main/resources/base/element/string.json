@@ -369,6 +369,10 @@
       "value": "Forgot to fill the link field!"
     },
     {
+      "name": "Fail_desc_no_content",
+      "value": "Forgot to fill the content!"
+    },
+    {
       "name": "Fail_desc_folder_current_name_crash",
       "value": "There is a folder with a duplicate name in the current directory!"
     },
@@ -394,7 +398,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "1. Immersive fullscreen!\n2. Intelligent Tracking Prevention~\n3. Can be set as default browser now!"
+      "value": "1. Disable JavaScript!"
     },
     {
       "name": "Whats_new_content_extra",
@@ -535,6 +539,42 @@
     {
       "name": "Settings_manage_cookies_desc_3",
       "value": "Clearing cookies may fix some weird web errors, but a site may require you to login again if its cookies are cleared."
+    },
+    {
+      "name": "Settings_js_disable_js",
+      "value": "Disable JavaScript"
+    },
+    {
+      "name": "Settings_js_manage",
+      "value": "Manage JavaScript"
+    },
+    {
+      "name": "Settings_js_all_sites",
+      "value": "Disable JavaScript on all sites"
+    },
+    {
+      "name": "Settings_js_some_sites",
+      "value": "Disable JavaScript on these sites"
+    },
+    {
+      "name": "Settings_js_add",
+      "value": "Add a site"
+    },
+    {
+      "name": "Settings_js_already_disabled",
+      "value": "Tips: JavaScript on this site has been disabled!"
+    },
+    {
+      "name": "Settings_js_desc_1",
+      "value": "Toggle \"Disable JavaScript\" on to enable this feature, then choose to disable on all sites, or on specific sites."
+    },
+    {
+      "name": "Settings_js_desc_2",
+      "value": "If turn \"Disable JavaScript\" on while having \"Disable JavaScript on all sites\" off, then JavaScript would only be disabled on these sites added to the list."
+    },
+    {
+      "name": "Settings_js_desc_3",
+      "value": "By the way, disabling JavaScript may cause some sites to break, while, however, causing some nice effects as well. :P"
     }
   ]
 }

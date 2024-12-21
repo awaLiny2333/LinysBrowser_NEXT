@@ -55,11 +55,11 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 
 ### Features
 
-- [ ] Cookies management (and clearing)
+- [x] Cookies management (and clearing)
 - [x] Cache management and clear
 - [x] Ads blocking
 - [ ] Private mode
-- [ ] Disable JavaScript
+- [x] Disable JavaScript
 - [ ] Right click or long press menu on web links. (For preview and operations)
 - [ ] No picture mode
 - [ ] Reading mode

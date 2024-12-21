@@ -11,17 +11,21 @@ import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { webview } from '@kit.ArkWeb';
 import linysShowButton from '../components/linysShowButton';
 import linysCapsuleButton from '../components/linysCapsuleButton';
+import { match_domain } from '../utils/url_tools';
 
 @CustomDialog
-struct woofAdsBlocker {
+struct woofJS {
   controller: CustomDialogController;
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('tablet_mode') tablet_mode: boolean = false;
-  @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
-  @State add_exception_domain_edit: string = "";
+  @StorageLink('disable_js') disable_js: boolean = false;
+  @StorageLink('disable_js_these_sites') disable_js_these_sites: string[] = [];
+  @StorageLink('disable_js_all_sites') disable_js_all_sites: boolean = true;
+  @StorageLink('current_url') current_url: string = "=￣ω￣=";
+  @State add_disable_js_sites_edit: string = "";
   @State showing_add_panel: boolean = false;
   // Manage
-  @State @Watch('on_select_change') selected: boolean[] = this.all_false(this.adblock_exceptions.length);
+  @State @Watch('on_select_change') selected: boolean[] = this.all_false(this.disable_js_these_sites.length);
   @State selecting: boolean = false;
   @State selected_number: number = 0;
   @State delete_confirm: number = 0;
@@ -32,7 +36,7 @@ struct woofAdsBlocker {
   };
   alignRules_head_tablet: AlignRuleOption = {
     top: { anchor: "__container__", align: VerticalAlign.Top },
-    bottom: { anchor: "controls_ads_blocker", align: VerticalAlign.Top },
+    bottom: { anchor: "controls_js_sites", align: VerticalAlign.Top },
     left: { anchor: "__container__", align: HorizontalAlign.Start },
   };
   alignRules_foot: AlignRuleOption = {
@@ -45,7 +49,7 @@ struct woofAdsBlocker {
   };
   alignRules_body_non_tablet: AlignRuleOption = {
     top: { anchor: "title_ads_blocker", align: VerticalAlign.Bottom },
-    bottom: { anchor: "controls_ads_blocker", align: VerticalAlign.Top },
+    bottom: { anchor: "controls_js_sites", align: VerticalAlign.Top },
     right: { anchor: "__container__", align: HorizontalAlign.End }
   };
   // Colors
@@ -60,55 +64,70 @@ struct woofAdsBlocker {
       Scroll() {
         Column({ space: 10 }) {
           linysTitleText({
-            text: $r('app.string.Settings_experience_manage_adblock'),
+            text: $r('app.string.Settings_js_manage'),
             max_lines: 1
           })
             .width("100%")
             .padding({ bottom: 5 })
+
           linysText({
-            text: $r('app.string.Ads_block_desc_1'),
-            max_lines: 6
+            text: $r('app.string.Settings_js_desc_1'),
+            max_lines: 10
           })
             .width("100%")
+
           linysText({
-            text: $r('app.string.Ads_block_desc_2'),
-            max_lines: 6
+            text: $r('app.string.Settings_js_desc_2'),
+            max_lines: 10
           })
             .width("100%")
+
           linysText({
-            text: $r('app.string.Ads_block_desc_3'),
-            max_lines: 6
+            text: $r('app.string.Settings_js_desc_3'),
+            max_lines: 10
           })
             .width("100%")
+
+          linysText({
+            text: $r('app.string.Settings_js_already_disabled'),
+            max_lines: 3
+          })
+            .width("100%")
+            .visibility(this.my_js(this.current_url) ? Visibility.None : Visibility.Visible)
+            .animation(animation_default())
+
           linysText({
             text: $r('app.string.Have_a_Nice_Surf'),
             max_lines: 2
           })
             .width("100%")
             .opacity(0.9)
+
         } // Title
         .width("100%")
       }
       .align(Alignment.TopStart)
       .edgeEffect(EdgeEffect.Spring)
       .padding({ top: 5, bottom: 10, right: 10})
-      .width(this.tablet_mode ? "35%" : "100%")
+      .width(this.tablet_mode ? "40%" : "100%")
       .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
-      .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })
       .animation(animation_default())
+      .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })
       .id("title_ads_blocker")
 
-      Column() {
+      Column({ space: 10 }) {
         linysText({
-          text: $r('app.string.Ads_block_dont_block_sites'),
+          text: $r('app.string.Settings_js_some_sites'),
           max_lines: 3
         })
+          .padding({ top: 10 })
           .width("100%")
-          .padding({ top: 10, bottom: 10 })
+          .opacity(this.disable_js_all_sites || !this.disable_js ? 0.5 : 1)
+          .animation(animation_default())
 
         Scroll() {
           Column() {
-            ForEach(this.adblock_exceptions, (item: string, index: number) => {
+            ForEach(this.disable_js_these_sites, (item: string, index: number) => {
               Domain({
                 domain: item,
                 index: index,
@@ -118,7 +137,7 @@ struct woofAdsBlocker {
               })
                 .width("100%")
             })
-            if (this.adblock_exceptions.length == 0) {
+            if (this.disable_js_these_sites.length == 0) {
               linysTitleText({
                 text: "¯\\_(ツ)_/¯"
               })
@@ -136,8 +155,41 @@ struct woofAdsBlocker {
         .backgroundColor(this.color_current_secondary)
         .width("100%")
         .layoutWeight(1)
+        .opacity(this.disable_js_all_sites || !this.disable_js ? 0.5 : 1)
+        .animation(animation_default())
+
+        Row({ space: 10 }) {
+          linysText({ text: $r('app.string.Settings_js_all_sites') })
+            .layoutWeight(1)
+
+          Toggle({ isOn: this.disable_js_all_sites, type: ToggleType.Switch })
+            .switchPointColor(this.color_current_secondary)
+            .selectedColor(this.color_current_font)
+            .onChange(isOn => {
+              this.disable_js_all_sites = isOn;
+              this.bunch_of_settings.set('disable_js_all_sites', isOn);
+            })
+        } // Toggle disable js on all sites
+        .width("100%")
+        .opacity(!this.disable_js ? 0.5 : 1)
+        .animation(animation_default())
+
+        Row({ space: 10 }) {
+          linysText({ text: $r('app.string.Settings_js_disable_js') })
+            .layoutWeight(1)
+
+          Toggle({ isOn: this.disable_js, type: ToggleType.Switch })
+            .switchPointColor(this.color_current_secondary)
+            .selectedColor(this.color_current_font)
+            .onChange(isOn => {
+              this.disable_js = isOn;
+              this.bunch_of_settings.set('disable_js', isOn);
+            })
+        } // Toggle disable js on all sites
+        .width("100%")
+
       } // Whitelist
-      .width(this.tablet_mode ? "65%" : "100%")
+      .width(this.tablet_mode ? "60%" : "100%")
       .height(this.tablet_mode ? "100%" : undefined)
       .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)
       .animation(animation_default())
@@ -146,7 +198,7 @@ struct woofAdsBlocker {
         linysShowButton({
           show: this.showing_add_panel,
           symbol_glyph_target: "sys.symbol.plus",
-          text: $r('app.string.Ads_block_add_exception_domain')
+          text: $r('app.string.Settings_js_add')
         })// Add Button
           .onClick(() => {
             this.showing_add_panel = !this.showing_add_panel;
@@ -154,9 +206,9 @@ struct woofAdsBlocker {
 
         Scroll() {
           Column({ space: 8 }) {
-            TextInput({ text: this.add_exception_domain_edit })// Input domain
+            TextInput({ text: this.add_disable_js_sites_edit })// Input domain
               .onChange((value) => {
-                this.add_exception_domain_edit = value;
+                this.add_disable_js_sites_edit = value;
               })
               .fontWeight(FontWeight.Regular)
               .fontColor(this.color_current_font)
@@ -164,8 +216,8 @@ struct woofAdsBlocker {
               .selectedBackgroundColor(this.color_current_font)
               .width("100%")
               .onSubmit(() => {
-                this.add_exception(this.add_exception_domain_edit);
-                this.add_exception_domain_edit = "";
+                this.add_exception(this.add_disable_js_sites_edit);
+                this.add_disable_js_sites_edit = "";
                 this.showing_add_panel = false;
               })
               .height(capsule_bar_height())
@@ -174,8 +226,8 @@ struct woofAdsBlocker {
             linysCapsuleButton({ text: "  󰀓  " })
               .animation(animation_default())
               .onClick(() => {
-                this.add_exception(this.add_exception_domain_edit);
-                this.add_exception_domain_edit = "";
+                this.add_exception(this.add_disable_js_sites_edit);
+                this.add_disable_js_sites_edit = "";
                 this.showing_add_panel = false;
               })
           }
@@ -238,10 +290,11 @@ struct woofAdsBlocker {
       } // Controls
       .padding({ top: 10, right: this.tablet_mode ? 10 : 0 })
       .alignItems(HorizontalAlign.End)
-      .id("controls_ads_blocker")
+      .id("controls_js_sites")
       .alignRules(this.alignRules_foot)
+      .opacity(this.disable_js_all_sites || !this.disable_js ? 0.5 : 1)
       .animation(animation_default())
-      .width(this.tablet_mode ? "35%" : "100%")
+      .width(this.tablet_mode ? "40%" : "100%")
     }
     .padding(15)
     .width("100%")
@@ -296,12 +349,12 @@ struct woofAdsBlocker {
       return;
     }
     webview.AdsBlockManager.addAdsBlockDisallowedList([domain]);
-    if (this.adblock_exceptions.includes(domain)) {
+    if (this.disable_js_these_sites.includes(domain)) {
       // don't add same domains
       return;
     }
-    this.adblock_exceptions.push(domain);
-    this.bunch_of_settings.set('adblock_exceptions', this.adblock_exceptions.join("\n"))
+    this.disable_js_these_sites.push(domain);
+    this.bunch_of_settings.set('disable_js_these_sites', this.disable_js_these_sites.join("\n"))
   }
 
   delete_selected() {
@@ -309,26 +362,37 @@ struct woofAdsBlocker {
     let delete_exceptions: string[] = [];
     for (let index = 0; index < this.selected.length; index++) {
       if (!this.selected[index]) {
-        new_exceptions.push(this.adblock_exceptions[index]);
+        new_exceptions.push(this.disable_js_these_sites[index]);
       } else {
-        delete_exceptions.push(this.adblock_exceptions[index]);
+        delete_exceptions.push(this.disable_js_these_sites[index]);
       }
     }
-    try {
-      webview.AdsBlockManager.removeAdsBlockDisallowedList(delete_exceptions);
-    } catch (e) {
-      console.error(e);
-    }
-    this.adblock_exceptions = new_exceptions;
+    this.disable_js_these_sites = new_exceptions;
     this.delete_confirm = 0;
     this.selecting = false;
     this.selected_number = 0;
-    this.selected = this.all_false(this.adblock_exceptions.length);
-    this.bunch_of_settings.set('adblock_exceptions', this.adblock_exceptions.join("\n"))
+    this.selected = this.all_false(this.disable_js_these_sites.length);
+    this.bunch_of_settings.set('disable_js_these_sites', this.disable_js_these_sites.join("\n"))
+  }
+
+  my_js(address: string) {
+    if (!this.disable_js) {
+      return true;
+    }
+    // Disable js toggle ON
+    if (this.disable_js_all_sites) {
+      // Disable on all sites
+      return false;
+    }
+    // Disable on some sites
+    if (address && this.disable_js_these_sites.includes(match_domain(address))) {
+      return false;
+    }
+    return true;
   }
 }
 
-export default woofAdsBlocker;
+export default woofJS;
 
 @Component
 struct Domain {
@@ -350,16 +414,15 @@ struct Domain {
     }
     .alignItems(HorizontalAlign.Start)
     .width("100%")
-    .backgroundColor(this.selected[this.index] ? this.color_current_font : this.color_current_secondary)
+    .backgroundColor(this.selected[this.index] ? this.color_current_font : 'transparent')
     .animation(animation_default())
-    .padding(5)
-    .clickEffect(click_effect_default())
     .padding({
-      left: 12,
-      right: 12,
-      top: 6,
+      left: 10,
+      right: 10,
+      top: 5,
       bottom: 5
     })
+    .clickEffect(click_effect_default())
     .onClick(() => {
       if (this.selecting) {
         // Select

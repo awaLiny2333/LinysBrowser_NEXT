@@ -369,6 +369,10 @@
       "value": "没有填链接！"
     },
     {
+      "name": "Fail_desc_no_content",
+      "value": "没有填内容！"
+    },
+    {
       "name": "Fail_desc_folder_current_name_crash",
       "value": "当前位置有一个重名的文件夹！"
     },
@@ -394,7 +398,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "1. 沉静式全屏！\n2. 智能防追踪功能～\n3. 可以设置为默认浏览器了！"
+      "value": "1. 禁用 JavaScript！"
     },
     {
       "name": "Whats_new_content_extra",
@@ -535,6 +539,42 @@
     {
       "name": "Settings_manage_cookies_desc_3",
       "value": "清除 Cookies 在某些时候能够解决一些诡异的问题，但是被清理了 Cookies 的网站可能会要求你重新登陆一次。"
+    },
+    {
+      "name": "Settings_js_disable_js",
+      "value": "禁用 JavaScript"
+    },
+    {
+      "name": "Settings_js_manage",
+      "value": "管理 JavaScript"
+    },
+    {
+      "name": "Settings_js_all_sites",
+      "value": "在所有网站上禁用 JavaScript"
+    },
+    {
+      "name": "Settings_js_some_sites",
+      "value": "在以下网站上禁用 JavaScript"
+    },
+    {
+      "name": "Settings_js_add",
+      "value": "添加一个域名"
+    },
+    {
+      "name": "Settings_js_already_disabled",
+      "value": "提示：这个页面上的 JavaScript 已被禁止！"
+    },
+    {
+      "name": "Settings_js_desc_1",
+      "value": "打开 “禁用 JavaScript” 开关来启用这个功能，然后选择：是要在全部网站上禁用，还是只在某些特定网站上禁用。"
+    },
+    {
+      "name": "Settings_js_desc_2",
+      "value": "如果在打开 “禁用 JavaScript” 的同时关掉 “在所有网站上禁用 JavaScript”，那么只有在这个列表的网站上会禁用 JavaScript。"
+    },
+    {
+      "name": "Settings_js_desc_3",
+      "value": "悄悄告诉你，禁用 JavaScript 会导致某些网站坏掉，也可能会有意想不到的神奇喵喵效果喔～ :P"
     }
   ]
 }
