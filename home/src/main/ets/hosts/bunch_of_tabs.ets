@@ -275,6 +275,9 @@ export class bunch_of_tabs {
   closeTab(target: number, home_url: string) {
     if (this.Tabs.length == 1) {
       // Reset the only tab
+      this.Tabs[0].searching_keyword = '';
+      this.Tabs[0].searching_keyword_stats_current = 0;
+      this.Tabs[0].searching_keyword_stats_total = 0;
       this.Tabs[0].controller.loadUrl(url_meow_to_resource(home_url));
       this.Tabs[0].controller.clearHistory();
       return 0;

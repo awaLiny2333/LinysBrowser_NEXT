@@ -29,8 +29,8 @@ import meowScratchingBoard from './meowScratchingBoard';
 import woofAdsBlocker from '../dialogs/woofAdsBlocker';
 import woofAddSE from '../dialogs/woofAddSE';
 import woofCookies from '../dialogs/woofCookies';
-import woofJS from '../dialogs/woofJS';
 import linysText from '../components/linysText';
+import woofGeneralManage from '../dialogs/woofGeneralManage';
 
 @Component
 struct meowTitleBar {
@@ -84,6 +84,12 @@ struct meowTitleBar {
   @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   @State address_analyzers_desc_close_cd: number = 0;
   // settings
+  @StorageLink('disable_js') disable_js: boolean = true;
+  @StorageLink('disable_js_these_sites') disable_js_these_sites: string[] = [];
+  @StorageLink('disable_js_all_sites') disable_js_all_sites: boolean = false;
+  @StorageLink('disable_image') disable_image: boolean = true;
+  @StorageLink('disable_image_these_sites') disable_image_these_sites: string[] = [];
+  @StorageLink('disable_image_all_sites') disable_image_all_sites: boolean = false;
   @StorageProp('title_bar_position') title_bar_position: string = "";
   @StorageLink('tabs_style') tabs_style: string = "";
   @StorageLink('max_bookmark_advice') max_bookmark_advice: number = 5;
@@ -124,9 +130,37 @@ struct meowTitleBar {
     width: "90%",
   });
   js_manage_control: CustomDialogController = new CustomDialogController({
-    builder: woofJS({
-      add_disable_js_sites_edit: match_domain(this.search_input),
+    builder: woofGeneralManage({
+      general_switch: this.disable_js,
+      general_sites_list: this.disable_js_these_sites,
+      general_on_all_sites_switch: this.disable_js_all_sites,
+      add_site_edit: match_domain(this.search_input),
       showing_add_panel: true
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16,
+    showInSubWindow: true,
+    width: "90%",
+  });
+  image_manage_control: CustomDialogController = new CustomDialogController({
+    builder: woofGeneralManage({
+      general_switch: this.disable_image,
+      general_sites_list: this.disable_image_these_sites,
+      general_on_all_sites_switch: this.disable_image_all_sites,
+      add_site_edit: match_domain(this.search_input),
+      showing_add_panel: true,
+      general_descriptions: [
+        $r('app.string.Settings_image_desc_1'),
+        $r('app.string.Settings_image_desc_2'),
+        $r('app.string.Settings_image_desc_3')],
+      general_tips: $r('app.string.Settings_image_already_disabled'),
+      general_title: $r('app.string.Settings_image_manage'),
+      general_switch_desc: $r('app.string.Settings_image_disable_image'),
+      general_subtitle_execute_on_these_sites: $r('app.string.Settings_image_some_sites'),
+      general_subtitle_execute_on_all_sites: $r('app.string.Settings_image_all_sites'),
+      general_switch_settings_id: 'disable_image',
+      general_sites_list_settings_id: 'disable_image_these_sites',
+      general_switch_all_sites_settings_id: 'disable_image_all_sites',
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
@@ -191,7 +225,7 @@ struct meowTitleBar {
       .animation(animation_default())
 
       RelativeContainer() {
-        Row({ space: this.tablet_mode ? 10 : 7 }) {
+        Row({ space: 10 }) {
           linysSymbol({
             symbol_glyph_target: 'sys.symbol.arrow_left'
           })// Backward
@@ -556,12 +590,12 @@ struct meowTitleBar {
           })
           .animation(animation_default())
 
-          Row({ space: this.tablet_mode ? 10 : 7 }) {
+          Row({ space: 10 }) {
             linysText({
               text: this.current_in_page_searching_stats_current.toString() + '／' +
               this.current_in_page_searching_stats_total.toString()
             })
-
+              .animation(animation_default())
             linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_up' })
               .onClick(() => {
                 try {
@@ -599,12 +633,18 @@ struct meowTitleBar {
         .padding(10)
         .animation(animation_default())
 
-        Row({ space: this.tablet_mode ? 10 : 7 }) {
+        Row({ space: 10 }) {
           linysSymbol({
             symbol_glyph_target: 'sys.symbol.tracking_cookie_interception'
           })// Cookies
             .onClick(() => {
               this.cookies_control.open();
+            })
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.ohos_photo'
+          })// Image
+            .onClick(() => {
+              this.image_manage_control.open();
             })
           linysSymbol({
             symbol_glyph_target: 'sys.symbol.electric_install'

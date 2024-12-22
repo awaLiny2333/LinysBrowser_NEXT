@@ -32,7 +32,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import meowCreditsRepos from './meowCreditsRepos';
 import meowCreditsUsers from './meowCreditsUsers';
 import woofCookies from '../dialogs/woofCookies';
-import woofJS from '../dialogs/woofJS';
+import woofGeneralManage from '../dialogs/woofGeneralManage';
 
 @Component
 struct meowAppSettings {
@@ -92,7 +92,12 @@ struct meowAppSettings {
   @StorageLink('use_adblock') use_adblock: boolean = true;
   @StorageLink('collect_new_history') collect_new_history: boolean = true;
   @StorageLink('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
-  @StorageLink('disable_js') disable_js: boolean = false;
+  @StorageLink('disable_js') disable_js: boolean = true;
+  @StorageLink('disable_js_these_sites') disable_js_these_sites: string[] = [];
+  @StorageLink('disable_js_all_sites') disable_js_all_sites: boolean = false;
+  @StorageLink('disable_image') disable_image: boolean = true;
+  @StorageLink('disable_image_these_sites') disable_image_these_sites: string[] = [];
+  @StorageLink('disable_image_all_sites') disable_image_all_sites: boolean = false;
   // Edits
   @State new_tab_url_edit: string = "";
   @State home_url_edit: string = "";
@@ -119,7 +124,34 @@ struct meowAppSettings {
     width: "90%",
   });
   js_manage_control: CustomDialogController = new CustomDialogController({
-    builder: woofJS(),
+    builder: woofGeneralManage({
+      general_switch: this.disable_js,
+      general_on_all_sites_switch: this.disable_js_all_sites,
+      general_sites_list: this.disable_js_these_sites
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16,
+    showInSubWindow: true,
+    width: "90%",
+  });
+  image_manage_control: CustomDialogController = new CustomDialogController({
+    builder: woofGeneralManage({
+      general_switch: this.disable_image,
+      general_sites_list: this.disable_image_these_sites,
+      general_on_all_sites_switch: this.disable_image_all_sites,
+      general_descriptions: [
+        $r('app.string.Settings_image_desc_1'),
+        $r('app.string.Settings_image_desc_2'),
+        $r('app.string.Settings_image_desc_3')],
+      general_tips: $r('app.string.Settings_image_already_disabled'),
+      general_title: $r('app.string.Settings_image_manage'),
+      general_switch_desc: $r('app.string.Settings_image_disable_image'),
+      general_subtitle_execute_on_these_sites: $r('app.string.Settings_image_some_sites'),
+      general_subtitle_execute_on_all_sites: $r('app.string.Settings_image_all_sites'),
+      general_switch_settings_id: 'disable_image',
+      general_sites_list_settings_id: 'disable_image_these_sites',
+      general_switch_all_sites_settings_id: 'disable_image_all_sites',
+    }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
     showInSubWindow: true,
@@ -284,16 +316,6 @@ struct meowAppSettings {
               } // Use adblock
               .width("100%")
 
-              Row({ space: 10 }) {
-                Blank()
-                linysText({ text: $r('app.string.Settings_experience_manage_adblock') })
-                linysCapsuleButton({ text: "  󰀠  " })
-                  .onClick(() => {
-                    this.adsBlocker_control.open();
-                  })
-              } // Ads Blocker management
-              .width("100%")
-
               Row() {
                 linysText({ text: $r('app.string.Settings_experience_sys_back_to_access_backward'), max_lines: 3 })
                   .layoutWeight(1)
@@ -305,6 +327,39 @@ struct meowAppSettings {
                     this.bunch_of_settings.set('sys_back_access_backward', isOn);
                   })
               } // Use sys back
+              .width("100%")
+
+              Row({ space: 10 }) {
+                Blank()
+                linysText({ text: $r('app.string.Settings_experience_manage_adblock') })
+                linysCapsuleButton({ text: "  󰀠  " })
+                  .onClick(() => {
+                    this.adsBlocker_control.open();
+                  })
+              } // Ads Blocker management
+              .width("100%")
+
+              Row() {
+                linysText({ text: $r('app.string.Settings_image_disable_image'), max_lines: 1 })
+                  .layoutWeight(1)
+                Toggle({ isOn: this.disable_image, type: ToggleType.Switch })
+                  .switchPointColor(this.color_current_secondary)
+                  .selectedColor(this.color_current_font)
+                  .onChange(isOn => {
+                    this.disable_image = isOn;
+                    this.bunch_of_settings.set('disable_image', isOn);
+                  })
+              } // Disable images
+              .width("100%")
+
+              Row({ space: 10 }) {
+                Blank()
+                linysText({ text: $r('app.string.Settings_image_manage') })
+                linysCapsuleButton({ text: "  󰀠  " })
+                  .onClick(() => {
+                    this.image_manage_control.open();
+                  })
+              } // Disable image management
               .width("100%")
 
               linysText({ text: $r('app.string.Settings_experience_max_bookmark_advice'), max_lines: 2 })
@@ -599,7 +654,7 @@ struct meowAppSettings {
               Row({ space: 10 }) {
                 Blank()
                 linysText({ text: $r('app.string.Settings_js_manage') })
-                linysCapsuleButton({ text: '  󰀩  ' })
+                linysCapsuleButton({ text: '  󰀠  ' })
                   .onClick(() => {
                     this.js_manage_control.open();
                   })

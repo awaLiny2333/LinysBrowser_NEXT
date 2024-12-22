@@ -45,6 +45,9 @@ struct meowWebView {
   @StorageLink('disable_js') disable_js: boolean = false;
   @StorageLink('disable_js_these_sites') disable_js_these_sites: string[] = [];
   @StorageLink('disable_js_all_sites') disable_js_all_sites: boolean = true;
+  @StorageLink('disable_image') disable_image: boolean = false;
+  @StorageLink('disable_image_these_sites') disable_image_these_sites: string[] = [];
+  @StorageLink('disable_image_all_sites') disable_image_all_sites: boolean = true;
   // Stuffs
   @State initialization_ok: boolean = false;
   @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
@@ -57,12 +60,26 @@ struct meowWebView {
 
   async aboutToAppear(): Promise<void> {
 
+    let sites_got: string;
+
+    // Get whether image is disabled
+    this.disable_image = await this.bunch_of_settings.get('disable_image') as boolean;
+    this.disable_image_all_sites = await this.bunch_of_settings.get('disable_image_all_sites') as boolean;
+
+    // Get image ban specifications
+    sites_got = await this.bunch_of_settings.get('disable_image_these_sites') as string;
+    if (sites_got == '') {
+      this.disable_image_these_sites = [];
+    } else {
+      this.disable_image_these_sites = sites_got.split('\n');
+    }
+
     // Get whether js is disabled
     this.disable_js = await this.bunch_of_settings.get('disable_js') as boolean;
     this.disable_js_all_sites = await this.bunch_of_settings.get('disable_js_all_sites') as boolean;
 
     // Get js ban specifications
-    let sites_got = await this.bunch_of_settings.get('disable_js_these_sites') as string;
+    sites_got = await this.bunch_of_settings.get('disable_js_these_sites') as string;
     if (sites_got == '') {
       this.disable_js_these_sites = [];
     } else {
@@ -73,11 +90,11 @@ struct meowWebView {
     this.use_adblock = await this.bunch_of_settings.get('use_adblock') as boolean;
 
     // Get adblock exceptions
-    let exceptions_got = await this.bunch_of_settings.get('adblock_exceptions') as string;
-    if (exceptions_got == '') {
+    sites_got = await this.bunch_of_settings.get('adblock_exceptions') as string;
+    if (sites_got == '') {
       this.adblock_exceptions = [];
     } else {
-      this.adblock_exceptions = exceptions_got.split('\n');
+      this.adblock_exceptions = sites_got.split('\n');
     }
 
     // If directly use addAdsBlockDisallowedList(this.adblock_exceptions)
@@ -121,6 +138,8 @@ struct meowWebView {
             .databaseAccess(true)
             .onlineImageAccess(true)
             .javaScriptAccess(this.my_js(Label.index_key))
+            .imageAccess(this.my_image(Label.index_key))
+            .onlineImageAccess(this.my_image(Label.index_key))
             .fileAccess(true)
             .domStorageAccess(true)
             .multiWindowAccess(true)
@@ -426,6 +445,22 @@ struct meowWebView {
     }
     // Disable on some sites
     if (this.tab_urls[index] && this.disable_js_these_sites.includes(match_domain(this.tab_urls[index]))) {
+      return false;
+    }
+    return true;
+  }
+
+  my_image(index: number) {
+    if (!this.disable_image) {
+      return true;
+    }
+    // Disable image toggle ON
+    if (this.disable_image_all_sites) {
+      // Disable on all sites
+      return false;
+    }
+    // Disable on some sites
+    if (this.tab_urls[index] && this.disable_image_these_sites.includes(match_domain(this.tab_urls[index]))) {
       return false;
     }
     return true;

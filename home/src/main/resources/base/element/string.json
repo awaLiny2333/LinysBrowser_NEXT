@@ -398,7 +398,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "1. Disable JavaScript!"
+      "value": "1. In-page search\n2. Disable web images!"
     },
     {
       "name": "Whats_new_content_extra",
@@ -541,6 +541,10 @@
       "value": "Clearing cookies may fix some weird web errors, but a site may require you to login again if its cookies are cleared."
     },
     {
+      "name": "Settings_woof_add_a_domain",
+      "value": "Add a site"
+    },
+    {
       "name": "Settings_js_disable_js",
       "value": "Disable JavaScript"
     },
@@ -555,10 +559,6 @@
     {
       "name": "Settings_js_some_sites",
       "value": "Disable JavaScript on these sites"
-    },
-    {
-      "name": "Settings_js_add",
-      "value": "Add a site"
     },
     {
       "name": "Settings_js_already_disabled",
@@ -579,6 +579,38 @@
     {
       "name": "More_in_page_search",
       "value": "Search in page..."
+    },
+    {
+      "name": "Settings_image_disable_image",
+      "value": "Disable web images"
+    },
+    {
+      "name": "Settings_image_manage",
+      "value": "Manage web images"
+    },
+    {
+      "name": "Settings_image_all_sites",
+      "value": "Disable web images on all sites"
+    },
+    {
+      "name": "Settings_image_some_sites",
+      "value": "Disable web images on these sites"
+    },
+    {
+      "name": "Settings_image_already_disabled",
+      "value": "Tips: Images on this site has been disabled!"
+    },
+    {
+      "name": "Settings_image_desc_1",
+      "value": "Toggle \"Disable web images\" on to enable this feature, then choose to disable on all sites, or on specific sites."
+    },
+    {
+      "name": "Settings_image_desc_2",
+      "value": "If turn \"Disable web images\" on while having \"Disable web images on all sites\" off, then web images would only be disabled on these sites added to the list."
+    },
+    {
+      "name": "Settings_image_desc_3",
+      "value": "By the way, disabling web images may cause some sites to break, but may also boost the load speed and save data as well. :P"
     }
   ]
 }

@@ -17,6 +17,7 @@ struct woofAdsBlocker {
   controller: CustomDialogController;
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('tablet_mode') tablet_mode: boolean = false;
+  @StorageLink('use_adblock') use_adblock: boolean = true;
   @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
   @State add_exception_domain_edit: string = "";
   @State showing_add_panel: boolean = false;
@@ -91,20 +92,22 @@ struct woofAdsBlocker {
       }
       .align(Alignment.TopStart)
       .edgeEffect(EdgeEffect.Spring)
-      .padding({ top: 5, bottom: 10, right: 10})
+      .padding({ top: 5, bottom: 10, right: 10 })
       .width(this.tablet_mode ? "35%" : "100%")
       .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
       .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })
       .animation(animation_default())
       .id("title_ads_blocker")
 
-      Column() {
+      Column({ space: 10 }) {
         linysText({
           text: $r('app.string.Ads_block_dont_block_sites'),
           max_lines: 3
         })
           .width("100%")
-          .padding({ top: 10, bottom: 10 })
+          .padding({ top: 10 })
+          .opacity(!this.use_adblock ? 0.5 : 1)
+          .animation(animation_default())
 
         Scroll() {
           Column() {
@@ -136,6 +139,22 @@ struct woofAdsBlocker {
         .backgroundColor(this.color_current_secondary)
         .width("100%")
         .layoutWeight(1)
+        .opacity(!this.use_adblock ? 0.5 : 1)
+        .animation(animation_default())
+
+        Row({ space: 10 }) {
+          linysText({ text: $r('app.string.Settings_experience_use_adblock') })
+            .layoutWeight(1)
+
+          Toggle({ isOn: this.use_adblock, type: ToggleType.Switch })
+            .switchPointColor(this.color_current_secondary)
+            .selectedColor(this.color_current_font)
+            .onChange(isOn => {
+              this.use_adblock = isOn;
+              this.bunch_of_settings.set('use_adblock', isOn);
+            })
+        } // Toggle use adblock
+        .width("100%")
       } // Whitelist
       .width(this.tablet_mode ? "65%" : "100%")
       .height(this.tablet_mode ? "100%" : undefined)
@@ -240,6 +259,7 @@ struct woofAdsBlocker {
       .alignItems(HorizontalAlign.End)
       .id("controls_ads_blocker")
       .alignRules(this.alignRules_foot)
+      .opacity(!this.use_adblock ? 0.5 : 1)
       .animation(animation_default())
       .width(this.tablet_mode ? "35%" : "100%")
     }
@@ -350,7 +370,7 @@ struct Domain {
     }
     .alignItems(HorizontalAlign.Start)
     .width("100%")
-    .backgroundColor(this.selected[this.index] ? this.color_current_font : this.color_current_secondary)
+    .backgroundColor(this.selected[this.index] ? this.color_current_font : 'transparent')
     .animation(animation_default())
     .padding(5)
     .clickEffect(click_effect_default())

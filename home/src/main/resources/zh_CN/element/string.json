@@ -398,7 +398,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "1. 禁用 JavaScript！"
+      "value": "1. 页面内搜索\n2. 无图模式！"
     },
     {
       "name": "Whats_new_content_extra",
@@ -557,7 +557,7 @@
       "value": "在以下网站上禁用 JavaScript"
     },
     {
-      "name": "Settings_js_add",
+      "name": "Settings_woof_add_a_domain",
       "value": "添加一个域名"
     },
     {
@@ -579,6 +579,38 @@
     {
       "name": "More_in_page_search",
       "value": "页面内查找……"
+    },
+    {
+      "name": "Settings_image_disable_image",
+      "value": "无图模式"
+    },
+    {
+      "name": "Settings_image_manage",
+      "value": "管理无图模式"
+    },
+    {
+      "name": "Settings_image_all_sites",
+      "value": "在所有网站上无图"
+    },
+    {
+      "name": "Settings_image_some_sites",
+      "value": "只在这些网站上启用无图模式"
+    },
+    {
+      "name": "Settings_image_already_disabled",
+      "value": "提示：无图模式在这个网页上已经启用！"
+    },
+    {
+      "name": "Settings_image_desc_1",
+      "value": "打开 “无图模式” 开关来启用这个功能，然后选择：是希望全部网站都无图，还是只有某些特定网站无图。"
+    },
+    {
+      "name": "Settings_image_desc_2",
+      "value": "如果在打开 “无图模式” 的同时关掉 “在所有网站上无图”，那么只有在这个列表的网站上会进入无图模式。"
+    },
+    {
+      "name": "Settings_image_desc_3",
+      "value": "悄悄告诉你，启用无图模式可能会导致某些网站坏掉，但是也能加速网页加载速度、节约不少流量喔～ :P"
     }
   ]
 }

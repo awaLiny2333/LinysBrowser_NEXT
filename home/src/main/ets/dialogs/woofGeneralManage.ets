@@ -14,18 +14,33 @@ import linysCapsuleButton from '../components/linysCapsuleButton';
 import { match_domain } from '../utils/url_tools';
 
 @CustomDialog
-struct woofJS {
+struct woofGeneralManage {
   controller: CustomDialogController;
+  // Environment and Hosts
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('tablet_mode') tablet_mode: boolean = false;
-  @StorageLink('disable_js') disable_js: boolean = false;
-  @StorageLink('disable_js_these_sites') disable_js_these_sites: string[] = [];
-  @StorageLink('disable_js_all_sites') disable_js_all_sites: boolean = true;
   @StorageLink('current_url') current_url: string = "=￣ω￣=";
-  @State add_disable_js_sites_edit: string = "";
+  @State add_site_edit: string = "";
   @State showing_add_panel: boolean = false;
+  // Generals
+  @Link general_switch: boolean;
+  @Link general_sites_list: string[];
+  @Link general_on_all_sites_switch: boolean;
+  @State general_descriptions: ResourceStr[] = [
+    $r('app.string.Settings_js_desc_1'),
+    $r('app.string.Settings_js_desc_2'),
+    $r('app.string.Settings_js_desc_3')
+  ];
+  @State general_tips: ResourceStr = $r('app.string.Settings_js_already_disabled');
+  @State general_title: ResourceStr = $r('app.string.Settings_js_manage');
+  @State general_switch_desc: ResourceStr = $r('app.string.Settings_js_disable_js');
+  @State general_subtitle_execute_on_these_sites: ResourceStr = $r('app.string.Settings_js_some_sites');
+  @State general_subtitle_execute_on_all_sites: ResourceStr = $r('app.string.Settings_js_all_sites');
+  @State general_switch_settings_id: string = 'disable_js';
+  @State general_sites_list_settings_id: string = 'disable_js_these_sites';
+  @State general_switch_all_sites_settings_id: string = 'disable_js_all_sites';
   // Manage
-  @State @Watch('on_select_change') selected: boolean[] = this.all_false(this.disable_js_these_sites.length);
+  @State @Watch('on_select_change') selected: boolean[] = this.all_false(this.general_sites_list.length);
   @State selecting: boolean = false;
   @State selected_number: number = 0;
   @State delete_confirm: number = 0;
@@ -36,7 +51,7 @@ struct woofJS {
   };
   alignRules_head_tablet: AlignRuleOption = {
     top: { anchor: "__container__", align: VerticalAlign.Top },
-    bottom: { anchor: "controls_js_sites", align: VerticalAlign.Top },
+    bottom: { anchor: "controls", align: VerticalAlign.Top },
     left: { anchor: "__container__", align: HorizontalAlign.Start },
   };
   alignRules_foot: AlignRuleOption = {
@@ -48,8 +63,8 @@ struct woofJS {
     right: { anchor: "__container__", align: HorizontalAlign.End }
   };
   alignRules_body_non_tablet: AlignRuleOption = {
-    top: { anchor: "title_ads_blocker", align: VerticalAlign.Bottom },
-    bottom: { anchor: "controls_js_sites", align: VerticalAlign.Top },
+    top: { anchor: "title", align: VerticalAlign.Bottom },
+    bottom: { anchor: "controls", align: VerticalAlign.Top },
     right: { anchor: "__container__", align: HorizontalAlign.End }
   };
   // Colors
@@ -64,36 +79,26 @@ struct woofJS {
       Scroll() {
         Column({ space: 10 }) {
           linysTitleText({
-            text: $r('app.string.Settings_js_manage'),
+            text: this.general_title,
             max_lines: 1
           })
             .width("100%")
             .padding({ bottom: 5 })
 
-          linysText({
-            text: $r('app.string.Settings_js_desc_1'),
-            max_lines: 10
+          ForEach(this.general_descriptions, (desc: ResourceStr, _index: number) => {
+            linysText({
+              text: desc,
+              max_lines: 10
+            })
+              .width("100%")
           })
-            .width("100%")
 
           linysText({
-            text: $r('app.string.Settings_js_desc_2'),
-            max_lines: 10
-          })
-            .width("100%")
-
-          linysText({
-            text: $r('app.string.Settings_js_desc_3'),
-            max_lines: 10
-          })
-            .width("100%")
-
-          linysText({
-            text: $r('app.string.Settings_js_already_disabled'),
+            text: this.general_tips,
             max_lines: 3
           })
             .width("100%")
-            .visibility(this.my_js(this.current_url) ? Visibility.None : Visibility.Visible)
+            .visibility(this.match_this_domain(this.current_url) ? Visibility.None : Visibility.Visible)
             .animation(animation_default())
 
           linysText({
@@ -108,26 +113,26 @@ struct woofJS {
       }
       .align(Alignment.TopStart)
       .edgeEffect(EdgeEffect.Spring)
-      .padding({ top: 5, bottom: 10, right: 10})
+      .padding({ top: 5, bottom: 10, right: 10 })
       .width(this.tablet_mode ? "40%" : "100%")
       .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
       .animation(animation_default())
       .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })
-      .id("title_ads_blocker")
+      .id("title")
 
       Column({ space: 10 }) {
         linysText({
-          text: $r('app.string.Settings_js_some_sites'),
+          text: this.general_subtitle_execute_on_these_sites,
           max_lines: 3
         })
           .padding({ top: 10 })
           .width("100%")
-          .opacity(this.disable_js_all_sites || !this.disable_js ? 0.5 : 1)
+          .opacity(this.general_on_all_sites_switch || !this.general_switch ? 0.5 : 1)
           .animation(animation_default())
 
         Scroll() {
           Column() {
-            ForEach(this.disable_js_these_sites, (item: string, index: number) => {
+            ForEach(this.general_sites_list, (item: string, index: number) => {
               Domain({
                 domain: item,
                 index: index,
@@ -137,7 +142,7 @@ struct woofJS {
               })
                 .width("100%")
             })
-            if (this.disable_js_these_sites.length == 0) {
+            if (this.general_sites_list.length == 0) {
               linysTitleText({
                 text: "¯\\_(ツ)_/¯"
               })
@@ -155,37 +160,37 @@ struct woofJS {
         .backgroundColor(this.color_current_secondary)
         .width("100%")
         .layoutWeight(1)
-        .opacity(this.disable_js_all_sites || !this.disable_js ? 0.5 : 1)
+        .opacity(this.general_on_all_sites_switch || !this.general_switch ? 0.5 : 1)
         .animation(animation_default())
 
         Row({ space: 10 }) {
-          linysText({ text: $r('app.string.Settings_js_all_sites') })
+          linysText({ text: this.general_subtitle_execute_on_all_sites })
             .layoutWeight(1)
 
-          Toggle({ isOn: this.disable_js_all_sites, type: ToggleType.Switch })
+          Toggle({ isOn: this.general_on_all_sites_switch, type: ToggleType.Switch })
             .switchPointColor(this.color_current_secondary)
             .selectedColor(this.color_current_font)
             .onChange(isOn => {
-              this.disable_js_all_sites = isOn;
-              this.bunch_of_settings.set('disable_js_all_sites', isOn);
+              this.general_on_all_sites_switch = isOn;
+              this.bunch_of_settings.set(this.general_switch_all_sites_settings_id, isOn);
             })
-        } // Toggle disable js on all sites
+        } // Toggle on all sites
         .width("100%")
-        .opacity(!this.disable_js ? 0.5 : 1)
+        .opacity(!this.general_switch ? 0.5 : 1)
         .animation(animation_default())
 
         Row({ space: 10 }) {
-          linysText({ text: $r('app.string.Settings_js_disable_js') })
+          linysText({ text: this.general_switch_desc })
             .layoutWeight(1)
 
-          Toggle({ isOn: this.disable_js, type: ToggleType.Switch })
+          Toggle({ isOn: this.general_switch, type: ToggleType.Switch })
             .switchPointColor(this.color_current_secondary)
             .selectedColor(this.color_current_font)
             .onChange(isOn => {
-              this.disable_js = isOn;
-              this.bunch_of_settings.set('disable_js', isOn);
+              this.general_switch = isOn;
+              this.bunch_of_settings.set(this.general_switch_settings_id, isOn);
             })
-        } // Toggle disable js on all sites
+        } // Toggle on all sites
         .width("100%")
 
       } // Whitelist
@@ -198,7 +203,7 @@ struct woofJS {
         linysShowButton({
           show: this.showing_add_panel,
           symbol_glyph_target: "sys.symbol.plus",
-          text: $r('app.string.Settings_js_add')
+          text: $r("app.string.Settings_woof_add_a_domain")
         })// Add Button
           .onClick(() => {
             this.showing_add_panel = !this.showing_add_panel;
@@ -206,9 +211,9 @@ struct woofJS {
 
         Scroll() {
           Column({ space: 8 }) {
-            TextInput({ text: this.add_disable_js_sites_edit })// Input domain
+            TextInput({ text: this.add_site_edit })// Input domain
               .onChange((value) => {
-                this.add_disable_js_sites_edit = value;
+                this.add_site_edit = value;
               })
               .fontWeight(FontWeight.Regular)
               .fontColor(this.color_current_font)
@@ -216,8 +221,8 @@ struct woofJS {
               .selectedBackgroundColor(this.color_current_font)
               .width("100%")
               .onSubmit(() => {
-                this.add_exception(this.add_disable_js_sites_edit);
-                this.add_disable_js_sites_edit = "";
+                this.add_exception(this.add_site_edit);
+                this.add_site_edit = "";
                 this.showing_add_panel = false;
               })
               .height(capsule_bar_height())
@@ -226,8 +231,8 @@ struct woofJS {
             linysCapsuleButton({ text: "  󰀓  " })
               .animation(animation_default())
               .onClick(() => {
-                this.add_exception(this.add_disable_js_sites_edit);
-                this.add_disable_js_sites_edit = "";
+                this.add_exception(this.add_site_edit);
+                this.add_site_edit = "";
                 this.showing_add_panel = false;
               })
           }
@@ -290,9 +295,9 @@ struct woofJS {
       } // Controls
       .padding({ top: 10, right: this.tablet_mode ? 10 : 0 })
       .alignItems(HorizontalAlign.End)
-      .id("controls_js_sites")
+      .id("controls")
       .alignRules(this.alignRules_foot)
-      .opacity(this.disable_js_all_sites || !this.disable_js ? 0.5 : 1)
+      .opacity(this.general_on_all_sites_switch || !this.general_switch ? 0.5 : 1)
       .animation(animation_default())
       .width(this.tablet_mode ? "40%" : "100%")
     }
@@ -349,12 +354,12 @@ struct woofJS {
       return;
     }
     webview.AdsBlockManager.addAdsBlockDisallowedList([domain]);
-    if (this.disable_js_these_sites.includes(domain)) {
+    if (this.general_sites_list.includes(domain)) {
       // don't add same domains
       return;
     }
-    this.disable_js_these_sites.push(domain);
-    this.bunch_of_settings.set('disable_js_these_sites', this.disable_js_these_sites.join("\n"))
+    this.general_sites_list.push(domain);
+    this.bunch_of_settings.set(this.general_sites_list_settings_id, this.general_sites_list.join("\n"))
   }
 
   delete_selected() {
@@ -362,37 +367,37 @@ struct woofJS {
     let delete_exceptions: string[] = [];
     for (let index = 0; index < this.selected.length; index++) {
       if (!this.selected[index]) {
-        new_exceptions.push(this.disable_js_these_sites[index]);
+        new_exceptions.push(this.general_sites_list[index]);
       } else {
-        delete_exceptions.push(this.disable_js_these_sites[index]);
+        delete_exceptions.push(this.general_sites_list[index]);
       }
     }
-    this.disable_js_these_sites = new_exceptions;
+    this.general_sites_list = new_exceptions;
     this.delete_confirm = 0;
     this.selecting = false;
     this.selected_number = 0;
-    this.selected = this.all_false(this.disable_js_these_sites.length);
-    this.bunch_of_settings.set('disable_js_these_sites', this.disable_js_these_sites.join("\n"))
+    this.selected = this.all_false(this.general_sites_list.length);
+    this.bunch_of_settings.set(this.general_sites_list_settings_id, this.general_sites_list.join("\n"))
   }
 
-  my_js(address: string) {
-    if (!this.disable_js) {
+  match_this_domain(address: string) {
+    if (!this.general_switch) {
       return true;
     }
-    // Disable js toggle ON
-    if (this.disable_js_all_sites) {
+    // Disable toggle ON
+    if (this.general_on_all_sites_switch) {
       // Disable on all sites
       return false;
     }
     // Disable on some sites
-    if (address && this.disable_js_these_sites.includes(match_domain(address))) {
+    if (address && this.general_sites_list.includes(match_domain(address))) {
       return false;
     }
     return true;
   }
 }
 
-export default woofJS;
+export default woofGeneralManage;
 
 @Component
 struct Domain {
