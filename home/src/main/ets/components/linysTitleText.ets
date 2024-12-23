@@ -16,7 +16,6 @@ struct linysTitleText {
       .fontWeight(FontWeight.Medium)
       .maxLines(this.max_lines)
       .textOverflow({ overflow: TextOverflow.Ellipsis })
-
   }
 }
 

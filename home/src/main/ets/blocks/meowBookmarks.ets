@@ -52,7 +52,7 @@ struct meowBookmarks {
               my_index: key,
               viewing_contents: this.viewing_contents, // For editing
               looking_at_path: this.looking_at_path, // the path of now showing list (directory) on the panel
-               // To ask webViews to show
+              // To ask webViews to show
               height_of_panel: this.scroll_area_height, // for animation params
               parent_path: this.looking_at_path, // for get_my_path()
             });
@@ -156,6 +156,7 @@ struct meowBookmarks {
               .fontColor(this.color_current_font)
               .caretColor(this.color_current_font)
               .selectedBackgroundColor(this.color_current_font)
+              .height(capsule_bar_height())
               .selectAll(true)
               .layoutWeight(1)
               .onSubmit(() => {
@@ -163,7 +164,6 @@ struct meowBookmarks {
                   this.new_folder();
                 }
               })
-              .height(capsule_bar_height())
 
           } // Edit Label TextInput
           .width("100%")
@@ -248,7 +248,7 @@ struct meowBookmarks {
       linysPathDisplay({
         current_viewing_path: this.looking_at_path,
       })
-        .height(this.showing_navigator ? undefined: 0)
+        .height(this.showing_navigator ? undefined : 0)
         .animation(animation_default())
       // Path indicator
     } // List of directory, Operation buttons and edit TextInputs
@@ -412,7 +412,6 @@ struct bookmarkItem {
   @Prop my_index: number = 0;
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
-
   @Link looking_at_path: string;
   @Link viewing_contents: unified_item[];
   @Prop parent_path: string;
@@ -453,7 +452,6 @@ struct bookmarkItem {
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
-
 
   build() {
     Column() {
@@ -516,14 +514,15 @@ struct bookmarkItem {
           Row({ space: 10 }) {
             linysSymbol({ symbol_glyph_target: "sys.symbol.rename" })
             TextInput({ text: this.edit_label })
-              .onChange((value) => {
-                this.edit_label = value;
-              })
               .fontWeight(FontWeight.Regular)
               .fontColor(this.color_current_font)
               .caretColor(this.color_current_font)
               .selectedBackgroundColor(this.color_current_font)
+              .height(capsule_bar_height())
               .layoutWeight(1)
+              .onChange((value) => {
+                this.edit_label = value;
+              })
               .onSubmit(() => {
                 if (this.type == "folder") {
                   this.save_changes_folder();
@@ -532,7 +531,6 @@ struct bookmarkItem {
                 }
                 this.editing = false;
               })
-              .height(capsule_bar_height())
 
           } // Edit label
           .width("100%")

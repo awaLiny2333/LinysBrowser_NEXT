@@ -38,7 +38,9 @@ struct linysShowButton {
     .borderRadius(10)
     .clickEffect(click_effect_default())
     .animation(animation_default())
-
+    .accessibilityText(this.text as string)
+    .accessibilityDescription($r('app.string.Accessibility_desc_linysShowButton'))
+    .accessibilityGroup(true)
   }
 }
 

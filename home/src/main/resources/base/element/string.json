@@ -611,6 +611,18 @@
     {
       "name": "Settings_image_desc_3",
       "value": "By the way, disabling web images may cause some sites to break, but may also boost the load speed and save data as well. :P"
+    },
+    {
+      "name": "Accessibility_desc_linysProgress",
+      "value": "This is a Web loading progress bar, indicating the current web page loading progress."
+    },
+    {
+      "name": "Accessibility_desc_linysLink",
+      "value": "This is a Link. After clicking, will open a new tab and load the link."
+    },
+    {
+      "name": "Accessibility_desc_linysShowButton",
+      "value": "This is a special Button. After clicking, a corresponding panel will open nearby."
     }
   ]
 }

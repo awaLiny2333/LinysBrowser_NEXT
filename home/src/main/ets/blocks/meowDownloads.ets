@@ -143,24 +143,28 @@ struct meowDownloadsButton {
           max_lines: 4,
         }) // File name
 
-        linysText({
-          text: this.my_link,
-          max_lines: 4,
-        }) // FIle link
-          .clickEffect(click_effect_default())
-          .onClick(() => {
-            copy(this.my_link);
-            this.copied = animation_popup_duration();
-          })
-          .opacity(0.7)
+        Column({ space: 10 }) {
+          linysText({
+            text: this.my_link,
+            max_lines: 4,
+          })// File link
+            .clickEffect(click_effect_default())
+            .onClick(() => {
+              copy(this.my_link);
+              this.copied = animation_popup_duration();
+            })
+            .opacity(0.7)
 
-        linysText({
-          text: $r('app.string.Downloads_copied'),
-        })
-          .offset({ y: this.copied > 0 ? -5 : -50 })
-          .opacity(0.7)
-          .visibility(this.copied > 0 ? Visibility.Visible : Visibility.None)
-          .animation(animation_default())
+          linysText({
+            text: $r('app.string.Downloads_copied'),
+          })
+            .offset({ y: this.copied > 0 ? 0 : -50 })
+            .opacity(0.7)
+            .visibility(this.copied > 0 ? Visibility.Visible : Visibility.None)
+            .animation(animation_default())
+        }
+        .alignItems(HorizontalAlign.Start)
+        .animation(animation_default())
 
         Row({ space: 5 }) {
           linysText({
@@ -195,7 +199,7 @@ struct meowDownloadsButton {
             .clickEffect(click_effect_default())
             .animation(animation_default())
 
-          Button(this.my_paused ? "  󰂴  " : "  󰂱  ") // Pause Continue
+          Button(this.my_paused ? "  󰂴  " : "  󰂱  ")// Pause Continue
             .type(ButtonType.Capsule)
             .backgroundColor($r("app.color.font_color_title"))
             .fontColor(this.color_current_primary)

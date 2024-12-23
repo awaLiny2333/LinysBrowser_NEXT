@@ -29,7 +29,9 @@ struct linysProgress {
     .height(this.show ? this.bar_height : 0)
     .width(this.bar_width)
     .animation({ duration: 200, curve: Curve.ExtremeDeceleration })
-
+    .accessibilityText(this.percentage.toString() + "%")
+    .accessibilityDescription($r('app.string.Accessibility_desc_linysProgress'))
+    .accessibilityGroup(true)
   }
 
   on_update() {

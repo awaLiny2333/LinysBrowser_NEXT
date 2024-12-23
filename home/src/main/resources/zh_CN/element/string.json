@@ -611,6 +611,18 @@
     {
       "name": "Settings_image_desc_3",
       "value": "悄悄告诉你，启用无图模式可能会导致某些网站坏掉，但是也能加速网页加载速度、节约不少流量喔～ :P"
+    },
+    {
+      "name": "Accessibility_desc_linysProgress",
+      "value": "这是一个网页加载进度条，指示当前网页加载的进度。"
+    },
+    {
+      "name": "Accessibility_desc_linysLink",
+      "value": "这是一个链接，点击之后会在新标签页打开这个链接。"
+    },
+    {
+      "name": "Accessibility_desc_linysShowButton",
+      "value": "这是一个特别的按钮，点击之后会在旁边打开对应功能的面板。"
     }
   ]
 }

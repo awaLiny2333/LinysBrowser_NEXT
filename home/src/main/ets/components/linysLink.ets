@@ -23,10 +23,12 @@ struct linysLink {
       .maxLines(this.max_lines)
       .lineSpacing(LengthMetrics.vp(4))
       .textOverflow({ overflow: TextOverflow.Ellipsis })
-      .onClick(()=>{
+      .onClick(() => {
         this.universal_new_tab_gateway = this.link;
         this.will_be_reversed_boolean = !this.will_be_reversed_boolean;
       })
+      .accessibilityText(this.text + ',' + this.link)
+      .accessibilityDescription($r('app.string.Accessibility_desc_linysLink'))
   }
 }
 
