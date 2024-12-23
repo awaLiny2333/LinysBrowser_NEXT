@@ -641,7 +641,7 @@ struct meowTitleBar {
               this.cookies_control.open();
             })
           linysSymbol({
-            symbol_glyph_target: 'sys.symbol.ohos_photo'
+            symbol_glyph_target: 'sys.symbol.picture_2'
           })// Image
             .onClick(() => {
               this.image_manage_control.open();
@@ -653,7 +653,7 @@ struct meowTitleBar {
               this.js_manage_control.open();
             })
           linysSymbol({
-            symbol_glyph_target: 'sys.symbol.ad_rectangle_fill'
+            symbol_glyph_target: 'sys.symbol.ad_circle_slash'
           })// Enable ads
             .onClick(() => {
               this.woofAdsBlocker_control.open();

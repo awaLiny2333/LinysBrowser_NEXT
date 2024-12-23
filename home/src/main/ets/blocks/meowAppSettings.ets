@@ -304,19 +304,6 @@ struct meowAppSettings {
               .width("100%")
 
               Row() {
-                linysText({ text: $r('app.string.Settings_experience_use_adblock'), max_lines: 1 })
-                  .layoutWeight(1)
-                Toggle({ isOn: this.use_adblock, type: ToggleType.Switch })
-                  .switchPointColor(this.color_current_secondary)
-                  .selectedColor(this.color_current_font)
-                  .onChange(isOn => {
-                    this.use_adblock = isOn;
-                    this.bunch_of_settings.set('use_adblock', isOn);
-                  })
-              } // Use adblock
-              .width("100%")
-
-              Row() {
                 linysText({ text: $r('app.string.Settings_experience_sys_back_to_access_backward'), max_lines: 3 })
                   .layoutWeight(1)
                 Toggle({ isOn: this.sys_back_to_access_backward, type: ToggleType.Switch })
@@ -327,6 +314,19 @@ struct meowAppSettings {
                     this.bunch_of_settings.set('sys_back_access_backward', isOn);
                   })
               } // Use sys back
+              .width("100%")
+
+              Row() {
+                linysText({ text: $r('app.string.Settings_experience_use_adblock'), max_lines: 1 })
+                  .layoutWeight(1)
+                Toggle({ isOn: this.use_adblock, type: ToggleType.Switch })
+                  .switchPointColor(this.color_current_secondary)
+                  .selectedColor(this.color_current_font)
+                  .onChange(isOn => {
+                    this.use_adblock = isOn;
+                    this.bunch_of_settings.set('use_adblock', isOn);
+                  })
+              } // Use adblock
               .width("100%")
 
               Row({ space: 10 }) {
