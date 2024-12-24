@@ -34,6 +34,7 @@ import meowCreditsUsers from './meowCreditsUsers';
 import woofCookies from '../dialogs/woofCookies';
 import woofGeneralManage from '../dialogs/woofGeneralManage';
 import woofKeyShortcuts from '../dialogs/woofKeyShortcuts';
+import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 
 @Component
 struct meowAppSettings {
@@ -45,6 +46,8 @@ struct meowAppSettings {
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
+  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts =
+    new bunch_of_key_shortcuts(true);
   // Colors
   @StorageProp('color_current_primary') @Watch('on_color_change') color_current_primary: ResourceColor =
     $r('app.color.start_window_background');
@@ -537,6 +540,8 @@ struct meowAppSettings {
                   .onClick(() => {
                     this.woofHistory_control.open();
                   })
+                  .keyboardShortcut(this.bunch_of_key_shortcuts.history.main_key,
+                    this.bunch_of_key_shortcuts.history.modifier)
               } // History management
               .width("100%")
             }

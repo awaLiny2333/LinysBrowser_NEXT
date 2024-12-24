@@ -287,14 +287,14 @@ struct meowTitleBar {
           RelativeContainer() {
             Scroll() {
               TextInput({ text: this.search_input })
-                .allowDrop(null)// .enabled(this.showing_search_extracted_field ? false : true)
+                .allowDrop(null)
                 .height(capsule_bar_height())
                 .fontWeight(FontWeight.Regular)
                 .fontColor(this.color_current_font)
                 .caretColor(this.color_current_font)
                 .selectedBackgroundColor(this.color_current_font)
                 .offset({ y: !this.showing_search_extracted_field ? 0 : -50 })
-                .opacity(this.showing_search_extracted_field ? 0 : this.showing_scratching_board ? 0.8 : 1)
+                .opacity(!this.showing_search_extracted_field ? (this.showing_scratching_board ? 0.8 : 1) : 0)
                 .animation(animation_default())
                 .onDragEnter(() => {
                   this.showing_scratching_board = true;
@@ -314,6 +314,9 @@ struct meowTitleBar {
                 })
                 .selectAll(true)
                 .id('address_bar')
+                .keyboardShortcut(!this.showing_search_extracted_field ?
+                this.bunch_of_key_shortcuts.focus_address.main_key : '',
+                  this.bunch_of_key_shortcuts.focus_address.modifier)
             }
             .scrollable(ScrollDirection.Vertical)
             .height(this.showing_search_extracted_field ? 0 : 36)
@@ -328,7 +331,7 @@ struct meowTitleBar {
                 .fontColor(this.color_current_font)
                 .caretColor(this.color_current_font)
                 .offset({ y: this.showing_search_extracted_field ? 0 : 50 })
-                .opacity(this.showing_search_extracted_field ? this.showing_scratching_board ? 0.8 : 1 : 0)
+                .opacity(this.showing_search_extracted_field ? (this.showing_scratching_board ? 0.8 : 1) : 0)
                 .animation(animation_default())
                 .onDragEnter(() => {
                   this.showing_scratching_board = true;
@@ -359,6 +362,9 @@ struct meowTitleBar {
                 .selectAll(true)
                 .selectedBackgroundColor(this.color_current_font)
                 .id('key_bar')
+                .keyboardShortcut(this.showing_search_extracted_field ?
+                this.bunch_of_key_shortcuts.focus_address.main_key : '',
+                  this.bunch_of_key_shortcuts.focus_address.modifier)
             }
             .scrollable(ScrollDirection.Vertical)
             .scrollBar(BarState.Off)
@@ -449,8 +455,10 @@ struct meowTitleBar {
             show: this.showing_tabs
           })// Tabs
             .onClick(() => {
-              this.show_tabs()
+              this.show_tabs();
             })
+            .keyboardShortcut(this.bunch_of_key_shortcuts.show_tabs.main_key,
+              this.bunch_of_key_shortcuts.show_tabs.modifier)
 
           linysShowButton({
             show: this.showing_bookmarks,
@@ -522,7 +530,7 @@ struct meowTitleBar {
           Row() {
             linysSymbol({
               symbol_glyph_target: 'sys.symbol.doc_text_badge_magnifyingglass'
-            }) // Search
+            }) // in-page Search
             TextInput({
               text: this.current_in_page_searching_keyword,
               placeholder: $r('app.string.More_in_page_search')
@@ -551,6 +559,11 @@ struct meowTitleBar {
                   console.error(e);
                 }
               })
+              .onFocus(() => {
+                this.showing_more_options = true;
+              })
+              .keyboardShortcut(this.bunch_of_key_shortcuts.in_page_search.main_key,
+                this.bunch_of_key_shortcuts.in_page_search.modifier)
 
             linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass' })
               .onClick(() => {

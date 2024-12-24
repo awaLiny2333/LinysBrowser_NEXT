@@ -13,12 +13,15 @@ import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import linysShowButton from '../components/linysShowButton';
 import linysText from '../components/linysText';
 import { sandbox_open_array_sync, sandbox_unlink_sync } from '../utils/storage_tools';
+import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 
 @Component
 struct meowTabs {
   // Hosts and environments
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
+  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts =
+    new bunch_of_key_shortcuts(true);
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
   @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
@@ -226,9 +229,9 @@ struct meowTabs {
 
         linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
           .onClick(() => {
-
             this.new_tab("")
           })
+          .keyboardShortcut(this.bunch_of_key_shortcuts.new_tab.main_key, this.bunch_of_key_shortcuts.new_tab.modifier)
       } // New Tab and Paralleow Button
       .width("100%")
 
@@ -594,6 +597,8 @@ struct TabButton {
   @Prop Label: tab_label;
   tab_height_default: number = 42;
   // Public
+  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts =
+    new bunch_of_key_shortcuts(true);
   @StorageLink('current_main_tab_index') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') current_sub_tab_index: number = -1;
   @StorageLink('tab_titles') tab_titles: string[] = []
@@ -669,6 +674,8 @@ struct TabButton {
       .onClick(() => {
         this.close_tab_gateway = this.Label.index_key;
       })
+      .keyboardShortcut(this.current_main_tab_index == this.Label.index_key ?
+      this.bunch_of_key_shortcuts.close_tab.main_key : '', this.bunch_of_key_shortcuts.close_tab.modifier)
     }
     .onTouch((event) => {
       if (event.type == TouchType.Up) {
