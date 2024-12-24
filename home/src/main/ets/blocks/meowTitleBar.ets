@@ -559,7 +559,7 @@ struct meowTitleBar {
                   console.error(e);
                 }
               })
-              .onFocus(() => {
+              .onClick(() => {
                 this.showing_more_options = true;
               })
               .keyboardShortcut(this.bunch_of_key_shortcuts.in_page_search.main_key,

@@ -181,9 +181,14 @@ export class bunch_of_downloads {
         console.log("[bunch_of_downloads][Export] from: " + file_path)
         console.log("[bunch_of_downloads][Export] to: " + target_uri[0])
 
-        let target_path = (new fileUri.FileUri(target_uri[0])).path;
+        // let target_path = (new fileUri.FileUri(target_uri[0])).path;
+        // This operation is likely to cause target_path
+        // to be identified as unauthorized!
+
         let writeLen = file_size;
-        fs.moveFileSync(file_path, target_path);
+        fs.copy(fileUri.getUriFromPath(file_path), target_uri[0]).then(() => {
+          fs.unlink(file_path);
+        });
         console.info("[bunch_of_downloads] write data to file succeed and size is:" + writeLen + " @ " +
         target_uri[0]);
 
