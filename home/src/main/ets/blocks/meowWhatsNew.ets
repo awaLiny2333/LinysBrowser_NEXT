@@ -23,11 +23,16 @@ struct meowWhatsNew {
         text: $r('app.string.Whats_new')
       })
       ForEach(this.new_things_list, (text: string, index: number) => {
-        linysText({
-          text: text,
-          max_lines: 48
-        })
-          .opacity(0.8)
+        Row({ space: 5 }) {
+          linysText({ text: (index+1).toString() + '.' })
+          linysText({
+            text: text,
+            max_lines: 48
+          })
+            .opacity(0.8)
+        }
+        .width('100%')
+        .alignItems(VerticalAlign.Top)
       })
       linysText({
         text: $r("app.string.Whats_new_content_extra"),
@@ -50,7 +55,7 @@ struct meowWhatsNew {
     .backgroundColor($r('sys.color.comp_background_tertiary'))
     .width("100%")
     .animation(animation_default())
-    .onAreaChange(()=>{
+    .onAreaChange(() => {
       this.update_resource_string();
     })
   }

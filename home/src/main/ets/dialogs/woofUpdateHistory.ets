@@ -10,6 +10,10 @@ struct woofUpdateHistory {
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @State texts: string[] = [
+    'v1.7.4-beta',
+    'A major update, bringing Keyboard shortcuts, In-page searching, JavaScript management and No picture mode into BrowserCat!',
+    '一个主要更新，将键盘快捷键、页面内搜索、JS 管理和无图模式带入冲浪喵～',
+
     'v1.7.3-beta',
     'A regular update, bringing Immersive Fullscreen, Cookie management, and more accurate cache size calculation into BrowserCat!\n' +
       'What\'s more, The app can now be set as default browser of system!',
