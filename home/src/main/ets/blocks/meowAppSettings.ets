@@ -33,6 +33,7 @@ import meowCreditsRepos from './meowCreditsRepos';
 import meowCreditsUsers from './meowCreditsUsers';
 import woofCookies from '../dialogs/woofCookies';
 import woofGeneralManage from '../dialogs/woofGeneralManage';
+import woofKeyShortcuts from '../dialogs/woofKeyShortcuts';
 
 @Component
 struct meowAppSettings {
@@ -161,6 +162,13 @@ struct meowAppSettings {
     builder: woofCookies(),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
+    showInSubWindow: true,
+    width: "90%",
+  });
+  key_shortcuts_control: CustomDialogController = new CustomDialogController({
+    builder: woofKeyShortcuts(),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 22,
     showInSubWindow: true,
     width: "90%",
   });
@@ -360,6 +368,19 @@ struct meowAppSettings {
                     this.image_manage_control.open();
                   })
               } // Disable image management
+              .width("100%")
+
+              linysText({ text: $r('app.string.Key_shortcuts') })
+                .width('100%')
+
+              Row({ space: 10 }) {
+                Blank()
+                linysText({ text: $r('app.string.Key_shortcuts_manage') })
+                linysCapsuleButton({ text: "  󰀠  " })
+                  .onClick(() => {
+                    this.key_shortcuts_control.open();
+                  })
+              } // Keyboard shortcuts management
               .width("100%")
 
               linysText({ text: $r('app.string.Settings_experience_max_bookmark_advice'), max_lines: 2 })

@@ -31,6 +31,7 @@ import woofAddSE from '../dialogs/woofAddSE';
 import woofCookies from '../dialogs/woofCookies';
 import linysText from '../components/linysText';
 import woofGeneralManage from '../dialogs/woofGeneralManage';
+import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 
 @Component
 struct meowTitleBar {
@@ -38,6 +39,8 @@ struct meowTitleBar {
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
+  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts =
+    new bunch_of_key_shortcuts(true);
   // Environments
   @StorageLink('fullscreen_mode') fullscreen_mode: boolean = false;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
@@ -673,6 +676,8 @@ struct meowTitleBar {
               this.fullscreen_mode = !this.fullscreen_mode;
               this.showing_more_options = false;
             })
+            .keyboardShortcut(this.bunch_of_key_shortcuts.fullscreen.main_key,
+              this.bunch_of_key_shortcuts.fullscreen.modifier)
         }
         .width('100%')
         .justifyContent(FlexAlign.End)

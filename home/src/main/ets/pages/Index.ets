@@ -14,6 +14,7 @@ import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
 import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 import { window } from '@kit.ArkUI';
+import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 
 @Entry
 @Component
@@ -31,6 +32,7 @@ struct Index {
   @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads();
   @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines =
     new bunch_of_search_engines();
+  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts();
   // UI Environment
   @StorageLink('bottomAvoidHeight') bottomAvoidHeight: number = 1;
   @StorageLink('topAvoidHeight') topAvoidHeight: number = 1;

@@ -613,6 +613,45 @@
       "value": "By the way, disabling web images may cause some sites to break, but may also boost the load speed and save data as well. :P"
     },
     {
+      "name": "Key_shortcuts",
+      "value": "Keyboard shortcuts"
+    },
+    {
+      "name": "Key_shortcuts_manage",
+      "value": "Manage shortcuts"
+    },
+    {
+      "name": "Key_shortcuts_modify",
+      "value": "Change combination"
+    },
+    {
+      "name": "Key_shortcuts_new_tab",
+      "value": "New tab"
+    },
+    {
+      "name": "Key_shortcuts_close_tab",
+      "value": "Close tab"
+    },{
+      "name": "Key_shortcuts_show_tabs",
+      "value": "Show tabs"
+    },
+    {
+      "name": "Key_shortcuts_focus_address",
+      "value": "Focus on the address input"
+    },
+    {
+      "name": "Key_shortcuts_in_page_search",
+      "value": "Search in page"
+    },
+    {
+      "name": "Key_shortcuts_fullscreen",
+      "value": "Toggle fullscreen"
+    },
+    {
+      "name": "Key_shortcuts_history",
+      "value": "Open history"
+    },
+    {
       "name": "Accessibility_desc_linysProgress",
       "value": "This is a Web loading progress bar, indicating the current web page loading progress."
     },

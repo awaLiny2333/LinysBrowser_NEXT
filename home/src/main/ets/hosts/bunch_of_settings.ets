@@ -32,6 +32,9 @@ export class bunch_of_settings {
     // Statuses
     this.register_setting('status_tabs_open', 'boolean', 'false');
 
+    // Keyboard shortcuts
+    this.register_setting('key_shortcuts', 'string', '');
+
     // General defaults
     this.register_setting('home_url', 'string', '');
     this.register_setting('new_tab_url', 'string', '');

@@ -613,6 +613,45 @@
       "value": "悄悄告诉你，启用无图模式可能会导致某些网站坏掉，但是也能加速网页加载速度、节约不少流量喔～ :P"
     },
     {
+      "name": "Key_shortcuts",
+      "value": "键盘快捷键"
+    },
+    {
+      "name": "Key_shortcuts_manage",
+      "value": "管理键盘快捷键"
+    },
+    {
+      "name": "Key_shortcuts_modify",
+      "value": "更改快捷键"
+    },
+    {
+      "name": "Key_shortcuts_new_tab",
+      "value": "新标签页"
+    },
+    {
+      "name": "Key_shortcuts_close_tab",
+      "value": "关闭标签页"
+    },{
+      "name": "Key_shortcuts_show_tabs",
+      "value": "浏览标签页"
+    },
+    {
+      "name": "Key_shortcuts_focus_address",
+      "value": "聚焦在搜索栏"
+    },
+    {
+      "name": "Key_shortcuts_in_page_search",
+      "value": "页面内查找"
+    },
+    {
+      "name": "Key_shortcuts_fullscreen",
+      "value": "切换全屏模式"
+    },
+    {
+      "name": "Key_shortcuts_history",
+      "value": "打开历史"
+    },
+    {
       "name": "Accessibility_desc_linysProgress",
       "value": "这是一个网页加载进度条，指示当前网页加载的进度。"
     },
