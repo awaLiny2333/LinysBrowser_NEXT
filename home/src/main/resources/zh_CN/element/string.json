@@ -389,6 +389,10 @@
       "value": "目标位置有一个重名的书签！"
     },
     {
+      "name": "Fail_desc_duplicate_domain",
+      "value": "已经有一个一样的域名了！"
+    },
+    {
       "name": "Update_record",
       "value": "更新历史 OwO"
     },
@@ -631,13 +635,14 @@
     {
       "name": "Key_shortcuts_close_tab",
       "value": "关闭标签页"
-    },{
+    },
+    {
       "name": "Key_shortcuts_show_tabs",
       "value": "浏览标签页"
     },
     {
       "name": "Key_shortcuts_focus_address",
-      "value": "聚焦在搜索栏"
+      "value": "聚焦在地址栏"
     },
     {
       "name": "Key_shortcuts_in_page_search",

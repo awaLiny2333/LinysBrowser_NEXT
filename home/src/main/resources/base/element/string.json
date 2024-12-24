@@ -389,6 +389,10 @@
       "value": "There is a bookmark with a duplicate name in the destination directory!"
     },
     {
+      "name": "Fail_desc_duplicate_domain",
+      "value": "There is a duplicate domain existing already!"
+    },
+    {
       "name": "Update_record",
       "value": "Update history OwO"
     },

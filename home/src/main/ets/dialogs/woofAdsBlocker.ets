@@ -318,6 +318,7 @@ struct woofAdsBlocker {
     webview.AdsBlockManager.addAdsBlockDisallowedList([domain]);
     if (this.adblock_exceptions.includes(domain)) {
       // don't add same domains
+      this.uni_fail_prompt_gateway = $r('app.string.Fail_desc_duplicate_domain');
       return;
     }
     this.adblock_exceptions.push(domain);

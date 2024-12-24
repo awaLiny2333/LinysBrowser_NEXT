@@ -221,7 +221,7 @@ struct woofGeneralManage {
               .selectedBackgroundColor(this.color_current_font)
               .width("100%")
               .onSubmit(() => {
-                this.add_exception(this.add_site_edit);
+                this.add_item(this.add_site_edit);
                 this.add_site_edit = "";
                 this.showing_add_panel = false;
               })
@@ -231,7 +231,7 @@ struct woofGeneralManage {
             linysCapsuleButton({ text: "  󰀓  " })
               .animation(animation_default())
               .onClick(() => {
-                this.add_exception(this.add_site_edit);
+                this.add_item(this.add_site_edit);
                 this.add_site_edit = "";
                 this.showing_add_panel = false;
               })
@@ -348,7 +348,7 @@ struct woofGeneralManage {
     this.selected = new_selected;
   }
 
-  add_exception(domain: string) {
+  add_item(domain: string) {
     if (domain == '') {
       this.uni_fail_prompt_gateway = $r('app.string.Fail_desc_no_content');
       return;
@@ -356,6 +356,7 @@ struct woofGeneralManage {
     webview.AdsBlockManager.addAdsBlockDisallowedList([domain]);
     if (this.general_sites_list.includes(domain)) {
       // don't add same domains
+      this.uni_fail_prompt_gateway = $r('app.string.Fail_desc_duplicate_domain');
       return;
     }
     this.general_sites_list.push(domain);
