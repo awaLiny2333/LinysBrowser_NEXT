@@ -260,11 +260,32 @@ struct meowWebView {
                 console.log('contentDisposition:' + event.contentDisposition)
                 console.log('contentLength:' + event.contentLength)
                 console.log('mimetype:' + event.mimetype)
-                let temp_index = event.contentDisposition.indexOf('filename=');
-                if (temp_index > -1) {
-                  this.new_download_filename_gateway = event.contentDisposition.slice(temp_index + 9);
-                  console.log('[Meow][meowWebView] Overwrite file name: ' + this.new_download_filename_gateway);
+
+                // Determine file name
+                let file_name_overwrite = '';
+                let file_name_start = event.contentDisposition.indexOf('filename=') + 9;
+                let file_name_end = event.contentDisposition.indexOf(';', file_name_start);
+                if (file_name_end == -1) {
+                  file_name_end = event.contentDisposition.length;
                 }
+
+                // key found
+                if (file_name_start > -1) {
+                  file_name_overwrite = event.contentDisposition.slice(file_name_start, file_name_end);
+                }
+
+                // eliminate quotes
+                let last_idx = file_name_overwrite.length - 1;
+                if (file_name_overwrite[last_idx] == '\"' || file_name_overwrite[last_idx] == '\'') {
+                  file_name_overwrite = file_name_overwrite.slice(1, last_idx);
+                }
+
+                // If overwrite assigned then set to gateway
+                if (file_name_overwrite != '') {
+                  this.new_download_filename_gateway = file_name_overwrite;
+                  console.log('[Meow][meowWebView] Overwrite file name: ' + file_name_overwrite);
+                }
+
                 this.new_download_gateway = event.url;
               }
             })
