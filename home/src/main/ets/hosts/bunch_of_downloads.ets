@@ -40,6 +40,17 @@ export class bunch_of_downloads {
     let file_url_split = url.split("/");
     let file_name_question_mark_split = file_url_split[file_url_split.length-1].split("?");
     let file_name = file_name_question_mark_split[0];
+    let file_name_overwrite = false;
+
+    // file name overwrite
+    let try_universal_filename = AppStorage.get('universal_new_download_filename_gateway') as string;
+    if (try_universal_filename != '') {
+      file_name_overwrite = true;
+      file_name = try_universal_filename;
+      AppStorage.set('universal_new_download_filename_gateway', '');
+    }
+
+    // connect path
     let download_target_path = this.context.filesDir + '/downloads/' + file_name;
 
     let config: request.DownloadConfig = {
@@ -70,13 +81,14 @@ export class bunch_of_downloads {
 
           let my_index = this.list_of_on_going_tasks.indexOf(downloadTask);
           // Get my index
-
           this.list_of_downloaded_size[my_index] = progress;
+
           downloadTask.getTaskInfo().then((info) => {
             this.list_of_full_size[my_index] = info.downloadTotalBytes;
-            this.list_of_file_names[my_index] = info.fileName;
+            this.list_of_file_names[my_index] = file_name_overwrite ? file_name : info.fileName;
             this.list_of_urls[my_index] = info.targetURI;
             // Update related info
+            // console.info('[bunch_of_downloads] Download file name: ' + info.downloadTitle);
           })
 
           this.last_action = Date.now();
@@ -91,9 +103,10 @@ export class bunch_of_downloads {
         this.list_of_on_going_tasks.push(downloadTask);
         this.list_of_downloaded_size.push(0);
         this.list_of_paused.push(false);
+
         downloadTask.getTaskInfo().then((info) => {
           this.list_of_full_size.push(info.downloadTotalBytes);
-          this.list_of_file_names.push(info.fileName);
+          this.list_of_file_names.push(file_name_overwrite ? file_name : info.fileName);
           this.list_of_urls.push(info.targetURI);
         })
         // Register on download start

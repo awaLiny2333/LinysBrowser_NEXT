@@ -52,6 +52,7 @@ struct meowWebView {
   @State initialization_ok: boolean = false;
   @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
+  @StorageLink('universal_new_download_filename_gateway') new_download_filename_gateway: string = "";
   @StorageLink('universal_new_download_gateway') new_download_gateway: string = "";
   @StorageProp('tab_animation') tab_animation: AnimateParam = animation_default();
   @State last_timeout_id: number | undefined = undefined;
@@ -259,7 +260,11 @@ struct meowWebView {
                 console.log('contentDisposition:' + event.contentDisposition)
                 console.log('contentLength:' + event.contentLength)
                 console.log('mimetype:' + event.mimetype)
-
+                let temp_index = event.contentDisposition.indexOf('filename=');
+                if (temp_index > -1) {
+                  this.new_download_filename_gateway = event.contentDisposition.slice(temp_index + 9);
+                  console.log('[Meow][meowWebView] Overwrite file name: ' + this.new_download_filename_gateway);
+                }
                 this.new_download_gateway = event.url;
               }
             })

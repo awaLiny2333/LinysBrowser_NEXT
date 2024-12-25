@@ -11,6 +11,7 @@ import {
 import { request } from '@kit.BasicServicesKit';
 import linysText from '../components/linysText';
 import { copy } from '../utils/clipboard_tools';
+import { add_units_to_size } from '../utils/storage_tools';
 
 @Component
 struct meowDownloads {
@@ -300,20 +301,8 @@ struct meowDownloadsButton {
   }
 
   private set_formatted_download_progress() {
-    let downloaded: string = "";
-    let total: string = "";
-
-    if (this.my_current_download_size > 1000 * 1000) {
-      downloaded = (this.my_current_download_size / 1000 / 1000).toFixed(3) + " MB"
-    } else {
-      downloaded = (this.my_current_download_size / 1000).toFixed(3) + " KB"
-    }
-
-    if (this.my_full_download_size > 1000 * 1000) {
-      total = (this.my_full_download_size / 1000 / 1000).toFixed(3) + " MB"
-    } else {
-      total = (this.my_full_download_size / 1000).toFixed(3) + " KB"
-    }
+    let downloaded: string = add_units_to_size(this.my_current_download_size);
+    let total: string = add_units_to_size(this.my_full_download_size);
 
     if (this.my_full_download_size == -1) {
       // Undefined end
