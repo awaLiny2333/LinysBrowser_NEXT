@@ -5,6 +5,7 @@ import { sandbox_save } from '../utils/storage_tools';
 import { match_domain, url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
 import { webview } from '@kit.ArkWeb';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
+import woofWantDownload from '../dialogs/woofWantDownload';
 
 @Component
 struct meowWebView {
@@ -53,9 +54,21 @@ struct meowWebView {
   @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
   @StorageLink('universal_new_download_filename_gateway') new_download_filename_gateway: string = "";
+  @StorageLink('universal_new_download_additional_info') new_download_additional_info: string = "";
   @StorageLink('universal_new_download_gateway') new_download_gateway: string = "";
   @StorageProp('tab_animation') tab_animation: AnimateParam = animation_default();
   @State last_timeout_id: number | undefined = undefined;
+  // dialogs
+  woofWantDownload_control: CustomDialogController = new CustomDialogController({
+    builder: woofWantDownload({
+      from: this.current_url,
+      file_name: '',
+      url: '',
+      try_additional_info: ''
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16
+  })
   // Colors
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
 
@@ -255,38 +268,56 @@ struct meowWebView {
             })
             .onDownloadStart((event) => {
               if (event) {
-                console.log('url:' + event.url)
-                console.log('userAgent:' + event.userAgent)
-                console.log('contentDisposition:' + event.contentDisposition)
-                console.log('contentLength:' + event.contentLength)
-                console.log('mimetype:' + event.mimetype)
+                console.log('url: ' + event.url)
+                console.log('userAgent: ' + event.userAgent)
+                console.log('contentDisposition: ' + event.contentDisposition)
+                console.log('contentLength: ' + event.contentLength)
+                console.log('mimetype: ' + event.mimetype)
 
-                // Determine file name
+                // Save file download additional info
+                let try_additional_info = ['url: ' + event.url,
+                  'userAgent: ' + event.userAgent,
+                  'contentDisposition: ' + event.contentDisposition,
+                  'contentLength: ' + event.contentLength.toString(),
+                  'mimetype: ' + event.mimetype].join('\n');
+
+                // Cut out original file name
+                let file_url_split = event.url.split("/");
+                let file_name_result = file_url_split[file_url_split.length-1].split("?")[0];
+
+                // Determine overwrite file name
                 let file_name_overwrite = '';
                 let file_name_start = event.contentDisposition.indexOf('filename=') + 9;
                 let file_name_end = event.contentDisposition.indexOf(';', file_name_start);
                 if (file_name_end == -1) {
                   file_name_end = event.contentDisposition.length;
                 }
-
-                // key found
+                // if key found, then cut out file_name_overwrite
                 if (file_name_start > -1) {
                   file_name_overwrite = event.contentDisposition.slice(file_name_start, file_name_end);
                 }
-
                 // eliminate quotes
                 let last_idx = file_name_overwrite.length - 1;
                 if (file_name_overwrite[last_idx] == '\"' || file_name_overwrite[last_idx] == '\'') {
                   file_name_overwrite = file_name_overwrite.slice(1, last_idx);
                 }
-
-                // If overwrite assigned then set to gateway
+                // Overwrite
                 if (file_name_overwrite != '') {
-                  this.new_download_filename_gateway = file_name_overwrite;
-                  console.log('[Meow][meowWebView] Overwrite file name: ' + file_name_overwrite);
+                  file_name_result = file_name_overwrite;
                 }
 
-                this.new_download_gateway = event.url;
+                // Call popup
+                this.woofWantDownload_control = new CustomDialogController({
+                  builder: woofWantDownload({
+                    from: this.current_url,
+                    file_name: file_name_result,
+                    url: event.url,
+                    try_additional_info: try_additional_info,
+                  }),
+                  alignment: DialogAlignment.Center,
+                  cornerRadius: 16
+                })
+                this.woofWantDownload_control.open();
               }
             })
             .onFullScreenEnter((event) => {

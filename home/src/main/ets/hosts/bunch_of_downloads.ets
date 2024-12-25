@@ -8,6 +8,7 @@ export class bunch_of_downloads {
   list_of_file_names: string[] = [];
   list_of_paused: boolean[] = [];
   list_of_urls: string[] = [];
+  list_of_additional_info: string[][] = [];
   last_action: number = 0;
   context = getContext();
 
@@ -41,6 +42,13 @@ export class bunch_of_downloads {
     let file_name_question_mark_split = file_url_split[file_url_split.length-1].split("?");
     let file_name = file_name_question_mark_split[0];
     let file_name_overwrite = false;
+    let additional_info: string[] = [];
+
+    // get additional info
+    let try_additional_info = AppStorage.get('universal_new_download_additional_info') as string;
+    if (try_additional_info) {
+      additional_info = try_additional_info.split('\n');
+    }
 
     // file name overwrite
     let try_universal_filename = AppStorage.get('universal_new_download_filename_gateway') as string;
@@ -100,16 +108,17 @@ export class bunch_of_downloads {
           this.last_action = Date.now();
         })
 
+        // Register on download start
         this.list_of_on_going_tasks.push(downloadTask);
         this.list_of_downloaded_size.push(0);
         this.list_of_paused.push(false);
+        this.list_of_additional_info.push(additional_info);
 
         downloadTask.getTaskInfo().then((info) => {
           this.list_of_full_size.push(info.downloadTotalBytes);
           this.list_of_file_names.push(file_name_overwrite ? file_name : info.fileName);
           this.list_of_urls.push(info.targetURI);
         })
-        // Register on download start
 
       })
         .catch((err: BusinessError) => {
@@ -162,6 +171,7 @@ export class bunch_of_downloads {
     this.list_of_file_names.splice(index, 1);
     this.list_of_paused.splice(index, 1);
     this.list_of_urls.splice(index, 1);
+    this.list_of_additional_info.splice(index, 1);
 
     this.last_action = Date.now();
   }

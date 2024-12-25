@@ -12,6 +12,7 @@ import { request } from '@kit.BasicServicesKit';
 import linysText from '../components/linysText';
 import { copy } from '../utils/clipboard_tools';
 import { add_units_to_size } from '../utils/storage_tools';
+import linysShowButton from '../components/linysShowButton';
 
 @Component
 struct meowDownloads {
@@ -122,6 +123,7 @@ struct meowDownloadsButton {
   @State my_current_download_size: number = 0;
   @State my_paused: boolean = false;
   @State my_link: string = "";
+  @State my_additional_info: string[] = [];
   // Display info
   @State formatted_download_progress: string = "／";
   @State formatted_download_percentage: string = "%";
@@ -131,6 +133,7 @@ struct meowDownloadsButton {
   @State exporting: boolean = false;
   @State delete_confirm: number = 0;
   @State copied: number = 0;
+  @State showing_additional_info: boolean = false;
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -147,38 +150,52 @@ struct meowDownloadsButton {
         Column({ space: 10 }) {
           linysText({
             text: this.my_link,
-            max_lines: 4,
+            max_lines: 2,
           })// File link
             .clickEffect(click_effect_default())
             .onClick(() => {
               copy(this.my_link);
               this.copied = animation_popup_duration();
             })
-            .opacity(0.7)
+            .opacity(0.85)
 
           linysText({
             text: $r('app.string.Downloads_copied'),
-          })
+          })// Copied!
             .offset({ y: this.copied > 0 ? 0 : -50 })
-            .opacity(0.7)
+            .opacity(0.85)
             .visibility(this.copied > 0 ? Visibility.Visible : Visibility.None)
             .animation(animation_default())
         }
+        .visibility(!this.showing_additional_info ? Visibility.Visible : Visibility.None)
         .alignItems(HorizontalAlign.Start)
         .animation(animation_default())
+
+        additionalInfoDisplay({
+          my_additional_info: this.my_additional_info
+        })
+          .visibility(this.showing_additional_info ? Visibility.Visible : Visibility.None)
+          .animation(animation_default())
 
         Row({ space: 5 }) {
           linysText({
             text: this.formatted_download_percentage,
-          })
-
+          }) // Percentage
           linysText({
             text: this.formatted_download_progress,
-          })
+          }) // Progress
         } // Progress
 
         Row({ space: 10 }) {
-          Blank()
+
+          linysShowButton({
+            symbol_glyph_target: 'sys.symbol.info_circle',
+            show: this.showing_additional_info,
+            text: $r('app.string.Index_downloads_additional_info')
+          })
+            .onClick(() => {
+              this.showing_additional_info = !this.showing_additional_info;
+            })
 
           Button("  󰀁  ")// Delete
             .type(ButtonType.Capsule)
@@ -231,6 +248,7 @@ struct meowDownloadsButton {
             .visibility(this.formatted_download_percentage == "100%" ? Visibility.Visible : Visibility.None)
             .animation(animation_default())
         } // Control Buttons
+        .justifyContent(FlexAlign.End)
         .width("100%")
       }
       .padding(15)
@@ -273,6 +291,7 @@ struct meowDownloadsButton {
     this.my_progress = Number.parseFloat((this.my_current_download_size / this.my_full_download_size * 100).toFixed(2));
     this.my_paused = this.bunch_of_downloads.list_of_paused[this.my_index];
     this.my_link = this.bunch_of_downloads.list_of_urls[this.my_index];
+    this.my_additional_info = this.bunch_of_downloads.list_of_additional_info[this.my_index];
 
     this.set_formatted_download_progress();
     this.set_formatted_download_percentage();
@@ -291,6 +310,7 @@ struct meowDownloadsButton {
     if (this.delete_confirm >= 301) {
       // Delete
       this.bunch_of_downloads.delete_task(this.my_index);
+      this.delete_confirm = 0;
     }
   }
 
@@ -319,5 +339,26 @@ struct meowDownloadsButton {
     } else {
       this.formatted_download_percentage = this.my_progress.toString() + "%";
     }
+  }
+}
+
+@Component
+struct additionalInfoDisplay {
+  @Prop my_additional_info: string[];
+
+  build() {
+    Scroll() {
+      Column({ space: 4 }) {
+        ForEach(this.my_additional_info, (info: string, _index: number) => {
+          linysText({ text: info })
+            .opacity(0.7)
+        }) // additional info
+      }
+      .margin({ bottom: 15 })
+      .alignItems(HorizontalAlign.Start)
+    }
+    .scrollBar(BarState.On)
+    .scrollable(ScrollDirection.Horizontal)
+    .edgeEffect(EdgeEffect.Spring)
   }
 }

@@ -95,6 +95,13 @@
     {
       "name": "Index_downloads_title",
       "value": "下载"
+    },    {
+      "name": "Index_downloads_additional_info",
+      "value": "更多信息"
+    },
+    {
+      "name": "Index_downloads_prompt",
+      "value": "要开始下载吗？ (～￣▽￣)～"
     },
     {
       "name": "permission_reason_READ_PASTEPOARD",
@@ -402,7 +409,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "快捷键！\n页面内搜索！\n无图模式！"
+      "value": "下载提示！\n快捷键！\n页面内搜索！\n无图模式！"
     },
     {
       "name": "Whats_new_content_extra",

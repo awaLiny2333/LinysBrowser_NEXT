@@ -97,6 +97,14 @@
       "value": "Downloads"
     },
     {
+      "name": "Index_downloads_additional_info",
+      "value": "More info"
+    },
+    {
+      "name": "Index_downloads_prompt",
+      "value": "Shall we start? (～￣▽￣)～"
+    },
+    {
       "name": "permission_reason_READ_PASTEPOARD",
       "value": "For suggesting shortcuts to urls in clipboard"
     },
@@ -402,7 +410,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "Keyboard shortcuts!\nIn-page search\nDisable web images!"
+      "value": "Download prompt!\nKeyboard shortcuts!\nIn-page search\nDisable web images!"
     },
     {
       "name": "Whats_new_content_extra",
@@ -635,7 +643,8 @@
     {
       "name": "Key_shortcuts_close_tab",
       "value": "Close tab"
-    },{
+    },
+    {
       "name": "Key_shortcuts_show_tabs",
       "value": "Show tabs"
     },
