@@ -3,6 +3,7 @@ import linysShowButton from '../components/linysShowButton';
 import linysText from '../components/linysText';
 import linysTitleText from '../components/linysTitleText';
 import { animation_default, capsule_bar_height } from '../hosts/bunch_of_defaults';
+import { is_legal_filename } from '../utils/storage_tools';
 
 @CustomDialog
 struct woofWantDownload {
@@ -13,6 +14,7 @@ struct woofWantDownload {
   @State try_additional_info: string = '';
   // UI
   @State showing_additional_info: boolean = false;
+  @State showing_illegal_chars: boolean = false;
   // Gateways
   @StorageLink('universal_new_download_filename_gateway') new_download_filename_gateway: string = "";
   @StorageLink('universal_new_download_additional_info') new_download_additional_info: string = "";
@@ -39,6 +41,10 @@ struct woofWantDownload {
         .visibility(this.showing_additional_info ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
 
+      linysText({ text: $r('app.string.Index_downloads_illegal_chars_in_filename'), max_lines: 3 })
+        .visibility(!is_legal_filename(this.file_name) ? Visibility.Visible : Visibility.None)
+        .animation(animation_default())
+
       TextInput({ text: this.file_name })// Edit file name
         .onChange((value) => {
           this.file_name = value;
@@ -58,16 +64,19 @@ struct woofWantDownload {
           .onClick(() => {
             this.showing_additional_info = !this.showing_additional_info;
           })
-        linysCapsuleButton({ text: "  󰁖  " })
+        linysCapsuleButton({ text: "  󰁖  " })// Cancel
           .onClick(() => {
             if (this.controller) {
               this.controller.close();
             }
           })
-        linysCapsuleButton({ text: "  󰀓  " })
+        linysCapsuleButton({ text: "  󰀓  " })// Submit
           .onClick(() => {
-            this.submit();
+            if (is_legal_filename(this.file_name)) {
+              this.submit();
+            }
           })
+          .opacity(is_legal_filename(this.file_name) ? 1 : 0.7)
       }
       .justifyContent(FlexAlign.End)
       .width('100%')

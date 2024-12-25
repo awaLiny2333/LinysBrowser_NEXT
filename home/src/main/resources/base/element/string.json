@@ -105,6 +105,10 @@
       "value": "Shall we start? (～￣▽￣)～"
     },
     {
+      "name": "Index_downloads_illegal_chars_in_filename",
+      "value": "A file name cannot contain any of the following: \\ / : * ? \" < > |"
+    },
+    {
       "name": "permission_reason_READ_PASTEPOARD",
       "value": "For suggesting shortcuts to urls in clipboard"
     },

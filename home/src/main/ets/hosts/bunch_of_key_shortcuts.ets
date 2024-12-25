@@ -1,10 +1,9 @@
 import { bunch_of_settings } from './bunch_of_settings';
 
-let function_keys =
-  [FunctionKey.ESC, FunctionKey.F1, FunctionKey.F2, FunctionKey.F3, FunctionKey.F4, FunctionKey.F5,
-    FunctionKey.F6, FunctionKey.F7, FunctionKey.F8, FunctionKey.F9, FunctionKey.F10, FunctionKey.F11, FunctionKey.F12,
-    FunctionKey.TAB, FunctionKey.DPAD_UP, FunctionKey.DPAD_DOWN, FunctionKey.DPAD_LEFT, FunctionKey.DPAD_RIGHT,
-  ];
+let function_keys = [FunctionKey.ESC, FunctionKey.F1, FunctionKey.F2, FunctionKey.F3, FunctionKey.F4, FunctionKey.F5,
+  FunctionKey.F6, FunctionKey.F7, FunctionKey.F8, FunctionKey.F9, FunctionKey.F10, FunctionKey.F11, FunctionKey.F12,
+  FunctionKey.TAB, FunctionKey.DPAD_UP, FunctionKey.DPAD_DOWN, FunctionKey.DPAD_LEFT, FunctionKey.DPAD_RIGHT,
+];
 let function_strings =
   ['esc', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12', 'tab', 'dpad_up', 'dpad_down',
     'dpad_left', 'dpad_right'];
@@ -25,6 +24,11 @@ export class bunch_of_key_shortcuts {
     [this.new_tab, this.close_tab, this.show_tabs, this.focus_address, this.in_page_search, this.fullscreen,
       this.history];
 
+  /**
+   * A class holding key shortcuts.
+   * @param no_init Will not load configuration from disk nor do anything else.
+   * Usually set true if this object is only created to sit the place of StorageLink initialization.
+   */
   constructor(no_init?: boolean) {
     if (no_init == true) {
       return;
@@ -32,6 +36,12 @@ export class bunch_of_key_shortcuts {
     this.load_from_disk();
   }
 
+  /**
+   * Gets the string[] of shortcut of a specific action.
+   * @param label A string, the label of the action. e.g. 'show_tabs'.
+   * @returns A string[], an array containing keys in the shortcut.
+   * e.g. ['a', 'ctrl', 'shift']
+   * */
   get_shortcut(label: string): string[] {
     let index = this.key_shortcut_labels.indexOf(label);
     if (index > -1) {
@@ -41,6 +51,12 @@ export class bunch_of_key_shortcuts {
     }
   }
 
+  /**
+   * Sets the shortcut of a specific action.
+   * @param label A string, the label of the action. e.g. 'show_tabs'.
+   * @param key_com A string[], an array containing keys in the shortcut.
+   * e.g. ['a', 'ctrl', 'shift']
+   * */
   set_shortcut(label: string, key_com: string[]) {
     let index = this.key_shortcut_labels.indexOf(label);
     if (index > -1) {
@@ -50,7 +66,7 @@ export class bunch_of_key_shortcuts {
   }
 
   /**
-   * Load key combination settings from disk
+   * Loads key combination settings from disk
    * */
   async load_from_disk() {
     let sites_got = await (AppStorage.get('bunch_of_settings') as bunch_of_settings).get('key_shortcuts') as string;
@@ -81,6 +97,13 @@ class key_combination {
   main_key: string | FunctionKey = '';
   modifier: Array<ModifierKey> = [];
 
+  /**
+   * An object holding a key combination,
+   * which consists of a main key and some modifier keys,
+   * if the main key isn't a function key.
+   * @param main A string or FunctionKey
+   * @param mod A ModifierKey[]
+   * */
   constructor(main?: string | FunctionKey, mod?: Array<ModifierKey>) {
     if (main) {
       this.main_key = main;
@@ -90,6 +113,10 @@ class key_combination {
     }
   }
 
+  /**
+   * @returns A string[], the key combination.
+   * e.g. ['a', 'ctrl', 'shift']
+   * */
   to_string_array() {
     let result: string[] = [];
     if (typeof this.main_key == 'string') {
@@ -103,10 +130,19 @@ class key_combination {
     return result;
   }
 
+  /**
+   * @returns A string, the key combination.
+   * e.g. 'a ctrl shift'
+   * */
   toString() {
     return this.to_string_array().join(' ');
   }
 
+  /**
+   * Loads a string array as a key combination, OVERWRITING whatever this combination was.
+   * @param combination A string[], containing the keys.
+   * e.g. ['a', 'ctrl', 'shift']
+   * */
   load_string_array(combination: string[]) {
     if (combination.length == 0) {
       return;
@@ -131,6 +167,11 @@ class key_combination {
     }
   }
 
+  /**
+   * Loads a string as a key combination, OVERWRITING whatever this combination was.
+   * @param combination A string, containing the keys.
+   * e.g. 'a ctrl shift'
+   * */
   load_string(combination: string) {
     if (combination == '') {
       return;

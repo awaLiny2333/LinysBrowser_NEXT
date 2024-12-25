@@ -193,3 +193,39 @@ export function add_units_to_size(size_in_bytes: number) {
   }
   return result.toFixed(2) + " " + units[unit];
 }
+
+/**
+ * Determines whether filename is legal.
+ * @param filename A string, the filename.
+ * @returns true or false.
+ * */
+export function is_legal_filename(filename: string) {
+  if (filename.includes('\\')) {
+    return false;
+  }
+  if (filename.includes('/')) {
+    return false;
+  }
+  if (filename.includes(':')) {
+    return false;
+  }
+  if (filename.includes('*')) {
+    return false;
+  }
+  if (filename.includes('?')) {
+    return false;
+  }
+  if (filename.includes('\"')) {
+    return false;
+  }
+  if (filename.includes('<')) {
+    return false;
+  }
+  if (filename.includes('>')) {
+    return false;
+  }
+  if (filename.includes('|')) {
+    return false;
+  }
+  return true;
+}
