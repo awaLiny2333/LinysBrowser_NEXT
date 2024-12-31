@@ -150,7 +150,6 @@ struct meowWebView {
             .height("100%")
             .backgroundColor('transparent')
             .databaseAccess(true)
-            .onlineImageAccess(true)
             .javaScriptAccess(this.my_js(Label.index_key))
             .imageAccess(this.my_image(Label.index_key))
             .onlineImageAccess(this.my_image(Label.index_key))

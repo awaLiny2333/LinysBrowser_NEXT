@@ -4,13 +4,13 @@ import { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
 export class bunch_of_downloads {
   list_of_on_going_tasks: request.DownloadTask[] = [];
   list_of_downloaded_size: number[] = [];
+  list_of_target_folders: string[] = [];
   list_of_full_size: number[] = [];
   list_of_file_names: string[] = [];
   list_of_paused: boolean[] = [];
   list_of_urls: string[] = [];
   list_of_additional_info: string[][] = [];
   last_action: number = 0;
-  context = getContext();
 
   /**
    * A class to handle download tasks.
@@ -23,7 +23,7 @@ export class bunch_of_downloads {
       return;
     }
 
-    let filesDir = this.context.filesDir;
+    let filesDir = getContext().filesDir;
     try {
       fs.mkdirSync(filesDir + '/downloads');
     } catch (e) {
@@ -58,8 +58,18 @@ export class bunch_of_downloads {
       AppStorage.set('universal_new_download_filename_gateway', '');
     }
 
+    // Produce task directory
+    let file_dir = getContext().filesDir + '/downloads/' + file_name + '_' + Date.now().toString() + '/';
+
+    // Create task folder
+    try {
+      fs.mkdirSync(file_dir);
+    } catch (e) {
+      console.log('[Meow][bunch_of_downloads] Task folder already created')
+    }
+
     // connect path
-    let download_target_path = this.context.filesDir + '/downloads/' + file_name;
+    let download_target_path = file_dir + file_name;
 
     let config: request.DownloadConfig = {
       url: url,
@@ -67,7 +77,7 @@ export class bunch_of_downloads {
     };
 
     try {
-      request.downloadFile(this.context, config).then((downloadTask: request.DownloadTask) => {
+      request.downloadFile(getContext(), config).then((downloadTask: request.DownloadTask) => {
         this.last_action = Date.now();
 
         downloadTask.on('complete', () => {
@@ -113,6 +123,7 @@ export class bunch_of_downloads {
         this.list_of_downloaded_size.push(0);
         this.list_of_paused.push(false);
         this.list_of_additional_info.push(additional_info);
+        this.list_of_target_folders.push(file_dir);
 
         downloadTask.getTaskInfo().then((info) => {
           this.list_of_full_size.push(info.downloadTotalBytes);
@@ -120,11 +131,9 @@ export class bunch_of_downloads {
           this.list_of_urls.push(info.targetURI);
         })
 
-      })
-        .catch((err: BusinessError) => {
-          console.error(`[bunch_of_downloads][ERROR] Meow Invoke downloadTask failed, code is ${err.code}, message is ${err.message}`);
-        });
-
+      }).catch((err: BusinessError) => {
+        console.error(`[bunch_of_downloads][ERROR] Meow Invoke downloadTask failed, code is ${err.code}, message is ${err.message}`);
+      });
     } catch (error) {
       let err: BusinessError = error as BusinessError;
       console.error(`[bunch_of_downloads][ERROR] Invoke downloadFile failed, code is ${err.code}, message is ${err.message}`);
@@ -153,20 +162,19 @@ export class bunch_of_downloads {
    * Delete a download task in this bunch_of_downloads.
    * @param index The index of target task in the tasks list to be deleted.
    * */
-  async delete_task(index: number) {
+  delete_task(index: number) {
 
-    let file_path = (await this.list_of_on_going_tasks[index].getTaskInfo()).filePath
+    this.list_of_on_going_tasks[index].delete();
 
     try {
-      fs.unlink(file_path)
+      fs.rmdir(this.list_of_target_folders[index]);
     } catch (e) {
       console.error("[ERROR][bunch_of_downloads][delete_task] Unlink file failed. " + e)
     }
 
-    this.list_of_on_going_tasks[index].delete();
-
     this.list_of_on_going_tasks.splice(index, 1);
     this.list_of_downloaded_size.splice(index, 1);
+    this.list_of_target_folders.splice(index, 1);
     this.list_of_full_size.splice(index, 1);
     this.list_of_file_names.splice(index, 1);
     this.list_of_paused.splice(index, 1);
@@ -197,7 +205,7 @@ export class bunch_of_downloads {
     try {
       let documentSaveOptions = new picker.DocumentSaveOptions();
       documentSaveOptions.newFileNames = [file_name];
-      let documentPicker = new picker.DocumentViewPicker(this.context);
+      let documentPicker = new picker.DocumentViewPicker(getContext());
 
       await documentPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
         target_uri = documentSaveResult
@@ -210,8 +218,10 @@ export class bunch_of_downloads {
 
         let writeLen = file_size;
         fs.copy(fileUri.getUriFromPath(file_path), target_uri[0]).then(() => {
-          fs.unlink(file_path);
+          // fs.unlink(this.list_of_target_folders[index]);
+          fs.rmdir(this.list_of_target_folders[index])
         });
+
         console.info("[bunch_of_downloads] write data to file succeed and size is:" + writeLen + " @ " +
         target_uri[0]);
 
@@ -239,11 +249,14 @@ export class bunch_of_downloads {
   delete_all_downloaded_files() {
     try {
       let filesDir = getContext().filesDir;
-      let list = fs.listFileSync(filesDir + "/downloads");
+      fs.rmdirSync(filesDir + "/downloads");
+      fs.mkdirSync(filesDir + "/downloads")
 
-      for (let index = 0; index < list.length; index++) {
-        fs.unlink(filesDir + "/downloads/" + list[index]);
-      }
+      // let list = fs.listFileSync(filesDir + "/downloads");
+      //
+      // for (let index = 0; index < list.length; index++) {
+      //   fs.rmdir(filesDir + "/downloads/" + list[index]);
+      // }
       // Delete all downloaded files
     } catch (e) {
       console.error(e)

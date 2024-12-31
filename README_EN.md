@@ -59,6 +59,7 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 - [x] Cache management and clear
 - [x] Ads blocking
 - [ ] Private mode
+- [ ] Customizable download options: ask each time & directly download to system download directory
 - [x] In-page text search
 - [x] Disable JavaScript
 - [ ] Right click or long press menu on web links. (For preview and operations)

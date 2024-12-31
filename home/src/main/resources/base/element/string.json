@@ -194,7 +194,7 @@
     },
     {
       "name": "Settings_experience_history_date_format",
-      "value": "Month/Date/Year, Hour:Minute:Second"
+      "value": "Month/Date/Year, H:M:S"
     },
     {
       "name": "Settings_edit_selecting",

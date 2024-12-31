@@ -429,7 +429,9 @@ export class bunch_of_tabs {
     for (let index = start; index < this.Tabs.length; index++) {
       let web_state = this.Tabs[index].web_state_array;
       let identifier = "continue/continue_tabs_web_state_array_" + index.toString();
-      sandbox_save(identifier, web_state.buffer);
+      if (web_state != null) {
+        sandbox_save(identifier, web_state.buffer);
+      }
     }
   }
 }
