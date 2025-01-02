@@ -11,8 +11,10 @@ struct woofUpdateHistory {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @State texts: string[] = [
     'v1.7.4-beta',
-    'A major update, bringing Keyboard shortcuts, In-page searching, JavaScript management and No picture mode into BrowserCat!',
-    '一个主要更新，将键盘快捷键、页面内搜索、JS 管理和无图模式带入冲浪喵～',
+    'A major update, bringing Keyboard shortcuts, In-page searching, JavaScript management and No picture mode into BrowserCat!\n' +
+      'AND, fixed download saving failure, download wrong file name problems, PLEASE INSTALL THIS UPDATE!',
+    '一个主要更新，将键盘快捷键、页面内搜索、JS 管理和无图模式带入冲浪喵～\n' +
+      '并且修复了下载无法保存、下载文件名混乱等关键问题，请务必安装此更新！',
 
     'v1.7.3-beta',
     'A regular update, bringing Immersive Fullscreen, Cookie management, and more accurate cache size calculation into BrowserCat!\n' +
