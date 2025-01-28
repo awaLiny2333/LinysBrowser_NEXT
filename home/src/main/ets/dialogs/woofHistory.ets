@@ -95,7 +95,7 @@ struct woofHistory {
       Column({ space: 10 }) {
 
         Row() {
-          linysText({ text: $r('app.string.Settings_experience_history_date_format') })
+          linysText({ text: $r('app.string.Settings_experience_history_date_format'), font_weight: FontWeight.Medium })
             .opacity(0.7)
           linysText({ text: " (" + this.history_list.length.toString() + ")" })
             .opacity(0.7)
@@ -355,13 +355,14 @@ struct meowRelation {
       linysText({
         color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
         text: this.label_link.label.length == 0 ? "　" : this.label_link.label,
-        font_weight: this.selected[this.index] ? FontWeight.Medium : FontWeight.Regular
+        font_weight: this.selected[this.index] ? FontWeight.Bold : FontWeight.Medium
       })
       linysText({
         color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
         text: this.label_link.link,
         max_lines: 2
       })
+        .opacity(0.88) // Happy New Year!
       linysText({
         color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
         text: this.human_time

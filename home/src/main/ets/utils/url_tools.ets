@@ -83,12 +83,16 @@ function is_legal_ipv4(input: string) {
     return false;
   }
 
-  // input = "https://114.114.114.114/somewhat"
+  // input = "https://114.114.114.114:32767/somewhat"
 
   input = eliminate_protocol_scheme(input)[1]
-  // input = "114.114.114.114/somewhat"
+  // input = "114.114.114.114:32767/somewhat"
   input = input.split("/")[0]
   // eliminate slashes
+  // input = "114.114.114.114:32767"
+  let split_ports = input.split(":");
+  input = split_ports[0]
+  // eliminate ports
   // input = "114.114.114.114"
 
   let input_split = input.split(".")
@@ -97,19 +101,34 @@ function is_legal_ipv4(input: string) {
     // if the length of parts isn't 4
   }
 
-  for (let index = 0; index < input_split.length; index++) {
+  for (let index = 0; index < 4; index++) {
     let part = input_split[index]
-    if (is_pure_number(part)) {
-      let pure_number = Number.parseInt(part)
-      if (pure_number > 255) {
-        // if any part not in legal range
-        return false;
-      }
-    } else {
+    if (!is_pure_number(part)) {
       // if any part isn't a pure number
       return false;
     }
+    let pure_number = Number.parseInt(part)
+    if (!(0 <= pure_number && pure_number <= 255)) {
+      // if any part not in legal range [0, 255]
+      return false;
+    }
   }
+
+  // if there is a port
+  if (split_ports.length == 2) {
+    let port = split_ports[1];
+    // examine ports, like 32767
+    if (!is_pure_number(port)) {
+      return false;
+    }
+    let port_int = Number.parseInt(port);
+    if (!(0 <= port_int && port_int <= 65535)) {
+      // if any part not in legal range [0, 255]
+      // or port not in legal range [0, 65535]
+      return false;
+    }
+  }
+
   return true;
 }
 

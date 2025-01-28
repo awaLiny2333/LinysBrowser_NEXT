@@ -30,8 +30,9 @@ struct meowWhatsNew {
             max_lines: 48
           })
             .opacity(0.8)
+            .layoutWeight(1)
         }
-        .width('100%')
+        // .width('90%')
         .alignItems(VerticalAlign.Top)
       })
       linysText({
