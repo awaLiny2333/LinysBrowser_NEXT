@@ -2,6 +2,29 @@
 
 [中文](README.md) | [English](README_EN.md)
 
+## Something to Meow Before
+
+The original purpose of this project is to make a decent browser for Liny catself to drive daily
+after upgrading to HarmonyOS NEXT. 
+But later after realizing that a lot of people out there may also need such an app,
+this project is completely made opensource for every body to use.
+
+However, due to the time and stuff arrangement problems by Liny catself, 
+issues may not be checked and updates may not be pushed so in time.
+In most cases plenty is lagging behind so thank you for your kind understanding.
+
+If you see that the last commit was made some weeks, or over a month ago,
+please don't consider this project dead so easily, since
+Liny may be so _lucky_ to be busy writing essays that 
+stuffs this side would not be cared for for a period of time.
+
+Therefore, the best solution to this problem is to **open an issue** so that 
+Liny would feel so anxious that the update of this project would be determined to be prioritized.
+
+Let's say: _Thank you, issues!_
+
+:3
+
 ## Guides
 
 In [build_auto](build_auto) directory there are the latest build products for testing,
