@@ -718,6 +718,10 @@ struct meowAppSettings {
               meowWhatsNew()
               meowCreditsRepos()
               meowCreditsUsers()
+              linysText({
+                text: $r("app.string.Credits_extra"),
+                max_lines: 6
+              })
             }
             .padding(15)
             .alignItems(HorizontalAlign.Start)

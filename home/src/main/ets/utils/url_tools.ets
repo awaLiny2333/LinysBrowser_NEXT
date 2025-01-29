@@ -6,7 +6,7 @@ import { default_search_engine } from '../hosts/bunch_of_defaults';
  * @returns A [string, boolean] array, string for the unified, visitable address,
  * while the boolean for whether the input itself is an address.
  * */
-export function unify_search_input_into_url(search_input: string) {
+export function unify_search_input_into_url(search_input: string, auto_scheme_overwrite?: string) {
   let url = search_input
 
   if (url == "") {
@@ -15,11 +15,11 @@ export function unify_search_input_into_url(search_input: string) {
   }
 
   if (is_legal_ipv4(url)) {
-    return [ensure_scheme_or_https(url) as string, true]
+    return [ensure_scheme_or_set_scheme(url, auto_scheme_overwrite ? auto_scheme_overwrite : "http") as string, true]
   }
 
   if (is_legal_url(url)) {
-    return [ensure_scheme_or_https(url) as string, true]
+    return [ensure_scheme_or_set_scheme(url, auto_scheme_overwrite ? auto_scheme_overwrite : "https") as string, true]
   }
 
   let search_engine = AppStorage.get('search_engine') as string;
@@ -64,7 +64,7 @@ function eliminate_protocol_scheme(input: string) {
   return [scheme, url];
 }
 
-export function ensure_scheme_or_https(input: string) {
+export function ensure_scheme_or_set_scheme(input: string, scheme?: string) {
   let url = input
   if (url.includes("://")) {
     let url_split = url.split("/")
@@ -74,6 +74,9 @@ export function ensure_scheme_or_https(input: string) {
     }
   }
   // if input needs a scheme
+  if (scheme) {
+    return scheme + "://" + url
+  }
   return "https://" + url
 }
 

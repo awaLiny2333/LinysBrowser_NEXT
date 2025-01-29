@@ -64,6 +64,7 @@ struct meowTitleBar {
   @State showing_search_extracted_field: boolean = false;
   @State search_extracted_field_available: boolean = false;
   @State search_input_is_address: boolean = false;
+  @State search_input_unify_scheme_http: boolean = true;
   // Web statuses
   @StorageLink('tab_titles') tab_titles: string[] = []
   @StorageLink('current_title') current_title: string = "=￣ω￣=";
@@ -187,7 +188,26 @@ struct meowTitleBar {
         Visibility.Visible : Visibility.None)
         .animation(animation_default())
 
-      Row() {
+      Row({ space: 10 }) {
+        Row({ space: 5 }) {
+          linysSymbol({
+            symbol_glyph_target: this.search_input_unify_scheme_http ? "sys.symbol.lock_open" : "sys.symbol.lock"
+          })
+          linysText({
+            text: this.search_input_unify_scheme_http ? "http" : "https"
+          })
+        }
+        .padding(8)
+        .onClick(() => {
+          this.search_input_unify_scheme_http = !this.search_input_unify_scheme_http;
+          this.update_search_input();
+        })
+        .borderRadius(8)
+        .backgroundColor(this.color_current_primary)
+        .visibility(this.visible_when_input_is_a_scheme_less_address())
+        .clickEffect(click_effect_default())
+        .animation(animation_default())
+
         Text("→ " + (this.search_input_unified == "" ? "(　o=^•ェ•)o ?" : this.search_input_unified))
           .fontColor(this.color_current_font)
           .fontWeight(FontWeight.Medium)
@@ -794,6 +814,17 @@ struct meowTitleBar {
     return this.tablet_mode && this.is_search_input_typing ? Visibility.Visible : Visibility.None;
   }
 
+  visible_when_input_is_a_scheme_less_address() {
+    return this.true_when_input_is_a_scheme_less_address() ? Visibility.Visible : Visibility.None;
+  }
+
+  true_when_input_is_a_scheme_less_address() {
+    if (this.search_input.includes("://")) {
+      return false;
+    }
+    return this.search_input_is_address ? true : false;
+  }
+
   // Events
 
   on_drop(e: DragEvent) {
@@ -957,9 +988,12 @@ struct meowTitleBar {
 
   // Data synchronizing
 
-  update_search_input(content: string) {
-    this.search_input = content;
-    let uni_result = unify_search_input_into_url(content);
+  update_search_input(content?: string) {
+    if (content) {
+      this.search_input = content;
+    }
+    let uni_result =
+      unify_search_input_into_url(this.search_input, this.search_input_unify_scheme_http ? "http" : "https");
     this.search_input_unified = uni_result[0] as string;
     this.search_input_is_address = uni_result[1] as boolean;
     this.search_input_unified = url_resource_to_meow(this.search_input_unified);

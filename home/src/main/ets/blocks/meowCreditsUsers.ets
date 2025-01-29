@@ -12,7 +12,7 @@ struct meowCreditsUsers {
     Column({ space: 8 }) {
       linysText({
         text: $r('app.string.Credits_issues'),
-        max_lines: 3
+        max_lines: 10
       })
 
       ForEach(this.credits_devs_and_users_list, (text: string, index: number) => {
@@ -22,11 +22,6 @@ struct meowCreditsUsers {
         })
           .opacity(0.8)
       })
-      linysText({
-        text: $r("app.string.Credits_extra"),
-        max_lines: 6
-      })
-        .opacity(0.8)
     }
     .alignItems(HorizontalAlign.Start)
     .padding(10)

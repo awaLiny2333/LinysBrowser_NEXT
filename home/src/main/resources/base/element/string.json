@@ -422,11 +422,11 @@
     },
     {
       "name": "Credits",
-      "value": "Credits"
+      "value": "Credits to"
     },
     {
       "name": "Credits_issues",
-      "value": "And you, along with those who opened really important issues:"
+      "value": "And especially, the improvement of this project would not be ever achieved without these devs and users who opened really important issues:"
     },
     {
       "name": "Credits_repos_and_projs",
@@ -438,7 +438,7 @@
     },
     {
       "name": "Credits_extra",
-      "value": "Thank you all :3"
+      "value": "And, you, my friend! So grateful that you are probably really putting this poorly built app into daily use and always being there with love and support. THANK YOU!! :3"
     },
     {
       "name": "Appearance_color_scheme_Light",
