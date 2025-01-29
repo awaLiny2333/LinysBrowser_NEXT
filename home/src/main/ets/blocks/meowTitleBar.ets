@@ -214,6 +214,7 @@ struct meowTitleBar {
           .fontSize(fontSize_Normal())
           .maxLines(4)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
+          .layoutWeight(1)
       } // Title Bar for estimated destination indication
       .visibility(this.visible_when_typing())
       .padding({ left: 15, right: 15 })
