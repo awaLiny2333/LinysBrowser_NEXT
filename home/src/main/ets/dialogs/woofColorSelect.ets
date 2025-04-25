@@ -128,11 +128,11 @@ struct woofColorSelect {
         .animation(animation_default())
 
       } // Color board
+      .animation(animation_default())
       .alignItems(HorizontalAlign.End)
       .width(this.tablet_mode ? "40%" : "100%")
       .height(this.tablet_mode ? "100%" : "40%")
       .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)
-      .animation(animation_default())
 
       Scroll() {
         Column({ space: 10 }) {
@@ -246,6 +246,7 @@ struct woofColorSelect {
       .id("controls_color")
       .alignRules(this.alignRules_foot)
       .animation(animation_default())
+      .height(this.tablet_mode ? undefined : "45%")
       .width(this.tablet_mode ? "60%" : "100%")
     }
     .onAreaChange((_old, n) => {
