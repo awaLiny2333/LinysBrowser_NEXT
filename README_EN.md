@@ -81,6 +81,13 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 - [x] Cookies management (and clearing)
 - [x] Cache management and clear
 - [x] Ads blocking
+- [ ] Share / Copy link
+- [ ] Require biometric access control for History
+- [ ] Require biometric access control for Bookmarks
+- [ ] Distributed data sync for History & Bookmarks, etc
+- [ ] Search History
+- [ ] Customizable homepage background
+- [ ] Customizable homepage shortcuts
 - [ ] Private mode
 - [ ] Customizable download options: ask each time & directly download to system download directory
 - [x] In-page text search
@@ -136,7 +143,7 @@ Long way ahead.
    (Seems to be solved, still under observation)
 8. HarmonyOS UA is not understood by plenty of websites (But UA is customizable now).
 9. The vertical tabs panel animations may seem weird when the scroll is longer than the screen.
-10. This project requires HarmonyOS NEXT API12 to run.
+10. This project requires HarmonyOS NEXT API15 to run.
 
 ## What are the commit labels for?
 
