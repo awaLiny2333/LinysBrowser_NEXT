@@ -81,6 +81,7 @@ struct Index {
   @StorageLink('sys_back_to_access_backward') sys_back_to_access_backward: boolean = false;
   @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
   @StorageLink('tabs_style') tabs_style: string = "";
+  @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
   @StorageLink('collect_new_history') collect_new_history: boolean = true;
   @StorageLink('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
   @StorageLink('use_adblock') use_adblock: boolean = true;
@@ -406,13 +407,20 @@ struct Index {
 
   width_of_Tabs() {
     if (this.tablet_mode) {
-      if (this.tabs_style != 'horizontal') {
-        return 250;
-      } else {
+      // Tablet mode
+      if (this.tabs_style == 'horizontal') {
         return 0;
+      } else {
+        return 250;
+      }
+    } else {
+      // non_tablet_mode
+      if (this.tabs_style_non_tablet_mode == 'horizontal') {
+        return 0;
+      } else {
+        return 0.9 * this.screen_width;
       }
     }
-    return 0.9 * this.screen_width;
   }
 
   // Operations

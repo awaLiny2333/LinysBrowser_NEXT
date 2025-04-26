@@ -97,6 +97,7 @@ struct meowTitleBar {
   @StorageLink('disable_image_all_sites') disable_image_all_sites: boolean = false;
   @StorageProp('title_bar_position') title_bar_position: string = "";
   @StorageLink('tabs_style') tabs_style: string = "";
+  @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
   @StorageLink('max_bookmark_advice') max_bookmark_advice: number = 5;
   @StorageLink('max_history_advice') max_history_advice: number = 5;
   // Dialogs
@@ -185,7 +186,8 @@ struct meowTitleBar {
       }
 
       meowTabsHorizontal()// Horizontal tabs
-        .visibility(this.showing_tabs && this.tabs_style == "horizontal" && this.tablet_mode ?
+        .visibility((this.tabs_style_non_tablet_mode == "horizontal" && !this.tablet_mode) ||
+          (this.tabs_style == "horizontal" && this.tablet_mode) && this.showing_tabs ?
         Visibility.Visible : Visibility.None)
         .animation(animation_default())
 

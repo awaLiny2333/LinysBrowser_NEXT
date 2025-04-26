@@ -239,6 +239,9 @@
     {
       "name": "Settings_appearance_tabs_style",
       "value": "(For landscape / tablets) Tabs style"
+    },    {
+      "name": "Settings_appearance_tabs_style_non_tablet_mode",
+      "value": "(For portrait / phones) Tabs style"
     },
     {
       "name": "Settings_appearance_tabs_style_vertical",

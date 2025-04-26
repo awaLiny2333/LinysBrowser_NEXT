@@ -4,7 +4,7 @@
     "vendor": "example",
     "versionCode": 1000020,
     "versionName": "1.7.5",
-    "icon": "$media:app_icon",
+    "icon": "$media:layered_image",
     "label": "$string:app_name"
   }
 }

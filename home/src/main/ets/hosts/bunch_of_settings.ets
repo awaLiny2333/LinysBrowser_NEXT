@@ -25,6 +25,7 @@ export class bunch_of_settings {
     this.register_setting('collect_new_history', 'boolean', 'true');
     this.register_setting('intelligent_tracking_prevention', 'boolean', 'false');
     this.register_setting('tabs_style', 'string', 'vertical');
+    this.register_setting('tabs_style_non_tablet_mode', 'string', 'vertical');
     this.register_setting('sys_back_access_backward', 'boolean', 'true');
     this.register_setting('max_bookmark_suggest', 'number', '5');
     this.register_setting('max_history_suggest', 'number', '5');

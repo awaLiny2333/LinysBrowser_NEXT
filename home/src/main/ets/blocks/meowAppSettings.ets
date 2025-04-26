@@ -41,6 +41,7 @@ struct meowAppSettings {
   @Link @Watch('on_open_or_close_panel') showing_app_settings: boolean;
   // Hosts and environment
   @StorageLink('tabs_style') tabs_style: string = "";
+  @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
   @StorageLink('title_bar_position') title_bar_position: string = "";
   @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
@@ -76,6 +77,12 @@ struct meowAppSettings {
     selectedBackgroundColor: this.color_current_font,
     selectedFontColor: this.color_current_primary
   })
+  @State tabs_style_tabOptions_non_tablet_mode: SegmentButtonOptions = SegmentButtonOptions.tab({
+    buttons: [{ text: $r('app.string.Settings_appearance_tabs_style_vertical') },
+      { text: $r('app.string.Settings_appearance_tabs_style_horizontal') }] as ItemRestriction<SegmentButtonTextItem>,
+    selectedBackgroundColor: this.color_current_font,
+    selectedFontColor: this.color_current_primary
+  })
   @State start_up_page_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [
       { text: $r('app.string.Settings_start_up_new_tab') },
@@ -88,6 +95,7 @@ struct meowAppSettings {
   // Settings
   @State @Watch('on_title_bar_position_changed') title_bar_position_selected: number[] = [0];
   @State @Watch('on_tabs_style_changed') tabs_style_selected: number[] = [0];
+  @State @Watch('on_tabs_style_non_tablet_mode_changed') tabs_style_selected_non_tablet_mode: number[] = [0];
   @State @Watch('on_start_up_page_changed') start_up_page_selected: number[] = [0];
   @StorageLink('max_bookmark_advice') max_bookmark_advice: number = 5;
   @StorageLink('max_history_advice') max_history_advice: number = 5;
@@ -445,10 +453,16 @@ struct meowAppSettings {
                 selectedIndexes: $title_bar_position_selected
               })
 
-              linysText({ text: $r('app.string.Settings_appearance_tabs_style') }) // Tabs Style
+              linysText({ text: $r('app.string.Settings_appearance_tabs_style') }) // Tabs Style for tablets and landscape displays
               SegmentButton({
                 options: this.tabs_style_tabOptions,
                 selectedIndexes: $tabs_style_selected
+              })
+
+              linysText({ text: $r('app.string.Settings_appearance_tabs_style_non_tablet_mode') }) // Tabs Style for mobile and portrait displays
+              SegmentButton({
+                options: this.tabs_style_tabOptions_non_tablet_mode,
+                selectedIndexes: $tabs_style_selected_non_tablet_mode
               })
 
               linysText({
@@ -777,6 +791,9 @@ struct meowAppSettings {
     // Get settings of tabs style
     this.tabs_style = await this.bunch_of_settings.get('tabs_style') as string;
 
+    // Get settings of tabs style
+    this.tabs_style_non_tablet_mode = await this.bunch_of_settings.get('tabs_style') as string;
+
     // Get number of max bookmarks suggestions
     this.max_bookmark_advice =
       await this.bunch_of_settings.get('max_bookmark_suggest') as number;
@@ -835,6 +852,11 @@ struct meowAppSettings {
       this.tabs_style_selected = [0];
     } else {
       this.tabs_style_selected = [1];
+    }
+    if (this.tabs_style_non_tablet_mode == "vertical") {
+      this.tabs_style_selected_non_tablet_mode = [0];
+    } else {
+      this.tabs_style_selected_non_tablet_mode = [1];
     }
     if (this.bunch_of_tabs.new_tab_url !== undefined) {
       this.new_tab_url_edit = this.bunch_of_tabs.new_tab_url;
@@ -899,6 +921,17 @@ struct meowAppSettings {
     }
     this.tabs_style = result;
     this.bunch_of_settings.set('tabs_style', result);
+  }
+
+  on_tabs_style_non_tablet_mode_changed() {
+    let result: string = "";
+    if (this.tabs_style_selected_non_tablet_mode[0] == 0) {
+      result = 'vertical';
+    } else {
+      result = 'horizontal';
+    }
+    this.tabs_style_non_tablet_mode = result;
+    this.bunch_of_settings.set('tabs_style_non_tablet_mode', result);
   }
 
   on_color_change() {

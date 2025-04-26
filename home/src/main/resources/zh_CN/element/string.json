@@ -240,6 +240,10 @@
       "value": "（横屏／平板时）标签页栏样式"
     },
     {
+      "name": "Settings_appearance_tabs_style_non_tablet_mode",
+      "value": "（竖屏／手机时）标签页栏样式"
+    },
+    {
       "name": "Settings_appearance_tabs_style_vertical",
       "value": "垂直的"
     },
