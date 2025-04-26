@@ -20,6 +20,7 @@ struct meowWebView {
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('current_main_tab_index') @Watch('on_tab_info_change') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') @Watch('on_tab_info_change') current_sub_tab_index: number = -1;
+  @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
   // Controls and environments
   @StorageLink('tab_titles') tab_titles: string[] = []
   @StorageLink('current_title') current_title: string = "=￣ω￣=";
@@ -137,6 +138,10 @@ struct meowWebView {
 
   build() {
     RelativeContainer() {
+      Image(this.homepage_background)
+        .visibility(this.homepage_background? Visibility.Visible: Visibility.Hidden)
+        .animation(animation_default())
+        .transition(TransitionEffect.OPACITY.animation({ duration: 800 }))
       ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
         Column() {
           Web({
@@ -373,7 +378,6 @@ struct meowWebView {
         .visibility(this.my_visibility(Label.index_key))
         .animation(this.tab_animation)
       }, (item: tab_label) => item.timestamp.toString())
-
     }
     .width("100%")
     .height("100%")

@@ -672,6 +672,18 @@
       "value": "打开历史"
     },
     {
+      "name": "Homepage_background",
+      "value": "主页背景"
+    },
+    {
+      "name": "Homepage_background_select",
+      "value": "选择一幅图像"
+    },
+    {
+      "name": "Homepage_background_delete",
+      "value": "删除当前图像"
+    },
+    {
       "name": "Accessibility_desc_linysProgress",
       "value": "这是一个网页加载进度条，指示当前网页加载的进度。"
     },

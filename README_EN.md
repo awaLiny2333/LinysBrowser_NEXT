@@ -81,12 +81,12 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 - [x] Cookies management (and clearing)
 - [x] Cache management and clear
 - [x] Ads blocking
-- [ ] Share / Copy link
+- [x] Share / Copy link
 - [ ] Require biometric access control for History
 - [ ] Require biometric access control for Bookmarks
 - [ ] Distributed data sync for History & Bookmarks, etc
 - [ ] Search History
-- [ ] Customizable homepage background
+- [x] Customizable homepage background
 - [ ] Customizable homepage shortcuts
 - [ ] Private mode
 - [ ] Customizable download options: ask each time & directly download to system download directory

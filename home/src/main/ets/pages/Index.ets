@@ -397,6 +397,7 @@ struct Index {
         result += 350;
       }
     } else {
+      // non_tablet_mode
       if (this.showing_bookmarks) {
         result += 0.9 * this.screen_width;
       }

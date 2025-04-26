@@ -2,6 +2,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 import { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
 import { buffer } from '@kit.ArkTS';
+import { image } from '@kit.ImageKit';
 
 let context = AppStorage.get("context") as common.UIAbilityContext;
 
@@ -77,6 +78,50 @@ export async function document_open() {
 }
 
 /**
+ * Pick an image file from device storage, pulling up a DocumentViewPicker.
+ * @returns A string, of the chosen file's content.
+ * */
+export async function image_open_to_ArrayBuffer() {
+  let selected_uri: string[] = [];
+
+  try {
+    let documentPicker = new picker.DocumentViewPicker(context);
+    let buf: ArrayBuffer | undefined = undefined;
+
+    await documentPicker.select({
+      maxSelectNumber: 1,
+      fileSuffixFilters: [".png", ".jpg", ".jpeg", ".JPG", ".JPEG", ".PNG"]
+    })
+      .then((documentSelectResult) => {
+        selected_uri = documentSelectResult;
+        console.info('[Meow][image_document_reader] DocumentViewPicker.select successfully, documentSelectResult uri: ' +
+        selected_uri[0])
+        let file = fs.openSync(selected_uri[0], fs.OpenMode.READ_ONLY);
+        // let selected_path = (new fileUri.FileUri(selected_uri[0])).path;
+        let target_path = (new fileUri.FileUri(selected_uri[0])).path;
+        let stat = fs.statSync(target_path);
+        let size = stat.size;
+        buf = new ArrayBuffer(size);
+        fs.readSync(file.fd, buf)
+        fs.closeSync(file);
+        // fs.copyFileSync(selected_path, sand_path);
+
+        console.info("[Meow][image_document_reader] Read image from " + selected_uri[0] + " Success!");
+      })
+      .catch((err: BusinessError) => {
+        console.error('[Meow][image_document_reader] DocumentViewPicker.select failed with err: ' +
+        JSON.stringify(err));
+        return undefined;
+      });
+    return buf;
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    console.error('[ERROR][Meow][image_document_reader] DocumentViewPicker failed with err: ' + JSON.stringify(err));
+    return undefined;
+  }
+}
+
+/**
  * Save a text file or ArrayBuffer to sandbox storage, overwrites whatever that was at that place.
  * @param file_name A string, setting the file's name.
  * @param content A string or an ArrayBuffer, fills the file's content.
@@ -139,7 +184,7 @@ export function sandbox_open_sync(file_name: string) {
  * Read an ArrayBuffer file from sandbox storage.
  * @returns An ArrayBuffer, of the requested file's content.
  * */
-export function sandbox_open_array_sync(file_path_name: string) {
+export function sandbox_open_arrayBuffer_sync(file_path_name: string) {
   let filesDir = getContext().filesDir;
   file_path_name = filesDir + "/" + file_path_name
   if (!(fs.accessSync(file_path_name))) {
@@ -228,4 +273,12 @@ export function is_legal_filename(filename: string) {
     return false;
   }
   return true;
+}
+
+export function arrayBuffer_to_pixelMap(buf: ArrayBuffer) {
+  // ArrayBuffer => PixelMap
+  const imageSource = image.createImageSource(buf);
+  console.log('imageSource: ' + JSON.stringify(imageSource));
+  let pixelMap = imageSource.createPixelMapSync({});
+  return pixelMap;
 }

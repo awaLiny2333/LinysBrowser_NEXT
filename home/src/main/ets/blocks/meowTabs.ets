@@ -12,7 +12,7 @@ import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import linysShowButton from '../components/linysShowButton';
 import linysText from '../components/linysText';
-import { sandbox_open_array_sync, sandbox_unlink_sync } from '../utils/storage_tools';
+import { sandbox_open_arrayBuffer_sync, sandbox_unlink_sync } from '../utils/storage_tools';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 
 @Component
@@ -141,7 +141,7 @@ struct meowTabs {
       for (let index = 0; index < continue_tabs_count; index++) {
         // Read continue tabs data
         let key = "continue/continue_tabs_web_state_array_" + index.toString();
-        let array_buffer = sandbox_open_array_sync(key);
+        let array_buffer = sandbox_open_arrayBuffer_sync(key);
         if (array_buffer) {
           web_state_arrays_to_restore.push(new Uint8Array(array_buffer));
         } else {

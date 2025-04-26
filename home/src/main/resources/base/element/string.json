@@ -239,7 +239,8 @@
     {
       "name": "Settings_appearance_tabs_style",
       "value": "(For landscape / tablets) Tabs style"
-    },    {
+    },
+    {
       "name": "Settings_appearance_tabs_style_non_tablet_mode",
       "value": "(For portrait / phones) Tabs style"
     },
@@ -670,6 +671,17 @@
     {
       "name": "Key_shortcuts_history",
       "value": "Open history"
+    },
+    {
+      "name": "Homepage_background",
+      "value": "Homepage background"
+    },
+    {
+      "name": "Homepage_background_select",
+      "value": "Select an image"
+    },    {
+      "name": "Homepage_background_delete",
+      "value": "Delete existing image"
     },
     {
       "name": "Accessibility_desc_linysProgress",

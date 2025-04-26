@@ -22,6 +22,10 @@ struct linysCapsuleButton {
       .fontSize(fontSize_Large())
       .fontWeight(FontWeight.Medium)
       .height(capsule_bar_height())
+      .border({
+        width: 2,
+        color: "transparent"
+      })
       .clickEffect(click_effect_default())
       .animation(animation_default())
   }
