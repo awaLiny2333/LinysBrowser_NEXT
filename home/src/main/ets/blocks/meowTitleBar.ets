@@ -32,6 +32,7 @@ import woofCookies from '../dialogs/woofCookies';
 import linysText from '../components/linysText';
 import woofGeneralManage from '../dialogs/woofGeneralManage';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
+import { share_link } from '../utils/share_tools';
 
 @Component
 struct meowTitleBar {
@@ -242,6 +243,9 @@ struct meowTitleBar {
         .layoutWeight(1)
 
         linysSymbol({ symbol_glyph_target: 'sys.symbol.share' })
+          .onClick(() => {
+            share_link(this.current_url, this.current_title);
+          })
       } // Title Bar for This Page Info display
       .padding({ left: 16, right: 15, top: 6 })
       .width("100%")
@@ -249,7 +253,7 @@ struct meowTitleBar {
       .animation(animation_default())
 
       RelativeContainer() {
-        Row({ space: 10 }) {
+        Row({ space: this.tablet_mode ? 10 : 6 }) {
           linysSymbol({
             symbol_glyph_target: 'sys.symbol.arrow_left'
           })// Backward
@@ -450,7 +454,7 @@ struct meowTitleBar {
           } : { bottom: { anchor: '__container__', align: VerticalAlign.Bottom } })
         .animation(animation_default())
 
-        Row({ space: this.tablet_mode ? 10 : 7 }) {
+        Row({ space: this.tablet_mode ? 10 : 6 }) {
           linysShowButton({
             show: this.showing_scratching_board,
             text: $r('app.string.Index_drop_scratching_board'),
