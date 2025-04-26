@@ -19,7 +19,6 @@ struct woofFailPrompt {
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
-
   build() {
     Column({ space: 10 }) {
       linysTitleText({
@@ -112,6 +111,7 @@ struct goodByeLink {
   @StorageLink('showing_app_settings') showing_app_settings: boolean = false;
   @StorageLink('showing_downloads') showing_downloads: boolean = false;
   @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
+  @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -143,7 +143,9 @@ struct goodByeLink {
         // Close all panels
         if (!this.tablet_mode) {
           // These are expected to remain open in tablet mode
-          this.showing_tabs = false;
+          if (this.tabs_style_non_tablet_mode == "vertical") {
+            this.showing_tabs = false;
+          }
           this.showing_bookmarks = false;
         }
         this.showing_more_options = false;

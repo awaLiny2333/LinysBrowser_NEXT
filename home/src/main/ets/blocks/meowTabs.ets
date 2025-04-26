@@ -26,6 +26,7 @@ struct meowTabs {
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
   @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
   @StorageProp('is_search_input_typing') is_search_input_typing: boolean = false;
+  @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
   // Controls
   @StorageLink('tab_titles') tab_titles: string[] = []
   @StorageLink('current_title') current_title: string = "=￣ω￣=";
@@ -312,7 +313,9 @@ struct meowTabs {
   switch_tab(target: number) {
     if (!this.tablet_mode) {
       // Auto close panel
-      this.showing_tabs = false;
+      if (this.tabs_style_non_tablet_mode == "vertical") {
+        this.showing_tabs = false;
+      }
     }
 
     this.choosing_paralleow = false;

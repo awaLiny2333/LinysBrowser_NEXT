@@ -185,7 +185,9 @@ struct Index {
         this.showing_app_settings = false;
         this.showing_scratching_board = false;
         // Specials
-        this.showing_tabs = false;
+        if (this.tabs_style_non_tablet_mode == "vertical") {
+          this.showing_tabs = false;
+        }
         this.showing_bookmarks = false;
         return true;
       }
@@ -325,7 +327,9 @@ struct Index {
       if (this.showing_tabs && this.showing_bookmarks) {
         // If showing both tabs and bookmarks,
         // then close tabs when switched to non-tablet mode
-        this.showing_tabs = false;
+        if (this.tabs_style_non_tablet_mode == "vertical") {
+          this.showing_tabs = false;
+        }
       }
     }
   }

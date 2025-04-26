@@ -186,8 +186,8 @@ struct meowTitleBar {
       }
 
       meowTabsHorizontal()// Horizontal tabs
-        .visibility((this.tabs_style_non_tablet_mode == "horizontal" && !this.tablet_mode) ||
-          (this.tabs_style == "horizontal" && this.tablet_mode) && this.showing_tabs ?
+        .visibility(((this.tabs_style_non_tablet_mode == "horizontal" && !this.tablet_mode) ||
+          (this.tabs_style == "horizontal" && this.tablet_mode)) && this.showing_tabs ?
         Visibility.Visible : Visibility.None)
         .animation(animation_default())
 
@@ -887,13 +887,10 @@ struct meowTitleBar {
   // UI controls
 
   show_tabs() {
-    if (!this.tablet_mode) {
+    if (!this.tablet_mode && this.tabs_style_non_tablet_mode == "vertical") {
       this.showing_more_options = false;
       this.showing_app_settings = false;
       this.showing_downloads = false;
-    }
-
-    if (!this.tablet_mode) {
       // allow bookmarks and tabs coexist in tablet mode
       this.showing_bookmarks = false;
     }
@@ -908,14 +905,18 @@ struct meowTitleBar {
     }
     if (!this.tablet_mode) {
       // allow bookmarks and tabs coexist in tablet mode
-      this.showing_tabs = false;
+      if (this.tabs_style_non_tablet_mode == "vertical") {
+        this.showing_tabs = false;
+      }
     }
     this.showing_bookmarks = !this.showing_bookmarks;
   }
 
   show_more_options() {
     if (!this.tablet_mode) {
-      this.showing_tabs = false;
+      if (this.tabs_style_non_tablet_mode == "vertical") {
+        this.showing_tabs = false;
+      }
       this.showing_bookmarks = false;
     }
     // Close all other panels
@@ -927,7 +928,9 @@ struct meowTitleBar {
 
   show_app_settings() {
     if (!this.tablet_mode) {
-      this.showing_tabs = false;
+      if (this.tabs_style_non_tablet_mode == "vertical") {
+        this.showing_tabs = false;
+      }
       this.showing_bookmarks = false;
     }
     // Close all other panels
@@ -939,7 +942,9 @@ struct meowTitleBar {
 
   show_downloads() {
     if (!this.tablet_mode) {
-      this.showing_tabs = false;
+      if (this.tabs_style_non_tablet_mode == "vertical") {
+        this.showing_tabs = false;
+      }
       this.showing_bookmarks = false;
     }
     // Close all other panels
