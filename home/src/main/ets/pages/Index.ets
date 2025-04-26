@@ -396,8 +396,13 @@ struct Index {
       if (this.showing_bookmarks) {
         result += 350;
       }
-    } else if (this.showing_tabs || this.showing_bookmarks) {
-      result += 0.9 * this.screen_width;
+    } else {
+      if (this.showing_bookmarks) {
+        result += 0.9 * this.screen_width;
+      }
+      if (this.showing_tabs && this.tabs_style_non_tablet_mode == 'vertical') {
+        result += 0.9 * this.screen_width;
+      }
     }
     return result;
   }
