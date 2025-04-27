@@ -417,7 +417,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "修复了自动识别网址遇到携带端口的 IPv4 地址自动蒙圈的问题 :O \n下载提示！\n快捷键！\n页面内搜索！\n无图模式！"
+      "value": "尝试修复诡异的打开崩溃问题 :O\n自定义首页背景图片！"
     },
     {
       "name": "Whats_new_content_extra",
@@ -437,7 +437,7 @@
     },
     {
       "name": "Credits_devs_and_users",
-      "value": "sseaan（#2 横向标签页和自定义 UA）\nSolidFaker（#3 错误的背景颜色）\nlsxuan12138（#6 移动书签功能）\nxymeng16（#8 劫持返回；#11 更多搜索引擎）\nLuxcis（#12 自动收起标签页）\n000wbh000（#22 网页深色模式；#28 键盘快捷键；#29 文件导出失败）\nLiuyexin（#29 文件导出失败）\nvincenthsing（#33 带端口的 IPv4 网址判定问题）～"
+      "value": "sseaan（#2 横向标签页和自定义 UA）\nSolidFaker（#3 错误的背景颜色）\nlsxuan12138（#6 移动书签功能）\nxymeng16（#8 劫持返回；#11 更多搜索引擎）\nLuxcis（#12 自动收起标签页）\n000wbh000（#22 网页深色模式；#28 键盘快捷键；#29 文件导出失败）\nLiuyexin（#29 文件导出失败）\nvincenthsing（#33 带端口的 IPv4 网址判定问题）\nxxbhpan（#38 #39 #40 诡异的崩溃 Bug、首页自定背景、安全访问历史&书签和超级多小建议！）～"
     },
     {
       "name": "Credits_extra",

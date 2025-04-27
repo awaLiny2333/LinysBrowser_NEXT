@@ -542,6 +542,7 @@ struct meowAppSettings {
                   })
               } // Homepage background select
               .width("100%")
+
               Row({ space: 10 }) {
                 Blank()
                 linysText({ text: $r('app.string.Homepage_background_delete') })
@@ -710,7 +711,19 @@ struct meowAppSettings {
                     this.intelligent_tracking_prevention = isOn;
                     this.bunch_of_settings.set('intelligent_tracking_prevention', isOn);
                     for (let index = 0; index < this.bunch_of_tabs.Tabs.length; index++) {
-                      this.bunch_of_tabs.Tabs[index].controller.enableIntelligentTrackingPrevention(isOn);
+                      if (this.bunch_of_tabs.Tabs[index].controller) {
+                        this.bunch_of_tabs.Tabs[index].controller.enableIntelligentTrackingPrevention(isOn);
+                        console.log('[Meow][meowAppSettings] Intelligent Tracking Prevention now ' + isOn.toString() + '!')
+                      } else {
+                        console.log('[Meow][meowAppSettings] Toggle Intelligent Tracking Prevention Failed! ' +
+                          'But perhaps this doesn\'t really matter?')
+                        // In most cases this fails on app launch, because the webViews are not initialized.
+                        // If the user has set this settings to true, then this will be triggered since the default is false
+                        // But at that moment webViews are not initialized, with controllers linked accordingly
+                        // So this would cause 'Init error. The WebviewController must be associated with a Web component'
+                        // I guess :O
+                        // Let's see if this works
+                      }
                     }
                   })
               } // Toggle Intelligent Tracking Prevention
@@ -887,7 +900,7 @@ struct meowAppSettings {
     // Set image for homepage
     if (homepage_background_array_buffer) {
       this.homepage_background = arrayBuffer_to_pixelMap(homepage_background_array_buffer);
-      console.log("[meowAppSettings] Finished loading homepage background!")
+      console.log("[Meow][meowAppSettings] Finished loading homepage background!")
     }
   }
 

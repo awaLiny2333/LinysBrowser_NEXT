@@ -360,10 +360,10 @@ struct meowWebView {
 
               if (this.intelligent_tracking_prevention) {
                 this.bunch_of_tabs.Tabs[Label.index_key].controller.enableIntelligentTrackingPrevention(true);
-                console.log('[meowWebView] ArkWeb Intelligent Tracking Prevention ON!')
+                console.log('[Meow][meowWebView] ArkWeb Intelligent Tracking Prevention ON!')
               } else {
                 this.bunch_of_tabs.Tabs[Label.index_key].controller.enableIntelligentTrackingPrevention(false);
-                console.log('[meowWebView] ArkWeb Intelligent Tracking Prevention not enabled.')
+                console.log('[Meow][meowWebView] ArkWeb Intelligent Tracking Prevention not enabled.')
               }
             })
             .darkMode(WebDarkMode.Auto)// Dark mode!
