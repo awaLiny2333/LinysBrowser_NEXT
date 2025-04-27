@@ -410,7 +410,7 @@
     },
     {
       "name": "Fail_select_bad_image",
-      "value": "Selected image contain errors? Or you selected a broken image!"
+      "value": "Selected a broken image? Or you selected nothing at all!"
     },
     {
       "name": "Update_record",

@@ -409,7 +409,7 @@
     },
     {
       "name": "Fail_select_bad_image",
-      "value": "选择的图片有问题？或者你选择了一张坏掉的图片！"
+      "value": "选择的图片有问题？或者你什么也没有选！"
     },
     {
       "name": "Update_record",
