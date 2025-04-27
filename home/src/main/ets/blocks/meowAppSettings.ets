@@ -711,10 +711,11 @@ struct meowAppSettings {
                     this.intelligent_tracking_prevention = isOn;
                     this.bunch_of_settings.set('intelligent_tracking_prevention', isOn);
                     for (let index = 0; index < this.bunch_of_tabs.Tabs.length; index++) {
-                      if (this.bunch_of_tabs.Tabs[index].controller) {
+                      try {
                         this.bunch_of_tabs.Tabs[index].controller.enableIntelligentTrackingPrevention(isOn);
-                        console.log('[Meow][meowAppSettings] Intelligent Tracking Prevention now ' + isOn.toString() + '!')
-                      } else {
+                        console.log('[Meow][meowAppSettings] Intelligent Tracking Prevention now ' + isOn.toString() +
+                          '!')
+                      } catch (e) {
                         console.log('[Meow][meowAppSettings] Toggle Intelligent Tracking Prevention Failed! ' +
                           'But perhaps this doesn\'t really matter?')
                         // In most cases this fails on app launch, because the webViews are not initialized.
