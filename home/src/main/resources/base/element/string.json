@@ -409,6 +409,10 @@
       "value": "There is a duplicate domain existing already!"
     },
     {
+      "name": "Fail_select_bad_image",
+      "value": "Selected image contain errors? Or you selected a broken image!"
+    },
+    {
       "name": "Update_record",
       "value": "Update history OwO"
     },
@@ -430,7 +434,7 @@
     },
     {
       "name": "Credits_issues",
-      "value": "And especially, the improvement of this project would not be ever achieved without these devs and users who opened really important issues:"
+      "value": "And especially, the improvement of this project would not be ever achieved without these devs and users who opened really important issues: ↓"
     },
     {
       "name": "Credits_repos_and_projs",

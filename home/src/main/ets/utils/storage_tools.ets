@@ -280,5 +280,6 @@ export function arrayBuffer_to_pixelMap(buf: ArrayBuffer) {
   const imageSource = image.createImageSource(buf);
   console.log('imageSource: ' + JSON.stringify(imageSource));
   let pixelMap = imageSource.createPixelMapSync({});
+  imageSource.release();
   return pixelMap;
 }

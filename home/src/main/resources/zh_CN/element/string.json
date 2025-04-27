@@ -408,6 +408,10 @@
       "value": "已经有一个一样的域名了！"
     },
     {
+      "name": "Fail_select_bad_image",
+      "value": "选择的图片有问题？或者你选择了一张坏掉的图片！"
+    },
+    {
       "name": "Update_record",
       "value": "更新历史 OwO"
     },
@@ -429,7 +433,7 @@
     },
     {
       "name": "Credits_issues",
-      "value": "然后特别地，这个项目的成长源自于每一条反馈和建议，因此还要感谢为这个项目写 Issue 的你们："
+      "value": "然后特别地，这个项目的成长源自于每一条反馈和建议，因此还要感谢为这个项目写 Issue 的你们：↓"
     },
     {
       "name": "Credits_repos_and_projs",

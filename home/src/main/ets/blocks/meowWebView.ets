@@ -139,9 +139,10 @@ struct meowWebView {
   build() {
     RelativeContainer() {
       Image(this.homepage_background)
-        .visibility(this.homepage_background? Visibility.Visible: Visibility.Hidden)
-        .animation(animation_default())
-        .transition(TransitionEffect.OPACITY.animation({ duration: 800 }))
+        // .visibility(this.homepage_background? Visibility.Visible: Visibility.Hidden)
+        // .animation(animation_default())
+        .transition(TransitionEffect.OPACITY.animation({ duration: 1200 }))
+
       ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
         Column() {
           Web({

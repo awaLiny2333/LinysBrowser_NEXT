@@ -130,6 +130,7 @@ struct meowAppSettings {
     ['Settings_start_up', 'Settings_general', 'Settings_Experience', 'Settings_appearance',
       'Settings_experience_history', 'Settings_storage', 'Settings_security', 'Settings_about'];
   // Dialogs
+  @StorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
   woofHistory_control: CustomDialogController = new CustomDialogController({
     builder: woofHistory({ showing_settings: this.showing_app_settings }),
     alignment: DialogAlignment.Center,
@@ -1056,16 +1057,18 @@ struct meowAppSettings {
 
   select_set_background_image() {
     image_open_to_ArrayBuffer().then(result => {
-      if (result !== undefined) {
-        let buf = result as ArrayBuffer;
-        // Save this to sandbox
-        sandbox_save('homepage_background_arrayBuffer', buf);
-        // Set image for homepage
-        this.homepage_background = arrayBuffer_to_pixelMap(buf);
-      } else {
-        console.log('[meowAppSettings] Select homepage background failed. Received undefined?')
-      }
+        if (result !== undefined) {
+          let buf = result as ArrayBuffer;
+          // Set image for homepage
+          this.homepage_background = arrayBuffer_to_pixelMap(buf);
+          // Save this to sandbox
+          sandbox_save('homepage_background_arrayBuffer', buf);
+        } else {
+          console.log('[meowAppSettings] Select homepage background failed. Received undefined?')
+          this.uni_fail_prompt_gateway = $r('app.string.Fail_select_bad_image');
+        }
     });
+
   }
 
   delete_homepage_background() {
