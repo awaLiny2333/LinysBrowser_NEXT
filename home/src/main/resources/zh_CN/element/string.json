@@ -565,7 +565,7 @@
     },
     {
       "name": "Settings_js_disable_js",
-      "value": "禁用 JavaScript"
+      "value": "JavaScript 管理模块"
     },
     {
       "name": "Settings_js_manage",
