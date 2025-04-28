@@ -226,7 +226,7 @@
     },
     {
       "name": "Settings_homepage_shortcuts",
-      "value": "首页快捷链接"
+      "value": "主页快捷链接"
     },
     {
       "name": "Settings_homepage_shortcuts_manage",
@@ -239,6 +239,10 @@
     {
       "name": "Settings_homepage_shortcuts_add_here",
       "value": "在这里添加！"
+    },
+    {
+      "name": "Settings_single_hand_preference",
+      "value": "单手优化偏好"
     },
     {
       "name": "Paralleow",

@@ -41,7 +41,7 @@ import woofGeneralManage from '../dialogs/woofGeneralManage';
 import woofKeyShortcuts from '../dialogs/woofKeyShortcuts';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 import { bunch_of_homepage_shortcuts } from '../hosts/bunch_of_homepage_shortcuts';
-import woofHomepageShortcutsManager from '../dialogs/woofShortcutsManager';
+import woofHomepageManager from '../dialogs/woofShortcutsManager';
 import meowHomepageBackgroundManager from './meowHomepageBackgroundManager';
 
 @Component
@@ -103,11 +103,18 @@ struct meowAppSettings {
     selectedBackgroundColor: this.color_current_font,
     selectedFontColor: this.color_current_primary
   })
+  @State left_or_right: SegmentButtonOptions = SegmentButtonOptions.tab({
+    buttons: [{ text: '←' }, { text: '→' }] as ItemRestriction<SegmentButtonTextItem>,
+    selectedBackgroundColor: this.color_current_font,
+    selectedFontColor: this.color_current_primary
+  })
   // Settings
   @State @Watch('on_title_bar_position_changed') title_bar_position_selected: number[] = [0];
   @State @Watch('on_tabs_style_changed') tabs_style_selected: number[] = [0];
   @State @Watch('on_tabs_style_non_tablet_mode_changed') tabs_style_selected_non_tablet_mode: number[] = [0];
   @State @Watch('on_start_up_page_changed') start_up_page_selected: number[] = [0];
+  @State @Watch('on_left_or_right_changed') left_or_right_selected: number[] = [0];
+  @StorageLink('homepage_shortcuts_left_or_right') homepage_shortcuts_left_or_right: string = 'right';
   @StorageLink('max_bookmark_advice') max_bookmark_advice: number = 5;
   @StorageLink('max_history_advice') max_history_advice: number = 5;
   @StorageLink('sys_back_to_access_backward') sys_back_to_access_backward: boolean = false;
@@ -196,7 +203,7 @@ struct meowAppSettings {
     width: "90%",
   });
   homepage_shortcuts_control: CustomDialogController = new CustomDialogController({
-    builder: woofHomepageShortcutsManager(),
+    builder: woofHomepageManager(),
     alignment: DialogAlignment.Center,
     cornerRadius: 22,
     showInSubWindow: true,
@@ -327,6 +334,13 @@ struct meowAppSettings {
           FlowItem() {
             Column({ space: 15 }) {
               linysTitleText({ text: $r('app.string.Settings_Experience') })
+
+              linysText({ text: $r('app.string.Settings_single_hand_preference') })
+                .width("100%")
+              SegmentButton({
+                options: this.left_or_right,
+                selectedIndexes: $left_or_right_selected
+              }) // Single hand usability
 
               Row() {
                 linysText({ text: $r('app.string.Settings_experience_web_force_dark_mode'), max_lines: 3 })
@@ -893,6 +907,15 @@ struct meowAppSettings {
       this.homepage_background = arrayBuffer_to_pixelMap(homepage_background_array_buffer);
       console.log("[Meow][meowAppSettings] Finished loading homepage background!")
     }
+
+    // Get settings of shortcuts on left or right
+    this.homepage_shortcuts_left_or_right =
+      await this.bunch_of_settings.get('homepage_shortcuts_left_or_right') as string;
+    if (this.homepage_shortcuts_left_or_right == 'left') {
+      this.left_or_right_selected = [0];
+    } else {
+      this.left_or_right_selected = [1];
+    }
   }
 
   on_open_or_close_panel() {
@@ -1021,6 +1044,17 @@ struct meowAppSettings {
       selectedBackgroundColor: this.color_current_font,
       selectedFontColor: this.color_current_primary
     })
+  }
+
+  // Events
+  on_left_or_right_changed() {
+    if (this.left_or_right_selected[0] == 0) {
+      this.bunch_of_settings.set('homepage_shortcuts_left_or_right', 'left');
+      this.homepage_shortcuts_left_or_right = 'left';
+    } else {
+      this.bunch_of_settings.set('homepage_shortcuts_left_or_right', 'right');
+      this.homepage_shortcuts_left_or_right = 'right';
+    }
   }
 
   // Operations

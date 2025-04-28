@@ -241,6 +241,10 @@
       "value": "Add your shortcuts here!"
     },
     {
+      "name": "Settings_single_hand_preference",
+      "value": "Single hand optimization preference"
+    },
+    {
       "name": "Paralleow",
       "value": "Paralleow"
     },

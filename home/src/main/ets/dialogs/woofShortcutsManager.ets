@@ -5,7 +5,7 @@ import linysTitleText from '../components/linysTitleText';
 import { animation_default } from '../hosts/bunch_of_defaults';
 
 @CustomDialog
-struct woofHomepageShortcutsManager {
+struct woofHomepageManager {
   controller: CustomDialogController;
   @Prop link: string = '';
   @Prop title: string = '';
@@ -72,7 +72,7 @@ struct woofHomepageShortcutsManager {
 
       Column({ space: 10 }) {
         linysTitleText({
-          text: $r('app.string.Settings_homepage_shortcuts_manage')
+          text: $r('app.string.Settings_homepage_shortcuts')
         }) // Title
         linysText({
           text: $r('app.string.Settings_homepage_shortcuts_manage_desc'),
@@ -103,4 +103,4 @@ struct woofHomepageShortcutsManager {
   }
 }
 
-export default woofHomepageShortcutsManager;
+export default woofHomepageManager;

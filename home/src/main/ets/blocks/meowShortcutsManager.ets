@@ -22,11 +22,12 @@ struct meowShortcutsManager {
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('homepage_shortcuts_left_or_right') homepage_shortcuts_left_or_right: string = 'right';
 
   build() {
     Column({ space: 2.5 }) {
       Scroll() {
-        Column({ space: 6 }){
+        Column({ space: 6 }) {
           Row() {
             Row() {
               Text($r('app.string.Settings_homepage_shortcuts_add_here'))// Title
@@ -101,7 +102,6 @@ struct meowShortcutsManager {
   }
 
   // Data utils
-
   save_homepage_shortcuts_to_kv_store() {
     this.bunch_of_settings.set('homepage_shortcuts', this.bunch_of_homepage_shortcuts.export_string());
   }

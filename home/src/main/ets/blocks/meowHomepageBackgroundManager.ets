@@ -31,7 +31,7 @@ struct meowHomepageBackgroundManager {
       Row({ space: 10 }) {
         Blank()
         linysText({ text: $r('app.string.Homepage_background_select') })
-        linysCapsuleButton({ text: "  󰀩  " })
+        linysCapsuleButton({ text: "  󰃟  " })
           .onClick(() => {
             this.select_set_background_image()
           })
@@ -45,8 +45,7 @@ struct meowHomepageBackgroundManager {
           .type(ButtonType.Capsule)
           .backgroundColor(this.homepage_background_delete_confirm > 0 ? this.color_current_primary :
           $r("app.color.font_color_title"))
-          .fontColor(this.homepage_background_delete_confirm > 0 ? this.color_current_font :
-          this.color_current_primary)
+          .fontColor(this.homepage_background_delete_confirm > 0 ? this.color_current_font : this.color_current_primary)
           .border({
             width: 2,
             color: this.homepage_background_delete_confirm > 0 ? this.color_current_font : "transparent"

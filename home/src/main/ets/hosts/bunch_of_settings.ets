@@ -51,6 +51,7 @@ export class bunch_of_settings {
     this.register_setting('custom_search_engines', 'string', preset_search_engines());
     this.register_setting('custom_search_engines_selected_index', 'number', '-1');
     this.register_setting('homepage_shortcuts', 'string', '');
+    this.register_setting('homepage_shortcuts_left_or_right', 'string', 'right');
 
     // Ad blocker
     this.register_setting('use_adblock', 'boolean', 'true');

@@ -12,7 +12,7 @@ import { webview } from '@kit.ArkWeb';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import woofWantDownload from '../dialogs/woofWantDownload';
 import { bunch_of_homepage_shortcuts, homepage_shortcut } from '../hosts/bunch_of_homepage_shortcuts';
-import woofHomepageShortcutsManager from '../dialogs/woofShortcutsManager';
+import woofHomepageManager from '../dialogs/woofShortcutsManager';
 
 @Component
 struct meowWebView {
@@ -52,7 +52,7 @@ struct meowWebView {
   @StorageProp('collect_new_history') collect_new_history: boolean = true;
   @StorageProp('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
   @StorageLink('use_adblock') @Watch('on_use_adblock_state_change') use_adblock: boolean = true;
-  @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
+  // @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
   @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
   @StorageLink('disable_js') disable_js: boolean = false;
   @StorageLink('disable_js_these_sites') disable_js_these_sites: string[] = [];
@@ -60,6 +60,7 @@ struct meowWebView {
   @StorageLink('disable_image') disable_image: boolean = false;
   @StorageLink('disable_image_these_sites') disable_image_these_sites: string[] = [];
   @StorageLink('disable_image_all_sites') disable_image_all_sites: boolean = true;
+  @StorageLink('homepage_shortcuts_left_or_right') homepage_shortcuts_left_or_right: string = 'right';
   // Stuffs
   @State initialization_ok: boolean = false;
   @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
@@ -84,7 +85,7 @@ struct meowWebView {
     cornerRadius: 16
   })
   homepage_shortcuts_control: CustomDialogController = new CustomDialogController({
-    builder: woofHomepageShortcutsManager(),
+    builder: woofHomepageManager(),
     alignment: DialogAlignment.Center,
     cornerRadius: 22,
     showInSubWindow: true,
@@ -92,6 +93,8 @@ struct meowWebView {
   });
   // Colors
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  // Else
+  adsBlocker_exceptions: string[] = [];
 
   async aboutToAppear(): Promise<void> {
 
@@ -125,47 +128,29 @@ struct meowWebView {
     this.use_adblock = await this.bunch_of_settings.get('use_adblock') as boolean;
 
     // Get adblock exceptions
-    sites_got = await this.bunch_of_settings.get('adblock_exceptions') as string;
-    if (sites_got == '') {
-      this.adblock_exceptions = [];
+    let got_adsBlocker_exceptions = await this.bunch_of_settings.get('adblock_exceptions') as string;
+    this.adsBlocker_exceptions = [];
+    if (got_adsBlocker_exceptions == '') {
+      this.adsBlocker_exceptions = [];
     } else {
-      this.adblock_exceptions = sites_got.split('\n');
+      this.adsBlocker_exceptions = got_adsBlocker_exceptions.split('\n');
     }
-
-    // If directly use addAdsBlockDisallowedList(this.adblock_exceptions)
-    // would cause Error: BusinessError 401: Parameter error. The type of domainSuffixes must be an array of string.
-    // So a manual copy of string[] is unavoidable so far
-    // WEIRD 눈_눈
-    // TODO: Find out why "401: The type of domainSuffixes must be an array of string" if don't manually copy this array
-
-    let exceptions: string[] = [];
-    for (let i = 0; i < this.adblock_exceptions.length; i++) {
-      if (this.adblock_exceptions[i] != "" && this.adblock_exceptions[i] != " ") {
-        exceptions.push(this.adblock_exceptions[i]);
-      }
-    }
-
-    // Set
-    this.adblock_exceptions = exceptions;
-    console.log("[Meow][meowAppSettings] Set AdsBlocker exceptions: " + this.adblock_exceptions.join(", "));
-
-    // TODO: Find out why this doesn't work here
-    // Set Ads Blocker exception list
-    // webview.AdsBlockManager.addAdsBlockDisallowedList(this.adblock_exceptions);
+    // Sync to AppStorage
+    AppStorage.set('adblock_exceptions', this.adsBlocker_exceptions);
 
     this.initialization_ok = true;
   }
 
   build() {
     RelativeContainer() {
-      if (this.homepage_background){
+      if (this.homepage_background) {
         Image(this.homepage_background)
           .visibility(this.current_url == 'meow://home' ? Visibility.Visible :
           Visibility.Hidden)// .animation(animation_default())
           .transition(TransitionEffect.OPACITY.animation({ duration: 1000 }))
           .opacity(Math.max(1 - this.shortcut_scroll_offset * 1.2 / this.screen_height, 0.3))
           .brightness(Math.max(Math.min(1 - this.shortcut_scroll_offset / this.screen_height, 1), 0.6))
-      }
+      } // Background
 
       ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
         Column() {
@@ -356,40 +341,42 @@ struct meowWebView {
             .onFullScreenExit(() => {
               this.fullscreen_mode = false;
             })
-            .onAppear(() => {
+            .onControllerAttached(async () => {
+              // Set UA
               if (this.now_global_custom_UA != "") {
                 this.bunch_of_tabs.Tabs[Label.index_key].controller.setCustomUserAgent(this.now_global_custom_UA);
               }
+
+              // Set Ads Blocker
               console.log('[Meow][meowWebView] enableAdsBlock: ' + (this.use_adblock ? 'true' : 'false'))
               this.bunch_of_tabs.Tabs[Label.index_key].controller.enableAdsBlock(this.use_adblock);
 
+              // TODO: Find out why this doesn't work sometimes for a recovered webpage :O getting crazy
               // Set Ads Blocker exception list
               try {
-                console.log('[Meow][meowWebView] add Ads Blocker Exceptions success. Operated by tab No.' +
-                Label.index_key.toString() + ' ~')
-                webview.AdsBlockManager.addAdsBlockDisallowedList(this.adblock_exceptions);
+                console.log('[Meow][meowWebView] add Ads Blocker Exceptions success. Operated by meowWebView ~')
+                webview.AdsBlockManager.addAdsBlockDisallowedList(this.adsBlocker_exceptions);
               } catch (e) {
-                console.error('[ERROR][Meow][meowWebView] add Ads Blocker Exceptions error: ')
-                console.error(e);
+                console.error('[ERROR][Meow][meowWebView] add Ads Blocker Exceptions error: ' + e);
               }
+
+              // Set intelligent tracking prevention
+              this.bunch_of_tabs.Tabs[Label.index_key].controller.enableIntelligentTrackingPrevention(this.intelligent_tracking_prevention);
+              console.log('[Meow][meowWebView] ArkWeb Intelligent Tracking Prevention ' +
+              this.intelligent_tracking_prevention.toString() + '!')
 
               // Restore Web State
-              if (this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation) {
-                if (Label.index_key < this.restore_web_state_arrays.length) {
-                  this.bunch_of_tabs.restore_web_state(this.restore_web_state_arrays[Label.index_key], Label.index_key);
-                } else {
-                  console.error('[ERROR][Meow][meowWebView] Restore web state failed ' +
-                    'for an out-of-bound index in restore_web_state_arrays.')
+              setTimeout(() => {
+                if (this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation) {
+                  if (Label.index_key < this.restore_web_state_arrays.length) {
+                    this.bunch_of_tabs.restore_web_state(this.restore_web_state_arrays[Label.index_key],
+                      Label.index_key);
+                  } else {
+                    console.error('[ERROR][Meow][meowWebView] Restore web state failed ' +
+                      'for an out-of-bound index in restore_web_state_arrays.')
+                  }
                 }
-              }
-
-              if (this.intelligent_tracking_prevention) {
-                this.bunch_of_tabs.Tabs[Label.index_key].controller.enableIntelligentTrackingPrevention(true);
-                console.log('[Meow][meowWebView] ArkWeb Intelligent Tracking Prevention ON!')
-              } else {
-                this.bunch_of_tabs.Tabs[Label.index_key].controller.enableIntelligentTrackingPrevention(false);
-                console.log('[Meow][meowWebView] ArkWeb Intelligent Tracking Prevention not enabled.')
-              }
+              }, 0)
             })
             .darkMode(WebDarkMode.Auto)// Dark mode!
             .forceDarkAccess(this.web_force_dark_mode) // Force dark mode
@@ -418,11 +405,12 @@ struct meowWebView {
         .onAreaChange((_o, n) => {
           this.shortcut_scroll_total_height = n.height as number;
         })
-        .alignItems(HorizontalAlign.End)
+        .alignItems(this.homepage_shortcuts_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
         .padding({ top: this.screen_height * (this.tablet_mode ? 0.3 : 0.7) })
+        .animation(animation_default())
         .width('100%')
       } // Shortcuts
-      .padding({ right: 14, bottom: 18 })
+      .padding({ right: 14, left: 14, bottom: 18 })
       .width('100%')
       .height('100%')
       .scrollable(ScrollDirection.Vertical)
