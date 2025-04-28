@@ -45,11 +45,12 @@ export class bunch_of_settings {
     this.register_setting('animation_response', 'number', '36');
     this.register_setting('animation_damping_coefficient', 'number', '20');
 
-    // UA and Search Engines
+    // UA and Search Engines and Homepage Shortcuts
     this.register_setting('custom_user_agents', 'string', default_user_agents());
     this.register_setting('custom_user_agents_selected_index', 'number', '-1');
     this.register_setting('custom_search_engines', 'string', preset_search_engines());
     this.register_setting('custom_search_engines_selected_index', 'number', '-1');
+    this.register_setting('homepage_shortcuts', 'string', '');
 
     // Ad blocker
     this.register_setting('use_adblock', 'boolean', 'true');

@@ -19,7 +19,7 @@ export function get_relations(label_link_array: string[][], key: string, max_res
     }
   }
 
-  // Limited quick selection sort
+  // Limited not quick selection sort
   let search_numbers = Math.min(related_items.length, max_result_number);
   let result: string[][] = [];
   let chosen_links: string[] = [];

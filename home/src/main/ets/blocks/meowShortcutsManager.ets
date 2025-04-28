@@ -7,17 +7,17 @@ import {
   fontSize_Large,
   fontSize_Normal
 } from '../hosts/bunch_of_defaults';
+import { bunch_of_homepage_shortcuts, homepage_shortcut } from '../hosts/bunch_of_homepage_shortcuts';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
-import { bunch_of_user_agents, user_agent } from '../hosts/bunch_of_user_agents';
 
 @Component
-struct meowUAManager {
-  @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
+struct meowShortcutsManager {
+  @StorageLink('bunch_of_homepage_shortcuts') bunch_of_homepage_shortcuts: bunch_of_homepage_shortcuts =
+    new bunch_of_homepage_shortcuts();
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
-  @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
-  @State @Watch('on_select') selected_index: number = -1; // -1 for system default
+  @StorageLink('homepage_shortcut') homepage_shortcut: string = "";
+  @State list_of_homepage_shortcuts: homepage_shortcut[] = this.bunch_of_homepage_shortcuts.list_of_homepage_shortcuts;
   @State default_pressing: boolean = false;
-  @State UA_loaded_from_disk: boolean = false;
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -25,131 +25,102 @@ struct meowUAManager {
 
   build() {
     Column({ space: 2.5 }) {
-      Row() {
-        Row() {
-          Text($r('app.string.Settings_general_custom_ua_default'))// Title
-            .fontColor(!this.default_pressing ? this.color_current_font : this.color_current_secondary)
-            .fontWeight(!this.default_pressing ? FontWeight.Normal : FontWeight.Medium)
-            .padding({ left: 2 })
-            .fontSize(fontSize_Normal())
-            .maxLines(1)
-            .textOverflow({ overflow: TextOverflow.Ellipsis })
-            .layoutWeight(1)
-            .margin(10)
+      Scroll() {
+        Column({ space: 6 }){
+          Row() {
+            Row() {
+              Text($r('app.string.Settings_homepage_shortcuts_add_here'))// Title
+                .fontColor(!this.default_pressing ? this.color_current_font : this.color_current_secondary)
+                .fontWeight(!this.default_pressing ? FontWeight.Normal : FontWeight.Medium)
+                .padding({ left: 2 })
+                .fontSize(fontSize_Normal())
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+                .layoutWeight(1)
+                .margin(10)
+                .animation(animation_default())
+
+            }
+            .width("100%")
+            .height("100%")
+            .borderRadius(7)
+            .backgroundColor(this.default_pressing ? this.color_current_font :
+            this.color_current_primary)
             .animation(animation_default())
 
-        }
-        .width("100%")
-        .height("100%")
-        .borderRadius(7)
-        .backgroundColor(this.default_pressing ? this.color_current_font :
-        this.color_current_primary)
-        .animation(animation_default())
-
-      } // Default
-      .width("100%")
-      .border({
-        radius: 10,
-        width: 2,
-        color: -1 == this.selected_index ? this.color_current_font : "transparent",
-        // color: "red"
-      })
-      .alignRules({
-        middle: { anchor: "__container__", align: HorizontalAlign.Center },
-        top: { anchor: "__container__", align: VerticalAlign.Top }
-      })
-      .onTouch((event) => {
-        if (event.type == TouchType.Up) {
-          this.default_pressing = false;
-          // If touch ends
-        } else {
-          this.default_pressing = true;
-          // If touching
-        }
-      })
-      .onClick(() => {
-        this.selected_index = -1;
-        // Set UA
-      })
-      .height(46)
-      .animation(animation_default())
-
-      ForEach(
-        this.bunch_of_user_agents.list_of_user_agents, (_user_agent: user_agent, key: number) => {
-        meowUAButton({
-          selected_index: this.selected_index,
-          my_index: key,
-        })
-      })
-
-      Row() {
-        Blank()
-        linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
-          .onClick(() => {
-            this.add_new_custom_ua();
+          } // Default
+          .width("100%")
+          .alignRules({
+            middle: { anchor: "__container__", align: HorizontalAlign.Center },
+            top: { anchor: "__container__", align: VerticalAlign.Top }
           })
-      } // Add Button
+          .onTouch((event) => {
+            if (event.type == TouchType.Up) {
+              this.default_pressing = false;
+              // If touch ends
+            } else {
+              this.default_pressing = true;
+              // If touching
+            }
+          })
+          .height(46)
+          .animation(animation_default())
+
+          ForEach(this.bunch_of_homepage_shortcuts.list_of_homepage_shortcuts,
+            (_user_agent: homepage_shortcut, key: number) => {
+              meowSCButton({
+                my_index: key,
+              })
+            })
+
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
+            .onClick(() => {
+              this.add_new_custom_homepage_shortcut();
+            })
+            .padding(5)
+        }
+        .alignItems(HorizontalAlign.End)
+      }
+      .padding(2)
       .width("100%")
-      .padding(5)
+      .animation(animation_default())
+      .edgeEffect(EdgeEffect.Spring)
+      .borderRadius(13.5)
     }
     .padding(5)
     .borderRadius(13.5)
     .backgroundColor($r('sys.color.comp_background_tertiary'))
-    .width("100%")
-    .animation(animation_default())
-    .onAppear(() => {
-      this.on_appear();
-    })
+    .height('100%')
+    .width('100%')
   }
 
-  async on_appear() {
-    let custom_user_agents = await this.bunch_of_settings.get('custom_user_agents') as string;
-    this.bunch_of_user_agents.import_string(custom_user_agents);
-    this.selected_index = await this.bunch_of_settings.get('custom_user_agents_selected_index') as number;
-
-    this.UA_loaded_from_disk = true;
-    // Get UA
-
-    console.log("[Meow][meowUAManager] UA Manager READY");
-  }
-
-  on_select() {
-    if (this.selected_index <= -1) {
-      // If set back to default
-      this.now_global_custom_UA = "";
-    } else {
-      this.now_global_custom_UA = this.bunch_of_user_agents.list_of_user_agents[this.selected_index].user_agent_content;
-    }
-    this.save_user_agents_to_settings();
-  }
-
-  add_new_custom_ua() {
-    this.bunch_of_user_agents.add_user_agent(new user_agent(new Date().toLocaleString(),
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0"));
-    this.save_user_agents_to_settings();
+  add_new_custom_homepage_shortcut() {
+    this.bunch_of_homepage_shortcuts.add_homepage_shortcut(new homepage_shortcut(new Date().toLocaleString(),
+      "https://you.rwebs.ite"));
+    this.save_homepage_shortcuts_to_kv_store();
   }
 
   // Data utils
-  save_user_agents_to_settings() {
-    this.bunch_of_settings.set('custom_user_agents', this.bunch_of_user_agents.export_string());
-    this.bunch_of_settings.set('custom_user_agents_selected_index', this.selected_index);
+
+  save_homepage_shortcuts_to_kv_store() {
+    this.bunch_of_settings.set('homepage_shortcuts', this.bunch_of_homepage_shortcuts.export_string());
   }
 }
 
-export default meowUAManager;
+export default meowShortcutsManager;
 
 @Component
-struct meowUAButton {
-  @Link selected_index: number;
+struct meowSCButton {
   @Prop my_index: number;
-  @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
+  @StorageLink('bunch_of_homepage_shortcuts') bunch_of_homepage_shortcuts: bunch_of_homepage_shortcuts =
+    new bunch_of_homepage_shortcuts();
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
-  @State my_ua: user_agent = this.bunch_of_user_agents.list_of_user_agents[this.my_index];
-  @State my_label: string = this.my_ua.label;
-  @State my_content: string = this.my_ua.user_agent_content;
+  @State my_se: homepage_shortcut = this.bunch_of_homepage_shortcuts.list_of_homepage_shortcuts[this.my_index];
+  @State my_label: string = this.my_se.label;
+  @State my_content: string = this.my_se.url;
   // statuses
-  @State pressing: boolean = false;
   @State editing: boolean = false;
+  @State pressing: boolean = false;
   @State press_timing_ok: boolean = false;
   press_timing: number = 0;
   button_height_default: number = 42;
@@ -213,8 +184,6 @@ struct meowUAButton {
             this.editing = !this.editing;
             return;
           } // Toggle Edit Panel
-          this.set_global_UA_to_mine();
-          // Set UA
         })
         .height(this.button_height_default)
 
@@ -242,7 +211,7 @@ struct meowUAButton {
 
             Row({ space: 10 }) {
               linysSymbol({ symbol_glyph_target: "sys.symbol.paperclip" })
-              TextArea({ text: this.edit_content })
+              TextInput({ text: this.edit_content })
                 .onChange((value) => {
                   this.edit_content = value;
                 })
@@ -280,7 +249,7 @@ struct meowUAButton {
                 .fontWeight(FontWeight.Medium)
                 .height(capsule_bar_height())
                 .onClick(() => {
-                  this.delete_myself()
+                  this.delete_myself();
                 })
                 .clickEffect(click_effect_default())
                 .animation(animation_default())
@@ -312,11 +281,6 @@ struct meowUAButton {
         .scrollBar(BarState.Off)
         .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.PARENT_FIRST })
       }
-      .border({
-        radius: 10,
-        width: 2,
-        color: this.my_index == this.selected_index ? this.color_current_font : "transparent"
-      })
     }
     .width("100%")
     .visibility(this.visible)
@@ -339,12 +303,6 @@ struct meowUAButton {
         // Reset delete confirm
       }, 10)
     })
-
-  }
-
-  set_global_UA_to_mine() {
-    this.selected_index = -1;
-    this.selected_index = this.my_index;
   }
 
   save_changes() {
@@ -352,36 +310,25 @@ struct meowUAButton {
 
     this.my_label = this.edit_label;
     this.my_content = this.edit_content;
-    this.my_ua.label = this.edit_label;
-    this.my_ua.user_agent_content = this.edit_content;
-    this.save_user_agents_to_settings();
-
-    if (this.selected_index == this.my_index) {
-      this.set_global_UA_to_mine();
-    }
+    this.my_se.label = this.edit_label;
+    this.my_se.url = this.edit_content;
+    this.bunch_of_homepage_shortcuts.last_accessed = Date.now();
+    console.log(this.my_se.label)
+    this.save_homepage_shortcut_to_kv_store();
   }
 
   delete_myself() {
     this.delete_confirm += 300;
     if (this.delete_confirm >= 301) {
       this.editing = false;
-      this.bunch_of_user_agents.del_user_agent(this.my_index);
-
-      if (this.selected_index == this.my_index) {
-        this.selected_index = this.my_index - 1;
-      } else {
-        let previous_selected = this.selected_index;
-        this.selected_index = -2;
-        this.selected_index = Math.min(this.bunch_of_user_agents.list_of_user_agents.length - 1, previous_selected);
-        // Refresh
-      }
-
-      this.save_user_agents_to_settings();
+      this.bunch_of_homepage_shortcuts.del_homepage_shortcut(this.my_index);
+      this.save_homepage_shortcut_to_kv_store();
     }
   }
 
-  save_user_agents_to_settings() {
-    console.log("[Meow][meowUAManager] Started to save custom user-agents to KVStore!")
-    this.bunch_of_settings.set('custom_user_agents', this.bunch_of_user_agents.export_string());
+  save_homepage_shortcut_to_kv_store() {
+    console.log("[Meow][meowShortcutsManager] Started to save custom Homepage Shortcuts " +
+    this.bunch_of_homepage_shortcuts.export_string() + " to Settings!")
+    this.bunch_of_settings.set('homepage_shortcuts', this.bunch_of_homepage_shortcuts.export_string());
   }
 }

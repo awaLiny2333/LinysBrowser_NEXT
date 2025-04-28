@@ -115,9 +115,9 @@ struct woofGeneralManage {
       .edgeEffect(EdgeEffect.Spring)
       .padding({ top: 5, bottom: 10, right: 10 })
       .width(this.tablet_mode ? "40%" : "100%")
+      .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })
       .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
       .animation(animation_default())
-      .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })
       .id("title")
 
       Column({ space: 10 }) {

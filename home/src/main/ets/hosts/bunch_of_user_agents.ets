@@ -1,5 +1,6 @@
 export class bunch_of_user_agents {
   list_of_user_agents: user_agent[] = [];
+  last_accessed: number = 0;
 
   /**
    * A class holding a user_agent[] array, in which there stores user_agent objects.
@@ -14,6 +15,7 @@ export class bunch_of_user_agents {
    * */
   add_user_agent(ua: user_agent) {
     this.list_of_user_agents.push(ua);
+    this.last_accessed = Date.now();
   }
 
   /**
@@ -22,6 +24,7 @@ export class bunch_of_user_agents {
    * */
   del_user_agent(index: number) {
     this.list_of_user_agents.splice(index, 1);
+    this.last_accessed = Date.now();
   }
 
   /**

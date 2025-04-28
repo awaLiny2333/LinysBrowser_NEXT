@@ -9,16 +9,14 @@ import {
 } from '../hosts/bunch_of_defaults';
 import { bunch_of_search_engines, search_engine } from '../hosts/bunch_of_search_engines';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
-import { kv_store_put } from '../utils/kv_store_tools';
 
 @Component
 struct meowSEManager {
-  @StorageLink('bunch_of_search_engines') @Watch('on_SE_change') bunch_of_search_engines: bunch_of_search_engines =
+  @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines =
     new bunch_of_search_engines();
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('search_engine') search_engine: string = "";
   @State @Watch('on_select') selected_index: number = -2; // -1 for system default
-  @State list_of_search_engines: search_engine[] = this.bunch_of_search_engines.list_of_search_engines;
   @State default_pressing: boolean = false;
   @State UA_loaded_from_disk: boolean = false;
   // Colors
@@ -78,12 +76,12 @@ struct meowSEManager {
       .animation(animation_default())
 
       ForEach(
-        this.list_of_search_engines, (_user_agent: search_engine, key: number) => {
-          meowSEButton({
-            selected_index: this.selected_index,
-            my_index: key,
-          })
+        this.bunch_of_search_engines.list_of_search_engines, (_user_agent: search_engine, key: number) => {
+        meowSEButton({
+          selected_index: this.selected_index,
+          my_index: key,
         })
+      })
 
       Row() {
         Blank()
@@ -108,7 +106,6 @@ struct meowSEManager {
   async on_appear() {
     let custom_search_engine = await this.bunch_of_settings.get('custom_search_engines') as string;
     this.bunch_of_search_engines.import_string(custom_search_engine);
-    this.sync_list_of_search_engines();
     this.selected_index =
       await this.bunch_of_settings.get('custom_search_engines_selected_index') as number;
 
@@ -118,10 +115,9 @@ struct meowSEManager {
     console.log("[Meow][meowSEManager] Search engine Manager READY");
   }
 
-  on_SE_change() {
-    console.log('[Meow][meowSEManager] Search Engine list change! Syncing data to Settings...')
-    this.sync_list_of_search_engines();
-  }
+  // on_SE_change() {
+  //   console.log('[Meow][meowSEManager] Search Engine list change! Syncing data to Settings...')
+  // }
 
   on_select() {
     if (this.selected_index <= -1) {
@@ -130,24 +126,18 @@ struct meowSEManager {
     } else {
       this.search_engine = this.bunch_of_search_engines.list_of_search_engines[this.selected_index].url;
     }
-    this.save_search_engines_to_kv_store();
-    this.sync_list_of_search_engines();
+    this.save_search_engines_to_settings();
   }
 
   add_new_custom_search_engine() {
     this.bunch_of_search_engines.add_search_engine(new search_engine(new Date().toLocaleString(),
       "https://bing.com/search?q=%s"));
-    this.sync_list_of_search_engines();
-    this.save_search_engines_to_kv_store();
+    this.save_search_engines_to_settings();
   }
 
   // Data utils
 
-  sync_list_of_search_engines() {
-    this.list_of_search_engines = this.bunch_of_search_engines.list_of_search_engines;
-  }
-
-  save_search_engines_to_kv_store() {
+  save_search_engines_to_settings() {
     this.bunch_of_settings.set('custom_search_engines', this.bunch_of_search_engines.export_string());
     this.bunch_of_settings.set('custom_search_engines_selected_index', this.selected_index);
   }
@@ -161,6 +151,7 @@ struct meowSEButton {
   @Prop my_index: number;
   @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines =
     new bunch_of_search_engines();
+  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @State my_se: search_engine = this.bunch_of_search_engines.list_of_search_engines[this.my_index];
   @State my_label: string = this.my_se.label;
   @State my_content: string = this.my_se.url;
@@ -382,17 +373,17 @@ struct meowSEButton {
   delete_myself() {
     this.delete_confirm += 300;
     if (this.delete_confirm >= 301) {
+      // Confirm delete
       this.editing = false;
       this.bunch_of_search_engines.del_search_engine(this.my_index);
 
       if (this.selected_index == this.my_index) {
         this.selected_index = this.my_index - 1;
       } else {
-        let previous_selected = this.selected_index;
-        this.selected_index = -2;
-        this.selected_index =
-          Math.min(this.bunch_of_search_engines.list_of_search_engines.length - 1, previous_selected);
         // Refresh
+        let prev_selected = this.selected_index;
+        this.selected_index = -2;
+        this.selected_index = Math.min(this.bunch_of_search_engines.list_of_search_engines.length - 1, prev_selected);
       }
       this.save_search_engine_to_kv_store();
     }
@@ -400,6 +391,6 @@ struct meowSEButton {
 
   save_search_engine_to_kv_store() {
     console.log("[Meow][meowUAManager] Started to save custom user-agents to KVStore!")
-    kv_store_put("custom_search_engine", this.bunch_of_search_engines.export_string());
+    this.bunch_of_settings.set('custom_search_engines', this.bunch_of_search_engines.export_string());
   }
 }

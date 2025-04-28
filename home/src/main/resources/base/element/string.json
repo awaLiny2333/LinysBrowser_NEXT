@@ -225,6 +225,22 @@
       "value": "Search engine"
     },
     {
+      "name": "Settings_homepage_shortcuts",
+      "value": "Homepage Shortcuts"
+    },
+    {
+      "name": "Settings_homepage_shortcuts_manage",
+      "value": "Manage Shortcuts"
+    },
+    {
+      "name": "Settings_homepage_shortcuts_manage_desc",
+      "value": "Clicking the blank area on Homepage could also bring you here!"
+    },
+    {
+      "name": "Settings_homepage_shortcuts_add_here",
+      "value": "Add your shortcuts here!"
+    },
+    {
       "name": "Paralleow",
       "value": "Paralleow"
     },
@@ -679,6 +695,10 @@
     {
       "name": "Homepage_background",
       "value": "Homepage background"
+    },
+    {
+      "name": "Homepage_background_desc",
+      "value": "Images of a wrong size would be wrongly displayed~ Contents at center position would be prioritized in showcase!"
     },
     {
       "name": "Homepage_background_select",

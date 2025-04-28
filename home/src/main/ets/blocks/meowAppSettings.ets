@@ -24,10 +24,7 @@ import {
   add_units_to_size,
   arrayBuffer_to_pixelMap,
   get_folder_size_Sync,
-  image_open_to_ArrayBuffer,
-  sandbox_open_arrayBuffer_sync,
-  sandbox_save,
-  sandbox_unlink
+  sandbox_open_arrayBuffer_sync
 } from '../utils/storage_tools';
 import woofHistory from '../dialogs/woofHistory';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
@@ -43,6 +40,9 @@ import woofCookies from '../dialogs/woofCookies';
 import woofGeneralManage from '../dialogs/woofGeneralManage';
 import woofKeyShortcuts from '../dialogs/woofKeyShortcuts';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
+import { bunch_of_homepage_shortcuts } from '../hosts/bunch_of_homepage_shortcuts';
+import woofHomepageShortcutsManager from '../dialogs/woofShortcutsManager';
+import meowHomepageBackgroundManager from './meowHomepageBackgroundManager';
 
 @Component
 struct meowAppSettings {
@@ -57,6 +57,8 @@ struct meowAppSettings {
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts =
     new bunch_of_key_shortcuts(true);
+  @StorageLink('bunch_of_homepage_shortcuts') bunch_of_homepage_shortcuts: bunch_of_homepage_shortcuts =
+    new bunch_of_homepage_shortcuts();
   @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
   // Colors
   @StorageProp('color_current_primary') @Watch('on_color_change') color_current_primary: ResourceColor =
@@ -193,11 +195,17 @@ struct meowAppSettings {
     showInSubWindow: true,
     width: "90%",
   });
+  homepage_shortcuts_control: CustomDialogController = new CustomDialogController({
+    builder: woofHomepageShortcutsManager(),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 22,
+    showInSubWindow: true,
+    width: "90%",
+  });
   waterFlow_control: Scroller = new Scroller();
   // Else
   @State clear_web_cache_confirm: number = 0;
   @State web_cache_size: number = 0;
-  @State homepage_background_delete_confirm: number = 0;
 
   build() {
     Row() {
@@ -408,7 +416,7 @@ struct meowAppSettings {
               Row({ space: 5 }) {
                 Slider({
                   min: 0,
-                  max: 5,
+                  max: 20,
                   value: this.max_bookmark_advice,
                   style: SliderStyle.InSet,
                 })
@@ -427,7 +435,7 @@ struct meowAppSettings {
               Row({ space: 5 }) {
                 Slider({
                   min: 0,
-                  max: 5,
+                  max: 20,
                   value: this.max_history_advice,
                   style: SliderStyle.InSet,
                 })
@@ -441,6 +449,25 @@ struct meowAppSettings {
                 linysText({ text: this.max_history_advice.toString() })
                   .margin({ right: 5 })
               } // Slider and display of max_history_suggestions
+
+              // Homepage Shortcuts
+              linysText({ text: $r('app.string.Settings_homepage_shortcuts') })
+              // meowShortcutsManager()
+              Row({ space: 10 }) {
+                Blank()
+                linysText({ text: $r('app.string.Settings_homepage_shortcuts_manage') })
+                linysCapsuleButton({ text: "  󰀠  " })
+                  .onClick(() => {
+                    this.homepage_shortcuts_control.open();
+                  })
+              }
+              .width("100%")
+              .onAppear(async () => {
+                // Get Data
+                let custom_homepage_shortcut = await this.bunch_of_settings.get('homepage_shortcuts') as string;
+                this.bunch_of_homepage_shortcuts.import_string(custom_homepage_shortcut);
+                console.log("[Meow][meowShortcutsManager] Shortcuts Manager READY");
+              })
 
             }
             .padding(15)
@@ -534,39 +561,7 @@ struct meowAppSettings {
 
               linysText({ text: $r('app.string.Homepage_background') })
                 .width('100%')
-              Row({ space: 10 }) {
-                Blank()
-                linysText({ text: $r('app.string.Homepage_background_select') })
-                linysCapsuleButton({ text: "  󰀩  " })
-                  .onClick(() => {
-                    this.select_set_background_image()
-                  })
-              } // Homepage background select
-              .width("100%")
-
-              Row({ space: 10 }) {
-                Blank()
-                linysText({ text: $r('app.string.Homepage_background_delete') })
-                Button("  󰀁  ")// Delete
-                  .type(ButtonType.Capsule)
-                  .backgroundColor(this.homepage_background_delete_confirm > 0 ? this.color_current_primary :
-                  $r("app.color.font_color_title"))
-                  .fontColor(this.homepage_background_delete_confirm > 0 ? this.color_current_font :
-                  this.color_current_primary)
-                  .border({
-                    width: 2,
-                    color: this.homepage_background_delete_confirm > 0 ? this.color_current_font : "transparent"
-                  })
-                  .fontSize(fontSize_Large())
-                  .fontWeight(FontWeight.Medium)
-                  .height(capsule_bar_height())
-                  .onClick(() => {
-                    this.delete_homepage_background();
-                  })
-                  .clickEffect(click_effect_default())
-                  .animation(animation_default())
-              } // Homepage background select
-              .width("100%")
+              meowHomepageBackgroundManager()
             }
             .padding(15)
             .alignItems(HorizontalAlign.Start)
@@ -834,12 +829,6 @@ struct meowAppSettings {
     .animation(animation_default())
     .onAppear(() => {
       console.log("[Meow][meowAppSettings] App Settings READY")
-      setInterval(() => {
-        if (this.homepage_background_delete_confirm > 0) {
-          this.homepage_background_delete_confirm -= 1;
-        }
-        // Reset homepage_background_delete_confirm
-      }, 10)
       this.on_appear();
     })
   }
@@ -1053,33 +1042,6 @@ struct meowAppSettings {
       return;
     }
     this.waterFlow_control.scrollToIndex(this.settings_scroll_to, true);
-  }
-
-  select_set_background_image() {
-    image_open_to_ArrayBuffer().then(result => {
-        if (result !== undefined) {
-          let buf = result as ArrayBuffer;
-          // Set image for homepage
-          this.homepage_background = arrayBuffer_to_pixelMap(buf);
-          // Save this to sandbox
-          sandbox_save('homepage_background_arrayBuffer', buf);
-        } else {
-          console.log('[meowAppSettings] Select homepage background failed. Received undefined?')
-          this.uni_fail_prompt_gateway = $r('app.string.Fail_select_bad_image');
-        }
-    });
-
-  }
-
-  delete_homepage_background() {
-    // Delete homepage background image
-    this.homepage_background_delete_confirm += 300;
-    if (this.homepage_background_delete_confirm >= 301) {
-      this.homepage_background = undefined;
-      sandbox_unlink('homepage_background_arrayBuffer');
-      this.homepage_background_delete_confirm = 0;
-      console.log("[meowAppSettings] Deleted homepage background!")
-    }
   }
 }
 

@@ -1,4 +1,9 @@
-import { animation_default } from '../hosts/bunch_of_defaults';
+import {
+  animation_default,
+  capsule_bar_height,
+  click_effect_default,
+  fontSize_Large
+} from '../hosts/bunch_of_defaults';
 import { bunch_of_history, history_record } from '../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_label } from '../hosts/bunch_of_tabs';
 import { sandbox_save } from '../utils/storage_tools';
@@ -6,6 +11,8 @@ import { match_domain, url_meow_to_resource, url_resource_to_meow } from '../uti
 import { webview } from '@kit.ArkWeb';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import woofWantDownload from '../dialogs/woofWantDownload';
+import { bunch_of_homepage_shortcuts, homepage_shortcut } from '../hosts/bunch_of_homepage_shortcuts';
+import woofHomepageShortcutsManager from '../dialogs/woofShortcutsManager';
 
 @Component
 struct meowWebView {
@@ -18,9 +25,12 @@ struct meowWebView {
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
+  @StorageLink('bunch_of_homepage_shortcuts') bunch_of_homepage_shortcuts: bunch_of_homepage_shortcuts =
+    new bunch_of_homepage_shortcuts();
   @StorageLink('current_main_tab_index') @Watch('on_tab_info_change') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') @Watch('on_tab_info_change') current_sub_tab_index: number = -1;
   @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
+  @StorageProp('screen_height') screen_height: number = 100;
   // Controls and environments
   @StorageLink('tab_titles') tab_titles: string[] = []
   @StorageLink('current_title') current_title: string = "=￣ω￣=";
@@ -59,6 +69,9 @@ struct meowWebView {
   @StorageLink('universal_new_download_gateway') new_download_gateway: string = "";
   @StorageProp('tab_animation') tab_animation: AnimateParam = animation_default();
   @State last_timeout_id: number | undefined = undefined;
+  @State shortcut_scroll_offset: number = 0;
+  @State shortcut_scroll_total_height: number = 100;
+  shortcut_scroller: Scroller = new Scroller();
   // dialogs
   woofWantDownload_control: CustomDialogController = new CustomDialogController({
     builder: woofWantDownload({
@@ -70,6 +83,13 @@ struct meowWebView {
     alignment: DialogAlignment.Center,
     cornerRadius: 16
   })
+  homepage_shortcuts_control: CustomDialogController = new CustomDialogController({
+    builder: woofHomepageShortcutsManager(),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 22,
+    showInSubWindow: true,
+    width: "90%",
+  });
   // Colors
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
 
@@ -138,10 +158,14 @@ struct meowWebView {
 
   build() {
     RelativeContainer() {
-      Image(this.homepage_background)
-        // .visibility(this.homepage_background? Visibility.Visible: Visibility.Hidden)
-        // .animation(animation_default())
-        .transition(TransitionEffect.OPACITY.animation({ duration: 1200 }))
+      if (this.homepage_background){
+        Image(this.homepage_background)
+          .visibility(this.current_url == 'meow://home' ? Visibility.Visible :
+          Visibility.Hidden)// .animation(animation_default())
+          .transition(TransitionEffect.OPACITY.animation({ duration: 1000 }))
+          .opacity(Math.max(1 - this.shortcut_scroll_offset * 1.2 / this.screen_height, 0.3))
+          .brightness(Math.max(Math.min(1 - this.shortcut_scroll_offset / this.screen_height, 1), 0.6))
+      }
 
       ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
         Column() {
@@ -379,6 +403,39 @@ struct meowWebView {
         .visibility(this.my_visibility(Label.index_key))
         .animation(this.tab_animation)
       }, (item: tab_label) => item.timestamp.toString())
+
+      Scroll(this.shortcut_scroller) {
+        Column({ space: 10 }) {
+          ForEach(
+            this.bunch_of_homepage_shortcuts.list_of_homepage_shortcuts,
+            (shortcut: homepage_shortcut, key: number) => {
+              shortcutButton({
+                shortcut: shortcut,
+                my_index: key,
+              })
+            })
+        }
+        .onAreaChange((_o, n) => {
+          this.shortcut_scroll_total_height = n.height as number;
+        })
+        .alignItems(HorizontalAlign.End)
+        .padding({ top: this.screen_height * (this.tablet_mode ? 0.3 : 0.7) })
+        .width('100%')
+      } // Shortcuts
+      .padding({ right: 14, bottom: 18 })
+      .width('100%')
+      .height('100%')
+      .scrollable(ScrollDirection.Vertical)
+      .align(Alignment.Bottom)
+      .edgeEffect(EdgeEffect.Spring)
+      .animation(animation_default())
+      .visibility(this.current_url == 'meow://home' ? Visibility.Visible : Visibility.None)
+      .onDidScroll(() => {
+        this.shortcut_scroll_offset = this.shortcut_scroller.currentOffset().yOffset;
+      })
+      .onClick(() => {
+        this.homepage_shortcuts_control.open();
+      })
     }
     .width("100%")
     .height("100%")
@@ -544,3 +601,66 @@ struct meowWebView {
 }
 
 export default meowWebView;
+
+@Component
+struct shortcutButton {
+  @Prop my_index: number;
+  @Prop shortcut: homepage_shortcut;
+  // Environment
+  @StorageLink('current_url') current_url: string = "=￣ω￣=";
+  @StorageLink('bunch_of_homepage_shortcuts') bunch_of_homepage_shortcuts: bunch_of_homepage_shortcuts =
+    new bunch_of_homepage_shortcuts();
+  // Gateways
+  @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // SHow
+  @State show: Visibility = Visibility.Hidden;
+  @State offset_y: number = 50;
+
+  build() {
+    Button("→ " + this.shortcut.label)// Shortcut "󰄏"
+      .type(ButtonType.Capsule)
+      .backgroundColor(this.color_current_secondary)
+      .fontColor(this.color_current_font)
+      .border({
+        width: 2,
+        color: "transparent"
+      })
+      .fontSize(fontSize_Large())
+      .fontWeight(FontWeight.Normal)
+      .height(capsule_bar_height())
+      .onClick(() => {
+        setTimeout(() => {
+          this.new_tab_gateway = this.shortcut.url;
+          this.current_url = this.shortcut.url;
+        }, 100)
+      })
+      .visibility(this.show)
+      .offset({ y: this.offset_y })
+      .clickEffect(click_effect_default())
+      .animation(animation_default())
+      .onAppear(() => {
+        setTimeout(() => {
+          this.show = Visibility.Visible;
+          this.offset_y = 0;
+          // Animation of floating up
+        }, this.get_animation_timeout())
+      })
+  }
+
+  get_animation_timeout() {
+    let unit_interval = 40;
+    let load_length = this.bunch_of_homepage_shortcuts.list_of_homepage_shortcuts.length;
+    if (load_length < 5) {
+      unit_interval = 100;
+    } else if (load_length < 10) {
+      unit_interval = 70;
+    } else {
+      unit_interval = 40;
+    }
+    return this.my_index * unit_interval;
+  }
+}
