@@ -222,12 +222,7 @@ export class bunch_of_downloads {
           fs.rmdir(this.list_of_target_folders[index])
         });
 
-        console.info("[bunch_of_downloads] write data to file succeed and size is:" + writeLen + " @ " +
-        target_uri[0]);
-
-        console.info('[bunch_of_downloads] DocumentViewPicker.save successfully, documentSaveResult uri: ' +
-        target_uri[0]);
-
+        console.info("[bunch_of_downloads] write data to file succeed and size is:" + writeLen + " @ " + target_uri[0]);
         this.delete_task(index);
 
       })
