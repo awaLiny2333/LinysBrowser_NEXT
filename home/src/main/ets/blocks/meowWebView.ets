@@ -90,7 +90,7 @@ struct meowWebView {
   woofHomepageManager_control: CustomDialogController = new CustomDialogController({
     builder: woofHomepageManager(),
     alignment: DialogAlignment.Center,
-    cornerRadius: 22,
+    cornerRadius: 16,
     // showInSubWindow: true,
   });
   // Colors

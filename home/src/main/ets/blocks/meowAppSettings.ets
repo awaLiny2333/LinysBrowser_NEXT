@@ -204,7 +204,7 @@ struct meowAppSettings {
   homepage_shortcuts_control: CustomDialogController = new CustomDialogController({
     builder: woofHomepageManager(),
     alignment: DialogAlignment.Center,
-    cornerRadius: 22,
+    cornerRadius: 16,
     // showInSubWindow: true,
     // width: "90%",
   });
