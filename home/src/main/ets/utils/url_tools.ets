@@ -241,6 +241,11 @@ export function match_domain(input: string) {
   return input;
 }
 
+/**
+ * Extracts search engine and search keyword from an url
+ * @param url
+ * @returns ['search.engine/q=%s', 'keyword']
+ * */
 export function extract_search(url: string) {
   let result: string[] = ['', ''];
 
@@ -279,4 +284,37 @@ export function extract_search(url: string) {
 
   // ['baidu.com/s?q=%s','awa']
   return result;
+}
+
+/**
+ * Analyze and divides the text data items and out put a unified list of texts and links
+ * @param data_list strings
+ * @returns [extracted_data: string[], extracted_type: string[]]
+ * */
+export function extract_links_from_text(data_list: string[]) {
+  let extracted_data: string[] = [];
+  let extracted_type: string[] = [];
+  for (let index = 0; index < data_list.length; index++) {
+    let text = data_list[index];
+    let match = text.match(/(https?|meow):\/\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]/g);
+    console.log(match?.join("\n"));
+    if (match) {
+      for (let inner = 0; inner < match.length; inner++) {
+        let position = text.indexOf(match[inner]);
+        if (text.substring(0, position).replace(/\s*/, "").length > 0) {
+          extracted_data.push(text.substring(0, position).replaceAll(/(^\s*)|(\s*$)/g, ""));
+          extracted_type.push("text");
+        }
+        extracted_data.push(match[inner]);
+        extracted_type.push("url");
+        text = text.substring(position + match[inner].length);
+      }
+    }
+    if (text.replace(/\s*/, "").length > 0) {
+      extracted_data.push(text.replaceAll(/(^\s*)|(\s*$)/g, ""));
+      extracted_type.push("text");
+    }
+  }
+
+  return [extracted_data, extracted_type]
 }

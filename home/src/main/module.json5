@@ -73,16 +73,16 @@
           ]
         }
       },
-      //      {
-      //        "name" : "ohos.permission.READ_PASTEBOARD",
-      //        "reason": "$string:permission_reason_READ_PASTEPOARD",
-      //        "usedScene": {
-      //          "when": "inuse",
-      //          "abilities": [
-      //            "HomeAbility"
-      //          ]
-      //        }
-      //      }
+//            {
+//              "name" : "ohos.permission.READ_PASTEBOARD",
+//              "reason": "$string:permission_reason_READ_PASTEPOARD",
+//              "usedScene": {
+//                "when": "inuse",
+//                "abilities": [
+//                  "HomeAbility"
+//                ]
+//              }
+//            }
     ]
   }
 }

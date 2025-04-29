@@ -147,7 +147,7 @@ struct meowDownloadsButton {
           max_lines: 4,
         }) // File name
 
-        Column({ space: 10 }) {
+        Row({ space: 10 }) {
           linysText({
             text: this.my_link,
             max_lines: 2,
@@ -158,17 +158,18 @@ struct meowDownloadsButton {
               this.copied = animation_popup_duration();
             })
             .opacity(0.85)
+            .layoutWeight(1)
 
-          linysText({
+          linysTitleText({
             text: $r('app.string.Downloads_copied'),
           })// Copied!
-            .offset({ y: this.copied > 0 ? 0 : -50 })
+            .offset({ x: this.copied > 0 ? 0 : 50 })
             .opacity(0.85)
-            .visibility(this.copied > 0 ? Visibility.Visible : Visibility.None)
+            .visibility(this.copied > 0 ? Visibility.Visible : Visibility.Hidden)
             .animation(animation_default())
         }
         .visibility(!this.showing_additional_info ? Visibility.Visible : Visibility.None)
-        .alignItems(HorizontalAlign.Start)
+        // .alignItems(HorizontalAlign.Start)
         .animation(animation_default())
 
         additionalInfoDisplay({
