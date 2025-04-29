@@ -3,6 +3,7 @@ import { ensure_scheme_or_set_scheme } from '../utils/url_tools';
 
 export class bunch_of_bookmarks {
   root: folder;
+  last_accessed: number = 0;
   private cached_plain_bookmarks: string[][] | undefined = undefined;
 
   /**
@@ -51,6 +52,7 @@ export class bunch_of_bookmarks {
       }
       // Update plain_bookmarks
       this.reconstruct_cached_plain_bookmarks();
+      this.last_accessed = Date.now();
       return add_result;
     }
   }
@@ -85,6 +87,7 @@ export class bunch_of_bookmarks {
     }
     // Update plain_bookmarks
     this.reconstruct_cached_plain_bookmarks();
+    this.last_accessed = Date.now();
     return add_result;
   }
 
@@ -131,6 +134,14 @@ export class bunch_of_bookmarks {
     // Will recursively open folders and sub folders, until the path is chopped down to a single level.
     // Then just pick the folder requested.
 
+    if (path == '/') {
+      return undefined;
+    }
+
+    if (path == '') {
+      return this.root;
+    }
+
     if (base_folder === undefined) {
       base_folder = this.root;
       // use root as default;
@@ -171,6 +182,7 @@ export class bunch_of_bookmarks {
 
     // Update plain_bookmarks
     this.reconstruct_cached_plain_bookmarks();
+    this.last_accessed = Date.now();
     return delete_result;
   }
 
@@ -183,6 +195,7 @@ export class bunch_of_bookmarks {
 
     // Update plain_bookmarks
     this.reconstruct_cached_plain_bookmarks();
+    this.last_accessed = Date.now();
     return delete_result;
   }
 
@@ -226,7 +239,7 @@ export class bunch_of_bookmarks {
       target_folder.add_content(new unified_item(item_bookmark, undefined));
       this.del_bookmark(bookmark_path);
     }
-
+    this.last_accessed = Date.now();
     return 0;
   }
 
@@ -276,7 +289,7 @@ export class bunch_of_bookmarks {
       target_folder.add_content(new unified_item(undefined, item_folder));
       this.del_folder(folder_path);
     }
-
+    this.last_accessed = Date.now();
     return 0;
   }
 
@@ -403,6 +416,7 @@ export class bunch_of_bookmarks {
     this.reconstruct_cached_plain_bookmarks();
 
     if (final_add_result) {
+      this.last_accessed = Date.now();
       return 0; // 0 for a successful import
     } else {
       return 3; // 3 for add_folder errors
@@ -713,6 +727,21 @@ export class folder {
   }
 
   /**
+   * Returns The bookmarks, excluding folders, of this folder.
+   * @returns A bookmark[] array.
+   * */
+  get_only_bookmarks_content() {
+    let result_bookmarks: bookmark[] = [];
+    for (let index = 0; index < this.contents.length; index++) {
+      let this_item = this.contents[index].get_item();
+      if (this_item.get_type() == 'bookmark') {
+        result_bookmarks.push(this_item as bookmark);
+      }
+    }
+    return result_bookmarks;
+  }
+
+  /**
    * Get plain information of all bookmarks in this folder and sub folders.
    * @returns A string[][] array consists of labels and links.
    * @example [['bing','www.bing.com'],['google','www.google.com']]
@@ -736,11 +765,11 @@ export class folder {
     return result;
   }
 
-/**
- * Encode this folder into HTML style text.
- * @param number_of_spaces The number of spaces in the front the line (forming an indent).
- * @returns The encoded HTML style text of this folder, containing its sub folders.
- * */
+  /**
+   * Encode this folder into HTML style text.
+   * @param number_of_spaces The number of spaces in the front the line (forming an indent).
+   * @returns The encoded HTML style text of this folder, containing its sub folders.
+   * */
   get_contents_in_html(number_of_spaces: number) {
     let spaces: number = number_of_spaces;
     let type: string = "";

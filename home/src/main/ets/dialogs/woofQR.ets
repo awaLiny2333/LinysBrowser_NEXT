@@ -11,7 +11,6 @@ struct woofQR {
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
-
   build() {
     Scroll() {
       Column({ space: 10 }) {

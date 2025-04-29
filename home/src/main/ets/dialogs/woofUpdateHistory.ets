@@ -11,10 +11,10 @@ struct woofUpdateHistory {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @State texts: string[] = [
     'v1.7.5-beta',
-    '一个神奇的更新，将自定义主页背景带入冲浪喵～\n' +
-      '并且尝试修复神秘的崩溃关键问题，请务必安装此更新！',
-    'A magical (?) update, bringing custom homepage background into BrowserCat!\n' +
-      'AND, tried to fix weird crashing problems, PLEASE INSTALL THIS UPDATE!',
+    '一个神奇的更新，将自定义主页背景、快捷链接带入冲浪喵～\n' +
+      '并且尝试修复神秘的崩溃等大量隐藏／关键问题，请务必安装此更新！',
+    'A magical (?) update, bringing custom homepage background and shortcuts into BrowserCat!\n' +
+      'AND, tried to fix plenty of hidden / critical problems like weird crashing on startup, PLEASE INSTALL THIS UPDATE!',
 
     'v1.7.4-beta',
     '一个主要更新，将键盘快捷键、页面内搜索、JS 管理和无图模式带入冲浪喵～\n' +

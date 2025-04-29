@@ -120,7 +120,7 @@ struct meowTitleBar {
   })
   woofAdsBlocker_control: CustomDialogController = new CustomDialogController({
     builder: woofAdsBlocker({
-      add_exception_domain_edit: match_domain(this.search_input),
+      add_exception_domain_edit: match_domain(this.search_input)[1],
       showing_add_panel: true
     }),
     showInSubWindow: true,
@@ -140,7 +140,7 @@ struct meowTitleBar {
       general_switch: this.disable_js,
       general_sites_list: this.disable_js_these_sites,
       general_on_all_sites_switch: this.disable_js_all_sites,
-      add_site_edit: match_domain(this.search_input),
+      add_site_edit: match_domain(this.search_input)[1],
       showing_add_panel: true
     }),
     alignment: DialogAlignment.Center,
@@ -153,7 +153,7 @@ struct meowTitleBar {
       general_switch: this.disable_image,
       general_sites_list: this.disable_image_these_sites,
       general_on_all_sites_switch: this.disable_image_all_sites,
-      add_site_edit: match_domain(this.search_input),
+      add_site_edit: match_domain(this.search_input)[1],
       showing_add_panel: true,
       general_descriptions: [
         $r('app.string.Settings_image_desc_1'),

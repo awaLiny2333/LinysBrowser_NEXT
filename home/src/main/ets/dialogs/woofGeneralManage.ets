@@ -391,7 +391,7 @@ struct woofGeneralManage {
       return false;
     }
     // Disable on some sites
-    if (address && this.general_sites_list.includes(match_domain(address))) {
+    if (address && this.general_sites_list.includes(match_domain(address)[1])) {
       return false;
     }
     return true;

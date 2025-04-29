@@ -229,6 +229,14 @@
       "value": "Homepage Shortcuts"
     },
     {
+      "name": "Settings_homepage",
+      "value": "The Cat's Homepage (meow://home)"
+    },
+    {
+      "name": "Settings_homepage_customization",
+      "value": "Manage Customization"
+    },
+    {
       "name": "Settings_homepage_shortcuts_manage",
       "value": "Manage Shortcuts"
     },
@@ -237,8 +245,12 @@
       "value": "Clicking the blank area on Homepage could also bring you here!"
     },
     {
-      "name": "Settings_homepage_shortcuts_add_here",
-      "value": "Add your shortcuts here!"
+      "name": "Homepage_shortcuts_desc",
+      "value": "Select a folder of bookmarks, then it will appear on the Homepage! Unless you have replaced the default homepage with another..."
+    },
+    {
+      "name": "Settings_homepage_shortcuts_select_dir",
+      "value": "Select a folder directory"
     },
     {
       "name": "Settings_single_hand_preference",
@@ -318,7 +330,7 @@
     },
     {
       "name": "Settings_experience_web_force_dark_mode",
-      "value": "Force websites to be in dark mode"
+      "value": "Force websites to be darkened when dark mode is enabled"
     },
     {
       "name": "Settings_experience_use_adblock",
@@ -442,11 +454,11 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "Tried to fix bug of weird crashing on launch\nCustomizable homepage background image!"
+      "value": "Cookies panel now shows the correct domain scheme of url\nSettings around the page are now collected into a single option entry: Experience - The Cat's Homepage (meow://home)\nCustomizable homepage background image...\nAnd shortcuts!"
     },
     {
       "name": "Whats_new_content_extra",
-      "value": "Perhaps also some bugfix? Liny the lazy didn't put them here, maybe...\n (～o￣3￣)～"
+      "value": "Perhaps also some bugfix? Liny the lazy kitty didn't put them here, maybe...\n (～o￣3￣)～"
     },
     {
       "name": "Credits",
@@ -702,7 +714,7 @@
     },
     {
       "name": "Homepage_background_desc",
-      "value": "Images of a wrong size would be wrongly displayed~ Contents at center position would be prioritized in showcase!"
+      "value": "Images of a mismatching size would be wrongly displayed~ Contents at center position would be prioritized in showcase!"
     },
     {
       "name": "Homepage_background_select",

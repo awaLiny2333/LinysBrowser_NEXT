@@ -229,6 +229,14 @@
       "value": "主页快捷链接"
     },
     {
+      "name": "Settings_homepage",
+      "value": "猫的默认主页（meow://home）"
+    },
+    {
+      "name": "Settings_homepage_customization",
+      "value": "管理个性化"
+    },
+    {
       "name": "Settings_homepage_shortcuts_manage",
       "value": "管理链接"
     },
@@ -237,8 +245,12 @@
       "value": "点击首页上的空白区域也能把你带到这里来！"
     },
     {
-      "name": "Settings_homepage_shortcuts_add_here",
-      "value": "在这里添加！"
+      "name": "Homepage_shortcuts_desc",
+      "value": "选择一个书签文件夹，然后它就会出现在首页！如果你没有把默认首页换掉的话……"
+    },
+    {
+      "name": "Settings_homepage_shortcuts_select_dir",
+      "value": "选择书签文件夹路径"
     },
     {
       "name": "Settings_single_hand_preference",
@@ -318,7 +330,7 @@
     },
     {
       "name": "Settings_experience_web_force_dark_mode",
-      "value": "强制（无适配的）网站使用深色模式"
+      "value": "深色模式开启时，强制（无适配的）网站使用深色模式"
     },
     {
       "name": "Settings_experience_use_adblock",
@@ -442,11 +454,11 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "尝试修复诡异的打开崩溃问题 :O\n自定义首页背景图片！"
+      "value": "Cookies 管理面板能够显示正确的域名协议了 :O\n散落各地的首页设置被整合进了一个入口：体验 - 猫的默认主页（meow://home）\n自定义首页背景图片……\n和快捷链接！"
     },
     {
       "name": "Whats_new_content_extra",
-      "value": "也许还修复了一些问题？懒惰的 Liny 估计没有写上来……\n (～o￣3￣)～"
+      "value": "也许还修复了一些问题？Liny 这只懒猫估计没有写上来……\n (～o￣3￣)～"
     },
     {
       "name": "Credits",

@@ -41,8 +41,7 @@ import woofGeneralManage from '../dialogs/woofGeneralManage';
 import woofKeyShortcuts from '../dialogs/woofKeyShortcuts';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 import { bunch_of_homepage_shortcuts } from '../hosts/bunch_of_homepage_shortcuts';
-import woofHomepageManager from '../dialogs/woofShortcutsManager';
-import meowHomepageBackgroundManager from './meowHomepageBackgroundManager';
+import woofHomepageManager from '../dialogs/woofHomepageManager';
 
 @Component
 struct meowAppSettings {
@@ -206,8 +205,8 @@ struct meowAppSettings {
     builder: woofHomepageManager(),
     alignment: DialogAlignment.Center,
     cornerRadius: 22,
-    showInSubWindow: true,
-    width: "90%",
+    // showInSubWindow: true,
+    // width: "90%",
   });
   waterFlow_control: Scroller = new Scroller();
   // Else
@@ -335,7 +334,7 @@ struct meowAppSettings {
             Column({ space: 15 }) {
               linysTitleText({ text: $r('app.string.Settings_Experience') })
 
-              linysText({ text: $r('app.string.Settings_single_hand_preference') })
+              linysText({ text: $r('app.string.Settings_single_hand_preference'), max_lines: 3 })
                 .width("100%")
               SegmentButton({
                 options: this.left_or_right,
@@ -382,8 +381,12 @@ struct meowAppSettings {
               .width("100%")
 
               Row({ space: 10 }) {
-                Blank()
-                linysText({ text: $r('app.string.Settings_experience_manage_adblock') })
+                linysText({
+                  text: $r('app.string.Settings_experience_manage_adblock'),
+                  max_lines: 3,
+                  align_another_side: true
+                })
+                  .layoutWeight(1)
                 linysCapsuleButton({ text: "  󰀠  " })
                   .onClick(() => {
                     this.adsBlocker_control.open();
@@ -405,8 +408,8 @@ struct meowAppSettings {
               .width("100%")
 
               Row({ space: 10 }) {
-                Blank()
-                linysText({ text: $r('app.string.Settings_image_manage') })
+                linysText({ text: $r('app.string.Settings_image_manage'), max_lines: 3, align_another_side: true })
+                  .layoutWeight(1)
                 linysCapsuleButton({ text: "  󰀠  " })
                   .onClick(() => {
                     this.image_manage_control.open();
@@ -417,13 +420,28 @@ struct meowAppSettings {
               linysText({ text: $r('app.string.Key_shortcuts') })
                 .width('100%')
               Row({ space: 10 }) {
-                Blank()
-                linysText({ text: $r('app.string.Key_shortcuts_manage') })
+                linysText({ text: $r('app.string.Key_shortcuts_manage'), max_lines: 3, align_another_side: true })
+                  .layoutWeight(1)
                 linysCapsuleButton({ text: "  󰀠  " })
                   .onClick(() => {
                     this.key_shortcuts_control.open();
                   })
               } // Keyboard shortcuts management
+              .width("100%")
+
+              linysText({ text: $r('app.string.Settings_homepage'), max_lines: 3 }) // Homepage Customization
+              Row({ space: 10 }) {
+                linysText({
+                  text: $r('app.string.Settings_homepage_customization'),
+                  max_lines: 3,
+                  align_another_side: true
+                })
+                  .layoutWeight(1)
+                linysCapsuleButton({ text: "  󰀠  " })
+                  .onClick(() => {
+                    this.homepage_shortcuts_control.open();
+                  })
+              }
               .width("100%")
 
               linysText({ text: $r('app.string.Settings_experience_max_bookmark_advice'), max_lines: 2 })
@@ -463,25 +481,6 @@ struct meowAppSettings {
                 linysText({ text: this.max_history_advice.toString() })
                   .margin({ right: 5 })
               } // Slider and display of max_history_suggestions
-
-              // Homepage Shortcuts
-              linysText({ text: $r('app.string.Settings_homepage_shortcuts') })
-              // meowShortcutsManager()
-              Row({ space: 10 }) {
-                Blank()
-                linysText({ text: $r('app.string.Settings_homepage_shortcuts_manage') })
-                linysCapsuleButton({ text: "  󰀠  " })
-                  .onClick(() => {
-                    this.homepage_shortcuts_control.open();
-                  })
-              }
-              .width("100%")
-              .onAppear(async () => {
-                // Get Data
-                let custom_homepage_shortcut = await this.bunch_of_settings.get('homepage_shortcuts') as string;
-                this.bunch_of_homepage_shortcuts.import_string(custom_homepage_shortcut);
-                console.log("[Meow][meowShortcutsManager] Shortcuts Manager READY");
-              })
 
             }
             .padding(15)
@@ -572,10 +571,6 @@ struct meowAppSettings {
               }
 
               meowColorsManager() // Colors manager
-
-              linysText({ text: $r('app.string.Homepage_background') })
-                .width('100%')
-              meowHomepageBackgroundManager()
             }
             .padding(15)
             .alignItems(HorizontalAlign.Start)
@@ -607,8 +602,12 @@ struct meowAppSettings {
 
               Row({ space: 10 }) {
                 // linysTitleText({ text: "󰏕 " + this.history_length.toString() })
-                Blank()
-                linysText({ text: $r('app.string.Settings_experience_history_view') })
+                linysText({
+                  text: $r('app.string.Settings_experience_history_view'),
+                  max_lines: 3,
+                  align_another_side: true
+                })
+                  .layoutWeight(1)
                 linysCapsuleButton({ text: "  󰀩  " })
                   .onClick(() => {
                     this.woofHistory_control.open();
@@ -741,8 +740,8 @@ struct meowAppSettings {
               .width("100%")
 
               Row({ space: 10 }) {
-                Blank()
-                linysText({ text: $r('app.string.Settings_manage_cookies') })
+                linysText({ text: $r('app.string.Settings_manage_cookies'), max_lines: 3, align_another_side: true })
+                  .layoutWeight(1)
                 linysCapsuleButton({ text: '  󰀩  ' })
                   .onClick(() => {
                     this.cookies_control.open();
@@ -800,7 +799,10 @@ struct meowAppSettings {
                 text: $r('app.string.About_Gitee'),
                 link: "https://gitee.com/awa_Liny/LinysBrowser_NEXT",
               }) // Gitee
-              linysText({ text: "（ฅ＾・ﻌ・＾）ฅ  - " + this.versionName + " - " + this.versionNo }) // Version Info
+              linysText({
+                text: "（ฅ＾・ﻌ・＾）ฅ  - " + this.versionName + " - " + this.versionNo,
+                max_lines: 3
+              }) // Version Info
               meowWhatsNew()
               meowCreditsRepos()
               meowCreditsUsers()
@@ -905,7 +907,7 @@ struct meowAppSettings {
     // Set image for homepage
     if (homepage_background_array_buffer) {
       this.homepage_background = arrayBuffer_to_pixelMap(homepage_background_array_buffer);
-      console.log("[Meow][meowAppSettings] Finished loading homepage background!")
+      console.log("[Meow][meowAppSettings] Finished loading homepage background!");
     }
 
     // Get settings of shortcuts on left or right
@@ -916,6 +918,12 @@ struct meowAppSettings {
     } else {
       this.left_or_right_selected = [1];
     }
+
+    // Get Homepage shortcut directory
+    let homepage_shortcuts_bookmarks_dir =
+      await this.bunch_of_settings.get('homepage_shortcuts_bookmarks_dir') as string;
+    AppStorage.set('homepage_shortcuts_bookmarks_dir', homepage_shortcuts_bookmarks_dir);
+    console.log("[Meow][meowAppSettings] Finished loading homepage shortcuts dir: " + homepage_shortcuts_bookmarks_dir);
   }
 
   on_open_or_close_panel() {

@@ -15,7 +15,7 @@ struct woofCookies {
   // Environment
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageProp('current_url') current_url: string = "=￣ω￣=";
-  @State domain_url: string = 'https://' + match_domain(this.current_url);
+  @State domain_url: string = this.get_domain_url(this.current_url);
   // Interfaces
   @State cookies_site: string[] = this.get_cookies_site();
   @State delete_confirm: number = 0;
@@ -200,6 +200,11 @@ struct woofCookies {
       list = list.slice(0, list.length - 1);
     }
     return list;
+  }
+
+  get_domain_url(url: string) {
+    let match_domain_result = match_domain(url);
+    return match_domain_result[0] + '//' + match_domain_result[1];
   }
 }
 

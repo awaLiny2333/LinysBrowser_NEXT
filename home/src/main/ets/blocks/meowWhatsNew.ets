@@ -41,8 +41,8 @@ struct meowWhatsNew {
       })
         .opacity(0.8)
       Row({ space: 10 }) {
-        Blank()
-        linysText({ text: $r('app.string.Update_record') })
+        linysText({ text: $r('app.string.Update_record') , max_lines: 3, align_another_side: true })
+          .layoutWeight(1)
         linysCapsuleButton({ text: "  󰀩  " })
           .onClick(() => {
             this.update_history.open();

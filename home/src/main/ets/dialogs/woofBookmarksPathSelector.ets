@@ -7,8 +7,8 @@ import { animation_default, click_effect_default, fontSize_Large, fontSize_Norma
 
 @CustomDialog
 struct woofBookmarksPathSelector {
-  controller: CustomDialogController;
   @Link select: string | undefined;
+  @Prop prompt_title: ResourceStr = ':O';
   @State scroll_area_height: number = 0;
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @State viewing_contents: unified_item[] = this.filter_only_folders(this.bunch_of_bookmarks.root.get_content());
@@ -18,6 +18,7 @@ struct woofBookmarksPathSelector {
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  controller: CustomDialogController;
 
   aboutToAppear(): void {
     this.refresh_dir_content();
@@ -25,7 +26,7 @@ struct woofBookmarksPathSelector {
 
   build() {
     Column({ space: 5 }) {
-      linysTitleText({ text: $r('app.string.Bookmarks_move_title') })
+      linysTitleText({ text: this.prompt_title })
         .width("100%")
 
       Scroll() {
@@ -77,7 +78,13 @@ struct woofBookmarksPathSelector {
         linysCapsuleButton({ text: "  󰀓  " })
           .onClick(() => {
             if (this.controller) {
+              // To force refresh
+              // I know this is stupid but it works
+              this.select = Date.now().toString();
+              // Forgive me
+              // TODO: find a better way to refresh shortcuts
               this.select = this.looking_at_path;
+              console.log('[Meow][woofBookmarkPathSelector] Selected Path: \'' + this.select + '\'');
               this.controller.close();
             }
           }) // Submit
@@ -120,6 +127,9 @@ struct woofBookmarksPathSelector {
   }
 
   refresh_dir_content() {
+    if (this.looking_at_path == "/") {
+      this.looking_at_path = '';
+    }
     let got_folder: folder | undefined;
     if (this.looking_at_path == "") {
       got_folder = this.bunch_of_bookmarks.root;

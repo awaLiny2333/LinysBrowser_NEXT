@@ -11,8 +11,8 @@ import { match_domain, url_meow_to_resource, url_resource_to_meow } from '../uti
 import { webview } from '@kit.ArkWeb';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import woofWantDownload from '../dialogs/woofWantDownload';
-import { bunch_of_homepage_shortcuts, homepage_shortcut } from '../hosts/bunch_of_homepage_shortcuts';
-import woofHomepageManager from '../dialogs/woofShortcutsManager';
+import woofHomepageManager from '../dialogs/woofHomepageManager';
+import { bookmark, bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
 
 @Component
 struct meowWebView {
@@ -24,9 +24,9 @@ struct meowWebView {
   @StorageLink('restore_web_state_arrays') restore_web_state_arrays: Uint8Array[] = [];
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
+  @StorageLink('bunch_of_bookmarks') @Watch('refresh_homepage_shortcuts') bunch_of_bookmarks: bunch_of_bookmarks =
+    new bunch_of_bookmarks('Bookmarks~Meow');
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
-  @StorageLink('bunch_of_homepage_shortcuts') bunch_of_homepage_shortcuts: bunch_of_homepage_shortcuts =
-    new bunch_of_homepage_shortcuts();
   @StorageLink('current_main_tab_index') @Watch('on_tab_info_change') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') @Watch('on_tab_info_change') current_sub_tab_index: number = -1;
   @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
@@ -52,6 +52,8 @@ struct meowWebView {
   @StorageProp('collect_new_history') collect_new_history: boolean = true;
   @StorageProp('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
   @StorageLink('use_adblock') @Watch('on_use_adblock_state_change') use_adblock: boolean = true;
+  @StorageLink('homepage_shortcuts_bookmarks_dir') @Watch('refresh_homepage_shortcuts') homepage_shortcuts_dir: string =
+    '/';
   // @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
   @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
   @StorageLink('disable_js') disable_js: boolean = false;
@@ -73,6 +75,7 @@ struct meowWebView {
   @State shortcut_scroll_offset: number = 0;
   @State shortcut_scroll_total_height: number = 100;
   shortcut_scroller: Scroller = new Scroller();
+  @State homepage_shortcuts: bookmark[] = [];
   // dialogs
   woofWantDownload_control: CustomDialogController = new CustomDialogController({
     builder: woofWantDownload({
@@ -84,12 +87,11 @@ struct meowWebView {
     alignment: DialogAlignment.Center,
     cornerRadius: 16
   })
-  homepage_shortcuts_control: CustomDialogController = new CustomDialogController({
+  woofHomepageManager_control: CustomDialogController = new CustomDialogController({
     builder: woofHomepageManager(),
     alignment: DialogAlignment.Center,
     cornerRadius: 22,
-    showInSubWindow: true,
-    width: "90%",
+    // showInSubWindow: true,
   });
   // Colors
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -148,7 +150,7 @@ struct meowWebView {
           .visibility(this.current_url == 'meow://home' ? Visibility.Visible :
           Visibility.Hidden)// .animation(animation_default())
           .transition(TransitionEffect.OPACITY.animation({ duration: 1000 }))
-          .opacity(Math.max(1 - this.shortcut_scroll_offset * 1.2 / this.screen_height, 0.3))
+          .opacity(Math.max(1 - this.shortcut_scroll_offset * 1.2 / this.screen_height, 0.5))
           .brightness(Math.max(Math.min(1 - this.shortcut_scroll_offset / this.screen_height, 1), 0.6))
       } // Background
 
@@ -393,14 +395,12 @@ struct meowWebView {
 
       Scroll(this.shortcut_scroller) {
         Column({ space: 10 }) {
-          ForEach(
-            this.bunch_of_homepage_shortcuts.list_of_homepage_shortcuts,
-            (shortcut: homepage_shortcut, key: number) => {
-              shortcutButton({
-                shortcut: shortcut,
-                my_index: key,
-              })
+          ForEach(this.homepage_shortcuts, (shortcut: bookmark, key: number) => {
+            shortcutButton({
+              bookmark: shortcut,
+              my_index: key,
             })
+          })
         }
         .onAreaChange((_o, n) => {
           this.shortcut_scroll_total_height = n.height as number;
@@ -422,7 +422,7 @@ struct meowWebView {
         this.shortcut_scroll_offset = this.shortcut_scroller.currentOffset().yOffset;
       })
       .onClick(() => {
-        this.homepage_shortcuts_control.open();
+        this.woofHomepageManager_control.open();
       })
     }
     .width("100%")
@@ -481,6 +481,23 @@ struct meowWebView {
     console.log('[Meow][meowWebView] enableAdsBlock: ' + (this.use_adblock ? 'true' : 'false'))
     for (let index = 0; index < this.bunch_of_tabs.Tabs.length; index++) {
       this.bunch_of_tabs.Tabs[index].controller.enableAdsBlock(this.use_adblock);
+    }
+  }
+
+  refresh_homepage_shortcuts() {
+    let result =
+      this.bunch_of_bookmarks.get_folder(this.homepage_shortcuts_dir)?.get_only_bookmarks_content();
+    if (result) {
+      this.homepage_shortcuts = result;
+      console.log('[Meow][meowWebView] Refresh homepage shortcuts!')
+      this.bunch_of_settings.set('homepage_shortcuts_bookmarks_dir', this.homepage_shortcuts_dir);
+    } else {
+      // directory doesn't exist
+      this.homepage_shortcuts = [];
+      if (this.homepage_shortcuts_dir != '/') {
+        this.homepage_shortcuts_dir = '';
+      }
+      console.log('[Meow][meowWebView] Directory selected for shortcuts doesn\'t exist!')
     }
   }
 
@@ -550,7 +567,7 @@ struct meowWebView {
       return false;
     }
     // Disable on some sites
-    if (this.tab_urls[index] && this.disable_js_these_sites.includes(match_domain(this.tab_urls[index]))) {
+    if (this.tab_urls[index] && this.disable_js_these_sites.includes(match_domain(this.tab_urls[index])[1])) {
       return false;
     }
     return true;
@@ -566,7 +583,7 @@ struct meowWebView {
       return false;
     }
     // Disable on some sites
-    if (this.tab_urls[index] && this.disable_image_these_sites.includes(match_domain(this.tab_urls[index]))) {
+    if (this.tab_urls[index] && this.disable_image_these_sites.includes(match_domain(this.tab_urls[index])[1])) {
       return false;
     }
     return true;
@@ -593,11 +610,10 @@ export default meowWebView;
 @Component
 struct shortcutButton {
   @Prop my_index: number;
-  @Prop shortcut: homepage_shortcut;
+  @Prop bookmark: bookmark;
   // Environment
   @StorageLink('current_url') current_url: string = "=￣ω￣=";
-  @StorageLink('bunch_of_homepage_shortcuts') bunch_of_homepage_shortcuts: bunch_of_homepage_shortcuts =
-    new bunch_of_homepage_shortcuts();
+  @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks('Bookmarks~Meow');
   // Gateways
   @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
   // Colors
@@ -609,7 +625,7 @@ struct shortcutButton {
   @State offset_y: number = 50;
 
   build() {
-    Button("→ " + this.shortcut.label)// Shortcut "󰄏"
+    Button(this.bookmark.get_label())// Shortcut "󰄏"
       .type(ButtonType.Capsule)
       .backgroundColor(this.color_current_secondary)
       .fontColor(this.color_current_font)
@@ -622,8 +638,8 @@ struct shortcutButton {
       .height(capsule_bar_height())
       .onClick(() => {
         setTimeout(() => {
-          this.new_tab_gateway = this.shortcut.url;
-          this.current_url = this.shortcut.url;
+          this.new_tab_gateway = this.bookmark.get_link();
+          this.current_url = this.bookmark.get_link();
         }, 100)
       })
       .visibility(this.show)
@@ -641,14 +657,13 @@ struct shortcutButton {
 
   get_animation_timeout() {
     let unit_interval = 40;
-    let load_length = this.bunch_of_homepage_shortcuts.list_of_homepage_shortcuts.length;
-    if (load_length < 5) {
-      unit_interval = 100;
-    } else if (load_length < 10) {
-      unit_interval = 70;
+    if (this.my_index < 5) {
+      unit_interval = 80;
+    } else if (this.my_index < 10) {
+      unit_interval = 60;
     } else {
       unit_interval = 40;
     }
-    return this.my_index * unit_interval;
+    return this.my_index * unit_interval + 100;
   }
 }

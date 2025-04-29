@@ -128,6 +128,7 @@ struct woofHistory {
           .reverse(true)
           .width("100%")
         } // Main history list
+        .padding({ bottom: 5 })
         .scrollable(ScrollDirection.Vertical)
         .edgeEffect(EdgeEffect.Spring)
         .onAreaChange((_o, n) => {
@@ -228,7 +229,6 @@ struct woofHistory {
       .alignRules(this.alignRules_foot)
       .animation(animation_default())
       .width(this.tablet_mode ? "35%" : "100%")
-
     }
     .padding(15)
     .width("100%")

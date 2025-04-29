@@ -13,7 +13,7 @@ import {
 import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 import linysShowButton from '../components/linysShowButton';
 import linysCapsuleButton from '../components/linysCapsuleButton';
-import woofBookmarksPathSelector from '../dialogs/woofBookmarksMove';
+import woofBookmarksPathSelector from '../dialogs/woofBookmarksPathSelector';
 import linysPathDisplay from '../components/linysPathDisplay';
 
 @Component
@@ -440,6 +440,7 @@ struct bookmarkItem {
   @StorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
   woofBookmarksPathSelector_control: CustomDialogController = new CustomDialogController({
     builder: woofBookmarksPathSelector({
+      prompt_title: $r('app.string.Bookmarks_move_title'),
       select: this.select_path_result,
       looking_at_path: this.looking_at_path
     }),

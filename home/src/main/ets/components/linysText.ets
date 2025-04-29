@@ -9,13 +9,15 @@ struct linysText {
   @Prop color: ResourceColor = "";
   @Prop max_lines: number = 1;
   @Prop font_weight: FontWeight = FontWeight.Normal;
+  @Prop align_another_side: boolean = false;
 
   build() {
     Text(this.text)
       .fontColor(this.color == "" ? this.color_current_font : this.color)
       .fontSize(fontSize_Normal())
       .fontWeight(this.font_weight)
-      .textAlign(TextAlign.Start)
+      .width(this.align_another_side ? '100%' : undefined)
+      .textAlign(this.align_another_side ? TextAlign.End : TextAlign.Start)
       .maxLines(this.max_lines)
       .lineSpacing(LengthMetrics.vp(4))
       .textOverflow({ overflow: TextOverflow.Ellipsis })

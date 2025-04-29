@@ -231,14 +231,23 @@ export function url_meow_to_resource(input: string) {
   return result;
 }
 
+/**
+ * Analyze an url and divides it into scheme and domain.
+ *
+ * If the input comes with no scheme then 'nope' is returned in scheme field.
+ * @param input the url
+ * @returns ['scheme', 'domain']
+ * */
 export function match_domain(input: string) {
   if (input.includes("//")) {
     let split_list = input.split("\/");
     if (split_list.length > 2) {
       input = split_list[2];
     }
+    return [split_list[0], input];
+  } else {
+    return ['nope', input]
   }
-  return input;
 }
 
 /**
