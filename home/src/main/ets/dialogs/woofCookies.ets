@@ -204,7 +204,7 @@ struct woofCookies {
 
   get_domain_url(url: string) {
     let match_domain_result = match_domain(url);
-    return match_domain_result[0] + '//' + match_domain_result[1];
+    return match_domain_result[0] + '://' + match_domain_result[1];
   }
 }
 

@@ -1,4 +1,5 @@
 import { default_search_engine } from '../hosts/bunch_of_defaults';
+import { common, Want } from '@kit.AbilityKit';
 
 /**
  * Process the search_input into a visitable address.
@@ -49,21 +50,6 @@ function is_containing_number(input: string) {
   }
 }
 
-function eliminate_protocol_scheme(input: string) {
-  let url = input
-  let scheme: string = ""
-  if (url.includes("://")) {
-    // if input contains protocol scheme
-    let url_split = url.split("/")
-    if ((url_split[0].substring(url_split[0].length - 1) == ":") && (url_split[1] == "")) {
-      // if protocol scheme is at the beginning
-      url = url.split("/").slice(2).join("/")
-      scheme = url_split[0].split(":")[0]
-    }
-  }
-  return [scheme, url];
-}
-
 export function ensure_scheme_or_set_scheme(input: string, scheme?: string) {
   let url = input
   if (url.includes("://")) {
@@ -77,7 +63,7 @@ export function ensure_scheme_or_set_scheme(input: string, scheme?: string) {
   if (scheme) {
     return scheme + "://" + url
   }
-  return "https://" + url
+  return "http://" + url
 }
 
 function is_legal_ipv4(input: string) {
@@ -88,7 +74,7 @@ function is_legal_ipv4(input: string) {
 
   // input = "https://114.114.114.114:32767/somewhat"
 
-  input = eliminate_protocol_scheme(input)[1]
+  input = match_domain(input)[1]
   // input = "114.114.114.114:32767/somewhat"
   input = input.split("/")[0]
   // eliminate slashes
@@ -143,7 +129,7 @@ function is_legal_url(input: string) {
 
   // input = "https://www.google.com/about"
 
-  let scheme_result = eliminate_protocol_scheme(input)
+  let scheme_result = match_domain(input)
   // scheme_result = ["https","www.google.com/about"]
 
   let scheme: string = scheme_result[0]
@@ -234,20 +220,23 @@ export function url_meow_to_resource(input: string) {
 /**
  * Analyze an url and divides it into scheme and domain.
  *
- * If the input comes with no scheme then 'nope' is returned in scheme field.
+ * If the input comes with no scheme then '' is returned in scheme field.
  * @param input the url
  * @returns ['scheme', 'domain']
  * */
 export function match_domain(input: string) {
-  if (input.includes("//")) {
-    let split_list = input.split("\/");
-    if (split_list.length > 2) {
-      input = split_list[2];
+  let url = input
+  let scheme: string = ""
+  if (url.includes("://")) {
+    // if input contains protocol scheme
+    let url_split = url.split("/")
+    if ((url_split[0].substring(url_split[0].length - 1) == ":") && (url_split[1] == "")) {
+      // if protocol scheme is at the beginning
+      url = url.split("/").slice(2).join("/")
+      scheme = url_split[0].split(":")[0]
     }
-    return [split_list[0], input];
-  } else {
-    return ['nope', input]
   }
+  return [scheme, url];
 }
 
 /**
@@ -326,4 +315,19 @@ export function extract_links_from_text(data_list: string[]) {
   }
 
   return [extracted_data, extracted_type]
+}
+
+export function jump_external_link(link: string) {
+  // jump to url received
+  const want: Want = {
+    uri: link
+  };
+  let context = AppStorage.get('context') as common.UIAbilityContext;
+  context.startAbility(want).then(() => {
+    // Pull up success
+    console.log('[Meow][url_tools] Pull up application for link ' + link + ' Success!');
+  }).catch(() => {
+    // Pull up failure
+    console.error('[ERROR][Meow][url_tools] Pull up application for link ' + link + ' Failed!');
+  });
 }

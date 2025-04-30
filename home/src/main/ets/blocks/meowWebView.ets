@@ -13,6 +13,7 @@ import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import woofWantDownload from '../dialogs/woofWantDownload';
 import woofHomepageManager from '../dialogs/woofHomepageManager';
 import { bookmark, bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
+import woofLinkJumper from '../dialogs/woofLinkJumper';
 
 @Component
 struct meowWebView {
@@ -76,6 +77,7 @@ struct meowWebView {
   @State shortcut_scroll_total_height: number = 100;
   shortcut_scroller: Scroller = new Scroller();
   @State homepage_shortcuts: bookmark[] = [];
+  @State potential_jump_link: string = '';
   // dialogs
   woofWantDownload_control: CustomDialogController = new CustomDialogController({
     builder: woofWantDownload({
@@ -83,6 +85,13 @@ struct meowWebView {
       file_name: '',
       url: '',
       try_additional_info: ''
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16
+  })
+  woofLinkJumper_control: CustomDialogController = new CustomDialogController({
+    builder: woofLinkJumper({
+      link: this.potential_jump_link,
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16
@@ -147,11 +156,11 @@ struct meowWebView {
     RelativeContainer() {
       if (this.homepage_background) {
         Image(this.homepage_background)
-          .visibility(this.current_url == 'meow://home' ? Visibility.Visible :
+          .visibility(this.current_url == 'meow://home' && this.current_sub_tab_index == -1 ? Visibility.Visible :
           Visibility.Hidden)// .animation(animation_default())
           .transition(TransitionEffect.OPACITY.animation({ duration: 1000 }))
           .opacity(Math.max(1 - this.shortcut_scroll_offset / this.screen_height, 0.5))
-          // .brightness(Math.max(Math.min(1 - this.shortcut_scroll_offset * 0.5 / this.screen_height, 1), 0.5))
+        // .brightness(Math.max(Math.min(1 - this.shortcut_scroll_offset * 0.5 / this.screen_height, 1), 0.5))
       } // Background
 
       ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
@@ -381,7 +390,19 @@ struct meowWebView {
               }, 0)
             })
             .darkMode(WebDarkMode.Auto)// Dark mode!
-            .forceDarkAccess(this.web_force_dark_mode) // Force dark mode
+            .forceDarkAccess(this.web_force_dark_mode)// Force dark mode
+            .onLoadIntercept((event) => {
+              if (event) {
+                let url: string = event.data.getRequestUrl();
+                let match_domain_result = match_domain(url);
+                if (['http', 'https', 'meow', 'resource'].includes(match_domain_result[0])) {
+                  return;
+                }
+                this.potential_jump_link = url;
+                this.woofLinkJumper_control.open();
+              }
+              return false;
+            })
         }
         .borderColor(this.color_current_secondary)
         .borderWidth(this.border_width_tab(this.current_sub_tab_index == Label.index_key))
@@ -417,7 +438,8 @@ struct meowWebView {
       .align(Alignment.Bottom)
       .edgeEffect(EdgeEffect.Spring)
       .animation(animation_default())
-      .visibility(this.current_url == 'meow://home' ? Visibility.Visible : Visibility.None)
+      .visibility(this.current_url == 'meow://home' && this.current_sub_tab_index == -1 ? Visibility.Visible :
+      Visibility.None)
       .onDidScroll(() => {
         this.shortcut_scroll_offset = this.shortcut_scroller.currentOffset().yOffset;
       })

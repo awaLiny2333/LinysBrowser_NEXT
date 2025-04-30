@@ -725,6 +725,14 @@
       "value": "删除当前图像"
     },
     {
+      "name": "LinkJumper_webpage_asks_for_jump",
+      "value": "网页想要跳转！"
+    },
+    {
+      "name": "LinkJumper_allow_jump",
+      "value": "同意它跳吗？"
+    },
+    {
       "name": "Accessibility_desc_linysProgress",
       "value": "这是一个网页加载进度条，指示当前网页加载的进度。"
     },

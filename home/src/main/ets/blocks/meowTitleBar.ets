@@ -186,9 +186,7 @@ struct meowTitleBar {
       }
 
       meowTabsHorizontal()// Horizontal tabs
-        .visibility(((this.tabs_style_non_tablet_mode == "horizontal" && !this.tablet_mode) ||
-          (this.tabs_style == "horizontal" && this.tablet_mode)) && this.showing_tabs ?
-        Visibility.Visible : Visibility.None)
+        .visibility(this.visibility_of_horizontal_tabs())
         .animation(animation_default())
 
       Row({ space: 10 }) {
@@ -823,6 +821,25 @@ struct meowTitleBar {
 
   visible_when_input_is_a_scheme_less_address() {
     return this.true_when_input_is_a_scheme_less_address() ? Visibility.Visible : Visibility.None;
+  }
+
+  visibility_of_horizontal_tabs() {
+    if (!this.showing_tabs){
+      return Visibility.None;
+    }
+
+    if (this.tablet_mode) {
+      if (this.tabs_style == "horizontal") {
+        return Visibility.Visible;
+      }
+    } else {
+      // Non tablet mode
+      if (this.tabs_style_non_tablet_mode == "horizontal") {
+        return Visibility.Visible;
+      }
+    }
+
+    return Visibility.None
   }
 
   true_when_input_is_a_scheme_less_address() {
