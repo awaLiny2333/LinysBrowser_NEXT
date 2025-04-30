@@ -1202,13 +1202,15 @@ struct menuScrollVertical {
       bottomLeft = 10;
       bottomRight = 10;
     }
+
     if (index + 1 < this.menu_text.length) {
-      if (this.button_Lengths[index] > this.button_Lengths[index + 1]) {
+      if (this.button_Lengths[index] + 10 > this.button_Lengths[index + 1]) {
         bottomLeft = 10;
       }
     }
+
     if (index - 1 >= 0) {
-      if (this.button_Lengths[index] > this.button_Lengths[index - 1]) {
+      if (this.button_Lengths[index] + 10 > this.button_Lengths[index - 1]) {
         topLeft = 10;
       }
     }

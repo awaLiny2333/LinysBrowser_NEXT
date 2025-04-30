@@ -150,8 +150,8 @@ struct meowWebView {
           .visibility(this.current_url == 'meow://home' ? Visibility.Visible :
           Visibility.Hidden)// .animation(animation_default())
           .transition(TransitionEffect.OPACITY.animation({ duration: 1000 }))
-          .opacity(Math.max(1 - this.shortcut_scroll_offset * 1.2 / this.screen_height, 0.5))
-          .brightness(Math.max(Math.min(1 - this.shortcut_scroll_offset / this.screen_height, 1), 0.6))
+          .opacity(Math.max(1 - this.shortcut_scroll_offset / this.screen_height, 0.5))
+          // .brightness(Math.max(Math.min(1 - this.shortcut_scroll_offset * 0.5 / this.screen_height, 1), 0.5))
       } // Background
 
       ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
