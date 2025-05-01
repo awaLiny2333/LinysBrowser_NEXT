@@ -33,6 +33,8 @@ import linysText from '../components/linysText';
 import woofGeneralManage from '../dialogs/woofGeneralManage';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 import { share_link } from '../utils/share_tools';
+import woofUAswitch from '../dialogs/woofUAswitch';
+import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 
 @Component
 struct meowTitleBar {
@@ -42,6 +44,7 @@ struct meowTitleBar {
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts =
     new bunch_of_key_shortcuts(true);
+  @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads();
   // Environments
   @StorageLink('fullscreen_mode') fullscreen_mode: boolean = false;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
@@ -108,6 +111,11 @@ struct meowTitleBar {
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16
+  })
+  woofUAswitch_control: CustomDialogController = new CustomDialogController({
+    builder: woofUAswitch(),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 22
   })
   woofAddSE_control: CustomDialogController = new CustomDialogController({
     builder: woofAddSE({
@@ -517,6 +525,7 @@ struct meowTitleBar {
           .backgroundColor(this.download_started_popup ? this.color_current_font : "transparent")
           .borderRadius(10)
           .clickEffect(click_effect_default())
+          // .visibility(this.bunch_of_downloads.list_of_urls.length > 0 ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
           .onClick(() => {
             if (this.download_started_popup) {
@@ -695,9 +704,15 @@ struct meowTitleBar {
             })
           linysSymbol({
             symbol_glyph_target: 'sys.symbol.ad_circle_slash'
-          })// Enable ads
+          })// Enable ads blocker
             .onClick(() => {
               this.woofAdsBlocker_control.open();
+            })
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.label'
+          })// UA
+            .onClick(() => {
+              this.woofUAswitch_control.open();
             })
           linysSymbol({
             symbol_glyph_target: 'sys.symbol.qrcode'
@@ -824,7 +839,7 @@ struct meowTitleBar {
   }
 
   visibility_of_horizontal_tabs() {
-    if (!this.showing_tabs){
+    if (!this.showing_tabs) {
       return Visibility.None;
     }
 

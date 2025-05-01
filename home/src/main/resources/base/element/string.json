@@ -221,6 +221,10 @@
       "value": "Animation elasticity"
     },
     {
+      "name": "Settings_appearance_animation_reset",
+      "value": "Reset animation"
+    },
+    {
       "name": "Settings_general_custom_search_engine",
       "value": "Search engine"
     },
@@ -538,7 +542,7 @@
     },
     {
       "name": "Color_reset",
-      "value": "Reset colors to default"
+      "value": "Reset colors"
     },
     {
       "name": "Settings_storage_clear_webview",
@@ -638,7 +642,7 @@
     },
     {
       "name": "Settings_image_disable_image",
-      "value": "Disable web images"
+      "value": "Web images manager"
     },
     {
       "name": "Settings_image_manage",
@@ -678,7 +682,7 @@
     },
     {
       "name": "Key_shortcuts_modify",
-      "value": "Change combination"
+      "value": "Edit combination"
     },
     {
       "name": "Key_shortcuts_new_tab",

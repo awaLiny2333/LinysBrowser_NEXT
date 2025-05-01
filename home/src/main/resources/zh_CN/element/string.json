@@ -221,6 +221,10 @@
       "value": "动画弹力"
     },
     {
+      "name": "Settings_appearance_animation_reset",
+      "value": "恢复默认动画设置"
+    },
+    {
       "name": "Settings_general_custom_search_engine",
       "value": "搜索引擎"
     },

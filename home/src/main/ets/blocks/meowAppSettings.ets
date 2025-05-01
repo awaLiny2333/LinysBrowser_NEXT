@@ -42,6 +42,7 @@ import woofKeyShortcuts from '../dialogs/woofKeyShortcuts';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 import { bunch_of_homepage_shortcuts } from '../hosts/bunch_of_homepage_shortcuts';
 import woofHomepageManager from '../dialogs/woofHomepageManager';
+import meowAnimationManager from './meowAnimationManager';
 
 @Component
 struct meowAppSettings {
@@ -69,8 +70,6 @@ struct meowAppSettings {
   // Generals
   @StorageProp('screen_width') screen_width: number = 0;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
-  @StorageLink('animation_response') animation_response: number = 0;
-  @StorageLink('animation_damping_coefficient') animation_damping_coefficient: number = 0;
   // Information
   @State versionName: string = "Version Name";
   @State versionNo: number = 0;
@@ -103,7 +102,7 @@ struct meowAppSettings {
     selectedFontColor: this.color_current_primary
   })
   @State left_or_right: SegmentButtonOptions = SegmentButtonOptions.tab({
-    buttons: [{ text: '←' }, { text: '→' }] as ItemRestriction<SegmentButtonTextItem>,
+    buttons: [{ text: '󰃊' }, { text: '󰈱' }] as ItemRestriction<SegmentButtonTextItem>,
     selectedBackgroundColor: this.color_current_font,
     selectedFontColor: this.color_current_primary
   })
@@ -521,56 +520,7 @@ struct meowAppSettings {
                 selectedIndexes: $tabs_style_selected_non_tablet_mode
               })
 
-              linysText({
-                text: $r('app.string.Settings_appearance_animation_response')
-              }) // Slider and display of animation_response
-              Row({ space: 5 }) {
-                Slider({
-                  min: 1,
-                  max: 100,
-                  value: this.animation_response,
-                  style: SliderStyle.InSet,
-                })
-                  .layoutWeight(1)
-                  .blockColor(this.color_current_primary)
-                  .selectedColor(this.color_current_font)
-                  .onChange((value) => {
-                    this.animation_response = value;
-                  })
-                  .onTouch(e => {
-                    if (e.type == TouchType.Up) {
-                      this.bunch_of_settings.set('animation_response', this.animation_response);
-                    }
-                  })
-                linysText({ text: (this.animation_response / 100).toFixed(2) })
-                  .margin({ right: 5 })
-              }
-
-              linysText({
-                text: $r('app.string.Settings_appearance_animation_damping_coefficient')
-              }) // Slider and display of animation damping coefficient
-              Row({ space: 5 }) {
-                Slider({
-                  min: 0,
-                  max: 75,
-                  value: this.animation_damping_coefficient,
-                  style: SliderStyle.InSet,
-                })
-                  .layoutWeight(1)
-                  .blockColor(this.color_current_primary)
-                  .selectedColor(this.color_current_font)
-                  .onChange((value) => {
-                    this.animation_damping_coefficient = value;
-                  })
-                  .onTouch(e => {
-                    if (e.type == TouchType.Up) {
-                      this.bunch_of_settings.set('animation_damping_coefficient',
-                        this.animation_damping_coefficient);
-                    }
-                  })
-                linysText({ text: (this.animation_damping_coefficient / 100).toFixed(2) })
-                  .margin({ right: 5 })
-              }
+              meowAnimationManager() // Animation manager
 
               meowColorsManager() // Colors manager
             }

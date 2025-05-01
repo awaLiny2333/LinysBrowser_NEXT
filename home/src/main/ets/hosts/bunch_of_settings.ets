@@ -171,8 +171,16 @@ export class bunch_of_settings {
   reset(key: string) {
     let index = this.settings_defaults_key.indexOf(key)
     let def_value = this.settings_defaults_value[index]
+    let type = this.settings_defaults_type[index];
     if (index >= 0) {
-      this.set(key, def_value);
+      if (type == 'string') {
+        this.set(key, def_value);
+      } else if (type == 'boolean') {
+        this.set(key, this.string_to_boolean(def_value));
+      } else {
+        // is number
+        this.set(key, Number.parseFloat(def_value));
+      }
     }
   }
 

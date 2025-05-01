@@ -192,6 +192,7 @@ struct meowSEButton {
               .fontSize(fontSize_Large())
               .fontColor([this.color_current_secondary])
           } // Edit Icon
+          .scrollBar(BarState.Off)
           .scrollable(ScrollDirection.Horizontal)
           .width(this.press_timing_ok ? 22 : 0)
           .margin({ left: this.press_timing_ok ? 10 : 0 })

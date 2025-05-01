@@ -79,7 +79,7 @@ struct meowColorsManager{
           text: $r("app.string.Color_reset")
         })
         Blank()
-        Button('  󰃈  ')// Delete
+        Button('  󰃈  ')// Reset
           .type(ButtonType.Capsule)
           .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
           this.color_current_font)

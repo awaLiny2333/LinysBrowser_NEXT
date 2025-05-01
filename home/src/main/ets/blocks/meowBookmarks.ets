@@ -479,6 +479,7 @@ struct bookmarkItem {
             .fontColor([this.color_current_secondary])
         } // Edit Icon
         .scrollable(ScrollDirection.Horizontal)
+        .scrollBar(BarState.Off)
         .width(this.press_timing_ok ? 22 : 0)
         .margin({ left: this.press_timing_ok ? 10 : 0 })
         .animation(animation_default())
