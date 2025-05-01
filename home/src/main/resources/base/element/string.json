@@ -474,7 +474,7 @@
     },
     {
       "name": "Credits_devs_and_users",
-      "value": "sseaan (#2 Horizontal Tabs & Custom UA)\nSolidFaker (#3 Unintentional color)\nlsxuan12138 (#6 Moving bookmarks)\nxymeng16 (#8 System back; #11 More search engines)\nLuxcis (#12 Auto collapse tabs)\n000wbh000 (#22 Web dark mode; #28 Keyboard shortcuts; #29 File save failed)\nLiuyexin (#29 File save failed)\nvincenthsing (#33 Failure in recognizing IPv4 addresses with ports)\nxxbhpan (#38 #39 #40 Weird crashing Bug, Custom homepage backdrop, Security access for History&Bookmarks and Plenty of other suggestions！)~"
+      "value": "sseaan (#2 Horizontal Tabs & Custom UA)\nSolidFaker (#3 Unintentional color)\nlsxuan12138 (#6 Moving bookmarks)\nxymeng16 (#8 System back; #11 More search engines)\nLuxcis (#12 Auto collapse tabs)\n000wbh000 (#22 Web dark mode; #28 Keyboard shortcuts; #29 File save failed)\nLiuyexin (#29 File save failed)\nvincenthsing (#33 Failure in recognizing IPv4 addresses with ports)\nxxbhpan (#38 #39 #40 #41 Weird crashing Bug, Custom homepage backdrop, Security access for History&Bookmarks and Plenty of other suggestions！)~"
     },
     {
       "name": "Credits_extra",
@@ -546,7 +546,7 @@
     },
     {
       "name": "Settings_storage_clear_webview_desc",
-      "value": "The statistics shown below may (is usually) not up to date. A manual refresh by clicking \uDB80\uDCC8 may be essential if you wish a accurate figure."
+      "value": "The statistics shown below may be (usually) not up to date. A manual refresh by clicking \uDB80\uDCC8 may be essential if you wish a accurate figure."
     },
     {
       "name": "Address_analyzer_address",
@@ -562,7 +562,7 @@
     },
     {
       "name": "AddSE_search_again_on",
-      "value": "Search again on..."
+      "value": "Search on another engine..."
     },
     {
       "name": "intelligent_tracking_prevention",

@@ -65,7 +65,6 @@ struct meowWebView {
   @StorageLink('disable_image_all_sites') disable_image_all_sites: boolean = true;
   @StorageLink('homepage_shortcuts_left_or_right') homepage_shortcuts_left_or_right: string = 'right';
   // Stuffs
-  @State initialization_ok: boolean = false;
   @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
   @StorageLink('universal_new_download_filename_gateway') new_download_filename_gateway: string = "";
@@ -148,8 +147,6 @@ struct meowWebView {
     }
     // Sync to AppStorage
     AppStorage.set('adblock_exceptions', this.adsBlocker_exceptions);
-
-    this.initialization_ok = true;
   }
 
   build() {

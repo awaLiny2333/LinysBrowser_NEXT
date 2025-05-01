@@ -1,5 +1,5 @@
 import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
-import { preset_search_engines, default_user_agents } from './bunch_of_defaults';
+import { default_user_agents, preset_search_engines } from './bunch_of_defaults';
 
 export class bunch_of_settings {
   settings_list: settings_item[] = [];
@@ -132,6 +132,11 @@ export class bunch_of_settings {
    * @returns false if fails, perhaps due to an unregistered setting key.
    * */
   set(key: string, value: string | boolean | number) {
+    if (!(AppStorage.get('settings_init_retrieved') as boolean)) {
+      // If settings not init
+      return;
+    }
+
     let key_default_index = this.settings_defaults_key.indexOf(key);
     if (key_default_index == -1) {
       // unregistered setting

@@ -212,6 +212,8 @@ struct meowAppSettings {
   // Else
   @State clear_web_cache_confirm: number = 0;
   @State web_cache_size: number = 0;
+  // Status
+  @StorageLink('settings_init_retrieved') settings_init_retrieved: boolean = false;
 
   build() {
     Row() {
@@ -924,6 +926,8 @@ struct meowAppSettings {
       await this.bunch_of_settings.get('homepage_shortcuts_bookmarks_dir') as string;
     AppStorage.set('homepage_shortcuts_bookmarks_dir', homepage_shortcuts_bookmarks_dir);
     console.log("[Meow][meowAppSettings] Finished loading homepage shortcuts dir: " + homepage_shortcuts_bookmarks_dir);
+
+    this.settings_init_retrieved = true;
   }
 
   on_open_or_close_panel() {
