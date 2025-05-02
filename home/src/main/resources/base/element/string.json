@@ -458,7 +458,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "Cookies panel now shows the correct domain scheme of url\nSettings around the page are now collected into a single option entry: Experience - The Cat's Homepage (meow://home)\nCustomizable homepage background image...\nAnd shortcuts!"
+      "value": "Tried to solve download save failure bug;\nNow dragging contents into anywhere else of the web area would activate Scratching Board!"
     },
     {
       "name": "Whats_new_content_extra",

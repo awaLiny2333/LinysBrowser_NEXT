@@ -458,7 +458,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "Cookies 管理面板能够显示正确的域名协议了 :O\n散落各地的主页设置被整合进了一个入口：体验 - 猫的默认主页（meow://home）\n自定义主页背景图片……\n和快捷链接！"
+      "value": "尝试解决下载保存成 0B 文件的 Bug；\n拖放东西到任何网页外的地方都能激活猫抓板了！"
     },
     {
       "name": "Whats_new_content_extra",

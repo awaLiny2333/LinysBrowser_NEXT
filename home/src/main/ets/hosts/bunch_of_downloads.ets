@@ -169,7 +169,7 @@ export class bunch_of_downloads {
     try {
       fs.rmdir(this.list_of_target_folders[index]);
     } catch (e) {
-      console.error("[ERROR][bunch_of_downloads][delete_task] Unlink file failed. " + e)
+      console.error("[ERROR][bunch_of_downloads][delete_task] Delete task file failed. " + e)
     }
 
     this.list_of_on_going_tasks.splice(index, 1);
@@ -217,13 +217,13 @@ export class bunch_of_downloads {
         // to be identified as unauthorized!
 
         let writeLen = file_size;
-        fs.copy(fileUri.getUriFromPath(file_path), target_uri[0]).then(() => {
-          // fs.unlink(this.list_of_target_folders[index]);
-          fs.rmdir(this.list_of_target_folders[index])
-        });
+        fs.copy(fileUri.getUriFromPath(file_path), target_uri[0])
+        // .then(() => {
+        //   fs.rmdir(this.list_of_target_folders[index]);
+        // });
 
         console.info("[bunch_of_downloads] write data to file succeed and size is:" + writeLen + " @ " + target_uri[0]);
-        this.delete_task(index);
+        // this.delete_task(index);
 
       })
         .catch((err: BusinessError) => {
