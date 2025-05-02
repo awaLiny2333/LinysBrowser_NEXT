@@ -15,6 +15,8 @@ import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 import { window } from '@kit.ArkUI';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
+import { uniformTypeDescriptor } from '@kit.ArkData';
+import { drop_to_scratching_board } from '../utils/drag_drop_tools';
 
 @Entry
 @Component
@@ -221,7 +223,8 @@ struct Index {
           Scroll() {
             Row() {
               Scroll() {
-                meowTabs().width(this.width_of_Tabs())
+                meowTabs()
+                  .width(this.width_of_Tabs())
               } // Tabs Panel
               .height("100%")
               .width(this.showing_tabs ? this.width_of_Tabs() : 0)

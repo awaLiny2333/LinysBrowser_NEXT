@@ -24,7 +24,7 @@ import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
 import meowSuggestions from './meowSuggestions';
 import woofQR from '../dialogs/woofQR';
 import meowTabsHorizontal from './meowTabsHorizontal';
-import { unifiedDataChannel, uniformTypeDescriptor } from '@kit.ArkData';
+import { uniformTypeDescriptor } from '@kit.ArkData';
 import meowScratchingBoard from './meowScratchingBoard';
 import woofAdsBlocker from '../dialogs/woofAdsBlocker';
 import woofAddSE from '../dialogs/woofAddSE';
@@ -35,6 +35,8 @@ import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 import { share_link } from '../utils/share_tools';
 import woofUAswitch from '../dialogs/woofUAswitch';
 import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
+import { drop_to_scratching_board } from '../utils/drag_drop_tools';
+import linysTitleText from '../components/linysTitleText';
 
 @Component
 struct meowTitleBar {
@@ -58,7 +60,7 @@ struct meowTitleBar {
   @State search_input_unified: string = "";
   @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
   @State download_started_popup: boolean = false;
-  @State drop_result_string: string[] = [];
+  @StorageLink('drop_result_strings') drop_result_string: string[] = [];
   @StorageLink('current_in_page_searching_keyword') current_in_page_searching_keyword: string = "";
   @StorageLink('current_in_page_searching_stats_current') current_in_page_searching_stats_current: number = 0;
   @StorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
@@ -734,6 +736,16 @@ struct meowTitleBar {
         }
         .width('100%')
         .justifyContent(FlexAlign.End)
+
+        // linysTitleText({
+        //   text: $r('app.string.Index_drop_please'),
+        //   max_lines: 3
+        // })
+        //   .visibility(!this.showing_scratching_board ? Visibility.Visible : Visibility.None)
+        //   .opacity(0.2)
+        //   .padding(10)
+        //   .animation(animation_default())
+
       } // Title Bar of More Options
       .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
       .padding({ left: 15, right: 15, bottom: 6 })
@@ -748,7 +760,7 @@ struct meowTitleBar {
         .visibility(this.showing_downloads ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
 
-      meowScratchingBoard({ data_list: this.drop_result_string })
+      meowScratchingBoard()
         .visibility(this.showing_scratching_board ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
 
@@ -762,7 +774,7 @@ struct meowTitleBar {
       uniformTypeDescriptor.UniformDataType.HYPERLINK,
       uniformTypeDescriptor.UniformDataType.PLAIN_TEXT])
     .onDrop((e) => {
-      this.on_drop(e);
+      drop_to_scratching_board(e);
     })
     .onDragEnter(() => {
       this.showing_scratching_board = true;
@@ -865,37 +877,6 @@ struct meowTitleBar {
   }
 
   // Events
-
-  on_drop(e: DragEvent) {
-    let drop_data = e.getData().getRecords();
-    let result_list: string[] = [];
-    for (let i = 0; i < drop_data.length; i++) {
-      let record = drop_data[i]
-      if (record.getType() == uniformTypeDescriptor.UniformDataType.HYPERLINK) {
-        let desc = (record as unifiedDataChannel.Hyperlink).description;
-        let url = (record as unifiedDataChannel.Hyperlink).url;
-
-        if (desc && !result_list.includes(desc)) {
-          // Push link description
-          result_list.push(desc);
-        }
-        if (!result_list.includes(url)) {
-          // Push link
-          result_list.push(url);
-        }
-
-      } else if (record.getType() == uniformTypeDescriptor.UniformDataType.PLAIN_TEXT) {
-        let textContent = (record as unifiedDataChannel.PlainText).textContent;
-
-        if (!result_list.includes(textContent)) {
-          // Push text
-          result_list.push(textContent);
-        }
-      }
-    }
-    this.drop_result_string = result_list.concat(this.drop_result_string);
-    e.setResult(DragResult.DRAG_SUCCESSFUL);
-  }
 
   on_download_start() {
     this.download_started_popup = true;

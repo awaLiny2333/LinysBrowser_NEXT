@@ -14,6 +14,8 @@ import linysShowButton from '../components/linysShowButton';
 import linysText from '../components/linysText';
 import { sandbox_open_arrayBuffer_sync, sandbox_unlink_sync } from '../utils/storage_tools';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
+import { uniformTypeDescriptor } from '@kit.ArkData';
+import { drop_to_scratching_board } from '../utils/drag_drop_tools';
 
 @Component
 struct meowTabs {
@@ -66,8 +68,11 @@ struct meowTabs {
   @StorageLink('universal_tab_button_click_gateway') @Watch('uni_tab_button_click') uni_tab_button_clicked: number = -1;
   @StorageLink('universal_global_custom_ua_gateway') @Watch('on_global_custom_UA_change') global_custom_UA: string = "";
   // Colors
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // Drop
+  @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
 
   async aboutToAppear() {
     // set Intelligent Tracking Prevention
@@ -184,6 +189,12 @@ struct meowTabs {
     Column({ space: 10 }) {
       Scroll(this.scroll_controller) {
         Column({ space: 5 }) {
+          // linysTitleText({
+          //   text: $r('app.string.Index_drop_please'),
+          //   max_lines: 3
+          // })
+          //   .opacity(0.2)
+          //   .padding({ bottom: 20 })
           ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
             TabButton({
               Label: Label,
@@ -271,6 +282,18 @@ struct meowTabs {
     })
     .onAreaChange((_o, n) => {
       this.scroll_area_height = n.height as number - 60;
+    })
+    .allowDrop([uniformTypeDescriptor.UniformDataType.TEXT,
+      uniformTypeDescriptor.UniformDataType.HYPERLINK,
+      uniformTypeDescriptor.UniformDataType.PLAIN_TEXT])
+    .onDrop((e) => {
+      drop_to_scratching_board(e);
+    })
+    .onDragEnter(() => {
+      this.showing_scratching_board = true;
+    })
+    .onDragLeave(() => {
+      this.showing_scratching_board = false;
     })
   }
 

@@ -34,7 +34,7 @@ struct meowDownloads {
         })
         linysText({
           text: $r('app.string.Downloads_notice_content'),
-          max_lines: 5
+          max_lines: 20
         })
       }
       .padding(15)

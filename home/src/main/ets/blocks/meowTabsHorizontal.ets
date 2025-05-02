@@ -3,6 +3,8 @@ import linysSymbol from '../components/linysSymbol';
 import { animation_default, click_effect_default, fontSize_Large, fontSize_Normal } from '../hosts/bunch_of_defaults';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { LengthMetrics } from '@kit.ArkUI';
+import { uniformTypeDescriptor } from '@kit.ArkData';
+import { drop_to_scratching_board } from '../utils/drag_drop_tools';
 
 @Component
 struct meowTabsHorizontal {
@@ -29,6 +31,8 @@ struct meowTabsHorizontal {
   // UI statuses
   @State length_width_of_tabs: number = 0;
   @State full_area_width: number = 10;
+  // Drop
+  @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
 
   build() {
     Row({ space: 5 }) {
@@ -88,7 +92,18 @@ struct meowTabsHorizontal {
     } // Base container
     .padding({ left: 8, right: 15 })
     .animation(animation_default())
-
+    .allowDrop([uniformTypeDescriptor.UniformDataType.TEXT,
+      uniformTypeDescriptor.UniformDataType.HYPERLINK,
+      uniformTypeDescriptor.UniformDataType.PLAIN_TEXT])
+    .onDrop((e) => {
+      drop_to_scratching_board(e);
+    })
+    .onDragEnter(() => {
+      this.showing_scratching_board = true;
+    })
+    .onDragLeave(() => {
+      this.showing_scratching_board = false;
+    })
   }
 
   choose_paralleow() {

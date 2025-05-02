@@ -16,7 +16,7 @@ import { extract_links_from_text } from '../utils/url_tools';
 struct meowScratchingBoard {
   // Links
   @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
-  @Link @Watch('on_data_change') data_list: string[];
+  @StorageLink('drop_result_strings') @Watch('on_data_change') data_list: string[] = [];
   // UI
   @Prop show_feed_prompt: boolean = true;
   @State area_height: number = 200;
@@ -117,9 +117,12 @@ struct meowScratchingBoard {
     })
   }
 
+  /**
+   * Called when new data comes
+   *
+   * If data is cleared then show feed prompt next time
+   * */
   on_data_change() {
-    // Called when new data comes
-    // If data is cleared then show feed prompt next time
     if (this.data_list.length > 0) {
       this.show_feed_prompt = false;
     } else {
@@ -127,30 +130,6 @@ struct meowScratchingBoard {
     }
 
     // Analyzes the data and extract web links
-
-    // this.extracted_data = [];
-    // this.extracted_type = [];
-    // for (let index = 0; index < this.data_list.length; index++) {
-    //   let text = this.data_list[index];
-    //   let match = text.match(/(https?|meow):\/\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]/g);
-    //   console.log(match?.join("\n"));
-    //   if (match) {
-    //     for (let inner = 0; inner < match.length; inner++) {
-    //       let position = text.indexOf(match[inner]);
-    //       if (text.substring(0, position).replace(/\s*/, "").length > 0) {
-    //         this.extracted_data.push(text.substring(0, position).replaceAll(/(^\s*)|(\s*$)/g, ""));
-    //         this.extracted_type.push("text");
-    //       }
-    //       this.extracted_data.push(match[inner]);
-    //       this.extracted_type.push("url");
-    //       text = text.substring(position + match[inner].length);
-    //     }
-    //   }
-    //   if (text.replace(/\s*/, "").length > 0) {
-    //     this.extracted_data.push(text.replaceAll(/(^\s*)|(\s*$)/g, ""));
-    //     this.extracted_type.push("text");
-    //   }
-    // }
     let extracted_result = extract_links_from_text(this.data_list);
     this.extracted_data = extracted_result[0];
     this.extracted_type = extracted_result[1];
