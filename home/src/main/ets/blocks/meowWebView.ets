@@ -328,6 +328,8 @@ struct meowWebView {
                   file_name_result = file_name_overwrite;
                 }
 
+                file_name_result = decodeURIComponent(file_name_result);
+
                 // Call popup
                 this.woofWantDownload_control = new CustomDialogController({
                   builder: woofWantDownload({

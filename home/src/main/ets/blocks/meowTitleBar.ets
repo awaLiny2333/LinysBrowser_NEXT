@@ -36,7 +36,6 @@ import { share_link } from '../utils/share_tools';
 import woofUAswitch from '../dialogs/woofUAswitch';
 import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { drop_to_scratching_board } from '../utils/drag_drop_tools';
-import linysTitleText from '../components/linysTitleText';
 
 @Component
 struct meowTitleBar {
@@ -54,6 +53,8 @@ struct meowTitleBar {
   @StorageProp('screen_height') screen_height: number = 0;
   @StorageProp('universal_new_download_gateway') @Watch('on_download_start') uni_new_download_gateway: string = "";
   @Link bar_height: number;
+  @StorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
+  @StorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
   // Current environment
   @Link title_bar_alignRules: AlignRuleOption;
   @StorageLink('search_input') @Watch('on_search_input_change') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
@@ -257,7 +258,7 @@ struct meowTitleBar {
             share_link(this.current_url, this.current_title);
           })
       } // Title Bar for This Page Info display
-      .padding({ left: 16, right: 15, top: 6 })
+      .padding({ left: 15, right: 15, top: 6 })
       .width("100%")
       .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
       .animation(animation_default())
@@ -786,6 +787,7 @@ struct meowTitleBar {
     .alignItems(HorizontalAlign.Start)
     .backgroundColor(this.color_current_secondary)
     .alignRules(this.title_bar_alignRules)
+    .padding({ left: this.leftAvoidWidth, right: this.rightAvoidWidth })
     .onAreaChange((_o, n) => {
       if (!this.showing_more_options && !this.is_search_input_typing &&
         !this.showing_app_settings && !this.showing_downloads && !this.showing_scratching_board) {

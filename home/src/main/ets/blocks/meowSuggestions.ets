@@ -66,8 +66,8 @@ struct meowSuggestions {
     }
     .scrollBar(BarState.Off)
     .margin({
-      left: 15,
-      right: 15,
+      // left: 15,
+      // right: 15,
       top: this.top_margin,
       bottom: this.bottom_margin
     })

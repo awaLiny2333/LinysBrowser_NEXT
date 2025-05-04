@@ -43,6 +43,7 @@ import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 import { bunch_of_homepage_shortcuts } from '../hosts/bunch_of_homepage_shortcuts';
 import woofHomepageManager from '../dialogs/woofHomepageManager';
 import meowAnimationManager from './meowAnimationManager';
+import linysLockToggle from '../components/linysLockToggle';
 
 @Component
 struct meowAppSettings {
@@ -129,6 +130,8 @@ struct meowAppSettings {
   // Edits
   @State new_tab_url_edit: string = "";
   @State home_url_edit: string = "";
+  @State lock_bookmark_suggestion_number: boolean = true;
+  @State lock_history_suggestion_number: boolean = true;
   // Scroll menu
   @State @Watch('scroll_settings_to') settings_scroll_to: number = 0;
   @State scroll_first: number = 0;
@@ -447,12 +450,17 @@ struct meowAppSettings {
 
               linysText({ text: $r('app.string.Settings_experience_max_bookmark_advice'), max_lines: 2 })
               Row({ space: 5 }) {
+                linysLockToggle({ locked: this.lock_bookmark_suggestion_number })
+
                 Slider({
                   min: 0,
                   max: 20,
                   value: this.max_bookmark_advice,
                   style: SliderStyle.InSet,
                 })
+                  .enabled(!this.lock_bookmark_suggestion_number)
+                  .opacity(!this.lock_bookmark_suggestion_number ? 1 : 0.5)
+                  .animation(animation_default())
                   .layoutWeight(1)
                   .blockColor(this.color_current_primary)
                   .selectedColor(this.color_current_font)
@@ -466,12 +474,17 @@ struct meowAppSettings {
 
               linysText({ text: $r('app.string.Settings_experience_max_history_advice'), max_lines: 2 })
               Row({ space: 5 }) {
+                linysLockToggle({ locked: this.lock_history_suggestion_number })
+
                 Slider({
                   min: 0,
                   max: 20,
                   value: this.max_history_advice,
                   style: SliderStyle.InSet,
                 })
+                  .enabled(!this.lock_history_suggestion_number)
+                  .opacity(!this.lock_history_suggestion_number ? 1 : 0.5)
+                  .animation(animation_default())
                   .layoutWeight(1)
                   .blockColor(this.color_current_primary)
                   .selectedColor(this.color_current_font)
@@ -1158,13 +1171,15 @@ struct menuScrollVertical {
     }
 
     if (index + 1 < this.menu_text.length) {
-      if (this.button_Lengths[index] + 10 > this.button_Lengths[index + 1]) {
+      if (this.button_Lengths[index] != this.button_Lengths[index + 1] &&
+        this.button_Lengths[index] + 10 > this.button_Lengths[index + 1]) {
         bottomLeft = 10;
       }
     }
 
     if (index - 1 >= 0) {
-      if (this.button_Lengths[index] + 10 > this.button_Lengths[index - 1]) {
+      if (this.button_Lengths[index] != this.button_Lengths[index - 1] &&
+        this.button_Lengths[index] + 10 > this.button_Lengths[index - 1]) {
         topLeft = 10;
       }
     }

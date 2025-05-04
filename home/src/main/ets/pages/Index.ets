@@ -15,8 +15,6 @@ import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 import { window } from '@kit.ArkUI';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
-import { uniformTypeDescriptor } from '@kit.ArkData';
-import { drop_to_scratching_board } from '../utils/drag_drop_tools';
 
 @Entry
 @Component
@@ -213,18 +211,18 @@ struct Index {
     Column() {
       Row()// Top Bar Avoid
         .width("100%")
-        .height(px2vp(this.fullscreen_mode ? 0 : this.topAvoidHeight))
+        .height(this.fullscreen_mode ? 0 : this.topAvoidHeight)
         .backgroundColor(this.color_current_secondary)
         .animation(animation_default())
 
       RelativeContainer() {
-
         Row() {
           Scroll() {
             Row() {
               Scroll() {
                 meowTabs()
                   .width(this.width_of_Tabs())
+                  .padding(10)
               } // Tabs Panel
               .height("100%")
               .width(this.showing_tabs ? this.width_of_Tabs() : 0)
@@ -233,20 +231,23 @@ struct Index {
               .scrollBar(BarState.Off)
 
               Scroll() {
-                meowBookmarks({})
+                meowBookmarks()
                   .width(this.width_of_Bookmarks())
+                  .padding(10)
               } // Bookmarks Panel
               .height("100%")
               .width(this.showing_bookmarks ? this.width_of_Bookmarks() : 0)
               .animation(animation_default())
               .scrollable(ScrollDirection.Horizontal)
               .scrollBar(BarState.Off)
-
             }
             .width("100%")
             .height("100%")
           } // Bookmarks and Tabs
+          // .backgroundColor('red')
           .width(this.width_of_Bookmarks_and_Tabs())
+          .margin(this.width_of_Bookmarks_and_Tabs() == 0 ? 0 :
+            this.tablet_mode ? { left: this.leftAvoidWidth } : { right: this.rightAvoidWidth })
           .animation(animation_default())
           .scrollable(ScrollDirection.Horizontal)
           .scrollBar(BarState.Off)
@@ -290,7 +291,7 @@ struct Index {
 
       Row()// Bottom Bar Avoid
         .width("100%")
-        .height(px2vp(this.fullscreen_mode ? 0 : this.bottomAvoidHeight))
+        .height(this.fullscreen_mode ? 0 : Math.max(15, this.bottomAvoidHeight))
         .animation(animation_default())
         .backgroundColor(this.title_bar_position == "bottom" ? "transparent" : this.color_current_secondary)
     }

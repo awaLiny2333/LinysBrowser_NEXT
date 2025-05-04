@@ -253,7 +253,7 @@ struct meowBookmarks {
       // Path indicator
     } // List of directory, Operation buttons and edit TextInputs
     .justifyContent(FlexAlign.End)
-    .padding(10)
+    // .padding(10)
     .width("100%")
     .height("100%")
     .onAppear(() => {

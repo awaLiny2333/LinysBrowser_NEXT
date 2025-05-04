@@ -62,23 +62,43 @@ export default class HomeAbility extends UIAbility {
       // 2. 获取布局避让遮挡的区域
       let type = window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR; // 以导航条避让为例
       let avoidArea = windowClass.getWindowAvoidArea(type);
-      let avoid = avoidArea.bottomRect.height; // 获取到导航条区域的高度
-      AppStorage.setOrCreate('bottomAvoidHeight', avoid);
+      let avoidBottom = px2vp(avoidArea.bottomRect.height); // 获取到导航条区域的高度
+      AppStorage.setOrCreate('bottomAvoidHeight', avoidBottom);
 
       type = window.AvoidAreaType.TYPE_SYSTEM;
       avoidArea = windowClass.getWindowAvoidArea(type);
-      avoid = avoidArea.topRect.height;
-      AppStorage.setOrCreate('topAvoidHeight', avoid);
+      let avoidTop = px2vp(avoidArea.topRect.height);
+      AppStorage.setOrCreate('topAvoidHeight', avoidTop + (avoidTop == 0 ? 0 : 2));
 
       type = window.AvoidAreaType.TYPE_CUTOUT;
       avoidArea = windowClass.getWindowAvoidArea(type);
-      avoid = avoidArea.leftRect.width;
-      AppStorage.setOrCreate('leftAvoidWidth', avoid);
+      let avoidLeft = px2vp(avoidArea.leftRect.width);
+      AppStorage.setOrCreate('leftAvoidWidth', avoidLeft + (avoidLeft == 0 ? 0 : 2));
 
       type = window.AvoidAreaType.TYPE_CUTOUT;
       avoidArea = windowClass.getWindowAvoidArea(type);
-      avoid = avoidArea.rightRect.width;
-      AppStorage.setOrCreate('rightAvoidWidth', avoid);
+      let avoidRight = px2vp(avoidArea.rightRect.width);
+      AppStorage.setOrCreate('rightAvoidWidth', avoidRight + (avoidRight == 0 ? 0 : 2));
+
+      // Change listener
+      windowClass.on('avoidAreaChange', (data) => {
+        if (data.type == window.AvoidAreaType.TYPE_SYSTEM) {
+          avoidTop = px2vp(data.area.topRect.height);
+          AppStorage.setOrCreate('topAvoidHeight', avoidTop + (avoidTop == 0 ? 0 : 2));
+        }
+        if (data.type == window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
+          avoidBottom = px2vp(data.area.bottomRect.height);
+          AppStorage.setOrCreate('bottomAvoidHeight', avoidBottom);
+        }
+        if (data.type == window.AvoidAreaType.TYPE_CUTOUT) {
+          avoidLeft = px2vp(data.area.leftRect.width);
+          AppStorage.setOrCreate('leftAvoidWidth', avoidLeft + (avoidLeft == 0 ? 0 : 2));
+        }
+        if (data.type == window.AvoidAreaType.TYPE_CUTOUT) {
+          avoidRight = px2vp(data.area.rightRect.width);
+          AppStorage.setOrCreate('rightAvoidWidth', avoidRight + (avoidRight == 0 ? 0 : 2));
+        }
+      })
     });
   }
 

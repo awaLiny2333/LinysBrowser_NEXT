@@ -274,6 +274,7 @@ export function extract_search(url: string) {
         result[1] = url.substring(search_key_index + search_key_length);
       }
       if (result[1] != '') {
+        result[1] = result[1].replaceAll('+', " ")
         result[1] = decodeURIComponent(result[1]);
       }
       return result;

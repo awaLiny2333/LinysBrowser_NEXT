@@ -458,7 +458,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "Tried to solve download save failure bug;\nNow dragging contents into anywhere else of the web area would activate Scratching Board!"
+      "value": "Now there are locks for sliders in settings so that animation speed won't rocket if mis-touched\nFixed safe area display and now any cutouts could be avoided;\nFixed issue that pluses in the search keyword are not decoded to spaces;\nTried to solve download save failure bug;\nNow dragging contents into anywhere else of the web area would activate Scratching Board!"
     },
     {
       "name": "Whats_new_content_extra",

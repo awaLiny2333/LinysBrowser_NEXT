@@ -1,3 +1,4 @@
+import linysLockToggle from '../components/linysLockToggle';
 import linysText from '../components/linysText';
 import {
   animation_default,
@@ -22,6 +23,8 @@ struct meowAnimationManager {
   @State delete_confirm: number = 0;
   @StorageLink('animation_response') animation_response: number = 0;
   @StorageLink('animation_damping_coefficient') animation_damping_coefficient: number = 0;
+  @State lock_response: boolean = true;
+  @State lock_damping_coefficient: boolean = true;
 
   build() {
     Column({ space: 10 }) {
@@ -30,12 +33,17 @@ struct meowAnimationManager {
         text: $r('app.string.Settings_appearance_animation_response')
       }) // Slider and display of animation_response
       Row({ space: 5 }) {
+        linysLockToggle({ locked: this.lock_response })
+
         Slider({
           min: 1,
           max: 100,
           value: this.animation_response,
           style: SliderStyle.InSet,
         })
+          .enabled(!this.lock_response)
+          .opacity(!this.lock_response ? 1 : 0.5)
+          .animation(animation_default())
           .layoutWeight(1)
           .blockColor(this.color_current_primary)
           .selectedColor(this.color_current_font)
@@ -55,12 +63,17 @@ struct meowAnimationManager {
         text: $r('app.string.Settings_appearance_animation_damping_coefficient')
       }) // Slider and display of animation damping coefficient
       Row({ space: 5 }) {
+        linysLockToggle({ locked: this.lock_damping_coefficient })
+
         Slider({
           min: 0,
           max: 75,
           value: this.animation_damping_coefficient,
           style: SliderStyle.InSet,
         })
+          .enabled(!this.lock_damping_coefficient)
+          .opacity(!this.lock_damping_coefficient ? 1 : 0.5)
+          .animation(animation_default())
           .layoutWeight(1)
           .blockColor(this.color_current_primary)
           .selectedColor(this.color_current_font)
