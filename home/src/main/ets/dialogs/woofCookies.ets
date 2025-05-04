@@ -8,6 +8,7 @@ import {
 } from '../hosts/bunch_of_defaults';
 import { webview } from '@kit.ArkWeb';
 import { match_domain } from '../utils/url_tools';
+import woofControlFrame from './woofControlFrame';
 
 @CustomDialog
 struct woofCookies {
@@ -48,140 +49,135 @@ struct woofCookies {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
-    RelativeContainer() {
-      Scroll() {
-        Column({ space: 10 }) {
-          linysTitleText({
-            text: $r('app.string.Settings_manage_cookies'),
-            max_lines: 2
-          })// Manage Cookies
-            .width("100%")
-            .padding({ bottom: 5 })
-          linysText({
-            text: $r('app.string.Settings_manage_cookies_desc_1'),
-            max_lines: 10
-          })
-            .width("100%")
-          linysText({
-            text: $r('app.string.Settings_manage_cookies_desc_2'),
-            max_lines: 10
-          })
-            .width("100%")
-          linysText({
-            text: $r('app.string.Settings_manage_cookies_desc_3'),
-            max_lines: 10
-          })
-            .width("100%")
-          linysText({
-            text: $r('app.string.Have_a_Nice_Surf'),
-            max_lines: 2
-          })
-            .width("100%")
-            .opacity(0.9)
-        }
-        .width("100%")
-      } // Title
-      .align(Alignment.TopStart)
-      .edgeEffect(EdgeEffect.Spring)
-      .padding({ top: 5, bottom: 10, right: 10 })
-      .width(this.tablet_mode ? "35%" : "100%")
-      .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
-      .animation(animation_default())
-      .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })
-      .id("title_cookies_manager")
-
-      Column() {
-        linysText({ text: $r('app.string.Settings_manage_cookies_this_site'), max_lines: 3 })// Cookies on
-          .width("100%")
-          .padding({ top: 10, bottom: 5 })
-
-        linysText({ text: this.domain_url })// domain
-          .width("100%")
-          .padding({ bottom: 10 })
-
+    woofControlFrame({
+      title: $r('app.string.Settings_manage_cookies'),
+      controller: this.controller
+    }) {
+      RelativeContainer() {
         Scroll() {
-          Column() {
-            ForEach(this.cookies_site, (item: string, index: number) => {
-              Cookie({
-                text: item,
-                index: index,
-              })
-                .width("100%")
+          Column({ space: 10 }) {
+            linysText({
+              text: $r('app.string.Settings_manage_cookies_desc_1'),
+              max_lines: 10
             })
-            if (this.cookies_site.length == 0) {
-              linysTitleText({
-                text: "¯\\_(ツ)_/¯"
-              })
-                .margin(30)
-                .opacity(0.7)
-                .animation(animation_default())
-            }
+              .width("100%")
+            linysText({
+              text: $r('app.string.Settings_manage_cookies_desc_2'),
+              max_lines: 10
+            })
+              .width("100%")
+            linysText({
+              text: $r('app.string.Settings_manage_cookies_desc_3'),
+              max_lines: 10
+            })
+              .width("100%")
+            linysText({
+              text: $r('app.string.Have_a_Nice_Surf'),
+              max_lines: 2
+            })
+              .width("100%")
+              .opacity(0.9)
           }
           .width("100%")
-        } // cookies display list
-        .scrollable(ScrollDirection.Vertical)
+        } // Title
+        .align(Alignment.TopStart)
         .edgeEffect(EdgeEffect.Spring)
-        .align(Alignment.Top)
-        .borderRadius(10)
-        .backgroundColor(this.color_current_secondary)
-        .width("100%")
-        .layoutWeight(1)
-      } // Cookies
-      .width(this.tablet_mode ? "65%" : "100%")
-      .height(this.tablet_mode ? "100%" : undefined)
-      .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)
-      .animation(animation_default())
+        .padding({ bottom: 10, right: 10 })
+        .width(this.tablet_mode ? "35%" : "100%")
+        .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
+        .animation(animation_default())
+        .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })
+        .id("title_cookies_manager")
 
-      Column({ space: 10 }) {
-        linysText({ text: $r('app.string.Settings_manage_cookies_clear_all'), max_lines: 5 })
-          .width('100%')
+        Column() {
+          linysText({ text: $r('app.string.Settings_manage_cookies_this_site'), max_lines: 3 })// Cookies on
+            .width("100%")
+            .padding({ top: this.tablet_mode ? 0 : 10, bottom: 5 })
 
-        Row({ space: 10 }) {
-          linysText({ text: '＞︿＜' })
-          Button("  󰀁  ")// Delete
-            .type(ButtonType.Capsule)
-            .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary : $r("app.color.font_color_title"))
-            .fontColor(this.delete_confirm > 0 ? this.color_current_font : this.color_current_primary)
-            .border({
-              width: 2,
-              color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
-            })
-            .fontSize(fontSize_Large())
-            .fontWeight(FontWeight.Medium)
-            .height(capsule_bar_height())
-            .onClick(() => {
-              this.delete_confirm += 300;
-              if (this.delete_confirm >= 301) {
-                // Delete
-                this.clear_all_cookies();
-                this.delete_confirm = 0;
+          linysText({ text: this.domain_url })// domain
+            .width("100%")
+            .padding({ bottom: 10 })
+
+          Scroll() {
+            Column() {
+              ForEach(this.cookies_site, (item: string, index: number) => {
+                Cookie({
+                  text: item,
+                  index: index,
+                })
+                  .width("100%")
+              })
+              if (this.cookies_site.length == 0) {
+                linysTitleText({
+                  text: "¯\\_(ツ)_/¯"
+                })
+                  .margin(30)
+                  .opacity(0.7)
+                  .animation(animation_default())
               }
-            })
-            .clickEffect(click_effect_default())
-            .animation(animation_default())
-        }
+            }
+            .width("100%")
+          } // cookies display list
+          .scrollable(ScrollDirection.Vertical)
+          .edgeEffect(EdgeEffect.Spring)
+          .align(Alignment.Top)
+          .borderRadius(10)
+          .backgroundColor(this.color_current_secondary)
+          .width("100%")
+          .layoutWeight(1)
+        } // Cookies
+        .width(this.tablet_mode ? "65%" : "100%")
+        .height(this.tablet_mode ? "100%" : undefined)
+        .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)
+        .animation(animation_default())
 
-      } // Controls
-      .margin({ top: 15 })
-      .padding(this.tablet_mode ? { right: 10 } : undefined)
-      .alignItems(HorizontalAlign.End)
-      .id("controls_cookies")
-      .alignRules(this.alignRules_foot)
-      .animation(animation_default())
-      .width(this.tablet_mode ? "35%" : "100%")
+        Column({ space: 10 }) {
+          linysText({ text: $r('app.string.Settings_manage_cookies_clear_all'), max_lines: 5 })
+            .width('100%')
+
+          Row({ space: 10 }) {
+            linysText({ text: '＞︿＜' })
+            Button("  󰀁  ")// Delete
+              .type(ButtonType.Capsule)
+              .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary : $r("app.color.font_color_title"))
+              .fontColor(this.delete_confirm > 0 ? this.color_current_font : this.color_current_primary)
+              .border({
+                width: 2,
+                color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
+              })
+              .fontSize(fontSize_Large())
+              .fontWeight(FontWeight.Medium)
+              .height(capsule_bar_height())
+              .onClick(() => {
+                this.delete_confirm += 300;
+                if (this.delete_confirm >= 301) {
+                  // Delete
+                  this.clear_all_cookies();
+                  this.delete_confirm = 0;
+                }
+              })
+              .clickEffect(click_effect_default())
+              .animation(animation_default())
+          }
+
+        } // Controls
+        .margin({ top: 15 })
+        .padding(this.tablet_mode ? { right: 10 } : undefined)
+        .alignItems(HorizontalAlign.End)
+        .alignRules(this.alignRules_foot)
+        .animation(animation_default())
+        .width(this.tablet_mode ? "35%" : "100%")
+        .id("controls_cookies")
+        .onAppear(() => {
+          setInterval(() => {
+            if (this.delete_confirm > 0) {
+              this.delete_confirm -= 1;
+            }
+            // Reset delete confirm
+          }, 10)
+        })
+      }.layoutWeight(1)
     }
-    .padding(15)
-    .width("100%")
-    .height("100%")
-    .backgroundColor(this.color_current_primary)
-    .onAppear(() => {
-      setInterval(() => {
-        if (this.delete_confirm > 0) {
-          this.delete_confirm -= 1;
-        }
-        // Reset delete confirm
-      }, 10)
-    })
   }
 
   clear_all_cookies() {

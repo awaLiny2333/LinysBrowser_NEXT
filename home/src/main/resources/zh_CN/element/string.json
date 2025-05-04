@@ -617,6 +617,10 @@
       "value": "在以下网站上禁用 JavaScript"
     },
     {
+      "name": "QR_code",
+      "value": "二维码"
+    },
+    {
       "name": "Settings_woof_add_a_domain",
       "value": "添加一个域名"
     },

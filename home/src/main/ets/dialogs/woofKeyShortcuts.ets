@@ -1,9 +1,9 @@
 import linysCapsuleButton from '../components/linysCapsuleButton';
 import linysShowButton from '../components/linysShowButton';
 import linysText from '../components/linysText';
-import linysTitleText from '../components/linysTitleText';
 import { animation_default, click_effect_default } from '../hosts/bunch_of_defaults';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
+import woofControlFrame from './woofControlFrame';
 
 @CustomDialog
 struct woofKeyShortcuts {
@@ -15,26 +15,25 @@ struct woofKeyShortcuts {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
-    Scroll() {
-      Column({ space: 10 }) {
-        linysTitleText({
-          text: $r('app.string.Key_shortcuts_manage'),
-          max_lines: 3
-        })
-          .width("100%")
-
-        ForEach(this.bunch_of_key_shortcuts.key_shortcut_labels, (label: string, _index: number) => {
-          keyDisplay({ key_settings_id: label })
-        })
+    woofControlFrame({
+      title: $r('app.string.Key_shortcuts_manage'),
+      controller: this.controller
+    }) {
+      Scroll() {
+        Column({ space: 10 }) {
+          ForEach(this.bunch_of_key_shortcuts.key_shortcut_labels, (label: string, _index: number) => {
+            keyDisplay({ key_settings_id: label })
+          })
+        }
+        .alignItems(HorizontalAlign.Center)
+        .justifyContent(FlexAlign.Center)
+        .width("100%")
       }
-      .padding(15)
-      .alignItems(HorizontalAlign.Center)
-      .justifyContent(FlexAlign.Center)
-      .width("100%")
+      .constraintSize({ maxHeight: 513 })
+      .scrollBar(BarState.Off)
+      .edgeEffect(EdgeEffect.Spring)
+      .layoutWeight(1)
     }
-    .scrollBar(BarState.Off)
-    .backgroundColor(this.color_current_primary)
-    .edgeEffect(EdgeEffect.Spring)
   }
 }
 

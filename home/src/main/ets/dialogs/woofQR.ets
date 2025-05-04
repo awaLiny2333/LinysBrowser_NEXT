@@ -1,5 +1,6 @@
 import linysText from '../components/linysText';
 import linysTitleText from '../components/linysTitleText';
+import woofControlFrame from './woofControlFrame';
 
 @CustomDialog
 struct woofQR {
@@ -12,32 +13,36 @@ struct woofQR {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
-    Scroll() {
-      Column({ space: 10 }) {
-        QRCode(this.link)
-          .color(this.color_current_font)
-          .backgroundColor("transparent")
-          .padding({ bottom: 20 })
+    woofControlFrame({
+      title: $r('app.string.QR_code'),
+      controller: this.controller
+    }) {
+      Scroll() {
+        Column({ space: 5 }) {
+          QRCode(this.link)
+            .color(this.color_current_font)
+            .backgroundColor("transparent")
+            .padding(20)
 
-        linysTitleText({
-          text: this.title,
-          max_lines: 3
-        })
-          .width("100%")
-        linysText({
-          text: this.link,
-          max_lines: 5
-        })
-          .width("100%")
-          .opacity(0.7)
+          linysTitleText({
+            text: this.title,
+            max_lines: 3
+          })
+            .width("100%")
+          linysText({
+            text: this.link,
+            max_lines: 5
+          })
+            .width("100%")
+            .opacity(0.7)
+        }
+        .alignItems(HorizontalAlign.Center)
+        .justifyContent(FlexAlign.Center)
+        .width("100%")
       }
-      .padding(40)
-      .alignItems(HorizontalAlign.Center)
-      .justifyContent(FlexAlign.Center)
-      .width("100%")
+      .layoutWeight(1)
+      .edgeEffect(EdgeEffect.Spring)
     }
-    .backgroundColor(this.color_current_primary)
-    .edgeEffect(EdgeEffect.Spring)
   }
 }
 

@@ -1,4 +1,4 @@
-import { click_effect_default, fontSize_Large } from '../hosts/bunch_of_defaults';
+import { fontSize_Large } from '../hosts/bunch_of_defaults';
 
 @Component
 struct linysLockToggle {
@@ -13,8 +13,7 @@ struct linysLockToggle {
       .onClick(() => {
         this.locked = !this.locked;
         this.triggerValueReplace += 1;
-      })
-      // .clickEffect(click_effect_default())
+      })// .clickEffect(click_effect_default())
       .fontSize(fontSize_Large())
       .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.triggerValueReplace)
       .fontColor([this.color ? this.color : this.color_current_font])

@@ -5,6 +5,7 @@ import linysTitleText from '../components/linysTitleText';
 import { animation_default } from '../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import woofBookmarksPathSelector from './woofBookmarksPathSelector';
+import woofControlFrame from './woofControlFrame';
 
 @CustomDialog
 struct woofHomepageManager {
@@ -36,62 +37,58 @@ struct woofHomepageManager {
   controller: CustomDialogController;
 
   build() {
-    Scroll() {
-      Column({ space: 10 }) {
+    woofControlFrame({
+      title: $r('app.string.Settings_homepage_customization'),
+      controller: this.controller
+    }) {
+      Scroll() {
+        Column({ space: 10 }) {
+          linysText({
+            text: $r('app.string.Settings_homepage_shortcuts_manage_desc'),
+            max_lines: 3
+          })// Desc
+            .padding({ bottom: 10 })
 
-        linysTitleText({
-          text: $r('app.string.Settings_homepage_customization')
-        })
-        linysText({
-          text: $r('app.string.Settings_homepage_shortcuts_manage_desc'),
-          max_lines: 3
-        })// Desc
-          .padding({ bottom: 10 })
+          linysTitleText({ text: $r('app.string.Homepage_background') })// Title
+            .width('100%')
+          linysText({
+            text: $r('app.string.Homepage_background_desc'),
+            max_lines: 5
+          }) // Desc
 
-        linysTitleText({ text: $r('app.string.Homepage_background') })// Title
+          meowHomepageBackgroundManager() // Homepage Background Manager
+
+          linysTitleText({
+            text: $r('app.string.Settings_homepage_shortcuts')
+          }) // Title
+
+          linysText({
+            text: $r('app.string.Homepage_shortcuts_desc'),
+            max_lines: 5
+          }) // Desc
+
+          Row({ space: 10 }) {
+            Blank()
+            linysText({ text: $r('app.string.Settings_homepage_shortcuts_select_dir') })
+            linysCapsuleButton({ text: "  󰂺  " })// Move
+              .onClick(() => {
+                if (this.woofBookmarksPathSelector_control != null) {
+                  this.woofBookmarksPathSelector_control.open();
+                }
+              })
+          }
           .width('100%')
-        linysText({
-          text: $r('app.string.Homepage_background_desc'),
-          max_lines: 5
-        })// Desc
-
-        meowHomepageBackgroundManager() // Homepage Background Manager
-
-        linysTitleText({
-          text: $r('app.string.Settings_homepage_shortcuts')
-        }) // Title
-
-        linysText({
-          text: $r('app.string.Homepage_shortcuts_desc'),
-          max_lines: 5
-        })// Desc
-
-        Row({ space: 10 }) {
-          Blank()
-          linysText({ text: $r('app.string.Settings_homepage_shortcuts_select_dir') })
-          linysCapsuleButton({ text: "  󰂺  " })// Move
-            .onClick(() => {
-              if (this.woofBookmarksPathSelector_control != null) {
-                this.woofBookmarksPathSelector_control.open();
-              }
-            })
         }
+        .alignItems(HorizontalAlign.Start)
         .width('100%')
+        // .height(this.tablet_mode ? this.screen_height * 0.9 : undefined)
+        .animation(animation_default())
       }
-      .alignItems(HorizontalAlign.Start)
-      .width('100%')
-      // .height(this.tablet_mode ? this.screen_height * 0.9 : undefined)
-      .animation(animation_default())
+      .layoutWeight(1)
+      .constraintSize({ maxHeight: 440 })
+      .scrollable(ScrollDirection.Vertical)
+      .edgeEffect(EdgeEffect.Spring)
     }
-    .backgroundColor(this.color_current_primary)
-    .scrollable(ScrollDirection.Vertical)
-    .edgeEffect(EdgeEffect.Spring)
-    .padding({
-      top: 20,
-      bottom: 15,
-      left: 15,
-      right: 15
-    })
   }
 
   on_select_change() {

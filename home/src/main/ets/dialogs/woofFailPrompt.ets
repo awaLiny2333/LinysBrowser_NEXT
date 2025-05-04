@@ -14,7 +14,6 @@ struct woofFailPrompt {
   @Prop desc: ResourceStr = 'Desc';
   @State @Watch('on_meow_reversed') meow: boolean = false;
   // Colors
-  // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');

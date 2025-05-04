@@ -12,6 +12,7 @@ import { webview } from '@kit.ArkWeb';
 import linysShowButton from '../components/linysShowButton';
 import linysCapsuleButton from '../components/linysCapsuleButton';
 import { match_domain } from '../utils/url_tools';
+import woofControlFrame from './woofControlFrame';
 
 @CustomDialog
 struct woofGeneralManage {
@@ -75,244 +76,238 @@ struct woofGeneralManage {
   @StorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
 
   build() {
-    RelativeContainer() {
-      Scroll() {
-        Column({ space: 10 }) {
-          linysTitleText({
-            text: this.general_title,
-            max_lines: 1
-          })
-            .width("100%")
-            .padding({ bottom: 5 })
-
-          ForEach(this.general_descriptions, (desc: ResourceStr, _index: number) => {
-            linysText({
-              text: desc,
-              max_lines: 10
-            })
-              .width("100%")
-          })
-
-          linysText({
-            text: this.general_tips,
-            max_lines: 3
-          })
-            .width("100%")
-            .visibility(this.match_this_domain(this.current_url) ? Visibility.None : Visibility.Visible)
-            .animation(animation_default())
-
-          linysText({
-            text: $r('app.string.Have_a_Nice_Surf'),
-            max_lines: 2
-          })
-            .width("100%")
-            .opacity(0.9)
-
-        } // Title
-        .width("100%")
-      }
-      .align(Alignment.TopStart)
-      .edgeEffect(EdgeEffect.Spring)
-      .padding({ top: 5, bottom: 10, right: 10 })
-      .width(this.tablet_mode ? "40%" : "100%")
-      .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })
-      .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
-      .animation(animation_default())
-      .id("title")
-
-      Column({ space: 10 }) {
-        linysText({
-          text: this.general_subtitle_execute_on_these_sites,
-          max_lines: 3
-        })
-          .padding({ top: 10 })
-          .width("100%")
-          .opacity(this.general_on_all_sites_switch || !this.general_switch ? 0.5 : 1)
-          .animation(animation_default())
-
+    woofControlFrame({
+      title: this.general_title,
+      controller: this.controller
+    }) {
+      RelativeContainer() {
         Scroll() {
-          Column() {
-            ForEach(this.general_sites_list, (item: string, index: number) => {
-              Domain({
-                domain: item,
-                index: index,
-                selected: this.selected,
-                selected_number: this.selected_number,
-                selecting: this.selecting
+          Column({ space: 10 }) {
+            ForEach(this.general_descriptions, (desc: ResourceStr, _index: number) => {
+              linysText({
+                text: desc,
+                max_lines: 10
               })
                 .width("100%")
             })
-            if (this.general_sites_list.length == 0) {
-              linysTitleText({
-                text: "¯\\_(ツ)_/¯"
-              })
-                .margin(30)
-                .opacity(0.7)
-                .animation(animation_default())
-            }
-          }
-          .width("100%")
-        } // domains display list
-        .scrollable(ScrollDirection.Vertical)
-        .edgeEffect(EdgeEffect.Spring)
-        .align(Alignment.Top)
-        .borderRadius(10)
-        .backgroundColor(this.color_current_secondary)
-        .width("100%")
-        .layoutWeight(1)
-        .opacity(this.general_on_all_sites_switch || !this.general_switch ? 0.5 : 1)
-        .animation(animation_default())
 
-        Row({ space: 10 }) {
-          linysText({ text: this.general_subtitle_execute_on_all_sites })
-            .layoutWeight(1)
-
-          Toggle({ isOn: this.general_on_all_sites_switch, type: ToggleType.Switch })
-            .switchPointColor(this.color_current_secondary)
-            .selectedColor(this.color_current_font)
-            .onChange(isOn => {
-              this.general_on_all_sites_switch = isOn;
-              this.bunch_of_settings.set(this.general_switch_all_sites_settings_id, isOn);
+            linysText({
+              text: this.general_tips,
+              max_lines: 3
             })
-        } // Toggle on all sites
-        .width("100%")
-        .opacity(!this.general_switch ? 0.5 : 1)
-        .animation(animation_default())
-
-        Row({ space: 10 }) {
-          linysText({ text: this.general_switch_desc })
-            .layoutWeight(1)
-
-          Toggle({ isOn: this.general_switch, type: ToggleType.Switch })
-            .switchPointColor(this.color_current_secondary)
-            .selectedColor(this.color_current_font)
-            .onChange(isOn => {
-              this.general_switch = isOn;
-              this.bunch_of_settings.set(this.general_switch_settings_id, isOn);
-            })
-        } // Toggle on all sites
-        .width("100%")
-
-      } // Whitelist
-      .width(this.tablet_mode ? "60%" : "100%")
-      .height(this.tablet_mode ? "100%" : undefined)
-      .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)
-      .animation(animation_default())
-
-      Column() {
-        linysShowButton({
-          show: this.showing_add_panel,
-          symbol_glyph_target: "sys.symbol.plus",
-          text: $r("app.string.Settings_woof_add_a_domain")
-        })// Add Button
-          .onClick(() => {
-            this.showing_add_panel = !this.showing_add_panel;
-          })
-
-        Scroll() {
-          Column({ space: 8 }) {
-            TextInput({ text: this.add_site_edit })// Input domain
-              .onChange((value) => {
-                this.add_site_edit = value;
-              })
-              .fontWeight(FontWeight.Regular)
-              .fontColor(this.color_current_font)
-              .caretColor(this.color_current_font)
-              .selectedBackgroundColor(this.color_current_font)
               .width("100%")
-              .onSubmit(() => {
-                this.add_item(this.add_site_edit);
-                this.add_site_edit = "";
-                this.showing_add_panel = false;
-              })
-              .height(capsule_bar_height())
+              .visibility(this.match_this_domain(this.current_url) ? Visibility.None : Visibility.Visible)
               .animation(animation_default())
 
-            linysCapsuleButton({ text: "  󰀓  " })
-              .animation(animation_default())
-              .onClick(() => {
-                this.add_item(this.add_site_edit);
-                this.add_site_edit = "";
-                this.showing_add_panel = false;
-              })
-          }
-          .padding({ top: 10 })
-          .alignItems(HorizontalAlign.End)
+            linysText({
+              text: $r('app.string.Have_a_Nice_Surf'),
+              max_lines: 2
+            })
+              .width("100%")
+              .opacity(0.9)
+
+          } // Title
           .width("100%")
-        } // Add
-        .scrollBar(BarState.Off)
-        .width("100%")
-        .height(this.showing_add_panel ? 90 : 0)
+        }
+        .align(Alignment.TopStart)
+        .edgeEffect(EdgeEffect.Spring)
+        .padding({ bottom: 10, right: 10 })
+        .width(this.tablet_mode ? "40%" : "100%")
+        .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })
+        .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
         .animation(animation_default())
+        .id("title")
 
-        Scroll() {
-          Column({ space: 10 }) {
-            Row() {
-              linysTitleText({ text: $r("app.string.Settings_edit_selecting") })
-              linysTitleText({ text: " " + this.selected_number.toString() + " " })
-              linysTitleText({ text: $r("app.string.Settings_edit_selecting_items") })
-            }
+        Column({ space: 10 }) {
+          linysText({
+            text: this.general_subtitle_execute_on_these_sites,
+            max_lines: 3
+          })
+            .padding({ top: this.tablet_mode ? 0 : 10 })
+            .width("100%")
+            .opacity(this.general_on_all_sites_switch || !this.general_switch ? 0.5 : 1)
+            .animation(animation_default())
 
-            Row() {
-              linysSymbol({ symbol_glyph_target: 'sys.symbol.list_checkmask' })
-                .onClick(() => {
-                  this.select_all();
+          Scroll() {
+            Column() {
+              ForEach(this.general_sites_list, (item: string, index: number) => {
+                Domain({
+                  domain: item,
+                  index: index,
+                  selected: this.selected,
+                  selected_number: this.selected_number,
+                  selecting: this.selecting
                 })
-              Blank()
-              Button("  󰀁  ")// Delete
-                .type(ButtonType.Capsule)
-                .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
-                $r("app.color.font_color_title"))
-                .fontColor(this.delete_confirm > 0 ? this.color_current_font :
-                this.color_current_primary)
-                .border({
-                  width: 2,
-                  color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
+                  .width("100%")
+              })
+              if (this.general_sites_list.length == 0) {
+                linysTitleText({
+                  text: "¯\\_(ツ)_/¯"
                 })
-                .fontSize(fontSize_Large())
-                .fontWeight(FontWeight.Medium)
-                .height(capsule_bar_height())
-                .onClick(() => {
-                  this.delete_confirm += 300;
-                  if (this.delete_confirm >= 301) {
-                    // Delete
-                    this.delete_selected();
-                  }
-                })
-                .clickEffect(click_effect_default())
-                .animation(animation_default())
+                  .margin(30)
+                  .opacity(0.7)
+                  .animation(animation_default())
+              }
             }
             .width("100%")
-          }
-          .padding({ top: 10 })
-          .alignItems(HorizontalAlign.Start)
+          } // domains display list
+          .scrollable(ScrollDirection.Vertical)
+          .edgeEffect(EdgeEffect.Spring)
+          .align(Alignment.Top)
+          .borderRadius(10)
+          .backgroundColor(this.color_current_secondary)
           .width("100%")
-        } // Select controls
-        .scrollBar(BarState.Off)
-        .width("100%")
-        .height(this.selecting ? 80 : 0)
+          .layoutWeight(1)
+          .opacity(this.general_on_all_sites_switch || !this.general_switch ? 0.5 : 1)
+          .animation(animation_default())
+
+          Row({ space: 10 }) {
+            linysText({ text: this.general_subtitle_execute_on_all_sites })
+              .layoutWeight(1)
+
+            Toggle({ isOn: this.general_on_all_sites_switch, type: ToggleType.Switch })
+              .switchPointColor(this.color_current_secondary)
+              .selectedColor(this.color_current_font)
+              .onChange(isOn => {
+                this.general_on_all_sites_switch = isOn;
+                this.bunch_of_settings.set(this.general_switch_all_sites_settings_id, isOn);
+              })
+          } // Toggle on all sites
+          .width("100%")
+          .opacity(!this.general_switch ? 0.5 : 1)
+          .animation(animation_default())
+
+          Row({ space: 10 }) {
+            linysText({ text: this.general_switch_desc })
+              .layoutWeight(1)
+
+            Toggle({ isOn: this.general_switch, type: ToggleType.Switch })
+              .switchPointColor(this.color_current_secondary)
+              .selectedColor(this.color_current_font)
+              .onChange(isOn => {
+                this.general_switch = isOn;
+                this.bunch_of_settings.set(this.general_switch_settings_id, isOn);
+              })
+          } // Toggle on all sites
+          .width("100%")
+
+        } // Whitelist
+        .width(this.tablet_mode ? "60%" : "100%")
+        .height(this.tablet_mode ? "100%" : undefined)
+        .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)
         .animation(animation_default())
-      } // Controls
-      .padding({ top: 10, right: this.tablet_mode ? 10 : 0 })
-      .alignItems(HorizontalAlign.End)
-      .id("controls")
-      .alignRules(this.alignRules_foot)
-      .opacity(this.general_on_all_sites_switch || !this.general_switch ? 0.5 : 1)
-      .animation(animation_default())
-      .width(this.tablet_mode ? "40%" : "100%")
+
+        Column() {
+          linysShowButton({
+            show: this.showing_add_panel,
+            symbol_glyph_target: "sys.symbol.plus",
+            text: $r("app.string.Settings_woof_add_a_domain")
+          })// Add Button
+            .onClick(() => {
+              this.showing_add_panel = !this.showing_add_panel;
+            })
+
+          Scroll() {
+            Column({ space: 8 }) {
+              TextInput({ text: this.add_site_edit })// Input domain
+                .onChange((value) => {
+                  this.add_site_edit = value;
+                })
+                .fontWeight(FontWeight.Regular)
+                .fontColor(this.color_current_font)
+                .caretColor(this.color_current_font)
+                .selectedBackgroundColor(this.color_current_font)
+                .width("100%")
+                .onSubmit(() => {
+                  this.add_item(this.add_site_edit);
+                  this.add_site_edit = "";
+                  this.showing_add_panel = false;
+                })
+                .height(capsule_bar_height())
+                .animation(animation_default())
+
+              linysCapsuleButton({ text: "  󰀓  " })
+                .animation(animation_default())
+                .onClick(() => {
+                  this.add_item(this.add_site_edit);
+                  this.add_site_edit = "";
+                  this.showing_add_panel = false;
+                })
+            }
+            .padding({ top: 10 })
+            .alignItems(HorizontalAlign.End)
+            .width("100%")
+          } // Add
+          .scrollBar(BarState.Off)
+          .width("100%")
+          .height(this.showing_add_panel ? 90 : 0)
+          .animation(animation_default())
+
+          Scroll() {
+            Column({ space: 10 }) {
+              Row() {
+                linysTitleText({ text: $r("app.string.Settings_edit_selecting") })
+                linysTitleText({ text: " " + this.selected_number.toString() + " " })
+                linysTitleText({ text: $r("app.string.Settings_edit_selecting_items") })
+              }
+
+              Row() {
+                linysSymbol({ symbol_glyph_target: 'sys.symbol.list_checkmask' })
+                  .onClick(() => {
+                    this.select_all();
+                  })
+                Blank()
+                Button("  󰀁  ")// Delete
+                  .type(ButtonType.Capsule)
+                  .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
+                  $r("app.color.font_color_title"))
+                  .fontColor(this.delete_confirm > 0 ? this.color_current_font :
+                  this.color_current_primary)
+                  .border({
+                    width: 2,
+                    color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
+                  })
+                  .fontSize(fontSize_Large())
+                  .fontWeight(FontWeight.Medium)
+                  .height(capsule_bar_height())
+                  .onClick(() => {
+                    this.delete_confirm += 300;
+                    if (this.delete_confirm >= 301) {
+                      // Delete
+                      this.delete_selected();
+                    }
+                  })
+                  .clickEffect(click_effect_default())
+                  .animation(animation_default())
+              }
+              .width("100%")
+            }
+            .padding({ top: 10 })
+            .alignItems(HorizontalAlign.Start)
+            .width("100%")
+          } // Select controls
+          .scrollBar(BarState.Off)
+          .width("100%")
+          .height(this.selecting ? 80 : 0)
+          .animation(animation_default())
+        } // Controls
+        .padding({ top: 10, right: this.tablet_mode ? 10 : 0 })
+        .alignItems(HorizontalAlign.End)
+        .alignRules(this.alignRules_foot)
+        .opacity(this.general_on_all_sites_switch || !this.general_switch ? 0.5 : 1)
+        .animation(animation_default())
+        .width(this.tablet_mode ? "40%" : "100%")
+        .id("controls")
+        .onAppear(() => {
+          setInterval(() => {
+            if (this.delete_confirm > 0) {
+              this.delete_confirm -= 1;
+            }
+            // Reset delete confirm
+          }, 10)
+        })
+      }.layoutWeight(1)
     }
-    .padding(15)
-    .width("100%")
-    .height("100%")
-    .backgroundColor(this.color_current_primary)
-    .onAppear(() => {
-      setInterval(() => {
-        if (this.delete_confirm > 0) {
-          this.delete_confirm -= 1;
-        }
-        // Reset delete confirm
-      }, 10)
-    })
   }
 
   all_false(length: number) {

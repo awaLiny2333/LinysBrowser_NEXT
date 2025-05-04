@@ -8,6 +8,7 @@ import {
   fontSize_Large
 } from '../hosts/bunch_of_defaults';
 import { bunch_of_history, history_record } from '../hosts/bunch_of_history';
+import woofControlFrame from './woofControlFrame';
 
 @CustomDialog
 struct woofHistory {
@@ -56,192 +57,194 @@ struct woofHistory {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
-    RelativeContainer() {
-      Scroll() {
-        Column({ space: 15 }) {
-          linysTitleText({ text: $r('app.string.Settings_experience_history_view') })
-            .padding({ top: 5 })
-            .width("100%")
-          linysText({
-            text: $r('app.string.History_desc_1'),
-            max_lines: 6
-          })
-            .width("100%")
-            .opacity(0.9)
-          linysText({
-            text: $r('app.string.History_desc_2'),
-            max_lines: 6
-          })
-            .width("100%")
-            .opacity(0.9)
-          linysText({
-            text: $r('app.string.Have_a_Nice_Surf'),
-            max_lines: 2
-          })
-            .width("100%")
-            .opacity(0.9)
-        } // Title
-        .width("100%")
-      } // Title and descriptions
-      .scrollBar(BarState.Off)
-      .align(Alignment.TopStart)
-      .edgeEffect(EdgeEffect.Spring)
-      .padding({ top: 5, bottom: 10, right: this.tablet_mode ? 10 : 0 })
-      .width(this.tablet_mode ? "35%" : "100%")
-      .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
-      .animation(animation_default())
-      .id("title_history")
-
-      Column({ space: 10 }) {
-
-        Row() {
-          linysText({ text: $r('app.string.Settings_experience_history_date_format'), font_weight: FontWeight.Medium })
-            .opacity(0.7)
-          linysText({ text: " (" + this.history_list.length.toString() + ")" })
-            .opacity(0.7)
-        } // Time elapse description
-        .width("100%")
-
+    woofControlFrame({
+      title: $r('app.string.Settings_experience_history_view'),
+      controller: this.controller
+    }) {
+      RelativeContainer() {
         Scroll() {
-          Column() {
-            ForEach(this.history_list, (item: history_record, key: number) => {
-              meowRelation({
-                index: key,
-                show: this.showing_settings,
-                selected: this.selected,
-                selected_number: this.selected_number,
-                selecting: this.selecting,
-                label_link: item,
-                controller: this.controller,
-              })
-                .width("100%")
-            }) // Items
-            if (this.history_list.length == 0) {
-              linysTitleText({
-                text: "¯\\_(ツ)_/¯"
-              })
-                .margin(30)
-                .opacity(0.7)
-                .animation(animation_default())
-            }
-          }
-          .reverse(true)
+          Column({ space: 15 }) {
+            linysText({
+              text: $r('app.string.History_desc_1'),
+              max_lines: 6
+            })
+              .width("100%")
+              .opacity(0.9)
+            linysText({
+              text: $r('app.string.History_desc_2'),
+              max_lines: 6
+            })
+              .width("100%")
+              .opacity(0.9)
+            linysText({
+              text: $r('app.string.Have_a_Nice_Surf'),
+              max_lines: 2
+            })
+              .width("100%")
+              .opacity(0.9)
+          } // Title
           .width("100%")
-        } // Main history list
-        .padding({ bottom: 5 })
-        .scrollable(ScrollDirection.Vertical)
-        .edgeEffect(EdgeEffect.Spring)
-        .onAreaChange((_o, n) => {
-          this.scroll_area_height = n.height as number;
-        })
-        .align(Alignment.Top)
-        .layoutWeight(1)
-        .width("100%")
-        .borderRadius(13.5)
-        .backgroundColor(this.color_current_secondary)
-
-        Scroll() {
-          Row({ space: 5 }) {
-            ForEach(this.available_months.reverse(), (item: number[], _key: number) => {
-              month_button({
-                year: item[0],
-                month: item[1],
-                viewing_year: this.viewing_year,
-                viewing_month: this.viewing_month,
-              })
-                .onClick(() => {
-                  // MEOW
-                  this.bunch_of_history.open_month_from_disk(item[0], item[1], false);
-                  this.refresh_current_history_list();
-                  this.viewing_year = item[0];
-                  this.viewing_month = item[1];
-                })
-            }) // Items
-          }
-        } // Available months
-        .scrollable(ScrollDirection.Horizontal)
-        .edgeEffect(EdgeEffect.Spring)
-        .onAreaChange((_o, n) => {
-          this.scroll_area_height = n.height as number;
-        })
-        .padding(5)
-        .align(Alignment.Start)
-        .width("100%")
-        .borderRadius(13.5)
-        .backgroundColor(this.color_current_secondary)
-
-      } // List
-      .width(this.tablet_mode ? "65%" : "100%")
-      .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)
-      .animation(animation_default())
-
-      Column() {
-        Scroll() {
-          Column({ space: 10 }) {
-            Row() {
-              linysTitleText({ text: $r("app.string.Settings_edit_selecting") })
-              linysTitleText({ text: " " + this.selected_number.toString() + " " })
-              linysTitleText({ text: $r("app.string.Settings_edit_selecting_items") })
-            } // Selecting ... item(s)
-            Row() {
-              linysSymbol({ symbol_glyph_target: 'sys.symbol.list_checkmask' })
-                .onClick(() => {
-                  this.select_all();
-                })
-              Blank()
-              Button("  󰀁  ")// Delete
-                .type(ButtonType.Capsule)
-                .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
-                $r("app.color.font_color_title"))
-                .fontColor(this.delete_confirm > 0 ? this.color_current_font :
-                this.color_current_primary)
-                .border({
-                  width: 2,
-                  color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
-                })
-                .fontSize(fontSize_Large())
-                .fontWeight(FontWeight.Medium)
-                .height(capsule_bar_height())
-                .onClick(() => {
-                  this.delete_confirm += 300;
-                  if (this.delete_confirm >= 301) {
-                    // Delete
-                    this.delete_selected();
-                  }
-                })
-                .clickEffect(click_effect_default())
-                .animation(animation_default())
-            } // Buttons
-            .width("100%")
-          }
-          .padding({ top: 10, right: this.tablet_mode ? 10 : 0, bottom: 5 })
-          .alignItems(HorizontalAlign.Start)
-          .width("100%")
-          .animation(animation_default())
-        } // Select controls
+        } // Title and descriptions
         .scrollBar(BarState.Off)
-        .width("100%")
-        .height(this.selecting ? 80 : 0)
+        .align(Alignment.TopStart)
+        .edgeEffect(EdgeEffect.Spring)
+        .padding({ bottom: 10, right: this.tablet_mode ? 10 : 0 })
+        .width(this.tablet_mode ? "35%" : "100%")
+        .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
         .animation(animation_default())
-      } // Controls
-      .alignItems(HorizontalAlign.End)
-      .id("controls_history")
-      .alignRules(this.alignRules_foot)
-      .animation(animation_default())
-      .width(this.tablet_mode ? "35%" : "100%")
+        .id("title_history")
+
+        Column({ space: 10 }) {
+
+          Row() {
+            linysText({
+              text: $r('app.string.Settings_experience_history_date_format'),
+              font_weight: FontWeight.Medium
+            })
+              .opacity(0.7)
+            linysText({ text: " (" + this.history_list.length.toString() + ")" })
+              .opacity(0.7)
+          } // Time elapse description
+          .width("100%")
+
+          Scroll() {
+            Column() {
+              ForEach(this.history_list, (item: history_record, key: number) => {
+                meowRelation({
+                  index: key,
+                  show: this.showing_settings,
+                  selected: this.selected,
+                  selected_number: this.selected_number,
+                  selecting: this.selecting,
+                  label_link: item,
+                  controller: this.controller,
+                })
+                  .width("100%")
+              }) // Items
+              if (this.history_list.length == 0) {
+                linysTitleText({
+                  text: "¯\\_(ツ)_/¯"
+                })
+                  .margin(30)
+                  .opacity(0.7)
+                  .animation(animation_default())
+              }
+            }
+            .reverse(true)
+            .width("100%")
+          } // Main history list
+          .padding({ bottom: 5 })
+          .scrollable(ScrollDirection.Vertical)
+          .edgeEffect(EdgeEffect.Spring)
+          .onAreaChange((_o, n) => {
+            this.scroll_area_height = n.height as number;
+          })
+          .align(Alignment.Top)
+          .layoutWeight(1)
+          .width("100%")
+          .borderRadius(13.5)
+          .backgroundColor(this.color_current_secondary)
+
+          Scroll() {
+            Row({ space: 5 }) {
+              ForEach(this.available_months.reverse(), (item: number[], _key: number) => {
+                month_button({
+                  year: item[0],
+                  month: item[1],
+                  viewing_year: this.viewing_year,
+                  viewing_month: this.viewing_month,
+                })
+                  .onClick(() => {
+                    // MEOW
+                    this.bunch_of_history.open_month_from_disk(item[0], item[1], false);
+                    this.refresh_current_history_list();
+                    this.viewing_year = item[0];
+                    this.viewing_month = item[1];
+                  })
+              }) // Items
+            }
+          } // Available months
+          .scrollable(ScrollDirection.Horizontal)
+          .edgeEffect(EdgeEffect.Spring)
+          .onAreaChange((_o, n) => {
+            this.scroll_area_height = n.height as number;
+          })
+          .padding(5)
+          .align(Alignment.Start)
+          .width("100%")
+          .borderRadius(13.5)
+          .backgroundColor(this.color_current_secondary)
+
+        } // List
+        .width(this.tablet_mode ? "65%" : "100%")
+        .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)
+        .animation(animation_default())
+
+        Column() {
+          Scroll() {
+            Column({ space: 10 }) {
+              Row() {
+                linysTitleText({ text: $r("app.string.Settings_edit_selecting") })
+                linysTitleText({ text: " " + this.selected_number.toString() + " " })
+                linysTitleText({ text: $r("app.string.Settings_edit_selecting_items") })
+              } // Selecting ... item(s)
+              Row() {
+                linysSymbol({ symbol_glyph_target: 'sys.symbol.list_checkmask' })
+                  .onClick(() => {
+                    this.select_all();
+                  })
+                Blank()
+                Button("  󰀁  ")// Delete
+                  .type(ButtonType.Capsule)
+                  .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
+                  $r("app.color.font_color_title"))
+                  .fontColor(this.delete_confirm > 0 ? this.color_current_font :
+                  this.color_current_primary)
+                  .border({
+                    width: 2,
+                    color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
+                  })
+                  .fontSize(fontSize_Large())
+                  .fontWeight(FontWeight.Medium)
+                  .height(capsule_bar_height())
+                  .onClick(() => {
+                    this.delete_confirm += 300;
+                    if (this.delete_confirm >= 301) {
+                      // Delete
+                      this.delete_selected();
+                    }
+                  })
+                  .clickEffect(click_effect_default())
+                  .animation(animation_default())
+              } // Buttons
+              .width("100%")
+            }
+            .padding({ top: 10, right: this.tablet_mode ? 10 : 0, bottom: 5 })
+            .alignItems(HorizontalAlign.Start)
+            .width("100%")
+            .animation(animation_default())
+          } // Select controls
+          .scrollBar(BarState.Off)
+          .width("100%")
+          .height(this.selecting ? 80 : 0)
+          .animation(animation_default())
+        } // Controls
+        .alignItems(HorizontalAlign.End)
+        .id("controls_history")
+        .alignRules(this.alignRules_foot)
+        .animation(animation_default())
+        .width(this.tablet_mode ? "35%" : "100%")
+        .onAppear(() => {
+          setInterval(() => {
+            if (this.delete_confirm > 0) {
+              this.delete_confirm -= 1;
+            }
+            // Reset delete confirm
+          }, 10)
+        })
+      }
+      .layoutWeight(1)
     }
-    .padding(15)
-    .width("100%")
-    .height("100%")
-    .backgroundColor(this.color_current_primary)
-    .onAppear(() => {
-      setInterval(() => {
-        if (this.delete_confirm > 0) {
-          this.delete_confirm -= 1;
-        }
-        // Reset delete confirm
-      }, 10)
-    })
   }
 
   // Utils

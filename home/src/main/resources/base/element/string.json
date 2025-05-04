@@ -601,6 +601,10 @@
       "value": "Clearing cookies may fix some weird web errors, but a site may require you to login again if its cookies are cleared."
     },
     {
+      "name": "QR_code",
+      "value": "QR Code"
+    },
+    {
       "name": "Settings_woof_add_a_domain",
       "value": "Add a site"
     },

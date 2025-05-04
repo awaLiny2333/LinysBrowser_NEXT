@@ -11,6 +11,7 @@ import {
 } from '../hosts/bunch_of_defaults';
 import { bunch_of_search_engines, search_engine } from '../hosts/bunch_of_search_engines';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
+import woofControlFrame from './woofControlFrame';
 
 @CustomDialog
 struct woofAddSE {
@@ -35,145 +36,142 @@ struct woofAddSE {
   @StorageLink('universal_load_url_gateway') load_url_gateway: string = "";
 
   build() {
-    Scroll() {
-      Column() {
-
-        linysTitleText({
-          text: $r('app.string.AddSE_search_again_on'),
-          max_lines: 1
-        })
-          .width("100%")
-
-        Column({ space: 6.5 }) {
-          Row() {
-            Text($r('app.string.Settings_general_custom_ua_default'))// Title
-              .fontColor(this.color_current_font)
-              .animation(animation_default())
-              .fontSize(fontSize_Normal())
-              .textOverflow({ overflow: TextOverflow.Ellipsis })
-              .layoutWeight(1)
-          }
-          .padding(10)
-          .borderRadius(7)
-          .backgroundColor(this.color_current_primary)
-          .animation(animation_default())
-          .height(this.button_height_default)
-          .width("100%")
-          .animation(animation_default())
-          .clickEffect(click_effect_default())
-          .onClick(() => {
-            this.load_url_gateway = default_search_engine().replaceAll('%s', this.keyword);
-            if (this.controller) {
-              this.controller.close();
+    woofControlFrame({
+      title: $r('app.string.AddSE_search_again_on'),
+      controller: this.controller
+    }) {
+      Scroll() {
+        Column({space:15}) {
+          Column({ space: 6.5 }) {
+            Row() {
+              Text($r('app.string.Settings_general_custom_ua_default'))// Title
+                .fontColor(this.color_current_font)
+                .animation(animation_default())
+                .fontSize(fontSize_Normal())
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+                .layoutWeight(1)
             }
-          })
-
-          ForEach(
-            this.list_of_search_engines, (_user_agent: search_engine, key: number) => {
-            meowSEButton({
-              my_index: key,
-            })
-              .onClick(() => {
-                this.load_url_gateway = this.list_of_search_engines[key].url.replaceAll('%s', this.keyword);
-                if (this.controller) {
-                  this.controller.close();
-                }
-              })
-          },
-          )
-        }
-        .padding(6.5)
-        .margin(15)
-        .borderRadius(13.5)
-        .backgroundColor($r('sys.color.comp_background_tertiary'))
-        .width("100%")
-        .animation(animation_default())
-
-        Row() {
-          linysShowButton({
-            symbol_glyph_target: 'sys.symbol.plus_square',
-            text: $r('app.string.AddSE_add_to_search_engines'),
-            show: this.adding_SE
-          })
-            .onClick(() => {
-              this.adding_SE = !this.adding_SE;
-            })
-        }
-        .width("100%")
-        .justifyContent(FlexAlign.End)
-
-
-        Scroll() {
-          Column({ space: 10 }) {
-            Row({ space: 10 }) {
-              linysSymbol({ symbol_glyph_target: "sys.symbol.rename" })
-              TextInput({ text: this.label })
-                .onChange((value) => {
-                  this.label = value;
-                })
-                .fontWeight(FontWeight.Regular)
-                .fontColor(this.color_current_font)
-                .caretColor(this.color_current_font)
-                .selectedBackgroundColor(this.color_current_font)
-                .layoutWeight(1)
-                .height(capsule_bar_height())
-
-            } // Edit label
-            .width("100%")
-
-            Row({ space: 10 }) {
-              linysSymbol({ symbol_glyph_target: "sys.symbol.paperclip" })
-              TextArea({ text: this.link })
-                .onChange((value) => {
-                  this.link = value;
-                })
-                .fontWeight(FontWeight.Regular)
-                .fontColor(this.color_current_font)
-                .caretColor(this.color_current_font)
-                .selectedBackgroundColor(this.color_current_font)
-                .layoutWeight(1)
-
-            } // Edit content
+            .padding(10)
+            .borderRadius(7)
+            .backgroundColor(this.color_current_primary)
+            .animation(animation_default())
+            .height(this.button_height_default)
             .width("100%")
             .animation(animation_default())
+            .clickEffect(click_effect_default())
+            .onClick(() => {
+              this.load_url_gateway = default_search_engine().replaceAll('%s', this.keyword);
+              if (this.controller) {
+                this.controller.close();
+              }
+            })
 
-            Row() {
-              Blank()
-              linysCapsuleButton({ text: '  󰀓  ' })
+            ForEach(
+              this.list_of_search_engines, (_user_agent: search_engine, key: number) => {
+              meowSEButton({
+                my_index: key,
+              })
                 .onClick(() => {
-                  this.bunch_of_search_engines.add_search_engine(new search_engine(this.label, this.link));
-                  this.bunch_of_settings.set('custom_search_engines', this.bunch_of_search_engines.export_string());
-                  // if (this.controller) {
-                  //   this.controller.close();
-                  // }
+                  this.load_url_gateway = this.list_of_search_engines[key].url.replaceAll('%s', this.keyword);
+                  if (this.controller) {
+                    this.controller.close();
+                  }
                 })
-            } // Confirm Button
-            .width("100%")
+            },
+            )
           }
-          .onAreaChange((_o, n) => {
-            this.height_of_add_panel = n.height as number;
-          })
+          .padding(6.5)
+          .borderRadius(13.5)
+          .backgroundColor($r('sys.color.comp_background_tertiary'))
+          .width("100%")
+          .animation(animation_default())
+
+          Column(){
+            Row() {
+              linysShowButton({
+                symbol_glyph_target: 'sys.symbol.plus_square',
+                text: $r('app.string.AddSE_add_to_search_engines'),
+                show: this.adding_SE
+              })
+                .onClick(() => {
+                  this.adding_SE = !this.adding_SE;
+                })
+            } // Plus button
+            .width("100%")
+            .justifyContent(FlexAlign.End)
+
+            Scroll() {
+              Column({ space: 10 }) {
+                Row({ space: 10 }) {
+                  linysSymbol({ symbol_glyph_target: "sys.symbol.rename" })
+                  TextInput({ text: this.label })
+                    .onChange((value) => {
+                      this.label = value;
+                    })
+                    .fontWeight(FontWeight.Regular)
+                    .fontColor(this.color_current_font)
+                    .caretColor(this.color_current_font)
+                    .selectedBackgroundColor(this.color_current_font)
+                    .layoutWeight(1)
+                    .height(capsule_bar_height())
+
+                } // Edit label
+                .width("100%")
+
+                Row({ space: 10 }) {
+                  linysSymbol({ symbol_glyph_target: "sys.symbol.paperclip" })
+                  TextArea({ text: this.link })
+                    .onChange((value) => {
+                      this.link = value;
+                    })
+                    .fontWeight(FontWeight.Regular)
+                    .fontColor(this.color_current_font)
+                    .caretColor(this.color_current_font)
+                    .selectedBackgroundColor(this.color_current_font)
+                    .layoutWeight(1)
+
+                } // Edit content
+                .width("100%")
+                .animation(animation_default())
+
+                Row() {
+                  Blank()
+                  linysCapsuleButton({ text: '  󰀓  ' })
+                    .onClick(() => {
+                      this.bunch_of_search_engines.add_search_engine(new search_engine(this.label, this.link));
+                      this.bunch_of_settings.set('custom_search_engines', this.bunch_of_search_engines.export_string());
+                      // if (this.controller) {
+                      //   this.controller.close();
+                      // }
+                    })
+                } // Confirm Button
+                .width("100%")
+              }
+              .onAreaChange((_o, n) => {
+                this.height_of_add_panel = n.height as number;
+              })
+            }
+            .margin({ top: this.adding_SE ? 15 : 0 })
+            .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.PARENT_FIRST })
+            .edgeEffect(EdgeEffect.Spring)
+            .height(this.adding_SE ? this.height_of_add_panel : 0)
+            .animation(animation_default())
+            .scrollBar(BarState.Off)
+          }
         }
-        .margin({ top: this.adding_SE ? 15 : 0 })
-        .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.PARENT_FIRST })
-        .edgeEffect(EdgeEffect.Spring)
-        .height(this.adding_SE ? this.height_of_add_panel : 0)
-        .animation(animation_default())
-        .scrollBar(BarState.Off)
+        .alignItems(HorizontalAlign.Center)
+        .justifyContent(FlexAlign.Center)
+        .width("100%")
       }
-      .padding(15)
-      .alignItems(HorizontalAlign.Center)
-      .justifyContent(FlexAlign.Center)
-      .width("100%")
+      .layoutWeight(1)
+      .scrollBar(BarState.Off)
+      .edgeEffect(EdgeEffect.Spring)
+      .onAppear(() => {
+        // Preserve the main title only
+        this.label = this.label.replace(this.keyword, '');
+        this.label = this.label.replace(/ ?[_-] ?/g, '');
+      })
     }
-    .scrollBar(BarState.Off)
-    .backgroundColor(this.color_current_primary)
-    .edgeEffect(EdgeEffect.Spring)
-    .onAppear(() => {
-      // Preserve the main title only
-      this.label = this.label.replace(this.keyword, '');
-      this.label = this.label.replace(/ ?[_-] ?/g, '');
-    })
   }
 
   on_SE_change() {

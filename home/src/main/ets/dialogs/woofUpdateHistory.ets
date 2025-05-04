@@ -1,6 +1,7 @@
 import linysText from '../components/linysText';
 import linysTitleText from '../components/linysTitleText';
 import { animation_default, click_effect_default } from '../hosts/bunch_of_defaults';
+import woofControlFrame from './woofControlFrame';
 
 @CustomDialog
 struct woofUpdateHistory {
@@ -92,30 +93,29 @@ struct woofUpdateHistory {
   ];
 
   build() {
-    Scroll() {
-      Column({ space: 10 }) {
-        linysTitleText({
-          text: $r('app.string.Update_record'),
-        })
-          .width("100%")
-          .padding({ top: 5, bottom: 5 })
-        ForEach(this.texts, (text: string, index: number) => {
-          if (index % 3 == 0) {
-            release_card({
-              title: text,
-              text_eng: this.texts[index + 1],
-              text_chi: this.texts[index + 2],
-            })
-          }
-        })
+    woofControlFrame({
+      title: $r('app.string.Update_record'),
+      controller: this.controller
+    }) {
+      Scroll() {
+        Column({ space: 10 }) {
+          ForEach(this.texts, (text: string, index: number) => {
+            if (index % 3 == 0) {
+              release_card({
+                title: text,
+                text_eng: this.texts[index + 1],
+                text_chi: this.texts[index + 2],
+              })
+            }
+          })
+        }
+        .alignItems(HorizontalAlign.Center)
+        .justifyContent(FlexAlign.Center)
+        .width("100%")
       }
-      .padding(15)
-      .alignItems(HorizontalAlign.Center)
-      .justifyContent(FlexAlign.Center)
-      .width("100%")
+      .edgeEffect(EdgeEffect.Spring)
+      .layoutWeight(1)
     }
-    .backgroundColor(this.color_current_primary)
-    .edgeEffect(EdgeEffect.Spring)
   }
 }
 
