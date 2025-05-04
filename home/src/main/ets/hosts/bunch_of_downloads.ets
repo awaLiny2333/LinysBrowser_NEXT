@@ -2,13 +2,14 @@ import { BusinessError, request } from '@kit.BasicServicesKit';
 import { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
 
 export class bunch_of_downloads {
-  list_of_on_going_tasks: request.DownloadTask[] = [];
+  list_of_on_going_tasks: request.agent.Task[] = [];
   list_of_downloaded_size: number[] = [];
   list_of_target_folders: string[] = [];
   list_of_full_size: number[] = [];
   list_of_file_names: string[] = [];
   list_of_paused: boolean[] = [];
   list_of_urls: string[] = [];
+  list_of_completed: boolean[] = [];
   list_of_additional_info: string[][] = [];
   last_action: number = 0;
 
@@ -41,7 +42,6 @@ export class bunch_of_downloads {
     let file_url_split = url.split("/");
     let file_name_question_mark_split = file_url_split[file_url_split.length-1].split("?");
     let file_name = file_name_question_mark_split[0];
-    let file_name_overwrite = false;
     let additional_info: string[] = [];
 
     // get additional info
@@ -53,7 +53,6 @@ export class bunch_of_downloads {
     // file name overwrite
     let try_universal_filename = AppStorage.get('universal_new_download_filename_gateway') as string;
     if (try_universal_filename != '') {
-      file_name_overwrite = true;
       file_name = try_universal_filename;
       AppStorage.set('universal_new_download_filename_gateway', '');
     }
@@ -71,16 +70,27 @@ export class bunch_of_downloads {
     // connect path
     let download_target_path = file_dir + file_name;
 
-    let config: request.DownloadConfig = {
+    let config: request.agent.Config = {
+      action: request.agent.Action.DOWNLOAD,
       url: url,
-      filePath: download_target_path,
+      saveas: download_target_path,
+      mode: request.agent.Mode.BACKGROUND,
+      overwrite: false,
+      method: "GET",
+      index: 0,
+      begins: 0,
+      ends: -1,
+      // gauge: true,
     };
 
     try {
-      request.downloadFile(getContext(), config).then((downloadTask: request.DownloadTask) => {
+      console.log('[meow][bunch_of_downloads] Try to start request!');
+      request.agent.create(getContext(), config).then((downloadTask: request.agent.Task) => {
         this.last_action = Date.now();
 
-        downloadTask.on('complete', () => {
+        downloadTask.start();
+
+        downloadTask.on('completed', () => {
           console.info('[bunch_of_downloads] Download complete, path: ' + download_target_path);
 
           let my_index = this.list_of_on_going_tasks.indexOf(downloadTask);
@@ -88,26 +98,21 @@ export class bunch_of_downloads {
 
           this.list_of_full_size[my_index] = this.list_of_downloaded_size[my_index];
           this.list_of_paused[my_index] = false;
+          this.list_of_completed[my_index] = true;
           // Update list
 
-          downloadTask.delete();
+          downloadTask.stop();
           this.last_action = Date.now();
         })
 
-        downloadTask.on('progress', (progress) => {
-          console.info('[bunch_of_downloads] Download progress: ' + (progress).toString() + " Bytes");
-
-          let my_index = this.list_of_on_going_tasks.indexOf(downloadTask);
+        downloadTask.on('progress', (progress: request.agent.Progress) => {
+          console.info('[bunch_of_downloads] Download progress: ' + (progress.processed).toString() +
+            " Bytes, sized: " + progress.sizes.toString());
           // Get my index
-          this.list_of_downloaded_size[my_index] = progress;
+          let my_index = this.list_of_on_going_tasks.indexOf(downloadTask);
 
-          downloadTask.getTaskInfo().then((info) => {
-            this.list_of_full_size[my_index] = info.downloadTotalBytes;
-            this.list_of_file_names[my_index] = file_name_overwrite ? file_name : info.fileName;
-            this.list_of_urls[my_index] = info.targetURI;
-            // Update related info
-            // console.info('[bunch_of_downloads] Download file name: ' + info.downloadTitle);
-          })
+          this.list_of_downloaded_size[my_index] = progress.processed;
+          this.list_of_full_size[my_index] = progress.sizes[0];
 
           this.last_action = Date.now();
           // Refresh
@@ -117,19 +122,40 @@ export class bunch_of_downloads {
           console.info('[bunch_of_downloads] Download paused');
           this.last_action = Date.now();
         })
+        downloadTask.on('remove', () => {
+          console.info('[bunch_of_downloads] Download removed');
+
+          let index = this.list_of_on_going_tasks.indexOf(downloadTask);
+
+          try {
+            fs.rmdir(this.list_of_target_folders[index]);
+          } catch (e) {
+            console.error("[ERROR][bunch_of_downloads][delete_task] Delete task file failed. " + e)
+          }
+
+          this.list_of_on_going_tasks.splice(index, 1);
+          this.list_of_downloaded_size.splice(index, 1);
+          this.list_of_target_folders.splice(index, 1);
+          this.list_of_full_size.splice(index, 1);
+          this.list_of_file_names.splice(index, 1);
+          this.list_of_paused.splice(index, 1);
+          this.list_of_urls.splice(index, 1);
+          this.list_of_completed.splice(index, 1);
+          this.list_of_additional_info.splice(index, 1);
+
+          this.last_action = Date.now();
+        })
 
         // Register on download start
         this.list_of_on_going_tasks.push(downloadTask);
         this.list_of_downloaded_size.push(0);
+        this.list_of_full_size.push(-1);
         this.list_of_paused.push(false);
+        this.list_of_completed.push(false);
         this.list_of_additional_info.push(additional_info);
         this.list_of_target_folders.push(file_dir);
-
-        downloadTask.getTaskInfo().then((info) => {
-          this.list_of_full_size.push(info.downloadTotalBytes);
-          this.list_of_file_names.push(file_name_overwrite ? file_name : info.fileName);
-          this.list_of_urls.push(info.targetURI);
-        })
+        this.list_of_file_names.push(file_name);
+        this.list_of_urls.push(url);
 
       }).catch((err: BusinessError) => {
         console.error(`[bunch_of_downloads][ERROR] Meow Invoke downloadTask failed, code is ${err.code}, message is ${err.message}`);
@@ -145,7 +171,7 @@ export class bunch_of_downloads {
    * @param index The index of target task in the tasks list to be paused.
    * */
   pause_task(index: number) {
-    this.list_of_on_going_tasks[index].suspend();
+    this.list_of_on_going_tasks[index].pause();
     this.list_of_paused[index] = true;
   }
 
@@ -154,7 +180,7 @@ export class bunch_of_downloads {
    * @param index The index of target task in the tasks list to be resumed.
    * */
   continue_task(index: number) {
-    this.list_of_on_going_tasks[index].restore();
+    this.list_of_on_going_tasks[index].resume();
     this.list_of_paused[index] = false;
   }
 
@@ -164,7 +190,7 @@ export class bunch_of_downloads {
    * */
   delete_task(index: number) {
 
-    this.list_of_on_going_tasks[index].delete();
+    this.list_of_on_going_tasks[index].stop();
 
     try {
       fs.rmdir(this.list_of_target_folders[index]);
@@ -179,6 +205,7 @@ export class bunch_of_downloads {
     this.list_of_file_names.splice(index, 1);
     this.list_of_paused.splice(index, 1);
     this.list_of_urls.splice(index, 1);
+    this.list_of_completed.splice(index, 1);
     this.list_of_additional_info.splice(index, 1);
 
     this.last_action = Date.now();
@@ -189,16 +216,14 @@ export class bunch_of_downloads {
    * @param index The index of target file in the tasks list to be moved.
    * */
   async save_downloaded_item_to_local(index: number) {
-    let info = await this.list_of_on_going_tasks[index].getTaskInfo()
-
-    if (info.status != request.SESSION_SUCCESSFUL) {
+    if (!this.list_of_completed[index]) {
       return;
     }
 
     // Finished task, do job
-    let file_path = info.filePath;
-    let file_name = info.fileName;
-    let file_size = info.downloadTotalBytes;
+    let file_path = this.list_of_target_folders[index];
+    let file_name = this.list_of_file_names[index];
+    let file_size = this.list_of_full_size[index];
     let target_uri: string[] = [];
 
     // Save
@@ -209,7 +234,7 @@ export class bunch_of_downloads {
 
       await documentPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
         target_uri = documentSaveResult
-        console.log("[bunch_of_downloads][Export] from: " + file_path)
+        console.log("[bunch_of_downloads][Export] from: " + file_path + file_name)
         console.log("[bunch_of_downloads][Export] to: " + target_uri[0])
 
         // let target_path = (new fileUri.FileUri(target_uri[0])).path;
@@ -217,7 +242,7 @@ export class bunch_of_downloads {
         // to be identified as unauthorized!
 
         let writeLen = file_size;
-        fs.copy(fileUri.getUriFromPath(file_path), target_uri[0])
+        fs.copy(fileUri.getUriFromPath(file_path + file_name), target_uri[0])
         // .then(() => {
         //   fs.rmdir(this.list_of_target_folders[index]);
         // });

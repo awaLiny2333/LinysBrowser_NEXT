@@ -150,7 +150,7 @@ struct meowDownloadsButton {
         Row({ space: 10 }) {
           linysText({
             text: this.my_link,
-            max_lines: 2,
+            max_lines: 4,
           })// File link
             .clickEffect(click_effect_default())
             .onClick(() => {

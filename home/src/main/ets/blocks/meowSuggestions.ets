@@ -14,6 +14,8 @@ struct meowSuggestions {
   @StorageProp('search_input') @Watch('refresh_suggestions') search_input: string = "";
   @StorageProp('screen_height') screen_height: number = 0;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
+  @StorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
+  @StorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
   // Hosts
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
@@ -32,14 +34,14 @@ struct meowSuggestions {
     Scroll() {
       if (this.tablet_mode) {
         Row({ space: 10 }) {
-            suggestionList({ suggestions: this.bookmark_suggestions })
-              .layoutWeight(1)
-              .visibility(this.bookmark_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
-              .animation(animation_default())
-            suggestionList({ suggestions: this.history_suggestions })
-              .layoutWeight(1)
-              .visibility(this.history_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
-              .animation(animation_default())
+          suggestionList({ suggestions: this.bookmark_suggestions })
+            .layoutWeight(1)
+            .visibility(this.bookmark_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
+            .animation(animation_default())
+          suggestionList({ suggestions: this.history_suggestions })
+            .layoutWeight(1)
+            .visibility(this.history_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
+            .animation(animation_default())
         }
         .alignItems(VerticalAlign.Top)
         .onAreaChange((_o, n) => {
@@ -48,10 +50,10 @@ struct meowSuggestions {
         .animation(animation_default())
       } else {
         Column({ space: 10 }) {
-            suggestionList({ suggestions: this.bookmark_suggestions })
-              .width("100%")
-              .visibility(this.bookmark_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
-              .animation(animation_default())
+          suggestionList({ suggestions: this.bookmark_suggestions })
+            .width("100%")
+            .visibility(this.bookmark_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
+            .animation(animation_default())
           suggestionList({ suggestions: this.history_suggestions })
             .width("100%")
             .visibility(this.history_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
@@ -66,8 +68,8 @@ struct meowSuggestions {
     }
     .scrollBar(BarState.Off)
     .margin({
-      // left: 15,
-      // right: 15,
+      left: 15,
+      right: 15,
       top: this.top_margin,
       bottom: this.bottom_margin
     })
