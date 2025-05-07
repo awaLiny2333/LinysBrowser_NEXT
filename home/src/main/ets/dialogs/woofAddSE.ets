@@ -1,7 +1,6 @@
 import linysCapsuleButton from '../components/linysCapsuleButton';
 import linysShowButton from '../components/linysShowButton';
 import linysSymbol from '../components/linysSymbol';
-import linysTitleText from '../components/linysTitleText';
 import {
   animation_default,
   capsule_bar_height,
@@ -41,7 +40,7 @@ struct woofAddSE {
       controller: this.controller
     }) {
       Scroll() {
-        Column({space:15}) {
+        Column({ space: 15 }) {
           Column({ space: 6.5 }) {
             Row() {
               Text($r('app.string.Settings_general_custom_ua_default'))// Title
@@ -86,7 +85,7 @@ struct woofAddSE {
           .width("100%")
           .animation(animation_default())
 
-          Column(){
+          Column() {
             Row() {
               linysShowButton({
                 symbol_glyph_target: 'sys.symbol.plus_square',
@@ -152,7 +151,10 @@ struct woofAddSE {
               })
             }
             .margin({ top: this.adding_SE ? 15 : 0 })
-            .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.PARENT_FIRST })
+            .nestedScroll({
+              scrollForward: NestedScrollMode.PARENT_FIRST,
+              scrollBackward: NestedScrollMode.PARENT_FIRST
+            })
             .edgeEffect(EdgeEffect.Spring)
             .height(this.adding_SE ? this.height_of_add_panel : 0)
             .animation(animation_default())
@@ -166,6 +168,10 @@ struct woofAddSE {
       .layoutWeight(1)
       .scrollBar(BarState.Off)
       .edgeEffect(EdgeEffect.Spring)
+      .constraintSize({
+        maxHeight: 48.5 * this.bunch_of_search_engines.list_of_search_engines.length + (this.adding_SE ? 270 : 100)
+      })
+      .animation(animation_default())
       .onAppear(() => {
         // Preserve the main title only
         this.label = this.label.replace(this.keyword, '');

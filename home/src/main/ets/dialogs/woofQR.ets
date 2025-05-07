@@ -42,6 +42,7 @@ struct woofQR {
       }
       .layoutWeight(1)
       .edgeEffect(EdgeEffect.Spring)
+      .constraintSize({ maxHeight: 320 })
     }
   }
 }
