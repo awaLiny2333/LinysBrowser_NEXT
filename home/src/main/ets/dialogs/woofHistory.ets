@@ -10,6 +10,113 @@ import {
 import { bunch_of_history, history_record } from '../hosts/bunch_of_history';
 import woofControlFrame from './woofControlFrame';
 
+/**
+ * Adapted from https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-rendering-control-lazyforeach
+ * */
+// BasicDataSource实现了IDataSource接口，用于管理listener监听，以及通知LazyForEach数据更新
+class BasicDataSource implements IDataSource {
+  private listeners: DataChangeListener[] = [];
+  private originDataArray: history_record[] = [];
+
+  public totalCount(): number {
+    return 0;
+  }
+
+  public getData(index: number): history_record {
+    return this.originDataArray[index];
+  }
+
+  // 该方法为框架侧调用，为LazyForEach组件向其数据源处添加listener监听
+  registerDataChangeListener(listener: DataChangeListener): void {
+    if (this.listeners.indexOf(listener) < 0) {
+      // console.info('add listener');
+      this.listeners.push(listener);
+    }
+  }
+
+  // 该方法为框架侧调用，为对应的LazyForEach组件在数据源处去除listener监听
+  unregisterDataChangeListener(listener: DataChangeListener): void {
+    const pos = this.listeners.indexOf(listener);
+    if (pos >= 0) {
+      // console.info('remove listener');
+      this.listeners.splice(pos, 1);
+    }
+  }
+
+  // 通知LazyForEach组件需要重载所有子组件
+  notifyDataReload(): void {
+    this.listeners.forEach(listener => {
+      listener.onDataReloaded();
+    });
+  }
+
+  // 通知LazyForEach组件需要在index对应索引处添加子组件
+  notifyDataAdd(index: number): void {
+    this.listeners.forEach(listener => {
+      listener.onDataAdd(index);
+      // 写法2：listener.onDatasetChange([{type: DataOperationType.ADD, index: index}]);
+    });
+  }
+
+  // 通知LazyForEach组件在index对应索引处数据有变化，需要重建该子组件
+  notifyDataChange(index: number): void {
+    this.listeners.forEach(listener => {
+      listener.onDataChange(index);
+      // 写法2：listener.onDatasetChange([{type: DataOperationType.CHANGE, index: index}]);
+    });
+  }
+
+  // 通知LazyForEach组件需要在index对应索引处删除该子组件
+  notifyDataDelete(index: number): void {
+    this.listeners.forEach(listener => {
+      listener.onDataDelete(index);
+      // 写法2：listener.onDatasetChange([{type: DataOperationType.DELETE, index: index}]);
+    });
+  }
+
+  // 通知LazyForEach组件将from索引和to索引处的子组件进行交换
+  notifyDataMove(from: number, to: number): void {
+    this.listeners.forEach(listener => {
+      listener.onDataMove(from, to);
+      // 写法2：listener.onDatasetChange(
+      //         [{type: DataOperationType.EXCHANGE, index: {start: from, end: to}}]);
+    });
+  }
+
+  notifyDatasetChange(operations: DataOperation[]): void {
+    this.listeners.forEach(listener => {
+      listener.onDatasetChange(operations);
+    });
+  }
+}
+
+class MyDataSource extends BasicDataSource {
+  private dataArray: history_record[] = [];
+
+  constructor(fromData: history_record[]) {
+    super();
+    this.dataArray = fromData;
+  }
+
+  public setData(data: history_record[]): void {
+    this.dataArray = data;
+    this.notifyDataReload();
+  }
+
+  public totalCount(): number {
+    return this.dataArray.length;
+  }
+
+  public getData(index: number): history_record {
+    return this.dataArray[index];
+  }
+
+  public pushData(data: history_record): void {
+    this.dataArray.push(data);
+    this.notifyDataAdd(this.dataArray.length - 1);
+  }
+}
+
 @CustomDialog
 struct woofHistory {
   controller: CustomDialogController;
@@ -55,6 +162,9 @@ struct woofHistory {
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  scroller: Scroller = new Scroller();
+  // Data
+  private data: MyDataSource = new MyDataSource(this.bunch_of_history.history_this_month);
 
   build() {
     woofControlFrame({
@@ -108,19 +218,31 @@ struct woofHistory {
           .width("100%")
 
           Scroll() {
-            Column() {
-              ForEach(this.history_list, (item: history_record, key: number) => {
-                meowRelation({
-                  index: key,
-                  show: this.showing_settings,
-                  selected: this.selected,
-                  selected_number: this.selected_number,
-                  selecting: this.selecting,
-                  label_link: item,
-                  controller: this.controller,
-                })
-                  .width("100%")
-              }) // Items
+            List({ scroller: this.scroller }) {
+              LazyForEach(this.data, (_record_item: history_record, key: number) => {
+                ListItem() {
+                  // linysText({ text: key.toString() })
+                  if (this.history_list[this.history_list.length - 1 - key]) {
+                    meowRelation({
+                      index: this.history_list.length - 1 - key,
+                      show: this.showing_settings,
+                      selected: this.selected,
+                      selected_number: this.selected_number,
+                      selecting: this.selecting,
+                      label_link: this.history_list[this.history_list.length - 1 - key],
+                      controller: this.controller,
+                    })
+                      .width("100%")
+                      .padding({
+                        left: 12,
+                        right: 12,
+                        top: 9,
+                        bottom: 3
+                      })
+                  }
+                }
+              }, (item: history_record) => item.accessed_time.toString() + this.history_list.length.toString()) // Items
+
               if (this.history_list.length == 0) {
                 linysTitleText({
                   text: "¯\\_(ツ)_/¯"
@@ -130,8 +252,8 @@ struct woofHistory {
                   .animation(animation_default())
               }
             }
-            .reverse(true)
             .width("100%")
+            .height("100%")
           } // Main history list
           .padding({ bottom: 5 })
           .scrollable(ScrollDirection.Vertical)
@@ -147,7 +269,7 @@ struct woofHistory {
 
           Scroll() {
             Row({ space: 5 }) {
-              ForEach(this.available_months.reverse(), (item: number[], _key: number) => {
+              ForEach(this.available_months, (item: number[], _key: number) => {
                 month_button({
                   year: item[0],
                   month: item[1],
@@ -160,6 +282,8 @@ struct woofHistory {
                     this.refresh_current_history_list();
                     this.viewing_year = item[0];
                     this.viewing_month = item[1];
+                    this.scroller.scrollToIndex(0, false);
+                    this.data.setData(this.bunch_of_history.history_this_month);
                   })
               }) // Items
             }
@@ -323,6 +447,8 @@ struct woofHistory {
     for (let index = 0; index < this.selected.length; index++) {
       if (this.selected[index]) {
         indices.push(index);
+        // Notify LazyForEach
+        this.data.notifyDataDelete(indices[index]);
       }
     }
     this.bunch_of_history.remove_selected_history(this.viewing_year, this.viewing_month, indices, true);
@@ -337,8 +463,8 @@ export default woofHistory;
 struct meowRelation {
   // Base
   controller: CustomDialogController | undefined;
-  @Prop label_link: history_record;
   @Prop index: number;
+  @Prop label_link: history_record;
   @Link show: boolean;
   @Link selected: boolean[];
   @Link selected_number: number;
@@ -372,12 +498,6 @@ struct meowRelation {
       })
         .opacity(0.7)
     }
-    .padding({
-      left: 12,
-      right: 12,
-      top: 9,
-      bottom: 3
-    })
     .alignItems(HorizontalAlign.Start)
     .width("100%")
     .backgroundColor(this.selected[this.index] ? this.color_current_font : this.color_current_secondary)
