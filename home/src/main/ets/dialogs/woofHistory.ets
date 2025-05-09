@@ -1,14 +1,11 @@
 import linysSymbol from '../components/linysSymbol';
 import linysText from '../components/linysText';
+import linysTimeoutButton from '../components/linysTimeoutButton';
 import linysTitleText from '../components/linysTitleText';
-import {
-  animation_default,
-  capsule_bar_height,
-  click_effect_default,
-  fontSize_Large
-} from '../hosts/bunch_of_defaults';
+import { animation_default, click_effect_default } from '../hosts/bunch_of_defaults';
 import { bunch_of_history, history_record } from '../hosts/bunch_of_history';
 import woofControlFrame from './woofControlFrame';
+import HistoryDataSource from '../objects/HistoryDataSource';
 
 @CustomDialog
 struct woofHistory {
@@ -18,7 +15,6 @@ struct woofHistory {
   @State scroll_area_height: number = 0;
   @Link showing_settings: boolean;
   // Interactions
-  @State delete_confirm: number = 0;
   @State viewing_year: number = this.bunch_of_history.current_year;
   @State viewing_month: number = this.bunch_of_history.current_month;
   // Dates
@@ -57,7 +53,7 @@ struct woofHistory {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   scroller: Scroller = new Scroller();
   // Data
-  private data: MyDataSource = new MyDataSource(this.bunch_of_history.history_this_month);
+  private data: HistoryDataSource = new HistoryDataSource(this.bunch_of_history.history_this_month);
 
   build() {
     woofControlFrame({
@@ -126,12 +122,6 @@ struct woofHistory {
                       controller: this.controller,
                     })
                       .width("100%")
-                      .padding({
-                        left: 12,
-                        right: 12,
-                        top: 9,
-                        bottom: 3
-                      })
                   }
                 }
               }, (item: history_record) => item.accessed_time.toString() + this.history_list.length.toString()) // Items
@@ -211,28 +201,12 @@ struct woofHistory {
                     this.select_all();
                   })
                 Blank()
-                Button("  󰀁  ")// Delete
-                  .type(ButtonType.Capsule)
-                  .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
-                  $r("app.color.font_color_title"))
-                  .fontColor(this.delete_confirm > 0 ? this.color_current_font :
-                  this.color_current_primary)
-                  .border({
-                    width: 2,
-                    color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
-                  })
-                  .fontSize(fontSize_Large())
-                  .fontWeight(FontWeight.Medium)
-                  .height(capsule_bar_height())
-                  .onClick(() => {
-                    this.delete_confirm += 300;
-                    if (this.delete_confirm >= 301) {
-                      // Delete
-                      this.delete_selected();
-                    }
-                  })
-                  .clickEffect(click_effect_default())
-                  .animation(animation_default())
+                linysTimeoutButton({
+                  text: "  󰀁  ",
+                  onExecution: () => {
+                    this.delete_selected();
+                  }
+                }) // Delete
               } // Buttons
               .width("100%")
             }
@@ -251,14 +225,6 @@ struct woofHistory {
         .alignRules(this.alignRules_foot)
         .animation(animation_default())
         .width(this.tablet_mode ? "35%" : "100%")
-        .onAppear(() => {
-          setInterval(() => {
-            if (this.delete_confirm > 0) {
-              this.delete_confirm -= 1;
-            }
-            // Reset delete confirm
-          }, 10)
-        })
       }
       .layoutWeight(1)
     }
@@ -296,7 +262,6 @@ struct woofHistory {
     } else {
       this.selecting = false;
     }
-    this.delete_confirm = 0;
   }
 
   /**
@@ -346,7 +311,6 @@ struct woofHistory {
     }
     this.bunch_of_history.remove_selected_history(this.viewing_year, this.viewing_month, indices, true);
     this.refresh_current_history_list();
-    this.delete_confirm = 0;
   }
 }
 
@@ -391,6 +355,12 @@ struct meowRelation {
       })
         .opacity(0.7)
     }
+    .padding({
+      left: 12,
+      right: 12,
+      top: 9,
+      bottom: 3
+    })
     .alignItems(HorizontalAlign.Start)
     .width("100%")
     .backgroundColor(this.selected[this.index] ? this.color_current_font : this.color_current_secondary)
@@ -459,112 +429,5 @@ struct month_button {
 
   selected() {
     return this.month == this.viewing_month && this.year == this.viewing_year;
-  }
-}
-
-/**
- * Adapted from https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-rendering-control-lazyforeach
- * */
-// BasicDataSource实现了IDataSource接口，用于管理listener监听，以及通知LazyForEach数据更新
-class BasicDataSource implements IDataSource {
-  private listeners: DataChangeListener[] = [];
-  private originDataArray: history_record[] = [];
-
-  public totalCount(): number {
-    return 0;
-  }
-
-  public getData(index: number): history_record {
-    return this.originDataArray[index];
-  }
-
-  // 该方法为框架侧调用，为LazyForEach组件向其数据源处添加listener监听
-  registerDataChangeListener(listener: DataChangeListener): void {
-    if (this.listeners.indexOf(listener) < 0) {
-      // console.info('add listener');
-      this.listeners.push(listener);
-    }
-  }
-
-  // 该方法为框架侧调用，为对应的LazyForEach组件在数据源处去除listener监听
-  unregisterDataChangeListener(listener: DataChangeListener): void {
-    const pos = this.listeners.indexOf(listener);
-    if (pos >= 0) {
-      // console.info('remove listener');
-      this.listeners.splice(pos, 1);
-    }
-  }
-
-  // 通知LazyForEach组件需要重载所有子组件
-  notifyDataReload(): void {
-    this.listeners.forEach(listener => {
-      listener.onDataReloaded();
-    });
-  }
-
-  // 通知LazyForEach组件需要在index对应索引处添加子组件
-  notifyDataAdd(index: number): void {
-    this.listeners.forEach(listener => {
-      listener.onDataAdd(index);
-      // 写法2：listener.onDatasetChange([{type: DataOperationType.ADD, index: index}]);
-    });
-  }
-
-  // 通知LazyForEach组件在index对应索引处数据有变化，需要重建该子组件
-  notifyDataChange(index: number): void {
-    this.listeners.forEach(listener => {
-      listener.onDataChange(index);
-      // 写法2：listener.onDatasetChange([{type: DataOperationType.CHANGE, index: index}]);
-    });
-  }
-
-  // 通知LazyForEach组件需要在index对应索引处删除该子组件
-  notifyDataDelete(index: number): void {
-    this.listeners.forEach(listener => {
-      listener.onDataDelete(index);
-      // 写法2：listener.onDatasetChange([{type: DataOperationType.DELETE, index: index}]);
-    });
-  }
-
-  // 通知LazyForEach组件将from索引和to索引处的子组件进行交换
-  notifyDataMove(from: number, to: number): void {
-    this.listeners.forEach(listener => {
-      listener.onDataMove(from, to);
-      // 写法2：listener.onDatasetChange(
-      //         [{type: DataOperationType.EXCHANGE, index: {start: from, end: to}}]);
-    });
-  }
-
-  notifyDatasetChange(operations: DataOperation[]): void {
-    this.listeners.forEach(listener => {
-      listener.onDatasetChange(operations);
-    });
-  }
-}
-
-class MyDataSource extends BasicDataSource {
-  private dataArray: history_record[] = [];
-
-  constructor(fromData: history_record[]) {
-    super();
-    this.dataArray = fromData;
-  }
-
-  public setData(data: history_record[]): void {
-    this.dataArray = data;
-    this.notifyDataReload();
-  }
-
-  public totalCount(): number {
-    return this.dataArray.length;
-  }
-
-  public getData(index: number): history_record {
-    return this.dataArray[index];
-  }
-
-  public pushData(data: history_record): void {
-    this.dataArray.push(data);
-    this.notifyDataAdd(this.dataArray.length - 1);
   }
 }
