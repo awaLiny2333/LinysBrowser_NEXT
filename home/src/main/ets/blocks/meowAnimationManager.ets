@@ -1,4 +1,4 @@
-import linysLockToggle from '../components/linysLockToggle';
+import linysLockSlider from '../components/linysLockSlider';
 import linysText from '../components/linysText';
 import {
   animation_default,
@@ -32,63 +32,31 @@ struct meowAnimationManager {
       linysText({
         text: $r('app.string.Settings_appearance_animation_response')
       }) // Slider and display of animation_response
-      Row({ space: 5 }) {
-        linysLockToggle({ locked: this.lock_response })
 
-        Slider({
-          min: 1,
-          max: 100,
-          value: this.animation_response,
-          style: SliderStyle.InSet,
-        })
-          .enabled(!this.lock_response)
-          .opacity(!this.lock_response ? 1 : 0.5)
-          .animation(animation_default())
-          .layoutWeight(1)
-          .blockColor(this.color_current_primary)
-          .selectedColor(this.color_current_font)
-          .onChange((value) => {
-            this.animation_response = value;
-          })
-          .onTouch(e => {
-            if (e.type == TouchType.Up) {
-              this.bunch_of_settings.set('animation_response', this.animation_response);
-            }
-          })
-        linysText({ text: (this.animation_response / 100).toFixed(2) })
-          .margin({ right: 5 })
-      }
+      linysLockSlider({
+        slider_min: 1,
+        slider_max: 100,
+        display: (0.01 * this.animation_response).toFixed(2),
+        slider_value: this.animation_response,
+        onTouchUp: () => {
+          this.bunch_of_settings.set('animation_response', this.animation_response);
+        }
+      })
 
       linysText({
         text: $r('app.string.Settings_appearance_animation_damping_coefficient')
       }) // Slider and display of animation damping coefficient
-      Row({ space: 5 }) {
-        linysLockToggle({ locked: this.lock_damping_coefficient })
 
-        Slider({
-          min: 0,
-          max: 75,
-          value: this.animation_damping_coefficient,
-          style: SliderStyle.InSet,
-        })
-          .enabled(!this.lock_damping_coefficient)
-          .opacity(!this.lock_damping_coefficient ? 1 : 0.5)
-          .animation(animation_default())
-          .layoutWeight(1)
-          .blockColor(this.color_current_primary)
-          .selectedColor(this.color_current_font)
-          .onChange((value) => {
-            this.animation_damping_coefficient = value;
-          })
-          .onTouch(e => {
-            if (e.type == TouchType.Up) {
-              this.bunch_of_settings.set('animation_damping_coefficient',
-                this.animation_damping_coefficient);
-            }
-          })
-        linysText({ text: (this.animation_damping_coefficient / 100).toFixed(2) })
-          .margin({ right: 5 })
-      }
+      linysLockSlider({
+        slider_min: 0,
+        slider_max: 75,
+        slider_value: this.animation_damping_coefficient,
+        display: (0.01 * this.animation_damping_coefficient).toFixed(2),
+        onTouchUp: () => {
+          this.bunch_of_settings.set('animation_damping_coefficient',
+            this.animation_damping_coefficient);
+        }
+      })
 
       Row() {
         linysText({

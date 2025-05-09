@@ -43,7 +43,7 @@ import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 import { bunch_of_homepage_shortcuts } from '../hosts/bunch_of_homepage_shortcuts';
 import woofHomepageManager from '../dialogs/woofHomepageManager';
 import meowAnimationManager from './meowAnimationManager';
-import linysLockToggle from '../components/linysLockToggle';
+import linysLockSlider from '../components/linysLockSlider';
 
 @Component
 struct meowAppSettings {
@@ -449,52 +449,24 @@ struct meowAppSettings {
               .width("100%")
 
               linysText({ text: $r('app.string.Settings_experience_max_bookmark_advice'), max_lines: 2 })
-              Row({ space: 5 }) {
-                linysLockToggle({ locked: this.lock_bookmark_suggestion_number })
-
-                Slider({
-                  min: 0,
-                  max: 20,
-                  value: this.max_bookmark_advice,
-                  style: SliderStyle.InSet,
-                })
-                  .enabled(!this.lock_bookmark_suggestion_number)
-                  .opacity(!this.lock_bookmark_suggestion_number ? 1 : 0.5)
-                  .animation(animation_default())
-                  .layoutWeight(1)
-                  .blockColor(this.color_current_primary)
-                  .selectedColor(this.color_current_font)
-                  .onChange((value) => {
-                    this.max_bookmark_advice = value;
-                    this.bunch_of_settings.set('max_bookmark_suggest', value);
-                  })
-                linysText({ text: this.max_bookmark_advice.toString() })
-                  .margin({ right: 5 })
-              } // Slider and display of max_bookmark_suggestions
+              linysLockSlider({
+                slider_min: 0,
+                slider_max: 20,
+                slider_value: this.max_bookmark_advice,
+                onTouchUp: () => {
+                  this.bunch_of_settings.set('max_bookmark_suggest', this.max_bookmark_advice);
+                }
+              }) // Slider and display of max_bookmark_suggestions
 
               linysText({ text: $r('app.string.Settings_experience_max_history_advice'), max_lines: 2 })
-              Row({ space: 5 }) {
-                linysLockToggle({ locked: this.lock_history_suggestion_number })
-
-                Slider({
-                  min: 0,
-                  max: 20,
-                  value: this.max_history_advice,
-                  style: SliderStyle.InSet,
-                })
-                  .enabled(!this.lock_history_suggestion_number)
-                  .opacity(!this.lock_history_suggestion_number ? 1 : 0.5)
-                  .animation(animation_default())
-                  .layoutWeight(1)
-                  .blockColor(this.color_current_primary)
-                  .selectedColor(this.color_current_font)
-                  .onChange((value) => {
-                    this.max_history_advice = value;
-                    this.bunch_of_settings.set('max_history_suggest', value);
-                  })
-                linysText({ text: this.max_history_advice.toString() })
-                  .margin({ right: 5 })
-              } // Slider and display of max_history_suggestions
+              linysLockSlider({
+                slider_min: 0,
+                slider_max: 20,
+                slider_value: this.max_history_advice,
+                onTouchUp: () => {
+                  this.bunch_of_settings.set('max_history_suggest', this.max_history_advice);
+                }
+              }) // Slider and display of max_history_suggestions
 
             }
             .padding(15)
