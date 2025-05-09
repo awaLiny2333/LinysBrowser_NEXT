@@ -1,11 +1,6 @@
 import linysLockSlider from '../components/linysLockSlider';
 import linysText from '../components/linysText';
-import {
-  animation_default,
-  capsule_bar_height,
-  click_effect_default,
-  fontSize_Large
-} from '../hosts/bunch_of_defaults';
+import linysTimeoutButton from '../components/linysTimeoutButton';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 
 @Component
@@ -63,43 +58,18 @@ struct meowAnimationManager {
           text: $r("app.string.Settings_appearance_animation_reset")
         })
         Blank()
-        Button('  󰃈  ')// Reset
-          .type(ButtonType.Capsule)
-          .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
-          this.color_current_font)
-          .fontColor(this.delete_confirm > 0 ? this.color_current_font :
-          this.color_current_primary)
-          .border({
-            width: 2,
-            color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
-          })
-          .fontSize(fontSize_Large())
-          .fontWeight(FontWeight.Medium)
-          .height(capsule_bar_height())
-          .onClick(async () => {
-            this.delete_confirm += 300;
-            if (this.delete_confirm >= 301) {
-              this.delete_confirm = 0;
-              // Reset
-              this.bunch_of_settings.reset('animation_response');
-              this.bunch_of_settings.reset('animation_damping_coefficient');
-              // Sync
-              this.animation_response = await this.bunch_of_settings.get('animation_response') as number;
-              console.log(this.animation_response.toString())
-              this.animation_damping_coefficient =
-                await this.bunch_of_settings.get('animation_damping_coefficient') as number;
-            }
-          })
-          .clickEffect(click_effect_default())
-          .animation(animation_default())
-          .onAppear(() => {
-            setInterval(() => {
-              if (this.delete_confirm > 0) {
-                this.delete_confirm -= 1;
-              }
-              // Reset confirm timeout
-            }, 10)
-          })
+        linysTimeoutButton({
+          onExecution: async () => {
+            // Reset
+            this.bunch_of_settings.reset('animation_response');
+            this.bunch_of_settings.reset('animation_damping_coefficient');
+            // Sync
+            this.animation_response = await this.bunch_of_settings.get('animation_response') as number;
+            console.log(this.animation_response.toString())
+            this.animation_damping_coefficient =
+              await this.bunch_of_settings.get('animation_damping_coefficient') as number;
+          }
+        })
       }
       .width("100%")
     }

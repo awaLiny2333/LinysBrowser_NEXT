@@ -1,6 +1,7 @@
 import linysCapsuleButton from '../components/linysCapsuleButton';
 import linysSymbol from '../components/linysSymbol';
 import linysText from '../components/linysText';
+import linysTimeoutButton from '../components/linysTimeoutButton';
 import linysTitleText from '../components/linysTitleText';
 import {
   animation_default,
@@ -69,24 +70,13 @@ struct meowScratchingBoard {
       .animation(animation_default())
 
       Row({ space: 10 }) {
-        Button("  󰀁  ")// Delete
-          .type(ButtonType.Capsule)
-          .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
-          $r("app.color.font_color_title"))
-          .fontColor(this.delete_confirm > 0 ? this.color_current_font :
-          this.color_current_primary)
-          .border({
-            width: 2,
-            color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
-          })
-          .fontSize(fontSize_Large())
-          .fontWeight(FontWeight.Medium)
-          .height(capsule_bar_height())
-          .onClick(() => {
+        linysTimeoutButton({
+          text: "  󰀁  ",
+          onExecution: () => {
             this.clear_data();
-          })
-          .clickEffect(click_effect_default())
-          .animation(animation_default())
+          }
+        })
+
         linysCapsuleButton({
           text: this.only_links ? "  󰄏  " : "  󰃁  "
         })
@@ -140,12 +130,8 @@ struct meowScratchingBoard {
 
   clear_data() {
     // Clear all scratching board data
-    this.delete_confirm += 300;
-    if (this.delete_confirm >= 301) {
-      this.data_list = [];
-      this.showing_scratching_board = false;
-      this.delete_confirm = 0;
-    }
+    this.data_list = [];
+    this.showing_scratching_board = false;
   }
 }
 

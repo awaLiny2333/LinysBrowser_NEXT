@@ -13,6 +13,7 @@ import linysText from '../components/linysText';
 import { copy } from '../utils/clipboard_tools';
 import { add_units_to_size } from '../utils/storage_tools';
 import linysShowButton from '../components/linysShowButton';
+import linysTimeoutButton from '../components/linysTimeoutButton';
 
 @Component
 struct meowDownloads {
@@ -131,7 +132,6 @@ struct meowDownloadsButton {
   @State y_off_set: number = 50;
   @State visible: Visibility = Visibility.Hidden;
   @State exporting: boolean = false;
-  @State delete_confirm: number = 0;
   @State copied: number = 0;
   @State showing_additional_info: boolean = false;
   // Colors
@@ -198,25 +198,13 @@ struct meowDownloadsButton {
               this.showing_additional_info = !this.showing_additional_info;
             })
 
-          Button("  󰀁  ")// Delete
-            .type(ButtonType.Capsule)
-            .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
-            $r("app.color.font_color_title"))
-            .fontColor(this.delete_confirm > 0 ? this.color_current_font :
-            this.color_current_primary)
-            .border({
-              width: 2,
-              color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
-            })
-            .fontSize(fontSize_Large())
-            .fontWeight(FontWeight.Medium)
-            .height(capsule_bar_height())
-            .onClick(() => {
-              this.delete_task()
-            })
+          linysTimeoutButton({
+            text: "  󰀁  ",
+            onExecution: () => {
+              this.delete_task();
+            }
+          })
             .enabled(!this.exporting)
-            .clickEffect(click_effect_default())
-            .animation(animation_default())
 
           Button(this.my_paused ? "  󰂴  " : "  󰂱  ")// Pause Continue
             .type(ButtonType.Capsule)
@@ -273,14 +261,10 @@ struct meowDownloadsButton {
       }, 10)
 
       setInterval(() => {
-        if (this.delete_confirm > 0) {
-          this.delete_confirm -= 1;
-        }
-        // Reset delete confirm
+        // Reset copy
         if (this.copied > 0) {
           this.copied -= 10;
         }
-        // Reset copy
       }, 10)
     })
   }
@@ -307,12 +291,8 @@ struct meowDownloadsButton {
   }
 
   delete_task() {
-    this.delete_confirm += 300;
-    if (this.delete_confirm >= 301) {
-      // Delete
-      this.bunch_of_downloads.delete_task(this.my_index);
-      this.delete_confirm = 0;
-    }
+    // Delete
+    this.bunch_of_downloads.delete_task(this.my_index);
   }
 
   export_file() {

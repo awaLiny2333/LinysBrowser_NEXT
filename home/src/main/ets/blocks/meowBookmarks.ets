@@ -15,6 +15,7 @@ import linysShowButton from '../components/linysShowButton';
 import linysCapsuleButton from '../components/linysCapsuleButton';
 import woofBookmarksPathSelector from '../dialogs/woofBookmarksPathSelector';
 import linysPathDisplay from '../components/linysPathDisplay';
+import linysTimeoutButton from '../components/linysTimeoutButton';
 
 @Component
 struct meowBookmarks {
@@ -572,24 +573,12 @@ struct bookmarkItem {
                 this.editing = false;
               })
 
-            Button("  󰀁  ")// Delete
-              .type(ButtonType.Capsule)
-              .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
-              $r("app.color.font_color_title"))
-              .fontColor(this.delete_confirm > 0 ? this.color_current_font :
-              this.color_current_primary)
-              .border({
-                width: 2,
-                color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
-              })
-              .fontSize(fontSize_Large())
-              .fontWeight(FontWeight.Medium)
-              .height(capsule_bar_height())
-              .onClick(() => {
+            linysTimeoutButton({
+              text: "  󰀁  ",
+              onExecution: () => {
                 this.delete_myself()
-              })
-              .clickEffect(click_effect_default())
-              .animation(animation_default())
+              }
+            }) // Delete
 
             linysCapsuleButton({ text: "  󰀻  " })// Save
               .onClick(() => {
@@ -694,29 +683,26 @@ struct bookmarkItem {
   }
 
   delete_myself() {
-    this.delete_confirm += 300;
-    if (this.delete_confirm >= 301) {
-      let my_position = "";
-      if (this.parent_path == "") {
-        my_position = this.label;
-      } else {
-        my_position = this.parent_path + "/" + this.label
-      }
-      if (this.type == "bookmark") {
-        this.bunch_of_bookmarks.del_bookmark(my_position)
-      } else {
-        this.bunch_of_bookmarks.del_folder(my_position)
-      }
-      // Delete myself from this.viewing_contents
-
-      let temp = this.looking_at_path;
-      this.looking_at_path = "/refresh";
-      this.looking_at_path = temp;
-      // Refresh root content
-      // Weird as hell but works, fine.
-
-      this.save_html_to_kv_store();
+    let my_position = "";
+    if (this.parent_path == "") {
+      my_position = this.label;
+    } else {
+      my_position = this.parent_path + "/" + this.label
     }
+    if (this.type == "bookmark") {
+      this.bunch_of_bookmarks.del_bookmark(my_position)
+    } else {
+      this.bunch_of_bookmarks.del_folder(my_position)
+    }
+    // Delete myself from this.viewing_contents
+
+    let temp = this.looking_at_path;
+    this.looking_at_path = "/refresh";
+    this.looking_at_path = temp;
+    // Refresh root content
+    // Weird as hell but works, fine.
+
+    this.save_html_to_kv_store();
   }
 
   save_changes_folder() {

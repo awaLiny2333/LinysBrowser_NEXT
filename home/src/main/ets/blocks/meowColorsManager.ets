@@ -1,4 +1,5 @@
 import linysText from '../components/linysText'
+import linysTimeoutButton from '../components/linysTimeoutButton';
 import woofColorSelect from '../dialogs/woofColorSelect'
 import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large } from '../hosts/bunch_of_defaults'
 import { bunch_of_settings } from '../hosts/bunch_of_settings'
@@ -79,51 +80,26 @@ struct meowColorsManager{
           text: $r("app.string.Color_reset")
         })
         Blank()
-        Button('  󰃈  ')// Reset
-          .type(ButtonType.Capsule)
-          .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
-          this.color_current_font)
-          .fontColor(this.delete_confirm > 0 ? this.color_current_font :
-          this.color_current_primary)
-          .border({
-            width: 2,
-            color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
-          })
-          .fontSize(fontSize_Large())
-          .fontWeight(FontWeight.Medium)
-          .height(capsule_bar_height())
-          .onClick(async () => {
-            this.delete_confirm += 300;
-            if (this.delete_confirm >= 301) {
-              // Reset
-              this.bunch_of_settings.reset('color_light_font');
-              this.bunch_of_settings.reset('color_light_primary');
-              this.bunch_of_settings.reset('color_light_secondary');
-              this.bunch_of_settings.reset('color_dark_font');
-              this.bunch_of_settings.reset('color_dark_primary');
-              this.bunch_of_settings.reset('color_dark_secondary');
+        linysTimeoutButton({
+          onExecution: async ()=>{
+            // Reset
+            this.bunch_of_settings.reset('color_light_font');
+            this.bunch_of_settings.reset('color_light_primary');
+            this.bunch_of_settings.reset('color_light_secondary');
+            this.bunch_of_settings.reset('color_dark_font');
+            this.bunch_of_settings.reset('color_dark_primary');
+            this.bunch_of_settings.reset('color_dark_secondary');
 
-              // Figure out what color should i use
-              this.color_light_primary = await this.bunch_of_settings.get('color_light_primary') as string;
-              this.color_light_secondary =
-                await this.bunch_of_settings.get('color_light_secondary') as string;
-              this.color_light_font = await this.bunch_of_settings.get('color_light_font') as string;
-              this.color_dark_primary = await this.bunch_of_settings.get('color_dark_primary') as string;
-              this.color_dark_secondary = await this.bunch_of_settings.get('color_dark_secondary') as string;
-              this.color_dark_font = await this.bunch_of_settings.get('color_dark_font') as string;
-              this.delete_confirm = 0;
-            }
-          })
-          .clickEffect(click_effect_default())
-          .animation(animation_default())
-          .onAppear(() => {
-            setInterval(() => {
-              if (this.delete_confirm > 0) {
-                this.delete_confirm -= 1;
-              }
-              // Reset delete confirm
-            }, 10)
-          })
+            // Figure out what color should i use
+            this.color_light_primary = await this.bunch_of_settings.get('color_light_primary') as string;
+            this.color_light_secondary =
+              await this.bunch_of_settings.get('color_light_secondary') as string;
+            this.color_light_font = await this.bunch_of_settings.get('color_light_font') as string;
+            this.color_dark_primary = await this.bunch_of_settings.get('color_dark_primary') as string;
+            this.color_dark_secondary = await this.bunch_of_settings.get('color_dark_secondary') as string;
+            this.color_dark_font = await this.bunch_of_settings.get('color_dark_font') as string;
+          }
+        }) // Reset button
       }
       .width("100%")
     } // Colors

@@ -1,9 +1,9 @@
 import linysCapsuleButton from '../components/linysCapsuleButton';
 import linysSymbol from '../components/linysSymbol';
+import linysTimeoutButton from '../components/linysTimeoutButton';
 import {
   animation_default,
   capsule_bar_height,
-  click_effect_default,
   fontSize_Large,
   fontSize_Normal
 } from '../hosts/bunch_of_defaults';
@@ -164,7 +164,6 @@ struct meowSEButton {
   // Edit inputs
   @State edit_label: string = this.my_label;
   @State edit_content: string = this.my_content;
-  @State delete_confirm: number = 0;
   // UI effects
   @State height_of_text_area: number = 42;
   @State visible: Visibility = Visibility.Hidden;
@@ -218,7 +217,6 @@ struct meowSEButton {
         })
         .onClick(() => {
           if (this.press_timing_ok) {
-            this.delete_confirm = 0;
             this.editing = !this.editing;
             return;
           } // Toggle Edit Panel
@@ -275,25 +273,12 @@ struct meowSEButton {
 
             Row({ space: 10 }) {
               Blank()
-              Button("  󰀁  ")// Delete
-                .type(ButtonType.Capsule)
-                .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
-                this.color_current_font)
-                .fontColor(this.delete_confirm > 0 ? this.color_current_font :
-                this.color_current_primary)
-                .border({
-                  width: 2,
-                  color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
-                })
-                .fontSize(fontSize_Large())
-                .fontWeight(FontWeight.Medium)
-                .height(capsule_bar_height())
-                .onClick(() => {
-                  this.delete_myself()
-                })
-                .clickEffect(click_effect_default())
-                .animation(animation_default())
-
+              linysTimeoutButton({
+                text: "  󰀁  ",
+                onExecution: () => {
+                  this.delete_myself();
+                }
+              })
               linysCapsuleButton({ text: "  󰀻  " })
                 .onClick(() => {
                   this.save_changes();
@@ -342,10 +327,6 @@ struct meowSEButton {
         }
         this.press_timing_ok = this.press_timing > 16;
         // Count press time
-        if (this.delete_confirm > 0) {
-          this.delete_confirm -= 1;
-        }
-        // Reset delete confirm
       }, 10)
     })
   }
@@ -372,22 +353,21 @@ struct meowSEButton {
   }
 
   delete_myself() {
-    this.delete_confirm += 300;
-    if (this.delete_confirm >= 301) {
-      // Confirm delete
-      this.editing = false;
-      this.bunch_of_search_engines.del_search_engine(this.my_index);
 
-      if (this.selected_index == this.my_index) {
-        this.selected_index = this.my_index - 1;
-      } else {
-        // Refresh
-        let prev_selected = this.selected_index;
-        this.selected_index = -2;
-        this.selected_index = Math.min(this.bunch_of_search_engines.list_of_search_engines.length - 1, prev_selected);
-      }
-      this.save_search_engine_to_kv_store();
+    // Confirm delete
+    this.editing = false;
+    this.bunch_of_search_engines.del_search_engine(this.my_index);
+
+    if (this.selected_index == this.my_index) {
+      this.selected_index = this.my_index - 1;
+    } else {
+      // Refresh
+      let prev_selected = this.selected_index;
+      this.selected_index = -2;
+      this.selected_index = Math.min(this.bunch_of_search_engines.list_of_search_engines.length - 1, prev_selected);
     }
+    this.save_search_engine_to_kv_store();
+
   }
 
   save_search_engine_to_kv_store() {

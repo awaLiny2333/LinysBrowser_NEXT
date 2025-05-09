@@ -1,11 +1,6 @@
 import linysCapsuleButton from '../components/linysCapsuleButton';
 import linysText from '../components/linysText';
-import {
-  animation_default,
-  capsule_bar_height,
-  click_effect_default,
-  fontSize_Large
-} from '../hosts/bunch_of_defaults';
+import linysTimeoutButton from '../components/linysTimeoutButton';
 import {
   arrayBuffer_to_pixelMap,
   image_open_to_ArrayBuffer,
@@ -41,23 +36,12 @@ struct meowHomepageBackgroundManager {
       Row({ space: 10 }) {
         Blank()
         linysText({ text: $r('app.string.Homepage_background_delete') })
-        Button("  󰀁  ")// Delete
-          .type(ButtonType.Capsule)
-          .backgroundColor(this.homepage_background_delete_confirm > 0 ? this.color_current_primary :
-          $r("app.color.font_color_title"))
-          .fontColor(this.homepage_background_delete_confirm > 0 ? this.color_current_font : this.color_current_primary)
-          .border({
-            width: 2,
-            color: this.homepage_background_delete_confirm > 0 ? this.color_current_font : "transparent"
-          })
-          .fontSize(fontSize_Large())
-          .fontWeight(FontWeight.Medium)
-          .height(capsule_bar_height())
-          .onClick(() => {
+        linysTimeoutButton({
+          text: "  󰀁  ",
+          onExecution: () => {
             this.delete_homepage_background();
-          })
-          .clickEffect(click_effect_default())
-          .animation(animation_default())
+          }
+        }) // Delete
       } // Homepage background delete
       .width("100%")
     }
@@ -89,13 +73,9 @@ struct meowHomepageBackgroundManager {
 
   delete_homepage_background() {
     // Delete homepage background image
-    this.homepage_background_delete_confirm += 300;
-    if (this.homepage_background_delete_confirm >= 301) {
-      this.homepage_background = undefined;
-      sandbox_unlink('homepage_background_arrayBuffer');
-      this.homepage_background_delete_confirm = 0;
-      console.log("[meowAppSettings] Deleted homepage background!")
-    }
+    this.homepage_background = undefined;
+    sandbox_unlink('homepage_background_arrayBuffer');
+    console.log("[meowAppSettings] Deleted homepage background!")
   }
 }
 

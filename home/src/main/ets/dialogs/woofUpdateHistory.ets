@@ -13,11 +13,11 @@ struct woofUpdateHistory {
   @State texts: string[] = [
     'v1.7.6-beta 2025 05',
     '一个普通的更新，将更好的显示区域避让带入冲浪喵～\n' +
-      '并且尝试修复了下载文件名 uri 不解码、自动抓取搜索词加号不解码等体验问题。\n' +
+      '并且尝试修复了历史面板打开卡顿、下载文件名 uri 不解码、自动抓取搜索词加号不解码等体验问题。\n' +
       '并且升级到了 API 16！',
     'A normal update, bringing better safe area display into BrowserCat!\n' +
-      'AND, tried to fix experience issues like download file name not decoded from uri codes, ' +
-      'pluses in auto extracted search keywords not replaced by spaces, etc.\n' +
+      'AND, tried to fix experience issues like a laggy History panel, download file name not decoding from uri codes, ' +
+      'pluses in auto extracted search keywords not being replaced by spaces, etc.\n' +
       'And upgraded to API 16!',
 
     'v1.7.5-beta 2025 04',

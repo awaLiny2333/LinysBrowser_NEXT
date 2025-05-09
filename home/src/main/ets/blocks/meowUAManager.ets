@@ -1,5 +1,6 @@
 import linysCapsuleButton from '../components/linysCapsuleButton';
 import linysSymbol from '../components/linysSymbol';
+import linysTimeoutButton from '../components/linysTimeoutButton';
 import {
   animation_default,
   capsule_bar_height,
@@ -156,7 +157,6 @@ struct meowUAButton {
   // Edit inputs
   @State edit_label: string = this.my_label;
   @State edit_content: string = this.my_content;
-  @State delete_confirm: number = 0;
   // UI effects
   @State height_of_text_area: number = 42;
   @State visible: Visibility = Visibility.Hidden;
@@ -210,7 +210,6 @@ struct meowUAButton {
         })
         .onClick(() => {
           if (this.press_timing_ok) {
-            this.delete_confirm = 0;
             this.editing = !this.editing;
             return;
           } // Toggle Edit Panel
@@ -267,25 +266,12 @@ struct meowUAButton {
 
             Row({ space: 10 }) {
               Blank()
-              Button("  󰀁  ")// Delete
-                .type(ButtonType.Capsule)
-                .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
-                this.color_current_font)
-                .fontColor(this.delete_confirm > 0 ? this.color_current_font :
-                this.color_current_primary)
-                .border({
-                  width: 2,
-                  color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
-                })
-                .fontSize(fontSize_Large())
-                .fontWeight(FontWeight.Medium)
-                .height(capsule_bar_height())
-                .onClick(() => {
-                  this.delete_myself()
-                })
-                .clickEffect(click_effect_default())
-                .animation(animation_default())
-
+              linysTimeoutButton({
+                text: "  󰀁  ",
+                onExecution: () => {
+                  this.delete_myself();
+                }
+              })
               linysCapsuleButton({ text: "  󰀻  " })
                 .onClick(() => {
                   this.save_changes();
@@ -334,10 +320,6 @@ struct meowUAButton {
         }
         this.press_timing_ok = this.press_timing > 16;
         // Count press time
-        if (this.delete_confirm > 0) {
-          this.delete_confirm -= 1;
-        }
-        // Reset delete confirm
       }, 10)
     })
 
@@ -363,22 +345,18 @@ struct meowUAButton {
   }
 
   delete_myself() {
-    this.delete_confirm += 300;
-    if (this.delete_confirm >= 301) {
-      this.editing = false;
-      this.bunch_of_user_agents.del_user_agent(this.my_index);
+    this.editing = false;
+    this.bunch_of_user_agents.del_user_agent(this.my_index);
 
-      if (this.selected_index == this.my_index) {
-        this.selected_index = this.my_index - 1;
-      } else {
-        let previous_selected = this.selected_index;
-        this.selected_index = -2;
-        this.selected_index = Math.min(this.bunch_of_user_agents.list_of_user_agents.length - 1, previous_selected);
-        // Refresh
-      }
-
-      this.save_user_agents_to_settings();
+    if (this.selected_index == this.my_index) {
+      this.selected_index = this.my_index - 1;
+    } else {
+      let previous_selected = this.selected_index;
+      this.selected_index = -2;
+      this.selected_index = Math.min(this.bunch_of_user_agents.list_of_user_agents.length - 1, previous_selected);
+      // Refresh
     }
+    this.save_user_agents_to_settings();
   }
 
   save_user_agents_to_settings() {

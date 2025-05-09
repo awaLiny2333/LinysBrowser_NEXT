@@ -1,14 +1,10 @@
 import linysText from '../components/linysText';
 import linysTitleText from '../components/linysTitleText';
-import {
-  animation_default,
-  capsule_bar_height,
-  click_effect_default,
-  fontSize_Large
-} from '../hosts/bunch_of_defaults';
+import { animation_default, click_effect_default } from '../hosts/bunch_of_defaults';
 import { webview } from '@kit.ArkWeb';
 import { match_domain } from '../utils/url_tools';
 import woofControlFrame from './woofControlFrame';
+import linysTimeoutButton from '../components/linysTimeoutButton';
 
 @CustomDialog
 struct woofCookies {
@@ -19,7 +15,6 @@ struct woofCookies {
   @State domain_url: string = this.get_domain_url(this.current_url);
   // Interfaces
   @State cookies_site: string[] = this.get_cookies_site();
-  @State delete_confirm: number = 0;
   // alignRules
   alignRules_head_non_tablet: AlignRuleOption = {
     top: { anchor: "__container__", align: VerticalAlign.Top },
@@ -137,27 +132,12 @@ struct woofCookies {
 
           Row({ space: 10 }) {
             linysText({ text: '＞︿＜' })
-            Button("  󰀁  ")// Delete
-              .type(ButtonType.Capsule)
-              .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary : $r("app.color.font_color_title"))
-              .fontColor(this.delete_confirm > 0 ? this.color_current_font : this.color_current_primary)
-              .border({
-                width: 2,
-                color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
-              })
-              .fontSize(fontSize_Large())
-              .fontWeight(FontWeight.Medium)
-              .height(capsule_bar_height())
-              .onClick(() => {
-                this.delete_confirm += 300;
-                if (this.delete_confirm >= 301) {
-                  // Delete
-                  this.clear_all_cookies();
-                  this.delete_confirm = 0;
-                }
-              })
-              .clickEffect(click_effect_default())
-              .animation(animation_default())
+            linysTimeoutButton({
+              text: "  󰀁  ",
+              onExecution: () => {
+                this.clear_all_cookies();
+              }
+            }) // Delete
           }
 
         } // Controls
@@ -168,14 +148,6 @@ struct woofCookies {
         .animation(animation_default())
         .width(this.tablet_mode ? "35%" : "100%")
         .id("controls_cookies")
-        .onAppear(() => {
-          setInterval(() => {
-            if (this.delete_confirm > 0) {
-              this.delete_confirm -= 1;
-            }
-            // Reset delete confirm
-          }, 10)
-        })
       }.layoutWeight(1)
     }
   }

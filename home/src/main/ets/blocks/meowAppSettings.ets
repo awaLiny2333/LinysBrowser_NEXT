@@ -44,6 +44,7 @@ import { bunch_of_homepage_shortcuts } from '../hosts/bunch_of_homepage_shortcut
 import woofHomepageManager from '../dialogs/woofHomepageManager';
 import meowAnimationManager from './meowAnimationManager';
 import linysLockSlider from '../components/linysLockSlider';
+import linysTimeoutButton from '../components/linysTimeoutButton';
 
 @Component
 struct meowAppSettings {
@@ -583,45 +584,22 @@ struct meowAppSettings {
                       this.bunch_of_settings.set('webview_cache_size', this.web_cache_size);
                     })
 
-                  Button('  󰀖  ')// Delete
-                    .type(ButtonType.Capsule)
-                    .backgroundColor(this.clear_web_cache_confirm > 0 ? this.color_current_primary :
-                    this.color_current_font)
-                    .fontColor(this.clear_web_cache_confirm > 0 ? this.color_current_font :
-                    this.color_current_primary)
-                    .border({
-                      width: 2,
-                      color: this.clear_web_cache_confirm > 0 ? this.color_current_font : "transparent"
-                    })
-                    .fontSize(fontSize_Large())
-                    .fontWeight(FontWeight.Medium)
-                    .height(capsule_bar_height())
-                    .onClick(() => {
-                      this.clear_web_cache_confirm += 300;
-                      if (this.clear_web_cache_confirm >= 301) {
-                        try {
-                          this.bunch_of_tabs.Tabs[0].controller.removeCache(true);
-                          console.log('[Meow][meowAppSettings] Clear webview cache!')
-                        } catch (error) {
-                          console.error(`[Meow][meowAppSettings] Clear webview cache.
+                  linysTimeoutButton({
+                    text: '  󰀖  ',
+                    onExecution: () => {
+                      try {
+                        this.bunch_of_tabs.Tabs[0].controller.removeCache(true);
+                        console.log('[Meow][meowAppSettings] Clear webview cache!')
+                      } catch (error) {
+                        console.error(`[Meow][meowAppSettings] Clear webview cache.
                       ErrorCode: ${(error as BusinessError).code},
                       Message: ${(error as BusinessError).message}`);
-                        }
-                        this.clear_web_cache_confirm = 0;
-                        this.web_cache_size = get_folder_size_Sync('/data/storage/el2/base/cache/web/', true);
-                        this.bunch_of_settings.set('webview_cache_size', this.web_cache_size);
                       }
-                    })
-                    .clickEffect(click_effect_default())
-                    .animation(animation_default())
-                    .onAppear(() => {
-                      setInterval(() => {
-                        if (this.clear_web_cache_confirm > 0) {
-                          this.clear_web_cache_confirm -= 1;
-                        }
-                        // Reset delete confirm
-                      }, 10)
-                    })
+                      this.web_cache_size = get_folder_size_Sync('/data/storage/el2/base/cache/web/', true);
+                      this.bunch_of_settings.set('webview_cache_size', this.web_cache_size);
+                    }
+                  }) // Clear Cache
+
                 } // buttons
                 .width("100%")
               } // data display and button
