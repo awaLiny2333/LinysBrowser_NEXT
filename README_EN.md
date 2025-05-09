@@ -87,7 +87,7 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 - [ ] Distributed data sync for History & Bookmarks, etc
 - [ ] Search History
 - [x] Customizable homepage background
-- [ ] Customizable homepage shortcuts
+- [x] Customizable homepage shortcuts
 - [ ] Private mode
 - [ ] Customizable download options: ask each time & directly download to system download directory
 - [x] In-page text search

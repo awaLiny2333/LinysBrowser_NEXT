@@ -402,7 +402,7 @@ struct meowWebView {
               }
               return false;
             })
-        }
+        } // Webs
         .borderColor(this.color_current_secondary)
         .borderWidth(this.border_width_tab(this.current_sub_tab_index == Label.index_key))
         .width(this.current_sub_tab_index < 0 ? "100%" : this.width_tab())
@@ -411,7 +411,7 @@ struct meowWebView {
           ? this.align_rules_main_tab() : this.align_rules_sub_tab())
         .visibility(this.my_visibility(Label.index_key))
         .animation(this.tab_animation)
-      }, (item: tab_label) => item.timestamp.toString())
+      }, (Label: tab_label) => Label.timestamp.toString())
 
       Scroll(this.shortcut_scroller) {
         Column({ space: 10 }) {

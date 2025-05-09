@@ -26,8 +26,11 @@ export class tab_info_packed {
   url: string;
   is_loading: boolean;
   loading_progress: number;
+  // Keyword of in-page search
   searching_keyword: string = '';
+  // Index of current viewing result during in-page search
   searching_keyword_stats_current: number = 0;
+  // Total number of results of in-page search
   searching_keyword_stats_total: number = 0;
   restore_on_creation: boolean = false;
   web_state_array: Uint8Array = new Uint8Array();
