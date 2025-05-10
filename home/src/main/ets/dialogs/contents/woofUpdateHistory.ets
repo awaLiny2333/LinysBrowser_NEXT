@@ -12,10 +12,10 @@ struct woofUpdateHistory {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @State texts: string[] = [
     'v1.7.6-beta 2025 05',
-    '一个普通的更新，将性能指示器和大量体验与性能优化带入冲浪喵～\n' +
+    '一个普通的更新，将故障日志查看、性能指示器和大量体验与性能优化带入冲浪喵～\n' +
       '实现了更好的显示区域避让，尝试修复了计算缓存卡顿、历史面板打开卡顿、下载文件名 uri 不解码、自动抓取搜索词加号不解码等体验问题。\n' +
       '并且升级到了 API 16！',
-    'A normal update, bringing performance monitor and quite a lot of experience & performance optimizations into BrowserCat!\n' +
+    'A normal update, bringing fault logs viewer, performance monitor and quite a lot of experience & performance optimizations into BrowserCat!\n' +
       'Implemented a better safe area display policy, and '+
       'tried to fix experience issues like lags when calculating cache size, lags when opening History panel, '+
       'download file name not decoding from uri codes, ' +

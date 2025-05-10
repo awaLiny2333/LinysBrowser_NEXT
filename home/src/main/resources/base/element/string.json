@@ -458,7 +458,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "Performance monitor!\nUsed taskpool to calculate cache size so that main thread won't be blocked;\nOpening the History panel no longer takes forever thanks to rescue from LazyForEach!"
+      "value": "Fault logs viewer;\nPerformance monitor!\nUsed taskpool to calculate cache size so that main thread won't be blocked;\nOpening the History panel no longer takes forever thanks to rescue from LazyForEach!"
     },
     {
       "name": "Whats_new_content_extra",
