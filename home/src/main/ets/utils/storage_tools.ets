@@ -1,7 +1,7 @@
 import { BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 import { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
-import { buffer } from '@kit.ArkTS';
+import { buffer, taskpool } from '@kit.ArkTS';
 import { image } from '@kit.ImageKit';
 
 let context = AppStorage.get("context") as common.UIAbilityContext;
@@ -225,18 +225,22 @@ export function get_folder_size_Sync(path: string, log: boolean) {
 
 /**
  * Adds a unit to a size in bytes.
- * @param size_in_bytes A number, the size in bytes.
+ * @param size_in_bytes A number or bigint, the size in bytes.
  * @returns A string, the connected result of a number of size and its unit.
  * */
-export function add_units_to_size(size_in_bytes: number) {
-  let units = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB']
-  let result = size_in_bytes;
+export function add_units_to_size(size_in_bytes: number | bigint) {
+  let units = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+  let result = BigInt(size_in_bytes);
   let unit = 0;
-  while (result > 1024) {
-    result /= 1024;
+  while (result > 1024 * 1024 && unit < units.length - 2) {
+    result /= 1024n;
     unit += 1;
   }
-  return result.toFixed(2) + " " + units[unit];
+  // To keep decimal places
+  let numberResult = Number(result);
+  numberResult /= 1024;
+  unit += 1;
+  return numberResult.toFixed(2) + " " + units[unit];
 }
 
 /**
@@ -275,6 +279,11 @@ export function is_legal_filename(filename: string) {
   return true;
 }
 
+/**
+ * Converts an ArrayBuffer to image.PixelMap object.
+ * @param buf the ArrayBuffer
+ * @returns an image.PixelMap
+ * */
 export function arrayBuffer_to_pixelMap(buf: ArrayBuffer) {
   // ArrayBuffer => PixelMap
   const imageSource = image.createImageSource(buf);

@@ -44,6 +44,7 @@ import woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import meowAnimationManager from '../panels/meowAnimationManager';
 import linysLockSlider from '../../components/linysLockSlider';
 import linysTimeoutButton from '../../components/linysTimeoutButton';
+import { get_web_cache_size } from '../../utils/any_concurrent_tools';
 
 @Component
 struct meowAppSettings {
@@ -214,6 +215,7 @@ struct meowAppSettings {
   @State web_cache_size: number = 0;
   // Status
   @StorageLink('settings_init_retrieved') settings_init_retrieved: boolean = false;
+  @State calculating_web_cache_size: boolean = false;
 
   build() {
     Row() {
@@ -577,9 +579,11 @@ struct meowAppSettings {
                   Blank()
                   linysCapsuleButton({ text: '  󰃈  ' })
                     .onClick(() => {
-                      this.web_cache_size = get_folder_size_Sync('/data/storage/el2/base/cache/web/', true);
-                      this.bunch_of_settings.set('webview_cache_size', this.web_cache_size);
+                      this.refresh_web_cache_size();
                     })
+                    .opacity(this.calculating_web_cache_size? 0.4:1)
+                    .enabled(!this.calculating_web_cache_size)
+                    .animation(animation_default())
 
                   linysTimeoutButton({
                     text: '  󰀖  ',
@@ -592,10 +596,12 @@ struct meowAppSettings {
                       ErrorCode: ${(error as BusinessError).code},
                       Message: ${(error as BusinessError).message}`);
                       }
-                      this.web_cache_size = get_folder_size_Sync('/data/storage/el2/base/cache/web/', true);
-                      this.bunch_of_settings.set('webview_cache_size', this.web_cache_size);
+                      this.refresh_web_cache_size();
                     }
                   }) // Clear Cache
+                    .opacity(this.calculating_web_cache_size? 0.4:1)
+                    .enabled(!this.calculating_web_cache_size)
+                    .animation(animation_default())
 
                 } // buttons
                 .width("100%")
@@ -991,6 +997,15 @@ struct meowAppSettings {
     this.bunch_of_tabs.home_url = this.home_url_edit;
     // kv_store_put("home_url", this.home_url_edit);
     this.bunch_of_settings.set('home_url', this.home_url_edit);
+  }
+
+  refresh_web_cache_size() {
+    this.calculating_web_cache_size = true;
+    get_web_cache_size().then(result => {
+      this.web_cache_size = result;
+      this.bunch_of_settings.set('webview_cache_size', this.web_cache_size);
+      this.calculating_web_cache_size = false;
+    })
   }
 
   scroll_settings_to() {
