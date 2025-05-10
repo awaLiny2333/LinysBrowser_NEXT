@@ -314,7 +314,7 @@
     },
     {
       "name": "Index_drop_please",
-      "value": "Feed me texts and links!!"
+      "value": "Feed me texts & links!!"
     },
     {
       "name": "Index_drop_ok",
@@ -578,7 +578,7 @@
     },
     {
       "name": "Settings_manage_cookies",
-      "value": "View and Manage Cookies"
+      "value": "View & Manage Cookies"
     },
     {
       "name": "Settings_manage_cookies_this_site",
@@ -739,6 +739,30 @@
     {
       "name": "LinkJumper_allow_jump",
       "value": "Allow this jump?"
+    },
+    {
+      "name": "Settings_toolbox",
+      "value": "Cardboard Box"
+    },
+    {
+      "name": "Settings_toolbox_resource_monitor",
+      "value": "Resource Monitor \nIn More \uDB80\uDC61 Panel"
+    },
+    {
+      "name": "Fault_logs",
+      "value": "Fault Logs"
+    },
+    {
+      "name": "Fault_logs_desc",
+      "value": "Fault logs are records of app faults, errors and crashes. Providing Liny with related fault logs could help better solve the problem:"
+    },
+    {
+      "name": "Fault_logs_empty",
+      "value": "Nothing here. Lucky!"
+    },
+    {
+      "name": "Fault_logs_copy_this",
+      "value": "Copy ↓"
     },
     {
       "name": "Debug_native_heap",

@@ -45,6 +45,7 @@ import meowAnimationManager from '../panels/meowAnimationManager';
 import linysLockSlider from '../../components/linysLockSlider';
 import linysTimeoutButton from '../../components/linysTimeoutButton';
 import { get_web_cache_size } from '../../utils/any_concurrent_tools';
+import woofRecentFaultLogs from '../../dialogs/contents/woofRecentFaultLogs';
 
 @Component
 struct meowAppSettings {
@@ -116,6 +117,7 @@ struct meowAppSettings {
   @StorageLink('max_bookmark_advice') max_bookmark_advice: number = 5;
   @StorageLink('max_history_advice') max_history_advice: number = 5;
   @StorageLink('sys_back_to_access_backward') sys_back_to_access_backward: boolean = false;
+  @StorageLink('resource_monitor') resource_monitor: boolean = true;
   @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
   @StorageLink('use_adblock') use_adblock: boolean = true;
   @StorageLink('collect_new_history') collect_new_history: boolean = true;
@@ -137,7 +139,7 @@ struct meowAppSettings {
   @State scroll_last: number = 0;
   @State menu_text: string[] =
     ['Settings_start_up', 'Settings_general', 'Settings_Experience', 'Settings_appearance',
-      'Settings_experience_history', 'Settings_storage', 'Settings_security', 'Settings_about'];
+      'Settings_experience_history', 'Settings_storage', 'Settings_security', 'Settings_toolbox', 'Settings_about'];
   // Dialogs
   @StorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
   woofHistory_control: CustomDialogController = new CustomDialogController({
@@ -208,6 +210,13 @@ struct meowAppSettings {
     cornerRadius: 16,
     // showInSubWindow: true,
     // width: "90%",
+  });
+  recent_fault_logs_control: CustomDialogController = new CustomDialogController({
+    builder: woofRecentFaultLogs(),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16,
+    showInSubWindow: true,
+    width: "90%",
   });
   waterFlow_control: Scroller = new Scroller();
   // Else
@@ -701,6 +710,42 @@ struct meowAppSettings {
 
           FlowItem() {
             Column({ space: 15 }) {
+              linysTitleText({ text: $r('app.string.Settings_toolbox') })
+              Row({ space: 5 }) {
+                linysText({ text: $r('app.string.Settings_toolbox_resource_monitor'), max_lines: 3 })
+                  .layoutWeight(1)
+                Toggle({ isOn: this.resource_monitor, type: ToggleType.Switch })
+                  .switchPointColor(this.color_current_secondary)
+                  .selectedColor(this.color_current_font)
+                  .onChange(isOn => {
+                    this.resource_monitor = isOn;
+                    this.bunch_of_settings.set('resource_monitor', isOn);
+                  })
+              } // Show Resource Monitor
+              .width("100%")
+
+              linysText({ text: $r('app.string.Fault_logs_desc'), max_lines: 10 })
+              Row({ space: 10 }) {
+                Blank()
+                linysText({ text: $r('app.string.Fault_logs') })
+                linysCapsuleButton({ text: '  󰀩  ' })
+                  .onClick(() => {
+                    this.recent_fault_logs_control.open();
+                  })
+              } // Fault logs display
+              .width("100%")
+            }
+            .padding(15)
+            .alignItems(HorizontalAlign.Start)
+            .justifyContent(FlexAlign.Start)
+            .width("100%")
+            .borderRadius(10)
+            .backgroundColor(this.color_current_primary)
+          } // Toolbox
+          .width("100%")
+
+          FlowItem() {
+            Column({ space: 15 }) {
               linysTitleText({ text: $r('app.string.Settings_about') })
               linysLink({
                 will_be_reversed_boolean: this.showing_app_settings,
@@ -735,7 +780,6 @@ struct meowAppSettings {
             .width("100%")
             .borderRadius(10)
             .backgroundColor(this.color_current_primary)
-
           } // About
           .width("100%")
 
@@ -842,6 +886,9 @@ struct meowAppSettings {
       await this.bunch_of_settings.get('homepage_shortcuts_bookmarks_dir') as string;
     AppStorage.set('homepage_shortcuts_bookmarks_dir', homepage_shortcuts_bookmarks_dir);
     console.log("[Meow][meowAppSettings] Finished loading homepage shortcuts dir: " + homepage_shortcuts_bookmarks_dir);
+
+    // Get whether to show resource monitor
+    this.resource_monitor = await this.bunch_of_settings.get('resource_monitor') as boolean;
 
     this.settings_init_retrieved = true;
   }

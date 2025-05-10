@@ -96,6 +96,7 @@ struct meowTitleBar {
   @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   @State address_analyzers_desc_close_cd: number = 0;
   // settings
+  @StorageLink('resource_monitor') resource_monitor: boolean = true;
   @StorageLink('disable_js') disable_js: boolean = true;
   @StorageLink('disable_js_these_sites') disable_js_these_sites: string[] = [];
   @StorageLink('disable_js_all_sites') disable_js_all_sites: boolean = false;
@@ -744,6 +745,7 @@ struct meowTitleBar {
         }
         .width('100%')
         .opacity(0.8)
+        .visibility(this.resource_monitor ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
 
         // linysTitleText({

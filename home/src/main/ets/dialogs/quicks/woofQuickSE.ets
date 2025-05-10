@@ -347,11 +347,11 @@ struct meowSEButton {
         .scrollBar(BarState.Off)
         .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.PARENT_FIRST })
       }
-      .border({
-        radius: 10,
-        width: 2,
-        color: "transparent"
-      })
+      // .border({
+      //   radius: 10,
+      //   width: 2,
+      //   color: "transparent"
+      // })
     }
     .width("100%")
     .visibility(this.visible)

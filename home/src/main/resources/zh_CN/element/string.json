@@ -741,6 +741,30 @@
       "value": "同意它跳吗？"
     },
     {
+      "name": "Settings_toolbox",
+      "value": "纸箱"
+    },
+    {
+      "name": "Settings_toolbox_resource_monitor",
+      "value": "资源指示器\n（在 \uDB80\uDC61 里）"
+    },
+    {
+      "name": "Fault_logs",
+      "value": "故障日志"
+    },
+    {
+      "name": "Fault_logs_desc",
+      "value": "故障日志是应用故障、出错和崩溃的记录。向 Liny 提供相关的故障日志有助于解决问题："
+    },
+    {
+      "name": "Fault_logs_empty",
+      "value": "空空如也……吉星高照！"
+    },
+    {
+      "name": "Fault_logs_copy_this",
+      "value": "复制 ↓"
+    },
+    {
       "name": "Debug_native_vram",
       "value": "显存"
     },
