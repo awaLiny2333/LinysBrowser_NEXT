@@ -34,7 +34,7 @@ struct meowDebug {
               return
             }
             getVRAM().then(result => {
-              this.data[6] = add_units_to_size(result);
+              this.data[6] = add_units_to_size(result * 1024);
             })
           }
         })
