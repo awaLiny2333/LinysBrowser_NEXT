@@ -1,12 +1,12 @@
 import linysProgress from '../components/linysProgress';
-import meowTabs from '../blocks/meowTabs';
-import meowWebView from '../blocks/meowWebView';
-import meowBookmarks from '../blocks/meowBookmarks';
+import meowTabs from '../blocks/modules/meowTabsVertical';
+import meowWebView from '../blocks/modules/meowWebView';
+import meowBookmarks from '../blocks/modules/meowBookmarks';
 import { animation_default } from '../hosts/bunch_of_defaults';
-import meowTitleBar from '../blocks/meowTitleBar';
+import meowTitleBar from '../blocks/modules/meowTitleBar';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
-import woofFailPrompt from '../dialogs/woofFailPrompt';
+import woofPromptFail from '../dialogs/prompts/woofPromptFail';
 import { ConfigurationConstant } from '@kit.AbilityKit';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_history } from '../hosts/bunch_of_history';
@@ -96,7 +96,7 @@ struct Index {
     "";
   @State fail_prompt_desc: ResourceStr = '';
   moveFailPrompt_control: CustomDialogController = new CustomDialogController({
-    builder: woofFailPrompt({
+    builder: woofPromptFail({
       desc: this.fail_prompt_desc,
     }),
     alignment: DialogAlignment.Center,
