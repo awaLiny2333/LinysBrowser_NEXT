@@ -458,7 +458,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "使用懒加载加载历史记录，打开面板不卡了！"
+      "value": "性能检测器！\n使用启动任务池计算缓存大小就不会阻塞主线程了；\n使用懒加载加载历史记录，打开面板不卡了！"
     },
     {
       "name": "Whats_new_content_extra",
@@ -739,6 +739,34 @@
     {
       "name": "LinkJumper_allow_jump",
       "value": "同意它跳吗？"
+    },
+    {
+      "name": "Debug_native_vram",
+      "value": "显存"
+    },
+    {
+      "name": "Debug_native_heap",
+      "value": "块字节数"
+    },
+    {
+      "name": "Debug_physical_ram",
+      "value": "物理"
+    },
+    {
+      "name": "Debug_virtual_ram",
+      "value": "虚拟"
+    },
+    {
+      "name": "Debug_shared_dirty",
+      "value": "共享脏内存"
+    },
+    {
+      "name": "Debug_private_dirty",
+      "value": "私有脏内存"
+    },
+    {
+      "name": "Debug_cpu",
+      "value": "CPU"
     },
     {
       "name": "Accessibility_desc_linysProgress",

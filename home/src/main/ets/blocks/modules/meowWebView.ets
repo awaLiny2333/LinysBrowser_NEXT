@@ -681,9 +681,9 @@ struct shortcutButton {
     if (this.my_index < 5) {
       unit_interval = 80;
     } else if (this.my_index < 10) {
-      unit_interval = 60;
+      unit_interval = 70;
     } else {
-      unit_interval = 40;
+      unit_interval = 60;
     }
     return this.my_index * unit_interval + 100;
   }

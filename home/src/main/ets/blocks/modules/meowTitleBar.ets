@@ -36,6 +36,7 @@ import { share_link } from '../../utils/share_tools';
 import woofUAswitch from '../../dialogs/quicks/woofQuickUA';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import { drop_to_scratching_board } from '../../utils/drag_drop_tools';
+import meowDebug from '../panels/meowDebug';
 
 @Component
 struct meowTitleBar {
@@ -234,7 +235,7 @@ struct meowTitleBar {
       .animation(animation_default())
       .constraintSize({ minHeight: 30 })
 
-      Row() {
+      Row({ space: 10 }) {
         Column({ space: 2.5 }) {
           Text(this.current_title)
             .fontColor(this.color_current_font)
@@ -737,6 +738,13 @@ struct meowTitleBar {
         }
         .width('100%')
         .justifyContent(FlexAlign.End)
+
+        Row() {
+          meowDebug()
+        }
+        .width('100%')
+        .opacity(0.8)
+        .animation(animation_default())
 
         // linysTitleText({
         //   text: $r('app.string.Index_drop_please'),

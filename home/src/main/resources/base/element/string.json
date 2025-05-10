@@ -458,7 +458,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "Opening the History panel no longer takes forever thanks to rescue from LazyForEach!"
+      "value": "Performance monitor!\nUsed taskpool to calculate cache size so that main thread won't be blocked;\nOpening the History panel no longer takes forever thanks to rescue from LazyForEach!"
     },
     {
       "name": "Whats_new_content_extra",
@@ -739,6 +739,34 @@
     {
       "name": "LinkJumper_allow_jump",
       "value": "Allow this jump?"
+    },
+    {
+      "name": "Debug_native_heap",
+      "value": "Heap"
+    },
+    {
+      "name": "Debug_native_vram",
+      "value": "VRAM"
+    },
+    {
+      "name": "Debug_physical_ram",
+      "value": "Physical"
+    },
+    {
+      "name": "Debug_virtual_ram",
+      "value": "Virtual"
+    },
+    {
+      "name": "Debug_shared_dirty",
+      "value": "Shared Dirty"
+    },
+    {
+      "name": "Debug_private_dirty",
+      "value": "Private Dirty"
+    },
+    {
+      "name": "Debug_cpu",
+      "value": "CPU"
     },
     {
       "name": "Accessibility_desc_linysProgress",
