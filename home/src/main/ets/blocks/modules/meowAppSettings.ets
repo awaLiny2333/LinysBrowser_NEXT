@@ -111,8 +111,8 @@ struct meowAppSettings {
   @State @Watch('on_tabs_style_changed') tabs_style_selected: number[] = [0];
   @State @Watch('on_tabs_style_non_tablet_mode_changed') tabs_style_selected_non_tablet_mode: number[] = [0];
   @State @Watch('on_start_up_page_changed') start_up_page_selected: number[] = [0];
-  @State @Watch('on_left_or_right_changed') left_or_right_selected: number[] = [0];
-  @StorageLink('homepage_shortcuts_left_or_right') homepage_shortcuts_left_or_right: string = 'right';
+  @State @Watch('on_prefer_hand_left_or_right_changed') prefer_hand_left_or_right_selected: number[] = [0];
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('max_bookmark_advice') max_bookmark_advice: number = 5;
   @StorageLink('max_history_advice') max_history_advice: number = 5;
   @StorageLink('sys_back_to_access_backward') sys_back_to_access_backward: boolean = false;
@@ -342,7 +342,7 @@ struct meowAppSettings {
                 .width("100%")
               SegmentButton({
                 options: this.left_or_right,
-                selectedIndexes: $left_or_right_selected
+                selectedIndexes: $prefer_hand_left_or_right_selected
               }) // Single hand usability
 
               Row() {
@@ -581,7 +581,7 @@ struct meowAppSettings {
                     .onClick(() => {
                       this.refresh_web_cache_size();
                     })
-                    .opacity(this.calculating_web_cache_size? 0.4:1)
+                    .opacity(this.calculating_web_cache_size ? 0.4 : 1)
                     .enabled(!this.calculating_web_cache_size)
                     .animation(animation_default())
 
@@ -598,8 +598,8 @@ struct meowAppSettings {
                       }
                       this.refresh_web_cache_size();
                     }
-                  }) // Clear Cache
-                    .opacity(this.calculating_web_cache_size? 0.4:1)
+                  })// Clear Cache
+                    .opacity(this.calculating_web_cache_size ? 0.4 : 1)
                     .enabled(!this.calculating_web_cache_size)
                     .animation(animation_default())
 
@@ -829,12 +829,12 @@ struct meowAppSettings {
     }
 
     // Get settings of shortcuts on left or right
-    this.homepage_shortcuts_left_or_right =
-      await this.bunch_of_settings.get('homepage_shortcuts_left_or_right') as string;
-    if (this.homepage_shortcuts_left_or_right == 'left') {
-      this.left_or_right_selected = [0];
+    this.preferred_hand_left_or_right =
+      await this.bunch_of_settings.get('preferred_hand_left_or_right') as string;
+    if (this.preferred_hand_left_or_right == 'left') {
+      this.prefer_hand_left_or_right_selected = [0];
     } else {
-      this.left_or_right_selected = [1];
+      this.prefer_hand_left_or_right_selected = [1];
     }
 
     // Get Homepage shortcut directory
@@ -975,13 +975,14 @@ struct meowAppSettings {
   }
 
   // Events
-  on_left_or_right_changed() {
-    if (this.left_or_right_selected[0] == 0) {
-      this.bunch_of_settings.set('homepage_shortcuts_left_or_right', 'left');
-      this.homepage_shortcuts_left_or_right = 'left';
+
+  on_prefer_hand_left_or_right_changed() {
+    if (this.prefer_hand_left_or_right_selected[0] == 0) {
+      this.bunch_of_settings.set('preferred_hand_left_or_right', 'left');
+      this.preferred_hand_left_or_right = 'left';
     } else {
-      this.bunch_of_settings.set('homepage_shortcuts_left_or_right', 'right');
-      this.homepage_shortcuts_left_or_right = 'right';
+      this.bunch_of_settings.set('preferred_hand_left_or_right', 'right');
+      this.preferred_hand_left_or_right = 'right';
     }
   }
 

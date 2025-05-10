@@ -63,7 +63,7 @@ struct meowWebView {
   @StorageLink('disable_image') disable_image: boolean = false;
   @StorageLink('disable_image_these_sites') disable_image_these_sites: string[] = [];
   @StorageLink('disable_image_all_sites') disable_image_all_sites: boolean = true;
-  @StorageLink('homepage_shortcuts_left_or_right') homepage_shortcuts_left_or_right: string = 'right';
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Stuffs
   @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
@@ -425,7 +425,7 @@ struct meowWebView {
         .onAreaChange((_o, n) => {
           this.shortcut_scroll_total_height = n.height as number;
         })
-        .alignItems(this.homepage_shortcuts_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
+        .alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
         .padding({ top: this.screen_height * (this.tablet_mode ? 0.3 : 0.7) })
         .animation(animation_default())
         .width('100%')
