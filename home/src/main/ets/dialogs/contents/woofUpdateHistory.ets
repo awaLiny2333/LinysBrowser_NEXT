@@ -19,7 +19,7 @@ struct woofUpdateHistory {
       'Implemented a better safe area display policy, and '+
       'tried to fix experience issues like lags when calculating cache size, lags when opening History panel, '+
       'download file name not decoding from uri codes, ' +
-      'and pluses in auto extracted search keywords not being replaced by spaces, etc.\n' +
+      'and plus signs in auto extracted search keywords not being replaced by spaces, etc.\n' +
       'And upgraded to API 16!',
 
     'v1.7.5-beta 2025 04',
