@@ -746,7 +746,7 @@
     },
     {
       "name": "Settings_toolbox_resource_monitor",
-      "value": "资源指示器\n（在 \uDB80\uDC61 里）"
+      "value": "资源指示器（在 \uDB80\uDC61 里）"
     },
     {
       "name": "Fault_logs",
@@ -774,11 +774,11 @@
     },
     {
       "name": "Debug_physical_ram",
-      "value": "物理"
+      "value": "物理内存"
     },
     {
       "name": "Debug_virtual_ram",
-      "value": "虚拟"
+      "value": "虚拟内存"
     },
     {
       "name": "Debug_shared_dirty",

@@ -7,19 +7,19 @@
 The original purpose of this project is to make a decent browser for Liny catself to drive daily
 after upgrading to HarmonyOS NEXT. 
 But later after realizing that a lot of people out there may also need such an app,
-this project is completely made opensource for every body to use.
+this project is made completely opensource for every body to use.
 
-However, due to the time and stuff arrangement problems by Liny catself, 
+However, due to the time and stuff scheduling issues due by Liny catself, 
 issues may not be checked and updates may not be pushed so in time.
-In most cases plenty is lagging behind so thank you for your kind understanding.
+In most cases plenty is lagging behind, so, thank you for your kind understanding!!
 
-If you see that the last commit was made some weeks, or over a month ago,
+If you see that the last commit was made quite a lot of weeks, or even months ago,
 please don't consider this project dead so easily, since
 Liny may be so _lucky_ to be busy writing essays that 
-stuffs this side would not be cared for for a period of time.
+stuffs this side would not be taken good care of for a period of time.
 
 Therefore, the best solution to this problem is to **open an issue** so that 
-Liny would feel so anxious that the update of this project would be determined to be prioritized.
+Liny would feel so anxious that the update of this project would be selected to be prioritized.
 
 Let's say: _Thank you, issues!_
 
@@ -30,6 +30,8 @@ Let's say: _Thank you, issues!_
 In [build_auto](build_auto) directory there are the latest build products for testing,
 which may contain some unknown issues, and are not suggested for long term use.
 However, if you have installed one of those, remember to check for updates here frequently!
+
+~~Though in most cases beta versions are more stable than stable releases...~~
 
 Type in urls or keywords in the search box at the bottom of the app,
 then return or click the little magnifying glass to submit.
@@ -89,7 +91,8 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 - [x] Customizable homepage background
 - [x] Customizable homepage shortcuts
 - [ ] Private mode
-- [ ] Customizable download options: ask each time & directly download to system download directory
+- [x] Customizable download options: ask each time 
+- [ ] Direct download to system download directory
 - [x] In-page text search
 - [x] Disable JavaScript
 - [ ] Right click or long press menu on web links. (For preview and operations)
@@ -146,7 +149,7 @@ Long way ahead.
    (Seems to be solved, still under observation)
 9. HarmonyOS UA is not understood by plenty of websites (But UA is customizable now).
 10. The vertical tabs panel animations may seem weird when the scroll is longer than the screen.
-11. This project requires HarmonyOS NEXT API15 to run.
+11. This project requires HarmonyOS NEXT API16 to run.
 12. OHOS Comes with no Share Kit, what can I do? Help needed.
 
 ## What are the commit labels for?

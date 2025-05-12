@@ -54,7 +54,7 @@ struct woofRecentFaultLogs {
           let len: number = value.length;
           for (let i = 0; i < len; i++) {
             let this_fault: string[] = [];
-            this_fault.push("log: " + i)
+            // this_fault.push("log: " + i)
             this_fault.push("Log pid: " + value[i].pid)
             this_fault.push("Log uid: " + value[i].uid)
             this_fault.push("Log type: " + value[i].type)
