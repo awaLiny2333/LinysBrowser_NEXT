@@ -1,11 +1,11 @@
-import linysText from '../../components/linysText'
+import linysText from '../../components/linysText';
 import linysTimeoutButton from '../../components/linysTimeoutButton';
-import woofSelectColor from '../../dialogs/prompts/woofSelectColor'
-import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large } from '../../hosts/bunch_of_defaults'
-import { bunch_of_settings } from '../../hosts/bunch_of_settings'
+import woofSelectColor from '../../dialogs/prompts/woofSelectColor';
+import { animation_default, click_effect_default } from '../../hosts/bunch_of_defaults';
+import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 
 @Component
-struct meowColorsManager{
+struct meowColorsManager {
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor =
@@ -75,13 +75,11 @@ struct meowColorsManager{
       .width("100%")
       .animation(animation_default())
 
-      Row() {
-        linysText({
-          text: $r("app.string.Color_reset")
-        })
-        Blank()
+      Row({ space: 10 }) {
+        linysText({ text: $r("app.string.Color_reset"), align_another_side: true })
+          .layoutWeight(1)
         linysTimeoutButton({
-          onExecution: async ()=>{
+          onExecution: async () => {
             // Reset
             this.bunch_of_settings.reset('color_light_font');
             this.bunch_of_settings.reset('color_light_primary');

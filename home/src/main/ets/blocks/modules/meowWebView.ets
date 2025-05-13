@@ -230,7 +230,7 @@ struct meowWebView {
               this.tab_is_loading = this.bunch_of_tabs.get_all_is_loading();
               this.update_current_info();
 
-              // Save browse history if is neither new tab nor a recovery tab
+              // Save browse history if is neither resource tab nor a recovery tab
               if (this.collect_new_history
                 && !this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation
                 && !this.tab_urls[Label.index_key].includes("resource://")

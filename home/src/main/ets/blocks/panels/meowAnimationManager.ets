@@ -53,11 +53,9 @@ struct meowAnimationManager {
         }
       })
 
-      Row() {
-        linysText({
-          text: $r("app.string.Settings_appearance_animation_reset")
-        })
-        Blank()
+      Row({ space: 10 }) {
+        linysText({ text: $r("app.string.Settings_appearance_animation_reset"), align_another_side: true })
+          .layoutWeight(1)
         linysTimeoutButton({
           onExecution: async () => {
             // Reset

@@ -74,7 +74,7 @@ struct meowAppSettings {
   // Information
   @State versionName: string = "Version Name";
   @State versionNo: number = 0;
-  @State history_length: number = this.bunch_of_history.history_this_month.length;
+  @State history_length: number = this.bunch_of_history.get_history_this_month().length;
   // Segment Button Options
   @State title_bar_position_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [{ text: '  󰀐  ' }, { text: '  󰃐  ' }] as ItemRestriction<SegmentButtonTextItem>,
@@ -902,7 +902,7 @@ struct meowAppSettings {
       this.on_panel_close();
     }
     // Get length properties
-    this.history_length = this.bunch_of_history.history_this_month.length;
+    this.history_length = this.bunch_of_history.get_history_this_month().length;
   }
 
   on_panel_open() {

@@ -15,11 +15,11 @@ struct woofHistory {
   @State scroll_area_height: number = 0;
   @Link showing_settings: boolean;
   // Interactions
-  @State viewing_year: number = this.bunch_of_history.current_year;
-  @State viewing_month: number = this.bunch_of_history.current_month;
+  @State viewing_year: number = this.bunch_of_history.get_current_year();
+  @State viewing_month: number = this.bunch_of_history.get_current_month();
   // Dates
-  @State available_months: number[][] = this.bunch_of_history.scan_history_months();
-  @State history_list: history_record[] = this.bunch_of_history.history_this_month;
+  @State available_months: number[][] = this.bunch_of_history.get_available_months();
+  @State history_list: history_record[] = this.bunch_of_history.get_history_this_month();
   // Manage
   @State @Watch('on_select_change') selected: boolean[] = this.all_false(this.history_list.length);
   @State selecting: boolean = false;
@@ -53,7 +53,7 @@ struct woofHistory {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   scroller: Scroller = new Scroller();
   // Data
-  private data: HistoryDataSource = new HistoryDataSource(this.bunch_of_history.history_this_month);
+  private data: HistoryDataSource = new HistoryDataSource(this.bunch_of_history.get_history_this_month());
 
   build() {
     woofControlFrame({
@@ -166,7 +166,7 @@ struct woofHistory {
                     this.viewing_year = item[0];
                     this.viewing_month = item[1];
                     this.scroller.scrollToIndex(0, false);
-                    this.data.setData(this.bunch_of_history.history_this_month);
+                    this.data.setData(this.bunch_of_history.get_history_this_month());
                   })
               }) // Items
             }
@@ -268,7 +268,7 @@ struct woofHistory {
    * Refreshes this.history_list according to the time range selected.
    * */
   refresh_current_history_list() {
-    this.history_list = this.bunch_of_history.history_this_month;
+    this.history_list = this.bunch_of_history.get_history_this_month();
     this.selected_number = 0;
     this.selected = this.all_false(this.history_list.length);
   }
@@ -309,7 +309,7 @@ struct woofHistory {
         this.data.notifyDataDelete(indices[index]);
       }
     }
-    this.bunch_of_history.remove_selected_history(this.viewing_year, this.viewing_month, indices, true);
+    this.bunch_of_history.remove_history_at_indices(this.viewing_year, this.viewing_month, indices, true);
     this.refresh_current_history_list();
   }
 }
