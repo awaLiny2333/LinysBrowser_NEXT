@@ -1,7 +1,7 @@
 {
   "app": {
     "bundleName": "com.next.liny.linysbrowserNEXT",
-    "vendor": "example",
+    "vendor": "Linys Workshop of Cats and Catzardry",
     "versionCode": 1000024,
     "versionName": "1.7.6",
     "icon": "$media:layered_image",

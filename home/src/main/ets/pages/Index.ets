@@ -39,9 +39,9 @@ struct Index {
   @StorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
   @StorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
   @StorageLink('tablet_mode') tablet_mode: boolean = false;
-  @StorageLink('fullscreen_mode') @Watch('on_fullscreen_switch') fullscreen_mode: boolean = false;
   @StorageLink('screen_width') screen_width: number = 0;
   @StorageLink('screen_height') screen_height: number = 0;
+  @StorageLink('fullscreen_mode') @Watch('on_fullscreen_switch') fullscreen_mode: boolean = false;
   @StorageLink('animation_response') animation_response: number = 0.36;
   @StorageLink('animation_damping_coefficient') animation_damping: number = 0.8;
   @StorageProp('currentColorMode') @Watch('on_color_mode_change') current_color_mode: number = 0;
