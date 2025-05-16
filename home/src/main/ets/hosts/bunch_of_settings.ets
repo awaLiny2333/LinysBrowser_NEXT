@@ -82,6 +82,7 @@ export class bunch_of_settings {
     this.register_setting('webview_cache_size', 'number', '-1');
 
     // Debug
+    this.register_setting('DEV_MODE', 'boolean', 'false');
     this.register_setting('resource_monitor', 'boolean', 'true');
 
     console.log('[Meow][bunch_of_settings] Init success!')

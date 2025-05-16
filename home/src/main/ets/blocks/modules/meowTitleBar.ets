@@ -37,6 +37,7 @@ import woofUAswitch from '../../dialogs/quicks/woofQuickUA';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import { drop_to_scratching_board } from '../../utils/drag_drop_tools';
 import meowDebug from '../panels/meowDebug';
+import linysProgressInfo from '../../components/linysProgressInfo';
 
 @Component
 struct meowTitleBar {
@@ -56,6 +57,9 @@ struct meowTitleBar {
   @Link bar_height: number;
   @StorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
   @StorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
+  @StorageProp('reindexing_history_progress') reindexing_history_progress: string = "";
+  @StorageProp('history_index_loading_progress') history_index_loading_progress: string = "";
+  @StorageProp('history_index_saving_progress') history_index_saving_progress: string = "";
   // Current environment
   @Link title_bar_alignRules: AlignRuleOption;
   @StorageLink('search_input') @Watch('on_search_input_change') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
@@ -96,6 +100,7 @@ struct meowTitleBar {
   @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   @State address_analyzers_desc_close_cd: number = 0;
   // settings
+  @StorageLink('DEV_MODE') DEV_MODE: boolean = false;
   @StorageLink('resource_monitor') resource_monitor: boolean = true;
   @StorageLink('disable_js') disable_js: boolean = true;
   @StorageLink('disable_js_these_sites') disable_js_these_sites: string[] = [];
@@ -384,12 +389,12 @@ struct meowTitleBar {
                 .onChange((content) => {
                   this.search_extracted_keyword = content;
                   if (content == '') {
-                    this.search_input_unified = this.search_extracted_engine.replaceAll('%s', 'o(=•ェ•=)m?');
+                    this.search_input_unified = this.search_extracted_engine.replaceAll('%s', "");
                   } else {
                     this.search_input_unified =
                       this.search_extracted_engine.replaceAll('%s', encodeURIComponent(content));
-                    this.search_input = this.search_input_unified;
                   }
+                  this.search_input = this.search_input_unified;
                 })
                 .onSubmit(() => {
                   this.submit_searching();
@@ -748,6 +753,24 @@ struct meowTitleBar {
         .visibility(this.resource_monitor ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
 
+        linysProgressInfo({
+          notification: $r('app.string.Settings_experience_history_index_loading_index_from_disk'),
+          progress: this.history_index_loading_progress,
+        })
+          .opacity(0.8)
+
+        linysProgressInfo({
+          notification: $r('app.string.Settings_experience_history_index_reindexing'),
+          progress: this.reindexing_history_progress,
+        })
+          .opacity(0.8)
+
+        linysProgressInfo({
+          notification: $r('app.string.Settings_experience_history_index_saving_to_disk'),
+          progress: this.history_index_saving_progress,
+        })
+          .opacity(0.8)
+
         // linysTitleText({
         //   text: $r('app.string.Index_drop_please'),
         //   max_lines: 3
@@ -1028,9 +1051,11 @@ struct meowTitleBar {
   update_search_input(content?: string) {
     if (content) {
       this.search_input = content;
+    } else {
+      this.search_input = "";
     }
-    let uni_result =
-      unify_search_input_into_url(this.search_input, this.search_input_unify_scheme_http ? "http" : "https");
+    let s: string = content || "¯\\_(ツ)_/¯";
+    let uni_result = unify_search_input_into_url(s, this.search_input_unify_scheme_http ? "http" : "https");
     this.search_input_unified = uni_result[0] as string;
     this.search_input_is_address = uni_result[1] as boolean;
     this.search_input_unified = url_resource_to_meow(this.search_input_unified);

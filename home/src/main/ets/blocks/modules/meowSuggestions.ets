@@ -78,7 +78,6 @@ struct meowSuggestions {
     Visibility.None : this.visible_when_typing())
     .edgeEffect(EdgeEffect.Spring)
     .animation(animation_default())
-
   }
 
   visible_when_typing() {
@@ -86,7 +85,7 @@ struct meowSuggestions {
   }
 
   refresh_suggestions() {
-    if (this.search_input === undefined) {
+    if (this.search_input === undefined || this.search_input.length == 0) {
       this.bookmark_suggestions = [];
       this.history_suggestions = [];
     } else {
@@ -94,9 +93,9 @@ struct meowSuggestions {
       this.bookmark_suggestions =
         get_relations(label_link_bookmark, this.search_input, this.max_bookmark_advice);
 
-      let label_link_history = this.bunch_of_history.get_plain_history();
       this.history_suggestions =
-        get_relations(label_link_history, this.search_input, this.max_history_advice);
+        bunch_of_history.search_with_index(this.search_input.toUpperCase(), this.max_history_advice);
+      // get_relations(label_link_history, this.search_input, this.max_history_advice);
     }
   }
 }

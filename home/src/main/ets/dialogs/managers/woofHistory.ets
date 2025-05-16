@@ -18,7 +18,7 @@ struct woofHistory {
   @State viewing_year: number = this.bunch_of_history.get_current_year();
   @State viewing_month: number = this.bunch_of_history.get_current_month();
   // Dates
-  @State available_months: number[][] = this.bunch_of_history.get_available_months();
+  @State available_months: number[][] = bunch_of_history.get_history_months();
   @State history_list: history_record[] = this.bunch_of_history.get_history_this_month();
   // Manage
   @State @Watch('on_select_change') selected: boolean[] = this.all_false(this.history_list.length);
@@ -161,7 +161,7 @@ struct woofHistory {
                 })
                   .onClick(() => {
                     // MEOW
-                    this.bunch_of_history.open_month_from_disk(item[0], item[1], false);
+                    this.bunch_of_history.open_month_from_disk_sync(item[0], item[1]);
                     this.refresh_current_history_list();
                     this.viewing_year = item[0];
                     this.viewing_month = item[1];
@@ -306,7 +306,10 @@ struct woofHistory {
       if (this.selected[index]) {
         indices.push(index);
         // Notify LazyForEach
-        this.data.notifyDataDelete(indices[index]);
+        // this.data.notifyDataDelete(indices[index]);
+
+        // TODO: use better strategy to notify LazyForEach about a deletion.
+        this.data.setData(this.bunch_of_history.get_history_this_month());
       }
     }
     this.bunch_of_history.remove_history_at_indices(this.viewing_year, this.viewing_month, indices, true);

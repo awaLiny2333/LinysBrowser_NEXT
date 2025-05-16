@@ -1,7 +1,7 @@
 import { BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 import { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
-import { buffer, taskpool } from '@kit.ArkTS';
+import { buffer } from '@kit.ArkTS';
 import { image } from '@kit.ImageKit';
 
 let context = AppStorage.get("context") as common.UIAbilityContext;
@@ -126,15 +126,15 @@ export async function image_open_to_ArrayBuffer() {
  * @param file_name A string, setting the file's name.
  * @param content A string or an ArrayBuffer, fills the file's content.
  * */
-export function sandbox_save(file_name: string, content: string | ArrayBuffer) {
-  let filesDir = getContext().filesDir;
+export function sandbox_save(file_name: string, content: string | ArrayBuffer, context_filesDir?: string) {
+  let filesDir: string = context_filesDir || getContext().filesDir;
   let full_file_directory = filesDir + '/' + file_name;
   if (fs.accessSync(full_file_directory)) {
     fs.unlinkSync(full_file_directory);
   }
   let file = fs.openSync(full_file_directory, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
   let writeLen = fs.writeSync(file.fd, content);
-  console.info("[sandbox_save] write data to file succeed and size is:" + writeLen + " @ " + file_name);
+  console.info("[sandbox_save] write to file \"" + file_name + "\" succeed and size: " + writeLen + " @ " + file_name);
   fs.closeSync(file);
 }
 
@@ -142,8 +142,8 @@ export function sandbox_save(file_name: string, content: string | ArrayBuffer) {
  * Unlink (delete) a file.
  * @param file_name A string, the path of the file.
  * */
-export function sandbox_unlink(file_name: string) {
-  let filesDir = getContext().filesDir;
+export function sandbox_unlink(file_name: string, context_filesDir?: string) {
+  let filesDir: string = context_filesDir || getContext().filesDir;
   let full_file_directory = filesDir + '/' + file_name;
   fs.unlink(full_file_directory);
 }
@@ -152,18 +152,20 @@ export function sandbox_unlink(file_name: string) {
  * Unlink (delete) a file in a sync way.
  * @param file_name A string, the path of the file.
  * */
-export function sandbox_unlink_sync(file_name: string) {
-  let filesDir = getContext().filesDir;
+export function sandbox_unlink_sync(file_name: string, context_filesDir?: string) {
+  let filesDir: string = context_filesDir || getContext().filesDir;
   let full_file_directory = filesDir + '/' + file_name;
   fs.unlinkSync(full_file_directory);
 }
 
 /**
  * Read a text file from sandbox storage.
+ *
+ * If you have a context filesDir already, you can pass it to me.
  * @returns A string, of the requested file's content.
  * */
-export function sandbox_open_sync(file_name: string) {
-  let filesDir = getContext().filesDir;
+export function sandbox_open_sync(file_name: string, context_filesDir?: string) {
+  let filesDir: string = context_filesDir || getContext().filesDir;
   file_name = filesDir + "/" + file_name
   if (!(fs.accessSync(file_name))) {
     // file doesn't exist
@@ -176,7 +178,7 @@ export function sandbox_open_sync(file_name: string) {
   let readLen = fs.readSync(file.fd, buf);
   fs.closeSync(file);
   let result = buf.slice(0, readLen);
-  console.info("[sandbox_open] read file data succeed, Length: " + readLen.toString());
+  console.info("[sandbox_open] read file \"" + file_name + "\" data succeed, Length: " + readLen.toString());
   return buffer.from(result).toString();
 }
 
@@ -184,8 +186,8 @@ export function sandbox_open_sync(file_name: string) {
  * Read an ArrayBuffer file from sandbox storage.
  * @returns An ArrayBuffer, of the requested file's content.
  * */
-export function sandbox_open_arrayBuffer_sync(file_path_name: string) {
-  let filesDir = getContext().filesDir;
+export function sandbox_open_arrayBuffer_sync(file_path_name: string, context_filesDir?: string) {
+  let filesDir: string = context_filesDir || getContext().filesDir;
   file_path_name = filesDir + "/" + file_path_name
   if (!(fs.accessSync(file_path_name))) {
     // file doesn't exist
@@ -291,4 +293,35 @@ export function arrayBuffer_to_pixelMap(buf: ArrayBuffer) {
   let pixelMap = imageSource.createPixelMapSync({});
   imageSource.release();
   return pixelMap;
+}
+
+/**
+ * Copies a file from rawfile to sandbox
+ * @param from
+ * @param to
+ * */
+export function copy_from_rawfile_to_sandbox(from: string, to: string) {
+  let boxPath = getContext().filesDir
+  let to_split = to.split("/");
+  let folderPath = boxPath + "/" + to_split.slice(0, to_split.length - 2).join("/");
+  let fullPath = boxPath + "/" + to
+
+  // 获取rawfile资源文件，转换数据
+  let uint8Array: Uint8Array = getContext().resourceManager.getRawFileContentSync(from);
+  let bf = buffer.from(uint8Array).buffer;
+
+  // 创建沙箱目录
+  try {
+    fs.mkdirSync(folderPath)
+  } catch (e) {
+  }
+
+  // 打开文件
+  const fsOpen =
+    fs.openSync(fullPath, fs.OpenMode.READ_WRITE | fs.OpenMode.READ_ONLY | fs.OpenMode.CREATE | fs.OpenMode.TRUNC)
+
+  // 写入文件
+  let destFile = fs.writeSync(fsOpen.fd, bf);
+  // 关闭文件
+  fs.close(destFile)
 }

@@ -2,7 +2,17 @@
   "apiType": "stageMode",
   "buildOption": {
     "externalNativeOptions": {
-      "abiFilters": ["arm64-v8a", "x86_64"]
+      "abiFilters": [
+        "arm64-v8a",
+        "x86_64"
+      ]
+    },
+    "sourceOption": {
+      "workers": [
+        './src/main/ets/workers/History_indexer.ets',
+        './src/main/ets/workers/History_index_loader.ets',
+        './src/main/ets/workers/History_index_saver.ets'
+      ]
     },
   },
   "buildOptionSet": [

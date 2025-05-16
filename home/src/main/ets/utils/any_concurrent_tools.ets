@@ -2,7 +2,11 @@ import { get_folder_size_Sync } from './storage_tools';
 import { taskpool } from '@kit.ArkTS';
 import {
   getGraphicsMemory_sync,
-  getPrivateDirty_sync, getPss_sync, getSharedDirty_sync, getVss_sync } from './performance_tools';
+  getPrivateDirty_sync,
+  getPss_sync,
+  getSharedDirty_sync,
+  getVss_sync
+} from './performance_tools';
 
 @Concurrent
 function get_web_cache_size_concurrent(): number {

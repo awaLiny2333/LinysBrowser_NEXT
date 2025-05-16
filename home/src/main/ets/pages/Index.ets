@@ -15,6 +15,7 @@ import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 import { window } from '@kit.ArkUI';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
+import linysProgressInfo from '../components/linysProgressInfo';
 
 @Entry
 @Component
@@ -45,6 +46,12 @@ struct Index {
   @StorageLink('animation_response') animation_response: number = 0.36;
   @StorageLink('animation_damping_coefficient') animation_damping: number = 0.8;
   @StorageProp('currentColorMode') @Watch('on_color_mode_change') current_color_mode: number = 0;
+  @StorageProp('reindexing_history') reindexing_history: boolean | undefined = undefined;
+  @StorageProp('reindexing_history_progress') reindexing_history_progress: string = "";
+  @StorageProp('history_index_loading') history_index_loading: boolean | undefined = undefined;
+  @StorageProp('history_index_loading_progress') history_index_loading_progress: string = "";
+  @StorageProp('history_index_saving') history_index_saving: boolean | undefined = undefined;
+  @StorageProp('history_index_saving_progress') history_index_saving_progress: string = "";
   // UI Statuses
   @StorageLink('fullscreen_handler') handler: FullScreenExitHandler | null = null;
   @StorageLink('showing_downloads') showing_downloads: boolean = false;

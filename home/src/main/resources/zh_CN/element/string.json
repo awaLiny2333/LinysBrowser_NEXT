@@ -169,20 +169,24 @@
       "value": "浏览历史"
     },
     {
-      "name": "Settings_experience_history_today",
-      "value": "今日"
+      "name": "Settings_experience_history_index",
+      "value": "索引历史"
     },
     {
-      "name": "Settings_experience_history_this_month",
-      "value": "今月"
+      "name": "Settings_experience_history_index_desc",
+      "value": "索引是一种通过预读取和分析数据以加快查询的技术。\n\n索引历史通常需要一定的时间和空间，但这通常是值得的。\n\n点击这个按钮以强制重新索引（进度会显示在 \uDB80\uDC61 里）："
     },
     {
-      "name": "Settings_experience_history_this_year",
-      "value": "今年"
+      "name": "Settings_experience_history_index_loading_index_from_disk",
+      "value": "载入历史索引 :D"
     },
     {
-      "name": "Settings_experience_history_before",
-      "value": "更久以前"
+      "name": "Settings_experience_history_index_reindexing",
+      "value": "重建历史索引 :O"
+    },
+    {
+      "name": "Settings_experience_history_index_saving_to_disk",
+      "value": "保存索引 =D"
     },
     {
       "name": "Settings_experience_history_from",
@@ -458,7 +462,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "故障日志查看；\n性能检测器！\n使用启动任务池计算缓存大小就不会阻塞主线程了；\n使用懒加载加载历史记录，打开面板不卡了！"
+      "value": "尝试为历史记录手搓索引系统！"
     },
     {
       "name": "Whats_new_content_extra",

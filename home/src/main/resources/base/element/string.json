@@ -169,20 +169,24 @@
       "value": "View history"
     },
     {
-      "name": "Settings_experience_history_today",
-      "value": "Today"
+      "name": "Settings_experience_history_index",
+      "value": "Index history now"
     },
     {
-      "name": "Settings_experience_history_this_month",
-      "value": "This month"
+      "name": "Settings_experience_history_index_desc",
+      "value": "Indexing is a technology that accelerates searching by pre-reading data and analyzing them. \n\nIndexing history often needs an amount of time and space but this is mostly worthy. \n\nHit the button below to force rebuild all indices (Progress would be shown in \uDB80\uDC61 ):"
     },
     {
-      "name": "Settings_experience_history_this_year",
-      "value": "This year"
+      "name": "Settings_experience_history_index_loading_index_from_disk",
+      "value": "History index loading from disk :D"
     },
     {
-      "name": "Settings_experience_history_before",
-      "value": "Before"
+      "name": "Settings_experience_history_index_reindexing",
+      "value": "History Reindexing :O"
+    },
+    {
+      "name": "Settings_experience_history_index_saving_to_disk",
+      "value": "History index saving =D"
     },
     {
       "name": "Settings_experience_history_from",
@@ -458,7 +462,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "Fault logs viewer;\nPerformance monitor!\nUsed taskpool to calculate cache size so that main thread won't be blocked;\nOpening the History panel no longer takes forever thanks to rescue from LazyForEach!"
+      "value": "Trying to write an indexing system for history!"
     },
     {
       "name": "Whats_new_content_extra",

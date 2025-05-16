@@ -1,5 +1,6 @@
 import { default_search_engine } from '../hosts/bunch_of_defaults';
 import { common, Want } from '@kit.AbilityKit';
+import { collections } from '@kit.ArkTS';
 
 /**
  * Process the search_input into a visitable address.
@@ -318,6 +319,10 @@ export function extract_links_from_text(data_list: string[]) {
   return [extracted_data, extracted_type]
 }
 
+/**
+ * Jumps to an external link using want.
+ * @param link the link
+ * */
 export function jump_external_link(link: string) {
   // jump to url received
   const want: Want = {

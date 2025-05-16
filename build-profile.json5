@@ -2,35 +2,35 @@
   "app": {
     "signingConfigs": [
       {
-        "name": "default",
-        "type": "HarmonyOS",
-        "material": {
-          "certpath": "C:\\Users\\meowDUO\\.ohos\\config\\default_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.cer",
-          "keyAlias": "debugKey",
-          "keyPassword": "0000001B3BDBE6993BCD8093A4AFA97A3CE27E6AAD4C14395F19914700D80E98128FCD23C73F34C5CAB916",
-          "profile": "C:\\Users\\meowDUO\\.ohos\\config\\default_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.p7b",
-          "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\meowDUO\\.ohos\\config\\default_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.p12",
-          "storePassword": "0000001BA993E9A0CC862F72721227B91F276F5140026D1BA9E344FC73E204BF3B38068A2C326F5810EF79"
-        }
-      },
-      {
         "name": "ohos",
         "material": {
           "certpath": "C:/Users/meowDUO/.ohos/config/openharmony/ohos_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.cer",
-          "storePassword": "0000001BC8A3725B5BF88C8AF34379D4F416000B2F2ABC6C959A46F5F07363D0EC03B4E8EA6F2B3EA52A50",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001B08D58D9A76092555EEF059CA7D98562DEA8F9DDEB961371A62D5D395AB77E0690EC6C87CE5AE6E",
+          "keyPassword": "0000001BAC46EE934404E44EE83581CF78AC91AD07C46E65DC3B8457A6B38F4DF4FE2C922FC3131AA72832",
           "profile": "C:/Users/meowDUO/.ohos/config/openharmony/ohos_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:/Users/meowDUO/.ohos/config/openharmony/ohos_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.p12"
+          "storeFile": "C:/Users/meowDUO/.ohos/config/openharmony/ohos_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.p12",
+          "storePassword": "0000001B308EF3C3CC3FE4B2BD3B42BD9A2E804B49880DE038EA58B322CC3FE7D066582B7F411B1332A516"
+        }
+      },
+      {
+        "name": "hmos",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\meowDUO\\.ohos\\config\\hmos_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001AB92680515DF6365CAC8CA6F65C10F7C9864B32F30B381C847CA34FD5EDB7CD8862325E09DF32",
+          "profile": "C:\\Users\\meowDUO\\.ohos\\config\\hmos_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\meowDUO\\.ohos\\config\\hmos_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.p12",
+          "storePassword": "0000001A87CC0106D3717DBCCA5E348487E1CB5FBFB83632475F1C254E5CC04A9EE67AC01B09FEA6BACB"
         }
       }
     ],
     "products": [
       {
         "name": "default",
-        "signingConfig": "default",
+        "signingConfig": "hmos",
         "compatibleSdkVersion": "5.0.4(16)",
         "runtimeOS": "HarmonyOS",
         "buildOption": {

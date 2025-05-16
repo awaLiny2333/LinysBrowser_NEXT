@@ -19,7 +19,7 @@ import meowUAManager from '../panels/meowUAManager';
 import { bunch_of_user_agents } from '../../hosts/bunch_of_user_agents';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import linysCapsuleButton from '../../components/linysCapsuleButton';
-import { bunch_of_history } from '../../hosts/bunch_of_history';
+import { bunch_of_history, fill_fake_history } from '../../hosts/bunch_of_history';
 import {
   add_units_to_size,
   arrayBuffer_to_pixelMap,
@@ -46,6 +46,12 @@ import linysLockSlider from '../../components/linysLockSlider';
 import linysTimeoutButton from '../../components/linysTimeoutButton';
 import { get_web_cache_size } from '../../utils/any_concurrent_tools';
 import woofRecentFaultLogs from '../../dialogs/contents/woofRecentFaultLogs';
+import { bunch_of_history_index } from '../../hosts/bunch_of_history_index';
+import {
+  history_index_full_rebuild_worker,
+  history_index_load_from_disk_worker,
+  history_index_save_to_disk_worker
+} from '../../hosts/bunch_of_history_index_functions';
 
 @Component
 struct meowAppSettings {
@@ -60,6 +66,7 @@ struct meowAppSettings {
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts =
     new bunch_of_key_shortcuts(true);
+  @StorageLink('bunch_of_history_index') bunch_of_history_index: bunch_of_history_index = new bunch_of_history_index();
   @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
   // Colors
   @StorageProp('color_current_primary') @Watch('on_color_change') color_current_primary: ResourceColor =
@@ -108,6 +115,7 @@ struct meowAppSettings {
     selectedFontColor: this.color_current_primary
   })
   // Settings
+  @StorageLink('DEV_MODE') DEV_MODE: boolean = false;
   @State @Watch('on_title_bar_position_changed') title_bar_position_selected: number[] = [0];
   @State @Watch('on_tabs_style_changed') tabs_style_selected: number[] = [0];
   @State @Watch('on_tabs_style_non_tablet_mode_changed') tabs_style_selected_non_tablet_mode: number[] = [0];
@@ -222,9 +230,12 @@ struct meowAppSettings {
   // Else
   @State clear_web_cache_confirm: number = 0;
   @State web_cache_size: number = 0;
+  @State version_clicked_times: number = 0;
   // Status
   @StorageLink('settings_init_retrieved') settings_init_retrieved: boolean = false;
   @State calculating_web_cache_size: boolean = false;
+  @StorageLink('reindexing_history') reindexing_history: boolean = false;
+  @StorageLink('reindexing_history_progress') reindexing_history_progress: number = 100;
 
   build() {
     Row() {
@@ -562,6 +573,56 @@ struct meowAppSettings {
                     this.bunch_of_key_shortcuts.history.modifier)
               } // History management
               .width("100%")
+
+              linysText({ text: $r('app.string.Settings_experience_history_index_desc'), max_lines: 20 })
+
+              Row({ space: 10 }) {
+                // linysTitleText({ text: "󰏕 " + this.history_length.toString() })
+                linysText({
+                  text: $r('app.string.Settings_experience_history_index'),
+                  max_lines: 3,
+                  align_another_side: true
+                })
+                  .layoutWeight(1)
+
+                linysTimeoutButton({
+                  text: "  󰏕  ",
+                  onExecution: () => {
+                    history_index_full_rebuild_worker();
+                  }
+                })
+                  .opacity(this.reindexing_history ? 0.4 : 1)
+                  .enabled(!this.reindexing_history)
+              } // History indexing
+              .width("100%")
+
+              if (this.DEV_MODE) {
+                linysTimeoutButton({
+                  text: " Fill test data ",
+                  onExecution: () => {
+                    fill_fake_history(500000);
+                  }
+                })
+                  .opacity(this.reindexing_history ? 0.4 : 1)
+                  .enabled(!this.reindexing_history)
+                  .animation(animation_default())
+
+                linysCapsuleButton({ text: ' Load from disk ' })
+                  .onClick(() => {
+                    history_index_load_from_disk_worker();
+                  })
+                  .opacity(this.reindexing_history ? 0.4 : 1)
+                  .enabled(!this.reindexing_history)
+                  .animation(animation_default())
+
+                linysCapsuleButton({ text: ' Save to disk ' })
+                  .onClick(() => {
+                    history_index_save_to_disk_worker();
+                  })
+                  .opacity(this.reindexing_history ? 0.4 : 1)
+                  .enabled(!this.reindexing_history)
+                  .animation(animation_default())
+              }
             }
             .padding(15)
             .alignItems(HorizontalAlign.Start)
@@ -734,6 +795,15 @@ struct meowAppSettings {
                   })
               } // Fault logs display
               .width("100%")
+
+              if (this.DEV_MODE) {
+                linysTimeoutButton({
+                  text: " Temp Code ",
+                  onExecution: () => {
+
+                  }
+                })
+              }
             }
             .padding(15)
             .alignItems(HorizontalAlign.Start)
@@ -741,7 +811,7 @@ struct meowAppSettings {
             .width("100%")
             .borderRadius(10)
             .backgroundColor(this.color_current_primary)
-          } // Toolbox
+          } // Toolbox cardboard box
           .width("100%")
 
           FlowItem() {
@@ -765,7 +835,10 @@ struct meowAppSettings {
               linysText({
                 text: "（ฅ＾・ﻌ・＾）ฅ  - " + this.versionName + " - " + this.versionNo,
                 max_lines: 3
-              }) // Version Info
+              })// Version Info
+                .onClick(() => {
+                  this.version_clicked();
+                })
               meowWhatsNew()
               meowCreditsRepos()
               meowCreditsUsers()
@@ -820,9 +893,11 @@ struct meowAppSettings {
       this.versionNo = bundleInfo.versionCode;
     })
 
+    // Get DEV_MODE
+    this.DEV_MODE = await this.bunch_of_settings.get('DEV_MODE') as boolean;
+
     // Get settings of title bar position
-    this.title_bar_position =
-      await this.bunch_of_settings.get('title_bar_position') as string;
+    this.title_bar_position = await this.bunch_of_settings.get('title_bar_position') as string;
 
     // Get settings of tabs style
     this.tabs_style = await this.bunch_of_settings.get('tabs_style') as string;
@@ -831,31 +906,26 @@ struct meowAppSettings {
     this.tabs_style_non_tablet_mode = await this.bunch_of_settings.get('tabs_style_non_tablet_mode') as string;
 
     // Get number of max bookmarks suggestions
-    this.max_bookmark_advice =
-      await this.bunch_of_settings.get('max_bookmark_suggest') as number;
+    this.max_bookmark_advice = await this.bunch_of_settings.get('max_bookmark_suggest') as number;
 
     // Get number of max history suggestions
-    this.max_history_advice =
-      await this.bunch_of_settings.get('max_history_suggest') as number;
+    this.max_history_advice = await this.bunch_of_settings.get('max_history_suggest') as number;
 
     // Get whether to continue to collect new history
-    this.collect_new_history =
-      await this.bunch_of_settings.get('collect_new_history') as boolean;
+    this.collect_new_history = await this.bunch_of_settings.get('collect_new_history') as boolean;
 
     // Get whether to continue to enable intelligent_tracking_prevention
     this.intelligent_tracking_prevention =
       await this.bunch_of_settings.get('intelligent_tracking_prevention') as boolean;
 
     // Get whether to use system back to access backward
-    this.sys_back_to_access_backward =
-      await this.bunch_of_settings.get('sys_back_access_backward') as boolean;
+    this.sys_back_to_access_backward = await this.bunch_of_settings.get('sys_back_access_backward') as boolean;
 
     // Get whether to enable forced webs dark mode
-    this.web_force_dark_mode =
-      await this.bunch_of_settings.get('web_force_dark_mode') as boolean;
+    this.web_force_dark_mode = await this.bunch_of_settings.get('web_force_dark_mode') as boolean;
 
     // Read history
-    this.bunch_of_history.check_disk_month(new Date().getFullYear(), new Date().getMonth() + 1);
+    bunch_of_history.check_disk_month(new Date().getUTCFullYear(), new Date().getUTCMonth() + 1);
 
     // Read webview cache
     this.web_cache_size = await this.bunch_of_settings.get('webview_cache_size') as number;
@@ -873,8 +943,7 @@ struct meowAppSettings {
     }
 
     // Get settings of shortcuts on left or right
-    this.preferred_hand_left_or_right =
-      await this.bunch_of_settings.get('preferred_hand_left_or_right') as string;
+    this.preferred_hand_left_or_right = await this.bunch_of_settings.get('preferred_hand_left_or_right') as string;
     if (this.preferred_hand_left_or_right == 'left') {
       this.prefer_hand_left_or_right_selected = [0];
     } else {
@@ -1061,6 +1130,15 @@ struct meowAppSettings {
       return;
     }
     this.waterFlow_control.scrollToIndex(this.settings_scroll_to, true);
+  }
+
+  version_clicked() {
+    this.version_clicked_times += 1;
+    if (this.version_clicked_times == 7) {
+      // Enter Dev mode
+      this.version_clicked_times += 1;
+      this.bunch_of_settings.set('DEV_MODE', true);
+    }
   }
 }
 
