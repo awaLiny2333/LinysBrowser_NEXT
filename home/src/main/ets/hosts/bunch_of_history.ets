@@ -1,4 +1,4 @@
-import { sandbox_open_sync, sandbox_save, sandbox_unlink } from '../utils/storage_tools';
+import { sandbox_open_sync, sandbox_save, sandbox_unlink, sandbox_unlink_sync } from '../utils/storage_tools';
 import { fileIo as fs } from '@kit.CoreFileKit';
 import { bunch_of_history_index } from './bunch_of_history_index';
 import {
@@ -69,6 +69,12 @@ export class bunch_of_history {
 
     // Log
     console.log('[Meow][bunch_of_history] bunch_of_history initialization finished!');
+
+    // Get app version info
+    bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION).then((bundleInfo) => {
+      sandbox_save("last_app_versionCode.txt", bundleInfo.versionCode.toString());
+      sandbox_save("last_app_versionName.txt", bundleInfo.versionName);
+    })
   }
 
   // Statics
@@ -187,7 +193,7 @@ export class bunch_of_history {
     if (old_history != 'undefined') {
       console.log('[Meow][bunch_of_history] Patch old history: found old history:\n' + old_history.toString())
       this.import_string_full(old_history);
-      sandbox_unlink('history.txt');
+      sandbox_unlink_sync('history.txt');
     }
   }
 
@@ -226,12 +232,6 @@ export class bunch_of_history {
     }
 
     this.import_string_full(result);
-
-    // Get app version info
-    bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION).then((bundleInfo) => {
-      sandbox_save("last_app_versionCode.txt", "versionCode");
-      sandbox_save("last_app_versionName.txt", "versionName");
-    })
   }
 
   // Properties
