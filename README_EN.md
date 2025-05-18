@@ -1,4 +1,4 @@
-# Liny’s Browser!
+# Liny’s BrowserCat!
 
 [中文](README.md) | [English](README_EN.md)
 
@@ -55,19 +55,35 @@ Thank you all with your works!! (*￣3￣)╭
 
 ## Previews
 
-On Large screens (Light Mode):
+Phones:
 
-![Tablet_light](Examples/gallery_4.png)
+|                   首页（浅）                    |                    设置（浅）                     |
+|:------------------------------------------:|:--------------------------------------------:|
+| ![gallery_9.jpg](build_auto/gallery_9.jpg) | ![gallery_10.jpg](build_auto/gallery_10.jpg) |
 
-On Foldables (Dark Mode):
+|                   首页（深）                    |                   设置（深）                    |
+|:------------------------------------------:|:------------------------------------------:|
+| ![gallery_3.jpg](build_auto/gallery_3.jpg) | ![gallery_4.jpg](build_auto/gallery_4.jpg) |
+Foldables:
 
-![Foldable_Dark](Examples/gallery_1.png)
+|                   首页（浅）                    |                   设置（浅）                    |
+|:------------------------------------------:|:------------------------------------------:|
+| ![gallery_7.jpg](build_auto/gallery_7.jpg) | ![gallery_8.jpg](build_auto/gallery_8.jpg) |
 
-On Phones (Light Mode):
+|                   首页（深）                    |                   设置（深）                    |
+|:------------------------------------------:|:------------------------------------------:|
+| ![gallery_1.jpg](build_auto/gallery_1.jpg) | ![gallery_2.jpg](build_auto/gallery_2.jpg) |
+Tablets:
 
-|               Browsing Page                |                  TabsView                   |
-|:------------------------------------------:|:-------------------------------------------:|
-| ![Phone_light_web](Examples/gallery_2.png) | ![Phone_light_tabs](Examples/gallery_3.png) |
+|                    首页（浅）                     |                    设置（浅）                     |
+|:--------------------------------------------:|:--------------------------------------------:|
+| ![gallery_11.jpg](build_auto/gallery_11.jpg) | ![gallery_12.jpg](build_auto/gallery_12.jpg) |
+
+|                   首页（深）                    |                   设置（深）                    |
+|:------------------------------------------:|:------------------------------------------:|
+| ![gallery_5.jpg](build_auto/gallery_5.jpg) | ![gallery_6.jpg](build_auto/gallery_6.jpg) |
+
+Note that the backdrop and colors need to be set by yourself! :P
 
 ## Related Permissions
 
