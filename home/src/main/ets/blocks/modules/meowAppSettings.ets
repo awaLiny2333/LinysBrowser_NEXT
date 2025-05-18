@@ -591,9 +591,19 @@ struct meowAppSettings {
 
               if (this.DEV_MODE) {
                 linysTimeoutButton({
-                  text: " Fill test data ",
+                  text: " Fill history 05 - 14 ",
                   onExecution: () => {
-                    fill_fake_history(500000);
+                    fill_fake_history(2005, 2014, 750000);
+                  }
+                })
+                  .opacity(this.reindexing_history ? 0.4 : 1)
+                  .enabled(!this.reindexing_history)
+                  .animation(animation_default())
+
+                linysTimeoutButton({
+                  text: " Fill history 15 - 24 ",
+                  onExecution: () => {
+                    fill_fake_history(2015, 2024, 750000);
                   }
                 })
                   .opacity(this.reindexing_history ? 0.4 : 1)

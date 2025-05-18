@@ -1,15 +1,8 @@
-import { sandbox_open_sync, sandbox_save } from '../utils/storage_tools';
-import { fileIo, fileIo as fs } from '@kit.CoreFileKit';
+import { sandbox_open_sync } from '../utils/storage_tools';
+import { fileIo as fs } from '@kit.CoreFileKit';
 import { collections } from '@kit.ArkTS';
 import { history_record } from './bunch_of_history';
-import {
-  divide_string,
-  get_history_from_disk,
-  history_index_full_rebuild_worker,
-  history_index_load_from_disk_worker,
-  index_file_name_of_month,
-  index_path_of_month
-} from './bunch_of_history_index_x_functions';
+import { divide_string, get_history_from_disk, index_file_name_of_month } from './bunch_of_history_index_x_functions';
 import { bunch_of_history_index_lite } from './bunch_of_history_index_lite';
 
 export class bunch_of_history_index {
@@ -58,9 +51,11 @@ export class bunch_of_history_index {
       return [];
     }
 
+    // TODO: find a more elegant way instead of reverse().
     let stamps = bunch_of_history_index.search_timestamps(key, max);
+    stamps.reverse();
     let result = get_history_from_disk(stamps, max);
-
+    result.reverse();
     return result;
   }
 
@@ -255,12 +250,15 @@ export class bunch_of_history_index {
     }
 
     const result: number[] = [];
-    for (const val of baseArray) {
+    for (let k = baseArray.length - 1; k >= 0; k--) {
+      const val = baseArray[k];
       let isCommon = true;
+
       for (const arr of ranges) {
         if (arr === baseArray) {
           continue;
         } // Skip the base array itself
+
         if (!bunch_of_history_index.binarySearch(arr, val)) {
           isCommon = false;
           break;
