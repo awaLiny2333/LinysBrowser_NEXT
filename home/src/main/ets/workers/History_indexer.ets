@@ -118,7 +118,7 @@ function get_history_months_no_create_this_month(context_filesDir?: string) {
     result.push([year, month]);
   }
   result = result.sort((a, b) => (a[0] * 12 + a[1]) - (b[0] * 12 + b[1]));
-  console.log(host.log_head_worker() + ' Got_ava`ilable_months. Result: ' + result.join(' ') + '.')
+  console.log(host.log_head_worker() + ' Got_available_months. Result: ' + result.join(' ') + '.')
   return result;
 }
 

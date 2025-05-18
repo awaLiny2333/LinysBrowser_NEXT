@@ -61,16 +61,6 @@ export class bunch_of_history {
     // Load today
     this.open_month_from_disk_sync(this.current_year, this.current_month);
 
-    if (fs.listFileSync(getContext().filesDir + '/history-index', { recursion: false }).length == 0) {
-      console.log(bunch_of_history_index.log_head_worker() + ' No index found. ')
-      console.log(bunch_of_history_index.log_head_worker() + ' Rebuilding... ')
-      history_index_full_rebuild_worker();
-    } else {
-      // Load index
-      // In a concurrent way?!
-      history_index_load_from_disk_worker("normal");
-    }
-
     // Log
     console.log('[Meow][bunch_of_history] bunch_of_history initialization finished!');
 

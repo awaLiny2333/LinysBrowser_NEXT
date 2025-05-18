@@ -2,7 +2,14 @@ import { sandbox_open_sync, sandbox_save } from '../utils/storage_tools';
 import { fileIo, fileIo as fs } from '@kit.CoreFileKit';
 import { collections } from '@kit.ArkTS';
 import { history_record } from './bunch_of_history';
-import { divide_string, get_history_from_disk, index_file_name_of_month, index_path_of_month } from './bunch_of_history_index_x_functions';
+import {
+  divide_string,
+  get_history_from_disk,
+  history_index_full_rebuild_worker,
+  history_index_load_from_disk_worker,
+  index_file_name_of_month,
+  index_path_of_month
+} from './bunch_of_history_index_x_functions';
 import { bunch_of_history_index_lite } from './bunch_of_history_index_lite';
 
 export class bunch_of_history_index {
@@ -16,14 +23,15 @@ export class bunch_of_history_index {
     } catch (e) {
       // console.log(log_head() + 'Check disk of month: E: /history-index folder already exists.')
     }
-    // Create this month index
-    const current_year: number = new Date().getUTCFullYear();
-    const current_month: number = new Date().getUTCMonth() + 1;
-    const this_month_file_path = index_path_of_month(current_year, current_month);
-    if (!fileIo.accessSync(getContext().filesDir + '/' + this_month_file_path)) {
-      // If this month have no index
-      console.log(bunch_of_history_index.log_head() + ' No this month index found. Creating one.')
-      sandbox_save(this_month_file_path, '');
+
+    if (fs.listFileSync(getContext().filesDir + '/history-index', { recursion: false }).length == 0) {
+      console.log(bunch_of_history_index.log_head_worker() + ' No index found. ')
+      console.log(bunch_of_history_index.log_head_worker() + ' Rebuilding... ')
+      history_index_full_rebuild_worker();
+    } else {
+      // Load index
+      // In a concurrent way?!
+      history_index_load_from_disk_worker("normal");
     }
   }
 
@@ -59,18 +67,10 @@ export class bunch_of_history_index {
         " A reindexing task is ongoing! Interrupted this search_history_label_link.");
       return [];
     }
-    // let s = Date.now();
 
     let stamps = bunch_of_history_index.search_timestamps(key, max);
-    // if (stamps.length > 0) {
-    //   console.log(bunch_of_history_index.log_head() + " Got " + stamps.length.toString() + " stamps for key: \"" + key +
-    //     "\" within " + (Date.now() - s).toString() + " ms!");
-    // }
     let result = get_history_from_disk(stamps, max);
-    // if (result.length > 0) {
-    //   console.log(log_head() + "Got " + result.length.toString() + " Histories for key: \"" + key +
-    //     "\".");
-    // }
+
     return result;
   }
 

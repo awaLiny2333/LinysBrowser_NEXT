@@ -1,7 +1,8 @@
 import { collections, MessageEvents, worker } from '@kit.ArkTS';
-import { sandbox_open_sync } from '../utils/storage_tools';
+import { sandbox_open_sync, sandbox_save } from '../utils/storage_tools';
 import { bunch_of_history_index } from './bunch_of_history_index';
 import { bunch_of_history_index_lite } from './bunch_of_history_index_lite';
+import { fileIo } from '@kit.CoreFileKit';
 
 /**
  * Divides an input into single chars (CJK) and leave words (Other) as words.
@@ -153,6 +154,8 @@ export function history_index_load_from_disk_worker(load_type: string) {
 
   AppStorage.set('history_index_loading', true);
 
+  ensure_this_month_index_file();
+
   let workerInstance = new worker.ThreadWorker("home/ets/workers/History_index_loader.ets");
   workerInstance.postMessage(getContext().filesDir);
 
@@ -299,7 +302,8 @@ export function history_index_full_rebuild_worker() {
   }
   workerInstance.onexit = (() => {
     console.log(bunch_of_history_index.log_head() + " Index worker TERMINATED!");
-    // AppStorage.set('reindexing_history_progress', "...");
+
+    ensure_this_month_index_file();
   })
 }
 
@@ -349,4 +353,16 @@ export function index_file_name_of_month(year: number, month: number) {
     month_unified = '0' + month_unified;
   }
   return 'index_' + year.toString() + "_" + month_unified + '_00_00_00_00_000.txt';
+}
+
+export function ensure_this_month_index_file() {
+  // Create this month index
+  const current_year: number = new Date().getUTCFullYear();
+  const current_month: number = new Date().getUTCMonth() + 1;
+  const this_month_file_path = index_path_of_month(current_year, current_month);
+  if (!fileIo.accessSync(getContext().filesDir + '/' + this_month_file_path)) {
+    // If this month have no index
+    console.log(bunch_of_history_index.log_head() + ' No this month index found. Creating one.')
+    sandbox_save(this_month_file_path, '');
+  }
 }
