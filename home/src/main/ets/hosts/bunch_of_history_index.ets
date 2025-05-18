@@ -2,11 +2,10 @@ import { sandbox_open_sync } from '../utils/storage_tools';
 import { fileIo as fs } from '@kit.CoreFileKit';
 import { collections } from '@kit.ArkTS';
 import { history_record } from './bunch_of_history';
-import { divide_string, get_history_from_disk } from './bunch_of_history_index_functions';
+import { divide_string, get_history_from_disk } from './bunch_of_history_index_x_functions';
 
 export class bunch_of_history_index {
-  static index_map: collections.Map<string, collections.Array<number>> =
-    new collections.Map<string, collections.Array<number>>();
+  static index_map: collections.Map<string, collections.Array<number>> = new collections.Map<string, collections.Array<number>>();
 
   constructor() {
     try {
@@ -83,7 +82,7 @@ export class bunch_of_history_index {
     return bunch_of_history_index.findCommonElements(ranges, max);
   }
 
-  static add_index_file(path: string, context_filesDir?: string) {
+  static add_index_history_file(path: string, context_filesDir?: string) {
     let imp = sandbox_open_sync(path, context_filesDir);
     let import_list: string[] = imp.split("\n");
     if (import_list.length % 3 > 0) {
@@ -92,13 +91,30 @@ export class bunch_of_history_index {
       return;
     }
     for (let index = 0; index < import_list.length; index += 3) {
-      let access_time = Number.parseInt(import_list[index+2]);
+      let access_time = parseInt(import_list[index+2]);
       bunch_of_history_index.add_index_string(import_list[index] + " " + import_list[index+1], access_time);
 
       // if (index % 100 == 0) {
       //   const progress = index / import_list.length * 100;
       //   console.log(log_head() + "Index sub progress: " + progress.toFixed(2) + "%");
       // }
+    }
+  }
+
+  static add_index_index_file(path: string, context_filesDir?: string) {
+    // Open the file
+    let imp = sandbox_open_sync(path, context_filesDir);
+    let import_list: string[] = imp.split("\n");
+
+    // traverse each key - values
+    for (let index = 0; index < import_list.length - 1; index += 2) {
+      const key = import_list[index];
+      const values = import_list[index+1].split("_");
+
+      // TODO: Improve logics here to boost efficiency!
+      for (let j = 0; j < values.length; j++) {
+        bunch_of_history_index.add_index_key_string(key, parseInt(values[j]));
+      }
     }
   }
 
@@ -122,6 +138,16 @@ export class bunch_of_history_index {
       } else {
         bunch_of_history_index.index_map.set(item, new collections.Array<number>(timestamp));
       }
+    }
+  }
+
+  static add_index_key_string(key: string, timestamp: number) {
+    // Divide into words
+    if (bunch_of_history_index.index_map.has(key)) {
+      // console.log(bunch_of_history_index.index_map.get(item)?.toString());
+      bunch_of_history_index.index_map.get(key)!.push(timestamp);
+    } else {
+      bunch_of_history_index.index_map.set(key, new collections.Array<number>(timestamp));
     }
   }
 

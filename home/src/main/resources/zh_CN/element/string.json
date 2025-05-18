@@ -174,19 +174,23 @@
     },
     {
       "name": "Settings_experience_history_index_desc",
-      "value": "索引是一种通过预读取和分析数据以加快查询的技术。\n\n索引历史通常需要一定的时间和空间，但这通常是值得的。\n\n点击这个按钮以强制重新索引（进度会显示在 \uDB80\uDC61 里）："
+      "value": "索引是一种通过预读取和分析数据以加快查询的技术。\n\n索引历史通常需要一定的时间和空间，但这通常是值得的。\n\n点击这个按钮以强制重新索引：\n\n（进度会显示在 \uDB80\uDC61 里）"
+    },
+    {
+      "name": "Settings_experience_history_index_storage_desc",
+      "value": "这是历史索引产生的空间占用。\n\n关于历史索引的更多信息可以前往“历史”一栏！"
     },
     {
       "name": "Settings_experience_history_index_loading_index_from_disk",
-      "value": "载入历史索引 :D"
+      "value": "历史索引载入 :P"
     },
     {
       "name": "Settings_experience_history_index_reindexing",
-      "value": "重建历史索引 :O"
+      "value": "历史索引重建 :O"
     },
     {
       "name": "Settings_experience_history_index_saving_to_disk",
-      "value": "保存索引 =D"
+      "value": "历史索引保存 :D"
     },
     {
       "name": "Settings_experience_history_from",
@@ -554,7 +558,7 @@
     },
     {
       "name": "Settings_storage_clear_webview_desc",
-      "value": "以下统计可能（往往）是过时的。如果你需要一个准确的信息，请点击 \uDB80\uDCC8 以刷新。"
+      "value": "以下统计可能（往往）是过时的。\n\n如果你需要一个准确的信息，请点击 \uDB80\uDCC8 以刷新。"
     },
     {
       "name": "Address_analyzer_address",

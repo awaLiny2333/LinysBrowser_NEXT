@@ -9,23 +9,13 @@ import {
 import linysTitleText from '../../components/linysTitleText';
 import linysText from '../../components/linysText';
 import bundleManager from '@ohos.bundle.bundleManager';
-import {
-  ItemRestriction,
-  SegmentButton,
-  SegmentButtonOptions,
-  SegmentButtonTextItem
-} from '@ohos.arkui.advanced.SegmentButton';
+import { ItemRestriction, SegmentButton, SegmentButtonOptions, SegmentButtonTextItem } from '@ohos.arkui.advanced.SegmentButton';
 import meowUAManager from '../panels/meowUAManager';
 import { bunch_of_user_agents } from '../../hosts/bunch_of_user_agents';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import linysCapsuleButton from '../../components/linysCapsuleButton';
 import { bunch_of_history, fill_fake_history } from '../../hosts/bunch_of_history';
-import {
-  add_units_to_size,
-  arrayBuffer_to_pixelMap,
-  get_folder_size_Sync,
-  sandbox_open_arrayBuffer_sync
-} from '../../utils/storage_tools';
+import { add_units_to_size, arrayBuffer_to_pixelMap, get_folder_size_Sync, sandbox_open_arrayBuffer_sync } from '../../utils/storage_tools';
 import woofHistory from '../../dialogs/managers/woofHistory';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import meowSEManager from '../panels/meowSEManager';
@@ -44,14 +34,14 @@ import woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import meowAnimationManager from '../panels/meowAnimationManager';
 import linysLockSlider from '../../components/linysLockSlider';
 import linysTimeoutButton from '../../components/linysTimeoutButton';
-import { get_web_cache_size } from '../../utils/any_concurrent_tools';
+import { get_sandbox_folder_size } from '../../utils/any_concurrent_tools';
 import woofRecentFaultLogs from '../../dialogs/contents/woofRecentFaultLogs';
 import { bunch_of_history_index } from '../../hosts/bunch_of_history_index';
 import {
   history_index_full_rebuild_worker,
   history_index_load_from_disk_worker,
   history_index_save_to_disk_worker
-} from '../../hosts/bunch_of_history_index_functions';
+} from '../../hosts/bunch_of_history_index_x_functions';
 
 @Component
 struct meowAppSettings {
@@ -230,10 +220,12 @@ struct meowAppSettings {
   // Else
   @State clear_web_cache_confirm: number = 0;
   @State web_cache_size: number = 0;
+  @State history_index_size: number = 0;
   @State version_clicked_times: number = 0;
   // Status
   @StorageLink('settings_init_retrieved') settings_init_retrieved: boolean = false;
   @State calculating_web_cache_size: boolean = false;
+  @State calculating_history_index_size: boolean = false;
   @StorageLink('reindexing_history') reindexing_history: boolean = false;
   @StorageLink('reindexing_history_progress') reindexing_history_progress: number = 100;
 
@@ -609,7 +601,7 @@ struct meowAppSettings {
 
                 linysCapsuleButton({ text: ' Load from disk ' })
                   .onClick(() => {
-                    history_index_load_from_disk_worker();
+                    history_index_load_from_disk_worker("normal");
                   })
                   .opacity(this.reindexing_history ? 0.4 : 1)
                   .enabled(!this.reindexing_history)
@@ -675,7 +667,27 @@ struct meowAppSettings {
 
                 } // buttons
                 .width("100%")
-              } // data display and button
+              } // Web Cache data display and button
+              .alignItems(HorizontalAlign.Start)
+
+              linysText({ text: $r('app.string.Settings_experience_history_index_storage_desc'), max_lines: 6 })
+
+              Column({ space: 10 }) {
+                linysTitleText({ text: "󰏕 " + add_units_to_size(this.history_index_size) })// data display
+                  .clickEffect(click_effect_default())
+
+                Row({ space: 12 }) {
+                  Blank()
+                  linysCapsuleButton({ text: '  󰃈  ' })
+                    .onClick(() => {
+                      this.refresh_history_index_size();
+                    })
+                    .opacity(this.calculating_history_index_size ? 0.4 : 1)
+                    .enabled(!this.calculating_history_index_size)
+                    .animation(animation_default())
+                } // buttons
+                .width("100%")
+              } // History Index data display and button
               .alignItems(HorizontalAlign.Start)
             }
             .padding(15)
@@ -915,8 +927,7 @@ struct meowAppSettings {
     this.collect_new_history = await this.bunch_of_settings.get('collect_new_history') as boolean;
 
     // Get whether to continue to enable intelligent_tracking_prevention
-    this.intelligent_tracking_prevention =
-      await this.bunch_of_settings.get('intelligent_tracking_prevention') as boolean;
+    this.intelligent_tracking_prevention = await this.bunch_of_settings.get('intelligent_tracking_prevention') as boolean;
 
     // Get whether to use system back to access backward
     this.sys_back_to_access_backward = await this.bunch_of_settings.get('sys_back_access_backward') as boolean;
@@ -951,14 +962,17 @@ struct meowAppSettings {
     }
 
     // Get Homepage shortcut directory
-    let homepage_shortcuts_bookmarks_dir =
-      await this.bunch_of_settings.get('homepage_shortcuts_bookmarks_dir') as string;
+    let homepage_shortcuts_bookmarks_dir = await this.bunch_of_settings.get('homepage_shortcuts_bookmarks_dir') as string;
     AppStorage.set('homepage_shortcuts_bookmarks_dir', homepage_shortcuts_bookmarks_dir);
     console.log("[Meow][meowAppSettings] Finished loading homepage shortcuts dir: " + homepage_shortcuts_bookmarks_dir);
 
     // Get whether to show resource monitor
     this.resource_monitor = await this.bunch_of_settings.get('resource_monitor') as boolean;
 
+    // History indexer
+    this.history_index_size = await this.bunch_of_settings.get('history_index_size') as number;
+
+    // Tag status
     this.settings_init_retrieved = true;
   }
 
@@ -1118,10 +1132,19 @@ struct meowAppSettings {
 
   refresh_web_cache_size() {
     this.calculating_web_cache_size = true;
-    get_web_cache_size().then(result => {
+    get_sandbox_folder_size('/data/storage/el2/base/cache/web/', false).then(result => {
       this.web_cache_size = result;
       this.bunch_of_settings.set('webview_cache_size', this.web_cache_size);
       this.calculating_web_cache_size = false;
+    })
+  }
+
+  refresh_history_index_size() {
+    this.calculating_history_index_size = true;
+    get_sandbox_folder_size('history-index', true).then(result => {
+      this.history_index_size = result;
+      this.bunch_of_settings.set('history_index_size', this.history_index_size);
+      this.calculating_history_index_size = false;
     })
   }
 

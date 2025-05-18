@@ -85,6 +85,9 @@ export class bunch_of_settings {
     this.register_setting('DEV_MODE', 'boolean', 'false');
     this.register_setting('resource_monitor', 'boolean', 'true');
 
+    // History Indexer
+    this.register_setting('history_index_size', 'number', '-1');
+
     console.log('[Meow][bunch_of_settings] Init success!')
   }
 

@@ -128,8 +128,9 @@ export function get_history_from_disk(timestamps: number[], max?: number): strin
 
 /**
  * Calls a worker thread to load built index from disk.
+ * @param load_type "normal" or "reindex".
  * */
-export function history_index_load_from_disk_worker() {
+export function history_index_load_from_disk_worker(load_type: string) {
   let history_index_saving = AppStorage.get('history_index_saving') as boolean | undefined;
   let history_index_loading = AppStorage.get('history_index_loading') as boolean | undefined;
   let reindexing = AppStorage.get('reindexing_history') as boolean | undefined;
@@ -144,7 +145,7 @@ export function history_index_load_from_disk_worker() {
       " Another history_index_loading task is ongoing! Interrupted this history_index_load_from_disk_worker.")
     return;
   }
-  if (reindexing == true) {
+  if (reindexing == true && load_type != 'reindex') {
     console.log(bunch_of_history_index.log_head() +
       " A reindexing task is ongoing! Interrupted this history_index_load_from_disk_worker.")
     return;
@@ -166,10 +167,14 @@ export function history_index_load_from_disk_worker() {
       // Coming back with the set
       bunch_of_history_index.index_map = e.data;
       workerInstance.terminate();
-      console.log("[Meow][bunch_of_history_index] Received full load from sandbox result, " +
-        "map size: " + bunch_of_history_index.index_map.size.toString());
+      console.log(bunch_of_history_index.log_head() + " Receive load from sandbox result. Map size: " + bunch_of_history_index.index_map.size.toString() + ".");
       // Set status
       AppStorage.set('history_index_loading', false);
+      if (load_type == 'reindex') {
+        // Set status if this is part of reindexing
+        console.log(bunch_of_history_index.log_head() + ' Index loader finished!');
+        AppStorage.set('reindexing_history', false);
+      }
     }
   }
   workerInstance.onexit = (() => {
@@ -187,26 +192,24 @@ export function history_index_save_to_disk_worker() {
   let reindexing = AppStorage.get('reindexing_history') as boolean | undefined;
 
   if (history_index_saving == true) {
-    console.log(bunch_of_history_index.log_head() +
-      " Another history_index_saving task is ongoing! Interrupted this history_index_save_to_disk_worker.")
+    console.log(bunch_of_history_index.log_head() + " Another history_index_saving task is ongoing! Interrupted this history_index_save_to_disk_worker.")
     return;
   }
   if (history_index_loading == true) {
-    console.log(bunch_of_history_index.log_head() +
-      " A history_index_loading task is ongoing! Interrupted this history_index_save_to_disk_worker.")
+    console.log(bunch_of_history_index.log_head() + " A history_index_loading task is ongoing! Interrupted this history_index_save_to_disk_worker.")
     return;
   }
   if (reindexing == true) {
-    console.log(bunch_of_history_index.log_head() +
-      " A reindexing task is ongoing! Interrupted this history_index_save_to_disk_worker.")
+    console.log(bunch_of_history_index.log_head() + " A reindexing task is ongoing! Interrupted this history_index_save_to_disk_worker.")
     return;
   }
 
   AppStorage.set('history_index_saving', true);
 
   let workerInstance = new worker.ThreadWorker("home/ets/workers/History_index_saver.ets");
+  workerInstance.postMessage('filesDir:' + getContext().filesDir);
+  workerInstance.postMessage('file_name:' + 'index.txt');
   workerInstance.postMessageWithSharedSendable(bunch_of_history_index.index_map);
-  workerInstance.postMessage(getContext().filesDir);
   console.log(bunch_of_history_index.log_head() + " Index saver worker CREATED!");
 
   workerInstance.onmessage = (e: MessageEvents): void => {
@@ -262,18 +265,18 @@ export function history_index_full_rebuild_worker() {
   console.log(bunch_of_history_index.log_head() + " Index worker CREATED!");
 
   workerInstance.onmessage = (e: MessageEvents): void => {
-    if (typeof e.data == "string") {
+    let message: string = e.data;
+    if (message == 'done') {
+      // FINISH
+      workerInstance.terminate();
+
+      // Read from disk
+      console.log("[Meow][bunch_of_history_index] Calling loader worker.");
+      history_index_load_from_disk_worker('reindex');
+    } else {
       // Coming back with progress
       let data: string = e.data;
       AppStorage.set('reindexing_history_progress', data);
-    } else {
-      // Coming back with the set
-      bunch_of_history_index.index_map = e.data;
-      workerInstance.terminate();
-      console.log("[Meow][bunch_of_history_index] Received full rebuild result, " +
-        "map size: " + bunch_of_history_index.index_map.size.toString());
-      // Set status
-      AppStorage.set('reindexing_history', false);
     }
   }
   workerInstance.onexit = (() => {

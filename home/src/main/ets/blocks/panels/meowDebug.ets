@@ -109,6 +109,7 @@ struct meowDebug {
         })
       }
     }
+    .borderRadius(12)
     .scrollable(ScrollDirection.Horizontal)
     .edgeEffect(EdgeEffect.Spring)
     .scrollBar(BarState.Off)

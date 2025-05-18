@@ -2,13 +2,7 @@ import linysSymbol from '../../components/linysSymbol';
 import linysShowButton from '../../components/linysShowButton';
 import meowAppSettings from './meowAppSettings';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
-import {
-  extract_search,
-  match_domain,
-  unify_search_input_into_url,
-  url_meow_to_resource,
-  url_resource_to_meow
-} from '../../utils/url_tools';
+import { extract_search, match_domain, unify_search_input_into_url, url_meow_to_resource, url_resource_to_meow } from '../../utils/url_tools';
 import {
   animation_default,
   animation_popup_duration,
@@ -781,6 +775,7 @@ struct meowTitleBar {
         //   .animation(animation_default())
 
       } // Title Bar of More Options
+      .alignItems(HorizontalAlign.End)
       .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
       .padding({ left: 15, right: 15, bottom: 6 })
       .width("100%")

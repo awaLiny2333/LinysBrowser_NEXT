@@ -46,6 +46,7 @@ struct Index {
   @StorageLink('animation_response') animation_response: number = 0.36;
   @StorageLink('animation_damping_coefficient') animation_damping: number = 0.8;
   @StorageProp('currentColorMode') @Watch('on_color_mode_change') current_color_mode: number = 0;
+  // History Indexing
   @StorageProp('reindexing_history') reindexing_history: boolean | undefined = undefined;
   @StorageProp('reindexing_history_progress') reindexing_history_progress: string = "";
   @StorageProp('history_index_loading') history_index_loading: boolean | undefined = undefined;

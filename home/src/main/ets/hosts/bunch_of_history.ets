@@ -1,11 +1,11 @@
-import { sandbox_open_sync, sandbox_save, sandbox_unlink, sandbox_unlink_sync } from '../utils/storage_tools';
+import { sandbox_open_sync, sandbox_save, sandbox_unlink_sync } from '../utils/storage_tools';
 import { fileIo as fs } from '@kit.CoreFileKit';
 import { bunch_of_history_index } from './bunch_of_history_index';
 import {
   history_index_full_rebuild_worker,
   history_index_load_from_disk_worker,
   history_index_save_to_disk_worker
-} from './bunch_of_history_index_functions';
+} from './bunch_of_history_index_x_functions';
 import { bundleManager } from '@kit.AbilityKit';
 
 export class history_record {
@@ -27,6 +27,9 @@ export class history_record {
     this.link = link;
   }
 
+  /**
+   * Increases this history's accessed_time by one (1).
+   * */
   shift_time() {
     this.accessed_time++;
   }
@@ -56,15 +59,14 @@ export class bunch_of_history {
     // Load today
     this.open_month_from_disk_sync(this.current_year, this.current_month);
 
-    let data_raw = sandbox_open_sync('history-index/index.txt');
-    if (data_raw == 'undefined') {
+    if (fs.listFileSync(getContext().filesDir + '/history-index', { recursion: false }).length == 0) {
       console.log(bunch_of_history_index.log_head_worker() + ' No index found. ')
       console.log(bunch_of_history_index.log_head_worker() + ' Rebuilding... ')
       history_index_full_rebuild_worker();
     } else {
       // Load index
       // In a concurrent way?!
-      history_index_load_from_disk_worker();
+      history_index_load_from_disk_worker("normal");
     }
 
     // Log
@@ -263,6 +265,7 @@ export class bunch_of_history {
     // Opens the month required
     this.open_month_from_disk_sync(year, month);
 
+    // Determine insert position
     let insert_position = this.index_of_first_record_at_or_after_time(history.accessed_time);
     if (insert_position < 0) {
       insert_position = this.history_this_month.length;
@@ -277,7 +280,9 @@ export class bunch_of_history {
         }
       }
     }
-    // check if this reaches next month
+
+    // Perhaps insert position determination process caused this history item to shift time, entering another month.
+    // check if this reaches another month
     let new_history_date = new Date(history.accessed_time);
     let new_year = new_history_date.getUTCFullYear();
     let new_month = new_history_date.getUTCMonth() + 1;
