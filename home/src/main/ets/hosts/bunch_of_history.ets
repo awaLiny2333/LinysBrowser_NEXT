@@ -4,9 +4,11 @@ import { bunch_of_history_index } from './bunch_of_history_index';
 import {
   history_index_full_rebuild_worker,
   history_index_load_from_disk_worker,
-  history_index_save_to_disk_worker
+  history_index_save_to_disk_worker,
+  history_path_of_month
 } from './bunch_of_history_index_x_functions';
 import { bundleManager } from '@kit.AbilityKit';
+import { bunch_of_history_index_lite } from './bunch_of_history_index_lite';
 
 export class history_record {
   accessed_time: number = Date.now();
@@ -82,20 +84,6 @@ export class bunch_of_history {
   // Statics
 
   /**
-   * Constructs the file name of history records in which history in [year, month] should be.
-   * @param year A number, the year, like 2024.
-   * @param month A number, the month, like 12.
-   * @returns A string, 'history/history_year_month.txt'
-   * */
-  static history_path_of_month(year: number, month: number) {
-    let month_unified = month.toString();
-    if (month_unified.length == 1) {
-      month_unified = '0' + month_unified;
-    }
-    return 'history/history_' + year.toString() + "_" + month_unified + '.txt';
-  }
-
-  /**
    * Connects a year and a month to string.
    * @param year A number, the year.
    * @param month A number, the month.
@@ -141,7 +129,7 @@ export class bunch_of_history {
       new_history = false;
     }
 
-    let history_year_month_path = bunch_of_history.history_path_of_month(year, month);
+    let history_year_month_path = history_path_of_month(year, month);
 
     if (new_history) {
       // no history before, like the first use of entire app
@@ -177,9 +165,8 @@ export class bunch_of_history {
     let result = bunch_of_history_index.search_history_label_link(key, max_result_number);
     let result_count = result.length;
     if (result.length > 0) {
-      console.log('[Meow][bunch_of_history][bunch_of_history_index] ' + result_count.toString() + ' results of Key "' +
-        key + '" searched in ' + (Date.now() - s).toString() + "ms among " +
-      bunch_of_history_index.index_map.size.toString() + " possibilities!");
+      console.log('[Meow][bunch_of_history][bunch_of_history_index] ' + result_count.toString() + ' results of Key "' + key + '" ' +
+        'searched in ' + (Date.now() - s).toString() + "ms among " + bunch_of_history_index.index_map.size.toString() + " keys!");
     }
     return result;
   }
@@ -215,7 +202,7 @@ export class bunch_of_history {
     for (let index = 0; index < months.length; index++) {
       const year = months[index][0];
       const month = months[index][1];
-      const path = bunch_of_history.history_path_of_month(year, month);
+      const path = history_path_of_month(year, month);
       if (result == "") {
         result = sandbox_open_sync(path);
       } else {
@@ -299,24 +286,26 @@ export class bunch_of_history {
         let history_index_loading = AppStorage.get('history_index_loading') as boolean;
         if (history_index_loading) {
           // Loading task is ongoing
-          console.log("[Meow][bunch_of_history][bunch_of_history_index] History_index_loading task is ongoing! " +
-            "Interrupted this one.")
+          console.log("[Meow][bunch_of_history][bunch_of_history_index] History_index_loading task is ongoing! Interrupted this one.")
         } else {
           // Add to index
           try {
             // TODO: IMPROVE THIS LOGIC to avoid missing add_index_string jobs.
             // This try catch is just to avoid crashes.
-            bunch_of_history_index.add_index_string(history.label + " " + encodeURI(history.link),
-              history.accessed_time);
+            bunch_of_history_index_lite.add_index_string(history.label + " " + encodeURI(history.link), history.accessed_time);
+            bunch_of_history_index.add_index_string(history.label + " " + encodeURI(history.link), history.accessed_time);
           } catch (e) {
             console.error(e);
           }
-        }
 
-        console.log("[Meow][bunch_of_history][bunch_of_history_index] Storing index. Size: " +
-        bunch_of_history_index.index_map.size.toString());
-        // save_index_ext(bunch_of_history_index.index_map);
-        history_index_save_to_disk_worker();
+          try {
+            // TODO: figure out why history_index_loading is false for the initial loading
+            console.log(bunch_of_history_index_lite.log_head() + " Loading: " + (AppStorage.get('history_index_loading') as boolean ? "loading." : "OK."));
+            history_index_save_to_disk_worker(bunch_of_history_index_lite.index_map, bunch_of_history_index_lite.this_file_name(), false);
+          } catch (e) {
+            // Import not finished
+          }
+        }
       }
     }
   }
@@ -417,13 +406,13 @@ export class bunch_of_history {
    * @param path A string, the path of the file.
    * */
   open_month_from_disk_sync(year: number, month: number) {
-    if (bunch_of_history.history_path_of_month(year, month) == this.current_opened_file_path) {
+    if (history_path_of_month(year, month) == this.current_opened_file_path) {
       // Already opened
       // console.log('already opened')
       return;
     }
     bunch_of_history.check_disk_month(year, month);
-    let path = bunch_of_history.history_path_of_month(year, month);
+    let path = history_path_of_month(year, month);
     let the_file = sandbox_open_sync(path);
     this.current_opened_file_path = path;
     this.current_year = year;

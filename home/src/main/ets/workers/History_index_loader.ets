@@ -1,6 +1,7 @@
-import { ErrorEvent, MessageEvents, ThreadWorkerGlobalScope, worker } from '@kit.ArkTS';
+import { collections, ErrorEvent, MessageEvents, ThreadWorkerGlobalScope, worker } from '@kit.ArkTS';
 import { bunch_of_history_index } from '../hosts/bunch_of_history_index';
 import { fileIo } from '@kit.CoreFileKit';
+import { bunch_of_history_index_lite as month_host } from '../hosts/bunch_of_history_index_lite';
 
 const workerPort: ThreadWorkerGlobalScope = worker.workerPort;
 
@@ -17,8 +18,11 @@ workerPort.onmessage = (event: MessageEvents) => {
     let filesDir = event.data as string;
     // Execution
     sandbox_load_index_sync(filesDir);
-    // worker线程向宿主线程发送信息
-    workerPort.postMessageWithSharedSendable(bunch_of_history_index.index_map);
+    // Send back information
+    let back = new collections.Array<collections.Map<string, collections.Array<number>>>();
+    back.push(bunch_of_history_index.index_map);
+    back.push(month_host.index_map);
+    workerPort.postMessageWithSharedSendable(back);
   }
 };
 
@@ -58,6 +62,8 @@ function sandbox_load_index_sync(context_filesDir?: string) {
     return;
   }
 
+  workerPort.postMessage((Date.now() - s).toString() + " ms, 0.01%");
+
   // clear
   bunch_of_history_index.clear();
 
@@ -65,11 +71,17 @@ function sandbox_load_index_sync(context_filesDir?: string) {
   for (let index = 0; index < all_index_files.length; index++) {
     const name = all_index_files[index];
 
-    bunch_of_history_index.add_index_index_file('history-index/' + name, context_filesDir);
+    bunch_of_history_index.index_from_index_file('history-index/' + name, context_filesDir);
 
-    workerPort.postMessage((Date.now() - s).toString() + " ms, " + (index / all_index_files.length * 100).toFixed(2) + "%");
+    workerPort.postMessage((Date.now() - s).toString() + " ms, " + (index / all_index_files.length * 90).toFixed(2) + "%");
     // console.log(bunch_of_history_index.log_head_worker() + '[Load] Finish loading: ' + name + '.');
   }
+
+  // Load this month to a separate host
+  month_host.clear();
+  const current_year: number = new Date().getUTCFullYear();
+  const current_month: number = new Date().getUTCMonth() + 1;
+  month_host.index_from_index_month_file(current_year, current_month, context_filesDir);
 
   // End report
   console.log(bunch_of_history_index.log_head_worker() + '[Load] Finish loading from sandbox! Time used: ' + (Date.now() - s).toString() + ' ms. ' +

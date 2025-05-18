@@ -7,6 +7,7 @@ const workerPort: ThreadWorkerGlobalScope = worker.workerPort;
 let map: collections.Map<string, collections.Array<number>>;
 let file_name: string;
 let filesDir: string;
+let clear: boolean;
 /**
  * Defines the event handler to be called when the worker thread receives a message sent by the host thread.
  * The event handler is executed in the worker thread.
@@ -24,13 +25,15 @@ workerPort.onmessage = (event: MessageEvents) => {
       filesDir = content;
     } else if (header == 'file_name') {
       file_name = content;
+    } else if (header == 'clear') {
+      clear = content == 'true' ? true : false;
     }
   } else {
     // Receives the map. LETS GOO!~
     map = event.data;
 
     // Save to disk
-    save_index_ext(file_name, map, filesDir);
+    save_index_ext(file_name, map, clear, filesDir);
 
     // Report finish
     workerPort.postMessage("done");
@@ -60,18 +63,20 @@ workerPort.onerror = (event: ErrorEvent) => {
  * @param map
  * @param context_filesDir
  * */
-function save_index_ext(file_name: string, map: collections.Map<string, collections.Array<number>>, context_filesDir?: string) {
+function save_index_ext(file_name: string, map: collections.Map<string, collections.Array<number>>, clear: boolean, context_filesDir?: string) {
   let filesDir: string = context_filesDir || getContext().filesDir;
   let result: string[] = [];
   let index = 0;
 
-  // TODO: Update this worker to adapt to the monthly division style of maps.
-  // Clear all previous index
-  try {
-    fileIo.rmdirSync(context_filesDir + "/history-index");
-    fileIo.mkdirSync(context_filesDir + "/history-index");
-  } catch (e) {
+  if (clear) {
+    // DONE: Update this worker to adapt to the monthly division style of maps.
+    // Clear all previous index
+    try {
+      fileIo.rmdirSync(context_filesDir + "/history-index");
+      fileIo.mkdirSync(context_filesDir + "/history-index");
+    } catch (e) {
 
+    }
   }
 
   // Timer

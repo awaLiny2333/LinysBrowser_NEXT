@@ -752,18 +752,24 @@ struct meowTitleBar {
           progress: this.history_index_loading_progress,
         })
           .opacity(0.8)
+          .visibility(this.history_index_loading_progress != "" ? Visibility.Visible : Visibility.None)
+          .animation(animation_default())
 
         linysProgressInfo({
           notification: $r('app.string.Settings_experience_history_index_reindexing'),
           progress: this.reindexing_history_progress,
         })
           .opacity(0.8)
+          .visibility(this.reindexing_history_progress != "" ? Visibility.Visible : Visibility.None)
+          .animation(animation_default())
 
         linysProgressInfo({
           notification: $r('app.string.Settings_experience_history_index_saving_to_disk'),
           progress: this.history_index_saving_progress,
         })
           .opacity(0.8)
+          .visibility(this.history_index_saving_progress != "" ? Visibility.Visible : Visibility.None)
+          .animation(animation_default())
 
         // linysTitleText({
         //   text: $r('app.string.Index_drop_please'),

@@ -21,7 +21,6 @@ struct linysProgressInfo {
     .alignItems(VerticalAlign.Center)
     .borderRadius(12)
     .backgroundColor($r('sys.color.comp_background_tertiary'))
-    .visibility(this.progress != "" ? Visibility.Visible : Visibility.None)
     .animation(animation_default())
     .clickEffect(click_effect_default())
     .constraintSize({ maxWidth: 500 })

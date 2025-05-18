@@ -1,18 +1,29 @@
-import { sandbox_open_sync } from '../utils/storage_tools';
-import { fileIo as fs } from '@kit.CoreFileKit';
+import { sandbox_open_sync, sandbox_save } from '../utils/storage_tools';
+import { fileIo, fileIo as fs } from '@kit.CoreFileKit';
 import { collections } from '@kit.ArkTS';
 import { history_record } from './bunch_of_history';
-import { divide_string, get_history_from_disk } from './bunch_of_history_index_x_functions';
+import { divide_string, get_history_from_disk, index_file_name_of_month, index_path_of_month } from './bunch_of_history_index_x_functions';
+import { bunch_of_history_index_lite } from './bunch_of_history_index_lite';
 
 export class bunch_of_history_index {
   static index_map: collections.Map<string, collections.Array<number>> = new collections.Map<string, collections.Array<number>>();
 
   constructor() {
+    // Create history index folder
     try {
       let filesDir = getContext().filesDir;
       fs.mkdirSync(filesDir + '/history-index');
     } catch (e) {
       // console.log(log_head() + 'Check disk of month: E: /history-index folder already exists.')
+    }
+    // Create this month index
+    const current_year: number = new Date().getUTCFullYear();
+    const current_month: number = new Date().getUTCMonth() + 1;
+    const this_month_file_path = index_path_of_month(current_year, current_month);
+    if (!fileIo.accessSync(getContext().filesDir + '/' + this_month_file_path)) {
+      // If this month have no index
+      console.log(bunch_of_history_index.log_head() + ' No this month index found. Creating one.')
+      sandbox_save(this_month_file_path, '');
     }
   }
 
@@ -48,13 +59,13 @@ export class bunch_of_history_index {
         " A reindexing task is ongoing! Interrupted this search_history_label_link.");
       return [];
     }
-    let s = Date.now();
+    // let s = Date.now();
 
     let stamps = bunch_of_history_index.search_timestamps(key, max);
-    if (stamps.length > 0) {
-      console.log(bunch_of_history_index.log_head() + " Got " + stamps.length.toString() + " stamps for key: \"" + key +
-        "\" within " + (Date.now() - s).toString() + " ms!");
-    }
+    // if (stamps.length > 0) {
+    //   console.log(bunch_of_history_index.log_head() + " Got " + stamps.length.toString() + " stamps for key: \"" + key +
+    //     "\" within " + (Date.now() - s).toString() + " ms!");
+    // }
     let result = get_history_from_disk(stamps, max);
     // if (result.length > 0) {
     //   console.log(log_head() + "Got " + result.length.toString() + " Histories for key: \"" + key +
@@ -82,7 +93,12 @@ export class bunch_of_history_index {
     return bunch_of_history_index.findCommonElements(ranges, max);
   }
 
-  static add_index_history_file(path: string, context_filesDir?: string) {
+  /**
+   * Index from history file.
+   * @param path the path of history file, for example, 'history/history_2002_12.txt'.
+   * @param context_filesDir getContext().filesDir.
+   * */
+  static index_from_history_file(path: string, context_filesDir?: string) {
     let imp = sandbox_open_sync(path, context_filesDir);
     let import_list: string[] = imp.split("\n");
     if (import_list.length % 3 > 0) {
@@ -101,7 +117,12 @@ export class bunch_of_history_index {
     }
   }
 
-  static add_index_index_file(path: string, context_filesDir?: string) {
+  /**
+   * Index from built index file.
+   * @param path the path of index file, for example, 'history-index/index_2002_12.txt'.
+   * @param context_filesDir getContext().filesDir.
+   * */
+  static index_from_index_file(path: string, context_filesDir?: string) {
     // Open the file
     let imp = sandbox_open_sync(path, context_filesDir);
     let import_list: string[] = imp.split("\n");
@@ -129,11 +150,20 @@ export class bunch_of_history_index {
   }
 
   static add_index_string(str: string, timestamp: number) {
+    const current_year: number = new Date(timestamp).getUTCFullYear();
+    const current_month: number = new Date(timestamp).getUTCMonth() + 1;
+    if (index_file_name_of_month(current_year, current_month) != bunch_of_history_index_lite.this_file_name()) {
+      // This could happen when system time is manually changed.
+      // DONT DO THIS IN YOUR DAILY USE PLZ.
+      return;
+    }
+
     // Divide into words
     let all_words = divide_string(str.toUpperCase());
+
+    // Traverse and add
     for (const item of all_words) {
       if (bunch_of_history_index.index_map.has(item)) {
-        // console.log(bunch_of_history_index.index_map.get(item)?.toString());
         bunch_of_history_index.index_map.get(item)!.push(timestamp);
       } else {
         bunch_of_history_index.index_map.set(item, new collections.Array<number>(timestamp));
@@ -142,7 +172,6 @@ export class bunch_of_history_index {
   }
 
   static add_index_key_string(key: string, timestamp: number) {
-    // Divide into words
     if (bunch_of_history_index.index_map.has(key)) {
       // console.log(bunch_of_history_index.index_map.get(item)?.toString());
       bunch_of_history_index.index_map.get(key)!.push(timestamp);
@@ -257,7 +286,6 @@ export class bunch_of_history_index {
 
     return result;
   }
-
 
   /**
    * Helper function to perform binary search

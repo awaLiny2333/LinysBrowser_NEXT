@@ -1,7 +1,7 @@
 import { collections, ErrorEvent, MessageEvents, ThreadWorkerGlobalScope, worker } from '@kit.ArkTS';
 import { sandbox_save } from '../utils/storage_tools';
 import { fileIo as fs } from '@kit.CoreFileKit';
-import { bunch_of_history_index_add_history_only as host } from '../hosts/bunch_of_history_index_add_only';
+import { bunch_of_history_index_lite as host } from '../hosts/bunch_of_history_index_lite';
 
 const workerPort: ThreadWorkerGlobalScope = worker.workerPort;
 
@@ -68,9 +68,8 @@ function rebuild_full_history_index_sync(context_filesDir?: string) {
 
     // Index
     const year_month = months[index];
-    const file_path = history_path_of_month(year_month[0], year_month[1]);
     // bunch_of_history_index.add_index_history_file(file_path, context_filesDir);
-    host.add_index_history_file(file_path, context_filesDir);
+    host.index_from_history_month_file(year_month[0], year_month[1], context_filesDir);
 
     // Save to disk
     console.log(host.log_head_worker() + ' Indexing month: ' + year_month.toString() + '. Map size: ' + host.index_map.size.toString() + '.');
@@ -121,20 +120,6 @@ function get_history_months_no_create_this_month(context_filesDir?: string) {
   result = result.sort((a, b) => (a[0] * 12 + a[1]) - (b[0] * 12 + b[1]));
   console.log(host.log_head_worker() + ' Got_ava`ilable_months. Result: ' + result.join(' ') + '.')
   return result;
-}
-
-/**
- * Constructs the file name of history records in which history in [year, month] should be.
- * @param year A number, the year, like 2024.
- * @param month A number, the month, like 12.
- * @returns A string, 'history/history_year_month.txt'
- * */
-function history_path_of_month(year: number, month: number) {
-  let month_unified = month.toString();
-  if (month_unified.length == 1) {
-    month_unified = '0' + month_unified;
-  }
-  return 'history/history_' + year.toString() + "_" + month_unified + '.txt';
 }
 
 /**

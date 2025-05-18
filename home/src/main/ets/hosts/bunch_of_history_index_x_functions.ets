@@ -1,7 +1,7 @@
-import { MessageEvents, worker } from '@kit.ArkTS';
+import { collections, MessageEvents, worker } from '@kit.ArkTS';
 import { sandbox_open_sync } from '../utils/storage_tools';
-import { bunch_of_history } from './bunch_of_history';
 import { bunch_of_history_index } from './bunch_of_history_index';
+import { bunch_of_history_index_lite } from './bunch_of_history_index_lite';
 
 /**
  * Divides an input into single chars (CJK) and leave words (Other) as words.
@@ -68,7 +68,7 @@ export function get_history_from_disk(timestamps: number[], max?: number): strin
   let month = new Date(timestamps[0]).getUTCMonth() + 1;
   let last_year = year;
   let last_month = month;
-  let imp = sandbox_open_sync(bunch_of_history.history_path_of_month(year, month)).split("\n");
+  let imp = sandbox_open_sync(history_path_of_month(year, month)).split("\n");
   // console.log(imp.join("\n"));
   let temp_pointer = -1;
   for (let index = 0; index < timestamps.length; index++) {
@@ -80,7 +80,7 @@ export function get_history_from_disk(timestamps: number[], max?: number): strin
 
     // Check if need to change file
     if (last_year != year || last_month != month) {
-      imp = sandbox_open_sync(bunch_of_history.history_path_of_month(year, month)).split("\n");
+      imp = sandbox_open_sync(history_path_of_month(year, month)).split("\n");
 
       if (imp.length % 3 > 0) {
         console.error("[ERROR][Meow][bunch_of_history_index] Import history Error: not 3*n length. Raw string: \n" +
@@ -164,29 +164,42 @@ export function history_index_load_from_disk_worker(load_type: string) {
       let data: string = e.data;
       AppStorage.set('history_index_loading_progress', data);
     } else {
-      // Coming back with the set
-      bunch_of_history_index.index_map = e.data;
+      // Coming back with the whole set
+      let result: collections.Array<collections.Map<string, collections.Array<number>>> = e.data;
+      bunch_of_history_index.index_map = result[0];
+      bunch_of_history_index_lite.index_map = result[1];
+
+      // Set info for month_host (bunch_of_history_index_lite)
+      const current_year: number = new Date().getUTCFullYear();
+      const current_month: number = new Date().getUTCMonth() + 1;
+      bunch_of_history_index_lite.this_year = current_year;
+      bunch_of_history_index_lite.this_month = current_month;
+
+      // STOP
       workerInstance.terminate();
-      console.log(bunch_of_history_index.log_head() + " Receive load from sandbox result. Map size: " + bunch_of_history_index.index_map.size.toString() + ".");
-      // Set status
-      AppStorage.set('history_index_loading', false);
-      if (load_type == 'reindex') {
-        // Set status if this is part of reindexing
-        console.log(bunch_of_history_index.log_head() + ' Index loader finished!');
-        AppStorage.set('reindexing_history', false);
-      }
+      console.log(bunch_of_history_index.log_head() + " Got load result. Whole Map size: " + bunch_of_history_index.index_map.size.toString() + ".");
+      console.log(bunch_of_history_index_lite.log_head() + " Got load result. Month Map size: " + bunch_of_history_index_lite.index_map.size.toString() + ".");
     }
   }
   workerInstance.onexit = (() => {
     console.log(bunch_of_history_index.log_head() + " Index loader worker TERMINATED!");
-    // AppStorage.set('history_index_loading_progress', "...");
+
+    // Set status
+    if (load_type == 'reindex') {
+      // Set status if this is part of reindexing
+      console.log(bunch_of_history_index.log_head() + ' Index loader finished!');
+      AppStorage.set('reindexing_history', false);
+    }
+    AppStorage.set('history_index_loading', false);
   })
 }
 
 /**
  * Calls a worker thread to save built index to disk.
+ * @param map the map to be saved.
+ * @param file_name the name of stored file, like 'index_2024_04_00_00_00_00_000'
  * */
-export function history_index_save_to_disk_worker() {
+export function history_index_save_to_disk_worker(map: collections.Map<string, collections.Array<number>>, file_name: string, clear: boolean) {
   let history_index_saving = AppStorage.get('history_index_saving') as boolean | undefined;
   let history_index_loading = AppStorage.get('history_index_loading') as boolean | undefined;
   let reindexing = AppStorage.get('reindexing_history') as boolean | undefined;
@@ -206,10 +219,15 @@ export function history_index_save_to_disk_worker() {
 
   AppStorage.set('history_index_saving', true);
 
+  // Get this month params
   let workerInstance = new worker.ThreadWorker("home/ets/workers/History_index_saver.ets");
   workerInstance.postMessage('filesDir:' + getContext().filesDir);
-  workerInstance.postMessage('file_name:' + 'index.txt');
-  workerInstance.postMessageWithSharedSendable(bunch_of_history_index.index_map);
+  // workerInstance.postMessage('file_name:' + 'index.txt');
+  workerInstance.postMessage('file_name:' + file_name);
+  // workerInstance.postMessageWithSharedSendable(bunch_of_history_index.index_map);
+  workerInstance.postMessage('clear:' + clear ? 'true' : 'false');
+  // workerInstance.postMessageWithSharedSendable(bunch_of_history_index.index_map);
+  workerInstance.postMessageWithSharedSendable(map);
   console.log(bunch_of_history_index.log_head() + " Index saver worker CREATED!");
 
   workerInstance.onmessage = (e: MessageEvents): void => {
@@ -283,4 +301,52 @@ export function history_index_full_rebuild_worker() {
     console.log(bunch_of_history_index.log_head() + " Index worker TERMINATED!");
     // AppStorage.set('reindexing_history_progress', "...");
   })
+}
+
+/**
+ * Constructs the file path of history records in which history in [year, month] should be.
+ * @param year A number, the year, like 2024.
+ * @param month A number, the month, like 12.
+ * @returns A string, 'history/history_year_month.txt'
+ * */
+export function history_path_of_month(year: number, month: number) {
+  return 'history/' + history_file_name_of_month(year, month);
+}
+
+/**
+ * Constructs the file name of history records in which history in [year, month] should be.
+ * @param year A number, the year, like 2024.
+ * @param month A number, the month, like 12.
+ * @returns A string, 'history_YYYY_MM.txt'
+ * */
+export function history_file_name_of_month(year: number, month: number) {
+  let month_unified = month.toString();
+  if (month_unified.length == 1) {
+    month_unified = '0' + month_unified;
+  }
+  return 'history_' + year.toString() + "_" + month_unified + '.txt';
+}
+
+/**
+ * Constructs the file path of history index data in which history in [year, month] should be.
+ * @param year A number, the year, like 2024.
+ * @param month A number, the month, like 12.
+ * @returns A string, 'history-index/index_year_month_00_00_00_00_000.txt'
+ * */
+export function index_path_of_month(year: number, month: number) {
+  return 'history-index/' + index_file_name_of_month(year, month);
+}
+
+/**
+ * Constructs the file name of history index data in which history in [year, month] should be.
+ * @param year A number, the year, like 2024.
+ * @param month A number, the month, like 12.
+ * @returns A string, 'index_year_month_00_00_00_00_000.txt'
+ * */
+export function index_file_name_of_month(year: number, month: number) {
+  let month_unified = month.toString();
+  if (month_unified.length == 1) {
+    month_unified = '0' + month_unified;
+  }
+  return 'index_' + year.toString() + "_" + month_unified + '_00_00_00_00_000.txt';
 }

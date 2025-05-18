@@ -42,6 +42,7 @@ import {
   history_index_load_from_disk_worker,
   history_index_save_to_disk_worker
 } from '../../hosts/bunch_of_history_index_x_functions';
+import { bunch_of_history_index_lite } from '../../hosts/bunch_of_history_index_lite';
 
 @Component
 struct meowAppSettings {
@@ -607,9 +608,9 @@ struct meowAppSettings {
                   .enabled(!this.reindexing_history)
                   .animation(animation_default())
 
-                linysCapsuleButton({ text: ' Save to disk ' })
+                linysCapsuleButton({ text: ' Save Month to disk ' })
                   .onClick(() => {
-                    history_index_save_to_disk_worker();
+                    history_index_save_to_disk_worker(bunch_of_history_index_lite.index_map, bunch_of_history_index_lite.this_file_name(), false);
                   })
                   .opacity(this.reindexing_history ? 0.4 : 1)
                   .enabled(!this.reindexing_history)
