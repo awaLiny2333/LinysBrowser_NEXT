@@ -94,7 +94,7 @@ function save_index_ext(file_name: string, map: collections.Map<string, collecti
     index += 1;
   })
 
-  console.log(bunch_of_history_index.log_head_worker() + '[Save] Finish forEach traversal! Time used: ' + (Date.now() - s).toString() + " ms.")
+  console.log(bunch_of_history_index.log_head_worker() + '[Save] Finished forEach traversal! Time used: ' + (Date.now() - s).toString() + " ms.")
 
   // console.log("qwq " + result.toString())
   sandbox_save('history-index/' + file_name, result.join('\n'), filesDir);

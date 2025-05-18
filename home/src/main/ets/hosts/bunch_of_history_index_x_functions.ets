@@ -363,6 +363,8 @@ export function ensure_this_month_index_file() {
   if (!fileIo.accessSync(getContext().filesDir + '/' + this_month_file_path)) {
     // If this month have no index
     console.log(bunch_of_history_index.log_head() + ' No this month index found. Creating one.')
+    bunch_of_history_index_lite.this_year = current_year;
+    bunch_of_history_index_lite.this_month = current_month;
     sandbox_save(this_month_file_path, '');
   }
 }

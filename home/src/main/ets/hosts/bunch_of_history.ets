@@ -2,6 +2,7 @@ import { sandbox_open_sync, sandbox_save, sandbox_unlink_sync } from '../utils/s
 import { fileIo as fs } from '@kit.CoreFileKit';
 import { bunch_of_history_index } from './bunch_of_history_index';
 import {
+  ensure_this_month_index_file,
   history_index_full_rebuild_worker,
   history_index_load_from_disk_worker,
   history_index_save_to_disk_worker,
@@ -54,9 +55,26 @@ export class bunch_of_history {
       return;
     }
 
-    // // Compatibility path for older BrowserCats
+    // Compatibility path for older BrowserCats
     this.patch_old_history_files();
     this.patch_history_files_before_index_era();
+
+    // Indexing
+    if (fs.listFileSync(getContext().filesDir + '/history-index', { recursion: false }).length == 0) {
+      if (fs.listFileSync(getContext().filesDir + '/history', { recursion: false }).length == 0) {
+        // No history. First launch of app.
+        console.log(bunch_of_history_index.log_head_worker() + ' First launch of app. Skipping loading index.')
+        ensure_this_month_index_file();
+      } else {
+        console.log(bunch_of_history_index.log_head_worker() + ' No index found. ')
+        console.log(bunch_of_history_index.log_head_worker() + ' Rebuilding... ')
+        history_index_full_rebuild_worker();
+      }
+    } else {
+      // Load index
+      // In a concurrent way?!
+      history_index_load_from_disk_worker("normal");
+    }
 
     // Load today
     this.open_month_from_disk_sync(this.current_year, this.current_month);
