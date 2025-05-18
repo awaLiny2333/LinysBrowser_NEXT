@@ -55,17 +55,13 @@ struct meowAppSettings {
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
-  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts =
-    new bunch_of_key_shortcuts(true);
+  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   @StorageLink('bunch_of_history_index') bunch_of_history_index: bunch_of_history_index = new bunch_of_history_index();
   @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
   // Colors
-  @StorageProp('color_current_primary') @Watch('on_color_change') color_current_primary: ResourceColor =
-    $r('app.color.start_window_background');
-  @StorageProp('color_current_secondary') @Watch('on_color_change') color_current_secondary: ResourceColor =
-    $r('app.color.block_color');
-  @StorageProp('color_current_font') @Watch('on_color_change') color_current_font: ResourceColor =
-    $r('app.color.font_color_title');
+  @StorageProp('color_current_primary') @Watch('on_color_change') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') @Watch('on_color_change') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') @Watch('on_color_change') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Generals
   @StorageProp('screen_width') screen_width: number = 0;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
@@ -75,19 +71,13 @@ struct meowAppSettings {
   @State history_length: number = this.bunch_of_history.get_history_this_month().length;
   // Segment Button Options
   @State title_bar_position_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
-    buttons: [{ text: '  󰀐  ' }, { text: '  󰃐  ' }] as ItemRestriction<SegmentButtonTextItem>,
+    buttons: [{ text: '  󰀐  ' }, { text: '  󰃐  ' }],
     selectedBackgroundColor: this.color_current_font,
     selectedFontColor: this.color_current_primary
   })
   @State tabs_style_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [{ text: $r('app.string.Settings_appearance_tabs_style_vertical') },
-      { text: $r('app.string.Settings_appearance_tabs_style_horizontal') }] as ItemRestriction<SegmentButtonTextItem>,
-    selectedBackgroundColor: this.color_current_font,
-    selectedFontColor: this.color_current_primary
-  })
-  @State tabs_style_tabOptions_non_tablet_mode: SegmentButtonOptions = SegmentButtonOptions.tab({
-    buttons: [{ text: $r('app.string.Settings_appearance_tabs_style_vertical') },
-      { text: $r('app.string.Settings_appearance_tabs_style_horizontal') }] as ItemRestriction<SegmentButtonTextItem>,
+      { text: $r('app.string.Settings_appearance_tabs_style_horizontal') }],
     selectedBackgroundColor: this.color_current_font,
     selectedFontColor: this.color_current_primary
   })
@@ -96,12 +86,12 @@ struct meowAppSettings {
       { text: $r('app.string.Settings_start_up_new_tab') },
       { text: $r('app.string.Settings_start_up_home') },
       { text: $r('app.string.Settings_start_up_continue') }
-    ] as ItemRestriction<SegmentButtonTextItem>,
+    ],
     selectedBackgroundColor: this.color_current_font,
     selectedFontColor: this.color_current_primary
   })
   @State left_or_right: SegmentButtonOptions = SegmentButtonOptions.tab({
-    buttons: [{ text: '󰃊' }, { text: '󰈱' }] as ItemRestriction<SegmentButtonTextItem>,
+    buttons: [{ text: '󰃊' }, { text: '󰈱' }],
     selectedBackgroundColor: this.color_current_font,
     selectedFontColor: this.color_current_primary
   })
@@ -111,7 +101,7 @@ struct meowAppSettings {
   @State @Watch('on_tabs_style_changed') tabs_style_selected: number[] = [0];
   @State @Watch('on_tabs_style_non_tablet_mode_changed') tabs_style_selected_non_tablet_mode: number[] = [0];
   @State @Watch('on_start_up_page_changed') start_up_page_selected: number[] = [0];
-  @State @Watch('on_prefer_hand_left_or_right_changed') prefer_hand_left_or_right_selected: number[] = [0];
+  @State @Watch('on_prefer_hand_left_or_right_changed') left_or_right_selected: number[] = [0];
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('max_bookmark_advice') max_bookmark_advice: number = 5;
   @StorageLink('max_history_advice') max_history_advice: number = 5;
@@ -258,7 +248,7 @@ struct meowAppSettings {
               linysText({ text: $r('app.string.Settings_start_up_page') })
               SegmentButton({
                 options: this.start_up_page_tabOptions,
-                selectedIndexes: $start_up_page_selected
+                selectedIndexes: this.start_up_page_selected
               })
             }
             .padding(15)
@@ -355,7 +345,7 @@ struct meowAppSettings {
                 .width("100%")
               SegmentButton({
                 options: this.left_or_right,
-                selectedIndexes: $prefer_hand_left_or_right_selected
+                selectedIndexes: this.left_or_right_selected
               }) // Single hand usability
 
               Row() {
@@ -499,7 +489,7 @@ struct meowAppSettings {
               linysText({ text: $r('app.string.Settings_appearance_title_bar_position') }) // Title bar position
               SegmentButton({
                 options: this.title_bar_position_tabOptions,
-                selectedIndexes: $title_bar_position_selected
+                selectedIndexes: this.title_bar_position_selected
               })
 
               linysText({
@@ -507,15 +497,15 @@ struct meowAppSettings {
               }) // Tabs Style for tablets and landscape displays
               SegmentButton({
                 options: this.tabs_style_tabOptions,
-                selectedIndexes: $tabs_style_selected
+                selectedIndexes: this.tabs_style_selected
               })
 
               linysText({
                 text: $r('app.string.Settings_appearance_tabs_style_non_tablet_mode')
               }) // Tabs Style for mobile and portrait displays
               SegmentButton({
-                options: this.tabs_style_tabOptions_non_tablet_mode,
-                selectedIndexes: $tabs_style_selected_non_tablet_mode
+                options: this.tabs_style_tabOptions,
+                selectedIndexes: this.tabs_style_selected_non_tablet_mode
               })
 
               meowAnimationManager() // Animation manager
@@ -967,9 +957,9 @@ struct meowAppSettings {
     // Get settings of shortcuts on left or right
     this.preferred_hand_left_or_right = await this.bunch_of_settings.get('preferred_hand_left_or_right') as string;
     if (this.preferred_hand_left_or_right == 'left') {
-      this.prefer_hand_left_or_right_selected = [0];
+      this.left_or_right_selected = [0];
     } else {
-      this.prefer_hand_left_or_right_selected = [1];
+      this.left_or_right_selected = [1];
     }
 
     // Get Homepage shortcut directory
@@ -1118,7 +1108,7 @@ struct meowAppSettings {
   // Events
 
   on_prefer_hand_left_or_right_changed() {
-    if (this.prefer_hand_left_or_right_selected[0] == 0) {
+    if (this.left_or_right_selected[0] == 0) {
       this.bunch_of_settings.set('preferred_hand_left_or_right', 'left');
       this.preferred_hand_left_or_right = 'left';
     } else {
