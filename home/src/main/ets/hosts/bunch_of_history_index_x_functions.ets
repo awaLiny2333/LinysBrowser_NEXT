@@ -83,7 +83,7 @@ export function get_history_from_disk(timestamps: number[], max?: number): strin
     if (last_year != year || last_month != month) {
       imp = sandbox_open_sync(history_path_of_month(year, month)).split("\n");
 
-      if (imp.length % 3 > 0 && imp[0] == 'undefined') {
+      if (imp.length % 3 > 0 && imp.length > 1) {
         console.error("[ERROR][Meow][bunch_of_history_index] Import history Error: not 3*n length. Raw string: " + imp)
         return [];
       }
