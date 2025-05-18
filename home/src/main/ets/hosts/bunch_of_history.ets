@@ -337,9 +337,6 @@ export class bunch_of_history {
     if (instantly_save_to_disk) {
       this.save_month_to_disk();
     }
-
-    // TODO: this should be improved to save rebuild time when deleting something!!
-    // bunch_of_history_index.rebuild_full_history_index();
   }
 
   /**
