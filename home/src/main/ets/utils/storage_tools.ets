@@ -25,18 +25,18 @@ export function document_save(file_name: string, content: string) {
 
       let file = fs.openSync(target_uri[0], fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
       let writeLen = fs.writeSync(file.fd, content);
-      console.info("[Meow][document_saver] write data to file succeed and size is:" + writeLen + " @ " + target_uri[0]);
+      console.info("[document_saver] write data to file succeed and size is:" + writeLen + " @ " + target_uri[0]);
       fs.closeSync(file);
 
-      console.info('[Meow][document_saver] DocumentViewPicker.save successfully, documentSaveResult uri: ' +
+      console.info('[document_saver] DocumentViewPicker.save successfully, documentSaveResult uri: ' +
       target_uri[0]);
     }).catch((err: BusinessError) => {
-      console.error('[Meow][document_saver][ERROR] DocumentViewPicker.save failed with err: ' + JSON.stringify(err));
+      console.error('[document_saver][ERROR] DocumentViewPicker.save failed with err: ' + JSON.stringify(err));
     });
 
   } catch (error) {
     let err: BusinessError = error as BusinessError;
-    console.error('[Meow][document_saver][ERROR] DocumentViewPicker failed with err: ' + JSON.stringify(err));
+    console.error('[document_saver][ERROR] DocumentViewPicker failed with err: ' + JSON.stringify(err));
   }
 }
 
@@ -54,7 +54,7 @@ export async function document_open() {
       .then((documentSelectResult) => {
         target_uri = documentSelectResult;
         let file = fs.openSync(target_uri[0], fs.OpenMode.READ_WRITE);
-        console.info('[Meow][document_reader] DocumentViewPicker.select successfully, documentSelectResult uri: ' +
+        console.info('[document_reader] DocumentViewPicker.select successfully, documentSelectResult uri: ' +
         target_uri[0])
         let target_path = (new fileUri.FileUri(target_uri[0])).path;
         let stat = fs.statSync(target_path);
@@ -63,16 +63,16 @@ export async function document_open() {
         let readLen = fs.readSync(file.fd, buf);
         fs.closeSync(file);
         let result = buf.slice(0, readLen);
-        console.info("[Meow][document_reader] read file data succeed, Length: " + readLen.toString());
+        console.info("[document_reader] read file data succeed, Length: " + readLen.toString());
         contents = buffer.from(result).toString();
       })
       .catch((err: BusinessError) => {
-        console.error('[Meow][document_reader] DocumentViewPicker.select failed with err: ' + JSON.stringify(err));
+        console.error('[document_reader] DocumentViewPicker.select failed with err: ' + JSON.stringify(err));
       });
     return contents;
   } catch (error) {
     let err: BusinessError = error as BusinessError;
-    console.error('[ERROR][Meow][document_reader] DocumentViewPicker failed with err: ' + JSON.stringify(err));
+    console.error('[ERROR][document_reader] DocumentViewPicker failed with err: ' + JSON.stringify(err));
     return "";
   }
 }
@@ -94,7 +94,7 @@ export async function image_open_to_ArrayBuffer() {
     })
       .then((documentSelectResult) => {
         selected_uri = documentSelectResult;
-        console.info('[Meow][image_document_reader] DocumentViewPicker.select successfully, documentSelectResult uri: ' +
+        console.info('[image_document_reader] DocumentViewPicker.select successfully, documentSelectResult uri: ' +
         selected_uri[0])
         let file = fs.openSync(selected_uri[0], fs.OpenMode.READ_ONLY);
         // let selected_path = (new fileUri.FileUri(selected_uri[0])).path;
@@ -106,17 +106,17 @@ export async function image_open_to_ArrayBuffer() {
         fs.closeSync(file);
         // fs.copyFileSync(selected_path, sand_path);
 
-        console.info("[Meow][image_document_reader] Read image from " + selected_uri[0] + " Success!");
+        console.info("[image_document_reader] Read image from " + selected_uri[0] + " Success!");
       })
       .catch((err: BusinessError) => {
-        console.error('[Meow][image_document_reader] DocumentViewPicker.select failed with err: ' +
+        console.error('[image_document_reader] DocumentViewPicker.select failed with err: ' +
         JSON.stringify(err));
         return undefined;
       });
     return buf;
   } catch (error) {
     let err: BusinessError = error as BusinessError;
-    console.error('[ERROR][Meow][image_document_reader] DocumentViewPicker failed with err: ' + JSON.stringify(err));
+    console.error('[ERROR][image_document_reader] DocumentViewPicker failed with err: ' + JSON.stringify(err));
     return undefined;
   }
 }
@@ -220,7 +220,7 @@ export function get_folder_size_Sync(path: string, log: boolean) {
 
   }
   if (log) {
-    console.log('[Meow][storage_tools] Calculated folder size: ' + sum.toString())
+    console.log('[storage_tools] Calculated folder size: ' + sum.toString())
   }
   return sum;
 }

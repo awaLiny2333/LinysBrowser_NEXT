@@ -1,9 +1,4 @@
-import {
-  animation_default,
-  capsule_bar_height,
-  click_effect_default,
-  fontSize_Large
-} from '../../hosts/bunch_of_defaults';
+import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large } from '../../hosts/bunch_of_defaults';
 import { bunch_of_history, history_record } from '../../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { sandbox_save } from '../../utils/storage_tools';
@@ -236,7 +231,7 @@ struct meowWebView {
                 && !this.tab_urls[Label.index_key].includes("resource://")
               ) {
                 let new_record = new history_record(this.tab_titles[Label.index_key], this.tab_urls[Label.index_key])
-                this.bunch_of_history.add_history(new_record, true);
+                this.bunch_of_history.add_history(new_record, true, true);
               } else {
                 this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation = false;
                 // log
@@ -449,7 +444,7 @@ struct meowWebView {
     .width("100%")
     .height("100%")
     .onAppear(() => {
-      console.log("[Meow][meowWebView] WebViews READY")
+      // console.log("[Meow][meowWebView] WebViews READY")
     })
   }
 

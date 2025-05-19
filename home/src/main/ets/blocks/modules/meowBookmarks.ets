@@ -258,7 +258,7 @@ struct meowBookmarks {
     .width("100%")
     .height("100%")
     .onAppear(() => {
-      console.log("[Meow][meowBookmarks] Bookmarks READY")
+      // console.log("[Meow][meowBookmarks] Bookmarks READY")
       this.on_appear();
     })
   }

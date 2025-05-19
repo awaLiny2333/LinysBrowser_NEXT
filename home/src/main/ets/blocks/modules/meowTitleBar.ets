@@ -832,7 +832,7 @@ struct meowTitleBar {
     .offset({ y: !this.fullscreen_mode ? 0 : (this.title_bar_position == 'bottom' ? 1.1 : -1.1) * this.bar_height })
     .animation(animation_default())
     .onAppear(() => {
-      console.log("[Meow][meowTitleBar] Title Bar READY")
+      // console.log("[Meow][meowTitleBar] Title Bar READY")
       setInterval(() => {
         if (this.address_analyzers_desc_close_cd > 0) {
           this.address_analyzers_desc_close_cd -= 10;

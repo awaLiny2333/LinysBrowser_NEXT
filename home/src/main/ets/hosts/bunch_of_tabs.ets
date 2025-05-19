@@ -108,10 +108,10 @@ export class bunch_of_tabs {
     try {
       fs.mkdirSync(filesDir + '/continue');
     } catch (e) {
-      console.log('[Meow][bunch_of_tabs] constructor: E: /continue folder already exists.')
+      // console.log('[Meow][bunch_of_tabs] constructor: E: /continue folder already exists.')
     }
 
-    console.log('[Meow][bunch_of_tabs] Init success!')
+    // console.log('[Meow][bunch_of_tabs] Init success!')
   }
 
   // Operations and Actions

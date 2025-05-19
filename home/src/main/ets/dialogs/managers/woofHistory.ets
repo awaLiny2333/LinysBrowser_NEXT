@@ -312,7 +312,7 @@ struct woofHistory {
         this.data.setData(this.bunch_of_history.get_history_this_month());
       }
     }
-    this.bunch_of_history.remove_history_at_indices(this.viewing_year, this.viewing_month, indices, true);
+    this.bunch_of_history.remove_histories_at_indices(this.viewing_year, this.viewing_month, indices, true);
     this.refresh_current_history_list();
   }
 }

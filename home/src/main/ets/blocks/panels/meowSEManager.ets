@@ -107,7 +107,7 @@ struct meowSEManager {
     this.bunch_of_search_engines.import_string(custom_search_engine);
     this.selected_index =
       await this.bunch_of_settings.get('custom_search_engines_selected_index') as number;
-    console.log("[Meow][meowSEManager] Search engine Manager READY");
+    // console.log("[Meow][meowSEManager] Search engine Manager READY");
   }
 
   // on_SE_change() {

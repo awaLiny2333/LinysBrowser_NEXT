@@ -14,7 +14,7 @@ import meowUAManager from '../panels/meowUAManager';
 import { bunch_of_user_agents } from '../../hosts/bunch_of_user_agents';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import linysCapsuleButton from '../../components/linysCapsuleButton';
-import { bunch_of_history, fill_fake_history } from '../../hosts/bunch_of_history';
+import { bunch_of_history } from '../../hosts/bunch_of_history';
 import { add_units_to_size, arrayBuffer_to_pixelMap, get_folder_size_Sync, sandbox_open_arrayBuffer_sync } from '../../utils/storage_tools';
 import woofHistory from '../../dialogs/managers/woofHistory';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
@@ -38,6 +38,7 @@ import { get_sandbox_folder_size } from '../../utils/any_concurrent_tools';
 import woofRecentFaultLogs from '../../dialogs/contents/woofRecentFaultLogs';
 import { bunch_of_history_index } from '../../hosts/bunch_of_history_index';
 import {
+  fill_fake_history,
   history_index_full_rebuild_worker,
   history_index_load_from_disk_worker,
   history_index_save_to_disk_worker
@@ -892,7 +893,7 @@ struct meowAppSettings {
     .width("100%")
     .animation(animation_default())
     .onAppear(() => {
-      console.log("[Meow][meowAppSettings] App Settings READY")
+      // console.log("[Meow][meowAppSettings] App Settings READY")
       this.on_appear();
     })
   }
@@ -936,9 +937,6 @@ struct meowAppSettings {
     // Get whether to enable forced webs dark mode
     this.web_force_dark_mode = await this.bunch_of_settings.get('web_force_dark_mode') as boolean;
 
-    // Read history
-    bunch_of_history.check_disk_month(new Date().getUTCFullYear(), new Date().getUTCMonth() + 1);
-
     // Read webview cache
     this.web_cache_size = await this.bunch_of_settings.get('webview_cache_size') as number;
     if (this.web_cache_size == -1) {
@@ -965,7 +963,7 @@ struct meowAppSettings {
     // Get Homepage shortcut directory
     let homepage_shortcuts_bookmarks_dir = await this.bunch_of_settings.get('homepage_shortcuts_bookmarks_dir') as string;
     AppStorage.set('homepage_shortcuts_bookmarks_dir', homepage_shortcuts_bookmarks_dir);
-    console.log("[Meow][meowAppSettings] Finished loading homepage shortcuts dir: " + homepage_shortcuts_bookmarks_dir);
+    console.log("[Meow][meowAppSettings] Finished loading homepage shortcuts dir: '" + homepage_shortcuts_bookmarks_dir + "'.");
 
     // Get whether to show resource monitor
     this.resource_monitor = await this.bunch_of_settings.get('resource_monitor') as boolean;

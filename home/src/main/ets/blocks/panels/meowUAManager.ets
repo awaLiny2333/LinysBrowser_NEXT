@@ -111,7 +111,7 @@ struct meowUAManager {
     this.UA_loaded_from_disk = true;
     // Get UA
 
-    console.log("[Meow][meowUAManager] UA Manager READY");
+    // console.log("[Meow][meowUAManager] UA Manager READY");
   }
 
   on_select() {

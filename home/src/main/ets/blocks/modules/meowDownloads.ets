@@ -83,7 +83,7 @@ struct meowDownloads {
       .layoutWeight(1)
       .animation(animation_default())
       .onAppear(() => {
-        console.log("[Meow][meowDownloads] Downloads READY")
+        // console.log("[Meow][meowDownloads] Downloads READY")
         this.on_appear();
       })
     }

@@ -88,7 +88,7 @@ export class bunch_of_settings {
     // History Indexer
     this.register_setting('history_index_size', 'number', '-1');
 
-    console.log('[Meow][bunch_of_settings] Init success!')
+    // console.log('[Meow][bunch_of_settings] Init success!')
   }
 
   /**

@@ -4,7 +4,7 @@ import { common } from '@kit.AbilityKit';
 
 export async function kv_store_get(key_name: string) {
   if (AppStorage.get('kvStore') == undefined) {
-    console.log("[kv_store_tools][GET] First launch of app, now getting kvStore")
+    console.log("[kv_store_tools][GET] Launch of app, now getting kvStore")
     await get_kv_store_into_app_storage();
   }
   let kvStore = AppStorage.get('kvStore') as distributedKVStore.DeviceKVStore;
@@ -30,7 +30,7 @@ export async function kv_store_get(key_name: string) {
 
 export async function kv_store_put(key_name: string, put_content: string) {
   if (AppStorage.get('kvStore') == undefined) {
-    console.log("[kv_store_tools][GET] First launch of app, now getting kvStore")
+    console.log("[kv_store_tools][GET] Launch of app, now getting kvStore")
     await get_kv_store_into_app_storage();
   }
   let kvStore = AppStorage.get('kvStore') as distributedKVStore.DeviceKVStore;
@@ -54,7 +54,7 @@ export async function kv_store_put(key_name: string, put_content: string) {
  * */
 export async function kv_store_get_uint_8_array(key_name: string) {
   if (AppStorage.get('kvStore') == undefined) {
-    console.log("[kv_store_tools][GET] First launch of app, now getting kvStore")
+    console.log("[kv_store_tools][GET] Launch of app, now getting kvStore")
     await get_kv_store_into_app_storage();
   }
   let kvStore = AppStorage.get('kvStore') as distributedKVStore.DeviceKVStore;
@@ -80,7 +80,7 @@ export async function kv_store_get_uint_8_array(key_name: string) {
 
 export async function kv_store_put_uint_8_array(key_name: string, put_content: Uint8Array) {
   if (AppStorage.get('kvStore') == undefined) {
-    console.log("[kv_store_tools][GET] First launch of app, now getting kvStore")
+    console.log("[kv_store_tools][GET] Launch of app, now getting kvStore")
     await get_kv_store_into_app_storage();
   }
   let kvStore = AppStorage.get('kvStore') as distributedKVStore.DeviceKVStore;
@@ -97,7 +97,7 @@ export async function kv_store_put_uint_8_array(key_name: string, put_content: U
 
 export async function kv_store_delete(key_name: string) {
   if (AppStorage.get('kvStore') == undefined) {
-    console.log("[kv_store_tools][GET] First launch of app, now getting kvStore")
+    console.log("[kv_store_tools][GET] Launch of app, now getting kvStore")
     await get_kv_store_into_app_storage();
   }
   let kvStore = AppStorage.get('kvStore') as distributedKVStore.DeviceKVStore;

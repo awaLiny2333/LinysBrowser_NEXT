@@ -272,7 +272,7 @@ struct meowTabs {
         this.on_timer();
       }, 10)
       // Set Task to calculate animation
-      console.log("[Meow][meowTabs] Tabs Panel READY")
+      // console.log("[Meow][meowTabs] Tabs Panel READY")
     })
     .onAreaChange((_o, n) => {
       this.scroll_area_height = n.height as number - 60;

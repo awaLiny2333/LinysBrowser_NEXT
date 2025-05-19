@@ -7,7 +7,7 @@ import meowTitleBar from '../blocks/modules/meowTitleBar';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import woofPromptFail from '../dialogs/prompts/woofPromptFail';
-import { ConfigurationConstant } from '@kit.AbilityKit';
+import { bundleManager, ConfigurationConstant } from '@kit.AbilityKit';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_history } from '../hosts/bunch_of_history';
 import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
@@ -15,7 +15,7 @@ import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 import { window } from '@kit.ArkUI';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
-import linysProgressInfo from '../components/linysProgressInfo';
+import { sandbox_save } from '../utils/storage_tools';
 
 @Entry
 @Component
@@ -143,7 +143,15 @@ struct Index {
     this.color_dark_secondary = await this.bunch_of_settings.get('color_dark_secondary') as string;
     this.color_dark_font = await this.bunch_of_settings.get('color_dark_font') as string;
 
+    // Respond to want
     this.on_want();
+
+    // Get and set app version info
+    bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION).then((bundleInfo) => {
+      console.log('[Meow][bunch_of_history] Saving app version: ' + bundleInfo.versionName + "(" + bundleInfo.versionCode.toString() + ")");
+      sandbox_save("last_app_versionCode.txt", bundleInfo.versionCode.toString());
+      sandbox_save("last_app_versionName.txt", bundleInfo.versionName);
+    })
   }
 
   on_want() {
@@ -309,7 +317,7 @@ struct Index {
     .animation(animation_default())
     .backgroundColor(this.color_current_secondary)
     .onAppear(() => {
-      console.log("[Meow][Index] Home Index READY")
+      // console.log("[Meow][Index] Home Index READY")
     })
   }
 

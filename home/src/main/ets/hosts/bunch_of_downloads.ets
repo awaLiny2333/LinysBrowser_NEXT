@@ -28,10 +28,10 @@ export class bunch_of_downloads {
     try {
       fs.mkdirSync(filesDir + '/downloads');
     } catch (e) {
-      console.log('[Meow][bunch_of_downloads] Init: E: /downloads already exists.')
+      // console.log('[Meow][bunch_of_downloads] Init: E: /downloads already exists.')
     }
 
-    console.log('[Meow][bunch_of_downloads] Init success!')
+    // console.log('[Meow][bunch_of_downloads] Init success!')
   }
 
   /**
