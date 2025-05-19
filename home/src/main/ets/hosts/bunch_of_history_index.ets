@@ -1,8 +1,7 @@
 import { sandbox_open_sync } from '../utils/storage_tools';
 import { fileIo as fs } from '@kit.CoreFileKit';
 import { collections } from '@kit.ArkTS';
-import { history_record } from './bunch_of_history';
-import { divide_string, get_history_from_disk, index_file_name_of_month } from './bunch_of_history_index_x_functions';
+import { divide_string, get_history_from_disk, index_file_name_of_month, insert_into_array } from './bunch_of_history_index_x_functions';
 import { bunch_of_history_index_lite } from './bunch_of_history_index_lite';
 
 export class bunch_of_history_index {
@@ -79,30 +78,6 @@ export class bunch_of_history_index {
   }
 
   /**
-   * Index from history file.
-   * @param path the path of history file, for example, 'history/history_2002_12.txt'.
-   * @param context_filesDir getContext().filesDir.
-   * */
-  static index_from_history_file(path: string, context_filesDir?: string) {
-    let imp = sandbox_open_sync(path, context_filesDir);
-    let import_list: string[] = imp.split("\n");
-    if (import_list.length % 3 > 0) {
-      console.error("[ERROR]" + bunch_of_history_index.log_head() +
-        " Import history Error: not 3*n length. Raw string: \n" + imp);
-      return;
-    }
-    for (let index = 0; index < import_list.length; index += 3) {
-      let access_time = parseInt(import_list[index+2]);
-      bunch_of_history_index.add_index_string(import_list[index] + " " + import_list[index+1], access_time);
-
-      // if (index % 100 == 0) {
-      //   const progress = index / import_list.length * 100;
-      //   console.log(log_head() + "Index sub progress: " + progress.toFixed(2) + "%");
-      // }
-    }
-  }
-
-  /**
    * Index from built index file.
    * @param path the path of index file, for example, 'history-index/index_2002_12.txt'.
    * @param context_filesDir getContext().filesDir.
@@ -119,86 +94,60 @@ export class bunch_of_history_index {
 
       // TODO: Improve logics here to boost efficiency!
       for (let j = 0; j < values.length; j++) {
-        bunch_of_history_index.add_index_key_string(key, parseInt(values[j]));
+        bunch_of_history_index.add_index_key_string(key, parseInt(values[j]), false);
       }
     }
   }
 
-  static add_index_histories(histories: history_record[]) {
-    for (let index = 0; index < histories.length; index++) {
-      bunch_of_history_index.add_index_history(histories[index]);
-    }
-  }
-
-  static add_index_history(history: history_record) {
-    bunch_of_history_index.add_index_string(history.label + " " + encodeURI(history.link), history.accessed_time);
-  }
-
-  static add_index_string(str: string, timestamp: number) {
-    const current_year: number = new Date(timestamp).getUTCFullYear();
-    const current_month: number = new Date(timestamp).getUTCMonth() + 1;
-    if (index_file_name_of_month(current_year, current_month) != bunch_of_history_index_lite.this_file_name()) {
-      // This could happen when system time is manually changed.
-      // DONT DO THIS IN YOUR DAILY USE PLZ.
-      return;
-    }
-
-    // Divide into words
-    let all_words = divide_string(str.toUpperCase());
-
-    // Traverse and add
-    for (const item of all_words) {
-      if (bunch_of_history_index.index_map.has(item)) {
-        bunch_of_history_index.index_map.get(item)!.push(timestamp);
-      } else {
-        bunch_of_history_index.index_map.set(item, new collections.Array<number>(timestamp));
+  /**
+   * Pushes a timestamp to the end of values of str (keys).
+   * @param key the SINGLE, SPECIFIC key.
+   * @param timestamp the timestamp.
+   * @param check_month set true to check if this action fits in the currently opened month in bunch_of_history_index_lite.
+   * */
+  static add_index_key_string(key: string, timestamp: number, check_month: boolean) {
+    if (check_month) {
+      const current_year: number = new Date(timestamp).getUTCFullYear();
+      const current_month: number = new Date(timestamp).getUTCMonth() + 1;
+      if (index_file_name_of_month(current_year, current_month) != bunch_of_history_index_lite.this_file_name()) {
+        // This could happen when system time is manually changed.
+        // DONT DO THIS IN YOUR DAILY USE PLZ.
+        return;
       }
     }
-  }
 
-  static add_index_key_string(key: string, timestamp: number) {
     if (bunch_of_history_index.index_map.has(key)) {
       // console.log(bunch_of_history_index.index_map.get(item)?.toString());
-      bunch_of_history_index.index_map.get(key)!.push(timestamp);
+      // bunch_of_history_index.index_map.get(key)!.push(timestamp);
+
+      let got_array = bunch_of_history_index.index_map.get(key)!;
+      let old_last = got_array[got_array.length-1];
+      if (timestamp < old_last) {
+        console.log(bunch_of_history_index.log_head() + ' Adding new index (' + timestamp + ') earlier than the old ones (' + old_last + ')??? How???');
+      } else {
+        got_array.push(timestamp);
+      }
     } else {
       bunch_of_history_index.index_map.set(key, new collections.Array<number>(timestamp));
     }
   }
 
+  /**
+   * Pushes a timestamp to the correct position of values of str (keys).
+   * @param str the keys.
+   * @param timestamp the timestamp.
+   * */
   static add_index_string_full(str: string, timestamp: number) {
     // Divide into words
     let all_words = divide_string(str.toUpperCase());
+
+    // Traverse and add
     for (const item of all_words) {
       let original = bunch_of_history_index.index_map.get(item) || new collections.Array<number>();
       // concat it in ascending order
-      bunch_of_history_index.index_map.set(item, bunch_of_history_index.insert_into_array(original, timestamp));
+      bunch_of_history_index.index_map.set(item, insert_into_array(original, timestamp));
       // bunch_of_history_index.index_map.get(item)?.push(timestamp);
     }
-  }
-
-  /**
-   * Inserts a number into given array in ascending order
-   * @param arr the array
-   * @param new_num the new number
-   * @returns a new array of result
-   * @author Generated by DeepSeek on 14th May, 2025, modified by awa_Liny
-   * */
-  static insert_into_array(arr: collections.Array<number>, new_num: number): collections.Array<number> {
-    let left = 0;
-    let right = arr.length;
-
-    // 二分查找插入位置
-    while (left < right) {
-      const mid = Math.floor((left + right) / 2);
-      if (arr[mid] < new_num) {
-        left = mid + 1;
-      } else {
-        right = mid;
-      }
-    }
-
-    // 创建新数组（原数组保持不变）
-    return new collections.Array<number>(...arr.slice(0, left), new_num, ...arr.slice(left));
   }
 
   /**

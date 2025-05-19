@@ -1,6 +1,6 @@
 import { sandbox_open_sync } from '../utils/storage_tools';
 import { collections } from '@kit.ArkTS';
-import { divide_string, history_path_of_month, index_file_name_of_month, index_path_of_month } from './bunch_of_history_index_x_functions';
+import { divide_string, history_path_of_month, index_file_name_of_month, index_path_of_month, insert_into_array } from './bunch_of_history_index_x_functions';
 
 export class bunch_of_history_index_lite {
   static index_map: collections.Map<string, collections.Array<number>> = new collections.Map<string, collections.Array<number>>();
@@ -92,16 +92,20 @@ export class bunch_of_history_index_lite {
   }
 
   /**
-   * Pushes a timestamp to the the end of values of str (keys).
+   * Pushes a timestamp to the end of values of str (keys).
    * @param str the keys.
    * @param timestamp the timestamp.
    * */
   static add_index_string(str: string, timestamp: number) {
-    const current_year: number = new Date(timestamp).getUTCFullYear();
-    const current_month: number = new Date(timestamp).getUTCMonth() + 1;
-    if (index_file_name_of_month(current_year, current_month) != bunch_of_history_index_lite.this_file_name()) {
+    const target_year: number = new Date(timestamp).getUTCFullYear();
+    const target_month: number = new Date(timestamp).getUTCMonth() + 1;
+    if (index_file_name_of_month(target_year, target_month) != bunch_of_history_index_lite.this_file_name()) {
       // This could happen when system time is manually changed.
       // DONT DO THIS IN YOUR DAILY USE PLZ.
+      const this_year_month: string = bunch_of_history_index_lite.this_year.toString() + ' - ' + bunch_of_history_index_lite.this_month.toString();
+      const target_year_month: string = target_year.toString() + ' - ' + target_month.toString();
+      console.log(bunch_of_history_index_lite.log_head() +
+        ' Adding history to another month (' + target_year_month + ') but current month loaded is ' + this_year_month + '! Interrupted add_index_string.');
       return;
     }
 
@@ -111,10 +115,46 @@ export class bunch_of_history_index_lite {
     // Traverse and add
     for (const item of all_words) {
       if (bunch_of_history_index_lite.index_map.has(item)) {
-        bunch_of_history_index_lite.index_map.get(item)!.push(timestamp);
+        let got_array = bunch_of_history_index_lite.index_map.get(item)!;
+        let old_last = got_array[got_array.length-1];
+        if (timestamp < old_last) {
+          console.log(bunch_of_history_index_lite.log_head() + ' Adding new index (' + timestamp + ') earlier than the old ones (' + old_last + ')??? How???');
+        } else {
+          got_array.push(timestamp);
+        }
       } else {
         bunch_of_history_index_lite.index_map.set(item, new collections.Array<number>(timestamp));
       }
+    }
+  }
+
+  /**
+   * Pushes a timestamp to the correct position of values of str (keys).
+   * @param str the keys.
+   * @param timestamp the timestamp.
+   * */
+  static add_index_string_full(str: string, timestamp: number) {
+    const target_year: number = new Date(timestamp).getUTCFullYear();
+    const target_month: number = new Date(timestamp).getUTCMonth() + 1;
+    if (index_file_name_of_month(target_year, target_month) != bunch_of_history_index_lite.this_file_name()) {
+      // This could happen when system time is manually changed.
+      // DONT DO THIS IN YOUR DAILY USE PLZ.
+      const this_year_month: string = bunch_of_history_index_lite.this_year.toString() + ' - ' + bunch_of_history_index_lite.this_month.toString();
+      const target_year_month: string = target_year.toString() + ' - ' + target_month.toString();
+      console.log(bunch_of_history_index_lite.log_head() +
+        ' Adding history to another month (' + target_year_month + ') but current month loaded is ' + this_year_month + '! Interrupted add_index_string_full.');
+      return;
+    }
+
+    // Divide into words
+    let all_words = divide_string(str.toUpperCase());
+
+    // Traverse and add
+    for (const item of all_words) {
+      let original = bunch_of_history_index_lite.index_map.get(item) || new collections.Array<number>();
+      // concat it in ascending order
+      bunch_of_history_index_lite.index_map.set(item, insert_into_array(original, timestamp));
+      // bunch_of_history_index.index_map.get(item)?.push(timestamp);
     }
   }
 

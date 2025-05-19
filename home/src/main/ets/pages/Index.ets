@@ -42,6 +42,7 @@ struct Index {
   @StorageLink('tablet_mode') tablet_mode: boolean = false;
   @StorageLink('screen_width') screen_width: number = 0;
   @StorageLink('screen_height') screen_height: number = 0;
+  @StorageLink('full_screen_height') full_screen_height: number = 0;
   @StorageLink('fullscreen_mode') @Watch('on_fullscreen_switch') fullscreen_mode: boolean = false;
   @StorageLink('animation_response') animation_response: number = 0.36;
   @StorageLink('animation_damping_coefficient') animation_damping: number = 0.8;
@@ -316,6 +317,9 @@ struct Index {
     .alignItems(HorizontalAlign.Start)
     .animation(animation_default())
     .backgroundColor(this.color_current_secondary)
+    .onAreaChange((_o, n) => {
+      this.full_screen_height = n.height as number;
+    })
     .onAppear(() => {
       // console.log("[Meow][Index] Home Index READY")
     })

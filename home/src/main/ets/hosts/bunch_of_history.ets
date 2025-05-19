@@ -292,8 +292,9 @@ export class bunch_of_history {
             // TODO: IMPROVE THIS LOGIC to avoid missing add_index_string jobs.
             // ↑ This got relaxed due to monthly division of index system.
             // This try catch is just to avoid crashes.
+            bunch_of_history_index.add_index_string_full(history.label + " " + encodeURI(history.link), history.accessed_time);
+            // TODO: This only works when history is in same month.
             bunch_of_history_index_lite.add_index_string(history.label + " " + encodeURI(history.link), history.accessed_time);
-            bunch_of_history_index.add_index_string(history.label + " " + encodeURI(history.link), history.accessed_time);
           } catch (e) {
             console.error(e);
           }

@@ -47,6 +47,7 @@ struct meowTitleBar {
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageProp('screen_width') screen_width: number = 0;
   @StorageProp('screen_height') screen_height: number = 0;
+  @StorageLink('full_screen_height') full_screen_height: number = 0;
   @StorageProp('universal_new_download_gateway') @Watch('on_download_start') uni_new_download_gateway: string = "";
   @Link bar_height: number;
   @StorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
@@ -563,229 +564,240 @@ struct meowTitleBar {
       .height(this.tablet_mode ? 36 : 82)
       .animation(animation_default())
 
-      Column({ space: 10 }) {
-        RelativeContainer() {
-          Row() {
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.doc_text_badge_magnifyingglass'
-            }) // in-page Search
-            TextInput({
-              text: this.current_in_page_searching_keyword,
-              placeholder: $r('app.string.More_in_page_search')
-            })
-              .onChange((edit) => {
-                this.current_in_page_searching_keyword = edit;
-                this.bunch_of_tabs.workingMainTab().searching_keyword = edit;
-              })
-              .margin({ left: 10 })
-              .layoutWeight(1)
-              .allowDrop(null)
-              .height(capsule_bar_height())
-              .fontWeight(FontWeight.Regular)
-              .fontColor(this.color_current_font)
-              .caretColor(this.color_current_font)
-              .selectedBackgroundColor(this.color_current_font)
-              .onDragEnter(() => {
-                this.showing_scratching_board = true;
-              })
-              .enabled(this.showing_scratching_board ? false : true)
-              .opacity(this.showing_scratching_board ? 0.8 : 1)
-              .onSubmit(() => {
-                try {
-                  this.bunch_of_tabs.workingMainTab().controller.searchAllAsync(this.current_in_page_searching_keyword);
-                } catch (e) {
-                  console.error(e);
-                }
-              })
-              .onClick(() => {
-                this.showing_more_options = true;
-              })
-              .keyboardShortcut(this.bunch_of_key_shortcuts.in_page_search.main_key,
-                this.bunch_of_key_shortcuts.in_page_search.modifier)
+      Scroll() {
+        Column({ space: 10 }) {
+          // Row().height(100) // For single hand use
 
-            linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass' })
-              .onClick(() => {
-                try {
-                  this.bunch_of_tabs.workingMainTab().controller.searchAllAsync(this.current_in_page_searching_keyword);
-                } catch (e) {
-                  console.error(e);
-                }
+          RelativeContainer() {
+            Row() {
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.doc_text_badge_magnifyingglass'
+              }) // in-page Search
+              TextInput({
+                text: this.current_in_page_searching_keyword,
+                placeholder: $r('app.string.More_in_page_search')
               })
-              .margin({ left: 10 })
-
-            Column() {
-              linysSymbol({ symbol_glyph_target: 'sys.symbol.xmark' })
-                .onClick(() => {
-                  this.current_in_page_searching_keyword = '';
-                  this.current_in_page_searching_stats_current = 0;
-                  this.current_in_page_searching_stats_total = 0;
-                  this.bunch_of_tabs.workingMainTab().searching_keyword_stats_current = 0;
-                  this.bunch_of_tabs.workingMainTab().searching_keyword_stats_total = 0;
-                  this.bunch_of_tabs.workingMainTab().searching_keyword = '';
+                .onChange((edit) => {
+                  this.current_in_page_searching_keyword = edit;
+                  this.bunch_of_tabs.workingMainTab().searching_keyword = edit;
+                })
+                .margin({ left: 10 })
+                .layoutWeight(1)
+                .allowDrop(null)
+                .height(capsule_bar_height())
+                .fontWeight(FontWeight.Regular)
+                .fontColor(this.color_current_font)
+                .caretColor(this.color_current_font)
+                .selectedBackgroundColor(this.color_current_font)
+                .onDragEnter(() => {
+                  this.showing_scratching_board = true;
+                })
+                .enabled(this.showing_scratching_board ? false : true)
+                .opacity(this.showing_scratching_board ? 0.8 : 1)
+                .onSubmit(() => {
                   try {
-                    this.bunch_of_tabs.workingMainTab().controller.clearMatches();
+                    this.bunch_of_tabs.workingMainTab().controller.searchAllAsync(this.current_in_page_searching_keyword);
+                  } catch (e) {
+                    console.error(e);
+                  }
+                })
+                .onClick(() => {
+                  this.showing_more_options = true;
+                })
+                .keyboardShortcut(this.bunch_of_key_shortcuts.in_page_search.main_key,
+                  this.bunch_of_key_shortcuts.in_page_search.modifier)
+
+              linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass' })
+                .onClick(() => {
+                  try {
+                    this.bunch_of_tabs.workingMainTab().controller.searchAllAsync(this.current_in_page_searching_keyword);
                   } catch (e) {
                     console.error(e);
                   }
                 })
                 .margin({ left: 10 })
-                .visibility(this.current_in_page_searching_keyword != "" ? Visibility.Visible : Visibility.None)
+
+              Column() {
+                linysSymbol({ symbol_glyph_target: 'sys.symbol.xmark' })
+                  .onClick(() => {
+                    this.current_in_page_searching_keyword = '';
+                    this.current_in_page_searching_stats_current = 0;
+                    this.current_in_page_searching_stats_total = 0;
+                    this.bunch_of_tabs.workingMainTab().searching_keyword_stats_current = 0;
+                    this.bunch_of_tabs.workingMainTab().searching_keyword_stats_total = 0;
+                    this.bunch_of_tabs.workingMainTab().searching_keyword = '';
+                    try {
+                      this.bunch_of_tabs.workingMainTab().controller.clearMatches();
+                    } catch (e) {
+                      console.error(e);
+                    }
+                  })
+                  .margin({ left: 10 })
+                  .visibility(this.current_in_page_searching_keyword != "" ? Visibility.Visible : Visibility.None)
+                  .animation(animation_default())
+              }
+            } // Search bar
+            .id('in_page_search_bar')
+            .alignRules(this.tablet_mode ? {
+              left: { anchor: "__container__", align: HorizontalAlign.Start },
+              right: { anchor: "in_page_search_operation_buttons", align: HorizontalAlign.Start }
+            } : {
+              left: { anchor: "__container__", align: HorizontalAlign.Start },
+              right: { anchor: "__container__", align: HorizontalAlign.End },
+              top: { anchor: "__container__", align: VerticalAlign.Top }
+            })
+            .animation(animation_default())
+
+            Row({ space: 10 }) {
+              linysText({
+                text: this.current_in_page_searching_stats_current.toString() + '／' +
+                this.current_in_page_searching_stats_total.toString()
+              })
                 .animation(animation_default())
-            }
-          } // Search bar
-          .id('in_page_search_bar')
-          .alignRules(this.tablet_mode ? {
-            left: { anchor: "__container__", align: HorizontalAlign.Start },
-            right: { anchor: "in_page_search_operation_buttons", align: HorizontalAlign.Start }
-          } : {
-            left: { anchor: "__container__", align: HorizontalAlign.Start },
-            right: { anchor: "__container__", align: HorizontalAlign.End },
-            top: { anchor: "__container__", align: VerticalAlign.Top }
-          })
+              linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_up' })
+                .onClick(() => {
+                  try {
+                    this.bunch_of_tabs.workingMainTab().controller.searchNext(false);
+                  } catch (e) {
+                    console.error(e);
+                  }
+                })
+              linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_down' })
+                .onClick(() => {
+                  try {
+                    this.bunch_of_tabs.workingMainTab().controller.searchNext(true);
+                  } catch (e) {
+                    console.error(e);
+                  }
+                })
+            } // Operation buttons
+            .justifyContent(FlexAlign.End)
+            .id('in_page_search_operation_buttons')
+            .padding({ left: this.tablet_mode ? 10 : 0 })
+            .alignRules(this.tablet_mode ? {
+              right: { anchor: "__container__", align: HorizontalAlign.End },
+              center: { anchor: "__container__", align: VerticalAlign.Center }
+            } : {
+              left: { anchor: "__container__", align: HorizontalAlign.Start },
+              right: { anchor: "__container__", align: HorizontalAlign.End },
+              bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
+            })
+            .animation(animation_default())
+          }
+          .width("100%")
+          .height(20 + (this.tablet_mode ? capsule_bar_height() : 2 * capsule_bar_height()))
+          .backgroundColor(this.color_current_primary)
+          .borderRadius(10)
+          .padding(10)
           .animation(animation_default())
 
           Row({ space: 10 }) {
-            linysText({
-              text: this.current_in_page_searching_stats_current.toString() + '／' +
-              this.current_in_page_searching_stats_total.toString()
-            })
-              .animation(animation_default())
-            linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_up' })
+            linysSymbol({
+              symbol_glyph_target: 'sys.symbol.tracking_cookie_interception'
+            })// Cookies
               .onClick(() => {
-                try {
-                  this.bunch_of_tabs.workingMainTab().controller.searchNext(false);
-                } catch (e) {
-                  console.error(e);
-                }
+                this.cookies_control.open();
               })
-            linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_down' })
+            linysSymbol({
+              symbol_glyph_target: 'sys.symbol.picture_2'
+            })// Image
               .onClick(() => {
-                try {
-                  this.bunch_of_tabs.workingMainTab().controller.searchNext(true);
-                } catch (e) {
-                  console.error(e);
-                }
+                this.image_manage_control.open();
               })
-          } // Operation buttons
+            linysSymbol({
+              symbol_glyph_target: 'sys.symbol.electric_install'
+            })// JS
+              .onClick(() => {
+                this.js_manage_control.open();
+              })
+            linysSymbol({
+              symbol_glyph_target: 'sys.symbol.ad_circle_slash'
+            })// Enable ads blocker
+              .onClick(() => {
+                this.woofAdsBlocker_control.open();
+              })
+            linysSymbol({
+              symbol_glyph_target: 'sys.symbol.label'
+            })// UA
+              .onClick(() => {
+                this.woofUAswitch_control.open();
+              })
+            linysSymbol({
+              symbol_glyph_target: 'sys.symbol.qrcode'
+            })// QRcode
+              .onClick(() => {
+                this.woofQR_control.open();
+              })
+            linysSymbol({
+              symbol_glyph_target: this.fullscreen_mode ?
+                'sys.symbol.arrow_down_right_and_arrow_up_left' :
+                'sys.symbol.arrow_up_left_and_arrow_down_right'
+            })// FullScreen
+              .onClick(() => {
+                this.fullscreen_mode = !this.fullscreen_mode;
+                this.showing_more_options = false;
+              })
+              .keyboardShortcut(this.bunch_of_key_shortcuts.fullscreen.main_key,
+                this.bunch_of_key_shortcuts.fullscreen.modifier)
+          }
+          .width('100%')
           .justifyContent(FlexAlign.End)
-          .id('in_page_search_operation_buttons')
-          .padding({ left: this.tablet_mode ? 10 : 0 })
-          .alignRules(this.tablet_mode ? {
-            right: { anchor: "__container__", align: HorizontalAlign.End },
-            center: { anchor: "__container__", align: VerticalAlign.Center }
-          } : {
-            left: { anchor: "__container__", align: HorizontalAlign.Start },
-            right: { anchor: "__container__", align: HorizontalAlign.End },
-            bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
+
+          Row() {
+            meowDebug()
+          }
+          .width('100%')
+          .opacity(0.8)
+          .visibility(this.resource_monitor ? Visibility.Visible : Visibility.None)
+          .animation(animation_default())
+
+          linysProgressInfo({
+            notification: $r('app.string.Settings_experience_history_index_loading_index_from_disk'),
+            progress: this.history_index_loading_progress,
           })
-          .animation(animation_default())
-        }
+            .opacity(0.8)
+            .visibility(this.history_index_loading_progress != "" ? Visibility.Visible : Visibility.None)
+            .animation(animation_default())
+
+          linysProgressInfo({
+            notification: $r('app.string.Settings_experience_history_index_reindexing'),
+            progress: this.reindexing_history_progress,
+          })
+            .opacity(0.8)
+            .visibility(this.reindexing_history_progress != "" ? Visibility.Visible : Visibility.None)
+            .animation(animation_default())
+
+          linysProgressInfo({
+            notification: $r('app.string.Settings_experience_history_index_saving_to_disk'),
+            progress: this.history_index_saving_progress,
+          })
+            .opacity(0.8)
+            .visibility(this.history_index_saving_progress != "" ? Visibility.Visible : Visibility.None)
+            .animation(animation_default())
+
+          // linysTitleText({
+          //   text: $r('app.string.Index_drop_please'),
+          //   max_lines: 3
+          // })
+          //   .visibility(!this.showing_scratching_board ? Visibility.Visible : Visibility.None)
+          //   .opacity(0.2)
+          //   .padding(10)
+          //   .animation(animation_default())
+
+        } // Title Bar of More Options
+        .alignItems(HorizontalAlign.End)
+        .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
+        .padding({ left: 15, right: 15, bottom: 6 })
         .width("100%")
-        .height(20 + (this.tablet_mode ? capsule_bar_height() : 2 * capsule_bar_height()))
-        .backgroundColor(this.color_current_primary)
-        .borderRadius(10)
-        .padding(10)
         .animation(animation_default())
-
-        Row({ space: 10 }) {
-          linysSymbol({
-            symbol_glyph_target: 'sys.symbol.tracking_cookie_interception'
-          })// Cookies
-            .onClick(() => {
-              this.cookies_control.open();
-            })
-          linysSymbol({
-            symbol_glyph_target: 'sys.symbol.picture_2'
-          })// Image
-            .onClick(() => {
-              this.image_manage_control.open();
-            })
-          linysSymbol({
-            symbol_glyph_target: 'sys.symbol.electric_install'
-          })// JS
-            .onClick(() => {
-              this.js_manage_control.open();
-            })
-          linysSymbol({
-            symbol_glyph_target: 'sys.symbol.ad_circle_slash'
-          })// Enable ads blocker
-            .onClick(() => {
-              this.woofAdsBlocker_control.open();
-            })
-          linysSymbol({
-            symbol_glyph_target: 'sys.symbol.label'
-          })// UA
-            .onClick(() => {
-              this.woofUAswitch_control.open();
-            })
-          linysSymbol({
-            symbol_glyph_target: 'sys.symbol.qrcode'
-          })// QRcode
-            .onClick(() => {
-              this.woofQR_control.open();
-            })
-          linysSymbol({
-            symbol_glyph_target: this.fullscreen_mode ?
-              'sys.symbol.arrow_down_right_and_arrow_up_left' :
-              'sys.symbol.arrow_up_left_and_arrow_down_right'
-          })// FullScreen
-            .onClick(() => {
-              this.fullscreen_mode = !this.fullscreen_mode;
-              this.showing_more_options = false;
-            })
-            .keyboardShortcut(this.bunch_of_key_shortcuts.fullscreen.main_key,
-              this.bunch_of_key_shortcuts.fullscreen.modifier)
-        }
-        .width('100%')
-        .justifyContent(FlexAlign.End)
-
-        Row() {
-          meowDebug()
-        }
-        .width('100%')
-        .opacity(0.8)
-        .visibility(this.resource_monitor ? Visibility.Visible : Visibility.None)
-        .animation(animation_default())
-
-        linysProgressInfo({
-          notification: $r('app.string.Settings_experience_history_index_loading_index_from_disk'),
-          progress: this.history_index_loading_progress,
-        })
-          .opacity(0.8)
-          .visibility(this.history_index_loading_progress != "" ? Visibility.Visible : Visibility.None)
-          .animation(animation_default())
-
-        linysProgressInfo({
-          notification: $r('app.string.Settings_experience_history_index_reindexing'),
-          progress: this.reindexing_history_progress,
-        })
-          .opacity(0.8)
-          .visibility(this.reindexing_history_progress != "" ? Visibility.Visible : Visibility.None)
-          .animation(animation_default())
-
-        linysProgressInfo({
-          notification: $r('app.string.Settings_experience_history_index_saving_to_disk'),
-          progress: this.history_index_saving_progress,
-        })
-          .opacity(0.8)
-          .visibility(this.history_index_saving_progress != "" ? Visibility.Visible : Visibility.None)
-          .animation(animation_default())
-
-        // linysTitleText({
-        //   text: $r('app.string.Index_drop_please'),
-        //   max_lines: 3
-        // })
-        //   .visibility(!this.showing_scratching_board ? Visibility.Visible : Visibility.None)
-        //   .opacity(0.2)
-        //   .padding(10)
-        //   .animation(animation_default())
-
-      } // Title Bar of More Options
-      .alignItems(HorizontalAlign.End)
-      .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
-      .padding({ left: 15, right: 15, bottom: 6 })
-      .width("100%")
+      }
+      .align(Alignment.Bottom)
+      .borderRadius(16)
+      .layoutWeight(this.showing_more_options ? 1 : undefined)
       .animation(animation_default())
+      .scrollable(ScrollDirection.Vertical)
+      .edgeEffect(EdgeEffect.Spring)
+      .scrollBar(BarState.Off)
 
       meowAppSettings({ showing_app_settings: this.showing_app_settings })// Settings
         .visibility(this.showing_app_settings ? Visibility.Visible : Visibility.None)
@@ -818,6 +830,7 @@ struct meowTitleBar {
       this.showing_scratching_board = false;
     })
     .width("100%")
+    .constraintSize({ maxHeight: this.showing_more_options ? Math.min(this.full_screen_height, 460) : undefined })
     .alignItems(HorizontalAlign.Start)
     .backgroundColor(this.color_current_secondary)
     .alignRules(this.title_bar_alignRules)
