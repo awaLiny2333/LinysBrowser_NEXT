@@ -830,7 +830,7 @@ struct meowTitleBar {
       this.showing_scratching_board = false;
     })
     .width("100%")
-    .constraintSize({ maxHeight: this.showing_more_options ? Math.min(this.full_screen_height, 460) : undefined })
+    .constraintSize({ maxHeight: this.showing_more_options ? Math.min(this.full_screen_height, this.tablet_mode ? 360 : 460) : undefined })
     .alignItems(HorizontalAlign.Start)
     .backgroundColor(this.color_current_secondary)
     .alignRules(this.title_bar_alignRules)
