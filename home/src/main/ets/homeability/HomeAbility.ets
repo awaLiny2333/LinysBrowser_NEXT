@@ -2,6 +2,7 @@ import { AbilityConstant, Configuration, UIAbility, Want } from '@kit.AbilityKit
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { deviceInfo } from '@kit.BasicServicesKit';
 
 export default class HomeAbility extends UIAbility {
   async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): Promise<void> {
@@ -47,19 +48,24 @@ export default class HomeAbility extends UIAbility {
       }
       hilog.info(0x0000, 'testTag', 'Succeeded in loading the content.');
 
-      let windowClass: window.Window = windowStage.getMainWindowSync(); // 获取应用主窗口
+      let windowClass = windowStage.getMainWindowSync(); // Get app main window
 
-      // 1. 设置窗口全屏
-      let isLayoutFullScreen = true;
-      windowClass.setWindowLayoutFullScreen(isLayoutFullScreen)
-        .then(() => {
-          console.info('Succeeded in setting the window layout to full-screen mode.');
-        })
-        .catch((err: BusinessError) => {
-          console.error('Failed to set the window layout to full-screen mode. Cause:' + JSON.stringify(err));
-        });
+      console.info('Succeeded in obtaining the main window. Data: ' + JSON.stringify(windowClass));
 
-      // 2. 获取布局避让遮挡的区域
+      if (deviceInfo.deviceType == '2in1') {
+        // TODO: find out why this doesn't work
+        windowClass.setWindowTitleButtonVisible(true, true, true);
+        // windowClass.setWindowDecorVisible(false);
+        windowClass.setResizeByDragEnabled(true);
+      } else {
+        // Set orientation
+        windowClass.setPreferredOrientation(window.Orientation.AUTO_ROTATION_RESTRICTED);
+      }
+
+      // 1. Set fullscreen window
+      windowClass.setWindowLayoutFullScreen(true);
+
+      // 2. Get avoid area
       let type = window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR; // 以导航条避让为例
       let avoidArea = windowClass.getWindowAvoidArea(type);
       let avoidBottom = px2vp(avoidArea.bottomRect.height); // 获取到导航条区域的高度
