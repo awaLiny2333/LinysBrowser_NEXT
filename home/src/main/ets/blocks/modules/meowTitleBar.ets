@@ -982,8 +982,6 @@ struct meowTitleBar {
   }
 
   show_more_options() {
-    this.is_search_input_typing = false;
-
     if (!this.tablet_mode) {
       if (this.tabs_style_non_tablet_mode == "vertical") {
         this.showing_tabs = false;

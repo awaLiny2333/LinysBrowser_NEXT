@@ -78,7 +78,8 @@ struct meowSuggestions {
       bottom: this.bottom_margin
     })
     .height(Math.min(this.content_height, 0.4 * this.screen_height))
-    .visibility((this.bookmark_suggestions.length + this.history_suggestions.length == 0) || this.search_input == "" || this.search_extracted_keyword == "" ?
+    .visibility((this.bookmark_suggestions.length + this.history_suggestions.length == 0) || this.showing_more_options || this.search_input == "" ||
+      this.search_extracted_keyword == "" ?
     Visibility.None : this.visible_when_typing())
     .edgeEffect(EdgeEffect.Spring)
     .animation(animation_default())
