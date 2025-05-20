@@ -12,10 +12,14 @@ struct meowSuggestions {
   @State content_height: number = 0;
   @StorageProp('is_search_input_typing') is_search_input_typing: boolean = false;
   @StorageProp('search_input') @Watch('refresh_suggestions') search_input: string = "";
+  @StorageLink('search_extracted_keyword') search_extracted_keyword: string = '';
   @StorageProp('screen_height') screen_height: number = 0;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
   @StorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
+  @StorageLink('showing_more_options') showing_more_options: boolean = false;
+  @StorageLink('showing_app_settings') showing_app_settings: boolean = false;
+  @StorageLink('showing_downloads') showing_downloads: boolean = false;
   // Hosts
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
@@ -74,7 +78,7 @@ struct meowSuggestions {
       bottom: this.bottom_margin
     })
     .height(Math.min(this.content_height, 0.4 * this.screen_height))
-    .visibility((this.bookmark_suggestions.length + this.history_suggestions.length == 0) || this.search_input == "" ?
+    .visibility((this.bookmark_suggestions.length + this.history_suggestions.length == 0) || this.search_input == "" || this.search_extracted_keyword == "" ?
     Visibility.None : this.visible_when_typing())
     .edgeEffect(EdgeEffect.Spring)
     .animation(animation_default())
@@ -85,6 +89,9 @@ struct meowSuggestions {
   }
 
   refresh_suggestions() {
+    this.showing_more_options = false;
+    this.showing_app_settings = false;
+    this.showing_downloads = false;
     if (this.search_input === undefined || this.search_input.length == 0) {
       this.bookmark_suggestions = [];
       this.history_suggestions = [];

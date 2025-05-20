@@ -1,8 +1,7 @@
 import { AbilityConstant, Configuration, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
-import { BusinessError } from '@kit.BasicServicesKit';
-import { deviceInfo } from '@kit.BasicServicesKit';
+import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
 
 export default class HomeAbility extends UIAbility {
   async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): Promise<void> {
@@ -37,8 +36,8 @@ export default class HomeAbility extends UIAbility {
         console.error(`Failed to obtain the main window. Cause code: ${err.code}, message: ${err.message}`);
         return;
       }
-      win.setPreferredOrientation(window.Orientation.AUTO_ROTATION_RESTRICTED)
       // Set window orientation
+      win.setPreferredOrientation(window.Orientation.AUTO_ROTATION_RESTRICTED)
     })
 
     windowStage.loadContent('pages/Index', (err) => {
@@ -50,61 +49,85 @@ export default class HomeAbility extends UIAbility {
 
       let windowClass = windowStage.getMainWindowSync(); // Get app main window
 
-      console.info('Succeeded in obtaining the main window. Data: ' + JSON.stringify(windowClass));
+      console.log('Succeeded in obtaining the main window. Data: ' + JSON.stringify(windowClass));
+      console.log('[HomeAbility] deviceType: ' + deviceInfo.deviceType);
 
       if (deviceInfo.deviceType == '2in1') {
-        // TODO: find out why this doesn't work
-        windowClass.setWindowTitleButtonVisible(true, true, true);
-        // windowClass.setWindowDecorVisible(false);
-        windowClass.setResizeByDragEnabled(true);
+        console.log('[HomeAbility] Treated as a 2in1.');
+        // windowClass.setWindowCornerRadius(26);
+        // windowClass.setWindowTitleButtonVisible(true, true, true);
+        windowClass.setWindowDecorVisible(false);
+        let windowDecorHeight = windowClass.getWindowDecorHeight();
+
+        windowClass.on('windowTitleButtonRectChange', (titleButtonRect) => {
+          console.info('[HomeAbility] Succeeded in enabling the listener for window title buttons area changes. Data: ' + JSON.stringify(titleButtonRect));
+
+          AppStorage.setOrCreate('windowDecorHeight', titleButtonRect.height);
+          console.log('[HomeAbility] windowDecorHeight: ' + titleButtonRect.height);
+
+          AppStorage.setOrCreate('windowDecorWidth', titleButtonRect.width);
+          console.log('[HomeAbility] windowDecorWidth: ' + titleButtonRect.width);
+        })
+
+        AppStorage.setOrCreate('topAvoidHeight', windowDecorHeight);
+        console.log('[HomeAbility] topAvoidHeight: ' + windowDecorHeight);
+        // windowClass.setResizeByDragEnabled(true);
+        // windowClass.setWindowTitle('qwq');
       } else {
-        // Set orientation
-        windowClass.setPreferredOrientation(window.Orientation.AUTO_ROTATION_RESTRICTED);
+        console.log('[HomeAbility] Treated as else.');
+
+        // 1. Set fullscreen window
+        windowClass.setImmersiveModeEnabledState(true);
+
+        // 2. Get avoid area
+        let type = window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR; // 以导航条避让为例
+        let avoidArea = windowClass.getWindowAvoidArea(type);
+        let avoidBottom = px2vp(avoidArea.bottomRect.height); // 获取到导航条区域的高度
+        AppStorage.setOrCreate('bottomAvoidHeight', avoidBottom);
+        console.log('[HomeAbility] New avoidBottomHeight: ' + avoidBottom);
+
+        type = window.AvoidAreaType.TYPE_SYSTEM;
+        avoidArea = windowClass.getWindowAvoidArea(type);
+        let avoidTop = px2vp(avoidArea.topRect.height);
+        AppStorage.setOrCreate('topAvoidHeight', avoidTop + (avoidTop == 0 ? 0 : 2));
+        console.log('[HomeAbility] topAvoidHeight: ' + avoidTop + (avoidTop == 0 ? 0 : 2));
+
+        type = window.AvoidAreaType.TYPE_CUTOUT;
+        avoidArea = windowClass.getWindowAvoidArea(type);
+        let avoidLeft = px2vp(avoidArea.leftRect.width);
+        AppStorage.setOrCreate('leftAvoidWidth', avoidLeft + (avoidLeft == 0 ? 0 : 2));
+        console.log('[HomeAbility] New leftAvoidWidth: ' + avoidLeft + (avoidLeft == 0 ? 0 : 2));
+
+        type = window.AvoidAreaType.TYPE_CUTOUT;
+        avoidArea = windowClass.getWindowAvoidArea(type);
+        let avoidRight = px2vp(avoidArea.rightRect.width);
+        AppStorage.setOrCreate('rightAvoidWidth', avoidRight + (avoidRight == 0 ? 0 : 2));
+        console.log('[HomeAbility] New avoidRightWidth: ' + avoidRight + (avoidRight == 0 ? 0 : 2));
+
+        // Change listener
+        windowClass.on('avoidAreaChange', (data) => {
+          if (data.type == window.AvoidAreaType.TYPE_SYSTEM) {
+            avoidTop = px2vp(data.area.topRect.height);
+            AppStorage.setOrCreate('topAvoidHeight', avoidTop + (avoidTop == 0 ? 0 : 2));
+            console.log('[HomeAbility] New topAvoidHeight: ' + avoidTop + (avoidTop == 0 ? 0 : 2));
+          }
+          if (data.type == window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
+            avoidBottom = px2vp(data.area.bottomRect.height);
+            AppStorage.setOrCreate('bottomAvoidHeight', avoidBottom);
+            console.log('[HomeAbility] New avoidBottomHeight: ' + avoidBottom);
+          }
+          if (data.type == window.AvoidAreaType.TYPE_CUTOUT) {
+            avoidLeft = px2vp(data.area.leftRect.width);
+            AppStorage.setOrCreate('leftAvoidWidth', avoidLeft + (avoidLeft == 0 ? 0 : 2));
+            console.log('[HomeAbility] New leftAvoidWidth: ' + avoidLeft + (avoidLeft == 0 ? 0 : 2));
+          }
+          if (data.type == window.AvoidAreaType.TYPE_CUTOUT) {
+            avoidRight = px2vp(data.area.rightRect.width);
+            AppStorage.setOrCreate('rightAvoidWidth', avoidRight + (avoidRight == 0 ? 0 : 2));
+            console.log('[HomeAbility] New avoidRightWidth: ' + avoidRight + (avoidRight == 0 ? 0 : 2));
+          }
+        })
       }
-
-      // 1. Set fullscreen window
-      windowClass.setWindowLayoutFullScreen(true);
-
-      // 2. Get avoid area
-      let type = window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR; // 以导航条避让为例
-      let avoidArea = windowClass.getWindowAvoidArea(type);
-      let avoidBottom = px2vp(avoidArea.bottomRect.height); // 获取到导航条区域的高度
-      AppStorage.setOrCreate('bottomAvoidHeight', avoidBottom);
-
-      type = window.AvoidAreaType.TYPE_SYSTEM;
-      avoidArea = windowClass.getWindowAvoidArea(type);
-      let avoidTop = px2vp(avoidArea.topRect.height);
-      AppStorage.setOrCreate('topAvoidHeight', avoidTop + (avoidTop == 0 ? 0 : 2));
-
-      type = window.AvoidAreaType.TYPE_CUTOUT;
-      avoidArea = windowClass.getWindowAvoidArea(type);
-      let avoidLeft = px2vp(avoidArea.leftRect.width);
-      AppStorage.setOrCreate('leftAvoidWidth', avoidLeft + (avoidLeft == 0 ? 0 : 2));
-
-      type = window.AvoidAreaType.TYPE_CUTOUT;
-      avoidArea = windowClass.getWindowAvoidArea(type);
-      let avoidRight = px2vp(avoidArea.rightRect.width);
-      AppStorage.setOrCreate('rightAvoidWidth', avoidRight + (avoidRight == 0 ? 0 : 2));
-
-      // Change listener
-      windowClass.on('avoidAreaChange', (data) => {
-        if (data.type == window.AvoidAreaType.TYPE_SYSTEM) {
-          avoidTop = px2vp(data.area.topRect.height);
-          AppStorage.setOrCreate('topAvoidHeight', avoidTop + (avoidTop == 0 ? 0 : 2));
-        }
-        if (data.type == window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
-          avoidBottom = px2vp(data.area.bottomRect.height);
-          AppStorage.setOrCreate('bottomAvoidHeight', avoidBottom);
-        }
-        if (data.type == window.AvoidAreaType.TYPE_CUTOUT) {
-          avoidLeft = px2vp(data.area.leftRect.width);
-          AppStorage.setOrCreate('leftAvoidWidth', avoidLeft + (avoidLeft == 0 ? 0 : 2));
-        }
-        if (data.type == window.AvoidAreaType.TYPE_CUTOUT) {
-          avoidRight = px2vp(data.area.rightRect.width);
-          AppStorage.setOrCreate('rightAvoidWidth', avoidRight + (avoidRight == 0 ? 0 : 2));
-        }
-      })
     });
   }
 

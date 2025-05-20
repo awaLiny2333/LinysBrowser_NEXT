@@ -5,6 +5,8 @@ import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { LengthMetrics } from '@kit.ArkUI';
 import { uniformTypeDescriptor } from '@kit.ArkData';
 import { drop_to_scratching_board } from '../../utils/drag_drop_tools';
+import linysText from '../../components/linysText';
+import { deviceInfo } from '@kit.BasicServicesKit';
 
 @Component
 struct meowTabsHorizontal {
@@ -12,10 +14,12 @@ struct meowTabsHorizontal {
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   // Environments
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
+  @StorageLink('windowDecorWidth') windowDecorWidth: number = 0;
   @StorageLink('current_main_tab_index') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') current_sub_tab_index: number = -1;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageProp('pathDir') pathDir: string = "";
+  @StorageProp('title_bar_position') title_bar_position: string = "";
   // Controls and environments
   @StorageLink('tab_titles') tab_titles: string[] = []
   @StorageLink('current_title') current_title: string = "=￣ω￣=";
@@ -86,11 +90,30 @@ struct meowTabsHorizontal {
 
           this.new_tab_gateway = "new_tab";
         })
-        .margin({ bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0 })
+        .margin({ bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0, right: 8 })
         .animation(animation_default())
 
+      Row() {
+        Row() {
+          linysText({
+            text: $r('app.string.Index_tabs_title_drag')
+          })
+        }
+        .justifyContent(FlexAlign.Center)
+        .padding(10)
+        .height(this.length_width_of_tabs > this.full_area_width ? 55 : 40)
+        .borderRadius(12)
+        .backgroundColor($r('sys.color.comp_background_tertiary'))
+        .width(100 + 10)
+        .clickEffect(click_effect_default())
+      } // Drag area
+      .justifyContent(FlexAlign.Start)
+      .visibility(deviceInfo.deviceType == '2in1' && this.title_bar_position == 'top' && this.tablet_mode ? Visibility.Visible : Visibility.None)
+      .width(this.windowDecorWidth + 100)
+      .animation(animation_default())
+
     } // Base container
-    .padding({ left: 8, right: 15 })
+    .padding({ left: 8, right: 8 })
     .animation(animation_default())
     .allowDrop([uniformTypeDescriptor.UniformDataType.TEXT,
       uniformTypeDescriptor.UniformDataType.HYPERLINK,

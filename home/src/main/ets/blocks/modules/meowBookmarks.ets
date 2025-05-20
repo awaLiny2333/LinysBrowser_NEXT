@@ -446,7 +446,7 @@ struct bookmarkItem {
       looking_at_path: this.looking_at_path
     }),
     alignment: DialogAlignment.Center,
-    showInSubWindow: true,
+    // showInSubWindow: true,
     cornerRadius: 16,
     width: "90%",
   })

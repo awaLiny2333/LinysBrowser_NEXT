@@ -21,6 +21,10 @@
       "value": "Tabs"
     },
     {
+      "name": "Index_tabs_title_drag",
+      "value": "Drag Area"
+    },
+    {
       "name": "Index_bookmarks_title",
       "value": "Bookmarks"
     },

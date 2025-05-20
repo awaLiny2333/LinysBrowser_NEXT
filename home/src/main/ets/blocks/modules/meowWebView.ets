@@ -94,7 +94,7 @@ struct meowWebView {
     builder: woofHomepageManager(),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
-    // showInSubWindow: true,
+    // // showInSubWindow: true,
   });
   // Colors
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');

@@ -21,6 +21,10 @@
       "value": "标签页"
     },
     {
+      "name": "Index_tabs_title_drag",
+      "value": "拖拽区域"
+    },
+    {
       "name": "Index_bookmarks_title",
       "value": "书签"
     },

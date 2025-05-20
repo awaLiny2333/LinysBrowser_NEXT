@@ -119,7 +119,7 @@ struct colorBlock {
     builder: woofSelectColor({ color: this.color, dark_mode_color: false, color_theme_id: this.color_theme_id }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
-    showInSubWindow: true,
+    // showInSubWindow: true,
     width: "90%",
   });
 
@@ -141,7 +141,7 @@ struct colorBlock {
           }),
           alignment: DialogAlignment.Center,
           cornerRadius: 16,
-          showInSubWindow: true,
+          // showInSubWindow: true,
           width: "90%",
         });
         this.woofColorSelect_control.open();

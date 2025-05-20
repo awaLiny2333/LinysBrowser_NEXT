@@ -136,14 +136,14 @@ struct meowAppSettings {
     builder: woofHistory({ showing_settings: this.showing_app_settings }),
     alignment: DialogAlignment.Center,
     cornerRadius: 22,
-    showInSubWindow: true,
+    // showInSubWindow: true,
     width: "90%",
   });
   adsBlocker_control: CustomDialogController = new CustomDialogController({
     builder: woofAdsBlocker(),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
-    showInSubWindow: true,
+    // showInSubWindow: true,
     width: "90%",
   });
   js_manage_control: CustomDialogController = new CustomDialogController({
@@ -154,7 +154,7 @@ struct meowAppSettings {
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
-    showInSubWindow: true,
+    // showInSubWindow: true,
     width: "90%",
   });
   image_manage_control: CustomDialogController = new CustomDialogController({
@@ -177,35 +177,35 @@ struct meowAppSettings {
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
-    showInSubWindow: true,
+    // showInSubWindow: true,
     width: "90%",
   });
   cookies_control: CustomDialogController = new CustomDialogController({
     builder: woofCookies(),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
-    showInSubWindow: true,
+    // showInSubWindow: true,
     width: "90%",
   });
   key_shortcuts_control: CustomDialogController = new CustomDialogController({
     builder: woofKeyShortcuts(),
     alignment: DialogAlignment.Center,
     cornerRadius: 22,
-    showInSubWindow: true,
+    // showInSubWindow: true,
     width: "90%",
   });
   homepage_shortcuts_control: CustomDialogController = new CustomDialogController({
     builder: woofHomepageManager(),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
-    // showInSubWindow: true,
+    // // showInSubWindow: true,
     // width: "90%",
   });
   recent_fault_logs_control: CustomDialogController = new CustomDialogController({
     builder: woofRecentFaultLogs(),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
-    showInSubWindow: true,
+    // showInSubWindow: true,
     width: "90%",
   });
   waterFlow_control: Scroller = new Scroller();
@@ -874,7 +874,7 @@ struct meowAppSettings {
         .columnsTemplate("1fr ".repeat(Math.ceil(this.screen_width / minimum_card_width())))
         .rowsGap(10)
         .columnsGap(10)
-        .padding({ left: 15, right: 15 })
+        .borderRadius(16)
         .edgeEffect(EdgeEffect.Spring)
         .scrollBar(BarState.Auto)
         .width("100%")
@@ -885,6 +885,7 @@ struct meowAppSettings {
           this.scroll_last = last;
         })
       } // Main
+      .padding({ left: 15, right: 15 })
       .layoutWeight(1)
       .height("100%")
       .animation(animation_default())

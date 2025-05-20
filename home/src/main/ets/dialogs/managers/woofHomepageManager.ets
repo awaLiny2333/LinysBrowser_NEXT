@@ -31,7 +31,7 @@ struct woofHomepageManager {
     }),
     cornerRadius: 16,
     alignment: DialogAlignment.Center,
-    // showInSubWindow: true,
+    // // showInSubWindow: true,
     width: "90%",
   })
   controller: CustomDialogController;

@@ -13,7 +13,7 @@ struct meowWhatsNew {
     builder: woofUpdateHistory(),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
-    showInSubWindow: true,
+    // showInSubWindow: true,
     width: "90%",
   });
 

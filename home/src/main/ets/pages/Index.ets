@@ -16,6 +16,7 @@ import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 import { window } from '@kit.ArkUI';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 import { sandbox_save } from '../utils/storage_tools';
+import { deviceInfo } from '@kit.BasicServicesKit';
 
 @Entry
 @Component
@@ -110,7 +111,7 @@ struct Index {
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
-    showInSubWindow: true,
+    // showInSubWindow: true,
     width: "90%",
   });
   // Colors
@@ -228,7 +229,9 @@ struct Index {
     Column() {
       Row()// Top Bar Avoid
         .width("100%")
-        .height(this.fullscreen_mode ? 0 : this.topAvoidHeight)
+        .height(this.fullscreen_mode ? 0 :
+          (deviceInfo.deviceType == '2in1' && this.title_bar_position == 'top' && this.tabs_style == 'horizontal' && this.showing_tabs && this.tablet_mode ?
+            10 : this.topAvoidHeight))
         .backgroundColor(this.color_current_secondary)
         .animation(animation_default())
 
@@ -308,7 +311,8 @@ struct Index {
 
       Row()// Bottom Bar Avoid
         .width("100%")
-        .height(this.fullscreen_mode ? 0 : Math.max(15, this.bottomAvoidHeight))
+        .height(this.fullscreen_mode ? 0 :
+          (deviceInfo.deviceType == '2in1' ? 0 : Math.max(0, this.title_bar_position == "bottom" ? this.bottomAvoidHeight - 15 : this.bottomAvoidHeight)))
         .animation(animation_default())
         .backgroundColor(this.title_bar_position == "bottom" ? "transparent" : this.color_current_secondary)
     }

@@ -66,7 +66,7 @@ struct meowTitleBar {
   @StorageLink('current_in_page_searching_stats_current') current_in_page_searching_stats_current: number = 0;
   @StorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
   // Search analyze
-  @State search_extracted_keyword: string = '';
+  @StorageLink('search_extracted_keyword') search_extracted_keyword: string = '';
   @State search_extracted_engine: string = '';
   @State showing_search_extracted_field: boolean = false;
   @State search_extracted_field_available: boolean = false;
@@ -136,7 +136,7 @@ struct meowTitleBar {
       add_exception_domain_edit: match_domain(this.search_input)[1],
       showing_add_panel: true
     }),
-    showInSubWindow: true,
+    // showInSubWindow: true,
     width: "90%",
     alignment: DialogAlignment.Center,
     cornerRadius: 16
@@ -145,7 +145,7 @@ struct meowTitleBar {
     builder: woofCookies(),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
-    showInSubWindow: true,
+    // showInSubWindow: true,
     width: "90%",
   });
   js_manage_control: CustomDialogController = new CustomDialogController({
@@ -158,7 +158,7 @@ struct meowTitleBar {
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
-    showInSubWindow: true,
+    // showInSubWindow: true,
     width: "90%",
   });
   image_manage_control: CustomDialogController = new CustomDialogController({
@@ -183,7 +183,7 @@ struct meowTitleBar {
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
-    showInSubWindow: true,
+    // showInSubWindow: true,
     width: "90%",
   });
   // Colors
@@ -193,6 +193,10 @@ struct meowTitleBar {
 
   build() {
     Column({ space: 10 }) {
+      // if (this.title_bar_position == "top") {
+      //   Row().height(0)
+      // }
+
       if (this.title_bar_position == "bottom") {
         meowSuggestions({ top_margin: 15 })
           .animation(animation_default())
@@ -816,6 +820,9 @@ struct meowTitleBar {
           .animation(animation_default())
       }
 
+      if (this.title_bar_position == "bottom") {
+        Row().height(5)
+      }
     } // Title Bars
     .allowDrop([uniformTypeDescriptor.UniformDataType.TEXT,
       uniformTypeDescriptor.UniformDataType.HYPERLINK,
@@ -830,7 +837,7 @@ struct meowTitleBar {
       this.showing_scratching_board = false;
     })
     .width("100%")
-    .constraintSize({ maxHeight: this.showing_more_options ? Math.min(this.full_screen_height, this.tablet_mode ? 360 : 460) : undefined })
+    .constraintSize({ maxHeight: this.showing_more_options ? Math.min(this.full_screen_height, this.tablet_mode ? 370 : 460) : undefined })
     .alignItems(HorizontalAlign.Start)
     .backgroundColor(this.color_current_secondary)
     .alignRules(this.title_bar_alignRules)
@@ -975,6 +982,8 @@ struct meowTitleBar {
   }
 
   show_more_options() {
+    this.is_search_input_typing = false;
+
     if (!this.tablet_mode) {
       if (this.tabs_style_non_tablet_mode == "vertical") {
         this.showing_tabs = false;
