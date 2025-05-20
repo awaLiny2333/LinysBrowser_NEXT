@@ -311,8 +311,7 @@ struct Index {
 
       Row()// Bottom Bar Avoid
         .width("100%")
-        .height(this.fullscreen_mode ? 0 :
-          (deviceInfo.deviceType == '2in1' ? 0 : Math.max(0, this.title_bar_position == "bottom" ? this.bottomAvoidHeight - 15 : this.bottomAvoidHeight)))
+        .height(this.height_of_bottom_avoid())
         .animation(animation_default())
         .backgroundColor(this.title_bar_position == "bottom" ? "transparent" : this.color_current_secondary)
     }
@@ -457,6 +456,20 @@ struct Index {
         return 0.9 * this.screen_width;
       }
     }
+  }
+
+  height_of_bottom_avoid() {
+    if (this.fullscreen_mode) {
+      return 0;
+    }
+    if (deviceInfo.deviceType == '2in1') {
+      return 0;
+    }
+    let target = this.bottomAvoidHeight;
+    if (this.title_bar_position == "bottom") {
+      target -= 20;
+    }
+    return Math.max(0, target);
   }
 
   // Operations

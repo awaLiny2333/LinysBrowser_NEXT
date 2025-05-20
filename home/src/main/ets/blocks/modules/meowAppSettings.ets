@@ -874,7 +874,7 @@ struct meowAppSettings {
         .columnsTemplate("1fr ".repeat(Math.ceil(this.screen_width / minimum_card_width())))
         .rowsGap(10)
         .columnsGap(10)
-        .borderRadius(16)
+        .borderRadius(12)
         .edgeEffect(EdgeEffect.Spring)
         .scrollBar(BarState.Auto)
         .width("100%")
