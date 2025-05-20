@@ -926,7 +926,7 @@ struct meowTitleBar {
   }
 
   true_when_input_is_a_scheme_less_address() {
-    if (this.search_input.includes("://")) {
+    if (!this.search_input || this.search_input.includes("://")) {
       return false;
     }
     return this.search_input_is_address ? true : false;
@@ -942,14 +942,16 @@ struct meowTitleBar {
   }
 
   on_search_input_change() {
-    let extract: string[] = extract_search(this.search_input);
-    if (extract[1] == '' && extract[0] == '') {
-      this.showing_search_extracted_field = false;
-      this.search_extracted_field_available = false;
-    } else {
-      this.search_extracted_field_available = true;
-      this.search_extracted_engine = extract[0];
-      this.search_extracted_keyword = extract[1];
+    if (this.search_input) {
+      let extract: string[] = extract_search(this.search_input);
+      if (extract[1] == '' && extract[0] == '') {
+        this.showing_search_extracted_field = false;
+        this.search_extracted_field_available = false;
+      } else {
+        this.search_extracted_field_available = true;
+        this.search_extracted_engine = extract[0];
+        this.search_extracted_keyword = extract[1];
+      }
     }
   }
 

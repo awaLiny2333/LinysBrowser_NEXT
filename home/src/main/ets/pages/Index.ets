@@ -73,14 +73,14 @@ struct Index {
   @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
   @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
   // Web Statuses
-  @StorageLink('tab_titles') tab_titles: string[] = []
+  @StorageLink('tab_titles') tab_titles: string[] = [];
   @StorageLink('current_title') current_title: string = "=￣ω￣=";
-  @StorageLink('tab_urls') tab_urls: string[] = []
+  @StorageLink('tab_urls') tab_urls: string[] = [];
   @StorageLink('current_url') current_url: string = "=￣ω￣=";
-  @StorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0]
-  @StorageLink('current_loading_progress') current_loading_progress: number = 0
-  @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]
-  @StorageLink('current_is_loading') current_is_loading: boolean = true
+  @StorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0];
+  @StorageLink('current_loading_progress') current_loading_progress: number = 0;
+  @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true];
+  @StorageLink('current_is_loading') current_is_loading: boolean = true;
   // Web control
   @StorageLink('current_main_tab_index') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') current_sub_tab_index: number = -1;
@@ -102,8 +102,7 @@ struct Index {
   @StorageLink('universal_close_tab_gateway') uni_close_tab_gateway: number = -1;
   @StorageLink('universal_new_tab_gateway') uni_new_tab_gateway: string = "";
   // Dialogs
-  @StorageLink('universal_fail_prompt_desc_gateway') @Watch('on_fail_prompt_gateway') universal_fail_prompt_desc_gateway: ResourceStr =
-    "";
+  @StorageLink('universal_fail_prompt_desc_gateway') @Watch('on_fail_prompt_gateway') universal_fail_prompt_desc_gateway: ResourceStr = "";
   @State fail_prompt_desc: ResourceStr = '';
   moveFailPrompt_control: CustomDialogController = new CustomDialogController({
     builder: woofPromptFail({
@@ -115,18 +114,12 @@ struct Index {
     width: "90%",
   });
   // Colors
-  @StorageLink('color_light_primary') @Watch('on_color_change') color_light_primary: ResourceColor =
-    $r('app.color.start_window_background');
-  @StorageLink('color_light_secondary') @Watch('on_color_change') color_light_secondary: ResourceColor =
-    $r('app.color.block_color');
-  @StorageLink('color_light_font') @Watch('on_color_change') color_light_font: ResourceColor =
-    $r('app.color.font_color_title');
-  @StorageLink('color_dark_primary') @Watch('on_color_change') color_dark_primary: ResourceColor =
-    $r('app.color.start_window_background');
-  @StorageLink('color_dark_secondary') @Watch('on_color_change') color_dark_secondary: ResourceColor =
-    $r('app.color.block_color');
-  @StorageLink('color_dark_font') @Watch('on_color_change') color_dark_font: ResourceColor =
-    $r('app.color.font_color_title');
+  @StorageLink('color_light_primary') @Watch('on_color_change') color_light_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_light_secondary') @Watch('on_color_change') color_light_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_light_font') @Watch('on_color_change') color_light_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_dark_primary') @Watch('on_color_change') color_dark_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_dark_secondary') @Watch('on_color_change') color_dark_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_dark_font') @Watch('on_color_change') color_dark_font: ResourceColor = $r('app.color.font_color_title');
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');

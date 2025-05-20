@@ -1,13 +1,7 @@
 import linysSymbol from '../../components/linysSymbol';
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { url_resource_to_meow } from '../../utils/url_tools';
-import {
-  animation_default,
-  click_effect_default,
-  fontSize_Large,
-  fontSize_Normal,
-  url_default_blank
-} from '../../hosts/bunch_of_defaults';
+import { animation_default, click_effect_default, fontSize_Large, fontSize_Normal, url_default_blank } from '../../hosts/bunch_of_defaults';
 import { kv_store_get, kv_store_put } from '../../utils/kv_store_tools';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import linysShowButton from '../../components/linysShowButton';
@@ -16,6 +10,7 @@ import { sandbox_open_arrayBuffer_sync, sandbox_unlink_sync } from '../../utils/
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { uniformTypeDescriptor } from '@kit.ArkData';
 import { drop_to_scratching_board } from '../../utils/drag_drop_tools';
+import linysTimeoutButton from '../../components/linysTimeoutButton';
 
 @Component
 struct meowTabs {
@@ -65,6 +60,7 @@ struct meowTabs {
   @StorageLink('universal_load_url_gateway') @Watch('uni_load_url') load_url_gateway: string = "";
   @StorageLink('universal_new_tab_gateway') @Watch('uni_new_tab') new_tab_gateway: string = "";
   @StorageLink('universal_close_tab_gateway') @Watch('uni_close_tab') close_tab_gateway: number = -1;
+  @StorageLink('universal_close_all_tabs_gateway') @Watch('uni_close_all_tabs') close_all_tabs_gateway: number = -1;
   @StorageLink('universal_tab_button_click_gateway') @Watch('uni_tab_button_click') uni_tab_button_clicked: number = -1;
   @StorageLink('universal_global_custom_ua_gateway') @Watch('on_global_custom_UA_change') global_custom_UA: string = "";
   // Colors
@@ -215,11 +211,19 @@ struct meowTabs {
       .align(Alignment.Bottom)
       .edgeEffect(this.count_down_for_switching_back_to_spring == 0 ? EdgeEffect.Spring : EdgeEffect.None)
       .width("100%")
-      .height(this.scroll_area_height -
-        (this.choosing_paralleow || this.current_sub_tab_index >= 0 ? this.paralleow_description_height : 0))
+      .height(this.scroll_area_height - (this.choosing_paralleow || this.current_sub_tab_index >= 0 ? this.paralleow_description_height : 0) - 35)
       .animation(animation_default())
 
       Row({ space: 10 }) {
+        linysTimeoutButton({
+          text: '  󰀁  ',
+          onExecution: () => {
+            this.close_all_tabs_gateway = Date.now();
+          }
+        })
+          .visibility(this.choosing_paralleow || this.current_sub_tab_index >= 0 ? Visibility.None : Visibility.Visible)
+          .animation(animation_default())
+
         Blank()
 
         linysShowButton({
@@ -439,6 +443,12 @@ struct meowTabs {
     this.count_down_for_switching_back_to_spring += 10;
   }
 
+  close_all_tabs() {
+    for (let index = this.bunch_of_tabs.Tabs.length - 1; index >= 0; index--) {
+      this.close_tab(0);
+    }
+  }
+
   choose_paralleow() {
     if (this.choosing_paralleow) {
       // if is choosing, cancel choosing, back to no paralleow
@@ -594,6 +604,12 @@ struct meowTabs {
     if (this.close_tab_gateway >= 0) {
       this.close_tab(this.close_tab_gateway);
       this.close_tab_gateway = -1;
+    }
+  }
+
+  uni_close_all_tabs() {
+    if (this.close_all_tabs_gateway != -1) {
+      this.close_all_tabs();
     }
   }
 

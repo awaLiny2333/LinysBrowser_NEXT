@@ -7,6 +7,7 @@ import { uniformTypeDescriptor } from '@kit.ArkData';
 import { drop_to_scratching_board } from '../../utils/drag_drop_tools';
 import linysText from '../../components/linysText';
 import { deviceInfo } from '@kit.BasicServicesKit';
+import linysTimeoutButton from '../../components/linysTimeoutButton';
 
 @Component
 struct meowTabsHorizontal {
@@ -32,6 +33,7 @@ struct meowTabsHorizontal {
   // Gateways
   @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
   @StorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
+  @StorageLink('universal_close_all_tabs_gateway') close_all_tabs_gateway: number = -1;
   // UI statuses
   @State length_width_of_tabs: number = 0;
   @State full_area_width: number = 10;
@@ -39,80 +41,146 @@ struct meowTabsHorizontal {
   @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
 
   build() {
-    Row({ space: 5 }) {
-      Scroll() {
-        Row({ space: 5 }) {
-          ForEach(this.tab_titles, (title: string, index: number) => {
-            HorizontalTabButton({
-              current_main_tab_index: this.current_main_tab_index,
-              current_sub_tab_index: this.current_sub_tab_index,
-              index: index,
-              title: title,
-
-              full_area_width: this.full_area_width,
-              tab_titles: this.tab_titles
-            })
+    Column() {
+      Row({ space: 10 }) {
+        if (this.tablet_mode) {
+          linysTimeoutButton({
+            text: '  󰀁  ',
+            onExecution: () => {
+              this.close_all_tabs_gateway = Date.now();
+            }
           })
+            .visibility(!this.tablet_mode || this.choosing_paralleow || this.current_sub_tab_index >= 0 ? Visibility.None : Visibility.Visible)
+            .animation(animation_default())
+            .padding({ left: 5 })
         }
-        .onAreaChange((_old, n) => {
-          this.length_width_of_tabs = n.width as number;
-        })
-        .margin({ bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0 })
-        .animation(animation_default())
-      } // Scroll of tab buttons
-      .scrollBarWidth(5)
-      .scrollBar(this.tab_width() == 80 ? BarState.On : BarState.Off)
-      .scrollable(ScrollDirection.Horizontal)
-      .edgeEffect(EdgeEffect.Spring)
-      .align(Alignment.Start)
-      .layoutWeight(1)
-      .height(this.length_width_of_tabs > this.full_area_width ? 55 : 40)
-      .animation(animation_default())
-      .onAreaChange((_old, n) => {
-        this.full_area_width = n.width as number;
-      })
 
-      linysShowButton({
-        symbol_glyph_target: 'sys.symbol.map',
-        show: this.choosing_paralleow || this.current_sub_tab_index >= 0,
-        text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
-      })// Paralleow entrance
-        .onClick(() => {
-
-          this.choose_paralleow();
-        })
-        .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden)
-        .margin({ left: 4, bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0 })
-        .animation(animation_default())
-
-      linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })// New tab
-        .onClick(() => {
-
-          this.new_tab_gateway = "new_tab";
-        })
-        .margin({ bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0, right: 8 })
-        .animation(animation_default())
-
-      Row() {
         Row() {
           linysText({
             text: $r('app.string.Index_tabs_title_drag')
           })
-        }
-        .justifyContent(FlexAlign.Center)
-        .padding(10)
+        } // Drag area
+        .visibility(this.visibility_2in1_top())
         .height(this.length_width_of_tabs > this.full_area_width ? 55 : 40)
+        .animation(animation_default())
+        .justifyContent(FlexAlign.Center)
+        .margin({ right: 5 })
         .borderRadius(12)
-        .backgroundColor($r('sys.color.comp_background_tertiary'))
+        .padding(10)
         .width(100 + 10)
+        .backgroundColor($r('sys.color.comp_background_tertiary'))
         .clickEffect(click_effect_default())
-      } // Drag area
-      .justifyContent(FlexAlign.Start)
-      .visibility(deviceInfo.deviceType == '2in1' && this.title_bar_position == 'top' && this.tablet_mode ? Visibility.Visible : Visibility.None)
-      .width(this.windowDecorWidth + 100)
-      .animation(animation_default())
 
-    } // Base container
+        Scroll() {
+          Row({ space: this.tablet_mode ? 7 : 5 }) {
+            ForEach(this.tab_titles, (title: string, index: number) => {
+              HorizontalTabButton({
+                current_main_tab_index: this.current_main_tab_index,
+                current_sub_tab_index: this.current_sub_tab_index,
+                index: index,
+                title: title,
+                full_area_width: this.full_area_width,
+                tab_titles: this.tab_titles
+              })
+            })
+          }
+          .onAreaChange((_old, n) => {
+            this.length_width_of_tabs = n.width as number;
+          })
+          .margin({ bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0 })
+          .animation(animation_default())
+        } // Scroll of tab buttons
+        .scrollBarWidth(5)
+        .scrollBar(this.tab_width() == 80 ? BarState.On : BarState.Off)
+        .scrollable(ScrollDirection.Horizontal)
+        .edgeEffect(EdgeEffect.Spring)
+        .align(Alignment.Start)
+        .layoutWeight(1)
+        .height(this.length_width_of_tabs > this.full_area_width ? 55 : 40)
+        .animation(animation_default())
+        .onAreaChange((_old, n) => {
+          this.full_area_width = n.width as number;
+        })
+
+        linysShowButton({
+          symbol_glyph_target: 'sys.symbol.map',
+          show: this.choosing_paralleow || this.current_sub_tab_index >= 0,
+          text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
+        })// Paralleow entrance
+          .onClick(() => {
+            this.choose_paralleow();
+          })
+          .visibility(this.tablet_mode ? (this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden) : Visibility.None)
+          .margin({ left: 4, bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0 })
+          .animation(animation_default())
+
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })// New tab
+          .onClick(() => {
+            this.new_tab_gateway = "new_tab";
+          })
+          .margin({ bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0, right: 8 })
+          .visibility(this.tablet_mode ? Visibility.Visible : Visibility.None)
+          .animation(animation_default())
+
+        Row() {
+          Row() {
+            linysText({
+              text: $r('app.string.Index_tabs_title_drag')
+            })
+          }
+          .justifyContent(FlexAlign.Center)
+          .padding(10)
+          .height(this.length_width_of_tabs > this.full_area_width ? 55 : 40)
+          .borderRadius(12)
+          .backgroundColor($r('sys.color.comp_background_tertiary'))
+          .width(100 + 10)
+          .clickEffect(click_effect_default())
+        } // Drag area
+        .justifyContent(FlexAlign.Start)
+        .visibility(this.visibility_2in1_top())
+        .width(this.windowDecorWidth + 100)
+        .animation(animation_default())
+
+      } // Base container
+
+      Row({ space: 10 }) {
+        linysTimeoutButton({
+          text: '  󰀁  ',
+          onExecution: () => {
+            this.close_all_tabs_gateway = Date.now();
+          }
+        })
+          .visibility(this.choosing_paralleow || this.current_sub_tab_index >= 0 ? Visibility.None : Visibility.Visible)
+          .animation(animation_default())
+          .padding({ left: 5 })
+
+        Blank()
+
+        linysShowButton({
+          symbol_glyph_target: 'sys.symbol.map',
+          show: this.choosing_paralleow || this.current_sub_tab_index >= 0,
+          text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
+        })// Paralleow entrance
+          .onClick(() => {
+            this.choose_paralleow();
+          })
+          .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden)
+          .margin({ left: 4, bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0 })
+          .animation(animation_default())
+
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })// New tab
+          .onClick(() => {
+            this.new_tab_gateway = "new_tab";
+          })
+          .margin({ bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0, right: 8 })
+          .animation(animation_default())
+      }
+      .visibility(this.tablet_mode ? Visibility.None : Visibility.Visible)
+      .padding({ top: this.length_width_of_tabs > this.full_area_width ? 0 : 10 })
+      .animation(animation_default())
+      .width('100%')
+
+    }
     .padding({ left: 8, right: 8 })
     .animation(animation_default())
     .allowDrop([uniformTypeDescriptor.UniformDataType.TEXT,
@@ -155,6 +223,10 @@ struct meowTabsHorizontal {
     }
     return result;
   }
+
+  visibility_2in1_top() {
+    return deviceInfo.deviceType == '2in1' && this.title_bar_position == 'top' && this.tablet_mode ? Visibility.Visible : Visibility.None;
+  }
 }
 
 export default meowTabsHorizontal;
@@ -167,6 +239,7 @@ struct HorizontalTabButton {
   @Prop title: string;
   @Link full_area_width: number;
   @Link tab_titles: string[];
+  @StorageProp('tablet_mode') tablet_mode: boolean = false;
   // Gateways
   @StorageLink('universal_close_tab_gateway') close_tab_gateway: number = -1;
   @StorageLink('universal_tab_button_click_gateway') uni_tab_button_clicked: number = -1;
@@ -231,7 +304,7 @@ struct HorizontalTabButton {
   }
 
   tab_width() {
-    let result = this.full_area_width / (this.tab_titles.length) - 5;
+    let result = this.full_area_width / (this.tab_titles.length) - (this.tablet_mode ? 7 : 5);
     if (result > 200) {
       return 200;
     }
