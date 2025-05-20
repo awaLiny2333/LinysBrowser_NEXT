@@ -43,17 +43,15 @@ struct meowTabsHorizontal {
   build() {
     Column() {
       Row({ space: 10 }) {
-        if (this.tablet_mode) {
-          linysTimeoutButton({
-            text: '  󰀁  ',
-            onExecution: () => {
-              this.close_all_tabs_gateway = Date.now();
-            }
-          })
-            .visibility(!this.tablet_mode || this.choosing_paralleow || this.current_sub_tab_index >= 0 ? Visibility.None : Visibility.Visible)
-            .animation(animation_default())
-            .padding({ left: 5 })
-        }
+        linysTimeoutButton({
+          text: '  󰀁  ',
+          onExecution: () => {
+            this.close_all_tabs_gateway = Date.now();
+          }
+        })
+          .visibility(!this.tablet_mode || this.choosing_paralleow || this.current_sub_tab_index >= 0 ? Visibility.None : Visibility.Visible)
+          .animation(animation_default())
+          .padding({ left: 5 })
 
         Row() {
           linysText({
@@ -64,10 +62,9 @@ struct meowTabsHorizontal {
         .height(this.length_width_of_tabs > this.full_area_width ? 55 : 40)
         .animation(animation_default())
         .justifyContent(FlexAlign.Center)
-        .margin({ right: 5 })
         .borderRadius(12)
         .padding(10)
-        .width(100 + 10)
+        .width(50 + 10)
         .backgroundColor($r('sys.color.comp_background_tertiary'))
         .clickEffect(click_effect_default())
 
@@ -111,14 +108,14 @@ struct meowTabsHorizontal {
             this.choose_paralleow();
           })
           .visibility(this.tablet_mode ? (this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden) : Visibility.None)
-          .margin({ left: 4, bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0 })
+          .margin({ left: 4 })
           .animation(animation_default())
 
         linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })// New tab
           .onClick(() => {
             this.new_tab_gateway = "new_tab";
           })
-          .margin({ bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0, right: 8 })
+          .margin({ right: 8 })
           .visibility(this.tablet_mode ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
 
@@ -133,15 +130,16 @@ struct meowTabsHorizontal {
           .height(this.length_width_of_tabs > this.full_area_width ? 55 : 40)
           .borderRadius(12)
           .backgroundColor($r('sys.color.comp_background_tertiary'))
-          .width(100 + 10)
+          .width(50 + 10)
           .clickEffect(click_effect_default())
         } // Drag area
         .justifyContent(FlexAlign.Start)
         .visibility(this.visibility_2in1_top())
-        .width(this.windowDecorWidth + 100)
+        .width(this.windowDecorWidth + 50)
         .animation(animation_default())
 
       } // Base container
+      .alignItems(VerticalAlign.Center)
 
       Row({ space: 10 }) {
         linysTimeoutButton({
@@ -174,7 +172,7 @@ struct meowTabsHorizontal {
           })
           .margin({ bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0, right: 8 })
           .animation(animation_default())
-      }
+      } // Extension for compact (non-tablet mode) layout
       .visibility(this.tablet_mode ? Visibility.None : Visibility.Visible)
       .padding({ top: this.length_width_of_tabs > this.full_area_width ? 0 : 10 })
       .animation(animation_default())
@@ -214,7 +212,7 @@ struct meowTabsHorizontal {
   }
 
   tab_width() {
-    let result = this.full_area_width / (this.tab_titles.length) - 5;
+    let result = (this.full_area_width) / (this.tab_titles.length) - (this.tablet_mode ? 7 : 5);
     if (result > 200) {
       return 200;
     }
@@ -304,7 +302,7 @@ struct HorizontalTabButton {
   }
 
   tab_width() {
-    let result = this.full_area_width / (this.tab_titles.length) - (this.tablet_mode ? 7 : 5);
+    let result = (this.full_area_width) / (this.tab_titles.length) - (this.tablet_mode ? 7 : 5);
     if (result > 200) {
       return 200;
     }
