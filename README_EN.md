@@ -64,6 +64,7 @@ Phones:
 |                   首页（深）                    |                   设置（深）                    |
 |:------------------------------------------:|:------------------------------------------:|
 | ![gallery_3.jpg](build_auto/gallery_3.jpg) | ![gallery_4.jpg](build_auto/gallery_4.jpg) |
+
 Foldables:
 
 |                   首页（浅）                    |                   设置（浅）                    |
@@ -73,6 +74,7 @@ Foldables:
 |                   首页（深）                    |                   设置（深）                    |
 |:------------------------------------------:|:------------------------------------------:|
 | ![gallery_1.jpg](build_auto/gallery_1.jpg) | ![gallery_2.jpg](build_auto/gallery_2.jpg) |
+
 Tablets:
 
 |                    首页（浅）                     |                    设置（浅）                     |
