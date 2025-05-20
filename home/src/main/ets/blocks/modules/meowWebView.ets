@@ -421,7 +421,7 @@ struct meowWebView {
           this.shortcut_scroll_total_height = n.height as number;
         })
         .alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
-        .padding({ top: this.screen_height * (this.tablet_mode ? 0.3 : 0.7) })
+        .padding({ top: this.screen_height * (this.tablet_mode ? 0.3 : 0.5) })
         .animation(animation_default())
         .width('100%')
       } // Shortcuts
@@ -432,8 +432,7 @@ struct meowWebView {
       .align(Alignment.Bottom)
       .edgeEffect(EdgeEffect.Spring)
       .animation(animation_default())
-      .visibility(this.current_url == 'meow://home' && this.current_sub_tab_index == -1 ? Visibility.Visible :
-      Visibility.None)
+      .visibility(this.current_url == 'meow://home' && this.current_sub_tab_index == -1 ? Visibility.Visible : Visibility.None)
       .onDidScroll(() => {
         this.shortcut_scroll_offset = this.shortcut_scroller.currentOffset().yOffset;
       })
