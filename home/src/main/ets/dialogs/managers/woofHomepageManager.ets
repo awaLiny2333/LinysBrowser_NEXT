@@ -1,5 +1,6 @@
 import meowHomepageBackgroundManager from '../../blocks/panels/meowHomepageBackgroundManager';
 import linysCapsuleButton from '../../components/linysCapsuleButton';
+import linysLockSlider from '../../components/linysLockSlider';
 import linysText from '../../components/linysText';
 import linysTitleText from '../../components/linysTitleText';
 import { animation_default } from '../../hosts/bunch_of_defaults';
@@ -12,6 +13,7 @@ struct woofHomepageManager {
   @Prop link: string = '';
   @Prop title: string = '';
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
+  @StorageLink('homepage_shortcuts_init_height') homepage_shortcuts_init_height: number = 50;
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -78,6 +80,17 @@ struct woofHomepageManager {
               })
           }
           .width('100%')
+
+          linysTitleText({
+            text: $r('app.string.Settings_homepage_shortcuts_init_height')
+          }) // Display height of shortcuts
+
+          linysLockSlider({
+            slider_value: this.homepage_shortcuts_init_height,
+            onTouchUp: () => {
+              this.bunch_of_settings.set('homepage_shortcuts_init_height', this.homepage_shortcuts_init_height);
+            }
+          })
         }
         .alignItems(HorizontalAlign.Start)
         .width('100%')

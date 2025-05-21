@@ -48,8 +48,8 @@ struct meowWebView {
   @StorageProp('collect_new_history') collect_new_history: boolean = true;
   @StorageProp('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
   @StorageLink('use_adblock') @Watch('on_use_adblock_state_change') use_adblock: boolean = true;
-  @StorageLink('homepage_shortcuts_bookmarks_dir') @Watch('refresh_homepage_shortcuts') homepage_shortcuts_dir: string =
-    '/';
+  @StorageLink('homepage_shortcuts_bookmarks_dir') @Watch('refresh_homepage_shortcuts') homepage_shortcuts_dir: string = '/';
+  @StorageLink('homepage_shortcuts_init_height') homepage_shortcuts_init_height: number = 50;
   // @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
   @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
   @StorageLink('disable_js') disable_js: boolean = false;
@@ -142,6 +142,9 @@ struct meowWebView {
     }
     // Sync to AppStorage
     AppStorage.set('adblock_exceptions', this.adsBlocker_exceptions);
+
+    // Get homepage shortcuts height
+    this.homepage_shortcuts_init_height = await this.bunch_of_settings.get('homepage_shortcuts_init_height') as number;
   }
 
   build() {
@@ -421,7 +424,7 @@ struct meowWebView {
           this.shortcut_scroll_total_height = n.height as number;
         })
         .alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
-        .padding({ top: this.screen_height * (this.tablet_mode ? 0.3 : 0.5) })
+        .padding({ top: Math.max(18, this.screen_height * (1 - this.homepage_shortcuts_init_height * 0.01)) })
         .animation(animation_default())
         .width('100%')
       } // Shortcuts

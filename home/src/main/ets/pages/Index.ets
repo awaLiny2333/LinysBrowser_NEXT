@@ -340,7 +340,7 @@ struct Index {
   on_main_area_change(_old: Area, n: Area) {
     this.screen_width = n.width as number;
     this.screen_height = n.height as number;
-    this.tablet_mode = this.screen_width > 500;
+    this.tablet_mode = this.screen_width > 600;
     if (!this.tablet_mode) {
       if (this.showing_tabs && this.showing_bookmarks) {
         // If showing both tabs and bookmarks,

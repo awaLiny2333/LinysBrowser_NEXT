@@ -245,6 +245,10 @@
       "value": "主页快捷链接"
     },
     {
+      "name": "Settings_homepage_shortcuts_init_height",
+      "value": "快捷链接默认显示高度"
+    },
+    {
       "name": "Settings_homepage",
       "value": "猫的默认主页（meow://home）"
     },

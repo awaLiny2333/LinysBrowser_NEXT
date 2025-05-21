@@ -245,6 +245,10 @@
       "value": "Homepage Shortcuts"
     },
     {
+      "name": "Settings_homepage_shortcuts_init_height",
+      "value": "Initial height of shortcuts display"
+    },
+    {
       "name": "Settings_homepage",
       "value": "The Cat's Homepage (meow://home)"
     },
