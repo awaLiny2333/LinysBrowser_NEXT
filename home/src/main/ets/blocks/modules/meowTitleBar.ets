@@ -18,7 +18,6 @@ import { bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import meowSuggestions from './meowSuggestions';
 import woofQR from '../../dialogs/contents/woofQR';
 import meowTabsHorizontal from './meowTabsHorizontal';
-import { uniformTypeDescriptor } from '@kit.ArkData';
 import meowScratchingBoard from './meowScratchingBoard';
 import woofAdsBlocker from '../../dialogs/managers/woofAdsBlocker';
 import woofAddSE from '../../dialogs/quicks/woofQuickSE';
@@ -29,7 +28,7 @@ import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { share_link } from '../../utils/share_tools';
 import woofUAswitch from '../../dialogs/quicks/woofQuickUA';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
-import { drop_to_scratching_board } from '../../utils/drag_drop_tools';
+import { allow_drop_types, drop_to_scratching_board } from '../../utils/drag_drop_tools';
 import meowDebug from '../panels/meowDebug';
 import linysProgressInfo from '../../components/linysProgressInfo';
 
@@ -133,7 +132,7 @@ struct meowTitleBar {
   })
   woofAdsBlocker_control: CustomDialogController = new CustomDialogController({
     builder: woofAdsBlocker({
-      add_exception_domain_edit: match_domain(this.search_input)[1],
+      add_exception_domain_edit: match_domain(this.search_input)[1].split("/")[0],
       showing_add_panel: true
     }),
     // showInSubWindow: true,
@@ -253,7 +252,7 @@ struct meowTitleBar {
             .fontWeight(FontWeight.Medium)
             .fontSize(fontSize_Normal())
             .opacity(0.7)
-            .maxLines(4)
+            .maxLines(2)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
         }
         .alignItems(HorizontalAlign.Start)
@@ -330,6 +329,7 @@ struct meowTitleBar {
             Scroll() {
               TextInput({ text: this.search_input })
                 .allowDrop(null)
+                .visibility(this.showing_scratching_board ? Visibility.Hidden : Visibility.Visible)
                 .height(capsule_bar_height())
                 .fontWeight(FontWeight.Regular)
                 .fontColor(this.color_current_font)
@@ -339,7 +339,7 @@ struct meowTitleBar {
                 .opacity(!this.showing_search_extracted_field ? (this.showing_scratching_board ? 0.8 : 1) : 0)
                 .animation(animation_default())
                 .onDragEnter(() => {
-                  this.showing_scratching_board = true;
+                  this.showing_scratching_board = false;
                 })
                 .onFocus(() => {
                   this.is_search_input_typing = true;
@@ -368,6 +368,7 @@ struct meowTitleBar {
             Scroll() {
               TextInput({ text: this.search_extracted_keyword })
                 .allowDrop(null)
+                .visibility(this.showing_scratching_board ? Visibility.Hidden : Visibility.Visible)
                 .height(capsule_bar_height())
                 .fontWeight(FontWeight.Regular)
                 .fontColor(this.color_current_font)
@@ -376,7 +377,7 @@ struct meowTitleBar {
                 .opacity(this.showing_search_extracted_field ? (this.showing_scratching_board ? 0.8 : 1) : 0)
                 .animation(animation_default())
                 .onDragEnter(() => {
-                  this.showing_scratching_board = true;
+                  this.showing_scratching_board = false;
                 })
                 .onFocus(() => {
                   this.is_search_input_typing = true;
@@ -433,7 +434,7 @@ struct meowTitleBar {
               show: this.address_analyzers_desc_close_cd > 0,
             })// Key Link
               .margin({ left: 10 })
-              .visibility(this.search_extracted_field_available ? Visibility.Visible : Visibility.None)
+              .visibility(this.showing_scratching_board ? Visibility.None : this.search_extracted_field_available ? Visibility.Visible : Visibility.None)
               .onClick(() => {
                 this.showing_search_extracted_field = !this.showing_search_extracted_field;
                 if (this.is_search_input_typing) {
@@ -585,6 +586,7 @@ struct meowTitleBar {
                   this.current_in_page_searching_keyword = edit;
                   this.bunch_of_tabs.workingMainTab().searching_keyword = edit;
                 })
+                .visibility(this.showing_scratching_board ? Visibility.Hidden : Visibility.Visible)
                 .margin({ left: 10 })
                 .layoutWeight(1)
                 .allowDrop(null)
@@ -594,7 +596,7 @@ struct meowTitleBar {
                 .caretColor(this.color_current_font)
                 .selectedBackgroundColor(this.color_current_font)
                 .onDragEnter(() => {
-                  this.showing_scratching_board = true;
+                  this.showing_scratching_board = false;
                 })
                 .enabled(this.showing_scratching_board ? false : true)
                 .opacity(this.showing_scratching_board ? 0.8 : 1)
@@ -824,14 +826,13 @@ struct meowTitleBar {
         Row().height(5)
       }
     } // Title Bars
-    .allowDrop([uniformTypeDescriptor.UniformDataType.TEXT,
-      uniformTypeDescriptor.UniformDataType.HYPERLINK,
-      uniformTypeDescriptor.UniformDataType.PLAIN_TEXT])
+    .allowDrop(allow_drop_types())
     .onDrop((e) => {
       drop_to_scratching_board(e);
     })
     .onDragEnter(() => {
       this.showing_scratching_board = true;
+      this.showing_more_options = false;
     })
     .onDragLeave(() => {
       this.showing_scratching_board = false;
@@ -992,6 +993,7 @@ struct meowTitleBar {
     }
     // Close all other panels
 
+    this.showing_scratching_board = false;
     this.showing_downloads = false;
     this.showing_app_settings = false;
     this.showing_more_options = !this.showing_more_options;

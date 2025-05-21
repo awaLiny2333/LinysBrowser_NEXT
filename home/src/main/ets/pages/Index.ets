@@ -17,6 +17,7 @@ import { window } from '@kit.ArkUI';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 import { sandbox_save } from '../utils/storage_tools';
 import { deviceInfo } from '@kit.BasicServicesKit';
+import { fileIo } from '@kit.CoreFileKit';
 
 @Entry
 @Component
@@ -32,8 +33,7 @@ struct Index {
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history();
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("Bookmarks~Meow");
   @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads();
-  @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines =
-    new bunch_of_search_engines();
+  @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines = new bunch_of_search_engines();
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts();
   // UI Environment
   @StorageLink('bottomAvoidHeight') bottomAvoidHeight: number = 1;
@@ -140,6 +140,18 @@ struct Index {
 
     // Respond to want
     this.on_want();
+
+    // Set cache dir
+    try {
+      fileIo.rmdirSync(getContext().filesDir + '/web-drag-image-cache');
+    } catch (e) {
+      console.error(e);
+    }
+    try {
+      fileIo.mkdirSync(getContext().filesDir + '/web-drag-image-cache');
+    } catch (e) {
+      console.error(e);
+    }
 
     // Get and set app version info
     bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION).then((bundleInfo) => {

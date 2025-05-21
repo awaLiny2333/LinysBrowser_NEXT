@@ -208,7 +208,7 @@ struct meowDownloadsButton {
 
           Button(this.my_paused ? "  󰂴  " : "  󰂱  ")// Pause Continue
             .type(ButtonType.Capsule)
-            .backgroundColor($r("app.color.font_color_title"))
+            .backgroundColor(this.color_current_font)
             .fontColor(this.color_current_primary)
             .fontSize(fontSize_Large())
             .fontWeight(FontWeight.Medium)
@@ -223,7 +223,7 @@ struct meowDownloadsButton {
 
           Button("  󰀻  ")// Save
             .type(ButtonType.Capsule)
-            .backgroundColor($r("app.color.font_color_title"))
+            .backgroundColor(this.color_current_font)
             .fontColor(this.color_current_primary)
             .fontSize(fontSize_Large())
             .fontWeight(FontWeight.Medium)

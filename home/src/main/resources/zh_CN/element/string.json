@@ -338,7 +338,7 @@
     },
     {
       "name": "Index_drop_ok",
-      "value": "/ᐠ. ｡.ᐟ\\ᵐᵉᵒʷˎˊ˗ 链接提取！"
+      "value": "/ᐠ. ｡.ᐟ\\ᵐᵉᵒʷˎˊ˗ 提取！提取！"
     },
     {
       "name": "Index_drop_scratching_board",
@@ -478,7 +478,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "尝试为历史记录手搓索引系统！"
+      "value": "可以往猫抓板里丢图片了！\n一键关闭所有标签页！\n尝试为历史记录手搓索引系统！"
     },
     {
       "name": "Whats_new_content_extra",
@@ -811,6 +811,34 @@
     {
       "name": "Debug_cpu",
       "value": "CPU"
+    },
+    {
+      "name": "Menu_select_all",
+      "value": "全选"
+    },
+    {
+      "name": "Menu_copy",
+      "value": "复制"
+    },
+    {
+      "name": "Menu_cut",
+      "value": "剪切"
+    },
+    {
+      "name": "Menu_paste",
+      "value": "粘贴"
+    },
+    {
+      "name": "Menu_copy_link",
+      "value": "复制链接"
+    },
+    {
+      "name": "Menu_copy_image",
+      "value": "复制图片"
+    },
+    {
+      "name": "Menu_download_image",
+      "value": "下载图片"
     },
     {
       "name": "Accessibility_desc_linysProgress",

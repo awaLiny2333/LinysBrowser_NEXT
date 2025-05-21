@@ -9,7 +9,7 @@ import linysText from '../../components/linysText';
 import { sandbox_open_arrayBuffer_sync, sandbox_unlink_sync } from '../../utils/storage_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { uniformTypeDescriptor } from '@kit.ArkData';
-import { drop_to_scratching_board } from '../../utils/drag_drop_tools';
+import { allow_drop_types, drop_to_scratching_board } from '../../utils/drag_drop_tools';
 import linysTimeoutButton from '../../components/linysTimeoutButton';
 
 @Component
@@ -21,6 +21,7 @@ struct meowTabs {
     new bunch_of_key_shortcuts(true);
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
+  @StorageLink('showing_more_options') showing_more_options: boolean = false;
   @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
   @StorageProp('is_search_input_typing') is_search_input_typing: boolean = false;
   @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
@@ -281,14 +282,13 @@ struct meowTabs {
     .onAreaChange((_o, n) => {
       this.scroll_area_height = n.height as number - 60;
     })
-    .allowDrop([uniformTypeDescriptor.UniformDataType.TEXT,
-      uniformTypeDescriptor.UniformDataType.HYPERLINK,
-      uniformTypeDescriptor.UniformDataType.PLAIN_TEXT])
+    .allowDrop(allow_drop_types())
     .onDrop((e) => {
       drop_to_scratching_board(e);
     })
     .onDragEnter(() => {
       this.showing_scratching_board = true;
+      this.showing_more_options =false;
     })
     .onDragLeave(() => {
       this.showing_scratching_board = false;

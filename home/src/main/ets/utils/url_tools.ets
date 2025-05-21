@@ -1,6 +1,5 @@
 import { default_search_engine } from '../hosts/bunch_of_defaults';
 import { common, Want } from '@kit.AbilityKit';
-import { collections } from '@kit.ArkTS';
 
 /**
  * Process the search_input into a visitable address.
@@ -296,18 +295,24 @@ export function extract_links_from_text(data_list: string[]) {
   let extracted_type: string[] = [];
   for (let index = 0; index < data_list.length; index++) {
     let text = data_list[index];
-    let match = text.match(/(https?|meow):\/\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]/g);
-    console.log(match?.join("\n"));
+    let match = text.match(/(file|https?|meow):\/\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]/g);
+    console.log('[extract_links_from_text] [' + match?.join("\n") + "]");
     if (match) {
       for (let inner = 0; inner < match.length; inner++) {
-        let position = text.indexOf(match[inner]);
+        let this_url = match[inner]
+        let position = text.indexOf(this_url);
         if (text.substring(0, position).replace(/\s*/, "").length > 0) {
           extracted_data.push(text.substring(0, position).replaceAll(/(^\s*)|(\s*$)/g, ""));
           extracted_type.push("text");
         }
-        extracted_data.push(match[inner]);
-        extracted_type.push("url");
-        text = text.substring(position + match[inner].length);
+        extracted_data.push(this_url);
+        if (this_url.substring(0, 4) == 'file') {
+          // TODO: this is only valid when IMAGE is the only allowed file type.
+          extracted_type.push("image");
+        } else {
+          extracted_type.push("url");
+        }
+        text = text.substring(position + this_url.length);
       }
     }
     if (text.replace(/\s*/, "").length > 0) {
@@ -331,7 +336,7 @@ export function jump_external_link(link: string) {
   let context = AppStorage.get('context') as common.UIAbilityContext;
   context.startAbility(want).then(() => {
     // Pull up success
-    console.log('[Meow][url_tools] Pull up application for link ' + link + ' Success!');
+    console.log('[Meow][jump_external_link] Pull up application for link ' + link + ' Success!');
   }).catch(() => {
     // Pull up failure
     console.error('[ERROR][Meow][url_tools] Pull up application for link ' + link + ' Failed!');

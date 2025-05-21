@@ -9,6 +9,7 @@ import woofWantDownload from '../../dialogs/prompts/woofWantDownload';
 import woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import { bookmark, bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import woofWantJump from '../../dialogs/prompts/woofWantJump';
+import { copy } from '../../utils/clipboard_tools';
 
 @Component
 struct meowWebView {
@@ -20,8 +21,7 @@ struct meowWebView {
   @StorageLink('restore_web_state_arrays') restore_web_state_arrays: Uint8Array[] = [];
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
-  @StorageLink('bunch_of_bookmarks') @Watch('refresh_homepage_shortcuts') bunch_of_bookmarks: bunch_of_bookmarks =
-    new bunch_of_bookmarks('Bookmarks~Meow');
+  @StorageLink('bunch_of_bookmarks') @Watch('refresh_homepage_shortcuts') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks('Bookmarks~Meow');
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('current_main_tab_index') @Watch('on_tab_info_change') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') @Watch('on_tab_info_change') current_sub_tab_index: number = -1;
@@ -100,6 +100,104 @@ struct meowWebView {
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   // Else
   adsBlocker_exceptions: string[] = [];
+
+  // // Menu contents
+  // @State menu_linkUrl: string = '';
+  // @State menu_offsetX: number = 0;
+  // @State menu_offsetY: number = 0;
+  // @State menu_has_link: boolean = false;
+  // @State menu_editable: boolean = false;
+  // @State menu_has_image: boolean = false;
+  // @State menu_imageLink: string = '';
+  // @State menu_mediaType: ContextMenuMediaType | undefined = undefined;
+  // // Menu
+  // private menu_result: WebContextMenuResult | undefined = undefined;
+  // @State menu_showMenu: boolean = false;
+  //
+  // /**
+  //  * Adapted from Huawei HarmonyOS Dev website example code
+  //  * https://developer.huawei.com/consumer/cn/doc/harmonyos-references/ts-basic-components-web#oncontextmenushow9
+  //  * */
+  // @Builder
+  // // 构建自定义菜单及触发功能接口
+  // MenuBuilder() {
+  //   // 以垂直列表形式显示的菜单。
+  //   Menu() {
+  //     // 展示菜单Menu中具体的item菜单项。
+  //     MenuItem({
+  //       content: $r('app.string.Menu_copy'),
+  //     })
+  //       .width(100)
+  //       .height(50)
+  //       .onClick(() => {
+  //         this.menu_result?.copy();
+  //         this.menu_showMenu = false;
+  //       })
+  //     MenuItem({
+  //       content: $r('app.string.Menu_select_all'),
+  //     })
+  //       .width(100)
+  //       .height(50)
+  //       .onClick(() => {
+  //         this.menu_result?.selectAll();
+  //         this.menu_showMenu = false;
+  //       })
+  //     MenuItem({
+  //       content: $r('app.string.Menu_cut'),
+  //     })
+  //       .width(100)
+  //       .height(50)
+  //       .onClick(() => {
+  //         this.menu_result?.cut();
+  //         this.menu_showMenu = false;
+  //       })
+  //       .enabled(this.menu_editable)
+  //     MenuItem({
+  //       content: $r('app.string.Menu_paste'),
+  //     })
+  //       .width(100)
+  //       .height(50)
+  //       .onClick(() => {
+  //         this.menu_result?.paste();
+  //         this.menu_showMenu = false;
+  //       })
+  //       .enabled(this.menu_editable)
+  //     MenuItem({
+  //       content: $r('app.string.Menu_copy_link'),
+  //     })
+  //       .width(100)
+  //       .height(50)
+  //       .onClick(() => {
+  //         copy(this.menu_linkUrl);
+  //         this.menu_showMenu = false;
+  //       })
+  //       .enabled(this.menu_has_link)
+  //     MenuItem({
+  //       content: $r('app.string.Menu_copy_image'),
+  //     })
+  //       .width(100)
+  //       .height(50)
+  //       .onClick(() => {
+  //         this.menu_result?.copyImage();
+  //         this.menu_showMenu = false;
+  //       })
+  //       .enabled(this.menu_has_image)
+  //     MenuItem({
+  //       content: $r('app.string.Menu_download_image'),
+  //     })
+  //       .width(100)
+  //       .height(50)
+  //       .onClick(() => {
+  //         // Download menu
+  //         this.download(this.menu_imageLink, this.now_global_custom_UA, '', -1, 'image');
+  //         this.menu_showMenu = false;
+  //       })
+  //       .enabled(this.menu_has_image)
+  //   }
+  //
+  //   // .width(150)
+  //   // .height(350)
+  // }
 
   async aboutToAppear(): Promise<void> {
 
@@ -287,60 +385,7 @@ struct meowWebView {
               }
             })
             .onDownloadStart((event) => {
-              if (event) {
-                console.log('url: ' + event.url)
-                console.log('userAgent: ' + event.userAgent)
-                console.log('contentDisposition: ' + event.contentDisposition)
-                console.log('contentLength: ' + event.contentLength)
-                console.log('mimetype: ' + event.mimetype)
-
-                // Save file download additional info
-                let try_additional_info = ['url: ' + event.url,
-                  'userAgent: ' + event.userAgent,
-                  'contentDisposition: ' + event.contentDisposition,
-                  'contentLength: ' + event.contentLength.toString(),
-                  'mimetype: ' + event.mimetype].join('\n');
-
-                // Cut out original file name
-                let file_url_split = event.url.split("/");
-                let file_name_result = file_url_split[file_url_split.length-1].split("?")[0];
-
-                // Determine overwrite file name
-                let file_name_overwrite = '';
-                let file_name_start = event.contentDisposition.indexOf('filename=') + 9;
-                let file_name_end = event.contentDisposition.indexOf(';', file_name_start);
-                if (file_name_end == -1) {
-                  file_name_end = event.contentDisposition.length;
-                }
-                // if key found, then cut out file_name_overwrite
-                if (file_name_start > -1) {
-                  file_name_overwrite = event.contentDisposition.slice(file_name_start, file_name_end);
-                }
-                // eliminate quotes
-                let last_idx = file_name_overwrite.length - 1;
-                if (file_name_overwrite[last_idx] == '\"' || file_name_overwrite[last_idx] == '\'') {
-                  file_name_overwrite = file_name_overwrite.slice(1, last_idx);
-                }
-                // Overwrite
-                if (file_name_overwrite != '') {
-                  file_name_result = file_name_overwrite;
-                }
-
-                file_name_result = decodeURIComponent(file_name_result);
-
-                // Call popup
-                this.woofWantDownload_control = new CustomDialogController({
-                  builder: woofWantDownload({
-                    from: this.current_url,
-                    file_name: file_name_result,
-                    url: event.url,
-                    try_additional_info: try_additional_info,
-                  }),
-                  alignment: DialogAlignment.Center,
-                  cornerRadius: 16
-                })
-                this.woofWantDownload_control.open();
-              }
+              this.download_event(event);
             })
             .onFullScreenEnter((event) => {
               this.fullscreen_mode = true;
@@ -400,13 +445,46 @@ struct meowWebView {
               }
               return false;
             })
+            // .onContextMenuShow((event) => {
+            //   if (event) {
+            //     this.menu_result = event.result
+            //     // console.info("x coord = " + event.param.x());
+            //     // console.info("link url = " + event.param.getLinkUrl());
+            //     this.menu_linkUrl = event.param.getLinkUrl();
+            //   }
+            //   console.info(`[ContextMenu] x: ${this.menu_offsetX}, y: ${this.menu_offsetY}`);
+            //   this.menu_showMenu = true;
+            //   this.menu_offsetX = 0;
+            //   this.menu_offsetY = Math.max(px2vp(event?.param.y() ?? 0) - 0, 0);
+            //   // Set content display
+            //   this.menu_has_link = this.menu_linkUrl ? true : false;
+            //   this.menu_editable = event.param.isEditable();
+            //   this.menu_has_image = event.param.existsImageContents();
+            //   this.menu_mediaType = event.param.getMediaType();
+            //   this.menu_imageLink = event.param.getSourceUrl();
+            //   return true;
+            // })// Trigger popup
+            // .bindPopup(this.menu_showMenu,
+            //   {
+            //     builder: this.MenuBuilder(),
+            //     enableArrow: false,
+            //     placement: Placement.LeftTop,
+            //     offset: { x: this.menu_offsetX, y: this.menu_offsetY },
+            //     mask: false,
+            //     onStateChange: (e) => {
+            //       if (!e.isVisible) {
+            //         this.menu_showMenu = false;
+            //         this.menu_result!.closeContextMenu();
+            //       }
+            //     }
+            //   })
+
         } // Webs
         .borderColor(this.color_current_secondary)
         .borderWidth(this.border_width_tab(this.current_sub_tab_index == Label.index_key))
         .width(this.current_sub_tab_index < 0 ? "100%" : this.width_tab())
         .height(this.current_sub_tab_index < 0 ? "100%" : this.height_tab())
-        .alignRules(this.current_main_tab_index == Label.index_key
-          ? this.align_rules_main_tab() : this.align_rules_sub_tab())
+        .alignRules(this.current_main_tab_index == Label.index_key ? this.align_rules_main_tab() : this.align_rules_sub_tab())
         .visibility(this.my_visibility(Label.index_key))
         .animation(this.tab_animation)
       }, (Label: tab_label) => Label.timestamp.toString())
@@ -516,6 +594,67 @@ struct meowWebView {
         this.homepage_shortcuts_dir = '';
       }
       console.log('[Meow][meowWebView] Directory selected for shortcuts doesn\'t exist!')
+    }
+  }
+
+  download(url: string, userAgent: string, contentDisposition: string, contentLength: number, mimetype: string) {
+    console.log('url: ' + url)
+    console.log('userAgent: ' + userAgent)
+    console.log('contentDisposition: ' + contentDisposition)
+    console.log('contentLength: ' + contentLength)
+    console.log('mimetype: ' + mimetype)
+
+    // Save file download additional info
+    let try_additional_info = ['url: ' + url,
+      'userAgent: ' + userAgent,
+      'contentDisposition: ' + contentDisposition,
+      'contentLength: ' + contentLength.toString(),
+      'mimetype: ' + mimetype].join('\n');
+
+    // Cut out original file name
+    let file_url_split = url.split("/");
+    let file_name_result = file_url_split[file_url_split.length-1].split("?")[0];
+
+    // Determine overwrite file name
+    let file_name_overwrite = '';
+    let file_name_start = contentDisposition.indexOf('filename=') + 9;
+    let file_name_end = contentDisposition.indexOf(';', file_name_start);
+    if (file_name_end == -1) {
+      file_name_end = contentDisposition.length;
+    }
+    // if key found, then cut out file_name_overwrite
+    if (file_name_start > -1) {
+      file_name_overwrite = contentDisposition.slice(file_name_start, file_name_end);
+    }
+    // eliminate quotes
+    let last_idx = file_name_overwrite.length - 1;
+    if (file_name_overwrite[last_idx] == '\"' || file_name_overwrite[last_idx] == '\'') {
+      file_name_overwrite = file_name_overwrite.slice(1, last_idx);
+    }
+    // Overwrite
+    if (file_name_overwrite != '') {
+      file_name_result = file_name_overwrite;
+    }
+
+    file_name_result = decodeURIComponent(file_name_result);
+
+    // Call popup
+    this.woofWantDownload_control = new CustomDialogController({
+      builder: woofWantDownload({
+        from: this.current_url,
+        file_name: file_name_result,
+        url: url,
+        try_additional_info: try_additional_info,
+      }),
+      alignment: DialogAlignment.Center,
+      cornerRadius: 16
+    })
+    this.woofWantDownload_control.open();
+  }
+
+  download_event(event: OnDownloadStartEvent) {
+    if (event) {
+      this.download(event.url, event.userAgent, event.contentDisposition, event.contentLength, event.mimetype)
     }
   }
 

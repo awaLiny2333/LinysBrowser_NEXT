@@ -3,14 +3,10 @@ import linysSymbol from '../../components/linysSymbol';
 import linysText from '../../components/linysText';
 import linysTimeoutButton from '../../components/linysTimeoutButton';
 import linysTitleText from '../../components/linysTitleText';
-import {
-  animation_default,
-  animation_popup_duration,
-  capsule_bar_height,
-  click_effect_default,
-  fontSize_Large
-} from '../../hosts/bunch_of_defaults';
+import { animation_default, animation_popup_duration, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { copy } from '../../utils/clipboard_tools';
+import { preview_image } from '../../utils/preview_tools';
+import { document_save_from_uri as document_save_from_uri } from '../../utils/storage_tools';
 import { extract_links_from_text } from '../../utils/url_tools';
 
 @Component
@@ -51,11 +47,11 @@ struct meowScratchingBoard {
               index: index,
               showing_scratching_board: this.showing_scratching_board,
             })// Filter only links
-              .visibility(this.only_links && this.extracted_type[index] == 'text' ?
-              Visibility.None : Visibility.Visible)
+              .visibility(this.only_links && this.extracted_type[index] != 'url' ? Visibility.None : Visibility.Visible)
               .animation(animation_default())
           })
         }
+        .alignItems(HorizontalAlign.Start)
         .onAreaChange((_old, n) => {
           this.area_height = n.height as number;
         })
@@ -146,6 +142,7 @@ struct raw_data_display {
   @State offset_y: number = 50;
   @State this_visibility: Visibility = Visibility.Hidden;
   @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
+  @StorageProp('tablet_mode') tablet_mode: boolean = false;
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -155,32 +152,75 @@ struct raw_data_display {
 
   build() {
     Row({ space: 10 }) {
-      linysSymbol({
-        symbol_glyph_target: this.type == "url" ? 'sys.symbol.paperclip' : 'sys.symbol.text_and_t',
-        font_weight: this.type == "url" ? FontWeight.Medium : FontWeight.Normal,
-      })
+      if (this.type == 'image') {
+        Image(this.text)
+          .width(this.tablet_mode ? '50%' : undefined)
+          .borderRadius(10)
+          .layoutWeight(this.tablet_mode ? undefined : 1)
+        Column({ space: 10 }) {
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.save'
+          })
+            .clickEffect(click_effect_default())
+            .onClick(() => {
+              document_save_from_uri(this.text);
+            })
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.magnifyingglass'
+          })
+            .clickEffect(click_effect_default())
+            .onClick(() => {
+              // Search online
+            })
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.arrow_up_left_and_arrow_down_right'
+          })
+            .clickEffect(click_effect_default())
+            .onClick(() => {
+              // Check details
+              preview_image(this.text);
+            })
+        }
+      } else {
+        linysSymbol({
+          symbol_glyph_target: this.type_symbol(),
+          font_weight: this.type == "text" ? FontWeight.Normal : FontWeight.Medium,
+        }) // Type Symbol
 
-      linysText({
-        text: this.text,
-        max_lines: 10,
-        font_weight: this.type == "url" ? FontWeight.Medium : FontWeight.Normal,
-      })
-        .layoutWeight(1)
+        linysText({
+          text: this.text,
+          max_lines: 10,
+          font_weight: this.type == "text" ? FontWeight.Normal : FontWeight.Medium,
+        })// Text display
+          .layoutWeight(1)
 
-      linysTitleText({
-        text: $r('app.string.Downloads_copied'),
-      })
-        .offset({ x: this.copied > 0 ? 0 : 50 })
-        .opacity(0.7)
-        .visibility(this.copied > 0 ? Visibility.Visible : Visibility.Hidden)
-        .animation(animation_default())
+        linysSymbol({
+          symbol_glyph_target: this.copied ? 'sys.symbol.checkmark_clipboard_fill' : 'sys.symbol.text_clipboard'
+        })// Text copy
+          .clickEffect(click_effect_default())
+          .onClick(() => {
+            copy(this.text);
+            this.copied = animation_popup_duration();
+          })
 
+        if (this.type == 'url') {
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.arrow_right'
+          })
+            .clickEffect(click_effect_default())
+            .onClick(() => {
+              this.new_tab_gateway = this.text;
+              this.showing_scratching_board = false;
+            })
+        } // Url visit button
+      } // Content display with Controls
     }
     .padding(15)
-    .borderRadius(10)
+    .borderRadius(20)
     .backgroundColor(this.color_current_primary)
     .justifyContent(FlexAlign.Start)
-    .width("100%")
+    // .alignItems(VerticalAlign.Top)
+    .width(this.type == 'image' ? undefined : "100%")
     .visibility(this.this_visibility)
     .offset({ y: this.offset_y })
     .animation(animation_default())
@@ -197,15 +237,17 @@ struct raw_data_display {
         // Reset copy
       }, 10)
     })
-    .onClick(() => {
-      if (this.type == "url") {
-        this.new_tab_gateway = this.text;
-        this.showing_scratching_board = false;
-      } else {
-        copy(this.text);
-        this.copied = animation_popup_duration();
-      }
-    })
     .clickEffect(click_effect_default())
+
+  }
+
+  type_symbol() {
+    if (this.type == 'url') {
+      return 'sys.symbol.paperclip';
+    }
+    if (this.type == 'image') {
+      return 'sys.symbol.picture';
+    }
+    return 'sys.symbol.text_and_t'
   }
 }

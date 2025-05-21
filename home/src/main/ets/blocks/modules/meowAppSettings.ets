@@ -724,8 +724,7 @@ struct meowAppSettings {
                     for (let index = 0; index < this.bunch_of_tabs.Tabs.length; index++) {
                       try {
                         this.bunch_of_tabs.Tabs[index].controller.enableIntelligentTrackingPrevention(isOn);
-                        console.log('[Meow][meowAppSettings] Intelligent Tracking Prevention now ' + isOn.toString() +
-                          '!')
+                        console.log('[Meow][meowAppSettings] Intelligent Tracking Prevention now ' + isOn.toString() + '!')
                       } catch (e) {
                         console.log('[Meow][meowAppSettings] Toggle Intelligent Tracking Prevention Failed! ' +
                           'But perhaps this doesn\'t really matter?')

@@ -41,6 +41,51 @@ export function document_save(file_name: string, content: string) {
 }
 
 /**
+ * Save (Copy) any file from a uri (file://...) to a selected position, pulling up a DocumentViewPicker.
+ * @param from the uri.
+ * */
+export async function document_save_from_uri(from: string) {
+  // Save
+  try {
+    // Get file name
+    const split_result = from.split('/');
+    const file_name = decodeURI(split_result[split_result.length-1]);
+
+    let documentSaveOptions = new picker.DocumentSaveOptions();
+    documentSaveOptions.newFileNames = [file_name];
+    let documentPicker = new picker.DocumentViewPicker(getContext());
+
+    await documentPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
+      let target_uri = documentSaveResult
+      console.log("[document_save_from_uri] file_name: " + file_name + ' - ' + split_result[split_result.length-1])
+      console.log("[document_save_from_uri] from: " + from)
+      console.log("[document_save_from_uri] to: " + target_uri[0])
+
+      // let target_path = (new fileUri.FileUri(target_uri[0])).path;
+      // This operation is likely to cause target_path
+      // to be identified as unauthorized!
+
+      fs.copy(from, target_uri[0])
+      // .then(() => {
+      //   fs.rmdir(this.list_of_target_folders[index]);
+      // });
+
+      console.info("[document_save_from_uri] write data to file succeed @ " + target_uri[0]);
+      // this.delete_task(index);
+
+    })
+      .catch((err: BusinessError) => {
+        console.error('[document_save_from_uri][ERROR] DocumentViewPicker.save failed with err: ' +
+        JSON.stringify(err));
+      });
+
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    console.error('[document_save_from_uri][ERROR] DocumentViewPicker failed with err: ' + JSON.stringify(err));
+  }
+}
+
+/**
  * Pick a text file from device storage, pulling up a DocumentViewPicker.
  * @returns A string, of the chosen file's content.
  * */
@@ -136,6 +181,28 @@ export function sandbox_save(file_name: string, content: string | ArrayBuffer, c
   let writeLen = fs.writeSync(file.fd, content);
   console.info("[sandbox_save] write to file \"" + file_name + "\" succeed and size: " + writeLen + " @ " + file_name);
   fs.closeSync(file);
+}
+
+/**
+ * Copy a text file to sandbox storage, overwrites whatever that was at that place.
+ *
+ * THIS IS A SYNC FUNCTION
+ * @param from from a uri (file://).
+ * @param to a sandbox directory, the new parent folder of this file (in sandbox).
+ * @returns a sandbox path, root is getContext().filesDir.
+ * */
+export function uri_copy_sandbox(from: string, to: string, context_filesDir?: string) {
+  let filesDir: string = context_filesDir || getContext().filesDir;
+  // Get file name
+  const split_result = from.split('/');
+  const file_name = split_result[split_result.length-1];
+  // Get from path
+  const from_path = new fileUri.FileUri(from).path;
+  // Combine target
+  let target_dir = filesDir + '/' + to + '/' + decodeURI(file_name);
+  console.log('[uri_copy_sandbox] Copy from [' + from_path + '] to [' + target_dir + '] return [' + to + '/' + file_name + ']');
+  fs.copyFileSync(from_path, target_dir);
+  return fileUri.getUriFromPath(target_dir);
 }
 
 /**

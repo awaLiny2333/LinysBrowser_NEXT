@@ -338,7 +338,7 @@
     },
     {
       "name": "Index_drop_ok",
-      "value": "/ᐠ. ｡.ᐟ\\ᵐᵉᵒʷˎˊ˗ Links extraction!"
+      "value": "/ᐠ. ｡.ᐟ\\ᵐᵉᵒʷˎˊ˗ Extraction!"
     },
     {
       "name": "Index_drop_scratching_board",
@@ -478,7 +478,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "Trying to write an indexing system for history!"
+      "value": "Scratching Board now accepts also images!\nOne button to close all tabs at once!\nTrying to write an indexing system for history!"
     },
     {
       "name": "Whats_new_content_extra",
@@ -811,6 +811,34 @@
     {
       "name": "Debug_cpu",
       "value": "CPU"
+    },
+    {
+      "name": "Menu_select_all",
+      "value": "Select All"
+    },
+    {
+      "name": "Menu_copy",
+      "value": "Copy"
+    },
+    {
+      "name": "Menu_cut",
+      "value": "Cut"
+    },
+    {
+      "name": "Menu_paste",
+      "value": "Paste"
+    },
+    {
+      "name": "Menu_copy_link",
+      "value": "Copy Link"
+    },
+    {
+      "name": "Menu_copy_image",
+      "value": "Copy Image"
+    },
+    {
+      "name": "Menu_download_image",
+      "value": "Download Image"
     },
     {
       "name": "Accessibility_desc_linysProgress",

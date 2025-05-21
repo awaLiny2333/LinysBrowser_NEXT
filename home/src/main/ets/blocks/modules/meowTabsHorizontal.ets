@@ -4,7 +4,7 @@ import { animation_default, click_effect_default, fontSize_Large, fontSize_Norma
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { LengthMetrics } from '@kit.ArkUI';
 import { uniformTypeDescriptor } from '@kit.ArkData';
-import { drop_to_scratching_board } from '../../utils/drag_drop_tools';
+import { allow_drop_types, drop_to_scratching_board } from '../../utils/drag_drop_tools';
 import linysText from '../../components/linysText';
 import { deviceInfo } from '@kit.BasicServicesKit';
 import linysTimeoutButton from '../../components/linysTimeoutButton';
@@ -15,6 +15,7 @@ struct meowTabsHorizontal {
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   // Environments
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
+  @StorageLink('showing_more_options') showing_more_options: boolean = false;
   @StorageLink('windowDecorWidth') windowDecorWidth: number = 0;
   @StorageLink('current_main_tab_index') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') current_sub_tab_index: number = -1;
@@ -181,14 +182,13 @@ struct meowTabsHorizontal {
     }
     .padding({ left: 8, right: 8 })
     .animation(animation_default())
-    .allowDrop([uniformTypeDescriptor.UniformDataType.TEXT,
-      uniformTypeDescriptor.UniformDataType.HYPERLINK,
-      uniformTypeDescriptor.UniformDataType.PLAIN_TEXT])
+    .allowDrop(allow_drop_types())
     .onDrop((e) => {
       drop_to_scratching_board(e);
     })
     .onDragEnter(() => {
       this.showing_scratching_board = true;
+      this.showing_more_options =false;
     })
     .onDragLeave(() => {
       this.showing_scratching_board = false;
