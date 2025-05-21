@@ -249,6 +249,10 @@
       "value": "Initial height of shortcuts display"
     },
     {
+      "name": "Settings_homepage_shortcuts_init_height_desc",
+      "value": "Putting them too high may be hard for a single hand to touch..."
+    },
+    {
       "name": "Settings_homepage",
       "value": "The Cat's Homepage (meow://home)"
     },

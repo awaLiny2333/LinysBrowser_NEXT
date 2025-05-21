@@ -241,7 +241,7 @@ export class bunch_of_history {
    * @param no_reconstruct_plain_history A boolean, will not reconstruct plain history cache if set true.
    * */
   add_history(history: history_record, instantly_save_to_disk: boolean, index: boolean, layer?: number) {
-    console.log('[Meow][bunch_of_history]' + '    '.repeat(layer || 0) + '(' + (layer || 0).toString() + ') Add history: ' + history.toString());
+    // console.log('[Meow][bunch_of_history]' + '    '.repeat(layer || 0) + '(' + (layer || 0).toString() + ') Add history: ' + history.toString());
     let history_date = new Date(history.accessed_time);
     let year = history_date.getUTCFullYear();
     let month = history_date.getUTCMonth() + 1;

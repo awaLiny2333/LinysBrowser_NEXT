@@ -49,7 +49,6 @@ struct woofHomepageManager {
             text: $r('app.string.Settings_homepage_shortcuts_manage_desc'),
             max_lines: 3
           })// Desc
-            .padding({ bottom: 10 })
 
           linysTitleText({ text: $r('app.string.Homepage_background') })// Title
             .width('100%')
@@ -85,6 +84,11 @@ struct woofHomepageManager {
             text: $r('app.string.Settings_homepage_shortcuts_init_height')
           }) // Display height of shortcuts
 
+          linysText({
+            text: $r('app.string.Settings_homepage_shortcuts_init_height_desc'),
+            max_lines: 5
+          }) // Desc
+
           linysLockSlider({
             slider_value: this.homepage_shortcuts_init_height,
             onTouchUp: () => {
@@ -97,8 +101,9 @@ struct woofHomepageManager {
         // .height(this.tablet_mode ? this.screen_height * 0.9 : undefined)
         .animation(animation_default())
       }
+      .scrollBar(BarState.Off)
       .layoutWeight(1)
-      .constraintSize({ maxHeight: 400 })
+      .constraintSize({ maxHeight: 425 })
       .scrollable(ScrollDirection.Vertical)
       .edgeEffect(EdgeEffect.Spring)
     }
