@@ -8,7 +8,6 @@ import linysShowButton from '../../components/linysShowButton';
 import linysText from '../../components/linysText';
 import { sandbox_open_arrayBuffer_sync, sandbox_unlink_sync } from '../../utils/storage_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
-import { uniformTypeDescriptor } from '@kit.ArkData';
 import { allow_drop_types, drop_to_scratching_board } from '../../utils/drag_drop_tools';
 import linysTimeoutButton from '../../components/linysTimeoutButton';
 
@@ -180,12 +179,6 @@ struct meowTabs {
     Column({ space: 10 }) {
       Scroll(this.scroll_controller) {
         Column({ space: 5 }) {
-          // linysTitleText({
-          //   text: $r('app.string.Index_drop_please'),
-          //   max_lines: 3
-          // })
-          //   .opacity(0.2)
-          //   .padding({ bottom: 20 })
           ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
             TabButton({
               Label: Label,
@@ -193,7 +186,6 @@ struct meowTabs {
               offset_area: this.offset_area,
             })
           }, (Label: tab_label) => Label.timestamp.toString())
-
         }
         .width("100%")
         .onAreaChange((_o, n) => {
@@ -212,7 +204,7 @@ struct meowTabs {
       .align(Alignment.Bottom)
       .edgeEffect(this.count_down_for_switching_back_to_spring == 0 ? EdgeEffect.Spring : EdgeEffect.None)
       .width("100%")
-      .height(this.scroll_area_height - (this.choosing_paralleow || this.current_sub_tab_index >= 0 ? this.paralleow_description_height : 0) - 35)
+      .height(this.scroll_area_height - (this.choosing_paralleow || this.current_sub_tab_index >= 0 ? this.paralleow_description_height : 0))
       .animation(animation_default())
 
       Row({ space: 10 }) {
@@ -288,7 +280,7 @@ struct meowTabs {
     })
     .onDragEnter(() => {
       this.showing_scratching_board = true;
-      this.showing_more_options =false;
+      this.showing_more_options = false;
     })
     .onDragLeave(() => {
       this.showing_scratching_board = false;
@@ -323,12 +315,14 @@ struct meowTabs {
         this.offset_area[index] += this.tab_height_default + 5;
         // Move downward for up going animation
       }
+      // Set offset for the new tab
+      this.offset_area.push(this.tab_height_default + 1000)
+    } else {
+      this.offset_area.push(this.tab_height_default)
     }
 
-    // Set offset for the new tab
-    this.offset_area.push(this.tab_height_default + 1000)
     // Scroll to the new tab later
-    this.count_down_for_scrolling_to_bottom = 20;
+    this.count_down_for_scrolling_to_bottom = 30;
   }
 
   switch_tab(target: number) {

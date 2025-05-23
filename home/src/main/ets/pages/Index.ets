@@ -271,8 +271,7 @@ struct Index {
           } // Bookmarks and Tabs
           // .backgroundColor('red')
           .width(this.width_of_Bookmarks_and_Tabs())
-          .margin(this.width_of_Bookmarks_and_Tabs() == 0 ? 0 :
-            this.tablet_mode ? { left: this.leftAvoidWidth } : { right: this.rightAvoidWidth })
+          .margin(this.width_of_Bookmarks_and_Tabs() == 0 ? 0 : this.tablet_mode ? { left: this.leftAvoidWidth } : { right: this.rightAvoidWidth })
           .animation(animation_default())
           .scrollable(ScrollDirection.Horizontal)
           .scrollBar(BarState.Off)
