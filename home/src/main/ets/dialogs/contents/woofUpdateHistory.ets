@@ -11,13 +11,22 @@ struct woofUpdateHistory {
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @State texts: string[] = [
+    'v1.7.7-beta 2025 06',
+    '一个实验性的更新！将历史记录索引、更多辅助功能带入冲浪喵～\n' +
+      '实现了猫抓板图片处理、一键关闭所有标签页等功能！\n' +
+      '在不科学的实验中，这个历史记录索引成功承载长达 20 年、共 1500000 条历史记录而不崩溃，因此 Liny 还有 20 年时间优化它！:P',
+    'An experimental update! Bringing history indexing and more accessibility features into BrowserCat~\n' +
+      'Implemented image processing for Scratching Board and one button to close all tabs!\n' +
+      'In an unscientific experiment, this history indexing system succeeded to host up to 1,500,000 histories for a span of ' +
+      'over 20 years without crashing. So, Liny has got another 20 years to optimize it! :P',
+
     'v1.7.6-beta 2025 05',
     '一个普通的更新，将故障日志查看、性能指示器和大量体验与性能优化带入冲浪喵～\n' +
       '实现了更好的显示区域避让，尝试修复了计算缓存卡顿、历史面板打开卡顿、下载文件名 uri 不解码、自动抓取搜索词加号不解码等体验问题。\n' +
       '并且升级到了 API 16！',
     'A normal update, bringing fault logs viewer, performance monitor and quite a lot of experience & performance optimizations into BrowserCat!\n' +
-      'Implemented a better safe area display policy, and '+
-      'tried to fix experience issues like lags when calculating cache size, lags when opening History panel, '+
+      'Implemented a better safe area display policy, and ' +
+      'tried to fix experience issues like lags when calculating cache size, lags when opening History panel, ' +
       'download file name not decoding from uri codes, ' +
       'and plus signs in auto extracted search keywords not being replaced by spaces, etc.\n' +
       'And upgraded to API 16!',
