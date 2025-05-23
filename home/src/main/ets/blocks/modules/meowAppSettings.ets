@@ -103,7 +103,6 @@ struct meowAppSettings {
   @State @Watch('on_tabs_style_non_tablet_mode_changed') tabs_style_selected_non_tablet_mode: number[] = [0];
   @State @Watch('on_start_up_page_changed') start_up_page_selected: number[] = [0];
   @State @Watch('on_prefer_hand_left_or_right_changed') left_or_right_selected: number[] = [0];
-  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('max_bookmark_advice') max_bookmark_advice: number = 5;
   @StorageLink('max_history_advice') max_history_advice: number = 5;
   @StorageLink('sys_back_to_access_backward') sys_back_to_access_backward: boolean = false;
@@ -118,6 +117,10 @@ struct meowAppSettings {
   @StorageLink('disable_image') disable_image: boolean = true;
   @StorageLink('disable_image_these_sites') disable_image_these_sites: string[] = [];
   @StorageLink('disable_image_all_sites') disable_image_all_sites: boolean = false;
+  // Settings / Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
+  @StorageLink('preferred_hand_reverse_settings_menu') preferred_hand_reverse_settings_menu: boolean = false;
+  @StorageLink('preferred_hand_reverse_tabs_panel') preferred_hand_reverse_tabs_panel: boolean = false;
   // Edits
   @State new_tab_url_edit: string = "";
   @State home_url_edit: string = "";
@@ -128,7 +131,7 @@ struct meowAppSettings {
   @State scroll_first: number = 0;
   @State scroll_last: number = 0;
   @State menu_text: string[] =
-    ['Settings_start_up', 'Settings_general', 'Settings_Experience', 'Settings_appearance',
+    ['Settings_start_up', 'Settings_general', 'Settings_Experience', 'Settings_Accessibility', 'Settings_appearance',
       'Settings_experience_history', 'Settings_storage', 'Settings_security', 'Settings_toolbox', 'Settings_about'];
   // Dialogs
   @StorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
@@ -223,15 +226,16 @@ struct meowAppSettings {
 
   build() {
     Row() {
-      if (this.tablet_mode) {
-        menuScrollVertical({
-          on_index_first: this.scroll_first,
-          on_index_last: this.scroll_last,
-          scroll_to_gateway: this.settings_scroll_to,
-          menu_text: this.menu_text,
-        })
-          .margin({ left: 15 })
-      } // Quick access on the left
+      menuScrollVertical({
+        on_index_first: this.scroll_first,
+        on_index_last: this.scroll_last,
+        scroll_to_gateway: this.settings_scroll_to,
+        menu_text: this.menu_text,
+      })// Quick access on the left
+        .margin({ left: 15 })
+        .visibility(this.visibility_of_left_menu())
+        .animation(animation_default())
+
       Column({ space: 10 }) {
         if (!this.tablet_mode) {
           menuScrollHorizontal({
@@ -342,13 +346,6 @@ struct meowAppSettings {
             Column({ space: 15 }) {
               linysTitleText({ text: $r('app.string.Settings_Experience') })
 
-              linysText({ text: $r('app.string.Settings_single_hand_preference'), max_lines: 3 })
-                .width("100%")
-              SegmentButton({
-                options: this.left_or_right,
-                selectedIndexes: this.left_or_right_selected
-              }) // Single hand usability
-
               Row() {
                 linysText({ text: $r('app.string.Settings_experience_web_force_dark_mode'), max_lines: 3 })
                   .layoutWeight(1)
@@ -360,19 +357,6 @@ struct meowAppSettings {
                     this.bunch_of_settings.set('web_force_dark_mode', isOn);
                   })
               } // Force dark mode
-              .width("100%")
-
-              Row() {
-                linysText({ text: $r('app.string.Settings_experience_sys_back_to_access_backward'), max_lines: 3 })
-                  .layoutWeight(1)
-                Toggle({ isOn: this.sys_back_to_access_backward, type: ToggleType.Switch })
-                  .switchPointColor(this.color_current_secondary)
-                  .selectedColor(this.color_current_font)
-                  .onChange(isOn => {
-                    this.sys_back_to_access_backward = isOn;
-                    this.bunch_of_settings.set('sys_back_access_backward', isOn);
-                  })
-              } // Use sys back
               .width("100%")
 
               Row() {
@@ -425,7 +409,7 @@ struct meowAppSettings {
               } // Disable image management
               .width("100%")
 
-              linysText({ text: $r('app.string.Key_shortcuts') })
+              linysText({ text: $r('app.string.Key_shortcuts') })// Keyboard shortcuts title
                 .width('100%')
               Row({ space: 10 }) {
                 linysText({ text: $r('app.string.Key_shortcuts_manage'), max_lines: 3, align_another_side: true })
@@ -485,6 +469,65 @@ struct meowAppSettings {
 
           FlowItem() {
             Column({ space: 15 }) {
+              linysTitleText({ text: $r('app.string.Settings_Accessibility') })
+
+              Row() {
+                linysText({ text: $r('app.string.Settings_experience_sys_back_to_access_backward'), max_lines: 3 })
+                  .layoutWeight(1)
+                Toggle({ isOn: this.sys_back_to_access_backward, type: ToggleType.Switch })
+                  .switchPointColor(this.color_current_secondary)
+                  .selectedColor(this.color_current_font)
+                  .onChange(isOn => {
+                    this.sys_back_to_access_backward = isOn;
+                    this.bunch_of_settings.set('sys_back_access_backward', isOn);
+                  })
+              } // Use sys back
+              .width("100%")
+
+              linysText({ text: $r('app.string.Settings_single_hand_preference'), max_lines: 3 })// Single hand optimization
+                .width("100%")
+              SegmentButton({
+                options: this.left_or_right,
+                selectedIndexes: this.left_or_right_selected
+              }) // Single hand usability
+
+              Row() {
+                linysText({ text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_settings_menu'), max_lines: 3 })
+                  .layoutWeight(1)
+                Toggle({ isOn: this.preferred_hand_reverse_settings_menu, type: ToggleType.Switch })
+                  .switchPointColor(this.color_current_secondary)
+                  .selectedColor(this.color_current_font)
+                  .onChange(isOn => {
+                    this.preferred_hand_reverse_settings_menu = isOn;
+                    this.bunch_of_settings.set('preferred_hand_reverse_settings_menu', isOn);
+                  })
+              } // Reverse settings menu
+              .width("100%")
+
+              Row() {
+                linysText({ text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_tabs_panel'), max_lines: 3 })
+                  .layoutWeight(1)
+                Toggle({ isOn: this.preferred_hand_reverse_tabs_panel, type: ToggleType.Switch })
+                  .switchPointColor(this.color_current_secondary)
+                  .selectedColor(this.color_current_font)
+                  .onChange(isOn => {
+                    this.preferred_hand_reverse_tabs_panel = isOn;
+                    this.bunch_of_settings.set('preferred_hand_reverse_tabs_panel', isOn);
+                  })
+              } // Reverse tabs panel
+              .width("100%")
+            }
+            .padding(15)
+            .alignItems(HorizontalAlign.Start)
+            .justifyContent(FlexAlign.Start)
+            .width("100%")
+            .borderRadius(10)
+            .backgroundColor(this.color_current_primary)
+          } // Accessibility
+          .width('100%')
+
+          FlowItem() {
+            Column({ space: 15 }) {
               linysTitleText({ text: $r('app.string.Settings_appearance') }) // Appearance Title
 
               linysText({ text: $r('app.string.Settings_appearance_title_bar_position') }) // Title bar position
@@ -494,7 +537,8 @@ struct meowAppSettings {
               })
 
               linysText({
-                text: $r('app.string.Settings_appearance_tabs_style')
+                text: $r('app.string.Settings_appearance_tabs_style'),
+                max_lines: 3
               }) // Tabs Style for tablets and landscape displays
               SegmentButton({
                 options: this.tabs_style_tabOptions,
@@ -502,7 +546,8 @@ struct meowAppSettings {
               })
 
               linysText({
-                text: $r('app.string.Settings_appearance_tabs_style_non_tablet_mode')
+                text: $r('app.string.Settings_appearance_tabs_style_non_tablet_mode'),
+                max_lines: 3
               }) // Tabs Style for mobile and portrait displays
               SegmentButton({
                 options: this.tabs_style_tabOptions,
@@ -530,7 +575,7 @@ struct meowAppSettings {
 
               Row() {
                 linysText({ text: $r('app.string.Settings_experience_history_record_new') })
-                Blank()
+                  .layoutWeight(1)
                 Toggle({ isOn: this.collect_new_history, type: ToggleType.Switch })
                   .switchPointColor(this.color_current_secondary)
                   .selectedColor(this.color_current_font)
@@ -888,6 +933,16 @@ struct meowAppSettings {
       .layoutWeight(1)
       .height("100%")
       .animation(animation_default())
+
+      menuScrollVertical({
+        on_index_first: this.scroll_first,
+        on_index_last: this.scroll_last,
+        scroll_to_gateway: this.settings_scroll_to,
+        menu_text: this.menu_text,
+      })// Quick access on the right
+        .margin({ right: 15 })
+        .visibility(this.visibility_of_right_menu())
+        .animation(animation_default())
     }
     .height(this.showing_app_settings ? "75%" : 0)
     .width("100%")
@@ -959,6 +1014,9 @@ struct meowAppSettings {
     } else {
       this.left_or_right_selected = [1];
     }
+    // Get accessibility - reverse
+    this.preferred_hand_reverse_tabs_panel = await this.bunch_of_settings.get('preferred_hand_reverse_tabs_panel') as boolean;
+    this.preferred_hand_reverse_settings_menu = await this.bunch_of_settings.get('preferred_hand_reverse_settings_menu') as boolean;
 
     // Get Homepage shortcut directory
     let homepage_shortcuts_bookmarks_dir = await this.bunch_of_settings.get('homepage_shortcuts_bookmarks_dir') as string;
@@ -1161,6 +1219,25 @@ struct meowAppSettings {
       this.version_clicked_times += 1;
       this.bunch_of_settings.set('DEV_MODE', true);
     }
+  }
+
+  // Kinda constants
+
+  visibility_of_left_menu() {
+    let status = this.tablet_mode && this.preferred_hand_left_or_right == 'left';
+    if (this.preferred_hand_reverse_settings_menu) {
+      status = !status;
+    }
+    return !status ? Visibility.Visible : Visibility.None;
+  }
+
+  // TODO: optimize duplicate code
+  visibility_of_right_menu() {
+    let status = this.tablet_mode && this.preferred_hand_left_or_right == 'right';
+    if (this.preferred_hand_reverse_settings_menu) {
+      status = !status;
+    }
+    return !status ? Visibility.Visible : Visibility.None;
   }
 }
 

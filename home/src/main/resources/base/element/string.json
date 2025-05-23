@@ -157,6 +157,18 @@
       "value": "Start up page"
     },
     {
+      "name": "Settings_Accessibility",
+      "value": "Accessibility"
+    },
+    {
+      "name": "Settings_Accessibility_preferred_hand_reverse_settings_menu",
+      "value": "Reverse settings menu position"
+    },
+    {
+      "name": "Settings_Accessibility_preferred_hand_reverse_tabs_panel",
+      "value": "Reverse tabs & bookmarks panel (vertical) position"
+    },
+    {
       "name": "Settings_Experience",
       "value": "Experience"
     },

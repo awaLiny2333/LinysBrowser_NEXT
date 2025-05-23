@@ -98,6 +98,8 @@ struct Index {
   @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
   @StorageLink('max_bookmark_advice') max_bookmark_advice: number = 5;
   @StorageLink('max_history_advice') max_history_advice: number = 5;
+  // Settings - Accessibility
+  @StorageLink('preferred_hand_reverse_tabs_panel') preferred_hand_reverse_tabs_panel: boolean = false;
   // Gateways
   @StorageLink('universal_close_tab_gateway') uni_close_tab_gateway: number = -1;
   @StorageLink('universal_new_tab_gateway') uni_new_tab_gateway: string = "";
@@ -269,9 +271,8 @@ struct Index {
             .width("100%")
             .height("100%")
           } // Bookmarks and Tabs
-          // .backgroundColor('red')
           .width(this.width_of_Bookmarks_and_Tabs())
-          .margin(this.width_of_Bookmarks_and_Tabs() == 0 ? 0 : this.tablet_mode ? { left: this.leftAvoidWidth } : { right: this.rightAvoidWidth })
+          .margin(this.margin_of_Bookmarks_and_Tabs())
           .animation(animation_default())
           .scrollable(ScrollDirection.Horizontal)
           .scrollBar(BarState.Off)
@@ -285,7 +286,7 @@ struct Index {
           .layoutWeight(this.tablet_mode ? 1 : 0)
 
         } // Main Web
-        .direction(this.tablet_mode ? Direction.Ltr : Direction.Rtl)
+        .direction(this.direction_of_web_and_side_panels())
         .alignRules(this.title_bar_alignRules)
         .layoutWeight(1)
         .width("100%")
@@ -414,7 +415,7 @@ struct Index {
 
   }
 
-  // kinds of params
+  // kinda params
 
   width_of_Bookmarks_and_Tabs() {
     let result = 0;
@@ -435,6 +436,13 @@ struct Index {
       }
     }
     return result;
+  }
+
+  margin_of_Bookmarks_and_Tabs(): Padding | number {
+    if (this.width_of_Bookmarks_and_Tabs() == 0) {
+      return 0;
+    }
+    return this.preferred_hand_reverse_tabs_panel ? { right: this.rightAvoidWidth } : { left: this.leftAvoidWidth };
   }
 
   width_of_Bookmarks() {
@@ -474,6 +482,14 @@ struct Index {
       target -= 20;
     }
     return Math.max(0, target);
+  }
+
+  direction_of_web_and_side_panels() {
+    // let status = this.tablet_mode;
+    // if () {
+    //   status = !status;
+    // }
+    return this.preferred_hand_reverse_tabs_panel ? Direction.Rtl : Direction.Ltr;
   }
 
   // Operations

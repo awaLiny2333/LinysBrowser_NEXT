@@ -52,7 +52,11 @@ export class bunch_of_settings {
     this.register_setting('custom_search_engines_selected_index', 'number', '-1');
     this.register_setting('homepage_shortcuts_bookmarks_dir', 'string', '');
     this.register_setting('homepage_shortcuts_init_height', 'number', '50');
+
+    // Single hand accessibility
     this.register_setting('preferred_hand_left_or_right', 'string', 'right');
+    this.register_setting('preferred_hand_reverse_settings_menu', 'boolean', 'false');
+    this.register_setting('preferred_hand_reverse_tabs_panel', 'boolean', 'false');
 
     // Ad blocker
     this.register_setting('use_adblock', 'boolean', 'true');
