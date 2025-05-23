@@ -577,12 +577,8 @@
       "value": "Reset colors"
     },
     {
-      "name": "Settings_storage_clear_webview",
-      "value": "Clear all webview cache"
-    },
-    {
       "name": "Settings_storage_clear_webview_desc",
-      "value": "The statistics shown below may be (usually) not up to date. \n\nA manual refresh by clicking \uDB80\uDCC8 may be essential if you wish a accurate figure."
+      "value": "This is space taken up by all webview cache.\n\nThe statistics shown below may be (usually) not up to date. \n\nA manual refresh by clicking \uDB80\uDCC8 may be essential if you wish a accurate figure."
     },
     {
       "name": "Address_analyzer_address",

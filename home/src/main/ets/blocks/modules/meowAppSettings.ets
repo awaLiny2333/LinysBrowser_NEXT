@@ -244,7 +244,7 @@ struct meowAppSettings {
             scroll_to_gateway: this.settings_scroll_to,
             menu_text: this.menu_text,
           })
-            // .margin({ left: 15, right: 15 })
+          // .margin({ left: 15, right: 15 })
         } // Quick access on the top
         WaterFlow({ scroller: this.waterFlow_control }) {
           FlowItem() {
@@ -677,8 +677,7 @@ struct meowAppSettings {
             Column({ space: 15 }) {
               linysTitleText({ text: $r('app.string.Settings_storage') }) // Storage Title
 
-              linysText({ text: $r('app.string.Settings_storage_clear_webview') })
-              linysText({ text: $r('app.string.Settings_storage_clear_webview_desc'), max_lines: 6 })
+              linysText({ text: $r('app.string.Settings_storage_clear_webview_desc'), max_lines: 20 })
 
               Column({ space: 10 }) {
                 linysTitleText({ text: "󰂼 " + add_units_to_size(this.web_cache_size) })// data display

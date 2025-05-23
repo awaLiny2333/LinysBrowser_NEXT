@@ -577,12 +577,8 @@
       "value": "恢复默认颜色主题"
     },
     {
-      "name": "Settings_storage_clear_webview",
-      "value": "清理所有网页（Webview）的缓存"
-    },
-    {
       "name": "Settings_storage_clear_webview_desc",
-      "value": "以下统计可能（往往）是过时的。\n\n如果你需要一个准确的信息，请点击 \uDB80\uDCC8 以刷新。"
+      "value": "这些是所有网页（Webview）的缓存。\n\n以下统计可能（往往）是过时的。\n\n如果你需要一个准确的信息，请点击 \uDB80\uDCC8 以刷新。"
     },
     {
       "name": "Address_analyzer_address",
