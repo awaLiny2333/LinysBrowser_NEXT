@@ -11,6 +11,7 @@ let modifier_keys = [ModifierKey.CTRL, ModifierKey.SHIFT, ModifierKey.ALT];
 let modifier_strings = ['ctrl', 'shift', 'alt'];
 
 export class bunch_of_key_shortcuts {
+  // Singles
   new_tab: key_combination = new key_combination('t', [ModifierKey.CTRL]);
   close_tab: key_combination = new key_combination('w', [ModifierKey.CTRL]);
   show_tabs: key_combination = new key_combination('a', [ModifierKey.SHIFT, ModifierKey.CTRL]);
@@ -18,11 +19,12 @@ export class bunch_of_key_shortcuts {
   in_page_search: key_combination = new key_combination('f', [ModifierKey.CTRL]);
   fullscreen: key_combination = new key_combination(FunctionKey.F11);
   history: key_combination = new key_combination('h', [ModifierKey.CTRL]);
+  refresh: key_combination = new key_combination(FunctionKey.F5);
+  // Lists
   key_shortcut_labels =
-    ['new_tab', 'close_tab', 'show_tabs', 'focus_address', 'in_page_search', 'fullscreen', 'history'];
+    ['new_tab', 'close_tab', 'show_tabs', 'focus_address', 'in_page_search', 'fullscreen', 'history', 'refresh'];
   key_shortcut_combinations =
-    [this.new_tab, this.close_tab, this.show_tabs, this.focus_address, this.in_page_search, this.fullscreen,
-      this.history];
+    [this.new_tab, this.close_tab, this.show_tabs, this.focus_address, this.in_page_search, this.fullscreen, this.history, this.refresh];
 
   /**
    * A class holding key shortcuts.

@@ -162,7 +162,7 @@
     },
     {
       "name": "Settings_Accessibility_preferred_hand_reverse_settings_menu",
-      "value": "反转设置菜单位置"
+      "value": "\uDB82\uDC3B / \uDB82\uDD42 反转设置菜单位置"
     },
     {
       "name": "Settings_Accessibility_preferred_hand_reverse_tabs_panel",
@@ -306,11 +306,11 @@
     },
     {
       "name": "Settings_appearance_tabs_style",
-      "value": "（横屏／平板时）标签页栏样式"
+      "value": "\uDB82\uDC3B / \uDB82\uDD42 标签页栏样式"
     },
     {
       "name": "Settings_appearance_tabs_style_non_tablet_mode",
-      "value": "（竖屏／手机时）标签页栏样式"
+      "value": "\uDB80\uDFB3 标签页栏样式"
     },
     {
       "name": "Settings_appearance_tabs_style_vertical",
@@ -747,6 +747,10 @@
     {
       "name": "Key_shortcuts_history",
       "value": "打开历史"
+    },
+    {
+      "name": "Key_shortcuts_refresh",
+      "value": "刷新"
     },
     {
       "name": "Homepage_background",

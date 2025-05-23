@@ -305,6 +305,7 @@ struct meowTitleBar {
                 this.refresh_page()
               }
             })
+            .keyboardShortcut(this.bunch_of_key_shortcuts.refresh.main_key, this.bunch_of_key_shortcuts.refresh.modifier)
 
           linysSymbol({
             symbol_glyph_target: 'sys.symbol.house'
@@ -356,8 +357,7 @@ struct meowTitleBar {
                 })
                 .selectAll(true)
                 .id('address_bar')
-                .keyboardShortcut(!this.showing_search_extracted_field ?
-                this.bunch_of_key_shortcuts.focus_address.main_key : '',
+                .keyboardShortcut(!this.showing_search_extracted_field ? this.bunch_of_key_shortcuts.focus_address.main_key : '',
                   this.bunch_of_key_shortcuts.focus_address.modifier)
             }
             .scrollable(ScrollDirection.Vertical)
@@ -405,8 +405,7 @@ struct meowTitleBar {
                 .selectAll(true)
                 .selectedBackgroundColor(this.color_current_font)
                 .id('key_bar')
-                .keyboardShortcut(this.showing_search_extracted_field ?
-                this.bunch_of_key_shortcuts.focus_address.main_key : '',
+                .keyboardShortcut(this.showing_search_extracted_field ? this.bunch_of_key_shortcuts.focus_address.main_key : '',
                   this.bunch_of_key_shortcuts.focus_address.modifier)
             }
             .scrollable(ScrollDirection.Vertical)
@@ -500,8 +499,7 @@ struct meowTitleBar {
             .onClick(() => {
               this.show_tabs();
             })
-            .keyboardShortcut(this.bunch_of_key_shortcuts.show_tabs.main_key,
-              this.bunch_of_key_shortcuts.show_tabs.modifier)
+            .keyboardShortcut(this.bunch_of_key_shortcuts.show_tabs.main_key, this.bunch_of_key_shortcuts.show_tabs.modifier)
 
           linysShowButton({
             show: this.showing_bookmarks,
@@ -610,8 +608,7 @@ struct meowTitleBar {
                 .onClick(() => {
                   this.showing_more_options = true;
                 })
-                .keyboardShortcut(this.bunch_of_key_shortcuts.in_page_search.main_key,
-                  this.bunch_of_key_shortcuts.in_page_search.modifier)
+                .keyboardShortcut(this.bunch_of_key_shortcuts.in_page_search.main_key, this.bunch_of_key_shortcuts.in_page_search.modifier)
 
               linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass' })
                 .onClick(() => {
@@ -743,8 +740,7 @@ struct meowTitleBar {
                 this.fullscreen_mode = !this.fullscreen_mode;
                 this.showing_more_options = false;
               })
-              .keyboardShortcut(this.bunch_of_key_shortcuts.fullscreen.main_key,
-                this.bunch_of_key_shortcuts.fullscreen.modifier)
+              .keyboardShortcut(this.bunch_of_key_shortcuts.fullscreen.main_key, this.bunch_of_key_shortcuts.fullscreen.modifier)
           }
           .width('100%')
           .justifyContent(FlexAlign.End)

@@ -1223,17 +1223,25 @@ struct meowAppSettings {
 
   // Kinda constants
 
+  // TODO: optimize duplicate code
   visibility_of_left_menu() {
-    let status = this.tablet_mode && this.preferred_hand_left_or_right == 'left';
+    if (!this.tablet_mode) {
+      // Non tablet mode NO vertical menu!
+      return Visibility.None;
+    }
+    let status = this.preferred_hand_left_or_right == 'left';
     if (this.preferred_hand_reverse_settings_menu) {
       status = !status;
     }
     return !status ? Visibility.Visible : Visibility.None;
   }
 
-  // TODO: optimize duplicate code
   visibility_of_right_menu() {
-    let status = this.tablet_mode && this.preferred_hand_left_or_right == 'right';
+    if (!this.tablet_mode) {
+      // Non tablet mode NO vertical menu!
+      return Visibility.None;
+    }
+    let status = this.preferred_hand_left_or_right == 'right';
     if (this.preferred_hand_reverse_settings_menu) {
       status = !status;
     }

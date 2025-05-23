@@ -162,7 +162,7 @@
     },
     {
       "name": "Settings_Accessibility_preferred_hand_reverse_settings_menu",
-      "value": "Reverse settings menu position"
+      "value": "\uDB82\uDC3B / \uDB82\uDD42 Reverse settings menu position"
     },
     {
       "name": "Settings_Accessibility_preferred_hand_reverse_tabs_panel",
@@ -306,11 +306,11 @@
     },
     {
       "name": "Settings_appearance_tabs_style",
-      "value": "(For landscape / tablets) Tabs style"
+      "value": "\uDB82\uDC3B / \uDB82\uDD42 Tabs style"
     },
     {
       "name": "Settings_appearance_tabs_style_non_tablet_mode",
-      "value": "(For portrait / phones) Tabs style"
+      "value": "\uDB80\uDFB3 Tabs style"
     },
     {
       "name": "Settings_appearance_tabs_style_vertical",
@@ -747,6 +747,10 @@
     {
       "name": "Key_shortcuts_history",
       "value": "Open history"
+    },
+    {
+      "name": "Key_shortcuts_refresh",
+      "value": "Refresh"
     },
     {
       "name": "Homepage_background",

@@ -29,7 +29,7 @@ struct woofKeyShortcuts {
         .justifyContent(FlexAlign.Center)
         .width("100%")
       }
-      .constraintSize({ maxHeight: 513 })
+      .constraintSize({ maxHeight: 588 })
       .scrollBar(BarState.Off)
       .edgeEffect(EdgeEffect.Spring)
       .layoutWeight(1)
@@ -41,8 +41,7 @@ export default woofKeyShortcuts;
 
 @Component
 struct keyDisplay {
-  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts =
-    new bunch_of_key_shortcuts(false);
+  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(false);
   @Prop key_settings_id: string;
   @State showing_keyboard: boolean = false;
   @State keys_edit: string[] = [];
