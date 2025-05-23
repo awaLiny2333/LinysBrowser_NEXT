@@ -244,7 +244,7 @@ struct meowAppSettings {
             scroll_to_gateway: this.settings_scroll_to,
             menu_text: this.menu_text,
           })
-            .margin({ left: 15, right: 15 })
+            // .margin({ left: 15, right: 15 })
         } // Quick access on the top
         WaterFlow({ scroller: this.waterFlow_control }) {
           FlowItem() {
