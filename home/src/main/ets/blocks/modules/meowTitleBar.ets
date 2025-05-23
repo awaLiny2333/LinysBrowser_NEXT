@@ -736,11 +736,11 @@ struct meowTitleBar {
                 'sys.symbol.arrow_down_right_and_arrow_up_left' :
                 'sys.symbol.arrow_up_left_and_arrow_down_right'
             })// FullScreen
-              .onClick(() => {
-                this.fullscreen_mode = !this.fullscreen_mode;
-                this.showing_more_options = false;
-              })
-              .keyboardShortcut(this.bunch_of_key_shortcuts.fullscreen.main_key, this.bunch_of_key_shortcuts.fullscreen.modifier)
+              // .onClick(() => {
+              //   this.fullscreen_mode = !this.fullscreen_mode;
+              //   this.showing_more_options = false;
+              // })
+              // .keyboardShortcut(this.bunch_of_key_shortcuts.fullscreen.main_key, this.bunch_of_key_shortcuts.fullscreen.modifier)
           }
           .width('100%')
           .justifyContent(FlexAlign.End)

@@ -310,6 +310,13 @@ struct Index {
           title_bar_alignRules: this.title_bar_alignRules,
         }) // Bottom Bar
 
+        // I know this is stupid
+        Row() // Fullscreen toggle
+          .onClick(() => {
+            this.fullscreen_mode = !this.fullscreen_mode;
+            this.showing_more_options = false;
+          })
+          .keyboardShortcut(this.bunch_of_key_shortcuts.fullscreen.main_key, this.bunch_of_key_shortcuts.fullscreen.modifier)
       } // Web, progress, and bottom bar
       .layoutWeight(1)
       .animation(animation_default())
