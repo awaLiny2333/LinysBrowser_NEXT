@@ -27,6 +27,8 @@ struct meowBookmarks {
   @State current_folder: folder | undefined = undefined;
   // Environments
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
+  // Settings / Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Input and Interactions
   @State add_label: string = "";
   @State add_link: string = "";

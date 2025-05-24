@@ -707,12 +707,16 @@ struct TabButton {
 
       Column() {
       } // The True Tab Closer
-      .width(70)
+      .width(35)
       .height("100%")
-      .alignRules({
-        middle: { anchor: "__container__", align: HorizontalAlign.End },
-        center: { anchor: "__container__", align: VerticalAlign.Center }
-      })
+      .alignRules(this.preferred_hand_left_or_right == 'right' ?
+        {
+          right: { anchor: "__container__", align: HorizontalAlign.End },
+          center: { anchor: "__container__", align: VerticalAlign.Center }
+        } : {
+          left: { anchor: "__container__", align: HorizontalAlign.Start },
+          center: { anchor: "__container__", align: VerticalAlign.Center }
+        })
       .onClick(() => {
         this.close_tab_gateway = this.Label.index_key;
       })
