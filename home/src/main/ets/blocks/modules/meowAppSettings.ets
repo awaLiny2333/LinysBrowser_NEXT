@@ -1252,7 +1252,7 @@ struct meowAppSettings {
     if (this.preferred_hand_reverse_settings_menu) {
       status = !status;
     }
-    return !status ? Visibility.Visible : Visibility.None;
+    return status ? Visibility.Visible : Visibility.None;
   }
 
   visibility_of_right_menu() {
@@ -1264,7 +1264,7 @@ struct meowAppSettings {
     if (this.preferred_hand_reverse_settings_menu) {
       status = !status;
     }
-    return !status ? Visibility.Visible : Visibility.None;
+    return status ? Visibility.Visible : Visibility.None;
   }
 }
 

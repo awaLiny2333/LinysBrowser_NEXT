@@ -450,7 +450,7 @@ struct Index {
     if (this.width_of_Bookmarks_and_Tabs() == 0) {
       return 0;
     }
-    let status = this.preferred_hand_left_or_right == 'left';
+    let status = this.preferred_hand_left_or_right == 'right';
     if (this.preferred_hand_reverse_tabs_panel) {
       status = !status;
     }
@@ -497,7 +497,7 @@ struct Index {
   }
 
   direction_of_web_and_side_panels() {
-    let status = this.preferred_hand_left_or_right == 'left';
+    let status = this.preferred_hand_left_or_right == 'right';
     if (this.preferred_hand_reverse_tabs_panel) {
       status = !status;
     }
