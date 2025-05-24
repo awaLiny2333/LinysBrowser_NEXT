@@ -161,12 +161,20 @@
       "value": "Accessibility"
     },
     {
+      "name": "Settings_Accessibility_preferred_hand_reverse_desc",
+      "value": "After switching the direction of single hand optimization, homepage shortcuts, settings menu, tabs and bookmarks panel would switch their positions accordingly.\n\nIf you want to adjust further based on this, you could toggle:"
+    },
+    {
       "name": "Settings_Accessibility_preferred_hand_reverse_settings_menu",
       "value": "\uDB82\uDC3B / \uDB82\uDD42 Reverse settings menu position"
     },
     {
       "name": "Settings_Accessibility_preferred_hand_reverse_tabs_panel",
-      "value": "Reverse tabs & bookmarks panel (vertical) position"
+      "value": "Reverse tabs & vertical bookmarks panel position"
+    },
+    {
+      "name": "Settings_Accessibility_preferred_hand_reverse_homepage_shortcuts",
+      "value": "Reverse homepage shortcuts position"
     },
     {
       "name": "Settings_Experience",

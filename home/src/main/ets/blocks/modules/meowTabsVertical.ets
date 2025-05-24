@@ -16,8 +16,7 @@ struct meowTabs {
   // Hosts and environments
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
-  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts =
-    new bunch_of_key_shortcuts(true);
+  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
   @StorageLink('showing_more_options') showing_more_options: boolean = false;
@@ -56,6 +55,8 @@ struct meowTabs {
   @State scroll_animation_enabled: boolean = true;
   @State paralleow_description_height: number = 0;
   @StorageLink('tab_animation') tab_animation: AnimateParam = animation_default();
+  // Settings - Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Gateways
   @StorageLink('universal_load_url_gateway') @Watch('uni_load_url') load_url_gateway: string = "";
   @StorageLink('universal_new_tab_gateway') @Watch('uni_new_tab') new_tab_gateway: string = "";
@@ -236,6 +237,7 @@ struct meowTabs {
           })
           .keyboardShortcut(this.bunch_of_key_shortcuts.new_tab.main_key, this.bunch_of_key_shortcuts.new_tab.modifier)
       } // New Tab and Paralleow Button
+      .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
       .width("100%")
 
       Scroll() {
@@ -627,11 +629,12 @@ struct TabButton {
   @Prop Label: tab_label;
   tab_height_default: number = 42;
   // Public
-  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts =
-    new bunch_of_key_shortcuts(true);
+  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   @StorageLink('current_main_tab_index') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') current_sub_tab_index: number = -1;
   @StorageLink('tab_titles') tab_titles: string[] = []
+  // Settings - Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Gateways
   @StorageLink('universal_tab_button_click_gateway') uni_tab_button_clicked: number = -1;
   @StorageLink('universal_close_tab_gateway') close_tab_gateway: number = -1;
@@ -644,6 +647,14 @@ struct TabButton {
   build() {
     RelativeContainer() {
       Row() {
+        SymbolGlyph($r('sys.symbol.xmark'))
+          .padding({ right: 5 })
+          .fontSize(fontSize_Normal())
+          .fontColor([this.color_current_font])
+          .fontWeight(FontWeight.Medium)
+          .visibility(this.preferred_hand_left_or_right == 'left' ? Visibility.Visible : Visibility.None)
+          .animation(animation_default())
+
         Text("󰇀")
           .padding({ right: 5 })
           .fontSize(fontSize_Large())
@@ -670,14 +681,15 @@ struct TabButton {
           .fontSize(fontSize_Normal())
           .fontColor([this.color_current_font])
           .fontWeight(FontWeight.Medium)
+          .visibility(this.preferred_hand_left_or_right == 'right' ? Visibility.Visible : Visibility.None)
+          .animation(animation_default())
 
       } // Title and xmark
       .border({
         radius: 10,
         width: 2,
-        color: (this.current_main_tab_index == this.Label.index_key ||
-          this.current_sub_tab_index == this.Label.index_key)
-          ? this.color_current_font : "transparent"
+        color: (this.current_main_tab_index == this.Label.index_key || this.current_sub_tab_index == this.Label.index_key) ?
+        this.color_current_font : "transparent"
       })
       .backgroundColor(this.color_current_secondary)
       .animation(animation_default())
@@ -704,8 +716,8 @@ struct TabButton {
       .onClick(() => {
         this.close_tab_gateway = this.Label.index_key;
       })
-      .keyboardShortcut(this.current_main_tab_index == this.Label.index_key ?
-      this.bunch_of_key_shortcuts.close_tab.main_key : '', this.bunch_of_key_shortcuts.close_tab.modifier)
+      .keyboardShortcut(this.current_main_tab_index == this.Label.index_key ? this.bunch_of_key_shortcuts.close_tab.main_key : '',
+        this.bunch_of_key_shortcuts.close_tab.modifier)
     }
     .onTouch((event) => {
       if (event.type == TouchType.Up) {

@@ -103,7 +103,7 @@ struct woofHomepageManager {
       }
       .scrollBar(BarState.Off)
       .layoutWeight(1)
-      .constraintSize({ maxHeight: 425 })
+      .constraintSize({ maxHeight: 520 })
       .scrollable(ScrollDirection.Vertical)
       .edgeEffect(EdgeEffect.Spring)
     }

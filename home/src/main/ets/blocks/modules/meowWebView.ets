@@ -9,7 +9,6 @@ import woofWantDownload from '../../dialogs/prompts/woofWantDownload';
 import woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import { bookmark, bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import woofWantJump from '../../dialogs/prompts/woofWantJump';
-import { copy } from '../../utils/clipboard_tools';
 
 @Component
 struct meowWebView {
@@ -58,7 +57,9 @@ struct meowWebView {
   @StorageLink('disable_image') disable_image: boolean = false;
   @StorageLink('disable_image_these_sites') disable_image_these_sites: string[] = [];
   @StorageLink('disable_image_all_sites') disable_image_all_sites: boolean = true;
+  // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
+  @StorageLink('preferred_hand_reverse_homepage_shortcuts') preferred_hand_reverse_homepage_shortcuts: boolean = false;
   // Stuffs
   @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
@@ -445,39 +446,39 @@ struct meowWebView {
               }
               return false;
             })
-            // .onContextMenuShow((event) => {
-            //   if (event) {
-            //     this.menu_result = event.result
-            //     // console.info("x coord = " + event.param.x());
-            //     // console.info("link url = " + event.param.getLinkUrl());
-            //     this.menu_linkUrl = event.param.getLinkUrl();
-            //   }
-            //   console.info(`[ContextMenu] x: ${this.menu_offsetX}, y: ${this.menu_offsetY}`);
-            //   this.menu_showMenu = true;
-            //   this.menu_offsetX = 0;
-            //   this.menu_offsetY = Math.max(px2vp(event?.param.y() ?? 0) - 0, 0);
-            //   // Set content display
-            //   this.menu_has_link = this.menu_linkUrl ? true : false;
-            //   this.menu_editable = event.param.isEditable();
-            //   this.menu_has_image = event.param.existsImageContents();
-            //   this.menu_mediaType = event.param.getMediaType();
-            //   this.menu_imageLink = event.param.getSourceUrl();
-            //   return true;
-            // })// Trigger popup
-            // .bindPopup(this.menu_showMenu,
-            //   {
-            //     builder: this.MenuBuilder(),
-            //     enableArrow: false,
-            //     placement: Placement.LeftTop,
-            //     offset: { x: this.menu_offsetX, y: this.menu_offsetY },
-            //     mask: false,
-            //     onStateChange: (e) => {
-            //       if (!e.isVisible) {
-            //         this.menu_showMenu = false;
-            //         this.menu_result!.closeContextMenu();
-            //       }
-            //     }
-            //   })
+          // .onContextMenuShow((event) => {
+          //   if (event) {
+          //     this.menu_result = event.result
+          //     // console.info("x coord = " + event.param.x());
+          //     // console.info("link url = " + event.param.getLinkUrl());
+          //     this.menu_linkUrl = event.param.getLinkUrl();
+          //   }
+          //   console.info(`[ContextMenu] x: ${this.menu_offsetX}, y: ${this.menu_offsetY}`);
+          //   this.menu_showMenu = true;
+          //   this.menu_offsetX = 0;
+          //   this.menu_offsetY = Math.max(px2vp(event?.param.y() ?? 0) - 0, 0);
+          //   // Set content display
+          //   this.menu_has_link = this.menu_linkUrl ? true : false;
+          //   this.menu_editable = event.param.isEditable();
+          //   this.menu_has_image = event.param.existsImageContents();
+          //   this.menu_mediaType = event.param.getMediaType();
+          //   this.menu_imageLink = event.param.getSourceUrl();
+          //   return true;
+          // })// Trigger popup
+          // .bindPopup(this.menu_showMenu,
+          //   {
+          //     builder: this.MenuBuilder(),
+          //     enableArrow: false,
+          //     placement: Placement.LeftTop,
+          //     offset: { x: this.menu_offsetX, y: this.menu_offsetY },
+          //     mask: false,
+          //     onStateChange: (e) => {
+          //       if (!e.isVisible) {
+          //         this.menu_showMenu = false;
+          //         this.menu_result!.closeContextMenu();
+          //       }
+          //     }
+          //   })
 
         } // Webs
         .borderColor(this.color_current_secondary)
@@ -501,7 +502,7 @@ struct meowWebView {
         .onAreaChange((_o, n) => {
           this.shortcut_scroll_total_height = n.height as number;
         })
-        .alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
+        .alignItems(this.shortcut_alignItems())
         .padding({ top: Math.max(18, this.screen_height * (1 - this.homepage_shortcuts_init_height * 0.01)) })
         .animation(animation_default())
         .width('100%')
@@ -744,6 +745,14 @@ struct meowWebView {
       return false;
     }
     return true;
+  }
+
+  shortcut_alignItems() {
+    let status = this.preferred_hand_left_or_right == 'right';
+    if (this.preferred_hand_reverse_homepage_shortcuts) {
+      status = !status;
+    }
+    return status ? HorizontalAlign.End : HorizontalAlign.Start;
   }
 
   // Ladders

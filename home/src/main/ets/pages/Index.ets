@@ -99,6 +99,7 @@ struct Index {
   @StorageLink('max_bookmark_advice') max_bookmark_advice: number = 5;
   @StorageLink('max_history_advice') max_history_advice: number = 5;
   // Settings - Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('preferred_hand_reverse_tabs_panel') preferred_hand_reverse_tabs_panel: boolean = false;
   // Gateways
   @StorageLink('universal_close_tab_gateway') uni_close_tab_gateway: number = -1;
@@ -449,7 +450,11 @@ struct Index {
     if (this.width_of_Bookmarks_and_Tabs() == 0) {
       return 0;
     }
-    return this.preferred_hand_reverse_tabs_panel ? { right: this.rightAvoidWidth } : { left: this.leftAvoidWidth };
+    let status = this.preferred_hand_left_or_right == 'left';
+    if (this.preferred_hand_reverse_tabs_panel) {
+      status = !status;
+    }
+    return status ? { right: this.rightAvoidWidth } : { left: this.leftAvoidWidth };
   }
 
   width_of_Bookmarks() {
@@ -492,11 +497,11 @@ struct Index {
   }
 
   direction_of_web_and_side_panels() {
-    // let status = this.tablet_mode;
-    // if () {
-    //   status = !status;
-    // }
-    return this.preferred_hand_reverse_tabs_panel ? Direction.Rtl : Direction.Ltr;
+    let status = this.preferred_hand_left_or_right == 'left';
+    if (this.preferred_hand_reverse_tabs_panel) {
+      status = !status;
+    }
+    return status ? Direction.Rtl : Direction.Ltr;
   }
 
   // Operations

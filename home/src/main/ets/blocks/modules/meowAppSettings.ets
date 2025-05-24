@@ -121,6 +121,7 @@ struct meowAppSettings {
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('preferred_hand_reverse_settings_menu') preferred_hand_reverse_settings_menu: boolean = false;
   @StorageLink('preferred_hand_reverse_tabs_panel') preferred_hand_reverse_tabs_panel: boolean = false;
+  @StorageLink('preferred_hand_reverse_homepage_shortcuts') preferred_hand_reverse_homepage_shortcuts: boolean = false;
   // Edits
   @State new_tab_url_edit: string = "";
   @State home_url_edit: string = "";
@@ -491,6 +492,11 @@ struct meowAppSettings {
                 selectedIndexes: this.left_or_right_selected
               }) // Single hand usability
 
+              linysText({
+                text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_desc'),
+                max_lines: 20
+              })
+
               Row() {
                 linysText({ text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_settings_menu'), max_lines: 3 })
                   .layoutWeight(1)
@@ -513,6 +519,19 @@ struct meowAppSettings {
                   .onChange(isOn => {
                     this.preferred_hand_reverse_tabs_panel = isOn;
                     this.bunch_of_settings.set('preferred_hand_reverse_tabs_panel', isOn);
+                  })
+              } // Reverse tabs panel
+              .width("100%")
+
+              Row() {
+                linysText({ text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_homepage_shortcuts'), max_lines: 3 })
+                  .layoutWeight(1)
+                Toggle({ isOn: this.preferred_hand_reverse_homepage_shortcuts, type: ToggleType.Switch })
+                  .switchPointColor(this.color_current_secondary)
+                  .selectedColor(this.color_current_font)
+                  .onChange(isOn => {
+                    this.preferred_hand_reverse_homepage_shortcuts = isOn;
+                    this.bunch_of_settings.set('preferred_hand_reverse_homepage_shortcuts', isOn);
                   })
               } // Reverse tabs panel
               .width("100%")
@@ -1016,6 +1035,7 @@ struct meowAppSettings {
     // Get accessibility - reverse
     this.preferred_hand_reverse_tabs_panel = await this.bunch_of_settings.get('preferred_hand_reverse_tabs_panel') as boolean;
     this.preferred_hand_reverse_settings_menu = await this.bunch_of_settings.get('preferred_hand_reverse_settings_menu') as boolean;
+    this.preferred_hand_reverse_homepage_shortcuts = await this.bunch_of_settings.get('preferred_hand_reverse_homepage_shortcuts') as boolean;
 
     // Get Homepage shortcut directory
     let homepage_shortcuts_bookmarks_dir = await this.bunch_of_settings.get('homepage_shortcuts_bookmarks_dir') as string;

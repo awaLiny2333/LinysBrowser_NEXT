@@ -57,6 +57,7 @@ export class bunch_of_settings {
     this.register_setting('preferred_hand_left_or_right', 'string', 'right');
     this.register_setting('preferred_hand_reverse_settings_menu', 'boolean', 'false');
     this.register_setting('preferred_hand_reverse_tabs_panel', 'boolean', 'false');
+    this.register_setting('preferred_hand_reverse_homepage_shortcuts', 'boolean', 'false');
 
     // Ad blocker
     this.register_setting('use_adblock', 'boolean', 'true');

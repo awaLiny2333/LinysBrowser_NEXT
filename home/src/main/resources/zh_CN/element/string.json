@@ -161,12 +161,20 @@
       "value": "辅助"
     },
     {
+      "name": "Settings_Accessibility_preferred_hand_reverse_desc",
+      "value": "在选择单手优化方向后，主页快捷链接、设置菜单、标签页和书签面板会相应地更改位置。\n\n如果你希望在之基础上做出更多调整，可以调节："
+    },
+    {
       "name": "Settings_Accessibility_preferred_hand_reverse_settings_menu",
       "value": "\uDB82\uDC3B / \uDB82\uDD42 反转设置菜单位置"
     },
     {
       "name": "Settings_Accessibility_preferred_hand_reverse_tabs_panel",
-      "value": "反转书签和（垂直）标签页面板位置"
+      "value": "反转书签和垂直标签页面板位置"
+    },
+    {
+      "name": "Settings_Accessibility_preferred_hand_reverse_homepage_shortcuts",
+      "value": "反转首页快捷链接位置"
     },
     {
       "name": "Settings_Experience",

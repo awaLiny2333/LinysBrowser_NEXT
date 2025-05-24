@@ -3,7 +3,6 @@ import linysSymbol from '../../components/linysSymbol';
 import { animation_default, click_effect_default, fontSize_Large, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { LengthMetrics } from '@kit.ArkUI';
-import { uniformTypeDescriptor } from '@kit.ArkData';
 import { allow_drop_types, drop_to_scratching_board } from '../../utils/drag_drop_tools';
 import linysText from '../../components/linysText';
 import { deviceInfo } from '@kit.BasicServicesKit';
@@ -31,6 +30,8 @@ struct meowTabsHorizontal {
   @StorageLink('current_loading_progress') current_loading_progress: number = 0
   @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]
   @StorageLink('current_is_loading') current_is_loading: boolean = true
+  // Settings - Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Gateways
   @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
   @StorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
@@ -142,7 +143,7 @@ struct meowTabsHorizontal {
       } // Base container
       .alignItems(VerticalAlign.Center)
 
-      Row({ space: 10 }) {
+      Row({ space: 5 }) {
         linysTimeoutButton({
           text: '  󰀁  ',
           onExecution: () => {
@@ -151,7 +152,7 @@ struct meowTabsHorizontal {
         })
           .visibility(this.choosing_paralleow || this.current_sub_tab_index >= 0 ? Visibility.None : Visibility.Visible)
           .animation(animation_default())
-          .padding({ left: 5 })
+          // .padding({ left: 5 })
 
         Blank()
 
@@ -163,19 +164,20 @@ struct meowTabsHorizontal {
           .onClick(() => {
             this.choose_paralleow();
           })
-          .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden)
-          .margin({ left: 4, bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0 })
+          .visibility(this.tab_titles.length > 1 ? Visibility.Visible :
+          Visibility.Hidden)// .margin({ left: 4, bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0 })
           .animation(animation_default())
 
         linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })// New tab
           .onClick(() => {
             this.new_tab_gateway = "new_tab";
-          })
-          .margin({ bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0, right: 8 })
+          })// .margin({ bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0, right: 8 })
           .animation(animation_default())
       } // Extension for compact (non-tablet mode) layout
+      .alignItems(VerticalAlign.Center)
+      .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
       .visibility(this.tablet_mode ? Visibility.None : Visibility.Visible)
-      .padding({ top: this.length_width_of_tabs > this.full_area_width ? 0 : 10 })
+      .padding({ left: 7, right: 7, top: this.length_width_of_tabs > this.full_area_width ? 0 : 10 })
       .animation(animation_default())
       .width('100%')
 
@@ -188,7 +190,7 @@ struct meowTabsHorizontal {
     })
     .onDragEnter(() => {
       this.showing_scratching_board = true;
-      this.showing_more_options =false;
+      this.showing_more_options = false;
     })
     .onDragLeave(() => {
       this.showing_scratching_board = false;
@@ -242,17 +244,31 @@ struct HorizontalTabButton {
   @StorageLink('universal_close_tab_gateway') close_tab_gateway: number = -1;
   @StorageLink('universal_tab_button_click_gateway') uni_tab_button_clicked: number = -1;
   @State offset_y: number = 100;
+  // Settings - Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     Row({ space: 8 }) {
+      if (this.preferred_hand_left_or_right == 'left') {
+        SymbolGlyph($r('sys.symbol.xmark'))// Close icon
+          .fontSize(fontSize_Normal())
+          .fontColor([this.color_current_font])
+          .fontWeight(FontWeight.Medium)
+          .onClick(() => {
+            this.close_tab_gateway = this.index;
+            // Close tab
+          })
+          .visibility(this.tab_width() <= 80 ? this.visibility_visible_on_chosen(this.index) : Visibility.Visible)
+          .animation(animation_default())
+      }
+
       Text("󰇀")// Paralleow icon
         .fontSize(fontSize_Large())
         .fontColor(this.color_current_font)
-        .fontWeight((this.current_main_tab_index == this.index || this.current_sub_tab_index == this.index) ?
-        FontWeight.Medium : undefined)
+        .fontWeight((this.current_main_tab_index == this.index || this.current_sub_tab_index == this.index) ? FontWeight.Medium : undefined)
         .visibility(this.current_sub_tab_index == this.index ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
         .offset({ y: -2 })
@@ -267,16 +283,18 @@ struct HorizontalTabButton {
         .textOverflow({ overflow: TextOverflow.Ellipsis })
         .layoutWeight(1)
 
-      SymbolGlyph($r('sys.symbol.xmark'))// Close icon
-        .fontSize(fontSize_Normal())
-        .fontColor([this.color_current_font])
-        .fontWeight(FontWeight.Medium)
-        .onClick(() => {
-          this.close_tab_gateway = this.index;
-          // Close tab
-        })
-        .visibility(this.tab_width() <= 80 ? this.visibility_visible_on_chosen(this.index) : Visibility.Visible)
-        .animation(animation_default())
+      if (this.preferred_hand_left_or_right == 'right') {
+        SymbolGlyph($r('sys.symbol.xmark'))// Close icon
+          .fontSize(fontSize_Normal())
+          .fontColor([this.color_current_font])
+          .fontWeight(FontWeight.Medium)
+          .onClick(() => {
+            this.close_tab_gateway = this.index;
+            // Close tab
+          })
+          .visibility(this.tab_width() <= 80 ? this.visibility_visible_on_chosen(this.index) : Visibility.Visible)
+          .animation(animation_default())
+      }
     }
     .offset({ y: this.offset_y })
     .width(this.tab_width())
