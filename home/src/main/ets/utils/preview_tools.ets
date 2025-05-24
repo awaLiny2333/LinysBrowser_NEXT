@@ -22,7 +22,7 @@ export function preview_image(uri: string) {
     height: 800
   };
   let fileInfo: filePreview.PreviewInfo = {
-    title: '~(=^･･^)_旦~ (ﾟoﾟ;)',
+    title: '（ฅ＾・ﻌ・＾）ฅ - ' + file_name,
     uri: uri,
     mimeType: mime
   };

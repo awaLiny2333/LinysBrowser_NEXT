@@ -151,7 +151,7 @@ struct raw_data_display {
   @State copied: number = 0;
 
   build() {
-    Row({ space: 10 }) {
+    Row({ space: 15 }) {
       if (this.type == 'image') {
         Image(this.text)
           .width(this.tablet_mode ? '50%' : undefined)
