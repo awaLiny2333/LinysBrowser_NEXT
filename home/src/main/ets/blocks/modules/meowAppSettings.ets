@@ -44,6 +44,7 @@ import {
   history_index_save_to_disk_worker
 } from '../../hosts/bunch_of_history_index_x_functions';
 import { bunch_of_history_index_lite } from '../../hosts/bunch_of_history_index_lite';
+import woofUpdateHistory from '../../dialogs/contents/woofUpdateHistory';
 
 @Component
 struct meowAppSettings {
@@ -133,7 +134,7 @@ struct meowAppSettings {
   @State scroll_last: number = 0;
   @State menu_text: string[] =
     ['Settings_start_up', 'Settings_general', 'Settings_Experience', 'Settings_Accessibility', 'Settings_appearance',
-      'Settings_experience_history', 'Settings_storage', 'Settings_security', 'Settings_toolbox', 'Settings_about'];
+      'Settings_experience_history', 'Settings_storage', 'Settings_security', 'Settings_toolbox', 'Settings_about', 'Settings_update'];
   // Dialogs
   @StorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
   woofHistory_control: CustomDialogController = new CustomDialogController({
@@ -207,6 +208,13 @@ struct meowAppSettings {
   });
   recent_fault_logs_control: CustomDialogController = new CustomDialogController({
     builder: woofRecentFaultLogs(),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16,
+    // showInSubWindow: true,
+    width: "90%",
+  });
+  update_history: CustomDialogController = new CustomDialogController({
+    builder: woofUpdateHistory(),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
     // showInSubWindow: true,
@@ -915,13 +923,41 @@ struct meowAppSettings {
                 .onClick(() => {
                   this.version_clicked();
                 })
-              meowWhatsNew()
               meowCreditsRepos()
               meowCreditsUsers()
               linysText({
                 text: $r("app.string.Credits_extra"),
                 max_lines: 6
               })
+            }
+            .padding(15)
+            .alignItems(HorizontalAlign.Start)
+            .justifyContent(FlexAlign.Start)
+            .width("100%")
+            .borderRadius(10)
+            .backgroundColor(this.color_current_primary)
+          } // About
+          .width("100%")
+
+          FlowItem() {
+            Column({ space: 15 }) {
+              linysTitleText({
+                text: $r('app.string.Whats_new')
+              })
+              meowWhatsNew()
+              linysText({
+                text: $r("app.string.Whats_new_content_extra"),
+                max_lines: 6
+              })
+              Row({ space: 10 }) {
+                linysText({ text: $r('app.string.Update_record'), max_lines: 3, align_another_side: true })
+                  .layoutWeight(1)
+                linysCapsuleButton({ text: "  󰀩  " })
+                  .onClick(() => {
+                    this.update_history.open();
+                  })
+              } // Update history
+              .width("100%")
             }
             .padding(15)
             .alignItems(HorizontalAlign.Start)

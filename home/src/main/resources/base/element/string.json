@@ -490,11 +490,15 @@
     },
     {
       "name": "Update_record",
-      "value": "Update history OwO"
+      "value": "Update history"
     },
     {
       "name": "Whats_new",
       "value": "What's new?"
+    },
+    {
+      "name": "Settings_update",
+      "value": "Update"
     },
     {
       "name": "Whats_new_content",

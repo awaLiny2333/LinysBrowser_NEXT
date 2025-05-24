@@ -490,11 +490,15 @@
     },
     {
       "name": "Update_record",
-      "value": "更新历史 OwO"
+      "value": "更新历史"
     },
     {
       "name": "Whats_new",
       "value": "更新了什么？"
+    },
+    {
+      "name": "Settings_update",
+      "value": "更新"
     },
     {
       "name": "Whats_new_content",
