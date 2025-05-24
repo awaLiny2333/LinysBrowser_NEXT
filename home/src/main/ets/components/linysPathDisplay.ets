@@ -9,6 +9,8 @@ struct linysPathDisplay {
   @State path_stack: string[] = [];
   @State label_stack: string[] = [];
   scroller: Scroller = new Scroller();
+  // Settings / Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Colors
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
 
@@ -35,7 +37,7 @@ struct linysPathDisplay {
           })
         })
       }
-      .alignItems(HorizontalAlign.End)
+      .alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
       .width("100%")
       .animation(animation_default())
     }

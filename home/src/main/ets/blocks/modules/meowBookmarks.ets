@@ -3,13 +3,7 @@ import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { url_resource_to_meow } from '../../utils/url_tools';
 import linysSymbol from '../../components/linysSymbol';
 import { document_open, document_save } from '../../utils/storage_tools';
-import {
-  animation_default,
-  capsule_bar_height,
-  click_effect_default,
-  fontSize_Large,
-  fontSize_Normal
-} from '../../hosts/bunch_of_defaults';
+import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import { kv_store_get, kv_store_put } from '../../utils/kv_store_tools';
 import linysShowButton from '../../components/linysShowButton';
 import linysCapsuleButton from '../../components/linysCapsuleButton';
@@ -232,13 +226,11 @@ struct meowBookmarks {
       .animation(animation_default())
       .scrollBar(BarState.Off)
 
-      Text(this.looking_at_path == "" ?
-        this.showing_navigator ? $r('app.string.Bookmarks_root_path_expanded') : $r('app.string.Bookmarks_root_path')
-        : "@ " + this.looking_at_path + "/")
+      Text(this.text_path())// Display of list menu quick jump
         .fontColor(this.color_current_font)
         .fontWeight(FontWeight.Medium)
         .fontSize(fontSize_Normal())
-        .textAlign(TextAlign.End)
+        .textAlign(this.preferred_hand_left_or_right == 'right' ? TextAlign.End : TextAlign.Start)
         .width("100%")
         .margin({ top: 5, bottom: 5 })
         .opacity(0.7)
@@ -405,6 +397,21 @@ struct meowBookmarks {
     console.log("[Meow][LinysBookmarks] Started to save HTML to KVStore!")
     let html_bookmark: string[] = this.bunch_of_bookmarks.get_export_html();
     kv_store_put("html_bookmarks", html_bookmark.join("\n"));
+  }
+
+  // Data
+
+  text_path() {
+    if (this.looking_at_path == "") {
+      if (this.showing_navigator) {
+        return $r('app.string.Bookmarks_root_path_expanded');
+      } else {
+        return $r('app.string.Bookmarks_root_path');
+      }
+    } else {
+      // Normal display
+      return "@ " + this.looking_at_path + "/";
+    }
   }
 }
 
