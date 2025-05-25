@@ -566,8 +566,6 @@ struct meowTitleBar {
 
       Scroll() {
         Column({ space: 10 }) {
-          // Row().height(100) // For single hand use
-
           RelativeContainer() {
             Row({ space: 10 }) {
               linysSymbol({
@@ -738,14 +736,12 @@ struct meowTitleBar {
                 this.fullscreen_mode = !this.fullscreen_mode;
                 this.showing_more_options = false;
               })
-          }
-          // .width('100%')
+          } // Small buttons
           .justifyContent(FlexAlign.End)
 
           Row() {
             meowDebug()
           } // Debug
-          // .width('100%')
           .opacity(0.8)
           .visibility(this.resource_monitor ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
@@ -775,7 +771,6 @@ struct meowTitleBar {
             .animation(animation_default())
 
         } // Title Bar of More Options
-        // .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
         .alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
         .width("100%")
         .animation(animation_default())

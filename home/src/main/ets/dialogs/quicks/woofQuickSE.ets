@@ -24,9 +24,10 @@ struct woofAddSE {
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Host
-  @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines =
-    new bunch_of_search_engines();
+  @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines = new bunch_of_search_engines();
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
+  // Settings - Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Animation UI Statuses
   @State adding_SE: boolean = false;
   @State height_of_add_panel: number = 0;
@@ -94,7 +95,7 @@ struct woofAddSE {
                 })
             } // Plus button
             .width("100%")
-            .justifyContent(FlexAlign.End)
+            .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
 
             Scroll() {
               Column({ space: 10 }) {
@@ -138,6 +139,7 @@ struct woofAddSE {
                       this.bunch_of_settings.set('custom_search_engines', this.bunch_of_search_engines.export_string());
                     })
                 } // Confirm Button
+                .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
                 .width("100%")
               }
               .onAreaChange((_o, n) => {
@@ -347,6 +349,7 @@ struct meowSEButton {
         .scrollBar(BarState.Off)
         .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.PARENT_FIRST })
       }
+
       // .border({
       //   radius: 10,
       //   width: 2,

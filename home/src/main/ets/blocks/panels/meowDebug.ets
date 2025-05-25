@@ -9,6 +9,8 @@ import { add_units_to_size } from '../../utils/storage_tools';
 struct meowDebug {
   @State data: string[] = ['pss', 'vss', 'shared dirty', 'private dirty', 'cpu', 'native heap', 'vram'];
   @StorageLink('showing_more_options') showing_more_options: boolean = false;
+  // Settings - Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
 
   build() {
     Scroll() {
@@ -113,7 +115,7 @@ struct meowDebug {
     .scrollable(ScrollDirection.Horizontal)
     .edgeEffect(EdgeEffect.Spring)
     .scrollBar(BarState.Off)
-    .align(Alignment.BottomEnd)
+    .align(this.preferred_hand_left_or_right == 'right' ? Alignment.BottomEnd : Alignment.BottomStart)
     .width('100%')
   }
 }

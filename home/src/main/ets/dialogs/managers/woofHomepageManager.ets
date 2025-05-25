@@ -37,6 +37,8 @@ struct woofHomepageManager {
     width: "90%",
   })
   controller: CustomDialogController;
+  // Status
+  @State content_height: number = 233;
 
   build() {
     woofControlFrame({
@@ -48,7 +50,7 @@ struct woofHomepageManager {
           linysText({
             text: $r('app.string.Settings_homepage_shortcuts_manage_desc'),
             max_lines: 3
-          })// Desc
+          }) // Desc
 
           linysTitleText({ text: $r('app.string.Homepage_background') })// Title
             .width('100%')
@@ -98,12 +100,15 @@ struct woofHomepageManager {
         }
         .alignItems(HorizontalAlign.Start)
         .width('100%')
+        .onAreaChange((_o, n) => {
+          this.content_height = n.height as number;
+        })
         // .height(this.tablet_mode ? this.screen_height * 0.9 : undefined)
         .animation(animation_default())
       }
       .scrollBar(BarState.Off)
       .layoutWeight(1)
-      .constraintSize({ maxHeight: 520 })
+      .constraintSize({ maxHeight: this.content_height })
       .scrollable(ScrollDirection.Vertical)
       .edgeEffect(EdgeEffect.Spring)
     }
