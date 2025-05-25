@@ -38,8 +38,7 @@ struct meowTitleBar {
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
-  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts =
-    new bunch_of_key_shortcuts(true);
+  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads();
   // Environments
   @StorageLink('fullscreen_mode') fullscreen_mode: boolean = false;
@@ -265,7 +264,7 @@ struct meowTitleBar {
       } // Title Bar for This Page Info display
       .padding({ left: 15, right: 15, top: 6 })
       .width("100%")
-      .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
+      .visibility(this.showing_more_options && !this.showing_scratching_board ? Visibility.Visible : Visibility.None)
       .animation(animation_default())
 
       RelativeContainer() {
@@ -453,8 +452,7 @@ struct meowTitleBar {
             })// Add Search Engine
               .margin({ left: 10 })
               .enabled(this.showing_scratching_board ? false : true)
-              .opacity(this.showing_scratching_board ? 0.4 : 1)
-              .visibility(this.search_extracted_field_available ? Visibility.Visible : Visibility.None)
+              .visibility(this.search_extracted_field_available && !this.showing_scratching_board ? Visibility.Visible : Visibility.None)
               .onClick(() => {
                 this.woofAddSE_control.open();
               })
@@ -564,7 +562,7 @@ struct meowTitleBar {
       } // Button controls and search
       .padding({ left: 15, right: 15 })
       .width("100%")
-      .height(this.tablet_mode ? 36 : 82)
+      .height(this.tablet_mode || this.showing_scratching_board ? 36 : 82)
       .animation(animation_default())
 
       Scroll() {
@@ -735,12 +733,7 @@ struct meowTitleBar {
               symbol_glyph_target: this.fullscreen_mode ?
                 'sys.symbol.arrow_down_right_and_arrow_up_left' :
                 'sys.symbol.arrow_up_left_and_arrow_down_right'
-            })// FullScreen
-              // .onClick(() => {
-              //   this.fullscreen_mode = !this.fullscreen_mode;
-              //   this.showing_more_options = false;
-              // })
-              // .keyboardShortcut(this.bunch_of_key_shortcuts.fullscreen.main_key, this.bunch_of_key_shortcuts.fullscreen.modifier)
+            }) // FullScreen
           }
           .width('100%')
           .justifyContent(FlexAlign.End)
@@ -777,20 +770,11 @@ struct meowTitleBar {
             .visibility(this.history_index_saving_progress != "" ? Visibility.Visible : Visibility.None)
             .animation(animation_default())
 
-          // linysTitleText({
-          //   text: $r('app.string.Index_drop_please'),
-          //   max_lines: 3
-          // })
-          //   .visibility(!this.showing_scratching_board ? Visibility.Visible : Visibility.None)
-          //   .opacity(0.2)
-          //   .padding(10)
-          //   .animation(animation_default())
-
         } // Title Bar of More Options
         .alignItems(HorizontalAlign.End)
         .width("100%")
         .animation(animation_default())
-      }
+      } // More Options
       .margin({ left: 15, right: 15 })
       .align(Alignment.Bottom)
       .borderRadius(16)

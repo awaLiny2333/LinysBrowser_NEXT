@@ -6,7 +6,7 @@ import linysTitleText from '../../components/linysTitleText';
 import { animation_default, animation_popup_duration, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { copy } from '../../utils/clipboard_tools';
 import { preview_image } from '../../utils/preview_tools';
-import { document_save_from_uri as document_save_from_uri } from '../../utils/storage_tools';
+import { add_units_to_size, document_save_from_uri as document_save_from_uri, get_file_size_Sync, get_file_suffix } from '../../utils/storage_tools';
 import { extract_links_from_text } from '../../utils/url_tools';
 
 @Component
@@ -138,25 +138,71 @@ struct raw_data_display {
   @Link showing_scratching_board: boolean;
   @State text: string = "meow";
   @State type: string = "text";
+  @State image_size: string = "233x233";
   @State index: number = 0;
   @State offset_y: number = 50;
   @State this_visibility: Visibility = Visibility.Hidden;
+  // Environment
   @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
+  @StorageProp('screen_width') screen_width: number = 0;
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Status
   @State copied: number = 0;
+  @State image_height: number = 0;
+  @State image_width: number = 0;
+  @State info_height: number = 0;
+  @State info_width: number = 0;
 
   build() {
     Row({ space: 15 }) {
       if (this.type == 'image') {
-        Image(this.text)
-          .width(this.tablet_mode ? '50%' : undefined)
-          .borderRadius(10)
-          .layoutWeight(this.tablet_mode ? undefined : 1)
+        RelativeContainer() {
+          Image(this.text)
+            .width(Math.min(300, this.screen_width - 100))
+            .borderRadius(10)
+            .onComplete((event) => {
+              let imageWidth = event?.width;
+              let imageHeight = event?.height;
+              this.image_size = imageWidth + 'x' + imageHeight
+              // console.info('imageWidth:'+imageWidth,'imageHeight:'+imageHeight);
+            })
+            .id('image')
+
+          Column({ space: 10 }) {
+            linysText({ text: this.image_size })// Size
+              .backgroundColor($r('sys.color.comp_background_tertiary'))
+              .padding(10)
+              .borderRadius(10)
+            linysText({ text: get_file_suffix(this.text) })
+              .backgroundColor($r('sys.color.comp_background_tertiary'))
+              .padding(10)
+              .borderRadius(10)
+            linysText({ text: add_units_to_size(get_file_size_Sync(this.text)) })
+              .backgroundColor($r('sys.color.comp_background_tertiary'))
+              .padding(10)
+              .borderRadius(10)
+          } // Info display
+          .alignItems(HorizontalAlign.Start)
+          .id('info')
+          .margin(this.tablet_mode ? { left: 10 } : { top: 10 })
+          .alignRules(this.tablet_mode ?
+            {
+              top: { anchor: 'image', align: VerticalAlign.Top },
+              left: { anchor: 'image', align: HorizontalAlign.End }
+            } :
+            {
+              top: { anchor: 'image', align: VerticalAlign.Bottom },
+              left: { anchor: 'image', align: HorizontalAlign.Start }
+            })
+        }
+        .width('auto')
+        .height('auto')
+        .animation(animation_default())
+
         Column({ space: 10 }) {
           linysSymbol({
             symbol_glyph_target: 'sys.symbol.save'
@@ -194,25 +240,27 @@ struct raw_data_display {
         })// Text display
           .layoutWeight(1)
 
-        linysSymbol({
-          symbol_glyph_target: this.copied ? 'sys.symbol.checkmark_clipboard_fill' : 'sys.symbol.text_clipboard'
-        })// Text copy
-          .clickEffect(click_effect_default())
-          .onClick(() => {
-            copy(this.text);
-            this.copied = animation_popup_duration();
-          })
-
-        if (this.type == 'url') {
+        Row({ space: 10 }) {
           linysSymbol({
-            symbol_glyph_target: 'sys.symbol.arrow_right'
-          })
+            symbol_glyph_target: this.copied ? 'sys.symbol.checkmark_clipboard_fill' : 'sys.symbol.text_clipboard'
+          })// Text copy
             .clickEffect(click_effect_default())
             .onClick(() => {
-              this.new_tab_gateway = this.text;
-              this.showing_scratching_board = false;
+              copy(this.text);
+              this.copied = animation_popup_duration();
             })
-        } // Url visit button
+
+          if (this.type == 'url') {
+            linysSymbol({
+              symbol_glyph_target: 'sys.symbol.arrow_right'
+            })
+              .clickEffect(click_effect_default())
+              .onClick(() => {
+                this.new_tab_gateway = this.text;
+                this.showing_scratching_board = false;
+              })
+          } // Url visit button
+        } // Buttons
       } // Content display with Controls
     }
     .padding(15)

@@ -293,6 +293,18 @@ export function get_folder_size_Sync(path: string, log: boolean) {
 }
 
 /**
+ * Gets the size of a file
+ * @param path the path or uri
+ * @returns the size in number
+ * */
+export function get_file_size_Sync(path: string) {
+  let file = fs.openSync(path);
+  let filestat = fs.statSync(file.fd);
+  fs.close(file);
+  return filestat.size;
+}
+
+/**
  * Adds a unit to a size in bytes.
  * @param size_in_bytes A number or bigint, the size in bytes.
  * @returns A string, the connected result of a number of size and its unit.
@@ -391,4 +403,14 @@ export function copy_from_rawfile_to_sandbox(from: string, to: string) {
   let destFile = fs.writeSync(fsOpen.fd, bf);
   // 关闭文件
   fs.close(destFile)
+}
+
+/**
+ * Returns the suffix of a file name.
+ * @param file for example, 'qwq.txt.awa'
+ * @returns the suffix. e.g. 'awa'
+ * */
+export function get_file_suffix(file: string) {
+  let s = file.split('.');
+  return s[s.length-1].toUpperCase();
 }
