@@ -418,49 +418,44 @@ struct meowTitleBar {
           } // Two inputs
           .layoutWeight(1)
 
-          Row({ space: 10 }) {
-            linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right' })// Search
-              // .margin({ left: 10 })
-              .visibility(this.visible_when_typing())
-              .onClick(() => {
-                this.submit_searching()
-              })
-              .animation(animation_default())
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right' })// Search
+            .visibility(this.visible_when_typing())
+            .onClick(() => {
+              this.submit_searching()
+            })
+            .animation(animation_default())
 
-            linysShowButton({
-              symbol_glyph_target: this.showing_search_extracted_field ? 'sys.symbol.text_and_t' : 'sys.symbol.link',
-              text: $r(this.showing_search_extracted_field ?
-                'app.string.Address_analyzer_keyword' :
-                'app.string.Address_analyzer_address'),
-              show: this.address_analyzers_desc_close_cd > 0,
-            })// Key Link
-              // .margin({ left: 10 })
-              .visibility(this.showing_scratching_board ? Visibility.None : this.search_extracted_field_available ? Visibility.Visible : Visibility.None)
-              .onClick(() => {
-                this.showing_search_extracted_field = !this.showing_search_extracted_field;
-                if (this.is_search_input_typing) {
-                  // Switch focus
-                  if (this.showing_search_extracted_field) {
-                    focusControl.requestFocus('key_bar');
-                  } else {
-                    focusControl.requestFocus('address_bar');
-                  }
+          linysShowButton({
+            symbol_glyph_target: this.showing_search_extracted_field ? 'sys.symbol.text_and_t' : 'sys.symbol.link',
+            text: $r(this.showing_search_extracted_field ?
+              'app.string.Address_analyzer_keyword' :
+              'app.string.Address_analyzer_address'),
+            show: this.address_analyzers_desc_close_cd > 0,
+          })// Key Link
+            .visibility(this.showing_scratching_board ? Visibility.None : this.search_extracted_field_available ? Visibility.Visible : Visibility.None)
+            .onClick(() => {
+              this.showing_search_extracted_field = !this.showing_search_extracted_field;
+              if (this.is_search_input_typing) {
+                // Switch focus
+                if (this.showing_search_extracted_field) {
+                  focusControl.requestFocus('key_bar');
+                } else {
+                  focusControl.requestFocus('address_bar');
                 }
-                this.address_analyzers_desc_close_cd = 1200;
-              })
-              .animation(animation_default())
+              }
+              this.address_analyzers_desc_close_cd = 1200;
+            })
+            .animation(animation_default())
 
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.magnifyingglass',
-            })// Add Search Engine
-              // .margin({ left: 10 })
-              .enabled(this.showing_scratching_board ? false : true)
-              .visibility(this.search_extracted_field_available && !this.showing_scratching_board ? Visibility.Visible : Visibility.None)
-              .onClick(() => {
-                this.woofAddSE_control.open();
-              })
-              .animation(animation_default())
-          } // Buttons
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.magnifyingglass',
+          })// Add Search Engine
+            .enabled(this.showing_scratching_board ? false : true)
+            .visibility(this.search_extracted_field_available && !this.showing_scratching_board ? Visibility.Visible : Visibility.None)
+            .onClick(() => {
+              this.woofAddSE_control.open();
+            })
+            .animation(animation_default())
         } // Searching bar
         .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
         .height(36)
@@ -739,6 +734,10 @@ struct meowTitleBar {
                 'sys.symbol.arrow_down_right_and_arrow_up_left' :
                 'sys.symbol.arrow_up_left_and_arrow_down_right'
             }) // FullScreen
+              .onClick(() => {
+                this.fullscreen_mode = !this.fullscreen_mode;
+                this.showing_more_options = false;
+              })
           }
           // .width('100%')
           .justifyContent(FlexAlign.End)
