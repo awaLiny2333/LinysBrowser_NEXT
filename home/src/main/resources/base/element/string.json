@@ -162,7 +162,7 @@
     },
     {
       "name": "Settings_Accessibility_preferred_hand_reverse_desc",
-      "value": "After switching the direction of single hand optimization, homepage shortcuts, settings menu, tabs and bookmarks panel would switch their positions accordingly.\n\nIf you want to adjust further based on this, you could toggle:"
+      "value": "After switching the direction of single hand optimization, layouts would adjust their display accordingly. \n\nFor example, homepage shortcuts, settings menu, tabs and bookmarks panel would switch their positions for a easier access.\n\nIf you want to adjust further based on this, you could toggle:"
     },
     {
       "name": "Settings_Accessibility_preferred_hand_reverse_settings_menu",

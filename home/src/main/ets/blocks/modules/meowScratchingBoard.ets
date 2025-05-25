@@ -8,6 +8,7 @@ import { copy } from '../../utils/clipboard_tools';
 import { preview_image } from '../../utils/preview_tools';
 import { add_units_to_size, document_save_from_uri as document_save_from_uri, get_file_size_Sync, get_file_suffix } from '../../utils/storage_tools';
 import { extract_links_from_text } from '../../utils/url_tools';
+import { LengthMetrics } from '@kit.ArkUI';
 
 @Component
 struct meowScratchingBoard {
@@ -142,6 +143,8 @@ struct raw_data_display {
   @State index: number = 0;
   @State offset_y: number = 50;
   @State this_visibility: Visibility = Visibility.Hidden;
+  // Settings - Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Environment
   @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
@@ -154,8 +157,6 @@ struct raw_data_display {
   @State copied: number = 0;
   @State image_height: number = 0;
   @State image_width: number = 0;
-  @State info_height: number = 0;
-  @State info_width: number = 0;
 
   build() {
     Row({ space: 15 }) {
@@ -171,22 +172,35 @@ struct raw_data_display {
               // console.info('imageWidth:'+imageWidth,'imageHeight:'+imageHeight);
             })
             .id('image')
+            .onAreaChange((_o, n) => {
+              this.image_height = n.height as number;
+              this.image_width = n.width as number;
+            })
 
-          Column({ space: 10 }) {
-            linysText({ text: this.image_size })// Size
-              .backgroundColor($r('sys.color.comp_background_tertiary'))
-              .padding(10)
-              .borderRadius(10)
-            linysText({ text: get_file_suffix(this.text) })
-              .backgroundColor($r('sys.color.comp_background_tertiary'))
-              .padding(10)
-              .borderRadius(10)
-            linysText({ text: add_units_to_size(get_file_size_Sync(this.text)) })
-              .backgroundColor($r('sys.color.comp_background_tertiary'))
-              .padding(10)
-              .borderRadius(10)
-          } // Info display
-          .alignItems(HorizontalAlign.Start)
+          Scroll() {
+            Flex({
+              direction: !this.tablet_mode ? FlexDirection.Row : FlexDirection.Column,
+              space: { main: LengthMetrics.vp(10), cross: LengthMetrics.vp(10) }
+            }) {
+              linysText({ text: this.image_size })// Size
+                .backgroundColor($r('sys.color.comp_background_tertiary'))
+                .padding(10)
+                .borderRadius(10)
+              linysText({ text: get_file_suffix(this.text) })
+                .backgroundColor($r('sys.color.comp_background_tertiary'))
+                .padding(10)
+                .borderRadius(10)
+              linysText({ text: add_units_to_size(get_file_size_Sync(this.text)) })
+                .backgroundColor($r('sys.color.comp_background_tertiary'))
+                .padding(10)
+                .borderRadius(10)
+            } // Info display
+          }
+          .borderRadius(10)
+          .edgeEffect(EdgeEffect.Spring)
+          .scrollBar(BarState.Off)
+          .constraintSize(this.tablet_mode ? { maxHeight: this.image_height } : { maxWidth: this.image_width })
+          .scrollable(this.tablet_mode ? ScrollDirection.Vertical : ScrollDirection.Horizontal)
           .id('info')
           .margin(this.tablet_mode ? { left: 10 } : { top: 10 })
           .alignRules(this.tablet_mode ?
@@ -263,11 +277,11 @@ struct raw_data_display {
         } // Buttons
       } // Content display with Controls
     }
+    .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
     .padding(15)
     .borderRadius(20)
     .backgroundColor(this.color_current_primary)
     .justifyContent(FlexAlign.Start)
-    // .alignItems(VerticalAlign.Top)
     .width(this.type == 'image' ? undefined : "100%")
     .visibility(this.this_visibility)
     .offset({ y: this.offset_y })
