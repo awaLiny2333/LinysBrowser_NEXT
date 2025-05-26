@@ -240,7 +240,7 @@ struct meowTitleBar {
       .animation(animation_default())
       .constraintSize({ minHeight: 30 })
 
-      Row({ space: 10 }) {
+      Row({ space: 15 }) {
         Column({ space: 2.5 }) {
           Text(this.current_title)
             .fontColor(this.color_current_font)
