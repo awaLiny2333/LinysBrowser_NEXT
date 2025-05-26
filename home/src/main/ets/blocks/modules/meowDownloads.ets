@@ -1,19 +1,13 @@
 import linysTextTitle from '../../components/texts/linysTextTitle';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
-import {
-  animation_default,
-  animation_popup_duration,
-  capsule_bar_height,
-  click_effect_default,
-  fontSize_Large,
-  minimum_card_width
-} from '../../hosts/bunch_of_defaults';
+import { animation_default, animation_popup_duration, click_effect_default, minimum_card_width } from '../../hosts/bunch_of_defaults';
 import { request } from '@kit.BasicServicesKit';
 import linysText from '../../components/texts/linysText';
 import { copy } from '../../utils/clipboard_tools';
 import { add_units_to_size } from '../../utils/storage_tools';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
+import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 
 @Component
 struct meowDownloads {
@@ -125,6 +119,8 @@ struct meowDownloadsButton {
   @State my_paused: boolean = false;
   @State my_link: string = "";
   @State my_additional_info: string[] = [];
+  // Settings - Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Display info
   @State formatted_download_progress: string = "／";
   @State formatted_download_percentage: string = "%";
@@ -188,7 +184,6 @@ struct meowDownloadsButton {
         } // Progress
 
         Row({ space: 10 }) {
-
           linysShowButton({
             symbol_glyph_target: 'sys.symbol.info_circle',
             show: this.showing_additional_info,
@@ -206,38 +201,30 @@ struct meowDownloadsButton {
           })
             .enabled(!this.exporting)
 
-          Button(this.my_paused ? "  󰂴  " : "  󰂱  ")// Pause Continue
-            .type(ButtonType.Capsule)
-            .backgroundColor(this.color_current_font)
-            .fontColor(this.color_current_primary)
-            .fontSize(fontSize_Large())
-            .fontWeight(FontWeight.Bold)
-            .height(capsule_bar_height())
+          linysCapsuleButton({
+            text: this.my_paused ? "  󰂴  " : "  󰂱  ",
+          })// Pause continue
             .onClick(() => {
               this.pause_or_continue_task();
             })
-            .clickEffect(click_effect_default())
             .enabled(!this.exporting)
             .visibility(this.formatted_download_percentage == "100%" ? Visibility.None : Visibility.Visible)
             .animation(animation_default())
 
-          Button("  󰀻  ")// Save
-            .type(ButtonType.Capsule)
-            .backgroundColor(this.color_current_font)
-            .fontColor(this.color_current_primary)
-            .fontSize(fontSize_Large())
-            .fontWeight(FontWeight.Bold)
-            .height(capsule_bar_height())
+          linysCapsuleButton({
+            text: "  󰀻  "
+          })// Save
             .onClick(() => {
               this.exporting = true;
               this.export_file();
             })
             .enabled(!this.exporting)
-            .clickEffect(click_effect_default())
             .visibility(this.formatted_download_percentage == "100%" ? Visibility.Visible : Visibility.None)
             .animation(animation_default())
+
         } // Control Buttons
-        .justifyContent(FlexAlign.End)
+        .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
+        .animation(animation_default())
         .width("100%")
       }
       .padding(15)
