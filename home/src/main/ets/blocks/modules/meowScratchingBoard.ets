@@ -1,8 +1,8 @@
-import linysCapsuleButton from '../../components/linysCapsuleButton';
-import linysSymbol from '../../components/linysSymbol';
-import linysText from '../../components/linysText';
-import linysTimeoutButton from '../../components/linysTimeoutButton';
-import linysTitleText from '../../components/linysTitleText';
+import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
+import linysSymbol from '../../components/texts/linysSymbol';
+import linysText from '../../components/texts/linysText';
+import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
+import linysTextTitle from '../../components/texts/linysTextTitle';
 import { animation_default, animation_popup_duration, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { copy } from '../../utils/clipboard_tools';
 import { preview_image } from '../../utils/preview_tools';
@@ -33,7 +33,7 @@ struct meowScratchingBoard {
 
   build() {
     Column({ space: 10 }) {
-      linysTitleText({
+      linysTextTitle({
         text: this.show_feed_prompt ? $r('app.string.Index_drop_please') : $r('app.string.Index_drop_ok')
       })
         .width(this.show_feed_prompt ? undefined : "100%")
@@ -244,13 +244,13 @@ struct raw_data_display {
       } else {
         linysSymbol({
           symbol_glyph_target: this.type_symbol(),
-          font_weight: this.type == "text" ? FontWeight.Normal : FontWeight.Medium,
+          font_weight: this.type == "text" ? FontWeight.Regular : FontWeight.Bold,
         }) // Type Symbol
 
         linysText({
           text: this.text,
           max_lines: 10,
-          font_weight: this.type == "text" ? FontWeight.Normal : FontWeight.Medium,
+          font_weight: this.type == "text" ? FontWeight.Regular : FontWeight.Bold,
         })// Text display
           .layoutWeight(1)
 

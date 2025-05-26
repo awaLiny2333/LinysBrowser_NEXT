@@ -1,6 +1,6 @@
-import linysCapsuleButton from '../../components/linysCapsuleButton';
-import linysText from '../../components/linysText';
-import linysTitleText from '../../components/linysTitleText';
+import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
+import linysText from '../../components/texts/linysText';
+import linysTextTitle from '../../components/texts/linysTextTitle';
 import { jump_external_link } from '../../utils/url_tools';
 
 @CustomDialog
@@ -14,7 +14,7 @@ struct woofWantJump {
 
   build() {
     Column({ space: 15 }) {
-      linysTitleText({ text: $r('app.string.LinkJumper_webpage_asks_for_jump') })// This page is asking for a jump
+      linysTextTitle({ text: $r('app.string.LinkJumper_webpage_asks_for_jump') })// This page is asking for a jump
         .width("100%")
 
       linysText({ text: this.link, max_lines: 5 })// link

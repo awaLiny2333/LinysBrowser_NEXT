@@ -1,7 +1,7 @@
-import linysCapsuleButton from '../../components/linysCapsuleButton';
-import linysShowButton from '../../components/linysShowButton';
-import linysText from '../../components/linysText';
-import linysTitleText from '../../components/linysTitleText';
+import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
+import linysShowButton from '../../components/buttons/linysShowButton';
+import linysText from '../../components/texts/linysText';
+import linysTextTitle from '../../components/texts/linysTextTitle';
 import { animation_default, capsule_bar_height } from '../../hosts/bunch_of_defaults';
 import { is_legal_filename } from '../../utils/storage_tools';
 
@@ -26,7 +26,7 @@ struct woofWantDownload {
 
   build() {
     Column({ space: 15 }) {
-      linysTitleText({ text: $r('app.string.Index_downloads_prompt') })// prompt
+      linysTextTitle({ text: $r('app.string.Index_downloads_prompt') })// prompt
         .width("100%")
 
       linysText({ text: this.from, max_lines: 10 })// from website

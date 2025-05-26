@@ -1,5 +1,5 @@
-import linysText from '../../components/linysText';
-import linysTitleText from '../../components/linysTitleText';
+import linysText from '../../components/texts/linysText';
+import linysTextTitle from '../../components/texts/linysTextTitle';
 import woofControlFrame from '../woofControlFrame';
 
 @CustomDialog
@@ -11,6 +11,8 @@ struct woofQR {
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // Status
+  @State content_height: number = 233;
 
   build() {
     woofControlFrame({
@@ -24,7 +26,7 @@ struct woofQR {
             .backgroundColor("transparent")
             .padding(20)
 
-          linysTitleText({
+          linysTextTitle({
             text: this.title,
             max_lines: 3
           })
@@ -39,10 +41,13 @@ struct woofQR {
         .alignItems(HorizontalAlign.Center)
         .justifyContent(FlexAlign.Center)
         .width("100%")
+        .onAreaChange((_o, n) => {
+          this.content_height = n.height as number;
+        })
       }
       .layoutWeight(1)
       .edgeEffect(EdgeEffect.Spring)
-      .constraintSize({ maxHeight: 320 })
+      .constraintSize({ maxHeight: this.content_height })
     }
   }
 }

@@ -1,6 +1,6 @@
-import linysCapsuleButton from '../../components/linysCapsuleButton';
-import linysShowButton from '../../components/linysShowButton';
-import linysText from '../../components/linysText';
+import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
+import linysShowButton from '../../components/buttons/linysShowButton';
+import linysText from '../../components/texts/linysText';
 import { animation_default, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import woofControlFrame from '../woofControlFrame';
@@ -191,7 +191,7 @@ struct KeyButton {
     Text(this.id_to_display())
       .padding(10)
       .borderRadius(7)
-      .fontWeight(this.keys_selected.includes(this.key_id) ? FontWeight.Medium : FontWeight.Normal)
+      .fontWeight(this.keys_selected.includes(this.key_id) ? FontWeight.Bold : FontWeight.Regular)
       .fontColor(this.keys_selected.includes(this.key_id) ? this.color_current_primary : this.color_current_font)
       .backgroundColor(this.keys_selected.includes(this.key_id) ? this.color_current_font : this.color_current_primary)
       .clickEffect(click_effect_default())

@@ -1,6 +1,6 @@
-import linysSymbol from '../../components/linysSymbol';
-import linysText from '../../components/linysText';
-import linysTitleText from '../../components/linysTitleText';
+import linysSymbol from '../../components/texts/linysSymbol';
+import linysText from '../../components/texts/linysText';
+import linysTextTitle from '../../components/texts/linysTextTitle';
 import {
   animation_default,
   capsule_bar_height,
@@ -9,11 +9,11 @@ import {
 } from '../../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { webview } from '@kit.ArkWeb';
-import linysShowButton from '../../components/linysShowButton';
-import linysCapsuleButton from '../../components/linysCapsuleButton';
+import linysShowButton from '../../components/buttons/linysShowButton';
+import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import { match_domain } from '../../utils/url_tools';
 import woofControlFrame from '../woofControlFrame';
-import linysTimeoutButton from '../../components/linysTimeoutButton';
+import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 
 @CustomDialog
 struct woofGeneralManage {
@@ -142,7 +142,7 @@ struct woofGeneralManage {
                   .width("100%")
               })
               if (this.general_sites_list.length == 0) {
-                linysTitleText({
+                linysTextTitle({
                   text: "¯\\_(ツ)_/¯"
                 })
                   .margin(30)
@@ -247,9 +247,9 @@ struct woofGeneralManage {
           Scroll() {
             Column({ space: 10 }) {
               Row() {
-                linysTitleText({ text: $r("app.string.Settings_edit_selecting") })
-                linysTitleText({ text: " " + this.selected_number.toString() + " " })
-                linysTitleText({ text: $r("app.string.Settings_edit_selecting_items") })
+                linysTextTitle({ text: $r("app.string.Settings_edit_selecting") })
+                linysTextTitle({ text: " " + this.selected_number.toString() + " " })
+                linysTextTitle({ text: $r("app.string.Settings_edit_selecting_items") })
               }
 
               Row() {
@@ -395,7 +395,8 @@ struct Domain {
     Column() {
       linysText({
         color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
-        text: this.domain
+        text: this.domain,
+        font_weight: this.selected[this.index] ? FontWeight.Bold : FontWeight.Regular
       })
     }
     .alignItems(HorizontalAlign.Start)

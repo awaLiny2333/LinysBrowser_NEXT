@@ -1,5 +1,5 @@
 import { animation_default, click_effect_default } from '../hosts/bunch_of_defaults';
-import linysText from './linysText';
+import linysText from './texts/linysText';
 
 @Component
 struct linysProgressInfo {

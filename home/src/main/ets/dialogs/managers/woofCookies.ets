@@ -1,10 +1,10 @@
-import linysText from '../../components/linysText';
-import linysTitleText from '../../components/linysTitleText';
+import linysText from '../../components/texts/linysText';
+import linysTextTitle from '../../components/texts/linysTextTitle';
 import { animation_default, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { webview } from '@kit.ArkWeb';
 import { match_domain } from '../../utils/url_tools';
 import woofControlFrame from '../woofControlFrame';
-import linysTimeoutButton from '../../components/linysTimeoutButton';
+import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 
 @CustomDialog
 struct woofCookies {
@@ -78,7 +78,7 @@ struct woofCookies {
         .align(Alignment.TopStart)
         .edgeEffect(EdgeEffect.Spring)
         .padding({ bottom: 10, right: 10 })
-        .width(this.tablet_mode ? "35%" : "100%")
+        .width(this.tablet_mode ? "40%" : "100%")
         .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
         .animation(animation_default())
         .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })
@@ -103,7 +103,7 @@ struct woofCookies {
                   .width("100%")
               })
               if (this.cookies_site.length == 0) {
-                linysTitleText({
+                linysTextTitle({
                   text: "¯\\_(ツ)_/¯"
                 })
                   .margin(30)
@@ -121,7 +121,7 @@ struct woofCookies {
           .width("100%")
           .layoutWeight(1)
         } // Cookies
-        .width(this.tablet_mode ? "65%" : "100%")
+        .width(this.tablet_mode ? "60%" : "100%")
         .height(this.tablet_mode ? "100%" : undefined)
         .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)
         .animation(animation_default())
@@ -146,7 +146,7 @@ struct woofCookies {
         .alignItems(HorizontalAlign.End)
         .alignRules(this.alignRules_foot)
         .animation(animation_default())
-        .width(this.tablet_mode ? "35%" : "100%")
+        .width(this.tablet_mode ? "40%" : "100%")
         .id("controls_cookies")
       }.layoutWeight(1)
     }

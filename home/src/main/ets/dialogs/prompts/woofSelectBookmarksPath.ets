@@ -1,7 +1,7 @@
-import linysCapsuleButton from '../../components/linysCapsuleButton';
+import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import linysPathDisplay from '../../components/linysPathDisplay';
-import linysSymbol from '../../components/linysSymbol';
-import linysTitleText from '../../components/linysTitleText';
+import linysSymbol from '../../components/texts/linysSymbol';
+import linysTextTitle from '../../components/texts/linysTextTitle';
 import { bookmark, bunch_of_bookmarks, folder, unified_item } from '../../hosts/bunch_of_bookmarks';
 import { animation_default, click_effect_default, fontSize_Large, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 
@@ -26,7 +26,7 @@ struct woofSelectBookmarksPath {
 
   build() {
     Column({ space: 5 }) {
-      linysTitleText({ text: this.prompt_title })
+      linysTextTitle({ text: this.prompt_title })
         .width("100%")
 
       Scroll() {
@@ -44,7 +44,7 @@ struct woofSelectBookmarksPath {
             },
           )
 
-          linysTitleText({ text: "¯\\_(ツ)_/¯" })
+          linysTextTitle({ text: "¯\\_(ツ)_/¯" })
             .visibility(this.viewing_contents.length == 0 ? Visibility.Visible : Visibility.None)
             .opacity(0.7)
             .animation(animation_default())
@@ -102,7 +102,7 @@ struct woofSelectBookmarksPath {
         this.showing_navigator ? $r('app.string.Bookmarks_root_path_expanded') : $r('app.string.Bookmarks_root_path')
         : "@ " + this.looking_at_path + "/")
         .fontColor(this.color_current_font)
-        .fontWeight(FontWeight.Medium)
+        .fontWeight(FontWeight.Bold)
         .fontSize(fontSize_Normal())
         .textAlign(TextAlign.End)
         .width("100%")
@@ -209,7 +209,7 @@ struct bookmarkItem {
       Row() {
         Text(this.my_label)// Title
           .fontColor(!this.pressing ? this.color_current_font : this.color_current_secondary)
-          .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
+          .fontWeight(!this.pressing ? FontWeight.Regular : FontWeight.Bold)
           .animation(animation_default())
           .padding({ left: 2 })
           .fontSize(fontSize_Normal())
@@ -219,7 +219,7 @@ struct bookmarkItem {
         if (this.my_type == "folder") {
           SymbolGlyph($r('sys.symbol.folder'))
             .fontSize(fontSize_Large())
-            .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
+            .fontWeight(!this.pressing ? FontWeight.Regular : FontWeight.Bold)
             .fontColor([!this.pressing ? this.color_current_font : this.color_current_secondary])
             .animation(animation_default())
         } // Folder Icon

@@ -7,7 +7,7 @@ import Curves from '@ohos.curves';
  * @returns 26
  * */
 export function fontSize_Extra() {
-  return 26;
+  return 24;
 }
 
 /**

@@ -1,12 +1,12 @@
-import linysShowButton from '../../components/linysShowButton';
-import linysSymbol from '../../components/linysSymbol';
+import linysShowButton from '../../components/buttons/linysShowButton';
+import linysSymbol from '../../components/texts/linysSymbol';
 import { animation_default, click_effect_default, fontSize_Large, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { LengthMetrics } from '@kit.ArkUI';
 import { allow_drop_types, drop_to_scratching_board } from '../../utils/drag_drop_tools';
-import linysText from '../../components/linysText';
+import linysText from '../../components/texts/linysText';
 import { deviceInfo } from '@kit.BasicServicesKit';
-import linysTimeoutButton from '../../components/linysTimeoutButton';
+import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 
 @Component
 struct meowTabsHorizontal {
@@ -256,7 +256,7 @@ struct HorizontalTabButton {
         SymbolGlyph($r('sys.symbol.xmark'))// Close icon
           .fontSize(fontSize_Normal())
           .fontColor([this.color_current_font])
-          .fontWeight(FontWeight.Medium)
+          .fontWeight(FontWeight.Bold)
           .onClick(() => {
             this.close_tab_gateway = this.index;
             // Close tab
@@ -268,7 +268,7 @@ struct HorizontalTabButton {
       Text("󰇀")// Paralleow icon
         .fontSize(fontSize_Large())
         .fontColor(this.color_current_font)
-        .fontWeight((this.current_main_tab_index == this.index || this.current_sub_tab_index == this.index) ? FontWeight.Medium : undefined)
+        .fontWeight((this.current_main_tab_index == this.index || this.current_sub_tab_index == this.index) ? FontWeight.Bold : undefined)
         .visibility(this.current_sub_tab_index == this.index ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
         .offset({ y: -2 })
@@ -276,7 +276,7 @@ struct HorizontalTabButton {
       Text(this.title == "" ? "Meow" : this.title)
         .fontColor(this.color_current_font)
         .fontSize(fontSize_Normal())
-        .fontWeight(FontWeight.Normal)
+        .fontWeight(FontWeight.Regular)
         .textAlign(TextAlign.Start)
         .maxLines(1)
         .lineSpacing(LengthMetrics.vp(4))
@@ -287,7 +287,7 @@ struct HorizontalTabButton {
         SymbolGlyph($r('sys.symbol.xmark'))// Close icon
           .fontSize(fontSize_Normal())
           .fontColor([this.color_current_font])
-          .fontWeight(FontWeight.Medium)
+          .fontWeight(FontWeight.Bold)
           .onClick(() => {
             this.close_tab_gateway = this.index;
             // Close tab

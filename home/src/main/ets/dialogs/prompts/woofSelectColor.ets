@@ -1,5 +1,5 @@
-import linysCapsuleButton from '../../components/linysCapsuleButton';
-import linysText from '../../components/linysText';
+import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
+import linysText from '../../components/texts/linysText';
 import { animation_default, capsule_bar_height } from '../../hosts/bunch_of_defaults';
 import { hex2hsv, hsv2hex, is_legal_hex } from '../../utils/color_tools';
 import woofControlFrame from '../woofControlFrame';

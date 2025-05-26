@@ -1,5 +1,5 @@
-import linysText from '../../components/linysText';
-import linysTimeoutButton from '../../components/linysTimeoutButton';
+import linysText from '../../components/texts/linysText';
+import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import woofSelectColor from '../../dialogs/prompts/woofSelectColor';
 import { animation_default, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';

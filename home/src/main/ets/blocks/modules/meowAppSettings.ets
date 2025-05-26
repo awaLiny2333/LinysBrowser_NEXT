@@ -6,14 +6,14 @@ import {
   minimum_card_width,
   url_default_blank
 } from '../../hosts/bunch_of_defaults';
-import linysTitleText from '../../components/linysTitleText';
-import linysText from '../../components/linysText';
+import linysTextTitle from '../../components/texts/linysTextTitle';
+import linysText from '../../components/texts/linysText';
 import bundleManager from '@ohos.bundle.bundleManager';
 import { ItemRestriction, SegmentButton, SegmentButtonOptions, SegmentButtonTextItem } from '@ohos.arkui.advanced.SegmentButton';
 import meowUAManager from '../panels/meowUAManager';
 import { bunch_of_user_agents } from '../../hosts/bunch_of_user_agents';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
-import linysCapsuleButton from '../../components/linysCapsuleButton';
+import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import { bunch_of_history } from '../../hosts/bunch_of_history';
 import { add_units_to_size, arrayBuffer_to_pixelMap, get_folder_size_Sync, sandbox_open_arrayBuffer_sync } from '../../utils/storage_tools';
 import woofHistory from '../../dialogs/managers/woofHistory';
@@ -33,7 +33,7 @@ import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import meowAnimationManager from '../panels/meowAnimationManager';
 import linysLockSlider from '../../components/linysLockSlider';
-import linysTimeoutButton from '../../components/linysTimeoutButton';
+import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import { get_sandbox_folder_size } from '../../utils/any_concurrent_tools';
 import woofRecentFaultLogs from '../../dialogs/contents/woofRecentFaultLogs';
 import { bunch_of_history_index } from '../../hosts/bunch_of_history_index';
@@ -258,7 +258,7 @@ struct meowAppSettings {
         WaterFlow({ scroller: this.waterFlow_control }) {
           FlowItem() {
             Column({ space: 15 }) {
-              linysTitleText({ text: $r('app.string.Settings_start_up') })
+              linysTextTitle({ text: $r('app.string.Settings_start_up') })
               linysText({ text: $r('app.string.Settings_start_up_page') })
               SegmentButton({
                 options: this.start_up_page_tabOptions,
@@ -277,7 +277,7 @@ struct meowAppSettings {
 
           FlowItem() {
             Column({ space: 15 }) {
-              linysTitleText({ text: $r('app.string.Settings_general') })
+              linysTextTitle({ text: $r('app.string.Settings_general') })
 
               // UA
               linysText({ text: $r('app.string.Settings_general_custom_ua') })
@@ -306,8 +306,7 @@ struct meowAppSettings {
                 .height(capsule_bar_height())
 
               linysCapsuleButton({ text: "  󰀻  " })
-                .visibility(this.new_tab_url_edit != this.bunch_of_tabs.new_tab_url ? Visibility.Visible :
-                Visibility.None)
+                .visibility(this.new_tab_url_edit != this.bunch_of_tabs.new_tab_url ? Visibility.Visible : Visibility.None)
                 .onClick(() => {
                   this.set_new_tab_url_and_kv_store();
                 })
@@ -353,7 +352,7 @@ struct meowAppSettings {
 
           FlowItem() {
             Column({ space: 15 }) {
-              linysTitleText({ text: $r('app.string.Settings_Experience') })
+              linysTextTitle({ text: $r('app.string.Settings_Experience') })
 
               Row() {
                 linysText({ text: $r('app.string.Settings_experience_web_force_dark_mode'), max_lines: 3 })
@@ -478,7 +477,7 @@ struct meowAppSettings {
 
           FlowItem() {
             Column({ space: 15 }) {
-              linysTitleText({ text: $r('app.string.Settings_Accessibility') })
+              linysTextTitle({ text: $r('app.string.Settings_Accessibility') })
 
               Row() {
                 linysText({ text: $r('app.string.Settings_experience_sys_back_to_access_backward'), max_lines: 3 })
@@ -555,7 +554,7 @@ struct meowAppSettings {
 
           FlowItem() {
             Column({ space: 15 }) {
-              linysTitleText({ text: $r('app.string.Settings_appearance') }) // Appearance Title
+              linysTextTitle({ text: $r('app.string.Settings_appearance') }) // Appearance Title
 
               linysText({ text: $r('app.string.Settings_appearance_title_bar_position') }) // Title bar position
               SegmentButton({
@@ -598,7 +597,7 @@ struct meowAppSettings {
           FlowItem() {
             Column({ space: 15 }) {
 
-              linysTitleText({ text: $r('app.string.Settings_experience_history') }) // History
+              linysTextTitle({ text: $r('app.string.Settings_experience_history') }) // History
 
               Row() {
                 linysText({ text: $r('app.string.Settings_experience_history_record_new') })
@@ -702,12 +701,12 @@ struct meowAppSettings {
 
           FlowItem() {
             Column({ space: 15 }) {
-              linysTitleText({ text: $r('app.string.Settings_storage') }) // Storage Title
+              linysTextTitle({ text: $r('app.string.Settings_storage') }) // Storage Title
 
               linysText({ text: $r('app.string.Settings_storage_clear_webview_desc'), max_lines: 20 })
 
               Column({ space: 10 }) {
-                linysTitleText({ text: "󰂼 " + add_units_to_size(this.web_cache_size) })// data display
+                linysTextTitle({ text: "󰂼 " + add_units_to_size(this.web_cache_size) })// data display
                   .clickEffect(click_effect_default())
 
                 Row({ space: 12 }) {
@@ -746,7 +745,7 @@ struct meowAppSettings {
               linysText({ text: $r('app.string.Settings_experience_history_index_storage_desc'), max_lines: 6 })
 
               Column({ space: 10 }) {
-                linysTitleText({ text: "󰏕 " + add_units_to_size(this.history_index_size) })// data display
+                linysTextTitle({ text: "󰏕 " + add_units_to_size(this.history_index_size) })// data display
                   .clickEffect(click_effect_default())
 
                 Row({ space: 12 }) {
@@ -774,7 +773,7 @@ struct meowAppSettings {
 
           FlowItem() {
             Column({ space: 15 }) {
-              linysTitleText({ text: $r('app.string.Settings_security') }) // Security Title
+              linysTextTitle({ text: $r('app.string.Settings_security') }) // Security Title
 
               linysText({
                 text: $r('app.string.intelligent_tracking_prevention_desc'),
@@ -855,7 +854,7 @@ struct meowAppSettings {
 
           FlowItem() {
             Column({ space: 15 }) {
-              linysTitleText({ text: $r('app.string.Settings_toolbox') })
+              linysTextTitle({ text: $r('app.string.Settings_toolbox') })
               Row({ space: 5 }) {
                 linysText({ text: $r('app.string.Settings_toolbox_resource_monitor'), max_lines: 3 })
                   .layoutWeight(1)
@@ -900,7 +899,7 @@ struct meowAppSettings {
 
           FlowItem() {
             Column({ space: 15 }) {
-              linysTitleText({ text: $r('app.string.Settings_about') })
+              linysTextTitle({ text: $r('app.string.Settings_about') })
               linysLink({
                 will_be_reversed_boolean: this.showing_app_settings,
                 text: $r('app.string.About_bilibili'),
@@ -941,7 +940,7 @@ struct meowAppSettings {
 
           FlowItem() {
             Column({ space: 15 }) {
-              linysTitleText({
+              linysTextTitle({
                 text: $r('app.string.Whats_new')
               })
               meowWhatsNew()

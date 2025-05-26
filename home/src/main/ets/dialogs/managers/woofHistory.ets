@@ -1,7 +1,7 @@
-import linysSymbol from '../../components/linysSymbol';
-import linysText from '../../components/linysText';
-import linysTimeoutButton from '../../components/linysTimeoutButton';
-import linysTitleText from '../../components/linysTitleText';
+import linysSymbol from '../../components/texts/linysSymbol';
+import linysText from '../../components/texts/linysText';
+import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
+import linysTextTitle from '../../components/texts/linysTextTitle';
 import { animation_default, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { bunch_of_history, history_record } from '../../hosts/bunch_of_history';
 import woofControlFrame from '../woofControlFrame';
@@ -98,7 +98,7 @@ struct woofHistory {
           Row() {
             linysText({
               text: $r('app.string.Settings_experience_history_date_format'),
-              font_weight: FontWeight.Medium
+              font_weight: FontWeight.Bold
             })
               .opacity(0.7)
             linysText({ text: " (" + this.history_list.length.toString() + ")" })
@@ -127,7 +127,7 @@ struct woofHistory {
               }, (item: history_record) => item.accessed_time.toString() + this.history_list.length.toString()) // Items
 
               if (this.history_list.length == 0) {
-                linysTitleText({
+                linysTextTitle({
                   text: "¯\\_(ツ)_/¯"
                 })
                   .margin(30)
@@ -191,9 +191,9 @@ struct woofHistory {
           Scroll() {
             Column({ space: 10 }) {
               Row() {
-                linysTitleText({ text: $r("app.string.Settings_edit_selecting") })
-                linysTitleText({ text: " " + this.selected_number.toString() + " " })
-                linysTitleText({ text: $r("app.string.Settings_edit_selecting_items") })
+                linysTextTitle({ text: $r("app.string.Settings_edit_selecting") })
+                linysTextTitle({ text: " " + this.selected_number.toString() + " " })
+                linysTextTitle({ text: $r("app.string.Settings_edit_selecting_items") })
               } // Selecting ... item(s)
               Row() {
                 linysSymbol({ symbol_glyph_target: 'sys.symbol.list_checkmask' })
@@ -344,7 +344,7 @@ struct meowRelation {
       linysText({
         color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
         text: this.label_link.label.length == 0 ? "　" : this.label_link.label,
-        font_weight: this.selected[this.index] ? FontWeight.Bold : FontWeight.Medium
+        font_weight: this.selected[this.index] ? FontWeight.Bold : FontWeight.Regular
       })
       linysText({
         color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
@@ -415,11 +415,11 @@ struct month_button {
     Column({ space: 0 }) {
       linysText({
         text: this.year.toString(),
-        font_weight: this.selected() ? FontWeight.Medium : FontWeight.Normal,
+        font_weight: this.selected() ? FontWeight.Bold : FontWeight.Regular,
       })
       linysText({
         text: this.month.toString(),
-        font_weight: this.selected() ? FontWeight.Medium : FontWeight.Normal,
+        font_weight: this.selected() ? FontWeight.Bold : FontWeight.Regular,
       })
     }
     .border({ color: this.selected() ? this.color_current_font : 'transparent', width: 2, radius: 10 })

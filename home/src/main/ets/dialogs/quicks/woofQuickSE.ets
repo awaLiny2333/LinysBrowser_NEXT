@@ -1,7 +1,7 @@
-import linysCapsuleButton from '../../components/linysCapsuleButton';
-import linysShowButton from '../../components/linysShowButton';
-import linysSymbol from '../../components/linysSymbol';
-import linysTimeoutButton from '../../components/linysTimeoutButton';
+import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
+import linysShowButton from '../../components/buttons/linysShowButton';
+import linysSymbol from '../../components/texts/linysSymbol';
+import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import {
   animation_default,
   capsule_bar_height,
@@ -222,7 +222,7 @@ struct meowSEButton {
         Row() {
           Text(this.my_label)// Title
             .fontColor(!this.pressing ? this.color_current_font : this.color_current_secondary)
-            .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
+            .fontWeight(!this.pressing ? FontWeight.Regular : FontWeight.Bold)
             .animation(animation_default())
             .padding({ left: 2 })
             .fontSize(fontSize_Normal())

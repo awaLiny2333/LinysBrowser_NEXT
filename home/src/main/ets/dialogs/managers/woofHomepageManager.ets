@@ -1,9 +1,9 @@
 import meowHomepageBackgroundManager from '../../blocks/panels/meowHomepageBackgroundManager';
-import linysCapsuleButton from '../../components/linysCapsuleButton';
+import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import linysLockSlider from '../../components/linysLockSlider';
-import linysText from '../../components/linysText';
-import linysTitleText from '../../components/linysTitleText';
-import { animation_default } from '../../hosts/bunch_of_defaults';
+import linysText from '../../components/texts/linysText';
+import linysTextTitle from '../../components/texts/linysTextTitle';
+import { animation_default, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import woofSelectBookmarksPath from '../prompts/woofSelectBookmarksPath';
 import woofControlFrame from '../woofControlFrame';
@@ -50,9 +50,15 @@ struct woofHomepageManager {
           linysText({
             text: $r('app.string.Settings_homepage_shortcuts_manage_desc'),
             max_lines: 3
-          }) // Desc
+          })// Desc
+            .borderRadius(12)
+            .padding(10)
+            .backgroundColor($r('sys.color.comp_background_tertiary'))
+            .width('100%')
+            .clickEffect(click_effect_default())
+            .margin({ bottom: 5 })
 
-          linysTitleText({ text: $r('app.string.Homepage_background') })// Title
+          linysTextTitle({ text: $r('app.string.Homepage_background') })// Title
             .width('100%')
           linysText({
             text: $r('app.string.Homepage_background_desc'),
@@ -61,7 +67,7 @@ struct woofHomepageManager {
 
           meowHomepageBackgroundManager() // Homepage Background Manager
 
-          linysTitleText({
+          linysTextTitle({
             text: $r('app.string.Settings_homepage_shortcuts')
           }) // Title
 
@@ -82,7 +88,7 @@ struct woofHomepageManager {
           }
           .width('100%')
 
-          linysTitleText({
+          linysTextTitle({
             text: $r('app.string.Settings_homepage_shortcuts_init_height')
           }) // Display height of shortcuts
 

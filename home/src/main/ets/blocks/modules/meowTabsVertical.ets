@@ -1,15 +1,15 @@
-import linysSymbol from '../../components/linysSymbol';
+import linysSymbol from '../../components/texts/linysSymbol';
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { url_resource_to_meow } from '../../utils/url_tools';
 import { animation_default, click_effect_default, fontSize_Large, fontSize_Normal, url_default_blank } from '../../hosts/bunch_of_defaults';
 import { kv_store_get, kv_store_put } from '../../utils/kv_store_tools';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
-import linysShowButton from '../../components/linysShowButton';
-import linysText from '../../components/linysText';
+import linysShowButton from '../../components/buttons/linysShowButton';
+import linysText from '../../components/texts/linysText';
 import { sandbox_open_arrayBuffer_sync, sandbox_unlink_sync } from '../../utils/storage_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { allow_drop_types, drop_to_scratching_board } from '../../utils/drag_drop_tools';
-import linysTimeoutButton from '../../components/linysTimeoutButton';
+import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 
 @Component
 struct meowTabs {
@@ -651,7 +651,7 @@ struct TabButton {
           .padding({ right: 5 })
           .fontSize(fontSize_Normal())
           .fontColor([this.color_current_font])
-          .fontWeight(FontWeight.Medium)
+          .fontWeight(FontWeight.Bold)
           .visibility(this.preferred_hand_left_or_right == 'left' ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
 
@@ -661,7 +661,7 @@ struct TabButton {
           .fontColor(this.color_current_font)
           .fontWeight((this.current_main_tab_index == this.Label.index_key ||
             this.current_sub_tab_index == this.Label.index_key)
-            ? FontWeight.Medium : undefined)
+            ? FontWeight.Bold : undefined)
           .visibility(this.current_sub_tab_index == this.Label.index_key ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
           .offset({ y: -2 })
@@ -672,7 +672,7 @@ struct TabButton {
           .fontColor(this.color_current_font)
           .fontWeight((this.current_main_tab_index == this.Label.index_key ||
             this.current_sub_tab_index == this.Label.index_key)
-            ? FontWeight.Medium : undefined)
+            ? FontWeight.Bold : undefined)
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
           .layoutWeight(1)
@@ -680,7 +680,7 @@ struct TabButton {
         SymbolGlyph($r('sys.symbol.xmark'))
           .fontSize(fontSize_Normal())
           .fontColor([this.color_current_font])
-          .fontWeight(FontWeight.Medium)
+          .fontWeight(FontWeight.Bold)
           .visibility(this.preferred_hand_left_or_right == 'right' ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
 

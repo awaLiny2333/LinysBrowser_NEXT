@@ -1,6 +1,6 @@
 import linysLockSlider from '../../components/linysLockSlider';
-import linysText from '../../components/linysText';
-import linysTimeoutButton from '../../components/linysTimeoutButton';
+import linysText from '../../components/texts/linysText';
+import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 
 @Component

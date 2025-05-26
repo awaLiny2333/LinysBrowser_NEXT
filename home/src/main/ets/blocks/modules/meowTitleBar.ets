@@ -1,5 +1,5 @@
-import linysSymbol from '../../components/linysSymbol';
-import linysShowButton from '../../components/linysShowButton';
+import linysSymbol from '../../components/texts/linysSymbol';
+import linysShowButton from '../../components/buttons/linysShowButton';
 import meowAppSettings from './meowAppSettings';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { extract_search, match_domain, unify_search_input_into_url, url_meow_to_resource, url_resource_to_meow } from '../../utils/url_tools';
@@ -22,7 +22,7 @@ import meowScratchingBoard from './meowScratchingBoard';
 import woofAdsBlocker from '../../dialogs/managers/woofAdsBlocker';
 import woofAddSE from '../../dialogs/quicks/woofQuickSE';
 import woofCookies from '../../dialogs/managers/woofCookies';
-import linysText from '../../components/linysText';
+import linysText from '../../components/texts/linysText';
 import woofGeneralManage from '../../dialogs/managers/woofGeneralManage';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { share_link } from '../../utils/share_tools';
@@ -228,7 +228,7 @@ struct meowTitleBar {
 
         Text("→ " + (this.search_input_unified == "" ? "(　o=^•ェ•)o ?" : this.search_input_unified))
           .fontColor(this.color_current_font)
-          .fontWeight(FontWeight.Medium)
+          .fontWeight(FontWeight.Bold)
           .fontSize(fontSize_Normal())
           .maxLines(4)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -244,13 +244,13 @@ struct meowTitleBar {
         Column({ space: 2.5 }) {
           Text(this.current_title)
             .fontColor(this.color_current_font)
-            .fontWeight(FontWeight.Medium)
+            .fontWeight(FontWeight.Bold)
             .fontSize(fontSize_Large())
             .maxLines(2)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
           Text(this.current_url)
             .fontColor(this.color_current_font)
-            .fontWeight(FontWeight.Medium)
+            .fontWeight(FontWeight.Bold)
             .fontSize(fontSize_Normal())
             .opacity(0.7)
             .maxLines(2)

@@ -1,5 +1,5 @@
-import linysSymbol from '../components/linysSymbol';
-import linysTitleText from '../components/linysTitleText';
+import linysSymbol from '../components/texts/linysSymbol';
+import linysTextTitle from '../components/texts/linysTextTitle';
 
 @Component
 struct woofControlFrame {
@@ -15,7 +15,7 @@ struct woofControlFrame {
   build() {
     Column({ space: 15 }) {
       Row() {
-        linysTitleText({ text: this.title, max_lines: 3 })
+        linysTextTitle({ text: this.title, max_lines: 3 })
           .layoutWeight(1)
         linysSymbol({ symbol_glyph_target: 'sys.symbol.xmark' })
           .onClick(() => {
@@ -23,6 +23,9 @@ struct woofControlFrame {
               this.controller.close();
             }
           })
+        // .borderRadius(20)
+        // .padding(6)
+        // .backgroundColor($r('sys.color.comp_background_tertiary'))
       }
 
       // Contents

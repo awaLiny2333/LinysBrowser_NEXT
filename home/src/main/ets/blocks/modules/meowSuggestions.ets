@@ -1,5 +1,5 @@
 import { animation_default } from '../../hosts/bunch_of_defaults';
-import linysText from '../../components/linysText';
+import linysText from '../../components/texts/linysText';
 import { get_relations } from '../../utils/label_link_relation_tools';
 import { bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_history } from '../../hosts/bunch_of_history';

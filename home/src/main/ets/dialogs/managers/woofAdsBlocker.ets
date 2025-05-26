@@ -1,6 +1,6 @@
-import linysSymbol from '../../components/linysSymbol';
-import linysText from '../../components/linysText';
-import linysTitleText from '../../components/linysTitleText';
+import linysSymbol from '../../components/texts/linysSymbol';
+import linysText from '../../components/texts/linysText';
+import linysTextTitle from '../../components/texts/linysTextTitle';
 import {
   animation_default,
   capsule_bar_height,
@@ -9,10 +9,10 @@ import {
 } from '../../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { webview } from '@kit.ArkWeb';
-import linysShowButton from '../../components/linysShowButton';
-import linysCapsuleButton from '../../components/linysCapsuleButton';
+import linysShowButton from '../../components/buttons/linysShowButton';
+import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import woofControlFrame from '../woofControlFrame';
-import linysTimeoutButton from '../../components/linysTimeoutButton';
+import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 
 @CustomDialog
 struct woofAdsBlocker {
@@ -93,7 +93,7 @@ struct woofAdsBlocker {
         .align(Alignment.TopStart)
         .edgeEffect(EdgeEffect.Spring)
         .padding({ bottom: 10, right: 10 })
-        .width(this.tablet_mode ? "35%" : "100%")
+        .width(this.tablet_mode ? "40%" : "100%")
         .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
         .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })
         .animation(animation_default())
@@ -122,7 +122,7 @@ struct woofAdsBlocker {
                   .width("100%")
               })
               if (this.adblock_exceptions.length == 0) {
-                linysTitleText({
+                linysTextTitle({
                   text: "¯\\_(ツ)_/¯"
                 })
                   .margin(30)
@@ -156,7 +156,7 @@ struct woofAdsBlocker {
           } // Toggle use adblock
           .width("100%")
         } // Whitelist
-        .width(this.tablet_mode ? "65%" : "100%")
+        .width(this.tablet_mode ? "60%" : "100%")
         .height(this.tablet_mode ? "100%" : undefined)
         .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)
         .animation(animation_default())
@@ -210,9 +210,9 @@ struct woofAdsBlocker {
           Scroll() {
             Column({ space: 10 }) {
               Row() {
-                linysTitleText({ text: $r("app.string.Settings_edit_selecting") })
-                linysTitleText({ text: " " + this.selected_number.toString() + " " })
-                linysTitleText({ text: $r("app.string.Settings_edit_selecting_items") })
+                linysTextTitle({ text: $r("app.string.Settings_edit_selecting") })
+                linysTextTitle({ text: " " + this.selected_number.toString() + " " })
+                linysTextTitle({ text: $r("app.string.Settings_edit_selecting_items") })
               }
 
               Row() {
@@ -244,7 +244,7 @@ struct woofAdsBlocker {
         .alignRules(this.alignRules_foot)
         .opacity(!this.use_adblock ? 0.5 : 1)
         .animation(animation_default())
-        .width(this.tablet_mode ? "35%" : "100%")
+        .width(this.tablet_mode ? "40%" : "100%")
         .id("controls_ads_blocker")
         .onAppear(() => {
           setInterval(() => {
@@ -347,7 +347,8 @@ struct Domain {
     Column() {
       linysText({
         color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
-        text: this.domain
+        text: this.domain,
+        font_weight: this.selected[this.index] ? FontWeight.Bold : FontWeight.Regular
       })
     }
     .alignItems(HorizontalAlign.Start)

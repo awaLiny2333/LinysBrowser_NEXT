@@ -1,4 +1,4 @@
-import { animation_default, click_effect_default, fontSize_Icon_Button } from '../hosts/bunch_of_defaults';
+import { animation_default, click_effect_default, fontSize_Icon_Button } from '../../hosts/bunch_of_defaults';
 
 @Component
 struct linysSymbol {
@@ -6,7 +6,7 @@ struct linysSymbol {
   // Colors
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @Prop color: ResourceColor = "";
-  @Prop font_weight: FontWeight = FontWeight.Normal;
+  @Prop font_weight: FontWeight = FontWeight.Regular;
 
   build() {
     SymbolGlyph($r(this.symbol_glyph_target))

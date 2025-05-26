@@ -1,5 +1,5 @@
-import linysSymbol from '../../components/linysSymbol';
-import linysText from '../../components/linysText';
+import linysSymbol from '../../components/texts/linysSymbol';
+import linysText from '../../components/texts/linysText';
 import { click_effect_default } from '../../hosts/bunch_of_defaults';
 import { getPrivateDirty, getPss, getSharedDirty, getVRAM, getVss } from '../../utils/any_concurrent_tools';
 import { getCPU_sync, getNativeHeapSize_sync } from '../../utils/performance_tools';

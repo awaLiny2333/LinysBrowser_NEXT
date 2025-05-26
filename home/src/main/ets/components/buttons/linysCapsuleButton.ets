@@ -3,7 +3,7 @@ import {
   capsule_bar_height,
   click_effect_default,
   fontSize_Large
-} from '../hosts/bunch_of_defaults';
+} from '../../hosts/bunch_of_defaults';
 
 @Component
 struct linysCapsuleButton {

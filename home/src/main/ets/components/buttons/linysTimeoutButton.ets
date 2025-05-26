@@ -1,9 +1,4 @@
-import {
-  animation_default,
-  capsule_bar_height,
-  click_effect_default,
-  fontSize_Large
-} from '../hosts/bunch_of_defaults';
+import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large } from '../../hosts/bunch_of_defaults';
 
 @Component
 struct linysTimeoutButton {
@@ -23,10 +18,8 @@ struct linysTimeoutButton {
   build() {
     Button(this.text)// Reset
       .type(ButtonType.Capsule)
-      .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary :
-      this.color_current_font)
-      .fontColor(this.delete_confirm > 0 ? this.color_current_font :
-      this.color_current_primary)
+      .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary : this.color_current_font)
+      .fontColor(this.delete_confirm > 0 ? this.color_current_font : this.color_current_primary)
       .border({
         width: 2,
         color: this.delete_confirm > 0 ? this.color_current_font : "transparent"

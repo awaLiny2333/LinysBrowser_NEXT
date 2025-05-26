@@ -1,6 +1,6 @@
 import { animation_default } from '../hosts/bunch_of_defaults';
 import linysLockToggle from './linysLockToggle';
-import linysText from './linysText';
+import linysText from './texts/linysText';
 
 @Component
 struct linysLockSlider {

@@ -1,6 +1,6 @@
-import linysCapsuleButton from '../../components/linysCapsuleButton';
-import linysText from '../../components/linysText';
-import linysTimeoutButton from '../../components/linysTimeoutButton';
+import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
+import linysText from '../../components/texts/linysText';
+import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import {
   arrayBuffer_to_pixelMap,
   image_open_to_ArrayBuffer,

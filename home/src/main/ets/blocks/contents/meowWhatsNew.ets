@@ -1,4 +1,4 @@
-import linysText from '../../components/linysText';
+import linysText from '../../components/texts/linysText';
 import { animation_default } from '../../hosts/bunch_of_defaults';
 import { resource_to_string } from '../../utils/resource_tools';
 

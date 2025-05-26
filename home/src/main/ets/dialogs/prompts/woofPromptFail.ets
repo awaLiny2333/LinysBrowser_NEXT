@@ -1,5 +1,5 @@
-import linysText from '../../components/linysText';
-import linysTitleText from '../../components/linysTitleText';
+import linysText from '../../components/texts/linysText';
+import linysTextTitle from '../../components/texts/linysTextTitle';
 import {
   animation_default,
   capsule_bar_height,
@@ -20,7 +20,7 @@ struct woofPromptFail {
 
   build() {
     Column({ space: 10 }) {
-      linysTitleText({
+      linysTextTitle({
         text: $r('app.string.Fail'),
         max_lines: 1
       })
@@ -72,7 +72,7 @@ struct woofPromptFail {
         .backgroundColor(this.color_current_font)
         .fontColor(this.color_current_primary)
         .fontSize(fontSize_Normal() + 2)
-        .fontWeight(FontWeight.Medium)
+        .fontWeight(FontWeight.Bold)
         .height(capsule_bar_height())
         .clickEffect(click_effect_default())
         .animation(animation_default())
@@ -119,7 +119,7 @@ struct goodByeLink {
   @Prop text: ResourceStr = $r('app.string.HomeAbility_label');
   @Prop color: ResourceColor = this.color_current_font;
   @Prop max_lines: number = 1;
-  @Prop font_weight: FontWeight = FontWeight.Normal;
+  @Prop font_weight: FontWeight = FontWeight.Regular;
   @State link: string = "huawei.com";
   @StorageLink('universal_new_tab_gateway') universal_new_tab_gateway: string = "";
   // This is for status noticing

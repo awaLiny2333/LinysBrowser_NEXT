@@ -1,4 +1,4 @@
-import linysTitleText from '../../components/linysTitleText';
+import linysTextTitle from '../../components/texts/linysTextTitle';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import {
   animation_default,
@@ -9,11 +9,11 @@ import {
   minimum_card_width
 } from '../../hosts/bunch_of_defaults';
 import { request } from '@kit.BasicServicesKit';
-import linysText from '../../components/linysText';
+import linysText from '../../components/texts/linysText';
 import { copy } from '../../utils/clipboard_tools';
 import { add_units_to_size } from '../../utils/storage_tools';
-import linysShowButton from '../../components/linysShowButton';
-import linysTimeoutButton from '../../components/linysTimeoutButton';
+import linysShowButton from '../../components/buttons/linysShowButton';
+import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 
 @Component
 struct meowDownloads {
@@ -30,7 +30,7 @@ struct meowDownloads {
   build() {
     Column({ space: 10 }) {
       Column({ space: 5 }) {
-        linysTitleText({
+        linysTextTitle({
           text: $r('app.string.Downloads_notice_title')
         })
         linysText({
@@ -49,7 +49,7 @@ struct meowDownloads {
       WaterFlow() {
         if (this.bunch_of_downloads.list_of_on_going_tasks.length == 0) {
           FlowItem() {
-            linysTitleText({
+            linysTextTitle({
               text: "¯\\_(ツ)_/¯"
             })
               .alignRules({
@@ -142,7 +142,7 @@ struct meowDownloadsButton {
   build() {
     FlowItem() {
       Column({ space: 15 }) {
-        linysTitleText({
+        linysTextTitle({
           text: this.my_file_name,
           max_lines: 4,
         }) // File name
@@ -160,7 +160,7 @@ struct meowDownloadsButton {
             .opacity(0.85)
             .layoutWeight(1)
 
-          linysTitleText({
+          linysTextTitle({
             text: $r('app.string.Downloads_copied'),
           })// Copied!
             .offset({ x: this.copied > 0 ? 0 : 50 })
@@ -211,7 +211,7 @@ struct meowDownloadsButton {
             .backgroundColor(this.color_current_font)
             .fontColor(this.color_current_primary)
             .fontSize(fontSize_Large())
-            .fontWeight(FontWeight.Medium)
+            .fontWeight(FontWeight.Bold)
             .height(capsule_bar_height())
             .onClick(() => {
               this.pause_or_continue_task();
@@ -226,7 +226,7 @@ struct meowDownloadsButton {
             .backgroundColor(this.color_current_font)
             .fontColor(this.color_current_primary)
             .fontSize(fontSize_Large())
-            .fontWeight(FontWeight.Medium)
+            .fontWeight(FontWeight.Bold)
             .height(capsule_bar_height())
             .onClick(() => {
               this.exporting = true;

@@ -1,5 +1,5 @@
 import { animation_default, click_effect_default } from '../hosts/bunch_of_defaults';
-import linysText from './linysText';
+import linysText from './texts/linysText';
 
 @Component
 struct linysPathDisplay {
@@ -18,7 +18,7 @@ struct linysPathDisplay {
     Scroll(this.scroller) {
       Column({ space: 5 }) {
         Row() {
-          linysText({ text: " 󰀧 ", font_weight: FontWeight.Medium });
+          linysText({ text: " 󰀧 ", font_weight: FontWeight.Bold });
         }
         .borderRadius(10)
         .padding(10)

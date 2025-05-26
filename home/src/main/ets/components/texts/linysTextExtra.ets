@@ -1,7 +1,7 @@
-import { fontSize_Large } from '../hosts/bunch_of_defaults';
+import { fontSize_Extra } from '../../hosts/bunch_of_defaults';
 
 @Component
-struct linysTitleText {
+struct linysTextExtra {
   // Colors
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @Prop text: ResourceStr = $r('app.string.HomeAbility_label');
@@ -14,11 +14,11 @@ struct linysTitleText {
       .fontColor(this.color == "" ? this.color_current_font : this.color)
       .width(this.align_another_side ? '100%' : undefined)
       .textAlign(this.align_another_side ? TextAlign.End : TextAlign.Start)
-      .fontSize(fontSize_Large())
-      .fontWeight(FontWeight.Medium)
+      .fontSize(fontSize_Extra())
+      .fontWeight(FontWeight.Bold)
       .maxLines(this.max_lines)
       .textOverflow({ overflow: TextOverflow.Ellipsis })
   }
 }
 
-export default linysTitleText
+export default linysTextExtra;

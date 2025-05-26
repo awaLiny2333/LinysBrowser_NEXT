@@ -2,8 +2,8 @@ import { FaultLogger } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import woofControlFrame from '../woofControlFrame';
 import { copy } from '../../utils/clipboard_tools';
-import linysCapsuleButton from '../../components/linysCapsuleButton';
-import linysTitleText from '../../components/linysTitleText';
+import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
+import linysTextTitle from '../../components/texts/linysTextTitle';
 
 @CustomDialog
 struct woofRecentFaultLogs {
@@ -18,10 +18,10 @@ struct woofRecentFaultLogs {
       Scroll() {
         Column({ space: 10 }) {
           if (this.faultLogs.length == 0) {
-            linysTitleText({
+            linysTextTitle({
               text: $r('app.string.Fault_logs_empty')
             })
-            linysTitleText({
+            linysTextTitle({
               text: ' ¯\\_(ツ)_/¯ '
             })
               .opacity(0.7)
@@ -88,7 +88,7 @@ struct faultItem {
   build() {
     Column({ space: 10 }) {
       Row({ space: 10 }) {
-        linysTitleText({ text: (this.idx + 1).toString() + "." })
+        linysTextTitle({ text: (this.idx + 1).toString() + "." })
           .layoutWeight(1)
         linysCapsuleButton({
           text: this.copied ? " 󰆊 " : " 󰆝 "

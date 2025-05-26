@@ -1,6 +1,6 @@
-import linysCapsuleButton from '../../components/linysCapsuleButton';
-import linysSymbol from '../../components/linysSymbol';
-import linysTimeoutButton from '../../components/linysTimeoutButton';
+import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
+import linysSymbol from '../../components/texts/linysSymbol';
+import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import {
   animation_default,
   capsule_bar_height,
@@ -30,7 +30,7 @@ struct meowUAManager {
         Row() {
           Text($r('app.string.Settings_general_custom_ua_default'))// Title
             .fontColor(!this.default_pressing ? this.color_current_font : this.color_current_secondary)
-            .fontWeight(!this.default_pressing ? FontWeight.Normal : FontWeight.Medium)
+            .fontWeight(!this.default_pressing ? FontWeight.Regular : FontWeight.Bold)
             .padding({ left: 2 })
             .fontSize(fontSize_Normal())
             .maxLines(1)
@@ -171,7 +171,7 @@ struct meowUAButton {
         Row() {
           Text(this.my_label)// Title
             .fontColor(!this.pressing ? this.color_current_font : this.color_current_secondary)
-            .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
+            .fontWeight(!this.pressing ? FontWeight.Regular : FontWeight.Bold)
             .animation(animation_default())
             .padding({ left: 2 })
             .fontSize(fontSize_Normal())

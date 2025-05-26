@@ -1,5 +1,5 @@
-import { animation_default, click_effect_default, fontSize_Large } from '../hosts/bunch_of_defaults';
-import linysSymbol from './linysSymbol';
+import { animation_default, click_effect_default, fontSize_Large } from '../../hosts/bunch_of_defaults';
+import linysSymbol from '../texts/linysSymbol';
 
 @Component
 struct linysShowButton {

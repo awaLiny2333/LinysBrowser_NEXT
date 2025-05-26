@@ -1,15 +1,15 @@
 import { bookmark, bunch_of_bookmarks, folder, unified_item } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { url_resource_to_meow } from '../../utils/url_tools';
-import linysSymbol from '../../components/linysSymbol';
+import linysSymbol from '../../components/texts/linysSymbol';
 import { document_open, document_save } from '../../utils/storage_tools';
 import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import { kv_store_get, kv_store_put } from '../../utils/kv_store_tools';
-import linysShowButton from '../../components/linysShowButton';
-import linysCapsuleButton from '../../components/linysCapsuleButton';
+import linysShowButton from '../../components/buttons/linysShowButton';
+import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import woofSelectBookmarksPath from '../../dialogs/prompts/woofSelectBookmarksPath';
 import linysPathDisplay from '../../components/linysPathDisplay';
-import linysTimeoutButton from '../../components/linysTimeoutButton';
+import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 
 @Component
 struct meowBookmarks {
@@ -228,7 +228,7 @@ struct meowBookmarks {
 
       Text(this.text_path())// Display of list menu quick jump
         .fontColor(this.color_current_font)
-        .fontWeight(FontWeight.Medium)
+        .fontWeight(FontWeight.Bold)
         .fontSize(fontSize_Normal())
         .textAlign(this.preferred_hand_left_or_right == 'right' ? TextAlign.End : TextAlign.Start)
         .width("100%")
@@ -469,7 +469,7 @@ struct bookmarkItem {
       Row() {
         Text(this.label)// Title
           .fontColor(!this.pressing ? this.color_current_font : this.color_current_secondary)
-          .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
+          .fontWeight(!this.pressing ? FontWeight.Regular : FontWeight.Bold)
           .animation(animation_default())
           .padding({ left: 2 })
           .fontSize(fontSize_Normal())
@@ -479,7 +479,7 @@ struct bookmarkItem {
         if (this.type == "folder") {
           SymbolGlyph($r(!this.pressing ? 'sys.symbol.folder' : 'sys.symbol.chevron_right'))
             .fontSize(fontSize_Large())
-            .fontWeight(!this.pressing ? FontWeight.Normal : FontWeight.Medium)
+            .fontWeight(!this.pressing ? FontWeight.Regular : FontWeight.Bold)
             .fontColor([!this.pressing ? this.color_current_font : this.color_current_secondary])
             .animation(animation_default())
         } // Folder Icon

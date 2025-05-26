@@ -800,7 +800,7 @@ struct shortcutButton {
         color: "transparent"
       })
       .fontSize(fontSize_Large())
-      .fontWeight(FontWeight.Normal)
+      .fontWeight(FontWeight.Regular)
       .height(capsule_bar_height())
       .onClick(() => {
         setTimeout(() => {
