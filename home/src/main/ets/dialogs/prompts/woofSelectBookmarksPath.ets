@@ -1,5 +1,5 @@
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
-import linysPathDisplay from '../../components/linysPathDisplay';
+import linysPathTree from '../../components/linysPathTree';
 import linysSymbol from '../../components/texts/linysSymbol';
 import linysTextTitle from '../../components/texts/linysTextTitle';
 import { bookmark, bunch_of_bookmarks, folder, unified_item } from '../../hosts/bunch_of_bookmarks';
@@ -116,7 +116,7 @@ struct woofSelectBookmarksPath {
           this.showing_navigator = !this.showing_navigator;
         })
 
-      linysPathDisplay({
+      linysPathTree({
         current_viewing_path: this.looking_at_path,
         max_height_screen_percentage: 0.2,
       })

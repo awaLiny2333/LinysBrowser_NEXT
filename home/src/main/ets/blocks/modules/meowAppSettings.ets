@@ -19,7 +19,7 @@ import { add_units_to_size, arrayBuffer_to_pixelMap, get_folder_size_Sync, sandb
 import woofHistory from '../../dialogs/managers/woofHistory';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import meowSEManager from '../panels/meowSEManager';
-import linysLink from '../../components/linysLink';
+import linysLink from '../../components/texts/linysLink';
 import woofAdsBlocker from '../../dialogs/managers/woofAdsBlocker';
 import meowWhatsNew from '../contents/meowWhatsNew';
 import meowColorsManager from '../panels/meowColorsManager';
@@ -47,6 +47,7 @@ import { bunch_of_history_index_lite } from '../../hosts/bunch_of_history_index_
 import woofUpdateHistory from '../../dialogs/contents/woofUpdateHistory';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
+import linysSwitchWithText from '../../components/toggles/linysSwitchWithText';
 
 @Component
 struct meowAppSettings {
@@ -356,31 +357,21 @@ struct meowAppSettings {
             Column({ space: 15 }) {
               linysTextTitle({ text: $r('app.string.Settings_Experience') })
 
-              Row() {
-                linysText({ text: $r('app.string.Settings_experience_web_force_dark_mode'), max_lines: 3 })
-                  .layoutWeight(1)
-                Toggle({ isOn: this.web_force_dark_mode, type: ToggleType.Switch })
-                  .switchPointColor(this.color_current_secondary)
-                  .selectedColor(this.color_current_font)
-                  .onChange(isOn => {
-                    this.web_force_dark_mode = isOn;
-                    this.bunch_of_settings.set('web_force_dark_mode', isOn);
-                  })
-              } // Force dark mode
-              .width("100%")
+              linysSwitchWithText({
+                text: $r('app.string.Settings_experience_web_force_dark_mode'),
+                toggle_state: this.web_force_dark_mode,
+                onExecution: () => {
+                  this.bunch_of_settings.set('web_force_dark_mode', this.web_force_dark_mode);
+                }
+              }) // Force dark mode
 
-              Row() {
-                linysText({ text: $r('app.string.Settings_experience_use_adblock'), max_lines: 1 })
-                  .layoutWeight(1)
-                Toggle({ isOn: this.use_adblock, type: ToggleType.Switch })
-                  .switchPointColor(this.color_current_secondary)
-                  .selectedColor(this.color_current_font)
-                  .onChange(isOn => {
-                    this.use_adblock = isOn;
-                    this.bunch_of_settings.set('use_adblock', isOn);
-                  })
-              } // Use adblock
-              .width("100%")
+              linysSwitchWithText({
+                text: $r('app.string.Settings_experience_use_adblock'),
+                toggle_state: this.use_adblock,
+                onExecution: () => {
+                  this.bunch_of_settings.set('use_adblock', this.use_adblock);
+                }
+              }) // Use adblock
 
               linysCapsuleButtonWithText({
                 desc_text: $r('app.string.Settings_experience_manage_adblock'),
@@ -390,18 +381,13 @@ struct meowAppSettings {
                 }
               })
 
-              Row() {
-                linysText({ text: $r('app.string.Settings_image_disable_image'), max_lines: 1 })
-                  .layoutWeight(1)
-                Toggle({ isOn: this.disable_image, type: ToggleType.Switch })
-                  .switchPointColor(this.color_current_secondary)
-                  .selectedColor(this.color_current_font)
-                  .onChange(isOn => {
-                    this.disable_image = isOn;
-                    this.bunch_of_settings.set('disable_image', isOn);
-                  })
-              } // Disable images
-              .width("100%")
+              linysSwitchWithText({
+                text: $r('app.string.Settings_image_disable_image'),
+                toggle_state: this.disable_image,
+                onExecution: () => {
+                  this.bunch_of_settings.set('disable_image', this.disable_image);
+                }
+              }) // Disable images
 
               linysCapsuleButtonWithText({
                 desc_text: $r('app.string.Settings_image_manage'),
@@ -466,18 +452,13 @@ struct meowAppSettings {
             Column({ space: 15 }) {
               linysTextTitle({ text: $r('app.string.Settings_Accessibility') })
 
-              Row() {
-                linysText({ text: $r('app.string.Settings_experience_sys_back_to_access_backward'), max_lines: 3 })
-                  .layoutWeight(1)
-                Toggle({ isOn: this.sys_back_to_access_backward, type: ToggleType.Switch })
-                  .switchPointColor(this.color_current_secondary)
-                  .selectedColor(this.color_current_font)
-                  .onChange(isOn => {
-                    this.sys_back_to_access_backward = isOn;
-                    this.bunch_of_settings.set('sys_back_access_backward', isOn);
-                  })
-              } // Use sys back
-              .width("100%")
+              linysSwitchWithText({
+                text: $r('app.string.Settings_experience_sys_back_to_access_backward'),
+                toggle_state: this.sys_back_to_access_backward,
+                onExecution: () => {
+                  this.bunch_of_settings.set('sys_back_access_backward', this.sys_back_to_access_backward);
+                }
+              }) // Use sys back
 
               linysText({ text: $r('app.string.Settings_single_hand_preference'), max_lines: 3 })// Single hand optimization
                 .width("100%")
@@ -491,44 +472,27 @@ struct meowAppSettings {
                 max_lines: 20
               })
 
-              Row() {
-                linysText({ text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_settings_menu'), max_lines: 3 })
-                  .layoutWeight(1)
-                Toggle({ isOn: this.preferred_hand_reverse_settings_menu, type: ToggleType.Switch })
-                  .switchPointColor(this.color_current_secondary)
-                  .selectedColor(this.color_current_font)
-                  .onChange(isOn => {
-                    this.preferred_hand_reverse_settings_menu = isOn;
-                    this.bunch_of_settings.set('preferred_hand_reverse_settings_menu', isOn);
-                  })
-              } // Reverse settings menu
-              .width("100%")
-
-              Row() {
-                linysText({ text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_tabs_panel'), max_lines: 3 })
-                  .layoutWeight(1)
-                Toggle({ isOn: this.preferred_hand_reverse_tabs_panel, type: ToggleType.Switch })
-                  .switchPointColor(this.color_current_secondary)
-                  .selectedColor(this.color_current_font)
-                  .onChange(isOn => {
-                    this.preferred_hand_reverse_tabs_panel = isOn;
-                    this.bunch_of_settings.set('preferred_hand_reverse_tabs_panel', isOn);
-                  })
-              } // Reverse tabs panel
-              .width("100%")
-
-              Row() {
-                linysText({ text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_homepage_shortcuts'), max_lines: 3 })
-                  .layoutWeight(1)
-                Toggle({ isOn: this.preferred_hand_reverse_homepage_shortcuts, type: ToggleType.Switch })
-                  .switchPointColor(this.color_current_secondary)
-                  .selectedColor(this.color_current_font)
-                  .onChange(isOn => {
-                    this.preferred_hand_reverse_homepage_shortcuts = isOn;
-                    this.bunch_of_settings.set('preferred_hand_reverse_homepage_shortcuts', isOn);
-                  })
-              } // Reverse tabs panel
-              .width("100%")
+              linysSwitchWithText({
+                text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_settings_menu'),
+                toggle_state: this.preferred_hand_reverse_settings_menu,
+                onExecution: () => {
+                  this.bunch_of_settings.set('preferred_hand_reverse_settings_menu', this.preferred_hand_reverse_settings_menu);
+                }
+              }) // Reverse settings menu
+              linysSwitchWithText({
+                text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_tabs_panel'),
+                toggle_state: this.preferred_hand_reverse_tabs_panel,
+                onExecution: () => {
+                  this.bunch_of_settings.set('preferred_hand_reverse_tabs_panel', this.preferred_hand_reverse_tabs_panel);
+                }
+              }) // Reverse settings menu
+              linysSwitchWithText({
+                text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_homepage_shortcuts'),
+                toggle_state: this.preferred_hand_reverse_homepage_shortcuts,
+                onExecution: () => {
+                  this.bunch_of_settings.set('preferred_hand_reverse_homepage_shortcuts', this.preferred_hand_reverse_homepage_shortcuts);
+                }
+              }) // Reverse homepage shortcuts
             }
             .padding(15)
             .alignItems(HorizontalAlign.Start)
@@ -585,19 +549,13 @@ struct meowAppSettings {
             Column({ space: 15 }) {
 
               linysTextTitle({ text: $r('app.string.Settings_experience_history') }) // History
-
-              Row() {
-                linysText({ text: $r('app.string.Settings_experience_history_record_new') })
-                  .layoutWeight(1)
-                Toggle({ isOn: this.collect_new_history, type: ToggleType.Switch })
-                  .switchPointColor(this.color_current_secondary)
-                  .selectedColor(this.color_current_font)
-                  .onChange(isOn => {
-                    this.collect_new_history = isOn;
-                    this.bunch_of_settings.set('collect_new_history', isOn);
-                  })
-              } // Toggle History
-              .width("100%")
+              linysSwitchWithText({
+                text: $r('app.string.Settings_experience_history_record_new'),
+                toggle_state: this.collect_new_history,
+                onExecution: () => {
+                  this.bunch_of_settings.set('collect_new_history', this.collect_new_history);
+                }
+              }) // Toggle History
 
               linysCapsuleButtonWithText({
                 desc_text: $r('app.string.Settings_experience_history_view'),
@@ -739,34 +697,28 @@ struct meowAppSettings {
                 text: $r('app.string.intelligent_tracking_prevention_desc'),
                 max_lines: 10
               }).width("100%") // Desc Intelligent Tracking Prevention
-              Row({ space: 10 }) {
-                linysText({ text: $r('app.string.intelligent_tracking_prevention'), max_lines: 4 })
-                  .layoutWeight(1)
-
-                Toggle({ isOn: this.intelligent_tracking_prevention, type: ToggleType.Switch })
-                  .switchPointColor(this.color_current_secondary)
-                  .selectedColor(this.color_current_font)
-                  .onChange(isOn => {
-                    this.intelligent_tracking_prevention = isOn;
-                    this.bunch_of_settings.set('intelligent_tracking_prevention', isOn);
-                    for (let index = 0; index < this.bunch_of_tabs.Tabs.length; index++) {
-                      try {
-                        this.bunch_of_tabs.Tabs[index].controller.enableIntelligentTrackingPrevention(isOn);
-                        console.log('[Meow][meowAppSettings] Intelligent Tracking Prevention now ' + isOn.toString() + '!')
-                      } catch (e) {
-                        console.log('[Meow][meowAppSettings] Toggle Intelligent Tracking Prevention Failed! ' +
-                          'But perhaps this doesn\'t really matter?')
-                        // In most cases this fails on app launch, because the webViews are not initialized.
-                        // If the user has set this settings to true, then this will be triggered since the default is false
-                        // But at that moment webViews are not initialized, with controllers linked accordingly
-                        // So this would cause 'Init error. The WebviewController must be associated with a Web component'
-                        // I guess :O
-                        // Let's see if this works
-                      }
+              linysSwitchWithText({
+                text: $r('app.string.intelligent_tracking_prevention'),
+                toggle_state: this.intelligent_tracking_prevention,
+                onExecution: () => {
+                  this.bunch_of_settings.set('intelligent_tracking_prevention', this.intelligent_tracking_prevention);
+                  for (let index = 0; index < this.bunch_of_tabs.Tabs.length; index++) {
+                    try {
+                      this.bunch_of_tabs.Tabs[index].controller.enableIntelligentTrackingPrevention(this.intelligent_tracking_prevention);
+                      console.log('[Meow][meowAppSettings] Intelligent Tracking Prevention now ' + this.intelligent_tracking_prevention.toString() + '!')
+                    } catch (e) {
+                      console.log('[Meow][meowAppSettings] Toggle Intelligent Tracking Prevention Failed! ' +
+                        'But perhaps this doesn\'t really matter?')
+                      // In most cases this fails on app launch, because the webViews are not initialized.
+                      // If the user has set this settings to true, then this will be triggered since the default is false
+                      // But at that moment webViews are not initialized, with controllers linked accordingly
+                      // So this would cause 'Init error. The WebviewController must be associated with a Web component'
+                      // I guess :O
+                      // Let's see if this works
                     }
-                  })
-              } // Toggle Intelligent Tracking Prevention
-              .width("100%")
+                  }
+                }
+              }) // Reverse settings menu
 
               linysCapsuleButtonWithText({
                 desc_text: $r('app.string.Settings_manage_cookies'),
@@ -776,18 +728,13 @@ struct meowAppSettings {
                 }
               }) // Cookie management
 
-              Row() {
-                linysText({ text: $r('app.string.Settings_js_disable_js'), max_lines: 4 })
-                  .layoutWeight(1)
-                Toggle({ isOn: this.disable_js, type: ToggleType.Switch })
-                  .switchPointColor(this.color_current_secondary)
-                  .selectedColor(this.color_current_font)
-                  .onChange(isOn => {
-                    this.disable_js = isOn;
-                    this.bunch_of_settings.set('disable_js', isOn);
-                  })
-              } // Toggle Disable JS
-              .width("100%")
+              linysSwitchWithText({
+                text: $r('app.string.Settings_js_disable_js'),
+                toggle_state: this.disable_js,
+                onExecution: () => {
+                  this.bunch_of_settings.set('Settings_js_disable_js', this.disable_js);
+                }
+              }) // Reverse settings menu
 
               linysCapsuleButtonWithText({
                 desc_text: $r('app.string.Settings_js_manage'),
@@ -809,18 +756,13 @@ struct meowAppSettings {
           FlowItem() {
             Column({ space: 15 }) {
               linysTextTitle({ text: $r('app.string.Settings_toolbox') })
-              Row({ space: 5 }) {
-                linysText({ text: $r('app.string.Settings_toolbox_resource_monitor'), max_lines: 3 })
-                  .layoutWeight(1)
-                Toggle({ isOn: this.resource_monitor, type: ToggleType.Switch })
-                  .switchPointColor(this.color_current_secondary)
-                  .selectedColor(this.color_current_font)
-                  .onChange(isOn => {
-                    this.resource_monitor = isOn;
-                    this.bunch_of_settings.set('resource_monitor', isOn);
-                  })
-              } // Show Resource Monitor
-              .width("100%")
+              linysSwitchWithText({
+                text: $r('app.string.Settings_toolbox_resource_monitor'),
+                toggle_state: this.resource_monitor,
+                onExecution: () => {
+                  this.bunch_of_settings.set('resource_monitor', this.resource_monitor);
+                }
+              }) // Show Resource Monitor
 
               linysText({ text: $r('app.string.Fault_logs_desc'), max_lines: 10 }) // Fault logs
               linysCapsuleButtonWithText({

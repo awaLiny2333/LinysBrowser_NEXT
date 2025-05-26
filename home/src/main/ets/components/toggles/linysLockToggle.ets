@@ -1,4 +1,4 @@
-import { fontSize_Large } from '../hosts/bunch_of_defaults';
+import { fontSize_Large } from '../../hosts/bunch_of_defaults';
 
 @Component
 struct linysLockToggle {

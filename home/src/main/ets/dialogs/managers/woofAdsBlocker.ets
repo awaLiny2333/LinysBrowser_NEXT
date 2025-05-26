@@ -1,18 +1,14 @@
 import linysSymbol from '../../components/texts/linysSymbol';
 import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
-import {
-  animation_default,
-  capsule_bar_height,
-  click_effect_default,
-  fontSize_Large
-} from '../../hosts/bunch_of_defaults';
+import { animation_default, capsule_bar_height, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { webview } from '@kit.ArkWeb';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import woofControlFrame from '../woofControlFrame';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
+import linysSwitchWithText from '../../components/toggles/linysSwitchWithText';
 
 @CustomDialog
 struct woofAdsBlocker {
@@ -144,19 +140,14 @@ struct woofAdsBlocker {
           .opacity(!this.use_adblock ? 0.5 : 1)
           .animation(animation_default())
 
-          Row({ space: 10 }) {
-            linysText({ text: $r('app.string.Settings_experience_use_adblock') })
-              .layoutWeight(1)
+          linysSwitchWithText({
+            text: $r('app.string.Settings_experience_use_adblock'),
+            toggle_state: this.use_adblock,
+            onExecution: () => {
+              this.bunch_of_settings.set('use_adblock', this.use_adblock);
+            }
+          }) // Reverse settings menu
 
-            Toggle({ isOn: this.use_adblock, type: ToggleType.Switch })
-              .switchPointColor(this.color_current_secondary)
-              .selectedColor(this.color_current_font)
-              .onChange(isOn => {
-                this.use_adblock = isOn;
-                this.bunch_of_settings.set('use_adblock', isOn);
-              })
-          } // Toggle use adblock
-          .width("100%")
         } // Whitelist
         .width(this.tablet_mode ? "60%" : "100%")
         .height(this.tablet_mode ? "100%" : undefined)

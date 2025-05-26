@@ -8,7 +8,7 @@ import { kv_store_get, kv_store_put } from '../../utils/kv_store_tools';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import woofSelectBookmarksPath from '../../dialogs/prompts/woofSelectBookmarksPath';
-import linysPathDisplay from '../../components/linysPathDisplay';
+import linysPathTree from '../../components/linysPathTree';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 
@@ -231,7 +231,7 @@ struct meowBookmarks {
           this.showing_navigator = !this.showing_navigator;
         })
 
-      linysPathDisplay({
+      linysPathTree({
         current_viewing_path: this.looking_at_path,
       })// Path indicator
         .height(this.showing_navigator ? undefined : 0)

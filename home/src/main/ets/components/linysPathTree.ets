@@ -2,7 +2,7 @@ import { animation_default, click_effect_default } from '../hosts/bunch_of_defau
 import linysText from './texts/linysText';
 
 @Component
-struct linysPathDisplay {
+struct linysPathTree {
   @Link @Watch('on_current_viewing_path_change') current_viewing_path: string;
   @StorageProp('screen_height') screen_height: number = 100;
   @Prop max_height_screen_percentage: number = 0.4;
@@ -73,7 +73,7 @@ struct linysPathDisplay {
   }
 }
 
-export default linysPathDisplay;
+export default linysPathTree;
 
 @Component
 struct linysPathButton {

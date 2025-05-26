@@ -9,6 +9,7 @@ import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import { match_domain } from '../../utils/url_tools';
 import woofControlFrame from '../woofControlFrame';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
+import linysSwitchWithText from '../../components/toggles/linysSwitchWithText';
 
 @CustomDialog
 struct woofGeneralManage {
@@ -159,35 +160,23 @@ struct woofGeneralManage {
           .opacity(this.general_on_all_sites_switch || !this.general_switch ? 0.5 : 1)
           .animation(animation_default())
 
-          Row({ space: 10 }) {
-            linysText({ text: this.general_subtitle_execute_on_all_sites })
-              .layoutWeight(1)
+          linysSwitchWithText({
+            text: this.general_subtitle_execute_on_all_sites,
+            toggle_state: this.general_on_all_sites_switch,
+            onExecution: () => {
+              this.bunch_of_settings.set(this.general_switch_all_sites_settings_id, this.general_on_all_sites_switch);
+            }
+          })// Toggle on all sites
+            .opacity(!this.general_switch ? 0.5 : 1)
+            .animation(animation_default())
 
-            Toggle({ isOn: this.general_on_all_sites_switch, type: ToggleType.Switch })
-              .switchPointColor(this.color_current_secondary)
-              .selectedColor(this.color_current_font)
-              .onChange(isOn => {
-                this.general_on_all_sites_switch = isOn;
-                this.bunch_of_settings.set(this.general_switch_all_sites_settings_id, isOn);
-              })
-          } // Toggle on all sites
-          .width("100%")
-          .opacity(!this.general_switch ? 0.5 : 1)
-          .animation(animation_default())
-
-          Row({ space: 10 }) {
-            linysText({ text: this.general_switch_desc })
-              .layoutWeight(1)
-
-            Toggle({ isOn: this.general_switch, type: ToggleType.Switch })
-              .switchPointColor(this.color_current_secondary)
-              .selectedColor(this.color_current_font)
-              .onChange(isOn => {
-                this.general_switch = isOn;
-                this.bunch_of_settings.set(this.general_switch_settings_id, isOn);
-              })
-          } // Toggle on all sites
-          .width("100%")
+          linysSwitchWithText({
+            text: this.general_switch_desc,
+            toggle_state: this.general_switch,
+            onExecution: () => {
+              this.bunch_of_settings.set(this.general_switch_settings_id, this.general_switch);
+            }
+          }) // Feature enable
 
         } // Whitelist
         .width(this.tablet_mode ? "60%" : "100%")
