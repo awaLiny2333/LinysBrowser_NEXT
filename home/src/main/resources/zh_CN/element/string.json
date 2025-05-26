@@ -198,7 +198,7 @@
     },
     {
       "name": "Settings_experience_history_index_desc",
-      "value": "索引是一种通过预读取和分析数据以加快查询的技术。\n\n索引历史通常需要一定的时间和空间，但这通常是值得的。\n\n点击这个按钮以强制重新索引：\n\n（进度会显示在 \uDB80\uDC61 里）"
+      "value": "索引是一种通过预读取和分析数据以加快查询的技术。\n\n索引历史通常需要一定的时间和空间，但这通常是值得的。\n\n点击这个按钮以强制重新索引：\n\n进度会显示在 \uDB80\uDC61 更多 里！"
     },
     {
       "name": "Settings_experience_history_index_storage_desc",
@@ -790,7 +790,7 @@
     },
     {
       "name": "Settings_toolbox_resource_monitor",
-      "value": "资源指示器（在 \uDB80\uDC61 里）"
+      "value": "资源指示器（在 \uDB80\uDC61 更多 里）"
     },
     {
       "name": "Fault_logs",
