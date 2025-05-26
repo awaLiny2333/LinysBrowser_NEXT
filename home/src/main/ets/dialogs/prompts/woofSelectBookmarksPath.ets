@@ -14,6 +14,8 @@ struct woofSelectBookmarksPath {
   @State viewing_contents: unified_item[] = this.filter_only_folders(this.bunch_of_bookmarks.root.get_content());
   @Prop @Watch('refresh_dir_content') looking_at_path: string;
   @State showing_navigator: boolean = false;
+  // Settings / Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -74,6 +76,8 @@ struct woofSelectBookmarksPath {
           .animation(animation_default())
 
         Blank()
+          .visibility(this.preferred_hand_left_or_right == 'right' ? Visibility.Visible : Visibility.None)
+          .animation(animation_default())
 
         linysCapsuleButton({ text: "  󰀓  " })
           .onClick(() => {
@@ -98,14 +102,12 @@ struct woofSelectBookmarksPath {
       } // Buttons of submit and cancel
       .width("100%")
 
-      Text(this.looking_at_path == "" ?
-        this.showing_navigator ? $r('app.string.Bookmarks_root_path_expanded') : $r('app.string.Bookmarks_root_path')
-        : "@ " + this.looking_at_path + "/")
+      Text(this.looking_at_path == "" ? this.showing_navigator ? $r('app.string.Bookmarks_root_path_expanded') : $r('app.string.Bookmarks_root_path') :
+        "@ " + this.looking_at_path + "/")
         .fontColor(this.color_current_font)
         .fontWeight(FontWeight.Bold)
         .fontSize(fontSize_Normal())
         .textAlign(TextAlign.End)
-        .width("100%")
         .margin({ top: 5 })
         .opacity(0.7)
         .animation(animation_default())
@@ -121,7 +123,9 @@ struct woofSelectBookmarksPath {
         .height(this.showing_navigator ? undefined : 0)
         .animation(animation_default())
     }
+    .alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
     .backgroundColor(this.color_current_primary)
+    .animation(animation_default())
     .padding(15)
     .height("80%")
   }

@@ -10,6 +10,8 @@ struct woofSelectColor {
   @Link color: ResourceColor;
   @Prop color_theme_id: string = 'color_light_font';
   @State dark_mode_color: boolean = false;
+  // Settings / Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
@@ -220,7 +222,6 @@ struct woofSelectColor {
               .height(capsule_bar_height())
             Blank()
             Row({ space: 10 }) {
-              Blank()
               linysCapsuleButton({ text: "  󰀓  " })
                 .onClick(() => {
                   if (this.controller) {
@@ -235,6 +236,8 @@ struct woofSelectColor {
                   }
                 }) // Cancel
             } // Buttons of submit and cancel
+            .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.Start : FlexAlign.End)
+            .animation(animation_default())
             .width("100%")
           }
           .width("100%")

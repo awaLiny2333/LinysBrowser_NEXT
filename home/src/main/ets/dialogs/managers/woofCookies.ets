@@ -5,6 +5,8 @@ import { webview } from '@kit.ArkWeb';
 import { match_domain } from '../../utils/url_tools';
 import woofControlFrame from '../woofControlFrame';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
+import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
+import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
 
 @CustomDialog
 struct woofCookies {
@@ -130,15 +132,13 @@ struct woofCookies {
           linysText({ text: $r('app.string.Settings_manage_cookies_clear_all'), max_lines: 5 })
             .width('100%')
 
-          Row({ space: 10 }) {
-            linysText({ text: '＞︿＜' })
-            linysTimeoutButton({
-              text: "  󰀁  ",
-              onExecution: () => {
-                this.clear_all_cookies();
-              }
-            }) // Delete
-          }
+          linysTimeoutButtonWithText({
+            desc_text: '＞︿＜',
+            button_text: '  󰀁  ',
+            onExecution: () => {
+              this.clear_all_cookies();
+            }
+          }) // Delete
 
         } // Controls
         .margin({ top: 15 })

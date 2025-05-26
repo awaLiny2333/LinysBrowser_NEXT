@@ -4,7 +4,7 @@ import { bunch_of_user_agents } from '../../hosts/bunch_of_user_agents';
 import woofControlFrame from '../woofControlFrame';
 
 @CustomDialog
-struct woofUAswitch {
+struct woofQuickUA {
   controller: CustomDialogController;
   // Color
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
@@ -22,7 +22,7 @@ struct woofUAswitch {
       .scrollable(ScrollDirection.Vertical)
       .edgeEffect(EdgeEffect.Spring)
       .backgroundColor(this.color_current_primary)
-      .constraintSize({ maxHeight: 100 + 48.5 * this.bunch_of_user_agents.list_of_user_agents.length })
+      .constraintSize({ maxHeight: 92.5 + 48.5 * this.bunch_of_user_agents.list_of_user_agents.length })
       .animation(animation_default())
 
       // .padding(15)
@@ -30,4 +30,4 @@ struct woofUAswitch {
   }
 }
 
-export default woofUAswitch;
+export default woofQuickUA;

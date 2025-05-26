@@ -1,12 +1,9 @@
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import linysText from '../../components/texts/linysText';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
-import {
-  arrayBuffer_to_pixelMap,
-  image_open_to_ArrayBuffer,
-  sandbox_save,
-  sandbox_unlink
-} from '../../utils/storage_tools';
+import { arrayBuffer_to_pixelMap, image_open_to_ArrayBuffer, sandbox_save, sandbox_unlink } from '../../utils/storage_tools';
+import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
+import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
 
 @Component
 struct meowHomepageBackgroundManager {
@@ -23,27 +20,20 @@ struct meowHomepageBackgroundManager {
 
   build() {
     Column({ space: 10 }) {
-      Row({ space: 10 }) {
-        Blank()
-        linysText({ text: $r('app.string.Homepage_background_select') })
-        linysCapsuleButton({ text: "  󰃟  " })
-          .onClick(() => {
-            this.select_set_background_image()
-          })
-      } // Homepage background select
-      .width("100%")
-
-      Row({ space: 10 }) {
-        Blank()
-        linysText({ text: $r('app.string.Homepage_background_delete') })
-        linysTimeoutButton({
-          text: "  󰀁  ",
-          onExecution: () => {
-            this.delete_homepage_background();
-          }
-        }) // Delete
-      } // Homepage background delete
-      .width("100%")
+      linysCapsuleButtonWithText({
+        desc_text: $r('app.string.Homepage_background_select'),
+        button_text: "  󰃟  ",
+        onExecution: () => {
+          this.select_set_background_image();
+        }
+      }) // Homepage background select
+      linysTimeoutButtonWithText({
+        desc_text: $r('app.string.Homepage_background_delete'),
+        button_text: "  󰀁  ",
+        onExecution: () => {
+          this.delete_homepage_background();
+        }
+      }) // Homepage background delete
     }
     .onAppear(() => {
       setInterval(() => {

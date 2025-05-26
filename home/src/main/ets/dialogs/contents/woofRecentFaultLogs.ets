@@ -4,6 +4,7 @@ import woofControlFrame from '../woofControlFrame';
 import { copy } from '../../utils/clipboard_tools';
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import linysTextTitle from '../../components/texts/linysTextTitle';
+import { animation_default } from '../../hosts/bunch_of_defaults';
 
 @CustomDialog
 struct woofRecentFaultLogs {
@@ -84,12 +85,18 @@ struct faultItem {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Edit
   @State copied: boolean = false;
+  // Settings / Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
 
   build() {
     Column({ space: 10 }) {
       Row({ space: 10 }) {
-        linysTextTitle({ text: (this.idx + 1).toString() + "." })
-          .layoutWeight(1)
+        Row() {
+          linysTextTitle({ text: (this.idx + 1).toString() + "." })
+        }
+        .layoutWeight(this.preferred_hand_left_or_right == 'right' ? 1 : undefined)
+        .animation(animation_default())
+
         linysCapsuleButton({
           text: this.copied ? " 󰆊 " : " 󰆝 "
         })

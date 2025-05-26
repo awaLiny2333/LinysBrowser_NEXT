@@ -1,5 +1,6 @@
 import meowHomepageBackgroundManager from '../../blocks/panels/meowHomepageBackgroundManager';
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
+import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 import linysLockSlider from '../../components/linysLockSlider';
 import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
@@ -76,26 +77,19 @@ struct woofHomepageManager {
             max_lines: 5
           }) // Desc
 
-          Row({ space: 10 }) {
-            Blank()
-            linysText({ text: $r('app.string.Settings_homepage_shortcuts_select_dir') })
-            linysCapsuleButton({ text: "  󰂺  " })// Move
-              .onClick(() => {
-                if (this.woofBookmarksPathSelector_control != null) {
-                  this.woofBookmarksPathSelector_control.open();
-                }
-              })
-          }
-          .width('100%')
+          linysCapsuleButtonWithText({
+            desc_text: $r('app.string.Settings_homepage_shortcuts_select_dir'),
+            button_text: "  󰂺  ",
+            onExecution: () => {
+              if (this.woofBookmarksPathSelector_control != null) {
+                this.woofBookmarksPathSelector_control.open();
+              }
+            }
+          }) // Select shortcuts directory
 
-          linysTextTitle({
-            text: $r('app.string.Settings_homepage_shortcuts_init_height')
-          }) // Display height of shortcuts
+          linysTextTitle({ text: $r('app.string.Settings_homepage_shortcuts_init_height'), max_lines: 5 }) // Display height of shortcuts
 
-          linysText({
-            text: $r('app.string.Settings_homepage_shortcuts_init_height_desc'),
-            max_lines: 5
-          }) // Desc
+          linysText({ text: $r('app.string.Settings_homepage_shortcuts_init_height_desc'), max_lines: 5 }) // Desc
 
           linysLockSlider({
             slider_value: this.homepage_shortcuts_init_height,

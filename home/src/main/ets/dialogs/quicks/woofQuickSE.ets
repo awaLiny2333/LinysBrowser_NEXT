@@ -15,7 +15,7 @@ import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import woofControlFrame from '../woofControlFrame';
 
 @CustomDialog
-struct woofAddSE {
+struct woofQuickSE {
   controller: CustomDialogController;
   @Prop link: string = '';
   @Prop label: string = '';
@@ -165,7 +165,7 @@ struct woofAddSE {
       .scrollBar(BarState.Off)
       .edgeEffect(EdgeEffect.Spring)
       .constraintSize({
-        maxHeight: 48.5 * this.bunch_of_search_engines.list_of_search_engines.length + (this.adding_SE ? 260 : 110)
+        maxHeight: 48.5 * this.bunch_of_search_engines.list_of_search_engines.length + 100 + (this.adding_SE ? 20 + this.height_of_add_panel : 0)
       })
       .animation(animation_default())
       .onAppear(() => {
@@ -186,7 +186,7 @@ struct woofAddSE {
   }
 }
 
-export default woofAddSE;
+export default woofQuickSE;
 
 @Component
 struct meowSEButton {

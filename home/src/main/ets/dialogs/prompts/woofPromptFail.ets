@@ -1,18 +1,16 @@
 import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
-import {
-  animation_default,
-  capsule_bar_height,
-  click_effect_default,
-  fontSize_Normal
-} from '../../hosts/bunch_of_defaults';
+import { animation_default, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import { LengthMetrics } from '@kit.ArkUI';
+import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 
 @CustomDialog
 struct woofPromptFail {
   controller: CustomDialogController;
   @Prop desc: ResourceStr = 'Desc';
   @State @Watch('on_meow_reversed') meow: boolean = false;
+  // Settings / Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -67,16 +65,9 @@ struct woofPromptFail {
       })
         .opacity(0.8)
 
-      Button($r('app.string.OK'))
-        .type(ButtonType.Capsule)
-        .backgroundColor(this.color_current_font)
-        .fontColor(this.color_current_primary)
-        .fontSize(fontSize_Normal() + 2)
-        .fontWeight(FontWeight.Bold)
-        .height(capsule_bar_height())
-        .clickEffect(click_effect_default())
-        .animation(animation_default())
-        .alignSelf(ItemAlign.End)
+      linysCapsuleButton({
+        text: $r('app.string.OK')
+      })
         .onClick(() => {
           if (this.controller) {
             this.controller.close();
@@ -85,7 +76,8 @@ struct woofPromptFail {
     }
     .padding(15)
     .backgroundColor(this.color_current_primary)
-    .alignItems(HorizontalAlign.Center)
+    .alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
+    .animation(animation_default())
     .justifyContent(FlexAlign.Center)
     .width("100%")
   }
@@ -117,7 +109,7 @@ struct goodByeLink {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Internal stuff
   @Prop text: ResourceStr = $r('app.string.HomeAbility_label');
-  @Prop color: ResourceColor = this.color_current_font;
+  @Prop color: ResourceColor;
   @Prop max_lines: number = 1;
   @Prop font_weight: FontWeight = FontWeight.Regular;
   @State link: string = "huawei.com";
@@ -127,7 +119,7 @@ struct goodByeLink {
 
   build() {
     Text(this.text)
-      .fontColor(this.color)
+      .fontColor(this.color || this.color_current_font)
       .fontSize(fontSize_Normal())
       .fontWeight(this.font_weight)
       .textAlign(TextAlign.Start)

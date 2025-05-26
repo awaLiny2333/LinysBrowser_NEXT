@@ -16,7 +16,7 @@ struct linysText {
       .fontColor(this.color == "" ? this.color_current_font : this.color)
       .fontSize(fontSize_Normal())
       .fontWeight(this.font_weight)
-      .width(this.align_another_side ? '100%' : undefined)
+      .layoutWeight(this.align_another_side ? 1 : undefined)
       .textAlign(this.align_another_side ? TextAlign.End : TextAlign.Start)
       .maxLines(this.max_lines)
       .lineSpacing(LengthMetrics.vp(4))

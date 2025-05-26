@@ -1,8 +1,8 @@
 import linysText from '../../components/texts/linysText';
-import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import woofSelectColor from '../../dialogs/prompts/woofSelectColor';
 import { animation_default, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
+import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
 
 @Component
 struct meowColorsManager {
@@ -75,31 +75,28 @@ struct meowColorsManager {
       .width("100%")
       .animation(animation_default())
 
-      Row({ space: 10 }) {
-        linysText({ text: $r("app.string.Color_reset"), align_another_side: true })
-          .layoutWeight(1)
-        linysTimeoutButton({
-          onExecution: async () => {
-            // Reset
-            this.bunch_of_settings.reset('color_light_font');
-            this.bunch_of_settings.reset('color_light_primary');
-            this.bunch_of_settings.reset('color_light_secondary');
-            this.bunch_of_settings.reset('color_dark_font');
-            this.bunch_of_settings.reset('color_dark_primary');
-            this.bunch_of_settings.reset('color_dark_secondary');
+      linysTimeoutButtonWithText({
+        desc_text: $r('app.string.Color_reset'),
+        button_text: '  󰃈  ',
+        onExecution: async () => {
+          // Reset
+          this.bunch_of_settings.reset('color_light_font');
+          this.bunch_of_settings.reset('color_light_primary');
+          this.bunch_of_settings.reset('color_light_secondary');
+          this.bunch_of_settings.reset('color_dark_font');
+          this.bunch_of_settings.reset('color_dark_primary');
+          this.bunch_of_settings.reset('color_dark_secondary');
 
-            // Figure out what color should i use
-            this.color_light_primary = await this.bunch_of_settings.get('color_light_primary') as string;
-            this.color_light_secondary =
-              await this.bunch_of_settings.get('color_light_secondary') as string;
-            this.color_light_font = await this.bunch_of_settings.get('color_light_font') as string;
-            this.color_dark_primary = await this.bunch_of_settings.get('color_dark_primary') as string;
-            this.color_dark_secondary = await this.bunch_of_settings.get('color_dark_secondary') as string;
-            this.color_dark_font = await this.bunch_of_settings.get('color_dark_font') as string;
-          }
-        }) // Reset button
-      }
-      .width("100%")
+          // Figure out what color should i use
+          this.color_light_primary = await this.bunch_of_settings.get('color_light_primary') as string;
+          this.color_light_secondary =
+            await this.bunch_of_settings.get('color_light_secondary') as string;
+          this.color_light_font = await this.bunch_of_settings.get('color_light_font') as string;
+          this.color_dark_primary = await this.bunch_of_settings.get('color_dark_primary') as string;
+          this.color_dark_secondary = await this.bunch_of_settings.get('color_dark_secondary') as string;
+          this.color_dark_font = await this.bunch_of_settings.get('color_dark_font') as string;
+        }
+      }) // Reset
     } // Colors
 
   }

@@ -20,13 +20,13 @@ import woofQR from '../../dialogs/contents/woofQR';
 import meowTabsHorizontal from './meowTabsHorizontal';
 import meowScratchingBoard from './meowScratchingBoard';
 import woofAdsBlocker from '../../dialogs/managers/woofAdsBlocker';
-import woofAddSE from '../../dialogs/quicks/woofQuickSE';
+import woofQuickSE from '../../dialogs/quicks/woofQuickSE';
 import woofCookies from '../../dialogs/managers/woofCookies';
 import linysText from '../../components/texts/linysText';
 import woofGeneralManage from '../../dialogs/managers/woofGeneralManage';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { share_link } from '../../utils/share_tools';
-import woofUAswitch from '../../dialogs/quicks/woofQuickUA';
+import woofQuickUA from '../../dialogs/quicks/woofQuickUA';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import { allow_drop_types, drop_to_scratching_board } from '../../utils/drag_drop_tools';
 import meowDebug from '../panels/meowDebug';
@@ -118,12 +118,12 @@ struct meowTitleBar {
     cornerRadius: 16
   })
   woofUAswitch_control: CustomDialogController = new CustomDialogController({
-    builder: woofUAswitch(),
+    builder: woofQuickUA(),
     alignment: DialogAlignment.Center,
     cornerRadius: 22
   })
   woofAddSE_control: CustomDialogController = new CustomDialogController({
-    builder: woofAddSE({
+    builder: woofQuickSE({
       label: this.current_title,
       link: this.search_extracted_engine,
       keyword: this.search_extracted_keyword

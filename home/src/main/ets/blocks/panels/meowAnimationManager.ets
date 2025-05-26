@@ -1,7 +1,7 @@
 import linysLockSlider from '../../components/linysLockSlider';
 import linysText from '../../components/texts/linysText';
-import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
+import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
 
 @Component
 struct meowAnimationManager {
@@ -53,23 +53,20 @@ struct meowAnimationManager {
         }
       })
 
-      Row({ space: 10 }) {
-        linysText({ text: $r("app.string.Settings_appearance_animation_reset"), align_another_side: true })
-          .layoutWeight(1)
-        linysTimeoutButton({
-          onExecution: async () => {
-            // Reset
-            this.bunch_of_settings.reset('animation_response');
-            this.bunch_of_settings.reset('animation_damping_coefficient');
-            // Sync
-            this.animation_response = await this.bunch_of_settings.get('animation_response') as number;
-            console.log(this.animation_response.toString())
-            this.animation_damping_coefficient =
-              await this.bunch_of_settings.get('animation_damping_coefficient') as number;
-          }
-        })
-      }
-      .width("100%")
+      linysTimeoutButtonWithText({
+        desc_text: $r('app.string.Settings_appearance_animation_reset'),
+        button_text: '  󰃈  ',
+        onExecution: async () => {
+          // Reset
+          this.bunch_of_settings.reset('animation_response');
+          this.bunch_of_settings.reset('animation_damping_coefficient');
+          // Sync
+          this.animation_response = await this.bunch_of_settings.get('animation_response') as number;
+          console.log(this.animation_response.toString())
+          this.animation_damping_coefficient =
+            await this.bunch_of_settings.get('animation_damping_coefficient') as number;
+        }
+      })
     }
     .alignItems(HorizontalAlign.Start)
     .justifyContent(FlexAlign.Start)

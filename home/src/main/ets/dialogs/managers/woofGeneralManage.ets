@@ -1,12 +1,7 @@
 import linysSymbol from '../../components/texts/linysSymbol';
 import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
-import {
-  animation_default,
-  capsule_bar_height,
-  click_effect_default,
-  fontSize_Large
-} from '../../hosts/bunch_of_defaults';
+import { animation_default, capsule_bar_height, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { webview } from '@kit.ArkWeb';
 import linysShowButton from '../../components/buttons/linysShowButton';
@@ -41,6 +36,8 @@ struct woofGeneralManage {
   @State general_switch_settings_id: string = 'disable_js';
   @State general_sites_list_settings_id: string = 'disable_js_these_sites';
   @State general_switch_all_sites_settings_id: string = 'disable_js_all_sites';
+  // Settings / Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Manage
   @State @Watch('on_select_change') selected: boolean[] = this.all_false(this.general_sites_list.length);
   @State selecting: boolean = false;
@@ -236,7 +233,8 @@ struct woofGeneralManage {
                 })
             }
             .padding({ top: 10 })
-            .alignItems(HorizontalAlign.End)
+            .alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
+            .animation(animation_default())
             .width("100%")
           } // Add
           .scrollBar(BarState.Off)
@@ -277,7 +275,7 @@ struct woofGeneralManage {
           .animation(animation_default())
         } // Controls
         .padding({ top: 10, right: this.tablet_mode ? 10 : 0 })
-        .alignItems(HorizontalAlign.End)
+        .alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
         .alignRules(this.alignRules_foot)
         .opacity(this.general_on_all_sites_switch || !this.general_switch ? 0.5 : 1)
         .animation(animation_default())

@@ -1,13 +1,7 @@
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import linysSymbol from '../../components/texts/linysSymbol';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
-import {
-  animation_default,
-  capsule_bar_height,
-  click_effect_default,
-  fontSize_Large,
-  fontSize_Normal
-} from '../../hosts/bunch_of_defaults';
+import { animation_default, capsule_bar_height, fontSize_Large, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { bunch_of_user_agents, user_agent } from '../../hosts/bunch_of_user_agents';
 
@@ -23,6 +17,8 @@ struct meowUAManager {
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // Settings / Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
 
   build() {
     Column({ space: 2.5 }) {
@@ -84,12 +80,12 @@ struct meowUAManager {
       })
 
       Row() {
-        Blank()
         linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
           .onClick(() => {
             this.add_new_custom_ua();
           })
       } // Add Button
+      .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
       .width("100%")
       .padding(5)
     }
@@ -148,6 +144,8 @@ struct meowUAButton {
   @State my_ua: user_agent = this.bunch_of_user_agents.list_of_user_agents[this.my_index];
   @State my_label: string = this.my_ua.label;
   @State my_content: string = this.my_ua.user_agent_content;
+  // Settings / Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // statuses
   @State pressing: boolean = false;
   @State editing: boolean = false;
@@ -265,7 +263,6 @@ struct meowUAButton {
             .animation(animation_default())
 
             Row({ space: 10 }) {
-              Blank()
               linysTimeoutButton({
                 text: "  󰀁  ",
                 onExecution: () => {
@@ -279,6 +276,8 @@ struct meowUAButton {
                 })
 
             } // Buttons of operations
+            .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
+            .animation(animation_default())
             .width("100%")
           }
           .padding({

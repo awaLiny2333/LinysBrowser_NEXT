@@ -45,6 +45,8 @@ import {
 } from '../../hosts/bunch_of_history_index_x_functions';
 import { bunch_of_history_index_lite } from '../../hosts/bunch_of_history_index_lite';
 import woofUpdateHistory from '../../dialogs/contents/woofUpdateHistory';
+import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
+import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
 
 @Component
 struct meowAppSettings {
@@ -380,19 +382,13 @@ struct meowAppSettings {
               } // Use adblock
               .width("100%")
 
-              Row({ space: 10 }) {
-                linysText({
-                  text: $r('app.string.Settings_experience_manage_adblock'),
-                  max_lines: 3,
-                  align_another_side: true
-                })
-                  .layoutWeight(1)
-                linysCapsuleButton({ text: "  󰀠  " })
-                  .onClick(() => {
-                    this.adsBlocker_control.open();
-                  })
-              } // Ads Blocker management
-              .width("100%")
+              linysCapsuleButtonWithText({
+                desc_text: $r('app.string.Settings_experience_manage_adblock'),
+                button_text: "  󰀠  ",
+                onExecution: () => {
+                  this.adsBlocker_control.open();
+                }
+              })
 
               Row() {
                 linysText({ text: $r('app.string.Settings_image_disable_image'), max_lines: 1 })
@@ -407,42 +403,33 @@ struct meowAppSettings {
               } // Disable images
               .width("100%")
 
-              Row({ space: 10 }) {
-                linysText({ text: $r('app.string.Settings_image_manage'), max_lines: 3, align_another_side: true })
-                  .layoutWeight(1)
-                linysCapsuleButton({ text: "  󰀠  " })
-                  .onClick(() => {
-                    this.image_manage_control.open();
-                  })
-              } // Disable image management
-              .width("100%")
+              linysCapsuleButtonWithText({
+                desc_text: $r('app.string.Settings_image_manage'),
+                button_text: "  󰀠  ",
+                onExecution: () => {
+                  this.image_manage_control.open();
+                }
+              })
 
               linysText({ text: $r('app.string.Key_shortcuts') })// Keyboard shortcuts title
                 .width('100%')
-              Row({ space: 10 }) {
-                linysText({ text: $r('app.string.Key_shortcuts_manage'), max_lines: 3, align_another_side: true })
-                  .layoutWeight(1)
-                linysCapsuleButton({ text: "  󰀠  " })
-                  .onClick(() => {
-                    this.key_shortcuts_control.open();
-                  })
-              } // Keyboard shortcuts management
-              .width("100%")
+              linysCapsuleButtonWithText({
+                desc_text: $r('app.string.Key_shortcuts_manage'),
+                button_text: "  󰀠  ",
+                onExecution: () => {
+                  this.key_shortcuts_control.open();
+                }
+              })
 
-              linysText({ text: $r('app.string.Settings_homepage'), max_lines: 3 }) // Homepage Customization
-              Row({ space: 10 }) {
-                linysText({
-                  text: $r('app.string.Settings_homepage_customization'),
-                  max_lines: 3,
-                  align_another_side: true
-                })
-                  .layoutWeight(1)
-                linysCapsuleButton({ text: "  󰀠  " })
-                  .onClick(() => {
-                    this.homepage_shortcuts_control.open();
-                  })
-              }
-              .width("100%")
+              linysText({ text: $r('app.string.Settings_homepage'), max_lines: 3 })// Homepage Customization
+                .width('100%')
+              linysCapsuleButtonWithText({
+                desc_text: $r('app.string.Settings_homepage_customization'),
+                button_text: "  󰀠  ",
+                onExecution: () => {
+                  this.homepage_shortcuts_control.open();
+                }
+              })
 
               linysText({ text: $r('app.string.Settings_experience_max_bookmark_advice'), max_lines: 2 })
               linysLockSlider({
@@ -612,44 +599,27 @@ struct meowAppSettings {
               } // Toggle History
               .width("100%")
 
-              Row({ space: 10 }) {
-                // linysTitleText({ text: "󰏕 " + this.history_length.toString() })
-                linysText({
-                  text: $r('app.string.Settings_experience_history_view'),
-                  max_lines: 3,
-                  align_another_side: true
+              linysCapsuleButtonWithText({
+                desc_text: $r('app.string.Settings_experience_history_view'),
+                button_text: "  󰀩  ",
+                onExecution: () => {
+                  this.woofHistory_control.open();
+                }
+              })// View history
+                .keyboardShortcut(this.bunch_of_key_shortcuts.history.main_key, this.bunch_of_key_shortcuts.history.modifier, () => {
+                  this.woofHistory_control.open();
                 })
-                  .layoutWeight(1)
-                linysCapsuleButton({ text: "  󰀩  " })
-                  .onClick(() => {
-                    this.woofHistory_control.open();
-                  })
-                  .keyboardShortcut(this.bunch_of_key_shortcuts.history.main_key,
-                    this.bunch_of_key_shortcuts.history.modifier)
-              } // History management
-              .width("100%")
 
               linysText({ text: $r('app.string.Settings_experience_history_index_desc'), max_lines: 20 })
-
-              Row({ space: 10 }) {
-                // linysTitleText({ text: "󰏕 " + this.history_length.toString() })
-                linysText({
-                  text: $r('app.string.Settings_experience_history_index'),
-                  max_lines: 3,
-                  align_another_side: true
-                })
-                  .layoutWeight(1)
-
-                linysTimeoutButton({
-                  text: "  󰏕  ",
-                  onExecution: () => {
-                    history_index_full_rebuild_worker();
-                  }
-                })
-                  .opacity(this.reindexing_history ? 0.4 : 1)
-                  .enabled(!this.reindexing_history)
-              } // History indexing
-              .width("100%")
+              linysTimeoutButtonWithText({
+                desc_text: $r('app.string.Settings_experience_history_index'),
+                button_text: "  󰀩  ",
+                onExecution: () => {
+                  history_index_full_rebuild_worker();
+                }
+              })// History Indexing
+                .opacity(this.reindexing_history ? 0.4 : 1)
+                .enabled(!this.reindexing_history)
 
               if (this.DEV_MODE) {
                 linysTimeoutButton({
@@ -703,64 +673,54 @@ struct meowAppSettings {
             Column({ space: 15 }) {
               linysTextTitle({ text: $r('app.string.Settings_storage') }) // Storage Title
 
-              linysText({ text: $r('app.string.Settings_storage_clear_webview_desc'), max_lines: 20 })
+              linysText({ text: $r('app.string.Settings_storage_clear_webview_desc'), max_lines: 20 }) // Cache title
+              linysTextTitle({ text: "󰂼 " + add_units_to_size(this.web_cache_size) }) // data display
+              Row({ space: 12 }) {
+                linysCapsuleButton({ text: '  󰃈  ' })
+                  .onClick(() => {
+                    this.refresh_web_cache_size();
+                  })
+                  .opacity(this.calculating_web_cache_size ? 0.4 : 1)
+                  .enabled(!this.calculating_web_cache_size)
+                  .animation(animation_default())
 
-              Column({ space: 10 }) {
-                linysTextTitle({ text: "󰂼 " + add_units_to_size(this.web_cache_size) })// data display
-                  .clickEffect(click_effect_default())
-
-                Row({ space: 12 }) {
-                  Blank()
-                  linysCapsuleButton({ text: '  󰃈  ' })
-                    .onClick(() => {
-                      this.refresh_web_cache_size();
-                    })
-                    .opacity(this.calculating_web_cache_size ? 0.4 : 1)
-                    .enabled(!this.calculating_web_cache_size)
-                    .animation(animation_default())
-
-                  linysTimeoutButton({
-                    text: '  󰀖  ',
-                    onExecution: () => {
-                      try {
-                        this.bunch_of_tabs.Tabs[0].controller.removeCache(true);
-                        console.log('[Meow][meowAppSettings] Clear webview cache!')
-                      } catch (error) {
-                        console.error(`[Meow][meowAppSettings] Clear webview cache.
+                linysTimeoutButton({
+                  text: '  󰀖  ',
+                  onExecution: () => {
+                    try {
+                      this.bunch_of_tabs.Tabs[0].controller.removeCache(true);
+                      console.log('[Meow][meowAppSettings] Clear webview cache!')
+                    } catch (error) {
+                      console.error(`[Meow][meowAppSettings] Clear webview cache.
                       ErrorCode: ${(error as BusinessError).code},
                       Message: ${(error as BusinessError).message}`);
-                      }
-                      this.refresh_web_cache_size();
                     }
-                  })// Clear Cache
-                    .opacity(this.calculating_web_cache_size ? 0.4 : 1)
-                    .enabled(!this.calculating_web_cache_size)
-                    .animation(animation_default())
+                    this.refresh_web_cache_size();
+                  }
+                })// Clear Cache
+                  .opacity(this.calculating_web_cache_size ? 0.4 : 1)
+                  .enabled(!this.calculating_web_cache_size)
+                  .animation(animation_default())
+              } // buttons
+              .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
+              .animation(animation_default())
+              .width("100%")
 
-                } // buttons
-                .width("100%")
-              } // Web Cache data display and button
-              .alignItems(HorizontalAlign.Start)
+              linysText({ text: $r('app.string.Settings_experience_history_index_storage_desc'), max_lines: 6 }) // Indexing title
+              linysTextTitle({ text: "󰏕 " + add_units_to_size(this.history_index_size) }) // data display
+              Row({ space: 12 }) {
+                linysCapsuleButton({ text: '  󰃈  ' })
+                  .onClick(() => {
+                    this.refresh_history_index_size();
+                  })
+                  .opacity(this.calculating_history_index_size ? 0.4 : 1)
+                  .enabled(!this.calculating_history_index_size)
+                  .animation(animation_default())
+              } // buttons
+              .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
+              .animation(animation_default())
+              .width("100%")
 
-              linysText({ text: $r('app.string.Settings_experience_history_index_storage_desc'), max_lines: 6 })
-
-              Column({ space: 10 }) {
-                linysTextTitle({ text: "󰏕 " + add_units_to_size(this.history_index_size) })// data display
-                  .clickEffect(click_effect_default())
-
-                Row({ space: 12 }) {
-                  Blank()
-                  linysCapsuleButton({ text: '  󰃈  ' })
-                    .onClick(() => {
-                      this.refresh_history_index_size();
-                    })
-                    .opacity(this.calculating_history_index_size ? 0.4 : 1)
-                    .enabled(!this.calculating_history_index_size)
-                    .animation(animation_default())
-                } // buttons
-                .width("100%")
-              } // History Index data display and button
-              .alignItems(HorizontalAlign.Start)
             }
             .padding(15)
             .alignItems(HorizontalAlign.Start)
@@ -778,9 +738,7 @@ struct meowAppSettings {
               linysText({
                 text: $r('app.string.intelligent_tracking_prevention_desc'),
                 max_lines: 10
-              })
-                .width("100%")
-
+              }).width("100%") // Desc Intelligent Tracking Prevention
               Row({ space: 10 }) {
                 linysText({ text: $r('app.string.intelligent_tracking_prevention'), max_lines: 4 })
                   .layoutWeight(1)
@@ -810,15 +768,13 @@ struct meowAppSettings {
               } // Toggle Intelligent Tracking Prevention
               .width("100%")
 
-              Row({ space: 10 }) {
-                linysText({ text: $r('app.string.Settings_manage_cookies'), max_lines: 3, align_another_side: true })
-                  .layoutWeight(1)
-                linysCapsuleButton({ text: '  󰀩  ' })
-                  .onClick(() => {
-                    this.cookies_control.open();
-                  })
-              } // Cookie management
-              .width("100%")
+              linysCapsuleButtonWithText({
+                desc_text: $r('app.string.Settings_manage_cookies'),
+                button_text: "  󰀩  ",
+                onExecution: () => {
+                  this.cookies_control.open();
+                }
+              }) // Cookie management
 
               Row() {
                 linysText({ text: $r('app.string.Settings_js_disable_js'), max_lines: 4 })
@@ -833,15 +789,13 @@ struct meowAppSettings {
               } // Toggle Disable JS
               .width("100%")
 
-              Row({ space: 10 }) {
-                Blank()
-                linysText({ text: $r('app.string.Settings_js_manage') })
-                linysCapsuleButton({ text: '  󰀠  ' })
-                  .onClick(() => {
-                    this.js_manage_control.open();
-                  })
-              } // JS management
-              .width("100%")
+              linysCapsuleButtonWithText({
+                desc_text: $r('app.string.Settings_js_manage'),
+                button_text: '  󰀠  ',
+                onExecution: () => {
+                  this.js_manage_control.open();
+                }
+              }) // JS management
             }
             .padding(15)
             .alignItems(HorizontalAlign.Start)
@@ -868,16 +822,14 @@ struct meowAppSettings {
               } // Show Resource Monitor
               .width("100%")
 
-              linysText({ text: $r('app.string.Fault_logs_desc'), max_lines: 10 })
-              Row({ space: 10 }) {
-                Blank()
-                linysText({ text: $r('app.string.Fault_logs') })
-                linysCapsuleButton({ text: '  󰀩  ' })
-                  .onClick(() => {
-                    this.recent_fault_logs_control.open();
-                  })
-              } // Fault logs display
-              .width("100%")
+              linysText({ text: $r('app.string.Fault_logs_desc'), max_lines: 10 }) // Fault logs
+              linysCapsuleButtonWithText({
+                desc_text: $r('app.string.Fault_logs'),
+                button_text: '  󰀩  ',
+                onExecution: () => {
+                  this.recent_fault_logs_control.open();
+                }
+              }) // Fault logs display
 
               if (this.DEV_MODE) {
                 linysTimeoutButton({
@@ -940,23 +892,19 @@ struct meowAppSettings {
 
           FlowItem() {
             Column({ space: 15 }) {
-              linysTextTitle({
-                text: $r('app.string.Whats_new')
-              })
-              meowWhatsNew()
+              linysTextTitle({ text: $r('app.string.Whats_new') }) // Whats new Title
+              meowWhatsNew() // Whats new contents
               linysText({
                 text: $r("app.string.Whats_new_content_extra"),
                 max_lines: 6
-              })
-              Row({ space: 10 }) {
-                linysText({ text: $r('app.string.Update_record'), max_lines: 3, align_another_side: true })
-                  .layoutWeight(1)
-                linysCapsuleButton({ text: "  󰀩  " })
-                  .onClick(() => {
-                    this.update_history.open();
-                  })
-              } // Update history
-              .width("100%")
+              }) // Perhaps some bugfix?
+              linysCapsuleButtonWithText({
+                desc_text: $r('app.string.Update_record'),
+                button_text: '  󰀩  ',
+                onExecution: () => {
+                  this.update_history.open();
+                }
+              }) // Update history
             }
             .padding(15)
             .alignItems(HorizontalAlign.Start)
@@ -964,7 +912,7 @@ struct meowAppSettings {
             .width("100%")
             .borderRadius(10)
             .backgroundColor(this.color_current_primary)
-          } // About
+          } // Update
           .width("100%")
 
         } // Bottom Bar of App Settings

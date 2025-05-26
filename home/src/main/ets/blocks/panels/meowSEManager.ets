@@ -1,13 +1,7 @@
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import linysSymbol from '../../components/texts/linysSymbol';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
-import {
-  animation_default,
-  capsule_bar_height,
-  default_search_engine,
-  fontSize_Large,
-  fontSize_Normal
-} from '../../hosts/bunch_of_defaults';
+import { animation_default, capsule_bar_height, default_search_engine, fontSize_Large, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import { bunch_of_search_engines, search_engine } from '../../hosts/bunch_of_search_engines';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 
@@ -23,6 +17,8 @@ struct meowSEManager {
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // Settings / Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
 
   build() {
     Column({ space: 2.5 }) {
@@ -83,12 +79,13 @@ struct meowSEManager {
       })
 
       Row() {
-        Blank()
         linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
           .onClick(() => {
             this.add_new_custom_search_engine();
           })
       } // Add Button
+      .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
+      .animation(animation_default())
       .width("100%")
       .padding(5)
     }
@@ -148,12 +145,13 @@ export default meowSEManager;
 struct meowSEButton {
   @Link selected_index: number;
   @Prop my_index: number;
-  @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines =
-    new bunch_of_search_engines();
+  @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines = new bunch_of_search_engines();
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @State my_se: search_engine = this.bunch_of_search_engines.list_of_search_engines[this.my_index];
   @State my_label: string = this.my_se.label;
   @State my_content: string = this.my_se.url;
+  // Settings - Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // statuses
   @State editing: boolean = false;
   @State pressing: boolean = false;
@@ -270,7 +268,6 @@ struct meowSEButton {
             .animation(animation_default())
 
             Row({ space: 10 }) {
-              Blank()
               linysTimeoutButton({
                 text: "  󰀁  ",
                 onExecution: () => {
@@ -284,6 +281,7 @@ struct meowSEButton {
                 })
 
             } // Buttons of operations
+            .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
             .width("100%")
           }
           .padding({

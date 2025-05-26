@@ -23,6 +23,8 @@ struct woofAdsBlocker {
   @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
   @State add_exception_domain_edit: string = "";
   @State showing_add_panel: boolean = false;
+  // Settings / Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Manage
   @State @Watch('on_select_change') selected: boolean[] = this.all_false(this.adblock_exceptions.length);
   @State selecting: boolean = false;
@@ -199,7 +201,8 @@ struct woofAdsBlocker {
                 })
             }
             .padding({ top: 10 })
-            .alignItems(HorizontalAlign.End)
+            .alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
+            .animation(animation_default())
             .width("100%")
           } // Add
           .scrollBar(BarState.Off)
@@ -240,7 +243,7 @@ struct woofAdsBlocker {
           .animation(animation_default())
         } // Controls
         .padding({ top: 10, right: this.tablet_mode ? 10 : 0 })
-        .alignItems(HorizontalAlign.End)
+        .alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
         .alignRules(this.alignRules_foot)
         .opacity(!this.use_adblock ? 0.5 : 1)
         .animation(animation_default())

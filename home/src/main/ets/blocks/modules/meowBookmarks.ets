@@ -10,6 +10,7 @@ import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import woofSelectBookmarksPath from '../../dialogs/prompts/woofSelectBookmarksPath';
 import linysPathDisplay from '../../components/linysPathDisplay';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
+import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 
 @Component
 struct meowBookmarks {
@@ -72,29 +73,30 @@ struct meowBookmarks {
       })
 
       Row({ space: this.tablet_mode ? 12 : 9 }) {
-        Column() {
-          linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left' })
-            .onClick(() => {
-              this.go_back();
-            })
-            .visibility(this.looking_at_path == "" ? Visibility.None : this.visible_when_no_operating())
-            .animation(animation_default())
-        } // Go back button
-        .alignItems(HorizontalAlign.Start)
-        .layoutWeight(1)
-
-        linysShowButton({
-          show: this.importing_bookmarks,
-          symbol_glyph_target: 'sys.symbol.arrow_down_and_rectangle_on_rectangle',
-          text: $r('app.string.Index_import_bookmarks_title')
-        })
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left' })// Go back button
           .onClick(() => {
-            this.adding_folder = false;
-            this.adding_bookmark = false;
-            this.exporting_bookmarks = false;
-            this.importing_bookmarks = !this.importing_bookmarks;
-            // this.import_bookmarks_html();
-          }) // Import bookmarks button
+            this.go_back();
+          })
+          .visibility(this.looking_at_path == "" ? Visibility.None : this.visible_when_no_operating())
+          .animation(animation_default())
+
+        Column() {
+          linysShowButton({
+            show: this.importing_bookmarks,
+            symbol_glyph_target: 'sys.symbol.arrow_down_and_rectangle_on_rectangle',
+            text: $r('app.string.Index_import_bookmarks_title')
+          })
+            .onClick(() => {
+              this.adding_folder = false;
+              this.adding_bookmark = false;
+              this.exporting_bookmarks = false;
+              this.importing_bookmarks = !this.importing_bookmarks;
+              // this.import_bookmarks_html();
+            })
+        } // Import bookmarks button
+        .alignItems(HorizontalAlign.End)
+        .layoutWeight(this.preferred_hand_left_or_right == 'right' ? 1 : undefined)
+        .animation(animation_default())
 
         linysShowButton({
           show: this.exporting_bookmarks,
@@ -139,7 +141,6 @@ struct meowBookmarks {
       } // Operation buttons
       .width("100%")
       .margin({ bottom: 5 })
-      .justifyContent(FlexAlign.End)
 
       Scroll() {
         Column({ space: 10 }) {
@@ -163,7 +164,6 @@ struct meowBookmarks {
               })
 
           } // Edit Label TextInput
-          .width("100%")
           .visibility(this.adding_folder || this.adding_bookmark ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
 
@@ -185,39 +185,30 @@ struct meowBookmarks {
               .height(capsule_bar_height())
 
           } // Edit link TextInput
-          .width("100%")
           .visibility(this.adding_bookmark ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
 
-          Row() {
-            Blank()
-            Text($r('app.string.Index_select_file'))
-              .fontSize(fontSize_Large() - 2)
-              .fontColor(this.color_current_font)
-              .visibility(this.exporting_bookmarks || this.importing_bookmarks ? Visibility.Visible : Visibility.None)
-              .margin({ right: 10 })
-
-            linysCapsuleButton({ text: this.adding_folder || this.adding_bookmark ? "  󰀓  " : "  󰃟  " })
-              .onClick(() => {
-                if (this.adding_folder) {
-                  this.new_folder()
-                }
-                if (this.adding_bookmark) {
-                  this.new_bookmark()
-                }
-                if (this.importing_bookmarks) {
-                  this.import_bookmarks_html()
-                }
-                if (this.exporting_bookmarks) {
-                  this.export_bookmarks_html()
-                }
-              })
-
-          } // Submit add button
-          .width("100%")
-          .visibility(this.adding_folder || this.adding_bookmark || this.exporting_bookmarks || this.importing_bookmarks
-            ? Visibility.Visible : Visibility.None)
-          .animation(animation_default())
+          linysCapsuleButtonWithText({
+            desc_text: this.exporting_bookmarks || this.importing_bookmarks ? $r('app.string.Index_select_file') : '',
+            button_text: this.adding_folder || this.adding_bookmark ? "  󰀓  " : "  󰃟  ",
+            onExecution: () => {
+              if (this.adding_folder) {
+                this.new_folder()
+              }
+              if (this.adding_bookmark) {
+                this.new_bookmark()
+              }
+              if (this.importing_bookmarks) {
+                this.import_bookmarks_html()
+              }
+              if (this.exporting_bookmarks) {
+                this.export_bookmarks_html()
+              }
+            }
+          })// Submit add button
+            .visibility(this.adding_folder || this.adding_bookmark || this.exporting_bookmarks || this.importing_bookmarks ? Visibility.Visible :
+            Visibility.None)
+            .animation(animation_default())
 
         }
         .width("100%")
@@ -242,13 +233,12 @@ struct meowBookmarks {
 
       linysPathDisplay({
         current_viewing_path: this.looking_at_path,
-      })
+      })// Path indicator
         .height(this.showing_navigator ? undefined : 0)
         .animation(animation_default())
-      // Path indicator
+
     } // List of directory, Operation buttons and edit TextInputs
     .justifyContent(FlexAlign.End)
-    // .padding(10)
     .width("100%")
     .height("100%")
     .onAppear(() => {
@@ -431,6 +421,8 @@ struct bookmarkItem {
   @State type: string = this.item.get_item().get_type();
   @State label: string = this.item.get_item().get_label();
   @State link: string = this.type == "bookmark" ? (this.item.get_item() as bookmark).get_link() : "";
+  // Settings / Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Basic this properties
   @State pressing: boolean = false;
   @State show: Visibility = Visibility.Hidden;
@@ -570,7 +562,6 @@ struct bookmarkItem {
           .animation(animation_default())
 
           Row({ space: 10 }) {
-            Blank()
             linysCapsuleButton({ text: "  󰂺  " })// Move
               .onClick(() => {
                 if (this.type == "folder") {
@@ -601,6 +592,7 @@ struct bookmarkItem {
               })
 
           } // Buttons of operations
+          .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
           .width("100%")
         }
         .padding({
@@ -615,10 +607,7 @@ struct bookmarkItem {
         })
 
       } // Edit panel
-      .height(
-        !this.editing ? 0 :
-          (this.type == "bookmark" ? 142 : 0) + (this.type == "folder" ? 98 : 0)
-      )
+      .height(!this.editing ? 0 : (this.type == "bookmark" ? 142 : 0) + (this.type == "folder" ? 98 : 0))
       .visibility(this.editing ? Visibility.Visible : Visibility.None)
       .animation(animation_default())
       .scrollBar(BarState.Off)

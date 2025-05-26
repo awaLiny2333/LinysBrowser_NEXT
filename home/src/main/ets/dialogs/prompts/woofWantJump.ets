@@ -1,6 +1,7 @@
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
+import { animation_default } from '../../hosts/bunch_of_defaults';
 import { jump_external_link } from '../../utils/url_tools';
 
 @CustomDialog
@@ -11,6 +12,8 @@ struct woofWantJump {
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // Settings / Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
 
   build() {
     Column({ space: 15 }) {
@@ -40,7 +43,8 @@ struct woofWantJump {
             jump_external_link(this.link);
           })
       }
-      .justifyContent(FlexAlign.End)
+      .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
+      .animation(animation_default())
       .width('100%')
     }
     .padding(20)
