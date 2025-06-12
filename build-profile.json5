@@ -2,49 +2,25 @@
   "app": {
     "signingConfigs": [
       {
-        "name": "ohos",
-        "material": {
-          "certpath": "C:/Users/meowDUO/.ohos/config/openharmony/ohos_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.cer",
-          "keyAlias": "debugKey",
-          "keyPassword": "0000001BAC46EE934404E44EE83581CF78AC91AD07C46E65DC3B8457A6B38F4DF4FE2C922FC3131AA72832",
-          "profile": "C:/Users/meowDUO/.ohos/config/openharmony/ohos_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.p7b",
-          "signAlg": "SHA256withECDSA",
-          "storeFile": "C:/Users/meowDUO/.ohos/config/openharmony/ohos_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.p12",
-          "storePassword": "0000001B308EF3C3CC3FE4B2BD3B42BD9A2E804B49880DE038EA58B322CC3FE7D066582B7F411B1332A516"
-        }
-      },
-      {
-        "name": "hmos",
+        "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\meowDUO\\.ohos\\config\\hmos_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.cer",
+          "certpath": "C:\\Users\\OseasyVM\\.ohos\\config\\default_LinysBrowser_NEXT_llND84tGtyXuShtK6Vwt_pf5mJY8vXH5lVDlEL3CvwY=.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001AB92680515DF6365CAC8CA6F65C10F7C9864B32F30B381C847CA34FD5EDB7CD8862325E09DF32",
-          "profile": "C:\\Users\\meowDUO\\.ohos\\config\\hmos_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.p7b",
+          "keyPassword": "0000001B72CA443C52F337D888189122D67B3B1B73982A88C23205570B4CA46463FFFCC6102E9DD3C5CCE4",
+          "profile": "C:\\Users\\OseasyVM\\.ohos\\config\\default_LinysBrowser_NEXT_llND84tGtyXuShtK6Vwt_pf5mJY8vXH5lVDlEL3CvwY=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\meowDUO\\.ohos\\config\\hmos_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.p12",
-          "storePassword": "0000001A87CC0106D3717DBCCA5E348487E1CB5FBFB83632475F1C254E5CC04A9EE67AC01B09FEA6BACB"
+          "storeFile": "C:\\Users\\OseasyVM\\.ohos\\config\\default_LinysBrowser_NEXT_llND84tGtyXuShtK6Vwt_pf5mJY8vXH5lVDlEL3CvwY=.p12",
+          "storePassword": "0000001BAD7B9704D197DC7FF93B550BB4F95AB2A534D1E452AE01E08E6CECBACC388ECCB8C01B4FD0936C"
         }
       }
     ],
     "products": [
       {
         "name": "default",
-        "signingConfig": "hmos",
-        "compatibleSdkVersion": "5.0.4(16)",
+        "signingConfig": "default",
+        "compatibleSdkVersion": "5.0.5(17)",
         "runtimeOS": "HarmonyOS",
-        "buildOption": {
-          "strictMode": {
-            "caseSensitiveCheck": true
-          }
-        }
-      },
-      {
-        "name": "ohos",
-        "signingConfig": "ohos",
-        "compileSdkVersion": 15,
-        "compatibleSdkVersion": 15,
-        "runtimeOS": "OpenHarmony",
         "buildOption": {
           "strictMode": {
             "caseSensitiveCheck": true
@@ -70,7 +46,6 @@
           "name": "default",
           "applyToProducts": [
             "default",
-            "ohos"
           ]
         }
       ]

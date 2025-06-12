@@ -17,6 +17,9 @@ If you see that the last commit was made quite a lot of weeks, or even months ag
 please don't consider this project dead so easily, since
 Liny may be so _lucky_ to be busy writing essays that 
 stuffs this side would not be taken good care of for a period of time.
+And now as HarmonyOS version of DevEco Studio hasn't come out,
+updates of this project would be inevitably even slower
+due to the super slow Windows virtual machine x86 translation.
 
 Therefore, the best solution to this problem is to **open an issue** so that 
 Liny would feel so anxious that the update of this project would be selected to be prioritized.
@@ -167,7 +170,7 @@ Long way ahead.
    (Seems to be solved, still under observation)
 9. HarmonyOS UA is not understood by plenty of websites (But UA is customizable now).
 10. The vertical tabs panel animations may seem weird when the scroll is longer than the screen.
-11. This project requires HarmonyOS NEXT API16 to run.
+11. This project requires HarmonyOS NEXT API17 to run.
 12. OHOS Comes with no Share Kit, what can I do? Help needed.
 
 ## What are the commit labels for?
