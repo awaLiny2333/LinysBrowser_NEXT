@@ -686,7 +686,7 @@ struct meowAppSettings {
                 text: $r('app.string.Settings_js_disable_js'),
                 toggle_state: this.disable_js,
                 onExecution: () => {
-                  this.bunch_of_settings.set('Settings_js_disable_js', this.disable_js);
+                  this.bunch_of_settings.set('disable_js', this.disable_js);
                 }
               }) // Reverse settings menu
 

@@ -72,6 +72,7 @@ struct meowWebView {
   @State shortcut_scroll_total_height: number = 100;
   @State homepage_shortcuts: bookmark[] = [];
   @State potential_jump_link: string = '';
+  @StorageLink('extra_background') extra_background: boolean = false;
   // dialogs
   woofWantDownload_control: CustomDialogController = new CustomDialogController({
     builder: woofWantDownload({
@@ -101,7 +102,7 @@ struct meowWebView {
   // Else
   adsBlocker_exceptions: string[] = [];
   shortcut_scroller: Scroller = new Scroller();
-  @State init_OK: boolean = false;
+  @StorageLink('meowWebView_init_OK') init_OK: boolean = false;
 
   // // Menu contents
   // @State menu_linkUrl: string = '';
@@ -262,10 +263,10 @@ struct meowWebView {
       } // Background
 
       Row() // Background color
-        .backgroundColor('white')
+        .backgroundColor(this.web_force_dark_mode ? 'black' : 'white')
         .height('100%')
         .width('100%')
-        .visibility(!this.init_OK || (this.current_url == 'meow://home' && this.current_sub_tab_index == -1) ? Visibility.Hidden : Visibility.Visible)
+        .visibility(this.extra_background ? Visibility.Visible : Visibility.Hidden)
       // .animation(animation_default())
 
       ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
@@ -354,6 +355,8 @@ struct meowWebView {
                   console.log("[meowWebView] Didn't save history for a recovery process in progress");
                 }
               }
+
+              this.determine_extra_background();
             })
             .onProgressChange((event) => {
               if (!event) {
@@ -779,6 +782,26 @@ struct meowWebView {
         return url_meow_to_resource(target_packed_tab_info.url);
       }
     }
+  }
+
+  private determine_extra_background() {
+    let need_extra_background = true;
+    // Determine background
+    if (!this.init_OK) {
+      need_extra_background = false;
+    }
+    if (this.current_sub_tab_index > -1) {
+      // Paralleowing
+      if (this.current_url == 'meow://home' && this.tab_urls[this.current_sub_tab_index] == 'meow://home') {
+        need_extra_background = false;
+      }
+    } else {
+      // Not Paralleowing
+      if (this.current_url == 'meow://home') {
+        need_extra_background = false;
+      }
+    }
+    this.extra_background = need_extra_background;
   }
 }
 

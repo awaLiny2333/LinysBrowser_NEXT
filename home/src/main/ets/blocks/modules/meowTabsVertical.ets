@@ -348,6 +348,8 @@ struct meowTabs {
     this.update_current_info()
     // Update Input Search Box
     this.set_search_box_text(this.current_url)
+
+    this.determine_extra_background();
   }
 
   close_tab(target: number) {
@@ -437,6 +439,8 @@ struct meowTabs {
     // So that when closing the last tab, it is always stuck at the bottom
     // Or we'll have to wait for the spring animation to finish, bringing the last tab button down.
     this.count_down_for_switching_back_to_spring += 10;
+
+    this.determine_extra_background();
   }
 
   close_all_tabs() {
@@ -460,6 +464,8 @@ struct meowTabs {
       this.choosing_paralleow = false;
       this.current_sub_tab_index = -1;
     }
+
+    this.determine_extra_background();
   }
 
   switch_paralleow() {
@@ -531,6 +537,26 @@ struct meowTabs {
       this.search_input = url_resource_to_meow(text);
       // Update Input Search Box
     }
+  }
+
+  determine_extra_background() {
+    let need_extra_background = true;
+    // Determine background
+    if (!AppStorage.get('meowWebView_init_OK') as boolean) {
+      need_extra_background = false;
+    }
+    if (this.current_sub_tab_index > -1) {
+      // Paralleowing
+      if (this.current_url == 'meow://home' && this.tab_urls[this.current_sub_tab_index] == 'meow://home') {
+        need_extra_background = false;
+      }
+    } else {
+      // Not Paralleowing
+      if (this.current_url == 'meow://home') {
+        need_extra_background = false;
+      }
+    }
+    AppStorage.set('extra_background', need_extra_background);
   }
 
   // Events
