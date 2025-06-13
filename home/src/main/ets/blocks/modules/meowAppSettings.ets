@@ -133,6 +133,7 @@ struct meowAppSettings {
   @State lock_history_suggestion_number: boolean = true;
   // Scroll menu
   @State @Watch('scroll_settings_to') settings_scroll_to: number = 0;
+  @State settings_scroll_to_highlight_timeout: number = 0;
   @State scroll_first: number = 0;
   @State scroll_last: number = 0;
   @State menu_text: string[] =
@@ -260,7 +261,7 @@ struct meowAppSettings {
         } // Quick access on the top
         WaterFlow({ scroller: this.waterFlow_control }) {
           FlowItem() {
-            Column({ space: 15 }) {
+            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 0 }) {
               linysTextTitle({ text: $r('app.string.Settings_start_up') })
               linysText({ text: $r('app.string.Settings_start_up_page') })
               SegmentButton({
@@ -268,18 +269,11 @@ struct meowAppSettings {
                 selectedIndexes: this.start_up_page_selected
               })
             }
-            .padding(15)
-            .alignItems(HorizontalAlign.Start)
-            .justifyContent(FlexAlign.Start)
-            .width("100%")
-            .borderRadius(10)
-            .backgroundColor(this.color_current_primary)
-
           } // Start up
           .width("100%")
 
           FlowItem() {
-            Column({ space: 15 }) {
+            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 1 }) {
               linysTextTitle({ text: $r('app.string.Settings_general') })
 
               // UA
@@ -343,18 +337,11 @@ struct meowAppSettings {
                 .animation(animation_default())
 
             }
-            .padding(15)
-            .alignItems(HorizontalAlign.Start)
-            .justifyContent(FlexAlign.Start)
-            .width("100%")
-            .borderRadius(10)
-            .backgroundColor(this.color_current_primary)
-
           } // General
           .width("100%")
 
           FlowItem() {
-            Column({ space: 15 }) {
+            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 2 }) {
               linysTextTitle({ text: $r('app.string.Settings_Experience') })
 
               linysSwitchWithText({
@@ -438,18 +425,11 @@ struct meowAppSettings {
               }) // Slider and display of max_history_suggestions
 
             }
-            .padding(15)
-            .alignItems(HorizontalAlign.Start)
-            .justifyContent(FlexAlign.Start)
-            .width("100%")
-            .borderRadius(10)
-            .backgroundColor(this.color_current_primary)
-
           } // Experience
           .width("100%")
 
           FlowItem() {
-            Column({ space: 15 }) {
+            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 3 }) {
               linysTextTitle({ text: $r('app.string.Settings_Accessibility') })
 
               linysSwitchWithText({
@@ -494,17 +474,11 @@ struct meowAppSettings {
                 }
               }) // Reverse homepage shortcuts
             }
-            .padding(15)
-            .alignItems(HorizontalAlign.Start)
-            .justifyContent(FlexAlign.Start)
-            .width("100%")
-            .borderRadius(10)
-            .backgroundColor(this.color_current_primary)
           } // Accessibility
           .width('100%')
 
           FlowItem() {
-            Column({ space: 15 }) {
+            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 4 }) {
               linysTextTitle({ text: $r('app.string.Settings_appearance') }) // Appearance Title
 
               linysText({ text: $r('app.string.Settings_appearance_title_bar_position') }) // Title bar position
@@ -535,18 +509,11 @@ struct meowAppSettings {
 
               meowColorsManager() // Colors manager
             }
-            .padding(15)
-            .alignItems(HorizontalAlign.Start)
-            .justifyContent(FlexAlign.Start)
-            .width("100%")
-            .borderRadius(10)
-            .backgroundColor(this.color_current_primary)
-
           } // Appearance
           .width("100%")
 
           FlowItem() {
-            Column({ space: 15 }) {
+            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 5 }) {
 
               linysTextTitle({ text: $r('app.string.Settings_experience_history') }) // History
               linysSwitchWithText({
@@ -617,18 +584,11 @@ struct meowAppSettings {
                   .animation(animation_default())
               }
             }
-            .padding(15)
-            .alignItems(HorizontalAlign.Start)
-            .justifyContent(FlexAlign.Start)
-            .width("100%")
-            .borderRadius(10)
-            .backgroundColor(this.color_current_primary)
-
           } // History
           .width("100%")
 
           FlowItem() {
-            Column({ space: 15 }) {
+            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 6 }) {
               linysTextTitle({ text: $r('app.string.Settings_storage') }) // Storage Title
 
               linysText({ text: $r('app.string.Settings_storage_clear_webview_desc'), max_lines: 20 }) // Cache title
@@ -680,17 +640,11 @@ struct meowAppSettings {
               .width("100%")
 
             }
-            .padding(15)
-            .alignItems(HorizontalAlign.Start)
-            .justifyContent(FlexAlign.Start)
-            .width("100%")
-            .borderRadius(10)
-            .backgroundColor(this.color_current_primary)
           } // Storage
           .width("100%")
 
           FlowItem() {
-            Column({ space: 15 }) {
+            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 7 }) {
               linysTextTitle({ text: $r('app.string.Settings_security') }) // Security Title
 
               linysText({
@@ -744,17 +698,11 @@ struct meowAppSettings {
                 }
               }) // JS management
             }
-            .padding(15)
-            .alignItems(HorizontalAlign.Start)
-            .justifyContent(FlexAlign.Start)
-            .width("100%")
-            .borderRadius(10)
-            .backgroundColor(this.color_current_primary)
           } // Security
           .width("100%")
 
           FlowItem() {
-            Column({ space: 15 }) {
+            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 8 }) {
               linysTextTitle({ text: $r('app.string.Settings_toolbox') })
               linysSwitchWithText({
                 text: $r('app.string.Settings_toolbox_resource_monitor'),
@@ -782,17 +730,11 @@ struct meowAppSettings {
                 })
               }
             }
-            .padding(15)
-            .alignItems(HorizontalAlign.Start)
-            .justifyContent(FlexAlign.Start)
-            .width("100%")
-            .borderRadius(10)
-            .backgroundColor(this.color_current_primary)
           } // Toolbox cardboard box
           .width("100%")
 
           FlowItem() {
-            Column({ space: 15 }) {
+            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 9 }) {
               linysTextTitle({ text: $r('app.string.Settings_about') })
               linysLink({
                 will_be_reversed_boolean: this.showing_app_settings,
@@ -823,17 +765,11 @@ struct meowAppSettings {
                 max_lines: 6
               })
             }
-            .padding(15)
-            .alignItems(HorizontalAlign.Start)
-            .justifyContent(FlexAlign.Start)
-            .width("100%")
-            .borderRadius(10)
-            .backgroundColor(this.color_current_primary)
           } // About
           .width("100%")
 
           FlowItem() {
-            Column({ space: 15 }) {
+            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 10 }) {
               linysTextTitle({ text: $r('app.string.Whats_new') }) // Whats new Title
               meowWhatsNew() // Whats new contents
               linysText({
@@ -848,12 +784,6 @@ struct meowAppSettings {
                 }
               }) // Update history
             }
-            .padding(15)
-            .alignItems(HorizontalAlign.Start)
-            .justifyContent(FlexAlign.Start)
-            .width("100%")
-            .borderRadius(10)
-            .backgroundColor(this.color_current_primary)
           } // Update
           .width("100%")
 
@@ -893,6 +823,15 @@ struct meowAppSettings {
     .onAppear(() => {
       // console.log("[Meow][meowAppSettings] App Settings READY")
       this.on_appear();
+      setInterval(() => {
+        // Deduce timeout for border highlights
+        if (this.settings_scroll_to_highlight_timeout < 0) {
+          this.settings_scroll_to_highlight_timeout = 0;
+        } else {
+          this.settings_scroll_to_highlight_timeout -= 100;
+        }
+        console.log(this.settings_scroll_to_highlight_timeout.toString())
+      }, 100)
     })
   }
 
@@ -1153,6 +1092,7 @@ struct meowAppSettings {
     if (this.settings_scroll_to < 0) {
       return;
     }
+    this.settings_scroll_to_highlight_timeout = 1200;
     this.waterFlow_control.scrollToIndex(this.settings_scroll_to, true);
   }
 
@@ -1194,6 +1134,34 @@ struct meowAppSettings {
 }
 
 export default meowAppSettings
+
+@Component
+struct settingsCard {
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // Contents
+  @BuilderParam contents: () => void;
+  // Outline
+  @Prop highlight: boolean = false;
+  @Prop timeout: number = 0;
+
+  build() {
+    Column({ space: 15 }) {
+      this.contents();
+    }
+    .borderColor((this.highlight && this.timeout > 0) ? this.color_current_font : this.color_current_primary)
+    .brightness((!this.highlight && this.timeout > 0) ? 0.5 : 1)
+    .animation(animation_default())
+    .padding(13)
+    .alignItems(HorizontalAlign.Start)
+    .justifyContent(FlexAlign.Start)
+    .width("100%")
+    .borderRadius(10)
+    .borderWidth(2)
+    .backgroundColor(this.color_current_primary)
+  }
+}
 
 @Component
 struct menuScrollHorizontal {

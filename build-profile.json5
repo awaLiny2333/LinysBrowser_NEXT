@@ -5,13 +5,13 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\OseasyVM\\.ohos\\config\\default_LinysBrowser_NEXT_llND84tGtyXuShtK6Vwt_pf5mJY8vXH5lVDlEL3CvwY=.cer",
+          "certpath": "C:\\Users\\meowDUO\\.ohos\\config\\default_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001B72CA443C52F337D888189122D67B3B1B73982A88C23205570B4CA46463FFFCC6102E9DD3C5CCE4",
-          "profile": "C:\\Users\\OseasyVM\\.ohos\\config\\default_LinysBrowser_NEXT_llND84tGtyXuShtK6Vwt_pf5mJY8vXH5lVDlEL3CvwY=.p7b",
+          "keyPassword": "0000001A6E62AE7F55ED9A00ED893FD5E8E6B7591EC1810F25A521ED86CB62106D7C7931E6FCE12337D8",
+          "profile": "C:\\Users\\meowDUO\\.ohos\\config\\default_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\OseasyVM\\.ohos\\config\\default_LinysBrowser_NEXT_llND84tGtyXuShtK6Vwt_pf5mJY8vXH5lVDlEL3CvwY=.p12",
-          "storePassword": "0000001BAD7B9704D197DC7FF93B550BB4F95AB2A534D1E452AE01E08E6CECBACC388ECCB8C01B4FD0936C"
+          "storeFile": "C:\\Users\\meowDUO\\.ohos\\config\\default_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.p12",
+          "storePassword": "0000001AA1360E7E7BFADD5861343D5301ECCC0994483313AD5B939629B2DA2C100C6F20B0D9B21E0E2E"
         }
       }
     ],

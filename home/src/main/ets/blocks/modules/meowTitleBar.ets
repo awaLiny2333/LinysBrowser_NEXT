@@ -68,7 +68,7 @@ struct meowTitleBar {
   @State search_extracted_engine: string = '';
   @State showing_search_extracted_field: boolean = false;
   @State search_extracted_field_available: boolean = false;
-  @State search_input_is_address: boolean = false;
+  @State is_search_input_address: boolean = false;
   @State search_input_unify_scheme_http: boolean = true;
   // Web statuses
   @StorageLink('tab_titles') tab_titles: string[] = []
@@ -206,39 +206,18 @@ struct meowTitleBar {
         .visibility(this.visibility_of_horizontal_tabs())
         .animation(animation_default())
 
-      Row({ space: 10 }) {
-        Row({ space: 5 }) {
-          linysSymbol({
-            symbol_glyph_target: this.search_input_unify_scheme_http ? "sys.symbol.lock_open" : "sys.symbol.lock"
-          })
-          linysText({
-            text: this.search_input_unify_scheme_http ? "http" : "https"
-          })
-        }
-        .padding(8)
-        .onClick(() => {
-          this.search_input_unify_scheme_http = !this.search_input_unify_scheme_http;
-          this.update_search_input();
-        })
-        .borderRadius(8)
-        .backgroundColor(this.color_current_primary)
-        .visibility(this.visible_when_input_is_a_scheme_less_address())
-        .clickEffect(click_effect_default())
+      estimatedDestination({
+        is_http_no_s: this.search_input_unify_scheme_http,
+        is_search_input_typing: this.is_search_input_typing,
+        is_search_input_address: this.is_search_input_address,
+        search_input: this.search_input,
+        search_input_unified: this.search_input_unified
+      })
+        .visibility(this.is_search_input_typing && this.title_bar_position == 'bottom' ? Visibility.Visible : Visibility.None)
+        .padding({ left: 15, right: 15 })
+        .width("100%")
         .animation(animation_default())
-
-        Text("→ " + (this.search_input_unified == "" ? "(　o=^•ェ•)o ?" : this.search_input_unified))
-          .fontColor(this.color_current_font)
-          .fontWeight(FontWeight.Bold)
-          .fontSize(fontSize_Normal())
-          .maxLines(4)
-          .textOverflow({ overflow: TextOverflow.Ellipsis })
-          .layoutWeight(1)
-      } // Title Bar for estimated destination indication
-      .visibility(this.visible_when_typing())
-      .padding({ left: 15, right: 15 })
-      .width("100%")
-      .animation(animation_default())
-      .constraintSize({ minHeight: 30 })
+        .constraintSize({ minHeight: 20 })
 
       Row({ space: 15 }) {
         Column({ space: 2.5 }) {
@@ -564,6 +543,19 @@ struct meowTitleBar {
       .height(this.tablet_mode || this.showing_scratching_board ? 36 : 82)
       .animation(animation_default())
 
+      estimatedDestination({
+        is_http_no_s: this.search_input_unify_scheme_http,
+        is_search_input_typing: this.is_search_input_typing,
+        is_search_input_address: this.is_search_input_address,
+        search_input: this.search_input,
+        search_input_unified: this.search_input_unified
+      })
+        .visibility(this.is_search_input_typing && this.title_bar_position == 'top' ? Visibility.Visible : Visibility.None)
+        .padding({ left: 15, right: 15 })
+        .width("100%")
+        .animation(animation_default())
+        .constraintSize({ minHeight: 20 })
+
       Scroll() {
         Column({ space: 10 }) {
           RelativeContainer() {
@@ -731,7 +723,7 @@ struct meowTitleBar {
               symbol_glyph_target: this.fullscreen_mode ?
                 'sys.symbol.arrow_down_right_and_arrow_up_left' :
                 'sys.symbol.arrow_up_left_and_arrow_down_right'
-            }) // FullScreen
+            })// FullScreen
               .onClick(() => {
                 this.fullscreen_mode = !this.fullscreen_mode;
                 this.showing_more_options = false;
@@ -883,10 +875,6 @@ struct meowTitleBar {
     return this.tablet_mode && this.is_search_input_typing ? Visibility.Visible : Visibility.None;
   }
 
-  visible_when_input_is_a_scheme_less_address() {
-    return this.true_when_input_is_a_scheme_less_address() ? Visibility.Visible : Visibility.None;
-  }
-
   visibility_of_horizontal_tabs() {
     if (!this.showing_tabs) {
       return Visibility.None;
@@ -904,13 +892,6 @@ struct meowTitleBar {
     }
 
     return Visibility.None
-  }
-
-  true_when_input_is_a_scheme_less_address() {
-    if (!this.search_input || this.search_input.includes("://")) {
-      return false;
-    }
-    return this.search_input_is_address ? true : false;
   }
 
   // Events
@@ -1017,7 +998,7 @@ struct meowTitleBar {
       // translate "meow://" into "resource://"
       this.bunch_of_tabs.loadUrl_onWorkingTab(unified_url);
     }
-    if (!this.search_input_is_address) {
+    if (!this.is_search_input_address) {
       this.showing_search_extracted_field = true;
     }
   }
@@ -1062,7 +1043,7 @@ struct meowTitleBar {
     let s: string = content || "¯\\_(ツ)_/¯";
     let uni_result = unify_search_input_into_url(s, this.search_input_unify_scheme_http ? "http" : "https");
     this.search_input_unified = uni_result[0] as string;
-    this.search_input_is_address = uni_result[1] as boolean;
+    this.is_search_input_address = uni_result[1] as boolean;
     this.search_input_unified = url_resource_to_meow(this.search_input_unified);
   }
 
@@ -1088,3 +1069,78 @@ struct meowTitleBar {
 }
 
 export default meowTitleBar;
+
+@Component
+struct estimatedDestination {
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // Data
+  @Link is_http_no_s: boolean;
+  @Link is_search_input_typing: boolean;
+  @Link is_search_input_address: boolean;
+  @Link search_input: string;
+  @Link search_input_unified: string;
+
+  build() {
+    Row({ space: 10 }) {
+      Row({ space: 5 }) {
+        linysSymbol({
+          symbol_glyph_target: this.is_http_no_s ? "sys.symbol.lock_open" : "sys.symbol.lock"
+        })
+        linysText({
+          text: this.is_http_no_s ? "http" : "https"
+        })
+      }
+      .padding(8)
+      .onClick(() => {
+        this.is_http_no_s = !this.is_http_no_s;
+        this.update_search_input();
+      })
+      .borderRadius(8)
+      .backgroundColor(this.color_current_primary)
+      .visibility(this.visible_when_input_is_a_scheme_less_address())
+      .clickEffect(click_effect_default())
+      .animation(animation_default())
+
+      Text("→ " + (this.search_input_unified == "" ? "(　o=^•ェ•)o ?" : this.search_input_unified))
+        .fontColor(this.color_current_font)
+        .fontWeight(FontWeight.Bold)
+        .fontSize(fontSize_Normal())
+        .maxLines(4)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
+        .layoutWeight(1)
+    } // Title Bar for estimated destination indication
+  }
+
+  visible_when_typing() {
+    return this.is_search_input_typing ? Visibility.Visible : Visibility.None
+  }
+
+  is_input_scheme_less_address() {
+    if (!this.search_input || this.search_input.includes("://")) {
+      return false;
+    }
+    return this.is_search_input_address ? true : false;
+  }
+
+  visible_when_input_is_a_scheme_less_address() {
+    return this.is_input_scheme_less_address() ? Visibility.Visible : Visibility.None;
+  }
+
+  // This is stupid
+
+  update_search_input(content?: string) {
+    if (content) {
+      this.search_input = content;
+    } else {
+      this.search_input = "";
+    }
+    let s: string = content || "¯\\_(ツ)_/¯";
+    let uni_result = unify_search_input_into_url(s, this.is_http_no_s ? "http" : "https");
+    this.search_input_unified = uni_result[0] as string;
+    this.is_search_input_address = uni_result[1] as boolean;
+    this.search_input_unified = url_resource_to_meow(this.search_input_unified);
+  }
+}

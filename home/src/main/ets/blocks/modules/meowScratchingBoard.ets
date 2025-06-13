@@ -223,7 +223,7 @@ struct raw_data_display {
           })
             .clickEffect(click_effect_default())
             .onClick(() => {
-              document_save_from_uri(this.text);
+              this.default_click();
             })
           linysSymbol({
             symbol_glyph_target: 'sys.symbol.magnifyingglass'
@@ -260,8 +260,7 @@ struct raw_data_display {
           })// Text copy
             .clickEffect(click_effect_default())
             .onClick(() => {
-              copy(this.text);
-              this.copied = animation_popup_duration();
+              this.default_click();
             })
 
           if (this.type == 'url') {
@@ -270,8 +269,7 @@ struct raw_data_display {
             })
               .clickEffect(click_effect_default())
               .onClick(() => {
-                this.new_tab_gateway = this.text;
-                this.showing_scratching_board = false;
+                this.default_click();
               })
           } // Url visit button
         } // Buttons
@@ -300,7 +298,23 @@ struct raw_data_display {
       }, 10)
     })
     .clickEffect(click_effect_default())
+    .onClick(() => {
+      this.default_click()
+    })
+  }
 
+  default_click() {
+    if (this.type == 'url') {
+      this.new_tab_gateway = this.text;
+      this.showing_scratching_board = false;
+    }
+    if (this.type == 'text') {
+      copy(this.text);
+      this.copied = animation_popup_duration();
+    }
+    if (this.type == 'image') {
+      document_save_from_uri(this.text);
+    }
   }
 
   type_symbol() {
