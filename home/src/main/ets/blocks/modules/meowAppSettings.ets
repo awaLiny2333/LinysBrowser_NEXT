@@ -830,7 +830,7 @@ struct meowAppSettings {
         } else {
           this.settings_scroll_to_highlight_timeout -= 100;
         }
-        console.log(this.settings_scroll_to_highlight_timeout.toString())
+        // console.log(this.settings_scroll_to_highlight_timeout.toString())
       }, 100)
     })
   }

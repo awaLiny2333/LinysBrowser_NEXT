@@ -49,7 +49,6 @@ struct meowWebView {
   @StorageLink('use_adblock') @Watch('on_use_adblock_state_change') use_adblock: boolean = true;
   @StorageLink('homepage_shortcuts_bookmarks_dir') @Watch('refresh_homepage_shortcuts') homepage_shortcuts_dir: string = '/';
   @StorageLink('homepage_shortcuts_init_height') homepage_shortcuts_init_height: number = 50;
-  // @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
   @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
   @StorageLink('disable_js') disable_js: boolean = false;
   @StorageLink('disable_js_these_sites') disable_js_these_sites: string[] = [];
@@ -66,11 +65,11 @@ struct meowWebView {
   @StorageLink('universal_new_download_filename_gateway') new_download_filename_gateway: string = "";
   @StorageLink('universal_new_download_additional_info') new_download_additional_info: string = "";
   @StorageLink('universal_new_download_gateway') new_download_gateway: string = "";
+  // Visual
   @StorageProp('tab_animation') tab_animation: AnimateParam = animation_default();
   @State last_timeout_id: number | undefined = undefined;
   @State shortcut_scroll_offset: number = 0;
   @State shortcut_scroll_total_height: number = 100;
-  shortcut_scroller: Scroller = new Scroller();
   @State homepage_shortcuts: bookmark[] = [];
   @State potential_jump_link: string = '';
   // dialogs
@@ -101,6 +100,8 @@ struct meowWebView {
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   // Else
   adsBlocker_exceptions: string[] = [];
+  shortcut_scroller: Scroller = new Scroller();
+  @State init_OK: boolean = false;
 
   // // Menu contents
   // @State menu_linkUrl: string = '';
@@ -244,18 +245,28 @@ struct meowWebView {
 
     // Get homepage shortcuts height
     this.homepage_shortcuts_init_height = await this.bunch_of_settings.get('homepage_shortcuts_init_height') as number;
+
+    // init OK
+    setTimeout(() => {
+      this.init_OK = true;
+    }, 10)
   }
 
   build() {
     RelativeContainer() {
       if (this.homepage_background) {
         Image(this.homepage_background)
-          .visibility(this.current_url == 'meow://home' && this.current_sub_tab_index == -1 ? Visibility.Visible :
-          Visibility.Hidden)// .animation(animation_default())
+          .visibility(this.current_url == 'meow://home' && this.current_sub_tab_index == -1 ? Visibility.Visible : Visibility.Hidden)
           .transition(TransitionEffect.OPACITY.animation({ duration: 1000 }))
           .opacity(Math.max(1 - this.shortcut_scroll_offset / this.screen_height, 0.5))
-        // .brightness(Math.max(Math.min(1 - this.shortcut_scroll_offset * 0.5 / this.screen_height, 1), 0.5))
       } // Background
+
+      Row() // Background color
+        .backgroundColor('white')
+        .height('100%')
+        .width('100%')
+        .visibility(!this.init_OK || (this.current_url == 'meow://home' && this.current_sub_tab_index == -1) ? Visibility.Hidden : Visibility.Visible)
+      // .animation(animation_default())
 
       ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
         Column() {
