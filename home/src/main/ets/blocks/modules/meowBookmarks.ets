@@ -2,9 +2,9 @@ import { bookmark, bunch_of_bookmarks, folder, unified_item } from '../../hosts/
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { url_resource_to_meow } from '../../utils/url_tools';
 import linysSymbol from '../../components/texts/linysSymbol';
-import { document_open, document_save } from '../../utils/storage_tools';
+import { document_open, document_save, sandbox_open_sync, sandbox_save } from '../../utils/storage_tools';
 import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large, fontSize_Normal } from '../../hosts/bunch_of_defaults';
-import { kv_store_get, kv_store_put } from '../../utils/kv_store_tools';
+import { kv_store_get } from '../../utils/kv_store_tools';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import woofSelectBookmarksPath from '../../dialogs/prompts/woofSelectBookmarksPath';
@@ -250,11 +250,16 @@ struct meowBookmarks {
   // Event
 
   async on_appear() {
-    let result = await kv_store_get("html_bookmarks");
-    if (result as string == "undefined") {
+    let result: string = sandbox_open_sync('html_bookmarks.html');
+    if (result == "undefined") {
+      // Check old kv_store
+      result = await kv_store_get("html_bookmarks") as string;
+      sandbox_save('html_bookmarks.html', result);
+    }
+    if (result == "undefined") {
       // First use bookmarks
     } else {
-      let html_bookmarks = result as string;
+      let html_bookmarks = result;
       this.bunch_of_bookmarks.import_html(html_bookmarks, true);
       this.refresh_content_view();
     }
@@ -311,7 +316,7 @@ struct meowBookmarks {
 
     this.adding_folder = false;
     this.refresh_content_view();
-    this.save_html_to_kv_store();
+    this.save_bookmarks();
   }
 
   new_bookmark() {
@@ -337,7 +342,7 @@ struct meowBookmarks {
 
     this.adding_bookmark = false;
     this.refresh_content_view();
-    this.save_html_to_kv_store();
+    this.save_bookmarks();
   }
 
   go_back() {
@@ -374,7 +379,7 @@ struct meowBookmarks {
       let import_result: number = this.bunch_of_bookmarks.import_html(result);
       this.refresh_content_view();
       console.log("[Meow][LinysBookmarks] Import result: " + import_result.toString())
-      this.save_html_to_kv_store();
+      this.save_bookmarks();
 
       if (import_result != 0) {
         // Show Fail Prompt
@@ -383,10 +388,11 @@ struct meowBookmarks {
     })
   }
 
-  save_html_to_kv_store() {
-    console.log("[Meow][LinysBookmarks] Started to save HTML to KVStore!")
+  save_bookmarks() {
+    console.log("[Meow][LinysBookmarks] Started to save HTML to disk!")
     let html_bookmark: string[] = this.bunch_of_bookmarks.get_export_html();
-    kv_store_put("html_bookmarks", html_bookmark.join("\n"));
+    // kv_store_put("html_bookmarks", html_bookmark.join("\n"));
+    sandbox_save('html_bookmarks.html', html_bookmark.join("\n"));
   }
 
   // Data
@@ -700,14 +706,14 @@ struct bookmarkItem {
     // Refresh root content
     // Weird as hell but works, fine.
 
-    this.save_html_to_kv_store();
+    this.save_bookmarks();
   }
 
   save_changes_folder() {
     this.item.get_item().set_label(this.edit_label);
     this.label = this.edit_label;
     this.bunch_of_bookmarks.reconstruct_cached_plain_bookmarks();
-    this.save_html_to_kv_store();
+    this.save_bookmarks();
   }
 
   save_changes_bookmark() {
@@ -716,7 +722,7 @@ struct bookmarkItem {
     this.label = this.edit_label;
     this.link = this.edit_link;
     this.bunch_of_bookmarks.reconstruct_cached_plain_bookmarks();
-    this.save_html_to_kv_store();
+    this.save_bookmarks();
   }
 
   on_select_change() {
@@ -758,7 +764,7 @@ struct bookmarkItem {
     // Refresh root content
     // Weird as hell but works, fine.
 
-    this.save_html_to_kv_store();
+    this.save_bookmarks();
     this.select_path_result = undefined;
   }
 
@@ -772,9 +778,10 @@ struct bookmarkItem {
     this.woofBookmarksPathSelector_control.open();
   }
 
-  save_html_to_kv_store() {
-    console.log("[Meow][LinysBookmarks] Started to save HTML to KVStore!")
+  save_bookmarks() {
+    console.log("[Meow][LinysBookmarks] Started to save HTML to disk!")
     let html_bookmark: string[] = this.bunch_of_bookmarks.get_export_html();
-    kv_store_put("html_bookmarks", html_bookmark.join("\n"));
+    // kv_store_put("html_bookmarks", html_bookmark.join("\n"));
+    sandbox_save('html_bookmarks.html', html_bookmark.join("\n"));
   }
 }

@@ -592,10 +592,7 @@ struct meowTitleBar {
                     console.error(e);
                   }
                 })
-                .onClick(() => {
-                  this.showing_more_options = true;
-                })
-                .keyboardShortcut(this.bunch_of_key_shortcuts.in_page_search.main_key, this.bunch_of_key_shortcuts.in_page_search.modifier)
+                .id('in_page_search_blank')
 
               linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass' })
                 .onClick(() => {
@@ -644,6 +641,7 @@ struct meowTitleBar {
               })
                 .animation(animation_default())
               linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_up' })
+                .keyboardShortcut(FunctionKey.DPAD_UP,[])
                 .onClick(() => {
                   try {
                     this.bunch_of_tabs.workingMainTab().controller.searchNext(false);
@@ -652,6 +650,7 @@ struct meowTitleBar {
                   }
                 })
               linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_down' })
+                .keyboardShortcut(FunctionKey.DPAD_DOWN,[])
                 .onClick(() => {
                   try {
                     this.bunch_of_tabs.workingMainTab().controller.searchNext(true);
@@ -821,7 +820,7 @@ struct meowTitleBar {
         this.bar_height = n.height as number;
       }
     })
-    .visibility((this.title_bar_position == "" ? Visibility.Hidden : Visibility.Visible))
+    // .visibility((this.title_bar_position == "" ? Visibility.Hidden : Visibility.Visible))
     .offset({ y: !this.fullscreen_mode ? 0 : (this.title_bar_position == 'bottom' ? 1.1 : -1.1) * this.bar_height })
     .animation(animation_default())
     .onAppear(() => {
@@ -831,6 +830,10 @@ struct meowTitleBar {
           this.address_analyzers_desc_close_cd -= 10;
         }
       }, 10)
+    })
+    .keyboardShortcut(this.bunch_of_key_shortcuts.in_page_search.main_key, this.bunch_of_key_shortcuts.in_page_search.modifier, () => {
+      this.showing_more_options = true;
+      focusControl.requestFocus("in_page_search_blank")
     })
   }
 

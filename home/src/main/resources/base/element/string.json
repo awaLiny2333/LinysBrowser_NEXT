@@ -502,7 +502,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "More detailed options for single-hand-optimized layout;\nScratching Board now accepts also images!\nOne button to close all tabs at once!\nTrying to write an indexing system for history!"
+      "value": "improve: optimize keyboard shortcut for in-page searches;\nimprove: jumping to a settings block now has highlight!\nimprove: clicking on Scratching Board objects now activates a default action;\nimprove: adjusted position of destination indicator!"
     },
     {
       "name": "Whats_new_content_extra",
