@@ -802,15 +802,19 @@
     },
     {
       "name": "Settings_toolbox_export_settings",
-      "value": "导出"
+      "value": "导出设置"
     },
     {
       "name": "Settings_toolbox_import_settings_desc",
       "value": "从已有文件导入设置！\n\n注意！这会覆盖一切原有的设置！！\n\n下次启动时将启用新设置！"
     },
     {
+      "name": "Settings_toolbox_import_settings_ok",
+      "value": "导入成功～\n你需要自己稍后重启应用以启用新设置！"
+    },
+    {
       "name": "Settings_toolbox_import_settings",
-      "value": "导入"
+      "value": "导入设置"
     },
     {
       "name": "Fault_logs",

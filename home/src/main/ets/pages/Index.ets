@@ -146,12 +146,12 @@ struct Index {
 
     // Set cache dir
     try {
-      fileIo.rmdirSync(getContext().filesDir + '/web-drag-image-cache');
+      fileIo.rmdirSync(this.getUIContext().getHostContext()!.filesDir + '/web-drag-image-cache');
     } catch (e) {
       console.error(e);
     }
     try {
-      fileIo.mkdirSync(getContext().filesDir + '/web-drag-image-cache');
+      fileIo.mkdirSync(this.getUIContext().getHostContext()!.filesDir + '/web-drag-image-cache');
     } catch (e) {
       console.error(e);
     }
@@ -415,7 +415,7 @@ struct Index {
   }
 
   on_fullscreen_switch() {
-    window.getLastWindow(getContext()).then((win) => {
+    window.getLastWindow(this.getUIContext().getHostContext()).then((win) => {
       if (this.fullscreen_mode) {
         win.setWindowSystemBarEnable([]);
       } else {

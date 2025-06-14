@@ -47,7 +47,7 @@ workerPort.onerror = (event: ErrorEvent) => {
  *
  * THIS IS A SYNC FUNCTION
  * */
-function rebuild_full_history_index_sync(context_filesDir?: string) {
+function rebuild_full_history_index_sync(context_filesDir: string) {
   let s = Date.now();
   console.log(host.log_head_worker() + ' Start rebuilding full index! Start: ' + new Date(s).toString() + '.')
 
@@ -105,8 +105,8 @@ function rebuild_full_history_index_sync(context_filesDir?: string) {
  * Lists all the months in which ther are history records made, in ascending order.
  * @returns A number[][] array, e.g. [[2023, 2], [2023, 3], [2023, 4], ...].
  * */
-function get_history_months_no_create_this_month(context_filesDir?: string) {
-  let filesDir: string = context_filesDir || getContext().filesDir;
+function get_history_months_no_create_this_month(context_filesDir: string) {
+  let filesDir: string = context_filesDir;
   let result: number[][] = [];
   let history_files = fs.listFileSync(filesDir + '/history', { recursion: false });
   for (let index = 0; index < history_files.length; index++) {
@@ -128,8 +128,8 @@ function get_history_months_no_create_this_month(context_filesDir?: string) {
  * @param set
  * @param context_filesDir
  * */
-function save_index_ext(index_name: string, set: collections.Map<string, collections.Array<number>>, context_filesDir?: string) {
-  let filesDir: string = context_filesDir || getContext().filesDir;
+function save_index_ext(index_name: string, set: collections.Map<string, collections.Array<number>>, context_filesDir: string) {
+  let filesDir: string = context_filesDir;
   let result: string[] = [];
   set.forEach((value, key) => {
     result.push(key)

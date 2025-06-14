@@ -33,7 +33,7 @@ export class bunch_of_history_index_lite {
    * @param path the path of history file, for example, 'history/history_2002_12.txt'.
    * @param context_filesDir getContext().filesDir.
    * */
-  static index_from_history_month_file(year: number, month: number, context_filesDir?: string) {
+  static index_from_history_month_file(year: number, month: number, context_filesDir: string) {
     // Set year and month
     bunch_of_history_index_lite.this_year = year;
     bunch_of_history_index_lite.this_month = month;
@@ -64,7 +64,7 @@ export class bunch_of_history_index_lite {
    * @param path the path of index file, for example, 'history-index/index_2002_12.txt'.
    * @param context_filesDir getContext().filesDir.
    * */
-  static index_from_index_month_file(year: number, month: number, context_filesDir?: string) {
+  static index_from_index_month_file(year: number, month: number, context_filesDir: string) {
     // Set year and month
     bunch_of_history_index_lite.this_year = year;
     bunch_of_history_index_lite.this_month = month;

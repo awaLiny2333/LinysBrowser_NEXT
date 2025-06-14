@@ -1,10 +1,13 @@
 import { BusinessError } from '@kit.BasicServicesKit';
 import { filePreview } from '@kit.PreviewKit';
+import { common } from '@kit.AbilityKit';
 
 const image_suffixes = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
 const image_mimes = ['jpeg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg+xml'];
 
 export function preview_image(uri: string) {
+  let uiContext = AppStorage.get('context') as common.UIAbilityContext;
+
   // Determine file name
   const split_name_result = uri.split('/');
   const file_name = split_name_result[split_name_result.length-1];
@@ -14,7 +17,6 @@ export function preview_image(uri: string) {
   // Determine mime
   let mime: string = 'image/' + image_mimes[image_suffixes.indexOf(file_suffix.toLowerCase())];
   // Show
-  let uiContext = getContext();
   let displayInfo: filePreview.DisplayInfo = {
     x: 100,
     y: 100,

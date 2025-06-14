@@ -9,8 +9,10 @@ import {
   history_index_save_to_disk_worker,
   history_path_of_month
 } from './bunch_of_history_index_x_functions';
-import { bundleManager } from '@kit.AbilityKit';
+import { common } from '@kit.AbilityKit';
 import { bunch_of_history_index_lite } from './bunch_of_history_index_lite';
+
+let context = AppStorage.get("context") as common.UIAbilityContext;
 
 export class history_record {
   accessed_time: number = Date.now();
@@ -64,18 +66,18 @@ export class bunch_of_history {
 
     // Creates folders
     try {
-      fs.mkdirSync(getContext().filesDir + '/history');
+      fs.mkdirSync(context.filesDir + '/history');
     } catch (e) {
       // console.log('[Meow][bunch_of_history] Check disk of month: E: /history folder already exists.')
     }
     try {
-      fs.mkdirSync(getContext().filesDir + '/history-index');
+      fs.mkdirSync(context.filesDir + '/history-index');
     } catch (e) {
       // console.log('[Meow][bunch_of_history] Check disk of month: E: /history folder already exists.')
     }
 
     // History
-    if (fs.listFileSync(getContext().filesDir + '/history-index', { recursion: false }).length == 0) {
+    if (fs.listFileSync(context.filesDir + '/history-index', { recursion: false }).length == 0) {
       // First launch of app
       first_launch = true;
     } else {
@@ -85,7 +87,7 @@ export class bunch_of_history {
     }
 
     // Indexing
-    if (fs.listFileSync(getContext().filesDir + '/history-index', { recursion: false }).length == 0) {
+    if (fs.listFileSync(context.filesDir + '/history-index', { recursion: false }).length == 0) {
       if (first_launch) {
         // No history. First launch of app.
         console.log(bunch_of_history_index.log_head() + ' First launch of app. Skipping loading index.')
@@ -128,7 +130,7 @@ export class bunch_of_history {
    * @returns A number[][] array, e.g. [[2024, 2], [2023, 4], ...].
    * */
   static get_history_months(context_filesDir?: string) {
-    let filesDir: string = context_filesDir || getContext().filesDir;
+    let filesDir: string = context_filesDir || context.filesDir;
     // Ensure this month
     ensure_this_month_history_file(context_filesDir);
     // Traverse directory
@@ -209,7 +211,7 @@ export class bunch_of_history {
 
     // clear history
     try {
-      let filesDir = getContext().filesDir;
+      let filesDir = context.filesDir;
       fs.rmdirSync(filesDir + "/history");
       fs.mkdirSync(filesDir + "/history")
     } catch (e) {

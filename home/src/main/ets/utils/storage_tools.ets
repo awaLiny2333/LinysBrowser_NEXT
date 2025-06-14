@@ -53,7 +53,7 @@ export async function document_save_from_uri(from: string) {
 
     let documentSaveOptions = new picker.DocumentSaveOptions();
     documentSaveOptions.newFileNames = [file_name];
-    let documentPicker = new picker.DocumentViewPicker(getContext());
+    let documentPicker = new picker.DocumentViewPicker(context);
 
     await documentPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
       let target_uri = documentSaveResult
@@ -172,7 +172,7 @@ export async function image_open_to_ArrayBuffer() {
  * @param content A string or an ArrayBuffer, fills the file's content.
  * */
 export function sandbox_save(file_name: string, content: string | ArrayBuffer, context_filesDir?: string) {
-  let filesDir: string = context_filesDir || getContext().filesDir;
+  let filesDir: string = context_filesDir || context.filesDir;
   let full_file_directory = filesDir + '/' + file_name;
   if (fs.accessSync(full_file_directory)) {
     fs.unlinkSync(full_file_directory);
@@ -189,10 +189,10 @@ export function sandbox_save(file_name: string, content: string | ArrayBuffer, c
  * THIS IS A SYNC FUNCTION
  * @param from from a uri (file://).
  * @param to a sandbox directory, the new parent folder of this file (in sandbox).
- * @returns a sandbox path, root is getContext().filesDir.
+ * @returns a sandbox path, root is context.filesDir.
  * */
 export function uri_copy_sandbox(from: string, to: string, context_filesDir?: string) {
-  let filesDir: string = context_filesDir || getContext().filesDir;
+  let filesDir: string = context_filesDir || context.filesDir;
   // Get file name
   const split_result = from.split('/');
   const file_name = split_result[split_result.length-1];
@@ -210,7 +210,7 @@ export function uri_copy_sandbox(from: string, to: string, context_filesDir?: st
  * @param file_name A string, the path of the file.
  * */
 export function sandbox_unlink(file_name: string, context_filesDir?: string) {
-  let filesDir: string = context_filesDir || getContext().filesDir;
+  let filesDir: string = context_filesDir || context.filesDir;
   let full_file_directory = filesDir + '/' + file_name;
   fs.unlink(full_file_directory);
 }
@@ -220,7 +220,7 @@ export function sandbox_unlink(file_name: string, context_filesDir?: string) {
  * @param file_name A string, the path of the file.
  * */
 export function sandbox_unlink_sync(file_name: string, context_filesDir?: string) {
-  let filesDir: string = context_filesDir || getContext().filesDir;
+  let filesDir: string = context_filesDir || context.filesDir;
   let full_file_directory = filesDir + '/' + file_name;
   fs.unlinkSync(full_file_directory);
 }
@@ -232,7 +232,7 @@ export function sandbox_unlink_sync(file_name: string, context_filesDir?: string
  * @returns A string, of the requested file's content.
  * */
 export function sandbox_open_sync(file_name: string, context_filesDir?: string) {
-  let filesDir: string = context_filesDir || getContext().filesDir;
+  let filesDir: string = context_filesDir || context.filesDir;
   file_name = filesDir + "/" + file_name
   if (!(fs.accessSync(file_name))) {
     // file doesn't exist
@@ -254,7 +254,7 @@ export function sandbox_open_sync(file_name: string, context_filesDir?: string) 
  * @returns An ArrayBuffer, of the requested file's content.
  * */
 export function sandbox_open_arrayBuffer_sync(file_path_name: string, context_filesDir?: string) {
-  let filesDir: string = context_filesDir || getContext().filesDir;
+  let filesDir: string = context_filesDir || context.filesDir;
   file_path_name = filesDir + "/" + file_path_name
   if (!(fs.accessSync(file_path_name))) {
     // file doesn't exist
@@ -380,13 +380,13 @@ export function arrayBuffer_to_pixelMap(buf: ArrayBuffer) {
  * @param to
  * */
 export function copy_from_rawfile_to_sandbox(from: string, to: string) {
-  let boxPath = getContext().filesDir
+  let boxPath = context.filesDir
   let to_split = to.split("/");
   let folderPath = boxPath + "/" + to_split.slice(0, to_split.length - 2).join("/");
   let fullPath = boxPath + "/" + to
 
   // 获取rawfile资源文件，转换数据
-  let uint8Array: Uint8Array = getContext().resourceManager.getRawFileContentSync(from);
+  let uint8Array: Uint8Array = context.resourceManager.getRawFileContentSync(from);
   let bf = buffer.from(uint8Array).buffer;
 
   // 创建沙箱目录

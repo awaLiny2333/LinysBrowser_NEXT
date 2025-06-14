@@ -1,5 +1,8 @@
 import { BusinessError, request } from '@kit.BasicServicesKit';
 import { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
+import { common } from '@kit.AbilityKit';
+
+let context = AppStorage.get('context') as common.UIAbilityContext;
 
 export class bunch_of_downloads {
   list_of_on_going_tasks: request.agent.Task[] = [];
@@ -23,8 +26,7 @@ export class bunch_of_downloads {
     if (no_init == true) {
       return;
     }
-
-    let filesDir = getContext().filesDir;
+    let filesDir = context.filesDir;
     try {
       fs.mkdirSync(filesDir + '/downloads');
     } catch (e) {
@@ -58,7 +60,7 @@ export class bunch_of_downloads {
     }
 
     // Produce task directory
-    let file_dir = getContext().filesDir + '/downloads/' + file_name + '_' + Date.now().toString() + '/';
+    let file_dir = context.filesDir + '/downloads/' + file_name + '_' + Date.now().toString() + '/';
 
     // Create task folder
     try {
@@ -85,7 +87,7 @@ export class bunch_of_downloads {
 
     try {
       console.log('[meow][bunch_of_downloads] Try to start request!');
-      request.agent.create(getContext(), config).then((downloadTask: request.agent.Task) => {
+      request.agent.create(context, config).then((downloadTask: request.agent.Task) => {
         this.last_action = Date.now();
 
         downloadTask.start();
@@ -230,7 +232,7 @@ export class bunch_of_downloads {
     try {
       let documentSaveOptions = new picker.DocumentSaveOptions();
       documentSaveOptions.newFileNames = [file_name];
-      let documentPicker = new picker.DocumentViewPicker(getContext());
+      let documentPicker = new picker.DocumentViewPicker(context);
 
       await documentPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
         target_uri = documentSaveResult
@@ -268,7 +270,7 @@ export class bunch_of_downloads {
    * */
   delete_all_downloaded_files() {
     try {
-      let filesDir = getContext().filesDir;
+      let filesDir = context.filesDir;
       fs.rmdirSync(filesDir + "/downloads");
       fs.mkdirSync(filesDir + "/downloads")
 

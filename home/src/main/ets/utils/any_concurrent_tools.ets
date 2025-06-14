@@ -1,6 +1,9 @@
 import { get_folder_size_Sync } from './storage_tools';
 import { taskpool } from '@kit.ArkTS';
 import { getGraphicsMemory_sync, getPrivateDirty_sync, getPss_sync, getSharedDirty_sync, getVss_sync } from './performance_tools';
+import { common } from '@kit.AbilityKit';
+
+let context = AppStorage.get("context") as common.UIAbilityContext;
 
 @Concurrent
 function get_sandbox_folder_size_concurrent(path: string): number {
@@ -16,7 +19,7 @@ function get_sandbox_folder_size_concurrent(path: string): number {
 export async function get_sandbox_folder_size(folder_path: string, sandbox_root: boolean): Promise<number> {
   let path: string;
   if (sandbox_root) {
-    const filesDir = getContext().filesDir;
+    const filesDir = context.filesDir;
     path = filesDir + '/' + folder_path;
   } else {
     path = folder_path;

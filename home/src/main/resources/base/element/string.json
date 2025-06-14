@@ -802,7 +802,11 @@
     },
     {
       "name": "Settings_toolbox_export_settings",
-      "value": "Export"
+      "value": "Export Settings"
+    },
+    {
+      "name": "Settings_toolbox_import_settings_ok",
+      "value": "Import Succeeded~\nRestart this app yourself later to apply!"
     },
     {
       "name": "Settings_toolbox_import_settings_desc",
@@ -810,7 +814,7 @@
     },
     {
       "name": "Settings_toolbox_import_settings",
-      "value": "Import"
+      "value": "Import settings"
     },
     {
       "name": "Fault_logs",

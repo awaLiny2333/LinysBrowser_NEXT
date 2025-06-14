@@ -2,6 +2,7 @@ import { collections, ErrorEvent, MessageEvents, ThreadWorkerGlobalScope, worker
 import { bunch_of_history_index } from '../hosts/bunch_of_history_index';
 import { sandbox_save } from '../utils/storage_tools';
 import { fileIo } from '@kit.CoreFileKit';
+import { common } from '@kit.AbilityKit';
 
 const workerPort: ThreadWorkerGlobalScope = worker.workerPort;
 let map: collections.Map<string, collections.Array<number>>;
@@ -63,8 +64,8 @@ workerPort.onerror = (event: ErrorEvent) => {
  * @param map
  * @param context_filesDir
  * */
-function save_index_ext(file_name: string, map: collections.Map<string, collections.Array<number>>, clear: boolean, context_filesDir?: string) {
-  let filesDir: string = context_filesDir || getContext().filesDir;
+function save_index_ext(file_name: string, map: collections.Map<string, collections.Array<number>>, clear: boolean, context_filesDir: string) {
+  let filesDir: string = context_filesDir;
   let result: string[] = [];
   let index = 0;
 

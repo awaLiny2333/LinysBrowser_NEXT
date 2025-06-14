@@ -47,7 +47,7 @@ workerPort.onerror = (event: ErrorEvent) => {
 /**
  * Loads built index from disk.
  * */
-function sandbox_load_index_sync(context_filesDir?: string) {
+function sandbox_load_index_sync(context_filesDir: string) {
   let s = Date.now();
   console.log(bunch_of_history_index.log_head_worker() + '[Load] Start loading from sandbox! Start: ' + new Date(s).toString() + '.')
 
