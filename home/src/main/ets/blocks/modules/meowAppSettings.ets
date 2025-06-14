@@ -1151,7 +1151,7 @@ struct settingsCard {
       this.contents();
     }
     .borderColor((this.highlight && this.timeout > 0) ? this.color_current_font : this.color_current_primary)
-    .brightness((!this.highlight && this.timeout > 0) ? 0.5 : 1)
+    .opacity((!this.highlight && this.timeout > 0) ? 0.5 : 1)
     .animation(animation_default())
     .padding(13)
     .alignItems(HorizontalAlign.Start)
