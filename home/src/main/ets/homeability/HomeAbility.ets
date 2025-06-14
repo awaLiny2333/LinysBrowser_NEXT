@@ -1,6 +1,6 @@
 import { AbilityConstant, Configuration, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { window } from '@kit.ArkUI';
+import { display, window } from '@kit.ArkUI';
 import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
 
 export default class HomeAbility extends UIAbility {
@@ -82,47 +82,47 @@ export default class HomeAbility extends UIAbility {
         // 2. Get avoid area
         let type = window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR; // 以导航条避让为例
         let avoidArea = windowClass.getWindowAvoidArea(type);
-        let avoidBottom = px2vp(avoidArea.bottomRect.height); // 获取到导航条区域的高度
+        let avoidBottom = this.px2vp(avoidArea.bottomRect.height); // 获取到导航条区域的高度
         AppStorage.setOrCreate('bottomAvoidHeight', avoidBottom);
         console.log('[HomeAbility] New avoidBottomHeight: ' + avoidBottom);
 
         type = window.AvoidAreaType.TYPE_SYSTEM;
         avoidArea = windowClass.getWindowAvoidArea(type);
-        let avoidTop = px2vp(avoidArea.topRect.height);
+        let avoidTop = this.px2vp(avoidArea.topRect.height);
         AppStorage.setOrCreate('topAvoidHeight', avoidTop + (avoidTop == 0 ? 0 : 2));
         console.log('[HomeAbility] topAvoidHeight: ' + avoidTop + (avoidTop == 0 ? 0 : 2));
 
         type = window.AvoidAreaType.TYPE_CUTOUT;
         avoidArea = windowClass.getWindowAvoidArea(type);
-        let avoidLeft = px2vp(avoidArea.leftRect.width);
+        let avoidLeft = this.px2vp(avoidArea.leftRect.width);
         AppStorage.setOrCreate('leftAvoidWidth', avoidLeft + (avoidLeft == 0 ? 0 : 2));
         console.log('[HomeAbility] New leftAvoidWidth: ' + avoidLeft + (avoidLeft == 0 ? 0 : 2));
 
         type = window.AvoidAreaType.TYPE_CUTOUT;
         avoidArea = windowClass.getWindowAvoidArea(type);
-        let avoidRight = px2vp(avoidArea.rightRect.width);
+        let avoidRight = this.px2vp(avoidArea.rightRect.width);
         AppStorage.setOrCreate('rightAvoidWidth', avoidRight + (avoidRight == 0 ? 0 : 2));
         console.log('[HomeAbility] New avoidRightWidth: ' + avoidRight + (avoidRight == 0 ? 0 : 2));
 
         // Change listener
         windowClass.on('avoidAreaChange', (data) => {
           if (data.type == window.AvoidAreaType.TYPE_SYSTEM) {
-            avoidTop = px2vp(data.area.topRect.height);
+            avoidTop = this.px2vp(data.area.topRect.height);
             AppStorage.setOrCreate('topAvoidHeight', avoidTop + (avoidTop == 0 ? 0 : 2));
             console.log('[HomeAbility] New topAvoidHeight: ' + avoidTop + (avoidTop == 0 ? 0 : 2));
           }
           if (data.type == window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
-            avoidBottom = px2vp(data.area.bottomRect.height);
+            avoidBottom = this.px2vp(data.area.bottomRect.height);
             AppStorage.setOrCreate('bottomAvoidHeight', avoidBottom);
             console.log('[HomeAbility] New avoidBottomHeight: ' + avoidBottom);
           }
           if (data.type == window.AvoidAreaType.TYPE_CUTOUT) {
-            avoidLeft = px2vp(data.area.leftRect.width);
+            avoidLeft = this.px2vp(data.area.leftRect.width);
             AppStorage.setOrCreate('leftAvoidWidth', avoidLeft + (avoidLeft == 0 ? 0 : 2));
             console.log('[HomeAbility] New leftAvoidWidth: ' + avoidLeft + (avoidLeft == 0 ? 0 : 2));
           }
           if (data.type == window.AvoidAreaType.TYPE_CUTOUT) {
-            avoidRight = px2vp(data.area.rightRect.width);
+            avoidRight = this.px2vp(data.area.rightRect.width);
             AppStorage.setOrCreate('rightAvoidWidth', avoidRight + (avoidRight == 0 ? 0 : 2));
             console.log('[HomeAbility] New avoidRightWidth: ' + avoidRight + (avoidRight == 0 ? 0 : 2));
           }
@@ -186,5 +186,14 @@ export default class HomeAbility extends UIAbility {
       // refresh want_uri in the last place
       AppStorage.setOrCreate('want_uri', want_uri);
     }
+  }
+
+  /**
+   * Implements a same px2vp as this.getUIContext().px2vp in UI interfaces
+   * @param px the real pixel
+   * @returns the vp equivalent
+   * */
+  px2vp(px:number) {
+    return px / display.getDefaultDisplaySync().densityPixels;
   }
 }

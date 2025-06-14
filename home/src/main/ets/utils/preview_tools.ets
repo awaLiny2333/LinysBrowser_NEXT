@@ -7,7 +7,7 @@ const image_mimes = ['jpeg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg+xml'];
 
 export function preview_image(uri: string) {
   let uiContext = AppStorage.get('context') as common.UIAbilityContext;
-
+  
   // Determine file name
   const split_name_result = uri.split('/');
   const file_name = split_name_result[split_name_result.length-1];
