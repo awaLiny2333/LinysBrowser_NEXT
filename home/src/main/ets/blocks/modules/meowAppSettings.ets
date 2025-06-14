@@ -55,6 +55,7 @@ import woofUpdateHistory from '../../dialogs/contents/woofUpdateHistory';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
 import linysSwitchWithText from '../../components/toggles/linysSwitchWithText';
+import woofSettingsImportOK from '../../dialogs/contents/woofSettingsImportOK';
 
 @Component
 struct meowAppSettings {
@@ -231,6 +232,11 @@ struct meowAppSettings {
     // showInSubWindow: true,
     width: "90%",
   });
+  woofSettingsImportOK_control: CustomDialogController = new CustomDialogController({
+    builder: woofSettingsImportOK(),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16
+  })
   waterFlow_control: Scroller = new Scroller();
   // Else
   @State clear_web_cache_confirm: number = 0;
@@ -747,6 +753,8 @@ struct meowAppSettings {
                     let import_result = this.bunch_of_settings.import_json(result);
                     if (!import_result) {
                       this.uni_fail_prompt_gateway = $r("app.string.Fail_select_bad_settings");
+                    } else {
+                      this.woofSettingsImportOK_control.open();
                     }
                   })
                 }
