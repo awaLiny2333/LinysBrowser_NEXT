@@ -17,7 +17,7 @@ export function document_save(file_name: string, content: string) {
   try {
     let documentSaveOptions = new picker.DocumentSaveOptions();
     documentSaveOptions.newFileNames = [file_name];
-    documentSaveOptions.fileSuffixChoices = [".html", ".txt"];
+    // documentSaveOptions.fileSuffixChoices = [".html", ".txt", ".json"];
     let documentPicker = new picker.DocumentViewPicker(context);
 
     documentPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
@@ -89,13 +89,13 @@ export async function document_save_from_uri(from: string) {
  * Pick a text file from device storage, pulling up a DocumentViewPicker.
  * @returns A string, of the chosen file's content.
  * */
-export async function document_open() {
+export async function document_open(suffixFilters?: string[]) {
   let target_uri: string[] = [];
 
   try {
     let documentPicker = new picker.DocumentViewPicker(context);
     let contents: string = "";
-    await documentPicker.select({ maxSelectNumber: 1, fileSuffixFilters: [".html", ".txt"] })
+    await documentPicker.select({ maxSelectNumber: 1, fileSuffixFilters: suffixFilters || [".html", ".txt"] })
       .then((documentSelectResult) => {
         target_uri = documentSelectResult;
         let file = fs.openSync(target_uri[0], fs.OpenMode.READ_WRITE);
@@ -135,7 +135,7 @@ export async function image_open_to_ArrayBuffer() {
 
     await documentPicker.select({
       maxSelectNumber: 1,
-      fileSuffixFilters: [".png", ".jpg", ".jpeg", ".JPG", ".JPEG", ".PNG"]
+      fileSuffixFilters: [".png", ".jpg", ".jpeg"]
     })
       .then((documentSelectResult) => {
         selected_uri = documentSelectResult;

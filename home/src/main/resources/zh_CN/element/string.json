@@ -489,6 +489,10 @@
       "value": "选择的图片有问题？或者你什么也没有选！"
     },
     {
+      "name": "Fail_select_bad_settings",
+      "value": "选择的设置文件有问题？或者你什么也没有选！"
+    },
+    {
       "name": "Update_record",
       "value": "更新历史"
     },
@@ -502,7 +506,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "优化了页面内搜索的键盘快捷键\n设置里跳转到某个板块有高光标注了！\n点击猫抓板的某个项目会执行默认操作了！\n调整了目的地预览栏的位置！"
+      "value": "设置的导出和导入！\n优化了页面内搜索的键盘快捷键\n设置里跳转到某个板块有高光标注了！\n点击猫抓板的某个项目会执行默认操作了！\n调整了目的地预览栏的位置！"
     },
     {
       "name": "Whats_new_content_extra",
@@ -791,6 +795,22 @@
     {
       "name": "Settings_toolbox_resource_monitor",
       "value": "资源指示器（在 \uDB80\uDC61 更多 里）"
+    },
+    {
+      "name": "Settings_toolbox_export_settings_desc",
+      "value": "导出设置：备份或者其他用途！"
+    },
+    {
+      "name": "Settings_toolbox_export_settings",
+      "value": "导出"
+    },
+    {
+      "name": "Settings_toolbox_import_settings_desc",
+      "value": "从已有文件导入设置！\n\n注意！这会覆盖一切原有的设置！！\n\n下次启动时将启用新设置！"
+    },
+    {
+      "name": "Settings_toolbox_import_settings",
+      "value": "导入"
     },
     {
       "name": "Fault_logs",

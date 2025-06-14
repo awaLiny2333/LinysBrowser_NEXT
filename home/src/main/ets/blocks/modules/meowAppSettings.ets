@@ -15,7 +15,14 @@ import { bunch_of_user_agents } from '../../hosts/bunch_of_user_agents';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import { bunch_of_history } from '../../hosts/bunch_of_history';
-import { add_units_to_size, arrayBuffer_to_pixelMap, get_folder_size_Sync, sandbox_open_arrayBuffer_sync } from '../../utils/storage_tools';
+import {
+  add_units_to_size,
+  arrayBuffer_to_pixelMap,
+  document_open,
+  document_save,
+  get_folder_size_Sync,
+  sandbox_open_arrayBuffer_sync
+} from '../../utils/storage_tools';
 import woofHistory from '../../dialogs/managers/woofHistory';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import meowSEManager from '../panels/meowSEManager';
@@ -721,6 +728,30 @@ struct meowAppSettings {
                 }
               }) // Fault logs display
 
+              linysText({ text: $r('app.string.Settings_toolbox_export_settings_desc'), max_lines: 3 })
+              linysCapsuleButtonWithText({
+                desc_text: $r('app.string.Settings_toolbox_export_settings'),
+                button_text: '  󰃋  ',
+                onExecution: () => {
+                  // sandbox_save('settings.json', this.bunch_of_settings.toString());
+                  document_save('settings.json.browsercatsettings', this.bunch_of_settings.toString())
+                }
+              }) // Export settings
+
+              linysText({ text: $r('app.string.Settings_toolbox_import_settings_desc'), max_lines: 10 })
+              linysTimeoutButtonWithText({
+                desc_text: $r('app.string.Settings_toolbox_import_settings'),
+                button_text: '  󰐝  ',
+                onExecution: () => {
+                  document_open(['browsercatsettings']).then((result) => {
+                    let import_result = this.bunch_of_settings.import_json(result);
+                    if (!import_result) {
+                      this.uni_fail_prompt_gateway = $r("app.string.Fail_select_bad_settings");
+                    }
+                  })
+                }
+              }) // Import settings
+
               if (this.DEV_MODE) {
                 linysTimeoutButton({
                   text: " Temp Code ",
@@ -730,7 +761,7 @@ struct meowAppSettings {
                 })
               }
             }
-          } // Toolbox cardboard box
+          } // Toolbox / cardboard box
           .width("100%")
 
           FlowItem() {

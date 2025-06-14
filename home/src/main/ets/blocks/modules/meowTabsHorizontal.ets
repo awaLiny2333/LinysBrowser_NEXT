@@ -152,7 +152,7 @@ struct meowTabsHorizontal {
         })
           .visibility(this.choosing_paralleow || this.current_sub_tab_index >= 0 ? Visibility.None : Visibility.Visible)
           .animation(animation_default())
-          // .padding({ left: 5 })
+        // .padding({ left: 5 })
 
         Blank()
 
@@ -170,6 +170,7 @@ struct meowTabsHorizontal {
 
         linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })// New tab
           .onClick(() => {
+            AppStorage.set('extra_background', false);
             this.new_tab_gateway = "new_tab";
           })// .margin({ bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0, right: 8 })
           .animation(animation_default())

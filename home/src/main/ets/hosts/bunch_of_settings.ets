@@ -144,6 +144,7 @@ export class bunch_of_settings {
    * @param value A string | boolean | number, the corresponding value of key to be set.
    * @returns true if success.
    * @returns false if fails, perhaps due to an unregistered setting key.
+   * @returns undefined if fails, due to not initialized setting.
    * */
   set(key: string, value: string | boolean | number) {
     if (!(AppStorage.get('settings_init_retrieved') as boolean)) {
@@ -196,6 +197,91 @@ export class bunch_of_settings {
         this.set(key, Number.parseFloat(def_value));
       }
     }
+  }
+
+  /**
+   * Outputs a string as result
+   * @returns a string.
+   * */
+  toString() {
+    let result_string: string[] = [];
+    for (let index = 0; index < this.settings_list.length; index++) {
+      const the_setting = this.settings_list[index];
+      result_string.push('    "' + the_setting.key + '": "' + (the_setting.value.toString()).replaceAll('\n', '\\n') + '"');
+    }
+    result_string.sort();
+    return '{\n' + result_string.join(',\n') + '\n}';
+  }
+
+  /**
+   * Import settings from json
+   * @param text the json
+   * */
+  import_json(text: string) {
+    console.log('[Meow][bunch_of_settings] Import settings:\n' + text)
+    let jsonObject: Record<string, string> | null = null;
+    if (text.length < 2) {
+      return false;
+    }
+
+    try {
+      jsonObject = JSON.parse(text);
+    } catch (e) {
+      console.log('[Meow][bunch_of_settings] Import settings failed! Json parse failed!');
+      return false;
+    }
+
+    Object.entries(jsonObject as Record<string, string>).forEach((item) => {
+      const key = item[0];
+      const val = item[1];
+      this.import_set(key, val);
+    })
+    return true;
+  }
+
+  /**
+   * Sets the corresponding value of key, and save it in the KvStore.
+   * @param key A string, the key of the setting.
+   * @param value A string, the corresponding value of key to be set.
+   * @returns true if success.
+   * @returns false if fails, perhaps due to an unregistered setting key.
+   * @returns undefined if fails, due to not initialized setting.
+   * */
+  import_set(key: string, value: string) {
+    if (!(AppStorage.get('settings_init_retrieved') as boolean)) {
+      // If settings not init
+      return;
+    }
+
+    let key_default_index = this.settings_defaults_key.indexOf(key);
+    if (key_default_index == -1) {
+      // unregistered setting
+      console.error('[Error][Meow][bunch_of_settings][get] Unregistered setting key: ' + key);
+      return false;
+    }
+    let key_default_type = this.settings_defaults_type[key_default_index];
+
+    let typed_value: string | boolean | number = -1;
+    if (key_default_type == 'number') {
+      typed_value = Number.parseFloat(value);
+    } else if (key_default_type == 'string') {
+      typed_value = value;
+    } else {
+      // boolean
+      typed_value = this.string_to_boolean(value);
+    }
+
+    // Sequential search
+    for (let index = 0; index < this.settings_list.length; index++) {
+      if (this.settings_list[index].key == key) {
+        this.settings_list[index].value = typed_value;
+        break;
+      }
+    }
+
+    kv_store_put(key, value);
+
+    return true;
   }
 
   /**

@@ -298,6 +298,8 @@ struct meowTabs {
    * @description While if new_tab_url is also not set ("" or undefined), then will load the url_default_blank().
    * */
   new_tab(target_url: string, do_recovery?: boolean) {
+    AppStorage.set('extra_background', false);
+
     this.tab_animation = { duration: 0 };
 
     this.current_main_tab_index = this.bunch_of_tabs.newTab(target_url, do_recovery);

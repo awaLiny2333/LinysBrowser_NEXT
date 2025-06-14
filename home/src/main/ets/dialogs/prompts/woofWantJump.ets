@@ -1,7 +1,7 @@
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
-import { animation_default } from '../../hosts/bunch_of_defaults';
+import { animation_default, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { jump_external_link } from '../../utils/url_tools';
 
 @CustomDialog
@@ -20,11 +20,17 @@ struct woofWantJump {
       linysTextTitle({ text: $r('app.string.LinkJumper_webpage_asks_for_jump') })// This page is asking for a jump
         .width("100%")
 
-      linysText({ text: this.link, max_lines: 5 })// link
+      TextArea({ text: this.link })
+      // linysText({ text: this.link, max_lines: 5 })// link
+        .fontWeight(FontWeight.Regular)
+        .fontColor(this.color_current_font)
+        .caretColor(this.color_current_font)
+        .selectedBackgroundColor(this.color_current_font)
+        .backgroundColor(this.color_current_secondary)
         .width("100%")
         .padding(10)
         .borderRadius(13.5)
-        .backgroundColor(this.color_current_secondary)
+        .clickEffect(click_effect_default())
 
       linysText({ text: $r('app.string.LinkJumper_allow_jump') })// allow?
         .width("100%")
