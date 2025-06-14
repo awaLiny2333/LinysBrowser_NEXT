@@ -33,6 +33,10 @@ export class bunch_of_settings {
     // Statuses
     this.register_setting('status_tabs_open', 'boolean', 'false');
 
+    // Continuation
+    this.register_setting('continuation_auto_exit', 'boolean', 'false');
+    this.register_setting('continuation_auto_close_tab', 'boolean', 'true');
+
     // Keyboard shortcuts
     this.register_setting('key_shortcuts', 'string', '');
 

@@ -373,6 +373,14 @@
       "value": "Use system back to access backward"
     },
     {
+      "name": "Settings_experience_continuation_auto_exit",
+      "value": "Exit entire app after continuation on another device"
+    },
+    {
+      "name": "Settings_experience_continuation_auto_close_tab",
+      "value": "Close the tab after continuation on another device"
+    },
+    {
       "name": "Settings_experience_web_force_dark_mode",
       "value": "Force websites to be darkened when dark mode is enabled"
     },
@@ -506,7 +514,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "feat: settings export and import!\nimprove: optimize keyboard shortcut for in-page searches;\nimprove: jumping to a settings block now has highlight!\nimprove: clicking on Scratching Board objects now activates a default action;\nimprove: adjusted position of destination indicator!"
+      "value": "feat: multi-device continuation!\nfeat: settings export and import!\nimprove: optimize keyboard shortcut for in-page searches;\nimprove: jumping to a settings block now has highlight!\nimprove: clicking on Scratching Board objects now activates a default action;\nimprove: adjusted position of destination indicator!"
     },
     {
       "name": "Whats_new_content_extra",

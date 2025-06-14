@@ -7,7 +7,7 @@ import meowTitleBar from '../blocks/modules/meowTitleBar';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import woofPromptFail from '../dialogs/prompts/woofPromptFail';
-import { bundleManager, ConfigurationConstant } from '@kit.AbilityKit';
+import { AbilityConstant, bundleManager, common, ConfigurationConstant } from '@kit.AbilityKit';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_history } from '../hosts/bunch_of_history';
 import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
@@ -126,6 +126,12 @@ struct Index {
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+
+  onPageShow(): void {
+    let context = AppStorage.get('context') as common.UIAbilityContext;
+    // Enable continue
+    context.setMissionContinueState(AbilityConstant.ContinueState.ACTIVE);
+  }
 
   async aboutToAppear(): Promise<void> {
     this.animation_response = await this.bunch_of_settings.get('animation_response') as number;

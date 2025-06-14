@@ -1,9 +1,11 @@
-import { AbilityConstant, Configuration, UIAbility, Want } from '@kit.AbilityKit';
+import { AbilityConstant, Configuration, UIAbility, Want, wantConstant } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { display, window } from '@kit.ArkUI';
 import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
 
 export default class HomeAbility extends UIAbility {
+  storage: LocalStorage = new LocalStorage();
+
   async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): Promise<void> {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
     console.log('want bundle name: ' + want.bundleName);
@@ -14,12 +16,41 @@ export default class HomeAbility extends UIAbility {
     AppStorage.setOrCreate('pathDir', this.context.filesDir);
     AppStorage.setOrCreate('currentColorMode', this.context.config.colorMode);
 
-    // Process want
-    this.process_want(want);
+    if (launchParam.launchReason === AbilityConstant.LaunchReason.CONTINUATION) {
+      this.process_continue(want);
+      this.context.restoreWindowStage(this.storage);
+    } else {
+      // Process want
+      this.process_want(want);
+    }
   }
 
   onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {
-    this.process_want(want);
+    if (launchParam.launchReason === AbilityConstant.LaunchReason.CONTINUATION) {
+      this.process_continue(want);
+    } else {
+      // Process want
+      this.process_want(want);
+    }
+  }
+
+  onContinue(wantParam: Record<string, Object>) {
+    // Check if continuation_auto_exit
+    let auto_exit = AppStorage.get('continuation_auto_exit') as boolean;
+    let close_tab = AppStorage.get('continuation_auto_close_tab') as boolean;
+    // Set continue information
+    console.info(`onContinue version = ${wantParam.version}, targetDevice: ${wantParam.targetDevice}`);
+    let current_url = AppStorage.get('current_url') as string;
+    wantParam['data'] = current_url;
+    if (!auto_exit) {
+      wantParam[wantConstant.Params.SUPPORT_CONTINUE_SOURCE_EXIT_KEY] = false;
+      if (close_tab) {
+        let current_main_tab_index = AppStorage.get('current_main_tab_index') as number;
+        AppStorage.set('universal_close_tab_gateway', current_main_tab_index);
+      }
+    }
+    wantParam[wantConstant.Params.SUPPORT_CONTINUE_PAGE_STACK_KEY] = false;
+    return AbilityConstant.OnContinueResult.AGREE;
   }
 
   onDestroy(): void {
@@ -36,10 +67,107 @@ export default class HomeAbility extends UIAbility {
         console.error(`Failed to obtain the main window. Cause code: ${err.code}, message: ${err.message}`);
         return;
       }
-      // Set window orientation
-      win.setPreferredOrientation(window.Orientation.AUTO_ROTATION_RESTRICTED)
     })
 
+    // Load window content
+    this.window_load_content(windowStage);
+  }
+
+  onWindowStageRestore(windowStage: window.WindowStage) {
+    let is_new_launch = !(AppStorage.get('settings_init_retrieved') as boolean);
+    console.log('[HomeAbility][onWindowStageRestore] is_new_launch? - ' + (is_new_launch ? 'yes!' : 'no...'))
+    // Only loads if is new launch
+    if (is_new_launch) {
+      this.window_load_content(windowStage);
+    }
+  }
+
+  onConfigurationUpdate(newConfig: Configuration): void {
+    AppStorage.setOrCreate('currentColorMode', newConfig.colorMode);
+  }
+
+  onWindowStageDestroy(): void {
+    // Main window is destroyed, release UI related resources
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageDestroy');
+  }
+
+  onForeground(): void {
+    // Ability has brought to foreground
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onForeground');
+  }
+
+  onBackground(): void {
+    // Ability has back to background
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onBackground');
+  }
+
+  process_want(want: Want) {
+    AppStorage.setOrCreate('want_uri', '');
+    // want
+    let want_uri = want.uri;
+    let want_type = want.type;
+    let want_action = want.action;
+    if (want_uri == null || want_uri == undefined || want_uri.length < 1) {
+      // Invalid want
+      console.info('[Meow][HomeAbility] No or empty Want uri accepted.');
+      AppStorage.setOrCreate('want_uri', '');
+      AppStorage.setOrCreate('want_type', '');
+      AppStorage.setOrCreate('want_action', '');
+    } else {
+      // Good want
+      console.log('[Meow][HomeAbility] Want accepted!');
+      console.log('[Meow][HomeAbility] Want uri: ' + want_uri);
+
+      // Process the rest params
+      if (want_type) {
+        AppStorage.setOrCreate('want_type', want_type);
+        console.log('[Meow][HomeAbility] Want type: ' + want_type);
+      } else {
+        AppStorage.setOrCreate('want_type', '');
+        console.log('[Meow][HomeAbility] Want type is empty?');
+      }
+      if (want_action) {
+        AppStorage.setOrCreate('want_action', want_action);
+        console.log('[Meow][HomeAbility] Want action: ' + want_action);
+      } else {
+        AppStorage.setOrCreate('want_action', '');
+        console.log('[Meow][HomeAbility] Want action is empty?');
+      }
+
+      // refresh want_uri in the last place
+      AppStorage.setOrCreate('want_uri', want_uri);
+    }
+  }
+
+  process_continue(want: Want) {
+    let is_new_launch = !(AppStorage.get('settings_init_retrieved') as boolean);
+    console.log('[HomeAbility][onWindowStageRestore] is_new_launch? - ' + (is_new_launch ? 'yes' : 'no'))
+    // Get the data
+    let continueInput = '';
+    if (want.parameters !== undefined) {
+      try {
+        continueInput = want.parameters.data.toString();
+        console.info('[Meow][HomeAbility][onNewWant] continue input: ' + continueInput);
+        // Recovery of window
+        setTimeout(() => {
+          AppStorage.set('universal_new_tab_gateway', continueInput);
+        }, is_new_launch ? 1000 : 100)
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }
+
+  /**
+   * Implements a same px2vp as this.getUIContext().px2vp in UI interfaces
+   * @param px the real pixel
+   * @returns the vp equivalent
+   * */
+  px2vp(px: number) {
+    return px / display.getDefaultDisplaySync().densityPixels;
+  }
+
+  window_load_content(windowStage: window.WindowStage) {
     windowStage.loadContent('pages/Index', (err) => {
       if (err.code) {
         hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
@@ -128,72 +256,7 @@ export default class HomeAbility extends UIAbility {
           }
         })
       }
+      AppStorage.set('isAppRunning', true);
     });
-  }
-
-  onConfigurationUpdate(newConfig: Configuration): void {
-    AppStorage.setOrCreate('currentColorMode', newConfig.colorMode);
-  }
-
-  onWindowStageDestroy(): void {
-    // Main window is destroyed, release UI related resources
-    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageDestroy');
-  }
-
-  onForeground(): void {
-    // Ability has brought to foreground
-    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onForeground');
-  }
-
-  onBackground(): void {
-    // Ability has back to background
-    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onBackground');
-  }
-
-  process_want(want: Want) {
-    AppStorage.setOrCreate('want_uri', '');
-    // want
-    let want_uri = want.uri;
-    let want_type = want.type;
-    let want_action = want.action;
-    if (want_uri == null || want_uri == undefined || want_uri.length < 1) {
-      // Invalid want
-      console.info('[Meow][HomeAbility] No or empty Want uri accepted.');
-      AppStorage.setOrCreate('want_uri', '');
-      AppStorage.setOrCreate('want_type', '');
-      AppStorage.setOrCreate('want_action', '');
-    } else {
-      // Good want
-      console.log('[Meow][HomeAbility] Want accepted!');
-      console.log('[Meow][HomeAbility] Want uri: ' + want_uri);
-
-      // Process the rest params
-      if (want_type) {
-        AppStorage.setOrCreate('want_type', want_type);
-        console.log('[Meow][HomeAbility] Want type: ' + want_type);
-      } else {
-        AppStorage.setOrCreate('want_type', '');
-        console.log('[Meow][HomeAbility] Want type is empty?');
-      }
-      if (want_action) {
-        AppStorage.setOrCreate('want_action', want_action);
-        console.log('[Meow][HomeAbility] Want action: ' + want_action);
-      } else {
-        AppStorage.setOrCreate('want_action', '');
-        console.log('[Meow][HomeAbility] Want action is empty?');
-      }
-
-      // refresh want_uri in the last place
-      AppStorage.setOrCreate('want_uri', want_uri);
-    }
-  }
-
-  /**
-   * Implements a same px2vp as this.getUIContext().px2vp in UI interfaces
-   * @param px the real pixel
-   * @returns the vp equivalent
-   * */
-  px2vp(px:number) {
-    return px / display.getDefaultDisplaySync().densityPixels;
   }
 }
