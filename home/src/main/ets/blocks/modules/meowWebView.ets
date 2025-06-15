@@ -626,13 +626,13 @@ struct meowWebView {
     }
   }
 
-  download(url: string, userAgent: string, contentDisposition: string, contentLength: number, mimetype: string) {
-    console.log('url: ' + url)
-    console.log('userAgent: ' + userAgent)
-    console.log('contentDisposition: ' + contentDisposition)
-    console.log('contentLength: ' + contentLength)
-    console.log('mimetype: ' + mimetype)
+  download_event(event: OnDownloadStartEvent) {
+    if (event) {
+      this.download(event.url, event.userAgent, event.contentDisposition, event.contentLength, event.mimetype)
+    }
+  }
 
+  download(url: string, userAgent: string, contentDisposition: string, contentLength: number, mimetype: string) {
     // Save file download additional info
     let try_additional_info = [
       'url: ' + url,
@@ -641,6 +641,7 @@ struct meowWebView {
       'contentLength: ' + contentLength.toString(),
       'mimetype: ' + mimetype
     ].join('\n');
+    console.log(try_additional_info);
 
     // Cut out original file name
     let url_split = url.split("/");
@@ -667,43 +668,6 @@ struct meowWebView {
       cornerRadius: 16
     })
     this.woofWantDownload_control.open();
-  }
-
-  /**
-   * Determines if an overwrite file name could be cut out and used
-   * @param contentDisposition e.g. "filename='qwq.txt'; type: TEXT"
-   * @returns a file name
-   * */
-  cut_filename_overwrite(contentDisposition: string) {
-    let name_overwrite = '';
-
-    let filename_start = contentDisposition.toLowerCase().indexOf('filename=');
-    if (filename_start == -1) {
-      return '';
-    }
-    filename_start += 9;
-
-    let filename_end = contentDisposition.indexOf(';', filename_start);
-    if (filename_end == -1) {
-      filename_end = contentDisposition.length;
-    }
-
-    // cut out file_name_overwrite
-    name_overwrite = contentDisposition.slice(filename_start, filename_end);
-
-    // eliminate quotes
-    let last_idx = name_overwrite.length - 1;
-    if (["'", '"'].includes(name_overwrite[last_idx])) {
-      name_overwrite = name_overwrite.slice(1, last_idx);
-    }
-
-    return name_overwrite;
-  }
-
-  download_event(event: OnDownloadStartEvent) {
-    if (event) {
-      this.download(event.url, event.userAgent, event.contentDisposition, event.contentLength, event.mimetype)
-    }
   }
 
   // Kind of constants
@@ -835,6 +799,37 @@ struct meowWebView {
       }
     }
     this.extra_background = need_extra_background;
+  }
+
+  /**
+   * Determines if an overwrite file name could be cut out and used
+   * @param contentDisposition e.g. "filename='qwq.txt'; type: TEXT"
+   * @returns a file name
+   * */
+  private cut_filename_overwrite(contentDisposition: string) {
+    let name_overwrite = '';
+
+    let filename_start = contentDisposition.toLowerCase().indexOf('filename=');
+    if (filename_start == -1) {
+      return '';
+    }
+    filename_start += 9;
+
+    let filename_end = contentDisposition.indexOf(';', filename_start);
+    if (filename_end == -1) {
+      filename_end = contentDisposition.length;
+    }
+
+    // cut out file_name_overwrite
+    name_overwrite = contentDisposition.slice(filename_start, filename_end);
+
+    // eliminate quotes
+    let last_idx = name_overwrite.length - 1;
+    if (["'", '"'].includes(name_overwrite[last_idx])) {
+      name_overwrite = name_overwrite.slice(1, last_idx);
+    }
+
+    return name_overwrite;
   }
 }
 

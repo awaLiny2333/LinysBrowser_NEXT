@@ -1,5 +1,6 @@
 import linysSymbol from '../components/texts/linysSymbol';
 import linysTextTitle from '../components/texts/linysTextTitle';
+import { animation_default } from '../hosts/bunch_of_defaults';
 
 @Component
 struct woofControlFrame {
@@ -11,6 +12,8 @@ struct woofControlFrame {
   controller?: CustomDialogController;
   // Color
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  // animation
+  @State off_y_contents: number = 120;
 
   build() {
     Column({ space: 15 }) {
@@ -23,16 +26,18 @@ struct woofControlFrame {
               this.controller.close();
             }
           })
-        // .borderRadius(20)
-        // .padding(6)
-        // .backgroundColor($r('sys.color.comp_background_tertiary'))
       }
 
       // Contents
       this.content_section();
     }
+    .offset({ y: this.off_y_contents })
+    .animation(animation_default())
     .padding(15)
     .backgroundColor(this.color_current_primary)
+    .onAppear(() => {
+      this.off_y_contents = 0;
+    })
   }
 }
 

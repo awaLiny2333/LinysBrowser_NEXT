@@ -18,12 +18,13 @@ import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 import { sandbox_save } from '../utils/storage_tools';
 import { deviceInfo } from '@kit.BasicServicesKit';
 import { fileIo } from '@kit.CoreFileKit';
+import woofHistory from '../dialogs/managers/woofHistory';
 
 @Entry
 @Component
 struct Index {
   // Want
-  @StorageLink('want_uri') @Watch('on_want') want_uri: string = 'want';
+  @StorageLink('want_uri') @Watch('check_want') want_uri: string = 'want';
   @StorageLink('want_action') want_action: string = '';
   @StorageLink('want_type') want_type: string = '';
   // Init Hosts
@@ -116,6 +117,13 @@ struct Index {
     // showInSubWindow: true,
     width: "90%",
   });
+  woofHistory_control: CustomDialogController = new CustomDialogController({
+    builder: woofHistory({ showing_settings: this.showing_app_settings }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 22,
+    // showInSubWindow: true,
+    width: "90%",
+  });
   // Colors
   @StorageLink('color_light_primary') @Watch('on_color_change') color_light_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_light_secondary') @Watch('on_color_change') color_light_secondary: ResourceColor = $r('app.color.block_color');
@@ -126,12 +134,6 @@ struct Index {
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
-
-  onPageShow(): void {
-    let context = AppStorage.get('context') as common.UIAbilityContext;
-    // Enable continue
-    context.setMissionContinueState(AbilityConstant.ContinueState.ACTIVE);
-  }
 
   async aboutToAppear(): Promise<void> {
     this.animation_response = await this.bunch_of_settings.get('animation_response') as number;
@@ -148,7 +150,7 @@ struct Index {
     this.color_dark_font = await this.bunch_of_settings.get('color_dark_font') as string;
 
     // Respond to want
-    this.on_want();
+    this.check_want();
 
     // Set cache dir
     try {
@@ -170,73 +172,14 @@ struct Index {
     })
   }
 
-  on_want() {
-    if (this.want_uri.length == 0) {
-      console.log('[Meow][Index] Didn\'t load want for an empty want.')
-      return;
-    }
-    console.log('[Meow][Index] Load want with action: ' + this.want_action + ', type: ' + this.want_type);
-    if (this.want_action == "ohos.want.action.viewData") {
-      console.log('[Meow][Index] Load want uri: ' + this.want_uri);
-      this.uni_new_tab_gateway = this.want_uri;
-    }
-    // Respond to want
-    this.want_uri = "";
+  onPageShow(): void {
+    let context = AppStorage.get('context') as common.UIAbilityContext;
+    // Enable continue
+    context.setMissionContinueState(AbilityConstant.ContinueState.ACTIVE);
   }
 
-  onBackPress(): boolean | void {
-    let stop_system_back = false;
-
-    if (this.fullscreen_mode) {
-      if (this.handler != null) {
-        this.handler.exitFullScreen();
-      }
-      this.fullscreen_mode = false;
-      return true;
-    }
-
-    // I know this is stupid but ¯\_(ツ)_/¯ it just works
-    // Prioritize closing UI panels
-    if (this.tablet_mode) {
-      if (this.showing_downloads || this.showing_more_options || this.showing_app_settings ||
-      this.showing_scratching_board) {
-        this.showing_downloads = false;
-        this.showing_more_options = false;
-        this.showing_app_settings = false;
-        this.showing_scratching_board = false;
-        return true;
-      }
-    } else {
-      if (this.showing_downloads || this.showing_more_options || this.showing_app_settings ||
-      this.showing_scratching_board
-        || this.showing_bookmarks || this.showing_tabs) {
-        this.showing_downloads = false;
-        this.showing_more_options = false;
-        this.showing_app_settings = false;
-        this.showing_scratching_board = false;
-        // Specials
-        if (this.tabs_style_non_tablet_mode == "vertical") {
-          this.showing_tabs = false;
-        }
-        this.showing_bookmarks = false;
-        return true;
-      }
-    }
-
-    // Other returns
-    if (this.sys_back_to_access_backward) {
-      if (this.go_back_if_possible()) {
-        stop_system_back = true;
-      } else {
-        if (this.bunch_of_tabs.get_tabs_count() > 1) {
-          // Can close something
-          this.uni_close_tab_gateway = this.current_main_tab_index;
-          stop_system_back = true;
-        }
-      }
-    }
-
-    return stop_system_back;
+  onBackPress(): boolean {
+    return this.back();
   }
 
   build() {
@@ -316,16 +259,6 @@ struct Index {
           bar_height: this.title_bar_height,
           title_bar_alignRules: this.title_bar_alignRules,
         }) // Bottom Bar
-
-        // I know this is stupid
-        // Forgive me
-        // O.o
-        Row()// Keyboard shortcuts
-          .keyboardShortcut(this.bunch_of_key_shortcuts.fullscreen.main_key, this.bunch_of_key_shortcuts.fullscreen.modifier, () => {
-            this.fullscreen_mode = !this.fullscreen_mode;
-            this.showing_more_options = false;
-          })
-
       } // Web, progress, and bottom bar
       .layoutWeight(1)
       .animation(animation_default())
@@ -335,6 +268,21 @@ struct Index {
         .height(this.height_of_bottom_avoid())
         .animation(animation_default())
         .backgroundColor(this.title_bar_position == "bottom" ? "transparent" : this.color_current_secondary)
+
+      // I know this is stupid
+      // Forgive me
+      // O.o
+      Row()// Keyboard shortcuts
+        .keyboardShortcut(this.bunch_of_key_shortcuts.fullscreen.main_key, this.bunch_of_key_shortcuts.fullscreen.modifier, () => {
+          this.fullscreen_mode = !this.fullscreen_mode;
+          this.showing_more_options = false;
+        })
+        .keyboardShortcut(this.bunch_of_key_shortcuts.history.main_key, this.bunch_of_key_shortcuts.history.modifier, () => {
+          this.woofHistory_control.open();
+        })
+        // .keyboardShortcut(FunctionKey.ESC, [], () => {
+        //   this.back();
+        // })
     }
     .height("100%")
     .width("100%")
@@ -514,7 +462,79 @@ struct Index {
 
   // Operations
 
-  go_back_if_possible(): boolean {
+  check_want() {
+    if (this.want_uri.length == 0) {
+      console.log('[Meow][Index] Didn\'t load want for an empty want.')
+      return;
+    }
+    console.log('[Meow][Index] Load want with action: ' + this.want_action + ', type: ' + this.want_type);
+    if (this.want_action == "ohos.want.action.viewData") {
+      console.log('[Meow][Index] Load want uri: ' + this.want_uri);
+      this.uni_new_tab_gateway = this.want_uri;
+    }
+    // Respond to want
+    this.want_uri = "";
+  }
+
+  /**
+   * Universal Go back function
+   * @returns true if successfully executed <Back> for some effects.
+   * */
+  back() {
+    let stop_system_back = false;
+
+    if (this.fullscreen_mode) {
+      if (this.handler != null) {
+        this.handler.exitFullScreen();
+      }
+      this.fullscreen_mode = false;
+      return true;
+    }
+
+    let showing_ui_panels = this.showing_downloads || this.showing_more_options || this.showing_app_settings || this.showing_scratching_board;
+
+    // I know this is stupid but ¯\_(ツ)_/¯ it just works
+    // Prioritize closing UI panels
+    if (this.tablet_mode) {
+      if (showing_ui_panels) {
+        this.showing_downloads = false;
+        this.showing_more_options = false;
+        this.showing_app_settings = false;
+        this.showing_scratching_board = false;
+        return true;
+      }
+    } else {
+      // Non-tablet mode
+      if (showing_ui_panels || this.showing_bookmarks || this.showing_tabs) {
+        this.showing_downloads = false;
+        this.showing_more_options = false;
+        this.showing_app_settings = false;
+        this.showing_scratching_board = false;
+        // Specials
+        if (this.tabs_style_non_tablet_mode == "vertical") {
+          this.showing_tabs = false;
+        }
+        this.showing_bookmarks = false;
+        return true;
+      }
+    }
+
+    // Other returns
+    // Only triggers if no closable UI panels are opened
+    if (this.sys_back_to_access_backward) {
+      if (this.go_back_tab()) {
+        stop_system_back = true;
+      } else if (this.bunch_of_tabs.get_tabs_count() > 1) {
+        // Can close something
+        this.uni_close_tab_gateway = this.current_main_tab_index;
+        stop_system_back = true;
+      }
+    }
+
+    return stop_system_back;
+  }
+
+  go_back_tab(): boolean {
     return this.bunch_of_tabs.goBackward_onWorkingTab();
   }
 }

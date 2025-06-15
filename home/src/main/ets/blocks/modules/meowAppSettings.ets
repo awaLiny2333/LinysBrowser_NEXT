@@ -565,9 +565,6 @@ struct meowAppSettings {
                   this.woofHistory_control.open();
                 }
               })// View history
-                .keyboardShortcut(this.bunch_of_key_shortcuts.history.main_key, this.bunch_of_key_shortcuts.history.modifier, () => {
-                  this.woofHistory_control.open();
-                })
 
               linysText({ text: $r('app.string.Settings_experience_history_index_desc'), max_lines: 20 })
               linysTimeoutButtonWithText({
