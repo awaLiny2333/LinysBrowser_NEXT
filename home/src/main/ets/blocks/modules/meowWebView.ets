@@ -203,53 +203,67 @@ struct meowWebView {
   // }
 
   async aboutToAppear(): Promise<void> {
-
     let sites_got: string;
 
-    // Get whether image is disabled
-    this.disable_image = await this.bunch_of_settings.get('disable_image') as boolean;
-    this.disable_image_all_sites = await this.bunch_of_settings.get('disable_image_all_sites') as boolean;
+    try {
+      // Get whether image is disabled
+      this.disable_image = await this.bunch_of_settings.get('disable_image') as boolean;
+      this.disable_image_all_sites = await this.bunch_of_settings.get('disable_image_all_sites') as boolean;
 
-    // Get image ban specifications
-    sites_got = await this.bunch_of_settings.get('disable_image_these_sites') as string;
-    if (sites_got == '') {
-      this.disable_image_these_sites = [];
-    } else {
-      this.disable_image_these_sites = sites_got.split('\n');
+      // Get image ban specifications
+      sites_got = await this.bunch_of_settings.get('disable_image_these_sites') as string;
+      if (sites_got == '') {
+        this.disable_image_these_sites = [];
+      } else {
+        this.disable_image_these_sites = sites_got.split('\n');
+      }
+    } catch (e) {
+      console.error(e);
     }
 
-    // Get whether js is disabled
-    this.disable_js = await this.bunch_of_settings.get('disable_js') as boolean;
-    this.disable_js_all_sites = await this.bunch_of_settings.get('disable_js_all_sites') as boolean;
+    try {
+      // Get whether js is disabled
+      this.disable_js = await this.bunch_of_settings.get('disable_js') as boolean;
+      this.disable_js_all_sites = await this.bunch_of_settings.get('disable_js_all_sites') as boolean;
 
-    // Get js ban specifications
-    sites_got = await this.bunch_of_settings.get('disable_js_these_sites') as string;
-    if (sites_got == '') {
-      this.disable_js_these_sites = [];
-    } else {
-      this.disable_js_these_sites = sites_got.split('\n');
+      // Get js ban specifications
+      sites_got = await this.bunch_of_settings.get('disable_js_these_sites') as string;
+      if (sites_got == '') {
+        this.disable_js_these_sites = [];
+      } else {
+        this.disable_js_these_sites = sites_got.split('\n');
+      }
+
+    } catch (e) {
+      console.error(e);
     }
 
-    // Get whether ads blocker is enabled
-    this.use_adblock = await this.bunch_of_settings.get('use_adblock') as boolean;
+    try {
+      // Get whether ads blocker is enabled
+      this.use_adblock = await this.bunch_of_settings.get('use_adblock') as boolean;
 
-    // Get adblock exceptions
-    let got_adsBlocker_exceptions = await this.bunch_of_settings.get('adblock_exceptions') as string;
-    this.adsBlocker_exceptions = [];
-    if (got_adsBlocker_exceptions == '') {
+      // Get adblock exceptions
+      let got_adsBlocker_exceptions = await this.bunch_of_settings.get('adblock_exceptions') as string;
       this.adsBlocker_exceptions = [];
-    } else {
-      this.adsBlocker_exceptions = got_adsBlocker_exceptions.split('\n');
-    }
-    // Sync to AppStorage
-    AppStorage.set('adblock_exceptions', this.adsBlocker_exceptions);
+      if (got_adsBlocker_exceptions == '') {
+        this.adsBlocker_exceptions = [];
+      } else {
+        this.adsBlocker_exceptions = got_adsBlocker_exceptions.split('\n');
+      }
+      // Sync to AppStorage
+      AppStorage.set('adblock_exceptions', this.adsBlocker_exceptions);
 
-    // Get homepage shortcuts height
-    this.homepage_shortcuts_init_height = await this.bunch_of_settings.get('homepage_shortcuts_init_height') as number;
+      // Get homepage shortcuts height
+      this.homepage_shortcuts_init_height = await this.bunch_of_settings.get('homepage_shortcuts_init_height') as number;
+
+    } catch (e) {
+      console.error(e);
+    }
 
     // init OK
     setTimeout(() => {
       this.init_OK = true;
+      // console.log('qwq')
     }, 10)
   }
 
@@ -620,44 +634,32 @@ struct meowWebView {
     console.log('mimetype: ' + mimetype)
 
     // Save file download additional info
-    let try_additional_info = ['url: ' + url,
+    let try_additional_info = [
+      'url: ' + url,
       'userAgent: ' + userAgent,
       'contentDisposition: ' + contentDisposition,
       'contentLength: ' + contentLength.toString(),
-      'mimetype: ' + mimetype].join('\n');
+      'mimetype: ' + mimetype
+    ].join('\n');
 
     // Cut out original file name
-    let file_url_split = url.split("/");
-    let file_name_result = file_url_split[file_url_split.length-1].split("?")[0];
+    let url_split = url.split("/");
+    let name_original = url_split[url_split.length-1].split("?")[0];
+    name_original = decodeURIComponent(name_original);
 
-    // Determine overwrite file name
-    let file_name_overwrite = '';
-    let file_name_start = contentDisposition.indexOf('filename=') + 9;
-    let file_name_end = contentDisposition.indexOf(';', file_name_start);
-    if (file_name_end == -1) {
-      file_name_end = contentDisposition.length;
-    }
-    // if key found, then cut out file_name_overwrite
-    if (file_name_start > -1) {
-      file_name_overwrite = contentDisposition.slice(file_name_start, file_name_end);
-    }
-    // eliminate quotes
-    let last_idx = file_name_overwrite.length - 1;
-    if (file_name_overwrite[last_idx] == '\"' || file_name_overwrite[last_idx] == '\'') {
-      file_name_overwrite = file_name_overwrite.slice(1, last_idx);
-    }
+    // Cut out overwrite file name
+    let name_overwrite = this.cut_filename_overwrite(contentDisposition);
+
     // Overwrite
-    if (file_name_overwrite != '') {
-      file_name_result = file_name_overwrite;
+    if (name_overwrite != '') {
+      name_original = name_overwrite;
     }
-
-    file_name_result = decodeURIComponent(file_name_result);
 
     // Call popup
     this.woofWantDownload_control = new CustomDialogController({
       builder: woofWantDownload({
         from: this.current_url,
-        file_name: file_name_result,
+        file_name: name_original,
         url: url,
         try_additional_info: try_additional_info,
       }),
@@ -665,6 +667,37 @@ struct meowWebView {
       cornerRadius: 16
     })
     this.woofWantDownload_control.open();
+  }
+
+  /**
+   * Determines if an overwrite file name could be cut out and used
+   * @param contentDisposition e.g. "filename='qwq.txt'; type: TEXT"
+   * @returns a file name
+   * */
+  cut_filename_overwrite(contentDisposition: string) {
+    let name_overwrite = '';
+
+    let filename_start = contentDisposition.toLowerCase().indexOf('filename=');
+    if (filename_start == -1) {
+      return '';
+    }
+    filename_start += 9;
+
+    let filename_end = contentDisposition.indexOf(';', filename_start);
+    if (filename_end == -1) {
+      filename_end = contentDisposition.length;
+    }
+
+    // cut out file_name_overwrite
+    name_overwrite = contentDisposition.slice(filename_start, filename_end);
+
+    // eliminate quotes
+    let last_idx = name_overwrite.length - 1;
+    if (["'", '"'].includes(name_overwrite[last_idx])) {
+      name_overwrite = name_overwrite.slice(1, last_idx);
+    }
+
+    return name_overwrite;
   }
 
   download_event(event: OnDownloadStartEvent) {
