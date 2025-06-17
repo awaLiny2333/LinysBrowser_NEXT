@@ -483,7 +483,8 @@ struct meowAppSettings {
 
               linysText({
                 text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_desc'),
-                max_lines: 20
+                max_lines: 20,
+                is_description: true
               })
 
               linysSwitchWithText({
@@ -566,7 +567,8 @@ struct meowAppSettings {
                 }
               })// View history
 
-              linysText({ text: $r('app.string.Settings_experience_history_index_desc'), max_lines: 20 })
+              linysText({ text: $r('app.string.Settings_experience_history_index_desc'), is_description: true })
+
               linysTimeoutButtonWithText({
                 desc_text: $r('app.string.Settings_experience_history_index'),
                 button_text: "  󰀩  ",
@@ -622,7 +624,7 @@ struct meowAppSettings {
             settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 6 }) {
               linysTextTitle({ text: $r('app.string.Settings_storage') }) // Storage Title
 
-              linysText({ text: $r('app.string.Settings_storage_clear_webview_desc'), max_lines: 20 }) // Cache title
+              linysText({ text: $r('app.string.Settings_storage_clear_webview_desc'), is_description: true }) // Cache title
               linysTextTitle({ text: "󰂼 " + add_units_to_size(this.web_cache_size) }) // data display
               Row({ space: 12 }) {
                 linysCapsuleButton({ text: '  󰃈  ' })
@@ -655,7 +657,7 @@ struct meowAppSettings {
               .animation(animation_default())
               .width("100%")
 
-              linysText({ text: $r('app.string.Settings_experience_history_index_storage_desc'), max_lines: 6 }) // Indexing title
+              linysText({ text: $r('app.string.Settings_experience_history_index_storage_desc'), is_description: true }) // Indexing title
               linysTextTitle({ text: "󰏕 " + add_units_to_size(this.history_index_size) }) // data display
               Row({ space: 12 }) {
                 linysCapsuleButton({ text: '  󰃈  ' })
@@ -680,8 +682,8 @@ struct meowAppSettings {
 
               linysText({
                 text: $r('app.string.intelligent_tracking_prevention_desc'),
-                max_lines: 10
-              }).width("100%") // Desc Intelligent Tracking Prevention
+                is_description: true
+              }) // Desc Intelligent Tracking Prevention
               linysSwitchWithText({
                 text: $r('app.string.intelligent_tracking_prevention'),
                 toggle_state: this.intelligent_tracking_prevention,
@@ -743,7 +745,7 @@ struct meowAppSettings {
                 }
               }) // Show Resource Monitor
 
-              linysText({ text: $r('app.string.Fault_logs_desc'), max_lines: 10 }) // Fault logs
+              linysText({ text: $r('app.string.Fault_logs_desc'), is_description: true }) // Fault logs
               linysCapsuleButtonWithText({
                 desc_text: $r('app.string.Fault_logs'),
                 button_text: '  󰀩  ',
@@ -762,7 +764,7 @@ struct meowAppSettings {
                 }
               }) // Export settings
 
-              linysText({ text: $r('app.string.Settings_toolbox_import_settings_desc'), max_lines: 10 })
+              linysText({ text: $r('app.string.Settings_toolbox_import_settings_desc'), is_description: true, is_expanded: true })
               linysTimeoutButtonWithText({
                 desc_text: $r('app.string.Settings_toolbox_import_settings'),
                 button_text: '  󰐝  ',

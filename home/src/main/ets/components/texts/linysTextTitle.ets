@@ -7,13 +7,10 @@ struct linysTextTitle {
   @Prop text: ResourceStr = $r('app.string.HomeAbility_label');
   @Prop color: ResourceColor = "";
   @Prop max_lines: number = 1;
-  @Prop align_another_side: boolean = false;
 
   build() {
     Text(this.text)
       .fontColor(this.color == "" ? this.color_current_font : this.color)
-      .width(this.align_another_side ? '100%' : undefined)
-      .textAlign(this.align_another_side ? TextAlign.End : TextAlign.Start)
       .fontSize(fontSize_Large())
       .fontWeight(FontWeight.Bold)
       .maxLines(this.max_lines)

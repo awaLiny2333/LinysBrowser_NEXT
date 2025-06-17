@@ -14,14 +14,15 @@ struct woofWantJump {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
+  // UI display
+  @StorageLink('screen_height') screen_height: number = 0;
 
   build() {
     Column({ space: 15 }) {
       linysTextTitle({ text: $r('app.string.LinkJumper_webpage_asks_for_jump') })// This page is asking for a jump
         .width("100%")
 
-      TextArea({ text: this.link })
-      // linysText({ text: this.link, max_lines: 5 })// link
+      TextArea({ text: this.link })// linysText({ text: this.link, max_lines: 5 })// link
         .fontWeight(FontWeight.Regular)
         .fontColor(this.color_current_font)
         .caretColor(this.color_current_font)
@@ -31,6 +32,7 @@ struct woofWantJump {
         .padding(10)
         .borderRadius(13.5)
         .clickEffect(click_effect_default())
+        .constraintSize({ maxHeight: Math.max(0, this.screen_height - 160) })
 
       linysText({ text: $r('app.string.LinkJumper_allow_jump') })// allow?
         .width("100%")

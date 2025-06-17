@@ -374,15 +374,15 @@
     },
     {
       "name": "Settings_experience_continuation_auto_exit",
-      "value": "在另外设备调起接续后退出整个应用"
+      "value": "跨设备接续后退出整个应用"
     },
     {
       "name": "Settings_experience_continuation_auto_close_tab",
-      "value": "在另外设备调起接续后关闭那个标签"
+      "value": "跨设备接续后关闭该标签页"
     },
     {
       "name": "Settings_experience_web_force_dark_mode",
-      "value": "深色模式开启时，强制（无适配的）网站使用深色模式"
+      "value": "深色模式中强制网站显示深色"
     },
     {
       "name": "Settings_experience_use_adblock",

@@ -290,7 +290,7 @@
     },
     {
       "name": "Homepage_shortcuts_desc",
-      "value": "Select a folder of bookmarks, then it will appear on the Homepage! Unless you have replaced the default homepage with another..."
+      "value": "Select a folder of bookmarks to appear on the Homepage! Unless you are using another site instead of the default one..."
     },
     {
       "name": "Settings_homepage_shortcuts_select_dir",
@@ -374,15 +374,15 @@
     },
     {
       "name": "Settings_experience_continuation_auto_exit",
-      "value": "Exit entire app after continuation on another device"
+      "value": "Exit entire app after continuation"
     },
     {
       "name": "Settings_experience_continuation_auto_close_tab",
-      "value": "Close the tab after continuation on another device"
+      "value": "Close the tab after continuation"
     },
     {
       "name": "Settings_experience_web_force_dark_mode",
-      "value": "Force websites to be darkened when dark mode is enabled"
+      "value": "Force darken websites in dark mode"
     },
     {
       "name": "Settings_experience_use_adblock",

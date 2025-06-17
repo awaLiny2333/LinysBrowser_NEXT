@@ -295,7 +295,8 @@ export function extract_links_from_text(data_list: string[]) {
   let extracted_type: string[] = [];
   for (let index = 0; index < data_list.length; index++) {
     let text = data_list[index];
-    let match = text.match(/(file|https?|meow):\/\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]/g);
+    // let match = text.match(/(file|https?|meow):\/\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]/g);
+    let match = text.match(/([a-zA-Z][a-zA-Z0-9+.-]*):\/\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]/g);
     console.log('[extract_links_from_text] [' + match?.join("\n") + "]");
     if (match) {
       for (let inner = 0; inner < match.length; inner++) {
