@@ -9,6 +9,7 @@ import woofWantDownload from '../../dialogs/prompts/woofWantDownload';
 import woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import { bookmark, bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import woofWantJump from '../../dialogs/prompts/woofWantJump';
+import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 
 @Component
 struct meowWebView {
@@ -22,6 +23,7 @@ struct meowWebView {
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
   @StorageLink('bunch_of_bookmarks') @Watch('refresh_homepage_shortcuts') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks('Bookmarks~Meow');
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
+  @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads();
   @StorageLink('current_main_tab_index') @Watch('on_tab_info_change') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') @Watch('on_tab_info_change') current_sub_tab_index: number = -1;
   @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
@@ -73,6 +75,10 @@ struct meowWebView {
   @State homepage_shortcuts: bookmark[] = [];
   @State potential_jump_link: string = '';
   @StorageLink('extra_background') extra_background: boolean = false;
+  // Download
+  @StorageLink('dl_delegate') dl_delegate: webview.WebDownloadDelegate = new webview.WebDownloadDelegate();
+  @StorageLink('blob_delegate') blob_delegate: webview.WebDownloadDelegate = new webview.WebDownloadDelegate();
+  @StorageLink('dl_controller') dl_controller: webview.WebviewController = new webview.WebviewController();
   // dialogs
   woofWantDownload_control: CustomDialogController = new CustomDialogController({
     builder: woofWantDownload({
@@ -283,6 +289,19 @@ struct meowWebView {
         .visibility(this.extra_background ? Visibility.Visible : Visibility.Hidden)
       // .animation(animation_default())
 
+      // Specific web to handle downloads
+      Web({ src: $rawfile('home.html'), controller: this.dl_controller })
+        .onPageEnd(() => {
+          try {
+            // Bind delegate at init
+            this.dl_controller.setDownloadDelegate(this.dl_delegate);
+          } catch (e) {
+            console.error(e);
+          }
+        })
+        // .opacity(0.2)
+        .visibility(Visibility.Hidden)
+
       ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
         Column() {
           Web({
@@ -326,6 +345,10 @@ struct meowWebView {
             })
             .onPageBegin(() => {
               // console.log("[Meow][ArkWeb] on page begin")
+
+              // bind blob download delegate
+              this.bunch_of_downloads.init_blob_delegate();
+              this.bunch_of_tabs.Tabs[Label.index_key].controller.setDownloadDelegate(this.blob_delegate);
 
               if (Label.index_key >= this.bunch_of_tabs.get_tabs_count()) {
                 // If not synced, idk why but o(=•ェ•=)m
@@ -466,7 +489,7 @@ struct meowWebView {
               if (event) {
                 let url: string = event.data.getRequestUrl();
                 let match_domain_result = match_domain(url);
-                if (['http', 'https', 'meow', 'resource'].includes(match_domain_result[0])) {
+                if (['http', 'https', 'meow', 'resource', 'file'].includes(match_domain_result[0])) {
                   return;
                 }
                 this.potential_jump_link = url;
@@ -507,7 +530,6 @@ struct meowWebView {
           //       }
           //     }
           //   })
-
         } // Webs
         .borderColor(this.color_current_secondary)
         .borderWidth(this.border_width_tab(this.current_sub_tab_index == Label.index_key))
@@ -627,6 +649,9 @@ struct meowWebView {
   }
 
   download_event(event: OnDownloadStartEvent) {
+    if (event.url.substring(0,5) == 'blob:') {
+      return;
+    }
     if (event) {
       this.download(event.url, event.userAgent, event.contentDisposition, event.contentLength, event.mimetype)
     }

@@ -1,12 +1,16 @@
-import { BusinessError, request } from '@kit.BasicServicesKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
 import { common } from '@kit.AbilityKit';
+import { webview } from '@kit.ArkWeb';
+import { add_units_to_size } from '../utils/storage_tools';
+import woofWantDownload from '../dialogs/prompts/woofWantDownload';
 
 let context = AppStorage.get('context') as common.UIAbilityContext;
 
 export class bunch_of_downloads {
-  list_of_on_going_tasks: request.agent.Task[] = [];
+  list_of_on_going_tasks: webview.WebDownloadItem[] = [];
   list_of_downloaded_size: number[] = [];
+  list_of_download_speed: number[] = [];
   list_of_target_folders: string[] = [];
   list_of_full_size: number[] = [];
   list_of_file_names: string[] = [];
@@ -15,6 +19,17 @@ export class bunch_of_downloads {
   list_of_completed: boolean[] = [];
   list_of_additional_info: string[][] = [];
   last_action: number = 0;
+  // dialogs
+  woofWantDownload_control: CustomDialogController = new CustomDialogController({
+    builder: woofWantDownload({
+      from: '',
+      file_name: '',
+      url: '',
+      try_additional_info: ''
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16
+  })
 
   /**
    * A class to handle download tasks.
@@ -37,134 +52,239 @@ export class bunch_of_downloads {
   }
 
   /**
-   * Start a download task in this bunch_of_downloads.
-   * @param url The https:// proxy url of the download target
+   * Initializes the download delegate for normal http downloads.
+   * Delegate: AppStorage.get('dl_delegate')
    * */
-  start_download_task(url: string) {
-    let file_url_split = url.split("/");
-    let file_name_question_mark_split = file_url_split[file_url_split.length-1].split("?");
-    let file_name = file_name_question_mark_split[0];
-    let additional_info: string[] = [];
-
+  init_dl_delegate() {
     // get additional info
+    let additional_info: string[] = [];
     let try_additional_info = AppStorage.get('universal_new_download_additional_info') as string;
     if (try_additional_info) {
       additional_info = try_additional_info.split('\n');
     }
 
-    // file name overwrite
-    let try_universal_filename = AppStorage.get('universal_new_download_filename_gateway') as string;
-    if (try_universal_filename != '') {
-      file_name = try_universal_filename;
+    // Init dl_delegate
+    let dl_delegate = AppStorage.get('dl_delegate') as webview.WebDownloadDelegate;
+    dl_delegate.onBeforeDownload((webDownloadItem: webview.WebDownloadItem) => {
+
+      // Determine file name
+      let file_name = AppStorage.get('universal_new_download_filename_gateway') as string;
       AppStorage.set('universal_new_download_filename_gateway', '');
+      if (file_name.length < 3) {
+        file_name = webDownloadItem.getSuggestedFileName();
+      }
+      // Create task folder
+      let file_dir = context.filesDir + '/downloads/' + file_name + '_' + Date.now().toString() + '/';
+      try {
+        fs.mkdirSync(file_dir);
+      } catch (e) {
+        console.log('[Meow][bunch_of_downloads] Task folder already created')
+      }
+      // connect path
+      let download_target_path = file_dir + file_name;
+
+      // LINK START!
+      try {
+        webDownloadItem.start(download_target_path);
+      } catch (e) {
+        console.error(e);
+        return;
+      }
+      console.log('[bunch_of_downloads] dl_delegate.onBeforeDownload! download_target_path: [' + download_target_path + ']')
+
+      // Register on download start
+      this.list_of_on_going_tasks.push(webDownloadItem);
+      this.list_of_downloaded_size.push(0);
+      this.list_of_download_speed.push(0);
+      this.list_of_full_size.push(-1);
+      this.list_of_paused.push(false);
+      this.list_of_completed.push(false);
+      this.list_of_additional_info.push(additional_info);
+      this.list_of_target_folders.push(file_dir);
+      this.list_of_file_names.push(file_name);
+      this.list_of_urls.push(webDownloadItem.getUrl());
+      // this.list_of_urls.push('url');
+
+      // Update Class
+      this.last_action = Date.now();
+    })
+
+    dl_delegate.onDownloadUpdated((webDownloadItem: webview.WebDownloadItem) => {
+      // console.log("download update guid: " + webDownloadItem.getGuid());
+
+      // Get my index
+      let my_index = this.index_of_task(webDownloadItem);
+
+      console.info('[bunch_of_downloads] Download progress of index <' + my_index.toString() + '>: '
+        + add_units_to_size(webDownloadItem.getReceivedBytes())
+        + ", total: " + add_units_to_size(webDownloadItem.getTotalBytes()));
+
+      this.list_of_downloaded_size[my_index] = webDownloadItem.getReceivedBytes();
+      this.list_of_full_size[my_index] = webDownloadItem.getTotalBytes();
+      this.list_of_download_speed[my_index] = webDownloadItem.getCurrentSpeed();
+
+      if (webDownloadItem.getState() == webview.WebDownloadState.PAUSED) {
+        this.list_of_paused[my_index] = true;
+      } else if (webDownloadItem.getState() == webview.WebDownloadState.IN_PROGRESS) {
+        this.list_of_paused[my_index] = false;
+      }
+
+      // Refresh
+      this.last_action = Date.now();
+    })
+
+    dl_delegate.onDownloadFailed((webDownloadItem: webview.WebDownloadItem) => {
+      console.error("[bunch_of_downloads] download failed guid: " + webDownloadItem.getGuid());
+    })
+
+    dl_delegate.onDownloadFinish((webDownloadItem: webview.WebDownloadItem) => {
+      // console.info('[bunch_of_downloads] Download complete, path: ' + download_target_path);
+
+      let my_index = this.index_of_task(webDownloadItem);
+      // Get my index
+
+      this.list_of_full_size[my_index] = this.list_of_downloaded_size[my_index];
+      this.list_of_paused[my_index] = false;
+      this.list_of_completed[my_index] = true;
+      // Update list
+
+      // webDownloadItem.stop(); // No longer need this! owo
+
+      // Refresh
+      this.last_action = Date.now();
+    })
+  }
+
+  /**
+   * Initializes the download delegate for blob downloads.
+   * Delegate: AppStorage.get('blob_delegate')
+   * */
+  init_blob_delegate() {
+    // Init blob_delegate
+    let blob_delegate = AppStorage.get('blob_delegate') as webview.WebDownloadDelegate;
+
+    blob_delegate.onBeforeDownload((webDownloadItem: webview.WebDownloadItem) => {
+
+      if (webDownloadItem.getUrl().substring(0, 5) != 'blob:') {
+        return;
+      }
+
+      AppStorage.set('universal_new_download_gateway', 'meow');
+      AppStorage.set('universal_new_download_gateway', '');
+
+      let additional_info: string[] = [
+        'url: ' + webDownloadItem.getUrl(),
+        'type: Blob download, so less info here owo.',
+        'meow: meow meow meow', // To express my joy after fixing this download logic @ Jun 22 2025!
+        'totalBytes: ' + webDownloadItem.getTotalBytes().toString(),
+        'mimetype: ' + webDownloadItem.getMimeType(),
+      ];
+
+      // Determine file name
+      let file_name = webDownloadItem.getSuggestedFileName();
+
+      // Create task folder
+      let file_dir = context.filesDir + '/downloads/' + file_name + '_' + Date.now().toString() + '/';
+      try {
+        fs.mkdirSync(file_dir);
+      } catch (e) {
+        console.log('[Meow][bunch_of_downloads] Task folder already created')
+      }
+      // connect path
+      let download_target_path = file_dir + file_name;
+
+      // LINK START!
+      try {
+        webDownloadItem.start(download_target_path);
+      } catch (e) {
+        console.error(e);
+        return;
+      }
+      console.log('[bunch_of_downloads] dl_delegate.onBeforeDownload! download_target_path: [' + download_target_path + ']')
+
+      // Register on download start
+      this.list_of_on_going_tasks.push(webDownloadItem);
+      this.list_of_downloaded_size.push(0);
+      this.list_of_download_speed.push(0);
+      this.list_of_full_size.push(-1);
+      this.list_of_paused.push(false);
+      this.list_of_completed.push(false);
+      this.list_of_additional_info.push(additional_info);
+      this.list_of_target_folders.push(file_dir);
+      this.list_of_file_names.push(file_name);
+      this.list_of_urls.push(webDownloadItem.getUrl());
+      // this.list_of_urls.push('url');
+
+      // Update Class
+      this.last_action = Date.now();
+    })
+
+    blob_delegate.onDownloadUpdated((webDownloadItem: webview.WebDownloadItem) => {
+      // console.log("download update guid: " + webDownloadItem.getGuid());
+
+      // Get my index
+      let my_index = this.index_of_task(webDownloadItem);
+
+      console.info('[bunch_of_downloads] Download progress of index <' + my_index.toString() + '>: '
+        + add_units_to_size(webDownloadItem.getReceivedBytes())
+        + ", total: " + add_units_to_size(webDownloadItem.getTotalBytes()));
+
+      this.list_of_downloaded_size[my_index] = webDownloadItem.getReceivedBytes();
+      this.list_of_full_size[my_index] = webDownloadItem.getTotalBytes();
+      this.list_of_download_speed[my_index] = webDownloadItem.getCurrentSpeed();
+
+      if (webDownloadItem.getState() == webview.WebDownloadState.PAUSED) {
+        this.list_of_paused[my_index] = true;
+      } else if (webDownloadItem.getState() == webview.WebDownloadState.IN_PROGRESS) {
+        this.list_of_paused[my_index] = false;
+      }
+
+      // Refresh
+      this.last_action = Date.now();
+    })
+
+    blob_delegate.onDownloadFailed((webDownloadItem: webview.WebDownloadItem) => {
+      console.error("[bunch_of_downloads] download failed guid: " + webDownloadItem.getGuid());
+    })
+
+    blob_delegate.onDownloadFinish((webDownloadItem: webview.WebDownloadItem) => {
+      // console.info('[bunch_of_downloads] Download complete, path: ' + download_target_path);
+
+      let my_index = this.index_of_task(webDownloadItem);
+      // Get my index
+
+      this.list_of_full_size[my_index] = this.list_of_downloaded_size[my_index];
+      this.list_of_paused[my_index] = false;
+      this.list_of_completed[my_index] = true;
+      // Update list
+
+      // webDownloadItem.stop(); // No longer need this! owo
+
+      // Refresh
+      this.last_action = Date.now();
+    })
+  }
+
+  /**
+   * Start a download task in this bunch_of_downloads.
+   * @param url The https:// proxy url of the download target
+   * */
+  start_download_task(url: string) {
+    if (url.substring(0, 5) == 'blob:') {
+      return;
     }
 
-    // Produce task directory
-    let file_dir = context.filesDir + '/downloads/' + file_name + '_' + Date.now().toString() + '/';
+    // Init
+    this.init_dl_delegate();
 
-    // Create task folder
+    // Invoke download
+    console.log('[meow][bunch_of_downloads] Try to invoke download on dl_controller!');
+    let dl_controller = AppStorage.get('dl_controller') as webview.WebviewController;
+
     try {
-      fs.mkdirSync(file_dir);
+      dl_controller.startDownload(url);
     } catch (e) {
-      console.log('[Meow][bunch_of_downloads] Task folder already created')
-    }
-
-    // connect path
-    let download_target_path = file_dir + file_name;
-
-    let config: request.agent.Config = {
-      action: request.agent.Action.DOWNLOAD,
-      url: url,
-      saveas: download_target_path,
-      mode: request.agent.Mode.BACKGROUND,
-      overwrite: false,
-      method: "GET",
-      index: 0,
-      begins: 0,
-      ends: -1,
-      // gauge: true,
-    };
-
-    try {
-      console.log('[meow][bunch_of_downloads] Try to start request!');
-      request.agent.create(context, config).then((downloadTask: request.agent.Task) => {
-        this.last_action = Date.now();
-
-        downloadTask.start();
-
-        downloadTask.on('completed', () => {
-          console.info('[bunch_of_downloads] Download complete, path: ' + download_target_path);
-
-          let my_index = this.list_of_on_going_tasks.indexOf(downloadTask);
-          // Get my index
-
-          this.list_of_full_size[my_index] = this.list_of_downloaded_size[my_index];
-          this.list_of_paused[my_index] = false;
-          this.list_of_completed[my_index] = true;
-          // Update list
-
-          downloadTask.stop();
-          this.last_action = Date.now();
-        })
-
-        downloadTask.on('progress', (progress: request.agent.Progress) => {
-          console.info('[bunch_of_downloads] Download progress: ' + (progress.processed).toString() +
-            " Bytes, sized: " + progress.sizes.toString());
-          // Get my index
-          let my_index = this.list_of_on_going_tasks.indexOf(downloadTask);
-
-          this.list_of_downloaded_size[my_index] = progress.processed;
-          this.list_of_full_size[my_index] = progress.sizes[0];
-
-          this.last_action = Date.now();
-          // Refresh
-        })
-
-        downloadTask.on('pause', () => {
-          console.info('[bunch_of_downloads] Download paused');
-          this.last_action = Date.now();
-        })
-        downloadTask.on('remove', () => {
-          console.info('[bunch_of_downloads] Download removed');
-
-          let index = this.list_of_on_going_tasks.indexOf(downloadTask);
-
-          try {
-            fs.rmdir(this.list_of_target_folders[index]);
-          } catch (e) {
-            console.error("[ERROR][bunch_of_downloads][delete_task] Delete task file failed. " + e)
-          }
-
-          this.list_of_on_going_tasks.splice(index, 1);
-          this.list_of_downloaded_size.splice(index, 1);
-          this.list_of_target_folders.splice(index, 1);
-          this.list_of_full_size.splice(index, 1);
-          this.list_of_file_names.splice(index, 1);
-          this.list_of_paused.splice(index, 1);
-          this.list_of_urls.splice(index, 1);
-          this.list_of_completed.splice(index, 1);
-          this.list_of_additional_info.splice(index, 1);
-
-          this.last_action = Date.now();
-        })
-
-        // Register on download start
-        this.list_of_on_going_tasks.push(downloadTask);
-        this.list_of_downloaded_size.push(0);
-        this.list_of_full_size.push(-1);
-        this.list_of_paused.push(false);
-        this.list_of_completed.push(false);
-        this.list_of_additional_info.push(additional_info);
-        this.list_of_target_folders.push(file_dir);
-        this.list_of_file_names.push(file_name);
-        this.list_of_urls.push(url);
-
-      }).catch((err: BusinessError) => {
-        console.error(`[bunch_of_downloads][ERROR] Meow Invoke downloadTask failed, code is ${err.code}, message is ${err.message}`);
-      });
-    } catch (error) {
-      let err: BusinessError = error as BusinessError;
-      console.error(`[bunch_of_downloads][ERROR] Invoke downloadFile failed, code is ${err.code}, message is ${err.message}`);
+      console.error(e);
     }
   }
 
@@ -174,7 +294,10 @@ export class bunch_of_downloads {
    * */
   pause_task(index: number) {
     this.list_of_on_going_tasks[index].pause();
-    this.list_of_paused[index] = true;
+    // this.list_of_paused[index] = true;
+
+    // Refresh
+    // this.last_action = Date.now();
   }
 
   /**
@@ -183,7 +306,10 @@ export class bunch_of_downloads {
    * */
   continue_task(index: number) {
     this.list_of_on_going_tasks[index].resume();
-    this.list_of_paused[index] = false;
+    // this.list_of_paused[index] = false;
+
+    // Refresh
+    // this.last_action = Date.now();
   }
 
   /**
@@ -192,7 +318,7 @@ export class bunch_of_downloads {
    * */
   delete_task(index: number) {
 
-    this.list_of_on_going_tasks[index].stop();
+    this.list_of_on_going_tasks[index].cancel();
 
     try {
       fs.rmdir(this.list_of_target_folders[index]);
@@ -202,6 +328,7 @@ export class bunch_of_downloads {
 
     this.list_of_on_going_tasks.splice(index, 1);
     this.list_of_downloaded_size.splice(index, 1);
+    this.list_of_download_speed.splice(index, 1);
     this.list_of_target_folders.splice(index, 1);
     this.list_of_full_size.splice(index, 1);
     this.list_of_file_names.splice(index, 1);
@@ -283,5 +410,17 @@ export class bunch_of_downloads {
     } catch (e) {
       console.error(e)
     }
+  }
+
+  private index_of_task(webDownloadItem: webview.WebDownloadItem) {
+    for (let index = 0; index < this.list_of_on_going_tasks.length; index++) {
+      const t = this.list_of_on_going_tasks[index];
+      // console.log('[bunch_of_downloads] index_of_task: testing guid t.Guid(): ' + t.getGuid()
+      //   + ', webDownloadItem.getGuid(): ' + webDownloadItem.getGuid() + '.');
+      if (t.getGuid() == webDownloadItem.getGuid()) {
+        return index;
+      }
+    }
+    return -1;
   }
 }

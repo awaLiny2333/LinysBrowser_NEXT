@@ -310,6 +310,9 @@ export function get_file_size_Sync(path: string) {
  * @returns A string, the connected result of a number of size and its unit.
  * */
 export function add_units_to_size(size_in_bytes: number | bigint) {
+  if (size_in_bytes == undefined || size_in_bytes == null) {
+    return 'No Bytes!';
+  }
   let units = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
   let result = BigInt(size_in_bytes);
   let unit = 0;

@@ -60,7 +60,7 @@ struct meowDownloads {
         ForEach(
           this.bunch_of_downloads.list_of_on_going_tasks,
           (_request_task: request.DownloadTask, key: number) => {
-            meowDownloadsButton({
+            meowDownloadCard({
               bunch_of_downloads: this.bunch_of_downloads,
               my_index: key,
             })
@@ -108,14 +108,16 @@ struct meowDownloads {
 export default meowDownloads
 
 @Component
-struct meowDownloadsButton {
+struct meowDownloadCard {
   @Prop my_index: number;
   @Link @Watch('update_progress') bunch_of_downloads: bunch_of_downloads;
+  @StorageLink('showing_downloads') showing_downloads: boolean = false;
   // Statuses
   @State my_progress: number = 0;
   @State my_file_name: string = "";
   @State my_full_download_size: number = 0;
   @State my_current_download_size: number = 0;
+  @State my_current_download_speed: number = 0;
   @State my_paused: boolean = false;
   @State my_link: string = "";
   @State my_additional_info: string[] = [];
@@ -139,7 +141,7 @@ struct meowDownloadsButton {
     FlowItem() {
       Column({ space: 15 }) {
         linysTextTitle({
-          text: this.my_file_name,
+          text: '[' + this.formatted_download_percentage + '] ' + this.my_file_name,
           max_lines: 4,
         }) // File name
 
@@ -174,14 +176,34 @@ struct meowDownloadsButton {
           .visibility(this.showing_additional_info ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
 
-        Row({ space: 5 }) {
-          linysText({
-            text: this.formatted_download_percentage,
-          }) // Percentage
-          linysText({
-            text: this.formatted_download_progress,
-          }) // Progress
-        } // Progress
+        Scroll() {
+          Row({ space: 8 }) {
+            linysText({
+              text: add_units_to_size(this.my_current_download_speed) + '/s',
+            }) // Speed
+              .borderRadius(10)
+              .padding(10)
+              .backgroundColor($r('sys.color.comp_background_tertiary'))
+              .clickEffect(click_effect_default())
+            // linysText({
+            //   text: this.formatted_download_percentage,
+            // }) // Percentage
+            //   .borderRadius(10)
+            //   .padding(10)
+            //   .backgroundColor($r('sys.color.comp_background_tertiary'))
+            //   .clickEffect(click_effect_default())
+            linysText({
+              text: this.formatted_download_progress,
+            }) // Progress
+              .borderRadius(10)
+              .padding(10)
+              .backgroundColor($r('sys.color.comp_background_tertiary'))
+              .clickEffect(click_effect_default())
+          } // Status
+        }
+        .scrollBar(BarState.Off)
+        .edgeEffect(EdgeEffect.Spring)
+        .scrollable(ScrollDirection.Horizontal)
 
         Row({ space: 10 }) {
           linysShowButton({
@@ -257,9 +279,12 @@ struct meowDownloadsButton {
   }
 
   async update_progress() {
+    // console.log('[meowDownloads] update_progress');
+
     this.my_file_name = this.bunch_of_downloads.list_of_file_names[this.my_index];
     this.my_full_download_size = this.bunch_of_downloads.list_of_full_size[this.my_index];
     this.my_current_download_size = this.bunch_of_downloads.list_of_downloaded_size[this.my_index];
+    this.my_current_download_speed = this.bunch_of_downloads.list_of_download_speed[this.my_index];
     this.my_progress = Number.parseFloat((this.my_current_download_size / this.my_full_download_size * 100).toFixed(2));
     this.my_paused = this.bunch_of_downloads.list_of_paused[this.my_index];
     this.my_link = this.bunch_of_downloads.list_of_urls[this.my_index];
@@ -271,15 +296,18 @@ struct meowDownloadsButton {
 
   pause_or_continue_task() {
     if (this.my_paused) {
-      this.bunch_of_downloads.continue_task(this.my_index)
+      this.bunch_of_downloads.continue_task(this.my_index);
     } else {
-      this.bunch_of_downloads.pause_task(this.my_index)
+      this.bunch_of_downloads.pause_task(this.my_index);
     }
   }
 
   delete_task() {
     // Delete
     this.bunch_of_downloads.delete_task(this.my_index);
+    if (this.bunch_of_downloads.list_of_on_going_tasks.length == 0) {
+      this.showing_downloads = false;
+    }
   }
 
   export_file() {

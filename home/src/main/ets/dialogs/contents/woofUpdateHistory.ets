@@ -11,6 +11,10 @@ struct woofUpdateHistory {
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @State texts: string[] = [
+    'v1.7.8-beta 2025 07',
+    '一个补充性的更新！将 Blob 下载支持、代理下载支持、跨设备接续等功能带入冲浪喵～',
+    'A supplementary update! Bringing Blob download support, proxy enabled download support and cross-device continuation support into BrowserCat~',
+
     'v1.7.7-beta 2025 06',
     '一个实验性的更新！将历史记录索引、更多辅助功能带入冲浪喵～\n' +
       '实现了猫抓板图片处理、一键关闭所有标签页等功能！\n' +

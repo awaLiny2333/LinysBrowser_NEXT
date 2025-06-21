@@ -797,6 +797,7 @@ struct meowTitleBar {
         Row().height(5)
       }
     } // Title Bars
+    .clip(true)
     .allowDrop(allow_drop_types())
     .onDrop((e) => {
       drop_to_scratching_board(e);
