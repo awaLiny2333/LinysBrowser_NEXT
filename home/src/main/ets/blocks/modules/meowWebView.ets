@@ -650,14 +650,15 @@ struct meowWebView {
 
   download_event(event: OnDownloadStartEvent) {
     if (event.url.substring(0,5) == 'blob:') {
+      // Would be already handled by blob delegate!
       return;
     }
     if (event) {
-      this.download(event.url, event.userAgent, event.contentDisposition, event.contentLength, event.mimetype)
+      this.download_non_blob(event.url, event.userAgent, event.contentDisposition, event.contentLength, event.mimetype)
     }
   }
 
-  download(url: string, userAgent: string, contentDisposition: string, contentLength: number, mimetype: string) {
+  download_non_blob(url: string, userAgent: string, contentDisposition: string, contentLength: number, mimetype: string) {
     // Save file download additional info
     let try_additional_info = [
       'url: ' + url,

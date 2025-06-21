@@ -110,27 +110,7 @@ export class bunch_of_downloads {
     })
 
     dl_delegate.onDownloadUpdated((webDownloadItem: webview.WebDownloadItem) => {
-      // console.log("download update guid: " + webDownloadItem.getGuid());
-
-      // Get my index
-      let my_index = this.index_of_task(webDownloadItem);
-
-      console.info('[bunch_of_downloads] Download progress of index <' + my_index.toString() + '>: '
-        + add_units_to_size(webDownloadItem.getReceivedBytes())
-        + ", total: " + add_units_to_size(webDownloadItem.getTotalBytes()));
-
-      this.list_of_downloaded_size[my_index] = webDownloadItem.getReceivedBytes();
-      this.list_of_full_size[my_index] = webDownloadItem.getTotalBytes();
-      this.list_of_download_speed[my_index] = webDownloadItem.getCurrentSpeed();
-
-      if (webDownloadItem.getState() == webview.WebDownloadState.PAUSED) {
-        this.list_of_paused[my_index] = true;
-      } else if (webDownloadItem.getState() == webview.WebDownloadState.IN_PROGRESS) {
-        this.list_of_paused[my_index] = false;
-      }
-
-      // Refresh
-      this.last_action = Date.now();
+      this.onDownloadUpdated(webDownloadItem);
     })
 
     dl_delegate.onDownloadFailed((webDownloadItem: webview.WebDownloadItem) => {
@@ -138,20 +118,7 @@ export class bunch_of_downloads {
     })
 
     dl_delegate.onDownloadFinish((webDownloadItem: webview.WebDownloadItem) => {
-      // console.info('[bunch_of_downloads] Download complete, path: ' + download_target_path);
-
-      let my_index = this.index_of_task(webDownloadItem);
-      // Get my index
-
-      this.list_of_full_size[my_index] = this.list_of_downloaded_size[my_index];
-      this.list_of_paused[my_index] = false;
-      this.list_of_completed[my_index] = true;
-      // Update list
-
-      // webDownloadItem.stop(); // No longer need this! owo
-
-      // Refresh
-      this.last_action = Date.now();
+      this.onDownloadFinish(webDownloadItem);
     })
   }
 
@@ -220,27 +187,7 @@ export class bunch_of_downloads {
     })
 
     blob_delegate.onDownloadUpdated((webDownloadItem: webview.WebDownloadItem) => {
-      // console.log("download update guid: " + webDownloadItem.getGuid());
-
-      // Get my index
-      let my_index = this.index_of_task(webDownloadItem);
-
-      console.info('[bunch_of_downloads] Download progress of index <' + my_index.toString() + '>: '
-        + add_units_to_size(webDownloadItem.getReceivedBytes())
-        + ", total: " + add_units_to_size(webDownloadItem.getTotalBytes()));
-
-      this.list_of_downloaded_size[my_index] = webDownloadItem.getReceivedBytes();
-      this.list_of_full_size[my_index] = webDownloadItem.getTotalBytes();
-      this.list_of_download_speed[my_index] = webDownloadItem.getCurrentSpeed();
-
-      if (webDownloadItem.getState() == webview.WebDownloadState.PAUSED) {
-        this.list_of_paused[my_index] = true;
-      } else if (webDownloadItem.getState() == webview.WebDownloadState.IN_PROGRESS) {
-        this.list_of_paused[my_index] = false;
-      }
-
-      // Refresh
-      this.last_action = Date.now();
+      this.onDownloadUpdated(webDownloadItem);
     })
 
     blob_delegate.onDownloadFailed((webDownloadItem: webview.WebDownloadItem) => {
@@ -248,21 +195,49 @@ export class bunch_of_downloads {
     })
 
     blob_delegate.onDownloadFinish((webDownloadItem: webview.WebDownloadItem) => {
-      // console.info('[bunch_of_downloads] Download complete, path: ' + download_target_path);
-
-      let my_index = this.index_of_task(webDownloadItem);
-      // Get my index
-
-      this.list_of_full_size[my_index] = this.list_of_downloaded_size[my_index];
-      this.list_of_paused[my_index] = false;
-      this.list_of_completed[my_index] = true;
-      // Update list
-
-      // webDownloadItem.stop(); // No longer need this! owo
-
-      // Refresh
-      this.last_action = Date.now();
+      this.onDownloadFinish(webDownloadItem);
     })
+  }
+
+  onDownloadUpdated(webDownloadItem: webview.WebDownloadItem) {
+    // console.log("download update guid: " + webDownloadItem.getGuid());
+
+    // Get my index
+    let my_index = this.index_of_task(webDownloadItem);
+
+    console.info('[bunch_of_downloads] Download progress of index <' + my_index.toString() + '>: '
+      + add_units_to_size(webDownloadItem.getReceivedBytes())
+      + ", total: " + add_units_to_size(webDownloadItem.getTotalBytes()));
+
+    this.list_of_downloaded_size[my_index] = webDownloadItem.getReceivedBytes();
+    this.list_of_full_size[my_index] = webDownloadItem.getTotalBytes();
+    this.list_of_download_speed[my_index] = webDownloadItem.getCurrentSpeed();
+
+    if (webDownloadItem.getState() == webview.WebDownloadState.PAUSED) {
+      this.list_of_paused[my_index] = true;
+    } else if (webDownloadItem.getState() == webview.WebDownloadState.IN_PROGRESS) {
+      this.list_of_paused[my_index] = false;
+    }
+
+    // Refresh
+    this.last_action = Date.now();
+  }
+
+  onDownloadFinish(webDownloadItem: webview.WebDownloadItem) {
+    // console.info('[bunch_of_downloads] Download complete, path: ' + download_target_path);
+
+    let my_index = this.index_of_task(webDownloadItem);
+    // Get my index
+
+    this.list_of_full_size[my_index] = this.list_of_downloaded_size[my_index];
+    this.list_of_paused[my_index] = false;
+    this.list_of_completed[my_index] = true;
+    // Update list
+
+    // webDownloadItem.stop(); // No longer need this! owo
+
+    // Refresh
+    this.last_action = Date.now();
   }
 
   /**
