@@ -22,8 +22,14 @@ struct meowBookmarks {
   @State current_folder: folder | undefined = undefined;
   // Environments
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
+  // UI control actions
+  @StorageLink('showing_tabs') showing_tabs: boolean = false;
+  @StorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
+  @StorageLink('tabs_style') tabs_style: string = "";
+  @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
+  @StorageLink('preferred_hand_reverse_tabs_panel') preferred_hand_reverse_tabs_panel: boolean = false;
   // Input and Interactions
   @State add_label: string = "";
   @State add_link: string = "";
@@ -39,6 +45,8 @@ struct meowBookmarks {
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // Pan Gesture
+  pan_x: number = 0;
 
   build() {
     Column() {
@@ -245,6 +253,45 @@ struct meowBookmarks {
       // console.log("[Meow][meowBookmarks] Bookmarks READY")
       this.on_appear();
     })
+    .gesture(
+      PanGesture({ direction: PanDirection.Left | PanDirection.Right })
+        .onActionStart(() => {
+          // console.info('Pan start');
+          this.pan_x = 0;
+        })
+        .onActionUpdate((e) => {
+          this.pan_x += e.offsetX;
+          // console.log(this.pan_x.toString())
+        })
+        .onActionEnd(() => {
+          // this.positionX = this.offsetX;
+          // this.positionY = this.offsetY;
+          // console.info('Pan end');
+          // console.info('Pan end timeStamp is: ' + event.timestamp);
+          if (this.current_tabs_style() == 'vertical') {
+            if (this.pan_x < 0) {
+              // ← CLose if Left align
+              if (!this.is_right_align()) {
+                this.showing_bookmarks = false;
+              }
+            } else {
+              // → Switch to Tabs
+              this.showing_bookmarks = false;
+              this.showing_tabs = true;
+            }
+          } else {
+            // Directly Close if Horizontal tab
+            if (this.pan_x > 0 && this.is_right_align()) {
+              // →
+              this.showing_bookmarks = false;
+            }
+            if (this.pan_x < 0 && !this.is_right_align()) {
+              // →
+              this.showing_bookmarks = false;
+            }
+          }
+        })
+    )
   }
 
   // Event
@@ -407,6 +454,18 @@ struct meowBookmarks {
     } else {
       // Normal display
       return "@ " + this.looking_at_path + "/";
+    }
+  }
+
+  is_right_align() {
+    return this.preferred_hand_left_or_right == 'right' && !this.preferred_hand_reverse_tabs_panel;
+  }
+
+  current_tabs_style() {
+    if (this.tablet_mode) {
+      return this.tabs_style;
+    } else {
+      return this.tabs_style_non_tablet_mode;
     }
   }
 }

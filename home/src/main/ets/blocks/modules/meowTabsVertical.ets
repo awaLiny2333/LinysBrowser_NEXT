@@ -19,6 +19,7 @@ struct meowTabs {
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
+  @StorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
   @StorageLink('showing_more_options') showing_more_options: boolean = false;
   @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
   @StorageProp('is_search_input_typing') is_search_input_typing: boolean = false;
@@ -57,6 +58,7 @@ struct meowTabs {
   @StorageLink('tab_animation') tab_animation: AnimateParam = animation_default();
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
+  @StorageLink('preferred_hand_reverse_tabs_panel') preferred_hand_reverse_tabs_panel: boolean = false;
   // Gateways
   @StorageLink('universal_load_url_gateway') @Watch('uni_load_url') load_url_gateway: string = "";
   @StorageLink('universal_new_tab_gateway') @Watch('uni_new_tab') new_tab_gateway: string = "";
@@ -70,6 +72,8 @@ struct meowTabs {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Drop
   @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
+  // Pan Gesture
+  pan_x: number = 0;
 
   async aboutToAppear() {
     // set Intelligent Tracking Prevention
@@ -287,6 +291,26 @@ struct meowTabs {
     .onDragLeave(() => {
       this.showing_scratching_board = false;
     })
+    .gesture(
+      PanGesture({ direction: PanDirection.Left | PanDirection.Right })
+        .onActionStart(() => {
+          this.pan_x = 0;
+        })
+        .onActionUpdate((e) => {
+          this.pan_x += e.offsetX;
+        })
+        .onActionEnd(() => {
+          if (this.pan_x < 0) {
+            // ← Switch to Bookmarks
+            this.showing_bookmarks = true;
+            this.showing_tabs = false;
+          }
+          if (this.pan_x > 0 && this.is_right_align()) {
+            // → Right Align Close panel
+            this.showing_tabs = false;
+          }
+        })
+    )
   }
 
   // Tab controls
@@ -644,6 +668,12 @@ struct meowTabs {
         this.load_url_gateway = "";
       }, 50)
     }
+  }
+
+  // Data
+
+  is_right_align() {
+    return this.preferred_hand_left_or_right == 'right' && !this.preferred_hand_reverse_tabs_panel;
   }
 }
 
