@@ -24,8 +24,10 @@ struct meowSuggestions {
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
   // Settings
-  @StorageProp('max_bookmark_advice') @Watch('refresh_suggestions') max_bookmark_advice: number = 5;
-  @StorageProp('max_history_advice') @Watch('refresh_suggestions') max_history_advice: number = 5;
+  @StorageProp('max_bookmark_advice') max_bookmark_advice: number = 5;
+  @StorageProp('max_history_advice') max_history_advice: number = 5;
+  // @StorageProp('max_bookmark_advice') @Watch('refresh_suggestions') max_bookmark_advice: number = 5;
+  // @StorageProp('max_history_advice') @Watch('refresh_suggestions') max_history_advice: number = 5;
   // Myself
   @State bookmark_suggestions: string[][] = [];
   @State history_suggestions: string[][] = [];

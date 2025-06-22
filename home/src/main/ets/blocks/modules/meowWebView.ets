@@ -884,7 +884,8 @@ struct shortcutButton {
 
   build() {
     Column({ space: 10 }) {
-      Button((this.bookmark.get_item().get_type() == 'folder' ? '󰃅 ' : '') + this.bookmark.get_item().get_label())// Shortcut "󰄏"
+      Button((this.bookmark.get_item().get_type() == 'folder' ? (this.show_contents == Visibility.Visible ? '󰃆  ' : '󰃅  ') : '')
+        + this.bookmark.get_item().get_label())// Shortcut "󰄏"
         .type(ButtonType.Capsule)
         .backgroundColor(this.color_current_secondary)
         .fontColor(this.color_current_font)
@@ -939,7 +940,7 @@ struct shortcutButton {
       }
     }
     .alignItems(this.get_alignItems())
-    .padding(this.show_contents == Visibility.Visible ? (this.is_right_align() ? { right: 40 } : { left: 40 }) : {})
+    .padding(this.show_contents == Visibility.Visible ? (this.is_right_align() ? { right: 30 } : { left: 30 }) : {})
     .animation(animation_default())
   }
 
