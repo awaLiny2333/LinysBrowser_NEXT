@@ -283,7 +283,7 @@ struct meowWebView {
       } // Background
 
       Row() // Background color
-        .backgroundColor(this.web_force_dark_mode ? 'black' : 'white')
+        .backgroundColor(this.current_color_mode == 0 ? (this.web_force_dark_mode ? 'black' : 'white') : 'white')
         .height('100%')
         .width('100%')
         .visibility(this.extra_background ? Visibility.Visible : Visibility.Hidden)
