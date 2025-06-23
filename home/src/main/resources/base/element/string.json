@@ -333,6 +333,10 @@
       "value": "Move to"
     },
     {
+      "name": "Bookmarks_move_order",
+      "value": "Reorder"
+    },
+    {
       "name": "Bookmarks_root_path",
       "value": "@ (～o￣3￣)～ Click me to expand"
     },

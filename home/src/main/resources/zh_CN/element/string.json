@@ -29,6 +29,10 @@
       "value": "书签"
     },
     {
+      "name": "Bookmarks_move_order",
+      "value": "排序"
+    },
+    {
       "name": "Index_more_title",
       "value": "更多"
     },

@@ -11,6 +11,7 @@ import woofSelectBookmarksPath from '../../dialogs/prompts/woofSelectBookmarksPa
 import linysPathTree from '../../components/linysPathTree';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
+import linysText from '../../components/texts/linysText';
 
 @Component
 struct meowBookmarks {
@@ -25,6 +26,9 @@ struct meowBookmarks {
   // UI control actions
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
   @StorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
+  @StorageLink('swapping_bookmarks') swapping_bookmarks: boolean = false;
+  bookmarks_scroller: Scroller = new Scroller();
+  @StorageLink('bookmarks_scroll_by') @Watch('scroll_bookmarks') bookmarks_scroll_by: number = 0;
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('tabs_style') tabs_style: string = "";
@@ -50,8 +54,14 @@ struct meowBookmarks {
 
   build() {
     Column() {
-      Scroll() {
+      Scroll(this.bookmarks_scroller) {
         Column({ space: 5 }) {
+          Column()
+            .clip(true)
+            .justifyContent(FlexAlign.End)
+            .height(Math.max(0, this.scroll_area_height - this.viewing_contents.length * (42 + 5)))
+          // .animation(animation_default())
+
           ForEach(this.viewing_contents, (_unified_item: unified_item, key: number) => {
             bookmarkItem({
               // Generals
@@ -62,8 +72,16 @@ struct meowBookmarks {
               height_of_panel: this.scroll_area_height, // for animation params
               parent_path: this.looking_at_path, // for get_my_path()
             });
-          },
-          )
+          },)
+          Column() {
+            linysText({ text: 'owo' })
+              .opacity(0.5)
+              .padding(20)
+          }
+          .clip(true)
+          .height(this.swapping_bookmarks ? this.scroll_area_height : 0)
+          .animation(animation_default())
+
         }
         .width("100%")
       } // List of this directory
@@ -85,7 +103,24 @@ struct meowBookmarks {
           .onClick(() => {
             this.go_back();
           })
-          .visibility(this.looking_at_path == "" ? Visibility.None : this.visible_when_no_operating())
+          .visibility(this.looking_at_path == "" || this.swapping_bookmarks ? Visibility.None : this.visible_when_no_operating())
+          .animation(animation_default())
+
+        linysShowButton({
+          symbol_glyph_target: 'sys.symbol.swap',
+          show: this.swapping_bookmarks,
+          text: $r('app.string.Bookmarks_move_order')
+        })// Swap Button
+          .onClick(() => {
+            this.importing_bookmarks = false;
+            this.exporting_bookmarks = false;
+            this.adding_folder = false;
+            this.adding_bookmark = false;
+            this.swapping_bookmarks = !this.swapping_bookmarks;
+          })
+
+        Blank()
+          .visibility(this.preferred_hand_left_or_right == 'right' ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
 
         Column() {
@@ -103,7 +138,7 @@ struct meowBookmarks {
             })
         } // Import bookmarks button
         .alignItems(HorizontalAlign.End)
-        .layoutWeight(this.preferred_hand_left_or_right == 'right' ? 1 : undefined)
+        .visibility(this.swapping_bookmarks ? Visibility.None : Visibility.Visible)
         .animation(animation_default())
 
         linysShowButton({
@@ -117,8 +152,9 @@ struct meowBookmarks {
             this.importing_bookmarks = false;
             this.exporting_bookmarks = !this.exporting_bookmarks;
             // this.export_bookmarks_html();
-          }) // Export bookmarks button
-
+          })// Export bookmarks button
+          .visibility(this.swapping_bookmarks ? Visibility.None : Visibility.Visible)
+          .animation(animation_default())
         linysShowButton({
           show: this.adding_folder,
           symbol_glyph_target: 'sys.symbol.folder_badge_plus',
@@ -130,8 +166,9 @@ struct meowBookmarks {
             this.importing_bookmarks = false;
             this.add_label = "";
             this.adding_folder = !this.adding_folder;
-          }) // Add folder button
-
+          })// Add folder button
+          .visibility(this.swapping_bookmarks ? Visibility.None : Visibility.Visible)
+          .animation(animation_default())
         linysShowButton({
           show: this.adding_bookmark,
           symbol_glyph_target: 'sys.symbol.plus_square',
@@ -144,8 +181,9 @@ struct meowBookmarks {
             this.add_label = this.bunch_of_tabs.workingMainTab().title;
             this.add_link = url_resource_to_meow(this.bunch_of_tabs.workingMainTab().url);
             this.adding_bookmark = !this.adding_bookmark;
-          }) // Add bookmark button
-
+          })// Add bookmark button
+          .visibility(this.swapping_bookmarks ? Visibility.None : Visibility.Visible)
+          .animation(animation_default())
       } // Operation buttons
       .width("100%")
       .margin({ bottom: 5 })
@@ -214,7 +252,8 @@ struct meowBookmarks {
               }
             }
           })// Submit add button
-            .visibility(this.adding_folder || this.adding_bookmark || this.exporting_bookmarks || this.importing_bookmarks ? Visibility.Visible :
+            .visibility(this.adding_folder || this.adding_bookmark || this.exporting_bookmarks ||
+            this.importing_bookmarks ? Visibility.Visible :
             Visibility.None)
             .animation(animation_default())
 
@@ -334,6 +373,7 @@ struct meowBookmarks {
         this.viewing_contents = this.current_folder.get_content();
       }
     }
+    // this.bookmarks_scroller.scrollTo({ xOffset: 0, yOffset: this.scroll_area_height * 0.75, animation: false });
   }
 
   visible_when_no_operating() {
@@ -345,6 +385,14 @@ struct meowBookmarks {
   }
 
   // Operations
+
+  scroll_bookmarks() {
+    if (this.bookmarks_scroll_by == 0) {
+      return;
+    }
+    this.bookmarks_scroller.scrollBy(0, this.bookmarks_scroll_by);
+    this.bookmarks_scroll_by = 0;
+  }
 
   new_folder() {
     if (this.add_label == "") {
@@ -486,12 +534,14 @@ struct bookmarkItem {
   @State type: string = this.item.get_item().get_type();
   @State label: string = this.item.get_item().get_label();
   @State link: string = this.type == "bookmark" ? (this.item.get_item() as bookmark).get_link() : "";
+  @StorageLink('swapping_bookmarks') swapping_bookmarks: boolean = false;
+  @StorageLink('bookmarks_scroll_by') bookmarks_scroll_by: number = 0;
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Basic this properties
   @State pressing: boolean = false;
-  @State show: Visibility = Visibility.Hidden;
-  @State offset_y: number = 50;
+  @State show: Visibility = this.swapping_bookmarks ? Visibility.Visible : Visibility.Hidden;
+  @State offset_y: number = this.swapping_bookmarks ? 0 : 50;
   @State editing: boolean = false;
   @State press_timing_ok: boolean = false;
   press_timing: number = 0;
@@ -533,6 +583,38 @@ struct bookmarkItem {
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
           .layoutWeight(1)
+
+        Row({ space: 8 }) {
+          SymbolGlyph($r('sys.symbol.chevron_up'))
+            .fontSize(fontSize_Large())
+            .fontColor([this.color_current_font])
+            .opacity(this.my_index == 0 ? 0.5 : 1)
+            .animation(animation_default())
+            .onClick(() => {
+              if (this.my_index != 0) {
+                this.swap(this.my_index, this.my_index - 1);
+                this.bookmarks_scroll_by = -this.bookmark_height_default - 5;
+              }
+            })
+          SymbolGlyph($r('sys.symbol.chevron_down'))
+            .fontSize(fontSize_Large())
+            .fontColor([this.color_current_font])
+            .opacity(this.my_index == this.viewing_contents.length - 1 ? 0.5 : 1)
+            .animation(animation_default())
+            .onClick(() => {
+              if (this.my_index != this.viewing_contents.length - 1) {
+                this.swap(this.my_index, this.my_index + 1);
+                this.bookmarks_scroll_by = this.bookmark_height_default + 5;
+              }
+            })
+        }
+        .margin({ right: 10 })
+        .visibility(this.swapping_bookmarks ? Visibility.Visible : Visibility.None)
+        .animation(animation_default())
+
+        // .margin({ right: 4 })
+
+
         if (this.type == "folder") {
           SymbolGlyph($r(!this.pressing ? 'sys.symbol.folder' : 'sys.symbol.chevron_right'))
             .fontSize(fontSize_Large())
@@ -570,7 +652,11 @@ struct bookmarkItem {
           this.pressing = false;
         } else {
           // If touching
-          this.pressing = true;
+          if (!this.swapping_bookmarks) {
+            this.pressing = true;
+          } else {
+            this.pressing = false;
+          }
         }
       })
       .onClick(() => {
@@ -707,6 +793,9 @@ struct bookmarkItem {
   }
 
   on_item_click() {
+    if (this.swapping_bookmarks) {
+      return;
+    }
     if (this.press_timing_ok) {
       this.delete_confirm = 0;
       this.editing = !this.editing;
@@ -718,7 +807,6 @@ struct bookmarkItem {
       // Will automatically cause meowBookmarks to update the UI list (@Watch)
     } else {
       // Load web
-
       this.bunch_of_tabs.stop_onWorkingTab()
       this.bunch_of_tabs.loadUrl_onWorkingTab((this.item.get_item() as bookmark).get_link())
     }
@@ -842,5 +930,13 @@ struct bookmarkItem {
     let html_bookmark: string[] = this.bunch_of_bookmarks.get_export_html();
     // kv_store_put("html_bookmarks", html_bookmark.join("\n"));
     sandbox_save('html_bookmarks.html', html_bookmark.join("\n"));
+  }
+
+  swap(idx_a: number, idx_b: number) {
+    this.bunch_of_bookmarks.last_accessed = Date.now();
+    let c = this.viewing_contents[idx_a];
+    this.viewing_contents[idx_a] = this.viewing_contents[idx_b];
+    this.viewing_contents[idx_b] = c;
+    this.save_bookmarks();
   }
 }
