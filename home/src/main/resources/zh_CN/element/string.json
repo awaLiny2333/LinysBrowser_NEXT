@@ -114,7 +114,11 @@
     },
     {
       "name": "Index_downloads_direct_desc",
-      "value": "所有的下载都被自动保存到你的“下载”文件夹了！点击查看→"
+      "value": "所有的下载都被自动保存到你的“下载”文件夹了！"
+    },
+    {
+      "name": "Index_downloads_direct_desc_check",
+      "value": "查看下载"
     },
     {
       "name": "Index_downloads_additional_info",

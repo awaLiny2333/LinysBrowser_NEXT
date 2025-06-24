@@ -9,6 +9,7 @@ import linysShowButton from '../../components/buttons/linysShowButton';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import { open_file_uri } from '../../utils/link_tools';
+import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 
 @Component
 struct meowDownloads {
@@ -44,26 +45,24 @@ struct meowDownloads {
       .backgroundColor(this.color_current_primary)
       .animation(animation_default())
 
-      Column(){
+      Column({ space: 5 }) {
         linysTextTitle({
           text: $r('app.string.Index_downloads_direct'),
           max_lines: 20
         })
           .width('100%')
-        Row({ space: 5 }) {
-          linysText({
-            text: $r('app.string.Index_downloads_direct_desc'),
-            max_lines: 20
-          })
-          Blank()
-          linysCapsuleButton({
-            text: ' 󰃋 '
-          })
-            .onClick(async ()=>{
-              open_file_uri(await get_download_uri());
-            })
-        }
-        .width('100%')
+
+        linysText({ text: $r('app.string.Index_downloads_direct_desc'), max_lines: 20 })
+          .width('100%')
+
+        linysCapsuleButtonWithText({
+          desc_text: $r('app.string.Index_downloads_direct_desc_check'),
+          button_text: '  󰃋  ',
+          onExecution: async () => {
+            open_file_uri(await get_download_uri());
+          }
+        })
+          .width('100%')
       }
       .visibility(!this.direct_download ? Visibility.None : Visibility.Visible)
       .padding(15)

@@ -102,15 +102,19 @@
     },
     {
       "name": "Index_downloads_direct",
-      "value": "Directly download to DOWNLOADS Folder"
+      "value": "Directly download to Downloads Folder"
     },
     {
       "name": "Index_downloads_direct_auto_open",
-      "value": "Open DOWNLOADS Folder when finish"
+      "value": "Open Downloads Folder when finish"
     },
     {
       "name": "Index_downloads_direct_desc",
-      "value": "All files downloaded are automatically saved to your Downloads Folder! Click to check→"
+      "value": "All files downloaded are automatically saved to your Downloads Folder! "
+    },
+    {
+      "name": "Index_downloads_direct_desc_check",
+      "value": "Open Downloads"
     },
     {
       "name": "Index_downloads_additional_info",
