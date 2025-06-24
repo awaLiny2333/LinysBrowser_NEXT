@@ -11,7 +11,6 @@ import woofSelectBookmarksPath from '../../dialogs/prompts/woofSelectBookmarksPa
 import linysPathTree from '../../components/linysPathTree';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
-import linysText from '../../components/texts/linysText';
 
 @Component
 struct meowBookmarks {
@@ -29,6 +28,9 @@ struct meowBookmarks {
   @StorageLink('swapping_bookmarks') swapping_bookmarks: boolean = false;
   bookmarks_scroller: Scroller = new Scroller();
   @StorageLink('bookmarks_scroll_by') @Watch('scroll_bookmarks') bookmarks_scroll_by: number = 0;
+  @StorageLink('swapping_offset_timeout') swapping_offset_timeout: number = 0;
+  @State swapping_offset_upper: number = 0;
+  @State swapping_offset_downer: number = 0;
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('tabs_style') tabs_style: string = "";
@@ -56,11 +58,14 @@ struct meowBookmarks {
     Column() {
       Scroll(this.bookmarks_scroller) {
         Column({ space: 5 }) {
-          Column()
-            .clip(true)
-            .justifyContent(FlexAlign.End)
-            .height(Math.max(0, this.scroll_area_height - this.viewing_contents.length * (42 + 5)))
-          // .animation(animation_default())
+          Column() {
+            Column()
+              .height(this.swapping_offset_upper)
+            if (this.swapping_bookmarks) {
+              Column()
+                .height(Math.max(0, this.scroll_area_height - 5 - this.viewing_contents.length * (42 + 5)))
+            }
+          }
 
           ForEach(this.viewing_contents, (_unified_item: unified_item, key: number) => {
             bookmarkItem({
@@ -73,24 +78,19 @@ struct meowBookmarks {
               parent_path: this.looking_at_path, // for get_my_path()
             });
           },)
-          Column() {
-            linysText({ text: 'owo' })
-              .opacity(0.5)
-              .padding(20)
-          }
-          .clip(true)
-          .height(this.swapping_bookmarks ? this.scroll_area_height : 0)
-          .animation(animation_default())
 
+          Column()
+            .height(this.swapping_offset_downer)
         }
         .width("100%")
       } // List of this directory
       .direction(Direction.Rtl)
+      // .scrollBar((this.scroll_area_height - 5 - this.viewing_contents.length * (42 + 5) < 40) ? BarState.Off : BarState.On)
       .align(Alignment.Bottom)
       .edgeEffect(EdgeEffect.Spring)
       .width("100%")
       .layoutWeight(1)
-      .margin({ bottom: 10 })
+      // .margin({ bottom: 10 })
       .onAreaChange((_o, n) => {
         this.scroll_area_height = n.height as number;
         // Update height of scroll area
@@ -185,6 +185,7 @@ struct meowBookmarks {
           .visibility(this.swapping_bookmarks ? Visibility.None : Visibility.Visible)
           .animation(animation_default())
       } // Operation buttons
+      .constraintSize({ minHeight: 36 })
       .width("100%")
       .margin({ bottom: 5 })
 
@@ -350,6 +351,18 @@ struct meowBookmarks {
       this.refresh_content_view();
     }
     // Get bookmarks
+    setInterval(() => {
+      if (this.swapping_offset_timeout == 100) {
+        animateTo(animation_default(), () => {
+          this.swapping_offset_upper = 0;
+          this.swapping_offset_downer = 0;
+        })
+      }
+      this.swapping_offset_timeout -= 100;
+      if (this.swapping_offset_timeout <= 0) {
+        this.swapping_offset_timeout = 0;
+      }
+    }, 100)
   }
 
   // Misc
@@ -390,7 +403,13 @@ struct meowBookmarks {
     if (this.bookmarks_scroll_by == 0) {
       return;
     }
-    this.bookmarks_scroller.scrollBy(0, this.bookmarks_scroll_by);
+    // this.swapping_offset_timeout = 300;
+    if (this.bookmarks_scroll_by > 0) {
+      this.swapping_offset_downer += this.bookmarks_scroll_by;
+      this.bookmarks_scroller.scrollBy(0, this.bookmarks_scroll_by);
+    } else {
+      this.swapping_offset_upper -= this.bookmarks_scroll_by;
+    }
     this.bookmarks_scroll_by = 0;
   }
 
@@ -484,7 +503,7 @@ struct meowBookmarks {
   }
 
   save_bookmarks() {
-    console.log("[Meow][LinysBookmarks] Started to save HTML to disk!")
+    console.log("[Meow][LinysBookmarks] Started to save HTML to disk!");
     let html_bookmark: string[] = this.bunch_of_bookmarks.get_export_html();
     // kv_store_put("html_bookmarks", html_bookmark.join("\n"));
     sandbox_save('html_bookmarks.html', html_bookmark.join("\n"));
@@ -550,6 +569,7 @@ struct bookmarkItem {
   @State edit_label: string = this.label;
   @State edit_link: string = this.link;
   @State delete_confirm: number = 0;
+  @StorageLink('swapping_offset_timeout') swapping_offset_timeout: number = 0;
   // Edit inputs
   @State @Watch('on_select_change') select_path_result: string | undefined = undefined;
   @State moving_type: string = "";
@@ -584,32 +604,38 @@ struct bookmarkItem {
           .textOverflow({ overflow: TextOverflow.Ellipsis })
           .layoutWeight(1)
 
-        Row({ space: 8 }) {
-          SymbolGlyph($r('sys.symbol.chevron_up'))
-            .fontSize(fontSize_Large())
-            .fontColor([this.color_current_font])
-            .opacity(this.my_index == 0 ? 0.5 : 1)
-            .animation(animation_default())
-            .onClick(() => {
-              if (this.my_index != 0) {
-                this.swap(this.my_index, this.my_index - 1);
-                this.bookmarks_scroll_by = -this.bookmark_height_default - 5;
-              }
-            })
-          SymbolGlyph($r('sys.symbol.chevron_down'))
-            .fontSize(fontSize_Large())
-            .fontColor([this.color_current_font])
-            .opacity(this.my_index == this.viewing_contents.length - 1 ? 0.5 : 1)
-            .animation(animation_default())
-            .onClick(() => {
-              if (this.my_index != this.viewing_contents.length - 1) {
-                this.swap(this.my_index, this.my_index + 1);
-                this.bookmarks_scroll_by = this.bookmark_height_default + 5;
-              }
-            })
-        }
-        .margin({ right: 10 })
-        .visibility(this.swapping_bookmarks ? Visibility.Visible : Visibility.None)
+        Scroll() {
+
+          Row({ space: 8 }) {
+            SymbolGlyph($r('sys.symbol.chevron_up'))
+              .fontSize(fontSize_Large())
+              .fontColor([this.color_current_font])
+              .opacity(this.my_index == 0 ? 0.5 : 1)
+              .animation(animation_default())
+              .onClick(() => {
+                this.swapping_offset_timeout = 600;
+                if (this.my_index != 0) {
+                  this.swap(this.my_index, this.my_index - 1);
+                  this.bookmarks_scroll_by = -this.bookmark_height_default - 5;
+                }
+              })
+            SymbolGlyph($r('sys.symbol.chevron_down'))
+              .fontSize(fontSize_Large())
+              .fontColor([this.color_current_font])
+              .opacity(this.my_index == this.viewing_contents.length - 1 ? 0.5 : 1)
+              .animation(animation_default())
+              .onClick(() => {
+                this.swapping_offset_timeout = 600;
+                if (this.my_index != this.viewing_contents.length - 1) {
+                  this.swap(this.my_index, this.my_index + 1);
+                  this.bookmarks_scroll_by = this.bookmark_height_default + 5;
+                }
+              })
+          }
+        } // Edit Icon
+        .scrollable(ScrollDirection.Horizontal)
+        .scrollBar(BarState.Off)
+        .width(this.swapping_bookmarks ? undefined : 0)
         .animation(animation_default())
 
         // .margin({ right: 4 })
@@ -621,6 +647,7 @@ struct bookmarkItem {
             .fontWeight(!this.pressing ? FontWeight.Regular : FontWeight.Bold)
             .fontColor([!this.pressing ? this.color_current_font : this.color_current_secondary])
             .animation(animation_default())
+            .margin({ left: 10 })
         } // Folder Icon
         Scroll() {
           SymbolGlyph($r('sys.symbol.square_and_pencil'))
