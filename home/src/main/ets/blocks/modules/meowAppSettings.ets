@@ -131,6 +131,9 @@ struct meowAppSettings {
   @StorageLink('disable_image_all_sites') disable_image_all_sites: boolean = false;
   @StorageLink('continuation_auto_exit') continuation_auto_exit: boolean = false;
   @StorageLink('continuation_auto_close_tab') continuation_auto_close_tab: boolean = true;
+  // Downloads
+  @StorageLink('direct_download') direct_download: boolean = false;
+  @StorageLink('direct_download_auto_open') direct_download_auto_open: boolean = false;
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('preferred_hand_reverse_settings_menu') preferred_hand_reverse_settings_menu: boolean = false;
@@ -357,7 +360,24 @@ struct meowAppSettings {
 
           FlowItem() {
             settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 2 }) {
-              linysTextTitle({ text: $r('app.string.Settings_Experience') })
+              linysTextTitle({ text: $r('app.string.Settings_Experience') }) // Exp title
+
+              linysSwitchWithText({
+                text: $r('app.string.Index_downloads_direct'),
+                toggle_state: this.direct_download,
+                onExecution: () => {
+                  this.bunch_of_settings.set('direct_download', this.direct_download);
+                }
+              }) // Direct Download
+              linysSwitchWithText({
+                text: $r('app.string.Index_downloads_direct_auto_open'),
+                toggle_state: this.direct_download_auto_open,
+                onExecution: () => {
+                  this.bunch_of_settings.set('direct_download_auto_open', this.direct_download_auto_open);
+                }
+              }) // Direct Download auto open
+                .opacity(this.direct_download ? 1 : 0.5)
+                .animation(animation_default())
 
               linysSwitchWithText({
                 text: $r('app.string.Settings_experience_web_force_dark_mode'),
@@ -374,15 +394,13 @@ struct meowAppSettings {
                   this.bunch_of_settings.set('continuation_auto_exit', this.continuation_auto_exit);
                 }
               }) // continuation_auto_exit
-
               linysSwitchWithText({
                 text: $r('app.string.Settings_experience_continuation_auto_close_tab'),
                 toggle_state: this.continuation_auto_close_tab,
                 onExecution: () => {
                   this.bunch_of_settings.set('continuation_auto_close_tab', this.continuation_auto_close_tab);
                 }
-              }) // continuation_auto_exit
-                // .enabled(!this.continuation_auto_exit)
+              }) // continuation_auto_close_tab
                 .opacity(!this.continuation_auto_exit ? 1 : 0.5)
                 .animation(animation_default())
 
@@ -970,6 +988,10 @@ struct meowAppSettings {
 
     // History indexer
     this.history_index_size = await this.bunch_of_settings.get('history_index_size') as number;
+
+    // Downloads
+    this.direct_download = await this.bunch_of_settings.get('direct_download') as boolean;
+    this.direct_download_auto_open = await this.bunch_of_settings.get('direct_download_auto_open') as boolean;
 
     // Continuation
     this.continuation_auto_close_tab = await this.bunch_of_settings.get('continuation_auto_close_tab') as boolean;

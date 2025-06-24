@@ -4,10 +4,11 @@ import { animation_default, animation_popup_duration, click_effect_default, mini
 import { request } from '@kit.BasicServicesKit';
 import linysText from '../../components/texts/linysText';
 import { copy } from '../../utils/clipboard_tools';
-import { add_units_to_size } from '../../utils/storage_tools';
+import { add_units_to_size, get_download_uri } from '../../utils/storage_tools';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
+import { open_file_uri } from '../../utils/link_tools';
 
 @Component
 struct meowDownloads {
@@ -15,6 +16,8 @@ struct meowDownloads {
     new bunch_of_downloads(true);
   @StorageLink('universal_new_download_gateway') @Watch('on_new_download') uni_new_download_gateway: string = "";
   @StorageLink('showing_downloads') showing_downloads: boolean = false;
+  // Downloads
+  @StorageLink('direct_download') direct_download: boolean = false;
   @Link screen_width: number;
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
@@ -32,9 +35,38 @@ struct meowDownloads {
           max_lines: 20
         })
       }
+      .visibility(this.direct_download ? Visibility.None : Visibility.Visible)
       .padding(15)
       .alignItems(HorizontalAlign.Start)
       .justifyContent(FlexAlign.Start)
+      .width("100%")
+      .borderRadius(10)
+      .backgroundColor(this.color_current_primary)
+      .animation(animation_default())
+
+      Column(){
+        linysTextTitle({
+          text: $r('app.string.Index_downloads_direct'),
+          max_lines: 20
+        })
+          .width('100%')
+        Row({ space: 5 }) {
+          linysText({
+            text: $r('app.string.Index_downloads_direct_desc'),
+            max_lines: 20
+          })
+          Blank()
+          linysCapsuleButton({
+            text: ' 󰃋 '
+          })
+            .onClick(async ()=>{
+              open_file_uri(await get_download_uri());
+            })
+        }
+        .width('100%')
+      }
+      .visibility(!this.direct_download ? Visibility.None : Visibility.Visible)
+      .padding(15)
       .width("100%")
       .borderRadius(10)
       .backgroundColor(this.color_current_primary)
@@ -67,8 +99,7 @@ struct meowDownloads {
           },
         )
       }
-      .columnsTemplate(this.bunch_of_downloads.list_of_on_going_tasks.length == 0 ?
-        "1fr" : "1fr ".repeat(Math.ceil(this.screen_width / minimum_card_width())))
+      .columnsTemplate(this.bunch_of_downloads.list_of_on_going_tasks.length == 0 ? "1fr" : "1fr ".repeat(Math.ceil(this.screen_width / minimum_card_width())))
       .rowsGap(10)
       .columnsGap(10)
       .width("100%")
@@ -180,7 +211,7 @@ struct meowDownloadCard {
           Row({ space: 8 }) {
             linysText({
               text: add_units_to_size(this.my_current_download_speed) + '/s',
-            }) // Speed
+            })// Speed
               .borderRadius(10)
               .padding(10)
               .backgroundColor($r('sys.color.comp_background_tertiary'))
@@ -194,7 +225,7 @@ struct meowDownloadCard {
             //   .clickEffect(click_effect_default())
             linysText({
               text: this.formatted_download_progress,
-            }) // Progress
+            })// Progress
               .borderRadius(10)
               .padding(10)
               .backgroundColor($r('sys.color.comp_background_tertiary'))
@@ -314,6 +345,12 @@ struct meowDownloadCard {
     this.bunch_of_downloads.save_downloaded_item_to_local(this.my_index).then(() => {
       this.exporting = false;
     })
+    // this.bunch_of_downloads.save_downloaded_item_to_download(this.my_index).then((uri_back) => {
+    //   this.exporting = false;
+    //   if (uri_back) {
+    //     open_file_uri(uri_back);
+    //   }
+    // })
   }
 
   private set_formatted_download_progress() {

@@ -41,6 +41,51 @@ export function document_save(file_name: string, content: string) {
 }
 
 /**
+ * Save (Copy) any file from a path to download folder.
+ * @param path source path of object to be stored.
+ * */
+export async function download_save_from_path(path: string) {
+  let uri: string = '';
+  // 请在组件内获取context，确保this.getUIContext().getHostContext()返回结果为UIAbilityContext
+  const documentViewPicker = new picker.DocumentViewPicker(context);
+  const documentSaveOptions = new picker.DocumentSaveOptions();
+  documentSaveOptions.pickerMode = picker.DocumentPickerMode.DOWNLOAD;
+  await documentViewPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
+    uri = documentSaveResult[0];
+    // console.info('documentViewPicker.save succeed and uri is:' + uri);
+
+    let path_split = path.split('/');
+    let file_name = path_split[path_split.length-1];
+
+    const save_uri= uri + '/' + file_name;
+
+    fs.copy((fileUri.getUriFromPath(path)), save_uri);
+
+  }).catch((err: BusinessError) => {
+    console.error(`[storage_tools][download_save_from_path] Invoke documentViewPicker.save failed, code is ${err.code}, message is ${err.message}`);
+  })
+  return uri;
+}
+
+/**
+ * Returns the download folder uri.
+ * @returns DOWNLOADS uri
+ * */
+export async function get_download_uri() {
+  let uri: string = '';
+  const documentViewPicker = new picker.DocumentViewPicker(context);
+  const documentSaveOptions = new picker.DocumentSaveOptions();
+  documentSaveOptions.pickerMode = picker.DocumentPickerMode.DOWNLOAD;
+  await documentViewPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
+    uri = documentSaveResult[0];
+  }).catch((err: BusinessError) => {
+    console.error(`[storage_tools][download_save_from_path] Invoke documentViewPicker.save failed, code is ${err.code}, message is ${err.message}`);
+  })
+  return uri;
+}
+
+
+/**
  * Save (Copy) any file from a uri (file://...) to a selected position, pulling up a DocumentViewPicker.
  * @param from the uri.
  * */

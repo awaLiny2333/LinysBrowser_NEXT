@@ -2,8 +2,9 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
 import { common } from '@kit.AbilityKit';
 import { webview } from '@kit.ArkWeb';
-import { add_units_to_size } from '../utils/storage_tools';
+import { add_units_to_size, download_save_from_path } from '../utils/storage_tools';
 import woofWantDownload from '../dialogs/prompts/woofWantDownload';
+import { open_file_uri } from '../utils/link_tools';
 
 let context = AppStorage.get('context') as common.UIAbilityContext;
 
@@ -226,15 +227,25 @@ export class bunch_of_downloads {
   onDownloadFinish(webDownloadItem: webview.WebDownloadItem) {
     // console.info('[bunch_of_downloads] Download complete, path: ' + download_target_path);
 
-    let my_index = this.index_of_task(webDownloadItem);
     // Get my index
+    let my_index = this.index_of_task(webDownloadItem);
 
+    // Update list
     this.list_of_full_size[my_index] = this.list_of_downloaded_size[my_index];
     this.list_of_paused[my_index] = false;
     this.list_of_completed[my_index] = true;
-    // Update list
 
     // webDownloadItem.stop(); // No longer need this! owo
+
+    let direct_download = AppStorage.get('direct_download') as boolean;
+    let direct_download_auto_open = AppStorage.get('direct_download_auto_open') as boolean;
+    if (direct_download) {
+      this.save_downloaded_item_to_download(my_index).then((uri) => {
+        if (uri && direct_download_auto_open) {
+          open_file_uri(uri);
+        }
+      });
+    }
 
     // Refresh
     this.last_action = Date.now();
@@ -364,6 +375,23 @@ export class bunch_of_downloads {
       let err: BusinessError = error as BusinessError;
       console.error('[bunch_of_downloads][ERROR] DocumentViewPicker failed with err: ' + JSON.stringify(err));
     }
+  }
+
+  /**
+   * Copies a downloaded item, specified by the index, from sandbox directory to device's DOWNLOAD folder.
+   * @param index The index of target file in the task list to be moved.
+   * */
+  async save_downloaded_item_to_download(index: number) {
+    if (!this.list_of_completed[index]) {
+      return;
+    }
+
+    let file_path = this.list_of_target_folders[index];
+    let file_name = this.list_of_file_names[index];
+    let from = file_path + '/' + file_name;
+    console.log('[bunch_of_downloads] Trying to save_downloaded_item_to_download: [' + from + ']');
+    let uri_back = await download_save_from_path(from);
+    return uri_back;
   }
 
   /**

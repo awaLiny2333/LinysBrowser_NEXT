@@ -98,6 +98,10 @@ export class bunch_of_settings {
     // History Indexer
     this.register_setting('history_index_size', 'number', '-1');
 
+    // Download
+    this.register_setting('direct_download', 'boolean', 'false');
+    this.register_setting('direct_download_auto_open', 'boolean', 'true');
+
     // console.log('[Meow][bunch_of_settings] Init success!')
   }
 
