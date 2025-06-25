@@ -48,8 +48,8 @@
             "domainVerify": true
           }
         ],
-        "minWindowHeight": 100,
-        "minWindowWidth": 200
+        "minWindowHeight": 260,
+        "minWindowWidth": 360
       }
     ],
     "extensionAbilities": [

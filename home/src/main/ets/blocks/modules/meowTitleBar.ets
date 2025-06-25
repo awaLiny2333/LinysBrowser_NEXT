@@ -31,6 +31,7 @@ import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import { allow_drop_types, drop_to_scratching_board } from '../../utils/drag_drop_tools';
 import meowDebug from '../panels/meowDebug';
 import linysProgressInfo from '../../components/linysProgressInfo';
+import { add_transparency } from '../../utils/color_tools';
 
 @Component
 struct meowTitleBar {
@@ -92,6 +93,7 @@ struct meowTitleBar {
   @StorageLink('showing_downloads') showing_downloads: boolean = false;
   @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   @State address_analyzers_desc_close_cd: number = 0;
+  @State this_page_info_height: number = 120;
   // settings
   @StorageLink('DEV_MODE') DEV_MODE: boolean = false;
   @StorageLink('resource_monitor') resource_monitor: boolean = true;
@@ -246,8 +248,11 @@ struct meowTitleBar {
       .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
       .padding({ left: 15, right: 15, top: 6 })
       .width("100%")
-      .visibility(this.showing_more_options && !this.showing_scratching_board ? Visibility.Visible : Visibility.None)
+      .visibility(this.current_in_page_searching_stats_total <= 0 && this.showing_more_options && !this.showing_scratching_board ? Visibility.Visible : Visibility.None)
       .animation(animation_default())
+      .onAreaChange((o, n) => {
+        this.this_page_info_height = n.height as number;
+      })
 
       RelativeContainer() {
         Row({ space: this.tablet_mode ? 10 : 6 }) {
@@ -641,7 +646,7 @@ struct meowTitleBar {
               })
                 .animation(animation_default())
               linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_up' })
-                .keyboardShortcut(FunctionKey.DPAD_UP,[])
+                .keyboardShortcut(FunctionKey.DPAD_UP, [])
                 .onClick(() => {
                   try {
                     this.bunch_of_tabs.workingMainTab().controller.searchNext(false);
@@ -650,7 +655,7 @@ struct meowTitleBar {
                   }
                 })
               linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_down' })
-                .keyboardShortcut(FunctionKey.DPAD_DOWN,[])
+                .keyboardShortcut(FunctionKey.DPAD_DOWN, [])
                 .onClick(() => {
                   try {
                     this.bunch_of_tabs.workingMainTab().controller.searchNext(true);
@@ -676,7 +681,9 @@ struct meowTitleBar {
           .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
           .width("100%")
           .height(20 + (this.tablet_mode ? capsule_bar_height() : 2 * capsule_bar_height()))
-          .backgroundColor(this.color_current_primary)
+          .backgroundColor(this.current_in_page_searching_stats_total <= 0
+            ? this.color_current_primary
+            : add_transparency(this.color_current_primary, 128))
           .borderRadius(10)
           .padding(10)
           .animation(animation_default())
@@ -729,12 +736,16 @@ struct meowTitleBar {
               })
           } // Small buttons
           .justifyContent(FlexAlign.End)
+          .visibility(this.visible_when_in_page_search())
+          .animation(animation_default())
 
           Row() {
             meowDebug()
           } // Debug
           .opacity(0.8)
-          .visibility(this.resource_monitor ? Visibility.Visible : Visibility.None)
+          .visibility(this.resource_monitor
+            ? (this.visible_when_in_page_search())
+            : Visibility.None)
           .animation(animation_default())
 
           linysProgressInfo({
@@ -742,7 +753,7 @@ struct meowTitleBar {
             progress: this.history_index_loading_progress,
           })
             .opacity(0.8)
-            .visibility(this.history_index_loading_progress != "" ? Visibility.Visible : Visibility.None)
+            .visibility(this.history_index_loading_progress != "" ? (this.visible_when_in_page_search()) : Visibility.None)
             .animation(animation_default())
 
           linysProgressInfo({
@@ -750,7 +761,7 @@ struct meowTitleBar {
             progress: this.reindexing_history_progress,
           })
             .opacity(0.8)
-            .visibility(this.reindexing_history_progress != "" ? Visibility.Visible : Visibility.None)
+            .visibility(this.reindexing_history_progress != "" ? (this.visible_when_in_page_search()) : Visibility.None)
             .animation(animation_default())
 
           linysProgressInfo({
@@ -758,7 +769,7 @@ struct meowTitleBar {
             progress: this.history_index_saving_progress,
           })
             .opacity(0.8)
-            .visibility(this.history_index_saving_progress != "" ? Visibility.Visible : Visibility.None)
+            .visibility(this.history_index_saving_progress != "" ? (this.visible_when_in_page_search()) : Visibility.None)
             .animation(animation_default())
 
         } // Title Bar of More Options
@@ -810,14 +821,21 @@ struct meowTitleBar {
       this.showing_scratching_board = false;
     })
     .width("100%")
-    .constraintSize({ maxHeight: this.showing_more_options ? Math.min(this.full_screen_height, this.tablet_mode ? 370 : 460) : undefined })
+    .constraintSize({
+      maxHeight: this.showing_more_options
+        ? (this.current_in_page_searching_stats_total > 0
+          ? 40 + (capsule_bar_height() + 5) * (this.tablet_mode ? 2 : 4)
+          : Math.min(this.full_screen_height, this.tablet_mode ? 370 : 460))
+        : undefined
+    })
     .alignItems(HorizontalAlign.Start)
-    .backgroundColor(this.color_current_secondary)
+    .backgroundColor(!this.showing_more_options || this.current_in_page_searching_stats_total <= 0
+      ? this.color_current_secondary
+      : add_transparency(this.color_current_secondary, 128))
     .alignRules(this.title_bar_alignRules)
     .padding({ left: this.leftAvoidWidth, right: this.rightAvoidWidth })
     .onAreaChange((_o, n) => {
-      if (!this.showing_more_options && !this.is_search_input_typing && !this.showing_app_settings && !this.showing_downloads &&
-        !this.showing_scratching_board) {
+      if (!this.showing_more_options && !this.is_search_input_typing && !this.showing_app_settings && !this.showing_downloads && !this.showing_scratching_board) {
         this.bar_height = n.height as number;
       }
     })
@@ -896,6 +914,10 @@ struct meowTitleBar {
     }
 
     return Visibility.None
+  }
+
+  visible_when_in_page_search() {
+    return (this.current_in_page_searching_stats_total <= 0 ? Visibility.Visible : Visibility.None);
   }
 
   // Events
