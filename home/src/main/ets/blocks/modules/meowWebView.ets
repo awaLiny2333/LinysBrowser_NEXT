@@ -109,7 +109,7 @@ struct meowWebView {
   adsBlocker_exceptions: string[] = [];
   shortcut_scroller: Scroller = new Scroller();
   @StorageLink('meowWebView_init_OK') init_OK: boolean = false;
-
+  httpAuth: boolean = false;
   // // Menu contents
   // @State menu_linkUrl: string = '';
   // @State menu_offsetX: number = 0;
@@ -321,6 +321,8 @@ struct meowWebView {
             .fileAccess(true)
             .domStorageAccess(true)
             .multiWindowAccess(true)
+            .mixedMode(MixedMode.All)
+            .allowWindowOpenMethod(true)
             .onSearchResultReceive((result) => {
               this.current_in_page_searching_stats_current =
                 Math.min(result.numberOfMatches, result.activeMatchOrdinal + 1);
