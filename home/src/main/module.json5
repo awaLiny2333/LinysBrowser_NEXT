@@ -77,6 +77,26 @@
           ]
         }
       },
+      {
+        "name": "ohos.permission.MICROPHONE",
+        "reason": "$string:permission_reason_MICROPHONE",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "HomeAbility"
+          ]
+        }
+      },
+      {
+        "name": "ohos.permission.CAMERA",
+        "reason": "$string:permission_reason_CAMERA",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "HomeAbility"
+          ]
+        }
+      },
 //            {
 //              "name" : "ohos.permission.READ_PASTEBOARD",
 //              "reason": "$string:permission_reason_READ_PASTEPOARD",

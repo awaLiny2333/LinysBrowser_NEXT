@@ -17,6 +17,34 @@
       "value": "For web browsing"
     },
     {
+      "name": "permission_reason_MICROPHONE",
+      "value": "Some webpages may request this permission for certain tasks. For example, recording your voice in online chats. BrowserCat itself won't use this."
+    },
+    {
+      "name": "permission_reason_CAMERA",
+      "value": "Some webpages may request this permission for certain tasks. For example, having a video meeting. BrowserCat itself won't use this."
+    },
+    {
+      "name": "permission_reason_GEOLOCATION",
+      "value": "Some webpages may request this permission for certain tasks. For example, using a web map. BrowserCat itself won't use this."
+    },
+    {
+      "name": "protected_resource_TYPE_MIDI_SYSEX",
+      "value": "\uDB80\uDCAC MIDI SYSEX Resources"
+    },
+    {
+      "name": "protected_resource_TYPE_VIDEO_CAPTURE",
+      "value": "\uDB81\uDC5B Camera"
+    },
+    {
+      "name": "protected_resource_TYPE_AUDIO_CAPTURE",
+      "value": "\uDB80\uDC06 Microphone"
+    },
+    {
+      "name": "protected_resource_TYPE_SENSOR",
+      "value": "\uDB81\uDE5F Sensors (Any type, e.g. geographic location and acceleration)"
+    },
+    {
       "name": "Index_tabs_title",
       "value": "Tabs"
     },
@@ -815,6 +843,14 @@
     {
       "name": "LinkJumper_allow_jump",
       "value": "Allow this jump?"
+    },
+    {
+      "name": "Permission_Manager_webpage_asks_for_permission",
+      "value": "The page is asking for a permission!"
+    },
+    {
+      "name": "Permission_Manager_grant_permission",
+      "value": "Grant this permission?"
     },
     {
       "name": "Settings_toolbox",

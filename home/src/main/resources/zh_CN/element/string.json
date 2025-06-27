@@ -17,6 +17,34 @@
       "value": "用于网页浏览"
     },
     {
+      "name": "permission_reason_MICROPHONE",
+      "value": "有些网站可能会为了某些任务而请求这个权限。比如，在线聊天室中录制语音的时候。冲浪喵本身不会使用这个权限。"
+    },
+    {
+      "name": "permission_reason_CAMERA",
+      "value": "有些网站可能会为了某些任务而请求这个权限。比如，在线视频会议的时候。冲浪喵本身不会使用这个权限。"
+    },
+    {
+      "name": "permission_reason_GEOLOCATION",
+      "value": "有些网站可能会为了某些任务而请求这个权限。比如，使用网页地图的时候。冲浪喵本身不会使用这个权限。"
+    },
+    {
+      "name": "protected_resource_TYPE_MIDI_SYSEX",
+      "value": "\uDB80\uDCAC MIDI SYSEX 资源"
+    },
+    {
+      "name": "protected_resource_TYPE_VIDEO_CAPTURE",
+      "value": "\uDB81\uDC5B 摄像头"
+    },
+    {
+      "name": "protected_resource_TYPE_AUDIO_CAPTURE",
+      "value": "\uDB80\uDC06 麦克风"
+    },
+    {
+      "name": "protected_resource_TYPE_SENSOR",
+      "value": "\uDB81\uDE5F 传感器（各类的，比如地理位置、加速度等）"
+    },
+    {
       "name": "Index_tabs_title",
       "value": "标签页"
     },
@@ -815,6 +843,14 @@
     {
       "name": "LinkJumper_allow_jump",
       "value": "同意它跳吗？"
+    },
+    {
+      "name": "Permission_Manager_webpage_asks_for_permission",
+      "value": "网页想要权限!"
+    },
+    {
+      "name": "Permission_Manager_grant_permission",
+      "value": "给它吗？"
     },
     {
       "name": "Settings_toolbox",

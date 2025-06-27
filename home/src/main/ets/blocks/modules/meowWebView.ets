@@ -10,6 +10,7 @@ import woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import { bookmark, bunch_of_bookmarks, folder, unified_item } from '../../hosts/bunch_of_bookmarks';
 import woofWantJump from '../../dialogs/prompts/woofWantJump';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
+import woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
 
 @Component
 struct meowWebView {
@@ -97,6 +98,18 @@ struct meowWebView {
     alignment: DialogAlignment.Center,
     cornerRadius: 16
   })
+  onPermit?: () => void;
+  onDeny?: () => void;
+  ask_resources: string[] = [];
+  woofWantProtectedResources_control: CustomDialogController = new CustomDialogController({
+    builder: woofWantResources({
+      protected_resource_types: this.ask_resources,
+      onPermit: this.onPermit,
+      onDeny: this.onDeny
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16
+  })
   woofHomepageManager_control: CustomDialogController = new CustomDialogController({
     builder: woofHomepageManager(),
     alignment: DialogAlignment.Center,
@@ -106,10 +119,11 @@ struct meowWebView {
   // Colors
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   // Else
+  @StorageLink('meowWebView_init_OK') init_OK: boolean = false;
   adsBlocker_exceptions: string[] = [];
   shortcut_scroller: Scroller = new Scroller();
-  @StorageLink('meowWebView_init_OK') init_OK: boolean = false;
   httpAuth: boolean = false;
+
   // // Menu contents
   // @State menu_linkUrl: string = '';
   // @State menu_offsetX: number = 0;
@@ -265,6 +279,20 @@ struct meowWebView {
     } catch (e) {
       console.error(e);
     }
+
+    // try {
+    //   let atManager = abilityAccessCtrl.createAtManager();
+    //   atManager.requestPermissionsFromUser(this.getUIContext().getHostContext(), ['ohos.permission.CAMERA', 'ohos.permission.MICROPHONE'])
+    //     .then((data) => {
+    //       console.info('data:' + JSON.stringify(data));
+    //       console.info('data permissions:' + data.permissions);
+    //       console.info('data authResults:' + data.authResults);
+    //     }).catch((error: BusinessError) => {
+    //     console.error(`Failed to request permissions from user. Code is ${error.code}, message is ${error.message}`);
+    //   })
+    // } catch (e) {
+    //   console.error(e);
+    // }
 
     // init OK
     setTimeout(() => {
@@ -498,6 +526,20 @@ struct meowWebView {
                 this.woofLinkJumper_control.open();
               }
               return false;
+            })
+            .onPermissionRequest((event) => {
+              if (!event) {
+                return;
+              }
+              this.onPermit = () => {
+                event.request.grant(event.request.getAccessibleResource());
+              }
+              this.onDeny = () => {
+                event.request.deny();
+              }
+              this.ask_resources = event.request.getAccessibleResource();
+              console.log('[Meow][meowWebView] Requesting Protected Resources: ' + event.request.getAccessibleResource());
+              this.woofWantProtectedResources_control.open();
             })
           // .onContextMenuShow((event) => {
           //   if (event) {
