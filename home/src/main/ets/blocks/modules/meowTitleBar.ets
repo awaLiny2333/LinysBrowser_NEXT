@@ -32,6 +32,7 @@ import { allow_drop_types, drop_to_scratching_board } from '../../utils/drag_dro
 import meowDebug from '../panels/meowDebug';
 import linysProgressInfo from '../../components/linysProgressInfo';
 import { add_transparency } from '../../utils/color_tools';
+import { current_tabs_style_is_horizontal } from '../../utils/ui_tools';
 
 @Component
 struct meowTitleBar {
@@ -93,7 +94,7 @@ struct meowTitleBar {
   @StorageLink('showing_downloads') showing_downloads: boolean = false;
   @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   @State address_analyzers_desc_close_cd: number = 0;
-  @State this_page_info_height: number = 120;
+  @State horizontal_tabs_height: number = 120;
   // settings
   @StorageLink('DEV_MODE') DEV_MODE: boolean = false;
   @StorageLink('resource_monitor') resource_monitor: boolean = true;
@@ -207,6 +208,9 @@ struct meowTitleBar {
       meowTabsHorizontal()// Horizontal tabs
         .visibility(this.visibility_of_horizontal_tabs())
         .animation(animation_default())
+        .onAreaChange((_oo, n) => {
+          this.horizontal_tabs_height = Math.max(0, n.height as number + 10);
+        })
 
       estimatedDestination({
         is_http_no_s: this.search_input_unify_scheme_http,
@@ -248,11 +252,9 @@ struct meowTitleBar {
       .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
       .padding({ left: 15, right: 15, top: 6 })
       .width("100%")
-      .visibility(this.current_in_page_searching_stats_total <= 0 && this.showing_more_options && !this.showing_scratching_board ? Visibility.Visible : Visibility.None)
+      .visibility(this.current_in_page_searching_stats_total <= 0 && this.showing_more_options && !this.showing_scratching_board ? Visibility.Visible :
+      Visibility.None)
       .animation(animation_default())
-      .onAreaChange((o, n) => {
-        this.this_page_info_height = n.height as number;
-      })
 
       RelativeContainer() {
         Row({ space: this.tablet_mode ? 10 : 6 }) {
@@ -822,11 +824,7 @@ struct meowTitleBar {
     })
     .width("100%")
     .constraintSize({
-      maxHeight: this.showing_more_options
-        ? (this.current_in_page_searching_stats_total > 0
-          ? 40 + (capsule_bar_height() + 5) * (this.tablet_mode ? 2 : 4)
-          : Math.min(this.full_screen_height, this.tablet_mode ? 370 : 460))
-        : undefined
+      maxHeight: this.max_height_of_title_bar()
     })
     .alignItems(HorizontalAlign.Start)
     .backgroundColor(!this.showing_more_options || this.current_in_page_searching_stats_total <= 0
@@ -835,7 +833,8 @@ struct meowTitleBar {
     .alignRules(this.title_bar_alignRules)
     .padding({ left: this.leftAvoidWidth, right: this.rightAvoidWidth })
     .onAreaChange((_o, n) => {
-      if (!this.showing_more_options && !this.is_search_input_typing && !this.showing_app_settings && !this.showing_downloads && !this.showing_scratching_board) {
+      if (!this.showing_more_options && !this.is_search_input_typing && !this.showing_app_settings && !this.showing_downloads &&
+        !this.showing_scratching_board) {
         this.bar_height = n.height as number;
       }
     })
@@ -1051,11 +1050,29 @@ struct meowTitleBar {
   }
 
   stop_page() {
-
     this.bunch_of_tabs.stop_onWorkingTab();
     this.bunch_of_tabs.workingMainTab().update_is_loading(false);
     this.sync_tabs_list_info();
     this.update_tabs_current_info();
+  }
+
+  // Values
+
+  max_height_of_title_bar() {
+    if (!this.showing_more_options) {
+      return undefined;
+    }
+
+    if (this.current_in_page_searching_stats_total > 0) {
+      // in-page Searching
+      let base_height = this.tablet_mode ? 110 : 190;
+      let tabs_offset = this.showing_tabs && current_tabs_style_is_horizontal() ? this.horizontal_tabs_height : 0;
+      let position_offset = this.title_bar_position == 'top' ? 0 : 15;
+      return base_height + tabs_offset + position_offset;
+    } else {
+      // Normal height
+      return Math.min(this.full_screen_height, this.tablet_mode ? 370 : 460);
+    }
   }
 
   // Data synchronizing
