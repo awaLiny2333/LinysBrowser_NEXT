@@ -282,7 +282,9 @@ export function extract_search(url: string) {
       //   result[1] = decodeURIComponent(result[1]);
       // }
       result[0] = url.replaceAll(keyword, '%s');
-      result[1] = decodeURIComponent(keyword);
+      result[1] = keyword;
+      result[1] = result[1].replaceAll('+', " ")
+      result[1] = decodeURIComponent(result[1]);
       return result;
     }
   }
