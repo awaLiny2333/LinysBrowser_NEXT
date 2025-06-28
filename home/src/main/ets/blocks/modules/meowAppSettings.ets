@@ -300,12 +300,7 @@ struct meowAppSettings {
 
               // Search Engine
               linysText({ text: $r('app.string.Settings_general_custom_search_engine') })
-              meowSEManager({
-                on_normal_execution: (idx, _se) => {
-                  AppStorage.set('search_engine_selected', -1);
-                  AppStorage.set('search_engine_selected', idx);
-                }
-              })
+              meowSEManager()
 
               // New tab URL
               linysText({ text: $r('app.string.Settings_general_new_tab_url') })

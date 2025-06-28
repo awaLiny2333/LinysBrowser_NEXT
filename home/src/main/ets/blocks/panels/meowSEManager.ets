@@ -73,6 +73,7 @@ struct meowSEManager {
         } else {
           this.selected_index = -1;
           // Set UA
+          this.bunch_of_settings.set('custom_search_engines_selected_index', -1);
         }
       })
       .height(46)
@@ -107,7 +108,9 @@ struct meowSEManager {
     let custom_search_engine = await this.bunch_of_settings.get('custom_search_engines') as string;
     this.bunch_of_search_engines.import_string(custom_search_engine);
     this.selected_index = await this.bunch_of_settings.get('custom_search_engines_selected_index') as number;
-    // console.log("[Meow][meowSEManager] Search engine Manager READY");
+
+    console.log("[Meow][meowSEManager] Search engine Manager READY");
+    console.log("[Meow][meowSEManager] Search engine index: " + this.selected_index.toString());
   }
 
   // on_SE_change() {
@@ -214,6 +217,10 @@ struct meowSEButton {
           } // Toggle Edit Panel
           if (this.onExecution) {
             this.onExecution(this.my_index, this.my_se);
+          } else {
+            AppStorage.set('search_engine_selected', -99);
+            AppStorage.set('search_engine_selected', this.my_index);
+            this.bunch_of_settings.set('custom_search_engines_selected_index', this.my_index);
           }
         })
         .height(this.button_height_default)
@@ -326,14 +333,6 @@ struct meowSEButton {
     })
   }
 
-  set_global_SE_to_mine() {
-    // Rough but works!
-    // Forgive Liny about this OwO
-    this.selected_index = -99;
-    this.selected_index = this.my_index;
-    this.bunch_of_settings.set('custom_search_engines_selected_index', this.my_index);
-  }
-
   save_changes() {
     this.edit_content = this.edit_content.replaceAll("\n", "");
 
@@ -342,10 +341,6 @@ struct meowSEButton {
     this.bunch_of_search_engines.list_of_search_engines[this.my_index].label = this.edit_label;
     this.bunch_of_search_engines.list_of_search_engines[this.my_index].url = this.edit_content;
     this.save_search_engine_to_settings();
-
-    if (this.selected_index == this.my_index) {
-      this.set_global_SE_to_mine();
-    }
 
     // This would refresh UI in other places
     this.bunch_of_search_engines.update_last_accessed();
