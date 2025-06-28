@@ -10,12 +10,19 @@ export class bunch_of_user_agents {
   }
 
   /**
+   * Update last accessed time. This would trigger some refresh on UI layer.
+   * */
+  update_last_accessed() {
+    this.last_accessed = Date.now();
+  }
+
+  /**
    * Add a new user agent to the current user agent list.
    * @param se A user_agent object, the user agent to be added.
    * */
   add_user_agent(ua: user_agent) {
     this.list_of_user_agents.push(ua);
-    this.last_accessed = Date.now();
+    this.update_last_accessed();
   }
 
   /**
@@ -24,7 +31,7 @@ export class bunch_of_user_agents {
    * */
   del_user_agent(index: number) {
     this.list_of_user_agents.splice(index, 1);
-    this.last_accessed = Date.now();
+    this.update_last_accessed();
   }
 
   /**

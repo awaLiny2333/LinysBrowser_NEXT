@@ -404,6 +404,8 @@ struct meowWebView {
             })
             .onPageEnd(() => {
               // console.log("[Meow][ArkWeb] on page end")
+              this.bunch_of_tabs.Tabs[Label.index_key].update_title();
+              this.bunch_of_tabs.Tabs[Label.index_key].update_url();
               this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(false);
               this.tab_is_loading = this.bunch_of_tabs.get_all_is_loading();
               this.update_current_info();

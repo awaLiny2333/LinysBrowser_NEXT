@@ -10,9 +10,8 @@ struct meowUAManager {
   @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
-  @State @Watch('on_select') selected_index: number = -1; // -1 for system default
+  @StorageLink('user_agent_selected') @Watch('on_select') selected_index: number = -1; // -1 for system default
   @State default_pressing: boolean = false;
-  @State UA_loaded_from_disk: boolean = false;
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -71,8 +70,7 @@ struct meowUAManager {
       .height(46)
       .animation(animation_default())
 
-      ForEach(
-        this.bunch_of_user_agents.list_of_user_agents, (_user_agent: user_agent, key: number) => {
+      ForEach(this.bunch_of_user_agents.list_of_user_agents, (_user_agent: user_agent, key: number) => {
         meowUAButton({
           selected_index: this.selected_index,
           my_index: key,
@@ -104,7 +102,6 @@ struct meowUAManager {
     this.bunch_of_user_agents.import_string(custom_user_agents);
     this.selected_index = await this.bunch_of_settings.get('custom_user_agents_selected_index') as number;
 
-    this.UA_loaded_from_disk = true;
     // Get UA
 
     // console.log("[Meow][meowUAManager] UA Manager READY");
@@ -117,19 +114,13 @@ struct meowUAManager {
     } else {
       this.now_global_custom_UA = this.bunch_of_user_agents.list_of_user_agents[this.selected_index].user_agent_content;
     }
-    this.save_user_agents_to_settings();
+    this.bunch_of_settings.set('custom_user_agents_selected_index', this.selected_index);
   }
 
   add_new_custom_ua() {
     this.bunch_of_user_agents.add_user_agent(new user_agent(new Date().toLocaleString(),
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0"));
-    this.save_user_agents_to_settings();
-  }
-
-  // Data utils
-  save_user_agents_to_settings() {
     this.bunch_of_settings.set('custom_user_agents', this.bunch_of_user_agents.export_string());
-    this.bunch_of_settings.set('custom_user_agents_selected_index', this.selected_index);
   }
 }
 
@@ -188,7 +179,7 @@ struct meowUAButton {
           .margin({ left: this.press_timing_ok ? 10 : 0 })
           .animation(animation_default())
 
-        } // Bookmark button
+        } // UA button
         .borderRadius(this.editing ? { topLeft: 7, topRight: 7 } : 7)
         .backgroundColor(this.pressing ? this.color_current_font : this.color_current_primary)
         .animation(animation_default())
@@ -340,13 +331,16 @@ struct meowUAButton {
 
     this.my_label = this.edit_label;
     this.my_content = this.edit_content;
-    this.my_ua.label = this.edit_label;
-    this.my_ua.user_agent_content = this.edit_content;
+    this.bunch_of_user_agents.list_of_user_agents[this.my_index].label = this.edit_label;
+    this.bunch_of_user_agents.list_of_user_agents[this.my_index].user_agent_content = this.edit_content;
     this.save_user_agents_to_settings();
 
     if (this.selected_index == this.my_index) {
       this.set_global_UA_to_mine();
     }
+
+    // This would refresh UI in other places
+    this.bunch_of_user_agents.update_last_accessed();
   }
 
   delete_myself() {

@@ -7,6 +7,8 @@ import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 
 @Component
 struct meowSEManager {
+  @Prop default_new_se: search_engine = new search_engine(new Date().toLocaleString(), "https://bing.com/search?q=%s");
+  // Environment
   @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines = new bunch_of_search_engines();
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('search_engine') search_engine: string = "";
@@ -76,8 +78,7 @@ struct meowSEManager {
       .height(46)
       .animation(animation_default())
 
-      ForEach(
-        this.bunch_of_search_engines.list_of_search_engines, (_user_agent: search_engine, key: number) => {
+      ForEach(this.bunch_of_search_engines.list_of_search_engines, (_se: search_engine, key: number) => {
         meowSEButton({
           selected_index: this.selected_index,
           my_index: key,
@@ -88,7 +89,7 @@ struct meowSEManager {
       Row() {
         linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
           .onClick(() => {
-            this.add_new_custom_search_engine();
+            this.add_new_custom_search_engine(this.default_new_se);
           })
       } // Add Button
       .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
@@ -109,8 +110,7 @@ struct meowSEManager {
   async on_appear() {
     let custom_search_engine = await this.bunch_of_settings.get('custom_search_engines') as string;
     this.bunch_of_search_engines.import_string(custom_search_engine);
-    this.selected_index =
-      await this.bunch_of_settings.get('custom_search_engines_selected_index') as number;
+    this.selected_index = await this.bunch_of_settings.get('custom_search_engines_selected_index') as number;
     // console.log("[Meow][meowSEManager] Search engine Manager READY");
   }
 
@@ -129,20 +129,12 @@ struct meowSEManager {
     } else {
       this.search_engine = this.bunch_of_search_engines.list_of_search_engines[index].url;
     }
-    this.save_search_engines_to_settings();
-  }
-
-  add_new_custom_search_engine() {
-    this.bunch_of_search_engines.add_search_engine(new search_engine(new Date().toLocaleString(),
-      "https://bing.com/search?q=%s"));
-    this.save_search_engines_to_settings();
-  }
-
-  // Data utils
-
-  save_search_engines_to_settings() {
-    this.bunch_of_settings.set('custom_search_engines', this.bunch_of_search_engines.export_string());
     this.bunch_of_settings.set('custom_search_engines_selected_index', this.selected_index);
+  }
+
+  add_new_custom_search_engine(se: search_engine) {
+    this.bunch_of_search_engines.add_search_engine(se);
+    this.bunch_of_settings.set('custom_search_engines', this.bunch_of_search_engines.export_string());
   }
 }
 
@@ -356,13 +348,16 @@ struct meowSEButton {
 
     this.my_label = this.edit_label;
     this.my_content = this.edit_content;
-    this.my_se.label = this.edit_label;
-    this.my_se.url = this.edit_content;
-    this.save_search_engine_to_kv_store();
+    this.bunch_of_search_engines.list_of_search_engines[this.my_index].label = this.edit_label;
+    this.bunch_of_search_engines.list_of_search_engines[this.my_index].url = this.edit_content;
+    this.save_search_engine_to_settings();
 
     if (this.selected_index == this.my_index) {
       this.set_global_SE_to_mine();
     }
+
+    // This would refresh UI in other places
+    this.bunch_of_search_engines.update_last_accessed();
   }
 
   delete_myself() {
@@ -379,11 +374,11 @@ struct meowSEButton {
       this.selected_index = -2;
       this.selected_index = Math.min(this.bunch_of_search_engines.list_of_search_engines.length - 1, prev_selected);
     }
-    this.save_search_engine_to_kv_store();
+    this.save_search_engine_to_settings();
 
   }
 
-  save_search_engine_to_kv_store() {
+  save_search_engine_to_settings() {
     console.log("[Meow][meowUAManager] Started to save custom user-agents to KVStore!")
     this.bunch_of_settings.set('custom_search_engines', this.bunch_of_search_engines.export_string());
   }

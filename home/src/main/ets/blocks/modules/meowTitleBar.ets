@@ -33,6 +33,7 @@ import meowDebug from '../panels/meowDebug';
 import linysProgressInfo from '../../components/linysProgressInfo';
 import { add_transparency } from '../../utils/color_tools';
 import { current_tabs_style_is_horizontal } from '../../utils/ui_tools';
+import { search_engine } from '../../hosts/bunch_of_search_engines';
 
 @Component
 struct meowTitleBar {
@@ -126,8 +127,10 @@ struct meowTitleBar {
     cornerRadius: 26
   })
   quick_keyword: string = '';
+  quick_se: search_engine | undefined = undefined;
   woofQuickSE_control: CustomDialogController = new CustomDialogController({
     builder: woofQuickSE({
+      default_new_se: this.quick_se,
       keyword: this.quick_keyword
     }),
     alignment: DialogAlignment.Center,
@@ -439,11 +442,19 @@ struct meowTitleBar {
             .visibility((this.is_search_input_typing || this.search_extracted_field_available) && !this.showing_scratching_board
               ? Visibility.Visible : Visibility.None)
             .onClick(() => {
-              console.log(this.search_extracted_keyword);
-              if (this.search_extracted_keyword == '') {
+              let extract: string[] = extract_search(this.search_input);
+              let key = extract[1];
+              let link = extract[0];
+              if (key == '' && link == '') {
                 this.quick_keyword = this.search_input;
+                this.quick_se = undefined;
               } else {
                 this.quick_keyword = this.search_extracted_keyword;
+                // Set default add Search engine
+                let label = this.current_title;
+                label = label.replaceAll(key, '');
+                label = label.replace(/ ?[_-] ?/g, '');
+                this.quick_se = new search_engine(label, link);
               }
               this.woofQuickSE_control.open();
             })
@@ -962,8 +973,6 @@ struct meowTitleBar {
       if (extract[1] == '' && extract[0] == '') {
         this.showing_search_extracted_field = false;
         this.search_extracted_field_available = false;
-        this.search_extracted_engine = '';
-        this.search_extracted_keyword = '';
       } else {
         this.search_extracted_field_available = true;
         this.search_extracted_engine = extract[0];

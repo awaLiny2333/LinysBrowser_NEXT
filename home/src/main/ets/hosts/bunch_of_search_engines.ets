@@ -9,12 +9,19 @@ export class bunch_of_search_engines {
   }
 
   /**
+   * Update last accessed time. This would trigger some refresh on UI layer.
+   * */
+  update_last_accessed() {
+    this.last_accessed = Date.now();
+  }
+
+  /**
    * Add a new search engine to the current search engine list.
    * @param se A search_engine object, the search engine to be added.
    * */
   add_search_engine(se: search_engine) {
     this.list_of_search_engines.push(se);
-    this.last_accessed = Date.now();
+    this.update_last_accessed();
   }
 
   /**
@@ -23,7 +30,7 @@ export class bunch_of_search_engines {
    * */
   del_search_engine(index: number) {
     this.list_of_search_engines.splice(index, 1);
-    this.last_accessed = Date.now();
+    this.update_last_accessed();
   }
 
   /**

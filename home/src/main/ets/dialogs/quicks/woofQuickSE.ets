@@ -1,5 +1,5 @@
 import { animation_default, click_effect_default, default_search_engine } from '../../hosts/bunch_of_defaults';
-import { bunch_of_search_engines } from '../../hosts/bunch_of_search_engines';
+import { bunch_of_search_engines, search_engine } from '../../hosts/bunch_of_search_engines';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import woofControlFrame from '../woofControlFrame';
 import meowSEManager from '../../blocks/panels/meowSEManager';
@@ -9,8 +9,10 @@ import linysText from '../../components/texts/linysText';
 struct woofQuickSE {
   controller: CustomDialogController;
   @Prop keyword: string = ''
+  @Prop default_new_se: search_engine = new search_engine(new Date().toLocaleString(), default_search_engine());
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Host
   @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines = new bunch_of_search_engines();
@@ -21,8 +23,6 @@ struct woofQuickSE {
   @State adding_SE: boolean = false;
   @State height_of_add_panel: number = 0;
   button_height_default: number = 42;
-  // Color
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   // Gateways
   @StorageLink('universal_load_url_gateway') load_url_gateway: string = "";
 
@@ -42,6 +42,7 @@ struct woofQuickSE {
             .backgroundColor(this.color_current_secondary)
 
           meowSEManager({
+            default_new_se: this.default_new_se,
             on_default_execution: () => {
               this.search_with_se(this.keyword);
             },

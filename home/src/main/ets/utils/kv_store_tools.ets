@@ -39,7 +39,8 @@ export async function kv_store_put(key_name: string, put_content: string) {
     if (err !== undefined) {
       console.error(`[kv_store_tools][ERROR] Failed to put data. Code: ${err.code},message: ${err.message}`);
     } else {
-      console.log("[kv_store_tools] Succeeded in putting data, key: " + key_name + ".")
+      console.log("[kv_store_tools] Succeeded in putting data, key: " + key_name + ".");
+      console.log(put_content);
     }
   });
 
