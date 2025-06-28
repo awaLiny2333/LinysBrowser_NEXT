@@ -379,12 +379,11 @@ struct meowTitleBar {
                 .onChange((content) => {
                   this.search_extracted_keyword = content;
                   if (content == '') {
-                    this.search_input_unified = this.search_extracted_engine.replaceAll('%s', "");
+                    this.search_input_unified = this.search_extracted_engine.replaceAll('%s', "meow");
                   } else {
-                    this.search_input_unified =
-                      this.search_extracted_engine.replaceAll('%s', encodeURIComponent(content));
+                    this.search_input_unified = this.search_extracted_engine.replaceAll('%s', encodeURIComponent(content));
+                    this.search_input = this.search_input_unified;
                   }
-                  this.search_input = this.search_input_unified;
                 })
                 .onSubmit(() => {
                   this.submit_searching();
