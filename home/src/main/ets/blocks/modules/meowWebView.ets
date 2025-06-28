@@ -101,11 +101,13 @@ struct meowWebView {
   onPermit?: () => void;
   onDeny?: () => void;
   ask_resources: string[] = [];
+  source: string = '';
   woofWantProtectedResources_control: CustomDialogController = new CustomDialogController({
     builder: woofWantResources({
       protected_resource_types: this.ask_resources,
       onPermit: this.onPermit,
-      onDeny: this.onDeny
+      onDeny: this.onDeny,
+      source: this.source
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16
@@ -538,9 +540,52 @@ struct meowWebView {
                 event.request.deny();
               }
               this.ask_resources = event.request.getAccessibleResource();
+              this.source = event.request.getOrigin();
               console.log('[Meow][meowWebView] Requesting Protected Resources: ' + event.request.getAccessibleResource());
               this.woofWantProtectedResources_control.open();
             })
+            .onClientAuthenticationRequest((event)=>{
+              console.log('[meowWebView] onClientAuthenticationRequest event.host: ' + event.host);
+              console.log('[meowWebView] onClientAuthenticationRequest event.port ' + event.port);
+              console.log('[meowWebView] onClientAuthenticationRequest event.keyTypes: ' + event.keyTypes.join('\n'));
+              console.log('[meowWebView] onClientAuthenticationRequest event.issuers: ' + event.issuers.join('\n'));
+            })
+            // .onHttpAuthRequest((event) => {
+            //   if (event) {
+            //     console.log('[meowWebView] onHttpAuthRequest event.host: ' + event.host)
+            //     console.log('[meowWebView] onHttpAuthRequest event.realm: ' + event.realm)
+            //     console.log('[meowWebView] onHttpAuthRequest event.handler.isHttpAuthInfoSaved(): ' + (event.handler.isHttpAuthInfoSaved() ? 'true' : 'false'))
+            //     this.getUIContext().showAlertDialog({
+            //       title: 'onHttpAuthRequest',
+            //       message: 'text',
+            //       primaryButton: {
+            //         value: 'cancel',
+            //         action: () => {
+            //           event.handler.cancel();
+            //         }
+            //       },
+            //       secondaryButton: {
+            //         value: 'ok',
+            //         action: () => {
+            //           this.httpAuth = event.handler.isHttpAuthInfoSaved();
+            //           if (this.httpAuth == false) {
+            //             webview.WebDataBase.saveHttpAuthCredentials(
+            //               event.host,
+            //               event.realm,
+            //               "2222",
+            //               "2222"
+            //             )
+            //             event.handler.cancel();
+            //           }
+            //         }
+            //       },
+            //       cancel: () => {
+            //         event.handler.cancel();
+            //       }
+            //     })
+            //   }
+            //   return true;
+            // })
           // .onContextMenuShow((event) => {
           //   if (event) {
           //     this.menu_result = event.result

@@ -12,8 +12,8 @@ struct woofUpdateHistory {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @State texts: string[] = [
     'v1.7.8-beta 2025 07',
-    '一个补充性的更新！将权限申请、更好的页面内搜索、Blob 下载支持、代理下载支持、跨设备接续等功能带入冲浪喵～',
-    'A supplementary update! Bringing Permission Request, better in-page searching, Blob download support, proxy enabled download support and cross-device continuation support into BrowserCat~',
+    '一个补充性的更新！将浏览器界面右键支持、权限申请、更好的页面内搜索、Blob 下载支持、代理下载支持、跨设备接续等功能带入冲浪喵～',
+    'A supplementary update! Bringing right click support for ui, Permission Request, better in-page searching, Blob download support, proxy enabled download support and cross-device continuation support into BrowserCat~',
 
     'v1.7.7-beta 2025 06',
     '一个实验性的更新！将历史记录索引、更多辅助功能带入冲浪喵～\n' +

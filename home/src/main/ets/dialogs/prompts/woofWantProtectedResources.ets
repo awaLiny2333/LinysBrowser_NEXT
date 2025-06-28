@@ -8,6 +8,7 @@ import { desc_for_ProtectedResourceTypes, permissions_for_ProtectedResourceTypes
 struct woofWantResources {
   controller: CustomDialogController;
   @Prop protected_resource_types: string[] = [];
+  @Prop source: string = 'source';
   onPermit?: () => void;
   onDeny?: () => void;
   // Colors
@@ -23,6 +24,7 @@ struct woofWantResources {
     Column({ space: 15 }) {
       linysTextTitle({ text: $r('app.string.Permission_Manager_webpage_asks_for_permission'), max_lines: 3 })// This page is asking for a jump
         .width("100%")
+      linysText({ text: this.source })
 
       Column({ space: 10 }) {
         ForEach(desc_for_ProtectedResourceTypes(this.protected_resource_types), ((desc: ResourceStr) => {

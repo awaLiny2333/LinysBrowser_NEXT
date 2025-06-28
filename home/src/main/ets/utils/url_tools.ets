@@ -232,8 +232,9 @@ export function match_domain(input: string) {
     let url_split = url.split("/")
     if ((url_split[0].substring(url_split[0].length - 1) == ":") && (url_split[1] == "")) {
       // if protocol scheme is at the beginning
-      url = url.split("/").slice(2).join("/")
-      scheme = url_split[0].split(":")[0]
+      // url = url.split("/").slice(2).join("/");
+      url = url.split("/")[2];
+      scheme = url_split[0].split(":")[0];
     }
   }
   return [scheme, url];

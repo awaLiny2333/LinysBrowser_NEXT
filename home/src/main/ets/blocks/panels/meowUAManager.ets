@@ -215,6 +215,12 @@ struct meowUAButton {
           // Set UA
         })
         .height(this.button_height_default)
+        .onMouse((e) => {
+          if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
+            // Right click
+            this.editing = !this.editing;
+          }
+        })
 
         Scroll() {
           Column({ space: 10 }) {

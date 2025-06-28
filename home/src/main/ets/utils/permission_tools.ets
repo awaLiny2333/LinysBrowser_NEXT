@@ -1,9 +1,9 @@
 import { abilityAccessCtrl, common, Permissions } from '@kit.AbilityKit';
-import { webview } from '@kit.ArkWeb';
+// import { webview } from '@kit.ArkWeb';
 
 let context = AppStorage.get("context") as common.UIAbilityContext;
 
-webview.WebviewController.setWebDebuggingAccess(true);
+// webview.WebviewController.setWebDebuggingAccess(true);
 let atManager = abilityAccessCtrl.createAtManager();
 
 /**

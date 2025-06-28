@@ -7,8 +7,7 @@ import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 
 @Component
 struct meowSEManager {
-  @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines =
-    new bunch_of_search_engines();
+  @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines = new bunch_of_search_engines();
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('search_engine') search_engine: string = "";
   @StorageLink('search_engine_selected') @Watch('on_select') selected_index: number = -2; // -1 for system default
@@ -220,6 +219,12 @@ struct meowSEButton {
           this.set_global_SE_to_mine();
         })
         .height(this.button_height_default)
+        .onMouse((e) => {
+          if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
+            // Right click
+            this.editing = !this.editing;
+          }
+        })
 
         Scroll() {
           Column({ space: 10 }) {

@@ -136,7 +136,7 @@ struct meowTitleBar {
   })
   woofAdsBlocker_control: CustomDialogController = new CustomDialogController({
     builder: woofAdsBlocker({
-      add_exception_domain_edit: match_domain(this.search_input)[1].split("/")[0],
+      add_exception_domain_edit: match_domain(this.search_input)[1],
       showing_add_panel: true
     }),
     // showInSubWindow: true,
@@ -482,6 +482,17 @@ struct meowTitleBar {
             .onClick(() => {
               this.show_tabs();
             })
+            .gesture(
+              LongPressGesture({ repeat: false })
+                .onAction(() => {
+                  this.new_tab();
+                }))
+            .onMouse((e) => {
+              if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
+                // Right click
+                this.new_tab();
+              }
+            })
             .keyboardShortcut(this.bunch_of_key_shortcuts.show_tabs.main_key, this.bunch_of_key_shortcuts.show_tabs.modifier)
 
           linysShowButton({
@@ -489,6 +500,17 @@ struct meowTitleBar {
             text: $r('app.string.Index_bookmarks_title'),
             symbol_glyph_target: 'sys.symbol.bookmark'
           })// Bookmarks
+            .gesture(
+              LongPressGesture({ repeat: false })
+                .onAction(() => {
+                  this.show_add_bookmarks();
+                }))
+            .onMouse((e) => {
+              if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
+                // Right click
+                this.show_add_bookmarks();
+              }
+            })
             .onClick(() => {
               this.show_bookmarks();
             })
@@ -1011,6 +1033,26 @@ struct meowTitleBar {
     this.showing_more_options = false;
     this.showing_app_settings = false;
     this.showing_downloads = !this.showing_downloads;
+  }
+
+  // Operations
+
+  show_add_bookmarks() {
+    if (this.showing_bookmarks) {
+      this.showing_bookmarks = false;
+      AppStorage.set('adding_bookmark', false);
+    } else {
+      // Add Bookmark
+      AppStorage.set('bookmark_add_label', this.bunch_of_tabs.workingMainTab().title);
+      AppStorage.set('bookmark_add_link', url_resource_to_meow(this.bunch_of_tabs.workingMainTab().url));
+      this.showing_bookmarks = true;
+      AppStorage.set('adding_bookmark', true);
+    }
+  }
+
+  new_tab() {
+    AppStorage.set('extra_background', false);
+    AppStorage.set('universal_new_tab_gateway', "new_tab");
   }
 
   // Web control events

@@ -370,6 +370,12 @@ struct Domain {
           this.select_unselect();
         })
     )
+    .onMouse((e) => {
+      if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
+        // Right click
+        this.select_unselect();
+      }
+    })
   }
 
   select_unselect() {

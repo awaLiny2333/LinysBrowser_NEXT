@@ -130,7 +130,7 @@ struct woofGeneralManage {
           Scroll() {
             Column() {
               ForEach(this.general_sites_list, (item: string, index: number) => {
-                Domain({
+                Element({
                   domain: item,
                   index: index,
                   selected: this.selected,
@@ -368,7 +368,7 @@ struct woofGeneralManage {
 export default woofGeneralManage;
 
 @Component
-struct Domain {
+struct Element {
   @State domain: string = "huawei.com";
   @Prop index: number;
   @Link selected: boolean[];
@@ -410,6 +410,12 @@ struct Domain {
           this.select_unselect();
         })
     )
+    .onMouse((e) => {
+      if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
+        // Right click
+        this.select_unselect();
+      }
+    })
   }
 
   select_unselect() {

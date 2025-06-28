@@ -37,11 +37,11 @@ struct meowBookmarks {
   @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
   @StorageLink('preferred_hand_reverse_tabs_panel') preferred_hand_reverse_tabs_panel: boolean = false;
   // Input and Interactions
-  @State add_label: string = "";
-  @State add_link: string = "";
+  @StorageLink('bookmark_add_label') add_label: string = "";
+  @StorageLink('bookmark_add_link') add_link: string = "";
   @State scroll_area_height: number = 0;
   @State adding_folder: boolean = false;
-  @State adding_bookmark: boolean = false;
+  @StorageLink('adding_bookmark') adding_bookmark: boolean = false;
   @State showing_navigator: boolean = false;
   @State importing_bookmarks: boolean = false;
   @State exporting_bookmarks: boolean = false;
@@ -568,7 +568,6 @@ struct bookmarkItem {
   // Animations statuses
   @State edit_label: string = this.label;
   @State edit_link: string = this.link;
-  @State delete_confirm: number = 0;
   @StorageLink('swapping_offset_timeout') swapping_offset_timeout: number = 0;
   // Edit inputs
   @State @Watch('on_select_change') select_path_result: string | undefined = undefined;
@@ -690,6 +689,12 @@ struct bookmarkItem {
         this.on_item_click();
       })
       .height(this.bookmark_height_default)
+      .onMouse((e) => {
+        if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
+          // Right click
+          this.editing = !this.editing;
+        }
+      })
 
       Scroll() {
         Column({ space: 10 }) {
@@ -804,17 +809,13 @@ struct bookmarkItem {
         // Animation of floating up
       }, this.get_animation_timeout())
       setInterval(() => {
+        // Count press time
         if (this.pressing) {
           this.press_timing += 1;
         } else {
           this.press_timing = 0;
         }
         this.press_timing_ok = this.press_timing > 20;
-        // Count press time
-        if (this.delete_confirm > 0) {
-          this.delete_confirm -= 1;
-        }
-        // Reset delete confirm
       }, 10)
     })
   }
@@ -824,7 +825,6 @@ struct bookmarkItem {
       return;
     }
     if (this.press_timing_ok) {
-      this.delete_confirm = 0;
       this.editing = !this.editing;
       return;
     } // Toggle Edit Panel
