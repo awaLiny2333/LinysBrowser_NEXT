@@ -90,7 +90,7 @@ struct meowBookmarks {
       .edgeEffect(EdgeEffect.Spring)
       .width("100%")
       .layoutWeight(1)
-      // .margin({ bottom: 10 })
+      .margin({ bottom: 10 })
       .onAreaChange((_o, n) => {
         this.scroll_area_height = n.height as number;
         // Update height of scroll area
@@ -553,7 +553,7 @@ struct bookmarkItem {
   @State type: string = this.item.get_item().get_type();
   @State label: string = this.item.get_item().get_label();
   @State link: string = this.type == "bookmark" ? (this.item.get_item() as bookmark).get_link() : "";
-  @StorageLink('swapping_bookmarks') swapping_bookmarks: boolean = false;
+  @StorageLink('swapping_bookmarks') @Watch('on_swapping_bookmarks') swapping_bookmarks: boolean = false;
   @StorageLink('bookmarks_scroll_by') bookmarks_scroll_by: number = 0;
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
@@ -899,6 +899,25 @@ struct bookmarkItem {
     this.save_bookmarks();
   }
 
+  // Operations
+
+  move_folder() {
+    this.moving_type = "folder";
+    this.woofBookmarksPathSelector_control.open();
+  }
+
+  move_bookmark() {
+    this.moving_type = "bookmark";
+    this.woofBookmarksPathSelector_control.open();
+  }
+
+  save_bookmarks() {
+    console.log("[Meow][LinysBookmarks] Started to save HTML to disk!")
+    let html_bookmark: string[] = this.bunch_of_bookmarks.get_export_html();
+    // kv_store_put("html_bookmarks", html_bookmark.join("\n"));
+    sandbox_save('html_bookmarks.html', html_bookmark.join("\n"));
+  }
+
   on_select_change() {
     // Move folder or bookmark
 
@@ -942,28 +961,17 @@ struct bookmarkItem {
     this.select_path_result = undefined;
   }
 
-  move_folder() {
-    this.moving_type = "folder";
-    this.woofBookmarksPathSelector_control.open();
-  }
-
-  move_bookmark() {
-    this.moving_type = "bookmark";
-    this.woofBookmarksPathSelector_control.open();
-  }
-
-  save_bookmarks() {
-    console.log("[Meow][LinysBookmarks] Started to save HTML to disk!")
-    let html_bookmark: string[] = this.bunch_of_bookmarks.get_export_html();
-    // kv_store_put("html_bookmarks", html_bookmark.join("\n"));
-    sandbox_save('html_bookmarks.html', html_bookmark.join("\n"));
-  }
-
   swap(idx_a: number, idx_b: number) {
     this.bunch_of_bookmarks.last_accessed = Date.now();
     let c = this.viewing_contents[idx_a];
     this.viewing_contents[idx_a] = this.viewing_contents[idx_b];
     this.viewing_contents[idx_b] = c;
     this.save_bookmarks();
+  }
+
+  on_swapping_bookmarks() {
+    if (this.swapping_bookmarks) {
+      this.editing = false;
+    }
   }
 }

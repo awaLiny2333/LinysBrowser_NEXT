@@ -21,7 +21,7 @@ struct woofWantResources {
 
   build() {
     Column({ space: 15 }) {
-      linysTextTitle({ text: $r('app.string.Permission_Manager_webpage_asks_for_permission') })// This page is asking for a jump
+      linysTextTitle({ text: $r('app.string.Permission_Manager_webpage_asks_for_permission'), max_lines: 3 })// This page is asking for a jump
         .width("100%")
 
       Column({ space: 10 }) {
