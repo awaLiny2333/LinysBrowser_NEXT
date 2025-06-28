@@ -101,12 +101,9 @@ struct meowSEManager {
     .backgroundColor($r('sys.color.comp_background_tertiary'))
     .width("100%")
     .animation(animation_default())
-    .onAppear(() => {
-      this.on_appear();
-    })
   }
 
-  async on_appear() {
+  async aboutToAppear() {
     let custom_search_engine = await this.bunch_of_settings.get('custom_search_engines') as string;
     this.bunch_of_search_engines.import_string(custom_search_engine);
     this.selected_index = await this.bunch_of_settings.get('custom_search_engines_selected_index') as number;
@@ -128,7 +125,6 @@ struct meowSEManager {
     } else {
       this.search_engine = this.bunch_of_search_engines.list_of_search_engines[index].url;
     }
-    this.bunch_of_settings.set('custom_search_engines_selected_index', this.selected_index);
   }
 
   add_new_custom_search_engine(se: search_engine) {
@@ -335,6 +331,7 @@ struct meowSEButton {
     // Forgive Liny about this OwO
     this.selected_index = -99;
     this.selected_index = this.my_index;
+    this.bunch_of_settings.set('custom_search_engines_selected_index', this.my_index);
   }
 
   save_changes() {

@@ -96,19 +96,16 @@ struct meowUAManager {
     .backgroundColor($r('sys.color.comp_background_tertiary'))
     .width("100%")
     .animation(animation_default())
-    .onAppear(() => {
-      this.on_appear();
-    })
   }
 
-  async on_appear() {
+  async aboutToAppear() {
     let custom_user_agents = await this.bunch_of_settings.get('custom_user_agents') as string;
     this.bunch_of_user_agents.import_string(custom_user_agents);
     this.selected_index = await this.bunch_of_settings.get('custom_user_agents_selected_index') as number;
 
     // Get UA
 
-    // console.log("[Meow][meowUAManager] UA Manager READY");
+    console.log("[Meow][meowUAManager] UA Manager READY");
   }
 
   on_select() {
@@ -119,7 +116,6 @@ struct meowUAManager {
     } else {
       this.now_global_custom_UA = this.bunch_of_user_agents.list_of_user_agents[this.selected_index].user_agent_content;
     }
-    this.bunch_of_settings.set('custom_user_agents_selected_index', this.selected_index);
   }
 
   add_new_custom_ua() {
@@ -324,6 +320,7 @@ struct meowUAButton {
   set_global_UA_to_mine() {
     this.selected_index = -99;
     this.selected_index = this.my_index;
+    this.bunch_of_settings.set('custom_user_agents_selected_index', this.my_index);
   }
 
   save_changes() {
