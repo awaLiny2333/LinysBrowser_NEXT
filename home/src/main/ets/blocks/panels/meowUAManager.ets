@@ -21,6 +21,10 @@ struct meowUAManager {
 
   build() {
     Column({ space: 2.5 }) {
+      // linysText({
+      //   text: this.selected_index.toString() + ': ' + this.now_global_custom_UA
+      // })
+
       Row() {
         Row() {
           Text($r('app.string.Settings_general_custom_ua_default'))// Title
@@ -108,7 +112,7 @@ struct meowUAManager {
   }
 
   on_select() {
-    console.log('meow')
+    // console.log('meow ' + this.selected_index.toString())
     if (this.selected_index <= -1) {
       // If set back to default
       this.now_global_custom_UA = "";
