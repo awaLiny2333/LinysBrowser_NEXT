@@ -7,8 +7,6 @@ import meowSEManager from '../../blocks/panels/meowSEManager';
 @CustomDialog
 struct woofQuickSE {
   controller: CustomDialogController;
-  @Prop link: string = '';
-  @Prop label: string = '';
   @Prop keyword: string = ''
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
@@ -33,10 +31,10 @@ struct woofQuickSE {
       Scroll() {
         meowSEManager({
           on_default_execution: () => {
-            this.on_click_selected();
+            this.search_with_se(this.keyword);
           },
           on_normal_execution: (idx, _se) => {
-            this.on_click_selected(idx);
+            this.search_with_se(this.keyword, idx);
           }
         })
       }
@@ -48,20 +46,19 @@ struct woofQuickSE {
       })
       .animation(animation_default())
       .onAppear(() => {
-        // Preserve the main title only
-        this.label = this.label.replace(this.keyword, '');
-        this.label = this.label.replace(/ ?[_-] ?/g, '');
+        console.log('[woofQuickSE] About to search: "' + this.keyword + '" on another engine.')
       })
     }
   }
 
-  on_click_selected(clicked_index?: number) {
+  search_with_se(key: string, clicked_index?: number) {
     // Choose to search on another engine
-    if (clicked_index) {
-      this.load_url_gateway = this.bunch_of_search_engines.list_of_search_engines[clicked_index].url.replaceAll('%s', this.keyword);
+    if (clicked_index !== undefined) {
+      this.load_url_gateway = this.bunch_of_search_engines.list_of_search_engines[clicked_index].url.replaceAll('%s', key);
     } else {
-      this.load_url_gateway = default_search_engine().replaceAll('%s', this.keyword);
+      this.load_url_gateway = default_search_engine().replaceAll('%s', key);
     }
+    console.log('[woofQuickSE] Search: "' + this.keyword + '" => ' + this.load_url_gateway);
     if (this.controller) {
       this.controller.close();
     }

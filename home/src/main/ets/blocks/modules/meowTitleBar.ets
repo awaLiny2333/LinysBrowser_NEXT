@@ -120,16 +120,15 @@ struct meowTitleBar {
     alignment: DialogAlignment.Center,
     cornerRadius: 16
   })
-  woofUAswitch_control: CustomDialogController = new CustomDialogController({
+  woofQuickUA_control: CustomDialogController = new CustomDialogController({
     builder: woofQuickUA(),
     alignment: DialogAlignment.Center,
     cornerRadius: 22
   })
-  woofAddSE_control: CustomDialogController = new CustomDialogController({
+  quick_keyword: string = '';
+  woofQuickSE_control: CustomDialogController = new CustomDialogController({
     builder: woofQuickSE({
-      label: this.current_title,
-      link: this.search_extracted_engine,
-      keyword: this.search_extracted_keyword
+      keyword: this.quick_keyword
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16
@@ -437,9 +436,16 @@ struct meowTitleBar {
             symbol_glyph_target: 'sys.symbol.magnifyingglass',
           })// Add Search Engine
             .enabled(this.showing_scratching_board ? false : true)
-            .visibility(this.search_extracted_field_available && !this.showing_scratching_board ? Visibility.Visible : Visibility.None)
+            .visibility((this.is_search_input_typing || this.search_extracted_field_available) && !this.showing_scratching_board
+              ? Visibility.Visible : Visibility.None)
             .onClick(() => {
-              this.woofAddSE_control.open();
+              console.log(this.search_extracted_keyword);
+              if (this.search_extracted_keyword == '') {
+                this.quick_keyword = this.search_input;
+              } else {
+                this.quick_keyword = this.search_extracted_keyword;
+              }
+              this.woofQuickSE_control.open();
             })
             .animation(animation_default())
         } // Searching bar
@@ -741,7 +747,7 @@ struct meowTitleBar {
               symbol_glyph_target: 'sys.symbol.label'
             })// UA
               .onClick(() => {
-                this.woofUAswitch_control.open();
+                this.woofQuickUA_control.open();
               })
             linysSymbol({
               symbol_glyph_target: 'sys.symbol.qrcode'
@@ -956,6 +962,8 @@ struct meowTitleBar {
       if (extract[1] == '' && extract[0] == '') {
         this.showing_search_extracted_field = false;
         this.search_extracted_field_available = false;
+        this.search_extracted_engine = '';
+        this.search_extracted_keyword = '';
       } else {
         this.search_extracted_field_available = true;
         this.search_extracted_engine = extract[0];
