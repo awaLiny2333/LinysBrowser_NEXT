@@ -108,6 +108,7 @@ struct meowUAManager {
   }
 
   on_select() {
+    console.log('meow')
     if (this.selected_index <= -1) {
       // If set back to default
       this.now_global_custom_UA = "";
@@ -148,7 +149,6 @@ struct meowUAButton {
   @State edit_content: string = this.my_content;
   // UI effects
   @State height_of_text_area: number = 42;
-  @State visible: Visibility = Visibility.Hidden;
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -302,12 +302,8 @@ struct meowUAButton {
       })
     }
     .width("100%")
-    .visibility(this.visible)
     .animation(animation_default())
     .onAppear(() => {
-      setTimeout(() => {
-        this.visible = Visibility.Visible;
-      }, 10)
       setInterval(() => {
         if (this.pressing) {
           this.press_timing += 1;
@@ -322,7 +318,7 @@ struct meowUAButton {
   }
 
   set_global_UA_to_mine() {
-    this.selected_index = -1;
+    this.selected_index = -99;
     this.selected_index = this.my_index;
   }
 
