@@ -300,7 +300,12 @@ struct meowAppSettings {
 
               // Search Engine
               linysText({ text: $r('app.string.Settings_general_custom_search_engine') })
-              meowSEManager()
+              meowSEManager({
+                on_normal_execution: (idx, _se) => {
+                  AppStorage.set('search_engine_selected', -1);
+                  AppStorage.set('search_engine_selected', idx);
+                }
+              })
 
               // New tab URL
               linysText({ text: $r('app.string.Settings_general_new_tab_url') })
@@ -583,7 +588,7 @@ struct meowAppSettings {
                 onExecution: () => {
                   this.woofHistory_control.open();
                 }
-              })// View history
+              }) // View history
 
               linysText({ text: $r('app.string.Settings_experience_history_index_desc'), is_description: true })
 

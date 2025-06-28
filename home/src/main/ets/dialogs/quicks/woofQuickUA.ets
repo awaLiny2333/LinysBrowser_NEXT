@@ -24,8 +24,6 @@ struct woofQuickUA {
       .backgroundColor(this.color_current_primary)
       .constraintSize({ maxHeight: 92.5 + 48.5 * this.bunch_of_user_agents.list_of_user_agents.length })
       .animation(animation_default())
-
-      // .padding(15)
     }
   }
 }

@@ -18,6 +18,9 @@ struct meowSEManager {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
+  // execution
+  on_normal_execution?: (idx: number, se: search_engine) => void;
+  on_default_execution?: () => void;
 
   build() {
     Column({ space: 2.5 }) {
@@ -63,8 +66,12 @@ struct meowSEManager {
         }
       })
       .onClick(() => {
-        this.selected_index = -1;
-        // Set UA
+        if (this.on_default_execution) {
+          this.on_default_execution();
+        } else {
+          this.selected_index = -1;
+          // Set UA
+        }
       })
       .height(46)
       .animation(animation_default())
@@ -74,6 +81,7 @@ struct meowSEManager {
         meowSEButton({
           selected_index: this.selected_index,
           my_index: key,
+          onExecution: this.on_normal_execution
         })
       })
 
@@ -167,6 +175,8 @@ struct meowSEButton {
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // execution
+  onExecution?: (idx: number, se: search_engine) => void;
 
   build() {
     Column() {
@@ -216,7 +226,9 @@ struct meowSEButton {
             this.editing = !this.editing;
             return;
           } // Toggle Edit Panel
-          this.set_global_SE_to_mine();
+          if (this.onExecution) {
+            this.onExecution(this.my_index, this.my_se);
+          }
         })
         .height(this.button_height_default)
         .onMouse((e) => {
