@@ -123,7 +123,7 @@ struct meowTitleBar {
   woofQuickUA_control: CustomDialogController = new CustomDialogController({
     builder: woofQuickUA(),
     alignment: DialogAlignment.Center,
-    cornerRadius: 22
+    cornerRadius: 26
   })
   quick_keyword: string = '';
   woofQuickSE_control: CustomDialogController = new CustomDialogController({
@@ -131,7 +131,7 @@ struct meowTitleBar {
       keyword: this.quick_keyword
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 16
+    cornerRadius: 26
   })
   woofAdsBlocker_control: CustomDialogController = new CustomDialogController({
     builder: woofAdsBlocker({

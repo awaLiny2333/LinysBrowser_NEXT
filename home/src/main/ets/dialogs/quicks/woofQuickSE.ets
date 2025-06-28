@@ -1,8 +1,9 @@
-import { animation_default, default_search_engine } from '../../hosts/bunch_of_defaults';
+import { animation_default, click_effect_default, default_search_engine } from '../../hosts/bunch_of_defaults';
 import { bunch_of_search_engines } from '../../hosts/bunch_of_search_engines';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import woofControlFrame from '../woofControlFrame';
 import meowSEManager from '../../blocks/panels/meowSEManager';
+import linysText from '../../components/texts/linysText';
 
 @CustomDialog
 struct woofQuickSE {
@@ -20,6 +21,8 @@ struct woofQuickSE {
   @State adding_SE: boolean = false;
   @State height_of_add_panel: number = 0;
   button_height_default: number = 42;
+  // Color
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   // Gateways
   @StorageLink('universal_load_url_gateway') load_url_gateway: string = "";
 
@@ -29,20 +32,32 @@ struct woofQuickSE {
       controller: this.controller
     }) {
       Scroll() {
-        meowSEManager({
-          on_default_execution: () => {
-            this.search_with_se(this.keyword);
-          },
-          on_normal_execution: (idx, _se) => {
-            this.search_with_se(this.keyword, idx);
-          }
-        })
+        Column({ space: 10 }) {
+          linysText({
+            text: ' 󰀩  ' + this.keyword + ' '
+          })
+            .padding(10)
+            .borderRadius(13.5)
+            .clickEffect(click_effect_default())
+            .backgroundColor(this.color_current_secondary)
+
+          meowSEManager({
+            on_default_execution: () => {
+              this.search_with_se(this.keyword);
+            },
+            on_normal_execution: (idx, _se) => {
+              this.search_with_se(this.keyword, idx);
+            }
+          })
+        }
+        .alignItems(HorizontalAlign.Start)
       }
+      .borderRadius(13.5)
       .layoutWeight(1)
       .scrollBar(BarState.Off)
       .edgeEffect(EdgeEffect.Spring)
       .constraintSize({
-        maxHeight: 48.5 * this.bunch_of_search_engines.list_of_search_engines.length + 100 + (this.adding_SE ? 20 + this.height_of_add_panel : 0)
+        maxHeight: 45 + 48.5 * this.bunch_of_search_engines.list_of_search_engines.length + 100 + (this.adding_SE ? 20 + this.height_of_add_panel : 0)
       })
       .animation(animation_default())
       .onAppear(() => {

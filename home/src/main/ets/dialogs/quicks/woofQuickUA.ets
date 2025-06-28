@@ -18,6 +18,7 @@ struct woofQuickUA {
       Scroll() {
         meowUAManager()
       }
+      .borderRadius(13.5)
       .layoutWeight(1)
       .scrollable(ScrollDirection.Vertical)
       .edgeEffect(EdgeEffect.Spring)

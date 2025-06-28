@@ -562,7 +562,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "feat: long press tabs and bookmarks buttons!\nfeat: UI right click support!\nimprove: now can request for permissions!\nimprove: transparency effect for in-page searching!\nfeat: Directly download to DOWNLOADS Folder!\nfeat: gestures for Tabs and Bookmarks Panel!\nfix: blob download support!\nfix: now goes through system proxy for downloads!\nfeat: multi-device continuation!\nfeat: settings export and import!\nimprove: optimize keyboard shortcut for in-page searches;\nimprove: jumping to a settings block now has highlight!\nimprove: clicking on Scratching Board objects now activates a default action;\nimprove: adjusted position of destination indicator!"
+      "value": "feat: now can select search engine before searching!\nfeat: long press tabs and bookmarks buttons!\nfeat: UI right click support!\nimprove: now can request for permissions!\nimprove: transparency effect for in-page searching!\nfeat: Directly download to DOWNLOADS Folder!\nfeat: gestures for Tabs and Bookmarks Panel!\nfix: blob download support!\nfix: now goes through system proxy for downloads!\nfeat: multi-device continuation!\nfeat: settings export and import!\nimprove: optimize keyboard shortcut for in-page searches;\nimprove: jumping to a settings block now has highlight!\nimprove: clicking on Scratching Board objects now activates a default action;\nimprove: adjusted position of destination indicator!"
     },
     {
       "name": "Whats_new_content_extra",
@@ -666,7 +666,7 @@
     },
     {
       "name": "AddSE_search_again_on",
-      "value": "Search on another engine..."
+      "value": "Re-Search on"
     },
     {
       "name": "intelligent_tracking_prevention",
