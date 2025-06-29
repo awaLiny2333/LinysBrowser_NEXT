@@ -59,6 +59,7 @@ struct meowTitleBar {
   // Current environment
   @Link title_bar_alignRules: AlignRuleOption;
   @StorageLink('search_input') @Watch('on_search_input_change') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
+  @StorageLink('search_input_source') search_input_update_source: string = "extracted_key_edit";
   @State search_input_unified: string = "";
   @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
   @State download_started_popup: boolean = false;
@@ -379,11 +380,12 @@ struct meowTitleBar {
                 .onChange((content) => {
                   this.search_extracted_keyword = content;
                   if (content == '') {
-                    this.search_input_unified = this.search_extracted_engine.replaceAll('%s', "meow");
+                    this.search_input_unified = this.search_extracted_engine.replaceAll('%s', "");
                   } else {
                     this.search_input_unified = this.search_extracted_engine.replaceAll('%s', encodeURIComponent(content));
-                    this.search_input = this.search_input_unified;
                   }
+                  this.search_input_update_source = 'extracted_key_edit';
+                  this.search_input = this.search_input_unified;
                 })
                 .onSubmit(() => {
                   this.submit_searching();
@@ -967,6 +969,9 @@ struct meowTitleBar {
   }
 
   on_search_input_change() {
+    if (this.search_input_update_source == 'extracted_key_edit') {
+      return;
+    }
     if (this.search_input) {
       let extract: string[] = extract_search(this.search_input);
       if (extract[1] == '' && extract[0] == '') {
@@ -1136,6 +1141,7 @@ struct meowTitleBar {
   // Data synchronizing
 
   update_search_input(content?: string) {
+    this.search_input_update_source = 'direct_edit';
     if (content) {
       this.search_input = content;
     } else {
@@ -1177,6 +1183,8 @@ struct estimatedDestination {
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // Env
+  @StorageLink('search_input_source') search_input_update_source: string = "web";
   // Data
   @Link is_http_no_s: boolean;
   @Link is_search_input_typing: boolean;
@@ -1197,7 +1205,7 @@ struct estimatedDestination {
       .padding(8)
       .onClick(() => {
         this.is_http_no_s = !this.is_http_no_s;
-        this.update_search_input();
+        this.update_search_input_unified(this.search_input);
       })
       .borderRadius(8)
       .backgroundColor(this.color_current_primary)
@@ -1230,18 +1238,12 @@ struct estimatedDestination {
     return this.is_input_scheme_less_address() ? Visibility.Visible : Visibility.None;
   }
 
-  // This is stupid
+  // Data
 
-  update_search_input(content?: string) {
-    if (content) {
-      this.search_input = content;
-    } else {
-      this.search_input = "";
-    }
+  update_search_input_unified(content?: string) {
     let s: string = content || "¯\\_(ツ)_/¯";
     let uni_result = unify_search_input_into_url(s, this.is_http_no_s ? "http" : "https");
     this.search_input_unified = uni_result[0] as string;
     this.is_search_input_address = uni_result[1] as boolean;
-    this.search_input_unified = url_resource_to_meow(this.search_input_unified);
   }
 }

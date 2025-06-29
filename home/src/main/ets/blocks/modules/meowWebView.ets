@@ -45,6 +45,7 @@ struct meowWebView {
   @StorageLink('current_accessForward') current_accessForward: boolean = false;
   @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
   @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
+  @StorageLink('search_input_source') search_input_update_source: string = "web";
   @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
   // Settings
   @StorageProp('collect_new_history') collect_new_history: boolean = true;
@@ -694,7 +695,8 @@ struct meowWebView {
 
   update_search_box_text(text: string) {
     if (!this.is_search_input_typing) {
-      this.search_input = url_resource_to_meow(text)
+      this.search_input_update_source = 'web';
+      this.search_input = url_resource_to_meow(text);
       // Update Input Search Box
     }
     // Update Input Search Box when new page loaded
