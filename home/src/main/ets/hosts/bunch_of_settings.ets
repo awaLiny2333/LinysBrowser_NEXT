@@ -317,7 +317,7 @@ export class bunch_of_settings {
     if (value == ('undefined')) {
       value = default_404_fall_back;
     }
-    console.log('[Meow][bunch_of_settings][Uni] Got settings for ' + key + ': ' + value)
+    console.log('[bunch_of_settings][Uni] Got settings for ' + key + ': ' + value)
     return value;
   }
 
@@ -333,7 +333,7 @@ export class bunch_of_settings {
     if (value == ('undefined')) {
       value = default_404_fall_back;
     }
-    console.log('[Meow][bunch_of_settings][Uni] Got settings for ' + key + ': ' + value)
+    console.log('[bunch_of_settings][Uni] Got settings for ' + key + ': ' + value)
     return Number.parseFloat(value);
   }
 
@@ -349,7 +349,7 @@ export class bunch_of_settings {
     if (value == ('undefined')) {
       value = default_404_fall_back;
     }
-    console.log('[Meow][bunch_of_settings][Uni] Got settings for ' + key + ': ' + value)
+    console.log('[bunch_of_settings][Uni] Got settings for ' + key + ': ' + value)
     return this.string_to_boolean(value);
   }
 

@@ -869,6 +869,14 @@
       "value": "导出设置"
     },
     {
+      "name": "Settings_toolbox_export_everything_desc",
+      "value": "或者导出所有的东西——从书签到历史，为一个独立的文件，这样你就可以带着它到处去了！"
+    },
+    {
+      "name": "Settings_toolbox_export_everything",
+      "value": "导出所有东西"
+    },
+    {
       "name": "Settings_toolbox_import_settings_desc",
       "value": "从已有文件导入设置！\n\n注意！这会覆盖一切原有的设置！！\n\n下次启动时将启用新设置！"
     },

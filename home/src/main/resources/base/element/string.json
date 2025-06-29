@@ -869,6 +869,14 @@
       "value": "Export Settings"
     },
     {
+      "name": "Settings_toolbox_export_everything_desc",
+      "value": "Or export everything, from bookmarks to history, into a single file to carry around!"
+    },
+    {
+      "name": "Settings_toolbox_export_everything",
+      "value": "Export Everything"
+    },
+    {
       "name": "Settings_toolbox_import_settings_ok",
       "value": "Import Succeeded~\nRestart this app yourself later to apply!"
     },

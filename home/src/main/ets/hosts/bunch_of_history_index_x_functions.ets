@@ -267,7 +267,7 @@ export function insert_into_array(arr: collections.Array<number>, new_num: numbe
  * @param max max number of result
  * @returns the label-link string[][] histories, for example [["SEARCH", "bing.com"], ["CCW", "ccw.site"], ...]
  * */
-export function get_history_from_disk(timestamps: number[], max?: number): string[][] {
+export function get_histories_from_disk(timestamps: number[], max?: number): string[][] {
   let result: string[][] = [];
   if (timestamps.length == 0) {
     return [];
@@ -292,7 +292,7 @@ export function get_history_from_disk(timestamps: number[], max?: number): strin
       imp = sandbox_open_sync(history_path_of_month(year, month)).split("\n");
 
       if (imp.length % 3 > 0 && imp.length > 1) {
-        console.error("[ERROR][Meow][bunch_of_history_index] Import history Error: not 3*n length. Raw string: " + imp)
+        console.error("[ERROR][Meow][bunch_of_history_index] Open history Error: not 3*n length. Raw string: " + imp)
         return [];
       }
       last_year = year;

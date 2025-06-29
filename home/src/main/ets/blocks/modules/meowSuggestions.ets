@@ -100,7 +100,6 @@ struct meowSuggestions {
     } else {
       let label_link_bookmark = this.bunch_of_bookmarks.get_all_plain_label_link();
       this.bookmark_suggestions = get_relations(label_link_bookmark, this.search_input, this.max_bookmark_advice);
-
       this.history_suggestions = bunch_of_history.search_with_index(this.search_input.toUpperCase(), this.max_history_advice);
       // get_relations(label_link_history, this.search_input, this.max_history_advice);
     }

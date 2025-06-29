@@ -981,7 +981,7 @@ struct meowAppSettings {
     // Get Homepage shortcut directory
     let homepage_shortcuts_bookmarks_dir = await this.bunch_of_settings.get('homepage_shortcuts_bookmarks_dir') as string;
     AppStorage.set('homepage_shortcuts_bookmarks_dir', homepage_shortcuts_bookmarks_dir);
-    console.log("[Meow][meowAppSettings] Finished loading homepage shortcuts dir: '" + homepage_shortcuts_bookmarks_dir + "'.");
+    // console.log("[Meow][meowAppSettings] Finished loading homepage shortcuts dir: '" + homepage_shortcuts_bookmarks_dir + "'.");
 
     // Get whether to show resource monitor
     this.resource_monitor = await this.bunch_of_settings.get('resource_monitor') as boolean;

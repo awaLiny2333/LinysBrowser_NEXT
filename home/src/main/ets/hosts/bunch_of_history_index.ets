@@ -1,7 +1,7 @@
 import { sandbox_open_sync } from '../utils/storage_tools';
 import { fileIo as fs } from '@kit.CoreFileKit';
 import { collections } from '@kit.ArkTS';
-import { divide_string, get_history_from_disk, index_file_name_of_month, insert_into_array } from './bunch_of_history_index_x_functions';
+import { divide_string, get_histories_from_disk, index_file_name_of_month, insert_into_array } from './bunch_of_history_index_x_functions';
 import { bunch_of_history_index_lite } from './bunch_of_history_index_lite';
 import { common } from '@kit.AbilityKit';
 
@@ -37,25 +37,22 @@ export class bunch_of_history_index {
     let reindexing = AppStorage.get('reindexing_history') as boolean | undefined;
 
     if (history_index_saving == true) {
-      console.log(bunch_of_history_index.log_head() +
-        " A history_index_saving task is ongoing! Interrupted this search_history_label_link.");
+      console.log(bunch_of_history_index.log_head() + " A history_index_saving task is ongoing! Interrupted this search_history_label_link.");
       return [];
     }
     if (history_index_loading == true) {
-      console.log(bunch_of_history_index.log_head() +
-        " A history_index_loading task is ongoing! Interrupted this search_history_label_link.");
+      console.log(bunch_of_history_index.log_head() + " A history_index_loading task is ongoing! Interrupted this search_history_label_link.");
       return [];
     }
     if (reindexing == true) {
-      console.log(bunch_of_history_index.log_head() +
-        " A reindexing task is ongoing! Interrupted this search_history_label_link.");
+      console.log(bunch_of_history_index.log_head() + " A reindexing task is ongoing! Interrupted this search_history_label_link.");
       return [];
     }
 
     // TODO: find a more elegant way instead of reverse().
     let stamps = bunch_of_history_index.search_timestamps(key, max);
     stamps.reverse();
-    let result = get_history_from_disk(stamps, max);
+    let result = get_histories_from_disk(stamps, max);
     result.reverse();
     return result;
   }

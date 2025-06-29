@@ -110,6 +110,7 @@ struct woofHomepageManager {
         // .height(this.tablet_mode ? this.screen_height * 0.9 : undefined)
         .animation(animation_default())
       }
+      .borderRadius(13.5)
       .animation(animation_default())
       .scrollBar(BarState.Off)
       .layoutWeight(1)

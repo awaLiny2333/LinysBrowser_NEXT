@@ -57,7 +57,7 @@ export async function download_save_from_path(path: string) {
     let path_split = path.split('/');
     let file_name = path_split[path_split.length-1];
 
-    const save_uri= uri + '/' + file_name;
+    const save_uri = uri + '/' + file_name;
 
     fs.copy((fileUri.getUriFromPath(path)), save_uri);
 
