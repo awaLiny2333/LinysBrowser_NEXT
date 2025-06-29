@@ -1,8 +1,10 @@
-import { BusinessError } from '@kit.BasicServicesKit';
+import { BusinessError, zlib } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 import { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
 import { buffer } from '@kit.ArkTS';
 import { image } from '@kit.ImageKit';
+import { bunch_of_settings } from '../hosts/bunch_of_settings';
+import { export_json_kv_store, import_json_kv_store } from './kv_store_tools';
 
 let context = AppStorage.get("context") as common.UIAbilityContext;
 
@@ -84,17 +86,19 @@ export async function get_download_uri() {
   return uri;
 }
 
-
 /**
  * Save (Copy) any file from a uri (file://...) to a selected position, pulling up a DocumentViewPicker.
  * @param from the uri.
  * */
-export async function document_save_from_uri(from: string) {
+export async function document_save_from_uri(from: string, file_name_overwrite?: string) {
   // Save
   try {
     // Get file name
     const split_result = from.split('/');
-    const file_name = decodeURI(split_result[split_result.length-1]);
+    let file_name = decodeURI(split_result[split_result.length-1]);
+    if (file_name_overwrite) {
+      file_name = file_name_overwrite;
+    }
 
     let documentSaveOptions = new picker.DocumentSaveOptions();
     documentSaveOptions.newFileNames = [file_name];
@@ -128,6 +132,14 @@ export async function document_save_from_uri(from: string) {
     let err: BusinessError = error as BusinessError;
     console.error('[document_save_from_uri][ERROR] DocumentViewPicker failed with err: ' + JSON.stringify(err));
   }
+}
+
+/**
+ * Save (Copy) any file from a path to a selected position, pulling up a DocumentViewPicker.
+ * @param from the path.
+ * */
+export async function document_save_from_path(from: string, file_name_overwrite?: string) {
+  await document_save_from_uri(fileUri.getUriFromPath(from), file_name_overwrite);
 }
 
 /**
@@ -229,35 +241,19 @@ export function sandbox_save(file_name: string, content: string | ArrayBuffer, c
 }
 
 /**
- * Copy a text file to sandbox storage, overwrites whatever that was at that place.
- *
- * THIS IS A SYNC FUNCTION
- * @param from from a uri (file://).
- * @param to a sandbox directory, the new parent folder of this file (in sandbox).
- * @returns a sandbox path, root is context.filesDir.
- * */
-export function uri_copy_sandbox(from: string, to: string, context_filesDir?: string) {
-  let filesDir: string = context_filesDir || context.filesDir;
-  // Get file name
-  const split_result = from.split('/');
-  const file_name = split_result[split_result.length-1];
-  // Get from path
-  const from_path = new fileUri.FileUri(from).path;
-  // Combine target
-  let target_dir = filesDir + '/' + to + '/' + decodeURI(file_name);
-  console.log('[uri_copy_sandbox] Copy from [' + from_path + '] to [' + target_dir + '] return [' + to + '/' + file_name + ']');
-  fs.copyFileSync(from_path, target_dir);
-  return fileUri.getUriFromPath(target_dir);
-}
-
-/**
  * Unlink (delete) a file.
  * @param file_name A string, the path of the file.
  * */
 export function sandbox_unlink(file_name: string, context_filesDir?: string) {
   let filesDir: string = context_filesDir || context.filesDir;
   let full_file_directory = filesDir + '/' + file_name;
-  fs.unlink(full_file_directory);
+  try {
+    fs.unlink(full_file_directory);
+  } catch (e) {
+    console.error('[storage_tools][sandbox_unlink] [' + file_name + ']' + e);
+    return false;
+  }
+  return true;
 }
 
 /**
@@ -267,7 +263,29 @@ export function sandbox_unlink(file_name: string, context_filesDir?: string) {
 export function sandbox_unlink_sync(file_name: string, context_filesDir?: string) {
   let filesDir: string = context_filesDir || context.filesDir;
   let full_file_directory = filesDir + '/' + file_name;
-  fs.unlinkSync(full_file_directory);
+  try {
+    fs.unlinkSync(full_file_directory);
+  } catch (e) {
+    console.error('[storage_tools][sandbox_unlink_sync] [' + file_name + ']' + e);
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Unlink (delete) a directory in a sync way.
+ * @param dir_name A string, the path of the file.
+ * */
+export function sandbox_rmdir_sync(dir_name: string, context_filesDir?: string) {
+  let filesDir: string = context_filesDir || context.filesDir;
+  let full_dir_directory = filesDir + '/' + dir_name;
+  try {
+    fs.rmdirSync(full_dir_directory);
+  } catch (e) {
+    console.error('[storage_tools][sandbox_rmdir_sync] [' + dir_name + ']' + e);
+    return false;
+  }
+  return true;
 }
 
 /**
@@ -423,6 +441,28 @@ export function arrayBuffer_to_pixelMap(buf: ArrayBuffer) {
 }
 
 /**
+ * Copy a text file to sandbox storage, overwrites whatever that was at that place.
+ *
+ * THIS IS A SYNC FUNCTION
+ * @param from from a uri (file://).
+ * @param to a sandbox directory, the new parent folder of this file (in sandbox).
+ * @returns a sandbox path, root is context.filesDir.
+ * */
+export function copy_from_uri_to_sandbox(from: string, to: string, context_filesDir?: string) {
+  let filesDir: string = context_filesDir || context.filesDir;
+  // Get file name
+  const split_result = from.split('/');
+  const file_name = split_result[split_result.length-1];
+  // Get from path
+  const from_path = new fileUri.FileUri(from).path;
+  // Combine target
+  let target_dir = filesDir + '/' + to + '/' + decodeURI(file_name);
+  console.log('[uri_copy_sandbox] Copy from [' + from_path + '] to [' + target_dir + '] return [' + to + '/' + file_name + ']');
+  fs.copyFileSync(from_path, target_dir);
+  return fileUri.getUriFromPath(target_dir);
+}
+
+/**
  * Copies a file from rawfile to sandbox
  * @param from
  * @param to
@@ -461,4 +501,138 @@ export function copy_from_rawfile_to_sandbox(from: string, to: string) {
 export function get_file_suffix(file: string) {
   let s = file.split('.');
   return s[s.length-1].toUpperCase();
+}
+
+/**
+ * Exports everything, ALL USER DATA.
+ * */
+export async function export_everything() {
+  sandbox_save('settings.json.browsercatsettings.txt', (AppStorage.get('bunch_of_settings') as bunch_of_settings).toString());
+  sandbox_save('kv_store.json.browsercatstore.txt', await export_json_kv_store());
+  sandbox_unlink_sync('profile.zip');
+  sandbox_rmdir_sync('temp');
+
+  let inFile = context.filesDir;
+  let outFile = context.filesDir + '/profile.zip';
+
+  let options: zlib.Options = {
+    level: zlib.CompressLevel.COMPRESS_LEVEL_DEFAULT_COMPRESSION,
+    memLevel: zlib.MemLevel.MEM_LEVEL_DEFAULT,
+    strategy: zlib.CompressStrategy.COMPRESS_STRATEGY_DEFAULT_STRATEGY
+  };
+
+  try {
+    zlib.compressFile(inFile, outFile, options).then((data: void) => {
+      console.info('compressFile success. data: ' + JSON.stringify(data));
+      // SAVE
+      document_save_from_path(outFile, 'profile.zip.browsercatprofile').then(() => {
+        sandbox_unlink_sync('settings.json.browsercatsettings.txt');
+        sandbox_unlink_sync('kv_store.json.browsercatstore.txt');
+        // sandbox_unlink_sync('profile.zip');
+        AppStorage.set('compressing_output_profile', false);
+      })
+    }).catch((errData: BusinessError) => {
+      console.error(`errData is errCode:${errData.code}  message:${errData.message}`);
+    })
+
+  } catch (errData) {
+    let code = (errData as BusinessError).code;
+    let message = (errData as BusinessError).message;
+    console.error(`errData is errCode:${code}  message:${message}`);
+  }
+}
+
+/**
+ * Imports everything, overwriting all current user data.
+ * */
+export async function import_everything() {
+  try {
+    fs.mkdirSync(context.filesDir + '/temp')
+  } catch (e) {
+    console.error('[storage_tools][import_everything] Create temp dir error: ' + e);
+  }
+
+  try {
+    let selected_uri: string[] = [];
+    let documentPicker = new picker.DocumentViewPicker(context);
+
+    await documentPicker.select({
+      maxSelectNumber: 1,
+      fileSuffixFilters: ["browsercatprofile"]
+    })
+      .then((documentSelectResult) => {
+        selected_uri = documentSelectResult;
+        console.info('[import_everything] DocumentViewPicker.select successfully, documentSelectResult uri: ' + selected_uri[0]);
+      })
+      .catch((err: BusinessError) => {
+        console.error('[import_everything] DocumentViewPicker.select failed with err: ' +
+        JSON.stringify(err));
+        return false;
+      });
+
+    // Decompress
+    let inFile = new fileUri.FileUri(selected_uri[0]).path;
+    let outFileDir = context.filesDir + '/temp';
+    let options: zlib.Options = {
+      level: zlib.CompressLevel.COMPRESS_LEVEL_DEFAULT_COMPRESSION,
+      // parallel: zlib.ParallelStrategy.PARALLEL_STRATEGY_PARALLEL_DECOMPRESSION
+    };
+
+    try {
+      await zlib.decompressFile(inFile, outFileDir, options).then(() => {
+
+        // Traverse all files and folders
+        // Clear sandbox
+        fs.listFileSync(context.filesDir).forEach((item) => {
+          const fullPath = context.filesDir + '/' + item;
+          const stat = fs.statSync(fullPath);
+          if (stat.isDirectory()) {
+            if (item !== 'temp') {
+              sandbox_rmdir_sync(item);
+            }
+          } else {
+            sandbox_unlink_sync(item);
+          }
+        });
+
+        // Traverse temp and copy
+        fs.listFileSync(context.filesDir + '/temp').forEach((item) => {
+          const fullPath = context.filesDir + '/temp/' + item;
+          const target = context.filesDir + '/' + item;
+          // console.log(fullPath);
+          const stat = fs.statSync(fullPath);
+          if (stat.isDirectory()) {
+            fs.copyDirSync(fullPath, context.filesDir);
+            console.log('[storage_tools][import_everything] copyDirSync from ' + fullPath + ', to ' + context.filesDir + '/' + item);
+          } else {
+            fs.copyFileSync(fullPath, target);
+            console.log('[storage_tools][import_everything] copyFileSync from ' + fullPath + ', to ' + context.filesDir + '/' + item);
+          }
+        });
+
+        sandbox_rmdir_sync('temp');
+
+        // Import settings
+        (AppStorage.get('bunch_of_settings') as bunch_of_settings).import_json(sandbox_open_sync('settings.json.browsercatsettings.txt'));
+        import_json_kv_store(sandbox_open_sync('kv_store.json.browsercatstore.txt'));
+        // Delete
+        sandbox_unlink_sync('settings.json.browsercatsettings.txt');
+        sandbox_unlink_sync('kv_store.json.browsercatstore.txt');
+
+      }).catch((errData: BusinessError) => {
+        console.error(`errData is errCode:${errData.code}  message:${errData.message}`);
+        return false;
+      })
+    } catch (e) {
+      console.error('[import_everything] ' + e);
+      return false;
+    }
+
+    console.info("[import_everything] Read zip from " + selected_uri[0] + " Success!");
+    return true;
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    console.error('[ERROR][import_everything] DocumentViewPicker failed with err: ' + JSON.stringify(err));
+    return false;
+  }
 }

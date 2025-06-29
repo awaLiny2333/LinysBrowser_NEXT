@@ -226,7 +226,6 @@ export class bunch_of_settings {
    * @param text the json
    * */
   import_json(text: string) {
-    console.log('[Meow][bunch_of_settings] Import settings:\n' + text)
     let jsonObject: Record<string, string> | null = null;
     if (text.length < 2) {
       return false;
@@ -243,7 +242,8 @@ export class bunch_of_settings {
       const key = item[0];
       const val = item[1];
       this.import_set(key, val);
-    })
+    });
+    console.log('[Meow][bunch_of_settings] Import settings:\n' + text);
     return true;
   }
 

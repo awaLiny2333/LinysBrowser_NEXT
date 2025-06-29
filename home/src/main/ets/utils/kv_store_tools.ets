@@ -19,12 +19,10 @@ export async function kv_store_get(key_name: string) {
       get_result = "undefined"
     })
     return get_result;
-
   } else {
     let get_result = "error"
     console.error("[kv_store_tools][GET][ERROR] Undefined KVStore! ")
     return get_result;
-
   }
 }
 
@@ -148,4 +146,35 @@ async function get_kv_store_into_app_storage() {
     let error = e as BusinessError;
     console.error(`[kv_store_tools][ERROR] Failed to create KVManager.code is ${error.code},message is ${error.message}`);
   }
+}
+
+export async function export_json_kv_store() {
+  let result_string: string[] = [];
+  result_string.push('    "continue_tabs_count": "' + await kv_store_get('continue_tabs_count') + '"');
+  result_string.push('    "continue_tabs_main_on": "' + await kv_store_get('continue_tabs_main_on') + '"');
+  result_string.push('    "continue_tabs_sub_on": "' + await kv_store_get('continue_tabs_sub_on') + '"');
+  result_string.sort();
+  return '{\n' + result_string.join(',\n') + '\n}';
+}
+
+export async function import_json_kv_store(text: string) {
+  let jsonObject: Record<string, string> | null = null;
+  if (text.length < 2) {
+    return false;
+  }
+
+  try {
+    jsonObject = JSON.parse(text);
+  } catch (e) {
+    console.log('[Meow][kv_store_tools] Import kv_store failed! Json parse failed!');
+    return false;
+  }
+
+  Object.entries(jsonObject as Record<string, string>).forEach((item) => {
+    const key = item[0];
+    const val = item[1];
+    kv_store_put(key, val);
+  })
+  console.log('[Meow][kv_store_tools] Import kv_store:\n' + text);
+  return true;
 }

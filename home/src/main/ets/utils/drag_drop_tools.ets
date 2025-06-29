@@ -1,5 +1,5 @@
 import { unifiedDataChannel, uniformTypeDescriptor } from '@kit.ArkData';
-import { uri_copy_sandbox } from './storage_tools';
+import { copy_from_uri_to_sandbox } from './storage_tools';
 
 export function allow_drop_types() {
   return [uniformTypeDescriptor.UniformDataType.TEXT,
@@ -40,7 +40,7 @@ export function drop_to_scratching_board(e: DragEvent) {
     } else if (record.getType() == uniformTypeDescriptor.UniformDataType.IMAGE) {
       let image_uri = (record as unifiedDataChannel.Image).imageUri;
       console.log("[drop_to_scratching_board] image uri: [" + image_uri + "]");
-      result_list_string.push(uri_copy_sandbox(image_uri, 'web-drag-image-cache'));
+      result_list_string.push(copy_from_uri_to_sandbox(image_uri, 'web-drag-image-cache'));
     }
   }
   // Append to start of original scratching board content

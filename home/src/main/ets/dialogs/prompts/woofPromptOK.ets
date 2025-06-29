@@ -4,10 +4,10 @@ import { animation_default } from '../../hosts/bunch_of_defaults';
 import woofControlFrame from '../woofControlFrame';
 
 @CustomDialog
-struct woofSettingsImportOK {
+struct woofPromptOK {
   controller: CustomDialogController;
-  @Prop link: string = '';
-  @Prop title: string = '';
+  @Prop title: ResourceStr = $r('app.string.Settings_toolbox_import_settings')
+  @Prop desc: ResourceStr = $r('app.string.Settings_toolbox_import_settings_ok')
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -19,13 +19,13 @@ struct woofSettingsImportOK {
 
   build() {
     woofControlFrame({
-      title: $r('app.string.Settings_toolbox_import_settings'),
+      title: this.title,
       controller: this.controller
     }) {
       Scroll() {
         Column({ space: 15 }) {
           linysText({
-            text: $r('app.string.Settings_toolbox_import_settings_ok'),
+            text: this.desc,
             max_lines: 5
           })
             .width("100%")
@@ -51,4 +51,4 @@ struct woofSettingsImportOK {
   }
 }
 
-export default woofSettingsImportOK;
+export default woofPromptOK;

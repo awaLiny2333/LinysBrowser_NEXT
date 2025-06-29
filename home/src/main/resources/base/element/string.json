@@ -549,6 +549,10 @@
       "value": "Selected a broken settings file? Or you selected nothing at all!"
     },
     {
+      "name": "Fail_select_bad_everything",
+      "value": "Selected a broken profile data file? Or you selected nothing at all!"
+    },
+    {
       "name": "Update_record",
       "value": "Update history"
     },
@@ -562,7 +566,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "feat: now can select search engine before searching!\nfeat: long press tabs and bookmarks buttons!\nfeat: UI right click support!\nimprove: now can request for permissions!\nimprove: transparency effect for in-page searching!\nfeat: Directly download to DOWNLOADS Folder!\nfeat: gestures for Tabs and Bookmarks Panel!\nfix: blob download support!\nfix: now goes through system proxy for downloads!\nfeat: multi-device continuation!\nfeat: settings export and import!\nimprove: optimize keyboard shortcut for in-page searches;\nimprove: jumping to a settings block now has highlight!\nimprove: clicking on Scratching Board objects now activates a default action;\nimprove: adjusted position of destination indicator!"
+      "value": "feat: export / import everything!\nfeat: now can select search engine before searching!\nfeat: long press tabs and bookmarks buttons!\nfeat: UI right click support!\nimprove: now can request for permissions!\nimprove: transparency effect for in-page searching!\nfeat: Directly download to DOWNLOADS Folder!\nfeat: gestures for Tabs and Bookmarks Panel!\nfix: blob download support!\nfix: now goes through system proxy for downloads!\nfeat: multi-device continuation!\nfeat: settings export and import!\nimprove: optimize keyboard shortcut for in-page searches;\nimprove: jumping to a settings block now has highlight!\nimprove: clicking on Scratching Board objects now activates a default action;\nimprove: adjusted position of destination indicator!"
     },
     {
       "name": "Whats_new_content_extra",
@@ -869,14 +873,6 @@
       "value": "Export Settings"
     },
     {
-      "name": "Settings_toolbox_export_everything_desc",
-      "value": "Or export everything, from bookmarks to history, into a single file to carry around!"
-    },
-    {
-      "name": "Settings_toolbox_export_everything",
-      "value": "Export Everything"
-    },
-    {
       "name": "Settings_toolbox_import_settings_ok",
       "value": "Import Succeeded~\nRestart this app yourself later to apply!"
     },
@@ -887,6 +883,26 @@
     {
       "name": "Settings_toolbox_import_settings",
       "value": "Import settings"
+    },
+    {
+      "name": "Settings_toolbox_export_everything_desc",
+      "value": "Or export everything, from bookmarks to history, into a single file to carry around!"
+    },
+    {
+      "name": "Settings_toolbox_export_everything",
+      "value": "Export Everything"
+    },
+    {
+      "name": "Settings_toolbox_import_everything_ok",
+      "value": "Import Succeeded~\nAn immediate restart is strongly recommended to apply these new data!"
+    },
+    {
+      "name": "Settings_toolbox_import_everything_desc",
+      "value": "Import everything from file.\n\nWARNING! This would directly OVERWRITE current user data!\n\nNew data would be used next launch!"
+    },
+    {
+      "name": "Settings_toolbox_import_everything",
+      "value": "Import everything"
     },
     {
       "name": "Fault_logs",

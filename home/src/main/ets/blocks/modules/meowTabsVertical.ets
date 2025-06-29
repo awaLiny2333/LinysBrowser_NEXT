@@ -421,11 +421,7 @@ struct meowTabs {
     while (true) {
       let key = "continue/continue_tabs_web_state_array_" + index.toString();
       // console.log('awa')
-      try {
-        sandbox_unlink_sync(key);
-      } catch (e) {
-        // console.log('qwq')
-        // console.error(e);
+      if (!sandbox_unlink_sync(key)) {
         break;
       }
       index += 1;

@@ -20,7 +20,9 @@ import {
   arrayBuffer_to_pixelMap,
   document_open,
   document_save,
+  export_everything,
   get_folder_size_Sync,
+  import_everything,
   sandbox_open_arrayBuffer_sync
 } from '../../utils/storage_tools';
 import woofHistory from '../../dialogs/managers/woofHistory';
@@ -55,7 +57,7 @@ import woofUpdateHistory from '../../dialogs/contents/woofUpdateHistory';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
 import linysSwitchWithText from '../../components/toggles/linysSwitchWithText';
-import woofSettingsImportOK from '../../dialogs/contents/woofSettingsImportOK';
+import woofPromptOK from '../../dialogs/prompts/woofPromptOK';
 
 @Component
 struct meowAppSettings {
@@ -238,7 +240,15 @@ struct meowAppSettings {
     width: "90%",
   });
   woofSettingsImportOK_control: CustomDialogController = new CustomDialogController({
-    builder: woofSettingsImportOK(),
+    builder: woofPromptOK(),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16
+  })
+  woofEverythingImportOK_control: CustomDialogController = new CustomDialogController({
+    builder: woofPromptOK({
+      title: $r('app.string.Settings_toolbox_export_everything'),
+      desc: $r('app.string.Settings_toolbox_import_everything_ok')
+    }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16
   })
@@ -254,6 +264,7 @@ struct meowAppSettings {
   @State calculating_history_index_size: boolean = false;
   @StorageLink('reindexing_history') reindexing_history: boolean = false;
   @StorageLink('reindexing_history_progress') reindexing_history_progress: number = 100;
+  @StorageLink('compressing_output_profile') compressing_output_profile: boolean = false;
 
   build() {
     Row() {
@@ -778,7 +789,7 @@ struct meowAppSettings {
                 button_text: '  󰃋  ',
                 onExecution: () => {
                   // sandbox_save('settings.json', this.bunch_of_settings.toString());
-                  document_save('settings.json.browsercatsettings', this.bunch_of_settings.toString())
+                  document_save('settings.json.browsercatsettings', this.bunch_of_settings.toString());
                 }
               }) // Export settings
 
@@ -795,6 +806,33 @@ struct meowAppSettings {
                       this.woofSettingsImportOK_control.open();
                     }
                   })
+                }
+              }) // Import settings
+
+              linysText({ text: $r('app.string.Settings_toolbox_export_everything_desc'), max_lines: 10 })
+              linysCapsuleButtonWithText({
+                desc_text: $r('app.string.Settings_toolbox_export_everything'),
+                button_text: '  󰃋  ',
+                onExecution: () => {
+                  export_everything();
+                }
+              }) // Export everything
+                .enabled(!this.compressing_output_profile)
+                .opacity(!this.compressing_output_profile ? 1 : 0.5)
+
+              linysText({ text: $r('app.string.Settings_toolbox_import_everything_desc'), is_description: true, is_expanded: true })
+              linysTimeoutButtonWithText({
+                desc_text: $r('app.string.Settings_toolbox_import_everything'),
+                button_text: '  󰐝  ',
+                onExecution: () => {
+                  import_everything().then((result) => {
+                    if (result) {
+                      // Import OK
+                      this.woofEverythingImportOK_control.open();
+                    } else {
+                      this.uni_fail_prompt_gateway = $r("app.string.Fail_select_bad_everything");
+                    }
+                  });
                 }
               }) // Import settings
 
