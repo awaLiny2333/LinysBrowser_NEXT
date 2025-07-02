@@ -68,7 +68,7 @@ struct meowUAManager {
         }
       })
       .onClick(() => {
-        this.selected_index = -1;
+        this.set_global_UA(-1);
         // Set UA
       })
       .height(46)
@@ -118,6 +118,12 @@ struct meowUAManager {
     }
   }
 
+  set_global_UA(idx: number) {
+    this.selected_index = -99;
+    this.selected_index = idx;
+    this.bunch_of_settings.set('custom_user_agents_selected_index', idx);
+  }
+
   add_new_custom_ua() {
     this.bunch_of_user_agents.add_user_agent(new user_agent(new Date().toLocaleString(),
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0"));
@@ -130,25 +136,24 @@ export default meowUAManager;
 @Component
 struct meowUAButton {
   @Link selected_index: number;
-  @Prop my_index: number;
   @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
+  @Prop my_index: number;
   @State my_ua: user_agent = this.bunch_of_user_agents.list_of_user_agents[this.my_index];
   @State my_label: string = this.my_ua.label;
   @State my_content: string = this.my_ua.user_agent_content;
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
-  // statuses
-  @State pressing: boolean = false;
-  @State editing: boolean = false;
-  @State press_timing_ok: boolean = false;
+  // UI effects
+  @State height_of_text_area: number = 42;
+  @State is_pressing: boolean = false;
+  @State is_editing: boolean = false;
+  @State is_press_timing_ok: boolean = false;
   press_timing: number = 0;
   button_height_default: number = 42;
   // Edit inputs
   @State edit_label: string = this.my_label;
   @State edit_content: string = this.my_content;
-  // UI effects
-  @State height_of_text_area: number = 42;
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -159,8 +164,8 @@ struct meowUAButton {
       Column() {
         Row() {
           Text(this.my_label)// Title
-            .fontColor(!this.pressing ? this.color_current_font : this.color_current_secondary)
-            .fontWeight(!this.pressing ? FontWeight.Regular : FontWeight.Bold)
+            .fontColor(!this.is_pressing ? this.color_current_font : this.color_current_secondary)
+            .fontWeight(!this.is_pressing ? FontWeight.Regular : FontWeight.Bold)
             .animation(animation_default())
             .padding({ left: 2 })
             .fontSize(fontSize_Normal())
@@ -175,13 +180,13 @@ struct meowUAButton {
           } // Edit Icon
           .scrollable(ScrollDirection.Horizontal)
           .scrollBar(BarState.Off)
-          .width(this.press_timing_ok ? 22 : 0)
-          .margin({ left: this.press_timing_ok ? 10 : 0 })
+          .width(this.is_press_timing_ok ? 22 : 0)
+          .margin({ left: this.is_press_timing_ok ? 10 : 0 })
           .animation(animation_default())
 
         } // UA button
-        .borderRadius(this.editing ? { topLeft: 7, topRight: 7 } : 7)
-        .backgroundColor(this.pressing ? this.color_current_font : this.color_current_primary)
+        .borderRadius(this.is_editing ? { topLeft: 7, topRight: 7 } : 7)
+        .backgroundColor(this.is_pressing ? this.color_current_font : this.color_current_primary)
         .animation(animation_default())
         .padding(10)
         .alignRules({
@@ -190,26 +195,26 @@ struct meowUAButton {
         })
         .onTouch((event) => {
           if (event.type == TouchType.Up) {
-            this.pressing = false;
+            this.is_pressing = false;
             // If touch ends
           } else {
-            this.pressing = true;
+            this.is_pressing = true;
             // If touching
           }
         })
         .onClick(() => {
-          if (this.press_timing_ok) {
-            this.editing = !this.editing;
+          if (this.is_press_timing_ok) {
+            this.is_editing = !this.is_editing;
             return;
           } // Toggle Edit Panel
-          this.set_global_UA_to_mine();
+          this.set_global_UA(this.my_index);
           // Set UA
         })
         .height(this.button_height_default)
         .onMouse((e) => {
           if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
             // Right click
-            this.editing = !this.editing;
+            this.is_editing = !this.is_editing;
           }
         })
 
@@ -228,7 +233,7 @@ struct meowUAButton {
                 .layoutWeight(1)
                 .onSubmit(() => {
                   this.save_changes();
-                  this.editing = false;
+                  this.is_editing = false;
                 })
                 .height(capsule_bar_height())
 
@@ -248,7 +253,7 @@ struct meowUAButton {
                 .layoutWeight(1)
                 .onSubmit(() => {
                   this.save_changes();
-                  this.editing = false;
+                  this.is_editing = false;
                 })
                 .onAreaChange((_o, n) => {
                   this.height_of_text_area = n.height as number;
@@ -269,7 +274,7 @@ struct meowUAButton {
               linysCapsuleButton({ text: "  󰀻  " })
                 .onClick(() => {
                   this.save_changes();
-                  this.editing = false;
+                  this.is_editing = false;
                 })
 
             } // Buttons of operations
@@ -289,8 +294,8 @@ struct meowUAButton {
           })
 
         } // Edit panel
-        .height(!this.editing ? 0 : 108 + this.height_of_text_area)
-        .visibility(this.editing ? Visibility.Visible : Visibility.None)
+        .height(!this.is_editing ? 0 : 108 + this.height_of_text_area)
+        .visibility(this.is_editing ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
         .scrollBar(BarState.Off)
         .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.PARENT_FIRST })
@@ -305,22 +310,22 @@ struct meowUAButton {
     .animation(animation_default())
     .onAppear(() => {
       setInterval(() => {
-        if (this.pressing) {
+        if (this.is_pressing) {
           this.press_timing += 1;
         } else {
           this.press_timing = 0;
         }
-        this.press_timing_ok = this.press_timing > 16;
+        this.is_press_timing_ok = this.press_timing > 16;
         // Count press time
       }, 10)
     })
 
   }
 
-  set_global_UA_to_mine() {
+  set_global_UA(idx: number) {
     this.selected_index = -99;
-    this.selected_index = this.my_index;
-    this.bunch_of_settings.set('custom_user_agents_selected_index', this.my_index);
+    this.selected_index = idx;
+    this.bunch_of_settings.set('custom_user_agents_selected_index', idx);
   }
 
   save_changes() {
@@ -333,7 +338,7 @@ struct meowUAButton {
     this.save_user_agents_to_settings();
 
     if (this.selected_index == this.my_index) {
-      this.set_global_UA_to_mine();
+      this.set_global_UA(this.my_index);
     }
 
     // This would refresh UI in other places
@@ -341,7 +346,7 @@ struct meowUAButton {
   }
 
   delete_myself() {
-    this.editing = false;
+    this.is_editing = false;
     this.bunch_of_user_agents.del_user_agent(this.my_index);
 
     if (this.selected_index == this.my_index) {
@@ -356,7 +361,8 @@ struct meowUAButton {
   }
 
   save_user_agents_to_settings() {
-    console.log("[Meow][meowUAManager] Started to save custom user-agents to KVStore!")
+    console.log("[Meow][meowUAManager] Started to save custom user-agents to Settings!")
     this.bunch_of_settings.set('custom_user_agents', this.bunch_of_user_agents.export_string());
   }
 }
+

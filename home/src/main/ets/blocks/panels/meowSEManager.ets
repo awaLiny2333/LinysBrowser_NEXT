@@ -141,25 +141,24 @@ export default meowSEManager;
 @Component
 struct meowSEButton {
   @Link selected_index: number;
-  @Prop my_index: number;
   @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines = new bunch_of_search_engines();
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
+  @Prop my_index: number;
   @State my_se: search_engine = this.bunch_of_search_engines.list_of_search_engines[this.my_index];
   @State my_label: string = this.my_se.label;
   @State my_content: string = this.my_se.url;
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
-  // statuses
-  @State editing: boolean = false;
-  @State pressing: boolean = false;
-  @State press_timing_ok: boolean = false;
+  // UI effects
+  @State height_of_text_area: number = 42;
+  @State is_editing: boolean = false;
+  @State is_pressing: boolean = false;
+  @State is_press_timing_ok: boolean = false;
   press_timing: number = 0;
   button_height_default: number = 42;
   // Edit inputs
   @State edit_label: string = this.my_label;
   @State edit_content: string = this.my_content;
-  // UI effects
-  @State height_of_text_area: number = 42;
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -172,8 +171,8 @@ struct meowSEButton {
       Column() {
         Row() {
           Text(this.my_label)// Title
-            .fontColor(!this.pressing ? this.color_current_font : this.color_current_secondary)
-            .fontWeight(!this.pressing ? FontWeight.Regular : FontWeight.Bold)
+            .fontColor(!this.is_pressing ? this.color_current_font : this.color_current_secondary)
+            .fontWeight(!this.is_pressing ? FontWeight.Regular : FontWeight.Bold)
             .animation(animation_default())
             .padding({ left: 2 })
             .fontSize(fontSize_Normal())
@@ -188,13 +187,13 @@ struct meowSEButton {
           } // Edit Icon
           .scrollBar(BarState.Off)
           .scrollable(ScrollDirection.Horizontal)
-          .width(this.press_timing_ok ? 22 : 0)
-          .margin({ left: this.press_timing_ok ? 10 : 0 })
+          .width(this.is_press_timing_ok ? 22 : 0)
+          .margin({ left: this.is_press_timing_ok ? 10 : 0 })
           .animation(animation_default())
 
         } // Bookmark button
-        .borderRadius(this.editing ? { topLeft: 7, topRight: 7 } : 7)
-        .backgroundColor(this.pressing ? this.color_current_font : this.color_current_primary)
+        .borderRadius(this.is_editing ? { topLeft: 7, topRight: 7 } : 7)
+        .backgroundColor(this.is_pressing ? this.color_current_font : this.color_current_primary)
         .animation(animation_default())
         .padding(10)
         .alignRules({
@@ -203,16 +202,16 @@ struct meowSEButton {
         })
         .onTouch((event) => {
           if (event.type == TouchType.Up) {
-            this.pressing = false;
+            this.is_pressing = false;
             // If touch ends
           } else {
-            this.pressing = true;
+            this.is_pressing = true;
             // If touching
           }
         })
         .onClick(() => {
-          if (this.press_timing_ok) {
-            this.editing = !this.editing;
+          if (this.is_press_timing_ok) {
+            this.is_editing = !this.is_editing;
             return;
           } // Toggle Edit Panel
           if (this.onExecution) {
@@ -227,7 +226,7 @@ struct meowSEButton {
         .onMouse((e) => {
           if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
             // Right click
-            this.editing = !this.editing;
+            this.is_editing = !this.is_editing;
           }
         })
 
@@ -246,7 +245,7 @@ struct meowSEButton {
                 .layoutWeight(1)
                 .onSubmit(() => {
                   this.save_changes();
-                  this.editing = false;
+                  this.is_editing = false;
                 })
                 .height(capsule_bar_height())
 
@@ -266,7 +265,7 @@ struct meowSEButton {
                 .layoutWeight(1)
                 .onSubmit(() => {
                   this.save_changes();
-                  this.editing = false;
+                  this.is_editing = false;
                 })
                 .onAreaChange((_o, n) => {
                   this.height_of_text_area = n.height as number;
@@ -287,7 +286,7 @@ struct meowSEButton {
               linysCapsuleButton({ text: "  󰀻  " })
                 .onClick(() => {
                   this.save_changes();
-                  this.editing = false;
+                  this.is_editing = false;
                 })
 
             } // Buttons of operations
@@ -306,8 +305,8 @@ struct meowSEButton {
           })
 
         } // Edit panel
-        .height(!this.editing ? 0 : 108 + this.height_of_text_area)
-        .visibility(this.editing ? Visibility.Visible : Visibility.None)
+        .height(!this.is_editing ? 0 : 108 + this.height_of_text_area)
+        .visibility(this.is_editing ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
         .scrollBar(BarState.Off)
         .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.PARENT_FIRST })
@@ -322,12 +321,12 @@ struct meowSEButton {
     .animation(animation_default())
     .onAppear(() => {
       setInterval(() => {
-        if (this.pressing) {
+        if (this.is_pressing) {
           this.press_timing += 1;
         } else {
           this.press_timing = 0;
         }
-        this.press_timing_ok = this.press_timing > 16;
+        this.is_press_timing_ok = this.press_timing > 16;
         // Count press time
       }, 10)
     })
@@ -349,7 +348,7 @@ struct meowSEButton {
   delete_myself() {
 
     // Confirm delete
-    this.editing = false;
+    this.is_editing = false;
     this.bunch_of_search_engines.del_search_engine(this.my_index);
 
     if (this.selected_index == this.my_index) {
