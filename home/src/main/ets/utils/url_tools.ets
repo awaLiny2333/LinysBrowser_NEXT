@@ -241,6 +241,14 @@ export function match_domain(input: string) {
 }
 
 /**
+ * Domains that can be loaded and displayed in web components
+ * @returns
+ * */
+export function viewable_domains() {
+  return ['http', 'https', 'meow', 'resource', 'file'];
+}
+
+/**
  * Extracts search engine and search keyword from an url
  * @param url
  * @returns ['search.engine/q=%s', 'keyword']

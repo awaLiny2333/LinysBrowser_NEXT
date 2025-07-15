@@ -1,5 +1,5 @@
 import { webview } from '@kit.ArkWeb';
-import { url_meow_to_resource } from '../utils/url_tools';
+import { match_domain, url_meow_to_resource, viewable_domains } from '../utils/url_tools';
 import { url_default_blank } from './bunch_of_defaults';
 import { fileIo as fs } from '@kit.CoreFileKit';
 import { sandbox_save } from '../utils/storage_tools';
@@ -67,6 +67,9 @@ export class tab_info_packed {
    * Asks the tab to update its url, usually called when the tab loads something new.
    * */
   update_url() {
+    if (!viewable_domains().includes(match_domain(this.controller.getUrl())[0])) {
+      return;
+    }
     this.url = this.controller.getUrl();
   }
 

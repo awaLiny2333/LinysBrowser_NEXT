@@ -2,7 +2,7 @@ import { animation_default, capsule_bar_height, click_effect_default, fontSize_L
 import { bunch_of_history, history_record } from '../../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { sandbox_save } from '../../utils/storage_tools';
-import { match_domain, url_meow_to_resource, url_resource_to_meow } from '../../utils/url_tools';
+import { match_domain, url_meow_to_resource, url_resource_to_meow, viewable_domains } from '../../utils/url_tools';
 import { webview } from '@kit.ArkWeb';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import woofWantDownload from '../../dialogs/prompts/woofWantDownload';
@@ -336,10 +336,10 @@ struct meowWebView {
       ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
         Column() {
           Web({
-            src: this.initial_src_of_tab_index(Label.index_key),
-            controller:
-            this.bunch_of_tabs.Tabs[Label.index_key] !== undefined ?
-            this.bunch_of_tabs.Tabs[Label.index_key].controller : undefined,
+            src: this.src_of_tab_index(Label.index_key),
+            controller: this.bunch_of_tabs.Tabs[Label.index_key] !== undefined
+              ? this.bunch_of_tabs.Tabs[Label.index_key].controller
+              : undefined,
             // renderMode: RenderMode.SYNC_RENDER
           })// Main WEB
             .width("100%")
@@ -365,7 +365,7 @@ struct meowWebView {
             .onWindowNew((event) => {
               // TODO: Find out why this triggers twice when click once
               let new_target_url = event.targetUrl;
-              // console.log('qwq_send_new_tab')
+              console.log('[meowWebView] New tab in new window!')
               this.new_tab_gateway = new_target_url;
               event.handler.setWebController(null);
             })
@@ -377,7 +377,7 @@ struct meowWebView {
               }
             })
             .onPageBegin(() => {
-              // console.log("[Meow][ArkWeb] on page begin")
+              console.log("[Meow][ArkWeb] on page begin");
 
               // bind blob download delegate
               this.bunch_of_downloads.init_blob_delegate();
@@ -524,11 +524,15 @@ struct meowWebView {
               if (event) {
                 let url: string = event.data.getRequestUrl();
                 let match_domain_result = match_domain(url);
-                if (['http', 'https', 'meow', 'resource', 'file'].includes(match_domain_result[0])) {
-                  return;
+                if (viewable_domains().includes(match_domain_result[0])) {
+                  // Viewable
+                  return false;
+                } else {
+                  // Not viewable, perhaps is a link that can jump?
+                  this.potential_jump_link = url;
+                  this.woofLinkJumper_control.open();
+                  return true;
                 }
-                this.potential_jump_link = url;
-                this.woofLinkJumper_control.open();
               }
               return false;
             })
@@ -545,6 +549,14 @@ struct meowWebView {
               this.ask_resources = event.request.getAccessibleResource();
               this.source = event.request.getOrigin();
               console.log('[Meow][meowWebView] Requesting Protected Resources: ' + event.request.getAccessibleResource());
+
+              if (this.ask_resources.length == 1 && this.ask_resources[0] == 'TYPE_SENSOR') {
+                // TODO: work out a workable permission manager!
+                this.onPermit();
+                console.log('[Meow][meowWebView] Permitted TYPE_SENSOR automatically!');
+                return;
+              }
+
               this.woofWantProtectedResources_control.open();
             })
             .onClientAuthenticationRequest((event) => {
@@ -553,75 +565,6 @@ struct meowWebView {
               console.log('[meowWebView] onClientAuthenticationRequest event.keyTypes: ' + event.keyTypes.join('\n'));
               console.log('[meowWebView] onClientAuthenticationRequest event.issuers: ' + event.issuers.join('\n'));
             })
-          // .onHttpAuthRequest((event) => {
-          //   if (event) {
-          //     console.log('[meowWebView] onHttpAuthRequest event.host: ' + event.host)
-          //     console.log('[meowWebView] onHttpAuthRequest event.realm: ' + event.realm)
-          //     console.log('[meowWebView] onHttpAuthRequest event.handler.isHttpAuthInfoSaved(): ' + (event.handler.isHttpAuthInfoSaved() ? 'true' : 'false'))
-          //     this.getUIContext().showAlertDialog({
-          //       title: 'onHttpAuthRequest',
-          //       message: 'text',
-          //       primaryButton: {
-          //         value: 'cancel',
-          //         action: () => {
-          //           event.handler.cancel();
-          //         }
-          //       },
-          //       secondaryButton: {
-          //         value: 'ok',
-          //         action: () => {
-          //           this.httpAuth = event.handler.isHttpAuthInfoSaved();
-          //           if (this.httpAuth == false) {
-          //             webview.WebDataBase.saveHttpAuthCredentials(
-          //               event.host,
-          //               event.realm,
-          //               "2222",
-          //               "2222"
-          //             )
-          //             event.handler.cancel();
-          //           }
-          //         }
-          //       },
-          //       cancel: () => {
-          //         event.handler.cancel();
-          //       }
-          //     })
-          //   }
-          //   return true;
-          // })
-          // .onContextMenuShow((event) => {
-          //   if (event) {
-          //     this.menu_result = event.result
-          //     // console.info("x coord = " + event.param.x());
-          //     // console.info("link url = " + event.param.getLinkUrl());
-          //     this.menu_linkUrl = event.param.getLinkUrl();
-          //   }
-          //   console.info(`[ContextMenu] x: ${this.menu_offsetX}, y: ${this.menu_offsetY}`);
-          //   this.menu_showMenu = true;
-          //   this.menu_offsetX = 0;
-          //   this.menu_offsetY = Math.max(px2vp(event?.param.y() ?? 0) - 0, 0);
-          //   // Set content display
-          //   this.menu_has_link = this.menu_linkUrl ? true : false;
-          //   this.menu_editable = event.param.isEditable();
-          //   this.menu_has_image = event.param.existsImageContents();
-          //   this.menu_mediaType = event.param.getMediaType();
-          //   this.menu_imageLink = event.param.getSourceUrl();
-          //   return true;
-          // })// Trigger popup
-          // .bindPopup(this.menu_showMenu,
-          //   {
-          //     builder: this.MenuBuilder(),
-          //     enableArrow: false,
-          //     placement: Placement.LeftTop,
-          //     offset: { x: this.menu_offsetX, y: this.menu_offsetY },
-          //     mask: false,
-          //     onStateChange: (e) => {
-          //       if (!e.isVisible) {
-          //         this.menu_showMenu = false;
-          //         this.menu_result!.closeContextMenu();
-          //       }
-          //     }
-          //   })
         } // Webs
         .borderColor(this.color_current_secondary)
         .borderWidth(this.border_width_tab(this.current_sub_tab_index == Label.index_key))
@@ -890,7 +833,7 @@ struct meowWebView {
 
   // Ladders
 
-  private initial_src_of_tab_index(index: number): string {
+  private src_of_tab_index(index: number): string {
     let target_packed_tab_info = this.bunch_of_tabs.Tabs[index];
     if (target_packed_tab_info == undefined) {
       return "";
@@ -898,6 +841,7 @@ struct meowWebView {
       if (target_packed_tab_info.restore_on_creation) {
         return "";
       } else {
+        console.log('[meowWebView] load: ' + url_meow_to_resource(target_packed_tab_info.url));
         return url_meow_to_resource(target_packed_tab_info.url);
       }
     }
