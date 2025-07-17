@@ -29,24 +29,30 @@
           {
             "entities": [
               "entity.system.home",
-              "entity.system.browsable"
             ],
             "actions": [
               "action.system.home",
-              "entity.system.browsable",
+            ],
+            "uris": [
+              {
+                "type": "general.hyperlink",
+              }
+            ]
+          },{
+            "entities": [
+              "entity.system.browsable"
+            ],
+            "actions": [
               "ohos.want.action.viewData"
             ],
             "uris": [
               {
-                "scheme": "https",
-                "type": "text/plain",
-                "linkFeature": "FileOpen"
+                "scheme": "https"
               },
               {
                 "scheme": "http"
               }
-            ],
-            "domainVerify": true
+            ]
           }
         ],
         "minWindowHeight": 260,
