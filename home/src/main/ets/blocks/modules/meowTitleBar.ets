@@ -215,7 +215,7 @@ struct meowTitleBar {
           this.horizontal_tabs_height = Math.max(0, n.height as number + 10);
         })
 
-      estimatedDestination({
+      EstimatedDestination({
         is_http_no_s: this.search_input_unify_scheme_http,
         is_search_input_typing: this.is_search_input_typing,
         is_search_input_address: this.is_search_input_address,
@@ -255,8 +255,8 @@ struct meowTitleBar {
       .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
       .padding({ left: 15, right: 15, top: 6 })
       .width("100%")
-      .visibility(this.current_in_page_searching_stats_total <= 0 && this.showing_more_options && !this.showing_scratching_board ? Visibility.Visible :
-      Visibility.None)
+      .visibility(this.current_in_page_searching_stats_total <= 0 && this.showing_more_options && !this.showing_scratching_board
+        ? Visibility.Visible : Visibility.None)
       .animation(animation_default())
 
       RelativeContainer() {
@@ -590,7 +590,7 @@ struct meowTitleBar {
       .height(this.tablet_mode || this.showing_scratching_board ? 36 : 82)
       .animation(animation_default())
 
-      estimatedDestination({
+      EstimatedDestination({
         is_http_no_s: this.search_input_unify_scheme_http,
         is_search_input_typing: this.is_search_input_typing,
         is_search_input_address: this.is_search_input_address,
@@ -878,7 +878,6 @@ struct meowTitleBar {
         this.bar_height = n.height as number;
       }
     })
-    // .visibility((this.title_bar_position == "" ? Visibility.Hidden : Visibility.Visible))
     .offset({ y: !this.fullscreen_mode ? 0 : (this.title_bar_position == 'bottom' ? 1.1 : -1.1) * this.bar_height })
     .animation(animation_default())
     .onAppear(() => {
@@ -1178,7 +1177,7 @@ struct meowTitleBar {
 export default meowTitleBar;
 
 @Component
-struct estimatedDestination {
+struct EstimatedDestination {
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');

@@ -65,10 +65,10 @@ struct meowSuggestions {
             .visibility(this.history_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
             .animation(animation_default())
         }
+        .alignItems(HorizontalAlign.Start)
         .onAreaChange((_o, n) => {
           this.content_height = n.height as number;
         })
-        .alignItems(HorizontalAlign.Start)
         .animation(animation_default())
       }
     }
@@ -80,14 +80,25 @@ struct meowSuggestions {
       bottom: this.bottom_margin
     })
     .height(Math.min(this.content_height, 0.4 * this.screen_height))
-    .visibility((this.bookmark_suggestions.length + this.history_suggestions.length == 0) || this.showing_more_options ||
-      this.search_input == "" ? Visibility.None : this.visible_when_typing())
-    .edgeEffect(EdgeEffect.Spring)
+    .visibility(this.visibility_suggestions())
     .animation(animation_default())
+    .edgeEffect(EdgeEffect.Spring)
   }
 
-  visible_when_typing() {
-    return this.is_search_input_typing ? Visibility.Visible : Visibility.None
+  visibility_suggestions() {
+    if (this.bookmark_suggestions.length + this.history_suggestions.length == 0) {
+      return Visibility.None;
+    }
+    if (this.showing_more_options) {
+      return Visibility.None;
+    }
+    if (this.search_input == "") {
+      return Visibility.None;
+    }
+    if (!this.is_search_input_typing) {
+      return Visibility.None;
+    }
+    return Visibility.Visible
   }
 
   refresh_suggestions() {
