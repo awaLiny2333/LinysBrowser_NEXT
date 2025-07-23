@@ -132,11 +132,16 @@ function is_legal_url(input: string) {
   let scheme_result = match_domain(input)
   // scheme_result = ["https","www.google.com/about"]
 
-  let scheme: string = scheme_result[0]
+  let scheme: string = scheme_result[0];
+
+  // Other schemes, directly jump
+  if (scheme.length >= 1 && !viewable_domains().includes(scheme)) {
+    return true;
+  }
 
   let url_first_part = scheme_result[1].split("/")[0].split(".")
   // eliminate slashes and split by dots
-  // url_first_part = ["www"."google","com"]
+  // url_first_part = ["www", "google", "com"]
 
   if (url_first_part.length < 2 && scheme == "") {
     // if doesn't contain dots and has no scheme
@@ -229,7 +234,7 @@ export function match_domain(input: string) {
   let scheme: string = ""
   if (url.includes("://")) {
     // if input contains protocol scheme
-    let url_split = url.split("/")
+    let url_split = url.split("/");
     if ((url_split[0].substring(url_split[0].length - 1) == ":") && (url_split[1] == "")) {
       // if protocol scheme is at the beginning
       // url = url.split("/").slice(2).join("/");
