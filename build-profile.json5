@@ -7,11 +7,11 @@
         "material": {
           "certpath": "C:\\Users\\meowDUO\\.ohos\\config\\default_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001A8534CD210F6D2A8D6196D6E984B9557C80BAD637920A42DA4A3135EE7AC395DE91777916F017",
+          "keyPassword": "0000001B1F6544A5D21C65E696056A36E242B151304EFB2B6CCC1DCB14BA885A555B133BD00C22CA88B1B6",
           "profile": "C:\\Users\\meowDUO\\.ohos\\config\\default_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "C:\\Users\\meowDUO\\.ohos\\config\\default_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.p12",
-          "storePassword": "0000001A81BD3B7ED7C758DA539AABB6050E3E2284B68D3A6A0E60C4B9FBBEA29A603B10BCE9F4AF61A4"
+          "storePassword": "0000001BA636C37EF82F543F1DE34C6A54F230ACD046E8DF078B721E077FBF4CA4D482178390CD41B01CEC"
         }
       }
     ],
@@ -25,7 +25,8 @@
           "strictMode": {
             "caseSensitiveCheck": true
           }
-        }
+        },
+        "targetSdkVersion": "5.1.1(19)"
       }
     ],
     "buildModeSet": [

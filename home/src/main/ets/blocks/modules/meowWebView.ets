@@ -517,6 +517,19 @@ struct meowWebView {
                   }
                 }
               }, 0)
+
+              // Set allowed resources
+              try {
+                let allowed = [
+                  this.getUIContext().getHostContext()!.resourceDir,
+                  // this.getUIContext().getHostContext()!.filesDir,
+                  // '/data/storage/el2/base/haps/cache'
+                ]
+                this.bunch_of_tabs.Tabs[Label.index_key].controller.setPathAllowingUniversalAccess(allowed);
+                console.log('[meowWebView] Init set allowed resources: [' + allowed.join(", ") + ']');
+              } catch (e) {
+                console.error('[meowWebView] Init set allowed resources error: ' + e);
+              }
             })
             .darkMode(WebDarkMode.Auto)// Dark mode!
             .forceDarkAccess(this.web_force_dark_mode)// Force dark mode
