@@ -260,7 +260,8 @@ struct raw_data_display {
           })// Text copy
             .clickEffect(click_effect_default())
             .onClick(() => {
-              this.default_click();
+              copy(this.text);
+              this.copied = animation_popup_duration();
             })
 
           if (this.type == 'url') {
@@ -299,7 +300,7 @@ struct raw_data_display {
     })
     .clickEffect(click_effect_default())
     .onClick(() => {
-      this.default_click()
+      this.default_click();
     })
   }
 
