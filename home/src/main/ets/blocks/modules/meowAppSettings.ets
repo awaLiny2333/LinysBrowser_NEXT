@@ -2,6 +2,7 @@ import {
   animation_default,
   capsule_bar_height,
   click_effect_default,
+  fontSize_Extra,
   fontSize_Large,
   minimum_card_width,
   url_default_blank
@@ -291,617 +292,684 @@ struct meowAppSettings {
         } // Quick access on the top
         WaterFlow({ scroller: this.waterFlow_control }) {
           FlowItem() {
-            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 0 }) {
-              linysTextTitle({ text: $r('app.string.Settings_start_up') })
-              linysText({ text: $r('app.string.Settings_start_up_page') })
-              SegmentButton({
-                options: this.start_up_page_tabOptions,
-                selectedIndexes: this.start_up_page_selected
-              })
+            settingsCard({
+              title: $r('app.string.Settings_start_up'),
+              timeout: this.settings_scroll_to_highlight_timeout,
+              highlight: this.settings_scroll_to == 0
+            }) {
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 0 }) {
+                linysText({ text: $r('app.string.Settings_start_up_page') })
+                SegmentButton({
+                  options: this.start_up_page_tabOptions,
+                  selectedIndexes: this.start_up_page_selected
+                })
+              }
             }
           } // Start up
           .width("100%")
 
           FlowItem() {
-            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 1 }) {
-              linysTextTitle({ text: $r('app.string.Settings_general') })
-
+            settingsCard({
+              title: $r('app.string.Settings_general'),
+              timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 1
+            }) {
               // UA
-              linysText({ text: $r('app.string.Settings_general_custom_ua') })
-              meowUAManager()
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 1 }) {
+                linysTextSubtitleDivision({ icon: '󰜎', text: $r('app.string.Index_surf_title') }) // Surf
 
-              // Search Engine
-              linysText({ text: $r('app.string.Settings_general_custom_search_engine') })
-              meowSEManager()
+                linysText({ text: $r('app.string.Settings_general_custom_ua') })
+                meowUAManager()
+                // }
 
-              // New tab URL
-              linysText({ text: $r('app.string.Settings_general_new_tab_url') })
-              TextInput({
-                text: this.new_tab_url_edit,
-                placeholder: url_default_blank(),
-              })
-                .onChange((value) => {
-                  this.new_tab_url_edit = value;
-                })
-                .fontWeight(FontWeight.Regular)
-                .fontColor(this.color_current_font)
-                .caretColor(this.color_current_font)
-                .selectedBackgroundColor(this.color_current_font)
-                .onSubmit(() => {
-                  this.set_new_tab_url_and_kv_store();
-                })
-                .height(capsule_bar_height())
+                // Search Engine
+                // settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 1 }) {
+                linysText({ text: $r('app.string.Settings_general_custom_search_engine') })
+                meowSEManager()
+                // }
 
-              linysCapsuleButton({ text: "  󰀻  " })
-                .visibility(this.new_tab_url_edit != this.bunch_of_tabs.new_tab_url ? Visibility.Visible : Visibility.None)
-                .onClick(() => {
-                  this.set_new_tab_url_and_kv_store();
+                // New tab URL
+                // settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 1 }) {
+                linysText({ text: $r('app.string.Settings_general_new_tab_url') })
+                TextInput({
+                  text: this.new_tab_url_edit,
+                  placeholder: url_default_blank(),
                 })
-                .alignSelf(ItemAlign.End)
-                .animation(animation_default())
+                  .onChange((value) => {
+                    this.new_tab_url_edit = value;
+                  })
+                  .fontWeight(FontWeight.Regular)
+                  .fontColor(this.color_current_font)
+                  .caretColor(this.color_current_font)
+                  .selectedBackgroundColor(this.color_current_font)
+                  .onSubmit(() => {
+                    this.set_new_tab_url_and_kv_store();
+                  })
+                  .height(capsule_bar_height())
 
-              // Home URL
-              linysText({ text: $r('app.string.Settings_general_home_url') })
-              TextInput({
-                text: this.home_url_edit,
-                placeholder: url_default_blank(),
-              })
-                .onChange((value) => {
-                  this.home_url_edit = value;
-                })
-                .fontWeight(FontWeight.Regular)
-                .fontColor(this.color_current_font)
-                .caretColor(this.color_current_font)
-                .selectedBackgroundColor(this.color_current_font)
-                .onSubmit(() => {
-                  this.set_home_url_and_kv_store();
-                })
-                .height(capsule_bar_height())
+                linysCapsuleButton({ text: "  󰀻  " })
+                  .visibility(this.new_tab_url_edit != this.bunch_of_tabs.new_tab_url ? Visibility.Visible : Visibility.None)
+                  .onClick(() => {
+                    this.set_new_tab_url_and_kv_store();
+                  })
+                  .alignSelf(ItemAlign.End)
+                  .animation(animation_default())
 
-              linysCapsuleButton({ text: "  󰀻  " })
-                .visibility(this.home_url_edit != this.bunch_of_tabs.home_url ? Visibility.Visible : Visibility.None)
-                .onClick(() => {
-                  this.set_home_url_and_kv_store();
+                // Home URL
+                linysText({ text: $r('app.string.Settings_general_home_url') })
+                TextInput({
+                  text: this.home_url_edit,
+                  placeholder: url_default_blank(),
                 })
-                .alignSelf(ItemAlign.End)
-                .animation(animation_default())
+                  .onChange((value) => {
+                    this.home_url_edit = value;
+                  })
+                  .fontWeight(FontWeight.Regular)
+                  .fontColor(this.color_current_font)
+                  .caretColor(this.color_current_font)
+                  .selectedBackgroundColor(this.color_current_font)
+                  .onSubmit(() => {
+                    this.set_home_url_and_kv_store();
+                  })
+                  .height(capsule_bar_height())
 
+                linysCapsuleButton({ text: "  󰀻  " })
+                  .visibility(this.home_url_edit != this.bunch_of_tabs.home_url ? Visibility.Visible : Visibility.None)
+                  .onClick(() => {
+                    this.set_home_url_and_kv_store();
+                  })
+                  .alignSelf(ItemAlign.End)
+                  .animation(animation_default())
+              }
+
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 1 }) {
+                linysTextSubtitleDivision({ icon: '󰀧', text: $r('app.string.Settings_homepage') }) // Homepage Customization
+                  .width('100%')
+                linysCapsuleButtonWithText({
+                  desc_text: $r('app.string.Settings_homepage_customization'),
+                  button_text: "  󰀠  ",
+                  onExecution: () => {
+                    this.homepage_shortcuts_control.open();
+                  }
+                })
+              }
             }
           } // General
           .width("100%")
 
           FlowItem() {
-            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 2 }) {
-              linysTextTitle({ text: $r('app.string.Settings_Experience') }) // Exp title
+            settingsCard({
+              title: $r('app.string.Settings_Experience'),
+              timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 2
+            }) {
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 2 }) {
+                linysTextSubtitleDivision({ icon: '󰏯', text: $r('app.string.Index_downloads_title') }) // Downloads
+                linysSwitchWithText({
+                  text: $r('app.string.Index_downloads_direct'),
+                  toggle_state: this.direct_download,
+                  onExecution: () => {
+                    this.bunch_of_settings.set('direct_download', this.direct_download);
+                  }
+                }) // Direct Download
+                linysSwitchWithText({
+                  text: $r('app.string.Index_downloads_direct_auto_open'),
+                  toggle_state: this.direct_download_auto_open,
+                  onExecution: () => {
+                    this.bunch_of_settings.set('direct_download_auto_open', this.direct_download_auto_open);
+                  }
+                }) // Direct Download auto open
+                  .opacity(this.direct_download ? 1 : 0.5)
+                  .animation(animation_default())
+              }
 
-              linysTextSubtitleDivision({ icon: '󰏯', text: $r('app.string.Index_downloads_title') }) // Downloads
-              linysSwitchWithText({
-                text: $r('app.string.Index_downloads_direct'),
-                toggle_state: this.direct_download,
-                onExecution: () => {
-                  this.bunch_of_settings.set('direct_download', this.direct_download);
-                }
-              }) // Direct Download
-              linysSwitchWithText({
-                text: $r('app.string.Index_downloads_direct_auto_open'),
-                toggle_state: this.direct_download_auto_open,
-                onExecution: () => {
-                  this.bunch_of_settings.set('direct_download_auto_open', this.direct_download_auto_open);
-                }
-              }) // Direct Download auto open
-                .opacity(this.direct_download ? 1 : 0.5)
-                .animation(animation_default())
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 2 }) {
+                linysTextSubtitleDivision({ icon: '󰊾', text: $r('app.string.Index_continuation_title') }) // Continuation
+                linysSwitchWithText({
+                  text: $r('app.string.Settings_experience_continuation_auto_exit'),
+                  toggle_state: this.continuation_auto_exit,
+                  onExecution: () => {
+                    this.bunch_of_settings.set('continuation_auto_exit', this.continuation_auto_exit);
+                  }
+                }) // continuation_auto_exit
+                linysSwitchWithText({
+                  text: $r('app.string.Settings_experience_continuation_auto_close_tab'),
+                  toggle_state: this.continuation_auto_close_tab,
+                  onExecution: () => {
+                    this.bunch_of_settings.set('continuation_auto_close_tab', this.continuation_auto_close_tab);
+                  }
+                }) // continuation_auto_close_tab
+                  .opacity(!this.continuation_auto_exit ? 1 : 0.5)
+                  .animation(animation_default())
+              }
 
-              linysTextSubtitleDivision({ icon: '󰊾', text: $r('app.string.Index_continuation_title') }) // Continuation
-              linysSwitchWithText({
-                text: $r('app.string.Settings_experience_continuation_auto_exit'),
-                toggle_state: this.continuation_auto_exit,
-                onExecution: () => {
-                  this.bunch_of_settings.set('continuation_auto_exit', this.continuation_auto_exit);
-                }
-              }) // continuation_auto_exit
-              linysSwitchWithText({
-                text: $r('app.string.Settings_experience_continuation_auto_close_tab'),
-                toggle_state: this.continuation_auto_close_tab,
-                onExecution: () => {
-                  this.bunch_of_settings.set('continuation_auto_close_tab', this.continuation_auto_close_tab);
-                }
-              }) // continuation_auto_close_tab
-                .opacity(!this.continuation_auto_exit ? 1 : 0.5)
-                .animation(animation_default())
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 2 }) {
+                linysTextSubtitleDivision({ icon: '󰯏', text: $r('app.string.Index_suggestions_title') }) // Suggestion
+                linysText({ text: $r('app.string.Settings_experience_max_bookmark_advice'), max_lines: 2 })
+                linysLockSlider({
+                  slider_min: 0,
+                  slider_max: 20,
+                  slider_value: this.max_bookmark_advice,
+                  onTouchUp: () => {
+                    this.bunch_of_settings.set('max_bookmark_suggest', this.max_bookmark_advice);
+                  }
+                }) // Slider and display of max_bookmark_suggestions
+                linysText({ text: $r('app.string.Settings_experience_max_history_advice'), max_lines: 2 })
+                linysLockSlider({
+                  slider_min: 0,
+                  slider_max: 20,
+                  slider_value: this.max_history_advice,
+                  onTouchUp: () => {
+                    this.bunch_of_settings.set('max_history_suggest', this.max_history_advice);
+                  }
+                }) // Slider and display of max_history_suggestions
+              }
 
-              linysTextSubtitleDivision({ icon: '󰯏', text: $r('app.string.Index_suggestions_title') }) // Suggestion
-              linysText({ text: $r('app.string.Settings_experience_max_bookmark_advice'), max_lines: 2 })
-              linysLockSlider({
-                slider_min: 0,
-                slider_max: 20,
-                slider_value: this.max_bookmark_advice,
-                onTouchUp: () => {
-                  this.bunch_of_settings.set('max_bookmark_suggest', this.max_bookmark_advice);
-                }
-              }) // Slider and display of max_bookmark_suggestions
-              linysText({ text: $r('app.string.Settings_experience_max_history_advice'), max_lines: 2 })
-              linysLockSlider({
-                slider_min: 0,
-                slider_max: 20,
-                slider_value: this.max_history_advice,
-                onTouchUp: () => {
-                  this.bunch_of_settings.set('max_history_suggest', this.max_history_advice);
-                }
-              }) // Slider and display of max_history_suggestions
-
-              linysTextSubtitleDivision({ icon: '󰌐', text: $r('app.string.Key_shortcuts') }) // Keyboard shortcuts
-                .width('100%')
-              linysCapsuleButtonWithText({
-                desc_text: $r('app.string.Key_shortcuts_manage'),
-                button_text: "  󰀠  ",
-                onExecution: () => {
-                  this.key_shortcuts_control.open();
-                }
-              })
-
-              linysTextSubtitleDivision({ icon: '󰀧', text: $r('app.string.Settings_homepage') }) // Homepage Customization
-                .width('100%')
-              linysCapsuleButtonWithText({
-                desc_text: $r('app.string.Settings_homepage_customization'),
-                button_text: "  󰀠  ",
-                onExecution: () => {
-                  this.homepage_shortcuts_control.open();
-                }
-              })
-
-              linysTextSubtitleDivision({ icon: '󰇝', text: $r('app.string.Title_advanced') }) // Advanced
-              linysSwitchWithText({
-                text: $r('app.string.Settings_experience_use_adblock'),
-                toggle_state: this.use_adblock,
-                onExecution: () => {
-                  this.bunch_of_settings.set('use_adblock', this.use_adblock);
-                }
-              }) // Use adblock
-              linysCapsuleButtonWithText({
-                desc_text: $r('app.string.Settings_experience_manage_adblock'),
-                button_text: "  󰀠  ",
-                onExecution: () => {
-                  this.adsBlocker_control.open();
-                }
-              })
-              linysSwitchWithText({
-                text: $r('app.string.Settings_image_disable_image'),
-                toggle_state: this.disable_image,
-                onExecution: () => {
-                  this.bunch_of_settings.set('disable_image', this.disable_image);
-                }
-              }) // Disable images
-              linysCapsuleButtonWithText({
-                desc_text: $r('app.string.Settings_image_manage'),
-                button_text: "  󰀠  ",
-                onExecution: () => {
-                  this.image_manage_control.open();
-                }
-              })
-              linysSwitchWithText({
-                text: $r('app.string.Settings_js_disable_js'),
-                toggle_state: this.disable_js,
-                onExecution: () => {
-                  this.bunch_of_settings.set('disable_js', this.disable_js);
-                }
-              }) // JavaScript Manager
-              linysCapsuleButtonWithText({
-                desc_text: $r('app.string.Settings_js_manage'),
-                button_text: '  󰀠  ',
-                onExecution: () => {
-                  this.js_manage_control.open();
-                }
-              }) // JS management
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 2 }) {
+                linysTextSubtitleDivision({ icon: '󰇝', text: $r('app.string.Title_advanced') }) // Advanced
+                linysSwitchWithText({
+                  text: $r('app.string.Settings_experience_use_adblock'),
+                  toggle_state: this.use_adblock,
+                  onExecution: () => {
+                    this.bunch_of_settings.set('use_adblock', this.use_adblock);
+                  }
+                }) // Use adblock
+                linysCapsuleButtonWithText({
+                  desc_text: $r('app.string.Settings_experience_manage_adblock'),
+                  button_text: "  󰀠  ",
+                  onExecution: () => {
+                    this.adsBlocker_control.open();
+                  }
+                })
+                linysSwitchWithText({
+                  text: $r('app.string.Settings_image_disable_image'),
+                  toggle_state: this.disable_image,
+                  onExecution: () => {
+                    this.bunch_of_settings.set('disable_image', this.disable_image);
+                  }
+                }) // Disable images
+                linysCapsuleButtonWithText({
+                  desc_text: $r('app.string.Settings_image_manage'),
+                  button_text: "  󰀠  ",
+                  onExecution: () => {
+                    this.image_manage_control.open();
+                  }
+                })
+                linysSwitchWithText({
+                  text: $r('app.string.Settings_js_disable_js'),
+                  toggle_state: this.disable_js,
+                  onExecution: () => {
+                    this.bunch_of_settings.set('disable_js', this.disable_js);
+                  }
+                }) // JavaScript Manager
+                linysCapsuleButtonWithText({
+                  desc_text: $r('app.string.Settings_js_manage'),
+                  button_text: '  󰀠  ',
+                  onExecution: () => {
+                    this.js_manage_control.open();
+                  }
+                }) // JS management
+              }
             }
           } // Experience
           .width("100%")
 
           FlowItem() {
-            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 3 }) {
-              linysTextTitle({ text: $r('app.string.Settings_Accessibility') })
+            settingsCard({
+              title: $r('app.string.Settings_Accessibility'),
+              timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 3
+            }) {
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 3 }) {
+                linysSwitchWithText({
+                  text: $r('app.string.Settings_experience_sys_back_to_access_backward'),
+                  toggle_state: this.sys_back_to_access_backward,
+                  onExecution: () => {
+                    this.bunch_of_settings.set('sys_back_access_backward', this.sys_back_to_access_backward);
+                  }
+                }) // Use sys back
+              }
 
-              linysSwitchWithText({
-                text: $r('app.string.Settings_experience_sys_back_to_access_backward'),
-                toggle_state: this.sys_back_to_access_backward,
-                onExecution: () => {
-                  this.bunch_of_settings.set('sys_back_access_backward', this.sys_back_to_access_backward);
-                }
-              }) // Use sys back
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 3 }) {
+                linysTextSubtitleDivision({ icon: '󰗫', text: $r('app.string.Settings_single_hand_preference') }) // Single hand
+                SegmentButton({
+                  options: this.left_or_right,
+                  selectedIndexes: this.left_or_right_selected
+                }) // Single hand usability
 
-              linysTextSubtitleDivision({ icon: '󰗫', text: $r('app.string.Settings_single_hand_preference') }) // Single hand
-              SegmentButton({
-                options: this.left_or_right,
-                selectedIndexes: this.left_or_right_selected
-              }) // Single hand usability
+                linysText({
+                  text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_desc'),
+                  max_lines: 20,
+                  is_description: true
+                }) // Explanation
 
-              linysText({
-                text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_desc'),
-                max_lines: 20,
-                is_description: true
-              })
+                linysSwitchWithText({
+                  text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_settings_menu'),
+                  toggle_state: this.preferred_hand_reverse_settings_menu,
+                  onExecution: () => {
+                    this.bunch_of_settings.set('preferred_hand_reverse_settings_menu', this.preferred_hand_reverse_settings_menu);
+                  }
+                }) // Reverse settings menu
+                linysSwitchWithText({
+                  text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_tabs_panel'),
+                  toggle_state: this.preferred_hand_reverse_tabs_panel,
+                  onExecution: () => {
+                    this.bunch_of_settings.set('preferred_hand_reverse_tabs_panel', this.preferred_hand_reverse_tabs_panel);
+                  }
+                }) // Reverse settings menu
+                linysSwitchWithText({
+                  text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_homepage_shortcuts'),
+                  toggle_state: this.preferred_hand_reverse_homepage_shortcuts,
+                  onExecution: () => {
+                    this.bunch_of_settings.set('preferred_hand_reverse_homepage_shortcuts', this.preferred_hand_reverse_homepage_shortcuts);
+                  }
+                }) // Reverse homepage shortcuts
+              }
 
-              linysSwitchWithText({
-                text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_settings_menu'),
-                toggle_state: this.preferred_hand_reverse_settings_menu,
-                onExecution: () => {
-                  this.bunch_of_settings.set('preferred_hand_reverse_settings_menu', this.preferred_hand_reverse_settings_menu);
-                }
-              }) // Reverse settings menu
-              linysSwitchWithText({
-                text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_tabs_panel'),
-                toggle_state: this.preferred_hand_reverse_tabs_panel,
-                onExecution: () => {
-                  this.bunch_of_settings.set('preferred_hand_reverse_tabs_panel', this.preferred_hand_reverse_tabs_panel);
-                }
-              }) // Reverse settings menu
-              linysSwitchWithText({
-                text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_homepage_shortcuts'),
-                toggle_state: this.preferred_hand_reverse_homepage_shortcuts,
-                onExecution: () => {
-                  this.bunch_of_settings.set('preferred_hand_reverse_homepage_shortcuts', this.preferred_hand_reverse_homepage_shortcuts);
-                }
-              }) // Reverse homepage shortcuts
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 3 }) {
+                linysTextSubtitleDivision({ icon: '󰌐', text: $r('app.string.Key_shortcuts') }) // Keyboard shortcuts
+                  .width('100%')
+                linysCapsuleButtonWithText({
+                  desc_text: $r('app.string.Key_shortcuts_manage'),
+                  button_text: "  󰀠  ",
+                  onExecution: () => {
+                    this.key_shortcuts_control.open();
+                  }
+                })
+              }
             }
           } // Accessibility
           .width('100%')
 
           FlowItem() {
-            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 4 }) {
-              linysTextTitle({ text: $r('app.string.Settings_appearance') }) // Appearance Title
+            settingsCard({
+              title: $r('app.string.Settings_appearance'),
+              timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 4
+            }) {
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 4 }) {
+                linysSwitchWithText({
+                  text: $r('app.string.Settings_experience_web_force_dark_mode'),
+                  toggle_state: this.web_force_dark_mode,
+                  onExecution: () => {
+                    this.bunch_of_settings.set('web_force_dark_mode', this.web_force_dark_mode);
+                  }
+                }) // Force dark mode
+              }
 
-              linysSwitchWithText({
-                text: $r('app.string.Settings_experience_web_force_dark_mode'),
-                toggle_state: this.web_force_dark_mode,
-                onExecution: () => {
-                  this.bunch_of_settings.set('web_force_dark_mode', this.web_force_dark_mode);
-                }
-              }) // Force dark mode
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 4 }) {
+                linysTextSubtitleDivision({ icon: '󰍗', text: $r('app.string.Index_layout_title') }) // Layout
 
-              linysTextSubtitleDivision({ icon: '󰍗', text: $r('app.string.Index_layout_title') }) // Layout
+                linysText({ text: $r('app.string.Settings_appearance_title_bar_position') }) // Title bar position
+                SegmentButton({
+                  options: this.title_bar_position_tabOptions,
+                  selectedIndexes: this.title_bar_position_selected
+                })
 
-              linysText({ text: $r('app.string.Settings_appearance_title_bar_position') }) // Title bar position
-              SegmentButton({
-                options: this.title_bar_position_tabOptions,
-                selectedIndexes: this.title_bar_position_selected
-              })
+                linysText({
+                  text: $r('app.string.Settings_appearance_tabs_style'),
+                  max_lines: 3
+                }) // Tabs Style for tablets and landscape displays
+                SegmentButton({
+                  options: this.tabs_style_tabOptions,
+                  selectedIndexes: this.tabs_style_selected
+                })
 
-              linysText({
-                text: $r('app.string.Settings_appearance_tabs_style'),
-                max_lines: 3
-              }) // Tabs Style for tablets and landscape displays
-              SegmentButton({
-                options: this.tabs_style_tabOptions,
-                selectedIndexes: this.tabs_style_selected
-              })
+                linysText({
+                  text: $r('app.string.Settings_appearance_tabs_style_non_tablet_mode'),
+                  max_lines: 3
+                }) // Tabs Style for mobile and portrait displays
+                SegmentButton({
+                  options: this.tabs_style_tabOptions,
+                  selectedIndexes: this.tabs_style_selected_non_tablet_mode
+                })
+              }
 
-              linysText({
-                text: $r('app.string.Settings_appearance_tabs_style_non_tablet_mode'),
-                max_lines: 3
-              }) // Tabs Style for mobile and portrait displays
-              SegmentButton({
-                options: this.tabs_style_tabOptions,
-                selectedIndexes: this.tabs_style_selected_non_tablet_mode
-              })
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 4 }) {
+                linysTextSubtitleDivision({ icon: '󰟠', text: $r('app.string.Index_animation_title') }) // Animation
+                meowAnimationManager() // Animation manager
+              }
 
-              linysTextSubtitleDivision({ icon: '󰟠', text: $r('app.string.Index_animation_title') }) // Animation
-              meowAnimationManager() // Animation manager
-
-              linysTextSubtitleDivision({ icon: '󰄥', text: $r('app.string.Index_colors_title') }) // Colors
-              meowColorsManager() // Colors manager
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 4 }) {
+                linysTextSubtitleDivision({ icon: '󰄥', text: $r('app.string.Index_colors_title') }) // Colors
+                meowColorsManager() // Colors manager
+              }
             }
           } // Appearance
           .width("100%")
 
           FlowItem() {
-            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 5 }) {
-
-              linysTextTitle({ text: $r('app.string.Settings_experience_history') }) // History
-              linysSwitchWithText({
-                text: $r('app.string.Settings_experience_history_record_new'),
-                toggle_state: this.collect_new_history,
-                onExecution: () => {
-                  this.bunch_of_settings.set('collect_new_history', this.collect_new_history);
-                }
-              }) // Toggle History
-
-              linysCapsuleButtonWithText({
-                desc_text: $r('app.string.Settings_experience_history_view'),
-                button_text: "  󰀩  ",
-                onExecution: () => {
-                  this.woofHistory_control.open();
-                }
-              }) // View history
-
-              linysText({ text: $r('app.string.Settings_experience_history_index_desc'), is_description: true })
-
-              linysTimeoutButtonWithText({
-                desc_text: $r('app.string.Settings_experience_history_index'),
-                button_text: "  󰀩  ",
-                onExecution: () => {
-                  history_index_full_rebuild_worker();
-                }
-              })// History Indexing
-                .opacity(this.reindexing_history ? 0.4 : 1)
-                .enabled(!this.reindexing_history)
-
-              if (this.DEV_MODE) {
-                linysTimeoutButton({
-                  text: " Fill history 05 - 14 ",
+            settingsCard({
+              title: $r('app.string.Settings_experience_history'),
+              timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 5
+            }) {
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 5 }) {
+                linysSwitchWithText({
+                  text: $r('app.string.Settings_experience_history_record_new'),
+                  toggle_state: this.collect_new_history,
                   onExecution: () => {
-                    fill_fake_history(2005, 2014, 750000);
+                    this.bunch_of_settings.set('collect_new_history', this.collect_new_history);
                   }
-                })
-                  .opacity(this.reindexing_history ? 0.4 : 1)
-                  .enabled(!this.reindexing_history)
-                  .animation(animation_default())
+                }) // Toggle History
 
-                linysTimeoutButton({
-                  text: " Fill history 15 - 24 ",
+                linysCapsuleButtonWithText({
+                  desc_text: $r('app.string.Settings_experience_history_view'),
+                  button_text: "  󰀩  ",
                   onExecution: () => {
-                    fill_fake_history(2015, 2024, 750000);
+                    this.woofHistory_control.open();
                   }
-                })
-                  .opacity(this.reindexing_history ? 0.4 : 1)
-                  .enabled(!this.reindexing_history)
-                  .animation(animation_default())
+                }) // View history
 
-                linysCapsuleButton({ text: ' Load from disk ' })
-                  .onClick(() => {
-                    history_index_load_from_disk_worker("normal");
-                  })
-                  .opacity(this.reindexing_history ? 0.4 : 1)
-                  .enabled(!this.reindexing_history)
-                  .animation(animation_default())
+                linysText({ text: $r('app.string.Settings_experience_history_index_desc'), is_description: true })
 
-                linysCapsuleButton({ text: ' Save Month to disk ' })
-                  .onClick(() => {
-                    history_index_save_to_disk_worker(bunch_of_history_index_lite.index_map, bunch_of_history_index_lite.this_file_name(), false);
-                  })
+                linysTimeoutButtonWithText({
+                  desc_text: $r('app.string.Settings_experience_history_index'),
+                  button_text: "  󰀩  ",
+                  onExecution: () => {
+                    history_index_full_rebuild_worker();
+                  }
+                })// History Indexing
                   .opacity(this.reindexing_history ? 0.4 : 1)
                   .enabled(!this.reindexing_history)
-                  .animation(animation_default())
+
+                if (this.DEV_MODE) {
+                  linysTimeoutButton({
+                    text: " Fill history 05 - 14 ",
+                    onExecution: () => {
+                      fill_fake_history(2005, 2014, 750000);
+                    }
+                  })
+                    .opacity(this.reindexing_history ? 0.4 : 1)
+                    .enabled(!this.reindexing_history)
+                    .animation(animation_default())
+
+                  linysTimeoutButton({
+                    text: " Fill history 15 - 24 ",
+                    onExecution: () => {
+                      fill_fake_history(2015, 2024, 750000);
+                    }
+                  })
+                    .opacity(this.reindexing_history ? 0.4 : 1)
+                    .enabled(!this.reindexing_history)
+                    .animation(animation_default())
+
+                  linysCapsuleButton({ text: ' Load from disk ' })
+                    .onClick(() => {
+                      history_index_load_from_disk_worker("normal");
+                    })
+                    .opacity(this.reindexing_history ? 0.4 : 1)
+                    .enabled(!this.reindexing_history)
+                    .animation(animation_default())
+
+                  linysCapsuleButton({ text: ' Save Month to disk ' })
+                    .onClick(() => {
+                      history_index_save_to_disk_worker(bunch_of_history_index_lite.index_map, bunch_of_history_index_lite.this_file_name(), false);
+                    })
+                    .opacity(this.reindexing_history ? 0.4 : 1)
+                    .enabled(!this.reindexing_history)
+                    .animation(animation_default())
+                }
               }
             }
           } // History
           .width("100%")
 
           FlowItem() {
-            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 6 }) {
-              linysTextTitle({ text: $r('app.string.Settings_storage') }) // Storage Title
+            settingsCard({
+              title: $r('app.string.Settings_storage'),
+              timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 6
+            }) {
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 6 }) {
+                linysTextSubtitleDivision({ icon: '󰂼', text: $r('app.string.Settings_experience_webview_storage') }) // Web cache
+                linysText({ text: $r('app.string.Settings_storage_clear_webview_desc'), is_description: true }) // Cache title
+                linysTextTitle({ text: add_units_to_size(this.web_cache_size) }) // data display
+                Row({ space: 12 }) {
+                  linysCapsuleButton({ text: '  󰃈  ' })
+                    .onClick(() => {
+                      this.refresh_web_cache_size();
+                    })
+                    .opacity(this.calculating_web_cache_size ? 0.4 : 1)
+                    .enabled(!this.calculating_web_cache_size)
+                    .animation(animation_default())
 
-              linysText({ text: $r('app.string.Settings_storage_clear_webview_desc'), is_description: true }) // Cache title
-              linysTextTitle({ text: "󰂼 " + add_units_to_size(this.web_cache_size) }) // data display
-              Row({ space: 12 }) {
-                linysCapsuleButton({ text: '  󰃈  ' })
-                  .onClick(() => {
-                    this.refresh_web_cache_size();
-                  })
-                  .opacity(this.calculating_web_cache_size ? 0.4 : 1)
-                  .enabled(!this.calculating_web_cache_size)
-                  .animation(animation_default())
-
-                linysTimeoutButton({
-                  text: '  󰀖  ',
-                  onExecution: () => {
-                    try {
-                      this.bunch_of_tabs.Tabs[0].controller.removeCache(true);
-                      console.log('[Meow][meowAppSettings] Clear webview cache!')
-                    } catch (error) {
-                      console.error(`[Meow][meowAppSettings] Clear webview cache.
+                  linysTimeoutButton({
+                    text: '  󰀖  ',
+                    onExecution: () => {
+                      try {
+                        this.bunch_of_tabs.Tabs[0].controller.removeCache(true);
+                        console.log('[Meow][meowAppSettings] Clear webview cache!')
+                      } catch (error) {
+                        console.error(`[Meow][meowAppSettings] Clear webview cache.
                       ErrorCode: ${(error as BusinessError).code},
                       Message: ${(error as BusinessError).message}`);
+                      }
+                      this.refresh_web_cache_size();
                     }
-                    this.refresh_web_cache_size();
-                  }
-                })// Clear Cache
-                  .opacity(this.calculating_web_cache_size ? 0.4 : 1)
-                  .enabled(!this.calculating_web_cache_size)
-                  .animation(animation_default())
-              } // buttons
-              .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
-              .animation(animation_default())
-              .width("100%")
+                  })// Clear Cache
+                    .opacity(this.calculating_web_cache_size ? 0.4 : 1)
+                    .enabled(!this.calculating_web_cache_size)
+                    .animation(animation_default())
+                } // buttons
+                .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
+                .animation(animation_default())
+                .width("100%")
+              }
 
-              linysText({ text: $r('app.string.Settings_experience_history_index_storage_desc'), is_description: true }) // Indexing title
-              linysTextTitle({ text: "󰏕 " + add_units_to_size(this.history_index_size) }) // data display
-              Row({ space: 12 }) {
-                linysCapsuleButton({ text: '  󰃈  ' })
-                  .onClick(() => {
-                    this.refresh_history_index_size();
-                  })
-                  .opacity(this.calculating_history_index_size ? 0.4 : 1)
-                  .enabled(!this.calculating_history_index_size)
-                  .animation(animation_default())
-              } // buttons
-              .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
-              .animation(animation_default())
-              .width("100%")
-
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 6 }) {
+                linysTextSubtitleDivision({ icon: '󰏕', text: $r('app.string.Settings_experience_history_index_storage') }) // Index files
+                linysText({ text: $r('app.string.Settings_experience_history_index_storage_desc'), is_description: true }) // Indexing title
+                linysTextTitle({ text: add_units_to_size(this.history_index_size) }) // data display
+                Row({ space: 12 }) {
+                  linysCapsuleButton({ text: '  󰃈  ' })
+                    .onClick(() => {
+                      this.refresh_history_index_size();
+                    })
+                    .opacity(this.calculating_history_index_size ? 0.4 : 1)
+                    .enabled(!this.calculating_history_index_size)
+                    .animation(animation_default())
+                } // buttons
+                .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
+                .animation(animation_default())
+                .width("100%")
+              }
             }
           } // Storage
           .width("100%")
 
           FlowItem() {
-            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 7 }) {
-              linysTextTitle({ text: $r('app.string.Settings_security') }) // Security Title
-
-              linysText({
-                text: $r('app.string.intelligent_tracking_prevention_desc'),
-                is_description: true
-              }) // Desc Intelligent Tracking Prevention
-              linysSwitchWithText({
-                text: $r('app.string.intelligent_tracking_prevention'),
-                toggle_state: this.intelligent_tracking_prevention,
-                onExecution: () => {
-                  this.bunch_of_settings.set('intelligent_tracking_prevention', this.intelligent_tracking_prevention);
-                  for (let index = 0; index < this.bunch_of_tabs.Tabs.length; index++) {
-                    try {
-                      this.bunch_of_tabs.Tabs[index].controller.enableIntelligentTrackingPrevention(this.intelligent_tracking_prevention);
-                      console.log('[Meow][meowAppSettings] Intelligent Tracking Prevention now ' + this.intelligent_tracking_prevention.toString() + '!')
-                    } catch (e) {
-                      console.log('[Meow][meowAppSettings] Toggle Intelligent Tracking Prevention Failed! ' +
-                        'But perhaps this doesn\'t really matter?')
-                      // In most cases this fails on app launch, because the webViews are not initialized.
-                      // If the user has set this settings to true, then this will be triggered since the default is false
-                      // But at that moment webViews are not initialized, with controllers linked accordingly
-                      // So this would cause 'Init error. The WebviewController must be associated with a Web component'
-                      // I guess :O
-                      // Let's see if this works
+            settingsCard({
+              title: $r('app.string.Settings_security'),
+              timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 7
+            }) {
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 7 }) {
+                linysText({
+                  text: $r('app.string.intelligent_tracking_prevention_desc'),
+                  is_description: true
+                }) // Desc Intelligent Tracking Prevention
+                linysSwitchWithText({
+                  text: $r('app.string.intelligent_tracking_prevention'),
+                  toggle_state: this.intelligent_tracking_prevention,
+                  onExecution: () => {
+                    this.bunch_of_settings.set('intelligent_tracking_prevention', this.intelligent_tracking_prevention);
+                    for (let index = 0; index < this.bunch_of_tabs.Tabs.length; index++) {
+                      try {
+                        this.bunch_of_tabs.Tabs[index].controller.enableIntelligentTrackingPrevention(this.intelligent_tracking_prevention);
+                        console.log('[Meow][meowAppSettings] Intelligent Tracking Prevention now ' + this.intelligent_tracking_prevention.toString() + '!')
+                      } catch (e) {
+                        console.log('[Meow][meowAppSettings] Toggle Intelligent Tracking Prevention Failed! ' +
+                          'But perhaps this doesn\'t really matter?')
+                        // In most cases this fails on app launch, because the webViews are not initialized.
+                        // If the user has set this settings to true, then this will be triggered since the default is false
+                        // But at that moment webViews are not initialized, with controllers linked accordingly
+                        // So this would cause 'Init error. The WebviewController must be associated with a Web component'
+                        // I guess :O
+                        // Let's see if this works
+                      }
                     }
                   }
-                }
-              }) // Reverse settings menu
+                }) // Reverse settings menu
+              }
 
-              linysTextSubtitleDivision({ icon: '󰠝', text: $r('app.string.Settings_cookies') }) // Cookies
-              linysCapsuleButtonWithText({
-                desc_text: $r('app.string.Settings_manage_cookies'),
-                button_text: "  󰀩  ",
-                onExecution: () => {
-                  this.cookies_control.open();
-                }
-              }) // Cookie management
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 7 }) {
+                linysTextSubtitleDivision({ icon: '󰠝', text: $r('app.string.Settings_cookies') }) // Cookies
+                linysCapsuleButtonWithText({
+                  desc_text: $r('app.string.Settings_manage_cookies'),
+                  button_text: "  󰀩  ",
+                  onExecution: () => {
+                    this.cookies_control.open();
+                  }
+                }) // Cookie management
+              }
             }
           } // Security
           .width("100%")
 
           FlowItem() {
-            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 8 }) {
-              linysTextTitle({ text: $r('app.string.Settings_toolbox') })
-              linysSwitchWithText({
-                text: $r('app.string.Settings_toolbox_resource_monitor'),
-                toggle_state: this.resource_monitor,
-                onExecution: () => {
-                  this.bunch_of_settings.set('resource_monitor', this.resource_monitor);
-                }
-              }) // Show Resource Monitor
+            settingsCard({
+              title: $r('app.string.Settings_toolbox'),
+              timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 8
+            }) {
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 8 }) {
+                linysTextSubtitleDivision({ icon: '󰊴', text: $r('app.string.Debug') }) // Debug
+                linysSwitchWithText({
+                  text: $r('app.string.Settings_toolbox_resource_monitor'),
+                  toggle_state: this.resource_monitor,
+                  onExecution: () => {
+                    this.bunch_of_settings.set('resource_monitor', this.resource_monitor);
+                  }
+                }) // Show Resource Monitor
+                linysText({ text: $r('app.string.Fault_logs_desc'), is_description: true }) // Fault logs
+                linysCapsuleButtonWithText({
+                  desc_text: $r('app.string.Fault_logs'),
+                  button_text: '  󰀩  ',
+                  onExecution: () => {
+                    this.recent_fault_logs_control.open();
+                  }
+                }) // Fault logs display
+              }
 
-              linysText({ text: $r('app.string.Fault_logs_desc'), is_description: true }) // Fault logs
-              linysCapsuleButtonWithText({
-                desc_text: $r('app.string.Fault_logs'),
-                button_text: '  󰀩  ',
-                onExecution: () => {
-                  this.recent_fault_logs_control.open();
-                }
-              }) // Fault logs display
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 8 }) {
+                linysTextSubtitleDivision({ icon: '󰀻', text: $r('app.string.Index_backup_title') }) // Backup
 
-              linysTextSubtitleDivision({ icon: '󰀻', text: $r('app.string.Index_backup_title') }) // Backup
+                linysText({ text: $r('app.string.Settings_toolbox_export_settings_desc'), max_lines: 3 })
+                linysCapsuleButtonWithText({
+                  desc_text: $r('app.string.Settings_toolbox_export_settings'),
+                  button_text: '  󰃋  ',
+                  onExecution: () => {
+                    // sandbox_save('settings.json', this.bunch_of_settings.toString());
+                    document_save('settings.json.browsercatsettings', this.bunch_of_settings.toString());
+                  }
+                }) // Export settings
+                linysText({ text: $r('app.string.Settings_toolbox_import_settings_desc'), is_description: true, is_expanded: true })
+                linysTimeoutButtonWithText({
+                  desc_text: $r('app.string.Settings_toolbox_import_settings'),
+                  button_text: '  󰐝  ',
+                  onExecution: () => {
+                    document_open(['browsercatsettings']).then((result) => {
+                      let import_result = this.bunch_of_settings.import_json(result);
+                      if (!import_result) {
+                        this.uni_fail_prompt_gateway = $r("app.string.Fail_select_bad_settings");
+                      } else {
+                        this.woofSettingsImportOK_control.open();
+                      }
+                    })
+                  }
+                }) // Import settings
 
-              linysText({ text: $r('app.string.Settings_toolbox_export_settings_desc'), max_lines: 3 })
-              linysCapsuleButtonWithText({
-                desc_text: $r('app.string.Settings_toolbox_export_settings'),
-                button_text: '  󰃋  ',
-                onExecution: () => {
-                  // sandbox_save('settings.json', this.bunch_of_settings.toString());
-                  document_save('settings.json.browsercatsettings', this.bunch_of_settings.toString());
-                }
-              }) // Export settings
+                linysText({ text: $r('app.string.Settings_toolbox_export_everything_desc'), max_lines: 10 })
+                linysCapsuleButtonWithText({
+                  desc_text: $r('app.string.Settings_toolbox_export_everything'),
+                  button_text: '  󰃋  ',
+                  onExecution: () => {
+                    export_everything();
+                  }
+                }) // Export everything
+                  .enabled(!this.compressing_output_profile)
+                  .opacity(!this.compressing_output_profile ? 1 : 0.5)
+                linysText({ text: $r('app.string.Settings_toolbox_import_everything_desc'), is_description: true, is_expanded: true })
+                linysTimeoutButtonWithText({
+                  desc_text: $r('app.string.Settings_toolbox_import_everything'),
+                  button_text: '  󰐝  ',
+                  onExecution: () => {
+                    import_everything().then((result) => {
+                      if (result) {
+                        // Import OK
+                        this.woofEverythingImportOK_control.open();
+                      } else {
+                        this.uni_fail_prompt_gateway = $r("app.string.Fail_select_bad_everything");
+                      }
+                    });
+                  }
+                }) // Import settings
 
-              linysText({ text: $r('app.string.Settings_toolbox_import_settings_desc'), is_description: true, is_expanded: true })
-              linysTimeoutButtonWithText({
-                desc_text: $r('app.string.Settings_toolbox_import_settings'),
-                button_text: '  󰐝  ',
-                onExecution: () => {
-                  document_open(['browsercatsettings']).then((result) => {
-                    let import_result = this.bunch_of_settings.import_json(result);
-                    if (!import_result) {
-                      this.uni_fail_prompt_gateway = $r("app.string.Fail_select_bad_settings");
-                    } else {
-                      this.woofSettingsImportOK_control.open();
+                if (this.DEV_MODE) {
+                  linysTimeoutButton({
+                    text: " Temp Code ",
+                    onExecution: () => {
+
                     }
                   })
                 }
-              }) // Import settings
-
-              linysText({ text: $r('app.string.Settings_toolbox_export_everything_desc'), max_lines: 10 })
-              linysCapsuleButtonWithText({
-                desc_text: $r('app.string.Settings_toolbox_export_everything'),
-                button_text: '  󰃋  ',
-                onExecution: () => {
-                  export_everything();
-                }
-              }) // Export everything
-                .enabled(!this.compressing_output_profile)
-                .opacity(!this.compressing_output_profile ? 1 : 0.5)
-
-              linysText({ text: $r('app.string.Settings_toolbox_import_everything_desc'), is_description: true, is_expanded: true })
-              linysTimeoutButtonWithText({
-                desc_text: $r('app.string.Settings_toolbox_import_everything'),
-                button_text: '  󰐝  ',
-                onExecution: () => {
-                  import_everything().then((result) => {
-                    if (result) {
-                      // Import OK
-                      this.woofEverythingImportOK_control.open();
-                    } else {
-                      this.uni_fail_prompt_gateway = $r("app.string.Fail_select_bad_everything");
-                    }
-                  });
-                }
-              }) // Import settings
-
-              if (this.DEV_MODE) {
-                linysTimeoutButton({
-                  text: " Temp Code ",
-                  onExecution: () => {
-
-                  }
-                })
               }
             }
           } // Toolbox / cardboard box
           .width("100%")
 
           FlowItem() {
-            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 9 }) {
-              linysTextTitle({ text: $r('app.string.Settings_about') })
-              linysLink({
-                will_be_reversed_boolean: this.showing_app_settings,
-                text: $r('app.string.About_bilibili'),
-                link: "https://space.bilibili.com/678438347",
-              }) // bili
-              linysLink({
-                will_be_reversed_boolean: this.showing_app_settings,
-                text: $r('app.string.About_GitHub'),
-                link: "https://github.com/awaLiny2333/LinysBrowser_NEXT",
-              }) // GitHub
-              linysLink({
-                will_be_reversed_boolean: this.showing_app_settings,
-                text: $r('app.string.About_Gitee'),
-                link: "https://gitee.com/awa_Liny/LinysBrowser_NEXT",
-              }) // Gitee
-              linysText({
-                text: "（ฅ＾・ﻌ・＾）ฅ  - " + this.versionName + " - " + this.versionNo,
-                max_lines: 3
-              })// Version Info
-                .onClick(() => {
-                  this.version_clicked();
-                })
-              meowCreditsRepos()
-              meowCreditsUsers()
-              linysText({
-                text: $r("app.string.Credits_extra"),
-                max_lines: 6
-              })
+            settingsCard({
+              title: $r('app.string.Settings_about'),
+              timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 9
+            }) {
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 9 }) {
+                linysLink({
+                  will_be_reversed_boolean: this.showing_app_settings,
+                  text: $r('app.string.About_bilibili'),
+                  link: "https://space.bilibili.com/678438347",
+                }) // bili
+                linysLink({
+                  will_be_reversed_boolean: this.showing_app_settings,
+                  text: $r('app.string.About_GitHub'),
+                  link: "https://github.com/awaLiny2333/LinysBrowser_NEXT",
+                }) // GitHub
+                linysLink({
+                  will_be_reversed_boolean: this.showing_app_settings,
+                  text: $r('app.string.About_Gitee'),
+                  link: "https://gitee.com/awa_Liny/LinysBrowser_NEXT",
+                }) // Gitee
+                linysText({
+                  text: "（ฅ＾・ﻌ・＾）ฅ  - " + this.versionName + " - " + this.versionNo,
+                  max_lines: 3
+                })// Version Info
+                  .onClick(() => {
+                    this.version_clicked();
+                  })
+                meowCreditsRepos()
+                meowCreditsUsers()
+                linysText({
+                  text: $r("app.string.Credits_extra"),
+                  max_lines: 6
+                }) // And you!
+              }
             }
           } // About
           .width("100%")
 
           FlowItem() {
-            settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 10 }) {
-              linysTextTitle({ text: $r('app.string.Whats_new') }) // Whats new Title
-              meowWhatsNew() // Whats new contents
-              linysText({
-                text: $r("app.string.Whats_new_content_extra"),
-                max_lines: 6
-              }) // Perhaps some bugfix?
-              linysCapsuleButtonWithText({
-                desc_text: $r('app.string.Update_record'),
-                button_text: '  󰀩  ',
-                onExecution: () => {
-                  this.update_history.open();
-                }
-              }) // Update history
+            settingsCard({
+              title: $r('app.string.Whats_new'),
+              timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 10
+            }) {
+              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 10 }) {
+                linysText({ text: $r('app.string.Update_this') }) // This update:
+                meowWhatsNew() // Whats new contents
+                linysText({
+                  text: $r("app.string.Whats_new_content_extra"),
+                  max_lines: 6
+                }) // Perhaps some bugfix?
+                linysCapsuleButtonWithText({
+                  desc_text: $r('app.string.Update_record'),
+                  button_text: '  󰀩  ',
+                  onExecution: () => {
+                    this.update_history.open();
+                  }
+                }) // Update history
+              }
             }
           } // Update
           .width("100%")
@@ -1269,12 +1337,54 @@ struct settingsCard {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Contents
   @BuilderParam contents: () => void;
+  @Prop title: ResourceStr = $r('app.string.Settings_start_up');
   // Outline
   @Prop highlight: boolean = false;
   @Prop timeout: number = 0;
 
   build() {
-    Column({ space: 15 }) {
+    Column({ space: 10 }) {
+      Text(this.title)
+        .fontColor(this.color_current_font)
+        .fontSize(fontSize_Extra())
+        .fontWeight(FontWeight.Bold)
+        .opacity((!this.highlight && this.timeout > 0) ? 0.5 : 0.8)
+        .animation(animation_default())
+        .padding({ left: 5 })
+
+      Column({ space: 10 }) {
+        this.contents();
+      }
+      // .borderColor((this.highlight && this.timeout > 0) ? this.color_current_font : this.color_current_primary)
+      // .opacity((!this.highlight && this.timeout > 0) ? 0.5 : 1)
+      // .animation(animation_default())
+      // .padding(13)
+      .alignItems(HorizontalAlign.Start)
+      .justifyContent(FlexAlign.Start)
+      .width("100%")
+
+      // .borderRadius(10)
+      // .borderWidth(2)
+      // .backgroundColor(this.color_current_primary)
+    }
+    .alignItems(HorizontalAlign.Start)
+    .justifyContent(FlexAlign.Start)
+  }
+}
+
+@Component
+struct settingsSubCard {
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // Contents
+  @BuilderParam contents: () => void;
+  // Outline
+  @Prop highlight: boolean = false;
+  @Prop timeout: number = 0;
+
+  build() {
+    Column({ space: 12 }) {
       this.contents();
     }
     .borderColor((this.highlight && this.timeout > 0) ? this.color_current_font : this.color_current_primary)

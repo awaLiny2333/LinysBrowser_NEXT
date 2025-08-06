@@ -16,6 +16,7 @@ struct linysCapsuleButton {
 
   build() {
     Button(this.text)
+      .opacity(0.9)
       .type(ButtonType.Capsule)
       .backgroundColor(this.color_button == "" ? this.color_current_font : this.color_button)
       .fontColor(this.color_text == "" ? this.color_current_primary : this.color_text)

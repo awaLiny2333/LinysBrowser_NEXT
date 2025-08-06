@@ -131,7 +131,12 @@
     {
       "name": "Title_advanced",
       "value": "Advanced"
-    }, {
+    },
+    {
+      "name": "Index_surf_title",
+      "value": "Surf"
+    },
+    {
       "name": "Index_layout_title",
       "value": "Layout"
     },
@@ -161,11 +166,11 @@
     },
     {
       "name": "Index_downloads_direct",
-      "value": "Directly download to Downloads Folder"
+      "value": "Save to Downloads folder"
     },
     {
       "name": "Index_downloads_direct_auto_open",
-      "value": "Open Downloads Folder when finish"
+      "value": "Jump to view when finish"
     },
     {
       "name": "Index_downloads_direct_desc",
@@ -241,15 +246,15 @@
     },
     {
       "name": "Settings_Accessibility_preferred_hand_reverse_settings_menu",
-      "value": "Reverse settings menu position \uDB82\uDC3B / \uDB82\uDD42 "
+      "value": "Reverse settings menu \uDB82\uDC3B / \uDB82\uDD42 "
     },
     {
       "name": "Settings_Accessibility_preferred_hand_reverse_tabs_panel",
-      "value": "Reverse tabs & vertical bookmarks panel position"
+      "value": "Reverse tabs & vertical bookmarks"
     },
     {
       "name": "Settings_Accessibility_preferred_hand_reverse_homepage_shortcuts",
-      "value": "Reverse homepage shortcuts position"
+      "value": "Reverse homepage shortcuts"
     },
     {
       "name": "Settings_Experience",
@@ -274,6 +279,10 @@
     {
       "name": "Settings_experience_history_index_desc",
       "value": "Indexing is a technology that accelerates searching by pre-reading data and analyzing them. \n\nIndexing history often needs an amount of time and space but this is mostly worthy. \n\nHit the button below to force rebuild all indices:\n\nProgress would be shown in \uDB80\uDC61 More Panel!"
+    },
+    {
+      "name": "Settings_experience_history_index_storage",
+      "value": "History index files"
     },
     {
       "name": "Settings_experience_history_index_storage_desc",
@@ -337,7 +346,7 @@
     },
     {
       "name": "Settings_homepage_shortcuts",
-      "value": "Homepage Shortcuts"
+      "value": "Shortcuts"
     },
     {
       "name": "Settings_homepage_shortcuts_init_height",
@@ -349,11 +358,11 @@
     },
     {
       "name": "Settings_homepage",
-      "value": "The Cat's Homepage"
+      "value": "Cat's Homepage"
     },
     {
       "name": "Settings_homepage_customization",
-      "value": "Manage Customization"
+      "value": "Customization"
     },
     {
       "name": "Settings_homepage_shortcuts_manage",
@@ -449,19 +458,19 @@
     },
     {
       "name": "Settings_experience_sys_back_to_access_backward",
-      "value": "Use system back to access backward"
+      "value": "Respond to system back"
     },
     {
       "name": "Settings_experience_continuation_auto_exit",
-      "value": "Exit entire app after continuation"
+      "value": "Close app after continuation"
     },
     {
       "name": "Settings_experience_continuation_auto_close_tab",
-      "value": "Close the tab after continuation"
+      "value": "Close tab after continuation"
     },
     {
       "name": "Settings_experience_web_force_dark_mode",
-      "value": "Force darken websites in dark mode"
+      "value": "Force websites dark mode"
     },
     {
       "name": "Settings_experience_use_adblock",
@@ -588,6 +597,10 @@
       "value": "Update history"
     },
     {
+      "name": "Update_this",
+      "value": "This update:"
+    },
+    {
       "name": "Whats_new",
       "value": "What's new?"
     },
@@ -682,6 +695,10 @@
     {
       "name": "Color_reset",
       "value": "Reset colors"
+    },
+    {
+      "name": "Settings_experience_webview_storage",
+      "value": "Web cache"
     },
     {
       "name": "Settings_storage_clear_webview_desc",
@@ -817,7 +834,7 @@
     },
     {
       "name": "Key_shortcuts",
-      "value": "Keyboard shortcuts"
+      "value": "Key shortcuts"
     },
     {
       "name": "Key_shortcuts_manage",
@@ -861,7 +878,7 @@
     },
     {
       "name": "Homepage_background",
-      "value": "Homepage background"
+      "value": "Background"
     },
     {
       "name": "Homepage_background_desc",
@@ -954,6 +971,10 @@
     {
       "name": "Fault_logs_copy_this",
       "value": "Copy ↓"
+    },
+    {
+      "name": "Debug",
+      "value": "Debug"
     },
     {
       "name": "Debug_native_heap",

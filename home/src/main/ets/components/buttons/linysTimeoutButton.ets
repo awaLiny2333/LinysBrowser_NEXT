@@ -17,6 +17,7 @@ struct linysTimeoutButton {
 
   build() {
     Button(this.text)// Reset
+      .opacity(0.9)
       .type(ButtonType.Capsule)
       .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary : this.color_current_font)
       .fontColor(this.delete_confirm > 0 ? this.color_current_font : this.color_current_primary)

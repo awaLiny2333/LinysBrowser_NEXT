@@ -137,6 +137,10 @@
       "value": "高级"
     },
     {
+      "name": "Index_surf_title",
+      "value": "冲浪"
+    },
+    {
       "name": "Index_suggestions_title",
       "value": "建议"
     },
@@ -170,7 +174,7 @@
     },
     {
       "name": "Index_downloads_direct_auto_open",
-      "value": "下载完成后自动打开“下载”"
+      "value": "完成后自动打开“下载”文件夹"
     },
     {
       "name": "Index_downloads_direct_desc",
@@ -250,7 +254,7 @@
     },
     {
       "name": "Settings_Accessibility_preferred_hand_reverse_tabs_panel",
-      "value": "反转书签和垂直标签页面板位置"
+      "value": "反转书签、垂直标签页面板位置"
     },
     {
       "name": "Settings_Accessibility_preferred_hand_reverse_homepage_shortcuts",
@@ -262,7 +266,7 @@
     },
     {
       "name": "Settings_experience_max_bookmark_advice",
-      "value": "最大书签建议数量"
+      "value": "最多书签建议"
     },
     {
       "name": "Settings_experience_history",
@@ -275,6 +279,10 @@
     {
       "name": "Settings_experience_history_index",
       "value": "索引历史"
+    },
+    {
+      "name": "Settings_experience_history_index_storage",
+      "value": "历史索引文件"
     },
     {
       "name": "Settings_experience_history_index_desc",
@@ -318,7 +326,7 @@
     },
     {
       "name": "Settings_experience_max_history_advice",
-      "value": "最大历史建议数量"
+      "value": "最多历史建议"
     },
     {
       "name": "Settings_experience_history_record_new",
@@ -342,7 +350,7 @@
     },
     {
       "name": "Settings_homepage_shortcuts",
-      "value": "主页快捷链接"
+      "value": "快捷链接"
     },
     {
       "name": "Settings_homepage_shortcuts_init_height",
@@ -450,15 +458,15 @@
     },
     {
       "name": "Settings_experience_sys_back_to_access_backward",
-      "value": "使用系统返回返回上一页"
+      "value": "响应系统返回"
     },
     {
       "name": "Settings_experience_continuation_auto_exit",
-      "value": "跨设备接续后退出整个应用"
+      "value": "接续后退出整个应用"
     },
     {
       "name": "Settings_experience_continuation_auto_close_tab",
-      "value": "跨设备接续后关闭该标签页"
+      "value": "接续后关闭该标签页"
     },
     {
       "name": "Settings_experience_web_force_dark_mode",
@@ -589,6 +597,10 @@
       "value": "更新历史"
     },
     {
+      "name": "Update_this",
+      "value": "此次更新："
+    },
+    {
       "name": "Whats_new",
       "value": "更新了什么？"
     },
@@ -683,6 +695,10 @@
     {
       "name": "Color_reset",
       "value": "恢复默认颜色主题"
+    },
+    {
+      "name": "Settings_experience_webview_storage",
+      "value": "网页缓存"
     },
     {
       "name": "Settings_storage_clear_webview_desc",
@@ -862,7 +878,7 @@
     },
     {
       "name": "Homepage_background",
-      "value": "主页背景"
+      "value": "背景"
     },
     {
       "name": "Homepage_background_desc",
@@ -955,6 +971,10 @@
     {
       "name": "Fault_logs_copy_this",
       "value": "复制 ↓"
+    },
+    {
+      "name": "Debug",
+      "value": "调试"
     },
     {
       "name": "Debug_native_vram",

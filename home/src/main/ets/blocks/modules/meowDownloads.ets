@@ -288,6 +288,7 @@ struct meowDownloadCard {
       .visibility(this.visible)
       .offset({ y: this.y_off_set })
       .animation(animation_default())
+      .clip(true)
     } // Start up
     .width("100%")
     .onAppear(async () => {
