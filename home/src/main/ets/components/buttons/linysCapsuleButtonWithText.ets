@@ -17,6 +17,7 @@ struct linysCapsuleButtonWithText {
         linysText({ text: this.desc_text, max_lines: 10 })
           .animation(animation_default())
       } // Text
+      // .opacity(0.9)
       .justifyContent(this.preferred_hand == 'right' ? FlexAlign.End : FlexAlign.Start)
       .animation(animation_default())
       .layoutWeight(1)

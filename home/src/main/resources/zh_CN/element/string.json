@@ -133,6 +133,34 @@
       "value": "默认的那个 :D"
     },
     {
+      "name": "Title_advanced",
+      "value": "高级"
+    },
+    {
+      "name": "Index_suggestions_title",
+      "value": "建议"
+    },
+    {
+      "name": "Index_layout_title",
+      "value": "布局"
+    },
+    {
+      "name": "Index_animation_title",
+      "value": "动画"
+    },
+    {
+      "name": "Index_colors_title",
+      "value": "颜色"
+    },
+    {
+      "name": "Index_continuation_title",
+      "value": "流转"
+    },
+    {
+      "name": "Index_backup_title",
+      "value": "备份"
+    },
+    {
       "name": "Index_downloads_title",
       "value": "下载"
     },
@@ -218,7 +246,7 @@
     },
     {
       "name": "Settings_Accessibility_preferred_hand_reverse_settings_menu",
-      "value": "\uDB82\uDC3B / \uDB82\uDD42 反转设置菜单位置"
+      "value": "反转设置菜单位置 \uDB82\uDC3B / \uDB82\uDD42 "
     },
     {
       "name": "Settings_Accessibility_preferred_hand_reverse_tabs_panel",
@@ -326,7 +354,7 @@
     },
     {
       "name": "Settings_homepage",
-      "value": "猫的默认主页（meow://home）"
+      "value": "猫的默认主页"
     },
     {
       "name": "Settings_homepage_customization",
@@ -350,7 +378,7 @@
     },
     {
       "name": "Settings_single_hand_preference",
-      "value": "单手优化偏好"
+      "value": "单手优化"
     },
     {
       "name": "Paralleow",
@@ -366,11 +394,11 @@
     },
     {
       "name": "Settings_appearance_tabs_style",
-      "value": "\uDB82\uDC3B / \uDB82\uDD42 标签页栏样式"
+      "value": "标签页栏样式 \uDB82\uDC3B / \uDB82\uDD42 "
     },
     {
       "name": "Settings_appearance_tabs_style_non_tablet_mode",
-      "value": "\uDB80\uDFB3 标签页栏样式"
+      "value": "标签页栏样式 \uDB80\uDFB3 "
     },
     {
       "name": "Settings_appearance_tabs_style_vertical",
@@ -683,6 +711,10 @@
     {
       "name": "intelligent_tracking_prevention_desc",
       "value": "禁止跟踪型网站（作为第三方）插入其它网页时发送携带 Cookie 的网络请求："
+    },
+    {
+      "name": "Settings_cookies",
+      "value": "曲奇饼干"
     },
     {
       "name": "Settings_manage_cookies",

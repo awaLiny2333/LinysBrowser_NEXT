@@ -129,6 +129,33 @@
       "value": "The Default One :D"
     },
     {
+      "name": "Title_advanced",
+      "value": "Advanced"
+    }, {
+      "name": "Index_layout_title",
+      "value": "Layout"
+    },
+    {
+      "name": "Index_animation_title",
+      "value": "Animation"
+    },
+    {
+      "name": "Index_colors_title",
+      "value": "Colors"
+    },
+    {
+      "name": "Index_backup_title",
+      "value": "Backup"
+    },
+    {
+      "name": "Index_suggestions_title",
+      "value": "Suggestions"
+    },
+    {
+      "name": "Index_continuation_title",
+      "value": "Continuation"
+    },
+    {
       "name": "Index_downloads_title",
       "value": "Downloads"
     },
@@ -214,7 +241,7 @@
     },
     {
       "name": "Settings_Accessibility_preferred_hand_reverse_settings_menu",
-      "value": "\uDB82\uDC3B / \uDB82\uDD42 Reverse settings menu position"
+      "value": "Reverse settings menu position \uDB82\uDC3B / \uDB82\uDD42 "
     },
     {
       "name": "Settings_Accessibility_preferred_hand_reverse_tabs_panel",
@@ -322,7 +349,7 @@
     },
     {
       "name": "Settings_homepage",
-      "value": "The Cat's Homepage (meow://home)"
+      "value": "The Cat's Homepage"
     },
     {
       "name": "Settings_homepage_customization",
@@ -346,7 +373,7 @@
     },
     {
       "name": "Settings_single_hand_preference",
-      "value": "Single hand optimization preference"
+      "value": "Single hand use"
     },
     {
       "name": "Paralleow",
@@ -362,11 +389,11 @@
     },
     {
       "name": "Settings_appearance_tabs_style",
-      "value": "\uDB82\uDC3B / \uDB82\uDD42 Tabs style"
+      "value": "Tabs style \uDB82\uDC3B / \uDB82\uDD42 "
     },
     {
       "name": "Settings_appearance_tabs_style_non_tablet_mode",
-      "value": "\uDB80\uDFB3 Tabs style"
+      "value": "Tabs style \uDB80\uDFB3 "
     },
     {
       "name": "Settings_appearance_tabs_style_vertical",
@@ -683,6 +710,10 @@
     {
       "name": "intelligent_tracking_prevention_desc",
       "value": "Restrict tracker sites (as third parties) inserted into other pages from sending network requests with cookies:"
+    },
+    {
+      "name": "Settings_cookies",
+      "value": "Cookies"
     },
     {
       "name": "Settings_manage_cookies",

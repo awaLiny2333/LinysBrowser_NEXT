@@ -58,6 +58,7 @@ import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleBut
 import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
 import linysSwitchWithText from '../../components/toggles/linysSwitchWithText';
 import woofPromptOK from '../../dialogs/prompts/woofPromptOK';
+import linysTextSubtitleDivision from '../../components/texts/linysTextSubtitleDivision';
 
 @Component
 struct meowAppSettings {
@@ -373,6 +374,7 @@ struct meowAppSettings {
             settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 2 }) {
               linysTextTitle({ text: $r('app.string.Settings_Experience') }) // Exp title
 
+              linysTextSubtitleDivision({ icon: '󰏯', text: $r('app.string.Index_downloads_title') }) // Downloads
               linysSwitchWithText({
                 text: $r('app.string.Index_downloads_direct'),
                 toggle_state: this.direct_download,
@@ -390,6 +392,7 @@ struct meowAppSettings {
                 .opacity(this.direct_download ? 1 : 0.5)
                 .animation(animation_default())
 
+              linysTextSubtitleDivision({ icon: '󰊾', text: $r('app.string.Index_continuation_title') }) // Continuation
               linysSwitchWithText({
                 text: $r('app.string.Settings_experience_continuation_auto_exit'),
                 toggle_state: this.continuation_auto_exit,
@@ -407,58 +410,7 @@ struct meowAppSettings {
                 .opacity(!this.continuation_auto_exit ? 1 : 0.5)
                 .animation(animation_default())
 
-              linysSwitchWithText({
-                text: $r('app.string.Settings_experience_use_adblock'),
-                toggle_state: this.use_adblock,
-                onExecution: () => {
-                  this.bunch_of_settings.set('use_adblock', this.use_adblock);
-                }
-              }) // Use adblock
-
-              linysCapsuleButtonWithText({
-                desc_text: $r('app.string.Settings_experience_manage_adblock'),
-                button_text: "  󰀠  ",
-                onExecution: () => {
-                  this.adsBlocker_control.open();
-                }
-              })
-
-              linysSwitchWithText({
-                text: $r('app.string.Settings_image_disable_image'),
-                toggle_state: this.disable_image,
-                onExecution: () => {
-                  this.bunch_of_settings.set('disable_image', this.disable_image);
-                }
-              }) // Disable images
-
-              linysCapsuleButtonWithText({
-                desc_text: $r('app.string.Settings_image_manage'),
-                button_text: "  󰀠  ",
-                onExecution: () => {
-                  this.image_manage_control.open();
-                }
-              })
-
-              linysText({ text: $r('app.string.Key_shortcuts') })// Keyboard shortcuts title
-                .width('100%')
-              linysCapsuleButtonWithText({
-                desc_text: $r('app.string.Key_shortcuts_manage'),
-                button_text: "  󰀠  ",
-                onExecution: () => {
-                  this.key_shortcuts_control.open();
-                }
-              })
-
-              linysText({ text: $r('app.string.Settings_homepage'), max_lines: 3 })// Homepage Customization
-                .width('100%')
-              linysCapsuleButtonWithText({
-                desc_text: $r('app.string.Settings_homepage_customization'),
-                button_text: "  󰀠  ",
-                onExecution: () => {
-                  this.homepage_shortcuts_control.open();
-                }
-              })
-
+              linysTextSubtitleDivision({ icon: '󰯏', text: $r('app.string.Index_suggestions_title') }) // Suggestion
               linysText({ text: $r('app.string.Settings_experience_max_bookmark_advice'), max_lines: 2 })
               linysLockSlider({
                 slider_min: 0,
@@ -468,7 +420,6 @@ struct meowAppSettings {
                   this.bunch_of_settings.set('max_bookmark_suggest', this.max_bookmark_advice);
                 }
               }) // Slider and display of max_bookmark_suggestions
-
               linysText({ text: $r('app.string.Settings_experience_max_history_advice'), max_lines: 2 })
               linysLockSlider({
                 slider_min: 0,
@@ -479,6 +430,69 @@ struct meowAppSettings {
                 }
               }) // Slider and display of max_history_suggestions
 
+              linysTextSubtitleDivision({ icon: '󰌐', text: $r('app.string.Key_shortcuts') }) // Keyboard shortcuts
+                .width('100%')
+              linysCapsuleButtonWithText({
+                desc_text: $r('app.string.Key_shortcuts_manage'),
+                button_text: "  󰀠  ",
+                onExecution: () => {
+                  this.key_shortcuts_control.open();
+                }
+              })
+
+              linysTextSubtitleDivision({ icon: '󰀧', text: $r('app.string.Settings_homepage') }) // Homepage Customization
+                .width('100%')
+              linysCapsuleButtonWithText({
+                desc_text: $r('app.string.Settings_homepage_customization'),
+                button_text: "  󰀠  ",
+                onExecution: () => {
+                  this.homepage_shortcuts_control.open();
+                }
+              })
+
+              linysTextSubtitleDivision({ icon: '󰇝', text: $r('app.string.Title_advanced') }) // Advanced
+              linysSwitchWithText({
+                text: $r('app.string.Settings_experience_use_adblock'),
+                toggle_state: this.use_adblock,
+                onExecution: () => {
+                  this.bunch_of_settings.set('use_adblock', this.use_adblock);
+                }
+              }) // Use adblock
+              linysCapsuleButtonWithText({
+                desc_text: $r('app.string.Settings_experience_manage_adblock'),
+                button_text: "  󰀠  ",
+                onExecution: () => {
+                  this.adsBlocker_control.open();
+                }
+              })
+              linysSwitchWithText({
+                text: $r('app.string.Settings_image_disable_image'),
+                toggle_state: this.disable_image,
+                onExecution: () => {
+                  this.bunch_of_settings.set('disable_image', this.disable_image);
+                }
+              }) // Disable images
+              linysCapsuleButtonWithText({
+                desc_text: $r('app.string.Settings_image_manage'),
+                button_text: "  󰀠  ",
+                onExecution: () => {
+                  this.image_manage_control.open();
+                }
+              })
+              linysSwitchWithText({
+                text: $r('app.string.Settings_js_disable_js'),
+                toggle_state: this.disable_js,
+                onExecution: () => {
+                  this.bunch_of_settings.set('disable_js', this.disable_js);
+                }
+              }) // JavaScript Manager
+              linysCapsuleButtonWithText({
+                desc_text: $r('app.string.Settings_js_manage'),
+                button_text: '  󰀠  ',
+                onExecution: () => {
+                  this.js_manage_control.open();
+                }
+              }) // JS management
             }
           } // Experience
           .width("100%")
@@ -495,8 +509,7 @@ struct meowAppSettings {
                 }
               }) // Use sys back
 
-              linysText({ text: $r('app.string.Settings_single_hand_preference'), max_lines: 3 })// Single hand optimization
-                .width("100%")
+              linysTextSubtitleDivision({ icon: '󰗫', text: $r('app.string.Settings_single_hand_preference') }) // Single hand
               SegmentButton({
                 options: this.left_or_right,
                 selectedIndexes: this.left_or_right_selected
@@ -545,6 +558,8 @@ struct meowAppSettings {
                 }
               }) // Force dark mode
 
+              linysTextSubtitleDivision({ icon: '󰍗', text: $r('app.string.Index_layout_title') }) // Layout
+
               linysText({ text: $r('app.string.Settings_appearance_title_bar_position') }) // Title bar position
               SegmentButton({
                 options: this.title_bar_position_tabOptions,
@@ -569,8 +584,10 @@ struct meowAppSettings {
                 selectedIndexes: this.tabs_style_selected_non_tablet_mode
               })
 
+              linysTextSubtitleDivision({ icon: '󰟠', text: $r('app.string.Index_animation_title') }) // Animation
               meowAnimationManager() // Animation manager
 
+              linysTextSubtitleDivision({ icon: '󰄥', text: $r('app.string.Index_colors_title') }) // Colors
               meowColorsManager() // Colors manager
             }
           } // Appearance
@@ -736,6 +753,7 @@ struct meowAppSettings {
                 }
               }) // Reverse settings menu
 
+              linysTextSubtitleDivision({ icon: '󰠝', text: $r('app.string.Settings_cookies') }) // Cookies
               linysCapsuleButtonWithText({
                 desc_text: $r('app.string.Settings_manage_cookies'),
                 button_text: "  󰀩  ",
@@ -743,22 +761,6 @@ struct meowAppSettings {
                   this.cookies_control.open();
                 }
               }) // Cookie management
-
-              linysSwitchWithText({
-                text: $r('app.string.Settings_js_disable_js'),
-                toggle_state: this.disable_js,
-                onExecution: () => {
-                  this.bunch_of_settings.set('disable_js', this.disable_js);
-                }
-              }) // Reverse settings menu
-
-              linysCapsuleButtonWithText({
-                desc_text: $r('app.string.Settings_js_manage'),
-                button_text: '  󰀠  ',
-                onExecution: () => {
-                  this.js_manage_control.open();
-                }
-              }) // JS management
             }
           } // Security
           .width("100%")
@@ -782,6 +784,8 @@ struct meowAppSettings {
                   this.recent_fault_logs_control.open();
                 }
               }) // Fault logs display
+
+              linysTextSubtitleDivision({ icon: '󰀻', text: $r('app.string.Index_backup_title') }) // Backup
 
               linysText({ text: $r('app.string.Settings_toolbox_export_settings_desc'), max_lines: 3 })
               linysCapsuleButtonWithText({

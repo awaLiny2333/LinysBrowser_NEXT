@@ -18,7 +18,7 @@ struct linysSwitchWithText {
       Row() {
         linysText({ text: this.text, max_lines: 5 })
       }
-      .opacity(0.85)
+      // .opacity(0.9)
       .layoutWeight(1)
       .justifyContent(FlexAlign.Start)
 
