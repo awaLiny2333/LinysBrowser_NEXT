@@ -391,14 +391,6 @@ struct meowAppSettings {
                 .animation(animation_default())
 
               linysSwitchWithText({
-                text: $r('app.string.Settings_experience_web_force_dark_mode'),
-                toggle_state: this.web_force_dark_mode,
-                onExecution: () => {
-                  this.bunch_of_settings.set('web_force_dark_mode', this.web_force_dark_mode);
-                }
-              }) // Force dark mode
-
-              linysSwitchWithText({
                 text: $r('app.string.Settings_experience_continuation_auto_exit'),
                 toggle_state: this.continuation_auto_exit,
                 onExecution: () => {
@@ -544,6 +536,14 @@ struct meowAppSettings {
           FlowItem() {
             settingsCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 4 }) {
               linysTextTitle({ text: $r('app.string.Settings_appearance') }) // Appearance Title
+
+              linysSwitchWithText({
+                text: $r('app.string.Settings_experience_web_force_dark_mode'),
+                toggle_state: this.web_force_dark_mode,
+                onExecution: () => {
+                  this.bunch_of_settings.set('web_force_dark_mode', this.web_force_dark_mode);
+                }
+              }) // Force dark mode
 
               linysText({ text: $r('app.string.Settings_appearance_title_bar_position') }) // Title bar position
               SegmentButton({

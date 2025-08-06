@@ -1,6 +1,6 @@
 import { distributedKVStore } from '@kit.ArkData';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { common } from '@kit.AbilityKit';
+import { meowContext } from './environment_tools';
 
 export async function kv_store_get(key_name: string) {
   if (AppStorage.get('kvStore') == undefined) {
@@ -60,7 +60,7 @@ export async function kv_store_get_uint_8_array(key_name: string) {
 
   if (kvStore !== undefined) {
     // If kvStore already got
-    let get_result:Uint8Array = new Uint8Array();
+    let get_result: Uint8Array = new Uint8Array();
     await kvStore.get(key_name).then((value) => {
       console.log("[kv_store_tools] Succeeded in getting data, key: " + key_name + ".")
       get_result = value as Uint8Array;
@@ -114,7 +114,7 @@ export async function kv_store_delete(key_name: string) {
 async function get_kv_store_into_app_storage() {
 
   const kvManagerConfig: distributedKVStore.KVManagerConfig = {
-    context: AppStorage.get('context') as common.UIAbilityContext,
+    context: meowContext(),
     bundleName: 'com.next.liny.linysbrowserNEXT',
   }
 

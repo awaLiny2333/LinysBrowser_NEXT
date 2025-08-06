@@ -15,10 +15,11 @@ import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 import { window } from '@kit.ArkUI';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
-import { sandbox_save } from '../utils/storage_tools';
+import { sandbox_save, sandbox_unlink } from '../utils/storage_tools';
 import { deviceInfo } from '@kit.BasicServicesKit';
 import { fileIo } from '@kit.CoreFileKit';
 import woofHistory from '../dialogs/managers/woofHistory';
+import { meowContext } from '../utils/environment_tools';
 
 @Entry
 @Component
@@ -152,16 +153,21 @@ struct Index {
     // Respond to want
     this.check_want();
 
-    // Set cache dir
+    // Set cache dir of web-dragged image into Scratching Board
     try {
       fileIo.rmdirSync(this.getUIContext().getHostContext()!.filesDir + '/web-drag-image-cache');
     } catch (e) {
-      console.error(e);
+      console.error('[Index] rmdirSync /web-drag-image-cache failed! ' + e);
     }
     try {
       fileIo.mkdirSync(this.getUIContext().getHostContext()!.filesDir + '/web-drag-image-cache');
     } catch (e) {
-      console.error(e);
+      console.error('[Index] mkdirSync /web-drag-image-cache failed! ' + e);
+    }
+    try {
+      sandbox_unlink('profile.zip');
+    } catch (e) {
+      console.error('[Index] unlink profile.zip! ' + e);
     }
 
     // Get and set app version info
@@ -173,9 +179,8 @@ struct Index {
   }
 
   onPageShow(): void {
-    let context = AppStorage.get('context') as common.UIAbilityContext;
     // Enable continue
-    context.setMissionContinueState(AbilityConstant.ContinueState.ACTIVE);
+    meowContext().setMissionContinueState(AbilityConstant.ContinueState.ACTIVE);
   }
 
   onBackPress(): boolean {
@@ -280,9 +285,9 @@ struct Index {
         .keyboardShortcut(this.bunch_of_key_shortcuts.history.main_key, this.bunch_of_key_shortcuts.history.modifier, () => {
           this.woofHistory_control.open();
         })
-        // .keyboardShortcut(FunctionKey.ESC, [], () => {
-        //   this.back();
-        // })
+      // .keyboardShortcut(FunctionKey.ESC, [], () => {
+      //   this.back();
+      // })
     }
     .height("100%")
     .width("100%")

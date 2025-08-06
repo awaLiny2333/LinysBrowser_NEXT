@@ -2,6 +2,7 @@ import { AbilityConstant, Configuration, UIAbility, Want, wantConstant } from '@
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { display, window } from '@kit.ArkUI';
 import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
+import { kv_store_get } from '../utils/kv_store_tools';
 
 export default class HomeAbility extends UIAbility {
   storage: LocalStorage = new LocalStorage();
@@ -23,6 +24,9 @@ export default class HomeAbility extends UIAbility {
       // Process want
       this.process_want(want);
     }
+
+    // Perhaps this could get the KVStore manager?
+    await kv_store_get('meow');
   }
 
   onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {

@@ -83,6 +83,15 @@
             "HomeAbility"
           ]
         }
+      },      {
+        "name": "ohos.permission.PRINT",
+        "reason": "$string:permission_reason_PRINT",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "HomeAbility"
+          ]
+        }
       },
       {
         "name": "ohos.permission.MICROPHONE",

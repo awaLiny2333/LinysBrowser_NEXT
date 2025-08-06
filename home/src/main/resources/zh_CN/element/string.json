@@ -17,6 +17,10 @@
       "value": "用于网页浏览"
     },
     {
+      "name": "permission_reason_PRINT",
+      "value": "用于网页打印"
+    },
+    {
       "name": "permission_reason_MICROPHONE",
       "value": "有些网站可能会为了某些任务而请求这个权限。比如，在线聊天室中录制语音的时候。冲浪喵本身不会使用这个权限。"
     },
@@ -566,7 +570,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "修复了没法从猫抓板里复制链接的问题！"
+      "value": "在修改下载文件名的输入框里提交/回车可以直接开始下载任务！\n点击 \uDB80\uDC61 更多 之后点击网址/标题可以快速复制！\n启动之后自动删除无用的 profile.zip；\n可以从网页打印了！\n修复了没法从猫抓板里复制链接的问题！"
     },
     {
       "name": "Whats_new_content_extra",

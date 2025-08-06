@@ -11,6 +11,8 @@ import { bookmark, bunch_of_bookmarks, folder, unified_item } from '../../hosts/
 import woofWantJump from '../../dialogs/prompts/woofWantJump';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
+import { print } from '@kit.BasicServicesKit';
+import { print_web } from '../../utils/print_tools';
 
 @Component
 struct meowWebView {
@@ -81,6 +83,7 @@ struct meowWebView {
   @StorageLink('dl_delegate') dl_delegate: webview.WebDownloadDelegate = new webview.WebDownloadDelegate();
   @StorageLink('blob_delegate') blob_delegate: webview.WebDownloadDelegate = new webview.WebDownloadDelegate();
   @StorageLink('dl_controller') dl_controller: webview.WebviewController = new webview.WebviewController();
+  @StorageLink('print_adapter') print_adapter: print.PrintDocumentAdapter | undefined = undefined;
   // dialogs
   woofWantDownload_control: CustomDialogController = new CustomDialogController({
     builder: woofWantDownload({
@@ -522,8 +525,8 @@ struct meowWebView {
               try {
                 let allowed = [
                   this.getUIContext().getHostContext()!.resourceDir,
-                  // this.getUIContext().getHostContext()!.filesDir,
-                  // '/data/storage/el2/base/haps/cache'
+                // this.getUIContext().getHostContext()!.filesDir,
+                // '/data/storage/el2/base/haps/cache'
                 ]
                 this.bunch_of_tabs.Tabs[Label.index_key].controller.setPathAllowingUniversalAccess(allowed);
                 console.log('[meowWebView] Init set allowed resources: [' + allowed.join(", ") + ']');
@@ -578,6 +581,7 @@ struct meowWebView {
               console.log('[meowWebView] onClientAuthenticationRequest event.keyTypes: ' + event.keyTypes.join('\n'));
               console.log('[meowWebView] onClientAuthenticationRequest event.issuers: ' + event.issuers.join('\n'));
             })
+
         } // Webs
         .borderColor(this.color_current_secondary)
         .borderWidth(this.border_width_tab(this.current_sub_tab_index == Label.index_key))
@@ -628,6 +632,13 @@ struct meowWebView {
   }
 
   // Operations
+
+  save_pdf() {
+  }
+
+  print() {
+    print_web(this.bunch_of_tabs.workingMainTab().controller);
+  }
 
   update_current_info() {
     this.current_title = this.tab_titles[this.current_main_tab_index];

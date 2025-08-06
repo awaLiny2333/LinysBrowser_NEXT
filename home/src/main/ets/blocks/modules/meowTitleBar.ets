@@ -34,6 +34,8 @@ import linysProgressInfo from '../../components/linysProgressInfo';
 import { add_transparency } from '../../utils/color_tools';
 import { current_tabs_style_is_horizontal } from '../../utils/ui_tools';
 import { search_engine } from '../../hosts/bunch_of_search_engines';
+import { copy } from '../../utils/clipboard_tools';
+import { print_web } from '../../utils/print_tools';
 
 @Component
 struct meowTitleBar {
@@ -236,6 +238,10 @@ struct meowTitleBar {
             .fontSize(fontSize_Large())
             .maxLines(2)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
+            .clickEffect(click_effect_default())
+            .onClick(()=>{
+              copy(this.current_title);
+            })
           Text(this.current_url)
             .fontColor(this.color_current_font)
             .fontWeight(FontWeight.Bold)
@@ -243,6 +249,10 @@ struct meowTitleBar {
             .opacity(0.7)
             .maxLines(2)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
+            .clickEffect(click_effect_default())
+            .onClick(()=>{
+              copy(this.current_url);
+            })
         }
         .alignItems(HorizontalAlign.Start)
         .layoutWeight(1)
@@ -731,6 +741,12 @@ struct meowTitleBar {
           .animation(animation_default())
 
           Row({ space: 10 }) {
+            linysSymbol({
+              symbol_glyph_target: 'sys.symbol.printer'
+            })// Print
+              .onClick(() => {
+                print_web(this.bunch_of_tabs.workingMainTab().controller);
+              })
             linysSymbol({
               symbol_glyph_target: 'sys.symbol.tracking_cookie_interception'
             })// Cookies

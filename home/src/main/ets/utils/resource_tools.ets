@@ -1,4 +1,4 @@
-import { common } from "@kit.AbilityKit";
+import { meowContext } from "./environment_tools";
 
 /**
  * Analyses a ResourceStr and converts it to a string object.
@@ -7,6 +7,5 @@ import { common } from "@kit.AbilityKit";
  * @example resource_to_string($r('app.string.Whats_new_content_1'))
  * */
 export function resource_to_string(resourceStr: Resource) {
-  let context = AppStorage.get('context') as common.UIAbilityContext;
-  return context.resourceManager.getStringSync(resourceStr);
+  return meowContext().resourceManager.getStringSync(resourceStr);
 }

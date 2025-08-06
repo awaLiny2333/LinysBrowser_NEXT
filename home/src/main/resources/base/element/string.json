@@ -17,6 +17,10 @@
       "value": "For web browsing"
     },
     {
+      "name": "permission_reason_PRINT",
+      "value": "For web printing"
+    },
+    {
       "name": "permission_reason_MICROPHONE",
       "value": "Some webpages may request this permission for certain tasks. For example, recording your voice in online chats. BrowserCat itself won't use this."
     },
@@ -566,7 +570,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "fix: fixed cannot copy links from Scratching Board bug."
+      "value": "improve: Submit / Enter to start downloading after editing file name!\nimprove: Quick copy link or title by clicking the \uDB80\uDC61 More Into page information!\nimprove: Auto deletes generated profile.zip on start up.\nfeat: Printing from web!\nfix: fixed cannot copy links from Scratching Board bug."
     },
     {
       "name": "Whats_new_content_extra",

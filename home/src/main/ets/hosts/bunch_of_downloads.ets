@@ -5,8 +5,9 @@ import { webview } from '@kit.ArkWeb';
 import { add_units_to_size, download_save_from_path } from '../utils/storage_tools';
 import woofWantDownload from '../dialogs/prompts/woofWantDownload';
 import { open_file_uri } from '../utils/link_tools';
+import { meowContext } from '../utils/environment_tools';
 
-let context = AppStorage.get('context') as common.UIAbilityContext;
+let context = meowContext();
 
 export class bunch_of_downloads {
   list_of_on_going_tasks: webview.WebDownloadItem[] = [];

@@ -43,11 +43,16 @@ struct woofWantDownload {
         .visibility(this.showing_additional_info ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
 
-      linysText({ text: $r('app.string.Index_downloads_illegal_chars_in_filename'), max_lines: 3 })
+      linysText({ text: $r('app.string.Index_downloads_illegal_chars_in_filename'), max_lines: 3 }) // File name error prompt
         .visibility(!is_legal_filename(this.file_name) ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
 
       TextInput({ text: this.file_name })// Edit file name
+        .onSubmit(()=>{
+          if (is_legal_filename(this.file_name)) {
+            this.submit();
+          }
+        })
         .onChange((value) => {
           this.file_name = value;
         })
@@ -79,7 +84,7 @@ struct woofWantDownload {
             }
           })
           .opacity(is_legal_filename(this.file_name) ? 1 : 0.7)
-      }
+      } // Edit
       .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
       .animation(animation_default())
       .width('100%')

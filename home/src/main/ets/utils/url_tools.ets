@@ -1,5 +1,6 @@
 import { default_search_engine } from '../hosts/bunch_of_defaults';
 import { common, Want } from '@kit.AbilityKit';
+import { meowContext } from './environment_tools';
 
 /**
  * Process the search_input into a visitable address.
@@ -355,8 +356,7 @@ export function jump_external_link(link: string) {
   const want: Want = {
     uri: link
   };
-  let context = AppStorage.get('context') as common.UIAbilityContext;
-  context.startAbility(want).then(() => {
+  meowContext().startAbility(want).then(() => {
     // Pull up success
     console.log('[Meow][jump_external_link] Pull up application for link ' + link + ' Success!');
   }).catch(() => {

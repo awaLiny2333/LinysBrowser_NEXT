@@ -1,6 +1,5 @@
-import { common, OpenLinkOptions } from "@kit.AbilityKit";
-
-let context = AppStorage.get('context') as common.UIAbilityContext;
+import { OpenLinkOptions } from '@kit.AbilityKit';
+import { meowContext } from './environment_tools';
 
 /**
  * Opens uri with filemanager.
@@ -15,7 +14,7 @@ export function open_file_uri(uri: string) {
     }
   };
   try {
-    context.openLink(link, openLinkOptions)
+    meowContext().openLink(link, openLinkOptions)
   } catch (e) {
     console.error(e);
   }
