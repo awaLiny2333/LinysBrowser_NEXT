@@ -9,7 +9,7 @@ struct meowCreditsUsers {
   @State credits_devs_and_users_list: string[] = this.credits_devs_and_users.split('\n');
 
   build() {
-    Scroll(){
+    Scroll() {
       Column({ space: 8 }) {
         linysText({
           text: $r('app.string.Credits_issues'),
@@ -34,6 +34,7 @@ struct meowCreditsUsers {
         this.update_resource_string();
       })
     }
+    // .nestedScroll({ scrollForward: NestedScrollMode.SELF_FIRST, scrollBackward: NestedScrollMode.SELF_FIRST })
     .width("100%")
     .height(180)
     .scrollable(ScrollDirection.Vertical)

@@ -239,7 +239,7 @@ struct meowTitleBar {
             .maxLines(2)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
             .clickEffect(click_effect_default())
-            .onClick(()=>{
+            .onClick(() => {
               copy(this.current_title);
             })
           Text(this.current_url)
@@ -250,7 +250,7 @@ struct meowTitleBar {
             .maxLines(2)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
             .clickEffect(click_effect_default())
-            .onClick(()=>{
+            .onClick(() => {
               copy(this.current_url);
             })
         }
@@ -491,7 +491,7 @@ struct meowTitleBar {
             .visibility(this.drop_result_string.length > 0 ? Visibility.Visible : Visibility.None)
             .animation(animation_default())
             .onClick(() => {
-              this.showing_scratching_board = !this.showing_scratching_board;
+              this.show_scratching_board();
             })
 
           linysShowButton({
@@ -572,7 +572,7 @@ struct meowTitleBar {
             if (this.download_started_popup) {
               this.download_started_popup = false;
             } else {
-              this.show_downloads()
+              this.show_downloads();
             }
           })
 
@@ -1007,6 +1007,7 @@ struct meowTitleBar {
       this.showing_more_options = false;
       this.showing_app_settings = false;
       this.showing_downloads = false;
+      this.showing_scratching_board = false;
       // allow bookmarks and tabs coexist in tablet mode
       this.showing_bookmarks = false;
     }
@@ -1018,6 +1019,7 @@ struct meowTitleBar {
       this.showing_more_options = false;
       this.showing_app_settings = false;
       this.showing_downloads = false;
+      this.showing_scratching_board = false;
     }
     if (!this.tablet_mode) {
       // allow bookmarks and tabs coexist in tablet mode
@@ -1028,15 +1030,19 @@ struct meowTitleBar {
     this.showing_bookmarks = !this.showing_bookmarks;
   }
 
-  show_more_options() {
+  close_tabs_and_bookmarks_non_tablet() {
     if (!this.tablet_mode) {
       if (this.tabs_style_non_tablet_mode == "vertical") {
         this.showing_tabs = false;
       }
       this.showing_bookmarks = false;
     }
-    // Close all other panels
+  }
 
+  show_more_options() {
+    this.close_tabs_and_bookmarks_non_tablet();
+
+    // Close all other panels
     this.showing_scratching_board = false;
     this.showing_downloads = false;
     this.showing_app_settings = false;
@@ -1044,31 +1050,33 @@ struct meowTitleBar {
   }
 
   show_app_settings() {
-    if (!this.tablet_mode) {
-      if (this.tabs_style_non_tablet_mode == "vertical") {
-        this.showing_tabs = false;
-      }
-      this.showing_bookmarks = false;
-    }
-    // Close all other panels
+    this.close_tabs_and_bookmarks_non_tablet();
 
+    // Close all other panels
+    this.showing_scratching_board = false;
     this.showing_downloads = false;
     this.showing_more_options = false;
     this.showing_app_settings = !this.showing_app_settings;
   }
 
   show_downloads() {
-    if (!this.tablet_mode) {
-      if (this.tabs_style_non_tablet_mode == "vertical") {
-        this.showing_tabs = false;
-      }
-      this.showing_bookmarks = false;
-    }
-    // Close all other panels
+    this.close_tabs_and_bookmarks_non_tablet();
 
+    // Close all other panels
+    this.showing_scratching_board = false;
     this.showing_more_options = false;
     this.showing_app_settings = false;
     this.showing_downloads = !this.showing_downloads;
+  }
+
+  show_scratching_board() {
+    this.close_tabs_and_bookmarks_non_tablet();
+
+    // Close all other panels
+    this.showing_more_options = false;
+    this.showing_downloads = false;
+    this.showing_app_settings = false;
+    this.showing_scratching_board = !this.showing_scratching_board;
   }
 
   // Operations

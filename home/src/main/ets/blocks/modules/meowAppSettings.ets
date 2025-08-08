@@ -314,21 +314,19 @@ struct meowAppSettings {
               timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 1
             }) {
               // UA
-              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 1 }) {
-                linysTextSubtitleDivision({ icon: '󰜎', text: $r('app.string.Index_surf_title') }) // Surf
+              settingsSubCard({
+                icon: '󰜎',
+                title: $r('app.string.Index_surf_title'),
+                timeout: this.settings_scroll_to_highlight_timeout,
+                highlight: this.settings_scroll_to == 1
+              }) {
 
                 linysText({ text: $r('app.string.Settings_general_custom_ua') })
                 meowUAManager()
-                // }
 
-                // Search Engine
-                // settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 1 }) {
                 linysText({ text: $r('app.string.Settings_general_custom_search_engine') })
                 meowSEManager()
-                // }
 
-                // New tab URL
-                // settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 1 }) {
                 linysText({ text: $r('app.string.Settings_general_new_tab_url') })
                 TextInput({
                   text: this.new_tab_url_edit,
@@ -379,11 +377,14 @@ struct meowAppSettings {
                   })
                   .alignSelf(ItemAlign.End)
                   .animation(animation_default())
-              }
+              } // Surf
 
-              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 1 }) {
-                linysTextSubtitleDivision({ icon: '󰀧', text: $r('app.string.Settings_homepage') }) // Homepage Customization
-                  .width('100%')
+              settingsSubCard({
+                icon: '󰀧',
+                title: $r('app.string.Settings_homepage'),
+                timeout: this.settings_scroll_to_highlight_timeout,
+                highlight: this.settings_scroll_to == 1
+              }) {
                 linysCapsuleButtonWithText({
                   desc_text: $r('app.string.Settings_homepage_customization'),
                   button_text: "  󰀠  ",
@@ -391,7 +392,7 @@ struct meowAppSettings {
                     this.homepage_shortcuts_control.open();
                   }
                 })
-              }
+              } // Homepage Customization
             }
           } // General
           .width("100%")
@@ -401,8 +402,12 @@ struct meowAppSettings {
               title: $r('app.string.Settings_Experience'),
               timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 2
             }) {
-              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 2 }) {
-                linysTextSubtitleDivision({ icon: '󰏯', text: $r('app.string.Index_downloads_title') }) // Downloads
+              settingsSubCard({
+                icon: '󰏯',
+                title: $r('app.string.Index_downloads_title'),
+                timeout: this.settings_scroll_to_highlight_timeout,
+                highlight: this.settings_scroll_to == 2
+              }) {
                 linysSwitchWithText({
                   text: $r('app.string.Index_downloads_direct'),
                   toggle_state: this.direct_download,
@@ -419,10 +424,14 @@ struct meowAppSettings {
                 }) // Direct Download auto open
                   .opacity(this.direct_download ? 1 : 0.5)
                   .animation(animation_default())
-              }
+              } // Downloads
 
-              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 2 }) {
-                linysTextSubtitleDivision({ icon: '󰊾', text: $r('app.string.Index_continuation_title') }) // Continuation
+              settingsSubCard({
+                icon: '󰊾',
+                title: $r('app.string.Index_continuation_title'),
+                timeout: this.settings_scroll_to_highlight_timeout,
+                highlight: this.settings_scroll_to == 2
+              }) {
                 linysSwitchWithText({
                   text: $r('app.string.Settings_experience_continuation_auto_exit'),
                   toggle_state: this.continuation_auto_exit,
@@ -439,10 +448,14 @@ struct meowAppSettings {
                 }) // continuation_auto_close_tab
                   .opacity(!this.continuation_auto_exit ? 1 : 0.5)
                   .animation(animation_default())
-              }
+              } // Continuation
 
-              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 2 }) {
-                linysTextSubtitleDivision({ icon: '󰯏', text: $r('app.string.Index_suggestions_title') }) // Suggestion
+              settingsSubCard({
+                icon: '󰯏',
+                title: $r('app.string.Index_suggestions_title'),
+                timeout: this.settings_scroll_to_highlight_timeout,
+                highlight: this.settings_scroll_to == 2
+              }) {
                 linysText({ text: $r('app.string.Settings_experience_max_bookmark_advice'), max_lines: 2 })
                 linysLockSlider({
                   slider_min: 0,
@@ -461,10 +474,14 @@ struct meowAppSettings {
                     this.bunch_of_settings.set('max_history_suggest', this.max_history_advice);
                   }
                 }) // Slider and display of max_history_suggestions
-              }
+              } // Suggestion
 
-              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 2 }) {
-                linysTextSubtitleDivision({ icon: '󰇝', text: $r('app.string.Title_advanced') }) // Advanced
+              settingsSubCard({
+                icon: '󰇝',
+                title: $r('app.string.Title_advanced'),
+                timeout: this.settings_scroll_to_highlight_timeout,
+                highlight: this.settings_scroll_to == 2
+              }) {
                 linysSwitchWithText({
                   text: $r('app.string.Settings_experience_use_adblock'),
                   toggle_state: this.use_adblock,
@@ -507,7 +524,7 @@ struct meowAppSettings {
                     this.js_manage_control.open();
                   }
                 }) // JS management
-              }
+              } // Advanced
             }
           } // Experience
           .width("100%")
@@ -527,8 +544,12 @@ struct meowAppSettings {
                 }) // Use sys back
               }
 
-              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 3 }) {
-                linysTextSubtitleDivision({ icon: '󰗫', text: $r('app.string.Settings_single_hand_preference') }) // Single hand
+              settingsSubCard({
+                icon: '󰗫',
+                title: $r('app.string.Settings_single_hand_preference'),
+                timeout: this.settings_scroll_to_highlight_timeout,
+                highlight: this.settings_scroll_to == 3
+              }) {
                 SegmentButton({
                   options: this.left_or_right,
                   selectedIndexes: this.left_or_right_selected
@@ -561,11 +582,14 @@ struct meowAppSettings {
                     this.bunch_of_settings.set('preferred_hand_reverse_homepage_shortcuts', this.preferred_hand_reverse_homepage_shortcuts);
                   }
                 }) // Reverse homepage shortcuts
-              }
+              } // Single hand
 
-              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 3 }) {
-                linysTextSubtitleDivision({ icon: '󰌐', text: $r('app.string.Key_shortcuts') }) // Keyboard shortcuts
-                  .width('100%')
+              settingsSubCard({
+                icon: '󰌐',
+                title: $r('app.string.Key_shortcuts'),
+                timeout: this.settings_scroll_to_highlight_timeout,
+                highlight: this.settings_scroll_to == 3
+              }) {
                 linysCapsuleButtonWithText({
                   desc_text: $r('app.string.Key_shortcuts_manage'),
                   button_text: "  󰀠  ",
@@ -573,7 +597,7 @@ struct meowAppSettings {
                     this.key_shortcuts_control.open();
                   }
                 })
-              }
+              } // Keyboard shortcuts
             }
           } // Accessibility
           .width('100%')
@@ -593,9 +617,12 @@ struct meowAppSettings {
                 }) // Force dark mode
               }
 
-              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 4 }) {
-                linysTextSubtitleDivision({ icon: '󰍗', text: $r('app.string.Index_layout_title') }) // Layout
-
+              settingsSubCard({
+                icon: '󰍗',
+                title: $r('app.string.Index_layout_title'),
+                timeout: this.settings_scroll_to_highlight_timeout,
+                highlight: this.settings_scroll_to == 4
+              }) {
                 linysText({ text: $r('app.string.Settings_appearance_title_bar_position') }) // Title bar position
                 SegmentButton({
                   options: this.title_bar_position_tabOptions,
@@ -619,17 +646,25 @@ struct meowAppSettings {
                   options: this.tabs_style_tabOptions,
                   selectedIndexes: this.tabs_style_selected_non_tablet_mode
                 })
-              }
+              } // Layout
 
-              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 4 }) {
-                linysTextSubtitleDivision({ icon: '󰟠', text: $r('app.string.Index_animation_title') }) // Animation
+              settingsSubCard({
+                icon: '󰟠',
+                title: $r('app.string.Index_animation_title'),
+                timeout: this.settings_scroll_to_highlight_timeout,
+                highlight: this.settings_scroll_to == 4
+              }) {
                 meowAnimationManager() // Animation manager
-              }
+              } // Animation
 
-              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 4 }) {
-                linysTextSubtitleDivision({ icon: '󰄥', text: $r('app.string.Index_colors_title') }) // Colors
+              settingsSubCard({
+                icon: '󰄥',
+                title: $r('app.string.Index_colors_title'),
+                timeout: this.settings_scroll_to_highlight_timeout,
+                highlight: this.settings_scroll_to == 4
+              }) {
                 meowColorsManager() // Colors manager
-              }
+              } // Colors
             }
           } // Appearance
           .width("100%")
@@ -639,7 +674,12 @@ struct meowAppSettings {
               title: $r('app.string.Settings_experience_history'),
               timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 5
             }) {
-              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 5 }) {
+              settingsSubCard({
+                icon: '󰏕',
+                title: $r('app.string.Settings_experience_history'),
+                timeout: this.settings_scroll_to_highlight_timeout,
+                highlight: this.settings_scroll_to == 5
+              }) {
                 linysSwitchWithText({
                   text: $r('app.string.Settings_experience_history_record_new'),
                   toggle_state: this.collect_new_history,
@@ -647,7 +687,6 @@ struct meowAppSettings {
                     this.bunch_of_settings.set('collect_new_history', this.collect_new_history);
                   }
                 }) // Toggle History
-
                 linysCapsuleButtonWithText({
                   desc_text: $r('app.string.Settings_experience_history_view'),
                   button_text: "  󰀩  ",
@@ -656,8 +695,7 @@ struct meowAppSettings {
                   }
                 }) // View history
 
-                linysText({ text: $r('app.string.Settings_experience_history_index_desc'), is_description: true })
-
+                linysText({ text: $r('app.string.Settings_experience_history_index_desc'), is_description: true }) // index desc
                 linysTimeoutButtonWithText({
                   desc_text: $r('app.string.Settings_experience_history_index'),
                   button_text: "  󰀩  ",
@@ -715,8 +753,12 @@ struct meowAppSettings {
               title: $r('app.string.Settings_storage'),
               timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 6
             }) {
-              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 6 }) {
-                linysTextSubtitleDivision({ icon: '󰂼', text: $r('app.string.Settings_experience_webview_storage') }) // Web cache
+              settingsSubCard({
+                icon: '󰂼',
+                title: $r('app.string.Settings_experience_webview_storage'),
+                timeout: this.settings_scroll_to_highlight_timeout,
+                highlight: this.settings_scroll_to == 6
+              }) {
                 linysText({ text: $r('app.string.Settings_storage_clear_webview_desc'), is_description: true }) // Cache title
                 linysTextTitle({ text: add_units_to_size(this.web_cache_size) }) // data display
                 Row({ space: 12 }) {
@@ -749,10 +791,14 @@ struct meowAppSettings {
                 .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
                 .animation(animation_default())
                 .width("100%")
-              }
+              } // Web cache
 
-              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 6 }) {
-                linysTextSubtitleDivision({ icon: '󰏕', text: $r('app.string.Settings_experience_history_index_storage') }) // Index files
+              settingsSubCard({
+                icon: '󰏕',
+                title: $r('app.string.Settings_experience_history_index_storage'),
+                timeout: this.settings_scroll_to_highlight_timeout,
+                highlight: this.settings_scroll_to == 6
+              }) {
                 linysText({ text: $r('app.string.Settings_experience_history_index_storage_desc'), is_description: true }) // Indexing title
                 linysTextTitle({ text: add_units_to_size(this.history_index_size) }) // data display
                 Row({ space: 12 }) {
@@ -767,7 +813,7 @@ struct meowAppSettings {
                 .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
                 .animation(animation_default())
                 .width("100%")
-              }
+              } // Index files
             }
           } // Storage
           .width("100%")
@@ -777,7 +823,12 @@ struct meowAppSettings {
               title: $r('app.string.Settings_security'),
               timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 7
             }) {
-              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 7 }) {
+              settingsSubCard({
+                icon: '󰠝',
+                title: $r('app.string.Settings_cookies'),
+                timeout: this.settings_scroll_to_highlight_timeout,
+                highlight: this.settings_scroll_to == 7
+              }) {
                 linysText({
                   text: $r('app.string.intelligent_tracking_prevention_desc'),
                   is_description: true
@@ -803,11 +854,8 @@ struct meowAppSettings {
                       }
                     }
                   }
-                }) // Reverse settings menu
-              }
+                }) // Intelligent tracking prevention
 
-              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 7 }) {
-                linysTextSubtitleDivision({ icon: '󰠝', text: $r('app.string.Settings_cookies') }) // Cookies
                 linysCapsuleButtonWithText({
                   desc_text: $r('app.string.Settings_manage_cookies'),
                   button_text: "  󰀩  ",
@@ -815,7 +863,8 @@ struct meowAppSettings {
                     this.cookies_control.open();
                   }
                 }) // Cookie management
-              }
+
+              } // Cookies
             }
           } // Security
           .width("100%")
@@ -825,8 +874,12 @@ struct meowAppSettings {
               title: $r('app.string.Settings_toolbox'),
               timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 8
             }) {
-              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 8 }) {
-                linysTextSubtitleDivision({ icon: '󰊴', text: $r('app.string.Debug') }) // Debug
+              settingsSubCard({
+                icon: '󰊴',
+                title: $r('app.string.Debug'),
+                timeout: this.settings_scroll_to_highlight_timeout,
+                highlight: this.settings_scroll_to == 8
+              }) {
                 linysSwitchWithText({
                   text: $r('app.string.Settings_toolbox_resource_monitor'),
                   toggle_state: this.resource_monitor,
@@ -842,11 +895,14 @@ struct meowAppSettings {
                     this.recent_fault_logs_control.open();
                   }
                 }) // Fault logs display
-              }
+              } // Debug
 
-              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 8 }) {
-                linysTextSubtitleDivision({ icon: '󰀻', text: $r('app.string.Index_backup_title') }) // Backup
-
+              settingsSubCard({
+                icon: '󰀻',
+                title: $r('app.string.Index_backup_title'),
+                timeout: this.settings_scroll_to_highlight_timeout,
+                highlight: this.settings_scroll_to == 8
+              }) {
                 linysText({ text: $r('app.string.Settings_toolbox_export_settings_desc'), max_lines: 3 })
                 linysCapsuleButtonWithText({
                   desc_text: $r('app.string.Settings_toolbox_export_settings'),
@@ -906,7 +962,7 @@ struct meowAppSettings {
                     }
                   })
                 }
-              }
+              } // Backup
             }
           } // Toolbox / cardboard box
           .width("100%")
@@ -916,7 +972,12 @@ struct meowAppSettings {
               title: $r('app.string.Settings_about'),
               timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 9
             }) {
-              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 9 }) {
+              settingsSubCard({
+                icon: '󰕰',
+                title: $r('app.string.Settings_about'),
+                timeout: this.settings_scroll_to_highlight_timeout,
+                highlight: this.settings_scroll_to == 9
+              }) {
                 linysLink({
                   will_be_reversed_boolean: this.showing_app_settings,
                   text: $r('app.string.About_bilibili'),
@@ -955,7 +1016,12 @@ struct meowAppSettings {
               title: $r('app.string.Whats_new'),
               timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 10
             }) {
-              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 10 }) {
+              settingsSubCard({
+                icon: '󰁦',
+                title: $r('app.string.Update_this'),
+                timeout: this.settings_scroll_to_highlight_timeout,
+                highlight: this.settings_scroll_to == 10
+              }) {
                 linysText({ text: $r('app.string.Update_this') }) // This update:
                 meowWhatsNew() // Whats new contents
                 linysText({
@@ -1330,6 +1396,8 @@ struct meowAppSettings {
 
 export default meowAppSettings
 
+// Cards
+
 @Component
 struct settingsCard {
   // Colors
@@ -1382,23 +1450,47 @@ struct settingsSubCard {
   // Outline
   @Prop highlight: boolean = false;
   @Prop timeout: number = 0;
+  // Title
+  @Prop icon: ResourceStr | undefined = undefined;
+  @Prop title: ResourceStr | undefined = undefined;
+  // Stats
+  @State show: boolean = false;
 
   build() {
-    Column({ space: 12 }) {
-      this.contents();
+    Column() {
+      if (this.title) {
+        linysTextSubtitleDivision({ icon: this.icon, text: this.title }) // Title
+          .padding({ top: 12, left: 12, right: 12 })
+          .width('100%')
+          .clickEffect(click_effect_default())
+          .onClick(() => {
+            this.show = !this.show;
+          })
+      }
+      Column({ space: 12 }) {
+        this.contents();
+      }
+      .clip(true)
+      .padding({ top: 12, left: 12, right: 12 })
+      .alignItems(HorizontalAlign.Start)
+      .justifyContent(FlexAlign.Start)
+      .visibility((this.title == undefined || this.show) ? Visibility.Visible : Visibility.None)
+      .animation(animation_default())
     }
+    .padding({ bottom: 12 })
+    .alignItems(HorizontalAlign.Start)
+    .justifyContent(FlexAlign.Start)
     .borderColor((this.highlight && this.timeout > 0) ? this.color_current_font : this.color_current_primary)
     .opacity((!this.highlight && this.timeout > 0) ? 0.5 : 1)
     .animation(animation_default())
-    .padding(13)
-    .alignItems(HorizontalAlign.Start)
-    .justifyContent(FlexAlign.Start)
     .width("100%")
     .borderRadius(10)
     .borderWidth(2)
     .backgroundColor(this.color_current_primary)
   }
 }
+
+// Jump Menu
 
 @Component
 struct menuScrollHorizontal {
