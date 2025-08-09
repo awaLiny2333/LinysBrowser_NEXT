@@ -877,6 +877,10 @@
       "value": "刷新"
     },
     {
+      "name": "Key_shortcuts_print",
+      "value": "打印"
+    },
+    {
       "name": "Homepage_background",
       "value": "背景"
     },

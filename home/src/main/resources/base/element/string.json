@@ -877,6 +877,10 @@
       "value": "Refresh"
     },
     {
+      "name": "Key_shortcuts_print",
+      "value": "Print"
+    },
+    {
       "name": "Homepage_background",
       "value": "Background"
     },

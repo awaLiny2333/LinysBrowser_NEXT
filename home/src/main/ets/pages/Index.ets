@@ -7,7 +7,7 @@ import meowTitleBar from '../blocks/modules/meowTitleBar';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import woofPromptFail from '../dialogs/prompts/woofPromptFail';
-import { AbilityConstant, bundleManager, common, ConfigurationConstant } from '@kit.AbilityKit';
+import { AbilityConstant, bundleManager, ConfigurationConstant } from '@kit.AbilityKit';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_history } from '../hosts/bunch_of_history';
 import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
@@ -20,6 +20,7 @@ import { deviceInfo } from '@kit.BasicServicesKit';
 import { fileIo } from '@kit.CoreFileKit';
 import woofHistory from '../dialogs/managers/woofHistory';
 import { meowContext } from '../utils/environment_tools';
+import { print_web } from '../utils/print_tools';
 
 @Entry
 @Component
@@ -284,6 +285,9 @@ struct Index {
         })
         .keyboardShortcut(this.bunch_of_key_shortcuts.history.main_key, this.bunch_of_key_shortcuts.history.modifier, () => {
           this.woofHistory_control.open();
+        })
+        .keyboardShortcut(this.bunch_of_key_shortcuts.print.main_key, this.bunch_of_key_shortcuts.print.modifier, () => {
+          print_web(this.bunch_of_tabs.workingMainTab().controller);
         })
       // .keyboardShortcut(FunctionKey.ESC, [], () => {
       //   this.back();

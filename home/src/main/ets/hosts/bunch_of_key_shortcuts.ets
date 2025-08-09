@@ -5,8 +5,7 @@ let function_keys = [FunctionKey.ESC, FunctionKey.F1, FunctionKey.F2, FunctionKe
   FunctionKey.TAB, FunctionKey.DPAD_UP, FunctionKey.DPAD_DOWN, FunctionKey.DPAD_LEFT, FunctionKey.DPAD_RIGHT,
 ];
 let function_strings =
-  ['esc', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12', 'tab', 'dpad_up', 'dpad_down',
-    'dpad_left', 'dpad_right'];
+  ['esc', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12', 'tab', 'dpad_up', 'dpad_down', 'dpad_left', 'dpad_right'];
 let modifier_keys = [ModifierKey.CTRL, ModifierKey.SHIFT, ModifierKey.ALT];
 let modifier_strings = ['ctrl', 'shift', 'alt'];
 
@@ -20,11 +19,12 @@ export class bunch_of_key_shortcuts {
   fullscreen: key_combination = new key_combination(FunctionKey.F11);
   history: key_combination = new key_combination('h', [ModifierKey.CTRL]);
   refresh: key_combination = new key_combination(FunctionKey.F5);
+  print: key_combination = new key_combination('p', [ModifierKey.CTRL]);
   // Lists
   key_shortcut_labels =
-    ['new_tab', 'close_tab', 'show_tabs', 'focus_address', 'in_page_search', 'fullscreen', 'history', 'refresh'];
+    ['new_tab', 'close_tab', 'show_tabs', 'focus_address', 'in_page_search', 'fullscreen', 'history', 'refresh', 'print'];
   key_shortcut_combinations =
-    [this.new_tab, this.close_tab, this.show_tabs, this.focus_address, this.in_page_search, this.fullscreen, this.history, this.refresh];
+    [this.new_tab, this.close_tab, this.show_tabs, this.focus_address, this.in_page_search, this.fullscreen, this.history, this.refresh, this.print];
 
   /**
    * A class holding key shortcuts.
@@ -71,10 +71,10 @@ export class bunch_of_key_shortcuts {
    * Loads key combination settings from disk
    * */
   async load_from_disk() {
-    let sites_got = await (AppStorage.get('bunch_of_settings') as bunch_of_settings).get('key_shortcuts') as string;
+    let combinations = await (AppStorage.get('bunch_of_settings') as bunch_of_settings).get('key_shortcuts') as string;
     let keys_lines: string[] = []
-    if (sites_got != '') {
-      keys_lines = sites_got.split('\n');
+    if (combinations != '') {
+      keys_lines = combinations.split('\n');
       for (let index = 0; index < keys_lines.length; index++) {
         if (this.key_shortcut_combinations[index]) {
           this.key_shortcut_combinations[index].load_string(keys_lines[index])

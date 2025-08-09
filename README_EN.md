@@ -140,7 +140,8 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 
 Long way ahead.
 
-1. Weird problem causing crashes on launch if long time no use →
+1. Weird problem causing modifications on key shortcuts not applied?
+2. Weird problem causing crashes on launch if long time no use →
    Issue [#40](https://github.com/awaLiny2333/LinysBrowser_NEXT/issues/40)
    (Still under investigation).
 2. As a result of Liny's unsystematic programming thoughts and rubbish codes,

@@ -36,6 +36,7 @@ import { current_tabs_style_is_horizontal } from '../../utils/ui_tools';
 import { search_engine } from '../../hosts/bunch_of_search_engines';
 import { copy } from '../../utils/clipboard_tools';
 import { print_web } from '../../utils/print_tools';
+import woofHistory from '../../dialogs/managers/woofHistory';
 
 @Component
 struct meowTitleBar {
@@ -123,12 +124,19 @@ struct meowTitleBar {
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16
-  })
+  });
   woofQuickUA_control: CustomDialogController = new CustomDialogController({
     builder: woofQuickUA(),
     alignment: DialogAlignment.Center,
     cornerRadius: 26
-  })
+  });
+  woofHistory_control: CustomDialogController = new CustomDialogController({
+    builder: woofHistory({ showing_settings: this.showing_app_settings }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 22,
+    // showInSubWindow: true,
+    width: "90%",
+  });
   quick_keyword: string = '';
   quick_se: search_engine | undefined = undefined;
   woofQuickSE_control: CustomDialogController = new CustomDialogController({
@@ -138,7 +146,7 @@ struct meowTitleBar {
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 26
-  })
+  });
   woofAdsBlocker_control: CustomDialogController = new CustomDialogController({
     builder: woofAdsBlocker({
       add_exception_domain_edit: match_domain(this.search_input)[1],
@@ -148,7 +156,7 @@ struct meowTitleBar {
     width: "90%",
     alignment: DialogAlignment.Center,
     cornerRadius: 16
-  })
+  });
   cookies_control: CustomDialogController = new CustomDialogController({
     builder: woofCookies(),
     alignment: DialogAlignment.Center,
@@ -770,6 +778,12 @@ struct meowTitleBar {
             })// Enable ads blocker
               .onClick(() => {
                 this.woofAdsBlocker_control.open();
+              })
+            linysSymbol({
+              symbol_glyph_target: 'sys.symbol.arrow_counterclockwise_clock'
+            })// History
+              .onClick(() => {
+                this.woofHistory_control.open();
               })
             linysSymbol({
               symbol_glyph_target: 'sys.symbol.label'
