@@ -17,11 +17,11 @@ export function unify_search_input_into_url(search_input: string, auto_scheme_ov
   }
 
   if (is_legal_ipv4(url)) {
-    return [ensure_scheme_or_set_scheme(url, auto_scheme_overwrite ? auto_scheme_overwrite : "http") as string, true]
+    return [ensure_scheme(url, auto_scheme_overwrite ? auto_scheme_overwrite : "http") as string, true]
   }
 
   if (is_legal_url(url)) {
-    return [ensure_scheme_or_set_scheme(url, auto_scheme_overwrite ? auto_scheme_overwrite : "https") as string, true]
+    return [ensure_scheme(url, auto_scheme_overwrite ? auto_scheme_overwrite : "https") as string, true]
   }
 
   let search_engine = AppStorage.get('search_engine') as string;
@@ -51,7 +51,7 @@ function is_containing_number(input: string) {
   }
 }
 
-export function ensure_scheme_or_set_scheme(input: string, scheme?: string) {
+export function ensure_scheme(input: string, scheme?: string) {
   let url = input
   if (url.includes("://")) {
     let url_split = url.split("/")
@@ -173,23 +173,28 @@ let built_ins: string[] = [
   "meow://home"
 ]
 
-export function url_resource_to_meow(input: string) {
-  let result: string = input;
+/**
+ * Translates a url with resource:// to meow://
+ * @param url The url.
+ * @returns The translated url.
+ * */
+export function url_resource_to_meow(url: string) {
+  let result: string = url;
 
-  if (input == undefined) {
+  if (url == undefined) {
     return result;
   }
-  if (input == null) {
+  if (url == null) {
     return result;
   }
-  if (input == "") {
+  if (url == "") {
     return result;
   }
   // No process for empty inputs
 
-  if (input.length > 11) {
-    if (input.substring(0, 11) == "resource://") {
-      let index = urls.indexOf(input)
+  if (url.length > 11) {
+    if (url.substring(0, 11) == "resource://") {
+      let index = urls.indexOf(url)
       if (index != -1) {
         result = built_ins[index]
       } else {
@@ -200,18 +205,23 @@ export function url_resource_to_meow(input: string) {
   return result;
 }
 
-export function url_meow_to_resource(input: string) {
-  let result: string = input;
+/**
+ * Translates a url with meow:// to resource://
+ * @param url The url.
+ * @returns The translated url.
+ * */
+export function url_meow_to_resource(url: string) {
+  let result: string = url;
 
-  if (input == undefined || input == null) {
+  if (url == undefined || url == null) {
     return result;
   }
   // No process for empty inputs
 
-  if (input.length > 7) {
-    if (input.substring(0, 7) == "meow://") {
+  if (url.length > 7) {
+    if (url.substring(0, 7) == "meow://") {
       // if is meow:// scheme
-      let index = built_ins.indexOf(input);
+      let index = built_ins.indexOf(url);
       if (index != -1) {
         // if this link exists
         result = urls[index];

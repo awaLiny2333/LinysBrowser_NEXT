@@ -1,4 +1,4 @@
-import { sandbox_open_sync } from '../utils/storage_tools';
+import { sandbox_read_text_sync } from '../utils/storage_tools';
 import { collections } from '@kit.ArkTS';
 import { divide_string, history_path_of_month, index_file_name_of_month, index_path_of_month, insert_into_array } from './bunch_of_history_index_x_functions';
 
@@ -40,7 +40,7 @@ export class bunch_of_history_index_lite {
 
     // Open the file
     let path = history_path_of_month(year, month);
-    let imp = sandbox_open_sync(path, context_filesDir);
+    let imp = sandbox_read_text_sync(path, context_filesDir);
 
     let import_list: string[] = imp.split("\n");
     if (import_list.length <= 1) {
@@ -71,7 +71,7 @@ export class bunch_of_history_index_lite {
 
     // Open the file
     let path = index_path_of_month(year, month);
-    let imp = sandbox_open_sync(path, context_filesDir);
+    let imp = sandbox_read_text_sync(path, context_filesDir);
     let import_list: string[] = imp.split("\n");
 
     if (import_list.length <= 1) {

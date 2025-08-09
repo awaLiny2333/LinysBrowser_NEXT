@@ -1,7 +1,7 @@
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import linysText from '../../components/texts/linysText';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
-import { arrayBuffer_to_pixelMap, image_open_to_ArrayBuffer, sandbox_save, sandbox_unlink } from '../../utils/storage_tools';
+import { arrayBuffer_2_pixelMap, image_pick_to_ArrayBuffer, sandbox_save, sandbox_unlink } from '../../utils/storage_tools';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
 
@@ -46,11 +46,11 @@ struct meowHomepageBackgroundManager {
   }
 
   select_set_background_image() {
-    image_open_to_ArrayBuffer().then(result => {
+    image_pick_to_ArrayBuffer().then(result => {
       if (result !== undefined) {
         let buf = result as ArrayBuffer;
         // Set image for homepage
-        this.homepage_background = arrayBuffer_to_pixelMap(buf);
+        this.homepage_background = arrayBuffer_2_pixelMap(buf);
         // Save this to sandbox
         sandbox_save('homepage_background_arrayBuffer', buf);
       } else {

@@ -18,13 +18,13 @@ import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import { bunch_of_history } from '../../hosts/bunch_of_history';
 import {
   add_units_to_size,
-  arrayBuffer_to_pixelMap,
-  document_open,
-  document_save,
+  arrayBuffer_2_pixelMap,
+  document_pick_to_text,
+  document_save_text,
   export_everything,
   get_folder_size_Sync,
   import_everything,
-  sandbox_open_arrayBuffer_sync
+  sandbox_read_arrayBuffer_sync
 } from '../../utils/storage_tools';
 import woofHistory from '../../dialogs/managers/woofHistory';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
@@ -909,7 +909,7 @@ struct meowAppSettings {
                   button_text: '  󰃋  ',
                   onExecution: () => {
                     // sandbox_save('settings.json', this.bunch_of_settings.toString());
-                    document_save('settings.json.browsercatsettings', this.bunch_of_settings.toString());
+                    document_save_text('settings.json.browsercatsettings', this.bunch_of_settings.toString());
                   }
                 }) // Export settings
                 linysText({ text: $r('app.string.Settings_toolbox_import_settings_desc'), is_description: true, is_expanded: true })
@@ -917,7 +917,7 @@ struct meowAppSettings {
                   desc_text: $r('app.string.Settings_toolbox_import_settings'),
                   button_text: '  󰐝  ',
                   onExecution: () => {
-                    document_open(['browsercatsettings']).then((result) => {
+                    document_pick_to_text(['browsercatsettings']).then((result) => {
                       let import_result = this.bunch_of_settings.import_json(result);
                       if (!import_result) {
                         this.uni_fail_prompt_gateway = $r("app.string.Fail_select_bad_settings");
@@ -1135,10 +1135,10 @@ struct meowAppSettings {
     }
 
     // Set homepage background
-    let homepage_background_array_buffer = sandbox_open_arrayBuffer_sync('homepage_background_arrayBuffer');
+    let homepage_background_array_buffer = sandbox_read_arrayBuffer_sync('homepage_background_arrayBuffer');
     // Set image for homepage
     if (homepage_background_array_buffer) {
-      this.homepage_background = arrayBuffer_to_pixelMap(homepage_background_array_buffer);
+      this.homepage_background = arrayBuffer_2_pixelMap(homepage_background_array_buffer);
       console.log("[Meow][meowAppSettings] Finished loading homepage background!");
     }
 

@@ -1,4 +1,4 @@
-import { sandbox_open_sync, sandbox_save, sandbox_unlink_sync } from '../utils/storage_tools';
+import { sandbox_read_text_sync, sandbox_save, sandbox_unlink_sync } from '../utils/storage_tools';
 import { fileIo as fs } from '@kit.CoreFileKit';
 import { bunch_of_history_index } from './bunch_of_history_index';
 import {
@@ -176,7 +176,7 @@ export class bunch_of_history {
    * This migrates old histories to new format and deletes the old file.
    * */
   patch_old_history_files() {
-    let old_history = sandbox_open_sync('history.txt');
+    let old_history = sandbox_read_text_sync('history.txt');
     if (old_history != 'undefined') {
       console.log('[Meow][bunch_of_history] Patch old history: found old history:\n' + old_history.toString())
       this.import_string_full(old_history);
@@ -189,7 +189,7 @@ export class bunch_of_history {
    * to switch all original timestamps into UTC time.
    * */
   patch_history_files_before_index_era() {
-    let version_file = sandbox_open_sync('last_app_versionCode.txt');
+    let version_file = sandbox_read_text_sync('last_app_versionCode.txt');
     if (version_file != 'undefined') {
       return;
     }
@@ -202,9 +202,9 @@ export class bunch_of_history {
       const month = months[index][1];
       const path = history_path_of_month(year, month);
       if (result == "") {
-        result = sandbox_open_sync(path);
+        result = sandbox_read_text_sync(path);
       } else {
-        result = result + "\n" + sandbox_open_sync(path);
+        result = result + "\n" + sandbox_read_text_sync(path);
       }
       // console.log(result.split("\n").length.toString());
     }
@@ -413,7 +413,7 @@ export class bunch_of_history {
     }
     ensure_this_month_history_file();
     let path = history_path_of_month(year, month);
-    let the_file = sandbox_open_sync(path);
+    let the_file = sandbox_read_text_sync(path);
     this.current_opened_file_path = path;
     this.current_year = year;
     this.current_month = month;

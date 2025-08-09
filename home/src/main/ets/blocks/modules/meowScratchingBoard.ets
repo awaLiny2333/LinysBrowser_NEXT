@@ -6,9 +6,15 @@ import linysTextTitle from '../../components/texts/linysTextTitle';
 import { animation_default, animation_popup_duration, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { copy } from '../../utils/clipboard_tools';
 import { preview_image } from '../../utils/preview_tools';
-import { add_units_to_size, document_save_from_uri as document_save_from_uri, get_file_size_Sync, get_file_suffix } from '../../utils/storage_tools';
+import {
+  add_units_to_size,
+  document_save_from_uri as document_save_from_uri,
+  get_file_size_Sync,
+  get_file_suffix,
+  image_save_from_uri
+} from '../../utils/storage_tools';
 import { extract_links_from_text } from '../../utils/url_tools';
-import { LengthMetrics } from '@kit.ArkUI';
+import { LengthMetrics, SymbolGlyphModifier } from '@kit.ArkUI';
 
 @Component
 struct meowScratchingBoard {
@@ -158,6 +164,28 @@ struct raw_data_display {
   @State image_height: number = 0;
   @State image_width: number = 0;
 
+  // Save menu
+  @Builder
+  SaveMenu() {
+    Menu() {
+      MenuItem({
+        content: $r('app.string.Save_to_files'),
+        symbolStartIcon: new SymbolGlyphModifier($r('sys.symbol.arrow_right_folder_circle')).fontSize('24vp'),
+      })
+        .onClick(()=>{
+          this.default_click();
+        })
+      MenuItem({
+        content: $r('app.string.Save_to_gallery'),
+        symbolStartIcon: new SymbolGlyphModifier($r('sys.symbol.picture_badge_arrow_down')).fontSize('24vp'),
+      }).onClick(() => {
+        image_save_from_uri(this.text);
+      })
+    }
+    .fontColor(this.color_current_font)
+    .backgroundColor(this.color_current_primary)
+  }
+
   build() {
     Row({ space: 15 }) {
       if (this.type == 'image') {
@@ -186,7 +214,7 @@ struct raw_data_display {
                 .backgroundColor($r('sys.color.comp_background_tertiary'))
                 .padding(10)
                 .borderRadius(10)
-              linysText({ text: get_file_suffix(this.text) })
+              linysText({ text: get_file_suffix(this.text) }) // Type
                 .backgroundColor($r('sys.color.comp_background_tertiary'))
                 .padding(10)
                 .borderRadius(10)
@@ -220,14 +248,12 @@ struct raw_data_display {
         Column({ space: 10 }) {
           linysSymbol({
             symbol_glyph_target: 'sys.symbol.save'
-          })
+          }) // Save
             .clickEffect(click_effect_default())
-            .onClick(() => {
-              this.default_click();
-            })
+            .bindMenu(this.SaveMenu)
           linysSymbol({
             symbol_glyph_target: 'sys.symbol.magnifyingglass'
-          })
+          }) // Search
             .clickEffect(click_effect_default())
             .onClick(() => {
               // Search online
@@ -239,8 +265,8 @@ struct raw_data_display {
             .onClick(() => {
               // Check details
               preview_image(this.text);
-            })
-        }
+            }) // Preview
+        } // Buttons
       } else {
         linysSymbol({
           symbol_glyph_target: this.type_symbol(),

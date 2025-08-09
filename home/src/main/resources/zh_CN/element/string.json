@@ -610,7 +610,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "在修改下载文件名的输入框里提交/回车可以直接开始下载任务！\n点击 \uDB80\uDC61 更多 之后点击网址/标题可以快速复制！\n启动之后自动删除无用的 profile.zip；\n可以从网页打印了！\n修复了没法从猫抓板里复制链接的问题！"
+      "value": "可以保存猫抓板的照片进相册里了！\n现在丢照片进猫抓板会自动重命名并包含时间戳，这样就不会撞车同名文件了；\n在修改下载文件名的输入框里提交/回车可以直接开始下载任务！\n点击 \uDB80\uDC61 更多 之后点击网址/标题可以快速复制！\n启动之后自动删除无用的 profile.zip；\n可以从网页打印了！\n修复了没法从猫抓板里复制链接的问题！"
     },
     {
       "name": "Whats_new_content_extra",
@@ -1031,6 +1031,14 @@
     {
       "name": "Menu_download_image",
       "value": "下载图片"
+    },
+    {
+      "name": "Save_to_files",
+      "value": "保存至文件"
+    },
+    {
+      "name": "Save_to_gallery",
+      "value": "保存至图库"
     },
     {
       "name": "Accessibility_desc_linysProgress",

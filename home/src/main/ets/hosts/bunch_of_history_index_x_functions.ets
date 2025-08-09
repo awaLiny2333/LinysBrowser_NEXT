@@ -1,5 +1,5 @@
 import { collections, MessageEvents, worker } from '@kit.ArkTS';
-import { sandbox_open_sync, sandbox_save } from '../utils/storage_tools';
+import { sandbox_read_text_sync, sandbox_save } from '../utils/storage_tools';
 import { bunch_of_history_index } from './bunch_of_history_index';
 import { bunch_of_history_index_lite } from './bunch_of_history_index_lite';
 import { fileIo } from '@kit.CoreFileKit';
@@ -277,7 +277,7 @@ export function get_histories_from_disk(timestamps: number[], max?: number): str
   let month = new Date(timestamps[0]).getUTCMonth() + 1;
   let last_year = year;
   let last_month = month;
-  let imp = sandbox_open_sync(history_path_of_month(year, month)).split("\n");
+  let imp = sandbox_read_text_sync(history_path_of_month(year, month)).split("\n");
   // console.log(imp.join("\n"));
   let temp_pointer = -1;
   for (let index = 0; index < timestamps.length; index++) {
@@ -289,7 +289,7 @@ export function get_histories_from_disk(timestamps: number[], max?: number): str
 
     // Check if need to change file
     if (last_year != year || last_month != month) {
-      imp = sandbox_open_sync(history_path_of_month(year, month)).split("\n");
+      imp = sandbox_read_text_sync(history_path_of_month(year, month)).split("\n");
 
       if (imp.length % 3 > 0 && imp.length > 1) {
         console.error("[ERROR][Meow][bunch_of_history_index] Open history Error: not 3*n length. Raw string: " + imp)

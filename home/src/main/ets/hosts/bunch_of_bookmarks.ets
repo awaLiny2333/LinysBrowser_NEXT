@@ -1,5 +1,5 @@
 import { decode_html_code_to_string, encode_string_to_html_code } from '../utils/html_tools';
-import { ensure_scheme_or_set_scheme } from '../utils/url_tools';
+import { ensure_scheme } from '../utils/url_tools';
 
 export class bunch_of_bookmarks {
   root: folder;
@@ -788,7 +788,7 @@ export class folder {
         item = item as bookmark;
         result.push(
           " ".repeat(spaces + 4) +
-            "<DT><A HREF=\"" + ensure_scheme_or_set_scheme(item.get_link()) +
+            "<DT><A HREF=\"" + ensure_scheme(item.get_link()) +
             "\" ADD_DATE=\"" + item.get_add_date().toString() +
             "\">" + encode_string_to_html_code(item.get_label()) + "</A>"
         ); // Push bookmark

@@ -1,4 +1,4 @@
-import { sandbox_open_sync } from '../utils/storage_tools';
+import { sandbox_read_text_sync } from '../utils/storage_tools';
 import { fileIo as fs } from '@kit.CoreFileKit';
 import { collections } from '@kit.ArkTS';
 import { divide_string, get_histories_from_disk, index_file_name_of_month, insert_into_array } from './bunch_of_history_index_x_functions';
@@ -83,7 +83,7 @@ export class bunch_of_history_index {
    * */
   static index_from_index_file(path: string, context_filesDir: string) {
     // Open the file
-    let imp = sandbox_open_sync(path, context_filesDir);
+    let imp = sandbox_read_text_sync(path, context_filesDir);
     let import_list: string[] = imp.split("\n");
 
     // traverse each key - values

@@ -5,42 +5,12 @@ import { buffer } from '@kit.ArkTS';
 import { image } from '@kit.ImageKit';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { export_json_kv_store, import_json_kv_store } from './kv_store_tools';
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
+import { meowContext } from './environment_tools';
 
 let context = AppStorage.get("context") as common.UIAbilityContext;
 
-/**
- * Save a text file to device storage, pulling up a DocumentViewPicker.
- * @param file_name A string, setting the file's name.
- * @param content A string, fills the file's content.
- * */
-export function document_save(file_name: string, content: string) {
-  let target_uri: string[] = [];
-
-  try {
-    let documentSaveOptions = new picker.DocumentSaveOptions();
-    documentSaveOptions.newFileNames = [file_name];
-    // documentSaveOptions.fileSuffixChoices = [".html", ".txt", ".json"];
-    let documentPicker = new picker.DocumentViewPicker(context);
-
-    documentPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
-      target_uri = documentSaveResult
-
-      let file = fs.openSync(target_uri[0], fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
-      let writeLen = fs.writeSync(file.fd, content);
-      console.info("[document_saver] write data to file succeed and size is:" + writeLen + " @ " + target_uri[0]);
-      fs.closeSync(file);
-
-      console.info('[document_saver] DocumentViewPicker.save successfully, documentSaveResult uri: ' +
-      target_uri[0]);
-    }).catch((err: BusinessError) => {
-      console.error('[document_saver][ERROR] DocumentViewPicker.save failed with err: ' + JSON.stringify(err));
-    });
-
-  } catch (error) {
-    let err: BusinessError = error as BusinessError;
-    console.error('[document_saver][ERROR] DocumentViewPicker failed with err: ' + JSON.stringify(err));
-  }
-}
+// Pick & Save
 
 /**
  * Save (Copy) any file from a path to download folder.
@@ -70,20 +40,37 @@ export async function download_save_from_path(path: string) {
 }
 
 /**
- * Returns the download folder uri.
- * @returns DOWNLOADS uri
+ * Save a text file to device storage, pulling up a DocumentViewPicker.
+ * @param file_name A string, setting the file's name.
+ * @param content A string, fills the file's content.
  * */
-export async function get_download_uri() {
-  let uri: string = '';
-  const documentViewPicker = new picker.DocumentViewPicker(context);
-  const documentSaveOptions = new picker.DocumentSaveOptions();
-  documentSaveOptions.pickerMode = picker.DocumentPickerMode.DOWNLOAD;
-  await documentViewPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
-    uri = documentSaveResult[0];
-  }).catch((err: BusinessError) => {
-    console.error(`[storage_tools][download_save_from_path] Invoke documentViewPicker.save failed, code is ${err.code}, message is ${err.message}`);
-  })
-  return uri;
+export function document_save_text(file_name: string, content: string) {
+  let target_uri: string[] = [];
+
+  try {
+    let documentSaveOptions = new picker.DocumentSaveOptions();
+    documentSaveOptions.newFileNames = [file_name];
+    // documentSaveOptions.fileSuffixChoices = [".html", ".txt", ".json"];
+    let documentPicker = new picker.DocumentViewPicker(context);
+
+    documentPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
+      target_uri = documentSaveResult
+
+      let file = fs.openSync(target_uri[0], fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
+      let writeLen = fs.writeSync(file.fd, content);
+      console.info("[document_saver] write data to file succeed and size is:" + writeLen + " @ " + target_uri[0]);
+      fs.closeSync(file);
+
+      console.info('[document_saver] DocumentViewPicker.save successfully, documentSaveResult uri: ' +
+      target_uri[0]);
+    }).catch((err: BusinessError) => {
+      console.error('[document_saver][ERROR] DocumentViewPicker.save failed with err: ' + JSON.stringify(err));
+    });
+
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    console.error('[document_saver][ERROR] DocumentViewPicker failed with err: ' + JSON.stringify(err));
+  }
 }
 
 /**
@@ -143,10 +130,41 @@ export async function document_save_from_path(from: string, file_name_overwrite?
 }
 
 /**
+ * Save (Copy) an image file from a uri to Gallery.
+ * @param from The uri of file.
+ * */
+export async function image_save_from_uri(from: string) {
+  try {
+    let srcFileUris: Array<string> = [from];
+    let photoCreationConfigs: Array<photoAccessHelper.PhotoCreationConfig> = [{
+      fileNameExtension: get_file_suffix(from),
+      photoType: photoAccessHelper.PhotoType.IMAGE,
+    }];
+    let context = meowContext();
+    let phAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
+    let desFileUris: Array<string> = await phAccessHelper.showAssetsCreationDialog(srcFileUris, photoCreationConfigs);
+    console.info('[storage_tools][image_save_from_uri] showAssetsCreationDialog success, data is ' + desFileUris);
+    try {
+      let srcFile = fs.openSync(srcFileUris[0], fs.OpenMode.READ_ONLY)
+      let desFile = fs.openSync(desFileUris[0], fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE)
+      fs.copyFileSync(srcFile.fd, desFile.fd)
+      fs.closeSync(srcFile);
+      fs.closeSync(desFile);
+    } catch (e) {
+      console.error('[storage_tools][image_save_from_uri] ' + e);
+    }
+  } catch (err) {
+    console.error('[storage_tools][image_save_from_uri] showAssetsCreationDialog failed, errCode is ' + err.code + ', errMsg is ' + err.message);
+  }
+}
+
+// Pick & Read
+
+/**
  * Pick a text file from device storage, pulling up a DocumentViewPicker.
  * @returns A string, of the chosen file's content.
  * */
-export async function document_open(suffixFilters?: string[]) {
+export async function document_pick_to_text(suffixFilters?: string[]) {
   let target_uri: string[] = [];
 
   try {
@@ -183,7 +201,7 @@ export async function document_open(suffixFilters?: string[]) {
  * Pick an image file from device storage, pulling up a DocumentViewPicker.
  * @returns A string, of the chosen file's content.
  * */
-export async function image_open_to_ArrayBuffer() {
+export async function image_pick_to_ArrayBuffer() {
   let selected_uri: string[] = [];
 
   try {
@@ -222,6 +240,8 @@ export async function image_open_to_ArrayBuffer() {
     return undefined;
   }
 }
+
+// Sandbox Operations
 
 /**
  * Save a text file or ArrayBuffer to sandbox storage, overwrites whatever that was at that place.
@@ -294,7 +314,7 @@ export function sandbox_rmdir_sync(dir_name: string, context_filesDir?: string) 
  * If you have a context filesDir already, you can pass it to me.
  * @returns A string, of the requested file's content.
  * */
-export function sandbox_open_sync(file_name: string, context_filesDir?: string) {
+export function sandbox_read_text_sync(file_name: string, context_filesDir?: string) {
   let filesDir: string = context_filesDir || context.filesDir;
   file_name = filesDir + "/" + file_name
   if (!(fs.accessSync(file_name))) {
@@ -316,7 +336,7 @@ export function sandbox_open_sync(file_name: string, context_filesDir?: string) 
  * Read an ArrayBuffer file from sandbox storage.
  * @returns An ArrayBuffer, of the requested file's content.
  * */
-export function sandbox_open_arrayBuffer_sync(file_path_name: string, context_filesDir?: string) {
+export function sandbox_read_arrayBuffer_sync(file_path_name: string, context_filesDir?: string) {
   let filesDir: string = context_filesDir || context.filesDir;
   file_path_name = filesDir + "/" + file_path_name
   if (!(fs.accessSync(file_path_name))) {
@@ -332,6 +352,84 @@ export function sandbox_open_arrayBuffer_sync(file_path_name: string, context_fi
   fs.closeSync(file);
   let result = buf.slice(0, readLen);
   return result;
+}
+
+/**
+ * Copy a text file to sandbox storage, overwrites whatever that was at that place.
+ *
+ * THIS IS A SYNC FUNCTION
+ * @param from from a uri (file://).
+ * @param to a sandbox directory, the new parent folder of this file (in sandbox).
+ * @returns a sandbox path, root is context.filesDir.
+ * */
+export function copy_from_uri_to_sandbox(from: string, to: string, max_name_length?: number): string {
+  let filesDir: string = context.filesDir;
+  let max_name_l: number = 64 || max_name_length;
+  // Get from path
+  const from_path = new fileUri.FileUri(from).path;
+  // Get file name
+  const split_result = from.split('/');
+  let file_name = decodeURI(split_result[split_result.length-1]);
+  if (file_name.length > max_name_l) {
+    file_name = file_name.substring(0, max_name_l);
+  }
+  // Try to prevent collision
+  file_name = Date.now().toString() + '-' + file_name;
+  // Combine target path
+  let target_path = filesDir + '/' + to + '/' + file_name;
+  console.log('[uri_copy_sandbox] Copy from [' + from_path + '] to [' + target_path + '] return [' + to + '/' + file_name + ']');
+  fs.copyFileSync(from_path, target_path);
+  return path_2_uri(target_path);
+}
+
+/**
+ * Copies a file from rawfile to sandbox
+ * @param from
+ * @param to
+ * */
+export function copy_from_rawfile_to_sandbox(from: string, to: string) {
+  let boxPath = context.filesDir
+  let to_split = to.split("/");
+  let folderPath = boxPath + "/" + to_split.slice(0, to_split.length - 2).join("/");
+  let fullPath = boxPath + "/" + to
+
+  // 获取rawfile资源文件，转换数据
+  let uint8Array: Uint8Array = context.resourceManager.getRawFileContentSync(from);
+  let bf = buffer.from(uint8Array).buffer;
+
+  // 创建沙箱目录
+  try {
+    fs.mkdirSync(folderPath)
+  } catch (e) {
+  }
+
+  // 打开文件
+  const fsOpen =
+    fs.openSync(fullPath, fs.OpenMode.READ_WRITE | fs.OpenMode.READ_ONLY | fs.OpenMode.CREATE | fs.OpenMode.TRUNC)
+
+  // 写入文件
+  let destFile = fs.writeSync(fsOpen.fd, bf);
+  // 关闭文件
+  fs.close(destFile)
+}
+
+// Info
+
+/**
+ * Returns the download folder uri.
+ * @returns DOWNLOADS uri
+ * */
+export async function get_download_uri() {
+  let uri: string = '';
+  const documentViewPicker = new picker.DocumentViewPicker(context);
+  const documentSaveOptions = new picker.DocumentSaveOptions();
+  documentSaveOptions.pickerMode = picker.DocumentPickerMode.DOWNLOAD;
+  await documentViewPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
+    uri = documentSaveResult[0];
+  }).catch((err: BusinessError) => {
+    console.error(`[storage_tools][download_save_from_path] Invoke documentViewPicker.save failed, code is ${err.code}, message is ${err.message}`);
+  })
+  return uri;
 }
 
 /**
@@ -365,6 +463,16 @@ export function get_file_size_Sync(path: string) {
   let filestat = fs.statSync(file.fd);
   fs.close(file);
   return filestat.size;
+}
+
+/**
+ * Returns the suffix of a file name.
+ * @param file for example, 'qwq.txt.awa'
+ * @returns the suffix. e.g. 'awa'
+ * */
+export function get_file_suffix(file: string) {
+  let s = file.split('.');
+  return s[s.length-1].toUpperCase();
 }
 
 /**
@@ -426,12 +534,32 @@ export function is_legal_filename(filename: string) {
   return true;
 }
 
+// Conversions
+
+/**
+ * Converts a uri to path.
+ * @param uri The uri.
+ * @returns Its path.
+ * */
+export function uri_2_path(uri: string) {
+  return new fileUri.FileUri(uri).path;
+}
+
+/**
+ * Converts a path to uri.
+ * @param path The path.
+ * @returns Its uri.
+ * */
+export function path_2_uri(path: string) {
+  return fileUri.getUriFromPath(path);
+}
+
 /**
  * Converts an ArrayBuffer to image.PixelMap object.
  * @param buf the ArrayBuffer
  * @returns an image.PixelMap
  * */
-export function arrayBuffer_to_pixelMap(buf: ArrayBuffer) {
+export function arrayBuffer_2_pixelMap(buf: ArrayBuffer) {
   // ArrayBuffer => PixelMap
   const imageSource = image.createImageSource(buf);
   console.log('imageSource: ' + JSON.stringify(imageSource));
@@ -440,68 +568,7 @@ export function arrayBuffer_to_pixelMap(buf: ArrayBuffer) {
   return pixelMap;
 }
 
-/**
- * Copy a text file to sandbox storage, overwrites whatever that was at that place.
- *
- * THIS IS A SYNC FUNCTION
- * @param from from a uri (file://).
- * @param to a sandbox directory, the new parent folder of this file (in sandbox).
- * @returns a sandbox path, root is context.filesDir.
- * */
-export function copy_from_uri_to_sandbox(from: string, to: string, context_filesDir?: string) {
-  let filesDir: string = context_filesDir || context.filesDir;
-  // Get file name
-  const split_result = from.split('/');
-  const file_name = split_result[split_result.length-1];
-  // Get from path
-  const from_path = new fileUri.FileUri(from).path;
-  // Combine target
-  let target_dir = filesDir + '/' + to + '/' + decodeURI(file_name);
-  console.log('[uri_copy_sandbox] Copy from [' + from_path + '] to [' + target_dir + '] return [' + to + '/' + file_name + ']');
-  fs.copyFileSync(from_path, target_dir);
-  return fileUri.getUriFromPath(target_dir);
-}
-
-/**
- * Copies a file from rawfile to sandbox
- * @param from
- * @param to
- * */
-export function copy_from_rawfile_to_sandbox(from: string, to: string) {
-  let boxPath = context.filesDir
-  let to_split = to.split("/");
-  let folderPath = boxPath + "/" + to_split.slice(0, to_split.length - 2).join("/");
-  let fullPath = boxPath + "/" + to
-
-  // 获取rawfile资源文件，转换数据
-  let uint8Array: Uint8Array = context.resourceManager.getRawFileContentSync(from);
-  let bf = buffer.from(uint8Array).buffer;
-
-  // 创建沙箱目录
-  try {
-    fs.mkdirSync(folderPath)
-  } catch (e) {
-  }
-
-  // 打开文件
-  const fsOpen =
-    fs.openSync(fullPath, fs.OpenMode.READ_WRITE | fs.OpenMode.READ_ONLY | fs.OpenMode.CREATE | fs.OpenMode.TRUNC)
-
-  // 写入文件
-  let destFile = fs.writeSync(fsOpen.fd, bf);
-  // 关闭文件
-  fs.close(destFile)
-}
-
-/**
- * Returns the suffix of a file name.
- * @param file for example, 'qwq.txt.awa'
- * @returns the suffix. e.g. 'awa'
- * */
-export function get_file_suffix(file: string) {
-  let s = file.split('.');
-  return s[s.length-1].toUpperCase();
-}
+// Global Data
 
 /**
  * Exports everything, ALL USER DATA.
@@ -613,8 +680,8 @@ export async function import_everything() {
         sandbox_rmdir_sync('temp');
 
         // Import settings
-        (AppStorage.get('bunch_of_settings') as bunch_of_settings).import_json(sandbox_open_sync('settings.json.browsercatsettings.txt'));
-        import_json_kv_store(sandbox_open_sync('kv_store.json.browsercatstore.txt'));
+        (AppStorage.get('bunch_of_settings') as bunch_of_settings).import_json(sandbox_read_text_sync('settings.json.browsercatsettings.txt'));
+        import_json_kv_store(sandbox_read_text_sync('kv_store.json.browsercatstore.txt'));
         // Delete
         sandbox_unlink_sync('settings.json.browsercatsettings.txt');
         sandbox_unlink_sync('kv_store.json.browsercatstore.txt');

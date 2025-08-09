@@ -18,9 +18,9 @@ export function drop_to_scratching_board(e: DragEvent) {
   for (let i = 0; i < drop_data.length; i++) {
     let record = drop_data[i]
     if (record.getType() == uniformTypeDescriptor.UniformDataType.HYPERLINK) {
+      // Push Hyperlink
       let desc = (record as unifiedDataChannel.Hyperlink).description;
       let url = (record as unifiedDataChannel.Hyperlink).url;
-
       if (desc && !result_list_string.includes(desc)) {
         // Push link description
         result_list_string.push(desc);
@@ -31,13 +31,14 @@ export function drop_to_scratching_board(e: DragEvent) {
       }
 
     } else if (record.getType() == uniformTypeDescriptor.UniformDataType.PLAIN_TEXT) {
+      // Push text
       let textContent = (record as unifiedDataChannel.PlainText).textContent;
-
       if (!result_list_string.includes(textContent)) {
-        // Push text
         result_list_string.push(textContent);
       }
+
     } else if (record.getType() == uniformTypeDescriptor.UniformDataType.IMAGE) {
+      // Push Image
       let image_uri = (record as unifiedDataChannel.Image).imageUri;
       console.log("[drop_to_scratching_board] image uri: [" + image_uri + "]");
       result_list_string.push(copy_from_uri_to_sandbox(image_uri, 'web-drag-image-cache'));

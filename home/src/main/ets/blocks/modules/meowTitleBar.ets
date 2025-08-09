@@ -1107,7 +1107,11 @@ struct meowTitleBar {
       // unify input into a legal link
       unified_url = url_meow_to_resource(unified_url);
       // translate "meow://" into "resource://"
-      this.bunch_of_tabs.loadUrl_onWorkingTab(unified_url);
+      try {
+        this.bunch_of_tabs.loadUrl_onWorkingTab(unified_url);
+      } catch (e) {
+        console.error('[Meow][meowTitleBar][submit_searching][loadUrl_onWorkingTab] ' + e);
+      }
     }
     if (!this.is_search_input_address) {
       this.showing_search_extracted_field = true;

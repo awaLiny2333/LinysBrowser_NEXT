@@ -2,7 +2,7 @@ import { bookmark, bunch_of_bookmarks, folder, unified_item } from '../../hosts/
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { url_resource_to_meow } from '../../utils/url_tools';
 import linysSymbol from '../../components/texts/linysSymbol';
-import { document_open, document_save, sandbox_open_sync, sandbox_save } from '../../utils/storage_tools';
+import { document_pick_to_text, document_save_text, sandbox_read_text_sync, sandbox_save } from '../../utils/storage_tools';
 import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import { kv_store_get } from '../../utils/kv_store_tools';
 import linysShowButton from '../../components/buttons/linysShowButton';
@@ -337,7 +337,7 @@ struct meowBookmarks {
   // Event
 
   async on_appear() {
-    let result: string = sandbox_open_sync('html_bookmarks.html');
+    let result: string = sandbox_read_text_sync('html_bookmarks.html');
     if (result == "undefined") {
       // Check old kv_store
       result = await kv_store_get("html_bookmarks") as string;
@@ -478,13 +478,13 @@ struct meowBookmarks {
   export_bookmarks_html() {
     this.exporting_bookmarks = false;
 
-    document_save("Bookmarks_" + Math.round(new Date().getTime() / 1000),
+    document_save_text("Bookmarks_" + Math.round(new Date().getTime() / 1000),
       this.bunch_of_bookmarks.get_export_html().join("\n"))
   }
 
   import_bookmarks_html() {
     this.importing_bookmarks = false;
-    document_open().then(result => {
+    document_pick_to_text().then(result => {
       if (result == "") {
         // Selected an empty file or cancelled selection
         this.uni_fail_prompt_gateway = $r('app.string.Fail_desc_empty_picked_file');
