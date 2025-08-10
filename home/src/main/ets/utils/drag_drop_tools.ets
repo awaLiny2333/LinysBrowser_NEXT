@@ -13,10 +13,10 @@ export function allow_drop_types() {
  * @param e DragEvent
  * */
 export function drop_to_scratching_board(e: DragEvent) {
-  let drop_data = e.getData().getRecords();
+  let drop_data_records = e.getData().getRecords();
   let result_list_string: string[] = [];
-  for (let i = 0; i < drop_data.length; i++) {
-    let record = drop_data[i]
+  for (let i = 0; i < drop_data_records.length; i++) {
+    let record = drop_data_records[i];
     if (record.getType() == uniformTypeDescriptor.UniformDataType.HYPERLINK) {
       // Push Hyperlink
       let desc = (record as unifiedDataChannel.Hyperlink).description;
@@ -29,6 +29,7 @@ export function drop_to_scratching_board(e: DragEvent) {
         // Push link
         result_list_string.push(url);
       }
+      console.log("[drop_to_scratching_board] Hyperlink url: [" + url + "]");
 
     } else if (record.getType() == uniformTypeDescriptor.UniformDataType.PLAIN_TEXT) {
       // Push text
@@ -36,12 +37,17 @@ export function drop_to_scratching_board(e: DragEvent) {
       if (!result_list_string.includes(textContent)) {
         result_list_string.push(textContent);
       }
+      console.log("[drop_to_scratching_board] Plain Text: [" + textContent + "]");
 
     } else if (record.getType() == uniformTypeDescriptor.UniformDataType.IMAGE) {
       // Push Image
       let image_uri = (record as unifiedDataChannel.Image).imageUri;
       console.log("[drop_to_scratching_board] image uri: [" + image_uri + "]");
-      result_list_string.push(copy_from_uri_to_sandbox(image_uri, 'web-drag-image-cache'));
+      try {
+        result_list_string.push(copy_from_uri_to_sandbox(image_uri, 'web-drag-image-cache'));
+      } catch (e) {
+        console.error('[drag_drop_tools] Plan A of Image drop failed: ' + e);
+      }
     }
   }
   // Append to start of original scratching board content

@@ -6,15 +6,10 @@ import linysTextTitle from '../../components/texts/linysTextTitle';
 import { animation_default, animation_popup_duration, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { copy } from '../../utils/clipboard_tools';
 import { preview_image } from '../../utils/preview_tools';
-import {
-  add_units_to_size,
-  document_save_from_uri as document_save_from_uri,
-  get_file_size_Sync,
-  get_file_suffix,
-  image_save_from_uri
-} from '../../utils/storage_tools';
-import { extract_links_from_text } from '../../utils/url_tools';
+import { add_units_to_size, get_file_size_Sync, get_file_suffix, image_save_from_uri } from '../../utils/storage_tools';
+import { extract_links_from_text, is_downloadable } from '../../utils/url_tools';
 import { LengthMetrics, SymbolGlyphModifier } from '@kit.ArkUI';
+import woofWantDownload from '../../dialogs/prompts/woofWantDownload';
 
 @Component
 struct meowScratchingBoard {
@@ -145,6 +140,8 @@ struct raw_data_display {
   @Link showing_scratching_board: boolean;
   @State text: string = "meow";
   @State type: string = "text";
+  @State downloadable: boolean = false;
+  @State download_filename: string = '';
   @State image_size: string = "233x233";
   @State index: number = 0;
   @State offset_y: number = 50;
@@ -163,6 +160,24 @@ struct raw_data_display {
   @State copied: number = 0;
   @State image_height: number = 0;
   @State image_width: number = 0;
+  // dialogs
+  woofWantDownload_control: CustomDialogController = new CustomDialogController({
+    builder: woofWantDownload({
+      from: '',
+      file_name: '',
+      url: '',
+      try_additional_info: ''
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16
+  })
+
+  aboutToAppear(): void {
+    if (this.type == 'url') {
+      this.downloadable = is_downloadable(this.text)[0] as boolean;
+      this.download_filename = is_downloadable(this.text)[1] as string;
+    }
+  }
 
   // Save menu
   @Builder
@@ -172,7 +187,7 @@ struct raw_data_display {
         content: $r('app.string.Save_to_files'),
         symbolStartIcon: new SymbolGlyphModifier($r('sys.symbol.arrow_right_folder_circle')).fontSize('24vp'),
       })
-        .onClick(()=>{
+        .onClick(() => {
           this.default_click();
         })
       MenuItem({
@@ -270,7 +285,7 @@ struct raw_data_display {
       } else {
         linysSymbol({
           symbol_glyph_target: this.type_symbol(),
-          font_weight: this.type == "text" ? FontWeight.Regular : FontWeight.Bold,
+          font_weight: this.type == "text" ? FontWeight.Regular : FontWeight.Medium,
         }) // Type Symbol
 
         linysText({
@@ -289,6 +304,28 @@ struct raw_data_display {
               copy(this.text);
               this.copied = animation_popup_duration();
             })
+
+          if (this.downloadable) {
+            linysSymbol({
+              symbol_glyph_target: 'sys.symbol.download'
+            })
+              .clickEffect(click_effect_default())
+              .onClick(() => {
+                // AppStorage.set('universal_new_download_gateway', this.text);
+                // Call popup
+                this.woofWantDownload_control = new CustomDialogController({
+                  builder: woofWantDownload({
+                    from: '󰊴!',
+                    file_name: this.download_filename,
+                    url: this.text,
+                    try_additional_info: '',
+                  }),
+                  alignment: DialogAlignment.Center,
+                  cornerRadius: 16
+                })
+                this.woofWantDownload_control.open();
+              })
+          } // Download button
 
           if (this.type == 'url') {
             linysSymbol({
@@ -340,7 +377,8 @@ struct raw_data_display {
       this.copied = animation_popup_duration();
     }
     if (this.type == 'image') {
-      document_save_from_uri(this.text);
+      preview_image(this.text);
+      // document_save_from_uri(this.text);
     }
   }
 

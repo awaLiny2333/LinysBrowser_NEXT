@@ -1,5 +1,5 @@
 import { default_search_engine } from '../hosts/bunch_of_defaults';
-import { common, Want } from '@kit.AbilityKit';
+import { Want } from '@kit.AbilityKit';
 import { meowContext } from './environment_tools';
 
 /**
@@ -355,6 +355,28 @@ export function extract_links_from_text(data_list: string[]) {
   }
 
   return [extracted_data, extracted_type]
+}
+
+/**
+ * Determines if a link is downloadable.
+ * @param link The url.
+ * @returns [boolean, string(filename)] If it is downloadable.
+ * */
+export function is_downloadable(link: string) {
+  try {
+    let last_part = (link.split('&')[0]).split('/').pop();
+    if (last_part?.includes('.')) {
+      // Has dot
+      let filename = last_part;
+      if (filename.length > 255) {
+        filename = filename.substring(filename.length - 254, filename.length);
+      }
+      return [true, filename];
+    }
+  } catch (e) {
+    console.error('[url_tools][is_downloadable] ' + e);
+  }
+  return [false, ''];
 }
 
 /**

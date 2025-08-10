@@ -194,7 +194,7 @@
     },
     {
       "name": "Index_downloads_illegal_chars_in_filename",
-      "value": "文件名不能包含下列任何字符：\\ / : * ? \" < > |"
+      "value": "文件名不能包含下列任何字符：\\ / : * ? \" < > |，并且长度必须小于 255 字符。"
     },
     {
       "name": "permission_reason_READ_PASTEPOARD",

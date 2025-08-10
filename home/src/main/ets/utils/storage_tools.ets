@@ -364,14 +364,14 @@ export function sandbox_read_arrayBuffer_sync(file_path_name: string, context_fi
  * */
 export function copy_from_uri_to_sandbox(from: string, to: string, max_name_length?: number): string {
   let filesDir: string = context.filesDir;
-  let max_name_l: number = 64 || max_name_length;
+  let max_name_l: number = max_name_length || 64;
   // Get from path
   const from_path = new fileUri.FileUri(from).path;
   // Get file name
   const split_result = from.split('/');
   let file_name = decodeURI(split_result[split_result.length-1]);
   if (file_name.length > max_name_l) {
-    file_name = file_name.substring(0, max_name_l);
+    file_name = file_name.substring(file_name.length - max_name_l, file_name.length + 1);
   }
   // Try to prevent collision
   file_name = Date.now().toString() + '-' + file_name;
@@ -504,6 +504,9 @@ export function add_units_to_size(size_in_bytes: number | bigint) {
  * @returns true or false.
  * */
 export function is_legal_filename(filename: string) {
+  if (filename.length > 255) {
+    return false;
+  }
   if (filename.includes('\\')) {
     return false;
   }

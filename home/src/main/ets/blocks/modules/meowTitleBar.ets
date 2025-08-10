@@ -748,66 +748,71 @@ struct meowTitleBar {
           .padding(10)
           .animation(animation_default())
 
-          Row({ space: 10 }) {
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.printer'
-            })// Print
-              .onClick(() => {
-                print_web(this.bunch_of_tabs.workingMainTab().controller);
-              })
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.tracking_cookie_interception'
-            })// Cookies
-              .onClick(() => {
-                this.cookies_control.open();
-              })
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.picture_2'
-            })// Image
-              .onClick(() => {
-                this.image_manage_control.open();
-              })
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.electric_install'
-            })// JS
-              .onClick(() => {
-                this.js_manage_control.open();
-              })
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.ad_circle_slash'
-            })// Enable ads blocker
-              .onClick(() => {
-                this.woofAdsBlocker_control.open();
-              })
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.arrow_counterclockwise_clock'
-            })// History
-              .onClick(() => {
-                this.woofHistory_control.open();
-              })
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.label'
-            })// UA
-              .onClick(() => {
-                this.woofQuickUA_control.open();
-              })
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.qrcode'
-            })// QRcode
-              .onClick(() => {
-                this.woofQR_control.open();
-              })
-            linysSymbol({
-              symbol_glyph_target: this.fullscreen_mode ?
-                'sys.symbol.arrow_down_right_and_arrow_up_left' :
-                'sys.symbol.arrow_up_left_and_arrow_down_right'
-            })// FullScreen
-              .onClick(() => {
-                this.fullscreen_mode = !this.fullscreen_mode;
-                this.showing_more_options = false;
-              })
-          } // Small buttons
-          .justifyContent(FlexAlign.End)
+          Scroll(){
+            Row({ space: 10 }) {
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.printer'
+              })// Print
+                .onClick(() => {
+                  print_web(this.bunch_of_tabs.workingMainTab().controller);
+                })
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.tracking_cookie_interception'
+              })// Cookies
+                .onClick(() => {
+                  this.cookies_control.open();
+                })
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.picture_2'
+              })// Image
+                .onClick(() => {
+                  this.image_manage_control.open();
+                })
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.electric_install'
+              })// JS
+                .onClick(() => {
+                  this.js_manage_control.open();
+                })
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.ad_circle_slash'
+              })// Enable ads blocker
+                .onClick(() => {
+                  this.woofAdsBlocker_control.open();
+                })
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.arrow_counterclockwise_clock'
+              })// History
+                .onClick(() => {
+                  this.woofHistory_control.open();
+                })
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.label'
+              })// UA
+                .onClick(() => {
+                  this.woofQuickUA_control.open();
+                })
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.qrcode'
+              })// QRcode
+                .onClick(() => {
+                  this.woofQR_control.open();
+                })
+              linysSymbol({
+                symbol_glyph_target: this.fullscreen_mode ?
+                  'sys.symbol.arrow_down_right_and_arrow_up_left' :
+                  'sys.symbol.arrow_up_left_and_arrow_down_right'
+              })// FullScreen
+                .onClick(() => {
+                  this.fullscreen_mode = !this.fullscreen_mode;
+                  this.showing_more_options = false;
+                })
+            } // Small buttons
+            .justifyContent(FlexAlign.End)
+          }
+          .scrollable(ScrollDirection.Horizontal)
+          .scrollBar(BarState.Off)
+          .edgeEffect(EdgeEffect.Spring)
           .visibility(this.visible_when_in_page_search())
           .animation(animation_default())
 
