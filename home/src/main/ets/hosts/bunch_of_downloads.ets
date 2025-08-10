@@ -1,6 +1,5 @@
 import { BusinessError } from '@kit.BasicServicesKit';
 import { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
-import { common } from '@kit.AbilityKit';
 import { webview } from '@kit.ArkWeb';
 import { add_units_to_size, download_save_from_path } from '../utils/storage_tools';
 import woofWantDownload from '../dialogs/prompts/woofWantDownload';
@@ -20,6 +19,7 @@ export class bunch_of_downloads {
   list_of_urls: string[] = [];
   list_of_completed: boolean[] = [];
   list_of_additional_info: string[][] = [];
+  list_of_failed: boolean[] = [];
   last_action: number = 0;
   // dialogs
   woofWantDownload_control: CustomDialogController = new CustomDialogController({
@@ -85,15 +85,6 @@ export class bunch_of_downloads {
       // connect path
       let download_target_path = file_dir + file_name;
 
-      // LINK START!
-      try {
-        webDownloadItem.start(download_target_path);
-      } catch (e) {
-        console.error(e);
-        return;
-      }
-      console.log('[bunch_of_downloads] dl_delegate.onBeforeDownload! download_target_path: [' + download_target_path + ']')
-
       // Register on download start
       this.list_of_on_going_tasks.push(webDownloadItem);
       this.list_of_downloaded_size.push(0);
@@ -105,7 +96,17 @@ export class bunch_of_downloads {
       this.list_of_target_folders.push(file_dir);
       this.list_of_file_names.push(file_name);
       this.list_of_urls.push(webDownloadItem.getUrl());
+      this.list_of_failed.push(false);
       // this.list_of_urls.push('url');
+
+      // LINK START!
+      try {
+        webDownloadItem.start(download_target_path);
+      } catch (e) {
+        console.error(e);
+        return;
+      }
+      console.log('[bunch_of_downloads] dl_delegate.onBeforeDownload! download_target_path: [' + download_target_path + ']')
 
       // Update Class
       this.last_action = Date.now();
@@ -117,6 +118,10 @@ export class bunch_of_downloads {
 
     dl_delegate.onDownloadFailed((webDownloadItem: webview.WebDownloadItem) => {
       console.error("[bunch_of_downloads] download failed guid: " + webDownloadItem.getGuid());
+      console.error("[bunch_of_downloads] download failed error: " + webDownloadItem.getLastErrorCode());
+      this.list_of_failed[this.index_of_task(webDownloadItem)] = true;
+      this.list_of_paused[this.index_of_task(webDownloadItem)] = true;
+      this.last_action = Date.now();
     })
 
     dl_delegate.onDownloadFinish((webDownloadItem: webview.WebDownloadItem) => {
@@ -162,15 +167,6 @@ export class bunch_of_downloads {
       // connect path
       let download_target_path = file_dir + file_name;
 
-      // LINK START!
-      try {
-        webDownloadItem.start(download_target_path);
-      } catch (e) {
-        console.error(e);
-        return;
-      }
-      console.log('[bunch_of_downloads] dl_delegate.onBeforeDownload! download_target_path: [' + download_target_path + ']')
-
       // Register on download start
       this.list_of_on_going_tasks.push(webDownloadItem);
       this.list_of_downloaded_size.push(0);
@@ -182,7 +178,18 @@ export class bunch_of_downloads {
       this.list_of_target_folders.push(file_dir);
       this.list_of_file_names.push(file_name);
       this.list_of_urls.push(webDownloadItem.getUrl());
+      this.list_of_failed.push(false);
       // this.list_of_urls.push('url');
+
+      // LINK START!
+      try {
+        webDownloadItem.start(download_target_path);
+      } catch (e) {
+        console.error(e);
+        return;
+      }
+      console.log('[bunch_of_downloads] dl_delegate.onBeforeDownload! download_target_path: [' + download_target_path + ']')
+
 
       // Update Class
       this.last_action = Date.now();
@@ -194,6 +201,10 @@ export class bunch_of_downloads {
 
     blob_delegate.onDownloadFailed((webDownloadItem: webview.WebDownloadItem) => {
       console.error("[bunch_of_downloads] download failed guid: " + webDownloadItem.getGuid());
+      console.error("[bunch_of_downloads] download failed error: " + webDownloadItem.getLastErrorCode());
+      this.list_of_failed[this.index_of_task(webDownloadItem)] = true;
+      this.list_of_paused[this.index_of_task(webDownloadItem)] = true;
+      this.last_action = Date.now();
     })
 
     blob_delegate.onDownloadFinish((webDownloadItem: webview.WebDownloadItem) => {
@@ -323,6 +334,7 @@ export class bunch_of_downloads {
     this.list_of_urls.splice(index, 1);
     this.list_of_completed.splice(index, 1);
     this.list_of_additional_info.splice(index, 1);
+    this.list_of_failed.splice(index, 1);
 
     this.last_action = Date.now();
   }

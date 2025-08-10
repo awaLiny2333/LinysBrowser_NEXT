@@ -13,8 +13,7 @@ import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleBut
 
 @Component
 struct meowDownloads {
-  @StorageLink('bunch_of_downloads') @Watch('on_download_state_change') bunch_of_downloads: bunch_of_downloads =
-    new bunch_of_downloads(true);
+  @StorageLink('bunch_of_downloads') @Watch('on_download_state_change') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads(true);
   @StorageLink('universal_new_download_gateway') @Watch('on_new_download') uni_new_download_gateway: string = "";
   @StorageLink('showing_downloads') showing_downloads: boolean = false;
   // Downloads
@@ -151,6 +150,7 @@ struct meowDownloadCard {
   @State my_paused: boolean = false;
   @State my_link: string = "";
   @State my_additional_info: string[] = [];
+  @State my_failed: boolean = false;
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Display info
@@ -170,6 +170,7 @@ struct meowDownloadCard {
   build() {
     FlowItem() {
       Column({ space: 15 }) {
+
         linysTextTitle({
           text: '[' + this.formatted_download_percentage + '] ' + this.my_file_name,
           max_lines: 4,
@@ -208,6 +209,16 @@ struct meowDownloadCard {
 
         Scroll() {
           Row({ space: 8 }) {
+            linysText({
+              text: $r('app.string.Downloads_failed'),
+            })// Failed
+              .borderRadius(10)
+              .padding(10)
+              .backgroundColor($r('sys.color.comp_background_tertiary'))
+              .clickEffect(click_effect_default())
+              .visibility(this.my_failed ? Visibility.Visible : Visibility.None)
+              .animation(animation_default())
+
             linysText({
               text: add_units_to_size(this.my_current_download_speed) + '/s',
             })// Speed
@@ -257,10 +268,13 @@ struct meowDownloadCard {
             text: this.my_paused ? "  󰂴  " : "  󰂱  ",
           })// Pause continue
             .onClick(() => {
-              this.pause_or_continue_task();
+              if (!this.my_failed) {
+                this.pause_or_continue_task();
+              }
             })
             .enabled(!this.exporting)
             .visibility(this.formatted_download_percentage == "100%" ? Visibility.None : Visibility.Visible)
+            .opacity(this.my_failed ? 0.85 : 1)
             .animation(animation_default())
 
           linysCapsuleButton({
@@ -320,6 +334,7 @@ struct meowDownloadCard {
     this.my_paused = this.bunch_of_downloads.list_of_paused[this.my_index];
     this.my_link = this.bunch_of_downloads.list_of_urls[this.my_index];
     this.my_additional_info = this.bunch_of_downloads.list_of_additional_info[this.my_index];
+    this.my_failed = this.bunch_of_downloads.list_of_failed[this.my_index];
 
     this.set_formatted_download_progress();
     this.set_formatted_download_percentage();
