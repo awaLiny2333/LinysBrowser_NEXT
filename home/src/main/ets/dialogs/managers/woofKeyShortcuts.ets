@@ -45,13 +45,13 @@ struct keyDisplay {
   @Prop key_settings_id: string;
   @State showing_keyboard: boolean = false;
   @State keys_edit: string[] = [];
-  @State display_text: string = '';
+  @State key_binds: string = '';
   // Colors
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
 
   aboutToAppear(): void {
     // Set display text
-    this.display_text = this.bunch_of_key_shortcuts.get_shortcut(this.key_settings_id)
+    this.key_binds = this.bunch_of_key_shortcuts.get_shortcut(this.key_settings_id)
       .reverse()
       .join(' + ')
       .toUpperCase();
@@ -64,8 +64,9 @@ struct keyDisplay {
 
       Row({ space: 10 }) {
         linysText({
-          text: this.display_text
+          text: this.key_binds
         })
+          .opacity(0.8)
           .layoutWeight(1)
         // linysText({ text: $r('app.string.Key_shortcuts_modify') })
         linysShowButton({
@@ -87,7 +88,7 @@ struct keyDisplay {
       KeyBoard({
         keys_edit: this.keys_edit,
         key_settings_id: this.key_settings_id,
-        display_text: this.display_text,
+        display_text: this.key_binds,
         showing_keyboard: this.showing_keyboard
       })
         .width('100%')

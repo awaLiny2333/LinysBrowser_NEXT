@@ -912,7 +912,6 @@ struct meowAppSettings {
                     document_save_text('settings.json.browsercatsettings', this.bunch_of_settings.toString());
                   }
                 }) // Export settings
-                linysText({ text: $r('app.string.Settings_toolbox_import_settings_desc'), is_description: true, is_expanded: true })
                 linysTimeoutButtonWithText({
                   desc_text: $r('app.string.Settings_toolbox_import_settings'),
                   button_text: '  󰐝  ',
@@ -927,6 +926,7 @@ struct meowAppSettings {
                     })
                   }
                 }) // Import settings
+                linysText({ text: $r('app.string.Settings_toolbox_import_settings_desc'), is_description: true, is_expanded: true })
 
                 linysText({ text: $r('app.string.Settings_toolbox_export_everything_desc'), max_lines: 10 })
                 linysCapsuleButtonWithText({
@@ -938,7 +938,6 @@ struct meowAppSettings {
                 }) // Export everything
                   .enabled(!this.compressing_output_profile)
                   .opacity(!this.compressing_output_profile ? 1 : 0.5)
-                linysText({ text: $r('app.string.Settings_toolbox_import_everything_desc'), is_description: true, is_expanded: true })
                 linysTimeoutButtonWithText({
                   desc_text: $r('app.string.Settings_toolbox_import_everything'),
                   button_text: '  󰐝  ',
@@ -953,6 +952,7 @@ struct meowAppSettings {
                     });
                   }
                 }) // Import settings
+                linysText({ text: $r('app.string.Settings_toolbox_import_everything_desc'), is_description: true, is_expanded: true })
 
                 if (this.DEV_MODE) {
                   linysTimeoutButton({

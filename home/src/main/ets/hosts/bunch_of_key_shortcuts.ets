@@ -25,6 +25,7 @@ export class bunch_of_key_shortcuts {
     ['new_tab', 'close_tab', 'show_tabs', 'focus_address', 'in_page_search', 'fullscreen', 'history', 'refresh', 'print'];
   key_shortcut_combinations =
     [this.new_tab, this.close_tab, this.show_tabs, this.focus_address, this.in_page_search, this.fullscreen, this.history, this.refresh, this.print];
+  last_edit: number = 0;
 
   /**
    * A class holding key shortcuts.
@@ -71,16 +72,22 @@ export class bunch_of_key_shortcuts {
    * Loads key combination settings from disk
    * */
   async load_from_disk() {
-    let combinations = await (AppStorage.get('bunch_of_settings') as bunch_of_settings).get('key_shortcuts') as string;
-    let keys_lines: string[] = []
-    if (combinations != '') {
-      keys_lines = combinations.split('\n');
-      for (let index = 0; index < keys_lines.length; index++) {
-        if (this.key_shortcut_combinations[index]) {
-          this.key_shortcut_combinations[index].load_string(keys_lines[index])
+    try {
+      let combinations = await (AppStorage.get('bunch_of_settings') as bunch_of_settings).get('key_shortcuts') as string;
+      // console.log('[bunch_of_key_shortcuts][load_from_disk] Combinations: ' + combinations);
+      let keys_lines: string[] = [];
+      if (combinations != '') {
+        keys_lines = combinations.split('\n');
+        for (let index = 0; index < keys_lines.length; index++) {
+          if (this.key_shortcut_combinations[index]) {
+            this.key_shortcut_combinations[index].load_string(keys_lines[index]);
+          }
         }
       }
+    } catch (e) {
+      console.error('[bunch_of_key_shortcuts][load_from_disk] ' + e);
     }
+    this.last_edit = Date.now();
   }
 
   /**
@@ -92,6 +99,7 @@ export class bunch_of_key_shortcuts {
       list.push(this.key_shortcut_combinations[index].toString());
     }
     (AppStorage.get('bunch_of_settings') as bunch_of_settings).set('key_shortcuts', list.join('\n'));
+    this.last_edit = Date.now();
   }
 }
 

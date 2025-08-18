@@ -317,7 +317,7 @@ export class bunch_of_settings {
     if (value == ('undefined')) {
       value = default_404_fall_back;
     }
-    console.log('[bunch_of_settings][Uni] Got settings for ' + key + ': ' + value)
+    console.log('[bunch_of_settings][Uni] Got settings for ' + key + ':\n\t' + value.replaceAll('\n', '\n\t'));
     return value;
   }
 

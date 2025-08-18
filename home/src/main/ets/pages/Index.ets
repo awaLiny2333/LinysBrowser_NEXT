@@ -37,7 +37,7 @@ struct Index {
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("Bookmarks~Meow");
   @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads();
   @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines = new bunch_of_search_engines();
-  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts();
+  @StorageLink('bunch_of_key_shortcuts') @Watch('on_bunch_of_key_shortcuts_change') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts();
   // UI Environment
   @StorageLink('bottomAvoidHeight') bottomAvoidHeight: number = 1;
   @StorageLink('topAvoidHeight') topAvoidHeight: number = 1;
@@ -392,6 +392,10 @@ struct Index {
       }
     })
 
+  }
+
+  on_bunch_of_key_shortcuts_change() {
+    console.log('[Index] on_bunch_of_key_shortcuts_change!');
   }
 
   // kinda params
