@@ -581,6 +581,10 @@ struct meowWebView {
               console.log('[meowWebView] onClientAuthenticationRequest event.keyTypes: ' + event.keyTypes.join('\n'));
               console.log('[meowWebView] onClientAuthenticationRequest event.issuers: ' + event.issuers.join('\n'));
             })
+            .onOverScroll(()=>{
+              console.log('[meowWebView] Over scrolled!')
+            })
+            .nestedScroll({ scrollForward: NestedScrollMode.SELF_FIRST, scrollBackward: NestedScrollMode.SELF_FIRST })
 
         } // Webs
         .borderColor(this.color_current_secondary)

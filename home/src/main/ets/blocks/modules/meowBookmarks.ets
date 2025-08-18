@@ -97,6 +97,7 @@ struct meowBookmarks {
         // So that bookmark buttons will know if they are out of visible area
         // and reduce their appearance animation time.
       })
+      .nestedScroll({scrollForward:NestedScrollMode.SELF_ONLY,scrollBackward:NestedScrollMode.SELF_ONLY})
 
       Row({ space: this.tablet_mode ? 12 : 9 }) {
         linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left' })// Go back button

@@ -212,6 +212,7 @@ struct meowTabs {
       .width("100%")
       .height(this.scroll_area_height - (this.choosing_paralleow || this.current_sub_tab_index >= 0 ? this.paralleow_description_height : 0))
       .animation(animation_default())
+      .nestedScroll({scrollForward:NestedScrollMode.SELF_ONLY,scrollBackward:NestedScrollMode.SELF_ONLY})
 
       Row({ space: 10 }) {
         linysTimeoutButton({

@@ -190,14 +190,32 @@ struct Index {
 
   build() {
     Column() {
+      // I know this is stupid
+      // Forgive me
+      // O.o
+      Row()// Keyboard shortcuts
+        .keyboardShortcut(this.bunch_of_key_shortcuts.fullscreen.main_key, this.bunch_of_key_shortcuts.fullscreen.modifier, () => {
+          this.fullscreen_mode = !this.fullscreen_mode;
+          this.showing_more_options = false;
+        })
+        .keyboardShortcut(this.bunch_of_key_shortcuts.history.main_key, this.bunch_of_key_shortcuts.history.modifier, () => {
+          this.woofHistory_control.open();
+        })
+        .keyboardShortcut(this.bunch_of_key_shortcuts.print.main_key, this.bunch_of_key_shortcuts.print.modifier, () => {
+          print_web(this.bunch_of_tabs.workingMainTab().controller);
+        })
+      // .keyboardShortcut(FunctionKey.ESC, [], () => {
+      //   this.back();
+      // })
+
       Row()// Top Bar Avoid
         .width("100%")
-        .height(this.fullscreen_mode ? 0 :
-          (deviceInfo.deviceType == '2in1' && this.title_bar_position == 'top' && this.tabs_style == 'horizontal' && this.showing_tabs && this.tablet_mode ?
-            10 : this.topAvoidHeight))
+        .height(this.height_of_top_avoid())
         .backgroundColor(this.color_current_secondary)
         .animation(animation_default())
 
+      // Scroll() {
+      //   Column() {
       RelativeContainer() {
         Row() {
           Scroll() {
@@ -250,22 +268,23 @@ struct Index {
         .onAreaChange((o, n) => {
           this.on_main_area_change(o, n);
         })
-        .margin(this.title_bar_position == "bottom" ?
-          { bottom: this.fullscreen_mode ? 0 : this.title_bar_height } :
-          { top: this.fullscreen_mode ? 0 : this.title_bar_height })
+        .margin(this.title_bar_position == "bottom"
+          ? { bottom: this.fullscreen_mode ? 0 : this.title_bar_height }
+          : { top: this.fullscreen_mode ? 0 : this.title_bar_height })
         .animation(animation_default())
 
         linysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
           .alignRules(this.title_bar_alignRules)
-          .margin(this.title_bar_position == "bottom" ?
-            { bottom: this.fullscreen_mode ? 0 : this.title_bar_height } :
-            { top: this.fullscreen_mode ? 0 : this.title_bar_height })
+          .margin(this.title_bar_position == "bottom"
+            ? { bottom: this.fullscreen_mode ? 0 : this.title_bar_height }
+            : { top: this.fullscreen_mode ? 0 : this.title_bar_height })
 
         meowTitleBar({
           bar_height: this.title_bar_height,
           title_bar_alignRules: this.title_bar_alignRules,
-        }) // Bottom Bar
-      } // Web, progress, and bottom bar
+        }) // Title Bar
+      } // Web, progress, and Title bar
+      // .height(this.screen_height - this.height_of_top_avoid())
       .layoutWeight(1)
       .animation(animation_default())
 
@@ -274,24 +293,11 @@ struct Index {
         .height(this.height_of_bottom_avoid())
         .animation(animation_default())
         .backgroundColor(this.title_bar_position == "bottom" ? "transparent" : this.color_current_secondary)
+      //   }
+      // }
+      // .width('100%')
+      // .layoutWeight(1)
 
-      // I know this is stupid
-      // Forgive me
-      // O.o
-      Row()// Keyboard shortcuts
-        .keyboardShortcut(this.bunch_of_key_shortcuts.fullscreen.main_key, this.bunch_of_key_shortcuts.fullscreen.modifier, () => {
-          this.fullscreen_mode = !this.fullscreen_mode;
-          this.showing_more_options = false;
-        })
-        .keyboardShortcut(this.bunch_of_key_shortcuts.history.main_key, this.bunch_of_key_shortcuts.history.modifier, () => {
-          this.woofHistory_control.open();
-        })
-        .keyboardShortcut(this.bunch_of_key_shortcuts.print.main_key, this.bunch_of_key_shortcuts.print.modifier, () => {
-          print_web(this.bunch_of_tabs.workingMainTab().controller);
-        })
-      // .keyboardShortcut(FunctionKey.ESC, [], () => {
-      //   this.back();
-      // })
     }
     .height("100%")
     .width("100%")
@@ -445,6 +451,16 @@ struct Index {
         return 0.9 * this.screen_width;
       }
     }
+  }
+
+  height_of_top_avoid() {
+    if (this.fullscreen_mode) {
+      return 0;
+    }
+    if (deviceInfo.deviceType == '2in1' && this.title_bar_position == 'top' && this.tabs_style == 'horizontal' && this.showing_tabs && this.tablet_mode) {
+      return 10;
+    }
+    return this.topAvoidHeight;
   }
 
   height_of_bottom_avoid() {
