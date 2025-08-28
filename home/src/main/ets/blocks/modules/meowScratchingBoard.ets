@@ -6,7 +6,7 @@ import linysTextTitle from '../../components/texts/linysTextTitle';
 import { animation_default, animation_popup_duration, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { copy } from '../../utils/clipboard_tools';
 import { preview_image } from '../../utils/preview_tools';
-import { add_units_to_size, get_file_size_Sync, get_file_suffix, image_save_from_uri } from '../../utils/storage_tools';
+import { add_units_to_size, document_save_from_uri, get_file_size_Sync, get_file_suffix, image_save_from_uri } from '../../utils/storage_tools';
 import { extract_links_from_text, is_downloadable } from '../../utils/url_tools';
 import { LengthMetrics, SymbolGlyphModifier } from '@kit.ArkUI';
 import woofWantDownload from '../../dialogs/prompts/woofWantDownload';
@@ -188,7 +188,7 @@ struct raw_data_display {
         symbolStartIcon: new SymbolGlyphModifier($r('sys.symbol.arrow_right_folder_circle')).fontSize('24vp'),
       })
         .onClick(() => {
-          this.default_click();
+          document_save_from_uri(this.text);
         })
       MenuItem({
         content: $r('app.string.Save_to_gallery'),

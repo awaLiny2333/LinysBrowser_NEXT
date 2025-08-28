@@ -3,8 +3,6 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { display, window } from '@kit.ArkUI';
 import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
 import { kv_store_get } from '../utils/kv_store_tools';
-import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
-import { bunch_of_settings } from '../hosts/bunch_of_settings';
 
 export default class HomeAbility extends UIAbility {
   storage: LocalStorage = new LocalStorage();
@@ -113,6 +111,7 @@ export default class HomeAbility extends UIAbility {
     let want_uri = want.uri;
     let want_type = want.type;
     let want_action = want.action;
+    let want_flags = want.flags;
     if (want_uri == null || want_uri == undefined || want_uri.length < 1) {
       // Invalid want
       console.info('[Meow][HomeAbility] No or empty Want uri accepted.');
@@ -139,12 +138,23 @@ export default class HomeAbility extends UIAbility {
         AppStorage.setOrCreate('want_action', '');
         console.log('[Meow][HomeAbility] Want action is empty?');
       }
+      if (want_action) {
+        AppStorage.setOrCreate('want_flags', want_flags);
+        console.log('[Meow][HomeAbility] Want flags: ' + want_flags);
+      } else {
+        AppStorage.setOrCreate('want_flags', '');
+        console.log('[Meow][HomeAbility] Want flags are empty?');
+      }
 
       // refresh want_uri in the last place
       AppStorage.setOrCreate('want_uri', want_uri);
     }
   }
 
+  /**
+   * Cross device continuation
+   * @param want the want
+   * */
   process_continue(want: Want) {
     let is_new_launch = !(AppStorage.get('settings_init_retrieved') as boolean);
     console.log('[HomeAbility][onWindowStageRestore] is_new_launch? - ' + (is_new_launch ? 'yes' : 'no'))

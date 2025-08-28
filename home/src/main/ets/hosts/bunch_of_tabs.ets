@@ -248,6 +248,7 @@ export class bunch_of_tabs {
    * @description While if new_tab_url is also not set ("" or undefined), then will load the url_default_blank().
    * */
   newTab(target_url: string, recover_on_creation?: boolean) {
+    // console.log('[bunch_of_tabs] newTab: [' + target_url + '].');
     if (target_url == "") {
       // If newing an empty tab
       if (this.new_tab_url == "" || this.new_tab_url == undefined) {
@@ -421,8 +422,9 @@ export class bunch_of_tabs {
    * */
   restore_web_state(web_state: Uint8Array, index_key: number) {
     if (web_state !== undefined) {
-      console.log("[Meow][meowWebView] Restore web " + index_key.toString() +
-        ", state Length: " + web_state.length.toString())
+      this.Tabs[index_key].url = '<Recovered> uwu';
+      this.Tabs[index_key].title = 'uwu';
+      console.log("[Meow][meowWebView] Restore web " + index_key.toString() + ", state Length: " + web_state.length.toString())
       this.Tabs[index_key].controller.clearHistory();
       this.Tabs[index_key].controller.restoreWebState(web_state);
     } else {

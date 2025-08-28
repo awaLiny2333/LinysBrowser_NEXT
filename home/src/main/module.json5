@@ -8,7 +8,7 @@
       "default",
       "tablet",
       "2in1",
-      "wearable"
+//      "wearable"
     ],
     "deliveryWithInstall": true,
     "installationFree": false,
@@ -38,7 +38,8 @@
                 "type": "general.hyperlink",
               }
             ]
-          },{
+          },
+          {
             "entities": [
               "entity.system.browsable"
             ],
@@ -46,6 +47,12 @@
               "ohos.want.action.viewData"
             ],
             "uris": [
+              {
+                "scheme": "file",
+                "type": "text/html",
+                // Accept html
+                "linkFeature": "FileOpen"
+              },
               {
                 "scheme": "https"
               },
@@ -83,7 +90,8 @@
             "HomeAbility"
           ]
         }
-      },      {
+      },
+      {
         "name": "ohos.permission.PRINT",
         "reason": "$string:permission_reason_PRINT",
         "usedScene": {
@@ -113,16 +121,16 @@
           ]
         }
       },
-//            {
-//              "name" : "ohos.permission.READ_PASTEBOARD",
-//              "reason": "$string:permission_reason_READ_PASTEPOARD",
-//              "usedScene": {
-//                "when": "inuse",
-//                "abilities": [
-//                  "HomeAbility"
-//                ]
-//              }
-//            }
+      //            {
+      //              "name" : "ohos.permission.READ_PASTEBOARD",
+      //              "reason": "$string:permission_reason_READ_PASTEPOARD",
+      //              "usedScene": {
+      //                "when": "inuse",
+      //                "abilities": [
+      //                  "HomeAbility"
+      //                ]
+      //              }
+      //            }
     ]
   }
 }

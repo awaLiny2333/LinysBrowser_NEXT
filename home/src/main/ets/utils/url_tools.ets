@@ -53,6 +53,10 @@ function is_containing_number(input: string) {
 
 export function ensure_scheme(input: string, scheme?: string) {
   let url = input
+  if (url.substring(0, 5) == 'data:') {
+    // If is data
+    return url;
+  }
   if (url.includes("://")) {
     let url_split = url.split("/")
     if ((url_split[0].substring(url_split[0].length - 1) == ":") && (url_split[1] == "")) {
@@ -130,7 +134,7 @@ function is_legal_url(input: string) {
 
   // input = "https://www.google.com/about"
 
-  let scheme_result = match_domain(input)
+  let scheme_result = match_domain(input);
   // scheme_result = ["https","www.google.com/about"]
 
   let scheme: string = scheme_result[0];
@@ -243,6 +247,9 @@ export function url_meow_to_resource(url: string) {
 export function match_domain(input: string) {
   let url = input
   let scheme: string = ""
+  if (url.substring(0, 5) == 'data:') {
+    return ['data', url.substring(6)];
+  }
   if (url.includes("://")) {
     // if input contains protocol scheme
     let url_split = url.split("/");

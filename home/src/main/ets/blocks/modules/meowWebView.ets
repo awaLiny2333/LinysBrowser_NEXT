@@ -539,6 +539,11 @@ struct meowWebView {
             .onLoadIntercept((event) => {
               if (event) {
                 let url: string = event.data.getRequestUrl();
+                // Do not intercept data:
+                if (url.substring(0, 5) == 'data:') {
+                  return false;
+                }
+                // Links or urls
                 let match_domain_result = match_domain(url);
                 if (viewable_domains().includes(match_domain_result[0])) {
                   // Viewable
@@ -581,7 +586,7 @@ struct meowWebView {
               console.log('[meowWebView] onClientAuthenticationRequest event.keyTypes: ' + event.keyTypes.join('\n'));
               console.log('[meowWebView] onClientAuthenticationRequest event.issuers: ' + event.issuers.join('\n'));
             })
-            .onOverScroll(()=>{
+            .onOverScroll(() => {
               console.log('[meowWebView] Over scrolled!')
             })
             .nestedScroll({ scrollForward: NestedScrollMode.SELF_FIRST, scrollBackward: NestedScrollMode.SELF_FIRST })

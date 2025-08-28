@@ -15,7 +15,7 @@ import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 import { window } from '@kit.ArkUI';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
-import { sandbox_save, sandbox_unlink } from '../utils/storage_tools';
+import { sandbox_save, sandbox_unlink, uri_read_text_sync } from '../utils/storage_tools';
 import { deviceInfo } from '@kit.BasicServicesKit';
 import { fileIo } from '@kit.CoreFileKit';
 import woofHistory from '../dialogs/managers/woofHistory';
@@ -151,9 +151,6 @@ struct Index {
     this.color_dark_secondary = await this.bunch_of_settings.get('color_dark_secondary') as string;
     this.color_dark_font = await this.bunch_of_settings.get('color_dark_font') as string;
 
-    // Respond to want
-    this.check_want();
-
     // Set cache dir of web-dragged image into Scratching Board
     try {
       fileIo.rmdirSync(this.getUIContext().getHostContext()!.filesDir + '/web-drag-image-cache');
@@ -165,6 +162,11 @@ struct Index {
     } catch (e) {
       console.error('[Index] mkdirSync /web-drag-image-cache failed! ' + e);
     }
+
+    // Respond to want
+    this.check_want();
+
+    // delete Profile package
     try {
       sandbox_unlink('profile.zip');
     } catch (e) {
@@ -493,16 +495,40 @@ struct Index {
 
   check_want() {
     if (this.want_uri.length == 0) {
-      console.log('[Meow][Index] Didn\'t load want for an empty want.')
+      // console.log('[Index] Didn\'t load want for an empty want.');
       return;
     }
     console.log('[Meow][Index] Load want with action: ' + this.want_action + ', type: ' + this.want_type);
+
+    if (this.want_uri.substring(0, 7) == 'file://') {
+      this.want_file();
+    } else {
+      this.want_web();
+    }
+
+    // Respond to want
+    this.want_uri = "";
+  }
+
+  want_file() {
+    // TODO: Find a more elegant way to open things...
+    console.log('[Meow][Index][Want] Want uri is file://. Copying file to sandbox root!');
+    // Copy want file
+    try {
+      let file_content = uri_read_text_sync(this.want_uri);
+      this.uni_new_tab_gateway = 'data:text/html, ' + encodeURIComponent(file_content);
+      // let want_file_uri = copy_from_uri_to_sandbox(this.want_uri, '', 'want-cache.html');
+      // this.uni_new_tab_gateway = want_file_uri;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  want_web() {
     if (this.want_action == "ohos.want.action.viewData") {
       console.log('[Meow][Index] Load want uri: ' + this.want_uri);
       this.uni_new_tab_gateway = this.want_uri;
     }
-    // Respond to want
-    this.want_uri = "";
   }
 
   /**

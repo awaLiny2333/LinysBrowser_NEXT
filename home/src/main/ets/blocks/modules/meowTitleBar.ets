@@ -748,7 +748,7 @@ struct meowTitleBar {
           .padding(10)
           .animation(animation_default())
 
-          Scroll(){
+          Scroll() {
             Row({ space: 10 }) {
               linysSymbol({
                 symbol_glyph_target: 'sys.symbol.printer'
@@ -1130,6 +1130,7 @@ struct meowTitleBar {
         this.bunch_of_tabs.loadUrl_onWorkingTab(unified_url);
       } catch (e) {
         console.error('[Meow][meowTitleBar][submit_searching][loadUrl_onWorkingTab] ' + e);
+        console.error('\t' + unified_url);
       }
     }
     if (!this.is_search_input_address) {

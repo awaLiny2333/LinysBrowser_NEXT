@@ -333,6 +333,31 @@ export function sandbox_read_text_sync(file_name: string, context_filesDir?: str
 }
 
 /**
+ * Read a text file from file uri.
+ *
+ * If you have a context filesDir already, you can pass it to me.
+ * @returns A string, of the requested file's content.
+ * */
+export function uri_read_text_sync(file_uri: string) {
+  console.log('[storage_tools][uri_read_text_sync] ' + file_uri);
+  let path = uri_2_path(file_uri);
+  if (!(fs.accessSync(path))) {
+    // file doesn't exist
+    console.log('[storage_tools][uri_read_text_sync][' + path + '] Doesn\'t exist!');
+    return "undefined";
+  }
+  let file = fs.openSync(path, fs.OpenMode.READ_WRITE);
+  let stat = fs.statSync(path);
+  let size = stat.size;
+  let buf = new ArrayBuffer(size);
+  let readLen = fs.readSync(file.fd, buf);
+  fs.closeSync(file);
+  let result = buf.slice(0, readLen);
+  console.info("[sandbox_open] read file \"" + file_uri + "\" data succeed, Length: " + readLen.toString());
+  return buffer.from(result).toString();
+}
+
+/**
  * Read an ArrayBuffer file from sandbox storage.
  * @returns An ArrayBuffer, of the requested file's content.
  * */
@@ -360,7 +385,7 @@ export function sandbox_read_arrayBuffer_sync(file_path_name: string, context_fi
  * THIS IS A SYNC FUNCTION
  * @param from from a uri (file://).
  * @param to a sandbox directory, the new parent folder of this file (in sandbox).
- * @returns a sandbox path, root is context.filesDir.
+ * @returns a sandbox uri, root is context.filesDir.
  * */
 export function copy_from_uri_to_sandbox(from: string, to: string, max_name_length?: number): string {
   let filesDir: string = context.filesDir;
