@@ -48,8 +48,8 @@ struct Index {
   @StorageLink('screen_height') screen_height: number = 0;
   @StorageLink('full_screen_height') full_screen_height: number = 0;
   @StorageLink('fullscreen_mode') @Watch('on_fullscreen_switch') fullscreen_mode: boolean = false;
-  @StorageLink('animation_response') animation_response: number = 0.36;
-  @StorageLink('animation_damping_coefficient') animation_damping: number = 0.8;
+  @StorageLink('animation_response') animation_response: number = 36;
+  @StorageLink('animation_damping_coefficient') animation_damping: number = 20;
   @StorageProp('currentColorMode') @Watch('on_color_mode_change') current_color_mode: number = 0;
   // History Indexing
   @StorageProp('reindexing_history') reindexing_history: boolean | undefined = undefined;

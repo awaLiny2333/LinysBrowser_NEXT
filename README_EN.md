@@ -108,12 +108,13 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 - [ ] Require biometric access control for History
 - [ ] Require biometric access control for Bookmarks
 - [ ] Distributed data sync for History & Bookmarks, etc
+- [ ] Open HTML files
 - [ ] Search History
 - [x] Customizable homepage background
 - [x] Customizable homepage shortcuts
 - [ ] Private mode
 - [x] Customizable download options: ask each time 
-- [ ] Direct download to system download directory
+- [x] Direct download to system download directory
 - [x] In-page text search
 - [x] Disable JavaScript
 - [ ] Right click or long press menu on web links. (For preview and operations)

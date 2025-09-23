@@ -8,16 +8,13 @@ struct meowAnimationManager {
   // Environment
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor =
-    $r('app.color.start_window_background');
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor =
-    $r('app.color.block_color');
-  @StorageProp('color_current_font') color_current_font: ResourceColor =
-    $r('app.color.font_color_title');
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // editing
   @State delete_confirm: number = 0;
-  @StorageLink('animation_response') animation_response: number = 0;
-  @StorageLink('animation_damping_coefficient') animation_damping_coefficient: number = 0;
+  @StorageLink('animation_response') animation_response: number = 36;
+  @StorageLink('animation_damping_coefficient') animation_damping_coefficient: number = 20;
   @State lock_response: boolean = true;
   @State lock_damping_coefficient: boolean = true;
 

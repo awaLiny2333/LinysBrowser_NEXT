@@ -1130,8 +1130,8 @@ struct meowAppSettings {
     // Read webview cache
     this.web_cache_size = await this.bunch_of_settings.get('webview_cache_size') as number;
     if (this.web_cache_size == -1) {
-      this.web_cache_size = get_folder_size_Sync('/data/storage/el2/base/cache/web', true);
-      this.bunch_of_settings.set('webview_cache_size', this.web_cache_size);
+      // this.web_cache_size = get_folder_size_Sync('/data/storage/el2/base/cache/web', true); // Caused lag
+      // this.refresh_web_cache_size();
     }
 
     // Set homepage background
@@ -1164,6 +1164,10 @@ struct meowAppSettings {
 
     // History indexer
     this.history_index_size = await this.bunch_of_settings.get('history_index_size') as number;
+    if (this.history_index_size == -1) {
+      // this.web_cache_size = get_folder_size_Sync('/data/storage/el2/base/cache/web', true); // Caused lag
+      // this.refresh_history_index_size();
+    }
 
     // Downloads
     this.direct_download = await this.bunch_of_settings.get('direct_download') as boolean;
@@ -1331,7 +1335,13 @@ struct meowAppSettings {
     this.bunch_of_settings.set('home_url', this.home_url_edit);
   }
 
+  /**
+   * Refreshes web cache size and stores the value into settings.
+   * */
   refresh_web_cache_size() {
+    if (this.calculating_web_cache_size) {
+      return;
+    }
     this.calculating_web_cache_size = true;
     get_sandbox_folder_size('/data/storage/el2/base/cache/web/', false).then(result => {
       this.web_cache_size = result;
@@ -1340,7 +1350,13 @@ struct meowAppSettings {
     })
   }
 
+  /**
+   * Refreshes history index size and stores the value into settings.
+   * */
   refresh_history_index_size() {
+    if (this.calculating_history_index_size) {
+      return;
+    }
     this.calculating_history_index_size = true;
     get_sandbox_folder_size('history-index', true).then(result => {
       this.history_index_size = result;
