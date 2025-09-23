@@ -1,0 +1,419 @@
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/homeability/HomeAbility.ets:25:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/homeability/HomeAbility.ets:183:17
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:254:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:255:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:257:14
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:258:18
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:260:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:320:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:324:14
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:325:14
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:328:17
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:329:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:332:10
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:344:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:349:14
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:350:14
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:353:17
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:354:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:357:10
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:367:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:371:14
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:372:14
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:375:17
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:377:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:406:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:422:32
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:423:12
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:433:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:436:18
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:438:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:466:13
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:487:14
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:488:18
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/storage_tools.ets:489:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_tabs.ets:63:18
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_tabs.ets:70:51
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_tabs.ets:73:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_tabs.ets:131:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_tabs.ets:152:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_tabs.ets:159:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_tabs.ets:168:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_tabs.ets:169:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_tabs.ets:179:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_tabs.ets:180:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_tabs.ets:203:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_tabs.ets:214:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_tabs.ets:223:12
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_tabs.ets:291:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_tabs.ets:292:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_tabs.ets:428:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_tabs.ets:429:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/drag_drop_tools.ets:16:27
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index_lite.ets:117:11
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index_lite.ets:118:25
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index_lite.ets:123:11
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index_lite.ets:126:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index_lite.ets:154:22
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index_lite.ets:156:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index_lite.ets:167:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index_lite.ets:169:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index_lite.ets:169:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index_lite.ets:171:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index_x_functions.ets:40:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index_x_functions.ets:107:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index_x_functions.ets:109:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index_x_functions.ets:111:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index_x_functions.ets:113:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index_x_functions.ets:165:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index_x_functions.ets:261:43
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index_x_functions.ets:261:75
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index_x_functions.ets:395:8
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index_x_functions.ets:415:8
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index.ets:72:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index.ets:72:19
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index.ets:118:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index.ets:122:23
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index.ets:127:9
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index.ets:130:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index.ets:145:22
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history_index.ets:147:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_history.ets:138:25
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_downloads.ets:294:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/hosts/bunch_of_downloads.ets:306:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/permission_tools.ets:17:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/print_tools.ets:12:21
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/print_tools.ets:13:5
+ The system capacity of this api 'print' is not supported on all devices
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/print_tools.ets:13:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/print_tools.ets:13:11
+ The system capacity of this api 'print' is not supported on all devices
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/blocks/modules/meowWebView.ets:703:7
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/blocks/modules/meowBookmarks.ets:357:9
+ 'animateTo' has been deprecated.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/dialogs/managers/woofAdsBlocker.ets:293:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/resource_tools.ets:10:10
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/resource_tools.ets:10:40
+ 'getStringSync' has been deprecated.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/dialogs/managers/woofCookies.ets:166:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/dialogs/managers/woofGeneralManage.ets:323:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/performance_tools.ets:35:10
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/any_concurrent_tools.ets:27:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/any_concurrent_tools.ets:31:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/any_concurrent_tools.ets:35:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/any_concurrent_tools.ets:39:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/any_concurrent_tools.ets:43:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/any_concurrent_tools.ets:47:16
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/dialogs/contents/woofRecentFaultLogs.ets:53:7
+ 'FaultLogger' has been deprecated.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/dialogs/contents/woofRecentFaultLogs.ets:53:19
+ 'query' has been deprecated.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/dialogs/contents/woofRecentFaultLogs.ets:53:25
+ 'FaultLogger' has been deprecated.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/dialogs/contents/woofRecentFaultLogs.ets:53:37
+ 'FaultType' has been deprecated.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/dialogs/contents/woofRecentFaultLogs.ets:53:47
+ 'JS_CRASH' has been deprecated.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/dialogs/contents/woofRecentFaultLogs.ets:60:52
+ 'pid' has been deprecated.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/dialogs/contents/woofRecentFaultLogs.ets:61:52
+ 'uid' has been deprecated.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/dialogs/contents/woofRecentFaultLogs.ets:62:53
+ 'type' has been deprecated.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/dialogs/contents/woofRecentFaultLogs.ets:63:58
+ 'timestamp' has been deprecated.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/dialogs/contents/woofRecentFaultLogs.ets:64:40
+ 'timestamp' has been deprecated.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/dialogs/contents/woofRecentFaultLogs.ets:65:55
+ 'reason' has been deprecated.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/dialogs/contents/woofRecentFaultLogs.ets:66:55
+ 'module' has been deprecated.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/dialogs/contents/woofRecentFaultLogs.ets:68:53
+ 'fullLog' has been deprecated.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/preview_tools.ets:30:3
+ The system capacity of this api 'filePreview' is not supported on all devices
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/preview_tools.ets:30:15
+ The system capacity of this api 'openPreview' is not supported on all devices
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/share_tools.ets:7:42
+ The system capacity of this api 'systemShare' is not supported on all devices
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/share_tools.ets:7:54
+ The system capacity of this api 'SharedData' is not supported on all devices
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/share_tools.ets:13:53
+ The system capacity of this api 'systemShare' is not supported on all devices
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/share_tools.ets:13:65
+ The system capacity of this api 'ShareController' is not supported on all devices
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/share_tools.ets:14:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/share_tools.ets:14:14
+ The system capacity of this api 'show' is not supported on all devices
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/share_tools.ets:15:18
+ The system capacity of this api 'systemShare' is not supported on all devices
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/share_tools.ets:15:30
+ The system capacity of this api 'SharePreviewMode' is not supported on all devices
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/share_tools.ets:15:47
+ The system capacity of this api 'DEFAULT' is not supported on all devices
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/share_tools.ets:16:20
+ The system capacity of this api 'systemShare' is not supported on all devices
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/share_tools.ets:16:32
+ The system capacity of this api 'SelectionMode' is not supported on all devices
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/utils/share_tools.ets:16:46
+ The system capacity of this api 'BATCH' is not supported on all devices
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/pages/Index.ets:392:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/workers/History_indexer.ets:87:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/workers/History_indexer.ets:97:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/workers/History_indexer.ets:111:23
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/workers/History_indexer.ets:134:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/workers/History_index_loader.ets:54:25
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/workers/History_index_loader.ets:65:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/workers/History_index_loader.ets:76:5
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/workers/History_index_loader.ets:90:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/workers/History_index_saver.ets:87:3
+ Function may throw exceptions. Special handling is required.
+
+WARN: ArkTS:WARN File: E:/linys/Harmony_Projects/Linys_Browser_NEXT/home/src/main/ets/workers/History_index_saver.ets:102:3
+ Function may throw exceptions. Special handling is required.

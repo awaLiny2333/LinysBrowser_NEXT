@@ -15,7 +15,7 @@ import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 import { window } from '@kit.ArkUI';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
-import { sandbox_save, sandbox_unlink, uri_read_text_sync } from '../utils/storage_tools';
+import { sandbox_save, sandbox_unlink } from '../utils/storage_tools';
 import { deviceInfo } from '@kit.BasicServicesKit';
 import { fileIo } from '@kit.CoreFileKit';
 import woofHistory from '../dialogs/managers/woofHistory';
@@ -183,7 +183,9 @@ struct Index {
 
   onPageShow(): void {
     // Enable continue
-    meowContext().setMissionContinueState(AbilityConstant.ContinueState.ACTIVE);
+    meowContext().setMissionContinueState(AbilityConstant.ContinueState.ACTIVE).catch(() => {
+      // TODO: Implement error handling.
+    });
   }
 
   onBackPress(): boolean {
@@ -385,12 +387,17 @@ struct Index {
     }
   }
 
+  // Hides and shows system UI components
   on_fullscreen_switch() {
     window.getLastWindow(this.getUIContext().getHostContext()).then((win) => {
       if (this.fullscreen_mode) {
-        win.setWindowSystemBarEnable([]);
+        win.setWindowSystemBarEnable([]).catch(() => {
+          // TODO: Implement error handling.
+        });
       } else {
-        win.setWindowSystemBarEnable(["status", "navigation"]);
+        win.setWindowSystemBarEnable(["status", "navigation"]).catch(() => {
+          // TODO: Implement error handling.
+        });
       }
     })
 

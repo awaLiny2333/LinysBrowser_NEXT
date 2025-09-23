@@ -7,5 +7,10 @@ import { meowContext } from "./environment_tools";
  * @example resource_to_string($r('app.string.Whats_new_content_1'))
  * */
 export function resource_to_string(resourceStr: Resource) {
-  return meowContext().resourceManager.getStringSync(resourceStr);
+  try {
+    // TODO: replace deprecated getStringSync when api20 is eventually released
+    return meowContext().resourceManager.getStringSync(resourceStr);
+  } catch (error) {
+    return error as string;
+  }
 }

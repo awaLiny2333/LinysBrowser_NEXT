@@ -354,7 +354,7 @@ struct meowBookmarks {
     // Get bookmarks
     setInterval(() => {
       if (this.swapping_offset_timeout == 100) {
-        animateTo(animation_default(), () => {
+        this.getUIContext().animateTo(animation_default(), () => {
           this.swapping_offset_upper = 0;
           this.swapping_offset_downer = 0;
         })

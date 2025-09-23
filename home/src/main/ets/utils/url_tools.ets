@@ -11,15 +11,15 @@ import { meowContext } from './environment_tools';
 export function unify_search_input_into_url(search_input: string, auto_scheme_overwrite?: string) {
   if (search_input == "") {
     // if is empty
-    return ["", false]
+    return ["", false];
   }
 
   if (is_legal_ipv4(search_input)) {
-    return [ensure_scheme(search_input, auto_scheme_overwrite ? auto_scheme_overwrite : "http") as string, true]
+    return [ensure_scheme(search_input, auto_scheme_overwrite ? auto_scheme_overwrite : "http") as string, true];
   }
 
   if (is_legal_url(search_input)) {
-    return [ensure_scheme(search_input, auto_scheme_overwrite ? auto_scheme_overwrite : "https") as string, true]
+    return [ensure_scheme(search_input, auto_scheme_overwrite ? auto_scheme_overwrite : "https") as string, true];
   }
 
   let search_engine = AppStorage.get('search_engine') as string;

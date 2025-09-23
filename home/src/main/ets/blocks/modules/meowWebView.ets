@@ -392,8 +392,8 @@ struct meowWebView {
               }
 
               // Update History
-              this.current_accessBackward = this.bunch_of_tabs.Tabs[Label.index_key].controller.accessBackward()
-              this.current_accessForward = this.bunch_of_tabs.Tabs[Label.index_key].controller.accessForward()
+              this.current_accessBackward = this.bunch_of_tabs.Tabs[Label.index_key].controller.accessBackward();
+              this.current_accessForward = this.bunch_of_tabs.Tabs[Label.index_key].controller.accessForward();
               // Ask tab to update its info (Reset)
               this.bunch_of_tabs.Tabs[Label.index_key].update_title()
               this.bunch_of_tabs.Tabs[Label.index_key].update_url()
