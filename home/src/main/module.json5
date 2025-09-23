@@ -8,7 +8,7 @@
       "default",
       "tablet",
       "2in1",
-//      "wearable"
+      //      "wearable"
     ],
     "deliveryWithInstall": true,
     "installationFree": false,
@@ -47,12 +47,12 @@
               "ohos.want.action.viewData"
             ],
             "uris": [
-              {
-                "scheme": "file",
-                "type": "text/html",
-                // Accept html
-                "linkFeature": "FileOpen"
-              },
+//              {
+//                "scheme": "file",
+//                "type": "text/html",
+//                // Accept html
+//                "linkFeature": "FileOpen"
+//              },
               {
                 "scheme": "https"
               },
@@ -83,6 +83,16 @@
     "requestPermissions": [
       {
         "name": "ohos.permission.INTERNET",
+        "reason": "$string:permission_reason_INTERNET",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "HomeAbility"
+          ]
+        }
+      },
+      {
+        "name": "ohos.permission.GET_NETWORK_INFO",
         "reason": "$string:permission_reason_INTERNET",
         "usedScene": {
           "when": "inuse",

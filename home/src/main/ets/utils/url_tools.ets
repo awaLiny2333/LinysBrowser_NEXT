@@ -9,26 +9,24 @@ import { meowContext } from './environment_tools';
  * while the boolean for whether the input itself is an address.
  * */
 export function unify_search_input_into_url(search_input: string, auto_scheme_overwrite?: string) {
-  let url = search_input
-
-  if (url == "") {
+  if (search_input == "") {
     // if is empty
     return ["", false]
   }
 
-  if (is_legal_ipv4(url)) {
-    return [ensure_scheme(url, auto_scheme_overwrite ? auto_scheme_overwrite : "http") as string, true]
+  if (is_legal_ipv4(search_input)) {
+    return [ensure_scheme(search_input, auto_scheme_overwrite ? auto_scheme_overwrite : "http") as string, true]
   }
 
-  if (is_legal_url(url)) {
-    return [ensure_scheme(url, auto_scheme_overwrite ? auto_scheme_overwrite : "https") as string, true]
+  if (is_legal_url(search_input)) {
+    return [ensure_scheme(search_input, auto_scheme_overwrite ? auto_scheme_overwrite : "https") as string, true]
   }
 
   let search_engine = AppStorage.get('search_engine') as string;
   if (search_engine === undefined) {
     search_engine = default_search_engine();
   }
-  let url_processed = search_engine.replaceAll("%s", url);
+  let url_processed = search_engine.replaceAll("%s", encodeURIComponent(search_input));
   return [url_processed as string, false];
 }
 
@@ -280,8 +278,7 @@ export function extract_search(url: string) {
   // url = decodeURI(url);
   let result: string[] = ['', ''];
 
-  let keys: string[] =
-    ['q', 'query', 's', 'key', 'wd', 'w', 'word', 'searchKeyWord', 'search_text', 'keyword', 'val', 'value', 'text'];
+  let keys: string[] = ['q', 'query', 's', 'key', 'wd', 'w', 'word', 'searchKeyWord', 'search_text', 'keyword', 'val', 'value', 'text', 'tag', 'tags'];
   let search_keys: string[] = [];
   for (let k = 0; k < keys.length; k++) {
     search_keys.push('?' + keys[k] + '=');
@@ -314,7 +311,7 @@ export function extract_search(url: string) {
       // }
       result[0] = url.replaceAll(search_key + keyword, search_key + '%s');
       result[1] = keyword;
-      result[1] = result[1].replaceAll('+', " ")
+      result[1] = result[1].replaceAll('+', " ");
       result[1] = decodeURIComponent(result[1]);
       return result;
     }

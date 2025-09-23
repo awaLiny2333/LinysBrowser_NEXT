@@ -514,14 +514,14 @@ struct Index {
     // TODO: Find a more elegant way to open things...
     console.log('[Meow][Index][Want] Want uri is file://. Copying file to sandbox root!');
     // Copy want file
-    try {
-      let file_content = uri_read_text_sync(this.want_uri);
-      this.uni_new_tab_gateway = 'data:text/html, ' + encodeURIComponent(file_content);
-      // let want_file_uri = copy_from_uri_to_sandbox(this.want_uri, '', 'want-cache.html');
-      // this.uni_new_tab_gateway = want_file_uri;
-    } catch (e) {
-      console.error(e);
-    }
+    // try {
+    //   let file_content = uri_read_text_sync(this.want_uri);
+    //   this.uni_new_tab_gateway = 'data:text/html, ' + encodeURIComponent(file_content);
+    //   // let want_file_uri = copy_from_uri_to_sandbox(this.want_uri, '', 'want-cache.html');
+    //   // this.uni_new_tab_gateway = want_file_uri;
+    // } catch (e) {
+    //   console.error(e);
+    // }
   }
 
   want_web() {

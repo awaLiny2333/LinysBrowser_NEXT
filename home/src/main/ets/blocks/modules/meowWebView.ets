@@ -543,6 +543,10 @@ struct meowWebView {
                 if (url.substring(0, 5) == 'data:') {
                   return false;
                 }
+                // Do not intercept blob:
+                if (url.substring(0, 5) == 'blob:') {
+                  return false;
+                }
                 // Links or urls
                 let match_domain_result = match_domain(url);
                 if (viewable_domains().includes(match_domain_result[0])) {
