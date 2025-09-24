@@ -16,7 +16,6 @@ import { meowContext } from './environment_tools';
  * */
 export async function download_save_from_path(path: string) {
   let uri: string = '';
-  // 请在组件内获取context，确保this.getUIContext().getHostContext()返回结果为UIAbilityContext
   const documentViewPicker = new picker.DocumentViewPicker(meowContext());
   const documentSaveOptions = new picker.DocumentSaveOptions();
   documentSaveOptions.pickerMode = picker.DocumentPickerMode.DOWNLOAD;
@@ -26,7 +25,6 @@ export async function download_save_from_path(path: string) {
 
     let path_split = path.split('/');
     let file_name = path_split[path_split.length-1];
-
     const save_uri = uri + '/' + file_name;
 
     fs.copy((fileUri.getUriFromPath(path)), save_uri);

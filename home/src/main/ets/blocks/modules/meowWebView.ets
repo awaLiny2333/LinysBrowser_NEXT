@@ -13,6 +13,8 @@ import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
 import { print } from '@kit.BasicServicesKit';
 import { print_web } from '../../utils/print_tools';
+import { meowContext } from '../../utils/environment_tools';
+import { fileIo } from '@kit.CoreFileKit';
 
 @Component
 struct meowWebView {
@@ -47,7 +49,6 @@ struct meowWebView {
   @StorageLink('current_accessForward') current_accessForward: boolean = false;
   @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
   @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
-  @StorageLink('search_input_source') search_input_update_source: string = "web";
   @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
   // Settings
   @StorageProp('collect_new_history') collect_new_history: boolean = true;
@@ -69,9 +70,6 @@ struct meowWebView {
   // Stuffs
   @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
-  @StorageLink('universal_new_download_filename_gateway') new_download_filename_gateway: string = "";
-  @StorageLink('universal_new_download_additional_info') new_download_additional_info: string = "";
-  @StorageLink('universal_new_download_gateway') new_download_gateway: string = "";
   // Visual
   @StorageProp('tab_animation') tab_animation: AnimateParam = animation_default();
   @State last_timeout_id: number | undefined = undefined;
@@ -82,16 +80,15 @@ struct meowWebView {
   @StorageLink('extra_background') extra_background: boolean = false;
   // Download
   @StorageLink('dl_delegate') dl_delegate: webview.WebDownloadDelegate = new webview.WebDownloadDelegate();
-  @StorageLink('blob_delegate') blob_delegate: webview.WebDownloadDelegate = new webview.WebDownloadDelegate();
-  @StorageLink('dl_controller') dl_controller: webview.WebviewController = new webview.WebviewController();
   @StorageLink('print_adapter') print_adapter: print.PrintDocumentAdapter | undefined = undefined;
+  @StorageLink('uni_webDownloadItem_gateway') @Watch('on_download_request') uni_webDownloadItem_gateway: webview.WebDownloadItem | undefined = undefined;
   // dialogs
   woofWantDownload_control: CustomDialogController = new CustomDialogController({
     builder: woofWantDownload({
       from: this.current_url,
       file_name: '',
       url: '',
-      try_additional_info: ''
+      try_additional_info: []
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16
@@ -229,6 +226,11 @@ struct meowWebView {
   // }
 
   async aboutToAppear(): Promise<void> {
+
+    // Init download delegate
+    this.bunch_of_downloads.init_delegate();
+
+    // Apply Adblock state
     this.on_use_adblock_state_change();
 
     // Set image for homepage
@@ -260,19 +262,6 @@ struct meowWebView {
         .width('100%')
         .visibility(this.extra_background ? Visibility.Visible : Visibility.Hidden)
       // .animation(animation_default())
-
-      // Specific web to handle downloads
-      Web({ src: $rawfile('home.html'), controller: this.dl_controller })
-        .onPageEnd(() => {
-          try {
-            // Bind delegate at init
-            this.dl_controller.setDownloadDelegate(this.dl_delegate);
-          } catch (e) {
-            console.error('[meowWebView] ' + e);
-          }
-        })
-        // .opacity(0.2)
-        .visibility(Visibility.Hidden)
 
       ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
         Column() {
@@ -320,10 +309,6 @@ struct meowWebView {
             .onPageBegin(() => {
               console.log("[Meow][ArkWeb] on page begin");
 
-              // bind blob download delegate
-              this.bunch_of_downloads.init_blob_delegate();
-              this.bunch_of_tabs.Tabs[Label.index_key].controller.setDownloadDelegate(this.blob_delegate);
-
               if (Label.index_key >= this.bunch_of_tabs.get_tabs_count()) {
                 // If not synced, idk why but o(=•ェ•=)m
                 return;
@@ -342,7 +327,6 @@ struct meowWebView {
               // Update Input Search Box
               this.update_current_info()
               this.update_search_box_text(this.current_url)
-
             })
             .onPageEnd(() => {
               // console.log("[Meow][ArkWeb] on page end")
@@ -412,9 +396,6 @@ struct meowWebView {
                 sandbox_save(identifier, web_state.buffer);
               }
             })
-            .onDownloadStart((event) => {
-              this.download_event(event);
-            })
             .onFullScreenEnter((event) => {
               this.fullscreen_mode = true;
               this.handler = event.handler;
@@ -423,6 +404,9 @@ struct meowWebView {
               this.fullscreen_mode = false;
             })
             .onControllerAttached(async () => {
+              // bind blob download delegate
+              this.bunch_of_tabs.Tabs[Label.index_key].controller.setDownloadDelegate(this.dl_delegate);
+
               // Set UA
               if (this.now_global_custom_UA != "") {
                 this.bunch_of_tabs.Tabs[Label.index_key].controller.setCustomUserAgent(this.now_global_custom_UA);
@@ -612,7 +596,6 @@ struct meowWebView {
 
   update_search_box_text(text: string) {
     if (!this.is_search_input_typing) {
-      this.search_input_update_source = 'web';
       this.search_input = url_resource_to_meow(text);
       // Update Input Search Box
     }
@@ -658,51 +641,45 @@ struct meowWebView {
     }
   }
 
-  download_event(event: OnDownloadStartEvent) {
-    if (event.url.substring(0, 5) == 'blob:') {
-      // Would be already handled by blob delegate!
+  on_download_request() {
+    if (!this.uni_webDownloadItem_gateway) {
       return;
     }
-    if (event) {
-      this.download_non_blob(event.url, event.userAgent, event.contentDisposition, event.contentLength, event.mimetype)
+
+    let file_name = this.uni_webDownloadItem_gateway.getSuggestedFileName();
+    let file_url = this.uni_webDownloadItem_gateway.getUrl();
+
+    // Create task folder
+    let file_dir = meowContext().filesDir + '/downloads/' + file_name + '_' + Date.now().toString() + '/';
+    try {
+      fileIo.mkdirSync(file_dir);
+    } catch (e) {
+      console.log('[Meow][bunch_of_downloads] Task folder creation failed! Already created? ' + e);
     }
-  }
+    let download_target_path = file_dir + file_name;
 
-  download_non_blob(url: string, userAgent: string, contentDisposition: string, contentLength: number, mimetype: string) {
-    // Save file download additional info
-    let try_additional_info = [
-      'url: ' + url,
-      'userAgent: ' + userAgent,
-      'contentDisposition: ' + contentDisposition,
-      'contentLength: ' + contentLength.toString(),
-      'mimetype: ' + mimetype
-    ].join('\n');
-    console.log(try_additional_info);
-
-    // Cut out original file name
-    let url_split = url.split("/");
-    let name_original = url_split[url_split.length-1].split("?")[0];
-    name_original = decodeURIComponent(name_original);
-
-    // Cut out overwrite file name
-    let name_overwrite = this.cut_filename_overwrite(contentDisposition);
-
-    // Overwrite
-    if (name_overwrite != '') {
-      name_original = name_overwrite;
-    }
+    let additional_info: string[] = [
+      'url: ' + this.uni_webDownloadItem_gateway.getUrl(),
+      'mimetype: ' + this.uni_webDownloadItem_gateway.getMimeType(),
+      'totalBytes: ' + this.uni_webDownloadItem_gateway.getTotalBytes().toString(),
+      'path: ' + download_target_path,
+      'meow: meow meow meow',
+    ];
 
     // Call popup
     this.woofWantDownload_control = new CustomDialogController({
       builder: woofWantDownload({
         from: this.current_url,
-        file_name: name_original,
-        url: url,
-        try_additional_info: try_additional_info,
+        file_name: file_name,
+        url: file_url,
+        try_additional_info: additional_info,
+        item: this.uni_webDownloadItem_gateway,
+        file_dir: file_dir,
+        download_target_path: download_target_path,
       }),
       alignment: DialogAlignment.Center,
       cornerRadius: 16
-    })
+    });
     this.woofWantDownload_control.open();
   }
 

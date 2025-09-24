@@ -4,6 +4,10 @@ import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
 import { animation_default, capsule_bar_height } from '../../hosts/bunch_of_defaults';
 import { is_legal_filename } from '../../utils/storage_tools';
+import { webview } from '@kit.ArkWeb';
+import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
+import { meowContext } from '../../utils/environment_tools';
+import { fileIo } from '@kit.CoreFileKit';
 
 @CustomDialog
 struct woofWantDownload {
@@ -11,14 +15,16 @@ struct woofWantDownload {
   @State from: string = '';
   @State file_name: string = '';
   @State url: string = '';
-  @State try_additional_info: string = '';
+  @State try_additional_info: string[] = [];
+  @State item: webview.WebDownloadItem | undefined = undefined;
+  // Params
+  @State file_dir: string = '';
+  @State download_target_path: string = '';
   // UI
   @State showing_additional_info: boolean = false;
   @State showing_illegal_chars: boolean = false;
-  // Gateways
-  @StorageLink('universal_new_download_filename_gateway') new_download_filename_gateway: string = "";
-  @StorageLink('universal_new_download_additional_info') new_download_additional_info: string = "";
-  @StorageLink('universal_new_download_gateway') new_download_gateway: string = "";
+  // Hosts
+  @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads(true);
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -38,7 +44,7 @@ struct woofWantDownload {
         .animation(animation_default())
 
       additionalInfoDisplay({
-        my_additional_info: this.try_additional_info.split('\n')
+        my_additional_info: this.try_additional_info
       })
         .visibility(this.showing_additional_info ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
@@ -48,7 +54,7 @@ struct woofWantDownload {
         .animation(animation_default())
 
       TextInput({ text: this.file_name })// Edit file name
-        .onSubmit(()=>{
+        .onSubmit(() => {
           if (is_legal_filename(this.file_name)) {
             this.submit();
           }
@@ -97,17 +103,35 @@ struct woofWantDownload {
   }
 
   submit() {
-    // Assigned file name overwrite
-    this.new_download_filename_gateway = this.file_name;
-
-    // Assign additional info
-    this.new_download_additional_info = this.try_additional_info;
-
     // LINK START!
-    this.new_download_gateway = this.url;
+    if (this.item) {
+      // Register on download start
+      this.bunch_of_downloads.list_of_on_going_tasks.push(this.item);
+      this.bunch_of_downloads.list_of_downloaded_size.push(0);
+      this.bunch_of_downloads.list_of_download_speed.push(0);
+      this.bunch_of_downloads.list_of_full_size.push(-1);
+      this.bunch_of_downloads.list_of_paused.push(false);
+      this.bunch_of_downloads.list_of_completed.push(false);
+      this.bunch_of_downloads.list_of_additional_info.push(this.try_additional_info);
+      this.bunch_of_downloads.list_of_target_folders.push(this.file_dir);
+      this.bunch_of_downloads.list_of_file_names.push(this.file_name);
+      this.bunch_of_downloads.list_of_urls.push(this.item.getUrl());
+      this.bunch_of_downloads.list_of_failed.push(false);
+      // this.list_of_urls.push('url');
+
+      try {
+        this.item.start(this.download_target_path);
+        AppStorage.set('uni_webDownloadItem_gateway', undefined);
+      } catch (e) {
+        console.error(e);
+        return;
+      }
+      console.log('[bunch_of_downloads] dl_delegate.onBeforeDownload! download_target_path: [' + this.download_target_path + ']')
+    }
 
     // Goodbye
     if (this.controller) {
+      this.bunch_of_downloads.update_timestamp();
       this.controller.close();
     }
   }

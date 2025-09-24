@@ -166,7 +166,7 @@ struct raw_data_display {
       from: '',
       file_name: '',
       url: '',
-      try_additional_info: ''
+      try_additional_info: []
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16
@@ -318,7 +318,7 @@ struct raw_data_display {
                     from: '󰊴!',
                     file_name: this.download_filename,
                     url: this.text,
-                    try_additional_info: '',
+                    try_additional_info: [],
                   }),
                   alignment: DialogAlignment.Center,
                   cornerRadius: 16

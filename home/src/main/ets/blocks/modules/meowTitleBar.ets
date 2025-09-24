@@ -2,7 +2,7 @@ import linysSymbol from '../../components/texts/linysSymbol';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import meowAppSettings from './meowAppSettings';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
-import { extract_search, match_domain, unify_search_input_into_url, url_meow_to_resource, url_resource_to_meow } from '../../utils/url_tools';
+import { extract_search, match_domain, unify_search_input_into_url, url_resource_to_meow } from '../../utils/url_tools';
 import {
   animation_default,
   animation_popup_duration,
@@ -37,6 +37,7 @@ import { search_engine } from '../../hosts/bunch_of_search_engines';
 import { copy } from '../../utils/clipboard_tools';
 import { print_web } from '../../utils/print_tools';
 import woofHistory from '../../dialogs/managers/woofHistory';
+import { webview } from '@kit.ArkWeb';
 
 @Component
 struct meowTitleBar {
@@ -52,7 +53,6 @@ struct meowTitleBar {
   @StorageProp('screen_width') screen_width: number = 0;
   @StorageProp('screen_height') screen_height: number = 0;
   @StorageLink('full_screen_height') full_screen_height: number = 0;
-  @StorageProp('universal_new_download_gateway') @Watch('on_download_start') uni_new_download_gateway: string = "";
   @Link bar_height: number;
   @StorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
   @StorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
@@ -61,10 +61,10 @@ struct meowTitleBar {
   @StorageProp('history_index_saving_progress') history_index_saving_progress: string = "";
   // Current environment
   @Link title_bar_alignRules: AlignRuleOption;
-  @StorageLink('search_input') @Watch('on_search_input_change') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
-  @StorageLink('search_input_source') search_input_update_source: string = "extracted_key_edit";
+  @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
   @State search_input_unified: string = "";
   @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
+  @StorageLink('uni_webDownloadItem_gateway') @Watch('on_download_start') uni_webDownloadItem_gateway: webview.WebDownloadItem | undefined = undefined;
   @State download_started_popup: boolean = false;
   @StorageLink('drop_result_strings') drop_result_string: string[] = [];
   @StorageLink('current_in_page_searching_keyword') current_in_page_searching_keyword: string = "";
@@ -81,7 +81,7 @@ struct meowTitleBar {
   @StorageLink('tab_titles') tab_titles: string[] = []
   @StorageLink('current_title') current_title: string = "=￣ω￣=";
   @StorageLink('tab_urls') tab_urls: string[] = []
-  @StorageLink('current_url') current_url: string = "=￣ω￣=";
+  @StorageLink('current_url') @Watch('on_current_url_change') current_url: string = "=￣ω￣=";
   @StorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0]
   @StorageLink('current_loading_progress') current_loading_progress: number = 0
   @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]
@@ -402,7 +402,6 @@ struct meowTitleBar {
                   } else {
                     this.search_input_unified = this.search_extracted_engine.replaceAll('%s', encodeURIComponent(content));
                   }
-                  this.search_input_update_source = 'extracted_key_edit';
                   this.search_input = this.search_input_unified;
                 })
                 .onSubmit(() => {
@@ -557,7 +556,7 @@ struct meowTitleBar {
               symbol_glyph_target: this.showing_downloads ? 'sys.symbol.chevron_down' : 'sys.symbol.download',
               show: this.showing_downloads,
               color_false: !this.showing_downloads && this.download_started_popup ?
-              this.color_current_primary : this.color_current_font
+                this.color_current_primary : this.color_current_font
             })
             Scroll() {
               Text($r('app.string.Index_download_task_start'))
@@ -996,25 +995,26 @@ struct meowTitleBar {
   // Events
 
   on_download_start() {
-    this.download_started_popup = true;
-    setTimeout(() => {
-      this.download_started_popup = false;
-    }, animation_popup_duration())
+    // Show popup when gateway is set back to undefined.
+    if (!this.uni_webDownloadItem_gateway) {
+      this.download_started_popup = true;
+      setTimeout(() => {
+        this.download_started_popup = false;
+      }, animation_popup_duration())
+    }
   }
 
-  on_search_input_change() {
-    if (this.search_input_update_source == 'extracted_key_edit') {
-      return;
-    }
-    if (this.search_input) {
-      let extract: string[] = extract_search(this.search_input);
+  on_current_url_change() {
+    if (this.current_url) {
+      let extract: string[] = extract_search(this.current_url);
       if (extract[1] == '' && extract[0] == '') {
         this.showing_search_extracted_field = false;
         this.search_extracted_field_available = false;
       } else {
-        this.search_extracted_field_available = true;
         this.search_extracted_engine = extract[0];
         this.search_extracted_keyword = extract[1];
+        this.showing_search_extracted_field = true;
+        this.search_extracted_field_available = true;
       }
     }
   }
@@ -1123,9 +1123,6 @@ struct meowTitleBar {
   submit_searching() {
     if (this.search_input_unified != "") {
       let unified_url: string = this.search_input_unified;
-      // unify input into a legal link
-      unified_url = url_meow_to_resource(unified_url);
-      // translate "meow://" into "resource://"
       try {
         this.bunch_of_tabs.loadUrl_onWorkingTab(unified_url);
       } catch (e) {
@@ -1188,7 +1185,6 @@ struct meowTitleBar {
   // Data synchronizing
 
   update_search_input(content?: string) {
-    this.search_input_update_source = 'direct_edit';
     if (content) {
       this.search_input = content;
     } else {
@@ -1230,8 +1226,6 @@ struct EstimatedDestination {
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
-  // Env
-  @StorageLink('search_input_source') search_input_update_source: string = "web";
   // Data
   @Link is_http_no_s: boolean;
   @Link is_search_input_typing: boolean;

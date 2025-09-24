@@ -2,7 +2,6 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
 import { webview } from '@kit.ArkWeb';
 import { add_units_to_size, download_save_from_path } from '../utils/storage_tools';
-import woofWantDownload from '../dialogs/prompts/woofWantDownload';
 import { open_file_uri } from '../utils/link_tools';
 import { meowContext } from '../utils/environment_tools';
 
@@ -19,17 +18,6 @@ export class bunch_of_downloads {
   list_of_additional_info: string[][] = [];
   list_of_failed: boolean[] = [];
   last_action: number = 0;
-  // dialogs
-  woofWantDownload_control: CustomDialogController = new CustomDialogController({
-    builder: woofWantDownload({
-      from: '',
-      file_name: '',
-      url: '',
-      try_additional_info: ''
-    }),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 16
-  })
 
   /**
    * A class to handle download tasks.
@@ -52,62 +40,20 @@ export class bunch_of_downloads {
   }
 
   /**
-   * Initializes the download delegate for normal http downloads.
+   * Initializes the download delegate for blob downloads.
    * Delegate: AppStorage.get('dl_delegate')
    * */
-  init_dl_delegate() {
-    // get additional info
-    let additional_info: string[] = [];
-    let try_additional_info = AppStorage.get('universal_new_download_additional_info') as string;
-    if (try_additional_info) {
-      additional_info = try_additional_info.split('\n');
-    }
-
-    // Init dl_delegate
+  init_delegate() {
+    // Init blob_delegate
     let dl_delegate = AppStorage.get('dl_delegate') as webview.WebDownloadDelegate;
+
     dl_delegate.onBeforeDownload((webDownloadItem: webview.WebDownloadItem) => {
+      console.log('[bunch_of_downloads][init_delegate] onBeforeDownload: [' + webDownloadItem.getSuggestedFileName() + '][' + webDownloadItem.getUrl() + ']');
 
-      // Determine file name
-      let file_name = AppStorage.get('universal_new_download_filename_gateway') as string;
-      AppStorage.set('universal_new_download_filename_gateway', '');
-      if (file_name.length < 3) {
-        file_name = webDownloadItem.getSuggestedFileName();
-      }
-      // Create task folder
-      let file_dir = meowContext().filesDir + '/downloads/' + file_name + '_' + Date.now().toString() + '/';
-      try {
-        fs.mkdirSync(file_dir);
-      } catch (e) {
-        console.log('[Meow][bunch_of_downloads] Task folder already created')
-      }
-      // connect path
-      let download_target_path = file_dir + file_name;
+      // See meowWebView and woofWantDownload for further handling
+      AppStorage.set('uni_webDownloadItem_gateway', webDownloadItem);
 
-      // Register on download start
-      this.list_of_on_going_tasks.push(webDownloadItem);
-      this.list_of_downloaded_size.push(0);
-      this.list_of_download_speed.push(0);
-      this.list_of_full_size.push(-1);
-      this.list_of_paused.push(false);
-      this.list_of_completed.push(false);
-      this.list_of_additional_info.push(additional_info);
-      this.list_of_target_folders.push(file_dir);
-      this.list_of_file_names.push(file_name);
-      this.list_of_urls.push(webDownloadItem.getUrl());
-      this.list_of_failed.push(false);
-      // this.list_of_urls.push('url');
-
-      // LINK START!
-      try {
-        webDownloadItem.start(download_target_path);
-      } catch (e) {
-        console.error(e);
-        return;
-      }
-      console.log('[bunch_of_downloads] dl_delegate.onBeforeDownload! download_target_path: [' + download_target_path + ']')
-
-      // Update Class
-      this.last_action = Date.now();
+      this.update_timestamp();
     })
 
     dl_delegate.onDownloadUpdated((webDownloadItem: webview.WebDownloadItem) => {
@@ -123,89 +69,6 @@ export class bunch_of_downloads {
     })
 
     dl_delegate.onDownloadFinish((webDownloadItem: webview.WebDownloadItem) => {
-      this.onDownloadFinish(webDownloadItem);
-    })
-  }
-
-  /**
-   * Initializes the download delegate for blob downloads.
-   * Delegate: AppStorage.get('blob_delegate')
-   * */
-  init_blob_delegate() {
-    // Init blob_delegate
-    let blob_delegate = AppStorage.get('blob_delegate') as webview.WebDownloadDelegate;
-
-    blob_delegate.onBeforeDownload((webDownloadItem: webview.WebDownloadItem) => {
-
-      if (webDownloadItem.getUrl().substring(0, 5) != 'blob:') {
-        return;
-      }
-
-      AppStorage.set('universal_new_download_gateway', 'meow');
-      AppStorage.set('universal_new_download_gateway', '');
-
-      let additional_info: string[] = [
-        'url: ' + webDownloadItem.getUrl(),
-        'type: Blob download, so less info here owo.',
-        'meow: meow meow meow', // To express my joy after fixing this download logic @ Jun 22 2025!
-        'totalBytes: ' + webDownloadItem.getTotalBytes().toString(),
-        'mimetype: ' + webDownloadItem.getMimeType(),
-      ];
-
-      // Determine file name
-      let file_name = webDownloadItem.getSuggestedFileName();
-
-      // Create task folder
-      let file_dir = meowContext().filesDir + '/downloads/' + file_name + '_' + Date.now().toString() + '/';
-      try {
-        fs.mkdirSync(file_dir);
-      } catch (e) {
-        console.log('[Meow][bunch_of_downloads] Task folder already created')
-      }
-      // connect path
-      let download_target_path = file_dir + file_name;
-
-      // Register on download start
-      this.list_of_on_going_tasks.push(webDownloadItem);
-      this.list_of_downloaded_size.push(0);
-      this.list_of_download_speed.push(0);
-      this.list_of_full_size.push(-1);
-      this.list_of_paused.push(false);
-      this.list_of_completed.push(false);
-      this.list_of_additional_info.push(additional_info);
-      this.list_of_target_folders.push(file_dir);
-      this.list_of_file_names.push(file_name);
-      this.list_of_urls.push(webDownloadItem.getUrl());
-      this.list_of_failed.push(false);
-      // this.list_of_urls.push('url');
-
-      // LINK START!
-      try {
-        webDownloadItem.start(download_target_path);
-      } catch (e) {
-        console.error(e);
-        return;
-      }
-      console.log('[bunch_of_downloads] dl_delegate.onBeforeDownload! download_target_path: [' + download_target_path + ']')
-
-
-      // Update Class
-      this.last_action = Date.now();
-    })
-
-    blob_delegate.onDownloadUpdated((webDownloadItem: webview.WebDownloadItem) => {
-      this.onDownloadUpdated(webDownloadItem);
-    })
-
-    blob_delegate.onDownloadFailed((webDownloadItem: webview.WebDownloadItem) => {
-      console.error("[bunch_of_downloads] download failed guid: " + webDownloadItem.getGuid());
-      console.error("[bunch_of_downloads] download failed error: " + webDownloadItem.getLastErrorCode());
-      this.list_of_failed[this.index_of_task(webDownloadItem)] = true;
-      this.list_of_paused[this.index_of_task(webDownloadItem)] = true;
-      this.last_action = Date.now();
-    })
-
-    blob_delegate.onDownloadFinish((webDownloadItem: webview.WebDownloadItem) => {
       this.onDownloadFinish(webDownloadItem);
     })
   }
@@ -245,8 +108,6 @@ export class bunch_of_downloads {
     this.list_of_paused[my_index] = false;
     this.list_of_completed[my_index] = true;
 
-    // webDownloadItem.stop(); // No longer need this! owo
-
     let direct_download = AppStorage.get('direct_download') as boolean;
     let direct_download_auto_open = AppStorage.get('direct_download_auto_open') as boolean;
     if (direct_download) {
@@ -259,29 +120,6 @@ export class bunch_of_downloads {
 
     // Refresh
     this.last_action = Date.now();
-  }
-
-  /**
-   * Start a download task in this bunch_of_downloads.
-   * @param url The https:// proxy url of the download target
-   * */
-  start_download_task(url: string) {
-    if (url.substring(0, 5) == 'blob:') {
-      return;
-    }
-
-    // Init
-    this.init_dl_delegate();
-
-    // Invoke download
-    console.log('[meow][bunch_of_downloads] Try to invoke download on dl_controller!');
-    let dl_controller = AppStorage.get('dl_controller') as webview.WebviewController;
-
-    try {
-      dl_controller.startDownload(url);
-    } catch (e) {
-      console.error(e);
-    }
   }
 
   /**
@@ -399,9 +237,9 @@ export class bunch_of_downloads {
 
     let file_path = this.list_of_target_folders[index];
     let file_name = this.list_of_file_names[index];
-    let from = file_path + '/' + file_name;
-    console.log('[bunch_of_downloads] Trying to save_downloaded_item_to_download: [' + from + ']');
-    let uri_back = await download_save_from_path(from);
+    let from_path = file_path + '/' + file_name;
+    console.log('[bunch_of_downloads] Trying to save_downloaded_item_to_download: [' + from_path + ']');
+    let uri_back = await download_save_from_path(from_path);
     return uri_back;
   }
 
@@ -424,6 +262,14 @@ export class bunch_of_downloads {
     } catch (e) {
       console.error(e)
     }
+  }
+
+  /**
+   * Updates the timestamp to trigger @Watch refresh
+   * */
+  update_timestamp() {
+    // Update Class
+    this.last_action = Date.now();
   }
 
   private index_of_task(webDownloadItem: webview.WebDownloadItem) {

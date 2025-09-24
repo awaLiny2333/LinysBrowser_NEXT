@@ -127,6 +127,7 @@ export class bunch_of_tabs {
    * */
   loadUrl_onWorkingTab(url: string) {
     url = url_meow_to_resource(url);
+    console.log('[bunch_of_tabs][loadUrl_onWorkingTab] '+ url);
     this.Tabs[this.current_working_tab_index].controller.loadUrl(url);
   }
 

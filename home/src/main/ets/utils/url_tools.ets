@@ -1,6 +1,8 @@
 import { default_search_engine } from '../hosts/bunch_of_defaults';
 import { Want } from '@kit.AbilityKit';
-import { meowContext } from './environment_tools';2
+import { meowContext } from './environment_tools';
+
+2
 
 /**
  * Process the search_input into a visitable address.
@@ -305,14 +307,15 @@ export function extract_search(url: string) {
         // There is no '&' for end
         keyword = url.substring(search_key_index + search_key_length);
       }
-      // if (result[1] != '') {
-      //   result[1] = result[1].replaceAll('+', " ")
-      //   result[1] = decodeURIComponent(result[1]);
-      // }
+
       result[0] = url.replaceAll(search_key + keyword, search_key + '%s');
       result[1] = keyword;
       result[1] = result[1].replaceAll('+', " ");
-      result[1] = decodeURIComponent(result[1]);
+      try {
+        result[1] = decodeURIComponent(result[1]);
+      } catch (e) {
+        result[1] = decodeURIComponent(result[1].replaceAll('%', '%25'));
+      }
       return result;
     }
   }

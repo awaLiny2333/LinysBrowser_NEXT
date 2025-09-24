@@ -27,7 +27,6 @@ struct meowTabs {
   @StorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
   @StorageLink('showing_more_options') showing_more_options: boolean = false;
   @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
-  @StorageLink('search_input_source') search_input_update_source: string = "tab_switch";
   @StorageProp('is_search_input_typing') is_search_input_typing: boolean = false;
   @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
   // Surf
@@ -552,7 +551,6 @@ struct meowTabs {
 
   set_search_box_text(text: string) {
     if (!this.is_search_input_typing && text) {
-      this.search_input_update_source = 'tab_switch';
       this.search_input = url_resource_to_meow(text);
       // Update Input Search Box
     }

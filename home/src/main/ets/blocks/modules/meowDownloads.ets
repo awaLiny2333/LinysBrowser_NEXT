@@ -14,7 +14,6 @@ import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleBut
 @Component
 struct meowDownloads {
   @StorageLink('bunch_of_downloads') @Watch('on_download_state_change') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads(true);
-  @StorageLink('universal_new_download_gateway') @Watch('on_new_download') uni_new_download_gateway: string = "";
   @StorageLink('showing_downloads') showing_downloads: boolean = false;
   // Downloads
   @StorageLink('direct_download') direct_download: boolean = false;
@@ -122,15 +121,6 @@ struct meowDownloads {
 
   on_download_state_change() {
 
-  }
-
-  // Gateway
-
-  on_new_download() {
-    if (this.uni_new_download_gateway != "") {
-      this.bunch_of_downloads.start_download_task(this.uni_new_download_gateway);
-      this.uni_new_download_gateway = "";
-    }
   }
 }
 
