@@ -1,7 +1,7 @@
 import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large } from '../../hosts/bunch_of_defaults';
 import { bunch_of_history, history_record } from '../../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
-import { sandbox_save } from '../../utils/storage_tools';
+import { arrayBuffer_2_pixelMap, sandbox_read_arrayBuffer_sync, sandbox_save } from '../../utils/storage_tools';
 import { match_domain, url_meow_to_resource, url_resource_to_meow, viewable_domains } from '../../utils/url_tools';
 import { webview } from '@kit.ArkWeb';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
@@ -26,7 +26,7 @@ struct meowWebView {
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
   @StorageLink('bunch_of_bookmarks') @Watch('refresh_homepage_shortcuts') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks('Bookmarks~Meow');
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
-  @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads();
+  @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads(true);
   @StorageLink('current_main_tab_index') @Watch('on_tab_info_change') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') @Watch('on_tab_info_change') current_sub_tab_index: number = -1;
   @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
@@ -53,6 +53,7 @@ struct meowWebView {
   @StorageProp('collect_new_history') collect_new_history: boolean = true;
   @StorageProp('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
   @StorageLink('use_adblock') @Watch('on_use_adblock_state_change') use_adblock: boolean = true;
+  @StorageProp('adblock_exceptions') adblock_exceptions: string[] = [];
   @StorageLink('homepage_shortcuts_bookmarks_dir') @Watch('refresh_homepage_shortcuts') homepage_shortcuts_dir: string = '/';
   @StorageLink('homepage_shortcuts_init_height') homepage_shortcuts_init_height: number = 50;
   @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
@@ -126,7 +127,6 @@ struct meowWebView {
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   // Else
   @StorageLink('meowWebView_init_OK') init_OK: boolean = false;
-  adsBlocker_exceptions: string[] = [];
   shortcut_scroller: Scroller = new Scroller();
   httpAuth: boolean = false;
 
@@ -229,76 +229,14 @@ struct meowWebView {
   // }
 
   async aboutToAppear(): Promise<void> {
-    let sites_got: string;
+    this.on_use_adblock_state_change();
 
-    try {
-      // Get whether image is disabled
-      this.disable_image = await this.bunch_of_settings.get('disable_image') as boolean;
-      this.disable_image_all_sites = await this.bunch_of_settings.get('disable_image_all_sites') as boolean;
-
-      // Get image ban specifications
-      sites_got = await this.bunch_of_settings.get('disable_image_these_sites') as string;
-      if (sites_got == '') {
-        this.disable_image_these_sites = [];
-      } else {
-        this.disable_image_these_sites = sites_got.split('\n');
-      }
-    } catch (e) {
-      console.error(e);
+    // Set image for homepage
+    let homepage_background_array_buffer = sandbox_read_arrayBuffer_sync('homepage_background_arrayBuffer');
+    if (homepage_background_array_buffer) {
+      this.homepage_background = arrayBuffer_2_pixelMap(homepage_background_array_buffer);
+      console.log("[Meow][meowAppSettings] Finished loading homepage background!");
     }
-
-    try {
-      // Get whether js is disabled
-      this.disable_js = await this.bunch_of_settings.get('disable_js') as boolean;
-      this.disable_js_all_sites = await this.bunch_of_settings.get('disable_js_all_sites') as boolean;
-
-      // Get js ban specifications
-      sites_got = await this.bunch_of_settings.get('disable_js_these_sites') as string;
-      if (sites_got == '') {
-        this.disable_js_these_sites = [];
-      } else {
-        this.disable_js_these_sites = sites_got.split('\n');
-      }
-
-    } catch (e) {
-      console.error(e);
-    }
-
-    try {
-      // Get whether ads blocker is enabled
-      this.use_adblock = await this.bunch_of_settings.get('use_adblock') as boolean;
-
-      // Get adblock exceptions
-      let got_adsBlocker_exceptions = await this.bunch_of_settings.get('adblock_exceptions') as string;
-      this.adsBlocker_exceptions = [];
-      if (got_adsBlocker_exceptions == '') {
-        this.adsBlocker_exceptions = [];
-      } else {
-        this.adsBlocker_exceptions = got_adsBlocker_exceptions.split('\n');
-      }
-      // Sync to AppStorage
-      AppStorage.set('adblock_exceptions', this.adsBlocker_exceptions);
-
-      // Get homepage shortcuts height
-      this.homepage_shortcuts_init_height = await this.bunch_of_settings.get('homepage_shortcuts_init_height') as number;
-
-    } catch (e) {
-      console.error(e);
-    }
-
-    // try {
-    //   let atManager = abilityAccessCtrl.createAtManager();
-    //   atManager.requestPermissionsFromUser(this.getUIContext().getHostContext(), ['ohos.permission.CAMERA', 'ohos.permission.MICROPHONE'])
-    //     .then((data) => {
-    //       console.info('data:' + JSON.stringify(data));
-    //       console.info('data permissions:' + data.permissions);
-    //       console.info('data authResults:' + data.authResults);
-    //     }).catch((error: BusinessError) => {
-    //     console.error(`Failed to request permissions from user. Code is ${error.code}, message is ${error.message}`);
-    //   })
-    // } catch (e) {
-    //   console.error(e);
-    // }
 
     // init OK
     setTimeout(() => {
@@ -330,7 +268,7 @@ struct meowWebView {
             // Bind delegate at init
             this.dl_controller.setDownloadDelegate(this.dl_delegate);
           } catch (e) {
-            console.error(e);
+            console.error('[meowWebView] ' + e);
           }
         })
         // .opacity(0.2)
@@ -491,22 +429,21 @@ struct meowWebView {
               }
 
               // Set Ads Blocker
-              console.log('[Meow][meowWebView] enableAdsBlock: ' + (this.use_adblock ? 'true' : 'false'))
+              console.log('[Meow][meowWebView] enableAdsBlock: ' + (this.use_adblock ? 'true' : 'false'));
               this.bunch_of_tabs.Tabs[Label.index_key].controller.enableAdsBlock(this.use_adblock);
 
               // TODO: Find out why this doesn't work sometimes for a recovered webpage :O getting crazy
               // Set Ads Blocker exception list
               try {
-                console.log('[Meow][meowWebView] add Ads Blocker Exceptions success. Operated by meowWebView ~')
-                webview.AdsBlockManager.addAdsBlockDisallowedList(this.adsBlocker_exceptions);
+                console.log('[init][meowWebView] Trying to add ads blocker exceptions: [' + this.adblock_exceptions + '] Operated by meowWebView ~');
+                webview.AdsBlockManager.addAdsBlockDisallowedList(this.adblock_exceptions);
               } catch (e) {
                 console.error('[ERROR][Meow][meowWebView] add Ads Blocker Exceptions error: ' + e);
               }
 
               // Set intelligent tracking prevention
               this.bunch_of_tabs.Tabs[Label.index_key].controller.enableIntelligentTrackingPrevention(this.intelligent_tracking_prevention);
-              console.log('[Meow][meowWebView] ArkWeb Intelligent Tracking Prevention ' +
-              this.intelligent_tracking_prevention.toString() + '!')
+              console.log('[Meow][meowWebView] ArkWeb Intelligent Tracking Prevention ' + this.intelligent_tracking_prevention.toString() + '!');
 
               // Restore Web State
               setTimeout(() => {
@@ -525,8 +462,8 @@ struct meowWebView {
               try {
                 let allowed = [
                   this.getUIContext().getHostContext()!.resourceDir,
-                // this.getUIContext().getHostContext()!.filesDir,
-                // '/data/storage/el2/base/haps/cache'
+                  // this.getUIContext().getHostContext()!.filesDir,
+                  // '/data/storage/el2/base/haps/cache'
                 ]
                 this.bunch_of_tabs.Tabs[Label.index_key].controller.setPathAllowingUniversalAccess(allowed);
                 console.log('[meowWebView] Init set allowed resources: [' + allowed.join(", ") + ']');
@@ -691,13 +628,10 @@ struct meowWebView {
     }, 50)
   }
 
+  /**
+   * Enable ads block for all tabs.
+   * */
   on_use_adblock_state_change() {
-    // Enable ads block for all tabs
-    // if (this.last_use_adblock === undefined) {
-    //   // Prevent: Init error. The WebviewController must be associated with a Web component
-    //   this.last_use_adblock = this.use_adblock;
-    //   return;
-    // }
     console.log('[Meow][meowWebView] enableAdsBlock: ' + (this.use_adblock ? 'true' : 'false'))
     for (let index = 0; index < this.bunch_of_tabs.Tabs.length; index++) {
       this.bunch_of_tabs.Tabs[index].controller.enableAdsBlock(this.use_adblock);
@@ -878,7 +812,7 @@ struct meowWebView {
       if (target_packed_tab_info.restore_on_creation) {
         return "";
       } else {
-        console.log('[meowWebView] load: ' + url_meow_to_resource(target_packed_tab_info.url));
+        console.log('[meowWebView][src_of_tab_index] load: ' + url_meow_to_resource(target_packed_tab_info.url));
         return url_meow_to_resource(target_packed_tab_info.url);
       }
     }

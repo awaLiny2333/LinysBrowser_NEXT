@@ -17,6 +17,7 @@ struct meowUAManager {
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Settings / Accessibility
+  @StorageProp('custom_user_agents') custom_user_agents: string = '';
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
 
   build() {
@@ -43,7 +44,7 @@ struct meowUAManager {
         .height("100%")
         .borderRadius(7)
         .backgroundColor(this.default_pressing ? this.color_current_font :
-        this.color_current_primary)
+          this.color_current_primary)
         .animation(animation_default())
 
       } // Default
@@ -68,7 +69,8 @@ struct meowUAManager {
         }
       })
       .onClick(() => {
-        this.set_global_UA(-1);
+        this.selected_index = -99
+        this.selected_index = -1;
         // Set UA
       })
       .height(46)
@@ -99,29 +101,29 @@ struct meowUAManager {
   }
 
   async aboutToAppear() {
-    let custom_user_agents = await this.bunch_of_settings.get('custom_user_agents') as string;
-    this.bunch_of_user_agents.import_string(custom_user_agents);
-    this.selected_index = await this.bunch_of_settings.get('custom_user_agents_selected_index') as number;
-
-    // Get UA
-
-    console.log("[Meow][meowUAManager] UA Manager READY");
+    this.bunch_of_user_agents.import_string(this.custom_user_agents);
+    this.set_global_UA();
+    console.log('[Meow][meowUAManager] UA Manager READY! [' + this.now_global_custom_UA + ']');
   }
 
   on_select() {
-    // console.log('meow ' + this.selected_index.toString())
+    this.set_global_UA();
+  }
+
+  set_global_UA() {
+    if (this.selected_index == -99) {
+      // Setting index to -99 then the real value
+      // Can force refresh @Watch
+      // And the index -99 has no meaning
+      return;
+    }
     if (this.selected_index <= -1) {
       // If set back to default
       this.now_global_custom_UA = "";
     } else {
       this.now_global_custom_UA = this.bunch_of_user_agents.list_of_user_agents[this.selected_index].user_agent_content;
     }
-  }
-
-  set_global_UA(idx: number) {
-    this.selected_index = -99;
-    this.selected_index = idx;
-    this.bunch_of_settings.set('custom_user_agents_selected_index', idx);
+    this.bunch_of_settings.set('custom_user_agents_selected_index', this.selected_index);
   }
 
   add_new_custom_ua() {
@@ -325,7 +327,7 @@ struct meowUAButton {
   set_global_UA(idx: number) {
     this.selected_index = -99;
     this.selected_index = idx;
-    this.bunch_of_settings.set('custom_user_agents_selected_index', idx);
+    // this.bunch_of_settings.set('custom_user_agents_selected_index', idx);
   }
 
   save_changes() {

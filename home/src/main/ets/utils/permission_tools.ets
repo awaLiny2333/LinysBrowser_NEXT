@@ -1,7 +1,7 @@
 import { abilityAccessCtrl, common, Permissions } from '@kit.AbilityKit';
-// import { webview } from '@kit.ArkWeb';
+import { meowContext } from './environment_tools';
 
-let context = AppStorage.get("context") as common.UIAbilityContext;
+// import { webview } from '@kit.ArkWeb';
 
 // webview.WebviewController.setWebDebuggingAccess(true);
 let atManager = abilityAccessCtrl.createAtManager();
@@ -14,7 +14,7 @@ export function request_user_permission(p: Permissions[]) {
   if (p.length == 0) {
     return;
   }
-  atManager.requestPermissionsFromUser(context, p);
+  atManager.requestPermissionsFromUser(meowContext(), p);
 }
 
 /**

@@ -19,6 +19,7 @@ struct meowSEManager {
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Settings / Accessibility
+  @StorageProp('custom_search_engines') custom_search_engines: string = '';
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // execution
   on_normal_execution?: (idx: number, se: search_engine) => void;
@@ -43,7 +44,7 @@ struct meowSEManager {
         .height("100%")
         .borderRadius(7)
         .backgroundColor(this.default_pressing ? this.color_current_font :
-        this.color_current_primary)
+          this.color_current_primary)
         .animation(animation_default())
 
       } // Default
@@ -71,9 +72,8 @@ struct meowSEManager {
         if (this.on_default_execution) {
           this.on_default_execution();
         } else {
+          this.selected_index = -99;
           this.selected_index = -1;
-          // Set UA
-          this.bunch_of_settings.set('custom_search_engines_selected_index', -1);
         }
       })
       .height(46)
@@ -105,29 +105,30 @@ struct meowSEManager {
   }
 
   async aboutToAppear() {
-    let custom_search_engine = await this.bunch_of_settings.get('custom_search_engines') as string;
-    this.bunch_of_search_engines.import_string(custom_search_engine);
-    this.selected_index = await this.bunch_of_settings.get('custom_search_engines_selected_index') as number;
+    this.bunch_of_search_engines.import_string(this.custom_search_engines);
+    this.select_search_engine();
 
-    console.log("[Meow][meowSEManager] Search engine Manager READY");
-    console.log("[Meow][meowSEManager] Search engine index: " + this.selected_index.toString());
+    console.log('[Meow][meowSEManager] Search engine Manager READY! [' + this.search_engine + ']');
   }
-
-  // on_SE_change() {
-  //   console.log('[Meow][meowSEManager] Search Engine list change! Syncing data to Settings...')
-  // }
 
   on_select() {
-    this.select_search_engine(this.selected_index);
+    this.select_search_engine();
   }
 
-  select_search_engine(index: number) {
-    if (index <= -1) {
+  select_search_engine() {
+    if (this.selected_index == -99) {
+      // Setting index to -99 then the real value
+      // Can force refresh @Watch
+      // And the index -99 has no meaning
+      return;
+    }
+    if (this.selected_index <= -1) {
       // If set back to default
       this.search_engine = default_search_engine();
     } else {
-      this.search_engine = this.bunch_of_search_engines.list_of_search_engines[index].url;
+      this.search_engine = this.bunch_of_search_engines.list_of_search_engines[this.selected_index].url;
     }
+    this.bunch_of_settings.set('custom_search_engines_selected_index', this.selected_index);
   }
 
   add_new_custom_search_engine(se: search_engine) {
@@ -191,7 +192,7 @@ struct meowSEButton {
           .margin({ left: this.is_press_timing_ok ? 10 : 0 })
           .animation(animation_default())
 
-        } // Bookmark button
+        } // UA Item Button
         .borderRadius(this.is_editing ? { topLeft: 7, topRight: 7 } : 7)
         .backgroundColor(this.is_pressing ? this.color_current_font : this.color_current_primary)
         .animation(animation_default())
@@ -219,7 +220,6 @@ struct meowSEButton {
           } else {
             AppStorage.set('search_engine_selected', -99);
             AppStorage.set('search_engine_selected', this.my_index);
-            this.bunch_of_settings.set('custom_search_engines_selected_index', this.my_index);
           }
         })
         .height(this.button_height_default)
@@ -346,7 +346,6 @@ struct meowSEButton {
   }
 
   delete_myself() {
-
     // Confirm delete
     this.is_editing = false;
     this.bunch_of_search_engines.del_search_engine(this.my_index);
@@ -360,7 +359,6 @@ struct meowSEButton {
       this.selected_index = Math.min(this.bunch_of_search_engines.list_of_search_engines.length - 1, prev_selected);
     }
     this.save_search_engine_to_settings();
-
   }
 
   save_search_engine_to_settings() {

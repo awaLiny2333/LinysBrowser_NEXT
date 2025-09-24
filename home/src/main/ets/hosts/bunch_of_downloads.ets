@@ -6,8 +6,6 @@ import woofWantDownload from '../dialogs/prompts/woofWantDownload';
 import { open_file_uri } from '../utils/link_tools';
 import { meowContext } from '../utils/environment_tools';
 
-let context = meowContext();
-
 export class bunch_of_downloads {
   list_of_on_going_tasks: webview.WebDownloadItem[] = [];
   list_of_downloaded_size: number[] = [];
@@ -43,7 +41,7 @@ export class bunch_of_downloads {
     if (no_init == true) {
       return;
     }
-    let filesDir = context.filesDir;
+    let filesDir = meowContext().filesDir;
     try {
       fs.mkdirSync(filesDir + '/downloads');
     } catch (e) {
@@ -76,7 +74,7 @@ export class bunch_of_downloads {
         file_name = webDownloadItem.getSuggestedFileName();
       }
       // Create task folder
-      let file_dir = context.filesDir + '/downloads/' + file_name + '_' + Date.now().toString() + '/';
+      let file_dir = meowContext().filesDir + '/downloads/' + file_name + '_' + Date.now().toString() + '/';
       try {
         fs.mkdirSync(file_dir);
       } catch (e) {
@@ -158,7 +156,7 @@ export class bunch_of_downloads {
       let file_name = webDownloadItem.getSuggestedFileName();
 
       // Create task folder
-      let file_dir = context.filesDir + '/downloads/' + file_name + '_' + Date.now().toString() + '/';
+      let file_dir = meowContext().filesDir + '/downloads/' + file_name + '_' + Date.now().toString() + '/';
       try {
         fs.mkdirSync(file_dir);
       } catch (e) {
@@ -358,7 +356,7 @@ export class bunch_of_downloads {
     try {
       let documentSaveOptions = new picker.DocumentSaveOptions();
       documentSaveOptions.newFileNames = [file_name];
-      let documentPicker = new picker.DocumentViewPicker(context);
+      let documentPicker = new picker.DocumentViewPicker(meowContext());
 
       await documentPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
         target_uri = documentSaveResult
@@ -413,7 +411,7 @@ export class bunch_of_downloads {
    * */
   delete_all_downloaded_files() {
     try {
-      let filesDir = context.filesDir;
+      let filesDir = meowContext().filesDir;
       fs.rmdirSync(filesDir + "/downloads");
       fs.mkdirSync(filesDir + "/downloads")
 

@@ -4,8 +4,7 @@ import { url_default_blank } from './bunch_of_defaults';
 import { fileIo as fs } from '@kit.CoreFileKit';
 import { sandbox_save } from '../utils/storage_tools';
 import { common } from '@kit.AbilityKit';
-
-let context = AppStorage.get("context") as common.UIAbilityContext;
+import { meowContext } from '../utils/environment_tools';
 
 @Observed
 export class tab_label {
@@ -110,7 +109,7 @@ export class bunch_of_tabs {
       return;
     }
 
-    let filesDir = context.filesDir;
+    let filesDir = meowContext().filesDir;
     try {
       fs.mkdirSync(filesDir + '/continue');
     } catch (e) {

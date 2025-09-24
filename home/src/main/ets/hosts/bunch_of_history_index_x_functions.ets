@@ -4,8 +4,8 @@ import { bunch_of_history_index } from './bunch_of_history_index';
 import { bunch_of_history_index_lite } from './bunch_of_history_index_lite';
 import { fileIo } from '@kit.CoreFileKit';
 import { common } from '@kit.AbilityKit';
+import { meowContext } from '../utils/environment_tools';
 
-let context = AppStorage.get("context") as common.UIAbilityContext;
 
 /**
  * Calls a worker thread to load built index from disk.
@@ -37,7 +37,7 @@ export function history_index_load_from_disk_worker(load_type: string) {
   ensure_this_month_index_file();
 
   let workerInstance = new worker.ThreadWorker("home/ets/workers/History_index_loader.ets");
-  workerInstance.postMessage(context.filesDir);
+  workerInstance.postMessage(meowContext().filesDir);
 
   console.log(bunch_of_history_index.log_head() + " Full Index loader worker CREATED!");
 
@@ -104,7 +104,7 @@ export function history_index_save_to_disk_worker(map: collections.Map<string, c
 
   // Get this month params
   let workerInstance = new worker.ThreadWorker("home/ets/workers/History_index_saver.ets");
-  workerInstance.postMessage('filesDir:' + context.filesDir);
+  workerInstance.postMessage('filesDir:' + meowContext().filesDir);
   // workerInstance.postMessage('file_name:' + 'index.txt');
   workerInstance.postMessage('file_name:' + file_name);
   // workerInstance.postMessageWithSharedSendable(bunch_of_history_index.index_map);
@@ -162,7 +162,7 @@ export function history_index_full_rebuild_worker() {
   AppStorage.set('reindexing_history', true);
 
   let workerInstance = new worker.ThreadWorker("home/ets/workers/History_indexer.ets");
-  workerInstance.postMessage(context.filesDir);
+  workerInstance.postMessage(meowContext().filesDir);
   console.log(bunch_of_history_index.log_head() + " Index worker CREATED!");
 
   workerInstance.onmessage = (e: MessageEvents): void => {
@@ -392,7 +392,7 @@ export function ensure_this_month_index_file() {
   const current_year: number = new Date().getUTCFullYear();
   const current_month: number = new Date().getUTCMonth() + 1;
   const this_month_file_path = index_path_of_month(current_year, current_month);
-  if (!fileIo.accessSync(context.filesDir + '/' + this_month_file_path)) {
+  if (!fileIo.accessSync(meowContext().filesDir + '/' + this_month_file_path)) {
     // If this month have no index
     console.log(bunch_of_history_index.log_head() + ' No this month index found. Creating one.')
     bunch_of_history_index_lite.this_year = current_year;
@@ -407,7 +407,7 @@ export function ensure_this_month_index_file() {
  * If there doesn't exist such, then create one.
  * */
 export function ensure_this_month_history_file(context_filesDir?: string) {
-  let filesDir: string = context_filesDir || context.filesDir;
+  let filesDir: string = context_filesDir || meowContext().filesDir;
   // Create this month history
   const current_year: number = new Date().getUTCFullYear();
   const current_month: number = new Date().getUTCMonth() + 1;

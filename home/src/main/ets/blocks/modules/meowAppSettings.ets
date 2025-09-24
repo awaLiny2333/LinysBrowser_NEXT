@@ -74,7 +74,6 @@ struct meowAppSettings {
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   @StorageLink('bunch_of_history_index') bunch_of_history_index: bunch_of_history_index = new bunch_of_history_index();
-  @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
   // Colors
   @StorageProp('color_current_primary') @Watch('on_color_change') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') @Watch('on_color_change') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -1097,85 +1096,17 @@ struct meowAppSettings {
       this.versionNo = bundleInfo.versionCode;
     })
 
-    // Get DEV_MODE
-    this.DEV_MODE = await this.bunch_of_settings.get('DEV_MODE') as boolean;
-
-    // Get settings of title bar position
-    this.title_bar_position = await this.bunch_of_settings.get('title_bar_position') as string;
-
-    // Get settings of tabs style
-    this.tabs_style = await this.bunch_of_settings.get('tabs_style') as string;
-
-    // Get settings of tabs style
-    this.tabs_style_non_tablet_mode = await this.bunch_of_settings.get('tabs_style_non_tablet_mode') as string;
-
-    // Get number of max bookmarks suggestions
-    this.max_bookmark_advice = await this.bunch_of_settings.get('max_bookmark_suggest') as number;
-
-    // Get number of max history suggestions
-    this.max_history_advice = await this.bunch_of_settings.get('max_history_suggest') as number;
-
-    // Get whether to continue to collect new history
-    this.collect_new_history = await this.bunch_of_settings.get('collect_new_history') as boolean;
-
-    // Get whether to continue to enable intelligent_tracking_prevention
-    this.intelligent_tracking_prevention = await this.bunch_of_settings.get('intelligent_tracking_prevention') as boolean;
-
-    // Get whether to use system back to access backward
-    this.sys_back_to_access_backward = await this.bunch_of_settings.get('sys_back_access_backward') as boolean;
-
-    // Get whether to enable forced webs dark mode
-    this.web_force_dark_mode = await this.bunch_of_settings.get('web_force_dark_mode') as boolean;
-
-    // Read webview cache
-    this.web_cache_size = await this.bunch_of_settings.get('webview_cache_size') as number;
-    if (this.web_cache_size == -1) {
-      // this.web_cache_size = get_folder_size_Sync('/data/storage/el2/base/cache/web', true); // Caused lag
-      // this.refresh_web_cache_size();
-    }
-
-    // Set homepage background
-    let homepage_background_array_buffer = sandbox_read_arrayBuffer_sync('homepage_background_arrayBuffer');
-    // Set image for homepage
-    if (homepage_background_array_buffer) {
-      this.homepage_background = arrayBuffer_2_pixelMap(homepage_background_array_buffer);
-      console.log("[Meow][meowAppSettings] Finished loading homepage background!");
-    }
-
     // Get settings of shortcuts on left or right
-    this.preferred_hand_left_or_right = await this.bunch_of_settings.get('preferred_hand_left_or_right') as string;
-    if (this.preferred_hand_left_or_right == 'left') {
-      this.left_or_right_selected = [0];
-    } else {
-      this.left_or_right_selected = [1];
-    }
-    // Get accessibility - reverse
-    this.preferred_hand_reverse_tabs_panel = await this.bunch_of_settings.get('preferred_hand_reverse_tabs_panel') as boolean;
-    this.preferred_hand_reverse_settings_menu = await this.bunch_of_settings.get('preferred_hand_reverse_settings_menu') as boolean;
-    this.preferred_hand_reverse_homepage_shortcuts = await this.bunch_of_settings.get('preferred_hand_reverse_homepage_shortcuts') as boolean;
-
-    // Get Homepage shortcut directory
-    let homepage_shortcuts_bookmarks_dir = await this.bunch_of_settings.get('homepage_shortcuts_bookmarks_dir') as string;
-    AppStorage.set('homepage_shortcuts_bookmarks_dir', homepage_shortcuts_bookmarks_dir);
-    // console.log("[Meow][meowAppSettings] Finished loading homepage shortcuts dir: '" + homepage_shortcuts_bookmarks_dir + "'.");
+    this.left_or_right_selected = (this.preferred_hand_left_or_right == 'left')?[0]:[1];
 
     // Get whether to show resource monitor
     this.resource_monitor = await this.bunch_of_settings.get('resource_monitor') as boolean;
 
-    // History indexer
+    // Read webview cache size
+    this.web_cache_size = await this.bunch_of_settings.get('webview_cache_size') as number;
+
+    // Read history indexer size
     this.history_index_size = await this.bunch_of_settings.get('history_index_size') as number;
-    if (this.history_index_size == -1) {
-      // this.web_cache_size = get_folder_size_Sync('/data/storage/el2/base/cache/web', true); // Caused lag
-      // this.refresh_history_index_size();
-    }
-
-    // Downloads
-    this.direct_download = await this.bunch_of_settings.get('direct_download') as boolean;
-    this.direct_download_auto_open = await this.bunch_of_settings.get('direct_download_auto_open') as boolean;
-
-    // Continuation
-    this.continuation_auto_close_tab = await this.bunch_of_settings.get('continuation_auto_close_tab') as boolean;
-    this.continuation_auto_exit = await this.bunch_of_settings.get('continuation_auto_exit') as boolean;
 
     // Tag status
     this.settings_init_retrieved = true;

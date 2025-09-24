@@ -16,6 +16,6 @@ export function open_file_uri(uri: string) {
   try {
     meowContext().openLink(link, openLinkOptions)
   } catch (e) {
-    console.error(e);
+    console.error('[link_tools] ' + e);
   }
 }

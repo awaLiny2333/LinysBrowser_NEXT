@@ -4,6 +4,7 @@ import { collections } from '@kit.ArkTS';
 import { divide_string, get_histories_from_disk, index_file_name_of_month, insert_into_array } from './bunch_of_history_index_x_functions';
 import { bunch_of_history_index_lite } from './bunch_of_history_index_lite';
 import { common } from '@kit.AbilityKit';
+import { meowContext } from '../utils/environment_tools';
 
 export class bunch_of_history_index {
   static index_map: collections.Map<string, collections.Array<number>> = new collections.Map<string, collections.Array<number>>();
@@ -11,9 +12,7 @@ export class bunch_of_history_index {
   constructor() {
     // Create history index folder
     try {
-      let context = AppStorage.get("context") as common.UIAbilityContext;
-      let filesDir = context.filesDir;
-      fs.mkdirSync(filesDir + '/history-index');
+      fs.mkdirSync(meowContext().filesDir + '/history-index');
     } catch (e) {
       // console.log(log_head() + 'Check disk of month: E: /history-index folder already exists.')
     }

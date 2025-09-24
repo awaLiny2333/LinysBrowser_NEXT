@@ -9,10 +9,8 @@ import {
   history_index_save_to_disk_worker,
   history_path_of_month
 } from './bunch_of_history_index_x_functions';
-import { common } from '@kit.AbilityKit';
 import { bunch_of_history_index_lite } from './bunch_of_history_index_lite';
-
-let context = AppStorage.get("context") as common.UIAbilityContext;
+import { meowContext } from '../utils/environment_tools';
 
 export class history_record {
   accessed_time: number = Date.now();
@@ -66,48 +64,64 @@ export class bunch_of_history {
 
     // Creates folders
     try {
-      fs.mkdirSync(context.filesDir + '/history');
+      fs.mkdirSync(meowContext().filesDir + '/history');
     } catch (e) {
       // console.log('[Meow][bunch_of_history] Check disk of month: E: /history folder already exists.')
     }
     try {
-      fs.mkdirSync(context.filesDir + '/history-index');
+      fs.mkdirSync(meowContext().filesDir + '/history-index');
     } catch (e) {
       // console.log('[Meow][bunch_of_history] Check disk of month: E: /history folder already exists.')
     }
 
     // History
-    if (fs.listFileSync(context.filesDir + '/history-index', { recursion: false }).length == 0) {
-      // First launch of app
-      first_launch = true;
-    } else {
-      // Compatibility path for older BrowserCats
-      this.patch_old_history_files();
-      this.patch_history_files_before_index_era();
+    try {
+      if (fs.listFileSync(meowContext().filesDir + '/history-index', { recursion: false }).length == 0) {
+        // First launch of app
+        first_launch = true;
+      } else {
+        // Compatibility patch for older BrowserCats
+        this.patch_old_history_files();
+        this.patch_history_files_before_index_era();
+      }
+    } catch (e) {
+      console.error('[bunch_of_history][constructor] patch error: ' + e);
     }
 
     // Indexing
-    if (fs.listFileSync(context.filesDir + '/history-index', { recursion: false }).length == 0) {
-      if (first_launch) {
-        // No history. First launch of app.
-        console.log(bunch_of_history_index.log_head() + ' First launch of app. Skipping loading index.')
+    try {
+      if (fs.listFileSync(meowContext().filesDir + '/history-index', { recursion: false }).length == 0) {
+        if (first_launch) {
+          // No history. First launch of app.
+          console.log(bunch_of_history_index.log_head() + ' First launch of app. Skipping loading index.')
+        } else {
+          console.log(bunch_of_history_index.log_head() + ' No index found. Perhaps this is an upgrade from older BrowserCats?')
+          console.log(bunch_of_history_index.log_head() + ' Rebuilding... ')
+          history_index_full_rebuild_worker();
+        }
       } else {
-        console.log(bunch_of_history_index.log_head() + ' No index found. Perhaps this is an upgrade from older BrowserCats?')
-        console.log(bunch_of_history_index.log_head() + ' Rebuilding... ')
-        history_index_full_rebuild_worker();
+        // Load index
+        // In a concurrent way?!
+        history_index_load_from_disk_worker("normal");
       }
-    } else {
-      // Load index
-      // In a concurrent way?!
-      history_index_load_from_disk_worker("normal");
+    } catch (e) {
+      console.error('[bunch_of_history][constructor] index error: ' + e);
     }
 
     // Ensure
-    ensure_this_month_index_file();
-    ensure_this_month_history_file();
+    try {
+      ensure_this_month_index_file();
+      ensure_this_month_history_file();
+    } catch (e) {
+      console.error('[bunch_of_history][constructor] ensure error: ' + e);
+    }
 
     // Load today
-    this.open_month_from_disk_sync(this.current_year, this.current_month);
+    try {
+      this.open_month_from_disk_sync(this.current_year, this.current_month);
+    }catch (e) {
+      console.error('[bunch_of_history][constructor] load today error: ' + e);
+    }
 
     // Log
     // console.log('[Meow][bunch_of_history] bunch_of_history initialization finished!');
@@ -130,7 +144,7 @@ export class bunch_of_history {
    * @returns A number[][] array, e.g. [[2024, 2], [2023, 4], ...].
    * */
   static get_history_months(context_filesDir?: string) {
-    let filesDir: string = context_filesDir || context.filesDir;
+    let filesDir: string = context_filesDir || meowContext().filesDir;
     // Ensure this month
     ensure_this_month_history_file(context_filesDir);
     // Traverse directory
@@ -177,11 +191,13 @@ export class bunch_of_history {
    * */
   patch_old_history_files() {
     let old_history = sandbox_read_text_sync('history.txt');
-    if (old_history != 'undefined') {
-      console.log('[Meow][bunch_of_history] Patch old history: found old history:\n' + old_history.toString())
-      this.import_string_full(old_history);
-      sandbox_unlink_sync('history.txt');
+    if (old_history == 'undefined') {
+      return;
     }
+    // Patch
+    console.log('[Meow][bunch_of_history] Patch old history: found old history:\n' + old_history.toString());
+    this.import_string_full(old_history);
+    sandbox_unlink_sync('history.txt');
   }
 
   /**
@@ -193,7 +209,7 @@ export class bunch_of_history {
     if (version_file != 'undefined') {
       return;
     }
-    console.log('[Meow][bunch_of_history] Patch old history of migration happens between 1.7.6(1000024) and 1.7.7(1000025).')
+    console.log('[Meow][bunch_of_history] Patch old history of migration 1.7.6(1000024) to 1.7.7(1000025).');
 
     let result: string = "";
     let months = bunch_of_history.get_history_months();
@@ -211,7 +227,7 @@ export class bunch_of_history {
 
     // clear history
     try {
-      let filesDir = context.filesDir;
+      let filesDir = meowContext().filesDir;
       fs.rmdirSync(filesDir + "/history");
       fs.mkdirSync(filesDir + "/history")
     } catch (e) {

@@ -2,7 +2,7 @@ import { AbilityConstant, Configuration, UIAbility, Want, wantConstant } from '@
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { display, window } from '@kit.ArkUI';
 import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
-import { kv_store_get } from '../utils/kv_store_tools';
+import { meow_init } from '../processes/init';
 
 export default class HomeAbility extends UIAbility {
   storage: LocalStorage = new LocalStorage();
@@ -17,14 +17,15 @@ export default class HomeAbility extends UIAbility {
     AppStorage.setOrCreate('pathDir', this.context.filesDir);
     AppStorage.setOrCreate('currentColorMode', this.context.config.colorMode);
 
-    // Perhaps this could get the KVStore manager?
-    await kv_store_get('meow');
-
     if (launchParam.launchReason === AbilityConstant.LaunchReason.CONTINUATION) {
       this.process_continue(want);
-      this.context.restoreWindowStage(this.storage);
+      try {
+        this.context.restoreWindowStage(this.storage);
+      } catch (e) {
+        console.error('[onCreate] restoreWindowStage Failed: ' + e);
+      }
     } else {
-      // Process want
+      // Normal wants
       this.process_want(want);
     }
   }
@@ -33,35 +34,33 @@ export default class HomeAbility extends UIAbility {
     if (launchParam.launchReason === AbilityConstant.LaunchReason.CONTINUATION) {
       this.process_continue(want);
     } else {
-      // Process want
       this.process_want(want);
     }
   }
 
   onContinue(wantParam: Record<string, Object>) {
+    console.info(`onContinue version = ${wantParam.version}, targetDevice: ${wantParam.targetDevice}`);
+
     // Check if continuation_auto_exit
     let auto_exit = AppStorage.get('continuation_auto_exit') as boolean;
     let close_tab = AppStorage.get('continuation_auto_close_tab') as boolean;
-    // Set continue information
-    console.info(`onContinue version = ${wantParam.version}, targetDevice: ${wantParam.targetDevice}`);
-    let current_url = AppStorage.get('current_url') as string;
-    wantParam['data'] = current_url;
+
+    // Pack continue data
+    wantParam['data'] = AppStorage.get('current_url') as string;
     if (!auto_exit) {
       wantParam[wantConstant.Params.SUPPORT_CONTINUE_SOURCE_EXIT_KEY] = false;
+      // Close tab
       if (close_tab) {
-        let current_main_tab_index = AppStorage.get('current_main_tab_index') as number;
-        AppStorage.set('universal_close_tab_gateway', current_main_tab_index);
+        AppStorage.set('universal_close_tab_gateway', AppStorage.get('current_main_tab_index') as number);
       }
     }
+
+    // No auto recovery
     wantParam[wantConstant.Params.SUPPORT_CONTINUE_PAGE_STACK_KEY] = false;
     return AbilityConstant.OnContinueResult.AGREE;
   }
 
-  onDestroy(): void {
-    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onDestroy');
-  }
-
-  onWindowStageCreate(windowStage: window.WindowStage): void {
+  async onWindowStageCreate(windowStage: window.WindowStage): Promise<void> {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
 
@@ -71,17 +70,24 @@ export default class HomeAbility extends UIAbility {
         console.error(`Failed to obtain the main window. Cause code: ${err.code}, message: ${err.message}`);
         return;
       }
+
+      // This does nothing at all. Just to get rid of the warning on ['win' is declared but its value is never read].
+      console.log('[getMainWindow] ' + (win ? 'Window Got' : 'No Window???'))
     })
 
-    // Load window content
+    // Init & Load window content
+    await meow_init(this.context);
     this.window_load_content(windowStage);
   }
 
-  onWindowStageRestore(windowStage: window.WindowStage) {
+  async onWindowStageRestore(windowStage: window.WindowStage) {
     let is_new_launch = !(AppStorage.get('settings_init_retrieved') as boolean);
     console.log('[HomeAbility][onWindowStageRestore] is_new_launch? - ' + (is_new_launch ? 'yes!' : 'no...'))
+
     // Only loads if is new launch
+    // Init & Load window content
     if (is_new_launch) {
+      await meow_init(this.context);
       this.window_load_content(windowStage);
     }
   }
@@ -105,6 +111,14 @@ export default class HomeAbility extends UIAbility {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onBackground');
   }
 
+  onDestroy(): void {
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onDestroy');
+  }
+
+  /**
+   * Fills the want into AppStorage.
+   * @param want the want
+   * */
   process_want(want: Want) {
     AppStorage.setOrCreate('want_uri', '');
     // want
@@ -138,7 +152,7 @@ export default class HomeAbility extends UIAbility {
         AppStorage.setOrCreate('want_action', '');
         console.log('[Meow][HomeAbility] Want action is empty?');
       }
-      if (want_action) {
+      if (want_flags) {
         AppStorage.setOrCreate('want_flags', want_flags);
         console.log('[Meow][HomeAbility] Want flags: ' + want_flags);
       } else {
@@ -152,25 +166,20 @@ export default class HomeAbility extends UIAbility {
   }
 
   /**
-   * Cross device continuation
+   * Cross device continuation.
+   * Fills the want into AppStorage.
    * @param want the want
    * */
   process_continue(want: Want) {
-    let is_new_launch = !(AppStorage.get('settings_init_retrieved') as boolean);
-    console.log('[HomeAbility][onWindowStageRestore] is_new_launch? - ' + (is_new_launch ? 'yes' : 'no'))
-    // Get the data
-    let continueInput = '';
+    AppStorage.setOrCreate('want_uri', '');
     if (want.parameters !== undefined) {
-      try {
-        continueInput = want.parameters.data.toString();
-        console.info('[Meow][HomeAbility][onNewWant] continue input: ' + continueInput);
-        // Recovery of window
-        setTimeout(() => {
-          AppStorage.set('universal_new_tab_gateway', continueInput);
-        }, is_new_launch ? 1000 : 100)
-      } catch (e) {
-        console.error(e);
-      }
+      // Get the data
+      let continue_params_data = want.parameters.data.toString();
+      console.info('[Meow][HomeAbility][onNewWant] continue input: ' + continue_params_data);
+      AppStorage.setOrCreate('want_action', 'ohos.want.action.viewData');
+      AppStorage.setOrCreate('want_type', want.type);
+      AppStorage.setOrCreate('want_flags', want.flags);
+      AppStorage.setOrCreate('want_uri', continue_params_data);
     }
   }
 
@@ -180,7 +189,13 @@ export default class HomeAbility extends UIAbility {
    * @returns the vp equivalent
    * */
   px2vp(px: number) {
-    return px / display.getDefaultDisplaySync().densityPixels;
+    try {
+      return px / display.getDefaultDisplaySync().densityPixels;
+    } catch (e) {
+      // This is not good.
+      console.error('[px2vp] Error: ' + e);
+      return px;
+    }
   }
 
   window_load_content(windowStage: window.WindowStage) {
@@ -197,29 +212,18 @@ export default class HomeAbility extends UIAbility {
       console.log('[HomeAbility] deviceType: ' + deviceInfo.deviceType);
 
       if (deviceInfo.deviceType == '2in1') {
-        console.log('\ttreated as a 2in1.');
-        // windowClass.setWindowCornerRadius(26);
-        // windowClass.setWindowTitleButtonVisible(true, true, true);
         windowClass.setWindowDecorVisible(false);
         let windowDecorHeight = windowClass.getWindowDecorHeight();
 
         windowClass.on('windowTitleButtonRectChange', (titleButtonRect) => {
-          console.info('[HomeAbility] Succeeded in enabling the listener for window title buttons area changes. Data: ' + JSON.stringify(titleButtonRect));
-
           AppStorage.setOrCreate('windowDecorHeight', titleButtonRect.height);
-          console.log('\twindowDecorHeight: ' + titleButtonRect.height);
-
           AppStorage.setOrCreate('windowDecorWidth', titleButtonRect.width);
-          console.log('\twindowDecorWidth: ' + titleButtonRect.width);
         })
 
         AppStorage.setOrCreate('topAvoidHeight', windowDecorHeight);
         console.log('[HomeAbility] topAvoidHeight: ' + windowDecorHeight);
-        // windowClass.setResizeByDragEnabled(true);
-        // windowClass.setWindowTitle('qwq');
-      } else {
-        console.log('\tnot "2in1", treated as else.');
 
+      } else {
         // 1. Set fullscreen window
         windowClass.setImmersiveModeEnabledState(true);
 
@@ -249,7 +253,7 @@ export default class HomeAbility extends UIAbility {
         AppStorage.setOrCreate('rightAvoidWidth', avoidRight + (avoidRight == 0 ? 0 : 2));
         console.log('\tNew avoidRightWidth: ' + avoidRight + (avoidRight == 0 ? 0 : 2));
 
-        // Change listener
+        // Avoid change listener
         windowClass.on('avoidAreaChange', (data) => {
           console.log('[HomeAbility] Changes on avoid areas:')
 
@@ -275,7 +279,6 @@ export default class HomeAbility extends UIAbility {
           }
         })
       }
-      AppStorage.set('isAppRunning', true);
     });
   }
 }

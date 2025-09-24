@@ -7,7 +7,7 @@ import meowTitleBar from '../blocks/modules/meowTitleBar';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import woofPromptFail from '../dialogs/prompts/woofPromptFail';
-import { AbilityConstant, bundleManager, ConfigurationConstant } from '@kit.AbilityKit';
+import { AbilityConstant, ConfigurationConstant } from '@kit.AbilityKit';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_history } from '../hosts/bunch_of_history';
 import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
@@ -15,9 +15,7 @@ import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 import { window } from '@kit.ArkUI';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
-import { sandbox_save, sandbox_unlink } from '../utils/storage_tools';
 import { deviceInfo } from '@kit.BasicServicesKit';
-import { fileIo } from '@kit.CoreFileKit';
 import woofHistory from '../dialogs/managers/woofHistory';
 import { meowContext } from '../utils/environment_tools';
 import { print_web } from '../utils/print_tools';
@@ -25,19 +23,15 @@ import { print_web } from '../utils/print_tools';
 @Entry
 @Component
 struct Index {
-  // Want
-  @StorageLink('want_uri') @Watch('check_want') want_uri: string = 'want';
-  @StorageLink('want_action') want_action: string = '';
-  @StorageLink('want_type') want_type: string = '';
   // Init Hosts
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings();
-  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs();
+  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
+  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
-  @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history();
+  @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("Bookmarks~Meow");
-  @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads();
+  @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads(true);
   @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines = new bunch_of_search_engines();
-  @StorageLink('bunch_of_key_shortcuts') @Watch('on_bunch_of_key_shortcuts_change') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts();
+  @StorageLink('bunch_of_key_shortcuts') @Watch('on_bunch_of_key_shortcuts_change') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   // UI Environment
   @StorageLink('bottomAvoidHeight') bottomAvoidHeight: number = 1;
   @StorageLink('topAvoidHeight') topAvoidHeight: number = 1;
@@ -138,47 +132,13 @@ struct Index {
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   async aboutToAppear(): Promise<void> {
-    this.animation_response = await this.bunch_of_settings.get('animation_response') as number;
-    this.animation_damping = await this.bunch_of_settings.get('animation_damping_coefficient') as number;
-    let showing_tabs = await this.bunch_of_settings.get('status_tabs_open') as boolean;
-    this.showing_tabs = showing_tabs;
+    console.log(' \n[Meow][Index]\n ');
 
-    // Figure out what color should i use
-    this.color_light_primary = await this.bunch_of_settings.get('color_light_primary') as string;
-    this.color_light_secondary = await this.bunch_of_settings.get('color_light_secondary') as string;
-    this.color_light_font = await this.bunch_of_settings.get('color_light_font') as string;
-    this.color_dark_primary = await this.bunch_of_settings.get('color_dark_primary') as string;
-    this.color_dark_secondary = await this.bunch_of_settings.get('color_dark_secondary') as string;
-    this.color_dark_font = await this.bunch_of_settings.get('color_dark_font') as string;
+    // Init title bar
+    this.on_title_bar_position_change();
 
-    // Set cache dir of web-dragged image into Scratching Board
-    try {
-      fileIo.rmdirSync(this.getUIContext().getHostContext()!.filesDir + '/web-drag-image-cache');
-    } catch (e) {
-      console.error('[Index] rmdirSync /web-drag-image-cache failed! ' + e);
-    }
-    try {
-      fileIo.mkdirSync(this.getUIContext().getHostContext()!.filesDir + '/web-drag-image-cache');
-    } catch (e) {
-      console.error('[Index] mkdirSync /web-drag-image-cache failed! ' + e);
-    }
-
-    // Respond to want
-    this.check_want();
-
-    // delete Profile package
-    try {
-      sandbox_unlink('profile.zip');
-    } catch (e) {
-      console.error('[Index] unlink profile.zip! ' + e);
-    }
-
-    // Get and set app version info
-    bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION).then((bundleInfo) => {
-      console.log('[Meow][bunch_of_history] Saving app version: ' + bundleInfo.versionName + "(" + bundleInfo.versionCode.toString() + ")");
-      sandbox_save("last_app_versionCode.txt", bundleInfo.versionCode.toString());
-      sandbox_save("last_app_versionName.txt", bundleInfo.versionName);
-    })
+    // Init color
+    this.on_color_change();
   }
 
   onPageShow(): void {
@@ -288,7 +248,6 @@ struct Index {
           title_bar_alignRules: this.title_bar_alignRules,
         }) // Title Bar
       } // Web, progress, and Title bar
-      // .height(this.screen_height - this.height_of_top_avoid())
       .layoutWeight(1)
       .animation(animation_default())
 
@@ -336,6 +295,7 @@ struct Index {
     this.screen_width = n.width as number;
     this.screen_height = n.height as number;
     this.tablet_mode = this.screen_width > 600;
+
     if (!this.tablet_mode) {
       if (this.showing_tabs && this.showing_bookmarks) {
         // If showing both tabs and bookmarks,
@@ -499,44 +459,6 @@ struct Index {
   }
 
   // Operations
-
-  check_want() {
-    if (this.want_uri.length == 0) {
-      // console.log('[Index] Didn\'t load want for an empty want.');
-      return;
-    }
-    console.log('[Meow][Index] Load want with action: ' + this.want_action + ', type: ' + this.want_type);
-
-    if (this.want_uri.substring(0, 7) == 'file://') {
-      this.want_file();
-    } else {
-      this.want_web();
-    }
-
-    // Respond to want
-    this.want_uri = "";
-  }
-
-  want_file() {
-    // TODO: Find a more elegant way to open things...
-    console.log('[Meow][Index][Want] Want uri is file://. Copying file to sandbox root!');
-    // Copy want file
-    // try {
-    //   let file_content = uri_read_text_sync(this.want_uri);
-    //   this.uni_new_tab_gateway = 'data:text/html, ' + encodeURIComponent(file_content);
-    //   // let want_file_uri = copy_from_uri_to_sandbox(this.want_uri, '', 'want-cache.html');
-    //   // this.uni_new_tab_gateway = want_file_uri;
-    // } catch (e) {
-    //   console.error(e);
-    // }
-  }
-
-  want_web() {
-    if (this.want_action == "ohos.want.action.viewData") {
-      console.log('[Meow][Index] Load want uri: ' + this.want_uri);
-      this.uni_new_tab_gateway = this.want_uri;
-    }
-  }
 
   /**
    * Universal Go back function

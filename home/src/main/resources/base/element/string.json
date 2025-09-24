@@ -614,7 +614,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "feat: Save images in Scratching Board to Gallery!\nfix: Images dropped to Scratching Board are now renamed with timestamp to prevent collision.\nimprove: Submit / Enter to start downloading after editing file name!\nimprove: Quick copy link or title by clicking the \uDB80\uDC61 More Into page information!\nimprove: Auto deletes generated profile.zip on start up.\nfeat: Printing from web!\nfix: fixed cannot copy links from Scratching Board bug."
+      "value": "Code: Increased Stability!"
     },
     {
       "name": "Whats_new_content_extra",

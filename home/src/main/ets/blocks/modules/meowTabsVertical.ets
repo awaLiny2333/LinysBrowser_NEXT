@@ -10,9 +10,14 @@ import { sandbox_read_arrayBuffer_sync, sandbox_unlink_sync } from '../../utils/
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { allow_drop_types, drop_to_scratching_board } from '../../utils/drag_drop_tools';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
+import { check_want } from '../../utils/want_tools';
 
 @Component
 struct meowTabs {
+  // Want
+  @StorageLink('want_uri') @Watch('on_want') want_uri: string = 'want';
+  @StorageLink('want_action') want_action: string = '';
+  @StorageLink('want_type') want_type: string = '';
   // Hosts and environments
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
@@ -25,6 +30,10 @@ struct meowTabs {
   @StorageLink('search_input_source') search_input_update_source: string = "tab_switch";
   @StorageProp('is_search_input_typing') is_search_input_typing: boolean = false;
   @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
+  // Surf
+  @StorageProp('home_url') home_url: string = '';
+  @StorageProp('new_tab_url') new_tab_url: string = '';
+  @StorageProp('start_up_option') start_up_option: string = '';
   // Controls
   @StorageLink('tab_titles') tab_titles: string[] = []
   @StorageLink('current_title') current_title: string = "=￣ω￣=";
@@ -77,14 +86,7 @@ struct meowTabs {
   pan_x: number = 0;
 
   async aboutToAppear() {
-    // set Intelligent Tracking Prevention
-    this.intelligent_tracking_prevention =
-      await this.bunch_of_settings.get('intelligent_tracking_prevention') as boolean;
-
     // Get Data
-    let home_url = await this.bunch_of_settings.get('home_url') as string;
-    let new_tab_url = await this.bunch_of_settings.get('new_tab_url') as string;
-    let start_up_option = await this.bunch_of_settings.get('start_up_option') as string;
     let continue_tabs_count_string = await kv_store_get("continue_tabs_count");
     let continue_tabs_main_on_string = await kv_store_get("continue_tabs_main_on");
     let continue_tabs_sub_on_string = await kv_store_get("continue_tabs_sub_on");
@@ -92,9 +94,9 @@ struct meowTabs {
     let continue_tabs_main_on = 0;
     let continue_tabs_sub_on = 0;
 
-    this.bunch_of_tabs.start_up = start_up_option;
-    this.bunch_of_tabs.new_tab_url = new_tab_url;
-    this.bunch_of_tabs.home_url = home_url;
+    this.bunch_of_tabs.start_up = this.start_up_option;
+    this.bunch_of_tabs.new_tab_url = this.new_tab_url;
+    this.bunch_of_tabs.home_url = this.home_url;
 
     if (continue_tabs_count_string == "undefined") {
       kv_store_put("continue_tabs_count", "0");
@@ -123,27 +125,16 @@ struct meowTabs {
     console.log("[Meow][meowTabs] Got continue_tabs_sub_on: " + continue_tabs_sub_on_string);
 
     // Start Up: generate / recover tabs
-    if (start_up_option == "new tab") {
-      this.new_tab(new_tab_url);
-      if (new_tab_url == "") {
-        // If is default blank page
-      } else {
+    if (this.start_up_option == "new tab") {
+      this.new_tab(this.new_tab_url);
+      this.switch_tab(0, false);
 
-      }
-      this.switch_tab(0);
-
-    } else if (start_up_option == "home") {
-      if (home_url == "") {
-        this.new_tab(url_default_blank());
-      } else {
-
-        this.new_tab(home_url);
-      }
-      this.switch_tab(0);
+    } else if (this.start_up_option == "home") {
+      this.new_tab((this.home_url == "") ? url_default_blank() : this.home_url);
+      this.switch_tab(0, false);
 
     } else {
-      // continue
-      // Prepare web states
+      // Restore. Prepare web states.
       let web_state_arrays_to_restore: Uint8Array[] = [];
       for (let index = 0; index < continue_tabs_count; index++) {
         // Read continue tabs data
@@ -152,8 +143,8 @@ struct meowTabs {
         if (array_buffer) {
           web_state_arrays_to_restore.push(new Uint8Array(array_buffer));
         } else {
-          // An unexpected error may occur.
-          web_state_arrays_to_restore.push(new Uint8Array())
+          // An unexpected error may occur: array_buffer may be empty.
+          web_state_arrays_to_restore.push(new Uint8Array());
           this.current_sub_tab_index = -1;
           this.current_main_tab_index = 0;
         }
@@ -169,7 +160,7 @@ struct meowTabs {
 
       // Try to switch tab
       this.tab_animation = { duration: 0 };
-      this.switch_tab(continue_tabs_main_on);
+      this.switch_tab(continue_tabs_main_on, false);
       this.sync_all_list_info();
 
       // Recover Paralleow
@@ -179,6 +170,9 @@ struct meowTabs {
     }
 
     this.recover_tabs_finished = true;
+
+    // Want
+    check_want(this.want_uri, this.want_action, this.want_type);
   }
 
   build() {
@@ -212,7 +206,7 @@ struct meowTabs {
       .width("100%")
       .height(this.scroll_area_height - (this.choosing_paralleow || this.current_sub_tab_index >= 0 ? this.paralleow_description_height : 0))
       .animation(animation_default())
-      .nestedScroll({scrollForward:NestedScrollMode.SELF_ONLY,scrollBackward:NestedScrollMode.SELF_ONLY})
+      .nestedScroll({ scrollForward: NestedScrollMode.SELF_ONLY, scrollBackward: NestedScrollMode.SELF_ONLY })
 
       Row({ space: 10 }) {
         linysTimeoutButton({
@@ -355,8 +349,8 @@ struct meowTabs {
     this.count_down_for_scrolling_to_bottom = 30;
   }
 
-  switch_tab(target: number) {
-    if (!this.tablet_mode) {
+  switch_tab(target: number, close_tabs_panel: boolean = true) {
+    if (!this.tablet_mode && close_tabs_panel) {
       // Auto close panel
       if (this.tabs_style_non_tablet_mode == "vertical") {
         this.showing_tabs = false;
@@ -632,19 +626,23 @@ struct meowTabs {
   }
 
   uni_new_tab() {
+    console.log('[meowTabsVertical][uni_new_tab] ' + this.new_tab_gateway);
     // console.log('qwq_new_tab')
     let tab = this.new_tab_gateway;
-    if (tab != "") {
-      if (tab == "new_tab") {
-        tab = ""
-      }
 
-      this.new_tab(tab);
-      setTimeout(() => {
-        // Avoid opening duplicate tabs, idk why
-        this.new_tab_gateway = "";
-      }, 20)
+    if (tab == "") {
+      return;
     }
+
+    if (tab == "new_tab") {
+      tab = ""
+    }
+
+    this.new_tab(tab);
+    setTimeout(() => {
+      // Avoid opening duplicate tabs, idk why
+      this.new_tab_gateway = "";
+    }, 20)
   }
 
   uni_close_tab() {
@@ -667,6 +665,13 @@ struct meowTabs {
         this.load_url_gateway = "";
       }, 50)
     }
+  }
+
+  /**
+   * Respond to wants
+   * */
+  on_want() {
+    check_want(this.want_uri, this.want_action, this.want_type);
   }
 
   // Data
@@ -746,7 +751,7 @@ struct TabButton {
         radius: 10,
         width: 2,
         color: (this.current_main_tab_index == this.Label.index_key || this.current_sub_tab_index == this.Label.index_key) ?
-        this.color_current_font : "transparent"
+          this.color_current_font : "transparent"
       })
       .backgroundColor(this.color_current_secondary)
       .animation(animation_default())

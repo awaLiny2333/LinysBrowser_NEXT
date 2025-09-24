@@ -8,8 +8,6 @@ import { export_json_kv_store, import_json_kv_store } from './kv_store_tools';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { meowContext } from './environment_tools';
 
-let context = AppStorage.get("context") as common.UIAbilityContext;
-
 // Pick & Save
 
 /**
@@ -19,7 +17,7 @@ let context = AppStorage.get("context") as common.UIAbilityContext;
 export async function download_save_from_path(path: string) {
   let uri: string = '';
   // 请在组件内获取context，确保this.getUIContext().getHostContext()返回结果为UIAbilityContext
-  const documentViewPicker = new picker.DocumentViewPicker(context);
+  const documentViewPicker = new picker.DocumentViewPicker(meowContext());
   const documentSaveOptions = new picker.DocumentSaveOptions();
   documentSaveOptions.pickerMode = picker.DocumentPickerMode.DOWNLOAD;
   await documentViewPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
@@ -51,7 +49,7 @@ export function document_save_text(file_name: string, content: string) {
     let documentSaveOptions = new picker.DocumentSaveOptions();
     documentSaveOptions.newFileNames = [file_name];
     // documentSaveOptions.fileSuffixChoices = [".html", ".txt", ".json"];
-    let documentPicker = new picker.DocumentViewPicker(context);
+    let documentPicker = new picker.DocumentViewPicker(meowContext());
 
     documentPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
       target_uri = documentSaveResult
@@ -89,7 +87,7 @@ export async function document_save_from_uri(from: string, file_name_overwrite?:
 
     let documentSaveOptions = new picker.DocumentSaveOptions();
     documentSaveOptions.newFileNames = [file_name];
-    let documentPicker = new picker.DocumentViewPicker(context);
+    let documentPicker = new picker.DocumentViewPicker(meowContext());
 
     await documentPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
       let target_uri = documentSaveResult
@@ -168,7 +166,7 @@ export async function document_pick_to_text(suffixFilters?: string[]) {
   let target_uri: string[] = [];
 
   try {
-    let documentPicker = new picker.DocumentViewPicker(context);
+    let documentPicker = new picker.DocumentViewPicker(meowContext());
     let contents: string = "";
     await documentPicker.select({ maxSelectNumber: 1, fileSuffixFilters: suffixFilters || [".html", ".txt"] })
       .then((documentSelectResult) => {
@@ -205,7 +203,7 @@ export async function image_pick_to_ArrayBuffer() {
   let selected_uri: string[] = [];
 
   try {
-    let documentPicker = new picker.DocumentViewPicker(context);
+    let documentPicker = new picker.DocumentViewPicker(meowContext());
     let buf: ArrayBuffer | undefined = undefined;
 
     await documentPicker.select({
@@ -249,7 +247,7 @@ export async function image_pick_to_ArrayBuffer() {
  * @param content A string or an ArrayBuffer, fills the file's content.
  * */
 export function sandbox_save(file_name: string, content: string | ArrayBuffer, context_filesDir?: string) {
-  let filesDir: string = context_filesDir || context.filesDir;
+  let filesDir: string = context_filesDir || meowContext().filesDir;
   let full_file_directory = filesDir + '/' + file_name;
   if (fs.accessSync(full_file_directory)) {
     fs.unlinkSync(full_file_directory);
@@ -265,7 +263,7 @@ export function sandbox_save(file_name: string, content: string | ArrayBuffer, c
  * @param file_name A string, the path of the file.
  * */
 export function sandbox_unlink(file_name: string, context_filesDir?: string) {
-  let filesDir: string = context_filesDir || context.filesDir;
+  let filesDir: string = context_filesDir || meowContext().filesDir;
   let full_file_directory = filesDir + '/' + file_name;
   try {
     fs.unlink(full_file_directory);
@@ -281,7 +279,7 @@ export function sandbox_unlink(file_name: string, context_filesDir?: string) {
  * @param file_name A string, the path of the file.
  * */
 export function sandbox_unlink_sync(file_name: string, context_filesDir?: string) {
-  let filesDir: string = context_filesDir || context.filesDir;
+  let filesDir: string = context_filesDir || meowContext().filesDir;
   let full_file_directory = filesDir + '/' + file_name;
   try {
     fs.unlinkSync(full_file_directory);
@@ -297,7 +295,7 @@ export function sandbox_unlink_sync(file_name: string, context_filesDir?: string
  * @param dir_name A string, the path of the file.
  * */
 export function sandbox_rmdir_sync(dir_name: string, context_filesDir?: string) {
-  let filesDir: string = context_filesDir || context.filesDir;
+  let filesDir: string = context_filesDir || meowContext().filesDir;
   let full_dir_directory = filesDir + '/' + dir_name;
   try {
     fs.rmdirSync(full_dir_directory);
@@ -315,7 +313,7 @@ export function sandbox_rmdir_sync(dir_name: string, context_filesDir?: string) 
  * @returns A string, of the requested file's content.
  * */
 export function sandbox_read_text_sync(file_name: string, context_filesDir?: string) {
-  let filesDir: string = context_filesDir || context.filesDir;
+  let filesDir: string = context_filesDir || meowContext().filesDir;
   file_name = filesDir + "/" + file_name
   if (!(fs.accessSync(file_name))) {
     // file doesn't exist
@@ -362,7 +360,7 @@ export function uri_read_text_sync(file_uri: string) {
  * @returns An ArrayBuffer, of the requested file's content.
  * */
 export function sandbox_read_arrayBuffer_sync(file_path_name: string, context_filesDir?: string) {
-  let filesDir: string = context_filesDir || context.filesDir;
+  let filesDir: string = context_filesDir || meowContext().filesDir;
   file_path_name = filesDir + "/" + file_path_name
   if (!(fs.accessSync(file_path_name))) {
     // file doesn't exist
@@ -385,10 +383,10 @@ export function sandbox_read_arrayBuffer_sync(file_path_name: string, context_fi
  * THIS IS A SYNC FUNCTION
  * @param from from a uri (file://).
  * @param to a sandbox directory, the new parent folder of this file (in sandbox).
- * @returns a sandbox uri, root is context.filesDir.
+ * @returns a sandbox uri, root is meowContext().filesDir.
  * */
 export function copy_from_uri_to_sandbox(from: string, to: string, max_name_length?: number): string {
-  let filesDir: string = context.filesDir;
+  let filesDir: string = meowContext().filesDir;
   let max_name_l: number = max_name_length || 64;
   // Get from path
   const from_path = new fileUri.FileUri(from).path;
@@ -413,13 +411,13 @@ export function copy_from_uri_to_sandbox(from: string, to: string, max_name_leng
  * @param to
  * */
 export function copy_from_rawfile_to_sandbox(from: string, to: string) {
-  let boxPath = context.filesDir
+  let boxPath = meowContext().filesDir
   let to_split = to.split("/");
   let folderPath = boxPath + "/" + to_split.slice(0, to_split.length - 2).join("/");
   let fullPath = boxPath + "/" + to
 
   // 获取rawfile资源文件，转换数据
-  let uint8Array: Uint8Array = context.resourceManager.getRawFileContentSync(from);
+  let uint8Array: Uint8Array = meowContext().resourceManager.getRawFileContentSync(from);
   let bf = buffer.from(uint8Array).buffer;
 
   // 创建沙箱目录
@@ -446,7 +444,7 @@ export function copy_from_rawfile_to_sandbox(from: string, to: string) {
  * */
 export async function get_download_uri() {
   let uri: string = '';
-  const documentViewPicker = new picker.DocumentViewPicker(context);
+  const documentViewPicker = new picker.DocumentViewPicker(meowContext());
   const documentSaveOptions = new picker.DocumentSaveOptions();
   documentSaveOptions.pickerMode = picker.DocumentPickerMode.DOWNLOAD;
   await documentViewPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
@@ -607,8 +605,8 @@ export async function export_everything() {
   sandbox_unlink_sync('profile.zip');
   sandbox_rmdir_sync('temp');
 
-  let inFile = context.filesDir;
-  let outFile = context.filesDir + '/profile.zip';
+  let inFile = meowContext().filesDir;
+  let outFile = meowContext().filesDir + '/profile.zip';
 
   let options: zlib.Options = {
     level: zlib.CompressLevel.COMPRESS_LEVEL_DEFAULT_COMPRESSION,
@@ -642,14 +640,14 @@ export async function export_everything() {
  * */
 export async function import_everything() {
   try {
-    fs.mkdirSync(context.filesDir + '/temp')
+    fs.mkdirSync(meowContext().filesDir + '/temp')
   } catch (e) {
     console.error('[storage_tools][import_everything] Create temp dir error: ' + e);
   }
 
   try {
     let selected_uri: string[] = [];
-    let documentPicker = new picker.DocumentViewPicker(context);
+    let documentPicker = new picker.DocumentViewPicker(meowContext());
 
     await documentPicker.select({
       maxSelectNumber: 1,
@@ -667,7 +665,7 @@ export async function import_everything() {
 
     // Decompress
     let inFile = new fileUri.FileUri(selected_uri[0]).path;
-    let outFileDir = context.filesDir + '/temp';
+    let outFileDir = meowContext().filesDir + '/temp';
     let options: zlib.Options = {
       level: zlib.CompressLevel.COMPRESS_LEVEL_DEFAULT_COMPRESSION,
       // parallel: zlib.ParallelStrategy.PARALLEL_STRATEGY_PARALLEL_DECOMPRESSION
@@ -678,8 +676,8 @@ export async function import_everything() {
 
         // Traverse all files and folders
         // Clear sandbox
-        fs.listFileSync(context.filesDir).forEach((item) => {
-          const fullPath = context.filesDir + '/' + item;
+        fs.listFileSync(meowContext().filesDir).forEach((item) => {
+          const fullPath = meowContext().filesDir + '/' + item;
           const stat = fs.statSync(fullPath);
           if (stat.isDirectory()) {
             if (item !== 'temp') {
@@ -691,17 +689,17 @@ export async function import_everything() {
         });
 
         // Traverse temp and copy
-        fs.listFileSync(context.filesDir + '/temp').forEach((item) => {
-          const fullPath = context.filesDir + '/temp/' + item;
-          const target = context.filesDir + '/' + item;
+        fs.listFileSync(meowContext().filesDir + '/temp').forEach((item) => {
+          const fullPath = meowContext().filesDir + '/temp/' + item;
+          const target = meowContext().filesDir + '/' + item;
           // console.log(fullPath);
           const stat = fs.statSync(fullPath);
           if (stat.isDirectory()) {
-            fs.copyDirSync(fullPath, context.filesDir);
-            console.log('[storage_tools][import_everything] copyDirSync from ' + fullPath + ', to ' + context.filesDir + '/' + item);
+            fs.copyDirSync(fullPath, meowContext().filesDir);
+            console.log('[storage_tools][import_everything] copyDirSync from ' + fullPath + ', to ' + meowContext().filesDir + '/' + item);
           } else {
             fs.copyFileSync(fullPath, target);
-            console.log('[storage_tools][import_everything] copyFileSync from ' + fullPath + ', to ' + context.filesDir + '/' + item);
+            console.log('[storage_tools][import_everything] copyFileSync from ' + fullPath + ', to ' + meowContext().filesDir + '/' + item);
           }
         });
 

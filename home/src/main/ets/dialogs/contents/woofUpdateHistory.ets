@@ -11,6 +11,10 @@ struct woofUpdateHistory {
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @State texts: string[] = [
+    'v1.7.9-beta 2025 09',
+    '一个修缮性的更新！将更稳定的使用体验带入冲浪喵～',
+    'A maintenance update! Bringing a more stable using experience into BrowserCat~',
+
     'v1.7.8-beta 2025 07',
     '一个补充性的更新！将浏览器界面右键支持、权限申请、更好的页面内搜索、网页打印、Blob 下载支持、代理下载支持、跨设备接续等功能带入冲浪喵～',
     'A supplementary update! Bringing right click support for ui, Permission Request, better in-page searching, web printing, ' +
