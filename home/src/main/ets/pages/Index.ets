@@ -17,7 +17,7 @@ import { window } from '@kit.ArkUI';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 import { deviceInfo } from '@kit.BasicServicesKit';
 import woofHistory from '../dialogs/managers/woofHistory';
-import { meowContext } from '../utils/environment_tools';
+import { meowContext, meowPx2vp } from '../utils/environment_tools';
 import { print_web } from '../utils/print_tools';
 
 @Entry
@@ -66,6 +66,8 @@ struct Index {
     middle: { anchor: "__container__", align: HorizontalAlign.Center },
     bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
   };
+  @StorageLink('delayed_load') delayed_load: boolean = false;
+  delay: number = 800;
   // Interactions
   @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
   @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
@@ -134,11 +136,22 @@ struct Index {
   async aboutToAppear(): Promise<void> {
     console.log(' \n[Meow][Index]\n ');
 
+    // Determine tablet mode
+    await window.getLastWindow(this.getUIContext().getHostContext()).then((value: window.Window) => {
+      const rect: window.Rect = value.getWindowProperties().windowRect;
+      this.tablet_mode = meowPx2vp(rect.width) > 600;
+    })
+
     // Init title bar
     this.on_title_bar_position_change();
 
     // Init color
     this.on_color_change();
+
+    // Trigger delayed load
+    setTimeout(() => {
+      this.delayed_load = true;
+    }, this.delay)
   }
 
   onPageShow(): void {
@@ -360,7 +373,6 @@ struct Index {
         });
       }
     })
-
   }
 
   on_bunch_of_key_shortcuts_change() {

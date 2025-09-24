@@ -45,6 +45,7 @@ struct meowWebView {
   @StorageLink('current_in_page_searching_stats_current') current_in_page_searching_stats_current: number = 0;
   @StorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
   @StorageLink('current_in_page_searching_keyword') current_in_page_searching_keyword: string = ''
+  @StorageLink('delayed_load') delayed_load: boolean = false;
   // Web control statuses
   @StorageLink('current_accessForward') current_accessForward: boolean = false;
   @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
@@ -225,7 +226,7 @@ struct meowWebView {
   //   // .height(350)
   // }
 
-  async aboutToAppear(): Promise<void> {
+  aboutToAppear(): void {
 
     // Init download delegate
     this.bunch_of_downloads.init_delegate();
@@ -550,7 +551,8 @@ struct meowWebView {
       .align(Alignment.Bottom)
       .edgeEffect(EdgeEffect.Spring)
       .animation(animation_default())
-      .visibility(this.current_url == 'meow://home' && this.current_sub_tab_index == -1 ? Visibility.Visible : Visibility.None)
+      .scrollBar(BarState.Off)
+      .visibility((this.current_url == 'meow://home' && this.current_sub_tab_index == -1) ? Visibility.Visible : Visibility.None)
       .onDidScroll(() => {
         this.shortcut_scroll_offset = this.shortcut_scroller.currentOffset().yOffset;
       })
@@ -814,37 +816,6 @@ struct meowWebView {
     }
     this.extra_background = need_extra_background;
   }
-
-  /**
-   * Determines if an overwrite file name could be cut out and used
-   * @param contentDisposition e.g. "filename='qwq.txt'; type: TEXT"
-   * @returns a file name
-   * */
-  private cut_filename_overwrite(contentDisposition: string) {
-    let name_overwrite = '';
-
-    let filename_start = contentDisposition.toLowerCase().indexOf('filename=');
-    if (filename_start == -1) {
-      return '';
-    }
-    filename_start += 9;
-
-    let filename_end = contentDisposition.indexOf(';', filename_start);
-    if (filename_end == -1) {
-      filename_end = contentDisposition.length;
-    }
-
-    // cut out file_name_overwrite
-    name_overwrite = contentDisposition.slice(filename_start, filename_end);
-
-    // eliminate quotes
-    let last_idx = name_overwrite.length - 1;
-    if (["'", '"'].includes(name_overwrite[last_idx])) {
-      name_overwrite = name_overwrite.slice(1, last_idx);
-    }
-
-    return name_overwrite;
-  }
 }
 
 export default meowWebView;
@@ -953,6 +924,6 @@ struct shortcutButton {
     } else {
       unit_interval = 60;
     }
-    return this.my_index * unit_interval + 100;
+    return this.my_index * unit_interval + 0;
   }
 }
