@@ -2,8 +2,6 @@ import { default_search_engine } from '../hosts/bunch_of_defaults';
 import { Want } from '@kit.AbilityKit';
 import { meowContext } from './environment_tools';
 
-2
-
 /**
  * Process the search_input into a visitable address.
  * @param search_input A string, the user input to search or visit.

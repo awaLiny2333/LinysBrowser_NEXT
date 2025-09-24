@@ -218,7 +218,7 @@ struct meowTitleBar {
           .animation(animation_default())
       }
 
-      meowTabsHorizontal()// Horizontal tabs
+      meowTabsHorizontal() // Horizontal tabs
         .visibility(this.visibility_of_horizontal_tabs())
         .animation(animation_default())
         .onAreaChange((_oo, n) => {
@@ -368,7 +368,7 @@ struct meowTitleBar {
                 .id('address_bar')
                 .keyboardShortcut(!this.showing_search_extracted_field ? this.bunch_of_key_shortcuts.focus_address.main_key : '',
                   this.bunch_of_key_shortcuts.focus_address.modifier)
-            }
+            } // Extract
             .scrollable(ScrollDirection.Vertical)
             .height(this.showing_search_extracted_field ? 0 : 36)
             .scrollBar(BarState.Off)
@@ -415,7 +415,7 @@ struct meowTitleBar {
                 .id('key_bar')
                 .keyboardShortcut(this.showing_search_extracted_field ? this.bunch_of_key_shortcuts.focus_address.main_key : '',
                   this.bunch_of_key_shortcuts.focus_address.modifier)
-            }
+            } // URL
             .scrollable(ScrollDirection.Vertical)
             .scrollBar(BarState.Off)
             .height(this.showing_search_extracted_field ? 36 : 0)
@@ -1122,14 +1122,13 @@ struct meowTitleBar {
 
   submit_searching() {
     if (this.search_input_unified != "") {
-      let unified_url: string = this.search_input_unified;
       try {
-        this.bunch_of_tabs.loadUrl_onWorkingTab(unified_url);
+        this.bunch_of_tabs.loadUrl_onWorkingTab(this.search_input_unified);
       } catch (e) {
-        console.error('[Meow][meowTitleBar][submit_searching][loadUrl_onWorkingTab] ' + e);
-        console.error('\t' + unified_url);
+        console.error('[Meow][meowTitleBar][submit_searching][loadUrl_onWorkingTab] ' + e + '\n\t' + this.search_input_unified);
       }
     }
+    // Flip url field if needed
     if (!this.is_search_input_address) {
       this.showing_search_extracted_field = true;
     }
@@ -1242,7 +1241,7 @@ struct EstimatedDestination {
         linysText({
           text: this.is_http_no_s ? "http" : "https"
         })
-      }
+      } // Https icon
       .padding(8)
       .onClick(() => {
         this.is_http_no_s = !this.is_http_no_s;
