@@ -1,15 +1,15 @@
-import linysTextTitle from '../../components/texts/linysTextTitle';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import { animation_default, animation_popup_duration, click_effect_default, minimum_card_width } from '../../hosts/bunch_of_defaults';
 import { request } from '@kit.BasicServicesKit';
-import linysText from '../../components/texts/linysText';
-import { copy } from '../../utils/clipboard_tools';
-import { add_units_to_size, get_download_uri } from '../../utils/storage_tools';
+import lazy { add_units_to_size, get_download_uri } from '../../utils/storage_tools';
+import lazy { open_file_uri } from '../../utils/link_tools';
+import lazy { copy } from '../../utils/clipboard_tools';
+import linysTextTitle from '../../components/texts/linysTextTitle';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
-import { open_file_uri } from '../../utils/link_tools';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
+import linysText from '../../components/texts/linysText';
 
 @Component
 struct meowDownloads {
@@ -350,12 +350,6 @@ struct meowDownloadCard {
     this.bunch_of_downloads.save_downloaded_item_to_local(this.my_index).then(() => {
       this.exporting = false;
     })
-    // this.bunch_of_downloads.save_downloaded_item_to_download(this.my_index).then((uri_back) => {
-    //   this.exporting = false;
-    //   if (uri_back) {
-    //     open_file_uri(uri_back);
-    //   }
-    // })
   }
 
   private set_formatted_download_progress() {

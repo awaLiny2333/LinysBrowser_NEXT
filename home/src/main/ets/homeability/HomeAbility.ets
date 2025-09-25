@@ -1,6 +1,6 @@
 import { AbilityConstant, Configuration, UIAbility, Want, wantConstant } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { display, window } from '@kit.ArkUI';
+import { window } from '@kit.ArkUI';
 import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
 import { meow_init } from '../processes/init';
 import { meowPx2vp } from '../utils/environment_tools';

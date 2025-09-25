@@ -1,7 +1,4 @@
-import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
-import linysText from '../../components/texts/linysText';
-import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
-import { arrayBuffer_2_pixelMap, image_pick_to_ArrayBuffer, sandbox_save, sandbox_unlink } from '../../utils/storage_tools';
+import lazy { arrayBuffer_2_pixelMap, image_pick_to_ArrayBuffer, sandbox_save, sandbox_unlink } from '../../utils/storage_tools';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
 

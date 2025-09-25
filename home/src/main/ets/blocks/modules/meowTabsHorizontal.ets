@@ -1,11 +1,12 @@
-import linysShowButton from '../../components/buttons/linysShowButton';
-import linysSymbol from '../../components/texts/linysSymbol';
 import { animation_default, click_effect_default, fontSize_Large, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { LengthMetrics } from '@kit.ArkUI';
-import { allow_drop_types, drop_to_scratching_board } from '../../utils/drag_drop_tools';
-import linysText from '../../components/texts/linysText';
 import { deviceInfo } from '@kit.BasicServicesKit';
+import lazy { drop_to_scratching_board } from '../../utils/drag_drop_tools';
+import { allow_drop_types } from '../../utils/drag_drop_tools';
+import linysShowButton from '../../components/buttons/linysShowButton';
+import linysSymbol from '../../components/texts/linysSymbol';
+import linysText from '../../components/texts/linysText';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 
 @Component
@@ -165,7 +166,7 @@ struct meowTabsHorizontal {
             this.choose_paralleow();
           })
           .visibility(this.tab_titles.length > 1 ? Visibility.Visible :
-          Visibility.Hidden)// .margin({ left: 4, bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0 })
+            Visibility.Hidden)// .margin({ left: 4, bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0 })
           .animation(animation_default())
 
         linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })// New tab

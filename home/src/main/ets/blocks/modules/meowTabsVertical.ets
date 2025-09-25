@@ -1,19 +1,20 @@
-import linysSymbol from '../../components/texts/linysSymbol';
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { url_resource_to_meow } from '../../utils/url_tools';
 import { animation_default, click_effect_default, fontSize_Large, fontSize_Normal, url_default_blank } from '../../hosts/bunch_of_defaults';
-import { kv_store_get, kv_store_put } from '../../utils/kv_store_tools';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
-import linysShowButton from '../../components/buttons/linysShowButton';
-import linysText from '../../components/texts/linysText';
 import { sandbox_read_arrayBuffer_sync, sandbox_unlink_sync } from '../../utils/storage_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
-import { allow_drop_types, drop_to_scratching_board } from '../../utils/drag_drop_tools';
-import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import { check_want } from '../../utils/want_tools';
+import lazy { kv_store_put } from '../../utils/kv_store_tools';
+import lazy { drop_to_scratching_board } from '../../utils/drag_drop_tools';
+import { allow_drop_types } from '../../utils/drag_drop_tools';
+import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
+import linysText from '../../components/texts/linysText';
+import linysShowButton from '../../components/buttons/linysShowButton';
+import linysSymbol from '../../components/texts/linysSymbol';
 
 @Component
-struct meowTabs {
+struct meowTabsVertical {
   // Want
   @StorageLink('want_uri') @Watch('on_want') want_uri: string = 'want';
   @StorageLink('want_action') want_action: string = '';
@@ -46,6 +47,9 @@ struct meowTabs {
   @StorageLink('current_in_page_searching_stats_current') current_in_page_searching_stats_current: number = 0;
   @StorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
   // Web control statuses
+  @StorageProp('continue_tabs_count') continue_tabs_count: number = 0;
+  @StorageProp('continue_tabs_main_on') continue_tabs_main_on: number = 0;
+  @StorageProp('continue_tabs_sub_on') continue_tabs_sub_on: number = 0;
   @StorageLink('current_main_tab_index') @Watch('on_did_switch_tab') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') @Watch('on_did_switch_tab') current_sub_tab_index: number = -1;
   @StorageLink('current_accessForward') current_accessForward: boolean = false;
@@ -54,6 +58,8 @@ struct meowTabs {
   @State recover_tabs_finished: boolean = false;
   @StorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
   @StorageLink('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
+  // Delay
+  @StorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
   // Animation info
   tab_height_default: number = 42;
   scroll_controller: Scroller = new Scroller();
@@ -85,43 +91,8 @@ struct meowTabs {
   pan_x: number = 0;
 
   async aboutToAppear() {
-    // Get Data
-    let continue_tabs_count_string = await kv_store_get("continue_tabs_count");
-    let continue_tabs_main_on_string = await kv_store_get("continue_tabs_main_on");
-    let continue_tabs_sub_on_string = await kv_store_get("continue_tabs_sub_on");
-    let continue_tabs_count = 0;
-    let continue_tabs_main_on = 0;
-    let continue_tabs_sub_on = 0;
-
-    this.bunch_of_tabs.start_up = this.start_up_option;
-    this.bunch_of_tabs.new_tab_url = this.new_tab_url;
-    this.bunch_of_tabs.home_url = this.home_url;
-
-    if (continue_tabs_count_string == "undefined") {
-      kv_store_put("continue_tabs_count", "0");
-      continue_tabs_count = 0;
-    } else {
-      continue_tabs_count = Number.parseInt(continue_tabs_count_string);
-    }
-
-    if (continue_tabs_main_on_string == "undefined") {
-      kv_store_put("continue_tabs_main_on", "0");
-      continue_tabs_main_on = 0;
-    } else {
-      continue_tabs_main_on = Number.parseInt(continue_tabs_main_on_string);
-    }
-
-    if (continue_tabs_sub_on_string == "undefined") {
-      kv_store_put("continue_tabs_sub_on", "-1");
-      continue_tabs_sub_on = -1;
-    } else {
-      continue_tabs_sub_on = Number.parseInt(continue_tabs_sub_on_string);
-    }
-
-    // Log
-    console.log("[Meow][meowTabs] Got continue_tabs_count: " + continue_tabs_count_string);
-    console.log("[Meow][meowTabs] Got continue_tabs_main_on: " + continue_tabs_main_on_string);
-    console.log("[Meow][meowTabs] Got continue_tabs_sub_on: " + continue_tabs_sub_on_string);
+    let t0 = Date.now();
+    let t = 0;
 
     // Start Up: generate / recover tabs
     if (this.start_up_option == "new tab") {
@@ -135,7 +106,7 @@ struct meowTabs {
     } else {
       // Restore. Prepare web states.
       let web_state_arrays_to_restore: Uint8Array[] = [];
-      for (let index = 0; index < continue_tabs_count; index++) {
+      for (let index = 0; index < this.continue_tabs_count; index++) {
         // Read continue tabs data
         let key = "continue/continue_tabs_web_state_array_" + index.toString();
         let array_buffer = sandbox_read_arrayBuffer_sync(key);
@@ -159,12 +130,12 @@ struct meowTabs {
 
       // Try to switch tab
       this.tab_animation = { duration: 0 };
-      this.switch_tab(continue_tabs_main_on, false);
+      this.switch_tab(this.continue_tabs_main_on, false);
       this.sync_all_list_info();
 
       // Recover Paralleow
-      if (continue_tabs_sub_on < this.tab_titles.length) {
-        this.current_sub_tab_index = continue_tabs_sub_on;
+      if (this.continue_tabs_sub_on < this.tab_titles.length) {
+        this.current_sub_tab_index = this.continue_tabs_sub_on;
       }
     }
 
@@ -172,140 +143,145 @@ struct meowTabs {
 
     // Want
     check_want(this.want_uri, this.want_action, this.want_type);
+
+    t = Date.now() - t0;
+    console.log('[Meow][init][meowTabsVertical] Tabs OK. (' + t + ' ms)');
   }
 
   build() {
-    Column({ space: 10 }) {
-      Scroll(this.scroll_controller) {
-        Column({ space: 5 }) {
-          ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
-            TabButton({
-              Label: Label,
-              extension_area: this.extension_area,
-              offset_area: this.offset_area,
-            })
-          }, (Label: tab_label) => Label.timestamp.toString())
-        }
-        .width("100%")
-        .onAreaChange((_o, n) => {
-          let my_height = n.height as number;
-          if (my_height > this.scroll_area_height) {
-            // Scroll Enabled, animation disabled
-            this.scroll_animation_enabled = false;
-          } else {
-            // Scroll Disabled, animation enabled
-            this.scroll_animation_enabled = true;
+    if (this.delayed_load_p1) {
+      Column({ space: 10 }) {
+        Scroll(this.scroll_controller) {
+          Column({ space: 5 }) {
+            ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
+              TabButton({
+                Label: Label,
+                extension_area: this.extension_area,
+                offset_area: this.offset_area,
+              })
+            }, (Label: tab_label) => Label.timestamp.toString())
           }
-        })
-
-      } // Tab Buttons List
-      .direction(Direction.Rtl)
-      .align(Alignment.Bottom)
-      .edgeEffect(this.count_down_for_switching_back_to_spring == 0 ? EdgeEffect.Spring : EdgeEffect.None)
-      .width("100%")
-      .height(this.scroll_area_height - (this.choosing_paralleow || this.current_sub_tab_index >= 0 ? this.paralleow_description_height : 0))
-      .animation(animation_default())
-      .nestedScroll({ scrollForward: NestedScrollMode.SELF_ONLY, scrollBackward: NestedScrollMode.SELF_ONLY })
-
-      Row({ space: 10 }) {
-        linysTimeoutButton({
-          text: '  󰀁  ',
-          onExecution: () => {
-            this.close_all_tabs_gateway = Date.now();
-          }
-        })
-          .visibility(this.choosing_paralleow || this.current_sub_tab_index >= 0 ? Visibility.None : Visibility.Visible)
-          .animation(animation_default())
-
-        Blank()
-
-        linysShowButton({
-          symbol_glyph_target: 'sys.symbol.map',
-          show: this.choosing_paralleow || this.current_sub_tab_index >= 0,
-          text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
-        })
-          .onClick(() => {
-            this.choose_paralleow();
-          })
-          .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden)
-          .animation(animation_default())
-
-        linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
-          .onClick(() => {
-            this.new_tab("")
-          })
-          .keyboardShortcut(this.bunch_of_key_shortcuts.new_tab.main_key, this.bunch_of_key_shortcuts.new_tab.modifier)
-      } // New Tab and Paralleow Button
-      .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
-      .width("100%")
-
-      Scroll() {
-        linysText({ text: $r('app.string.Paralleow_description'), max_lines: 4 })
+          .width("100%")
           .onAreaChange((_o, n) => {
-            this.paralleow_description_height = n.height as number + 16;
+            let my_height = n.height as number;
+            if (my_height > this.scroll_area_height) {
+              // Scroll Enabled, animation disabled
+              this.scroll_animation_enabled = false;
+            } else {
+              // Scroll Disabled, animation enabled
+              this.scroll_animation_enabled = true;
+            }
           })
-      } // Paralleow Introduction
-      .align(Alignment.TopStart)
-      .width("100%")
-      .height(this.choosing_paralleow || this.current_sub_tab_index >= 0 ? this.paralleow_description_height : 0)
-      .visibility(this.choosing_paralleow || this.current_sub_tab_index >= 0 ? Visibility.Visible : Visibility.None)
-      .animation(animation_default())
-      .scrollBar(BarState.Off)
-      .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.PARENT_FIRST })
 
-    } // Tabs Panel
-    .justifyContent(FlexAlign.End)
-    // .padding(10)
-    .width("100%")
-    .height("100%")
-    .onAppear(() => {
-      this.extension_area = [];
-      this.offset_area = [];
-      for (let i = 0; i < this.bunch_of_tabs.Tabs.length; i++) {
-        this.extension_area.push(0);
-        this.offset_area.push(0);
-      }
-      // Init extension_area
-      setInterval(() => {
-        this.on_timer();
-      }, 10)
-      // Set Task to calculate animation
-      // console.log("[Meow][meowTabs] Tabs Panel READY")
-    })
-    .onAreaChange((_o, n) => {
-      this.scroll_area_height = n.height as number - 60;
-    })
-    .allowDrop(allow_drop_types())
-    .onDrop((e) => {
-      drop_to_scratching_board(e);
-    })
-    .onDragEnter(() => {
-      this.showing_scratching_board = true;
-      this.showing_more_options = false;
-    })
-    .onDragLeave(() => {
-      this.showing_scratching_board = false;
-    })
-    .gesture(
-      PanGesture({ direction: PanDirection.Left | PanDirection.Right })
-        .onActionStart(() => {
-          this.pan_x = 0;
-        })
-        .onActionUpdate((e) => {
-          this.pan_x += e.offsetX;
-        })
-        .onActionEnd(() => {
-          if (this.pan_x < 0) {
-            // ← Switch to Bookmarks
-            this.showing_bookmarks = true;
-            this.showing_tabs = false;
-          }
-          if (this.pan_x > 0 && this.is_right_align()) {
-            // → Right Align Close panel
-            this.showing_tabs = false;
-          }
-        })
-    )
+        } // Tab Buttons List
+        .direction(Direction.Rtl)
+        .align(Alignment.Bottom)
+        .edgeEffect(this.count_down_for_switching_back_to_spring == 0 ? EdgeEffect.Spring : EdgeEffect.None)
+        .width("100%")
+        .height(this.scroll_area_height - (this.choosing_paralleow || this.current_sub_tab_index >= 0 ? this.paralleow_description_height : 0))
+        .animation(animation_default())
+        .nestedScroll({ scrollForward: NestedScrollMode.SELF_ONLY, scrollBackward: NestedScrollMode.SELF_ONLY })
+
+        Row({ space: 10 }) {
+          linysTimeoutButton({
+            text: '  󰀁  ',
+            onExecution: () => {
+              this.close_all_tabs_gateway = Date.now();
+            }
+          })
+            .visibility(this.choosing_paralleow || this.current_sub_tab_index >= 0 ? Visibility.None : Visibility.Visible)
+            .animation(animation_default())
+
+          Blank()
+
+          linysShowButton({
+            symbol_glyph_target: 'sys.symbol.map',
+            show: this.choosing_paralleow || this.current_sub_tab_index >= 0,
+            text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
+          })
+            .onClick(() => {
+              this.choose_paralleow();
+            })
+            .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden)
+            .animation(animation_default())
+
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
+            .onClick(() => {
+              this.new_tab("")
+            })
+            .keyboardShortcut(this.bunch_of_key_shortcuts.new_tab.main_key, this.bunch_of_key_shortcuts.new_tab.modifier)
+        } // New Tab and Paralleow Button
+        .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
+        .width("100%")
+
+        Scroll() {
+          linysText({ text: $r('app.string.Paralleow_description'), max_lines: 4 })
+            .onAreaChange((_o, n) => {
+              this.paralleow_description_height = n.height as number + 16;
+            })
+        } // Paralleow Introduction
+        .align(Alignment.TopStart)
+        .width("100%")
+        .height(this.choosing_paralleow || this.current_sub_tab_index >= 0 ? this.paralleow_description_height : 0)
+        .visibility(this.choosing_paralleow || this.current_sub_tab_index >= 0 ? Visibility.Visible : Visibility.None)
+        .animation(animation_default())
+        .scrollBar(BarState.Off)
+        .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.PARENT_FIRST })
+
+      } // Tabs Panel
+      .justifyContent(FlexAlign.End)
+      // .padding(10)
+      .width("100%")
+      .height("100%")
+      .onAppear(() => {
+        this.extension_area = [];
+        this.offset_area = [];
+        for (let i = 0; i < this.bunch_of_tabs.Tabs.length; i++) {
+          this.extension_area.push(0);
+          this.offset_area.push(0);
+        }
+        // Init extension_area
+        setInterval(() => {
+          this.on_timer();
+        }, 10)
+        // Set Task to calculate animation
+        // console.log("[Meow][meowTabs] Tabs Panel READY")
+      })
+      .onAreaChange((_o, n) => {
+        this.scroll_area_height = n.height as number - 60;
+      })
+      .allowDrop(allow_drop_types())
+      .onDrop((e) => {
+        drop_to_scratching_board(e);
+      })
+      .onDragEnter(() => {
+        this.showing_scratching_board = true;
+        this.showing_more_options = false;
+      })
+      .onDragLeave(() => {
+        this.showing_scratching_board = false;
+      })
+      .gesture(
+        PanGesture({ direction: PanDirection.Left | PanDirection.Right })
+          .onActionStart(() => {
+            this.pan_x = 0;
+          })
+          .onActionUpdate((e) => {
+            this.pan_x += e.offsetX;
+          })
+          .onActionEnd(() => {
+            if (this.pan_x < 0) {
+              // ← Switch to Bookmarks
+              this.showing_bookmarks = true;
+              this.showing_tabs = false;
+            }
+            if (this.pan_x > 0 && this.is_right_align()) {
+              // → Right Align Close panel
+              this.showing_tabs = false;
+            }
+          })
+      )
+    }
   }
 
   // Tab controls
@@ -679,7 +655,7 @@ struct meowTabs {
   }
 }
 
-export default meowTabs;
+export default meowTabsVertical;
 
 @Component
 struct TabButton {

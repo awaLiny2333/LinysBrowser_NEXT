@@ -1,16 +1,15 @@
 import { bookmark, bunch_of_bookmarks, folder, unified_item } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
-import { url_resource_to_meow } from '../../utils/url_tools';
-import linysSymbol from '../../components/texts/linysSymbol';
-import { document_pick_to_text, document_save_text, sandbox_read_text_sync, sandbox_save } from '../../utils/storage_tools';
+import { document_pick_to_text, document_save_text, sandbox_save } from '../../utils/storage_tools';
 import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large, fontSize_Normal } from '../../hosts/bunch_of_defaults';
-import { kv_store_get } from '../../utils/kv_store_tools';
+import lazy { url_resource_to_meow } from '../../utils/url_tools';
+import linysSymbol from '../../components/texts/linysSymbol';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
-import woofSelectBookmarksPath from '../../dialogs/prompts/woofSelectBookmarksPath';
 import linysPathTree from '../../components/linysPathTree';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
+import lazy woofSelectBookmarksPath from '../../dialogs/prompts/woofSelectBookmarksPath';
 
 @Component
 struct meowBookmarks {
@@ -97,7 +96,7 @@ struct meowBookmarks {
         // So that bookmark buttons will know if they are out of visible area
         // and reduce their appearance animation time.
       })
-      .nestedScroll({scrollForward:NestedScrollMode.SELF_ONLY,scrollBackward:NestedScrollMode.SELF_ONLY})
+      .nestedScroll({ scrollForward: NestedScrollMode.SELF_ONLY, scrollBackward: NestedScrollMode.SELF_ONLY })
 
       Row({ space: this.tablet_mode ? 12 : 9 }) {
         linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left' })// Go back button
@@ -256,7 +255,7 @@ struct meowBookmarks {
           })// Submit add button
             .visibility(this.adding_folder || this.adding_bookmark || this.exporting_bookmarks ||
             this.importing_bookmarks ? Visibility.Visible :
-            Visibility.None)
+              Visibility.None)
             .animation(animation_default())
 
         }
@@ -338,20 +337,8 @@ struct meowBookmarks {
   // Event
 
   async on_appear() {
-    let result: string = sandbox_read_text_sync('html_bookmarks.html');
-    if (result == "undefined") {
-      // Check old kv_store
-      result = await kv_store_get("html_bookmarks") as string;
-      sandbox_save('html_bookmarks.html', result);
-    }
-    if (result == "undefined") {
-      // First use bookmarks
-    } else {
-      let html_bookmarks = result;
-      this.bunch_of_bookmarks.import_html(html_bookmarks, true);
-      this.refresh_content_view();
-    }
-    // Get bookmarks
+    this.refresh_content_view();
+
     setInterval(() => {
       if (this.swapping_offset_timeout == 100) {
         this.getUIContext().animateTo(animation_default(), () => {

@@ -1,24 +1,24 @@
 import linysProgress from '../components/linysProgress';
-import meowTabs from '../blocks/modules/meowTabsVertical';
+import meowTabsVertical from '../blocks/modules/meowTabsVertical';
 import meowWebView from '../blocks/modules/meowWebView';
 import meowBookmarks from '../blocks/modules/meowBookmarks';
-import { animation_default } from '../hosts/bunch_of_defaults';
 import meowTitleBar from '../blocks/modules/meowTitleBar';
+import { AbilityConstant, ConfigurationConstant } from '@kit.AbilityKit';
+import { window } from '@kit.ArkUI';
+import { deviceInfo } from '@kit.BasicServicesKit';
+import { animation_default } from '../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
-import woofPromptFail from '../dialogs/prompts/woofPromptFail';
-import { AbilityConstant, ConfigurationConstant } from '@kit.AbilityKit';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_history } from '../hosts/bunch_of_history';
 import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
 import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
-import { window } from '@kit.ArkUI';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
-import { deviceInfo } from '@kit.BasicServicesKit';
-import woofHistory from '../dialogs/managers/woofHistory';
 import { meowContext, meowPx2vp } from '../utils/environment_tools';
-import { print_web } from '../utils/print_tools';
+import lazy { print_web } from '../utils/print_tools';
+import lazy woofHistory from '../dialogs/managers/woofHistory';
+import lazy woofPromptFail from '../dialogs/prompts/woofPromptFail';
 
 @Entry
 @Component
@@ -66,8 +66,13 @@ struct Index {
     middle: { anchor: "__container__", align: HorizontalAlign.Center },
     bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
   };
-  @StorageLink('delayed_load') delayed_load: boolean = false;
-  delay: number = 800;
+  // Delay
+  @StorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
+  delay_p0: number = 200;
+  @StorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
+  delay_p1: number = 500;
+  @StorageLink('delayed_load_p2') delayed_load_p2: boolean = false;
+  delay_p2: number = 800;
   // Interactions
   @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
   @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
@@ -150,8 +155,14 @@ struct Index {
 
     // Trigger delayed load
     setTimeout(() => {
-      this.delayed_load = true;
-    }, this.delay)
+      this.delayed_load_p0 = true;
+    }, this.delay_p0);
+    setTimeout(() => {
+      this.delayed_load_p1 = true;
+    }, this.delay_p1);
+    setTimeout(() => {
+      this.delayed_load_p2 = true;
+    }, this.delay_p2);
   }
 
   onPageShow(): void {
@@ -186,10 +197,10 @@ struct Index {
       // })
 
       Row()// Top Bar Avoid
-        .width("100%")
         .height(this.height_of_top_avoid())
         .backgroundColor(this.color_current_secondary)
         .animation(animation_default())
+        .width("100%")
 
       // Scroll() {
       //   Column() {
@@ -197,27 +208,29 @@ struct Index {
         Row() {
           Scroll() {
             Row() {
-              Scroll() {
-                meowTabs()
-                  .width(this.width_of_Tabs())
-                  .padding(10)
-              } // Tabs Panel
-              .height("100%")
-              .width(this.showing_tabs ? this.width_of_Tabs() : 0)
-              .animation(animation_default())
-              .scrollable(ScrollDirection.Horizontal)
-              .scrollBar(BarState.Off)
+                Scroll() {
+                  meowTabsVertical()
+                    .width(this.width_of_Tabs())
+                    .padding(10)
+                } // Tabs Panel
+                .height("100%")
+                .width(this.showing_tabs ? this.width_of_Tabs() : 0)
+                .animation(animation_default())
+                .scrollable(ScrollDirection.Horizontal)
+                .scrollBar(BarState.Off)
 
-              Scroll() {
-                meowBookmarks()
-                  .width(this.width_of_Bookmarks())
-                  .padding(10)
-              } // Bookmarks Panel
-              .height("100%")
-              .width(this.showing_bookmarks ? this.width_of_Bookmarks() : 0)
-              .animation(animation_default())
-              .scrollable(ScrollDirection.Horizontal)
-              .scrollBar(BarState.Off)
+              if (this.delayed_load_p1) {
+                Scroll() {
+                  meowBookmarks()
+                    .width(this.width_of_Bookmarks())
+                    .padding(10)
+                } // Bookmarks Panel
+                .height("100%")
+                .width(this.showing_bookmarks ? this.width_of_Bookmarks() : 0)
+                .animation(animation_default())
+                .scrollable(ScrollDirection.Horizontal)
+                .scrollBar(BarState.Off)
+              }
             }
             .width("100%")
             .height("100%")
@@ -229,26 +242,28 @@ struct Index {
           .scrollBar(BarState.Off)
           .height("100%")
 
-          Row() {
-            meowWebView()
-          } // WebViews
-          .width("100%")
-          .backgroundColor(this.color_current_primary)
-          .layoutWeight(this.tablet_mode ? 1 : 0)
+          if (this.delayed_load_p0) {
+            Row() {
+              meowWebView()
+            } // WebViews
+            .width("100%")
+            .backgroundColor(this.color_current_primary)
+            .layoutWeight(this.tablet_mode ? 1 : 0)
+          }
 
         } // Main Web
         .direction(this.direction_of_web_and_side_panels())
-        .alignRules(this.title_bar_alignRules)
-        .layoutWeight(1)
-        .width("100%")
-        .backgroundColor(this.color_current_primary)
-        .onAreaChange((o, n) => {
-          this.on_main_area_change(o, n);
-        })
         .margin(this.title_bar_position == "bottom"
           ? { bottom: this.fullscreen_mode ? 0 : this.title_bar_height }
           : { top: this.fullscreen_mode ? 0 : this.title_bar_height })
+        .backgroundColor(this.color_current_primary)
+        .alignRules(this.title_bar_alignRules)
         .animation(animation_default())
+        .layoutWeight(1)
+        .width("100%")
+        .onAreaChange((o, n) => {
+          this.on_main_area_change(o, n);
+        })
 
         linysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
           .alignRules(this.title_bar_alignRules)
@@ -265,10 +280,11 @@ struct Index {
       .animation(animation_default())
 
       Row()// Bottom Bar Avoid
-        .width("100%")
         .height(this.height_of_bottom_avoid())
-        .animation(animation_default())
         .backgroundColor(this.title_bar_position == "bottom" ? "transparent" : this.color_current_secondary)
+        .animation(animation_default())
+        .width("100%")
+
       //   }
       // }
       // .width('100%')

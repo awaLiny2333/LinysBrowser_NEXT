@@ -1,16 +1,19 @@
 // The initialization of the entire app
 import { bundleManager, common } from '@kit.AbilityKit';
-import { sandbox_save, sandbox_unlink } from '../utils/storage_tools';
+import { sandbox_read_text_sync, sandbox_save, sandbox_unlink } from '../utils/storage_tools';
 import { fileIo } from '@kit.CoreFileKit';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { bunch_of_history } from '../hosts/bunch_of_history';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
+import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
+import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
 
 // executed in async aboutToAppear(): Promise<void> in Index.ets
 export async function meow_init(context: common.UIAbilityContext) {
   let t0 = Date.now();
+  let t = 0;
 
   // Get and set app version info
   bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION).then((bundleInfo) => {
@@ -19,21 +22,29 @@ export async function meow_init(context: common.UIAbilityContext) {
     sandbox_save("last_app_versionName.txt", bundleInfo.versionName);
   })
 
-  await settings();
-  console.log('[init] Settings OK');
+  await settings_tabs();
+  t = Date.now() - t0;
+  console.log('[init] Settings OK. (' + t + ' ms)');
+
+  await bookmarks();
+  t = Date.now() - t0;
+  console.log('[init] Bookmarks OK. (' + t + ' ms)');
+
+  await restore();
+  t = Date.now() - t0;
+  console.log('[init] Restore OK. (' + t + ' ms)');
 
   AppStorage.setOrCreate('bunch_of_history', new bunch_of_history());
-  AppStorage.setOrCreate('bunch_of_tabs', new bunch_of_tabs());
   AppStorage.setOrCreate('bunch_of_downloads', new bunch_of_downloads());
   AppStorage.setOrCreate('bunch_of_key_shortcuts', new bunch_of_key_shortcuts());
-  console.log('[init] bunch_of_init!')
+  t = Date.now() - t0;
+  console.log('[init] bunch_of_init! (' + t + ' ms)')
 
   // File management
   clear_web_drag_image_cache(context);
   clear_profile(context);
 
-  let t = Date.now() - t0;
-
+  t = Date.now() - t0;
   console.log('[Meow][init] OK. (' + t + ' ms)');
 }
 
@@ -66,11 +77,16 @@ function clear_profile(context: common.UIAbilityContext) {
   }
 }
 
-// Settings
+// Hosts
 
-async function settings() {
+/**
+ * Inits both settings and tabs
+ * */
+async function settings_tabs() {
   let settings = new bunch_of_settings();
   AppStorage.setOrCreate('bunch_of_settings', settings);
+  let tabs = new bunch_of_tabs();
+  AppStorage.setOrCreate('bunch_of_tabs', tabs);
 
   // DEV_MODE
   AppStorage.setOrCreate('DEV_MODE', await settings.get('DEV_MODE') as boolean);
@@ -114,9 +130,16 @@ async function settings() {
   AppStorage.setOrCreate('web_force_dark_mode', await settings.get('web_force_dark_mode') as boolean);
 
   // General - Surf
-  AppStorage.setOrCreate('home_url', await settings.get('home_url') as string);
-  AppStorage.setOrCreate('new_tab_url', await settings.get('new_tab_url') as string);
-  AppStorage.setOrCreate('start_up_option', await settings.get('start_up_option') as string);
+  let home_url: string = await settings.get('home_url') as string
+  let new_tab_url: string = await settings.get('new_tab_url') as string
+  let start_up_option: string = await settings.get('start_up_option') as string
+  AppStorage.setOrCreate('home_url', home_url);
+  AppStorage.setOrCreate('new_tab_url', new_tab_url);
+  AppStorage.setOrCreate('start_up_option', start_up_option);
+  tabs.start_up = start_up_option;
+  tabs.new_tab_url = new_tab_url;
+  tabs.home_url = home_url;
+
   AppStorage.setOrCreate('intelligent_tracking_prevention', await settings.get('intelligent_tracking_prevention') as boolean);
 
   // General - Homepage
@@ -159,4 +182,66 @@ async function settings() {
 
   // Cardboard Box
   AppStorage.setOrCreate('resource_monitor', await settings.get('resource_monitor') as boolean);
+}
+
+async function bookmarks() {
+  let bookmarks = new bunch_of_bookmarks("Bookmarks~Meow");
+  AppStorage.setOrCreate('bunch_of_bookmarks', bookmarks);
+
+  // Get bookmarks
+  let result: string = sandbox_read_text_sync('html_bookmarks.html');
+  if (result == "undefined") {
+    // Check old kv_store
+    result = await kv_store_get("html_bookmarks") as string;
+    sandbox_save('html_bookmarks.html', result);
+  }
+  if (result == "undefined") {
+    // First use bookmarks
+  } else {
+    let html_bookmarks = result;
+    bookmarks.import_html(html_bookmarks, true);
+  }
+}
+
+/**
+ * Retrieves the restore tabs indices
+ * */
+async function restore() {
+  // Get Data
+  let continue_tabs_count_string = await kv_store_get("continue_tabs_count");
+  let continue_tabs_main_on_string = await kv_store_get("continue_tabs_main_on");
+  let continue_tabs_sub_on_string = await kv_store_get("continue_tabs_sub_on");
+  let continue_tabs_count = 0;
+  let continue_tabs_main_on = 0;
+  let continue_tabs_sub_on = 0;
+
+  if (continue_tabs_count_string == "undefined") {
+    kv_store_put("continue_tabs_count", "0");
+    continue_tabs_count = 0;
+  } else {
+    continue_tabs_count = Number.parseInt(continue_tabs_count_string);
+  }
+
+  if (continue_tabs_main_on_string == "undefined") {
+    kv_store_put("continue_tabs_main_on", "0");
+    continue_tabs_main_on = 0;
+  } else {
+    continue_tabs_main_on = Number.parseInt(continue_tabs_main_on_string);
+  }
+
+  if (continue_tabs_sub_on_string == "undefined") {
+    kv_store_put("continue_tabs_sub_on", "-1");
+    continue_tabs_sub_on = -1;
+  } else {
+    continue_tabs_sub_on = Number.parseInt(continue_tabs_sub_on_string);
+  }
+
+  AppStorage.setOrCreate('continue_tabs_count',continue_tabs_count);
+  AppStorage.setOrCreate('continue_tabs_main_on',continue_tabs_main_on);
+  AppStorage.setOrCreate('continue_tabs_sub_on',continue_tabs_sub_on);
+
+  // Log
+  console.log("[Meow][init] Got continue_tabs_count: " + continue_tabs_count_string);
+  console.log("[Meow][init] Got continue_tabs_main_on: " + continue_tabs_main_on_string);
+  console.log("[Meow][init] Got continue_tabs_sub_on: " + continue_tabs_sub_on_string);
 }

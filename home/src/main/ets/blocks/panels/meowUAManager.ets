@@ -1,9 +1,9 @@
-import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
-import linysSymbol from '../../components/texts/linysSymbol';
-import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import { animation_default, capsule_bar_height, fontSize_Large, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { bunch_of_user_agents, user_agent } from '../../hosts/bunch_of_user_agents';
+import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
+import linysSymbol from '../../components/texts/linysSymbol';
+import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 
 @Component
 struct meowUAManager {

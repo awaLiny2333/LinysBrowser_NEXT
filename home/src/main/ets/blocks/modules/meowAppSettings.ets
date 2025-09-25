@@ -1,3 +1,4 @@
+import { BusinessError } from '@kit.BasicServicesKit';
 import {
   animation_default,
   capsule_bar_height,
@@ -7,45 +8,14 @@ import {
   minimum_card_width,
   url_default_blank
 } from '../../hosts/bunch_of_defaults';
-import linysTextTitle from '../../components/texts/linysTextTitle';
-import linysText from '../../components/texts/linysText';
-import bundleManager from '@ohos.bundle.bundleManager';
 import { ItemRestriction, SegmentButton, SegmentButtonOptions, SegmentButtonTextItem } from '@ohos.arkui.advanced.SegmentButton';
-import meowUAManager from '../panels/meowUAManager';
 import { bunch_of_user_agents } from '../../hosts/bunch_of_user_agents';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
-import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import { bunch_of_history } from '../../hosts/bunch_of_history';
 import {
-  add_units_to_size,
-  arrayBuffer_2_pixelMap,
-  document_pick_to_text,
-  document_save_text,
-  export_everything,
-  get_folder_size_Sync,
-  import_everything,
-  sandbox_read_arrayBuffer_sync
+  add_units_to_size, document_pick_to_text, document_save_text, export_everything, import_everything
 } from '../../utils/storage_tools';
-import woofHistory from '../../dialogs/managers/woofHistory';
-import { bunch_of_settings } from '../../hosts/bunch_of_settings';
-import meowSEManager from '../panels/meowSEManager';
-import linysLink from '../../components/texts/linysLink';
-import woofAdsBlocker from '../../dialogs/managers/woofAdsBlocker';
-import meowWhatsNew from '../contents/meowWhatsNew';
-import meowColorsManager from '../panels/meowColorsManager';
-import { BusinessError } from '@kit.BasicServicesKit';
-import meowCreditsRepos from '../contents/meowCreditsRepos';
-import meowCreditsUsers from '../contents/meowCreditsUsers';
-import woofCookies from '../../dialogs/managers/woofCookies';
-import woofGeneralManage from '../../dialogs/managers/woofGeneralManage';
-import woofKeyShortcuts from '../../dialogs/managers/woofKeyShortcuts';
-import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
-import woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
-import meowAnimationManager from '../panels/meowAnimationManager';
-import linysLockSlider from '../../components/linysLockSlider';
-import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
-import { get_sandbox_folder_size } from '../../utils/any_concurrent_tools';
-import woofRecentFaultLogs from '../../dialogs/contents/woofRecentFaultLogs';
+import lazy { get_sandbox_folder_size } from '../../utils/any_concurrent_tools';
 import { bunch_of_history_index } from '../../hosts/bunch_of_history_index';
 import {
   fill_fake_history,
@@ -54,12 +24,35 @@ import {
   history_index_save_to_disk_worker
 } from '../../hosts/bunch_of_history_index_x_functions';
 import { bunch_of_history_index_lite } from '../../hosts/bunch_of_history_index_lite';
-import woofUpdateHistory from '../../dialogs/contents/woofUpdateHistory';
+import { bunch_of_settings } from '../../hosts/bunch_of_settings';
+import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
+import bundleManager from '@ohos.bundle.bundleManager';
+import meowSEManager from '../panels/meowSEManager';
+import meowUAManager from '../panels/meowUAManager';
+import meowWhatsNew from '../contents/meowWhatsNew';
+import meowColorsManager from '../panels/meowColorsManager';
+import meowCreditsRepos from '../contents/meowCreditsRepos';
+import meowCreditsUsers from '../contents/meowCreditsUsers';
+import meowAnimationManager from '../panels/meowAnimationManager';
+import linysLink from '../../components/texts/linysLink';
+import linysLockSlider from '../../components/linysLockSlider';
+import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
 import linysSwitchWithText from '../../components/toggles/linysSwitchWithText';
-import woofPromptOK from '../../dialogs/prompts/woofPromptOK';
 import linysTextSubtitleDivision from '../../components/texts/linysTextSubtitleDivision';
+import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
+import linysTextTitle from '../../components/texts/linysTextTitle';
+import linysText from '../../components/texts/linysText';
+import lazy woofAdsBlocker from '../../dialogs/managers/woofAdsBlocker';
+import lazy woofCookies from '../../dialogs/managers/woofCookies';
+import lazy woofGeneralManage from '../../dialogs/managers/woofGeneralManage';
+import lazy woofKeyShortcuts from '../../dialogs/managers/woofKeyShortcuts';
+import lazy woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
+import lazy woofRecentFaultLogs from '../../dialogs/contents/woofRecentFaultLogs';
+import lazy woofUpdateHistory from '../../dialogs/contents/woofUpdateHistory';
+import lazy woofPromptOK from '../../dialogs/prompts/woofPromptOK';
+import lazy woofHistory from '../../dialogs/managers/woofHistory';
 
 @Component
 struct meowAppSettings {
@@ -1097,7 +1090,7 @@ struct meowAppSettings {
     })
 
     // Get settings of shortcuts on left or right
-    this.left_or_right_selected = (this.preferred_hand_left_or_right == 'left')?[0]:[1];
+    this.left_or_right_selected = (this.preferred_hand_left_or_right == 'left') ? [0] : [1];
 
     // Get whether to show resource monitor
     this.resource_monitor = await this.bunch_of_settings.get('resource_monitor') as boolean;
@@ -1462,7 +1455,7 @@ struct menuScrollHorizontal {
             scroll_to_gateway: this.scroll_to_gateway,
           })
             .backgroundColor(this.on_index_first <= index && index <= this.on_index_last ?
-            this.color_current_font : "transparent")
+              this.color_current_font : "transparent")
             .borderRadius(this.border_radius(index))
             .animation(animation_default())
         })
@@ -1519,7 +1512,7 @@ struct menuScrollVertical {
               this.button_Lengths[index] = n.width as number;
             })
             .backgroundColor(this.on_index_first <= index && index <= this.on_index_last ?
-            this.color_current_font : "transparent")
+              this.color_current_font : "transparent")
             .borderRadius(this.border_radius(index))
             .animation(animation_default())
         })
@@ -1593,7 +1586,7 @@ struct menuItem {
     Row() {
       Text(this.my_text)
         .fontColor(this.on_index_first <= this.my_index && this.my_index <= this.on_index_last ?
-        this.color_current_secondary : this.color_current_font)
+          this.color_current_secondary : this.color_current_font)
         .fontSize(fontSize_Large() - 2)
     }
     .clickEffect(click_effect_default())

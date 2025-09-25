@@ -1,8 +1,8 @@
-import linysText from '../../components/texts/linysText';
-import woofSelectColor from '../../dialogs/prompts/woofSelectColor';
 import { animation_default, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
+import linysText from '../../components/texts/linysText';
 import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
+import lazy woofSelectColor from '../../dialogs/prompts/woofSelectColor';
 
 @Component
 struct meowColorsManager {

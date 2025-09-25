@@ -5,16 +5,15 @@ import { arrayBuffer_2_pixelMap, sandbox_read_arrayBuffer_sync, sandbox_save } f
 import { match_domain, url_meow_to_resource, url_resource_to_meow, viewable_domains } from '../../utils/url_tools';
 import { webview } from '@kit.ArkWeb';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
-import woofWantDownload from '../../dialogs/prompts/woofWantDownload';
-import woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import { bookmark, bunch_of_bookmarks, folder, unified_item } from '../../hosts/bunch_of_bookmarks';
-import woofWantJump from '../../dialogs/prompts/woofWantJump';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
-import woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
 import { print } from '@kit.BasicServicesKit';
-import { print_web } from '../../utils/print_tools';
 import { meowContext } from '../../utils/environment_tools';
 import { fileIo } from '@kit.CoreFileKit';
+import lazy woofWantJump from '../../dialogs/prompts/woofWantJump';
+import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
+import lazy woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
+import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
 
 @Component
 struct meowWebView {
@@ -45,7 +44,6 @@ struct meowWebView {
   @StorageLink('current_in_page_searching_stats_current') current_in_page_searching_stats_current: number = 0;
   @StorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
   @StorageLink('current_in_page_searching_keyword') current_in_page_searching_keyword: string = ''
-  @StorageLink('delayed_load') delayed_load: boolean = false;
   // Web control statuses
   @StorageLink('current_accessForward') current_accessForward: boolean = false;
   @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
@@ -227,12 +225,8 @@ struct meowWebView {
   // }
 
   aboutToAppear(): void {
-
     // Init download delegate
     this.bunch_of_downloads.init_delegate();
-
-    // Apply Adblock state
-    this.on_use_adblock_state_change();
 
     // Set image for homepage
     let homepage_background_array_buffer = sandbox_read_arrayBuffer_sync('homepage_background_arrayBuffer');
@@ -244,8 +238,12 @@ struct meowWebView {
     // init OK
     setTimeout(() => {
       this.init_OK = true;
-      // console.log('qwq')
-    }, 10)
+    }, 10);
+
+    setTimeout(() => {
+      // Refresh shortcuts
+      this.refresh_homepage_shortcuts();
+    }, 100);
   }
 
   build() {
@@ -568,13 +566,6 @@ struct meowWebView {
   }
 
   // Operations
-
-  save_pdf() {
-  }
-
-  print() {
-    print_web(this.bunch_of_tabs.workingMainTab().controller);
-  }
 
   update_current_info() {
     this.current_title = this.tab_titles[this.current_main_tab_index];

@@ -1,6 +1,3 @@
-import linysSymbol from '../../components/texts/linysSymbol';
-import linysShowButton from '../../components/buttons/linysShowButton';
-import meowAppSettings from './meowAppSettings';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { extract_search, match_domain, unify_search_input_into_url, url_resource_to_meow } from '../../utils/url_tools';
 import {
@@ -12,32 +9,35 @@ import {
   fontSize_Large,
   fontSize_Normal
 } from '../../hosts/bunch_of_defaults';
+import { webview } from '@kit.ArkWeb';
 import { bunch_of_user_agents } from '../../hosts/bunch_of_user_agents';
-import meowDownloads from './meowDownloads';
 import { bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
-import meowSuggestions from './meowSuggestions';
-import woofQR from '../../dialogs/contents/woofQR';
-import meowTabsHorizontal from './meowTabsHorizontal';
-import meowScratchingBoard from './meowScratchingBoard';
-import woofAdsBlocker from '../../dialogs/managers/woofAdsBlocker';
-import woofQuickSE from '../../dialogs/quicks/woofQuickSE';
-import woofCookies from '../../dialogs/managers/woofCookies';
-import linysText from '../../components/texts/linysText';
-import woofGeneralManage from '../../dialogs/managers/woofGeneralManage';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
-import { share_link } from '../../utils/share_tools';
-import woofQuickUA from '../../dialogs/quicks/woofQuickUA';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import { allow_drop_types, drop_to_scratching_board } from '../../utils/drag_drop_tools';
-import meowDebug from '../panels/meowDebug';
-import linysProgressInfo from '../../components/linysProgressInfo';
-import { add_transparency } from '../../utils/color_tools';
 import { current_tabs_style_is_horizontal } from '../../utils/ui_tools';
 import { search_engine } from '../../hosts/bunch_of_search_engines';
-import { copy } from '../../utils/clipboard_tools';
-import { print_web } from '../../utils/print_tools';
-import woofHistory from '../../dialogs/managers/woofHistory';
-import { webview } from '@kit.ArkWeb';
+import lazy { add_transparency } from '../../utils/color_tools';
+import lazy { copy } from '../../utils/clipboard_tools';
+import lazy { print_web } from '../../utils/print_tools';
+import lazy { share_link } from '../../utils/share_tools';
+import linysText from '../../components/texts/linysText';
+import linysProgressInfo from '../../components/linysProgressInfo';
+import linysSymbol from '../../components/texts/linysSymbol';
+import linysShowButton from '../../components/buttons/linysShowButton';
+import meowSuggestions from './meowSuggestions';
+import meowTabsHorizontal from './meowTabsHorizontal';
+import lazy meowScratchingBoard from './meowScratchingBoard';
+import lazy meowAppSettings from './meowAppSettings';
+import lazy meowDownloads from './meowDownloads';
+import lazy meowDebug from '../panels/meowDebug';
+import lazy woofQR from '../../dialogs/contents/woofQR';
+import lazy woofHistory from '../../dialogs/managers/woofHistory';
+import lazy woofAdsBlocker from '../../dialogs/managers/woofAdsBlocker';
+import lazy woofQuickSE from '../../dialogs/quicks/woofQuickSE';
+import lazy woofCookies from '../../dialogs/managers/woofCookies';
+import lazy woofQuickUA from '../../dialogs/quicks/woofQuickUA';
+import lazy woofGeneralManage from '../../dialogs/managers/woofGeneralManage';
 
 @Component
 struct meowTitleBar {
@@ -100,7 +100,9 @@ struct meowTitleBar {
   @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   @State address_analyzers_desc_close_cd: number = 0;
   @State horizontal_tabs_height: number = 120;
-  @StorageLink('delayed_load') delayed_load: boolean = false;
+  @StorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
+  @StorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
+  @StorageLink('delayed_load_p2') delayed_load_p2: boolean = false;
   // settings
   @StorageLink('DEV_MODE') DEV_MODE: boolean = false;
   @StorageLink('resource_monitor') resource_monitor: boolean = true;
@@ -219,65 +221,69 @@ struct meowTitleBar {
           .animation(animation_default())
       }
 
-      meowTabsHorizontal() // Horizontal tabs
-        .visibility(this.visibility_of_horizontal_tabs())
-        .animation(animation_default())
-        .onAreaChange((_oo, n) => {
-          this.horizontal_tabs_height = Math.max(0, n.height as number + 10);
-        })
-
-      EstimatedDestination({
-        is_http_no_s: this.search_input_unify_scheme_http,
-        is_search_input_typing: this.is_search_input_typing,
-        is_search_input_address: this.is_search_input_address,
-        search_input: this.search_input,
-        search_input_unified: this.search_input_unified
-      })
-        .visibility(this.is_search_input_typing && this.title_bar_position == 'bottom' ? Visibility.Visible : Visibility.None)
-        .padding({ left: 15, right: 15 })
-        .width("100%")
-        .animation(animation_default())
-        .constraintSize({ minHeight: 20 })
-
-      Row({ space: 15 }) {
-        Column({ space: 2.5 }) {
-          Text(this.current_title)
-            .fontColor(this.color_current_font)
-            .fontWeight(FontWeight.Bold)
-            .fontSize(fontSize_Large())
-            .maxLines(2)
-            .textOverflow({ overflow: TextOverflow.Ellipsis })
-            .clickEffect(click_effect_default())
-            .onClick(() => {
-              copy(this.current_title);
-            })
-          Text(this.current_url)
-            .fontColor(this.color_current_font)
-            .fontWeight(FontWeight.Bold)
-            .fontSize(fontSize_Normal())
-            .opacity(0.7)
-            .maxLines(2)
-            .textOverflow({ overflow: TextOverflow.Ellipsis })
-            .clickEffect(click_effect_default())
-            .onClick(() => {
-              copy(this.current_url);
-            })
-        }
-        .alignItems(HorizontalAlign.Start)
-        .layoutWeight(1)
-
-        linysSymbol({ symbol_glyph_target: 'sys.symbol.share' })
-          .onClick(() => {
-            share_link(this.current_url, this.current_title);
+      if (this.delayed_load_p1) {
+        meowTabsHorizontal() // Horizontal tabs
+          .visibility(this.visibility_of_horizontal_tabs())
+          .animation(animation_default())
+          .onAreaChange((_oo, n) => {
+            this.horizontal_tabs_height = Math.max(0, n.height as number + 10);
           })
-      } // Title Bar for This Page Info display
-      .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
-      .padding({ left: 15, right: 15, top: 6 })
-      .width("100%")
-      .visibility(this.current_in_page_searching_stats_total <= 0 && this.showing_more_options && !this.showing_scratching_board
-        ? Visibility.Visible : Visibility.None)
-      .animation(animation_default())
+      }
 
+      if (this.delayed_load_p0) {
+
+        EstimatedDestination({
+          is_http_no_s: this.search_input_unify_scheme_http,
+          is_search_input_typing: this.is_search_input_typing,
+          is_search_input_address: this.is_search_input_address,
+          search_input: this.search_input,
+          search_input_unified: this.search_input_unified
+        })
+          .visibility(this.is_search_input_typing && this.title_bar_position == 'bottom' ? Visibility.Visible : Visibility.None)
+          .padding({ left: 15, right: 15 })
+          .width("100%")
+          .animation(animation_default())
+          .constraintSize({ minHeight: 20 })
+
+        Row({ space: 15 }) {
+          Column({ space: 2.5 }) {
+            Text(this.current_title)
+              .fontColor(this.color_current_font)
+              .fontWeight(FontWeight.Bold)
+              .fontSize(fontSize_Large())
+              .maxLines(2)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+              .clickEffect(click_effect_default())
+              .onClick(() => {
+                copy(this.current_title);
+              })
+            Text(this.current_url)
+              .fontColor(this.color_current_font)
+              .fontWeight(FontWeight.Bold)
+              .fontSize(fontSize_Normal())
+              .opacity(0.7)
+              .maxLines(2)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+              .clickEffect(click_effect_default())
+              .onClick(() => {
+                copy(this.current_url);
+              })
+          }
+          .alignItems(HorizontalAlign.Start)
+          .layoutWeight(1)
+
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.share' })
+            .onClick(() => {
+              share_link(this.current_url, this.current_title);
+            })
+        } // Title Bar for This Page Info display
+        .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
+        .padding({ left: 15, right: 15, top: 6 })
+        .width("100%")
+        .visibility(this.current_in_page_searching_stats_total <= 0 && this.showing_more_options && !this.showing_scratching_board
+          ? Visibility.Visible : Visibility.None)
+        .animation(animation_default())
+      }
       RelativeContainer() {
         Row({ space: this.tablet_mode ? 10 : 6 }) {
           linysSymbol({
@@ -510,9 +516,9 @@ struct meowTitleBar {
             .onClick(() => {
               this.show_more_options()
             })
-            .opacity(this.delayed_load ? 1 : 0.5)
+            .opacity(this.delayed_load_p2 ? 1 : 0.5)
             .animation(animation_default())
-            .enabled(this.delayed_load)
+            .enabled(this.delayed_load_p2)
 
           linysShowButton({
             symbol_glyph_target: 'sys.symbol.rectangle_stack',
@@ -553,6 +559,9 @@ struct meowTitleBar {
             .onClick(() => {
               this.show_bookmarks();
             })
+            .opacity(this.delayed_load_p1 ? 1 : 0.5)
+            .animation(animation_default())
+            .enabled(this.delayed_load_p1)
 
           Row() {
             linysShowButton({
@@ -578,7 +587,7 @@ struct meowTitleBar {
           .borderRadius(10)
           .clickEffect(click_effect_default())
           // .visibility(this.bunch_of_downloads.list_of_urls.length > 0 ? Visibility.Visible : Visibility.None)
-          .opacity(this.delayed_load ? 1 : 0.5)
+          .opacity(this.delayed_load_p2 ? 1 : 0.5)
           .animation(animation_default())
           .onClick(() => {
             if (this.download_started_popup) {
@@ -587,7 +596,7 @@ struct meowTitleBar {
               this.show_downloads();
             }
           })
-          .enabled(this.delayed_load)
+          .enabled(this.delayed_load_p2)
 
           linysShowButton({
             show: this.showing_app_settings,
@@ -597,9 +606,9 @@ struct meowTitleBar {
             .onClick(() => {
               this.show_app_settings()
             })
-            .opacity(this.delayed_load ? 1 : 0.5)
+            .opacity(this.delayed_load_p2 ? 1 : 0.5)
             .animation(animation_default())
-            .enabled(this.delayed_load)
+            .enabled(this.delayed_load_p2)
 
         } // Title Bar of right controls
         .height(36)
@@ -630,7 +639,7 @@ struct meowTitleBar {
         .constraintSize({ minHeight: 20 })
 
       // Delayed loading
-      if (this.delayed_load) {
+      if (this.delayed_load_p2) {
         Scroll() {
           Column({ space: 10 }) {
             RelativeContainer() {

@@ -1,8 +1,8 @@
 import { animation_default } from '../../hosts/bunch_of_defaults';
-import linysText from '../../components/texts/linysText';
-import { get_relations } from '../../utils/label_link_relation_tools';
 import { bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_history } from '../../hosts/bunch_of_history';
+import lazy { get_relations } from '../../utils/label_link_relation_tools';
+import linysText from '../../components/texts/linysText';
 
 @Component
 struct meowSuggestions {
@@ -112,7 +112,6 @@ struct meowSuggestions {
       let label_link_bookmark = this.bunch_of_bookmarks.get_all_plain_label_link();
       this.bookmark_suggestions = get_relations(label_link_bookmark, this.search_input, this.max_bookmark_advice);
       this.history_suggestions = bunch_of_history.search_with_index(this.search_input.toUpperCase(), this.max_history_advice);
-      // get_relations(label_link_history, this.search_input, this.max_history_advice);
     }
   }
 }
