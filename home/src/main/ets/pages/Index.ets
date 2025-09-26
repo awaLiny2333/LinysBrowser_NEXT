@@ -1,38 +1,35 @@
-import linysProgress from '../components/linysProgress';
-import meowTabsVertical from '../blocks/modules/meowTabsVertical';
-import meowWebView from '../blocks/modules/meowWebView';
-import meowBookmarks from '../blocks/modules/meowBookmarks';
-import meowTitleBar from '../blocks/modules/meowTitleBar';
 import { AbilityConstant, ConfigurationConstant } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { deviceInfo } from '@kit.BasicServicesKit';
 import { animation_default } from '../hosts/bunch_of_defaults';
-import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
-import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
-import { bunch_of_history } from '../hosts/bunch_of_history';
-import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
-import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
-import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 import { meowContext, meowPx2vp } from '../utils/environment_tools';
 import lazy { print_web } from '../utils/print_tools';
+import lazy { bunch_of_settings } from '../hosts/bunch_of_settings';
+import linysProgress from '../components/linysProgress';
+import meowTabsVertical from '../blocks/modules/meowTabsVertical';
+import meowTitleBar from '../blocks/modules/meowTitleBar';
+import lazy meowBookmarks from '../blocks/modules/meowBookmarks';
+import lazy meowWebView from '../blocks/modules/meowWebView';
 import lazy woofHistory from '../dialogs/managers/woofHistory';
 import lazy woofPromptFail from '../dialogs/prompts/woofPromptFail';
 
 @Entry
 @Component
 struct Index {
-  // Init Hosts
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
+  /**
+   * Init Hosts */
+  // @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
+  // @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
+  // @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
+  // @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("Bookmarks~Meow");
+  // @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads(true);
+  // @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines = new bunch_of_search_engines();
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
-  @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
-  @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
-  @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("Bookmarks~Meow");
-  @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads(true);
-  @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines = new bunch_of_search_engines();
-  @StorageLink('bunch_of_key_shortcuts') @Watch('on_bunch_of_key_shortcuts_change') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
-  // UI Environment
+  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
+  /**
+   * UI Environment */
   @StorageLink('bottomAvoidHeight') bottomAvoidHeight: number = 1;
   @StorageLink('topAvoidHeight') topAvoidHeight: number = 1;
   @StorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
@@ -42,17 +39,19 @@ struct Index {
   @StorageLink('screen_height') screen_height: number = 0;
   @StorageLink('full_screen_height') full_screen_height: number = 0;
   @StorageLink('fullscreen_mode') @Watch('on_fullscreen_switch') fullscreen_mode: boolean = false;
-  @StorageLink('animation_response') animation_response: number = 36;
-  @StorageLink('animation_damping_coefficient') animation_damping: number = 20;
   @StorageProp('currentColorMode') @Watch('on_color_mode_change') current_color_mode: number = 0;
-  // History Indexing
-  @StorageProp('reindexing_history') reindexing_history: boolean | undefined = undefined;
-  @StorageProp('reindexing_history_progress') reindexing_history_progress: string = "";
-  @StorageProp('history_index_loading') history_index_loading: boolean | undefined = undefined;
-  @StorageProp('history_index_loading_progress') history_index_loading_progress: string = "";
-  @StorageProp('history_index_saving') history_index_saving: boolean | undefined = undefined;
-  @StorageProp('history_index_saving_progress') history_index_saving_progress: string = "";
-  // UI Statuses
+  // @StorageLink('animation_response') animation_response: number = 36;
+  // @StorageLink('animation_damping_coefficient') animation_damping: number = 20;
+  /**
+   * History Indexing */
+  // @StorageProp('reindexing_history') reindexing_history: boolean | undefined = undefined;
+  // @StorageProp('reindexing_history_progress') reindexing_history_progress: string = "";
+  // @StorageProp('history_index_loading') history_index_loading: boolean | undefined = undefined;
+  // @StorageProp('history_index_loading_progress') history_index_loading_progress: string = "";
+  // @StorageProp('history_index_saving') history_index_saving: boolean | undefined = undefined;
+  // @StorageProp('history_index_saving_progress') history_index_saving_progress: string = "";
+  /**
+   * UI Statuses */
   @StorageLink('fullscreen_handler') handler: FullScreenExitHandler | null = null;
   @StorageLink('showing_downloads') showing_downloads: boolean = false;
   @StorageLink('showing_more_options') showing_more_options: boolean = false;
@@ -60,55 +59,64 @@ struct Index {
   @StorageLink('showing_tabs') @Watch('on_showing_tabs_change') showing_tabs: boolean = false;
   @StorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
   @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
-  // UI params
+  /**
+   * UI params */
   @State title_bar_height: number = 0;
   @State title_bar_alignRules: AlignRuleOption = {
     middle: { anchor: "__container__", align: HorizontalAlign.Center },
     bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
   };
-  // Delay
+  /**
+   * Delay */
   @StorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
   delay_p0: number = 200;
   @StorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
   delay_p1: number = 500;
   @StorageLink('delayed_load_p2') delayed_load_p2: boolean = false;
   delay_p2: number = 800;
-  // Interactions
-  @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
-  @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
-  // Web Statuses
-  @StorageLink('tab_titles') tab_titles: string[] = [];
-  @StorageLink('current_title') current_title: string = "=￣ω￣=";
-  @StorageLink('tab_urls') tab_urls: string[] = [];
-  @StorageLink('current_url') current_url: string = "=￣ω￣=";
-  @StorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0];
+  /**
+   * Interactions (Duplicated in meowTitleBar) */
+  // @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
+  // @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
+  /**
+   * Web Statuses */
+  // @StorageLink('tab_titles') tab_titles: string[] = [];
+  // @StorageLink('current_title') current_title: string = "=￣ω￣=";
+  // @StorageLink('tab_urls') tab_urls: string[] = [];
+  // @StorageLink('current_url') current_url: string = "=￣ω￣=";
+  // @StorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0];
   @StorageLink('current_loading_progress') current_loading_progress: number = 0;
-  @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true];
+  // @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true];
   @StorageLink('current_is_loading') current_is_loading: boolean = true;
-  // Web control
+  /**
+   * Web control */
   @StorageLink('current_main_tab_index') current_main_tab_index: number = 0;
-  @StorageLink('current_sub_tab_index') current_sub_tab_index: number = -1;
-  @StorageLink('current_accessForward') current_accessForward: boolean = false;
-  @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
-  // Settings
+  // @StorageLink('current_sub_tab_index') current_sub_tab_index: number = -1;
+  // @StorageLink('current_accessForward') current_accessForward: boolean = false;
+  // @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
+  /**
+   * Settings */
   @StorageLink('title_bar_position') @Watch('on_title_bar_position_change') title_bar_position: string = "";
   @StorageLink('sys_back_to_access_backward') sys_back_to_access_backward: boolean = false;
-  @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
   @StorageLink('tabs_style') tabs_style: string = "";
   @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
-  @StorageLink('collect_new_history') collect_new_history: boolean = true;
-  @StorageLink('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
-  @StorageLink('use_adblock') use_adblock: boolean = true;
-  @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
-  @StorageLink('max_bookmark_advice') max_bookmark_advice: number = 5;
-  @StorageLink('max_history_advice') max_history_advice: number = 5;
-  // Settings - Accessibility
+  // @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
+  // @StorageLink('collect_new_history') collect_new_history: boolean = true;
+  // @StorageLink('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
+  // @StorageLink('use_adblock') use_adblock: boolean = true;
+  // @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
+  // @StorageLink('max_bookmark_advice') max_bookmark_advice: number = 5;
+  // @StorageLink('max_history_advice') max_history_advice: number = 5;
+  /**
+   * Settings - Accessibility */
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('preferred_hand_reverse_tabs_panel') preferred_hand_reverse_tabs_panel: boolean = false;
-  // Gateways
+  /**
+   * Gateways */
   @StorageLink('universal_close_tab_gateway') uni_close_tab_gateway: number = -1;
   @StorageLink('universal_new_tab_gateway') uni_new_tab_gateway: string = "";
-  // Dialogs
+  /**
+   * Dialogs */
   @StorageLink('universal_fail_prompt_desc_gateway') @Watch('on_fail_prompt_gateway') universal_fail_prompt_desc_gateway: ResourceStr = "";
   @State fail_prompt_desc: ResourceStr = '';
   moveFailPrompt_control: CustomDialogController = new CustomDialogController({
@@ -127,7 +135,8 @@ struct Index {
     // showInSubWindow: true,
     width: "90%",
   });
-  // Colors
+  /**
+   * Colors */
   @StorageLink('color_light_primary') @Watch('on_color_change') color_light_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_light_secondary') @Watch('on_color_change') color_light_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_light_font') @Watch('on_color_change') color_light_font: ResourceColor = $r('app.color.font_color_title');
@@ -165,9 +174,9 @@ struct Index {
     setTimeout(() => {
       this.delayed_load_p1 = true;
       // Reopen tabs panel
-      this.bunch_of_settings.get('status_tabs_open').then((status_tabs_open) => {
-        AppStorage.setOrCreate('showing_tabs', status_tabs_open as boolean);
-      })
+      // this.bunch_of_settings.get('status_tabs_open').then((status_tabs_open) => {
+      //   AppStorage.setOrCreate('showing_tabs', status_tabs_open as boolean);
+      // })
     }, this.delay_p1);
     setTimeout(() => {
       this.delayed_load_p2 = true;
@@ -346,7 +355,7 @@ struct Index {
   }
 
   on_showing_tabs_change() {
-    this.bunch_of_settings.set('status_tabs_open', this.showing_tabs);
+    (AppStorage.get('bunch_of_settings') as bunch_of_settings).set('status_tabs_open', this.showing_tabs);
   }
 
   on_fail_prompt_gateway() {
@@ -385,7 +394,9 @@ struct Index {
     }
   }
 
-  // Hides and shows system UI components
+  /**
+   * Hides and shows system UI components.
+   * */
   on_fullscreen_switch() {
     window.getLastWindow(this.getUIContext().getHostContext()).then((win) => {
       if (this.fullscreen_mode) {
@@ -400,9 +411,9 @@ struct Index {
     })
   }
 
-  on_bunch_of_key_shortcuts_change() {
-    console.log('[Index] on_bunch_of_key_shortcuts_change!');
-  }
+  // on_bunch_of_key_shortcuts_change() {
+  //   console.log('[Index] on_bunch_of_key_shortcuts_change!');
+  // }
 
   // kinda params
 

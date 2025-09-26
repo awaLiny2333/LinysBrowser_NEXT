@@ -256,7 +256,7 @@ struct meowAppSettings {
   @StorageLink('settings_init_retrieved') settings_init_retrieved: boolean = false;
   @State calculating_web_cache_size: boolean = false;
   @State calculating_history_index_size: boolean = false;
-  @StorageLink('reindexing_history') reindexing_history: boolean = false;
+  @StorageLink('reindexing_history') reindexing_history: boolean | undefined = undefined;
   @StorageLink('reindexing_history_progress') reindexing_history_progress: number = 100;
   @StorageLink('compressing_output_profile') compressing_output_profile: boolean = false;
 

@@ -25,8 +25,8 @@ import linysText from '../../components/texts/linysText';
 import linysProgressInfo from '../../components/linysProgressInfo';
 import linysSymbol from '../../components/texts/linysSymbol';
 import linysShowButton from '../../components/buttons/linysShowButton';
-import meowSuggestions from './meowSuggestions';
-import meowTabsHorizontal from './meowTabsHorizontal';
+import lazy meowSuggestions from './meowSuggestions';
+import lazy meowTabsHorizontal from './meowTabsHorizontal';
 import lazy meowScratchingBoard from './meowScratchingBoard';
 import lazy meowAppSettings from './meowAppSettings';
 import lazy meowDownloads from './meowDownloads';
@@ -61,8 +61,8 @@ struct meowTitleBar {
   @StorageProp('history_index_saving_progress') history_index_saving_progress: string = "";
   // Current environment
   @Link title_bar_alignRules: AlignRuleOption;
-  @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
   @State search_input_unified: string = "";
+  @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
   @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
   @StorageLink('uni_webDownloadItem_gateway') @Watch('on_download_start') uni_webDownloadItem_gateway: webview.WebDownloadItem | undefined = undefined;
   @State download_started_popup: boolean = false;
@@ -216,7 +216,7 @@ struct meowTitleBar {
       //   Row().height(0)
       // }
 
-      if (this.title_bar_position == "bottom") {
+      if (this.title_bar_position == "bottom" && this.delayed_load_p0) {
         meowSuggestions({ top_margin: 15 })
           .animation(animation_default())
       }
@@ -488,8 +488,8 @@ struct meowTitleBar {
         .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
         .height(36)
         .padding(this.tablet_mode ? { left: 10, right: 10 } : {})
-        .alignRules(this.tablet_mode ?
-          {
+        .alignRules(this.tablet_mode
+          ? {
             left: { anchor: 'left_controls', align: HorizontalAlign.End },
             right: { anchor: 'right_controls', align: HorizontalAlign.Start },
             bottom: { anchor: '__container__', align: VerticalAlign.Bottom }
@@ -896,7 +896,7 @@ struct meowTitleBar {
           .animation(animation_default())
       }
 
-      if (this.title_bar_position == "top") {
+      if (this.title_bar_position == "top" && this.delayed_load_p0) {
         meowSuggestions({ bottom_margin: 15 })
           .animation(animation_default())
       }

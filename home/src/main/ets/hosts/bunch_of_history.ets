@@ -93,10 +93,10 @@ export class bunch_of_history {
       if (fs.listFileSync(meowContext().filesDir + '/history-index', { recursion: false }).length == 0) {
         if (first_launch) {
           // No history. First launch of app.
-          console.log(bunch_of_history_index.log_head() + ' First launch of app. Skipping loading index.')
+          console.log(bunch_of_history_index.log_head() + ' First launch of app. Skipping loading index.');
         } else {
-          console.log(bunch_of_history_index.log_head() + ' No index found. Perhaps this is an upgrade from older BrowserCats?')
-          console.log(bunch_of_history_index.log_head() + ' Rebuilding... ')
+          console.log(bunch_of_history_index.log_head() + ' No index found. Perhaps this is an upgrade from older BrowserCats?');
+          console.log(bunch_of_history_index.log_head() + ' Rebuilding... ');
           history_index_full_rebuild_worker();
         }
       } else {

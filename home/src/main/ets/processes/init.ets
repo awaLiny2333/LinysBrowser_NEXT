@@ -9,8 +9,12 @@ import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 import { kv_store_get, kv_store_put } from '../utils/kv_store_tools';
 import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
+import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
+import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 
-// executed in async aboutToAppear(): Promise<void> in Index.ets
+/**
+ * Executed in async aboutToAppear(): Promise<void> in Index.ets
+ */
 export async function meow_init(context: common.UIAbilityContext) {
   let t0 = Date.now();
   let t = 0;
@@ -34,8 +38,13 @@ export async function meow_init(context: common.UIAbilityContext) {
   t = Date.now() - t0;
   console.log('[init] Restore OK. (' + t + ' ms)');
 
-  AppStorage.setOrCreate('bunch_of_history', new bunch_of_history());
+  history();
+  t = Date.now() - t0;
+  console.log('[init] History OK. (' + t + ' ms)');
+
   AppStorage.setOrCreate('bunch_of_downloads', new bunch_of_downloads());
+  AppStorage.setOrCreate('bunch_of_user_agents', new bunch_of_user_agents());
+  AppStorage.setOrCreate('bunch_of_search_engines', new bunch_of_search_engines());
   AppStorage.setOrCreate('bunch_of_key_shortcuts', new bunch_of_key_shortcuts());
   t = Date.now() - t0;
   console.log('[init] bunch_of_init! (' + t + ' ms)')
@@ -95,6 +104,7 @@ async function settings_tabs() {
   AppStorage.setOrCreate('title_bar_position', await settings.get('title_bar_position') as string);
   AppStorage.setOrCreate('tabs_style', await settings.get('tabs_style') as string);
   AppStorage.setOrCreate('tabs_style_non_tablet_mode', await settings.get('tabs_style_non_tablet_mode') as string);
+  AppStorage.setOrCreate('showing_tabs', await settings.get('status_tabs_open') as boolean);
 
   // Experience - Suggestions
   AppStorage.setOrCreate('max_bookmark_advice', await settings.get('max_bookmark_suggest') as number);
@@ -183,6 +193,9 @@ async function settings_tabs() {
   AppStorage.setOrCreate('resource_monitor', await settings.get('resource_monitor') as boolean);
 }
 
+/**
+ * Inits and loads bookmarks from disk.
+ * */
 async function bookmarks() {
   let bookmarks = new bunch_of_bookmarks("Bookmarks~Meow");
   AppStorage.setOrCreate('bunch_of_bookmarks', bookmarks);
@@ -235,12 +248,27 @@ async function restore() {
     continue_tabs_sub_on = Number.parseInt(continue_tabs_sub_on_string);
   }
 
-  AppStorage.setOrCreate('continue_tabs_count',continue_tabs_count);
-  AppStorage.setOrCreate('continue_tabs_main_on',continue_tabs_main_on);
-  AppStorage.setOrCreate('continue_tabs_sub_on',continue_tabs_sub_on);
+  AppStorage.setOrCreate('continue_tabs_count', continue_tabs_count);
+  AppStorage.setOrCreate('continue_tabs_main_on', continue_tabs_main_on);
+  AppStorage.setOrCreate('continue_tabs_sub_on', continue_tabs_sub_on);
 
   // Log
   console.log("[Meow][init] Got continue_tabs_count: " + continue_tabs_count_string);
   console.log("[Meow][init] Got continue_tabs_main_on: " + continue_tabs_main_on_string);
   console.log("[Meow][init] Got continue_tabs_sub_on: " + continue_tabs_sub_on_string);
+}
+
+/**
+ * Inits history.
+ * */
+function history() {
+  AppStorage.setOrCreate('bunch_of_history', new bunch_of_history());
+
+  // Initialize statuses
+  AppStorage.setOrCreate('reindexing_history', undefined);
+  AppStorage.setOrCreate('history_index_loading', undefined);
+  AppStorage.setOrCreate('history_index_saving', undefined);
+  AppStorage.setOrCreate('reindexing_history_progress', '');
+  AppStorage.setOrCreate('history_index_loading_progress', '');
+  AppStorage.setOrCreate('history_index_saving_progress', '');
 }
