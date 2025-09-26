@@ -13,10 +13,11 @@ import { fileIo } from '@kit.CoreFileKit';
 struct woofWantDownload {
   controller: CustomDialogController;
   @State from: string = '';
-  @State file_name: string = '';
+  @State @Watch('refresh') file_name: string = '';
   @State url: string = '';
   @State try_additional_info: string[] = [];
   @State item: webview.WebDownloadItem | undefined = undefined;
+  @State error_code: number = 0;
   // Params
   @State file_dir: string = '';
   @State download_target_path: string = '';
@@ -31,6 +32,10 @@ struct woofWantDownload {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
+
+  aboutToAppear(): void {
+    this.refresh();
+  }
 
   build() {
     Column({ space: 15 }) {
@@ -49,9 +54,7 @@ struct woofWantDownload {
         .visibility(this.showing_additional_info ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
 
-      linysText({ text: $r('app.string.Index_downloads_illegal_chars_in_filename'), max_lines: 3 }) // File name error prompt
-        .visibility(!is_legal_filename(this.file_name) ? Visibility.Visible : Visibility.None)
-        .animation(animation_default())
+      fileNameErrorDisplay({ file_name: this.file_name, error_code: this.error_code });
 
       TextInput({ text: this.file_name })// Edit file name
         .onSubmit(() => {
@@ -73,7 +76,7 @@ struct woofWantDownload {
           symbol_glyph_target: 'sys.symbol.info_circle',
           show: this.showing_additional_info,
           text: $r('app.string.Index_downloads_additional_info')
-        })
+        })// Info
           .onClick(() => {
             this.showing_additional_info = !this.showing_additional_info;
           })
@@ -85,12 +88,12 @@ struct woofWantDownload {
           })
         linysCapsuleButton({ text: "  󰀓  " })// Submit
           .onClick(() => {
-            if (is_legal_filename(this.file_name)) {
+            if (this.error_code == 0) {
               this.submit();
             }
           })
-          .opacity(is_legal_filename(this.file_name) ? 1 : 0.7)
-      } // Edit
+          .opacity(this.error_code == 0 ? 1 : 0.7)
+      } // Control
       .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
       .animation(animation_default())
       .width('100%')
@@ -102,9 +105,40 @@ struct woofWantDownload {
     .backgroundColor(this.color_current_primary)
   }
 
+  /**
+   * Checks if the filename is legal.
+   * And sets this.error_code.
+   * Also updates additional info.
+   * */
+  refresh() {
+    this.file_dir = meowContext().filesDir + '/downloads/' + this.file_name + '/' + Date.now().toString() + '/';
+    this.download_target_path = this.file_dir + this.file_name;
+
+    this.try_additional_info = [
+      'url: ' + this.item!.getUrl(),
+      'mimetype: ' + this.item!.getMimeType(),
+      'totalBytes: ' + this.item!.getTotalBytes().toString(),
+      'path: ' + this.download_target_path,
+      'meow: meow meow meow',
+    ];
+
+    this.error_code = is_legal_filename(this.file_name);
+  }
+
+  /**
+   * Starts the download task!
+   * */
   submit() {
     // LINK START!
     if (this.item) {
+      // Make directory
+      console.log('[Meow][bunch_of_downloads] Task folder creation: ' + this.file_dir);
+      try {
+        fileIo.mkdirSync(this.file_dir);
+      } catch (e) {
+        console.log('[Meow][bunch_of_downloads] Task folder creation failed! ' + e);
+      }
+
       // Register on download start
       this.bunch_of_downloads.list_of_on_going_tasks.push(this.item);
       this.bunch_of_downloads.list_of_downloaded_size.push(0);
@@ -123,13 +157,13 @@ struct woofWantDownload {
         this.item.start(this.download_target_path);
         AppStorage.set('uni_webDownloadItem_gateway', undefined);
       } catch (e) {
-        console.error(e);
+        console.error('[woofWantDownload] item.start failed! ' + e);
         return;
       }
       console.log('[bunch_of_downloads] dl_delegate.onBeforeDownload! download_target_path: [' + this.download_target_path + ']')
     }
 
-    // Goodbye
+    // Goodbye my friends
     if (this.controller) {
       this.bunch_of_downloads.update_timestamp();
       this.controller.close();
@@ -157,5 +191,53 @@ struct additionalInfoDisplay {
     .scrollBar(BarState.On)
     .scrollable(ScrollDirection.Horizontal)
     .edgeEffect(EdgeEffect.Spring)
+  }
+}
+
+
+@Component
+struct fileNameErrorDisplay {
+  @Prop file_name: string = 'uwu';
+  @Prop error_code: number = 0;
+  chars: string[] = ['', '', '\\', '/', ':', '*', '?', '\'', '<', '>', '|'];
+
+  build() {
+    Column({ space: 10 }) {
+      linysText({
+        text: $r('app.string.Index_downloads_illegal_chars_in_filename'),
+        max_lines: 3,
+        is_description: true,
+        is_expanded: true
+      }) // File name error prompt
+        .visibility(this.error_code > 0 ? Visibility.Visible : Visibility.None)
+        .animation(animation_default())
+
+      Row() {
+        linysText({
+          text: $r('app.string.Index_downloads_filename_length'),
+          max_lines: 3,
+        })
+        linysText({
+          text: this.file_name.length.toString(),
+          max_lines: 3,
+        })
+      } // File name too long
+      .visibility(this.error_code == 1 ? Visibility.Visible : Visibility.None)
+      .animation(animation_default())
+
+      Row() {
+        linysText({
+          text: $r('app.string.Index_downloads_filename_illegal'),
+          max_lines: 3,
+        })
+        linysText({
+          text: this.chars[this.error_code],
+          max_lines: 3,
+        })
+      } // File name illegal
+      .visibility(this.error_code >= 2 ? Visibility.Visible : Visibility.None)
+      .animation(animation_default())
+    }
+    .alignItems(HorizontalAlign.Start)
   }
 }

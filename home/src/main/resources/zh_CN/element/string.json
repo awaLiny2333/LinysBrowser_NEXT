@@ -197,6 +197,14 @@
       "value": "文件名不能包含下列任何字符：\\ / : * ? \" < > |，并且长度必须小于 255 字符。"
     },
     {
+      "name": "Index_downloads_filename_length",
+      "value": "长度："
+    },
+    {
+      "name": "Index_downloads_filename_illegal",
+      "value": "包含字符: "
+    },
+    {
       "name": "permission_reason_READ_PASTEPOARD",
       "value": "以供快速跳转剪贴板链接"
     },

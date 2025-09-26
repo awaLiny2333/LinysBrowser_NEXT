@@ -522,40 +522,40 @@ export function add_units_to_size(size_in_bytes: number | bigint) {
 /**
  * Determines whether filename is legal.
  * @param filename A string, the filename.
- * @returns true or false.
+ * @returns an integer 0 ~ 10.
  * */
 export function is_legal_filename(filename: string) {
   if (filename.length > 255) {
-    return false;
+    return 1;
   }
   if (filename.includes('\\')) {
-    return false;
+    return 2;
   }
   if (filename.includes('/')) {
-    return false;
+    return 3;
   }
   if (filename.includes(':')) {
-    return false;
+    return 4;
   }
   if (filename.includes('*')) {
-    return false;
+    return 5;
   }
   if (filename.includes('?')) {
-    return false;
+    return 6;
   }
   if (filename.includes('\"')) {
-    return false;
+    return 7;
   }
   if (filename.includes('<')) {
-    return false;
+    return 8;
   }
   if (filename.includes('>')) {
-    return false;
+    return 9;
   }
   if (filename.includes('|')) {
-    return false;
+    return 10;
   }
-  return true;
+  return 0;
 }
 
 // Conversions

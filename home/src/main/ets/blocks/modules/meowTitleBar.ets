@@ -231,7 +231,6 @@ struct meowTitleBar {
       }
 
       if (this.delayed_load_p0) {
-
         EstimatedDestination({
           is_http_no_s: this.search_input_unify_scheme_http,
           is_search_input_typing: this.is_search_input_typing,
@@ -284,6 +283,7 @@ struct meowTitleBar {
           ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
       }
+
       RelativeContainer() {
         Row({ space: this.tablet_mode ? 10 : 6 }) {
           linysSymbol({
@@ -375,7 +375,7 @@ struct meowTitleBar {
                 .id('address_bar')
                 .keyboardShortcut(!this.showing_search_extracted_field ? this.bunch_of_key_shortcuts.focus_address.main_key : '',
                   this.bunch_of_key_shortcuts.focus_address.modifier)
-            } // Extract
+            } // URL
             .scrollable(ScrollDirection.Vertical)
             .height(this.showing_search_extracted_field ? 0 : 36)
             .scrollBar(BarState.Off)
@@ -422,7 +422,7 @@ struct meowTitleBar {
                 .id('key_bar')
                 .keyboardShortcut(this.showing_search_extracted_field ? this.bunch_of_key_shortcuts.focus_address.main_key : '',
                   this.bunch_of_key_shortcuts.focus_address.modifier)
-            } // URL
+            } // Keywords
             .scrollable(ScrollDirection.Vertical)
             .scrollBar(BarState.Off)
             .height(this.showing_search_extracted_field ? 36 : 0)

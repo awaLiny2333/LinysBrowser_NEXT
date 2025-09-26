@@ -193,6 +193,14 @@
       "value": "A file name cannot contain any of the following: \\ / : * ? \" < > |, and the length must be less than 255 characters."
     },
     {
+      "name": "Index_downloads_filename_length",
+      "value": "Length: "
+    },
+    {
+      "name": "Index_downloads_filename_illegal",
+      "value": "Contains: "
+    },
+    {
       "name": "permission_reason_READ_PASTEPOARD",
       "value": "For suggesting shortcuts to urls in clipboard"
     },
@@ -902,7 +910,7 @@
     },
     {
       "name": "LinkJumper_webpage_asks_for_jump",
-      "value": "The page is asking for a jump!"
+      "value": "Request of jump!"
     },
     {
       "name": "LinkJumper_allow_jump",
@@ -942,7 +950,7 @@
     },
     {
       "name": "Settings_toolbox_import_settings",
-      "value": "Import settings"
+      "value": "Import Settings"
     },
     {
       "name": "Settings_toolbox_export_everything_desc",
@@ -962,7 +970,7 @@
     },
     {
       "name": "Settings_toolbox_import_everything",
-      "value": "Import everything"
+      "value": "Import Everything"
     },
     {
       "name": "Fault_logs",

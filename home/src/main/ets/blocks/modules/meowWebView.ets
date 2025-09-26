@@ -8,8 +8,6 @@ import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { bookmark, bunch_of_bookmarks, folder, unified_item } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import { print } from '@kit.BasicServicesKit';
-import { meowContext } from '../../utils/environment_tools';
-import { fileIo } from '@kit.CoreFileKit';
 import lazy woofWantJump from '../../dialogs/prompts/woofWantJump';
 import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
 import lazy woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
@@ -439,7 +437,7 @@ struct meowWebView {
                       'for an out-of-bound index in restore_web_state_arrays.')
                   }
                 }
-              }, 0)
+              }, 0);
 
               // Set allowed resources
               try {
@@ -642,33 +640,13 @@ struct meowWebView {
     let file_name = this.uni_webDownloadItem_gateway.getSuggestedFileName();
     let file_url = this.uni_webDownloadItem_gateway.getUrl();
 
-    // Create task folder
-    let file_dir = meowContext().filesDir + '/downloads/' + file_name + '_' + Date.now().toString() + '/';
-    try {
-      fileIo.mkdirSync(file_dir);
-    } catch (e) {
-      console.log('[Meow][bunch_of_downloads] Task folder creation failed! Already created? ' + e);
-    }
-    let download_target_path = file_dir + file_name;
-
-    let additional_info: string[] = [
-      'url: ' + this.uni_webDownloadItem_gateway.getUrl(),
-      'mimetype: ' + this.uni_webDownloadItem_gateway.getMimeType(),
-      'totalBytes: ' + this.uni_webDownloadItem_gateway.getTotalBytes().toString(),
-      'path: ' + download_target_path,
-      'meow: meow meow meow',
-    ];
-
     // Call popup
     this.woofWantDownload_control = new CustomDialogController({
       builder: woofWantDownload({
         from: this.current_url,
         file_name: file_name,
         url: file_url,
-        try_additional_info: additional_info,
         item: this.uni_webDownloadItem_gateway,
-        file_dir: file_dir,
-        download_target_path: download_target_path,
       }),
       alignment: DialogAlignment.Center,
       cornerRadius: 16

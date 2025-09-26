@@ -371,7 +371,7 @@ struct meowTabsVertical {
     }
 
     // Close
-    this.current_main_tab_index = this.bunch_of_tabs.closeTab(target, url_default_blank())
+    this.current_main_tab_index = this.bunch_of_tabs.closeTab(target, this.bunch_of_tabs.new_tab_url || url_default_blank());
     // Update history
     this.update_backward_forward_access()
     // Get synced lists

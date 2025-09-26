@@ -92,7 +92,6 @@ async function settings_tabs() {
   AppStorage.setOrCreate('DEV_MODE', await settings.get('DEV_MODE') as boolean);
 
   // UI Status
-  AppStorage.setOrCreate('showing_tabs', await settings.get('status_tabs_open') as boolean);
   AppStorage.setOrCreate('title_bar_position', await settings.get('title_bar_position') as string);
   AppStorage.setOrCreate('tabs_style', await settings.get('tabs_style') as string);
   AppStorage.setOrCreate('tabs_style_non_tablet_mode', await settings.get('tabs_style_non_tablet_mode') as string);

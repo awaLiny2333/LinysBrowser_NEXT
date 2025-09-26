@@ -76,51 +76,62 @@ function is_legal_ipv4(input: string) {
   }
 
   // input = "https://114.114.114.114:32767/somewhat"
-
-  input = match_domain(input)[1]
-  // input = "114.114.114.114:32767/somewhat"
-  input = input.split("/")[0]
-  // eliminate slashes
-  // input = "114.114.114.114:32767"
+  input = match_domain(input)[1].split("/")[0] // input = "114.114.114.114:32767"
   let split_ports = input.split(":");
-  input = split_ports[0]
-  // eliminate ports
-  // input = "114.114.114.114"
+  input = split_ports[0]; // input = "114.114.114.114"
+  let port = split_ports[1];
 
-  let input_split = input.split(".")
-  if (input_split.length != 4) {
+  let input_parts = input.split(".");
+  if (input_parts.length != 4) {
     return false;
     // if the length of parts isn't 4
   }
 
+  // Check every part
   for (let index = 0; index < 4; index++) {
-    let part = input_split[index]
+    const part = input_parts[index];
     if (!is_pure_number(part)) {
       // if any part isn't a pure number
       return false;
     }
-    let pure_number = Number.parseInt(part)
+    let pure_number = Number.parseInt(part);
     if (!(0 <= pure_number && pure_number <= 255)) {
       // if any part not in legal range [0, 255]
       return false;
     }
   }
 
+  // meow.com::::80 is illegal
+  if (split_ports.length > 2) {
+    return false;
+  }
+
   // if there is a port
   if (split_ports.length == 2) {
-    let port = split_ports[1];
     // examine ports, like 32767
-    if (!is_pure_number(port)) {
-      return false;
-    }
-    let port_int = Number.parseInt(port);
-    if (!(0 <= port_int && port_int <= 65535)) {
-      // if any part not in legal range [0, 255]
-      // or port not in legal range [0, 65535]
+    if (!is_legal_port(port)) {
       return false;
     }
   }
 
+  return true;
+}
+
+/**
+ * Determines if a port is legal.
+ * @param port the port
+ * @returns true if the port is legal
+ * */
+function is_legal_port(port: string) {
+  if (!is_pure_number(port)) {
+    return false;
+  }
+  let port_int = Number.parseInt(port);
+  if (!(0 <= port_int && port_int <= 65535)) {
+    // if any part not in legal range [0, 255]
+    // or port not in legal range [0, 65535]
+    return false;
+  }
   return true;
 }
 
@@ -130,37 +141,41 @@ function is_legal_url(input: string) {
     return false;
   }
 
-  // input = "https://www.google.com/about"
+  // input = "https://www.google.com:80/about"
 
-  let scheme_result = match_domain(input);
-  // scheme_result = ["https","www.google.com/about"]
-
+  let scheme_result = match_domain(input); // scheme_result = ["https","www.google.com:80/about"]
   let scheme: string = scheme_result[0];
+  let url_first_part = scheme_result[1].split("/")[0].split("."); // url_first_part = ["www", "google", "com:80"]
+  let url_tail = url_first_part[url_first_part.length - 1]; // top_domain = "com:80"
+  let split_ports = url_tail.split(":");
+  let top = split_ports[0]; // top = "com"
+  let port = split_ports[1];
 
   // Other schemes, directly jump
   if (scheme.length >= 1 && !viewable_domains().includes(scheme)) {
     return true;
   }
-
-  let url_first_part = scheme_result[1].split("/")[0].split(".")
-  // eliminate slashes and split by dots
-  // url_first_part = ["www", "google", "com"]
-
+  // if doesn't contain dots and has no scheme
   if (url_first_part.length < 2 && scheme == "") {
-    // if doesn't contain dots and has no scheme
     return false;
   }
-
-  let top_domain = url_first_part[url_first_part.length - 1]
-  // top_domain = "com"
-
-  if (top_domain.length == 0) {
-    // if url ends with a dot
+  // if url ends with a dot
+  if (url_tail.length == 0) {
     return false;
   }
-
-  if (is_containing_number(top_domain)) {
-    // if top domain contains numbers
+  // meow.com::::80 is illegal
+  if (split_ports.length > 2) {
+    return false;
+  }
+  // if there is a port
+  if (split_ports.length == 2) {
+    // examine ports, like 32767
+    if (!is_legal_port(port)) {
+      return false;
+    }
+  }
+  // if top domain contains numbers
+  if (is_containing_number(top)) {
     return false;
   }
 
@@ -263,7 +278,7 @@ export function match_domain(input: string) {
 
 /**
  * Domains that can be loaded and displayed in web components
- * @returns
+ * @returns ['http', 'https', 'meow', 'resource', 'file']
  * */
 export function viewable_domains() {
   return ['http', 'https', 'meow', 'resource', 'file'];

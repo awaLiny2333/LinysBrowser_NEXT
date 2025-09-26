@@ -5,23 +5,23 @@
 ## Something to Meow Before
 
 The original purpose of this project is to make a decent browser for Liny catself to drive daily
-after upgrading to HarmonyOS NEXT. 
+after upgrading to HarmonyOS NEXT.
 But later after realizing that a lot of people out there may also need such an app,
 this project is made completely opensource for every body to use.
 
-However, due to the time and stuff scheduling issues due by Liny catself, 
+However, due to the time and stuff scheduling issues due by Liny catself,
 issues may not be checked and updates may not be pushed so in time.
 In most cases plenty is lagging behind, so, thank you for your kind understanding!!
 
 If you see that the last commit was made quite a lot of weeks, or even months ago,
 please don't consider this project dead so easily, since
-Liny may be so _lucky_ to be busy writing essays that 
+Liny may be so _lucky_ to be busy writing essays that
 stuffs this side would not be taken good care of for a period of time.
 And now as HarmonyOS version of DevEco Studio hasn't come out,
 updates of this project would be inevitably even slower
 due to the super slow Windows virtual machine x86 translation.
 
-Therefore, the best solution to this problem is to **open an issue** so that 
+Therefore, the best solution to this problem is to **open an issue** so that
 Liny would feel so anxious that the update of this project would be selected to be prioritized.
 
 Let's say: _Thank you, issues!_
@@ -113,7 +113,7 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 - [x] Customizable homepage background
 - [x] Customizable homepage shortcuts
 - [ ] Private mode
-- [x] Customizable download options: ask each time 
+- [x] Customizable download options: ask each time
 - [x] Direct download to system download directory
 - [x] In-page text search
 - [x] Disable JavaScript
@@ -139,41 +139,45 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 
 ## Constraints and limits
 
-Long way ahead.
+### Long way ahead.
 
-1. Weird problem causing modifications on key shortcuts not applied?
-2. Weird problem causing crashes on launch if long time no use →
-   Issue [#40](https://github.com/awaLiny2333/LinysBrowser_NEXT/issues/40)
-   (Still under investigation).
-2. As a result of Liny's unsystematic programming thoughts and rubbish codes,
+1. As a result of Liny's unsystematic programming thoughts and rubbish codes,
    this application may contain performance problems.
    Liny would appreciate that so much if you wish to report a problem, big or small!
-3. Some mysterious problems causing the selected options not displayed in the first opening
-   of the Settings Panel after app launch.
-4. Due to a mysterious problem and a temporary but necessary compromise,
+2. Due to a mysterious problem and a temporary but necessary compromise,
    sometimes the AD blocking whitelist may not take effect in time after launching,
    resulting in ads on the web page being blocked.
    (Trying to solve)
-5. Due to a mysterious problem and a temporary but necessary compromise,
+3. Due to a mysterious problem and a temporary but necessary compromise,
    sometimes the AD blocking function itself may not take effect in time after launching,
    resulting in ads on the web page not being blocked.
    (Trying to solve)
-6. In some cases reopening tabs function won't work, and no new tabs are shown.
-   (Still under investigation)
-7. Perhaps due to performance issues on Windows x86-64 Emulators,
+4. HarmonyOS UA is not understood by plenty of websites (But UA is customizable now).
+5. The vertical tabs panel animations may seem weird when the scroll is longer than the screen.
+6. This project requires HarmonyOS NEXT API17 to run.
+7. OHOS Comes with no Share Kit, what can I do? Help needed.
+
+### Seems to be Solved?
+
+1. Perhaps due to performance issues on Windows x86-64 Emulators,
    quickly opening plenty of new tabs may cause crashes due to error
    17100001 (Init error. The WebviewController must be associated with a Web component).
-   (Seems to be solved, still under observation)
-8. Quickly closing plenty of tabs may cause tabs to disappear.
+   (Seems to be solved)
+2. Quickly closing plenty of tabs may cause tabs to disappear.
    This is because in some extreme occasions,
    the tab button is trying to close the last+1 index of the tab list.
    An if statement has been added before the operation
    in order to make sure the index is in the legal range.
-   (Seems to be solved, still under observation)
-9. HarmonyOS UA is not understood by plenty of websites (But UA is customizable now).
-10. The vertical tabs panel animations may seem weird when the scroll is longer than the screen.
-11. This project requires HarmonyOS NEXT API17 to run.
-12. OHOS Comes with no Share Kit, what can I do? Help needed.
+   (Seems to be solved)
+3. Weird problem causing crashes on launch if long time no use →
+   Issue [#40](https://github.com/awaLiny2333/LinysBrowser_NEXT/issues/40)
+   (Seems to be solved).
+4. Weird problem causing modifications on key shortcuts not applied?
+5. Some mysterious problems causing the selected options not displayed in the first opening
+   of the Settings Panel after app launch.
+   (Seems to have disappeared)
+6. In some cases reopening tabs function won't work, and no new tabs are shown.
+   (Seems to be solved)
 
 ## What are the commit labels for?
 

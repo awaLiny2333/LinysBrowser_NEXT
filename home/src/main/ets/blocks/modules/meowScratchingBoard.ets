@@ -5,12 +5,12 @@ import lazy { copy } from '../../utils/clipboard_tools';
 import lazy { preview_image } from '../../utils/preview_tools';
 import lazy { document_save_from_uri, image_save_from_uri } from '../../utils/storage_tools';
 import { add_units_to_size, get_file_size_Sync, get_file_suffix } from '../../utils/storage_tools';
+import lazy { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import linysSymbol from '../../components/texts/linysSymbol';
 import linysText from '../../components/texts/linysText';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysTextTitle from '../../components/texts/linysTextTitle';
-import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
 
 @Component
 struct meowScratchingBoard {
@@ -44,7 +44,7 @@ struct meowScratchingBoard {
       Scroll(this.scroll_controller) {
         Column({ space: 10 }) {
           ForEach(this.extracted_data, (item: string, index: number) => {
-            raw_data_display({
+            data_display({
               text: item,
               type: this.extracted_type[index],
               index: index,
@@ -137,7 +137,7 @@ struct meowScratchingBoard {
 export default meowScratchingBoard;
 
 @Component
-struct raw_data_display {
+struct data_display {
   @Link showing_scratching_board: boolean;
   @State text: string = "meow";
   @State type: string = "text";
@@ -161,17 +161,6 @@ struct raw_data_display {
   @State copied: number = 0;
   @State image_height: number = 0;
   @State image_width: number = 0;
-  // dialogs
-  woofWantDownload_control: CustomDialogController = new CustomDialogController({
-    builder: woofWantDownload({
-      from: '',
-      file_name: '',
-      url: '',
-      try_additional_info: []
-    }),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 16
-  })
 
   aboutToAppear(): void {
     if (this.type == 'url') {
@@ -247,12 +236,12 @@ struct raw_data_display {
           .scrollable(this.tablet_mode ? ScrollDirection.Vertical : ScrollDirection.Horizontal)
           .id('info')
           .margin(this.tablet_mode ? { left: 10 } : { top: 10 })
-          .alignRules(this.tablet_mode ?
-            {
+          .alignRules(this.tablet_mode
+            ? {
               top: { anchor: 'image', align: VerticalAlign.Top },
               left: { anchor: 'image', align: HorizontalAlign.End }
-            } :
-            {
+            }
+            : {
               top: { anchor: 'image', align: VerticalAlign.Bottom },
               left: { anchor: 'image', align: HorizontalAlign.Start }
             })
@@ -279,65 +268,54 @@ struct raw_data_display {
           })
             .clickEffect(click_effect_default())
             .onClick(() => {
-              // Check details
               preview_image(this.text);
             }) // Preview
         } // Buttons
       } else {
+        // Type Symbol
         linysSymbol({
           symbol_glyph_target: this.type_symbol(),
           font_weight: this.type == "text" ? FontWeight.Regular : FontWeight.Medium,
-        }) // Type Symbol
-
+        })
+        // Text display
         linysText({
           text: this.text,
           max_lines: 10,
           font_weight: this.type == "text" ? FontWeight.Regular : FontWeight.Bold,
-        })// Text display
+        })
           .layoutWeight(1)
-
+        // Buttons
         Row({ space: 10 }) {
+          // Text copy
           linysSymbol({
             symbol_glyph_target: this.copied ? 'sys.symbol.checkmark_clipboard_fill' : 'sys.symbol.text_clipboard'
-          })// Text copy
+          })
             .clickEffect(click_effect_default())
             .onClick(() => {
-              copy(this.text);
-              this.copied = animation_popup_duration();
+              this.copy_text(this.text);
             })
-
+          // Download button
           if (this.downloadable) {
             linysSymbol({
               symbol_glyph_target: 'sys.symbol.download'
             })
               .clickEffect(click_effect_default())
               .onClick(() => {
-                // AppStorage.set('universal_new_download_gateway', this.text);
-                // Call popup
-                this.woofWantDownload_control = new CustomDialogController({
-                  builder: woofWantDownload({
-                    from: '󰊴!',
-                    file_name: this.download_filename,
-                    url: this.text,
-                    try_additional_info: [],
-                  }),
-                  alignment: DialogAlignment.Center,
-                  cornerRadius: 16
-                })
-                this.woofWantDownload_control.open();
+                this.download_url(this.text);
               })
-          } // Download button
-
+          }
+          // Url visit button
           if (this.type == 'url') {
             linysSymbol({
               symbol_glyph_target: 'sys.symbol.arrow_right'
             })
               .clickEffect(click_effect_default())
               .onClick(() => {
-                this.default_click();
+                this.open_url(this.text);
               })
-          } // Url visit button
-        } // Buttons
+          }
+
+        }
       } // Content display with Controls
     }
     .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
@@ -364,25 +342,14 @@ struct raw_data_display {
     })
     .clickEffect(click_effect_default())
     .onClick(() => {
-      this.default_click();
+      this.default_action();
     })
   }
 
-  default_click() {
-    if (this.type == 'url') {
-      this.new_tab_gateway = this.text;
-      this.showing_scratching_board = false;
-    }
-    if (this.type == 'text') {
-      copy(this.text);
-      this.copied = animation_popup_duration();
-    }
-    if (this.type == 'image') {
-      preview_image(this.text);
-      // document_save_from_uri(this.text);
-    }
-  }
-
+  /**
+   * The default symbols for different types of items.
+   * @returns the symbolGlyphs id name.
+   * */
   type_symbol() {
     if (this.type == 'url') {
       return 'sys.symbol.paperclip';
@@ -391,5 +358,52 @@ struct raw_data_display {
       return 'sys.symbol.picture';
     }
     return 'sys.symbol.text_and_t'
+  }
+
+  // Actions
+
+  /**
+   * The default actions for url, text and image when clicked.
+   * */
+  default_action() {
+    if (this.type == 'url') {
+      this.open_url(this.text);
+    }
+    if (this.type == 'text') {
+      this.copy_text(this.text);
+    }
+    if (this.type == 'image') {
+      preview_image(this.text);
+    }
+  }
+
+  /**
+   * Copies a text into system pasteboard.
+   * @param text the text
+   * */
+  copy_text(text: string) {
+    copy(text);
+    this.copied = animation_popup_duration();
+  }
+
+  /**
+   * Calls the webViews to open a new tab
+   * @param url the url of new tab
+   * */
+  open_url(url: string) {
+    this.new_tab_gateway = url;
+    this.showing_scratching_board = false;
+  }
+
+  /**
+   * Call the webViews to download something from a url
+   * @param url the url of file to be downloaded
+   * */
+  download_url(url: string) {
+    try {
+      (AppStorage.get('bunch_of_tabs') as bunch_of_tabs).workingMainTab().controller.startDownload(url);
+    } catch (e) {
+      console.error('[meowScratchingBoard] Download Url failed! ' + e);
+    }
   }
 }

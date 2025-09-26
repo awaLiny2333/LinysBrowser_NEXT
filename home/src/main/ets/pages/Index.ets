@@ -143,9 +143,14 @@ struct Index {
 
     // Determine tablet mode
     await window.getLastWindow(this.getUIContext().getHostContext()).then((value: window.Window) => {
-      const rect: window.Rect = value.getWindowProperties().windowRect;
-      this.tablet_mode = meowPx2vp(rect.width) > 600;
-    })
+      try {
+        const rect: window.Rect = value.getWindowProperties().windowRect;
+        this.tablet_mode = meowPx2vp(rect.width) > 600;
+      } catch (error) {
+        // Leave tablet_mode there to be negative
+        this.tablet_mode = false;
+      }
+    });
 
     // Init title bar
     this.on_title_bar_position_change();
@@ -159,6 +164,10 @@ struct Index {
     }, this.delay_p0);
     setTimeout(() => {
       this.delayed_load_p1 = true;
+      // Reopen tabs panel
+      this.bunch_of_settings.get('status_tabs_open').then((status_tabs_open) => {
+        AppStorage.setOrCreate('showing_tabs', status_tabs_open as boolean);
+      })
     }, this.delay_p1);
     setTimeout(() => {
       this.delayed_load_p2 = true;
@@ -208,16 +217,16 @@ struct Index {
         Row() {
           Scroll() {
             Row() {
-                Scroll() {
-                  meowTabsVertical()
-                    .width(this.width_of_Tabs())
-                    .padding(10)
-                } // Tabs Panel
-                .height("100%")
-                .width(this.showing_tabs ? this.width_of_Tabs() : 0)
-                .animation(animation_default())
-                .scrollable(ScrollDirection.Horizontal)
-                .scrollBar(BarState.Off)
+              Scroll() {
+                meowTabsVertical()
+                  .width(this.width_of_Tabs())
+                  .padding(10)
+              } // Tabs Panel
+              .height("100%")
+              .width(this.showing_tabs ? this.width_of_Tabs() : 0)
+              .animation(animation_default())
+              .scrollable(ScrollDirection.Horizontal)
+              .scrollBar(BarState.Off)
 
               if (this.delayed_load_p1) {
                 Scroll() {

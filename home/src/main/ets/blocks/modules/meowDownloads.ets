@@ -379,18 +379,14 @@ struct additionalInfoDisplay {
   @Prop my_additional_info: string[];
 
   build() {
-    Scroll() {
-      Column({ space: 4 }) {
-        ForEach(this.my_additional_info, (info: string, _index: number) => {
-          linysText({ text: info })
-            .opacity(0.7)
-        }) // additional info
-      }
-      .margin({ bottom: 15 })
-      .alignItems(HorizontalAlign.Start)
+    Column({ space: 4 }) {
+      ForEach(this.my_additional_info, (info: string, _index: number) => {
+        linysText({ text: info, max_lines: 999 })
+          .opacity(0.7)
+      }) // additional info
     }
-    .scrollBar(BarState.On)
-    .scrollable(ScrollDirection.Horizontal)
-    .edgeEffect(EdgeEffect.Spring)
+    .width('100%')
+    .margin({ bottom: 15 })
+    .alignItems(HorizontalAlign.Start)
   }
 }

@@ -3,7 +3,6 @@ import { match_domain, url_meow_to_resource, viewable_domains } from '../utils/u
 import { url_default_blank } from './bunch_of_defaults';
 import { fileIo as fs } from '@kit.CoreFileKit';
 import { sandbox_save } from '../utils/storage_tools';
-import { common } from '@kit.AbilityKit';
 import { meowContext } from '../utils/environment_tools';
 
 @Observed
@@ -127,7 +126,7 @@ export class bunch_of_tabs {
    * */
   loadUrl_onWorkingTab(url: string) {
     url = url_meow_to_resource(url);
-    console.log('[bunch_of_tabs][loadUrl_onWorkingTab] '+ url);
+    console.log('[bunch_of_tabs][loadUrl_onWorkingTab] ' + url);
     this.Tabs[this.current_working_tab_index].controller.loadUrl(url);
   }
 
@@ -422,7 +421,7 @@ export class bunch_of_tabs {
    * */
   restore_web_state(web_state: Uint8Array, index_key: number) {
     if (web_state !== undefined) {
-      this.Tabs[index_key].url = '<Recovered> uwu';
+      this.Tabs[index_key].url = 'uwu';
       this.Tabs[index_key].title = 'uwu';
       console.log("[Meow][meowWebView] Restore web " + index_key.toString() + ", state Length: " + web_state.length.toString())
       this.Tabs[index_key].controller.clearHistory();
