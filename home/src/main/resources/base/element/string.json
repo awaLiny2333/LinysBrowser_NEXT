@@ -505,6 +505,10 @@
       "value": "However, some websites may look weird in the algorithm-reversed colors. So if they are added here, forced dark mode would not be applied."
     },
     {
+      "name": "Web_force_dark_mode_already_disabled",
+      "value": "Tips: Forced dark mode on this site has been disabled!"
+    },
+    {
       "name": "Settings_experience_use_adblock",
       "value": "Ads Blocker"
     },

@@ -12,6 +12,7 @@ import lazy woofWantJump from '../../dialogs/prompts/woofWantJump';
 import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
 import lazy woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
+import { sync_tabs_list_info } from '../../utils/data_operation_tools';
 
 @Component
 struct meowWebView {
@@ -33,16 +34,20 @@ struct meowWebView {
   @StorageLink('current_in_page_searching_stats_current') current_in_page_searching_stats_current: number = 0;
   @StorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
   @StorageLink('current_in_page_searching_keyword') current_in_page_searching_keyword: string = ''
-  // Web Info statuses
+  /**
+   * Controls */
   @StorageLink('tab_titles') tab_titles: string[] = []
-  @StorageLink('current_title') current_title: string = "=￣ω￣=";
+  // @StorageLink('current_title') current_title: string = "=￣ω￣=";
   @StorageLink('tab_urls') tab_urls: string[] = []
   @StorageLink('current_url') current_url: string = "=￣ω￣=";
-  @StorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0]
-  @StorageLink('current_loading_progress') current_loading_progress: number = 0
-  @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]
-  @StorageLink('current_is_loading') current_is_loading: boolean = true
-  // Web Control statuses
+  // @StorageLink('tab_match_domains') tab_match_domains: string[][] = [];
+  // @StorageLink('current_match_domain') current_match_domain: string[] = ['scheme', 'domain'];
+  // @StorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0]
+  // @StorageLink('current_loading_progress') current_loading_progress: number = 0
+  // @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]
+  // @StorageLink('current_is_loading') current_is_loading: boolean = true
+  /**
+   * Web control statuses */
   @StorageLink('current_accessForward') current_accessForward: boolean = false;
   @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
   @StorageLink('current_main_tab_index') @Watch('on_tab_info_change') current_main_tab_index: number = 0;
@@ -325,9 +330,8 @@ struct meowWebView {
               this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(true)
               this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(0)
               // Get synced lists
-              this.sync_list_info()
+              sync_tabs_list_info()
               // Update Input Search Box
-              this.update_current_info()
               this.update_search_box_text(this.current_url)
             })
             .onPageEnd(() => {
@@ -335,8 +339,8 @@ struct meowWebView {
               this.bunch_of_tabs.Tabs[Label.index_key].update_title();
               this.bunch_of_tabs.Tabs[Label.index_key].update_url();
               this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(false);
-              this.tab_is_loading = this.bunch_of_tabs.get_all_is_loading();
-              this.update_current_info();
+
+              sync_tabs_list_info();
 
               // Save browse history if is neither resource tab nor a recovery tab
               if (this.collect_new_history
@@ -374,15 +378,15 @@ struct meowWebView {
                 return;
               }
 
+              // Ask tab to update its info
               this.bunch_of_tabs.Tabs[Label.index_key].update_title()
               this.bunch_of_tabs.Tabs[Label.index_key].update_url()
               this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(progress)
-              // Ask tab to update its info
-              this.sync_list_info()
-              // Get synced lists
-              this.update_current_info()
+
+              sync_tabs_list_info(); // Get synced lists
+
               // Update Input Search Box
-              this.update_search_box_text(this.current_url)
+              this.update_search_box_text(this.current_url);
 
               if (this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation) {
                 return;
@@ -569,26 +573,6 @@ struct meowWebView {
   }
 
   // Operations
-
-  update_current_info() {
-    this.current_title = this.tab_titles[this.current_main_tab_index];
-    this.current_url = this.tab_urls[this.current_main_tab_index];
-    this.current_url = url_resource_to_meow(this.current_url);
-    // translate "resource://" into "meow://"
-    this.current_loading_progress = this.tab_loading_progresses[this.current_main_tab_index];
-    this.current_is_loading = this.tab_is_loading[this.current_main_tab_index];
-    // Set loading progress
-    this.current_in_page_searching_keyword = this.bunch_of_tabs.workingMainTab().searching_keyword;
-    this.current_in_page_searching_stats_current = this.bunch_of_tabs.workingMainTab().searching_keyword_stats_current;
-    this.current_in_page_searching_stats_total = this.bunch_of_tabs.workingMainTab().searching_keyword_stats_total;
-  }
-
-  sync_list_info() {
-    this.tab_titles = this.bunch_of_tabs.get_all_titles()
-    this.tab_urls = this.bunch_of_tabs.get_all_urls()
-    this.tab_is_loading = this.bunch_of_tabs.get_all_is_loading();
-    this.tab_loading_progresses = this.bunch_of_tabs.get_all_loading_progress()
-  }
 
   update_search_box_text(text: string) {
     if (!this.is_search_input_typing) {

@@ -505,6 +505,10 @@
       "value": "但是有一些网站的颜色在被算法反转之后看起来会很诡异。所以如果添加一些网站的域名到例外里，它们就不会被强制转换！"
     },
     {
+      "name": "Web_force_dark_mode_already_disabled",
+      "value": "提示：强制深色模式在这个网站上已经禁用！"
+    },
+    {
       "name": "Settings_experience_use_adblock",
       "value": "广告过滤"
     },

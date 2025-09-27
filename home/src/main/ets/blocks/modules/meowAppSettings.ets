@@ -26,6 +26,7 @@ import {
 import { bunch_of_history_index_lite } from '../../hosts/bunch_of_history_index_lite';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
+import { webview } from '@kit.ArkWeb';
 import bundleManager from '@ohos.bundle.bundleManager';
 import meowSEManager from '../panels/meowSEManager';
 import meowUAManager from '../panels/meowUAManager';
@@ -44,7 +45,6 @@ import linysTextSubtitleDivision from '../../components/texts/linysTextSubtitleD
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import linysTextTitle from '../../components/texts/linysTextTitle';
 import linysText from '../../components/texts/linysText';
-import lazy woofAdsBlocker from '../../dialogs/managers/woofAdsBlocker';
 import lazy woofCookies from '../../dialogs/managers/woofCookies';
 import lazy woofGeneralManage from '../../dialogs/managers/woofGeneralManage';
 import lazy woofKeyShortcuts from '../../dialogs/managers/woofKeyShortcuts';
@@ -53,7 +53,6 @@ import lazy woofRecentFaultLogs from '../../dialogs/contents/woofRecentFaultLogs
 import lazy woofUpdateHistory from '../../dialogs/contents/woofUpdateHistory';
 import lazy woofPromptOK from '../../dialogs/prompts/woofPromptOK';
 import lazy woofHistory from '../../dialogs/managers/woofHistory';
-import lazy woofDarkExempts from '../../dialogs/managers/woofDarkExempts';
 
 @Component
 struct meowAppSettings {
@@ -117,7 +116,9 @@ struct meowAppSettings {
   @StorageLink('sys_back_to_access_backward') sys_back_to_access_backward: boolean = false;
   @StorageLink('resource_monitor') resource_monitor: boolean = true;
   @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
+  @StorageLink('web_force_dark_mode_exemptions') web_force_dark_mode_exemptions: string[] = [];
   @StorageLink('use_adblock') use_adblock: boolean = true;
+  @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
   @StorageLink('collect_new_history') collect_new_history: boolean = true;
   @StorageLink('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
   @StorageLink('disable_js') disable_js: boolean = true;
@@ -158,15 +159,62 @@ struct meowAppSettings {
     // showInSubWindow: true,
     width: "90%",
   });
-  adsBlocker_control: CustomDialogController = new CustomDialogController({
-    builder: woofAdsBlocker(),
+  @State to_fool_woofGeneralManage: boolean = false;
+  dark_control: CustomDialogController = new CustomDialogController({
+    builder: woofGeneralManage({
+      general_switch: this.web_force_dark_mode,
+      sites_list: this.web_force_dark_mode_exemptions,
+      descriptions: [
+        $r('app.string.Web_force_dark_mode_desc_1'),
+        $r('app.string.Web_force_dark_mode_desc_2'),
+        $r('app.string.General_select_guide')],
+      tips: $r('app.string.Web_force_dark_mode_already_disabled'),
+      title: $r('app.string.Settings_experience_manage_web_force_dark_mode'),
+      switch_desc: $r('app.string.Settings_experience_web_force_dark_mode'),
+      subtitle_sites_list: $r('app.string.Web_force_dark_mode_exemptions'),
+      switch_id: 'web_force_dark_mode',
+      sites_list_id: 'web_force_dark_mode_exemptions',
+      subtitle_all_sites: '',
+      all_sites_switch: this.to_fool_woofGeneralManage,
+      switch_all_sites_id: '',
+    }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
     // showInSubWindow: true,
     width: "90%",
   });
-  dark_control: CustomDialogController = new CustomDialogController({
-    builder: woofDarkExempts(),
+  adsBlocker_control: CustomDialogController = new CustomDialogController({
+    builder: woofGeneralManage({
+      general_switch: this.use_adblock,
+      sites_list: this.adblock_exceptions,
+      descriptions: [
+        $r('app.string.Ads_block_desc_1'),
+        $r('app.string.Ads_block_desc_2'),
+        $r('app.string.General_select_guide')],
+      tips: '',
+      title: $r('app.string.Settings_experience_manage_adblock'),
+      switch_desc: $r('app.string.Settings_experience_use_adblock'),
+      subtitle_sites_list: $r('app.string.Ads_block_dont_block_sites'),
+      switch_id: 'use_adblock',
+      sites_list_id: 'adblock_exceptions',
+      subtitle_all_sites: '',
+      all_sites_switch: this.to_fool_woofGeneralManage,
+      switch_all_sites_id: '',
+      onAdd: (added) => {
+        try {
+          webview.AdsBlockManager.addAdsBlockDisallowedList([added]);
+        } catch (e) {
+          console.error('[woofAdsBlocker][add_exception] ' + e);
+        }
+      },
+      onDelete: (deleted)=>{
+        try {
+          webview.AdsBlockManager.removeAdsBlockDisallowedList(deleted);
+        } catch (e) {
+          console.error('[woofAdsBlocker][delete_selected] ' + e);
+        }
+      }
+    }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
     // showInSubWindow: true,
@@ -175,8 +223,8 @@ struct meowAppSettings {
   js_manage_control: CustomDialogController = new CustomDialogController({
     builder: woofGeneralManage({
       general_switch: this.disable_js,
-      general_on_all_sites_switch: this.disable_js_all_sites,
-      general_sites_list: this.disable_js_these_sites
+      all_sites_switch: this.disable_js_all_sites,
+      sites_list: this.disable_js_these_sites
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
@@ -186,20 +234,20 @@ struct meowAppSettings {
   image_manage_control: CustomDialogController = new CustomDialogController({
     builder: woofGeneralManage({
       general_switch: this.disable_image,
-      general_sites_list: this.disable_image_these_sites,
-      general_on_all_sites_switch: this.disable_image_all_sites,
-      general_descriptions: [
+      sites_list: this.disable_image_these_sites,
+      all_sites_switch: this.disable_image_all_sites,
+      descriptions: [
         $r('app.string.Settings_image_desc_1'),
         $r('app.string.Settings_image_desc_2'),
         $r('app.string.Settings_image_desc_3')],
-      general_tips: $r('app.string.Settings_image_already_disabled'),
-      general_title: $r('app.string.Settings_image_manage'),
-      general_switch_desc: $r('app.string.Settings_image_disable_image'),
-      general_subtitle_execute_on_these_sites: $r('app.string.Settings_image_some_sites'),
-      general_subtitle_execute_on_all_sites: $r('app.string.Settings_image_all_sites'),
-      general_switch_settings_id: 'disable_image',
-      general_sites_list_settings_id: 'disable_image_these_sites',
-      general_switch_all_sites_settings_id: 'disable_image_all_sites',
+      tips: $r('app.string.Settings_image_already_disabled'),
+      title: $r('app.string.Settings_image_manage'),
+      switch_desc: $r('app.string.Settings_image_disable_image'),
+      subtitle_sites_list: $r('app.string.Settings_image_some_sites'),
+      subtitle_all_sites: $r('app.string.Settings_image_all_sites'),
+      switch_id: 'disable_image',
+      sites_list_id: 'disable_image_these_sites',
+      switch_all_sites_id: 'disable_image_all_sites',
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
@@ -277,7 +325,7 @@ struct meowAppSettings {
         menu_text: this.menu_text,
       })// Quick access on the left
         .margin({ left: 15 })
-        .visibility(this.visibility_of_left_menu())
+        .visibility(this.visibility_of_menu_side('left'))
         .animation(animation_default())
 
       Column({ space: 10 }) {
@@ -1071,7 +1119,7 @@ struct meowAppSettings {
         menu_text: this.menu_text,
       })// Quick access on the right
         .margin({ right: 15 })
-        .visibility(this.visibility_of_right_menu())
+        .visibility(this.visibility_of_menu_side('right'))
         .animation(animation_default())
     }
     .height(this.showing_app_settings ? "75%" : 0)
@@ -1320,25 +1368,12 @@ struct meowAppSettings {
 
   // Kinda constants
 
-  // TODO: optimize duplicate code
-  visibility_of_left_menu() {
+  visibility_of_menu_side(side: string) {
     if (!this.tablet_mode) {
       // Non tablet mode NO vertical menu!
       return Visibility.None;
     }
-    let status = this.preferred_hand_left_or_right == 'left';
-    if (this.preferred_hand_reverse_settings_menu) {
-      status = !status;
-    }
-    return status ? Visibility.Visible : Visibility.None;
-  }
-
-  visibility_of_right_menu() {
-    if (!this.tablet_mode) {
-      // Non tablet mode NO vertical menu!
-      return Visibility.None;
-    }
-    let status = this.preferred_hand_left_or_right == 'right';
+    let status = this.preferred_hand_left_or_right == side;
     if (this.preferred_hand_reverse_settings_menu) {
       status = !status;
     }

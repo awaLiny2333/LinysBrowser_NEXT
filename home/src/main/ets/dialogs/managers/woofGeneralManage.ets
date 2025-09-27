@@ -3,44 +3,40 @@ import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
 import { animation_default, capsule_bar_height, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
-import { webview } from '@kit.ArkWeb';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import { match_domain } from '../../utils/url_tools';
 import woofControlFrame from '../woofControlFrame';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysSwitchWithText from '../../components/toggles/linysSwitchWithText';
+import { all_false } from '../../utils/data_operation_tools';
 
 @CustomDialog
 struct woofGeneralManage {
   controller: CustomDialogController;
   // Environment and Hosts
+  @StorageLink('current_url') current_url: string = "=￣ω￣=";
   @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('tablet_mode') tablet_mode: boolean = false;
-  @StorageLink('current_url') current_url: string = "=￣ω￣=";
   @State add_site_edit: string = "";
   @State showing_add_panel: boolean = false;
   // Generals
   @Link general_switch: boolean;
-  @Link general_sites_list: string[];
-  @Link general_on_all_sites_switch: boolean;
-  @State general_descriptions: ResourceStr[] = [
-    $r('app.string.Settings_js_desc_1'),
-    $r('app.string.Settings_js_desc_2'),
-    $r('app.string.Settings_js_desc_3')
-  ];
-  @State general_tips: ResourceStr = $r('app.string.Settings_js_already_disabled');
-  @State general_title: ResourceStr = $r('app.string.Settings_js_manage');
-  @State general_switch_desc: ResourceStr = $r('app.string.Settings_js_disable_js');
-  @State general_subtitle_execute_on_these_sites: ResourceStr = $r('app.string.Settings_js_some_sites');
-  @State general_subtitle_execute_on_all_sites: ResourceStr = $r('app.string.Settings_js_all_sites');
-  @State general_switch_settings_id: string = 'disable_js';
-  @State general_sites_list_settings_id: string = 'disable_js_these_sites';
-  @State general_switch_all_sites_settings_id: string = 'disable_js_all_sites';
+  @Link all_sites_switch: boolean;
+  @Link sites_list: string[];
+  @State descriptions: ResourceStr[] = [];
+  @State tips: ResourceStr = '';
+  @State title: ResourceStr = '';
+  @State switch_desc: ResourceStr = '';
+  @State subtitle_sites_list: ResourceStr = '';
+  @State subtitle_all_sites: ResourceStr = ''; // If this is left blank, then this toggle is not displayed
+  @State switch_id: string = '';
+  @State sites_list_id: string = '';
+  @State switch_all_sites_id: string = '';
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Manage
-  @State @Watch('on_select_change') selected: boolean[] = this.all_false(this.general_sites_list.length);
+  @State @Watch('on_select_change') selected: boolean[] = all_false(this.sites_list.length);
   @State selecting: boolean = false;
   @State selected_number: number = 0;
   @State delete_confirm: number = 0;
@@ -73,41 +69,45 @@ struct woofGeneralManage {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Gateways
   @StorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
+  // Actions
+  onDelete?: (deleted: string[], remaining: string[]) => void;
+  onAdd?: (added: string) => void;
 
   build() {
     woofControlFrame({
-      title: this.general_title,
+      title: this.title,
       controller: this.controller
     }) {
       RelativeContainer() {
         Scroll() {
           Column({ space: 10 }) {
-            ForEach(this.general_descriptions, (desc: ResourceStr, _index: number) => {
+            ForEach(this.descriptions, (desc: ResourceStr, _index: number) => {
               linysText({
                 text: desc,
                 max_lines: 10
               })
                 .width("100%")
             })
-
-            linysText({
-              text: this.general_tips,
-              max_lines: 3
-            })
-              .width("100%")
-              .visibility(this.match_this_domain(this.current_url) ? Visibility.None : Visibility.Visible)
-              .animation(animation_default())
-
+            if (this.tips) {
+              linysText({
+                text: this.tips,
+                max_lines: 3,
+                is_description: true,
+                is_expanded: true
+              })
+                .width("100%")
+                .visibility(this.match_this_domain(this.current_url) ? Visibility.None : Visibility.Visible)
+                .animation(animation_default())
+            } // Tips on status of current site.
             linysText({
               text: $r('app.string.Have_a_Nice_Surf'),
               max_lines: 2
             })
               .width("100%")
               .opacity(0.9)
-
-          } // Title
+          }
           .width("100%")
-        }
+        } // Descriptions
         .align(Alignment.TopStart)
         .edgeEffect(EdgeEffect.Spring)
         .padding({ bottom: 10, right: 10 })
@@ -119,17 +119,17 @@ struct woofGeneralManage {
 
         Column({ space: 10 }) {
           linysText({
-            text: this.general_subtitle_execute_on_these_sites,
+            text: this.subtitle_sites_list,
             max_lines: 3
-          })
+          }) // Subtitle on list of domains
             .padding({ top: this.tablet_mode ? 0 : 10 })
             .width("100%")
-            .opacity(this.general_on_all_sites_switch || !this.general_switch ? 0.5 : 1)
+            .opacity(this.all_sites_switch || !this.general_switch ? 0.5 : 1)
             .animation(animation_default())
 
           Scroll() {
             Column() {
-              ForEach(this.general_sites_list, (item: string, index: number) => {
+              ForEach(this.sites_list, (item: string, index: number) => {
                 Element({
                   domain: item,
                   index: index,
@@ -139,7 +139,7 @@ struct woofGeneralManage {
                 })
                   .width("100%")
               })
-              if (this.general_sites_list.length == 0) {
+              if (this.sites_list.length == 0) {
                 linysTextTitle({
                   text: "¯\\_(ツ)_/¯"
                 })
@@ -157,24 +157,26 @@ struct woofGeneralManage {
           .backgroundColor(this.color_current_secondary)
           .width("100%")
           .layoutWeight(1)
-          .opacity(this.general_on_all_sites_switch || !this.general_switch ? 0.5 : 1)
+          .opacity(this.all_sites_switch || !this.general_switch ? 0.5 : 1)
           .animation(animation_default())
 
-          linysSwitchWithText({
-            text: this.general_subtitle_execute_on_all_sites,
-            toggle_state: this.general_on_all_sites_switch,
-            onExecution: () => {
-              this.bunch_of_settings.set(this.general_switch_all_sites_settings_id, this.general_on_all_sites_switch);
-            }
-          })// Toggle on all sites
-            .opacity(!this.general_switch ? 0.5 : 1)
-            .animation(animation_default())
+          if (this.subtitle_all_sites) {
+            linysSwitchWithText({
+              text: this.subtitle_all_sites,
+              toggle_state: this.all_sites_switch,
+              onExecution: () => {
+                this.bunch_of_settings.set(this.switch_all_sites_id, this.all_sites_switch);
+              }
+            })
+              .opacity(!this.general_switch ? 0.5 : 1)
+              .animation(animation_default())
+          } // Toggle on all sites
 
           linysSwitchWithText({
-            text: this.general_switch_desc,
+            text: this.switch_desc,
             toggle_state: this.general_switch,
             onExecution: () => {
-              this.bunch_of_settings.set(this.general_switch_settings_id, this.general_switch);
+              this.bunch_of_settings.set(this.switch_id, this.general_switch);
             }
           }) // Feature enable
 
@@ -242,7 +244,7 @@ struct woofGeneralManage {
               Row() {
                 linysSymbol({ symbol_glyph_target: 'sys.symbol.list_checkmask' })
                   .onClick(() => {
-                    this.select_all();
+                    this.select_unselect_all();
                   })
                 Blank()
                 linysTimeoutButton({
@@ -266,7 +268,7 @@ struct woofGeneralManage {
         .padding({ top: 10, right: this.tablet_mode ? 10 : 0 })
         .alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
         .alignRules(this.alignRules_foot)
-        .opacity(this.general_on_all_sites_switch || !this.general_switch ? 0.5 : 1)
+        .opacity(this.all_sites_switch || !this.general_switch ? 0.5 : 1)
         .animation(animation_default())
         .width(this.tablet_mode ? "40%" : "100%")
         .id("controls")
@@ -282,14 +284,9 @@ struct woofGeneralManage {
     }
   }
 
-  all_false(length: number) {
-    let result: boolean[] = [];
-    for (let index = 0; index < length; index++) {
-      result.push(false);
-    }
-    return result;
-  }
-
+  /**
+   * Called when some item is selected.
+   * */
   on_select_change() {
     if (this.selected.includes(true)) {
       this.selecting = true;
@@ -299,7 +296,10 @@ struct woofGeneralManage {
     this.delete_confirm = 0;
   }
 
-  select_all() {
+  /**
+   * Selects or unselects all items.
+   * */
+  select_unselect_all() {
     let new_selected: boolean[] = [];
     if (this.selected.includes(false)) {
       for (let index = 0; index < this.selected.length; index++) {
@@ -315,50 +315,67 @@ struct woofGeneralManage {
     this.selected = new_selected;
   }
 
+  /**
+   * Adds an item.
+   * @param domain The item.
+   * */
   add_item(domain: string) {
     if (domain == '') {
       this.uni_fail_prompt_gateway = $r('app.string.Fail_desc_no_content');
       return;
     }
-    webview.AdsBlockManager.addAdsBlockDisallowedList([domain]);
-    if (this.general_sites_list.includes(domain)) {
-      // don't add same domains
+    // don't add same domains
+    if (this.sites_list.includes(domain)) {
       this.uni_fail_prompt_gateway = $r('app.string.Fail_desc_duplicate_domain');
       return;
     }
-    this.general_sites_list.push(domain);
-    this.bunch_of_settings.set(this.general_sites_list_settings_id, this.general_sites_list.join("\n"))
+    if (this.onAdd) {
+      this.onAdd(domain);
+    }
+    this.sites_list.push(domain);
+    this.bunch_of_settings.set(this.sites_list_id, this.sites_list.join("\n"))
   }
 
+  /**
+   * Deletes the selected items.
+   * */
   delete_selected() {
     let new_exceptions: string[] = [];
     let delete_exceptions: string[] = [];
     for (let index = 0; index < this.selected.length; index++) {
       if (!this.selected[index]) {
-        new_exceptions.push(this.general_sites_list[index]);
+        new_exceptions.push(this.sites_list[index]);
       } else {
-        delete_exceptions.push(this.general_sites_list[index]);
+        delete_exceptions.push(this.sites_list[index]);
       }
     }
-    this.general_sites_list = new_exceptions;
+    if (this.onDelete) {
+      this.onDelete(delete_exceptions, new_exceptions);
+    }
+    this.sites_list = new_exceptions;
     this.delete_confirm = 0;
     this.selecting = false;
     this.selected_number = 0;
-    this.selected = this.all_false(this.general_sites_list.length);
-    this.bunch_of_settings.set(this.general_sites_list_settings_id, this.general_sites_list.join("\n"))
+    this.selected = all_false(this.sites_list.length);
+    this.bunch_of_settings.set(this.sites_list_id, this.sites_list.join("\n"))
   }
 
+  /**
+   * Checks if address is included in the list of sites.
+   * @param address The address.
+   * @returns True if is in.
+   * */
   match_this_domain(address: string) {
     if (!this.general_switch) {
       return true;
     }
     // Disable toggle ON
-    if (this.general_on_all_sites_switch) {
+    if (this.all_sites_switch) {
       // Disable on all sites
       return false;
     }
     // Disable on some sites
-    if (address && this.general_sites_list.includes(match_domain(address)[1])) {
+    if (address && this.sites_list.includes(match_domain(address)[1])) {
       return false;
     }
     return true;
@@ -418,6 +435,9 @@ struct Element {
     })
   }
 
+  /**
+   * Toggles the state
+   * */
   select_unselect() {
     if (this.selected[this.index]) {
       this.selected_number -= 1;

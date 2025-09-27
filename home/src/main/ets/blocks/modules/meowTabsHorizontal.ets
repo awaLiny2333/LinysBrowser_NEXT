@@ -27,6 +27,8 @@ struct meowTabsHorizontal {
   @StorageLink('current_title') current_title: string = "=￣ω￣=";
   @StorageLink('tab_urls') tab_urls: string[] = []
   @StorageLink('current_url') current_url: string = "=￣ω￣=";
+  @StorageLink('tab_match_domains') tab_match_domains: string[][] = [];
+  @StorageLink('current_match_domain') current_match_domain: string[] = ['scheme', 'domain'];
   @StorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0]
   @StorageLink('current_loading_progress') current_loading_progress: number = 0
   @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]

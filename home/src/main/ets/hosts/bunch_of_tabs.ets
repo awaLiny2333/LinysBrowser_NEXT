@@ -412,6 +412,19 @@ export class bunch_of_tabs {
     return stamps;
   }
 
+  /**
+   * Gets a list of all tabs' domains.
+   * @returns A string[][] array, the [scheme, domain].
+   * */
+  get_all_match_domains() {
+    let match: string[][] = [];
+
+    for (let index = 0; index < this.Tabs.length; index++) {
+      match.push(match_domain(this.Tabs[index].url));
+    }
+    return match;
+  }
+
   // Web states
 
   /**

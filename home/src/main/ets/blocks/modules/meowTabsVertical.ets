@@ -12,6 +12,7 @@ import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysText from '../../components/texts/linysText';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysSymbol from '../../components/texts/linysSymbol';
+import { sync_tabs_list_info } from '../../utils/data_operation_tools';
 
 @Component
 struct meowTabsVertical {
@@ -34,19 +35,23 @@ struct meowTabsVertical {
   @StorageProp('home_url') home_url: string = '';
   @StorageProp('new_tab_url') new_tab_url: string = '';
   @StorageProp('start_up_option') start_up_option: string = '';
-  // Controls
+  /**
+   * Controls */
   @StorageLink('tab_titles') tab_titles: string[] = []
-  @StorageLink('current_title') current_title: string = "=￣ω￣=";
-  @StorageLink('tab_urls') tab_urls: string[] = []
+  // @StorageLink('current_title') current_title: string = "=￣ω￣=";
+  @StorageLink('tab_urls') tab_urls: string[] = [];
   @StorageLink('current_url') current_url: string = "=￣ω￣=";
-  @StorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0]
-  @StorageLink('current_loading_progress') current_loading_progress: number = 0
-  @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]
-  @StorageLink('current_is_loading') current_is_loading: boolean = true
-  @StorageLink('current_in_page_searching_keyword') current_in_page_searching_keyword: string = ''
-  @StorageLink('current_in_page_searching_stats_current') current_in_page_searching_stats_current: number = 0;
-  @StorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
-  // Web control statuses
+  // @StorageLink('tab_match_domains') tab_match_domains: string[][] = [];
+  // @StorageLink('current_match_domain') current_match_domain: string[] = ['scheme', 'domain'];
+  // @StorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0]
+  // @StorageLink('current_loading_progress') current_loading_progress: number = 0
+  // @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]
+  // @StorageLink('current_is_loading') current_is_loading: boolean = true
+  // @StorageLink('current_in_page_searching_keyword') current_in_page_searching_keyword: string = ''
+  // @StorageLink('current_in_page_searching_stats_current') current_in_page_searching_stats_current: number = 0;
+  // @StorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
+  /**
+   * Web control statuses */
   @StorageProp('continue_tabs_count') continue_tabs_count: number = 0;
   @StorageProp('continue_tabs_main_on') continue_tabs_main_on: number = 0;
   @StorageProp('continue_tabs_sub_on') continue_tabs_sub_on: number = 0;
@@ -131,7 +136,7 @@ struct meowTabsVertical {
       // Try to switch tab
       this.tab_animation = { duration: 0 };
       this.switch_tab(this.continue_tabs_main_on, false);
-      this.sync_all_list_info();
+      sync_tabs_list_info();
 
       // Recover Paralleow
       if (this.continue_tabs_sub_on < this.tab_titles.length) {
@@ -342,7 +347,7 @@ struct meowTabsVertical {
       this.update_backward_forward_access()
     }
     // Set CURRENT variables
-    this.update_current_info()
+    sync_tabs_list_info();
     // Update Input Search Box
     this.set_search_box_text(this.current_url)
 
@@ -373,13 +378,11 @@ struct meowTabsVertical {
     // Close
     this.current_main_tab_index = this.bunch_of_tabs.closeTab(target, this.bunch_of_tabs.new_tab_url || url_default_blank());
     // Update history
-    this.update_backward_forward_access()
+    this.update_backward_forward_access();
     // Get synced lists
-    this.sync_all_list_info()
-    // Set CURRENT variables
-    this.update_current_info()
+    sync_tabs_list_info();
     // Update Input Search Box
-    this.set_search_box_text(this.current_url)
+    this.set_search_box_text(this.current_url);
 
     // Store tabs count
     let store_tabs_count = this.tab_titles.length.toString();
@@ -486,26 +489,6 @@ struct meowTabsVertical {
         // Execute
       }
     }
-  }
-
-  update_current_info() {
-    this.current_title = this.tab_titles[this.current_main_tab_index];
-    this.current_url = this.tab_urls[this.current_main_tab_index];
-    this.current_url = url_resource_to_meow(this.current_url);
-    // translate "resource://" into "meow://"
-    this.current_loading_progress = this.tab_loading_progresses[this.current_main_tab_index];
-    this.current_is_loading = this.tab_is_loading[this.current_main_tab_index];
-    // Set loading progress
-    this.current_in_page_searching_keyword = this.bunch_of_tabs.workingMainTab().searching_keyword;
-    this.current_in_page_searching_stats_current = this.bunch_of_tabs.workingMainTab().searching_keyword_stats_current;
-    this.current_in_page_searching_stats_total = this.bunch_of_tabs.workingMainTab().searching_keyword_stats_total;
-  }
-
-  sync_all_list_info() {
-    this.tab_titles = this.bunch_of_tabs.get_all_titles()
-    this.tab_urls = this.bunch_of_tabs.get_all_urls()
-    this.tab_is_loading = this.bunch_of_tabs.get_all_is_loading();
-    this.tab_loading_progresses = this.bunch_of_tabs.get_all_loading_progress()
   }
 
   update_backward_forward_access() {

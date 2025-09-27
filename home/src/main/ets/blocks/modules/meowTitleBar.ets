@@ -33,12 +33,11 @@ import lazy meowDownloads from './meowDownloads';
 import lazy meowDebug from '../panels/meowDebug';
 import lazy woofQR from '../../dialogs/contents/woofQR';
 import lazy woofHistory from '../../dialogs/managers/woofHistory';
-import lazy woofAdsBlocker from '../../dialogs/managers/woofAdsBlocker';
 import lazy woofQuickSE from '../../dialogs/quicks/woofQuickSE';
 import lazy woofCookies from '../../dialogs/managers/woofCookies';
 import lazy woofQuickUA from '../../dialogs/quicks/woofQuickUA';
 import lazy woofGeneralManage from '../../dialogs/managers/woofGeneralManage';
-import woofDarkExempts from '../../dialogs/managers/woofDarkExempts';
+import { sync_tabs_list_info } from '../../utils/data_operation_tools';
 
 @Component
 struct meowTitleBar {
@@ -83,6 +82,8 @@ struct meowTitleBar {
   @StorageLink('current_title') current_title: string = "=￣ω￣=";
   @StorageLink('tab_urls') tab_urls: string[] = [];
   @StorageLink('current_url') @Watch('on_current_url_change') current_url: string = "=￣ω￣=";
+  @StorageLink('tab_match_domains') tab_match_domains: string[][] = [];
+  @StorageLink('current_match_domain') current_match_domain: string[] = ['scheme', 'domain'];
   @StorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0];
   @StorageLink('current_loading_progress') current_loading_progress: number = 0;
   @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true];
@@ -105,7 +106,6 @@ struct meowTitleBar {
   @StorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
   @StorageLink('delayed_load_p2') delayed_load_p2: boolean = false;
   // settings
-  @StorageLink('DEV_MODE') DEV_MODE: boolean = false;
   @StorageLink('resource_monitor') resource_monitor: boolean = true;
   @StorageLink('disable_js') disable_js: boolean = true;
   @StorageLink('disable_js_these_sites') disable_js_these_sites: string[] = [];
@@ -113,11 +113,13 @@ struct meowTitleBar {
   @StorageLink('disable_image') disable_image: boolean = true;
   @StorageLink('disable_image_these_sites') disable_image_these_sites: string[] = [];
   @StorageLink('disable_image_all_sites') disable_image_all_sites: boolean = false;
+  @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = true;
+  @StorageLink('web_force_dark_mode_exemptions') web_force_dark_mode_exemptions: string[] = [];
+  @StorageLink('use_adblock') use_adblock: boolean = true;
+  @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
   @StorageProp('title_bar_position') title_bar_position: string = "";
   @StorageLink('tabs_style') tabs_style: string = "";
   @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
-  @StorageLink('max_bookmark_advice') max_bookmark_advice: number = 5;
-  @StorageLink('max_history_advice') max_history_advice: number = 5;
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Dialogs
@@ -151,20 +153,65 @@ struct meowTitleBar {
     alignment: DialogAlignment.Center,
     cornerRadius: 26
   });
+  @State to_fool_woofGeneralManage: boolean = false;
   woofAdsBlocker_control: CustomDialogController = new CustomDialogController({
-    builder: woofAdsBlocker({
-      add_exception_domain_edit: match_domain(this.search_input)[1],
-      showing_add_panel: true
+    builder: woofGeneralManage({
+      general_switch: this.use_adblock,
+      sites_list: this.adblock_exceptions,
+      add_site_edit: match_domain(this.search_input)[1],
+      showing_add_panel: true,
+      descriptions: [
+        $r('app.string.Ads_block_desc_1'),
+        $r('app.string.Ads_block_desc_2'),
+        $r('app.string.General_select_guide')],
+      tips: '',
+      title: $r('app.string.Settings_experience_manage_adblock'),
+      switch_desc: $r('app.string.Settings_experience_use_adblock'),
+      subtitle_sites_list: $r('app.string.Ads_block_dont_block_sites'),
+      switch_id: 'use_adblock',
+      sites_list_id: 'adblock_exceptions',
+      subtitle_all_sites: '',
+      all_sites_switch: this.to_fool_woofGeneralManage,
+      switch_all_sites_id: '',
+      onAdd: (added) => {
+        try {
+          webview.AdsBlockManager.addAdsBlockDisallowedList([added]);
+        } catch (e) {
+          console.error('[woofAdsBlocker][add_exception] ' + e);
+        }
+      },
+      onDelete: (deleted) => {
+        try {
+          webview.AdsBlockManager.removeAdsBlockDisallowedList(deleted);
+        } catch (e) {
+          console.error('[woofAdsBlocker][delete_selected] ' + e);
+        }
+      }
     }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16,
     // showInSubWindow: true,
     width: "90%",
-    alignment: DialogAlignment.Center,
-    cornerRadius: 16
   });
   woofDarkExempts_control: CustomDialogController = new CustomDialogController({
-    builder: woofDarkExempts({
-      add_exception_domain_edit: match_domain(this.search_input)[1],
-      showing_add_panel: true
+    builder: woofGeneralManage({
+      general_switch: this.web_force_dark_mode,
+      sites_list: this.web_force_dark_mode_exemptions,
+      add_site_edit: match_domain(this.search_input)[1],
+      showing_add_panel: true,
+      descriptions: [
+        $r('app.string.Web_force_dark_mode_desc_1'),
+        $r('app.string.Web_force_dark_mode_desc_2'),
+        $r('app.string.General_select_guide')],
+      tips: $r('app.string.Web_force_dark_mode_already_disabled'),
+      title: $r('app.string.Settings_experience_manage_web_force_dark_mode'),
+      switch_desc: $r('app.string.Settings_experience_web_force_dark_mode'),
+      subtitle_sites_list: $r('app.string.Web_force_dark_mode_exemptions'),
+      switch_id: 'web_force_dark_mode',
+      sites_list_id: 'web_force_dark_mode_exemptions',
+      subtitle_all_sites: '',
+      all_sites_switch: this.to_fool_woofGeneralManage,
+      switch_all_sites_id: '',
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
@@ -181,10 +228,22 @@ struct meowTitleBar {
   js_manage_control: CustomDialogController = new CustomDialogController({
     builder: woofGeneralManage({
       general_switch: this.disable_js,
-      general_sites_list: this.disable_js_these_sites,
-      general_on_all_sites_switch: this.disable_js_all_sites,
+      sites_list: this.disable_js_these_sites,
+      all_sites_switch: this.disable_js_all_sites,
       add_site_edit: match_domain(this.search_input)[1],
-      showing_add_panel: true
+      showing_add_panel: true,
+      descriptions: [
+        $r('app.string.Settings_js_desc_1'),
+        $r('app.string.Settings_js_desc_2'),
+        $r('app.string.Settings_js_desc_3')],
+      tips: $r('app.string.Settings_js_already_disabled'),
+      title: $r('app.string.Settings_js_manage'),
+      switch_desc: $r('app.string.Settings_js_disable_js'),
+      subtitle_sites_list: $r('app.string.Settings_js_some_sites'),
+      subtitle_all_sites: $r('app.string.Settings_js_all_sites'),
+      switch_id: 'disable_js',
+      sites_list_id: 'disable_js_these_sites',
+      switch_all_sites_id: 'disable_js_all_sites',
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
@@ -194,22 +253,22 @@ struct meowTitleBar {
   image_manage_control: CustomDialogController = new CustomDialogController({
     builder: woofGeneralManage({
       general_switch: this.disable_image,
-      general_sites_list: this.disable_image_these_sites,
-      general_on_all_sites_switch: this.disable_image_all_sites,
+      sites_list: this.disable_image_these_sites,
+      all_sites_switch: this.disable_image_all_sites,
       add_site_edit: match_domain(this.search_input)[1],
       showing_add_panel: true,
-      general_descriptions: [
+      descriptions: [
         $r('app.string.Settings_image_desc_1'),
         $r('app.string.Settings_image_desc_2'),
         $r('app.string.Settings_image_desc_3')],
-      general_tips: $r('app.string.Settings_image_already_disabled'),
-      general_title: $r('app.string.Settings_image_manage'),
-      general_switch_desc: $r('app.string.Settings_image_disable_image'),
-      general_subtitle_execute_on_these_sites: $r('app.string.Settings_image_some_sites'),
-      general_subtitle_execute_on_all_sites: $r('app.string.Settings_image_all_sites'),
-      general_switch_settings_id: 'disable_image',
-      general_sites_list_settings_id: 'disable_image_these_sites',
-      general_switch_all_sites_settings_id: 'disable_image_all_sites',
+      tips: $r('app.string.Settings_image_already_disabled'),
+      title: $r('app.string.Settings_image_manage'),
+      switch_desc: $r('app.string.Settings_image_disable_image'),
+      subtitle_sites_list: $r('app.string.Settings_image_some_sites'),
+      subtitle_all_sites: $r('app.string.Settings_image_all_sites'),
+      switch_id: 'disable_image',
+      sites_list_id: 'disable_image_these_sites',
+      switch_all_sites_id: 'disable_image_all_sites',
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
@@ -1196,8 +1255,7 @@ struct meowTitleBar {
   stop_page() {
     this.bunch_of_tabs.stop_onWorkingTab();
     this.bunch_of_tabs.workingMainTab().update_is_loading(false);
-    this.sync_tabs_list_info();
-    this.update_tabs_current_info();
+    sync_tabs_list_info();
   }
 
   // Values
@@ -1232,26 +1290,6 @@ struct meowTitleBar {
     this.search_input_unified = uni_result[0] as string;
     this.is_search_input_address = uni_result[1] as boolean;
     this.search_input_unified = url_resource_to_meow(this.search_input_unified);
-  }
-
-  update_tabs_current_info() {
-    this.current_title = this.tab_titles[this.current_main_tab_index];
-    this.current_url = this.tab_urls[this.current_main_tab_index];
-    this.current_url = url_resource_to_meow(this.current_url);
-    // translate "resource://" into "meow://"
-    this.current_loading_progress = this.tab_loading_progresses[this.current_main_tab_index];
-    this.current_is_loading = this.tab_is_loading[this.current_main_tab_index];
-    // Set loading progress
-    this.current_in_page_searching_keyword = this.bunch_of_tabs.workingMainTab().searching_keyword;
-    this.current_in_page_searching_stats_current = this.bunch_of_tabs.workingMainTab().searching_keyword_stats_current;
-    this.current_in_page_searching_stats_total = this.bunch_of_tabs.workingMainTab().searching_keyword_stats_total;
-  }
-
-  sync_tabs_list_info() {
-    this.tab_titles = this.bunch_of_tabs.get_all_titles()
-    this.tab_urls = this.bunch_of_tabs.get_all_urls()
-    this.tab_is_loading = this.bunch_of_tabs.get_all_is_loading();
-    this.tab_loading_progresses = this.bunch_of_tabs.get_all_loading_progress()
   }
 }
 
