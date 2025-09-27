@@ -350,7 +350,7 @@
     },
     {
       "name": "Settings_appearance_animation_reset",
-      "value": "Reset animation"
+      "value": "Reset Animation"
     },
     {
       "name": "Settings_general_custom_search_engine",
@@ -485,6 +485,26 @@
       "value": "Force websites dark mode"
     },
     {
+      "name": "Settings_experience_manage_web_force_dark_mode",
+      "value": "Manage Dark Mode"
+    },
+    {
+      "name": "Web_force_dark_mode_exemptions",
+      "value": "Exemptions (Colors intact)"
+    },
+    {
+      "name": "Web_force_dark_mode_add_exemption_domain",
+      "value": "Add an exemption"
+    },
+    {
+      "name": "Web_force_dark_mode_desc_1",
+      "value": "If this is enabled, all websites are forced to be in dark mode along with the system."
+    },
+    {
+      "name": "Web_force_dark_mode_desc_2",
+      "value": "However, some websites may look weird in the algorithm-reversed colors. So if they are added here, forced dark mode would not be applied."
+    },
+    {
       "name": "Settings_experience_use_adblock",
       "value": "Ads Blocker"
     },
@@ -509,6 +529,10 @@
       "value": "However, if some sites' domains is added to this whitelist, ads on those sites would be allowed."
     },
     {
+      "name": "General_select_guide",
+      "value": "Long press a domain to select. After entering selecting mode, tap on other domains to multi-select."
+    },
+    {
       "name": "Have_a_Nice_Surf",
       "value": "Have a nice Surf! (～o￣3￣)～"
     },
@@ -519,10 +543,6 @@
     {
       "name": "History_desc_2",
       "value": "Long press a record to select. After entering selecting mode, tap on other records to multi-select."
-    },
-    {
-      "name": "Ads_block_desc_3",
-      "value": "Long press a domain to select. After entering selecting mode, tap on other domains to multi-select."
     },
     {
       "name": "Success",
@@ -622,7 +642,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "Improve: Tried to boost launch speed...\nCode: Increased Stability!"
+      "value": "Feat: allow forced dark mode exemptions!\nImprove: Moved dark mode settings under Colors;\nImprove: Tried to boost launch speed...\nCode: Increased Stability!"
     },
     {
       "name": "Whats_new_content_extra",
@@ -706,7 +726,7 @@
     },
     {
       "name": "Color_reset",
-      "value": "Reset colors"
+      "value": "Reset Colors"
     },
     {
       "name": "Settings_experience_webview_storage",
@@ -818,7 +838,7 @@
     },
     {
       "name": "Settings_image_manage",
-      "value": "Manage web images"
+      "value": "Manage Web Images"
     },
     {
       "name": "Settings_image_all_sites",
@@ -850,7 +870,7 @@
     },
     {
       "name": "Key_shortcuts_manage",
-      "value": "Manage shortcuts"
+      "value": "Manage Shortcuts"
     },
     {
       "name": "Key_shortcuts_modify",

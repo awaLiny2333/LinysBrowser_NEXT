@@ -38,6 +38,7 @@ import lazy woofQuickSE from '../../dialogs/quicks/woofQuickSE';
 import lazy woofCookies from '../../dialogs/managers/woofCookies';
 import lazy woofQuickUA from '../../dialogs/quicks/woofQuickUA';
 import lazy woofGeneralManage from '../../dialogs/managers/woofGeneralManage';
+import woofDarkExempts from '../../dialogs/managers/woofDarkExempts';
 
 @Component
 struct meowTitleBar {
@@ -78,14 +79,14 @@ struct meowTitleBar {
   @State is_search_input_address: boolean = false;
   @State search_input_unify_scheme_http: boolean = true;
   // Web statuses
-  @StorageLink('tab_titles') tab_titles: string[] = []
+  @StorageLink('tab_titles') tab_titles: string[] = [];
   @StorageLink('current_title') current_title: string = "=￣ω￣=";
-  @StorageLink('tab_urls') tab_urls: string[] = []
+  @StorageLink('tab_urls') tab_urls: string[] = [];
   @StorageLink('current_url') @Watch('on_current_url_change') current_url: string = "=￣ω￣=";
-  @StorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0]
-  @StorageLink('current_loading_progress') current_loading_progress: number = 0
-  @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]
-  @StorageLink('current_is_loading') current_is_loading: boolean = true
+  @StorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0];
+  @StorageLink('current_loading_progress') current_loading_progress: number = 0;
+  @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true];
+  @StorageLink('current_is_loading') current_is_loading: boolean = true;
   // Web control statuses
   @StorageLink('current_main_tab_index') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') current_sub_tab_index: number = -1;
@@ -159,6 +160,16 @@ struct meowTitleBar {
     width: "90%",
     alignment: DialogAlignment.Center,
     cornerRadius: 16
+  });
+  woofDarkExempts_control: CustomDialogController = new CustomDialogController({
+    builder: woofDarkExempts({
+      add_exception_domain_edit: match_domain(this.search_input)[1],
+      showing_add_panel: true
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16,
+    // showInSubWindow: true,
+    width: "90%",
   });
   cookies_control: CustomDialogController = new CustomDialogController({
     builder: woofCookies(),
@@ -774,6 +785,12 @@ struct meowTitleBar {
                 })// Print
                   .onClick(() => {
                     print_web(this.bunch_of_tabs.workingMainTab().controller);
+                  })
+                linysSymbol({
+                  symbol_glyph_target: 'sys.symbol.star_2_moon'
+                })// Dark
+                  .onClick(() => {
+                    this.woofDarkExempts_control.open();
                   })
                 linysSymbol({
                   symbol_glyph_target: 'sys.symbol.tracking_cookie_interception'

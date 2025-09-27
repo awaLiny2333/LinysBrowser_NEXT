@@ -1,5 +1,4 @@
 import { BusinessError, zlib } from '@kit.BasicServicesKit';
-import { common } from '@kit.AbilityKit';
 import { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
 import { buffer } from '@kit.ArkTS';
 import { image } from '@kit.ImageKit';
@@ -354,8 +353,8 @@ export function uri_read_text_sync(file_uri: string) {
 }
 
 /**
- * Read an ArrayBuffer file from sandbox storage.
- * @returns An ArrayBuffer, of the requested file's content.
+ * Read an ArrayBuffer file from sandbox storage in a synchronous way.
+ * @returns An ArrayBuffer, of the requested file's content or undefined if the file doesn't exist.
  * */
 export function sandbox_read_arrayBuffer_sync(file_path_name: string, context_filesDir?: string) {
   let filesDir: string = context_filesDir || meowContext().filesDir;
@@ -373,6 +372,30 @@ export function sandbox_read_arrayBuffer_sync(file_path_name: string, context_fi
   fs.closeSync(file);
   let result = buf.slice(0, readLen);
   return result;
+}
+
+/**
+ * Read an ArrayBuffer file from sandbox storage in an asynchronous way.
+ * @returns An ArrayBuffer, of the requested file's content or undefined if the file doesn't exist.
+ * */
+export function sandbox_read_arrayBuffer(file_path_name: string, context_filesDir?: string) {
+  let filesDir: string = context_filesDir || meowContext().filesDir;
+  file_path_name = filesDir + "/" + file_path_name
+  if (!(fs.accessSync(file_path_name))) {
+    // file doesn't exist
+    return undefined;
+  }
+  let file = fs.openSync(file_path_name, fs.OpenMode.READ_WRITE);
+  let stat = fs.statSync(file_path_name);
+  let size = stat.size;
+  let buf = new ArrayBuffer(size);
+  return fs.read(file.fd, buf).then((l) => {
+    let readLen = l;
+    console.info("[sandbox_open] read file data succeed, Length: " + readLen.toString());
+    fs.close(file);
+    let result = buf.slice(0, readLen);
+    return result;
+  })
 }
 
 /**

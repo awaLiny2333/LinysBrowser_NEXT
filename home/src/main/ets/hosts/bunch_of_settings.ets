@@ -79,6 +79,7 @@ export class bunch_of_settings {
 
     // Dark mode
     this.register_setting('web_force_dark_mode', 'boolean', 'false');
+    this.register_setting('web_force_dark_mode_exemptions', 'string', '');
 
     // Colors
     this.register_setting('color_light_primary', 'string', '#E1E9E3');

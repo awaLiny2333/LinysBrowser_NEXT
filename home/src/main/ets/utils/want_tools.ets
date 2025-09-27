@@ -37,11 +37,10 @@ function want_file(uri: string) {
 }
 
 function want_web(action: string, uri: string) {
-  // TODO: This should be given delays, as technically this should be put after tabs recovery
   if (action == "ohos.want.action.viewData") {
     setTimeout(() => {
       console.log('[Meow][want] Load want uri: ' + uri);
       AppStorage.set('universal_new_tab_gateway', uri);
-    }, 50)
+    }, 0)
   }
 }

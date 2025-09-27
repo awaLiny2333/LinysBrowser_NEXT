@@ -75,7 +75,7 @@ struct woofAdsBlocker {
             })
               .width("100%")
             linysText({
-              text: $r('app.string.Ads_block_desc_3'),
+              text: $r('app.string.General_select_guide'),
               max_lines: 6
             })
               .width("100%")

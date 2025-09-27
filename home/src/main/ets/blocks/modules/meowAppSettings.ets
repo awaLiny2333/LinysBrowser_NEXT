@@ -53,6 +53,7 @@ import lazy woofRecentFaultLogs from '../../dialogs/contents/woofRecentFaultLogs
 import lazy woofUpdateHistory from '../../dialogs/contents/woofUpdateHistory';
 import lazy woofPromptOK from '../../dialogs/prompts/woofPromptOK';
 import lazy woofHistory from '../../dialogs/managers/woofHistory';
+import lazy woofDarkExempts from '../../dialogs/managers/woofDarkExempts';
 
 @Component
 struct meowAppSettings {
@@ -159,6 +160,13 @@ struct meowAppSettings {
   });
   adsBlocker_control: CustomDialogController = new CustomDialogController({
     builder: woofAdsBlocker(),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16,
+    // showInSubWindow: true,
+    width: "90%",
+  });
+  dark_control: CustomDialogController = new CustomDialogController({
+    builder: woofDarkExempts(),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,
     // showInSubWindow: true,
@@ -599,16 +607,6 @@ struct meowAppSettings {
               title: $r('app.string.Settings_appearance'),
               timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 4
             }) {
-              settingsSubCard({ timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 4 }) {
-                linysSwitchWithText({
-                  text: $r('app.string.Settings_experience_web_force_dark_mode'),
-                  toggle_state: this.web_force_dark_mode,
-                  onExecution: () => {
-                    this.bunch_of_settings.set('web_force_dark_mode', this.web_force_dark_mode);
-                  }
-                }) // Force dark mode
-              }
-
               settingsSubCard({
                 icon: '󰍗',
                 title: $r('app.string.Index_layout_title'),
@@ -656,6 +654,20 @@ struct meowAppSettings {
                 highlight: this.settings_scroll_to == 4
               }) {
                 meowColorsManager() // Colors manager
+                linysSwitchWithText({
+                  text: $r('app.string.Settings_experience_web_force_dark_mode'),
+                  toggle_state: this.web_force_dark_mode,
+                  onExecution: () => {
+                    this.bunch_of_settings.set('web_force_dark_mode', this.web_force_dark_mode);
+                  }
+                }) // Force dark mode
+                linysCapsuleButtonWithText({
+                  desc_text: $r('app.string.Settings_experience_manage_web_force_dark_mode'),
+                  button_text: "  󰀩  ",
+                  onExecution: () => {
+                    this.dark_control.open();
+                  }
+                }) // Dark management
               } // Colors
             }
           } // Appearance

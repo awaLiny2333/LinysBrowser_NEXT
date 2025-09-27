@@ -137,6 +137,14 @@ async function settings_tabs() {
 
   // Appearance - Dark
   AppStorage.setOrCreate('web_force_dark_mode', await settings.get('web_force_dark_mode') as boolean);
+  let web_force_dark_mode_exemptions = await settings.get('web_force_dark_mode_exemptions') as string;
+  if (web_force_dark_mode_exemptions.length < 2) {
+    // Empty
+    let web_force_dark_mode_exemptions_list: string[] = [];
+    AppStorage.setOrCreate('web_force_dark_mode_exemptions', web_force_dark_mode_exemptions_list);
+  } else {
+    AppStorage.setOrCreate('web_force_dark_mode_exemptions', web_force_dark_mode_exemptions.split('\n'));
+  }
 
   // General - Surf
   let home_url: string = await settings.get('home_url') as string
