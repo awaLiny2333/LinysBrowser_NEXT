@@ -62,7 +62,7 @@ struct meowTitleBar {
   // Current environment
   @Link title_bar_alignRules: AlignRuleOption;
   @State search_input_unified: string = "";
-  @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
+  @StorageLink('search_input') search_input: string = "ଘ*(੭*ˊᵕˋ)੭*";
   @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
   @StorageLink('uni_webDownloadItem_gateway') @Watch('on_download_start') uni_webDownloadItem_gateway: webview.WebDownloadItem | undefined = undefined;
   @State download_started_popup: boolean = false;
@@ -88,6 +88,12 @@ struct meowTitleBar {
   @StorageLink('current_loading_progress') current_loading_progress: number = 0;
   @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true];
   @StorageLink('current_is_loading') current_is_loading: boolean = true;
+  @StorageLink('tab_disable_js') tab_disable_js: boolean[] = [false];
+  @StorageLink('current_disable_js') current_disable_js: boolean = false;
+  @StorageLink('tab_disable_image') tab_disable_image: boolean[] = [false];
+  @StorageLink('current_disable_image') current_disable_image: boolean = false;
+  @StorageLink('tab_force_dark') tab_force_dark: boolean[] = [false];
+  @StorageLink('current_force_dark') current_force_dark: boolean = false;
   // Web control statuses
   @StorageLink('current_main_tab_index') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') current_sub_tab_index: number = -1;

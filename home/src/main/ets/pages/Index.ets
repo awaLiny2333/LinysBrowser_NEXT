@@ -77,7 +77,7 @@ struct Index {
   /**
    * Interactions (Duplicated in meowTitleBar) */
   // @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
-  // @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
+  // @StorageLink('search_input') search_input: string = "ଘ*(੭*ˊᵕˋ)੭*";
   /**
    * Web Statuses */
   // @StorageLink('tab_titles') tab_titles: string[] = [];

@@ -28,7 +28,7 @@ struct meowTabsVertical {
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
   @StorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
   @StorageLink('showing_more_options') showing_more_options: boolean = false;
-  @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
+  @StorageLink('search_input') search_input: string = "ଘ*(੭*ˊᵕˋ)੭*";
   @StorageProp('is_search_input_typing') is_search_input_typing: boolean = false;
   @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
   // Surf

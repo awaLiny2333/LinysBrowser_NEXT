@@ -33,26 +33,32 @@ struct meowWebView {
   // In-Page Searching
   @StorageLink('current_in_page_searching_stats_current') current_in_page_searching_stats_current: number = 0;
   @StorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
-  @StorageLink('current_in_page_searching_keyword') current_in_page_searching_keyword: string = ''
+  // @StorageLink('current_in_page_searching_keyword') current_in_page_searching_keyword: string = ''
   /**
    * Controls */
   @StorageLink('tab_titles') tab_titles: string[] = []
   // @StorageLink('current_title') current_title: string = "=￣ω￣=";
   @StorageLink('tab_urls') tab_urls: string[] = []
   @StorageLink('current_url') current_url: string = "=￣ω￣=";
-  // @StorageLink('tab_match_domains') tab_match_domains: string[][] = [];
+  @StorageLink('tab_match_domains') tab_match_domains: string[][] = [];
   // @StorageLink('current_match_domain') current_match_domain: string[] = ['scheme', 'domain'];
   // @StorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0]
   // @StorageLink('current_loading_progress') current_loading_progress: number = 0
   // @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]
   // @StorageLink('current_is_loading') current_is_loading: boolean = true
+  @StorageLink('tab_disable_js') tab_disable_js: boolean[] = [false];
+  // @StorageLink('current_disable_js') current_disable_js: boolean = false;
+  @StorageLink('tab_disable_image') tab_disable_image: boolean[] = [false];
+  // @StorageLink('current_disable_image') current_disable_image: boolean = false;
+  @StorageLink('tab_force_dark') tab_force_dark: boolean[] = [false];
+  // @StorageLink('current_force_dark') current_force_dark: boolean = false;
   /**
    * Web control statuses */
   @StorageLink('current_accessForward') current_accessForward: boolean = false;
   @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
   @StorageLink('current_main_tab_index') @Watch('on_tab_info_change') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') @Watch('on_tab_info_change') current_sub_tab_index: number = -1;
-  @StorageLink('search_input') search_input: string = "*(੭*ˊᵕˋ)੭*ଘ";
+  // @StorageLink('search_input') search_input: string = "ଘ*(੭*ˊᵕˋ)੭*";
   @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
   // Settings
   @StorageProp('collect_new_history') collect_new_history: boolean = true;
@@ -72,22 +78,23 @@ struct meowWebView {
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('preferred_hand_reverse_homepage_shortcuts') preferred_hand_reverse_homepage_shortcuts: boolean = false;
-  // Stuffs
-  @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
+  /**
+   * Stuffs */
+  // @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
-  // Visual
+  /**
+   * Visual */
   @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
   @StorageProp('tab_animation') tab_animation: AnimateParam = animation_default();
   @State last_timeout_id: number | undefined = undefined;
   @State shortcut_scroll_offset: number = 0;
-  @State shortcut_scroll_total_height: number = 100;
   @State homepage_shortcuts: unified_item[] = [];
   @State potential_jump_link: string = '';
   @StorageLink('extra_background') extra_background: boolean = false;
   // Download
   @StorageLink('dl_delegate') dl_delegate: webview.WebDownloadDelegate = new webview.WebDownloadDelegate();
-  @StorageLink('print_adapter') print_adapter: print.PrintDocumentAdapter | undefined = undefined;
   @StorageLink('uni_webDownloadItem_gateway') @Watch('on_download_request') uni_webDownloadItem_gateway: webview.WebDownloadItem | undefined = undefined;
+  @StorageLink('print_adapter') print_adapter: print.PrintDocumentAdapter | undefined = undefined;
   // dialogs
   woofWantDownload_control: CustomDialogController = new CustomDialogController({
     builder: woofWantDownload({
@@ -283,9 +290,9 @@ struct meowWebView {
             .height("100%")
             .backgroundColor('transparent')
             .databaseAccess(true)
-            .javaScriptAccess(this.my_js(Label.index_key))
-            .imageAccess(this.my_image(Label.index_key))
-            .onlineImageAccess(this.my_image(Label.index_key))
+            .javaScriptAccess(!this.tab_disable_js[Label.index_key])
+            .imageAccess(!this.tab_disable_image[Label.index_key])
+            .onlineImageAccess(!this.tab_disable_image[Label.index_key])
             .fileAccess(true)
             .domStorageAccess(true)
             .multiWindowAccess(true)
@@ -302,8 +309,8 @@ struct meowWebView {
             .onWindowNew((event) => {
               // TODO: Find out why this triggers twice when click once
               let new_target_url = event.targetUrl;
-              console.log('[meowWebView] New tab in new window!')
-              this.new_tab_gateway = new_target_url;
+              console.log('[meowWebView] New tab in new window!');
+              AppStorage.set('universal_new_tab_gateway', new_target_url);
               event.handler.setWebController(null);
             })
             .onErrorReceive((e) => {
@@ -462,7 +469,7 @@ struct meowWebView {
               }
             })
             .darkMode(WebDarkMode.Auto)// Dark mode!
-            .forceDarkAccess(this.web_force_dark_mode && this.my_forced_dark_mode(Label.index_key))// Force dark mode
+            .forceDarkAccess(this.tab_force_dark[Label.index_key])// Force dark mode
             .onLoadIntercept((event) => {
               if (event) {
                 let url: string = event.data.getRequestUrl();
@@ -541,9 +548,6 @@ struct meowWebView {
             })
           })
         }
-        .onAreaChange((_o, n) => {
-          this.shortcut_scroll_total_height = n.height as number;
-        })
         .alignItems(this.shortcut_alignItems())
         .padding({ top: Math.max(18, this.screen_height * (1 - this.homepage_shortcuts_init_height * 0.01)) })
         .animation(animation_default())
@@ -576,7 +580,7 @@ struct meowWebView {
 
   update_search_box_text(text: string) {
     if (!this.is_search_input_typing) {
-      this.search_input = url_resource_to_meow(text);
+      AppStorage.set('search_input', url_resource_to_meow(text));
       // Update Input Search Box
     }
     // Update Input Search Box when new page loaded
@@ -601,6 +605,9 @@ struct meowWebView {
     }
   }
 
+  /**
+   * Tries to retrieve homepage shortcuts from bunch_of_bookmarks.
+   * */
   refresh_homepage_shortcuts() {
     if (this.homepage_shortcuts_dir == '') {
       return;
@@ -697,47 +704,6 @@ struct meowWebView {
       return Visibility.None;
     }
     return Visibility.Visible;
-  }
-
-  // TODO: Reduce duplicated processing of match_domain(this.tab_urls[index])[1] in the following functions
-
-  my_js(index: number) {
-    if (!this.disable_js) {
-      return true;
-    }
-    // Disable js toggle ON
-    if (this.disable_js_all_sites) {
-      // Disable on all sites
-      return false;
-    }
-    // Disable on some sites
-    if (this.tab_urls[index] && this.disable_js_these_sites.includes(match_domain(this.tab_urls[index])[1])) {
-      return false;
-    }
-    return true;
-  }
-
-  my_image(index: number) {
-    if (!this.disable_image) {
-      return true;
-    }
-    // Disable image toggle ON
-    if (this.disable_image_all_sites) {
-      // Disable on all sites
-      return false;
-    }
-    // Disable on some sites
-    if (this.tab_urls[index] && this.disable_image_these_sites.includes(match_domain(this.tab_urls[index])[1])) {
-      return false;
-    }
-    return true;
-  }
-
-  my_forced_dark_mode(index: number) {
-    if (!this.tab_urls[index]) {
-      return true;
-    }
-    return !this.web_force_dark_mode_exemptions.includes(match_domain(this.tab_urls[index])[1]);
   }
 
   shortcut_alignItems() {

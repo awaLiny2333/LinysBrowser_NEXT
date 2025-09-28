@@ -10,6 +10,7 @@ import linysPathTree from '../../components/linysPathTree';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 import lazy woofSelectBookmarksPath from '../../dialogs/prompts/woofSelectBookmarksPath';
+import { current_tabs_style_is_horizontal } from '../../utils/ui_tools';
 
 @Component
 struct meowBookmarks {
@@ -32,8 +33,6 @@ struct meowBookmarks {
   @State swapping_offset_downer: number = 0;
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
-  @StorageLink('tabs_style') tabs_style: string = "";
-  @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
   @StorageLink('preferred_hand_reverse_tabs_panel') preferred_hand_reverse_tabs_panel: boolean = false;
   // Input and Interactions
   @StorageLink('bookmark_add_label') add_label: string = "";
@@ -46,9 +45,10 @@ struct meowBookmarks {
   @State exporting_bookmarks: boolean = false;
   // Dialogs
   @StorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
-  // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  /**
+   * Colors */
+  // @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  // @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Pan Gesture
   pan_x: number = 0;
@@ -308,7 +308,7 @@ struct meowBookmarks {
           // this.positionY = this.offsetY;
           // console.info('Pan end');
           // console.info('Pan end timeStamp is: ' + event.timestamp);
-          if (this.current_tabs_style() == 'vertical') {
+          if (!current_tabs_style_is_horizontal()) {
             if (this.pan_x < 0) {
               // ← CLose if Left align
               if (!this.is_right_align()) {
@@ -514,14 +514,6 @@ struct meowBookmarks {
 
   is_right_align() {
     return this.preferred_hand_left_or_right == 'right' && !this.preferred_hand_reverse_tabs_panel;
-  }
-
-  current_tabs_style() {
-    if (this.tablet_mode) {
-      return this.tabs_style;
-    } else {
-      return this.tabs_style_non_tablet_mode;
-    }
   }
 }
 

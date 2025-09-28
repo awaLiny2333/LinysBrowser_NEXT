@@ -4,6 +4,7 @@ import { url_default_blank } from './bunch_of_defaults';
 import { fileIo as fs } from '@kit.CoreFileKit';
 import { sandbox_save } from '../utils/storage_tools';
 import { meowContext } from '../utils/environment_tools';
+import { all_false, all_true } from '../utils/data_operation_tools';
 
 @Observed
 export class tab_label {
@@ -423,6 +424,81 @@ export class bunch_of_tabs {
       match.push(match_domain(this.Tabs[index].url));
     }
     return match;
+  }
+
+  /**
+   * Gets a list of all tabs' disable js settings.
+   * @returns A boolean[] array, the settings are either true or false.
+   * */
+  get_all_disable_js() {
+    let disable_js: boolean[] = [];
+    let main_switch = AppStorage.get('disable_js') as boolean;
+    let sub_switch = AppStorage.get('disable_js_all_sites') as boolean;
+
+    // Main switch off: NO disable js.
+    if (!main_switch) {
+      return all_false(this.Tabs.length) as boolean[];
+    }
+
+    // Main switch off: disable ALL js.
+    if (sub_switch) {
+      return all_true(this.Tabs.length) as boolean[];
+    }
+
+    for (let index = 0; index < this.Tabs.length; index++) {
+      let disable_these_sites = AppStorage.get('disable_js_these_sites') as string[];
+      let tab_match_domains = AppStorage.get('tab_match_domains') as string[];
+      disable_js.push(disable_these_sites.includes(tab_match_domains[index][1]));
+    }
+    return disable_js;
+  }
+
+  /**
+   * Gets a list of all tabs' disable image settings.
+   * @returns A boolean[] array, the settings are either true or false.
+   * */
+  get_all_disable_image() {
+    let disable: boolean[] = [];
+    let main_switch = AppStorage.get('disable_image') as boolean;
+    let sub_switch = AppStorage.get('disable_image_all_sites') as boolean;
+
+    // Main switch off: NO disable image.
+    if (!main_switch) {
+      return all_false(this.Tabs.length) as boolean[];
+    }
+
+    // Main switch off: disable ALL images.
+    if (sub_switch) {
+      return all_true(this.Tabs.length) as boolean[];
+    }
+
+    for (let index = 0; index < this.Tabs.length; index++) {
+      let disable_these_sites = AppStorage.get('disable_image_these_sites') as string[];
+      let tab_match_domains = AppStorage.get('tab_match_domains') as string[];
+      disable.push(disable_these_sites.includes(tab_match_domains[index][1]));
+    }
+    return disable;
+  }
+
+  /**
+   * Gets a list of all tabs' forced dark mode settings.
+   * @returns A boolean[] array, the settings are either true or false.
+   * */
+  get_all_force_dark() {
+    let force: boolean[] = [];
+    let main_switch = AppStorage.get('web_force_dark_mode') as boolean;
+
+    // Main switch off: NO force dark.
+    if (!main_switch) {
+      return all_false(this.Tabs.length) as boolean[];
+    }
+
+    for (let index = 0; index < this.Tabs.length; index++) {
+      let exempt_sites = AppStorage.get('web_force_dark_mode_exemptions') as string[];
+      let tab_match_domains = AppStorage.get('tab_match_domains') as string[];
+      force.push(!exempt_sites.includes(tab_match_domains[index][1]));
+    }
+    return force;
   }
 
   // Web states
