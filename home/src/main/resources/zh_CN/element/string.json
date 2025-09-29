@@ -317,6 +317,14 @@
       "value": "历史索引保存 :D"
     },
     {
+      "name": "Settings_experience_history_index_load_quantity",
+      "value": "历史索引加载数量"
+    },
+    {
+      "name": "Settings_experience_history_index_load_quantity_desc",
+      "value": "这是指在每次启动时加载的索引月份数量。加载得越多，输入时提示的历史记录时间范围就更久远。\n\n把这项设置为 0 会加载所有的记录（超级多！）\n\n加载太多会需要很长时间喔～\n\n进度会显示在 \uDB80\uDC61 更多 里！"
+    },
+    {
       "name": "Settings_experience_history_from",
       "value": "自"
     },

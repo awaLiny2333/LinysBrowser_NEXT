@@ -112,6 +112,7 @@ async function settings_tabs() {
 
   // History
   AppStorage.setOrCreate('collect_new_history', await settings.get('collect_new_history') as boolean);
+  AppStorage.setOrCreate('history_index_load_quantity', await settings.get('history_index_load_quantity') as boolean);
 
   // Accessibility
   AppStorage.setOrCreate('sys_back_to_access_backward', await settings.get('sys_back_access_backward') as boolean);

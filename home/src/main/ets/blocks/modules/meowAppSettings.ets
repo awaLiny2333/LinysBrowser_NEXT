@@ -113,6 +113,7 @@ struct meowAppSettings {
   @State @Watch('on_prefer_hand_left_or_right_changed') left_or_right_selected: number[] = [0];
   @StorageLink('max_bookmark_advice') max_bookmark_advice: number = 5;
   @StorageLink('max_history_advice') max_history_advice: number = 5;
+  @StorageLink('history_index_load_quantity') history_index_load_quantity: number = 6;
   @StorageLink('sys_back_to_access_backward') sys_back_to_access_backward: boolean = false;
   @StorageLink('resource_monitor') resource_monitor: boolean = true;
   @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
@@ -767,44 +768,16 @@ struct meowAppSettings {
                 })// History Indexing
                   .opacity(this.reindexing_history ? 0.4 : 1)
                   .enabled(!this.reindexing_history)
-
-                if (this.DEV_MODE) {
-                  linysTimeoutButton({
-                    text: " Fill history 05 - 14 ",
-                    onExecution: () => {
-                      fill_fake_history(2005, 2014, 750000);
-                    }
-                  })
-                    .opacity(this.reindexing_history ? 0.4 : 1)
-                    .enabled(!this.reindexing_history)
-                    .animation(animation_default())
-
-                  linysTimeoutButton({
-                    text: " Fill history 15 - 24 ",
-                    onExecution: () => {
-                      fill_fake_history(2015, 2024, 750000);
-                    }
-                  })
-                    .opacity(this.reindexing_history ? 0.4 : 1)
-                    .enabled(!this.reindexing_history)
-                    .animation(animation_default())
-
-                  linysCapsuleButton({ text: ' Load from disk ' })
-                    .onClick(() => {
-                      history_index_load_from_disk_worker("normal");
-                    })
-                    .opacity(this.reindexing_history ? 0.4 : 1)
-                    .enabled(!this.reindexing_history)
-                    .animation(animation_default())
-
-                  linysCapsuleButton({ text: ' Save Month to disk ' })
-                    .onClick(() => {
-                      history_index_save_to_disk_worker(bunch_of_history_index_lite.index_map, bunch_of_history_index_lite.this_file_name(), false);
-                    })
-                    .opacity(this.reindexing_history ? 0.4 : 1)
-                    .enabled(!this.reindexing_history)
-                    .animation(animation_default())
-                }
+                linysText({ text: $r('app.string.Settings_experience_history_index_load_quantity') }) // index load quantity
+                linysText({ text: $r('app.string.Settings_experience_history_index_load_quantity_desc'), is_description: true }) // index load quantity desc
+                linysLockSlider({
+                  slider_min: 0,
+                  slider_max: 24,
+                  slider_value: this.history_index_load_quantity,
+                  onTouchUp: () => {
+                    this.bunch_of_settings.set('history_index_load_quantity', this.history_index_load_quantity);
+                  }
+                }) // Slider and display of history_index_load_quantity
               }
             }
           } // History

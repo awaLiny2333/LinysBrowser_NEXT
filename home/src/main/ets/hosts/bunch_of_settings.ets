@@ -98,6 +98,7 @@ export class bunch_of_settings {
 
     // History Indexer
     this.register_setting('history_index_size', 'number', '-1');
+    this.register_setting('history_index_load_quantity', 'number', '6');
 
     // Download
     this.register_setting('direct_download', 'boolean', 'false');

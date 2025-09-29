@@ -4,6 +4,7 @@ import { fileIo } from '@kit.CoreFileKit';
 import { bunch_of_history_index_lite as month_host } from '../hosts/bunch_of_history_index_lite';
 
 const workerPort: ThreadWorkerGlobalScope = worker.workerPort;
+let threshold: number = 0;
 
 /**
  * Defines the event handler to be called when the worker thread receives a message sent by the host thread.
@@ -13,11 +14,15 @@ const workerPort: ThreadWorkerGlobalScope = worker.workerPort;
  */
 workerPort.onmessage = (event: MessageEvents) => {
   // receive getContext().filesDir from main thread
+  if (typeof event.data == "number") {
+    // threshold of load index files amount
+    threshold = event.data as number;
+  }
   if (typeof event.data == "string") {
     // Receive the filesDir
     let filesDir = event.data as string;
     // Execution
-    sandbox_load_index_sync(filesDir);
+    sandbox_load_index_sync(filesDir, threshold);
     // Send back information
     let back = new collections.Array<collections.Map<string, collections.Array<number>>>();
     back.push(bunch_of_history_index.index_map);
@@ -47,7 +52,7 @@ workerPort.onerror = (event: ErrorEvent) => {
 /**
  * Loads built index from disk.
  * */
-function sandbox_load_index_sync(context_filesDir: string) {
+function sandbox_load_index_sync(context_filesDir: string, load_threshold: number = 0) {
   let s = Date.now();
   console.log(bunch_of_history_index.log_head_worker() + '[Load] Start loading from sandbox! Start: ' + new Date(s).toString() + '.')
 
@@ -60,6 +65,12 @@ function sandbox_load_index_sync(context_filesDir: string) {
     // console.log(bunch_of_history_index.log_head_worker() + ' Rebuilding... ')
     // history_index_full_rebuild_worker();
     return;
+  }
+
+  // Limit history index months
+  // let load_threshold = AppStorage.get('history_index_load_quantity') as number;
+  if (load_threshold != 0 && all_index_files.length > load_threshold) {
+    all_index_files = all_index_files.slice(all_index_files.length - load_threshold, all_index_files.length);
   }
 
   workerPort.postMessage((Date.now() - s).toString() + " ms, 0.01%");

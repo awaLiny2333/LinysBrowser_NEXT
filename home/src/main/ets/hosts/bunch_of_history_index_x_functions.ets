@@ -5,6 +5,7 @@ import { bunch_of_history_index_lite } from './bunch_of_history_index_lite';
 import { fileIo } from '@kit.CoreFileKit';
 import { common } from '@kit.AbilityKit';
 import { meowContext } from '../utils/environment_tools';
+import App from '@system.app';
 
 
 /**
@@ -37,6 +38,7 @@ export function history_index_load_from_disk_worker(load_type: string) {
   ensure_this_month_index_file();
 
   let workerInstance = new worker.ThreadWorker("home/ets/workers/History_index_loader.ets");
+  workerInstance.postMessage(AppStorage.get('history_index_load_quantity') as number);
   workerInstance.postMessage(meowContext().filesDir);
 
   console.log(bunch_of_history_index.log_head() + " Full Index loader worker CREATED!");
