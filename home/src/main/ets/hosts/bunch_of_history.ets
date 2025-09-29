@@ -11,7 +11,6 @@ import {
 } from './bunch_of_history_index_x_functions';
 import { bunch_of_history_index_lite } from './bunch_of_history_index_lite';
 import { meowContext } from '../utils/environment_tools';
-import { all_true } from '../utils/data_operation_tools';
 
 export class history_record {
   accessed_time: number = Date.now();
@@ -259,6 +258,8 @@ export class bunch_of_history {
    * */
   get_history_this_month_with_index(key: string = '') {
     let result: Array<Array<history_record | number>> = [];
+    let shown: boolean[] = [];
+    let woofHistory_filter = AppStorage.get('woofHistory_filter') as number;
     key = key.toUpperCase();
     for (let index = 0; index < this.history_this_month.length; index++) {
       let element = this.history_this_month[index];
@@ -274,19 +275,22 @@ export class bunch_of_history {
         // Check url
         // console.log('[bunch_of_history] [' + (url.includes(key) || label.includes(key)).toString() + '] Search ' + key + ' in ' + label + ' - ' + url);
         // Push if hits search
-        if (url.includes(key) || label.includes(key)) {
+        if (this.history_match_key(url, label, key, woofHistory_filter)) {
           result.push([element, index]);
+          shown.push(true);
+        } else {
+          shown.push(false);
         }
       } else {
         // No search
         result.push([element, index]);
+        shown.push(true);
       }
     }
+    AppStorage.set('woofHistory_shown', shown);
     // TODO: Is .reverse() efficient enough?
     return result.reverse();
   }
-
-  // Operations
 
   /**
    * Adds a history, automatically puts it in the order of time.
@@ -363,6 +367,8 @@ export class bunch_of_history {
       }
     }
   }
+
+  // Operations
 
   /**
    * Removes some selected histories, according to a given array of indices.
@@ -450,8 +456,6 @@ export class bunch_of_history {
     return mid;
   }
 
-  // Saving
-
   /**
    * Opens a month of history using lite import, that is, assuming all of them are in time range one month.
    * @param path A string, the path of the file.
@@ -475,11 +479,23 @@ export class bunch_of_history {
     this.import_string_lite(the_file);
   }
 
+  // Saving
+
   /**
    * Saves the current opened file to disk
    * */
   save_month_to_disk() {
     sandbox_save(this.current_opened_file_path, this.export_string());
+  }
+
+  private history_match_key(url: string, label: string, key: string, filter: number = 2) {
+    if (filter == 0) {
+      return label.includes(key);
+    }
+    if (filter = 1) {
+      return url.includes(key);
+    }
+    return url.includes(key) || label.includes(key);
   }
 
   /**

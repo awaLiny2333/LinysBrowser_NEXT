@@ -561,6 +561,18 @@
       "value": "搜索历史记录"
     },
     {
+      "name": "History_search_link",
+      "value": "链接"
+    },
+    {
+      "name": "History_search_label",
+      "value": "标题"
+    },
+    {
+      "name": "History_search_both_link_and_label",
+      "value": "同时"
+    },
+    {
       "name": "Success",
       "value": "搞定!（＾・ﻌ・＾✿）"
     },

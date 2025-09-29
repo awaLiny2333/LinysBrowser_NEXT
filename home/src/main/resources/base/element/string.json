@@ -561,6 +561,18 @@
       "value": "Search in History"
     },
     {
+      "name": "History_search_link",
+      "value": "URL"
+    },
+    {
+      "name": "History_search_label",
+      "value": "Title"
+    },
+    {
+      "name": "History_search_both_link_and_label",
+      "value": "Both"
+    },
+    {
       "name": "Success",
       "value": "Success!（＾・ﻌ・＾✿）"
     },

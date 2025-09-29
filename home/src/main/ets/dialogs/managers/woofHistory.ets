@@ -6,7 +6,7 @@ import { animation_default, capsule_bar_height, click_effect_default } from '../
 import { bunch_of_history, history_record } from '../../hosts/bunch_of_history';
 import woofControlFrame from '../woofControlFrame';
 import HistoryDataSource from '../../objects/HistoryDataSource';
-import { all_false } from '../../utils/data_operation_tools';
+import { all_false, all_true } from '../../utils/data_operation_tools';
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 
 @CustomDialog
@@ -56,6 +56,8 @@ struct woofHistory {
   scroller: Scroller = new Scroller();
   controller: CustomDialogController;
   @StorageProp('woofHistory_search_input') woofHistory_search_input: string = '';
+  @StorageProp('woofHistory_shown') woofHistory_shown: boolean[] = all_true(this.opened_month_history_list.length); // If is included in search result
+  @StorageProp('woofHistory_filter') @Watch('submit_search') woofHistory_filter: number = 2; // 0 = label, 1 = link, 2 = both
   // Data
   @StorageLink('woofHistory_data') data: HistoryDataSource = new HistoryDataSource(this.bunch_of_history.get_history_this_month_with_index());
 
@@ -108,7 +110,12 @@ struct woofHistory {
               font_weight: FontWeight.Bold
             })
               .opacity(0.7)
-            linysText({ text: " (" + this.opened_month_history_list.length.toString() + ")" })
+            linysText({
+              text: " (" +
+                ((this.data.totalCount() != this.opened_month_history_list.length) ? " 󰀩 " + this.data.totalCount().toString() + ' / ' : '') +
+              this.opened_month_history_list.length.toString() + ")",
+              font_weight: FontWeight.Bold
+            })
               .opacity(0.7)
           } // Time elapse description
           .width("100%")
@@ -242,12 +249,26 @@ struct woofHistory {
         // linysTextTitle({ text: '󰀞' }) // This is stupid O.o
         SearchInput({ onSubmitAction: this.submit_search })
           .layoutWeight(1)
+          .animation(animation_default())
+
+        // Range
+        RangeSelection()
+
+        // Search button
         linysCapsuleButton({
           text: "  󰀩  "
         })
           .onClick(() => {
             this.submit_search();
           })
+          .visibility(this.tablet_mode ? Visibility.Visible : Visibility.None)
+          .animation(animation_default())
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass' })
+          .onClick(() => {
+            this.submit_search();
+          })
+          .visibility(!this.tablet_mode ? Visibility.Visible : Visibility.None)
+          .animation(animation_default())
       } // Search
       .width('100%')
       .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
@@ -297,25 +318,28 @@ struct woofHistory {
   }
 
   /**
-   * One click to select or unselect all history records.
+   * One click to select or unselect all history records in result.
    *
    * @abstract If there is still items unselected, then selects all.
    * If all items are already selected, then unselect all.
    * */
   select_all() {
-    let new_selected: boolean[] = [];
-    if (this.selected.includes(false)) {
-      for (let index = 0; index < this.selected.length; index++) {
-        new_selected.push(true);
+    // Determine current select state
+    let need_select_all: boolean = false;
+    for (let index = 0; index < this.woofHistory_shown.length; index++) {
+      if (this.woofHistory_shown[index] && !this.selected[index]) {
+        need_select_all = true;
+        break;
       }
-      this.selected_items_quantity = this.selected.length;
-    } else {
-      for (let index = 0; index < this.selected.length; index++) {
-        new_selected.push(false);
-      }
-      this.selected_items_quantity = 0;
     }
-    this.selected = new_selected;
+    // Select
+    if (need_select_all) {
+      this.selected_items_quantity = this.data.totalCount();
+      this.selected = this.woofHistory_shown;
+    } else {
+      this.selected_items_quantity = 0;
+      this.selected = all_false(this.woofHistory_shown.length);
+    }
   }
 
   /**
@@ -493,5 +517,50 @@ struct SearchInput {
 
   submit() {
 
+  }
+}
+
+@Component
+struct RangeSelection {
+  @State descs: ResourceStr[] = [$r('app.string.History_search_label'), $r('app.string.History_search_link'), $r('app.string.History_search_both_link_and_label')];
+  @StorageLink('woofHistory_filter') index: number = 2;
+  @StorageLink('tablet_mode') tablet_mode: boolean = false;
+  // Options
+  @State meow_text: string = "󰀞";
+  @State space: number = 8;
+  @State arrowPosition: ArrowPosition = ArrowPosition.END;
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+
+  build() {
+    Select([
+      { value: this.descs[0], icon: $r('sys.symbol.label') },
+      { value: this.descs[1], icon: $r('sys.symbol.paperclip') },
+      { value: this.descs[2], icon: $r('sys.symbol.pawprint') }
+    ])
+      .selected(this.index)
+      .value(this.descs[this.index])
+      .fontColor(this.color_current_font)
+      .menuBackgroundBlurStyle(BlurStyle.NONE)
+      .menuBackgroundColor(this.color_current_primary)
+      .optionFontColor(this.color_current_font)
+      .selectedOptionFontColor(this.color_current_font)
+      .selectedOptionBgColor(this.color_current_secondary)
+      .selectedOptionFont({ weight: FontWeight.Bold })
+      .space(this.space)
+      .arrowPosition(this.arrowPosition)
+      // .arrowModifier(new SymbolGlyphModifier().fontColor([this.color_current_font]))
+      .menuAlign(MenuAlignType.START, { dx: 0, dy: 0 })
+      .optionWidth(200)
+      .optionHeight(300)
+      .animation(animation_default())
+      .onSelect((index: number) => {
+        // console.info('Select:' + index);
+        this.index = index;
+      })
+    // TODO: enable this when upgrade to api 20
+    // .avoidance(AvoidanceMode.COVER_TARGET);
   }
 }
