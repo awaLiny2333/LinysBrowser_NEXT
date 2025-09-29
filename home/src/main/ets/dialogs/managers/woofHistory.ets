@@ -2,28 +2,29 @@ import linysSymbol from '../../components/texts/linysSymbol';
 import linysText from '../../components/texts/linysText';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysTextTitle from '../../components/texts/linysTextTitle';
-import { animation_default, click_effect_default } from '../../hosts/bunch_of_defaults';
+import { animation_default, capsule_bar_height, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { bunch_of_history, history_record } from '../../hosts/bunch_of_history';
 import woofControlFrame from '../woofControlFrame';
 import HistoryDataSource from '../../objects/HistoryDataSource';
+import { all_false } from '../../utils/data_operation_tools';
+import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 
 @CustomDialog
 struct woofHistory {
-  controller: CustomDialogController;
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
   @StorageLink('tablet_mode') tablet_mode: boolean = false;
   @State scroll_area_height: number = 0;
-  @Link showing_settings: boolean;
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Interactions
   @State viewing_year: number = this.bunch_of_history.get_current_year();
   @State viewing_month: number = this.bunch_of_history.get_current_month();
   // Dates
   @State available_months: number[][] = bunch_of_history.get_history_months();
-  @State history_list: history_record[] = this.bunch_of_history.get_history_this_month();
+  @State opened_month_history_list: history_record[] = this.bunch_of_history.get_history_this_month();
   // Manage
-  @State @Watch('on_select_change') selected: boolean[] = this.all_false(this.history_list.length);
+  @State @Watch('on_select_change') selected: boolean[] = all_false(this.opened_month_history_list.length);
   @State selecting: boolean = false;
-  @State selected_number: number = 0;
+  @State selected_items_quantity: number = 0;
   // alignRules
   alignRules_head_non_tablet: AlignRuleOption = {
     top: { anchor: "__container__", align: VerticalAlign.Top },
@@ -51,9 +52,12 @@ struct woofHistory {
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // Stuffs
   scroller: Scroller = new Scroller();
+  controller: CustomDialogController;
+  @StorageProp('woofHistory_search_input') woofHistory_search_input: string = '';
   // Data
-  private data: HistoryDataSource = new HistoryDataSource(this.bunch_of_history.get_history_this_month());
+  @StorageLink('woofHistory_data') data: HistoryDataSource = new HistoryDataSource(this.bunch_of_history.get_history_this_month_with_index());
 
   build() {
     woofControlFrame({
@@ -71,7 +75,9 @@ struct woofHistory {
               .opacity(0.9)
             linysText({
               text: $r('app.string.History_desc_2'),
-              max_lines: 6
+              max_lines: 6,
+              is_description: true,
+              is_expanded: true
             })
               .width("100%")
               .opacity(0.9)
@@ -95,45 +101,49 @@ struct woofHistory {
 
         Column({ space: 10 }) {
 
+          // Sub title
           Row() {
             linysText({
               text: $r('app.string.Settings_experience_history_date_format'),
               font_weight: FontWeight.Bold
             })
               .opacity(0.7)
-            linysText({ text: " (" + this.history_list.length.toString() + ")" })
+            linysText({ text: " (" + this.opened_month_history_list.length.toString() + ")" })
               .opacity(0.7)
           } // Time elapse description
           .width("100%")
 
           Scroll() {
             List({ scroller: this.scroller }) {
-              LazyForEach(this.data, (_record_item: history_record, key: number) => {
+              LazyForEach(this.data, (_record_item: Array<history_record | number>, _key: number) => {
                 ListItem() {
                   // linysText({ text: key.toString() })
-                  if (this.history_list[this.history_list.length - 1 - key]) {
+                  if (this.opened_month_history_list[_record_item[1] as number]) {
                     meowRelation({
-                      index: this.history_list.length - 1 - key,
-                      show: this.showing_settings,
+                      index: (_record_item[1] as number),
                       selected: this.selected,
-                      selected_number: this.selected_number,
+                      selected_item_quantity: this.selected_items_quantity,
                       selecting: this.selecting,
-                      label_link: this.history_list[this.history_list.length - 1 - key],
+                      // record: this.opened_month_history_list[(_record_item[1] as number)],
+                      record: _record_item[0] as history_record,
                       controller: this.controller,
                     })
                       .width("100%")
                   }
                 }
-              }, (item: history_record) => item.accessed_time.toString() + this.history_list.length.toString()) // Items
+                .animation(animation_default())
+              }, (item: Array<history_record | number>) => (item[0] as history_record).accessed_time.toString() +
+              this.opened_month_history_list.length.toString()) // Items
 
-              if (this.history_list.length == 0) {
-                linysTextTitle({
-                  text: "¯\\_(ツ)_/¯"
-                })
-                  .margin(30)
-                  .opacity(0.7)
-                  .animation(animation_default())
-              }
+              linysTextTitle({
+                text: "¯\\_(ツ)_/¯"
+              })
+                .margin(30)
+                .opacity(0.7)
+                .visibility((this.opened_month_history_list.length == 0 || this.data.totalCount() == 0)
+                  ? Visibility.Visible
+                  : Visibility.None)
+                .animation(animation_default())
             }
             .width("100%")
             .height("100%")
@@ -166,9 +176,9 @@ struct woofHistory {
                     this.viewing_year = item[0];
                     this.viewing_month = item[1];
                     this.scroller.scrollToIndex(0, false);
-                    this.data.setData(this.bunch_of_history.get_history_this_month());
+                    this.data.setData(this.bunch_of_history.get_history_this_month_with_index(this.woofHistory_search_input));
                   })
-              }) // Items
+              }) // Month Buttons
             }
           } // Available months
           .scrollable(ScrollDirection.Horizontal)
@@ -192,7 +202,7 @@ struct woofHistory {
             Column({ space: 10 }) {
               Row() {
                 linysTextTitle({ text: $r("app.string.Settings_edit_selecting") })
-                linysTextTitle({ text: " " + this.selected_number.toString() + " " })
+                linysTextTitle({ text: " " + this.selected_items_quantity.toString() + " " })
                 linysTextTitle({ text: $r("app.string.Settings_edit_selecting_items") })
               } // Selecting ... item(s)
               Row() {
@@ -227,22 +237,35 @@ struct woofHistory {
         .width(this.tablet_mode ? "35%" : "100%")
       }
       .layoutWeight(1)
+
+      Row({ space: 10 }) {
+        // linysTextTitle({ text: '󰀞' }) // This is stupid O.o
+        SearchInput({ onSubmitAction: this.submit_search })
+          .layoutWeight(1)
+        linysCapsuleButton({
+          text: "  󰀩  "
+        })
+          .onClick(() => {
+            this.submit_search();
+          })
+      } // Search
+      .width('100%')
+      .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
+      .animation(animation_default())
     }
   }
 
-  // Utils
+  // Search
 
-  /**
-   * Constructs and returns a boolean list of specified length consists of false.
-   * @param length A number, the length of the list.
-   * @returns A boolean[] array, all elements are false.
-   * */
-  all_false(length: number) {
-    let result: boolean[] = [];
-    for (let index = 0; index < length; index++) {
-      result.push(false);
-    }
-    return result;
+  submit_search() {
+    // Timer
+    let s = Date.now();
+    // Prep
+    let search = AppStorage.get('woofHistory_search_input') as string;
+    let source = AppStorage.get('woofHistory_data') as HistoryDataSource;
+    let history = AppStorage.get('bunch_of_history') as bunch_of_history;
+    source.setData(history.get_history_this_month_with_index(search));
+    console.log('[Meow][woofHistory] submit_search [' + search + '] (' + (Date.now() - s).toString() + ' ms)');
   }
 
   // Select Events and operations
@@ -265,12 +288,12 @@ struct woofHistory {
   }
 
   /**
-   * Refreshes this.history_list according to the time range selected.
+   * Refreshes this.opened_month_history_list according to the time range selected.
    * */
   refresh_current_history_list() {
-    this.history_list = this.bunch_of_history.get_history_this_month();
-    this.selected_number = 0;
-    this.selected = this.all_false(this.history_list.length);
+    this.opened_month_history_list = this.bunch_of_history.get_history_this_month();
+    this.selected_items_quantity = 0;
+    this.selected = all_false(this.opened_month_history_list.length);
   }
 
   /**
@@ -285,12 +308,12 @@ struct woofHistory {
       for (let index = 0; index < this.selected.length; index++) {
         new_selected.push(true);
       }
-      this.selected_number = this.selected.length;
+      this.selected_items_quantity = this.selected.length;
     } else {
       for (let index = 0; index < this.selected.length; index++) {
         new_selected.push(false);
       }
-      this.selected_number = 0;
+      this.selected_items_quantity = 0;
     }
     this.selected = new_selected;
   }
@@ -307,12 +330,11 @@ struct woofHistory {
         indices.push(index);
         // Notify LazyForEach
         // this.data.notifyDataDelete(indices[index]);
-
-        // TODO: use better strategy to notify LazyForEach about a deletion.
-        this.data.setData(this.bunch_of_history.get_history_this_month());
       }
     }
     this.bunch_of_history.remove_histories_at_indices(this.viewing_year, this.viewing_month, indices, true);
+    // TODO: use better strategy to notify LazyForEach about a deletion.
+    this.data.setData(this.bunch_of_history.get_history_this_month_with_index(this.woofHistory_search_input));
     this.refresh_current_history_list();
   }
 }
@@ -324,14 +346,13 @@ struct meowRelation {
   // Base
   controller: CustomDialogController | undefined;
   @Prop index: number;
-  @Prop label_link: history_record;
-  @Link show: boolean;
+  @Prop record: history_record;
   @Link selected: boolean[];
-  @Link selected_number: number;
+  @Link selected_item_quantity: number;
   @Prop selecting: boolean;
   // UI Effects
   @Prop scroll_area_height: number;
-  @Prop human_time: string = new Date(this.label_link.accessed_time).toLocaleString();
+  @Prop human_time: string = new Date(this.record.accessed_time).toLocaleString();
   // Gateways
   @StorageLink('universal_new_tab_gateway') universal_new_tab_gateway: string = "";
   // Colors
@@ -343,12 +364,12 @@ struct meowRelation {
     Column({ space: 2 }) {
       linysText({
         color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
-        text: this.label_link.label.length == 0 ? "　" : this.label_link.label,
+        text: this.record.label.length == 0 ? "　" : this.record.label,
         font_weight: this.selected[this.index] ? FontWeight.Bold : FontWeight.Regular
       })
       linysText({
         color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
-        text: this.label_link.link,
+        text: this.record.link,
         max_lines: 2
       })
         .opacity(0.88) // Happy New Year!
@@ -374,9 +395,9 @@ struct meowRelation {
         this.select_unselect();
         return;
       }
-      this.universal_new_tab_gateway = this.label_link.link;
+      this.universal_new_tab_gateway = this.record.link;
       if (this.controller) {
-        this.show = false;
+        AppStorage.set('showing_app_settings', false);
         this.controller.close();
       }
     })
@@ -400,9 +421,9 @@ struct meowRelation {
    * */
   select_unselect() {
     if (this.selected[this.index]) {
-      this.selected_number -= 1;
+      this.selected_item_quantity -= 1;
     } else {
-      this.selected_number += 1;
+      this.selected_item_quantity += 1;
     }
     this.selected[this.index] = !this.selected[this.index];
   }
@@ -438,5 +459,39 @@ struct month_button {
 
   selected() {
     return this.month == this.viewing_month && this.year == this.viewing_year;
+  }
+}
+
+@Component
+struct SearchInput {
+  @StorageLink('woofHistory_search_input') input: string = '';
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // Actions
+  onSubmitAction?: () => void;
+
+  build() {
+    TextInput({ text: this.input })
+      .height(capsule_bar_height())
+      .fontWeight(FontWeight.Regular)
+      .fontColor(this.color_current_font)
+      .caretColor(this.color_current_font)
+      .selectedBackgroundColor(this.color_current_font)
+      .animation(animation_default())
+      .onChange((content) => {
+        this.input = content;
+      })
+      .selectAll(true)
+      .onSubmit(() => {
+        if (this.onSubmitAction) {
+          this.onSubmitAction();
+        }
+      })
+  }
+
+  submit() {
+
   }
 }

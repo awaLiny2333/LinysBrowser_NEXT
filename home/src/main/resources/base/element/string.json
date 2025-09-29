@@ -549,6 +549,10 @@
       "value": "Long press a record to select. After entering selecting mode, tap on other records to multi-select."
     },
     {
+      "name": "History_search",
+      "value": "Search in History"
+    },
+    {
       "name": "Success",
       "value": "Success!（＾・ﻌ・＾✿）"
     },
@@ -646,7 +650,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "Feat: allow forced dark mode exemptions!\nImprove: Moved dark mode settings under Colors;\nImprove: Tried to boost launch speed...\nCode: Increased Stability!"
+      "value": "Feat: now auto remembers and recovers the window status (size, position, etc.);\nFeat: history searching!\nFeat: allow forced dark mode exemptions!\nImprove: Moved dark mode settings under Colors;\nImprove: Tried to boost launch speed...\nCode: Increased Stability!"
     },
     {
       "name": "Whats_new_content_extra",
@@ -846,11 +850,11 @@
     },
     {
       "name": "Settings_image_all_sites",
-      "value": "Disable web images on all sites"
+      "value": "Disable images on all sites"
     },
     {
       "name": "Settings_image_some_sites",
-      "value": "Disable web images on these sites"
+      "value": "Disable images on these sites"
     },
     {
       "name": "Settings_image_already_disabled",

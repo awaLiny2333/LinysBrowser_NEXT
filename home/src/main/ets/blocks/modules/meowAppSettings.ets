@@ -153,7 +153,7 @@ struct meowAppSettings {
   // Dialogs
   @StorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
   woofHistory_control: CustomDialogController = new CustomDialogController({
-    builder: woofHistory({ showing_settings: this.showing_app_settings }),
+    builder: woofHistory(),
     alignment: DialogAlignment.Center,
     cornerRadius: 22,
     // showInSubWindow: true,
@@ -166,8 +166,7 @@ struct meowAppSettings {
       sites_list: this.web_force_dark_mode_exemptions,
       descriptions: [
         $r('app.string.Web_force_dark_mode_desc_1'),
-        $r('app.string.Web_force_dark_mode_desc_2'),
-        $r('app.string.General_select_guide')],
+        $r('app.string.Web_force_dark_mode_desc_2')],
       tips: $r('app.string.Web_force_dark_mode_already_disabled'),
       title: $r('app.string.Settings_experience_manage_web_force_dark_mode'),
       switch_desc: $r('app.string.Settings_experience_web_force_dark_mode'),
@@ -189,8 +188,7 @@ struct meowAppSettings {
       sites_list: this.adblock_exceptions,
       descriptions: [
         $r('app.string.Ads_block_desc_1'),
-        $r('app.string.Ads_block_desc_2'),
-        $r('app.string.General_select_guide')],
+        $r('app.string.Ads_block_desc_2')],
       tips: '',
       title: $r('app.string.Settings_experience_manage_adblock'),
       switch_desc: $r('app.string.Settings_experience_use_adblock'),
@@ -223,8 +221,20 @@ struct meowAppSettings {
   js_manage_control: CustomDialogController = new CustomDialogController({
     builder: woofGeneralManage({
       general_switch: this.disable_js,
+      sites_list: this.disable_js_these_sites,
       all_sites_switch: this.disable_js_all_sites,
-      sites_list: this.disable_js_these_sites
+      descriptions: [
+        $r('app.string.Settings_js_desc_1'),
+        $r('app.string.Settings_js_desc_2'),
+        $r('app.string.Settings_js_desc_3')],
+      tips: $r('app.string.Settings_js_already_disabled'),
+      title: $r('app.string.Settings_js_manage'),
+      switch_desc: $r('app.string.Settings_js_disable_js'),
+      subtitle_sites_list: $r('app.string.Settings_js_some_sites'),
+      subtitle_all_sites: $r('app.string.Settings_js_all_sites'),
+      switch_id: 'disable_js',
+      sites_list_id: 'disable_js_these_sites',
+      switch_all_sites_id: 'disable_js_all_sites',
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16,

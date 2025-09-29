@@ -88,6 +88,13 @@ struct woofGeneralManage {
               })
                 .width("100%")
             })
+            linysText({
+              text: $r('app.string.General_select_guide'),
+              max_lines: 10,
+              is_description: true,
+              is_expanded: true
+            })
+              .width("100%")
             if (this.tips) {
               linysText({
                 text: this.tips,

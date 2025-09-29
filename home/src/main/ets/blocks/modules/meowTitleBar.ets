@@ -143,7 +143,7 @@ struct meowTitleBar {
     cornerRadius: 26
   });
   woofHistory_control: CustomDialogController = new CustomDialogController({
-    builder: woofHistory({ showing_settings: this.showing_app_settings }),
+    builder: woofHistory(),
     alignment: DialogAlignment.Center,
     cornerRadius: 22,
     // showInSubWindow: true,
@@ -168,8 +168,7 @@ struct meowTitleBar {
       showing_add_panel: true,
       descriptions: [
         $r('app.string.Ads_block_desc_1'),
-        $r('app.string.Ads_block_desc_2'),
-        $r('app.string.General_select_guide')],
+        $r('app.string.Ads_block_desc_2')],
       tips: '',
       title: $r('app.string.Settings_experience_manage_adblock'),
       switch_desc: $r('app.string.Settings_experience_use_adblock'),
@@ -207,8 +206,7 @@ struct meowTitleBar {
       showing_add_panel: true,
       descriptions: [
         $r('app.string.Web_force_dark_mode_desc_1'),
-        $r('app.string.Web_force_dark_mode_desc_2'),
-        $r('app.string.General_select_guide')],
+        $r('app.string.Web_force_dark_mode_desc_2')],
       tips: $r('app.string.Web_force_dark_mode_already_disabled'),
       title: $r('app.string.Settings_experience_manage_web_force_dark_mode'),
       switch_desc: $r('app.string.Settings_experience_web_force_dark_mode'),

@@ -6,13 +6,13 @@ import { history_record } from '../hosts/bunch_of_history';
 // BasicDataSource实现了IDataSource接口，用于管理listener监听，以及通知LazyForEach数据更新
 class BasicHistoryDataSource implements IDataSource {
   private listeners: DataChangeListener[] = [];
-  private originDataArray: history_record[] = [];
+  private originDataArray: Array<Array<history_record | number>> = [];
 
   public totalCount(): number {
     return 0;
   }
 
-  public getData(index: number): history_record {
+  public getData(index: number): Array<history_record | number> {
     return this.originDataArray[index];
   }
 
@@ -81,14 +81,14 @@ class BasicHistoryDataSource implements IDataSource {
 }
 
 export default class HistoryDataSource extends BasicHistoryDataSource {
-  private dataArray: history_record[] = [];
+  private dataArray: Array<Array<history_record | number>> = [];
 
-  constructor(fromData: history_record[]) {
+  constructor(fromData: Array<Array<history_record | number>>) {
     super();
     this.dataArray = fromData;
   }
 
-  public setData(data: history_record[]): void {
+  public setData(data: Array<Array<history_record | number>>): void {
     this.dataArray = data;
     this.notifyDataReload();
   }
@@ -97,11 +97,11 @@ export default class HistoryDataSource extends BasicHistoryDataSource {
     return this.dataArray.length;
   }
 
-  public getData(index: number): history_record {
+  public getData(index: number): Array<history_record | number> {
     return this.dataArray[index];
   }
 
-  public pushData(data: history_record): void {
+  public pushData(data: Array<history_record | number>): void {
     this.dataArray.push(data);
     this.notifyDataAdd(this.dataArray.length - 1);
   }

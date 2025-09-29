@@ -105,7 +105,7 @@ async function settings_tabs() {
   AppStorage.setOrCreate('tabs_style', await settings.get('tabs_style') as string);
   AppStorage.setOrCreate('tabs_style_non_tablet_mode', await settings.get('tabs_style_non_tablet_mode') as string);
   AppStorage.setOrCreate('showing_tabs', await settings.get('status_tabs_open') as boolean);
-
+  
   // Experience - Suggestions
   AppStorage.setOrCreate('max_bookmark_advice', await settings.get('max_bookmark_suggest') as number);
   AppStorage.setOrCreate('max_history_advice', await settings.get('max_history_suggest') as number);

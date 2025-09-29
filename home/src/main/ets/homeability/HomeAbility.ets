@@ -65,10 +65,21 @@ export default class HomeAbility extends UIAbility {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
 
+    // Set window rect auto save
+    try {
+      windowStage.setWindowRectAutoSave(true).then(() => {
+        console.info('[HomeAbility] Succeeded in setting window rect auto-save');
+      }).catch((err: BusinessError) => {
+        console.error(`[HomeAbility] Failed to set window rect auto-save. Cause code: ${err.code}, message: ${err.message}`);
+      });
+    } catch (exception) {
+      console.error(`[HomeAbility] Failed to set window rect auto-save. Cause code: ${exception.code}, message: ${exception.message}`);
+    }
+
     windowStage.getMainWindow((err: BusinessError, win) => {
       const errCode: number = err.code;
       if (errCode) {
-        console.error(`Failed to obtain the main window. Cause code: ${err.code}, message: ${err.message}`);
+        console.error(`[HomeAbility] Failed to obtain the main window. Cause code: ${err.code}, message: ${err.message}`);
         return;
       }
 
@@ -185,13 +196,13 @@ export default class HomeAbility extends UIAbility {
   }
 
   /**
-   * Implements a same px2vp as this.getUIContext().px2vp in UI interfaces
-   * @param px the real pixel
-   * @returns the vp equivalent
+   * A general load content function.
+   * @param windowStage The windowStage.
    * */
-
-
   window_load_content(windowStage: window.WindowStage) {
+    let windowClass = windowStage.getMainWindowSync(); // Get app main window
+
+    // Load content
     windowStage.loadContent('pages/Index', (err) => {
       if (err.code) {
         hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
@@ -199,7 +210,6 @@ export default class HomeAbility extends UIAbility {
       }
       hilog.info(0x0000, 'testTag', 'Succeeded in loading the content.');
 
-      let windowClass = windowStage.getMainWindowSync(); // Get app main window
 
       console.log('Succeeded in obtaining the main window. Data: ' + JSON.stringify(windowClass));
       console.log('[HomeAbility] deviceType: ' + deviceInfo.deviceType);
@@ -271,7 +281,8 @@ export default class HomeAbility extends UIAbility {
             console.log('\tNew avoidRightWidth: ' + avoidRight + (avoidRight == 0 ? 0 : 2));
           }
         })
-      }
+      } // Avoid areas
+
     });
   }
 }

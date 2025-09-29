@@ -11,6 +11,7 @@ import {
 } from './bunch_of_history_index_x_functions';
 import { bunch_of_history_index_lite } from './bunch_of_history_index_lite';
 import { meowContext } from '../utils/environment_tools';
+import { all_true } from '../utils/data_operation_tools';
 
 export class history_record {
   accessed_time: number = Date.now();
@@ -119,7 +120,7 @@ export class bunch_of_history {
     // Load today
     try {
       this.open_month_from_disk_sync(this.current_year, this.current_month);
-    }catch (e) {
+    } catch (e) {
       console.error('[bunch_of_history][constructor] load today error: ' + e);
     }
 
@@ -249,6 +250,40 @@ export class bunch_of_history {
 
   get_history_this_month() {
     return this.history_this_month;
+  }
+
+  /**
+   * Searches through the history of this month.
+   * @param key The search key.
+   * @returns Array<Array<history_record | number>>
+   * */
+  get_history_this_month_with_index(key: string = '') {
+    let result: Array<Array<history_record | number>> = [];
+    key = key.toUpperCase();
+    for (let index = 0; index < this.history_this_month.length; index++) {
+      let element = this.history_this_month[index];
+      if (key != '') {
+        // Search
+        let url: string;
+        try {
+          url = decodeURIComponent(element.link).toUpperCase();
+        } catch (e) {
+          url = element.link.toUpperCase();
+        }
+        let label = (element.label.toUpperCase());
+        // Check url
+        // console.log('[bunch_of_history] [' + (url.includes(key) || label.includes(key)).toString() + '] Search ' + key + ' in ' + label + ' - ' + url);
+        // Push if hits search
+        if (url.includes(key) || label.includes(key)) {
+          result.push([element, index]);
+        }
+      } else {
+        // No search
+        result.push([element, index]);
+      }
+    }
+    // TODO: Is .reverse() efficient enough?
+    return result.reverse();
   }
 
   // Operations
@@ -468,7 +503,7 @@ export class bunch_of_history {
    *
    * Usually used when to import a file containing histories spanning over months.
    *
-   * In default overwrites whatever was in this history_list.
+   * In default overwrites whatever was in this opened_month_history_list.
    * @param imp The string in the correct format:
    * @example 'bing\nbing.com\n127771721'
    * */
@@ -523,7 +558,7 @@ export class bunch_of_history {
    *
    * Assuming that all records are in one month.
    *
-   * In default overwrites whatever was in this history_list.
+   * In default overwrites whatever was in this opened_month_history_list.
    *
    * Usually used when importing a month file, because it is ensured to be legal.
    * @param imp The string in the correct format:

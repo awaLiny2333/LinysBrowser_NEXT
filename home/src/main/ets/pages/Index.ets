@@ -129,7 +129,7 @@ struct Index {
     width: "90%",
   });
   woofHistory_control: CustomDialogController = new CustomDialogController({
-    builder: woofHistory({ showing_settings: this.showing_app_settings }),
+    builder: woofHistory(),
     alignment: DialogAlignment.Center,
     cornerRadius: 22,
     // showInSubWindow: true,
