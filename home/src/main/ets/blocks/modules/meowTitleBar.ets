@@ -698,6 +698,9 @@ struct meowTitleBar {
       .width("100%")
       .height(this.tablet_mode || this.showing_scratching_board ? 36 : 82)
       .animation(animation_default())
+      .keyboardShortcut(this.bunch_of_key_shortcuts.history.main_key, this.bunch_of_key_shortcuts.history.modifier, () => {
+        this.woofHistory_control.open();
+      })
 
       EstimatedDestination({
         is_http_no_s: this.search_input_unify_scheme_http,

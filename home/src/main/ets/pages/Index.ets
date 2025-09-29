@@ -12,7 +12,6 @@ import meowTabsVertical from '../blocks/modules/meowTabsVertical';
 import meowTitleBar from '../blocks/modules/meowTitleBar';
 import lazy meowBookmarks from '../blocks/modules/meowBookmarks';
 import lazy meowWebView from '../blocks/modules/meowWebView';
-import lazy woofHistory from '../dialogs/managers/woofHistory';
 import lazy woofPromptFail from '../dialogs/prompts/woofPromptFail';
 
 @Entry
@@ -128,13 +127,6 @@ struct Index {
     // showInSubWindow: true,
     width: "90%",
   });
-  woofHistory_control: CustomDialogController = new CustomDialogController({
-    builder: woofHistory(),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 22,
-    // showInSubWindow: true,
-    width: "90%",
-  });
   /**
    * Colors */
   @StorageLink('color_light_primary') @Watch('on_color_change') color_light_primary: ResourceColor = $r('app.color.start_window_background');
@@ -203,9 +195,6 @@ struct Index {
         .keyboardShortcut(this.bunch_of_key_shortcuts.fullscreen.main_key, this.bunch_of_key_shortcuts.fullscreen.modifier, () => {
           this.fullscreen_mode = !this.fullscreen_mode;
           this.showing_more_options = false;
-        })
-        .keyboardShortcut(this.bunch_of_key_shortcuts.history.main_key, this.bunch_of_key_shortcuts.history.modifier, () => {
-          this.woofHistory_control.open();
         })
         .keyboardShortcut(this.bunch_of_key_shortcuts.print.main_key, this.bunch_of_key_shortcuts.print.modifier, () => {
           print_web(this.bunch_of_tabs.workingMainTab().controller);
