@@ -265,7 +265,12 @@ export class bunch_of_history {
 
     // Process keyword
     key = key.toUpperCase();
-    let keys = Array.from(divide_string(key));
+    let keys: string[] = [];
+    if (woofHistory_match_coefficient == 1) {
+      keys.push(key);
+    } else {
+      keys = Array.from(divide_string(key));
+    }
     console.log('[Meow][bunch_of_history] History search keywords: \n' + keys.join('\n'));
 
     // Search
