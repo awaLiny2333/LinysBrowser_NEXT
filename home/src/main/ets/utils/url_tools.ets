@@ -69,6 +69,24 @@ export function ensure_scheme(input: string, scheme?: string) {
   return "http://" + url
 }
 
+/**
+ * Determines if a port is legal.
+ * @param port the port
+ * @returns true if the port is legal
+ * */
+function is_legal_port(port: string) {
+  if (!is_pure_number(port)) {
+    return false;
+  }
+  let port_int = Number.parseInt(port);
+  if (!(0 <= port_int && port_int <= 65535)) {
+    // if any part not in legal range [0, 255]
+    // or port not in legal range [0, 65535]
+    return false;
+  }
+  return true;
+}
+
 function is_legal_ipv4(input: string) {
   if (input == "") {
     // if is empty
@@ -117,24 +135,6 @@ function is_legal_ipv4(input: string) {
   return true;
 }
 
-/**
- * Determines if a port is legal.
- * @param port the port
- * @returns true if the port is legal
- * */
-function is_legal_port(port: string) {
-  if (!is_pure_number(port)) {
-    return false;
-  }
-  let port_int = Number.parseInt(port);
-  if (!(0 <= port_int && port_int <= 65535)) {
-    // if any part not in legal range [0, 255]
-    // or port not in legal range [0, 65535]
-    return false;
-  }
-  return true;
-}
-
 function is_legal_url(input: string) {
   if (input == "") {
     // if is empty
@@ -176,6 +176,10 @@ function is_legal_url(input: string) {
   }
   // if top domain contains numbers
   if (is_containing_number(top)) {
+    return false;
+  }
+  // too long or contains spaces
+  if (top.length > 63 || top.includes(' ')) {
     return false;
   }
 
