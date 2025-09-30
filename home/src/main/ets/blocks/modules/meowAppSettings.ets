@@ -950,6 +950,10 @@ struct meowAppSettings {
                       if (!import_result) {
                         this.uni_fail_prompt_gateway = $r("app.string.Fail_select_bad_settings");
                       } else {
+                        bunch_of_settings.set('start_up_option', 'new tab');
+                        bunch_of_settings.set('continue_tabs_count', 0);
+                        bunch_of_settings.set('continue_tabs_main_on', 0);
+                        bunch_of_settings.set('continue_tabs_sub_on', 0);
                         bunch_of_settings.save_to_disk();
                         this.woofSettingsImportOK_control.open();
                       }
