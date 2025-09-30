@@ -271,12 +271,20 @@ struct woofHistory {
               this.submit_search();
             })
             .animation(animation_default())
+
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.xmark' })
+            .onClick(() => {
+              // Clear
+              AppStorage.set('woofHistory_search_input', '');
+              this.submit_search();
+            })
+            .visibility(this.woofHistory_search_input? Visibility.Visible: Visibility.None)
+            .animation(animation_default())
         }
         .width(this.tablet_mode ? undefined : '100%')
         .layoutWeight(this.tablet_mode ? 1 : undefined)
         .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
         .animation(animation_default())
-        .id('search_bar')
 
         // Range
         LinysSelection({
@@ -285,7 +293,6 @@ struct woofHistory {
           icons: [$r('sys.symbol.label'), $r('sys.symbol.paperclip'), $r('sys.symbol.pawprint')]
         })
           .animation(animation_default())
-          .id('range_selection')
 
         // Blur
         LinysSelection({
@@ -294,7 +301,6 @@ struct woofHistory {
           icons: [$r('sys.symbol.questionmark_circle'), $r('sys.symbol.figure_falling_bed'), $r('sys.symbol.pin')]
         })
           .animation(animation_default())
-          .id('range_selection')
       }
       .width('100%')
       .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
