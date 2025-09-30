@@ -573,6 +573,18 @@
       "value": "Both"
     },
     {
+      "name": "History_search_fuzzy_05",
+      "value": "Fuzzy"
+    },
+    {
+      "name": "History_search_fuzzy_075",
+      "value": "Balanced"
+    },
+    {
+      "name": "History_search_fuzzy_1",
+      "value": "Exact"
+    },
+    {
       "name": "Success",
       "value": "Success!（＾・ﻌ・＾✿）"
     },

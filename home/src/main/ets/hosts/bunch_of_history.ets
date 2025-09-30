@@ -2,6 +2,7 @@ import { sandbox_read_text_sync, sandbox_save, sandbox_unlink_sync } from '../ut
 import { fileIo as fs } from '@kit.CoreFileKit';
 import { bunch_of_history_index } from './bunch_of_history_index';
 import {
+  divide_string,
   ensure_this_month_history_file,
   ensure_this_month_index_file,
   history_index_full_rebuild_worker,
@@ -260,11 +261,19 @@ export class bunch_of_history {
     let result: Array<Array<history_record | number>> = [];
     let shown: boolean[] = [];
     let woofHistory_filter = AppStorage.get('woofHistory_filter') as number;
+    let woofHistory_match_coefficient = AppStorage.get('woofHistory_match_coefficient') as number;
+
+    // Process keyword
     key = key.toUpperCase();
+    let keys = Array.from(divide_string(key));
+    console.log('[Meow][bunch_of_history] History search keywords: \n' + keys.join('\n'));
+
+    // Search
     for (let index = 0; index < this.history_this_month.length; index++) {
       let element = this.history_this_month[index];
+
       if (key != '') {
-        // Search
+        // Prepare information
         let url: string;
         try {
           url = decodeURIComponent(element.link).toUpperCase();
@@ -272,22 +281,24 @@ export class bunch_of_history {
           url = element.link.toUpperCase();
         }
         let label = (element.label.toUpperCase());
-        // Check url
-        // console.log('[bunch_of_history] [' + (url.includes(key) || label.includes(key)).toString() + '] Search ' + key + ' in ' + label + ' - ' + url);
         // Push if hits search
-        if (this.history_match_key(url, label, key, woofHistory_filter)) {
+        if (this.history_match_key(url, label, keys, woofHistory_filter, woofHistory_match_coefficient)) {
           result.push([element, index]);
           shown.push(true);
         } else {
           shown.push(false);
         }
+
       } else {
         // No search
         result.push([element, index]);
         shown.push(true);
       }
     }
+
+    // Label the proportion of records that are included in the search result.
     AppStorage.set('woofHistory_shown', shown);
+
     // TODO: Is .reverse() efficient enough?
     return result.reverse();
   }
@@ -488,14 +499,49 @@ export class bunch_of_history {
     sandbox_save(this.current_opened_file_path, this.export_string());
   }
 
-  private history_match_key(url: string, label: string, key: string, filter: number = 2) {
+  /**
+   * Determines if a label-link pair (url, label) matches the key word.
+   * @param url The url.
+   * @param label The label.
+   * @param key The key to be searched.
+   * @param filter The filter mode. 0 = Label, 1 = URL, 2 = Both.
+   * @returns
+   * */
+  private history_match_key(url: string, label: string, key: string[], filter: number, match_coefficient: number): boolean {
     if (filter == 0) {
-      return label.includes(key);
+      return this.match_with_coefficient(label, key, match_coefficient);
     }
-    if (filter = 1) {
-      return url.includes(key);
+    if (filter == 1) {
+      return this.match_with_coefficient(url, key, match_coefficient);
     }
-    return url.includes(key) || label.includes(key);
+    return this.match_with_coefficient(label, key, match_coefficient) || this.match_with_coefficient(url, key, match_coefficient);
+  }
+
+  /**
+   * Determines if a text matches with the keys given. Blurry to a hit rate of c.
+   * @param text The text.
+   * @param keys The keys.
+   * @param c The minimum hit rate.
+   * @returns A boolean stating they match or not.
+   * */
+  private match_with_coefficient(text: string, keys: string[], c: number): boolean {
+    let hits = 0;
+    let miss = 0;
+    for (let index = 0; index < keys.length; index++) {
+      let hit = text.includes(keys[index]);
+      hits += (hit ? 1 : 0);
+      miss += (!hit ? 1 : 0);
+      if (hits >= c * keys.length) {
+        // console.log('[match_with_coefficient] ['+text+'] ['+keys[index]+'] Returned True');
+        return true;
+      }
+      if (miss > (1 - c) * keys.length) {
+        // console.log('[match_with_coefficient] ['+text+'] ['+keys[index]+'] Returned False');
+        return false;
+      }
+    }
+    // console.log('[match_with_coefficient] Returned Final False');
+    return false;
   }
 
   /**

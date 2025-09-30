@@ -7,7 +7,7 @@ import { bunch_of_history, history_record } from '../../hosts/bunch_of_history';
 import woofControlFrame from '../woofControlFrame';
 import HistoryDataSource from '../../objects/HistoryDataSource';
 import { all_false, all_true } from '../../utils/data_operation_tools';
-import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
+import { LengthMetrics } from '@kit.ArkUI';
 
 @CustomDialog
 struct woofHistory {
@@ -58,8 +58,15 @@ struct woofHistory {
   @StorageProp('woofHistory_search_input') woofHistory_search_input: string = '';
   @StorageProp('woofHistory_shown') woofHistory_shown: boolean[] = all_true(this.opened_month_history_list.length); // If is included in search result
   @StorageProp('woofHistory_filter') @Watch('submit_search') woofHistory_filter: number = 2; // 0 = label, 1 = link, 2 = both
+  @StorageProp('woofHistory_match_coefficient') @Watch('submit_search') woofHistory_match_coefficient: number = 0.8;
+  @StorageProp('woofHistory_blur') @Watch('on_blur_change') woofHistory_blur: number = 1; // 0 = 0.5, 1 = 0.75, 2 = 1.0
   // Data
   @StorageLink('woofHistory_data') data: HistoryDataSource = new HistoryDataSource(this.bunch_of_history.get_history_this_month_with_index());
+
+  onPageShow(): void {
+    // initial Refresh
+    this.submit_search();
+  }
 
   build() {
     woofControlFrame({
@@ -245,31 +252,50 @@ struct woofHistory {
       }
       .layoutWeight(1)
 
-      Row({ space: 10 }) {
-        // linysTextTitle({ text: '󰀞' }) // This is stupid O.o
-        SearchInput({ onSubmitAction: this.submit_search })
-          .layoutWeight(1)
-          .animation(animation_default())
+      Flex({
+        wrap: this.tablet_mode
+          ? FlexWrap.NoWrap
+          : FlexWrap.WrapReverse,
+        space: { main: LengthMetrics.vp(10), cross: LengthMetrics.vp(10) },
+        alignItems: ItemAlign.Center
+      }) {
+        // Search bar
+        Row({ space: 10 }) {
+          // linysTextTitle({ text: '󰀞' }) // This is stupid O.o
+          SearchInput({ onSubmitAction: this.submit_search })
+            .layoutWeight(1)
+            .animation(animation_default())
+
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass' })
+            .onClick(() => {
+              this.submit_search();
+            })
+            .animation(animation_default())
+        }
+        .width(this.tablet_mode ? undefined : '100%')
+        .layoutWeight(this.tablet_mode ? 1 : undefined)
+        .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
+        .animation(animation_default())
+        .id('search_bar')
 
         // Range
-        RangeSelection()
-
-        // Search button
-        linysCapsuleButton({
-          text: "  󰀩  "
+        LinysSelection({
+          app_storage_link_id: 'woofHistory_filter',
+          descs: [$r('app.string.History_search_label'), $r('app.string.History_search_link'), $r('app.string.History_search_both_link_and_label')],
+          icons: [$r('sys.symbol.label'), $r('sys.symbol.paperclip'), $r('sys.symbol.pawprint')]
         })
-          .onClick(() => {
-            this.submit_search();
-          })
-          .visibility(this.tablet_mode ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
-        linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass' })
-          .onClick(() => {
-            this.submit_search();
-          })
-          .visibility(!this.tablet_mode ? Visibility.Visible : Visibility.None)
+          .id('range_selection')
+
+        // Blur
+        LinysSelection({
+          app_storage_link_id: 'woofHistory_blur',
+          descs: [$r('app.string.History_search_fuzzy_05'), $r('app.string.History_search_fuzzy_075'), $r('app.string.History_search_fuzzy_1')],
+          icons: [$r('sys.symbol.questionmark_circle'), $r('sys.symbol.figure_falling_bed'), $r('sys.symbol.pin')]
+        })
           .animation(animation_default())
-      } // Search
+          .id('range_selection')
+      }
       .width('100%')
       .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
       .animation(animation_default())
@@ -285,8 +311,14 @@ struct woofHistory {
     let search = AppStorage.get('woofHistory_search_input') as string;
     let source = AppStorage.get('woofHistory_data') as HistoryDataSource;
     let history = AppStorage.get('bunch_of_history') as bunch_of_history;
+    // Update lazy data
     source.setData(history.get_history_this_month_with_index(search));
     console.log('[Meow][woofHistory] submit_search [' + search + '] (' + (Date.now() - s).toString() + ' ms)');
+  }
+
+  on_blur_change() {
+    // This will trigger @watch of this.woofHistory_match_coefficient and do the searching
+    AppStorage.set('woofHistory_match_coefficient', this.woofHistory_blur * 0.25 + 0.5);
   }
 
   // Select Events and operations
@@ -521,12 +553,13 @@ struct SearchInput {
 }
 
 @Component
-struct RangeSelection {
+struct LinysSelection {
   @State descs: ResourceStr[] = [$r('app.string.History_search_label'), $r('app.string.History_search_link'), $r('app.string.History_search_both_link_and_label')];
-  @StorageLink('woofHistory_filter') index: number = 2;
+  @State icons: Resource[] = [$r('sys.symbol.label'), $r('sys.symbol.paperclip'), $r('sys.symbol.pawprint')];
+  @State app_storage_link_id: string = 'woofHistory_filter';
+  @State index: number = 2;
   @StorageLink('tablet_mode') tablet_mode: boolean = false;
   // Options
-  @State meow_text: string = "󰀞";
   @State space: number = 8;
   @State arrowPosition: ArrowPosition = ArrowPosition.END;
   // Colors
@@ -534,14 +567,20 @@ struct RangeSelection {
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
+  aboutToAppear(): void {
+    this.index = AppStorage.get(this.app_storage_link_id) as number;
+  }
+
   build() {
     Select([
-      { value: this.descs[0], icon: $r('sys.symbol.label') },
-      { value: this.descs[1], icon: $r('sys.symbol.paperclip') },
-      { value: this.descs[2], icon: $r('sys.symbol.pawprint') }
+      { value: this.descs[0], icon: this.icons[0] },
+      { value: this.descs[1], icon: this.icons[1] },
+      { value: this.descs[2], icon: this.icons[2] }
     ])
+      .borderRadius(13.5)
       .selected(this.index)
       .value(this.descs[this.index])
+      // .animation(animation_default())
       .fontColor(this.color_current_font)
       .menuBackgroundBlurStyle(BlurStyle.NONE)
       .menuBackgroundColor(this.color_current_primary)
@@ -551,16 +590,16 @@ struct RangeSelection {
       .selectedOptionFont({ weight: FontWeight.Bold })
       .space(this.space)
       .arrowPosition(this.arrowPosition)
-      // .arrowModifier(new SymbolGlyphModifier().fontColor([this.color_current_font]))
       .menuAlign(MenuAlignType.START, { dx: 0, dy: 0 })
       .optionWidth(200)
       .optionHeight(300)
-      .animation(animation_default())
       .onSelect((index: number) => {
         // console.info('Select:' + index);
+        AppStorage.set(this.app_storage_link_id, index);
         this.index = index;
       })
     // TODO: enable this when upgrade to api 20
-    // .avoidance(AvoidanceMode.COVER_TARGET);
+    // .arrowModifier(new SymbolGlyphModifier().fontColor([this.color_current_font]))
+    // .avoidance(AvoidanceMode.COVER_TARGET)
   }
 }

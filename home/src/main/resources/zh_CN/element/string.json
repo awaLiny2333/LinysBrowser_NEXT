@@ -573,6 +573,18 @@
       "value": "同时"
     },
     {
+      "name": "History_search_fuzzy_05",
+      "value": "模糊"
+    },
+    {
+      "name": "History_search_fuzzy_075",
+      "value": "平衡"
+    },
+    {
+      "name": "History_search_fuzzy_1",
+      "value": "精确"
+    },
+    {
       "name": "Success",
       "value": "搞定!（＾・ﻌ・＾✿）"
     },
