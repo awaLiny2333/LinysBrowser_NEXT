@@ -2,7 +2,6 @@ import { sandbox_read_text_sync, sandbox_save, sandbox_unlink_sync } from '../ut
 import { fileIo as fs } from '@kit.CoreFileKit';
 import { bunch_of_history_index } from './bunch_of_history_index';
 import {
-  divide_string,
   ensure_this_month_history_file,
   ensure_this_month_index_file,
   history_index_full_rebuild_worker,
@@ -12,6 +11,7 @@ import {
 } from './bunch_of_history_index_x_functions';
 import { bunch_of_history_index_lite } from './bunch_of_history_index_lite';
 import { meowContext } from '../utils/environment_tools';
+import { deduplicate_pairs, divide_string, label_link_match_key } from '../utils/data_operation_tools';
 
 export class history_record {
   accessed_time: number = Date.now();
@@ -175,11 +175,19 @@ export class bunch_of_history {
     let s = Date.now();
     // console.log('[Meow][bunch_of_history_index] Start Searching with Index! Start: ' + s.toString())
 
-    let result = bunch_of_history_index.search_history_label_link(key, max_result_number);
+    let search_number = max_result_number;
+    if (search_number) {
+      search_number *= 10;
+    }
+    let result = bunch_of_history_index.search_history_label_link(key, search_number);
+
+    // Deduplication
+    result = deduplicate_pairs(result).slice(0, max_result_number);
+
     let result_count = result.length;
     if (result.length > 0) {
       console.log('[Meow][bunch_of_history][bunch_of_history_index] ' + result_count.toString() + ' results of Key "' + key + '" ' +
-        'searched in ' + (Date.now() - s).toString() + "ms among " + bunch_of_history_index.index_map.size.toString() + " keys!");
+        'searched among ' + bunch_of_history_index.index_map.size.toString() + ' keys! (' + (Date.now() - s).toString() + ' ms)');
     }
     return result;
   }
@@ -287,7 +295,7 @@ export class bunch_of_history {
         }
         let label = (element.label.toUpperCase());
         // Push if hits search
-        if (this.history_match_key(url, label, keys, woofHistory_filter, woofHistory_match_coefficient)) {
+        if (label_link_match_key(label, url, keys, woofHistory_filter, woofHistory_match_coefficient)) {
           result.push([element, index]);
           shown.push(true);
         } else {
@@ -504,50 +512,7 @@ export class bunch_of_history {
     sandbox_save(this.current_opened_file_path, this.export_string());
   }
 
-  /**
-   * Determines if a label-link pair (url, label) matches the key word.
-   * @param url The url.
-   * @param label The label.
-   * @param key The key to be searched.
-   * @param filter The filter mode. 0 = Label, 1 = URL, 2 = Both.
-   * @returns
-   * */
-  private history_match_key(url: string, label: string, key: string[], filter: number, match_coefficient: number): boolean {
-    if (filter == 0) {
-      return this.match_with_coefficient(label, key, match_coefficient);
-    }
-    if (filter == 1) {
-      return this.match_with_coefficient(url, key, match_coefficient);
-    }
-    return this.match_with_coefficient(label, key, match_coefficient) || this.match_with_coefficient(url, key, match_coefficient);
-  }
-
-  /**
-   * Determines if a text matches with the keys given. Blurry to a hit rate of c.
-   * @param text The text.
-   * @param keys The keys.
-   * @param c The minimum hit rate.
-   * @returns A boolean stating they match or not.
-   * */
-  private match_with_coefficient(text: string, keys: string[], c: number): boolean {
-    let hits = 0;
-    let miss = 0;
-    for (let index = 0; index < keys.length; index++) {
-      let hit = text.includes(keys[index]);
-      hits += (hit ? 1 : 0);
-      miss += (!hit ? 1 : 0);
-      if (hits >= c * keys.length) {
-        // console.log('[match_with_coefficient] ['+text+'] ['+keys[index]+'] Returned True');
-        return true;
-      }
-      if (miss > (1 - c) * keys.length) {
-        // console.log('[match_with_coefficient] ['+text+'] ['+keys[index]+'] Returned False');
-        return false;
-      }
-    }
-    // console.log('[match_with_coefficient] Returned Final False');
-    return false;
-  }
+  // Data Management
 
   /**
    * Export history records in a specific plain text format.

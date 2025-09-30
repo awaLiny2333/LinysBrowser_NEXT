@@ -86,7 +86,7 @@ export function click_effect_default() {
 }
 
 /**
- * Default url of blank page.
+ * Default link of blank page.
  * @returns 'meow://home'
  * */
 export function url_default_blank() {

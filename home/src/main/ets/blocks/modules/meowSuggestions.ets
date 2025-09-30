@@ -1,8 +1,8 @@
 import { animation_default } from '../../hosts/bunch_of_defaults';
 import { bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_history } from '../../hosts/bunch_of_history';
-import lazy { get_relations } from '../../utils/label_link_relation_tools';
 import linysText from '../../components/texts/linysText';
+import { search_label_link } from '../../utils/data_operation_tools';
 
 @Component
 struct meowSuggestions {
@@ -110,7 +110,7 @@ struct meowSuggestions {
       this.history_suggestions = [];
     } else {
       let label_link_bookmark = this.bunch_of_bookmarks.get_all_plain_label_link();
-      this.bookmark_suggestions = get_relations(label_link_bookmark, this.search_input, this.max_bookmark_advice);
+      this.bookmark_suggestions = search_label_link(label_link_bookmark, this.search_input, 0.8, this.max_bookmark_advice);
       this.history_suggestions = bunch_of_history.search_with_index(this.search_input.toUpperCase(), this.max_history_advice);
     }
   }

@@ -363,7 +363,7 @@ struct data_display {
   // Actions
 
   /**
-   * The default actions for url, text and image when clicked.
+   * The default actions for link, text and image when clicked.
    * */
   default_action() {
     if (this.type == 'url') {
@@ -388,7 +388,7 @@ struct data_display {
 
   /**
    * Calls the webViews to open a new tab
-   * @param url the url of new tab
+   * @param link the link of new tab
    * */
   open_url(url: string) {
     this.new_tab_gateway = url;
@@ -396,8 +396,8 @@ struct data_display {
   }
 
   /**
-   * Call the webViews to download something from a url
-   * @param url the url of file to be downloaded
+   * Call the webViews to download something from a link
+   * @param link the link of file to be downloaded
    * */
   download_url(url: string) {
     try {

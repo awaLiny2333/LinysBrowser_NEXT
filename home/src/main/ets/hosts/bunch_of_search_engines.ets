@@ -75,9 +75,9 @@ export class search_engine {
   url: string;
 
   /**
-   * A search_engine object, which consists of a label and the search engine url.
+   * A search_engine object, which consists of a label and the search engine link.
    * @param label The name of the search engine.
-   * @param url The url of the search engine, '%s' in which will be replaced with real search keywords.
+   * @param link The link of the search engine, '%s' in which will be replaced with real search keywords.
    */
   constructor(label: string, content: string) {
     this.label = label;

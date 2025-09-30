@@ -159,7 +159,7 @@ function is_legal_url(input: string) {
   if (url_first_part.length < 2 && scheme == "") {
     return false;
   }
-  // if url ends with a dot
+  // if link ends with a dot
   if (url_tail.length == 0) {
     return false;
   }
@@ -195,9 +195,9 @@ let built_ins: string[] = [
 ]
 
 /**
- * Translates a url with resource:// to meow://
- * @param url The url.
- * @returns The translated url.
+ * Translates a link with resource:// to meow://
+ * @param link The link.
+ * @returns The translated link.
  * */
 export function url_resource_to_meow(url: string) {
   let result: string = url;
@@ -219,7 +219,7 @@ export function url_resource_to_meow(url: string) {
       if (index != -1) {
         result = built_ins[index]
       } else {
-        // If input is a non-existing resource:// url
+        // If input is a non-existing resource:// link
       }
     }
   }
@@ -227,9 +227,9 @@ export function url_resource_to_meow(url: string) {
 }
 
 /**
- * Translates a url with meow:// to resource://
- * @param url The url.
- * @returns The translated url.
+ * Translates a link with meow:// to resource://
+ * @param link The link.
+ * @returns The translated link.
  * */
 export function url_meow_to_resource(url: string) {
   let result: string = url;
@@ -255,10 +255,10 @@ export function url_meow_to_resource(url: string) {
 }
 
 /**
- * Analyze an url and divides it into scheme and domain.
+ * Analyze an link and divides it into scheme and domain.
  *
  * If the input comes with no scheme then '' is returned in scheme field.
- * @param input the url
+ * @param input the link
  * @returns ['scheme', 'domain']
  * */
 export function match_domain(input: string) {
@@ -272,7 +272,7 @@ export function match_domain(input: string) {
     let url_split = url.split("/");
     if ((url_split[0].substring(url_split[0].length - 1) == ":") && (url_split[1] == "")) {
       // if protocol scheme is at the beginning
-      // url = url.split("/").slice(2).join("/");
+      // link = link.split("/").slice(2).join("/");
       url = url.split("/")[2];
       scheme = url_split[0].split(":")[0];
     }
@@ -289,12 +289,12 @@ export function viewable_domains() {
 }
 
 /**
- * Extracts search engine and search keyword from an url
- * @param url
+ * Extracts search engine and search keyword from an link
+ * @param link
  * @returns ['search.engine/q=%s', 'keyword']
  * */
 export function extract_search(url: string) {
-  // url = decodeURI(url);
+  // link = decodeURI(link);
   let result: string[] = ['', ''];
 
   let keys: string[] = ['q', 'query', 's', 'key', 'wd', 'w', 'word', 'searchKeyWord', 'search_text', 'keyword', 'val', 'value', 'text', 'tag', 'tags'];
@@ -383,7 +383,7 @@ export function extract_links_from_text(data_list: string[]) {
 
 /**
  * Determines if a link is downloadable.
- * @param link The url.
+ * @param link The link.
  * @returns [boolean, string(filename)] If it is downloadable.
  * */
 export function is_downloadable(link: string) {
@@ -408,7 +408,7 @@ export function is_downloadable(link: string) {
  * @param link the link
  * */
 export function jump_external_link(link: string) {
-  // jump to url received
+  // jump to link received
   const want: Want = {
     uri: link
   };

@@ -151,7 +151,7 @@ struct woofWantDownload {
       this.bunch_of_downloads.list_of_file_names.push(this.file_name);
       this.bunch_of_downloads.list_of_urls.push(this.item.getUrl());
       this.bunch_of_downloads.list_of_failed.push(false);
-      // this.list_of_urls.push('url');
+      // this.list_of_urls.push('link');
 
       try {
         this.item.start(this.download_target_path);

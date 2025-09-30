@@ -1,10 +1,10 @@
 import { sandbox_read_text_sync } from '../utils/storage_tools';
 import { fileIo as fs } from '@kit.CoreFileKit';
 import { collections } from '@kit.ArkTS';
-import { divide_string, get_histories_from_disk, index_file_name_of_month, insert_into_array } from './bunch_of_history_index_x_functions';
+import { get_histories_from_disk, index_file_name_of_month } from './bunch_of_history_index_x_functions';
 import { bunch_of_history_index_lite } from './bunch_of_history_index_lite';
-import { common } from '@kit.AbilityKit';
 import { meowContext } from '../utils/environment_tools';
+import { divide_string, insert_into_array } from '../utils/data_operation_tools';
 
 export class bunch_of_history_index {
   static index_map: collections.Map<string, collections.Array<number>> = new collections.Map<string, collections.Array<number>>();

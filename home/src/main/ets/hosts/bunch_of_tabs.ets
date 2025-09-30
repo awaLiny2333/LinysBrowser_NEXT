@@ -40,7 +40,7 @@ export class tab_info_packed {
   /**
    * A class holding a controller and statuses of a tab.
    * @param title A string, the initial title when the tab is created.
-   * @param url A string, the initial url when the tab is created.
+   * @param link A string, the initial link when the tab is created.
    * @param restore_on_creation A boolean, optional, will restore web state on creation if the index in valid.
    */
   constructor(title: string, url: string, restore_on_creation?: boolean) {
@@ -63,7 +63,7 @@ export class tab_info_packed {
   }
 
   /**
-   * Asks the tab to update its url, usually called when the tab loads something new.
+   * Asks the tab to update its link, usually called when the tab loads something new.
    * */
   update_url() {
     if (!viewable_domains().includes(match_domain(this.controller.getUrl())[0])) {
@@ -122,7 +122,7 @@ export class bunch_of_tabs {
   // Operations and Actions
 
   /**
-   * Loads a url on the current main tab.
+   * Loads a link on the current main tab.
    * @description Will load url_default_blank() if the home_url of this bunch_of_tabs is not set.
    * */
   loadUrl_onWorkingTab(url: string) {
@@ -132,7 +132,7 @@ export class bunch_of_tabs {
   }
 
   /**
-   * Loads home url on the current main tab.
+   * Loads home link on the current main tab.
    * @description Will load url_default_blank() if the home_url of this bunch_of_tabs is not set.
    * */
   go_home_onWorkingTab() {
@@ -242,7 +242,7 @@ export class bunch_of_tabs {
 
   /**
    * Creates a new tab.
-   * @param target_url A string, if url is "", then load the default new_tab_url set in this object.
+   * @param target_url A string, if link is "", then load the default new_tab_url set in this object.
    * @param recover_on_creation A boolean, if set true, then the tab will restore the serialized web state in
    * @returns A number, the index of the new tab.
    * @description While if new_tab_url is also not set ("" or undefined), then will load the url_default_blank().
@@ -279,7 +279,7 @@ export class bunch_of_tabs {
   /**
    * Closes a tab.
    * @param target A number, the index of the tab requested to close.
-   * @param home_url A string, will load this url if closed the last tab and opened a new one right after it.
+   * @param home_url A string, will load this link if closed the last tab and opened a new one right after it.
    * @returns A number, the index of current working main tab which eventually switched to.
    * */
   closeTab(target: number, home_url: string) {

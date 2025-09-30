@@ -20,7 +20,7 @@ import { search_engine } from '../../hosts/bunch_of_search_engines';
 import lazy { add_transparency } from '../../utils/color_tools';
 import lazy { copy } from '../../utils/clipboard_tools';
 import lazy { print_web } from '../../utils/print_tools';
-import lazy { share_link } from '../../utils/share_tools';
+import lazy { share_link } from '../../utils/link_tools';
 import linysText from '../../components/texts/linysText';
 import linysProgressInfo from '../../components/linysProgressInfo';
 import linysSymbol from '../../components/texts/linysSymbol';
@@ -487,7 +487,7 @@ struct meowTitleBar {
                 })
                 .onSubmit(() => {
                   this.submit_searching();
-                  // After submit, as the web loads, the new url will be synced to the search_input (address bar)
+                  // After submit, as the web loads, the new link will be synced to the search_input (address bar)
                   // Then it will trigger @Watch('on_search_input_change')
                   // And the extracted keyword would be synced to its TextInput.
                 })
@@ -1232,7 +1232,7 @@ struct meowTitleBar {
         console.error('[Meow][meowTitleBar][submit_searching][loadUrl_onWorkingTab] ' + e + '\n\t' + this.search_input_unified);
       }
     }
-    // Flip url field if needed
+    // Flip link field if needed
     if (!this.is_search_input_address) {
       this.showing_search_extracted_field = true;
     }

@@ -293,7 +293,7 @@ struct meowTabsVertical {
 
   /**
    * Creates a new tab.
-   * @param target_url A string, if url is "", then load the default new_tab_url set in this object.
+   * @param target_url A string, if link is "", then load the default new_tab_url set in this object.
    * @param do_recovery A boolean, if set true, then the tab will restore the serialized web state in
    * @description While if new_tab_url is also not set ("" or undefined), then will load the url_default_blank().
    * */

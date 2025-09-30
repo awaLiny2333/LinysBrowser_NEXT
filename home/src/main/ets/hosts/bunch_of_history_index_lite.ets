@@ -1,6 +1,7 @@
 import { sandbox_read_text_sync } from '../utils/storage_tools';
 import { collections } from '@kit.ArkTS';
-import { divide_string, history_path_of_month, index_file_name_of_month, index_path_of_month, insert_into_array } from './bunch_of_history_index_x_functions';
+import { history_path_of_month, index_file_name_of_month, index_path_of_month } from './bunch_of_history_index_x_functions';
+import { divide_string, insert_into_array } from '../utils/data_operation_tools';
 
 export class bunch_of_history_index_lite {
   static index_map: collections.Map<string, collections.Array<number>> = new collections.Map<string, collections.Array<number>>();
@@ -41,8 +42,9 @@ export class bunch_of_history_index_lite {
     // Open the file
     let path = history_path_of_month(year, month);
     let imp = sandbox_read_text_sync(path, context_filesDir);
-
     let import_list: string[] = imp.split("\n");
+
+    // Skip errors
     if (import_list.length <= 1) {
       console.info(bunch_of_history_index_lite.log_head() + " Import history SKIPPED: Too short. (" + path + ").");
       return;
@@ -55,7 +57,8 @@ export class bunch_of_history_index_lite {
     // Traverse
     for (let index = 0; index < import_list.length; index += 3) {
       let access_time = parseInt(import_list[index+2]);
-      bunch_of_history_index_lite.add_index_string(import_list[index] + " " + import_list[index+1], access_time);
+      let content = import_list[index] + " " + import_list[index+1];
+      bunch_of_history_index_lite.add_index_string(content, access_time);
     }
   }
 
