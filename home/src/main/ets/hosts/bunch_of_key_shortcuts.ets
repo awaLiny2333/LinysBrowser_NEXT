@@ -71,9 +71,9 @@ export class bunch_of_key_shortcuts {
   /**
    * Loads key combination settings from disk
    * */
-  async load_from_disk() {
+  load_from_disk() {
     try {
-      let combinations = await (AppStorage.get('bunch_of_settings') as bunch_of_settings).get('key_shortcuts') as string;
+      let combinations = bunch_of_settings.get('key_shortcuts') as string;
       // console.log('[bunch_of_key_shortcuts][load_from_disk] Combinations: ' + combinations);
       let keys_lines: string[] = [];
       if (combinations != '') {
@@ -98,7 +98,7 @@ export class bunch_of_key_shortcuts {
     for (let index = 0; index < this.key_shortcut_combinations.length; index++) {
       list.push(this.key_shortcut_combinations[index].toString());
     }
-    (AppStorage.get('bunch_of_settings') as bunch_of_settings).set('key_shortcuts', list.join('\n'));
+    bunch_of_settings.set('key_shortcuts', list.join('\n'));
     this.last_edit = Date.now();
   }
 }

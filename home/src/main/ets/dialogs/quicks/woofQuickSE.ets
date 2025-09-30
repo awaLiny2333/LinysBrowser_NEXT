@@ -1,6 +1,5 @@
 import { animation_default, click_effect_default, default_search_engine } from '../../hosts/bunch_of_defaults';
 import { bunch_of_search_engines, search_engine } from '../../hosts/bunch_of_search_engines';
-import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import woofControlFrame from '../woofControlFrame';
 import meowSEManager from '../../blocks/panels/meowSEManager';
 import linysText from '../../components/texts/linysText';
@@ -16,7 +15,6 @@ struct woofQuickSE {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Host
   @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines = new bunch_of_search_engines();
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Animation UI Statuses

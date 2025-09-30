@@ -6,7 +6,6 @@ import lazy woofSelectColor from '../../dialogs/prompts/woofSelectColor';
 
 @Component
 struct meowColorsManager {
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor =
     $r('app.color.start_window_background');
@@ -80,21 +79,20 @@ struct meowColorsManager {
         button_text: '  󰃈  ',
         onExecution: async () => {
           // Reset
-          this.bunch_of_settings.reset('color_light_font');
-          this.bunch_of_settings.reset('color_light_primary');
-          this.bunch_of_settings.reset('color_light_secondary');
-          this.bunch_of_settings.reset('color_dark_font');
-          this.bunch_of_settings.reset('color_dark_primary');
-          this.bunch_of_settings.reset('color_dark_secondary');
+          bunch_of_settings.reset('color_light_font');
+          bunch_of_settings.reset('color_light_primary');
+          bunch_of_settings.reset('color_light_secondary');
+          bunch_of_settings.reset('color_dark_font');
+          bunch_of_settings.reset('color_dark_primary');
+          bunch_of_settings.reset('color_dark_secondary');
 
           // Figure out what color should i use
-          this.color_light_primary = await this.bunch_of_settings.get('color_light_primary') as string;
-          this.color_light_secondary =
-            await this.bunch_of_settings.get('color_light_secondary') as string;
-          this.color_light_font = await this.bunch_of_settings.get('color_light_font') as string;
-          this.color_dark_primary = await this.bunch_of_settings.get('color_dark_primary') as string;
-          this.color_dark_secondary = await this.bunch_of_settings.get('color_dark_secondary') as string;
-          this.color_dark_font = await this.bunch_of_settings.get('color_dark_font') as string;
+          this.color_light_primary = bunch_of_settings.get('color_light_primary') as string;
+          this.color_light_secondary = bunch_of_settings.get('color_light_secondary') as string;
+          this.color_light_font = bunch_of_settings.get('color_light_font') as string;
+          this.color_dark_primary = bunch_of_settings.get('color_dark_primary') as string;
+          this.color_dark_secondary = bunch_of_settings.get('color_dark_secondary') as string;
+          this.color_dark_font = bunch_of_settings.get('color_dark_font') as string;
         }
       }) // Reset
     } // Colors
@@ -111,7 +109,6 @@ struct colorBlock {
   @State my_color_mode: number = 0;
   @StorageProp('currentColorMode') current_color_mode: number = 0;
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   woofColorSelect_control: CustomDialogController = new CustomDialogController({
     builder: woofSelectColor({ color: this.color, dark_mode_color: false, color_theme_id: this.color_theme_id }),
     alignment: DialogAlignment.Center,
@@ -146,6 +143,6 @@ struct colorBlock {
   }
 
   on_color_set() {
-    this.bunch_of_settings.set(this.color_theme_id, this.color as string);
+    bunch_of_settings.set(this.color_theme_id, this.color as string);
   }
 }

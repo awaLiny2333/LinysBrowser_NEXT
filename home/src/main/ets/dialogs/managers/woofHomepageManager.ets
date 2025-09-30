@@ -12,7 +12,6 @@ import woofControlFrame from '../woofControlFrame';
 struct woofHomepageManager {
   @Prop link: string = '';
   @Prop title: string = '';
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('homepage_shortcuts_init_height') homepage_shortcuts_init_height: number = 50;
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
@@ -98,7 +97,7 @@ struct woofHomepageManager {
           linysLockSlider({
             slider_value: this.homepage_shortcuts_init_height,
             onTouchUp: () => {
-              this.bunch_of_settings.set('homepage_shortcuts_init_height', this.homepage_shortcuts_init_height);
+              bunch_of_settings.set('homepage_shortcuts_init_height', this.homepage_shortcuts_init_height);
             }
           })
         }

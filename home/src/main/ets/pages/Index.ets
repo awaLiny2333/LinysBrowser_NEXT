@@ -19,7 +19,6 @@ import lazy woofPromptFail from '../dialogs/prompts/woofPromptFail';
 struct Index {
   /**
    * Init Hosts */
-  // @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   // @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
   // @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
   // @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("Bookmarks~Meow");
@@ -344,7 +343,7 @@ struct Index {
   }
 
   on_showing_tabs_change() {
-    (AppStorage.get('bunch_of_settings') as bunch_of_settings).set('status_tabs_open', this.showing_tabs);
+    bunch_of_settings.set('status_tabs_open', this.showing_tabs);
   }
 
   on_fail_prompt_gateway() {

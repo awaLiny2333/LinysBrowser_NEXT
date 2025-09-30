@@ -5,8 +5,6 @@ import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutBut
 
 @Component
 struct meowAnimationManager {
-  // Environment
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -31,7 +29,7 @@ struct meowAnimationManager {
         display: (0.01 * this.animation_response).toFixed(2),
         slider_value: this.animation_response,
         onTouchUp: () => {
-          this.bunch_of_settings.set('animation_response', this.animation_response);
+          bunch_of_settings.set('animation_response', this.animation_response);
         }
       })
 
@@ -45,7 +43,7 @@ struct meowAnimationManager {
         slider_value: this.animation_damping_coefficient,
         display: (0.01 * this.animation_damping_coefficient).toFixed(2),
         onTouchUp: () => {
-          this.bunch_of_settings.set('animation_damping_coefficient',
+          bunch_of_settings.set('animation_damping_coefficient',
             this.animation_damping_coefficient);
         }
       })
@@ -53,15 +51,14 @@ struct meowAnimationManager {
       linysTimeoutButtonWithText({
         desc_text: $r('app.string.Settings_appearance_animation_reset'),
         button_text: '  󰃈  ',
-        onExecution: async () => {
+        onExecution: () => {
           // Reset
-          this.bunch_of_settings.reset('animation_response');
-          this.bunch_of_settings.reset('animation_damping_coefficient');
+          bunch_of_settings.reset('animation_response');
+          bunch_of_settings.reset('animation_damping_coefficient');
           // Sync
-          this.animation_response = await this.bunch_of_settings.get('animation_response') as number;
+          this.animation_response = bunch_of_settings.get('animation_response') as number;
           console.log(this.animation_response.toString())
-          this.animation_damping_coefficient =
-            await this.bunch_of_settings.get('animation_damping_coefficient') as number;
+          this.animation_damping_coefficient = bunch_of_settings.get('animation_damping_coefficient') as number;
         }
       })
     }

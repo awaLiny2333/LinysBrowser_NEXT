@@ -8,7 +8,6 @@ import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 @Component
 struct meowUAManager {
   @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
   @StorageLink('user_agent_selected') @Watch('on_select') selected_index: number = -1; // -1 for system default
   @State default_pressing: boolean = false;
@@ -123,13 +122,13 @@ struct meowUAManager {
     } else {
       this.now_global_custom_UA = this.bunch_of_user_agents.list_of_user_agents[this.selected_index].user_agent_content;
     }
-    this.bunch_of_settings.set('custom_user_agents_selected_index', this.selected_index);
+    bunch_of_settings.set('custom_user_agents_selected_index', this.selected_index);
   }
 
   add_new_custom_ua() {
     this.bunch_of_user_agents.add_user_agent(new user_agent(new Date().toLocaleString(),
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0"));
-    this.bunch_of_settings.set('custom_user_agents', this.bunch_of_user_agents.export_string());
+    bunch_of_settings.set('custom_user_agents', this.bunch_of_user_agents.export_string());
   }
 }
 
@@ -139,7 +138,6 @@ export default meowUAManager;
 struct meowUAButton {
   @Link selected_index: number;
   @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @Prop my_index: number;
   @State my_ua: user_agent = this.bunch_of_user_agents.list_of_user_agents[this.my_index];
   @State my_label: string = this.my_ua.label;
@@ -327,7 +325,7 @@ struct meowUAButton {
   set_global_UA(idx: number) {
     this.selected_index = -99;
     this.selected_index = idx;
-    // this.bunch_of_settings.set('custom_user_agents_selected_index', idx);
+    // bunch_of_settings.set('custom_user_agents_selected_index', idx);
   }
 
   save_changes() {
@@ -364,7 +362,7 @@ struct meowUAButton {
 
   save_user_agents_to_settings() {
     console.log("[Meow][meowUAManager] Started to save custom user-agents to Settings!")
-    this.bunch_of_settings.set('custom_user_agents', this.bunch_of_user_agents.export_string());
+    bunch_of_settings.set('custom_user_agents', this.bunch_of_user_agents.export_string());
   }
 }
 

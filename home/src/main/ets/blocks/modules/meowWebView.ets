@@ -20,7 +20,6 @@ struct meowWebView {
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
   @StorageLink('bunch_of_bookmarks') @Watch('refresh_homepage_shortcuts') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks('Bookmarks~Meow');
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads(true);
   // Environments
   @StorageProp('currentColorMode') current_color_mode: number = 0;
@@ -313,13 +312,13 @@ struct meowWebView {
               AppStorage.set('universal_new_tab_gateway', new_target_url);
               event.handler.setWebController(null);
             })
-            .onErrorReceive((e) => {
-              if (e) {
-                console.error("[ArkWeb][ERROR] " + e.error.getErrorCode() + ", " + e.error.getErrorInfo()
-                  + " @ " + this.tab_urls[Label.index_key])
-                // Log web errors
-              }
-            })
+            // .onErrorReceive((e) => {
+            //   if (e) {
+            //     console.error("[ArkWeb][ERROR] " + e.error.getErrorCode() + ", " + e.error.getErrorInfo()
+            //       + " @ " + this.tab_urls[Label.index_key])
+            //     // Log web errors
+            //   }
+            // })
             .onPageBegin(() => {
               console.log("[Meow][ArkWeb] on page begin");
 
@@ -525,7 +524,7 @@ struct meowWebView {
               console.log('[meowWebView] onClientAuthenticationRequest event.issuers: ' + event.issuers.join('\n'));
             })
             .onOverScroll(() => {
-              console.log('[meowWebView] Over scrolled!')
+              // console.log('[meowWebView] Over scrolled!')
             })
             .nestedScroll({ scrollForward: NestedScrollMode.SELF_FIRST, scrollBackward: NestedScrollMode.SELF_FIRST })
 
@@ -617,7 +616,7 @@ struct meowWebView {
     if (result) {
       console.log('[Meow][meowWebView] Directory selected / refreshed for shortcuts: [' + this.homepage_shortcuts_dir + ']');
       this.homepage_shortcuts = result;
-      this.bunch_of_settings.set('homepage_shortcuts_bookmarks_dir', this.homepage_shortcuts_dir);
+      bunch_of_settings.set('homepage_shortcuts_bookmarks_dir', this.homepage_shortcuts_dir);
     } else {
       // directory doesn't exist
       console.log('[Meow][meowWebView] Directory selected for shortcuts doesn\'t exist! [' + this.homepage_shortcuts_dir + ']');
@@ -724,7 +723,7 @@ struct meowWebView {
       if (target_packed_tab_info.restore_on_creation) {
         return "";
       } else {
-        console.log('[meowWebView][src_of_tab_index] load: ' + url_meow_to_resource(target_packed_tab_info.url));
+        // console.log('[meowWebView][src_of_tab_index] load: ' + url_meow_to_resource(target_packed_tab_info.url));
         return url_meow_to_resource(target_packed_tab_info.url);
       }
     }

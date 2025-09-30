@@ -10,7 +10,6 @@ struct meowSEManager {
   @Prop default_new_se: search_engine = new search_engine(new Date().toLocaleString(), "https://bing.com/search?q=%s");
   // Environment
   @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines = new bunch_of_search_engines();
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('search_engine') search_engine: string = "";
   @StorageLink('search_engine_selected') @Watch('on_select') selected_index: number = -2; // -1 for system default
   @State default_pressing: boolean = false;
@@ -128,12 +127,12 @@ struct meowSEManager {
     } else {
       this.search_engine = this.bunch_of_search_engines.list_of_search_engines[this.selected_index].url;
     }
-    this.bunch_of_settings.set('custom_search_engines_selected_index', this.selected_index);
+    bunch_of_settings.set('custom_search_engines_selected_index', this.selected_index);
   }
 
   add_new_custom_search_engine(se: search_engine) {
     this.bunch_of_search_engines.add_search_engine(se);
-    this.bunch_of_settings.set('custom_search_engines', this.bunch_of_search_engines.export_string());
+    bunch_of_settings.set('custom_search_engines', this.bunch_of_search_engines.export_string());
   }
 }
 
@@ -143,7 +142,6 @@ export default meowSEManager;
 struct meowSEButton {
   @Link selected_index: number;
   @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines = new bunch_of_search_engines();
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @Prop my_index: number;
   @State my_se: search_engine = this.bunch_of_search_engines.list_of_search_engines[this.my_index];
   @State my_label: string = this.my_se.label;
@@ -363,6 +361,6 @@ struct meowSEButton {
 
   save_search_engine_to_settings() {
     console.log("[Meow][meowUAManager] Started to save custom user-agents to KVStore!")
-    this.bunch_of_settings.set('custom_search_engines', this.bunch_of_search_engines.export_string());
+    bunch_of_settings.set('custom_search_engines', this.bunch_of_search_engines.export_string());
   }
 }

@@ -5,7 +5,6 @@ import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { sandbox_read_arrayBuffer_sync, sandbox_unlink_sync } from '../../utils/storage_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { check_want } from '../../utils/want_tools';
-import lazy { kv_store_put } from '../../utils/kv_store_tools';
 import lazy { drop_to_scratching_board } from '../../utils/drag_drop_tools';
 import { allow_drop_types } from '../../utils/drag_drop_tools';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
@@ -22,7 +21,6 @@ struct meowTabsVertical {
   @StorageLink('want_type') want_type: string = '';
   // Hosts and environments
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
@@ -306,9 +304,9 @@ struct meowTabsVertical {
 
     if (!do_recovery) {
       // Store tabs count
-      let store_tabs_count = this.bunch_of_tabs.get_tabs_count().toString();
+      let store_tabs_count = this.bunch_of_tabs.get_tabs_count();
       console.log("[Meow][meowTabs] Stored Tabs Count: " + store_tabs_count)
-      kv_store_put("continue_tabs_count", store_tabs_count);
+      bunch_of_settings.set("continue_tabs_count", store_tabs_count);
     }
 
     // Animation part
@@ -385,9 +383,9 @@ struct meowTabsVertical {
     this.set_search_box_text(this.current_url);
 
     // Store tabs count
-    let store_tabs_count = this.tab_titles.length.toString();
-    console.log("[Meow][meowTabs] Store Tabs Count: " + store_tabs_count)
-    kv_store_put("continue_tabs_count", store_tabs_count);
+    let store_tabs_count = this.tab_titles.length;
+    console.log("[Meow][meowTabs] Store Tabs Count: " + store_tabs_count);
+    bunch_of_settings.set("continue_tabs_count", store_tabs_count);
 
     // clear extra continue storage
     let index = this.bunch_of_tabs.Tabs.length;
@@ -568,13 +566,13 @@ struct meowTabsVertical {
   on_did_switch_tab() {
     if (this.recover_tabs_finished) {
       // Store where am I
-      let where_main_am_i = this.current_main_tab_index.toString();
-      console.log("[Meow][meowTabs] Stored where main am I: " + where_main_am_i)
-      kv_store_put("continue_tabs_main_on", where_main_am_i);
+      let where_main_am_i = this.current_main_tab_index;
+      console.log("[Meow][meowTabs] Stored where main am I: " + where_main_am_i);
+      bunch_of_settings.set("continue_tabs_main_on", where_main_am_i);
 
-      let where_sub_am_i = this.current_sub_tab_index.toString();
-      console.log("[Meow][meowTabs] Stored where sub am I: " + where_sub_am_i)
-      kv_store_put("continue_tabs_sub_on", where_sub_am_i);
+      let where_sub_am_i = this.current_sub_tab_index;
+      console.log("[Meow][meowTabs] Stored where sub am I: " + where_sub_am_i);
+      bunch_of_settings.set("continue_tabs_sub_on", where_sub_am_i);
     }
   }
 

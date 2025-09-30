@@ -16,7 +16,6 @@ struct woofGeneralManage {
   controller: CustomDialogController;
   // Environment and Hosts
   @StorageLink('current_url') current_url: string = "=￣ω￣=";
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('tablet_mode') tablet_mode: boolean = false;
   @State add_site_edit: string = "";
   @State showing_add_panel: boolean = false;
@@ -172,7 +171,7 @@ struct woofGeneralManage {
               text: this.subtitle_all_sites,
               toggle_state: this.all_sites_switch,
               onExecution: () => {
-                this.bunch_of_settings.set(this.switch_all_sites_id, this.all_sites_switch);
+                bunch_of_settings.set(this.switch_all_sites_id, this.all_sites_switch);
               }
             })
               .opacity(!this.general_switch ? 0.5 : 1)
@@ -183,7 +182,7 @@ struct woofGeneralManage {
             text: this.switch_desc,
             toggle_state: this.general_switch,
             onExecution: () => {
-              this.bunch_of_settings.set(this.switch_id, this.general_switch);
+              bunch_of_settings.set(this.switch_id, this.general_switch);
             }
           }) // Feature enable
 
@@ -340,7 +339,7 @@ struct woofGeneralManage {
       this.onAdd(domain);
     }
     this.sites_list.push(domain);
-    this.bunch_of_settings.set(this.sites_list_id, this.sites_list.join("\n"))
+    bunch_of_settings.set(this.sites_list_id, this.sites_list.join("\n"))
   }
 
   /**
@@ -364,7 +363,7 @@ struct woofGeneralManage {
     this.selecting = false;
     this.selected_number = 0;
     this.selected = all_false(this.sites_list.length);
-    this.bunch_of_settings.set(this.sites_list_id, this.sites_list.join("\n"))
+    bunch_of_settings.set(this.sites_list_id, this.sites_list.join("\n"))
   }
 
   /**

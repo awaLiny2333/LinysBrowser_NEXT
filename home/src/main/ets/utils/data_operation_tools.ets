@@ -48,7 +48,7 @@ export function sync_tabs_list_info() {
 
   // Timer
   t = Date.now() - t0;
-  console.log('[sync_tabs_list_info] Called! (' + t + ' ms)');
+  // console.log('[sync_tabs_list_info] Called! (' + t + ' ms)');
 }
 
 // Search and match
@@ -129,7 +129,7 @@ export function search_label_link(label_link_array: string[][], key: string, mat
   } else {
     keys = Array.from(divide_string(key));
   }
-  console.log('[Meow][search_label_link] search keywords: \n' + keys.join('\n'));
+  // console.log('[Meow][search_label_link] search keywords: \n' + keys.join('\n'));
 
   // Add to the list
   for (let index = 0; index < label_link_array.length; index++) {
@@ -273,4 +273,26 @@ export function insert_into_array(arr: collections.Array<number>, new_num: numbe
     console.error('[insert_into_array] Error in building new array. ' + e);
     return new collections.Array<number>();
   }
+}
+
+// Types & conversions
+
+
+/**
+ * Converts a boolean to string.
+ * @param bool A boolean.
+ * @returns A string form of the boolean: 'true' | 'false'.
+ * */
+export function boolean_to_string(bool: boolean) {
+  return bool ? 'true' : 'false';
+}
+
+/**
+ * Converts a boolean to string.
+ * @param str A string form of the boolean: 'true' | 'false'.
+ * @returns A boolean, true if the str is exactly 'true'.
+ * @returns A boolean, false if otherwise.
+ * */
+export function string_to_boolean(str: string) {
+  return (str == 'true') ? true : false;
 }

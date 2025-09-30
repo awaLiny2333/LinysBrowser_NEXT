@@ -3,7 +3,6 @@ import { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
 import { buffer } from '@kit.ArkTS';
 import { image } from '@kit.ImageKit';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
-import { export_json_kv_store, import_json_kv_store } from './kv_store_tools';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { meowContext } from './environment_tools';
 
@@ -621,8 +620,9 @@ export function arrayBuffer_2_pixelMap(buf: ArrayBuffer) {
  * Exports everything, ALL USER DATA.
  * */
 export async function export_everything() {
-  sandbox_save('settings.json.browsercatsettings.txt', (AppStorage.get('bunch_of_settings') as bunch_of_settings).toString());
-  sandbox_save('kv_store.json.browsercatstore.txt', await export_json_kv_store());
+  bunch_of_settings.save_to_disk();
+  // sandbox_save('kv_store.json.browsercatstore.txt', await export_json_kv_store());
+  sandbox_unlink_sync('kv_store.json.browsercatstore.txt');
   sandbox_unlink_sync('profile.zip');
   sandbox_rmdir_sync('temp');
 
@@ -640,8 +640,7 @@ export async function export_everything() {
       console.info('compressFile success. data: ' + JSON.stringify(data));
       // SAVE
       document_save_from_path(outFile, 'profile.zip.browsercatprofile').then(() => {
-        sandbox_unlink_sync('settings.json.browsercatsettings.txt');
-        sandbox_unlink_sync('kv_store.json.browsercatstore.txt');
+        // sandbox_unlink_sync('settings.json.browsercatsettings.txt');
         // sandbox_unlink_sync('profile.zip');
         AppStorage.set('compressing_output_profile', false);
       })
@@ -727,11 +726,21 @@ export async function import_everything() {
         sandbox_rmdir_sync('temp');
 
         // Import settings
-        (AppStorage.get('bunch_of_settings') as bunch_of_settings).import_json(sandbox_read_text_sync('settings.json.browsercatsettings.txt'));
-        import_json_kv_store(sandbox_read_text_sync('kv_store.json.browsercatstore.txt'));
+        bunch_of_settings.import_json(sandbox_read_text_sync('settings.json.browsercatsettings.txt'));
+
+        // Deal with kvStore
+        let original_kv = sandbox_read_text_sync('kv_store.json.browsercatstore.txt');
+        if (original_kv != 'undefined') {
+          sandbox_unlink_sync('kv_store.json.browsercatstore.txt');
+          bunch_of_settings.set('start_up_option', 'new tab');
+          bunch_of_settings.set('continue_tabs_count', 0);
+          bunch_of_settings.set('continue_tabs_main_on', 0);
+          bunch_of_settings.set('continue_tabs_sub_on', 0);
+        } else {
+          bunch_of_settings.save_to_disk();
+        }
         // Delete
-        sandbox_unlink_sync('settings.json.browsercatsettings.txt');
-        sandbox_unlink_sync('kv_store.json.browsercatstore.txt');
+        // sandbox_unlink_sync('settings.json.browsercatsettings.txt');
 
       }).catch((errData: BusinessError) => {
         console.error(`errData is errCode:${errData.code}  message:${errData.message}`);

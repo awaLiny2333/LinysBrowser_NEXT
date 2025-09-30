@@ -18,12 +18,8 @@ import {
 import lazy { get_sandbox_folder_size } from '../../utils/any_concurrent_tools';
 import { bunch_of_history_index } from '../../hosts/bunch_of_history_index';
 import {
-  fill_fake_history,
-  history_index_full_rebuild_worker,
-  history_index_load_from_disk_worker,
-  history_index_save_to_disk_worker
+  history_index_full_rebuild_worker
 } from '../../hosts/bunch_of_history_index_x_functions';
-import { bunch_of_history_index_lite } from '../../hosts/bunch_of_history_index_lite';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { webview } from '@kit.ArkWeb';
@@ -64,7 +60,6 @@ struct meowAppSettings {
   @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
   @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
-  @StorageLink('bunch_of_settings') bunch_of_settings: bunch_of_settings = new bunch_of_settings(true);
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   @StorageLink('bunch_of_history_index') bunch_of_history_index: bunch_of_history_index = new bunch_of_history_index();
   // Colors
@@ -206,7 +201,7 @@ struct meowAppSettings {
           console.error('[woofAdsBlocker][add_exception] ' + e);
         }
       },
-      onDelete: (deleted)=>{
+      onDelete: (deleted) => {
         try {
           webview.AdsBlockManager.removeAdsBlockDisallowedList(deleted);
         } catch (e) {
@@ -320,7 +315,6 @@ struct meowAppSettings {
   @State history_index_size: number = 0;
   @State version_clicked_times: number = 0;
   // Status
-  @StorageLink('settings_init_retrieved') settings_init_retrieved: boolean = false;
   @State calculating_web_cache_size: boolean = false;
   @State calculating_history_index_size: boolean = false;
   @StorageLink('reindexing_history') reindexing_history: boolean | undefined = undefined;
@@ -471,14 +465,14 @@ struct meowAppSettings {
                   text: $r('app.string.Index_downloads_direct'),
                   toggle_state: this.direct_download,
                   onExecution: () => {
-                    this.bunch_of_settings.set('direct_download', this.direct_download);
+                    bunch_of_settings.set('direct_download', this.direct_download);
                   }
                 }) // Direct Download
                 linysSwitchWithText({
                   text: $r('app.string.Index_downloads_direct_auto_open'),
                   toggle_state: this.direct_download_auto_open,
                   onExecution: () => {
-                    this.bunch_of_settings.set('direct_download_auto_open', this.direct_download_auto_open);
+                    bunch_of_settings.set('direct_download_auto_open', this.direct_download_auto_open);
                   }
                 }) // Direct Download auto open
                   .opacity(this.direct_download ? 1 : 0.5)
@@ -495,14 +489,14 @@ struct meowAppSettings {
                   text: $r('app.string.Settings_experience_continuation_auto_exit'),
                   toggle_state: this.continuation_auto_exit,
                   onExecution: () => {
-                    this.bunch_of_settings.set('continuation_auto_exit', this.continuation_auto_exit);
+                    bunch_of_settings.set('continuation_auto_exit', this.continuation_auto_exit);
                   }
                 }) // continuation_auto_exit
                 linysSwitchWithText({
                   text: $r('app.string.Settings_experience_continuation_auto_close_tab'),
                   toggle_state: this.continuation_auto_close_tab,
                   onExecution: () => {
-                    this.bunch_of_settings.set('continuation_auto_close_tab', this.continuation_auto_close_tab);
+                    bunch_of_settings.set('continuation_auto_close_tab', this.continuation_auto_close_tab);
                   }
                 }) // continuation_auto_close_tab
                   .opacity(!this.continuation_auto_exit ? 1 : 0.5)
@@ -521,7 +515,7 @@ struct meowAppSettings {
                   slider_max: 20,
                   slider_value: this.max_bookmark_advice,
                   onTouchUp: () => {
-                    this.bunch_of_settings.set('max_bookmark_suggest', this.max_bookmark_advice);
+                    bunch_of_settings.set('max_bookmark_suggest', this.max_bookmark_advice);
                   }
                 }) // Slider and display of max_bookmark_suggestions
                 linysText({ text: $r('app.string.Settings_experience_max_history_advice'), max_lines: 2 })
@@ -530,7 +524,7 @@ struct meowAppSettings {
                   slider_max: 20,
                   slider_value: this.max_history_advice,
                   onTouchUp: () => {
-                    this.bunch_of_settings.set('max_history_suggest', this.max_history_advice);
+                    bunch_of_settings.set('max_history_suggest', this.max_history_advice);
                   }
                 }) // Slider and display of max_history_suggestions
               } // Suggestion
@@ -545,7 +539,7 @@ struct meowAppSettings {
                   text: $r('app.string.Settings_experience_use_adblock'),
                   toggle_state: this.use_adblock,
                   onExecution: () => {
-                    this.bunch_of_settings.set('use_adblock', this.use_adblock);
+                    bunch_of_settings.set('use_adblock', this.use_adblock);
                   }
                 }) // Use adblock
                 linysCapsuleButtonWithText({
@@ -559,7 +553,7 @@ struct meowAppSettings {
                   text: $r('app.string.Settings_image_disable_image'),
                   toggle_state: this.disable_image,
                   onExecution: () => {
-                    this.bunch_of_settings.set('disable_image', this.disable_image);
+                    bunch_of_settings.set('disable_image', this.disable_image);
                   }
                 }) // Disable images
                 linysCapsuleButtonWithText({
@@ -573,7 +567,7 @@ struct meowAppSettings {
                   text: $r('app.string.Settings_js_disable_js'),
                   toggle_state: this.disable_js,
                   onExecution: () => {
-                    this.bunch_of_settings.set('disable_js', this.disable_js);
+                    bunch_of_settings.set('disable_js', this.disable_js);
                   }
                 }) // JavaScript Manager
                 linysCapsuleButtonWithText({
@@ -598,7 +592,7 @@ struct meowAppSettings {
                   text: $r('app.string.Settings_experience_sys_back_to_access_backward'),
                   toggle_state: this.sys_back_to_access_backward,
                   onExecution: () => {
-                    this.bunch_of_settings.set('sys_back_access_backward', this.sys_back_to_access_backward);
+                    bunch_of_settings.set('sys_back_access_backward', this.sys_back_to_access_backward);
                   }
                 }) // Use sys back
               }
@@ -624,21 +618,21 @@ struct meowAppSettings {
                   text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_settings_menu'),
                   toggle_state: this.preferred_hand_reverse_settings_menu,
                   onExecution: () => {
-                    this.bunch_of_settings.set('preferred_hand_reverse_settings_menu', this.preferred_hand_reverse_settings_menu);
+                    bunch_of_settings.set('preferred_hand_reverse_settings_menu', this.preferred_hand_reverse_settings_menu);
                   }
                 }) // Reverse settings menu
                 linysSwitchWithText({
                   text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_tabs_panel'),
                   toggle_state: this.preferred_hand_reverse_tabs_panel,
                   onExecution: () => {
-                    this.bunch_of_settings.set('preferred_hand_reverse_tabs_panel', this.preferred_hand_reverse_tabs_panel);
+                    bunch_of_settings.set('preferred_hand_reverse_tabs_panel', this.preferred_hand_reverse_tabs_panel);
                   }
                 }) // Reverse settings menu
                 linysSwitchWithText({
                   text: $r('app.string.Settings_Accessibility_preferred_hand_reverse_homepage_shortcuts'),
                   toggle_state: this.preferred_hand_reverse_homepage_shortcuts,
                   onExecution: () => {
-                    this.bunch_of_settings.set('preferred_hand_reverse_homepage_shortcuts', this.preferred_hand_reverse_homepage_shortcuts);
+                    bunch_of_settings.set('preferred_hand_reverse_homepage_shortcuts', this.preferred_hand_reverse_homepage_shortcuts);
                   }
                 }) // Reverse homepage shortcuts
               } // Single hand
@@ -717,7 +711,7 @@ struct meowAppSettings {
                   text: $r('app.string.Settings_experience_web_force_dark_mode'),
                   toggle_state: this.web_force_dark_mode,
                   onExecution: () => {
-                    this.bunch_of_settings.set('web_force_dark_mode', this.web_force_dark_mode);
+                    bunch_of_settings.set('web_force_dark_mode', this.web_force_dark_mode);
                   }
                 }) // Force dark mode
                 linysCapsuleButtonWithText({
@@ -747,7 +741,7 @@ struct meowAppSettings {
                   text: $r('app.string.Settings_experience_history_record_new'),
                   toggle_state: this.collect_new_history,
                   onExecution: () => {
-                    this.bunch_of_settings.set('collect_new_history', this.collect_new_history);
+                    bunch_of_settings.set('collect_new_history', this.collect_new_history);
                   }
                 }) // Toggle History
                 linysCapsuleButtonWithText({
@@ -775,7 +769,7 @@ struct meowAppSettings {
                   slider_max: 24,
                   slider_value: this.history_index_load_quantity,
                   onTouchUp: () => {
-                    this.bunch_of_settings.set('history_index_load_quantity', this.history_index_load_quantity);
+                    bunch_of_settings.set('history_index_load_quantity', this.history_index_load_quantity);
                   }
                 }) // Slider and display of history_index_load_quantity
               }
@@ -872,7 +866,7 @@ struct meowAppSettings {
                   text: $r('app.string.intelligent_tracking_prevention'),
                   toggle_state: this.intelligent_tracking_prevention,
                   onExecution: () => {
-                    this.bunch_of_settings.set('intelligent_tracking_prevention', this.intelligent_tracking_prevention);
+                    bunch_of_settings.set('intelligent_tracking_prevention', this.intelligent_tracking_prevention);
                     for (let index = 0; index < this.bunch_of_tabs.Tabs.length; index++) {
                       try {
                         this.bunch_of_tabs.Tabs[index].controller.enableIntelligentTrackingPrevention(this.intelligent_tracking_prevention);
@@ -919,7 +913,7 @@ struct meowAppSettings {
                   text: $r('app.string.Settings_toolbox_resource_monitor'),
                   toggle_state: this.resource_monitor,
                   onExecution: () => {
-                    this.bunch_of_settings.set('resource_monitor', this.resource_monitor);
+                    bunch_of_settings.set('resource_monitor', this.resource_monitor);
                   }
                 }) // Show Resource Monitor
                 linysText({ text: $r('app.string.Fault_logs_desc'), is_description: true }) // Fault logs
@@ -943,8 +937,8 @@ struct meowAppSettings {
                   desc_text: $r('app.string.Settings_toolbox_export_settings'),
                   button_text: '  󰃋  ',
                   onExecution: () => {
-                    // sandbox_save('settings.json', this.bunch_of_settings.toString());
-                    document_save_text('settings.json.browsercatsettings', this.bunch_of_settings.toString());
+                    // sandbox_save('settings.json', bunch_of_settings.toString());
+                    document_save_text('settings.json.browsercatsettings', bunch_of_settings.toString());
                   }
                 }) // Export settings
                 linysTimeoutButtonWithText({
@@ -952,10 +946,11 @@ struct meowAppSettings {
                   button_text: '  󰐝  ',
                   onExecution: () => {
                     document_pick_to_text(['browsercatsettings']).then((result) => {
-                      let import_result = this.bunch_of_settings.import_json(result);
+                      let import_result = bunch_of_settings.import_json(result);
                       if (!import_result) {
                         this.uni_fail_prompt_gateway = $r("app.string.Fail_select_bad_settings");
                       } else {
+                        bunch_of_settings.save_to_disk();
                         this.woofSettingsImportOK_control.open();
                       }
                     })
@@ -1135,17 +1130,14 @@ struct meowAppSettings {
     // Get settings of shortcuts on left or right
     this.left_or_right_selected = (this.preferred_hand_left_or_right == 'left') ? [0] : [1];
 
-    // Get whether to show resource monitor
-    this.resource_monitor = await this.bunch_of_settings.get('resource_monitor') as boolean;
-
     // Read webview cache size
-    this.web_cache_size = await this.bunch_of_settings.get('webview_cache_size') as number;
+    this.web_cache_size = bunch_of_settings.get('webview_cache_size') as number;
 
     // Read history indexer size
-    this.history_index_size = await this.bunch_of_settings.get('history_index_size') as number;
+    this.history_index_size = bunch_of_settings.get('history_index_size') as number;
 
     // Tag status
-    this.settings_init_retrieved = true;
+    AppStorage.setOrCreate('settings_init_retrieved', true);
   }
 
   on_open_or_close_panel() {
@@ -1213,7 +1205,7 @@ struct meowAppSettings {
       result = 'bottom';
     }
     this.title_bar_position = result;
-    this.bunch_of_settings.set('title_bar_position', result);
+    bunch_of_settings.set('title_bar_position', result);
   }
 
   on_start_up_page_changed() {
@@ -1228,7 +1220,7 @@ struct meowAppSettings {
     }
     this.bunch_of_tabs.start_up = result;
     // kv_store_put("start_up_option", result);
-    this.bunch_of_settings.set('start_up_option', result);
+    bunch_of_settings.set('start_up_option', result);
   }
 
   on_tabs_style_changed() {
@@ -1239,7 +1231,7 @@ struct meowAppSettings {
       result = 'horizontal';
     }
     this.tabs_style = result;
-    this.bunch_of_settings.set('tabs_style', result);
+    bunch_of_settings.set('tabs_style', result);
   }
 
   on_tabs_style_non_tablet_mode_changed() {
@@ -1250,7 +1242,7 @@ struct meowAppSettings {
       result = 'horizontal';
     }
     this.tabs_style_non_tablet_mode = result;
-    this.bunch_of_settings.set('tabs_style_non_tablet_mode', result);
+    bunch_of_settings.set('tabs_style_non_tablet_mode', result);
   }
 
   on_color_change() {
@@ -1280,10 +1272,10 @@ struct meowAppSettings {
 
   on_prefer_hand_left_or_right_changed() {
     if (this.left_or_right_selected[0] == 0) {
-      this.bunch_of_settings.set('preferred_hand_left_or_right', 'left');
+      bunch_of_settings.set('preferred_hand_left_or_right', 'left');
       this.preferred_hand_left_or_right = 'left';
     } else {
-      this.bunch_of_settings.set('preferred_hand_left_or_right', 'right');
+      bunch_of_settings.set('preferred_hand_left_or_right', 'right');
       this.preferred_hand_left_or_right = 'right';
     }
   }
@@ -1293,13 +1285,13 @@ struct meowAppSettings {
   set_new_tab_url_and_kv_store() {
     this.bunch_of_tabs.new_tab_url = this.new_tab_url_edit;
     // kv_store_put("new_tab_url", this.new_tab_url_edit);
-    this.bunch_of_settings.set('new_tab_url', this.new_tab_url_edit);
+    bunch_of_settings.set('new_tab_url', this.new_tab_url_edit);
   }
 
   set_home_url_and_kv_store() {
     this.bunch_of_tabs.home_url = this.home_url_edit;
     // kv_store_put("home_url", this.home_url_edit);
-    this.bunch_of_settings.set('home_url', this.home_url_edit);
+    bunch_of_settings.set('home_url', this.home_url_edit);
   }
 
   /**
@@ -1312,7 +1304,7 @@ struct meowAppSettings {
     this.calculating_web_cache_size = true;
     get_sandbox_folder_size('/data/storage/el2/base/cache/web/', false).then(result => {
       this.web_cache_size = result;
-      this.bunch_of_settings.set('webview_cache_size', this.web_cache_size);
+      bunch_of_settings.set('webview_cache_size', this.web_cache_size);
       this.calculating_web_cache_size = false;
     })
   }
@@ -1327,7 +1319,7 @@ struct meowAppSettings {
     this.calculating_history_index_size = true;
     get_sandbox_folder_size('history-index', true).then(result => {
       this.history_index_size = result;
-      this.bunch_of_settings.set('history_index_size', this.history_index_size);
+      bunch_of_settings.set('history_index_size', this.history_index_size);
       this.calculating_history_index_size = false;
     })
   }
@@ -1345,7 +1337,7 @@ struct meowAppSettings {
     if (this.version_clicked_times == 7) {
       // Enter Dev mode
       this.version_clicked_times += 1;
-      this.bunch_of_settings.set('DEV_MODE', true);
+      bunch_of_settings.set('DEV_MODE', true);
     }
   }
 
