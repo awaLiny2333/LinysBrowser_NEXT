@@ -20,6 +20,7 @@ export class bunch_of_settings {
     bunch_of_settings.register_setting('title_bar_position', 'string', 'bottom');
     bunch_of_settings.register_setting('tabs_style', 'string', 'vertical');
     bunch_of_settings.register_setting('tabs_style_non_tablet_mode', 'string', 'vertical');
+    bunch_of_settings.register_setting('bottom_avoid', 'boolean', 'true');
 
     // Experience
     bunch_of_settings.register_setting('sys_back_access_backward', 'boolean', 'true');
@@ -121,12 +122,18 @@ export class bunch_of_settings {
    * @param value A string | boolean | number, the corresponding value of key to be set.
    * */
   static set(key: string, value: string | boolean | number, save: boolean = true) {
+    let found = false;
     // Sequential search to modify that value.
     for (let index = 0; index < bunch_of_settings.settings_list.length; index++) {
       if (bunch_of_settings.settings_list[index].key == key) {
         bunch_of_settings.settings_list[index].value = value;
+        found = true;
         break;
       }
+    }
+
+    if (!found) {
+      bunch_of_settings.settings_list.push(new settings_item(key, value));
     }
 
     // Save to sandbox

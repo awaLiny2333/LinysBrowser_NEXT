@@ -278,7 +278,7 @@ struct woofHistory {
               AppStorage.set('woofHistory_search_input', '');
               this.submit_search();
             })
-            .visibility(this.woofHistory_search_input? Visibility.Visible: Visibility.None)
+            .visibility(this.woofHistory_search_input ? Visibility.Visible : Visibility.None)
             .animation(animation_default())
         }
         .width(this.tablet_mode ? undefined : '100%')

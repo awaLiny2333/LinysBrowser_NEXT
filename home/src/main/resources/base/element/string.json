@@ -121,6 +121,10 @@
       "value": "Title bar position"
     },
     {
+      "name": "Settings_appearance_bottom_avoid",
+      "value": "Enable bottom avoid"
+    },
+    {
       "name": "Settings_general_custom_ua",
       "value": "User-agent"
     },
@@ -330,7 +334,7 @@
     },
     {
       "name": "Settings_experience_history_date_format",
-      "value": "Month/Date/Year, H:M:S"
+      "value": "M/D/Y, H:M:S"
     },
     {
       "name": "Settings_edit_selecting",

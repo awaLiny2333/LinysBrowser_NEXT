@@ -147,6 +147,9 @@ async function settings_tabs() {
     AppStorage.setOrCreate('web_force_dark_mode_exemptions', web_force_dark_mode_exemptions.split('\n'));
   }
 
+  // Bottom avoid
+  AppStorage.setOrCreate('bottom_avoid', bunch_of_settings.get('bottom_avoid') as boolean);
+
   // General - Surf
   let home_url: string = bunch_of_settings.get('home_url') as string
   let new_tab_url: string = bunch_of_settings.get('new_tab_url') as string

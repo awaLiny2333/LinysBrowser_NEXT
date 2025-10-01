@@ -110,6 +110,7 @@ struct meowAppSettings {
   @StorageLink('max_history_advice') max_history_advice: number = 5;
   @StorageLink('history_index_load_quantity') history_index_load_quantity: number = 6;
   @StorageLink('sys_back_to_access_backward') sys_back_to_access_backward: boolean = false;
+  @StorageLink('bottom_avoid') bottom_avoid: boolean = true;
   @StorageLink('resource_monitor') resource_monitor: boolean = true;
   @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
   @StorageLink('web_force_dark_mode_exemptions') web_force_dark_mode_exemptions: string[] = [];
@@ -660,6 +661,19 @@ struct meowAppSettings {
               title: $r('app.string.Settings_appearance'),
               timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 4
             }) {
+              settingsSubCard({
+                timeout: this.settings_scroll_to_highlight_timeout,
+                highlight: this.settings_scroll_to == 4
+              }){
+                linysSwitchWithText({
+                  text: $r('app.string.Settings_appearance_bottom_avoid'),
+                  toggle_state: this.bottom_avoid,
+                  onExecution: () => {
+                    bunch_of_settings.set('bottom_avoid', this.bottom_avoid);
+                  }
+                }) // Enable bottom_avoid
+              }
+
               settingsSubCard({
                 icon: '󰍗',
                 title: $r('app.string.Index_layout_title'),

@@ -297,7 +297,7 @@ export function extract_search(url: string) {
   // link = decodeURI(link);
   let result: string[] = ['', ''];
 
-  let keys: string[] = ['q', 'query', 's', 'key', 'wd', 'w', 'word', 'searchKeyWord', 'search_text', 'keyword', 'val', 'value', 'text', 'tag', 'tags'];
+  let keys: string[] = ['q', 'query', 's', 'key', 'wd', 'w', 'word', 'searchKeyWord', 'search_text', 'keyword', 'val', 'value', 'text', 'tag', 'tags', 'search'];
   let search_keys: string[] = [];
   for (let k = 0; k < keys.length; k++) {
     search_keys.push('?' + keys[k] + '=');

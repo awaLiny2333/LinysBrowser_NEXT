@@ -125,6 +125,10 @@
       "value": "标题栏位置"
     },
     {
+      "name": "Settings_appearance_bottom_avoid",
+      "value": "底部避让"
+    },
+    {
       "name": "Settings_general_custom_ua",
       "value": "用户代理（UA）"
     },

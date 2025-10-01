@@ -64,6 +64,7 @@ struct Index {
     middle: { anchor: "__container__", align: HorizontalAlign.Center },
     bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
   };
+  @StorageLink('bottom_avoid') bottom_avoid: boolean = true;
   /**
    * Delay */
   @StorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
@@ -286,8 +287,9 @@ struct Index {
       .animation(animation_default())
 
       Row()// Bottom Bar Avoid
-        .height(this.height_of_bottom_avoid())
+        .height((this.title_bar_position == "bottom" || this.bottom_avoid) ? this.height_of_bottom_avoid() : 0)
         .backgroundColor(this.title_bar_position == "bottom" ? "transparent" : this.color_current_secondary)
+        // .visibility((this.title_bar_position == "bottom" || this.bottom_avoid) ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
         .width("100%")
 
