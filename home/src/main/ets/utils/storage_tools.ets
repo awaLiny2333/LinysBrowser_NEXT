@@ -659,16 +659,17 @@ export async function export_everything() {
  * Imports everything, overwriting all current user data.
  * */
 export async function import_everything() {
+  // Make temp dir
   try {
     fs.mkdirSync(meowContext().filesDir + '/temp')
   } catch (e) {
     console.error('[storage_tools][import_everything] Create temp dir error: ' + e);
   }
 
+  // Pick file
+  let selected_uri: string[] = [];
+  let documentPicker = new picker.DocumentViewPicker(meowContext());
   try {
-    let selected_uri: string[] = [];
-    let documentPicker = new picker.DocumentViewPicker(meowContext());
-
     await documentPicker.select({
       maxSelectNumber: 1,
       fileSuffixFilters: ["browsercatprofile"]
@@ -677,85 +678,71 @@ export async function import_everything() {
         selected_uri = documentSelectResult;
         console.info('[import_everything] DocumentViewPicker.select successfully, documentSelectResult uri: ' + selected_uri[0]);
       })
-      .catch((err: BusinessError) => {
-        console.error('[import_everything] DocumentViewPicker.select failed with err: ' +
-        JSON.stringify(err));
-        return false;
-      });
-
-    // Decompress
-    let inFile = new fileUri.FileUri(selected_uri[0]).path;
-    let outFileDir = meowContext().filesDir + '/temp';
-    let options: zlib.Options = {
-      level: zlib.CompressLevel.COMPRESS_LEVEL_DEFAULT_COMPRESSION,
-      // parallel: zlib.ParallelStrategy.PARALLEL_STRATEGY_PARALLEL_DECOMPRESSION
-    };
-
-    try {
-      await zlib.decompressFile(inFile, outFileDir, options).then(() => {
-
-        // Traverse all files and folders
-        // Clear sandbox
-        fs.listFileSync(meowContext().filesDir).forEach((item) => {
-          const fullPath = meowContext().filesDir + '/' + item;
-          const stat = fs.statSync(fullPath);
-          if (stat.isDirectory()) {
-            if (item !== 'temp') {
-              sandbox_rmdir_sync(item);
-            }
-          } else {
-            sandbox_unlink_sync(item);
-          }
-        });
-
-        // Traverse temp and copy
-        fs.listFileSync(meowContext().filesDir + '/temp').forEach((item) => {
-          const fullPath = meowContext().filesDir + '/temp/' + item;
-          const target = meowContext().filesDir + '/' + item;
-          // console.log(fullPath);
-          const stat = fs.statSync(fullPath);
-          if (stat.isDirectory()) {
-            fs.copyDirSync(fullPath, meowContext().filesDir);
-            console.log('[storage_tools][import_everything] copyDirSync from ' + fullPath + ', to ' + meowContext().filesDir + '/' + item);
-          } else {
-            fs.copyFileSync(fullPath, target);
-            console.log('[storage_tools][import_everything] copyFileSync from ' + fullPath + ', to ' + meowContext().filesDir + '/' + item);
-          }
-        });
-
-        sandbox_rmdir_sync('temp');
-
-        // Import settings
-        bunch_of_settings.import_json(sandbox_read_text_sync('settings.json.browsercatsettings.txt'));
-
-        // Deal with kvStore
-        let original_kv = sandbox_read_text_sync('kv_store.json.browsercatstore.txt');
-        if (original_kv != 'undefined') {
-          sandbox_unlink_sync('kv_store.json.browsercatstore.txt');
-          bunch_of_settings.set('start_up_option', 'new tab');
-          bunch_of_settings.set('continue_tabs_count', 0);
-          bunch_of_settings.set('continue_tabs_main_on', 0);
-          bunch_of_settings.set('continue_tabs_sub_on', 0);
-        } else {
-          bunch_of_settings.save_to_disk();
-        }
-        // Delete
-        // sandbox_unlink_sync('settings.json.browsercatsettings.txt');
-
-      }).catch((errData: BusinessError) => {
-        console.error(`errData is errCode:${errData.code}  message:${errData.message}`);
-        return false;
-      })
-    } catch (e) {
-      console.error('[import_everything] ' + e);
-      return false;
-    }
-
-    console.info("[import_everything] Read zip from " + selected_uri[0] + " Success!");
-    return true;
-  } catch (error) {
-    let err: BusinessError = error as BusinessError;
-    console.error('[ERROR][import_everything] DocumentViewPicker failed with err: ' + JSON.stringify(err));
+  } catch (e) {
+    console.error('[import_everything] DocumentViewPicker.select failed: ' + e);
     return false;
   }
+
+  // Decompress
+  let inFile = new fileUri.FileUri(selected_uri[0]).path;
+  let outFileDir = meowContext().filesDir + '/temp';
+  let options: zlib.Options = {
+    level: zlib.CompressLevel.COMPRESS_LEVEL_DEFAULT_COMPRESSION,
+    // parallel: zlib.ParallelStrategy.PARALLEL_STRATEGY_PARALLEL_DECOMPRESSION
+  };
+  try {
+    await zlib.decompressFile(inFile, outFileDir, options).then(() => {
+      // Traverse all files and folders
+      // Clear sandbox
+      fs.listFileSync(meowContext().filesDir).forEach((item) => {
+        const fullPath = meowContext().filesDir + '/' + item;
+        const stat = fs.statSync(fullPath);
+        if (stat.isDirectory()) {
+          if (item !== 'temp') {
+            sandbox_rmdir_sync(item);
+          }
+        } else {
+          sandbox_unlink_sync(item);
+        }
+      });
+
+      // Traverse temp and copy
+      fs.listFileSync(meowContext().filesDir + '/temp').forEach((item) => {
+        const fullPath = meowContext().filesDir + '/temp/' + item;
+        const target = meowContext().filesDir + '/' + item;
+        // console.log(fullPath);
+        const stat = fs.statSync(fullPath);
+        if (stat.isDirectory()) {
+          fs.copyDirSync(fullPath, meowContext().filesDir);
+          console.log('[storage_tools][import_everything] copyDirSync from ' + fullPath + ', to ' + meowContext().filesDir + '/' + item);
+        } else {
+          fs.copyFileSync(fullPath, target);
+          console.log('[storage_tools][import_everything] copyFileSync from ' + fullPath + ', to ' + meowContext().filesDir + '/' + item);
+        }
+      });
+      sandbox_rmdir_sync('temp');
+
+      // Import settings
+      bunch_of_settings.import_json(sandbox_read_text_sync('settings.json.browsercatsettings.txt'));
+
+      // Deal with kvStore
+      let original_kv = sandbox_read_text_sync('kv_store.json.browsercatstore.txt');
+      if (original_kv != 'undefined') {
+        sandbox_unlink_sync('kv_store.json.browsercatstore.txt');
+        bunch_of_settings.set('start_up_option', 'new tab');
+        bunch_of_settings.set('continue_tabs_count', 0);
+        bunch_of_settings.set('continue_tabs_main_on', 0);
+        bunch_of_settings.set('continue_tabs_sub_on', 0);
+      } else {
+        bunch_of_settings.save_to_disk();
+      }
+
+    })
+  } catch (e) {
+    console.error('[import_everything] zip error: ' + e);
+    return false;
+  }
+
+  console.info("[import_everything] Read zip from " + selected_uri[0] + " Success!");
+  return true;
 }

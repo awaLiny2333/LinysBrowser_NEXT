@@ -1,4 +1,5 @@
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
+import linysConfirmDenyButtons from '../../components/buttons/linysConfirmDenyButtons';
 import linysText from '../../components/texts/linysText';
 import { animation_default, capsule_bar_height } from '../../hosts/bunch_of_defaults';
 import { hex2hsv, hsv2hex, is_legal_hex } from '../../utils/color_tools';
@@ -10,8 +11,6 @@ struct woofSelectColor {
   @Link color: ResourceColor;
   @Prop color_theme_id: string = 'color_light_font';
   @State dark_mode_color: boolean = false;
-  // Settings / Accessibility
-  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
@@ -93,7 +92,7 @@ struct woofSelectColor {
                   max_lines: 10,
                 })
                 linysCapsuleButton({
-                  text: "  󰀓  ",
+                  text: "  󰊂  ",
                   color_button: this.dark_mode_color ? this.color_dark_font : this.color_light_font,
                   color_text: this.dark_mode_color ? this.color_dark_primary : this.color_light_primary
                 })
@@ -221,24 +220,19 @@ struct woofSelectColor {
               })
               .height(capsule_bar_height())
             Blank()
-            Row({ space: 10 }) {
-              linysCapsuleButton({ text: "  󰀓  " })
-                .onClick(() => {
-                  if (this.controller) {
-                    this.color = this.color_hex_display;
-                    this.controller.close();
-                  }
-                }) // Submit
-              linysCapsuleButton({ text: "  󰁖  " })
-                .onClick(() => {
-                  if (this.controller) {
-                    this.controller.close();
-                  }
-                }) // Cancel
-            } // Buttons of submit and cancel
-            .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.Start : FlexAlign.End)
-            .animation(animation_default())
-            .width("100%")
+            linysConfirmDenyButtons({
+              onConfirm: () => {
+                if (this.controller) {
+                  this.color = this.color_hex_display;
+                  this.controller.close();
+                }
+              },
+              onDeny: () => {
+                if (this.controller) {
+                  this.controller.close();
+                }
+              }
+            }) // Confirm deny buttons
           }
           .width("100%")
         } // Operations

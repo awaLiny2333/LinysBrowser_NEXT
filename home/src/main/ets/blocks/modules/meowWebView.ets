@@ -351,7 +351,7 @@ struct meowWebView {
             //   }
             // })
             .onPageBegin(() => {
-              console.log("[Meow][ArkWeb] on page begin");
+              console.log("[ArkWeb] on page begin");
 
               if (Label.index_key >= this.bunch_of_tabs.get_tabs_count()) {
                 // If not synced, idk why but o(=•ェ•=)m

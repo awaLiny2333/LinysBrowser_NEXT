@@ -8,6 +8,7 @@ import { webview } from '@kit.ArkWeb';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import { meowContext } from '../../utils/environment_tools';
 import { fileIo } from '@kit.CoreFileKit';
+import linysConfirmDenyButtons from '../../components/buttons/linysConfirmDenyButtons';
 
 @CustomDialog
 struct woofWantDownload {
@@ -80,19 +81,22 @@ struct woofWantDownload {
           .onClick(() => {
             this.showing_additional_info = !this.showing_additional_info;
           })
-        linysCapsuleButton({ text: "  󰁖  " })// Cancel
-          .onClick(() => {
-            if (this.controller) {
-              this.controller.close();
-            }
-          })
-        linysCapsuleButton({ text: "  󰀓  " })// Submit
-          .onClick(() => {
+
+        linysConfirmDenyButtons({
+          confirm_enabled: this.error_code == 0,
+          onConfirm:()=>{
             if (this.error_code == 0) {
               this.submit();
             }
-          })
-          .opacity(this.error_code == 0 ? 1 : 0.7)
+          },
+          onDeny:()=>{
+            if (this.controller) {
+              this.controller.close();
+            }
+          }
+        }) // Confirm deny buttons
+          .layoutWeight(1)
+
       } // Control
       .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
       .animation(animation_default())

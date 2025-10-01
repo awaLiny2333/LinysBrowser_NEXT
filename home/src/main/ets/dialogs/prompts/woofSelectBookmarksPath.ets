@@ -1,4 +1,4 @@
-import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
+import linysConfirmDenyButtons from '../../components/buttons/linysConfirmDenyButtons';
 import linysPathTree from '../../components/linysPathTree';
 import linysSymbol from '../../components/texts/linysSymbol';
 import linysTextTitle from '../../components/texts/linysTextTitle';
@@ -79,8 +79,8 @@ struct woofSelectBookmarksPath {
           .visibility(this.preferred_hand_left_or_right == 'right' ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
 
-        linysCapsuleButton({ text: "  󰀓  " })
-          .onClick(() => {
+        linysConfirmDenyButtons({
+          onConfirm: () => {
             if (this.controller) {
               // To force refresh
               // I know this is stupid but it works
@@ -91,14 +91,15 @@ struct woofSelectBookmarksPath {
               console.log('[Meow][woofBookmarkPathSelector] Selected Path: \'' + this.select + '\'');
               this.controller.close();
             }
-          }) // Submit
-
-        linysCapsuleButton({ text: "  󰁖  " })
-          .onClick(() => {
+          },
+          onDeny: () => {
             if (this.controller) {
               this.controller.close();
             }
-          }) // Cancel
+          }
+        }) // Confirm deny buttons
+          .layoutWeight(1)
+
       } // Buttons of submit and cancel
       .width("100%")
 

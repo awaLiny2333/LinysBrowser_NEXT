@@ -7,6 +7,7 @@ struct linysConfirmDenyButtons {
   onConfirm?: () => void;
   onDeny?: () => void;
   double_confirm: boolean = false;
+  @Prop confirm_enabled: boolean = true;
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
 
@@ -36,6 +37,8 @@ struct linysConfirmDenyButtons {
                 this.onConfirm();
               }
             })
+            .enabled(this.confirm_enabled)
+            .opacity(this.confirm_enabled ? 1 : 0.7)
         }
       }
     }

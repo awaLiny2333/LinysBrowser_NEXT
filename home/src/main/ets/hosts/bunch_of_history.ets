@@ -63,7 +63,7 @@ export class bunch_of_history {
 
     let first_launch = false;
 
-    // Creates folders
+    // Creates folders for history and index
     try {
       fs.mkdirSync(meowContext().filesDir + '/history');
     } catch (e) {
@@ -192,60 +192,6 @@ export class bunch_of_history {
     return result;
   }
 
-  // PATCHES
-
-  /**
-   * Executed when an old format history.txt is found.
-   * This migrates old histories to new format and deletes the old file.
-   * */
-  patch_old_history_files() {
-    let old_history = sandbox_read_text_sync('history.txt');
-    if (old_history == 'undefined') {
-      return;
-    }
-    // Patch
-    console.log('[Meow][bunch_of_history] Patch old history: found old history:\n' + old_history.toString());
-    this.import_string_full(old_history);
-    sandbox_unlink_sync('history.txt');
-  }
-
-  /**
-   * This migration happens between 1.7.6(1000024) and 1.7.7(1000025)
-   * to switch all original timestamps into UTC time.
-   * */
-  patch_history_files_before_index_era() {
-    let version_file = sandbox_read_text_sync('last_app_versionCode.txt');
-    if (version_file != 'undefined') {
-      return;
-    }
-    console.log('[Meow][bunch_of_history] Patch old history of migration 1.7.6(1000024) to 1.7.7(1000025).');
-
-    let result: string = "";
-    let months = bunch_of_history.get_history_months();
-    for (let index = 0; index < months.length; index++) {
-      const year = months[index][0];
-      const month = months[index][1];
-      const path = history_path_of_month(year, month);
-      if (result == "") {
-        result = sandbox_read_text_sync(path);
-      } else {
-        result = result + "\n" + sandbox_read_text_sync(path);
-      }
-      // console.log(result.split("\n").length.toString());
-    }
-
-    // clear history
-    try {
-      let filesDir = meowContext().filesDir;
-      fs.rmdirSync(filesDir + "/history");
-      fs.mkdirSync(filesDir + "/history")
-    } catch (e) {
-      console.error(e)
-    }
-
-    this.import_string_full(result);
-  }
-
   // Properties
 
   get_current_year() {
@@ -315,6 +261,8 @@ export class bunch_of_history {
     // TODO: Is .reverse() efficient enough?
     return result.reverse();
   }
+
+  // Operations
 
   /**
    * Adds a history, automatically puts it in the order of time.
@@ -391,8 +339,6 @@ export class bunch_of_history {
       }
     }
   }
-
-  // Operations
 
   /**
    * Removes some selected histories, according to a given array of indices.
@@ -480,6 +426,8 @@ export class bunch_of_history {
     return mid;
   }
 
+  // Files and Saving
+
   /**
    * Opens a month of history using lite import, that is, assuming all of them are in time range one month.
    * @param path A string, the path of the file.
@@ -490,6 +438,7 @@ export class bunch_of_history {
       // console.log('already opened')
       return;
     }
+    console.log('[bunch_of_history] Called open_month_from_disk_sync Y: ' + year + ' M: ' + month + '.');
     ensure_this_month_history_file();
     let path = history_path_of_month(year, month);
     let the_file = sandbox_read_text_sync(path);
@@ -502,16 +451,68 @@ export class bunch_of_history {
       this.history_this_month = [];
       return;
     }
-    this.import_string_lite(the_file);
+    this.import_string_lite(the_file, year, month);
   }
-
-  // Saving
 
   /**
    * Saves the current opened file to disk
    * */
   save_month_to_disk() {
     sandbox_save(this.current_opened_file_path, this.export_string());
+  }
+
+  // PATCHES
+
+  /**
+   * Executed when an old format history.txt is found.
+   * This migrates old histories to new format and deletes the old file.
+   * */
+  patch_old_history_files() {
+    let old_history = sandbox_read_text_sync('history.txt');
+    if (old_history == 'undefined') {
+      return;
+    }
+    // Patch
+    console.log('[Meow][bunch_of_history] Patch old history: found old history:\n' + old_history.toString());
+    this.import_string_full(old_history);
+    sandbox_unlink_sync('history.txt');
+  }
+
+  /**
+   * This migration happens between 1.7.6(1000024) and 1.7.7(1000025)
+   * to switch all original timestamps into UTC time.
+   * */
+  patch_history_files_before_index_era() {
+    let version_file = sandbox_read_text_sync('last_app_versionCode.txt');
+    if (version_file != 'undefined') {
+      return;
+    }
+    console.log('[Meow][bunch_of_history] Patch old history of migration 1.7.6(1000024) to 1.7.7(1000025).');
+
+    let result: string = "";
+    let months = bunch_of_history.get_history_months();
+    for (let index = 0; index < months.length; index++) {
+      const year = months[index][0];
+      const month = months[index][1];
+      const path = history_path_of_month(year, month);
+      if (result == "") {
+        result = sandbox_read_text_sync(path);
+      } else {
+        result = result + "\n" + sandbox_read_text_sync(path);
+      }
+      // console.log(result.split("\n").length.toString());
+    }
+
+    // clear history
+    try {
+      let filesDir = meowContext().filesDir;
+      fs.rmdirSync(filesDir + "/history");
+      fs.mkdirSync(filesDir + "/history")
+    } catch (e) {
+      console.error(e)
+    }
+
+    this.import_string_full(result);
   }
 
   // Data Management
@@ -533,6 +534,8 @@ export class bunch_of_history {
   }
 
   /**
+   * THIS IS LEGACY CODE FOR MIGRATION ONLY
+   *
    * Import history records in a specific plain text format.
    *
    * Usually used when to import a file containing histories spanning over months.
@@ -598,7 +601,7 @@ export class bunch_of_history {
    * @param imp The string in the correct format:
    * @example 'bing\nbing.com\n127771721'
    * */
-  private import_string_lite(imp: string) {
+  private import_string_lite(imp: string, year: number, month: number) {
     let import_list: string[] = imp.split("\n");
     if (import_list.length <= 1) {
       // This is theoretically prevented in previous codes
@@ -616,6 +619,7 @@ export class bunch_of_history {
 
     console.log("[Meow][bunch_of_history][lite] Starting to import history");
     let start_time = Date.now();
+    let month_time_error = 0;
 
     // Clear
     this.history_this_month = [];
@@ -626,11 +630,19 @@ export class bunch_of_history {
       //     "%")
       // }
       let access_time = Number.parseInt(import_list[index+2]);
+      let d = new Date(access_time);
+      if (d.getUTCFullYear() != year || (d.getUTCMonth() + 1) != month) {
+        // THIS RECORD IS NOT IN THIS MONTH!
+        month_time_error += 1;
+        continue;
+      }
       let new_history_record = new history_record(import_list[index], import_list[index+1], access_time);
       this.add_history(new_history_record, false, false);
     }
 
-    console.log('[Meow][bunch_of_history][lite] Import history success! Time used: ' +
-    (Date.now() - start_time).toString() + "ms.");
+    if (month_time_error > 0) {
+      console.error('[Meow][bunch_of_history][lite] Import history error: ' + month_time_error + ".");
+    }
+    console.log('[Meow][bunch_of_history][lite] Import history success! (' + (Date.now() - start_time) + " ms)");
   }
 }

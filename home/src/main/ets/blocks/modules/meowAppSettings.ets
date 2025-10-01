@@ -146,7 +146,7 @@ struct meowAppSettings {
   @State scroll_last: number = 0;
   @State menu_text: string[] =
     ['Settings_start_up', 'Settings_general', 'Settings_Experience', 'Settings_Accessibility', 'Settings_appearance',
-      'Settings_experience_history', 'Settings_storage', 'Settings_security', 'Settings_toolbox', 'Settings_about', 'Settings_update'];
+      'Settings_experience_history', 'Settings_storage', 'Settings_security', 'Settings_toolbox', 'Settings_about', 'Settings_update', 'Settings_dev'];
   // Dialogs
   @StorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
   woofHistory_control: CustomDialogController = new CustomDialogController({
@@ -664,7 +664,7 @@ struct meowAppSettings {
               settingsSubCard({
                 timeout: this.settings_scroll_to_highlight_timeout,
                 highlight: this.settings_scroll_to == 4
-              }){
+              }) {
                 linysSwitchWithText({
                   text: $r('app.string.Settings_appearance_bottom_avoid'),
                   toggle_state: this.bottom_avoid,
@@ -990,26 +990,22 @@ struct meowAppSettings {
                   desc_text: $r('app.string.Settings_toolbox_import_everything'),
                   button_text: '  󰐝  ',
                   onExecution: () => {
-                    import_everything().then((result) => {
-                      if (result) {
-                        // Import OK
-                        this.woofEverythingImportOK_control.open();
-                      } else {
-                        this.uni_fail_prompt_gateway = $r("app.string.Fail_select_bad_everything");
-                      }
-                    });
+                    try {
+                      import_everything().then((result) => {
+                        if (result) {
+                          // Import OK
+                          this.woofEverythingImportOK_control.open();
+                        } else {
+                          this.uni_fail_prompt_gateway = $r("app.string.Fail_select_bad_everything");
+                        }
+                      });
+                    } catch (e) {
+                      console.error('[Meow][meowAppSettings] Import Everything error: ' + e);
+                      this.uni_fail_prompt_gateway = $r("app.string.Fail_select_bad_everything");
+                    }
                   }
                 }) // Import settings
                 linysText({ text: $r('app.string.Settings_toolbox_import_everything_desc'), is_description: true, is_expanded: true })
-
-                if (this.DEV_MODE) {
-                  linysTimeoutButton({
-                    text: " Temp Code ",
-                    onExecution: () => {
-
-                    }
-                  })
-                }
               } // Backup
             }
           } // Toolbox / cardboard box
@@ -1087,6 +1083,30 @@ struct meowAppSettings {
             }
           } // Update
           .width("100%")
+
+          if (this.DEV_MODE) {
+            FlowItem() {
+              settingsCard({
+                title: $r('app.string.Settings_dev'),
+                timeout: this.settings_scroll_to_highlight_timeout, highlight: this.settings_scroll_to == 11
+              }) {
+                settingsSubCard({
+                  icon: '󰊂',
+                  title: $r('app.string.Settings_dev'),
+                  timeout: this.settings_scroll_to_highlight_timeout,
+                  highlight: this.settings_scroll_to == 11
+                }) {
+                  linysText({
+                    text: $r('app.string.Settings_dev_desc'),
+                    max_lines: 99,
+                    is_description: true,
+                    is_expanded: true
+                  });
+                }
+              }
+            } // Update
+            .width("100%")
+          } // Deveowloper Options
 
         } // Bottom Bar of App Settings
         .columnsTemplate("1fr ".repeat(Math.ceil(this.screen_width / minimum_card_width())))

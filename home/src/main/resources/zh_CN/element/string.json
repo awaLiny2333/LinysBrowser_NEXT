@@ -22,15 +22,15 @@
     },
     {
       "name": "permission_reason_MICROPHONE",
-      "value": "有些网站可能会为了某些任务而请求这个权限。比如，在线聊天室中录制语音的时候。冲浪喵本身不会使用这个权限。"
+      "value": "有些网站可能会为了某些任务而请求这个权限。比如，在线聊天室中录制语音的时候。冲浪喵本身不会使用这个权限去做任何其他事情。"
     },
     {
       "name": "permission_reason_CAMERA",
-      "value": "有些网站可能会为了某些任务而请求这个权限。比如，在线视频会议的时候。冲浪喵本身不会使用这个权限。"
+      "value": "有些网站可能会为了某些任务而请求这个权限。比如，在线视频会议的时候。冲浪喵本身不会使用这个权限去做任何其他事情。"
     },
     {
       "name": "permission_reason_GEOLOCATION",
-      "value": "有些网站可能会为了某些任务而请求这个权限。比如，使用网页地图的时候。冲浪喵本身不会使用这个权限。"
+      "value": "有些网站可能会为了某些任务而请求这个权限。比如，使用网页地图的时候。冲浪喵本身不会使用这个权限去做任何其他事情。"
     },
     {
       "name": "protected_resource_TYPE_MIDI_SYSEX",
@@ -119,6 +119,14 @@
     {
       "name": "Settings_about",
       "value": "关于"
+    },
+    {
+      "name": "Settings_dev",
+      "value": "开发者选项"
+    },
+    {
+      "name": "Settings_dev_desc",
+      "value": "开发者选项是为了猫咪工程师的故障排除工作准备的。问题出现的时候这些工具可能有所帮助。"
     },
     {
       "name": "Settings_appearance_title_bar_position",
@@ -706,7 +714,7 @@
     },
     {
       "name": "Credits_devs_and_users",
-      "value": "sseaan（#2 横向标签页和自定义 UA）\nSolidFaker（#3 错误的背景颜色）\nlsxuan12138（#6 移动书签功能）\nxymeng16（#8 劫持返回；#11 更多搜索引擎）\nLuxcis（#12 自动收起标签页）\n000wbh000（#22 网页深色模式；#28 键盘快捷键；#29 文件导出失败）\nLiuyexin（#29 文件导出失败）\nvincenthsing（#33 带端口的 IPv4 网址判定问题）\nXiaoBaiXBS（#38 #39 #40 #41 #42 #50 #63 #67 #68 诡异的崩溃 Bug、主页自定背景、安全访问历史&书签、更好的单手优化布局选项和超级多小建议！）\nWJ-T（#46 关闭所有标签页）\nyushuo1532（#65 启动速度优化）\nmsgdw（#69 带端口的 URL 判定问题）～"
+      "value": "sseaan（#2 横向标签页和自定义 UA）\nSolidFaker（#3 错误的背景颜色）\nlsxuan12138（#6 移动书签功能）\nxymeng16（#8 劫持返回；#11 更多搜索引擎）\nLuxcis（#12 自动收起标签页）\n000wbh000（#22 网页深色模式；#28 键盘快捷键；#29 文件导出失败）\nLiuyexin（#29 文件导出失败）\nvincenthsing（#33 带端口的 IPv4 网址判定问题）\nXiaoBaiXBS（#38 #39 #40 #41 #42 #50 #63 #67 #68 诡异的崩溃 Bug、主页自定背景、安全访问历史&书签、更好的单手优化布局选项和超级多小建议！）\nWJ-T（#46 关闭所有标签页）\nyushuo1532（#65 启动速度优化）\nmsgdw（#69 带端口的 URL 判定问题）\nYukiNo420（#55 快捷打开历史、关闭小白条避让）～"
     },
     {
       "name": "Credits_extra",

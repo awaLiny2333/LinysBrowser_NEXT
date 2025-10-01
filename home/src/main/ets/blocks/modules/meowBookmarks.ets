@@ -549,7 +549,7 @@ struct bookmarkItem {
   @State edit_label: string = this.label;
   @State edit_link: string = this.link;
   @StorageLink('swapping_offset_timeout') swapping_offset_timeout: number = 0;
-  // Edit inputs
+  // Move params
   @State @Watch('on_select_change') select_path_result: string | undefined = undefined;
   @State moving_type: string = "";
   // Dialogs
@@ -770,7 +770,7 @@ struct bookmarkItem {
         })
 
       } // Edit panel
-      .height(!this.editing ? 0 : (this.type == "bookmark" ? 142 : 0) + (this.type == "folder" ? 98 : 0))
+      .height(!this.editing ? 0 : (this.type == "bookmark" ? 145 : 0) + (this.type == "folder" ? 100 : 0))
       .visibility(this.editing ? Visibility.Visible : Visibility.None)
       .animation(animation_default())
       .scrollBar(BarState.Off)
