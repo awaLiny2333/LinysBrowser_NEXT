@@ -13,6 +13,9 @@ import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResou
 import lazy woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
 import { sync_tabs_list_info } from '../../utils/data_operation_tools';
+import woofPrompt from '../../dialogs/web/woofPrompt';
+import woofConfirm from '../../dialogs/web/woofConfirm';
+import woofAlert from '../../dialogs/web/woofAlert';
 
 @Component
 struct meowWebView {
@@ -104,10 +107,35 @@ struct meowWebView {
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16
-  })
+  });
   woofLinkJumper_control: CustomDialogController = new CustomDialogController({
     builder: woofWantJump({
       link: this.potential_jump_link,
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16,
+    width: "90%"
+  });
+  @State js_prompt_event: OnPromptEvent | undefined = undefined;
+  woofPrompt_control: CustomDialogController = new CustomDialogController({
+    builder: woofPrompt({
+      event: this.js_prompt_event
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16
+  })
+  @State js_confirm_event: OnConfirmEvent | undefined = undefined;
+  woofConfirm_control: CustomDialogController = new CustomDialogController({
+    builder: woofConfirm({
+      event: this.js_confirm_event
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16
+  })
+  @State js_alert_event: OnAlertEvent | undefined = undefined;
+  woofAlert_control: CustomDialogController = new CustomDialogController({
+    builder: woofAlert({
+      event: this.js_alert_event
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16
@@ -125,7 +153,7 @@ struct meowWebView {
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 16
-  })
+  });
   woofHomepageManager_control: CustomDialogController = new CustomDialogController({
     builder: woofHomepageManager(),
     alignment: DialogAlignment.Center,
@@ -138,6 +166,9 @@ struct meowWebView {
   @StorageLink('meowWebView_init_OK') init_OK: boolean = false;
   shortcut_scroller: Scroller = new Scroller();
   httpAuth: boolean = false;
+
+  // JS Prompts
+
 
   // // Menu contents
   // @State menu_linkUrl: string = '';
@@ -527,6 +558,27 @@ struct meowWebView {
               // console.log('[meowWebView] Over scrolled!')
             })
             .nestedScroll({ scrollForward: NestedScrollMode.SELF_FIRST, scrollBackward: NestedScrollMode.SELF_FIRST })
+            .onPrompt((e) => {
+              if (e) {
+                this.js_prompt_event = e;
+                this.woofPrompt_control.open();
+              }
+              return true;
+            })
+            .onConfirm((e)=>{
+              if (e) {
+                this.js_confirm_event = e;
+                this.woofConfirm_control.open();
+              }
+              return true;
+            })
+            .onAlert((e)=>{
+              if (e) {
+                this.js_alert_event = e;
+                this.woofAlert_control.open();
+              }
+              return true;
+            })
 
         } // Webs
         .borderColor(this.color_current_secondary)
