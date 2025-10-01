@@ -498,6 +498,8 @@ export class bunch_of_history {
     this.current_month = month;
     if (the_file == "undefined" || the_file.length <= 1) {
       console.info("[Meow][bunch_of_history] Import history SKIPPED: Too short. (" + path + ").");
+      // Clear
+      this.history_this_month = [];
       return;
     }
     this.import_string_lite(the_file);
