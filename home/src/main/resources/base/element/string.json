@@ -973,8 +973,12 @@
       "value": "Images of a mismatching size would be wrongly displayed~ Contents at center position would be prioritized in showcase!"
     },
     {
-      "name": "Homepage_background_select",
-      "value": "Select an image"
+      "name": "Homepage_background_select_storage",
+      "value": "Select from Files"
+    },
+    {
+      "name": "Homepage_background_select_gallery",
+      "value": "Select from Gallery"
     },
     {
       "name": "Homepage_background_delete",

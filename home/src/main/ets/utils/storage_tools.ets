@@ -195,7 +195,7 @@ export async function document_pick_to_text(suffixFilters?: string[]) {
  * Pick an image file from device storage, pulling up a DocumentViewPicker.
  * @returns A string, of the chosen file's content.
  * */
-export async function image_pick_to_ArrayBuffer() {
+export async function image_document_pick_to_ArrayBuffer() {
   let selected_uri: string[] = [];
 
   try {
@@ -208,8 +208,7 @@ export async function image_pick_to_ArrayBuffer() {
     })
       .then((documentSelectResult) => {
         selected_uri = documentSelectResult;
-        console.info('[image_document_reader] DocumentViewPicker.select successfully, documentSelectResult uri: ' +
-        selected_uri[0])
+        console.info('[image_document_reader] DocumentViewPicker.select successfully, documentSelectResult uri: ' + selected_uri[0])
         let file = fs.openSync(selected_uri[0], fs.OpenMode.READ_ONLY);
         // let selected_path = (new fileUri.FileUri(selected_uri[0])).path;
         let target_path = (new fileUri.FileUri(selected_uri[0])).path;
@@ -231,6 +230,53 @@ export async function image_pick_to_ArrayBuffer() {
   } catch (error) {
     let err: BusinessError = error as BusinessError;
     console.error('[ERROR][image_document_reader] DocumentViewPicker failed with err: ' + JSON.stringify(err));
+    return undefined;
+  }
+}
+
+/**
+ * Pick an image file from device gallery, pulling up a DocumentViewPicker.
+ * @param select_number The maximum select number.
+ * @returns A string, of the chosen file's content.
+ * */
+export async function image_gallery_pick_to_ArrayBuffer() {
+  let selected_uri: string[] = [];
+
+  try {
+    let buf: ArrayBuffer | undefined = undefined;
+    let PhotoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
+    PhotoSelectOptions.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
+    PhotoSelectOptions.maxSelectNumber = 1;
+    let photoPicker = new photoAccessHelper.PhotoViewPicker();
+    await photoPicker.select(PhotoSelectOptions).then((PhotoSelectResult: photoAccessHelper.PhotoSelectResult) => {
+      console.info('[storage_tools][image_gallery_pick_to_ArrayBuffer] PhotoViewPicker.select successfully, PhotoSelectResult uri: ' +
+      JSON.stringify(PhotoSelectResult));
+
+      // Get Assets
+      selected_uri = PhotoSelectResult.photoUris;
+
+      // Read
+      let file = fs.openSync(selected_uri[0], fs.OpenMode.READ_ONLY);
+      let target_path = (new fileUri.FileUri(selected_uri[0])).path;
+      let stat = fs.statSync(target_path);
+      let size = stat.size;
+      buf = new ArrayBuffer(size);
+      fs.readSync(file.fd, buf)
+      fs.closeSync(file);
+      // fs.copyFileSync(selected_path, sand_path);
+
+      console.info("[image_gallery_pick_to_ArrayBuffer] Read image from " + selected_uri[0] + " Success!");
+    })
+      .catch((err: BusinessError) => {
+      console.error('[image_gallery_pick_to_ArrayBuffer] DocumentViewPicker.select failed with err: ' +
+      JSON.stringify(err));
+      return undefined;
+    });
+    return buf;
+
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    console.error(`[storage_tools][image_gallery_pick_to_ArrayBuffer] PhotoViewPicker failed with err: ${err.code}, ${err.message}`);
     return undefined;
   }
 }

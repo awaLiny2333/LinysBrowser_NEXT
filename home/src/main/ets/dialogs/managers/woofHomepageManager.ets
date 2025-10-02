@@ -1,4 +1,4 @@
-import meowHomepageBackgroundManager from '../../blocks/panels/meowHomepageBackgroundManager';
+import meowHomepageManager from '../../blocks/panels/meowHomepageManager';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 import linysLockSlider from '../../components/linysLockSlider';
 import linysText from '../../components/texts/linysText';
@@ -62,7 +62,7 @@ struct woofHomepageManager {
             is_expanded: true
           }) // Desc
 
-          meowHomepageBackgroundManager() // Homepage Background Manager
+          meowHomepageManager() // Homepage Background Manager
 
           linysTextTitle({
             text: $r('app.string.Settings_homepage_shortcuts')

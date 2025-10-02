@@ -973,8 +973,12 @@
       "value": "尺寸不对的会显示不全喔～优先展示正中心的内容！"
     },
     {
-      "name": "Homepage_background_select",
-      "value": "选择一幅图像"
+      "name": "Homepage_background_select_storage",
+      "value": "从文件选择"
+    },
+    {
+      "name": "Homepage_background_select_gallery",
+      "value": "从图库选择"
     },
     {
       "name": "Homepage_background_delete",
