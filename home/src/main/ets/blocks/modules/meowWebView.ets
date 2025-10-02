@@ -35,32 +35,21 @@ struct meowWebView {
   // In-Page Searching
   @StorageLink('current_in_page_searching_stats_current') current_in_page_searching_stats_current: number = 0;
   @StorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
-  // @StorageLink('current_in_page_searching_keyword') current_in_page_searching_keyword: string = ''
   /**
    * Controls */
   @StorageLink('tab_titles') tab_titles: string[] = []
-  // @StorageLink('current_title') current_title: string = "=￣ω￣=";
   @StorageLink('tab_urls') tab_urls: string[] = []
   @StorageLink('current_url') current_url: string = "=￣ω￣=";
   @StorageLink('tab_match_domains') tab_match_domains: string[][] = [];
-  // @StorageLink('current_match_domain') current_match_domain: string[] = ['scheme', 'domain'];
-  // @StorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0]
-  // @StorageLink('current_loading_progress') current_loading_progress: number = 0
-  // @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]
-  // @StorageLink('current_is_loading') current_is_loading: boolean = true
   @StorageLink('tab_disable_js') tab_disable_js: boolean[] = [false];
-  // @StorageLink('current_disable_js') current_disable_js: boolean = false;
   @StorageLink('tab_disable_image') tab_disable_image: boolean[] = [false];
-  // @StorageLink('current_disable_image') current_disable_image: boolean = false;
   @StorageLink('tab_force_dark') tab_force_dark: boolean[] = [false];
-  // @StorageLink('current_force_dark') current_force_dark: boolean = false;
   /**
    * Web control statuses */
   @StorageLink('current_accessForward') current_accessForward: boolean = false;
   @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
   @StorageLink('current_main_tab_index') @Watch('on_tab_info_change') current_main_tab_index: number = 0;
   @StorageLink('current_sub_tab_index') @Watch('on_tab_info_change') current_sub_tab_index: number = -1;
-  // @StorageLink('search_input') search_input: string = "ଘ*(੭*ˊᵕˋ)੭*";
   @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
   // Settings
   @StorageProp('collect_new_history') collect_new_history: boolean = true;
@@ -82,7 +71,6 @@ struct meowWebView {
   @StorageLink('preferred_hand_reverse_homepage_shortcuts') preferred_hand_reverse_homepage_shortcuts: boolean = false;
   /**
    * Stuffs */
-  // @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
   /**
    * Visual */
@@ -166,9 +154,6 @@ struct meowWebView {
   @StorageLink('meowWebView_init_OK') init_OK: boolean = false;
   shortcut_scroller: Scroller = new Scroller();
   httpAuth: boolean = false;
-
-  // JS Prompts
-
 
   // // Menu contents
   // @State menu_linkUrl: string = '';

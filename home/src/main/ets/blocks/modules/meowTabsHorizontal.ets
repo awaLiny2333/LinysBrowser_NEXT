@@ -42,6 +42,7 @@ struct meowTabsHorizontal {
   // UI statuses
   @State length_width_of_tabs: number = 0;
   @State full_area_width: number = 10;
+  @State my_height: number | undefined = 0;
   // Drop
   @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
 
@@ -186,9 +187,14 @@ struct meowTabsHorizontal {
       .width('100%')
 
     }
+    .height(this.my_height)
     .padding({ left: 8, right: 8 })
     .animation(animation_default())
+    .clip(true)
     .allowDrop(allow_drop_types())
+    .onAppear(() => {
+      this.my_height = undefined;
+    })
     .onDrop((e) => {
       drop_to_scratching_board(e);
     })

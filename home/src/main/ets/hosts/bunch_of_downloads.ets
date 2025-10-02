@@ -247,7 +247,7 @@ export class bunch_of_downloads {
    * Delete all downloaded files in sandbox storage,
    * usually executed when the app launches.
    * */
-  delete_all_downloaded_files() {
+  delete_all_downloaded_files_sync() {
     try {
       let filesDir = meowContext().filesDir;
       fs.rmdirSync(filesDir + "/downloads");

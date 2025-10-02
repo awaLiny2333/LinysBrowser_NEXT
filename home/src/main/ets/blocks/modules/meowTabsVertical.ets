@@ -36,18 +36,8 @@ struct meowTabsVertical {
   /**
    * Controls */
   @StorageLink('tab_titles') tab_titles: string[] = []
-  // @StorageLink('current_title') current_title: string = "=￣ω￣=";
   @StorageLink('tab_urls') tab_urls: string[] = [];
   @StorageLink('current_url') current_url: string = "=￣ω￣=";
-  // @StorageLink('tab_match_domains') tab_match_domains: string[][] = [];
-  // @StorageLink('current_match_domain') current_match_domain: string[] = ['scheme', 'domain'];
-  // @StorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0]
-  // @StorageLink('current_loading_progress') current_loading_progress: number = 0
-  // @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]
-  // @StorageLink('current_is_loading') current_is_loading: boolean = true
-  // @StorageLink('current_in_page_searching_keyword') current_in_page_searching_keyword: string = ''
-  // @StorageLink('current_in_page_searching_stats_current') current_in_page_searching_stats_current: number = 0;
-  // @StorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
   /**
    * Web control statuses */
   @StorageProp('continue_tabs_count') continue_tabs_count: number = 0;
@@ -64,6 +54,7 @@ struct meowTabsVertical {
   // Delay
   @StorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
   // Animation info
+  @State my_visibility: Visibility = Visibility.Hidden;
   tab_height_default: number = 42;
   scroll_controller: Scroller = new Scroller();
   @State extension_area: number[] = [];
@@ -217,23 +208,17 @@ struct meowTabsVertical {
         .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
         .width("100%")
 
-        Scroll() {
-          linysText({ text: $r('app.string.Paralleow_description'), max_lines: 4 })
-            .onAreaChange((_o, n) => {
-              this.paralleow_description_height = n.height as number + 16;
-            })
-        } // Paralleow Introduction
-        .align(Alignment.TopStart)
-        .width("100%")
-        .height(this.choosing_paralleow || this.current_sub_tab_index >= 0 ? this.paralleow_description_height : 0)
-        .visibility(this.choosing_paralleow || this.current_sub_tab_index >= 0 ? Visibility.Visible : Visibility.None)
-        .animation(animation_default())
-        .scrollBar(BarState.Off)
-        .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.PARENT_FIRST })
+        linysText({ text: $r('app.string.Paralleow_description'), max_lines: 4 })
+          .onAreaChange((_o, n) => {
+            this.paralleow_description_height = n.height as number + 16;
+          })
+          .visibility(this.choosing_paralleow || this.current_sub_tab_index >= 0 ? Visibility.Visible : Visibility.None)
+          .animation(animation_default())
 
       } // Tabs Panel
+      .visibility(this.my_visibility)
+      .animation(animation_default())
       .justifyContent(FlexAlign.End)
-      // .padding(10)
       .width("100%")
       .height("100%")
       .onAppear(() => {
@@ -243,6 +228,8 @@ struct meowTabsVertical {
           this.extension_area.push(0);
           this.offset_area.push(0);
         }
+        this.my_visibility = Visibility.Visible;
+
         // Init extension_area
         setInterval(() => {
           this.on_timer();

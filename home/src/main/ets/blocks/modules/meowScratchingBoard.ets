@@ -66,6 +66,7 @@ struct meowScratchingBoard {
       .layoutWeight(1)
       .visibility(this.show_feed_prompt ? Visibility.None : Visibility.Visible)
       .width("100%")
+      .borderRadius(13.5)
       .animation(animation_default())
 
       Row({ space: 10 }) {

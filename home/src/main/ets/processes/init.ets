@@ -42,7 +42,10 @@ export async function meow_init(context: common.UIAbilityContext) {
   t = Date.now() - t0;
   console.log('[init] History OK. (' + t + ' ms)');
 
-  AppStorage.setOrCreate('bunch_of_downloads', new bunch_of_downloads());
+  downloads();
+  t = Date.now() - t0;
+  console.log('[init] Downloads OK. (' + t + ' ms)');
+
   AppStorage.setOrCreate('bunch_of_user_agents', new bunch_of_user_agents());
   AppStorage.setOrCreate('bunch_of_search_engines', new bunch_of_search_engines());
   AppStorage.setOrCreate('bunch_of_key_shortcuts', new bunch_of_key_shortcuts());
@@ -259,4 +262,13 @@ function history() {
   AppStorage.setOrCreate('reindexing_history_progress', '');
   AppStorage.setOrCreate('history_index_loading_progress', '');
   AppStorage.setOrCreate('history_index_saving_progress', '');
+}
+
+/**
+ * Inits downloads.
+ * */
+function downloads() {
+  let downloads = new bunch_of_downloads();
+  downloads.delete_all_downloaded_files_sync();
+  AppStorage.setOrCreate('bunch_of_downloads', downloads);
 }

@@ -74,6 +74,7 @@ struct meowSuggestions {
         .animation(animation_default())
       }
     }
+    .borderRadius(12)
     .scrollBar(BarState.Off)
     .margin({
       left: 15,
@@ -199,7 +200,7 @@ struct suggestionList {
     }
     .padding(15)
     .backgroundColor(this.color_current_primary)
-    .borderRadius(10)
+    .borderRadius(12)
     .visibility(this.suggestions.length > 0 ? Visibility.Visible : Visibility.None)
     .animation(animation_default())
   }

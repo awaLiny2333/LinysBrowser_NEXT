@@ -21,17 +21,12 @@ struct linysShowButton {
           (this.color_false == "" ? this.color_current_font : this.color_false)
       })
 
-      Scroll() {
-        Text(this.text)
-          .fontSize(fontSize_Large() - 2)
-          .fontColor(this.color_current_primary)
-          .margin({ left: 4, right: 3 })
-      }
-      .width(this.show ? undefined : 0)
-      .scrollable(ScrollDirection.Horizontal)
-      .edgeEffect(EdgeEffect.Spring)
-      .scrollBar(BarState.Off)
-      .animation(animation_default())
+      Text(this.text)
+        .fontSize(fontSize_Large() - 2)
+        .fontColor(this.color_current_primary)
+        .margin({ left: 4, right: 3 })
+        .visibility(this.show ? Visibility.Visible : Visibility.None)
+        .animation(animation_default())
     }
     .padding(this.show ? 5 : 0)
     .backgroundColor(this.show ? (this.color_false == "" ? this.color_current_font : this.color_false) : "transparent")

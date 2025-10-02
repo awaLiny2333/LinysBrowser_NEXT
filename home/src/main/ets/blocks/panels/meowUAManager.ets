@@ -294,7 +294,7 @@ struct meowUAButton {
           })
 
         } // Edit panel
-        .height(!this.is_editing ? 0 : 108 + this.height_of_text_area)
+        .height(!this.is_editing ? 0 : 110 + this.height_of_text_area)
         .visibility(this.is_editing ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
         .scrollBar(BarState.Off)

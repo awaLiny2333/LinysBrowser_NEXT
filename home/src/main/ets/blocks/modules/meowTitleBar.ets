@@ -286,23 +286,19 @@ struct meowTitleBar {
 
   build() {
     Column({ space: 10 }) {
-      // if (this.title_bar_position == "top") {
-      //   Row().height(0)
-      // }
-
-      if (this.title_bar_position == "bottom" && this.delayed_load_p0) {
+      if (this.title_bar_position == "bottom") {
         meowSuggestions({ top_margin: 15 })
-          .animation(animation_default())
-      }
+          .width(undefined)
+      } // Suggestions
 
       if (this.delayed_load_p1) {
-        meowTabsHorizontal() // Horizontal tabs
+        meowTabsHorizontal()
           .visibility(this.visibility_of_horizontal_tabs())
           .animation(animation_default())
-          .onAreaChange((_oo, n) => {
+          .onAreaChange((_o, n) => {
             this.horizontal_tabs_height = Math.max(0, n.height as number + 10);
           })
-      }
+      } // Horizontal tabs
 
       if (this.delayed_load_p0) {
         EstimatedDestination({
@@ -317,46 +313,15 @@ struct meowTitleBar {
           .width("100%")
           .animation(animation_default())
           .constraintSize({ minHeight: 20 })
+      } // Estimated Destination
 
-        Row({ space: 15 }) {
-          Column({ space: 2.5 }) {
-            Text(this.current_title)
-              .fontColor(this.color_current_font)
-              .fontWeight(FontWeight.Bold)
-              .fontSize(fontSize_Large())
-              .maxLines(2)
-              .textOverflow({ overflow: TextOverflow.Ellipsis })
-              .clickEffect(click_effect_default())
-              .onClick(() => {
-                copy(this.current_title);
-              })
-            Text(this.current_url)
-              .fontColor(this.color_current_font)
-              .fontWeight(FontWeight.Bold)
-              .fontSize(fontSize_Normal())
-              .opacity(0.7)
-              .maxLines(2)
-              .textOverflow({ overflow: TextOverflow.Ellipsis })
-              .clickEffect(click_effect_default())
-              .onClick(() => {
-                copy(this.current_url);
-              })
-          }
-          .alignItems(HorizontalAlign.Start)
-          .layoutWeight(1)
-
-          linysSymbol({ symbol_glyph_target: 'sys.symbol.share' })
-            .onClick(() => {
-              share_link(this.current_url, this.current_title);
-            })
-        } // Title Bar for This Page Info display
-        .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
-        .padding({ left: 15, right: 15, top: 6 })
-        .width("100%")
+      ThisPageInfo({
+        current_title: this.current_title,
+        current_url: this.current_url
+      }) // Page Info
         .visibility(this.current_in_page_searching_stats_total <= 0 && this.showing_more_options && !this.showing_scratching_board
           ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
-      }
 
       RelativeContainer() {
         Row({ space: this.tablet_mode ? 10 : 6 }) {
@@ -417,95 +382,87 @@ struct meowTitleBar {
 
         Row({ space: 10 }) {
           RelativeContainer() {
-            Scroll() {
-              TextInput({ text: this.search_input })
-                .allowDrop(null)
-                .visibility(this.showing_scratching_board ? Visibility.Hidden : Visibility.Visible)
-                .height(capsule_bar_height())
-                .fontWeight(FontWeight.Regular)
-                .fontColor(this.color_current_font)
-                .caretColor(this.color_current_font)
-                .selectedBackgroundColor(this.color_current_font)
-                .offset({ y: !this.showing_search_extracted_field ? 0 : -50 })
-                .opacity(!this.showing_search_extracted_field ? (this.showing_scratching_board ? 0.8 : 1) : 0)
-                .animation(animation_default())
-                .onDragEnter(() => {
-                  this.showing_scratching_board = false;
-                })
-                .onFocus(() => {
-                  this.is_search_input_typing = true;
-                })
-                .onBlur(() => {
-                  this.is_search_input_typing = false;
-                })
-                .enabled(this.showing_scratching_board ? false : true)
-                .onChange((content) => {
-                  this.update_search_input(content);
-                })
-                .onSubmit(() => {
-                  this.submit_searching()
-                })
-                .selectAll(true)
-                .id('address_bar')
-                .keyboardShortcut(!this.showing_search_extracted_field ? this.bunch_of_key_shortcuts.focus_address.main_key : '',
-                  this.bunch_of_key_shortcuts.focus_address.modifier)
-            } // URL
-            .scrollable(ScrollDirection.Vertical)
-            .height(this.showing_search_extracted_field ? 0 : 36)
-            .scrollBar(BarState.Off)
-            .animation(animation_default())
+            TextInput({ text: this.search_input })
+              .allowDrop(null)
+              .visibility(this.showing_scratching_board ? Visibility.Hidden : Visibility.Visible)
+              .height(capsule_bar_height())
+              .fontWeight(FontWeight.Regular)
+              .fontColor(this.color_current_font)
+              .caretColor(this.color_current_font)
+              .selectedBackgroundColor(this.color_current_font)
+              .offset({ y: !this.showing_search_extracted_field ? 0 : -50 })
+              .opacity(!this.showing_search_extracted_field ? (this.showing_scratching_board ? 0.8 : 1) : 0)
+              .height(this.showing_search_extracted_field ? 0 : 36)
+              .animation(animation_default())
+              .onDragEnter(() => {
+                this.showing_scratching_board = false;
+              })
+              .onFocus(() => {
+                this.is_search_input_typing = true;
+              })
+              .onBlur(() => {
+                this.is_search_input_typing = false;
+              })
+              .enabled(this.showing_scratching_board ? false : true)
+              .onChange((content) => {
+                this.update_search_input(content);
+              })
+              .onSubmit(() => {
+                this.submit_searching()
+              })
+              .selectAll(true)
+              .id('address_bar')
+              .keyboardShortcut(!this.showing_search_extracted_field ? this.bunch_of_key_shortcuts.focus_address.main_key : '',
+                this.bunch_of_key_shortcuts.focus_address.modifier)
+              .clip(true)
 
-            Scroll() {
-              TextInput({ text: this.search_extracted_keyword })
-                .allowDrop(null)
-                .visibility(this.showing_scratching_board ? Visibility.Hidden : Visibility.Visible)
-                .height(capsule_bar_height())
-                .fontWeight(FontWeight.Regular)
-                .fontColor(this.color_current_font)
-                .caretColor(this.color_current_font)
-                .offset({ y: this.showing_search_extracted_field ? 0 : 50 })
-                .opacity(this.showing_search_extracted_field ? (this.showing_scratching_board ? 0.8 : 1) : 0)
-                .animation(animation_default())
-                .onDragEnter(() => {
-                  this.showing_scratching_board = false;
-                })
-                .onFocus(() => {
-                  this.is_search_input_typing = true;
-                })
-                .onBlur(() => {
-                  this.is_search_input_typing = false;
-                })
-                .enabled(this.showing_scratching_board ? false : true)
-                .onChange((content) => {
-                  this.search_extracted_keyword = content;
-                  if (content == '') {
-                    this.search_input_unified = this.search_extracted_engine.replaceAll('%s', "");
-                  } else {
-                    this.search_input_unified = this.search_extracted_engine.replaceAll('%s', encodeURIComponent(content));
-                  }
-                  this.search_input = this.search_input_unified;
-                })
-                .onSubmit(() => {
-                  this.submit_searching();
-                  // After submit, as the web loads, the new link will be synced to the search_input (address bar)
-                  // Then it will trigger @Watch('on_search_input_change')
-                  // And the extracted keyword would be synced to its TextInput.
-                })
-                .selectAll(true)
-                .selectedBackgroundColor(this.color_current_font)
-                .id('key_bar')
-                .keyboardShortcut(this.showing_search_extracted_field ? this.bunch_of_key_shortcuts.focus_address.main_key : '',
-                  this.bunch_of_key_shortcuts.focus_address.modifier)
-            } // Keywords
-            .scrollable(ScrollDirection.Vertical)
-            .scrollBar(BarState.Off)
-            .height(this.showing_search_extracted_field ? 36 : 0)
-            .animation(animation_default())
+            TextInput({ text: this.search_extracted_keyword })
+              .allowDrop(null)
+              .visibility(this.showing_scratching_board ? Visibility.Hidden : Visibility.Visible)
+              .height(capsule_bar_height())
+              .fontWeight(FontWeight.Regular)
+              .fontColor(this.color_current_font)
+              .caretColor(this.color_current_font)
+              .offset({ y: this.showing_search_extracted_field ? 0 : 50 })
+              .opacity(this.showing_search_extracted_field ? (this.showing_scratching_board ? 0.8 : 1) : 0)
+              .height(this.showing_search_extracted_field ? 36 : 0)
+              .animation(animation_default())
+              .onDragEnter(() => {
+                this.showing_scratching_board = false;
+              })
+              .onFocus(() => {
+                this.is_search_input_typing = true;
+              })
+              .onBlur(() => {
+                this.is_search_input_typing = false;
+              })
+              .enabled(this.showing_scratching_board ? false : true)
+              .onChange((content) => {
+                this.search_extracted_keyword = content;
+                if (content == '') {
+                  this.search_input_unified = this.search_extracted_engine.replaceAll('%s', "");
+                } else {
+                  this.search_input_unified = this.search_extracted_engine.replaceAll('%s', encodeURIComponent(content));
+                }
+                this.search_input = this.search_input_unified;
+              })
+              .onSubmit(() => {
+                this.submit_searching();
+                // After submit, as the web loads, the new link will be synced to the search_input (address bar)
+                // Then it will trigger @Watch('on_search_input_change')
+                // And the extracted keyword would be synced to its TextInput.
+              })
+              .selectAll(true)
+              .selectedBackgroundColor(this.color_current_font)
+              .id('key_bar')
+              .keyboardShortcut(this.showing_search_extracted_field ? this.bunch_of_key_shortcuts.focus_address.main_key : '',
+                this.bunch_of_key_shortcuts.focus_address.modifier)
+              .clip(true)
 
           } // Two inputs
           .layoutWeight(1)
 
-          linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right' })// Search
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right' }) // Search
             .visibility(this.visible_when_typing())
             .onClick(() => {
               this.submit_searching()
@@ -558,16 +515,16 @@ struct meowTitleBar {
               this.woofQuickSE_control.open();
             })
             .animation(animation_default())
+
         } // Searching bar
         .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
-        .height(36)
+        .height(capsule_bar_height())
         .padding(this.tablet_mode ? { left: 10, right: 10 } : {})
-        .alignRules(this.tablet_mode
-          ? {
-            left: { anchor: 'left_controls', align: HorizontalAlign.End },
-            right: { anchor: 'right_controls', align: HorizontalAlign.Start },
-            bottom: { anchor: '__container__', align: VerticalAlign.Bottom }
-          } : { bottom: { anchor: '__container__', align: VerticalAlign.Bottom } })
+        .alignRules(this.tablet_mode ? {
+          left: { anchor: 'left_controls', align: HorizontalAlign.End },
+          right: { anchor: 'right_controls', align: HorizontalAlign.Start },
+          bottom: { anchor: '__container__', align: VerticalAlign.Bottom }
+        } : { bottom: { anchor: '__container__', align: VerticalAlign.Bottom } })
         .animation(animation_default())
 
         Row({ space: this.tablet_mode ? 10 : 6 }) {
@@ -577,7 +534,6 @@ struct meowTitleBar {
             symbol_glyph_target: this.showing_scratching_board ? 'sys.symbol.chevron_down' : 'sys.symbol.doc_rectify'
           })// Scratching board
             .visibility(this.drop_result_string.length > 0 ? Visibility.Visible : Visibility.None)
-            .animation(animation_default())
             .onClick(() => {
               this.show_scratching_board();
             })
@@ -645,22 +601,17 @@ struct meowTitleBar {
               color_false: !this.showing_downloads && this.download_started_popup ?
                 this.color_current_primary : this.color_current_font
             })
-            Scroll() {
-              Text($r('app.string.Index_download_task_start'))
-                .fontSize(fontSize_Large() - 2)
-                .fontColor(this.color_current_primary)
-                .margin({ right: this.showing_downloads ? 5 : 0 })
-            }
-            .width(this.download_started_popup ? undefined : 0)
-            .scrollable(ScrollDirection.Horizontal)
-            .scrollBar(BarState.Off)
-            .animation(animation_default())
+            Text($r('app.string.Index_download_task_start'))
+              .fontSize(fontSize_Large() - 2)
+              .fontColor(this.color_current_primary)
+              .margin({ right: this.showing_downloads ? 5 : 0 })
+              .visibility(this.download_started_popup ? Visibility.Visible : Visibility.None)
+              .animation(animation_default())
           } // Downloads
           .padding(!this.showing_downloads && this.download_started_popup ? 5 : 0)
           .backgroundColor(this.download_started_popup ? this.color_current_font : "transparent")
           .borderRadius(10)
           .clickEffect(click_effect_default())
-          // .visibility(this.bunch_of_downloads.list_of_urls.length > 0 ? Visibility.Visible : Visibility.None)
           .opacity(this.delayed_load_p2 ? 1 : 0.5)
           .animation(animation_default())
           .onClick(() => {
@@ -702,20 +653,21 @@ struct meowTitleBar {
         this.woofHistory_control.open();
       })
 
-      EstimatedDestination({
-        is_http_no_s: this.search_input_unify_scheme_http,
-        is_search_input_typing: this.is_search_input_typing,
-        is_search_input_address: this.is_search_input_address,
-        search_input: this.search_input,
-        search_input_unified: this.search_input_unified
-      })
-        .visibility(this.is_search_input_typing && this.title_bar_position == 'top' ? Visibility.Visible : Visibility.None)
-        .padding({ left: 15, right: 15 })
-        .width("100%")
-        .animation(animation_default())
-        .constraintSize({ minHeight: 20 })
+      if (this.delayed_load_p0) {
+        EstimatedDestination({
+          is_http_no_s: this.search_input_unify_scheme_http,
+          is_search_input_typing: this.is_search_input_typing,
+          is_search_input_address: this.is_search_input_address,
+          search_input: this.search_input,
+          search_input_unified: this.search_input_unified
+        })
+          .visibility(this.is_search_input_typing && this.title_bar_position == 'top' ? Visibility.Visible : Visibility.None)
+          .padding({ left: 15, right: 15 })
+          .width("100%")
+          .animation(animation_default())
+          .constraintSize({ minHeight: 20 })
+      } // Estimated Destination
 
-      // Delayed loading
       if (this.delayed_load_p2) {
         Scroll() {
           Column({ space: 10 }) {
@@ -980,16 +932,16 @@ struct meowTitleBar {
           .visibility(this.showing_scratching_board ? Visibility.Visible : Visibility.None)
           .layoutWeight(this.showing_scratching_board ? 1 : undefined)
           .animation(animation_default())
-      }
+      } // All the panels
 
-      if (this.title_bar_position == "top" && this.delayed_load_p0) {
+      if (this.title_bar_position == "top") {
         meowSuggestions({ bottom_margin: 15 })
-          .animation(animation_default())
-      }
+          .width(undefined)
+      } // Suggestions
 
       if (this.title_bar_position == "bottom") {
         Row().height(5)
-      }
+      } // Space
     } // Title Bars
     .clip(true)
     .allowDrop(allow_drop_types())
@@ -1031,7 +983,7 @@ struct meowTitleBar {
     })
     .keyboardShortcut(this.bunch_of_key_shortcuts.in_page_search.main_key, this.bunch_of_key_shortcuts.in_page_search.modifier, () => {
       this.showing_more_options = true;
-      focusControl.requestFocus("in_page_search_blank")
+      focusControl.requestFocus("in_page_search_blank");
     })
   }
 
@@ -1156,6 +1108,9 @@ struct meowTitleBar {
     this.showing_bookmarks = !this.showing_bookmarks;
   }
 
+  /**
+   * Closes the Vertical Tabs and bookmarks panels if is not tablet mode.
+   * */
   close_tabs_and_bookmarks_non_tablet() {
     if (!this.tablet_mode) {
       if (this.tabs_style_non_tablet_mode == "vertical") {
@@ -1207,6 +1162,9 @@ struct meowTitleBar {
 
   // Operations
 
+  /**
+   * Opens the bookmarks panel and prepare to add current page.
+   * */
   show_add_bookmarks() {
     if (this.showing_bookmarks) {
       this.showing_bookmarks = false;
@@ -1374,5 +1332,55 @@ struct EstimatedDestination {
     let uni_result = unify_search_input_into_url(s, this.is_http_no_s ? "http" : "https");
     this.search_input_unified = uni_result[0] as string;
     this.is_search_input_address = uni_result[1] as boolean;
+  }
+}
+
+@Component
+struct ThisPageInfo {
+  @Prop current_title: string;
+  @Prop current_url: string;
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // Settings - Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
+
+  build() {
+    Row({ space: 15 }) {
+      Column({ space: 2.5 }) {
+        Text(this.current_title)
+          .fontColor(this.color_current_font)
+          .fontWeight(FontWeight.Bold)
+          .fontSize(fontSize_Large())
+          .maxLines(2)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+          .clickEffect(click_effect_default())
+          .onClick(() => {
+            copy(this.current_title);
+          })
+        Text(this.current_url)
+          .fontColor(this.color_current_font)
+          .fontWeight(FontWeight.Bold)
+          .fontSize(fontSize_Normal())
+          .opacity(0.7)
+          .maxLines(2)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+          .clickEffect(click_effect_default())
+          .onClick(() => {
+            copy(this.current_url);
+          })
+      }
+      .alignItems(HorizontalAlign.Start)
+      .layoutWeight(1)
+
+      linysSymbol({ symbol_glyph_target: 'sys.symbol.share' })
+        .onClick(() => {
+          share_link(this.current_url, this.current_title);
+        })
+    } // Title Bar for This Page Info display
+    .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
+    .padding({ left: 15, right: 15, top: 6 })
+    .width("100%")
   }
 }

@@ -314,7 +314,7 @@ struct meowAppSettings {
   @State clear_web_cache_confirm: number = 0;
   @State web_cache_size: number = 0;
   @State history_index_size: number = 0;
-  @State version_clicked_times: number = 0;
+  version_clicked_times: number = 0;
   // Status
   @State calculating_web_cache_size: boolean = false;
   @State calculating_history_index_size: boolean = false;
@@ -344,6 +344,7 @@ struct meowAppSettings {
           })
           // .margin({ left: 15, right: 15 })
         } // Quick access on the top
+
         WaterFlow({ scroller: this.waterFlow_control }) {
           FlowItem() {
             settingsCard({
@@ -394,14 +395,14 @@ struct meowAppSettings {
                   .caretColor(this.color_current_font)
                   .selectedBackgroundColor(this.color_current_font)
                   .onSubmit(() => {
-                    this.set_new_tab_url_and_kv_store();
+                    this.set_save_new_tab_url();
                   })
                   .height(capsule_bar_height())
 
                 linysCapsuleButton({ text: "  󰀻  " })
                   .visibility(this.new_tab_url_edit != this.bunch_of_tabs.new_tab_url ? Visibility.Visible : Visibility.None)
                   .onClick(() => {
-                    this.set_new_tab_url_and_kv_store();
+                    this.set_save_new_tab_url();
                   })
                   .alignSelf(ItemAlign.End)
                   .animation(animation_default())
@@ -420,14 +421,14 @@ struct meowAppSettings {
                   .caretColor(this.color_current_font)
                   .selectedBackgroundColor(this.color_current_font)
                   .onSubmit(() => {
-                    this.set_home_url_and_kv_store();
+                    this.set_save_home_url();
                   })
                   .height(capsule_bar_height())
 
                 linysCapsuleButton({ text: "  󰀻  " })
                   .visibility(this.home_url_edit != this.bunch_of_tabs.home_url ? Visibility.Visible : Visibility.None)
                   .onClick(() => {
-                    this.set_home_url_and_kv_store();
+                    this.set_save_home_url();
                   })
                   .alignSelf(ItemAlign.End)
                   .animation(animation_default())
@@ -1112,7 +1113,7 @@ struct meowAppSettings {
         .columnsTemplate("1fr ".repeat(Math.ceil(this.screen_width / minimum_card_width())))
         .rowsGap(10)
         .columnsGap(10)
-        .borderRadius(10)
+        .borderRadius(13.5)
         .edgeEffect(EdgeEffect.Spring)
         .scrollBar(BarState.Auto)
         .width("100%")
@@ -1320,15 +1321,13 @@ struct meowAppSettings {
 
   // Operations
 
-  set_new_tab_url_and_kv_store() {
+  set_save_new_tab_url() {
     this.bunch_of_tabs.new_tab_url = this.new_tab_url_edit;
-    // kv_store_put("new_tab_url", this.new_tab_url_edit);
     bunch_of_settings.set('new_tab_url', this.new_tab_url_edit);
   }
 
-  set_home_url_and_kv_store() {
+  set_save_home_url() {
     this.bunch_of_tabs.home_url = this.home_url_edit;
-    // kv_store_put("home_url", this.home_url_edit);
     bunch_of_settings.set('home_url', this.home_url_edit);
   }
 
@@ -1362,6 +1361,11 @@ struct meowAppSettings {
     })
   }
 
+  /**
+   * Scrolls to a specific category of settings.
+   *
+   * Triggered by @Watch of this.settings_scroll_to.
+   * */
   scroll_settings_to() {
     if (this.settings_scroll_to < 0) {
       return;
@@ -1370,11 +1374,15 @@ struct meowAppSettings {
     this.waterFlow_control.scrollToIndex(this.settings_scroll_to, true);
   }
 
+  /**
+   * Called when clicking the version code in Settings - About.
+   *
+   * Activates the Devs Ops.
+   * */
   version_clicked() {
     this.version_clicked_times += 1;
     if (this.version_clicked_times == 7) {
       // Enter Dev mode
-      this.version_clicked_times += 1;
       bunch_of_settings.set('DEV_MODE', true);
     }
   }

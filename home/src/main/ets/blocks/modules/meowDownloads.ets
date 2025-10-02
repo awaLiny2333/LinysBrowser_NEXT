@@ -55,7 +55,7 @@ struct meowDownloads {
           notice_height: this.notice_height
         })
       } // Download cards
-      .borderRadius(10)
+      .borderRadius(13.5)
       .columnsTemplate(this.bunch_of_downloads.list_of_on_going_tasks.length == 0 ? "1fr" : "1fr ".repeat(Math.ceil(this.screen_width / minimum_card_width())))
       .rowsGap(10)
       .columnsGap(10)
@@ -63,10 +63,6 @@ struct meowDownloads {
       .edgeEffect(EdgeEffect.Spring)
       .scrollBar(BarState.Auto)
       .layoutWeight(1)
-      .onAppear(() => {
-        // console.log("[Meow][meowDownloads] Downloads READY")
-        this.on_appear();
-      })
       .onAreaChange((_old_value, new_value) => {
         if (this.waterflow_height != new_value.height as number) {
           this.waterflow_height = new_value.height as number;
@@ -78,10 +74,6 @@ struct meowDownloads {
     .padding({ left: 15, right: 15 })
     .animation(animation_default())
 
-  }
-
-  on_appear() {
-    this.bunch_of_downloads.delete_all_downloaded_files();
   }
 
   on_download_state_change() {
