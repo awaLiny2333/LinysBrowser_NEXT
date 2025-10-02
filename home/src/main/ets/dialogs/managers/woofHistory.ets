@@ -151,6 +151,7 @@ struct woofHistory {
                 this.full_view = !this.full_view
               })
           } // Time elapse description
+          .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
           .width("100%")
 
           Scroll() {
@@ -188,6 +189,7 @@ struct woofHistory {
                       top: 9,
                       bottom: 3
                     })
+                    .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
                     .backgroundColor(this.selected[_record_item[1] as number] ? this.color_current_font : this.color_current_secondary)
                     .animation(animation_default())
                   }

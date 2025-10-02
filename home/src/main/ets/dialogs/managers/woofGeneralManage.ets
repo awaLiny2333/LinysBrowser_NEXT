@@ -148,7 +148,9 @@ struct woofGeneralManage {
               .onClick(() => {
                 this.full_view = !this.full_view
               })
-          }.width('100%')
+          }
+          .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
+          .width('100%')
 
           Scroll() {
             Column() {

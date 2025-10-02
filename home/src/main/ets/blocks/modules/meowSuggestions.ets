@@ -159,6 +159,8 @@ struct meowRelation {
 struct suggestionList {
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @Prop suggestions: string[][] = [];
+  // Settings / Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Dialogs
   @State show_title: string = '';
   @State show_url: string = '';
@@ -191,6 +193,8 @@ struct suggestionList {
             })
             .opacity(0.7)
         }
+        .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
+        .animation(animation_default())
       })
     }
     .padding(15)

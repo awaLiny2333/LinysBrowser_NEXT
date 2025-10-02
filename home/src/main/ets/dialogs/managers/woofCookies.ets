@@ -16,6 +16,8 @@ struct woofCookies {
   @State domain_url: string = this.get_domain_url(this.current_url);
   // UI
   @State full_view: boolean = false;
+  // Settings / Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Interfaces
   @State cookies_site: string[] = this.get_cookies_site();
   // alignRules
@@ -106,7 +108,9 @@ struct woofCookies {
               .onClick(() => {
                 this.full_view = !this.full_view
               })
-          }.width('100%')
+          }
+          .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
+          .width('100%')
 
           linysText({ text: this.domain_url })// domain
             .width("100%")
