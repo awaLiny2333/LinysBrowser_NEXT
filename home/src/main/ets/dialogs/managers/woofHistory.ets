@@ -8,6 +8,7 @@ import woofControlFrame from '../woofControlFrame';
 import HistoryDataSource from '../../objects/HistoryDataSource';
 import { all_false, all_true } from '../../utils/data_operation_tools';
 import { LengthMetrics } from '@kit.ArkUI';
+import woofQR from '../contents/woofQR';
 
 @CustomDialog
 struct woofHistory {
@@ -54,12 +55,23 @@ struct woofHistory {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Stuffs
   scroller: Scroller = new Scroller();
-  controller: CustomDialogController;
   @StorageProp('woofHistory_search_input') woofHistory_search_input: string = '';
   @StorageProp('woofHistory_shown') woofHistory_shown: boolean[] = all_true(this.opened_month_history_list.length); // If is included in search result
   @StorageProp('woofHistory_filter') @Watch('submit_search') woofHistory_filter: number = 2; // 0 = label, 1 = link, 2 = both
   @StorageProp('woofHistory_match_coefficient') @Watch('submit_search') woofHistory_match_coefficient: number = 0.8;
   @StorageProp('woofHistory_blur') @Watch('on_blur_change') woofHistory_blur: number = 1; // 0 = 0.5, 1 = 0.75, 2 = 1.0
+  // Dialogs
+  @State show_title: string = '';
+  @State show_url: string = '';
+  woofQR_control: CustomDialogController = new CustomDialogController({
+    builder: woofQR({
+      title: this.show_title,
+      link: this.show_url
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16
+  });
+  controller: CustomDialogController;
   // Data
   @StorageLink('woofHistory_data') data: HistoryDataSource = new HistoryDataSource(this.bunch_of_history.get_history_this_month_with_index());
 
@@ -133,16 +145,34 @@ struct woofHistory {
                 ListItem() {
                   // linysText({ text: key.toString() })
                   if (this.opened_month_history_list[_record_item[1] as number]) {
-                    meowRelation({
-                      index: (_record_item[1] as number),
-                      selected: this.selected,
-                      selected_item_quantity: this.selected_items_quantity,
-                      selecting: this.selecting,
-                      // record: this.opened_month_history_list[(_record_item[1] as number)],
-                      record: _record_item[0] as history_record,
-                      controller: this.controller,
+                    Row({ space: 10 }) {
+                      meowRelation({
+                        index: (_record_item[1] as number),
+                        selected: this.selected,
+                        selected_item_quantity: this.selected_items_quantity,
+                        selecting: this.selecting,
+                        // record: this.opened_month_history_list[(_record_item[1] as number)],
+                        record: _record_item[0] as history_record,
+                        controller: this.controller,
+                      })
+                        .layoutWeight(1)
+
+                      linysSymbol({
+                        symbol_glyph_target: 'sys.symbol.qrcode'
+                      })// QRcode
+                        .onClick(() => {
+                          this.show_title = (_record_item[0] as history_record).label;
+                          this.show_url = (_record_item[0] as history_record).link;
+                          this.woofQR_control.open();
+                        })
+                        .opacity(0.7)
+                    }
+                    .padding({
+                      left: 12,
+                      right: 12,
+                      top: 9,
+                      bottom: 3
                     })
-                      .width("100%")
                   }
                 }
                 .animation(animation_default())
@@ -441,12 +471,6 @@ struct meowRelation {
       })
         .opacity(0.7)
     }
-    .padding({
-      left: 12,
-      right: 12,
-      top: 9,
-      bottom: 3
-    })
     .alignItems(HorizontalAlign.Start)
     .width("100%")
     .backgroundColor(this.selected[this.index] ? this.color_current_font : this.color_current_secondary)

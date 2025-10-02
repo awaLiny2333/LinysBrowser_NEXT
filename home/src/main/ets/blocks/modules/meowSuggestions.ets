@@ -5,7 +5,6 @@ import linysText from '../../components/texts/linysText';
 import { search_label_link } from '../../utils/data_operation_tools';
 import woofQR from '../../dialogs/contents/woofQR';
 import linysSymbol from '../../components/texts/linysSymbol';
-import { it } from '@ohos/hypium';
 
 @Component
 struct meowSuggestions {
