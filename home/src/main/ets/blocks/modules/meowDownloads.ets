@@ -109,10 +109,9 @@ struct meowDownloads {
         this.on_appear();
       })
     }
-    .height(this.showing_downloads ? "75%" : 0)
+    // .height(this.showing_downloads ? "75%" : 0)
     .margin({ left: 15, right: 15 })
     .animation(animation_default())
-
   }
 
   on_appear() {

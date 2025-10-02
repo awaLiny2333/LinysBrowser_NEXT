@@ -1138,7 +1138,7 @@ struct meowAppSettings {
         .visibility(this.visibility_of_menu_side('right'))
         .animation(animation_default())
     }
-    .height(this.showing_app_settings ? "75%" : 0)
+    // .height(this.showing_app_settings ? "100%" : 0)
     .width("100%")
     .animation(animation_default())
     .onAppear(() => {

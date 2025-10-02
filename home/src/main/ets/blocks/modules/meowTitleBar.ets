@@ -968,14 +968,17 @@ struct meowTitleBar {
 
         meowAppSettings({ showing_app_settings: this.showing_app_settings })// Settings
           .visibility(this.showing_app_settings ? Visibility.Visible : Visibility.None)
+          .layoutWeight(this.showing_app_settings ? 1 : undefined)
           .animation(animation_default())
 
         meowDownloads({ screen_width: this.screen_width })
           .visibility(this.showing_downloads ? Visibility.Visible : Visibility.None)
+          .layoutWeight(this.showing_downloads ? 1 : undefined)
           .animation(animation_default())
 
         meowScratchingBoard()
           .visibility(this.showing_scratching_board ? Visibility.Visible : Visibility.None)
+          .layoutWeight(this.showing_scratching_board ? 1 : undefined)
           .animation(animation_default())
       }
 
@@ -1268,11 +1271,8 @@ struct meowTitleBar {
   // Values
 
   max_height_of_title_bar() {
-    if (!this.showing_more_options) {
-      return undefined;
-    }
-
-    if (this.current_in_page_searching_stats_total > 0) {
+    // TODO: Clean up the logics here
+    if (this.showing_more_options && this.current_in_page_searching_stats_total > 0) {
       // in-page Searching
       let base_height = this.tablet_mode ? 110 : 190;
       let tabs_offset = this.showing_tabs && current_tabs_style_is_horizontal() ? this.horizontal_tabs_height : 0;
@@ -1280,7 +1280,13 @@ struct meowTitleBar {
       return base_height + tabs_offset + position_offset;
     } else {
       // Normal height
-      return Math.min(this.full_screen_height, this.tablet_mode ? 370 : 460);
+      if (this.showing_more_options) {
+        return Math.min(this.full_screen_height, (this.tablet_mode ? 370 : 460));
+      }
+      if (this.full_screen_height < 370) {
+        return this.full_screen_height
+      }
+      return this.full_screen_height * 0.75;
     }
   }
 
