@@ -16,59 +16,14 @@ struct meowDownloads {
   @StorageLink('bunch_of_downloads') @Watch('on_download_state_change') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads(true);
   @StorageLink('showing_downloads') showing_downloads: boolean = false;
   // Downloads
-  @StorageLink('direct_download') direct_download: boolean = false;
-  @Link screen_width: number;
-  // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageProp('screen_width') screen_width: number = 0;
+  @StorageProp('screen_height') screen_height: number = 0;
+  // UI
+  @State notice_height: number = 100;
+  @State waterflow_height: number = 300;
 
   build() {
     Column({ space: 10 }) {
-      Column({ space: 5 }) {
-        linysTextTitle({
-          text: $r('app.string.Downloads_notice_title')
-        })
-        linysText({
-          text: $r('app.string.Downloads_notice_content'),
-          max_lines: 20
-        })
-      }
-      .visibility(this.direct_download ? Visibility.None : Visibility.Visible)
-      .padding(15)
-      .alignItems(HorizontalAlign.Start)
-      .justifyContent(FlexAlign.Start)
-      .width("100%")
-      .borderRadius(10)
-      .backgroundColor(this.color_current_primary)
-      .animation(animation_default())
-
-      Column({ space: 5 }) {
-        linysTextTitle({
-          text: $r('app.string.Index_downloads_direct'),
-          max_lines: 20
-        })
-          .width('100%')
-
-        linysText({ text: $r('app.string.Index_downloads_direct_desc'), max_lines: 20 })
-          .width('100%')
-
-        linysCapsuleButtonWithText({
-          desc_text: $r('app.string.Index_downloads_direct_desc_check'),
-          button_text: '  󰃋  ',
-          onExecution: async () => {
-            open_file_uri(await get_download_uri());
-          }
-        })
-          .width('100%')
-      }
-      .visibility(!this.direct_download ? Visibility.None : Visibility.Visible)
-      .padding(15)
-      .width("100%")
-      .borderRadius(10)
-      .backgroundColor(this.color_current_primary)
-      .animation(animation_default())
-
       WaterFlow() {
         if (this.bunch_of_downloads.list_of_on_going_tasks.length == 0) {
           FlowItem() {
@@ -81,10 +36,10 @@ struct meowDownloads {
               })
           }
           .opacity(0.5)
+          .height(this.waterflow_height - this.notice_height - 10)
           .width("100%")
-          .height("100%")
           .animation(animation_default())
-        }
+        } // Nothing
 
         ForEach(
           this.bunch_of_downloads.list_of_on_going_tasks,
@@ -94,8 +49,13 @@ struct meowDownloads {
               my_index: key,
             })
           },
-        )
-      }
+        ) // Cards
+
+        noticeCard({
+          notice_height: this.notice_height
+        })
+      } // Download cards
+      .borderRadius(10)
       .columnsTemplate(this.bunch_of_downloads.list_of_on_going_tasks.length == 0 ? "1fr" : "1fr ".repeat(Math.ceil(this.screen_width / minimum_card_width())))
       .rowsGap(10)
       .columnsGap(10)
@@ -103,15 +63,21 @@ struct meowDownloads {
       .edgeEffect(EdgeEffect.Spring)
       .scrollBar(BarState.Auto)
       .layoutWeight(1)
-      .animation(animation_default())
       .onAppear(() => {
         // console.log("[Meow][meowDownloads] Downloads READY")
         this.on_appear();
       })
+      .onAreaChange((_old_value, new_value) => {
+        if (this.waterflow_height != new_value.height as number) {
+          this.waterflow_height = new_value.height as number;
+        }
+      })
     }
-    // .height(this.showing_downloads ? "75%" : 0)
-    .margin({ left: 15, right: 15 })
+    .height('100%')
+    .layoutWeight(1)
+    .padding({ left: 15, right: 15 })
     .animation(animation_default())
+
   }
 
   on_appear() {
@@ -124,6 +90,68 @@ struct meowDownloads {
 }
 
 export default meowDownloads
+
+@Component
+struct noticeCard {
+  @Link notice_height: number;
+  @StorageLink('direct_download') direct_download: boolean = false;
+  // Colors
+  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+
+  build() {
+    FlowItem() {
+      if (this.direct_download) {
+        Column({ space: 5 }) {
+          linysTextTitle({
+            text: $r('app.string.Index_downloads_direct'),
+            max_lines: 20
+          })
+          // .width('100%')
+
+          linysText({ text: $r('app.string.Index_downloads_direct_desc'), max_lines: 20 })
+          // .width('100%')
+
+          linysCapsuleButtonWithText({
+            desc_text: $r('app.string.Index_downloads_direct_desc_check'),
+            button_text: '  󰃋  ',
+            onExecution: async () => {
+              open_file_uri(await get_download_uri());
+            }
+          })
+        } // Direct down
+        .alignItems(HorizontalAlign.Start)
+        .justifyContent(FlexAlign.Start)
+        .padding(15)
+        .borderRadius(10)
+        .backgroundColor(this.color_current_primary)
+        .animation(animation_default())
+
+      } else {
+        Column({ space: 5 }) {
+          linysTextTitle({
+            text: $r('app.string.Downloads_notice_title')
+          })
+          linysText({
+            text: $r('app.string.Downloads_notice_content'),
+            max_lines: 20
+          })
+        } // Attention plz
+        .padding(15)
+        .alignItems(HorizontalAlign.Start)
+        .justifyContent(FlexAlign.Start)
+        .borderRadius(10)
+        .backgroundColor(this.color_current_primary)
+        .animation(animation_default())
+      }
+    } // Notice
+    .width("100%")
+    .onAreaChange((_old_value, new_value) => {
+      this.notice_height = new_value.height as number;
+    })
+  }
+}
 
 @Component
 struct meowDownloadCard {

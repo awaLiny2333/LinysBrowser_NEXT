@@ -971,7 +971,7 @@ struct meowTitleBar {
           .layoutWeight(this.showing_app_settings ? 1 : undefined)
           .animation(animation_default())
 
-        meowDownloads({ screen_width: this.screen_width })
+        meowDownloads()
           .visibility(this.showing_downloads ? Visibility.Visible : Visibility.None)
           .layoutWeight(this.showing_downloads ? 1 : undefined)
           .animation(animation_default())
