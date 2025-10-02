@@ -296,6 +296,7 @@ struct woofHistory {
         .alignItems(HorizontalAlign.End)
         .id("controls_history")
         .alignRules(this.alignRules_foot)
+        .visibility(this.full_view ? Visibility.None : Visibility.Visible)
         .animation(animation_default())
         .width(this.tablet_mode ? "35%" : "100%")
       }
