@@ -32,6 +32,8 @@ struct woofGeneralManage {
   @State switch_id: string = '';
   @State sites_list_id: string = '';
   @State switch_all_sites_id: string = '';
+  // UI
+  @State full_view: boolean = false;
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Manage
@@ -117,21 +119,36 @@ struct woofGeneralManage {
         .align(Alignment.TopStart)
         .edgeEffect(EdgeEffect.Spring)
         .padding({ bottom: 10, right: 10 })
-        .width(this.tablet_mode ? "40%" : "100%")
+        .width(this.tablet_mode ? (this.full_view ? "0%" : "40%") : "100%")
         .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })
         .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
+        .clip(true)
+        .enabled(!this.full_view)
+        .opacity(this.full_view ? 0 : 1)
+        .height(this.full_view && !this.tablet_mode ? 0 : undefined)
         .animation(animation_default())
         .id("title")
 
         Column({ space: 10 }) {
-          linysText({
-            text: this.subtitle_sites_list,
-            max_lines: 3
-          }) // Subtitle on list of domains
-            .padding({ top: this.tablet_mode ? 0 : 10 })
-            .width("100%")
-            .opacity(this.all_sites_switch || !this.general_switch ? 0.5 : 1)
-            .animation(animation_default())
+          Row({ space: 10 }) {
+            linysText({
+              text: this.subtitle_sites_list,
+              max_lines: 3
+            }) // Subtitle on list of domains
+              .padding({ top: this.tablet_mode ? 0 : 10 })
+              .width("100%")
+              .opacity(this.all_sites_switch || !this.general_switch ? 0.5 : 1)
+              .animation(animation_default())
+              .layoutWeight(1)
+            linysSymbol({
+              symbol_glyph_target: this.full_view ?
+                'sys.symbol.arrow_down_right_and_arrow_up_left' :
+                'sys.symbol.arrow_up_left_and_arrow_down_right'
+            })
+              .onClick(() => {
+                this.full_view = !this.full_view
+              })
+          }.width('100%')
 
           Scroll() {
             Column() {
@@ -187,7 +204,7 @@ struct woofGeneralManage {
           }) // Feature enable
 
         } // Whitelist
-        .width(this.tablet_mode ? "60%" : "100%")
+        .width(this.tablet_mode ? (this.full_view ? "100%" : "60%") : "100%")
         .height(this.tablet_mode ? "100%" : undefined)
         .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)
         .animation(animation_default())
@@ -275,6 +292,7 @@ struct woofGeneralManage {
         .alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
         .alignRules(this.alignRules_foot)
         .opacity(this.all_sites_switch || !this.general_switch ? 0.5 : 1)
+        .visibility(this.full_view ? Visibility.None : Visibility.Visible)
         .animation(animation_default())
         .width(this.tablet_mode ? "40%" : "100%")
         .id("controls")
@@ -286,6 +304,7 @@ struct woofGeneralManage {
             // Reset delete confirm
           }, 10)
         })
+
       }.layoutWeight(1)
     }
   }

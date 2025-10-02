@@ -19,6 +19,7 @@ struct woofHistory {
   // Interactions
   @State viewing_year: number = this.bunch_of_history.get_current_year();
   @State viewing_month: number = this.bunch_of_history.get_current_month();
+  @State full_view: boolean = false;
   // Dates
   @State available_months: number[][] = bunch_of_history.get_history_months();
   @State opened_month_history_list: history_record[] = this.bunch_of_history.get_history_this_month();
@@ -115,27 +116,40 @@ struct woofHistory {
         .align(Alignment.TopStart)
         .edgeEffect(EdgeEffect.Spring)
         .padding({ bottom: 10, right: this.tablet_mode ? 10 : 0 })
-        .width(this.tablet_mode ? "35%" : "100%")
+        .width(this.tablet_mode ? (this.full_view ? '0%' : "35%") : "100%")
         .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
+        .clip(true)
+        .enabled(!this.full_view)
+        .opacity(this.full_view ? 0 : 1)
+        .height(this.full_view && !this.tablet_mode ? 0 : undefined)
         .animation(animation_default())
         .id("title_history")
 
         Column({ space: 10 }) {
 
           // Sub title
-          Row() {
+          Row({ space: 10 }) {
             linysText({
               text: $r('app.string.Settings_experience_history_date_format'),
               font_weight: FontWeight.Bold
             })
               .opacity(0.7)
             linysText({
-              text: " (" +
+              text: "(" +
                 ((this.data.totalCount() != this.opened_month_history_list.length) ? " 󰀩 " + this.data.totalCount().toString() + ' / ' : '') +
               this.opened_month_history_list.length.toString() + ")",
               font_weight: FontWeight.Bold
             })
               .opacity(0.7)
+              .layoutWeight(1)
+            linysSymbol({
+              symbol_glyph_target: this.full_view ?
+                'sys.symbol.arrow_down_right_and_arrow_up_left' :
+                'sys.symbol.arrow_up_left_and_arrow_down_right'
+            })
+              .onClick(() => {
+                this.full_view = !this.full_view
+              })
           } // Time elapse description
           .width("100%")
 
@@ -158,7 +172,8 @@ struct woofHistory {
                         .layoutWeight(1)
 
                       linysSymbol({
-                        symbol_glyph_target: 'sys.symbol.qrcode'
+                        symbol_glyph_target: 'sys.symbol.qrcode',
+                        color: !this.selected[_record_item[1] as number] ? this.color_current_font : this.color_current_secondary
                       })// QRcode
                         .onClick(() => {
                           this.show_title = (_record_item[0] as history_record).label;
@@ -173,6 +188,8 @@ struct woofHistory {
                       top: 9,
                       bottom: 3
                     })
+                    .backgroundColor(this.selected[_record_item[1] as number] ? this.color_current_font : this.color_current_secondary)
+                    .animation(animation_default())
                   }
                 }
                 .animation(animation_default())
@@ -237,7 +254,7 @@ struct woofHistory {
           .backgroundColor(this.color_current_secondary)
 
         } // List
-        .width(this.tablet_mode ? "65%" : "100%")
+        .width(this.tablet_mode ? (this.full_view ? '100%' : "65%") : "100%")
         .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)
         .animation(animation_default())
 
@@ -334,6 +351,7 @@ struct woofHistory {
       }
       .width('100%')
       .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
+      .visibility(this.full_view ? Visibility.None : Visibility.Visible)
       .animation(animation_default())
     }
   }
@@ -473,7 +491,6 @@ struct meowRelation {
     }
     .alignItems(HorizontalAlign.Start)
     .width("100%")
-    .backgroundColor(this.selected[this.index] ? this.color_current_font : this.color_current_secondary)
     .animation(animation_default())
     .onClick(() => {
       if (this.selecting) {

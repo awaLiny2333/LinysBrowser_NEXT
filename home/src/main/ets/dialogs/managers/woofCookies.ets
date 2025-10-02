@@ -4,9 +4,8 @@ import { animation_default, click_effect_default } from '../../hosts/bunch_of_de
 import { webview } from '@kit.ArkWeb';
 import { match_domain } from '../../utils/url_tools';
 import woofControlFrame from '../woofControlFrame';
-import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
-import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
+import linysSymbol from '../../components/texts/linysSymbol';
 
 @CustomDialog
 struct woofCookies {
@@ -15,6 +14,8 @@ struct woofCookies {
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageProp('current_url') current_url: string = "=￣ω￣=";
   @State domain_url: string = this.get_domain_url(this.current_url);
+  // UI
+  @State full_view: boolean = false;
   // Interfaces
   @State cookies_site: string[] = this.get_cookies_site();
   // alignRules
@@ -80,16 +81,32 @@ struct woofCookies {
         .align(Alignment.TopStart)
         .edgeEffect(EdgeEffect.Spring)
         .padding({ bottom: 10, right: 10 })
-        .width(this.tablet_mode ? "40%" : "100%")
+        .width(this.tablet_mode ? (this.full_view ? "0%" : "40%") : "100%")
         .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
+        .clip(true)
+        .enabled(!this.full_view)
+        .opacity(this.full_view ? 0 : 1)
+        .height(this.full_view && !this.tablet_mode ? 0 : undefined)
         .animation(animation_default())
         .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })
         .id("title_cookies_manager")
 
         Column() {
-          linysText({ text: $r('app.string.Settings_manage_cookies_this_site'), max_lines: 3 })// Cookies on
-            .width("100%")
-            .padding({ top: this.tablet_mode ? 0 : 10, bottom: 5 })
+          Row({ space: 10 }) {
+            linysText({ text: $r('app.string.Settings_manage_cookies_this_site'), max_lines: 3 })// Cookies on
+              .width("100%")
+              .padding({ top: this.tablet_mode ? 0 : 10, bottom: 5 })
+              .layoutWeight(1)
+
+            linysSymbol({
+              symbol_glyph_target: this.full_view ?
+                'sys.symbol.arrow_down_right_and_arrow_up_left' :
+                'sys.symbol.arrow_up_left_and_arrow_down_right'
+            })
+              .onClick(() => {
+                this.full_view = !this.full_view
+              })
+          }.width('100%')
 
           linysText({ text: this.domain_url })// domain
             .width("100%")
@@ -123,7 +140,7 @@ struct woofCookies {
           .width("100%")
           .layoutWeight(1)
         } // Cookies
-        .width(this.tablet_mode ? "60%" : "100%")
+        .width(this.tablet_mode ? (this.full_view ? "100%" : "60%") : "100%")
         .height(this.tablet_mode ? "100%" : undefined)
         .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)
         .animation(animation_default())
@@ -145,6 +162,7 @@ struct woofCookies {
         .padding(this.tablet_mode ? { right: 10 } : undefined)
         .alignItems(HorizontalAlign.End)
         .alignRules(this.alignRules_foot)
+        .visibility(this.full_view ? Visibility.None : Visibility.Visible)
         .animation(animation_default())
         .width(this.tablet_mode ? "40%" : "100%")
         .id("controls_cookies")
