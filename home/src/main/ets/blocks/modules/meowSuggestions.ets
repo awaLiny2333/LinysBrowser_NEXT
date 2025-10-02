@@ -3,6 +3,9 @@ import { bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_history } from '../../hosts/bunch_of_history';
 import linysText from '../../components/texts/linysText';
 import { search_label_link } from '../../utils/data_operation_tools';
+import woofQR from '../../dialogs/contents/woofQR';
+import linysSymbol from '../../components/texts/linysSymbol';
+import { it } from '@ohos/hypium';
 
 @Component
 struct meowSuggestions {
@@ -157,14 +160,38 @@ struct meowRelation {
 struct suggestionList {
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @Prop suggestions: string[][] = [];
+  // Dialogs
+  @State show_title: string = '';
+  @State show_url: string = '';
+  woofQR_control: CustomDialogController = new CustomDialogController({
+    builder: woofQR({
+      title: this.show_title,
+      link: this.show_url
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 16
+  });
 
   build() {
     Column({ space: 8 }) {
       ForEach(this.suggestions, (item: string[], index: number) => {
-        meowRelation({
-          relation: item,
-          index: index
-        })
+        Row({ space: 10 }) {
+          meowRelation({
+            relation: item,
+            index: index
+          })
+            .layoutWeight(1)
+
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.qrcode'
+          })// QRcode
+            .onClick(() => {
+              this.show_title = item[0];
+              this.show_url = item[1];
+              this.woofQR_control.open();
+            })
+            .opacity(0.7)
+        }
       })
     }
     .padding(15)

@@ -73,7 +73,7 @@ export function animation_default() {
  * @returns 2000
  * */
 export function animation_popup_duration() {
-  return 2000;
+  return 1000;
 }
 
 /**

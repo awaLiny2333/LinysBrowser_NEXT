@@ -1,5 +1,7 @@
 import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
+import { click_effect_default } from '../../hosts/bunch_of_defaults';
+import { copy } from '../../utils/clipboard_tools';
 import woofControlFrame from '../woofControlFrame';
 
 @CustomDialog
@@ -20,23 +22,36 @@ struct woofQR {
       controller: this.controller
     }) {
       Scroll() {
-        Column({ space: 5 }) {
+        Column({ space: 15 }) {
           QRCode(this.link)
             .color(this.color_current_font)
             .backgroundColor("transparent")
             .padding(20)
 
-          linysTextTitle({
-            text: this.title,
-            max_lines: 3
-          })
-            .width("100%")
-          linysText({
-            text: this.link,
-            max_lines: 5
-          })
-            .width("100%")
-            .opacity(0.7)
+          Column({ space: 5 }) {
+            linysTextTitle({
+              text: this.title,
+              max_lines: 5
+            })
+              .width("100%")
+              .clickEffect(click_effect_default())
+              .onClick(() => {
+                copy(this.title);
+              })
+
+            linysText({
+              text: this.link,
+              font_weight: FontWeight.Bold,
+              max_lines: 10
+            })
+              .width("100%")
+              .opacity(0.7)
+              .clickEffect(click_effect_default())
+              .onClick(() => {
+                copy(this.link);
+              })
+          } // Info
+
         }
         .alignItems(HorizontalAlign.Center)
         .justifyContent(FlexAlign.Center)
