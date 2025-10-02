@@ -239,6 +239,7 @@ struct woofSelectColor {
         .edgeEffect(EdgeEffect.Spring)
         .scrollBar(BarState.Off)
         .padding({ right: this.tablet_mode ? 12 : 0 })
+        .borderRadius(10)
         .id("controls_color")
         .alignRules(this.alignRules_foot)
         .animation(animation_default())

@@ -50,6 +50,7 @@ struct meowTitleBar {
   // Environments
   @StorageLink('fullscreen_mode') fullscreen_mode: boolean = false;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
+  @StorageLink('compact_mode') compact_mode: boolean = false; // Like PuraX
   @StorageProp('screen_width') screen_width: number = 0;
   @StorageProp('screen_height') screen_height: number = 0;
   @StorageLink('full_screen_height') full_screen_height: number = 0;
@@ -135,7 +136,7 @@ struct meowTitleBar {
       link: this.current_url
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 16
+    cornerRadius: 24,
   });
   woofQuickUA_control: CustomDialogController = new CustomDialogController({
     builder: woofQuickUA(),
@@ -143,10 +144,11 @@ struct meowTitleBar {
     cornerRadius: 26
   });
   woofHistory_control: CustomDialogController = new CustomDialogController({
-    builder: woofHistory(),
+    builder: woofHistory({
+      full_view: this.compact_mode
+    }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 22,
-    // showInSubWindow: true,
+    cornerRadius: 24,
     width: "90%",
   });
   quick_keyword: string = '';
@@ -165,7 +167,7 @@ struct meowTitleBar {
       general_switch: this.use_adblock,
       sites_list: this.adblock_exceptions,
       add_site_edit: match_domain(this.search_input)[1],
-      showing_add_panel: true,
+      showing_add_panel: !this.compact_mode,
       descriptions: [
         $r('app.string.Ads_block_desc_1'),
         $r('app.string.Ads_block_desc_2')],
@@ -191,10 +193,11 @@ struct meowTitleBar {
         } catch (e) {
           console.error('[woofAdsBlocker][delete_selected] ' + e);
         }
-      }
+      },
+      full_view: this.compact_mode
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 16,
+    cornerRadius: 24,
     // showInSubWindow: true,
     width: "90%",
   });
@@ -203,7 +206,7 @@ struct meowTitleBar {
       general_switch: this.web_force_dark_mode,
       sites_list: this.web_force_dark_mode_exemptions,
       add_site_edit: match_domain(this.search_input)[1],
-      showing_add_panel: true,
+      showing_add_panel: !this.compact_mode,
       descriptions: [
         $r('app.string.Web_force_dark_mode_desc_1'),
         $r('app.string.Web_force_dark_mode_desc_2')],
@@ -216,17 +219,19 @@ struct meowTitleBar {
       subtitle_all_sites: '',
       all_sites_switch: this.to_fool_woofGeneralManage,
       switch_all_sites_id: '',
+      full_view: this.compact_mode
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 16,
+    cornerRadius: 24,
     // showInSubWindow: true,
     width: "90%",
   });
   cookies_control: CustomDialogController = new CustomDialogController({
-    builder: woofCookies(),
+    builder: woofCookies({
+      full_view: this.compact_mode
+    }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 16,
-    // showInSubWindow: true,
+    cornerRadius: 24,
     width: "90%",
   });
   js_manage_control: CustomDialogController = new CustomDialogController({
@@ -235,7 +240,7 @@ struct meowTitleBar {
       sites_list: this.disable_js_these_sites,
       all_sites_switch: this.disable_js_all_sites,
       add_site_edit: match_domain(this.search_input)[1],
-      showing_add_panel: true,
+      showing_add_panel: !this.compact_mode,
       descriptions: [
         $r('app.string.Settings_js_desc_1'),
         $r('app.string.Settings_js_desc_2'),
@@ -248,9 +253,10 @@ struct meowTitleBar {
       switch_id: 'disable_js',
       sites_list_id: 'disable_js_these_sites',
       switch_all_sites_id: 'disable_js_all_sites',
+      full_view: this.compact_mode
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 16,
+    cornerRadius: 24,
     // showInSubWindow: true,
     width: "90%",
   });
@@ -260,7 +266,7 @@ struct meowTitleBar {
       sites_list: this.disable_image_these_sites,
       all_sites_switch: this.disable_image_all_sites,
       add_site_edit: match_domain(this.search_input)[1],
-      showing_add_panel: true,
+      showing_add_panel: !this.compact_mode,
       descriptions: [
         $r('app.string.Settings_image_desc_1'),
         $r('app.string.Settings_image_desc_2'),
@@ -273,9 +279,10 @@ struct meowTitleBar {
       switch_id: 'disable_image',
       sites_list_id: 'disable_image_these_sites',
       switch_all_sites_id: 'disable_image_all_sites',
+      full_view: this.compact_mode
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 16,
+    cornerRadius: 24,
     // showInSubWindow: true,
     width: "90%",
   });
@@ -1239,9 +1246,9 @@ struct meowTitleBar {
     } else {
       // Normal height
       if (this.showing_more_options) {
-        return Math.min(this.full_screen_height, (this.tablet_mode ? 370 : 460));
+        return Math.min(this.full_screen_height, (this.tablet_mode ? 400 : 460));
       }
-      if (this.full_screen_height < 370) {
+      if (this.full_screen_height < 400) {
         return this.full_screen_height
       }
       return this.full_screen_height * 0.75;

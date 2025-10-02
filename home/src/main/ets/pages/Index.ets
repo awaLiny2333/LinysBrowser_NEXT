@@ -26,6 +26,7 @@ struct Index {
   @StorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
   @StorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
   @StorageLink('tablet_mode') tablet_mode: boolean = false;
+  @StorageLink('compact_mode') compact_mode: boolean = false; // Like PuraX
   @StorageLink('screen_width') screen_width: number = 0;
   @StorageLink('screen_height') screen_height: number = 0;
   @StorageLink('full_screen_height') full_screen_height: number = 0;
@@ -86,7 +87,7 @@ struct Index {
       desc: this.fail_prompt_desc,
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 16,
+    cornerRadius: 24,
     // showInSubWindow: true,
     width: "90%",
   });
@@ -110,9 +111,11 @@ struct Index {
       try {
         const rect: window.Rect = value.getWindowProperties().windowRect;
         this.tablet_mode = meowPx2vp(rect.width) > 600;
+        this.compact_mode = meowPx2vp(rect.height) < 400;
       } catch (error) {
         // Leave tablet_mode there to be negative
         this.tablet_mode = false;
+        this.compact_mode = false;
       }
     });
 
@@ -271,6 +274,7 @@ struct Index {
     this.screen_width = n.width as number;
     this.screen_height = n.height as number;
     this.tablet_mode = this.screen_width > 600;
+    this.compact_mode = this.screen_height < 400;
 
     if (!this.tablet_mode) {
       if (this.showing_tabs && this.showing_bookmarks) {

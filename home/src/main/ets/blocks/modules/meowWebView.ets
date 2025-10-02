@@ -94,14 +94,14 @@ struct meowWebView {
       try_additional_info: []
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 16
+    cornerRadius: 24
   });
   woofLinkJumper_control: CustomDialogController = new CustomDialogController({
     builder: woofWantJump({
       link: this.potential_jump_link,
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 16,
+    cornerRadius: 24,
     width: "90%"
   });
   @State js_prompt_event: OnPromptEvent | undefined = undefined;
@@ -110,7 +110,7 @@ struct meowWebView {
       event: this.js_prompt_event
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 16
+    cornerRadius: 24
   })
   @State js_confirm_event: OnConfirmEvent | undefined = undefined;
   woofConfirm_control: CustomDialogController = new CustomDialogController({
@@ -118,7 +118,7 @@ struct meowWebView {
       event: this.js_confirm_event
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 16
+    cornerRadius: 24
   })
   @State js_alert_event: OnAlertEvent | undefined = undefined;
   woofAlert_control: CustomDialogController = new CustomDialogController({
@@ -126,7 +126,7 @@ struct meowWebView {
       event: this.js_alert_event
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 16
+    cornerRadius: 24
   })
   onPermit?: () => void;
   onDeny?: () => void;
@@ -140,13 +140,12 @@ struct meowWebView {
       source: this.source
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 16
+    cornerRadius: 24
   });
   woofHomepageManager_control: CustomDialogController = new CustomDialogController({
     builder: woofHomepageManager(),
     alignment: DialogAlignment.Center,
-    cornerRadius: 16,
-    // // showInSubWindow: true,
+    cornerRadius: 24,
   });
   // Colors
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -681,7 +680,7 @@ struct meowWebView {
         item: this.uni_webDownloadItem_gateway,
       }),
       alignment: DialogAlignment.Center,
-      cornerRadius: 16
+      cornerRadius: 24
     });
     this.woofWantDownload_control.open();
   }

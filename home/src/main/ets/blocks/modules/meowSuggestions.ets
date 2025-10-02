@@ -171,7 +171,7 @@ struct suggestionList {
       link: this.show_url
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 16
+    cornerRadius: 24
   });
 
   build() {

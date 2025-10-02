@@ -562,7 +562,7 @@ struct bookmarkItem {
     }),
     alignment: DialogAlignment.Center,
     // showInSubWindow: true,
-    cornerRadius: 16,
+    cornerRadius: 24,
     width: "90%",
   })
   // Colors

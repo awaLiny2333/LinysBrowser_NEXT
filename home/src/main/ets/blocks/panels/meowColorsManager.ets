@@ -112,7 +112,7 @@ struct colorBlock {
   woofColorSelect_control: CustomDialogController = new CustomDialogController({
     builder: woofSelectColor({ color: this.color, dark_mode_color: false, color_theme_id: this.color_theme_id }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 16,
+    cornerRadius: 24,
     // showInSubWindow: true,
     width: "90%",
   });
@@ -134,7 +134,7 @@ struct colorBlock {
             color_theme_id: this.color_theme_id
           }),
           alignment: DialogAlignment.Center,
-          cornerRadius: 16,
+          cornerRadius: 24,
           // showInSubWindow: true,
           width: "90%",
         });

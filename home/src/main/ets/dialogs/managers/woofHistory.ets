@@ -70,7 +70,7 @@ struct woofHistory {
       link: this.show_url
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 16
+    cornerRadius: 24
   });
   controller: CustomDialogController;
   // Data

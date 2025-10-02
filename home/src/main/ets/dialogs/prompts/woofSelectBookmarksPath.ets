@@ -59,6 +59,7 @@ struct woofSelectBookmarksPath {
       .edgeEffect(EdgeEffect.Spring)
       .width("100%")
       .layoutWeight(1)
+      .borderRadius(10)
       .margin({ bottom: 10 })
       .onAreaChange((_o, n) => {
         this.scroll_area_height = n.height as number;
