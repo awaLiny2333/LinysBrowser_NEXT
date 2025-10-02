@@ -93,8 +93,8 @@ struct meowScratchingBoard {
     .justifyContent(FlexAlign.Center)
     .padding({ left: 15, right: 15 })
     .width("100%")
-    .height((this.show_feed_prompt ? 0.3 * this.screen_height :
-      Math.min(this.area_height + 43, 0.6 * this.screen_height)) + 40)
+    // .height((this.show_feed_prompt ? 0.3 * this.screen_height :
+    //   Math.min(this.area_height + 43, 0.6 * this.screen_height)) + 40)
     .animation(animation_default())
     .onAppear(() => {
       setInterval(() => {
