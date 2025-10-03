@@ -118,7 +118,7 @@ struct woofGeneralManage {
         } // Descriptions
         .align(Alignment.TopStart)
         .edgeEffect(EdgeEffect.Spring)
-        .margin({ bottom: 10, top: 5, right: this.tablet_mode ? 10 : 0 })
+        .padding({ bottom: 10, top: 5, right: this.tablet_mode ? 10 : 0 })
         .width(this.tablet_mode ? (this.full_view ? "0%" : "40%") : "100%")
         .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })
         .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
