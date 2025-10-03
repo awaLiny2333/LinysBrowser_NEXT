@@ -277,7 +277,6 @@ export function insert_into_array(arr: collections.Array<number>, new_num: numbe
 
 // Types & conversions
 
-
 /**
  * Converts a boolean to string.
  * @param bool A boolean.

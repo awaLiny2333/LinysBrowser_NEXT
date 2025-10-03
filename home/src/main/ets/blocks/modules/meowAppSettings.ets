@@ -1109,7 +1109,7 @@ struct meowAppSettings {
         .columnsTemplate("1fr ".repeat(Math.ceil(this.screen_width / minimum_card_width())))
         .rowsGap(10)
         .columnsGap(10)
-        .borderRadius(13.5)
+        .borderRadius(10)
         .edgeEffect(EdgeEffect.Spring)
         .scrollBar(BarState.Auto)
         .width("100%")
@@ -1135,7 +1135,6 @@ struct meowAppSettings {
         .visibility(this.visibility_of_menu_side('right'))
         .animation(animation_default())
     }
-    // .height(this.showing_app_settings ? "100%" : 0)
     .width("100%")
     .animation(animation_default())
     .onAppear(() => {
@@ -1427,17 +1426,9 @@ struct settingsCard {
       Column({ space: 10 }) {
         this.contents();
       }
-      // .borderColor((this.highlight && this.timeout > 0) ? this.color_current_font : this.color_current_primary)
-      // .opacity((!this.highlight && this.timeout > 0) ? 0.5 : 1)
-      // .animation(animation_default())
-      // .padding(13)
       .alignItems(HorizontalAlign.Start)
       .justifyContent(FlexAlign.Start)
       .width("100%")
-
-      // .borderRadius(10)
-      // .borderWidth(2)
-      // .backgroundColor(this.color_current_primary)
     }
     .alignItems(HorizontalAlign.Start)
     .justifyContent(FlexAlign.Start)
@@ -1556,8 +1547,6 @@ struct menuScrollVertical {
   @State menu_text: string[] = [];
   @State button_Lengths: number[] = new Array(this.menu_text.length).fill(0);
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
@@ -1642,7 +1631,6 @@ struct menuItem {
   @Link on_index_last: number;
   @Link scroll_to_gateway: number;
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 

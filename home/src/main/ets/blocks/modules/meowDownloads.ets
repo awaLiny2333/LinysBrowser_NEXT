@@ -55,7 +55,7 @@ struct meowDownloads {
           notice_height: this.notice_height
         })
       } // Download cards
-      .borderRadius(13.5)
+      .borderRadius(10)
       .columnsTemplate(this.bunch_of_downloads.list_of_on_going_tasks.length == 0 ? "1fr" : "1fr ".repeat(Math.ceil(this.screen_width / minimum_card_width())))
       .rowsGap(10)
       .columnsGap(10)

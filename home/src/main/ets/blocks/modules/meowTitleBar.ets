@@ -798,7 +798,7 @@ struct meowTitleBar {
             .backgroundColor(this.current_in_page_searching_stats_total <= 0
               ? this.color_current_primary
               : add_transparency(this.color_current_primary, 128))
-            .borderRadius(10)
+            .borderRadius(12)
             .padding(10)
             .animation(animation_default())
 
@@ -916,7 +916,7 @@ struct meowTitleBar {
         } // More Options
         .margin({ left: 15, right: 15 })
         .align(Alignment.Bottom)
-        .borderRadius(16)
+        .borderRadius(10)
         .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
         .layoutWeight(this.showing_more_options ? 1 : undefined)
         .animation(animation_default())
