@@ -8,7 +8,6 @@ struct woofQuickUA {
   controller: CustomDialogController;
   // Color
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
 
   build() {
     woofControlFrame({
@@ -23,7 +22,7 @@ struct woofQuickUA {
       .scrollable(ScrollDirection.Vertical)
       .edgeEffect(EdgeEffect.Spring)
       .backgroundColor(this.color_current_primary)
-      .constraintSize({ maxHeight: 92.5 + 48.5 * this.bunch_of_user_agents.list_of_user_agents.length })
+      .constraintSize({ maxHeight: 92.5 + 48.5 * bunch_of_user_agents.list_of_user_agents.length })
       .animation(animation_default())
     }
   }

@@ -22,7 +22,7 @@ struct woofKeyShortcuts {
       Scroll() {
         Column({ space: 10 }) {
           ForEach(this.bunch_of_key_shortcuts.key_shortcut_labels, (label: string, _index: number) => {
-            keyDisplay({ key_settings_id: label })
+            KeyDisplayCard({ key_settings_id: label })
           })
         }
         .alignItems(HorizontalAlign.Center)
@@ -40,7 +40,7 @@ struct woofKeyShortcuts {
 export default woofKeyShortcuts;
 
 @Component
-struct keyDisplay {
+struct KeyDisplayCard {
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(false);
   @Prop key_settings_id: string;
   @State showing_keyboard: boolean = false;

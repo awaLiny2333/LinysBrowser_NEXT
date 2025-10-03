@@ -29,7 +29,7 @@ struct woofAlert {
             this.controller.close();
           }
         },
-        double_confirm: true
+        confirm_double_confirm: true
       }) // Buttons
     }
     .padding(20)

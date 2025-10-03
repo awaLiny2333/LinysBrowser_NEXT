@@ -13,8 +13,6 @@ struct woofQuickSE {
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
-  // Host
-  @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines = new bunch_of_search_engines();
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Animation UI Statuses
@@ -56,7 +54,7 @@ struct woofQuickSE {
       .scrollBar(BarState.Off)
       .edgeEffect(EdgeEffect.Spring)
       .constraintSize({
-        maxHeight: 45 + 48.5 * this.bunch_of_search_engines.list_of_search_engines.length + 100 + (this.adding_SE ? 20 + this.height_of_add_panel : 0)
+        maxHeight: 45 + 48.5 * bunch_of_search_engines.list_of_search_engines.length + 100 + (this.adding_SE ? 20 + this.height_of_add_panel : 0)
       })
       .animation(animation_default())
       .onAppear(() => {
@@ -68,7 +66,7 @@ struct woofQuickSE {
   search_with_se(key: string, clicked_index?: number) {
     // Choose to search on another engine
     if (clicked_index !== undefined) {
-      this.load_url_gateway = this.bunch_of_search_engines.list_of_search_engines[clicked_index].url.replaceAll('%s', key);
+      this.load_url_gateway = bunch_of_search_engines.list_of_search_engines[clicked_index].url.replaceAll('%s', key);
     } else {
       this.load_url_gateway = default_search_engine().replaceAll('%s', key);
     }

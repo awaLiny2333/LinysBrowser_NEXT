@@ -1,37 +1,52 @@
-export class bunch_of_user_agents {
-  list_of_user_agents: user_agent[] = [];
-  last_accessed: number = 0;
+import { bunch_of_settings } from "./bunch_of_settings";
 
-  /**
-   * A class holding a user_agent[] array, in which there stores user_agent objects.
-   */
-  constructor() {
-    // console.log('[Meow][bunch_of_user_agents] Init success!')
-  }
+export class bunch_of_user_agents {
+  static list_of_user_agents: user_agent[] = [];
 
   /**
    * Update last accessed time. This would trigger some refresh on UI layer.
    * */
-  update_last_accessed() {
-    this.last_accessed = Date.now();
+  static update_last_accessed() {
+    AppStorage.setOrCreate('bunch_of_user_agents_update', Date.now());
+  }
+
+  /**
+   * Sets the global UA.
+   * @param idx The index of UA.
+   * */
+  static set_global_UA(idx: number) {
+    if (idx == -99) {
+      // Setting index to -99 then the real value
+      // Can force refresh @Watch
+      // And the index -99 has no meaning
+      return;
+    }
+    AppStorage.setOrCreate('user_agent_selected', idx);
+    if (idx <= -1) {
+      // If set back to default
+      AppStorage.setOrCreate('universal_global_custom_ua_gateway', '');
+    } else {
+      AppStorage.setOrCreate('universal_global_custom_ua_gateway', bunch_of_user_agents.list_of_user_agents[idx].user_agent_content);
+    }
+    bunch_of_settings.set('custom_user_agents_selected_index', idx);
   }
 
   /**
    * Add a new user agent to the current user agent list.
    * @param se A user_agent object, the user agent to be added.
    * */
-  add_user_agent(ua: user_agent) {
-    this.list_of_user_agents.push(ua);
-    this.update_last_accessed();
+  static add_user_agent(ua: user_agent) {
+    bunch_of_user_agents.list_of_user_agents.push(ua);
+    bunch_of_user_agents.update_last_accessed();
   }
 
   /**
    * Remove a user agent from the current user agent list.
    * @param index A number, the index of the user agent to be removed in the list.
    * */
-  del_user_agent(index: number) {
-    this.list_of_user_agents.splice(index, 1);
-    this.update_last_accessed();
+  static del_user_agent(index: number) {
+    bunch_of_user_agents.list_of_user_agents.splice(index, 1);
+    bunch_of_user_agents.update_last_accessed();
   }
 
   /**
@@ -39,10 +54,10 @@ export class bunch_of_user_agents {
    * @returns '\n' connected string of user agents in the format of:
    * @example 'Firefox Windows 132\nMozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0'
    * */
-  export_string() {
+  static export_string() {
     let export_list: string[] = []
-    for (let index = 0; index < this.list_of_user_agents.length; index++) {
-      let ua: user_agent = this.list_of_user_agents[index];
+    for (let index = 0; index < bunch_of_user_agents.list_of_user_agents.length; index++) {
+      let ua: user_agent = bunch_of_user_agents.list_of_user_agents[index];
       export_list.push(ua.label);
       export_list.push(ua.user_agent_content);
     }
@@ -56,9 +71,9 @@ export class bunch_of_user_agents {
    * @param imp The string in the correct format:
    * @example 'Firefox Windows 132\nMozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0'
    * */
-  import_string(imp: string) {
+  static import_string(imp: string) {
     // Clear
-    this.list_of_user_agents = [];
+    bunch_of_user_agents.list_of_user_agents = [];
     if (imp == "") {
       return;
     }
@@ -66,7 +81,7 @@ export class bunch_of_user_agents {
     let import_list: string[] = imp.split("\n");
     for (let index = 0; index < import_list.length; index += 2) {
       if (import_list[index] != "") {
-        this.add_user_agent(new user_agent(import_list[index], import_list[index+1]));
+        bunch_of_user_agents.add_user_agent(new user_agent(import_list[index], import_list[index+1]));
       }
     }
   }

@@ -1,36 +1,42 @@
-import { animation_default, capsule_bar_height, default_search_engine, fontSize_Large, fontSize_Normal } from '../../hosts/bunch_of_defaults';
+import { animation_default, capsule_bar_height, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import { bunch_of_search_engines, search_engine } from '../../hosts/bunch_of_search_engines';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
-import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import linysSymbol from '../../components/texts/linysSymbol';
-import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
+import linysTextArea from '../../components/texts/linysTextArea';
+import linysExpandableCardItem from '../../components/layouts/linysExpandableCardItem';
+import linysConfirmDenyButtons from '../../components/buttons/linysConfirmDenyButtons';
 
 @Component
 struct meowSEManager {
   @Prop default_new_se: search_engine = new search_engine(new Date().toLocaleString(), "https://bing.com/search?q=%s");
   // Environment
-  @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines = new bunch_of_search_engines();
   @StorageLink('search_engine') search_engine: string = "";
-  @StorageLink('search_engine_selected') @Watch('on_select') selected_index: number = -2; // -1 for system default
-  @State default_pressing: boolean = false;
+  @StorageLink('search_engine_selected') selected_index: number = -2; // -1 for system default
+  @State is_pressing_default_card: boolean = false;
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // UI
+  @StorageLink('bunch_of_search_engines_update') bunch_of_search_engines_update: number = 0;
   // Settings / Accessibility
   @StorageProp('custom_search_engines') custom_search_engines: string = '';
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // execution
-  on_normal_execution?: (idx: number, se: search_engine) => void;
-  on_default_execution?: () => void;
+  on_normal_execution?: (idx: number, se: search_engine) => void; // Click on other ItemCards in ForEach list
+  on_default_execution?: () => void; // Click on default ItemCard
+
+  aboutToAppear() {
+    console.log('[Meow][meowSEManager] Search engine Manager READY! [' + this.search_engine + ']');
+  }
 
   build() {
     Column({ space: 2.5 }) {
       Row() {
         Row() {
-          Text($r('app.string.Settings_general_custom_ua_default'))// Title
-            .fontColor(!this.default_pressing ? this.color_current_font : this.color_current_secondary)
-            .fontWeight(!this.default_pressing ? FontWeight.Regular : FontWeight.Bold)
+          Text($r('app.string.Settings_general_custom_ua_default')) // Title
+            .fontColor(!this.is_pressing_default_card ? this.color_current_font : this.color_current_secondary)
+            .fontWeight(!this.is_pressing_default_card ? FontWeight.Regular : FontWeight.Bold)
             .padding({ left: 2 })
             .fontSize(fontSize_Normal())
             .maxLines(1)
@@ -42,7 +48,7 @@ struct meowSEManager {
         .width("100%")
         .height("100%")
         .borderRadius(7)
-        .backgroundColor(this.default_pressing ? this.color_current_font :
+        .backgroundColor(this.is_pressing_default_card ? this.color_current_font :
           this.color_current_primary)
         .animation(animation_default())
 
@@ -60,10 +66,10 @@ struct meowSEManager {
       })
       .onTouch((event) => {
         if (event.type == TouchType.Up) {
-          this.default_pressing = false;
+          this.is_pressing_default_card = false;
           // If touch ends
         } else {
-          this.default_pressing = true;
+          this.is_pressing_default_card = true;
           // If touching
         }
       })
@@ -71,16 +77,14 @@ struct meowSEManager {
         if (this.on_default_execution) {
           this.on_default_execution();
         } else {
-          this.selected_index = -99;
-          this.selected_index = -1;
+          bunch_of_search_engines.set_global_SE(-1);
         }
       })
       .height(46)
       .animation(animation_default())
 
-      ForEach(this.bunch_of_search_engines.list_of_search_engines, (_se: search_engine, key: number) => {
-        meowSEButton({
-          selected_index: this.selected_index,
+      ForEach(this.bunch_of_search_engines_update ? bunch_of_search_engines.list_of_search_engines : [], (_se: search_engine, key: number) => {
+        meowSECardItem({
           my_index: key,
           onExecution: this.on_normal_execution
         })
@@ -103,230 +107,94 @@ struct meowSEManager {
     .animation(animation_default())
   }
 
-  async aboutToAppear() {
-    this.bunch_of_search_engines.import_string(this.custom_search_engines);
-    this.select_search_engine();
-
-    console.log('[Meow][meowSEManager] Search engine Manager READY! [' + this.search_engine + ']');
-  }
-
-  on_select() {
-    this.select_search_engine();
-  }
-
-  select_search_engine() {
-    if (this.selected_index == -99) {
-      // Setting index to -99 then the real value
-      // Can force refresh @Watch
-      // And the index -99 has no meaning
-      return;
-    }
-    if (this.selected_index <= -1) {
-      // If set back to default
-      this.search_engine = default_search_engine();
-    } else {
-      this.search_engine = this.bunch_of_search_engines.list_of_search_engines[this.selected_index].url;
-    }
-    bunch_of_settings.set('custom_search_engines_selected_index', this.selected_index);
-  }
-
   add_new_custom_search_engine(se: search_engine) {
-    this.bunch_of_search_engines.add_search_engine(se);
-    bunch_of_settings.set('custom_search_engines', this.bunch_of_search_engines.export_string());
+    bunch_of_search_engines.add_search_engine(se);
+    bunch_of_settings.set('custom_search_engines', bunch_of_search_engines.export_string());
   }
 }
 
 export default meowSEManager;
 
 @Component
-struct meowSEButton {
-  @Link selected_index: number;
-  @StorageLink('bunch_of_search_engines') bunch_of_search_engines: bunch_of_search_engines = new bunch_of_search_engines();
+struct meowSECardItem {
+  @StorageLink('search_engine_selected') selected_index: number = -1;
+  // Data
   @Prop my_index: number;
-  @State my_se: search_engine = this.bunch_of_search_engines.list_of_search_engines[this.my_index];
+  @State my_se: search_engine = bunch_of_search_engines.list_of_search_engines[this.my_index];
   @State my_label: string = this.my_se.label;
   @State my_content: string = this.my_se.url;
-  // Settings - Accessibility
-  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
-  // UI effects
-  @State height_of_text_area: number = 42;
+  // UI
   @State is_editing: boolean = false;
-  @State is_pressing: boolean = false;
-  @State is_press_timing_ok: boolean = false;
-  press_timing: number = 0;
-  button_height_default: number = 42;
   // Edit inputs
   @State edit_label: string = this.my_label;
   @State edit_content: string = this.my_content;
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // execution
   onExecution?: (idx: number, se: search_engine) => void;
 
-  build() {
-    Column() {
-      Column() {
-        Row() {
-          Text(this.my_label)// Title
-            .fontColor(!this.is_pressing ? this.color_current_font : this.color_current_secondary)
-            .fontWeight(!this.is_pressing ? FontWeight.Regular : FontWeight.Bold)
-            .animation(animation_default())
-            .padding({ left: 2 })
-            .fontSize(fontSize_Normal())
-            .maxLines(1)
-            .textOverflow({ overflow: TextOverflow.Ellipsis })
-            .layoutWeight(1)
-
-          Scroll() {
-            SymbolGlyph($r('sys.symbol.square_and_pencil'))
-              .fontSize(fontSize_Large())
-              .fontColor([this.color_current_secondary])
-          } // Edit Icon
-          .scrollBar(BarState.Off)
-          .scrollable(ScrollDirection.Horizontal)
-          .width(this.is_press_timing_ok ? 22 : 0)
-          .margin({ left: this.is_press_timing_ok ? 10 : 0 })
-          .animation(animation_default())
-
-        } // UA Item Button
-        .borderRadius(this.is_editing ? { topLeft: 7, topRight: 7 } : 7)
-        .backgroundColor(this.is_pressing ? this.color_current_font : this.color_current_primary)
-        .animation(animation_default())
-        .padding(10)
-        .alignRules({
-          middle: { anchor: "__container__", align: HorizontalAlign.Center },
-          top: { anchor: "__container__", align: VerticalAlign.Top }
+  @Builder
+  contents() {
+    Row({ space: 10 }) {
+      linysSymbol({ symbol_glyph_target: "sys.symbol.rename" })
+      TextInput({ text: this.edit_label })
+        .onChange((value) => {
+          this.edit_label = value;
         })
-        .onTouch((event) => {
-          if (event.type == TouchType.Up) {
-            this.is_pressing = false;
-            // If touch ends
-          } else {
-            this.is_pressing = true;
-            // If touching
-          }
+        .fontWeight(FontWeight.Regular)
+        .fontColor(this.color_current_font)
+        .caretColor(this.color_current_font)
+        .selectedBackgroundColor(this.color_current_font)
+        .layoutWeight(1)
+        .onSubmit(() => {
+          this.save_changes();
         })
-        .onClick(() => {
-          if (this.is_press_timing_ok) {
-            this.is_editing = !this.is_editing;
-            return;
-          } // Toggle Edit Panel
-          if (this.onExecution) {
-            this.onExecution(this.my_index, this.my_se);
-          } else {
-            AppStorage.set('search_engine_selected', -99);
-            AppStorage.set('search_engine_selected', this.my_index);
-          }
-        })
-        .height(this.button_height_default)
-        .onMouse((e) => {
-          if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
-            // Right click
-            this.is_editing = !this.is_editing;
-          }
-        })
+        .height(capsule_bar_height())
 
-        Scroll() {
-          Column({ space: 10 }) {
-            Row({ space: 10 }) {
-              linysSymbol({ symbol_glyph_target: "sys.symbol.rename" })
-              TextInput({ text: this.edit_label })
-                .onChange((value) => {
-                  this.edit_label = value;
-                })
-                .fontWeight(FontWeight.Regular)
-                .fontColor(this.color_current_font)
-                .caretColor(this.color_current_font)
-                .selectedBackgroundColor(this.color_current_font)
-                .layoutWeight(1)
-                .onSubmit(() => {
-                  this.save_changes();
-                  this.is_editing = false;
-                })
-                .height(capsule_bar_height())
+    } // Edit label
+    .width("100%")
 
-            } // Edit label
-            .width("100%")
-
-            Row({ space: 10 }) {
-              linysSymbol({ symbol_glyph_target: "sys.symbol.paperclip" })
-              TextArea({ text: this.edit_content })
-                .onChange((value) => {
-                  this.edit_content = value;
-                })
-                .fontWeight(FontWeight.Regular)
-                .fontColor(this.color_current_font)
-                .caretColor(this.color_current_font)
-                .selectedBackgroundColor(this.color_current_font)
-                .layoutWeight(1)
-                .onSubmit(() => {
-                  this.save_changes();
-                  this.is_editing = false;
-                })
-                .onAreaChange((_o, n) => {
-                  this.height_of_text_area = n.height as number;
-                })
-              // .height(capsule_bar_height())
-
-            } // Edit content
-            .width("100%")
-            .animation(animation_default())
-
-            Row({ space: 10 }) {
-              linysTimeoutButton({
-                text: "  󰀁  ",
-                onExecution: () => {
-                  this.delete_myself();
-                }
-              })
-              linysCapsuleButton({ text: "  󰀻  " })
-                .onClick(() => {
-                  this.save_changes();
-                  this.is_editing = false;
-                })
-
-            } // Buttons of operations
-            .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
-            .width("100%")
-          }
-          .padding({
-            top: 6,
-            left: 14,
-            right: 14,
-            bottom: 14
-          })
-          .backgroundColor(this.color_current_primary)
-          .border({
-            radius: { bottomLeft: 10, bottomRight: 10 }
-          })
-
-        } // Edit panel
-        .height(!this.is_editing ? 0 : 110 + this.height_of_text_area)
-        .visibility(this.is_editing ? Visibility.Visible : Visibility.None)
-        .animation(animation_default())
-        .scrollBar(BarState.Off)
-        .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.PARENT_FIRST })
-      }
-      .border({
-        radius: 10,
-        width: 2,
-        color: this.my_index == this.selected_index ? this.color_current_font : "transparent"
+    Row({ space: 10 }) {
+      linysSymbol({ symbol_glyph_target: "sys.symbol.paperclip" })
+      linysTextArea({
+        init_text: this.edit_content,
+        text: this.edit_content
       })
-    }
+        .layoutWeight(1)
+
+    } // Edit content
     .width("100%")
     .animation(animation_default())
-    .onAppear(() => {
-      setInterval(() => {
-        if (this.is_pressing) {
-          this.press_timing += 1;
+
+    linysConfirmDenyButtons({
+      onConfirm: () => {
+        this.save_changes();
+      },
+      onDeny: () => {
+        this.delete_myself();
+      },
+      confirm_text: '  󰀻  ',
+      deny_text: '  󰀁  ',
+      deny_double_confirm: true
+    })
+  }
+
+  build() {
+    linysExpandableCardItem({
+      my_label: this.my_label,
+      show_border: this.my_index == this.selected_index,
+      is_editing: this.is_editing,
+      onExecution: () => {
+        if (this.onExecution) {
+          this.onExecution(this.my_index, this.my_se);
         } else {
-          this.press_timing = 0;
+          // Select me!
+          bunch_of_search_engines.set_global_SE(this.my_index);
         }
-        this.is_press_timing_ok = this.press_timing > 16;
-        // Count press time
-      }, 10)
+      },
+      content_edit: (): void => {
+        this.contents();
+      }
     })
   }
 
@@ -335,32 +203,28 @@ struct meowSEButton {
 
     this.my_label = this.edit_label;
     this.my_content = this.edit_content;
-    this.bunch_of_search_engines.list_of_search_engines[this.my_index].label = this.edit_label;
-    this.bunch_of_search_engines.list_of_search_engines[this.my_index].url = this.edit_content;
+    bunch_of_search_engines.list_of_search_engines[this.my_index].label = this.edit_label;
+    bunch_of_search_engines.list_of_search_engines[this.my_index].url = this.edit_content;
     this.save_search_engine_to_settings();
 
     // This would refresh UI in other places
-    this.bunch_of_search_engines.update_last_accessed();
+    this.is_editing = false;
   }
 
   delete_myself() {
-    // Confirm delete
     this.is_editing = false;
-    this.bunch_of_search_engines.del_search_engine(this.my_index);
+    bunch_of_search_engines.del_search_engine(this.my_index);
 
     if (this.selected_index == this.my_index) {
       this.selected_index = this.my_index - 1;
-    } else {
-      // Refresh
-      let prev_selected = this.selected_index;
-      this.selected_index = -2;
-      this.selected_index = Math.min(this.bunch_of_search_engines.list_of_search_engines.length - 1, prev_selected);
+    } else if (this.selected_index > this.my_index) {
+      this.selected_index -= 1;
     }
     this.save_search_engine_to_settings();
   }
 
   save_search_engine_to_settings() {
-    console.log("[Meow][meowUAManager] Started to save custom user-agents to KVStore!")
-    bunch_of_settings.set('custom_search_engines', this.bunch_of_search_engines.export_string());
+    console.log("[Meow][meowUAManager] Started to save custom search engines to Settings!")
+    bunch_of_settings.set('custom_search_engines', bunch_of_search_engines.export_string());
   }
 }

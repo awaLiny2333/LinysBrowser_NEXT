@@ -172,6 +172,7 @@ struct meowTabsVertical {
         .align(Alignment.Bottom)
         .edgeEffect(this.count_down_for_switching_back_to_spring == 0 ? EdgeEffect.Spring : EdgeEffect.None)
         .width("100%")
+        .borderRadius(10)
         .height(this.scroll_area_height - (this.choosing_paralleow || this.current_sub_tab_index >= 0 ? this.paralleow_description_height : 0))
         .animation(animation_default())
         .nestedScroll({ scrollForward: NestedScrollMode.SELF_ONLY, scrollBackward: NestedScrollMode.SELF_ONLY })

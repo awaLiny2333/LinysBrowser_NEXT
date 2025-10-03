@@ -1,35 +1,37 @@
-import { animation_default, capsule_bar_height, fontSize_Large, fontSize_Normal } from '../../hosts/bunch_of_defaults';
+import { animation_default, capsule_bar_height, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { bunch_of_user_agents, user_agent } from '../../hosts/bunch_of_user_agents';
-import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import linysSymbol from '../../components/texts/linysSymbol';
-import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
+import linysTextArea from '../../components/texts/linysTextArea';
+import linysExpandableCardItem from '../../components/layouts/linysExpandableCardItem';
+import linysConfirmDenyButtons from '../../components/buttons/linysConfirmDenyButtons';
 
 @Component
 struct meowUAManager {
-  @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
-  @StorageLink('user_agent_selected') @Watch('on_select') selected_index: number = -1; // -1 for system default
-  @State default_pressing: boolean = false;
+  @StorageLink('user_agent_selected') selected_index: number = -1; // -1 for system default
+  @State is_pressing_default_card: boolean = false;
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // UI
+  @StorageLink('bunch_of_user_agents_update') bunch_of_user_agents_update: number = 0;
   // Settings / Accessibility
   @StorageProp('custom_user_agents') custom_user_agents: string = '';
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
 
+  aboutToAppear() {
+    console.log('[Meow][meowUAManager] UA Manager READY! [' + this.now_global_custom_UA + ']');
+  }
+
   build() {
     Column({ space: 2.5 }) {
-      // linysText({
-      //   text: this.selected_index.toString() + ': ' + this.now_global_custom_UA
-      // })
-
       Row() {
         Row() {
           Text($r('app.string.Settings_general_custom_ua_default'))// Title
-            .fontColor(!this.default_pressing ? this.color_current_font : this.color_current_secondary)
-            .fontWeight(!this.default_pressing ? FontWeight.Regular : FontWeight.Bold)
+            .fontColor(!this.is_pressing_default_card ? this.color_current_font : this.color_current_secondary)
+            .fontWeight(!this.is_pressing_default_card ? FontWeight.Regular : FontWeight.Bold)
             .padding({ left: 2 })
             .fontSize(fontSize_Normal())
             .maxLines(1)
@@ -42,8 +44,7 @@ struct meowUAManager {
         .width("100%")
         .height("100%")
         .borderRadius(7)
-        .backgroundColor(this.default_pressing ? this.color_current_font :
-          this.color_current_primary)
+        .backgroundColor(this.is_pressing_default_card ? this.color_current_font : this.color_current_primary)
         .animation(animation_default())
 
       } // Default
@@ -60,24 +61,22 @@ struct meowUAManager {
       })
       .onTouch((event) => {
         if (event.type == TouchType.Up) {
-          this.default_pressing = false;
+          this.is_pressing_default_card = false;
           // If touch ends
         } else {
-          this.default_pressing = true;
+          this.is_pressing_default_card = true;
           // If touching
         }
       })
       .onClick(() => {
-        this.selected_index = -99
-        this.selected_index = -1;
+        bunch_of_user_agents.set_global_UA(-1);
         // Set UA
       })
       .height(46)
       .animation(animation_default())
 
-      ForEach(this.bunch_of_user_agents.list_of_user_agents, (_user_agent: user_agent, key: number) => {
-        meowUAButton({
-          selected_index: this.selected_index,
+      ForEach(this.bunch_of_user_agents_update ? bunch_of_user_agents.list_of_user_agents : [], (_user_agent: user_agent, key: number) => {
+        meowUACardItem({
           my_index: key,
         })
       })
@@ -99,233 +98,90 @@ struct meowUAManager {
     .animation(animation_default())
   }
 
-  async aboutToAppear() {
-    this.bunch_of_user_agents.import_string(this.custom_user_agents);
-    this.set_global_UA();
-    console.log('[Meow][meowUAManager] UA Manager READY! [' + this.now_global_custom_UA + ']');
-  }
-
-  on_select() {
-    this.set_global_UA();
-  }
-
-  set_global_UA() {
-    if (this.selected_index == -99) {
-      // Setting index to -99 then the real value
-      // Can force refresh @Watch
-      // And the index -99 has no meaning
-      return;
-    }
-    if (this.selected_index <= -1) {
-      // If set back to default
-      this.now_global_custom_UA = "";
-    } else {
-      this.now_global_custom_UA = this.bunch_of_user_agents.list_of_user_agents[this.selected_index].user_agent_content;
-    }
-    bunch_of_settings.set('custom_user_agents_selected_index', this.selected_index);
-  }
-
   add_new_custom_ua() {
-    this.bunch_of_user_agents.add_user_agent(new user_agent(new Date().toLocaleString(),
+    bunch_of_user_agents.add_user_agent(new user_agent(new Date().toLocaleString(),
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0"));
-    bunch_of_settings.set('custom_user_agents', this.bunch_of_user_agents.export_string());
+    bunch_of_settings.set('custom_user_agents', bunch_of_user_agents.export_string());
   }
 }
 
 export default meowUAManager;
 
 @Component
-struct meowUAButton {
-  @Link selected_index: number;
-  @StorageLink('bunch_of_user_agents') bunch_of_user_agents: bunch_of_user_agents = new bunch_of_user_agents();
+struct meowUACardItem {
+  @StorageLink('user_agent_selected') selected_index: number = 0;
   @Prop my_index: number;
-  @State my_ua: user_agent = this.bunch_of_user_agents.list_of_user_agents[this.my_index];
+  @State my_ua: user_agent = bunch_of_user_agents.list_of_user_agents[this.my_index];
   @State my_label: string = this.my_ua.label;
   @State my_content: string = this.my_ua.user_agent_content;
-  // Settings / Accessibility
-  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // UI effects
-  @State height_of_text_area: number = 42;
-  @State is_pressing: boolean = false;
   @State is_editing: boolean = false;
-  @State is_press_timing_ok: boolean = false;
-  press_timing: number = 0;
-  button_height_default: number = 42;
+  @State is_selected: boolean = false;
   // Edit inputs
   @State edit_label: string = this.my_label;
   @State edit_content: string = this.my_content;
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
-  build() {
-    Column() {
-      Column() {
-        Row() {
-          Text(this.my_label)// Title
-            .fontColor(!this.is_pressing ? this.color_current_font : this.color_current_secondary)
-            .fontWeight(!this.is_pressing ? FontWeight.Regular : FontWeight.Bold)
-            .animation(animation_default())
-            .padding({ left: 2 })
-            .fontSize(fontSize_Normal())
-            .maxLines(1)
-            .textOverflow({ overflow: TextOverflow.Ellipsis })
-            .layoutWeight(1)
-
-          Scroll() {
-            SymbolGlyph($r('sys.symbol.square_and_pencil'))
-              .fontSize(fontSize_Large())
-              .fontColor([this.color_current_secondary])
-          } // Edit Icon
-          .scrollable(ScrollDirection.Horizontal)
-          .scrollBar(BarState.Off)
-          .width(this.is_press_timing_ok ? 22 : 0)
-          .margin({ left: this.is_press_timing_ok ? 10 : 0 })
-          .animation(animation_default())
-
-        } // UA button
-        .borderRadius(this.is_editing ? { topLeft: 7, topRight: 7 } : 7)
-        .backgroundColor(this.is_pressing ? this.color_current_font : this.color_current_primary)
-        .animation(animation_default())
-        .padding(10)
-        .alignRules({
-          middle: { anchor: "__container__", align: HorizontalAlign.Center },
-          top: { anchor: "__container__", align: VerticalAlign.Top }
+  @Builder
+  contents() {
+    Row({ space: 10 }) {
+      linysSymbol({ symbol_glyph_target: "sys.symbol.rename" })
+      TextInput({ text: this.edit_label })
+        .onChange((value) => {
+          this.edit_label = value;
         })
-        .onTouch((event) => {
-          if (event.type == TouchType.Up) {
-            this.is_pressing = false;
-            // If touch ends
-          } else {
-            this.is_pressing = true;
-            // If touching
-          }
+        .fontWeight(FontWeight.Regular)
+        .fontColor(this.color_current_font)
+        .caretColor(this.color_current_font)
+        .selectedBackgroundColor(this.color_current_font)
+        .layoutWeight(1)
+        .onSubmit(() => {
+          this.save_changes();
+          this.is_editing = false;
         })
-        .onClick(() => {
-          if (this.is_press_timing_ok) {
-            this.is_editing = !this.is_editing;
-            return;
-          } // Toggle Edit Panel
-          this.set_global_UA(this.my_index);
-          // Set UA
-        })
-        .height(this.button_height_default)
-        .onMouse((e) => {
-          if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
-            // Right click
-            this.is_editing = !this.is_editing;
-          }
-        })
+        .height(capsule_bar_height())
 
-        Scroll() {
-          Column({ space: 10 }) {
-            Row({ space: 10 }) {
-              linysSymbol({ symbol_glyph_target: "sys.symbol.rename" })
-              TextInput({ text: this.edit_label })
-                .onChange((value) => {
-                  this.edit_label = value;
-                })
-                .fontWeight(FontWeight.Regular)
-                .fontColor(this.color_current_font)
-                .caretColor(this.color_current_font)
-                .selectedBackgroundColor(this.color_current_font)
-                .layoutWeight(1)
-                .onSubmit(() => {
-                  this.save_changes();
-                  this.is_editing = false;
-                })
-                .height(capsule_bar_height())
+    } // Edit label
+    .width("100%")
 
-            } // Edit label
-            .width("100%")
-
-            Row({ space: 10 }) {
-              linysSymbol({ symbol_glyph_target: "sys.symbol.paperclip" })
-              TextArea({ text: this.edit_content })
-                .onChange((value) => {
-                  this.edit_content = value;
-                })
-                .fontWeight(FontWeight.Regular)
-                .fontColor(this.color_current_font)
-                .caretColor(this.color_current_font)
-                .selectedBackgroundColor(this.color_current_font)
-                .layoutWeight(1)
-                .onSubmit(() => {
-                  this.save_changes();
-                  this.is_editing = false;
-                })
-                .onAreaChange((_o, n) => {
-                  this.height_of_text_area = n.height as number;
-                })
-              // .height(capsule_bar_height())
-
-            } // Edit content
-            .width("100%")
-            .animation(animation_default())
-
-            Row({ space: 10 }) {
-              linysTimeoutButton({
-                text: "  󰀁  ",
-                onExecution: () => {
-                  this.delete_myself();
-                }
-              })
-              linysCapsuleButton({ text: "  󰀻  " })
-                .onClick(() => {
-                  this.save_changes();
-                  this.is_editing = false;
-                })
-
-            } // Buttons of operations
-            .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
-            .animation(animation_default())
-            .width("100%")
-          }
-          .padding({
-            top: 6,
-            left: 14,
-            right: 14,
-            bottom: 14
-          })
-          .backgroundColor(this.color_current_primary)
-          .border({
-            radius: { bottomLeft: 10, bottomRight: 10 }
-          })
-
-        } // Edit panel
-        .height(!this.is_editing ? 0 : 110 + this.height_of_text_area)
-        .visibility(this.is_editing ? Visibility.Visible : Visibility.None)
-        .animation(animation_default())
-        .scrollBar(BarState.Off)
-        .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.PARENT_FIRST })
-      }
-      .border({
-        radius: 10,
-        width: 2,
-        color: this.my_index == this.selected_index ? this.color_current_font : "transparent"
+    Row({ space: 10 }) {
+      linysSymbol({ symbol_glyph_target: "sys.symbol.paperclip" })
+      linysTextArea({
+        init_text: this.edit_content,
+        text: this.edit_content
       })
-    }
+        .layoutWeight(1)
+
+    } // Edit content
     .width("100%")
     .animation(animation_default())
-    .onAppear(() => {
-      setInterval(() => {
-        if (this.is_pressing) {
-          this.press_timing += 1;
-        } else {
-          this.press_timing = 0;
-        }
-        this.is_press_timing_ok = this.press_timing > 16;
-        // Count press time
-      }, 10)
-    })
 
+    linysConfirmDenyButtons({
+      onConfirm: () => {
+        this.save_changes();
+      },
+      onDeny: () => {
+        this.delete_myself();
+      },
+      confirm_text: '  󰀻  ',
+      deny_text: '  󰀁  ',
+      deny_double_confirm: true
+    })
   }
 
-  set_global_UA(idx: number) {
-    this.selected_index = -99;
-    this.selected_index = idx;
-    // bunch_of_settings.set('custom_user_agents_selected_index', idx);
+  build() {
+    linysExpandableCardItem({
+      my_label: this.my_label,
+      show_border: this.my_index == this.selected_index,
+      is_editing: this.is_editing,
+      onExecution: () => {
+        bunch_of_user_agents.set_global_UA(this.my_index);
+      },
+      content_edit: (): void => {
+        this.contents();
+      }
+    })
   }
 
   save_changes() {
@@ -333,36 +189,32 @@ struct meowUAButton {
 
     this.my_label = this.edit_label;
     this.my_content = this.edit_content;
-    this.bunch_of_user_agents.list_of_user_agents[this.my_index].label = this.edit_label;
-    this.bunch_of_user_agents.list_of_user_agents[this.my_index].user_agent_content = this.edit_content;
+    bunch_of_user_agents.list_of_user_agents[this.my_index].label = this.edit_label;
+    bunch_of_user_agents.list_of_user_agents[this.my_index].user_agent_content = this.edit_content;
     this.save_user_agents_to_settings();
 
     if (this.selected_index == this.my_index) {
-      this.set_global_UA(this.my_index);
+      bunch_of_user_agents.set_global_UA(this.my_index);
     }
 
     // This would refresh UI in other places
-    this.bunch_of_user_agents.update_last_accessed();
+    this.is_editing = false;
   }
 
   delete_myself() {
     this.is_editing = false;
-    this.bunch_of_user_agents.del_user_agent(this.my_index);
+    bunch_of_user_agents.del_user_agent(this.my_index);
 
     if (this.selected_index == this.my_index) {
       this.selected_index = this.my_index - 1;
-    } else {
-      let previous_selected = this.selected_index;
-      this.selected_index = -2;
-      this.selected_index = Math.min(this.bunch_of_user_agents.list_of_user_agents.length - 1, previous_selected);
-      // Refresh
+    } else if (this.selected_index > this.my_index) {
+      this.selected_index -= 1;
     }
+    bunch_of_user_agents.set_global_UA(this.selected_index);
     this.save_user_agents_to_settings();
   }
 
   save_user_agents_to_settings() {
-    console.log("[Meow][meowUAManager] Started to save custom user-agents to Settings!")
-    bunch_of_settings.set('custom_user_agents', this.bunch_of_user_agents.export_string());
+    bunch_of_settings.set('custom_user_agents', bunch_of_user_agents.export_string());
   }
 }
-

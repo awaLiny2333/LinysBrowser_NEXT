@@ -6,32 +6,49 @@ import linysTimeoutButton from './linysTimeoutButton';
 struct linysConfirmDenyButtons {
   onConfirm?: () => void;
   onDeny?: () => void;
-  double_confirm: boolean = false;
+  confirm_double_confirm: boolean = false;
+  deny_double_confirm: boolean = false;
+  confirm_text: ResourceStr = '  󰀓  ';
+  deny_text: ResourceStr = '  󰁖  '
   @Prop confirm_enabled: boolean = true;
+  @Prop deny_enabled: boolean = true;
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
 
   build() {
     Row({ space: 10 }) {
       if (this.onDeny) {
-        linysCapsuleButton({ text: "  󰁖  " }) // Cancel
-          .onClick(() => {
-            if (this.onDeny) {
-              this.onDeny();
+        if (this.deny_double_confirm) {
+          linysTimeoutButton({
+            text: this.deny_text, onExecution: () => {
+              if (this.onDeny) {
+                this.onDeny();
+              }
             }
           })
+        } else {
+          linysCapsuleButton({ text: this.deny_text }) // Deny
+            .onClick(() => {
+              if (this.onDeny) {
+                this.onDeny();
+              }
+            })
+            .enabled(this.deny_enabled)
+            .opacity(this.deny_enabled ? 1 : 0.7)
+        }
       }
+
       if (this.onConfirm) {
-        if (this.double_confirm) {
+        if (this.confirm_double_confirm) {
           linysTimeoutButton({
-            text: "  󰀓  ", onExecution: () => {
+            text: this.confirm_text, onExecution: () => {
               if (this.onConfirm) {
                 this.onConfirm();
               }
             }
           })
         } else {
-          linysCapsuleButton({ text: "  󰀓  " }) // Submit
+          linysCapsuleButton({ text: this.confirm_text }) // Submit
             .onClick(() => {
               if (this.onConfirm) {
                 this.onConfirm();

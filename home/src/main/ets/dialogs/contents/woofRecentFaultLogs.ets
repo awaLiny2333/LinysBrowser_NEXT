@@ -6,6 +6,7 @@ import { copy } from '../../utils/clipboard_tools';
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import linysTextTitle from '../../components/texts/linysTextTitle';
 import { animation_default } from '../../hosts/bunch_of_defaults';
+import linysTextArea from '../../components/texts/linysTextArea';
 
 @CustomDialog
 struct woofRecentFaultLogs {
@@ -109,12 +110,7 @@ struct faultItem {
       .alignItems(VerticalAlign.Bottom)
       .width('100%')
 
-      TextArea({ text: this.fault })
-        .fontWeight(FontWeight.Regular)
-        .fontColor(this.color_current_font)
-        .caretColor(this.color_current_font)
-        .selectedBackgroundColor(this.color_current_font)
-      // .height(200)
+      linysTextArea({ text: this.fault, init_text: this.fault })
     }
   }
 

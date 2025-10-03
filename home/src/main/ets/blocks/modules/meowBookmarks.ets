@@ -11,6 +11,7 @@ import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 import lazy woofSelectBookmarksPath from '../../dialogs/prompts/woofSelectBookmarksPath';
 import { current_tabs_style_is_horizontal } from '../../utils/ui_tools';
+import linysExpandableCardItem from '../../components/layouts/linysExpandableCardItem';
 
 @Component
 struct meowBookmarks {
@@ -84,8 +85,8 @@ struct meowBookmarks {
         .width("100%")
       } // List of this directory
       .direction(Direction.Rtl)
-      // .scrollBar((this.scroll_area_height - 5 - this.viewing_contents.length * (42 + 5) < 40) ? BarState.Off : BarState.On)
       .align(Alignment.Bottom)
+      .borderRadius(7)
       .edgeEffect(EdgeEffect.Spring)
       .width("100%")
       .layoutWeight(1)
@@ -528,26 +529,23 @@ struct bookmarkItem {
   @Link viewing_contents: unified_item[];
   @Prop parent_path: string;
   @Prop height_of_panel: number;
-  // Public stuffs
+  // Me
   @State item: unified_item = this.viewing_contents[this.my_index];
-  @State type: string = this.item.get_item().get_type();
-  @State label: string = this.item.get_item().get_label();
-  @State link: string = this.type == "bookmark" ? (this.item.get_item() as bookmark).get_link() : "";
-  @StorageLink('swapping_bookmarks') @Watch('on_swapping_bookmarks') swapping_bookmarks: boolean = false;
-  @StorageLink('bookmarks_scroll_by') bookmarks_scroll_by: number = 0;
+  @State my_type: string = this.item.get_item().get_type();
+  @State my_label: string = this.item.get_item().get_label();
+  @State my_link: string = this.my_type == "bookmark" ? (this.item.get_item() as bookmark).get_link() : "";
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
-  // Basic this properties
-  @State pressing: boolean = false;
+  // UI
+  @StorageLink('swapping_bookmarks') @Watch('on_swapping_bookmarks') swapping_bookmarks: boolean = false;
+  @StorageLink('bookmarks_scroll_by') bookmarks_scroll_by: number = 0;
   @State show: Visibility = this.swapping_bookmarks ? Visibility.Visible : Visibility.Hidden;
   @State offset_y: number = this.swapping_bookmarks ? 0 : 50;
-  @State editing: boolean = false;
-  @State press_timing_ok: boolean = false;
-  press_timing: number = 0;
+  @State is_editing: boolean = false;
   bookmark_height_default: number = 42;
   // Animations statuses
-  @State edit_label: string = this.label;
-  @State edit_link: string = this.link;
+  @State edit_label: string = this.my_label;
+  @State edit_link: string = this.my_link;
   @StorageLink('swapping_offset_timeout') swapping_offset_timeout: number = 0;
   // Move params
   @State @Watch('on_select_change') select_path_result: string | undefined = undefined;
@@ -566,249 +564,158 @@ struct bookmarkItem {
     width: "90%",
   })
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
-  build() {
-    Column() {
-      Row() {
-        Text(this.label)// Title
-          .fontColor(!this.pressing ? this.color_current_font : this.color_current_secondary)
-          .fontWeight(!this.pressing ? FontWeight.Regular : FontWeight.Bold)
-          .animation(animation_default())
-          .padding({ left: 2 })
-          .fontSize(fontSize_Normal())
-          .maxLines(1)
-          .textOverflow({ overflow: TextOverflow.Ellipsis })
-          .layoutWeight(1)
-
-        Scroll() {
-
-          Row({ space: 8 }) {
-            SymbolGlyph($r('sys.symbol.chevron_up'))
-              .fontSize(fontSize_Large())
-              .fontColor([this.color_current_font])
-              .opacity(this.my_index == 0 ? 0.5 : 1)
-              .animation(animation_default())
-              .onClick(() => {
-                this.swapping_offset_timeout = 600;
-                if (this.my_index != 0) {
-                  this.swap(this.my_index, this.my_index - 1);
-                  this.bookmarks_scroll_by = -this.bookmark_height_default - 5;
-                }
-              })
-            SymbolGlyph($r('sys.symbol.chevron_down'))
-              .fontSize(fontSize_Large())
-              .fontColor([this.color_current_font])
-              .opacity(this.my_index == this.viewing_contents.length - 1 ? 0.5 : 1)
-              .animation(animation_default())
-              .onClick(() => {
-                this.swapping_offset_timeout = 600;
-                if (this.my_index != this.viewing_contents.length - 1) {
-                  this.swap(this.my_index, this.my_index + 1);
-                  this.bookmarks_scroll_by = this.bookmark_height_default + 5;
-                }
-              })
-          }
-        } // Edit Icon
-        .scrollable(ScrollDirection.Horizontal)
-        .scrollBar(BarState.Off)
-        .width(this.swapping_bookmarks ? undefined : 0)
-        .animation(animation_default())
-
-        // .margin({ right: 4 })
-
-
-        if (this.type == "folder") {
-          SymbolGlyph($r(!this.pressing ? 'sys.symbol.folder' : 'sys.symbol.chevron_right'))
-            .fontSize(fontSize_Large())
-            .fontWeight(!this.pressing ? FontWeight.Regular : FontWeight.Bold)
-            .fontColor([!this.pressing ? this.color_current_font : this.color_current_secondary])
-            .animation(animation_default())
-            .margin({ left: 10 })
-        } // Folder Icon
-        Scroll() {
-          SymbolGlyph($r('sys.symbol.square_and_pencil'))
-            .fontSize(fontSize_Large())
-            .fontColor([this.color_current_secondary])
-        } // Edit Icon
-        .scrollable(ScrollDirection.Horizontal)
-        .scrollBar(BarState.Off)
-        .width(this.press_timing_ok ? 22 : 0)
-        .margin({ left: this.press_timing_ok ? 10 : 0 })
-        .animation(animation_default())
-
-      } // Bookmark button
-      .border({
-        radius: this.editing ? { topLeft: 10, topRight: 10 } : 10,
-        width: 2,
-        color: "transparent"
-      })
-      .backgroundColor(this.pressing ? this.color_current_font : this.color_current_secondary)
-      .animation(animation_default())
-      .padding(10)
-      .alignRules({
-        middle: { anchor: "__container__", align: HorizontalAlign.Center },
-        top: { anchor: "__container__", align: VerticalAlign.Top }
-      })
-      .onTouch((event) => {
-        if (event.type == TouchType.Up) {
-          // If touch ends
-          this.pressing = false;
-        } else {
-          // If touching
-          if (!this.swapping_bookmarks) {
-            this.pressing = true;
+  @Builder
+  contents() {
+    Row({ space: 10 }) {
+      linysSymbol({ symbol_glyph_target: "sys.symbol.rename" })
+      TextInput({ text: this.edit_label })
+        .fontWeight(FontWeight.Regular)
+        .fontColor(this.color_current_font)
+        .caretColor(this.color_current_font)
+        .selectedBackgroundColor(this.color_current_font)
+        .height(capsule_bar_height())
+        .layoutWeight(1)
+        .onChange((value) => {
+          this.edit_label = value;
+        })
+        .onSubmit(() => {
+          if (this.my_type == "folder") {
+            this.save_changes_folder();
           } else {
-            this.pressing = false;
+            this.save_changes_bookmark();
           }
-        }
-      })
-      .onClick(() => {
-        this.on_item_click();
-      })
-      .height(this.bookmark_height_default)
-      .onMouse((e) => {
-        if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
-          // Right click
-          this.editing = !this.editing;
-        }
-      })
-
-      Scroll() {
-        Column({ space: 10 }) {
-          Row({ space: 10 }) {
-            linysSymbol({ symbol_glyph_target: "sys.symbol.rename" })
-            TextInput({ text: this.edit_label })
-              .fontWeight(FontWeight.Regular)
-              .fontColor(this.color_current_font)
-              .caretColor(this.color_current_font)
-              .selectedBackgroundColor(this.color_current_font)
-              .height(capsule_bar_height())
-              .layoutWeight(1)
-              .onChange((value) => {
-                this.edit_label = value;
-              })
-              .onSubmit(() => {
-                if (this.type == "folder") {
-                  this.save_changes_folder();
-                } else {
-                  this.save_changes_bookmark();
-                }
-                this.editing = false;
-              })
-
-          } // Edit label
-          .width("100%")
-
-          Row({ space: 10 }) {
-            linysSymbol({ symbol_glyph_target: "sys.symbol.paperclip" })
-            TextInput({ text: this.edit_link })
-              .onChange((value) => {
-                this.edit_link = value;
-              })
-              .fontWeight(FontWeight.Regular)
-              .fontColor(this.color_current_font)
-              .caretColor(this.color_current_font)
-              .selectedBackgroundColor(this.color_current_font)
-              .layoutWeight(1)
-              .onSubmit(() => {
-                this.save_changes_bookmark();
-                this.editing = false;
-              })
-              .height(capsule_bar_height())
-
-          } // Edit link
-          .width("100%")
-          .visibility(this.type == "bookmark" ? Visibility.Visible : Visibility.None)
-          .animation(animation_default())
-
-          Row({ space: 10 }) {
-            linysCapsuleButton({ text: "  󰂺  " })// Move
-              .onClick(() => {
-                if (this.type == "folder") {
-                  this.move_folder();
-                }
-                if (this.type == "bookmark") {
-                  this.move_bookmark();
-                }
-                this.editing = false;
-              })
-
-            linysTimeoutButton({
-              text: "  󰀁  ",
-              onExecution: () => {
-                this.delete_myself()
-              }
-            }) // Delete
-
-            linysCapsuleButton({ text: "  󰀻  " })// Save
-              .onClick(() => {
-                if (this.type == "folder") {
-                  this.save_changes_folder()
-                }
-                if (this.type == "bookmark") {
-                  this.save_changes_bookmark()
-                }
-                this.editing = false;
-              })
-
-          } // Buttons of operations
-          .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
-          .width("100%")
-        }
-        .padding({
-          top: 6,
-          left: 14,
-          right: 14,
-          bottom: 14
-        })
-        .backgroundColor(this.color_current_secondary)
-        .border({
-          radius: { bottomLeft: 10, bottomRight: 10 }
+          this.is_editing = false;
         })
 
-      } // Edit panel
-      .height(!this.editing ? 0 : (this.type == "bookmark" ? 145 : 0) + (this.type == "folder" ? 100 : 0))
-      .visibility(this.editing ? Visibility.Visible : Visibility.None)
-      .animation(animation_default())
-      .scrollBar(BarState.Off)
-      .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.PARENT_FIRST })
-
-    }
+    } // Edit label
     .width("100%")
-    .visibility(this.show)
-    .offset({ y: this.offset_y })
+
+    Row({ space: 10 }) {
+      linysSymbol({ symbol_glyph_target: "sys.symbol.paperclip" })
+      TextInput({ text: this.edit_link })
+        .onChange((value) => {
+          this.edit_link = value;
+        })
+        .fontWeight(FontWeight.Regular)
+        .fontColor(this.color_current_font)
+        .caretColor(this.color_current_font)
+        .selectedBackgroundColor(this.color_current_font)
+        .layoutWeight(1)
+        .onSubmit(() => {
+          this.save_changes_bookmark();
+          this.is_editing = false;
+        })
+        .height(capsule_bar_height())
+
+    } // Edit link
+    .width("100%")
+    .visibility(this.my_type == "bookmark" ? Visibility.Visible : Visibility.None)
     .animation(animation_default())
-    .onAppear(() => {
-      this.pressing = false;
-      setTimeout(() => {
-        this.show = Visibility.Visible;
-        this.offset_y = 0;
-        // Animation of floating up
-      }, this.get_animation_timeout())
-      setInterval(() => {
-        // Count press time
-        if (this.pressing) {
-          this.press_timing += 1;
-        } else {
-          this.press_timing = 0;
+
+    Row({ space: 10 }) {
+      linysCapsuleButton({ text: "  󰂺  " })// Move
+        .onClick(() => {
+          if (this.my_type == "folder") {
+            this.move_folder();
+          }
+          if (this.my_type == "bookmark") {
+            this.move_bookmark();
+          }
+          this.is_editing = false;
+        })
+
+      linysTimeoutButton({
+        text: "  󰀁  ",
+        onExecution: () => {
+          this.delete_myself()
         }
-        this.press_timing_ok = this.press_timing > 20;
-      }, 10)
+      }) // Delete
+
+      linysCapsuleButton({ text: "  󰀻  " })// Save
+        .onClick(() => {
+          if (this.my_type == "folder") {
+            this.save_changes_folder()
+          }
+          if (this.my_type == "bookmark") {
+            this.save_changes_bookmark()
+          }
+          this.is_editing = false;
+        })
+
+    } // Buttons of operations
+    .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
+    .width("100%")
+  }
+
+  @Builder
+  extra() {
+    Row({ space: 8 }) {
+      SymbolGlyph($r('sys.symbol.chevron_up'))
+        .fontSize(fontSize_Large())
+        .fontColor([this.color_current_font])
+        .opacity(this.my_index == 0 ? 0.5 : 1)
+        .animation(animation_default())
+        .onClick(() => {
+          this.swapping_offset_timeout = 600;
+          if (this.my_index != 0) {
+            this.swap(this.my_index, this.my_index - 1);
+            this.bookmarks_scroll_by = -this.bookmark_height_default - 5;
+          }
+        })
+      SymbolGlyph($r('sys.symbol.chevron_down'))
+        .fontSize(fontSize_Large())
+        .fontColor([this.color_current_font])
+        .opacity(this.my_index == this.viewing_contents.length - 1 ? 0.5 : 1)
+        .animation(animation_default())
+        .onClick(() => {
+          this.swapping_offset_timeout = 600;
+          if (this.my_index != this.viewing_contents.length - 1) {
+            this.swap(this.my_index, this.my_index + 1);
+            this.bookmarks_scroll_by = this.bookmark_height_default + 5;
+          }
+        })
+    } // Move up and down
+    .width(this.swapping_bookmarks ? undefined : 0)
+    .animation(animation_default())
+  }
+
+  build() {
+    linysExpandableCardItem({
+      my_label: this.my_label,
+      is_editing: this.is_editing,
+      my_icon: this.my_type == 'folder' ? $r('sys.symbol.folder') : undefined,
+      my_icon_press_edit: $r('sys.symbol.square_and_pencil'),
+      default_background_color: this.color_current_secondary,
+      onExecution: () => {
+        this.on_item_click();
+      },
+      title_extras: (): void => {
+        this.extra();
+      },
+      content_edit: (): void => {
+        this.contents();
+      }
     })
+      .onAppear(() => {
+        setTimeout(() => {
+          this.show = Visibility.Visible;
+          this.offset_y = 0;
+          // Animation of floating up
+        }, this.get_animation_timeout())
+      })
+      .visibility(this.show)
+      .offset({ y: this.offset_y })
+      .animation(animation_default())
   }
 
   on_item_click() {
     if (this.swapping_bookmarks) {
       return;
     }
-    if (this.press_timing_ok) {
-      this.editing = !this.editing;
-      return;
-    } // Toggle Edit Panel
-    if (this.type == "folder") {
+    if (this.my_type == "folder") {
       // Open folder
       this.looking_at_path = this.get_my_path();
       // Will automatically cause meowBookmarks to update the UI list (@Watch)
@@ -834,20 +741,20 @@ struct bookmarkItem {
 
   get_my_path() {
     if (this.parent_path == "") {
-      return this.label;
+      return this.my_label;
     } else {
-      return this.parent_path + "/" + this.label;
+      return this.parent_path + "/" + this.my_label;
     }
   }
 
   delete_myself() {
     let my_position = "";
     if (this.parent_path == "") {
-      my_position = this.label;
+      my_position = this.my_label;
     } else {
-      my_position = this.parent_path + "/" + this.label
+      my_position = this.parent_path + "/" + this.my_label
     }
-    if (this.type == "bookmark") {
+    if (this.my_type == "bookmark") {
       this.bunch_of_bookmarks.del_bookmark(my_position)
     } else {
       this.bunch_of_bookmarks.del_folder(my_position)
@@ -865,7 +772,7 @@ struct bookmarkItem {
 
   save_changes_folder() {
     this.item.get_item().set_label(this.edit_label);
-    this.label = this.edit_label;
+    this.my_label = this.edit_label;
     this.bunch_of_bookmarks.reconstruct_cached_plain_bookmarks();
     this.save_bookmarks();
   }
@@ -873,8 +780,8 @@ struct bookmarkItem {
   save_changes_bookmark() {
     this.item.get_item().set_label(this.edit_label);
     (this.item.get_item() as bookmark).set_link(this.edit_link);
-    this.label = this.edit_label;
-    this.link = this.edit_link;
+    this.my_label = this.edit_label;
+    this.my_link = this.edit_link;
     this.bunch_of_bookmarks.reconstruct_cached_plain_bookmarks();
     this.save_bookmarks();
   }
@@ -951,7 +858,7 @@ struct bookmarkItem {
 
   on_swapping_bookmarks() {
     if (this.swapping_bookmarks) {
-      this.editing = false;
+      this.is_editing = false;
     }
   }
 }

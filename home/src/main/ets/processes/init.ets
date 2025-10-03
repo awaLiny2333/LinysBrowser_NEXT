@@ -26,28 +26,14 @@ export async function meow_init(context: common.UIAbilityContext) {
     sandbox_save("last_app_versionName.txt", bundleInfo.versionName);
   })
 
-  await settings_tabs();
-  t = Date.now() - t0;
-  console.log('[init] Settings OK. (' + t + ' ms)');
+  await settings_tabs(t0);
+  await bookmarks(t0);
+  await restore_tabs(t0);
+  history(t0);
+  downloads(t0);
+  user_agents(t0);
+  search_engines(t0);
 
-  await bookmarks();
-  t = Date.now() - t0;
-  console.log('[init] Bookmarks OK. (' + t + ' ms)');
-
-  await restore();
-  t = Date.now() - t0;
-  console.log('[init] Restore OK. (' + t + ' ms)');
-
-  history();
-  t = Date.now() - t0;
-  console.log('[init] History OK. (' + t + ' ms)');
-
-  downloads();
-  t = Date.now() - t0;
-  console.log('[init] Downloads OK. (' + t + ' ms)');
-
-  AppStorage.setOrCreate('bunch_of_user_agents', new bunch_of_user_agents());
-  AppStorage.setOrCreate('bunch_of_search_engines', new bunch_of_search_engines());
   AppStorage.setOrCreate('bunch_of_key_shortcuts', new bunch_of_key_shortcuts());
   t = Date.now() - t0;
   console.log('[init] bunch_of_init! (' + t + ' ms)')
@@ -92,9 +78,10 @@ function clear_profile(context: common.UIAbilityContext) {
 // Hosts
 
 /**
- * Inits both settings and tabs
+ * Inits both settings and tabs.
+ * @param t0 Start time of the whole initialization process.
  * */
-async function settings_tabs() {
+async function settings_tabs(t0: number) {
   await bunch_of_settings.init();
 
   let tabs = new bunch_of_tabs();
@@ -206,12 +193,17 @@ async function settings_tabs() {
 
   // Cardboard Box
   AppStorage.setOrCreate('resource_monitor', bunch_of_settings.get('resource_monitor') as boolean);
+
+  // Timer
+  let t = Date.now() - t0;
+  console.log('[init] Settings OK. (' + t + ' ms)');
 }
 
 /**
  * Inits and loads bookmarks from disk.
+ * @param t0 Start time of the whole initialization process.
  * */
-async function bookmarks() {
+async function bookmarks(t0: number) {
   let bookmarks = new bunch_of_bookmarks("Bookmarks~Meow");
   AppStorage.setOrCreate('bunch_of_bookmarks', bookmarks);
 
@@ -228,12 +220,17 @@ async function bookmarks() {
     let html_bookmarks = result;
     bookmarks.import_html(html_bookmarks, true);
   }
+
+  // Timer
+  let t = Date.now() - t0;
+  console.log('[init] Bookmarks OK. (' + t + ' ms)');
 }
 
 /**
- * Retrieves the restore tabs indices
+ * Retrieves the restore tabs indices.
+ * @param t0 Start time of the whole initialization process.
  * */
-async function restore() {
+async function restore_tabs(t0: number) {
   // Get Data
   let continue_tabs_count = bunch_of_settings.get('continue_tabs_count') as number;
   let continue_tabs_main_on = bunch_of_settings.get('continue_tabs_main_on') as number;
@@ -247,12 +244,17 @@ async function restore() {
   console.log("[Meow][init] Got continue_tabs_count: " + continue_tabs_count);
   console.log("[Meow][init] Got continue_tabs_main_on: " + continue_tabs_main_on);
   console.log("[Meow][init] Got continue_tabs_sub_on: " + continue_tabs_sub_on);
+
+  // Timer
+  let t = Date.now() - t0;
+  console.log('[init] Restore OK. (' + t + ' ms)');
 }
 
 /**
  * Inits history.
+ * @param t0 Start time of the whole initialization process.
  * */
-function history() {
+function history(t0: number) {
   AppStorage.setOrCreate('bunch_of_history', new bunch_of_history());
 
   // Initialize statuses
@@ -262,13 +264,52 @@ function history() {
   AppStorage.setOrCreate('reindexing_history_progress', '');
   AppStorage.setOrCreate('history_index_loading_progress', '');
   AppStorage.setOrCreate('history_index_saving_progress', '');
+
+  // Timer
+  let t = Date.now() - t0;
+  console.log('[init] History OK. (' + t + ' ms)');
 }
 
 /**
  * Inits downloads.
+ * @param t0 Start time of the whole initialization process.
  * */
-function downloads() {
+function downloads(t0: number) {
   let downloads = new bunch_of_downloads();
   downloads.delete_all_downloaded_files_sync();
   AppStorage.setOrCreate('bunch_of_downloads', downloads);
+
+  // Timer
+  let t = Date.now() - t0;
+  console.log('[init] Downloads OK. (' + t + ' ms)');
+}
+
+/**
+ * Inits bunch_of_user_agents.
+ * @param t0 Start time of the whole initialization process.
+ * */
+function user_agents(t0: number) {
+  let custom_user_agents = bunch_of_settings.get('custom_user_agents') as string;
+  let user_agent_selected = bunch_of_settings.get('custom_user_agents_selected_index') as number;
+  bunch_of_user_agents.import_string(custom_user_agents);
+  bunch_of_user_agents.set_global_UA(user_agent_selected);
+
+  // Timer
+  let t = Date.now() - t0;
+  console.log('[init] UA OK. (' + t + ' ms)');
+}
+
+/**
+ * Inits bunch_of_search_engines.
+ * @param t0 Start time of the whole initialization process.
+ * */
+function search_engines(t0: number) {
+  let custom_search_engines = bunch_of_settings.get('custom_search_engines') as string;
+  let search_engines_selected = bunch_of_settings.get('custom_search_engines_selected_index') as number;
+  bunch_of_search_engines.import_string(custom_search_engines);
+  bunch_of_search_engines.set_global_SE(search_engines_selected);
+
+  // Timer
+  let t = Date.now() - t0;
+  console.log('[init] SE OK. (' + t + ' ms)');
 }
