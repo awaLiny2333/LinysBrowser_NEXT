@@ -136,7 +136,7 @@ struct meowTitleBar {
       link: this.current_url
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 24,
+    cornerRadius: 26,
   });
   woofQuickUA_control: CustomDialogController = new CustomDialogController({
     builder: woofQuickUA(),
@@ -148,7 +148,7 @@ struct meowTitleBar {
       full_view: this.compact_mode
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 24,
+    cornerRadius: 26,
     width: "90%",
   });
   quick_keyword: string = '';
@@ -197,7 +197,7 @@ struct meowTitleBar {
       full_view: this.compact_mode
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 24,
+    cornerRadius: 26,
     // showInSubWindow: true,
     width: "90%",
   });
@@ -222,7 +222,7 @@ struct meowTitleBar {
       full_view: this.compact_mode
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 24,
+    cornerRadius: 26,
     // showInSubWindow: true,
     width: "90%",
   });
@@ -231,7 +231,7 @@ struct meowTitleBar {
       full_view: this.compact_mode
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 24,
+    cornerRadius: 26,
     width: "90%",
   });
   js_manage_control: CustomDialogController = new CustomDialogController({
@@ -256,7 +256,7 @@ struct meowTitleBar {
       full_view: this.compact_mode
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 24,
+    cornerRadius: 26,
     // showInSubWindow: true,
     width: "90%",
   });
@@ -282,7 +282,7 @@ struct meowTitleBar {
       full_view: this.compact_mode
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 24,
+    cornerRadius: 26,
     // showInSubWindow: true,
     width: "90%",
   });

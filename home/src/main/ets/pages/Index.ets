@@ -87,7 +87,7 @@ struct Index {
       desc: this.fail_prompt_desc,
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 24,
+    cornerRadius: 26,
     // showInSubWindow: true,
     width: "90%",
   });

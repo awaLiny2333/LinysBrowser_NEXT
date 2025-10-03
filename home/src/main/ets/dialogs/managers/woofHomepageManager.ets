@@ -30,7 +30,7 @@ struct woofHomepageManager {
       select: this.select_path_result,
       looking_at_path: this.looking_at_path
     }),
-    cornerRadius: 24,
+    cornerRadius: 26,
     alignment: DialogAlignment.Center,
     // // showInSubWindow: true,
     width: "90%",

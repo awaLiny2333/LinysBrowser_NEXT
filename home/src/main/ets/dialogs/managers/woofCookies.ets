@@ -79,16 +79,18 @@ struct woofCookies {
               .opacity(0.9)
           }
           .width("100%")
-        } // Title
+        } // Descriptions
         .align(Alignment.TopStart)
         .edgeEffect(EdgeEffect.Spring)
-        .padding({ bottom: 10, right: 10 })
+        .padding({ bottom: 10, top: 5, right: this.tablet_mode ? 10 : 0 })
         .width(this.tablet_mode ? (this.full_view ? "0%" : "40%") : "100%")
         .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
-        .clip(true)
-        .enabled(!this.full_view)
-        .opacity(this.full_view ? 0 : 1)
-        .height(this.full_view && !this.tablet_mode ? 0 : undefined)
+        .borderRadius(10)
+        // .clip(true)
+        // .enabled(!this.full_view)
+        // .opacity(this.full_view ? 0 : 1)
+        // .height(this.full_view && !this.tablet_mode ? 0 : undefined)
+        .visibility(this.full_view ? Visibility.None : Visibility.Visible)
         .animation(animation_default())
         .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })
         .id("title_cookies_manager")
@@ -105,6 +107,7 @@ struct woofCookies {
                 'sys.symbol.arrow_down_right_and_arrow_up_left' :
                 'sys.symbol.arrow_up_left_and_arrow_down_right'
             })
+              .padding({ top: 5 })
               .onClick(() => {
                 this.full_view = !this.full_view
               })

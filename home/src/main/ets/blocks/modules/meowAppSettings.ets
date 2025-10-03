@@ -152,7 +152,7 @@ struct meowAppSettings {
   woofHistory_control: CustomDialogController = new CustomDialogController({
     builder: woofHistory(),
     alignment: DialogAlignment.Center,
-    cornerRadius: 24,
+    cornerRadius: 26,
     width: "90%",
   });
   @State to_fool_woofGeneralManage: boolean = false;
@@ -174,7 +174,7 @@ struct meowAppSettings {
       switch_all_sites_id: '',
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 24,
+    cornerRadius: 26,
     // showInSubWindow: true,
     width: "90%",
   });
@@ -210,7 +210,7 @@ struct meowAppSettings {
       }
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 24,
+    cornerRadius: 26,
     // showInSubWindow: true,
     width: "90%",
   });
@@ -233,7 +233,7 @@ struct meowAppSettings {
       switch_all_sites_id: 'disable_js_all_sites',
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 24,
+    cornerRadius: 26,
     // showInSubWindow: true,
     width: "90%",
   });
@@ -256,47 +256,47 @@ struct meowAppSettings {
       switch_all_sites_id: 'disable_image_all_sites',
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 24,
+    cornerRadius: 26,
     // showInSubWindow: true,
     width: "90%",
   });
   cookies_control: CustomDialogController = new CustomDialogController({
     builder: woofCookies(),
     alignment: DialogAlignment.Center,
-    cornerRadius: 24,
+    cornerRadius: 26,
     // showInSubWindow: true,
     width: "90%",
   });
   key_shortcuts_control: CustomDialogController = new CustomDialogController({
     builder: woofKeyShortcuts(),
     alignment: DialogAlignment.Center,
-    cornerRadius: 24,
+    cornerRadius: 26,
     // showInSubWindow: true,
     width: "90%",
   });
   homepage_shortcuts_control: CustomDialogController = new CustomDialogController({
     builder: woofHomepageManager(),
     alignment: DialogAlignment.Center,
-    cornerRadius: 24,
+    cornerRadius: 26,
   });
   recent_fault_logs_control: CustomDialogController = new CustomDialogController({
     builder: woofRecentFaultLogs(),
     alignment: DialogAlignment.Center,
-    cornerRadius: 24,
+    cornerRadius: 26,
     // showInSubWindow: true,
     width: "90%",
   });
   update_history: CustomDialogController = new CustomDialogController({
     builder: woofUpdateHistory(),
     alignment: DialogAlignment.Center,
-    cornerRadius: 24,
+    cornerRadius: 26,
     // showInSubWindow: true,
     width: "90%",
   });
   woofSettingsImportOK_control: CustomDialogController = new CustomDialogController({
     builder: woofPromptOK(),
     alignment: DialogAlignment.Center,
-    cornerRadius: 24
+    cornerRadius: 26
   })
   woofEverythingImportOK_control: CustomDialogController = new CustomDialogController({
     builder: woofPromptOK({
@@ -304,7 +304,7 @@ struct meowAppSettings {
       desc: $r('app.string.Settings_toolbox_import_everything_ok')
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 24
+    cornerRadius: 26
   })
   waterFlow_control: Scroller = new Scroller();
   // Else

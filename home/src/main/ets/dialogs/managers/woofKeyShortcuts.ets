@@ -85,16 +85,22 @@ struct keyDisplay {
       .alignItems(VerticalAlign.Bottom)
       .width("100%")
 
-      KeyBoard({
-        keys_edit: this.keys_edit,
-        key_settings_id: this.key_settings_id,
-        display_text: this.key_binds,
-        showing_keyboard: this.showing_keyboard
-      })
-        .width('100%')
-        .padding({ top: 10 })
-        .visibility(this.showing_keyboard ? Visibility.Visible : Visibility.None)
-        .animation(animation_default())
+      Column() {
+        if (this.showing_keyboard) {
+          KeyBoard({
+            keys_edit: this.keys_edit,
+            key_settings_id: this.key_settings_id,
+            display_text: this.key_binds,
+            showing_keyboard: this.showing_keyboard
+          })
+            .width('100%')
+            .padding({ top: 10 })
+          // .visibility(this.showing_keyboard ? Visibility.Visible : Visibility.None)
+        }
+      }
+      .clip(true)
+      .height(this.showing_keyboard ? undefined : 0)
+      .animation(animation_default())
     }
     .padding(10)
     .borderRadius(10)
@@ -113,11 +119,20 @@ struct KeyBoard {
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // Data
   first_line = ['esc', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12']
   second_line = ['tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p']
   third_line = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l']
   fourth_line = ['shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm']
   fifth_line = ['ctrl', 'alt', 'dpad_left', 'dpad_up', 'dpad_down', 'dpad_right']
+  // UI
+  @State my_height: number | undefined = 0;
+
+  aboutToAppear(): void {
+    setTimeout(() => {
+      this.my_height = undefined;
+    }, 10)
+  }
 
   build() {
     Column({ space: 5 }) {
@@ -175,6 +190,9 @@ struct KeyBoard {
       .width("100%")
       .margin({ top: 5 })
     }
+    .height(this.my_height)
+    .animation(animation_default())
+    .clip(true)
     .alignItems(HorizontalAlign.Start)
     .justifyContent(FlexAlign.Center)
     .width("100%")

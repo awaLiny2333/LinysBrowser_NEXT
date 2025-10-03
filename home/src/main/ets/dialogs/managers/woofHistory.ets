@@ -70,7 +70,7 @@ struct woofHistory {
       link: this.show_url
     }),
     alignment: DialogAlignment.Center,
-    cornerRadius: 24
+    cornerRadius: 26
   });
   controller: CustomDialogController;
   // Data
@@ -115,13 +115,15 @@ struct woofHistory {
         .scrollBar(BarState.Off)
         .align(Alignment.TopStart)
         .edgeEffect(EdgeEffect.Spring)
-        .padding({ bottom: 10, right: this.tablet_mode ? 10 : 0 })
+        .padding({ bottom: 10, top: 5, right: this.tablet_mode ? 10 : 0 })
         .width(this.tablet_mode ? (this.full_view ? '0%' : "35%") : "100%")
         .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
-        .clip(true)
-        .enabled(!this.full_view)
-        .opacity(this.full_view ? 0 : 1)
-        .height(this.full_view && !this.tablet_mode ? 0 : undefined)
+        .borderRadius(10)
+        // .clip(true)
+        // .enabled(!this.full_view)
+        // .opacity(this.full_view ? 0 : 1)
+        // .height(this.full_view && !this.tablet_mode ? 0 : undefined)
+        .visibility(this.full_view ? Visibility.None : Visibility.Visible)
         .animation(animation_default())
         .id("title_history")
 
