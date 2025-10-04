@@ -44,7 +44,7 @@ export class bunch_of_settings {
     bunch_of_settings.register_setting('intelligent_tracking_prevention', 'boolean', 'false');
     bunch_of_settings.register_setting('continue_tabs_count', 'number', '0');
     bunch_of_settings.register_setting('continue_tabs_main_on', 'number', '0');
-    bunch_of_settings.register_setting('continue_tabs_sub_on', 'number', '0');
+    bunch_of_settings.register_setting('continue_tabs_sub_on', 'number', '-1');
 
     // Animation defaults
     bunch_of_settings.register_setting('animation_response', 'number', '36');

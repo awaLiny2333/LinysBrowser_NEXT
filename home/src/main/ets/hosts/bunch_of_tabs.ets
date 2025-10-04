@@ -5,6 +5,7 @@ import { fileIo as fs } from '@kit.CoreFileKit';
 import { sandbox_save } from '../utils/storage_tools';
 import { meowContext } from '../utils/environment_tools';
 import { all_false, all_true } from '../utils/data_operation_tools';
+import { bunch_of_settings } from './bunch_of_settings';
 
 @Observed
 export class tab_label {
@@ -28,12 +29,9 @@ export class tab_info_packed {
   url: string;
   is_loading: boolean;
   loading_progress: number;
-  // Keyword of in-page search
-  searching_keyword: string = '';
-  // Index of current viewing result during in-page search
-  searching_keyword_stats_current: number = 0;
-  // Total number of results of in-page search
-  searching_keyword_stats_total: number = 0;
+  searching_keyword: string = ''; // Keyword of in-page search
+  searching_keyword_stats_current: number = 0; // Index of current viewing result during in-page search
+  searching_keyword_stats_total: number = 0; // Total number of results of in-page search
   restore_on_creation: boolean = false;
   web_state_array: Uint8Array = new Uint8Array();
 
@@ -88,14 +86,19 @@ export class tab_info_packed {
 }
 
 export class bunch_of_tabs {
+  // Major Data
   Tabs: Array<tab_info_packed> = [];
   Labels: Array<tab_label> = [];
-  current_working_tab_index: number = 0;
-  current_color_mode: number = AppStorage.get('currentColorMode') as number;
-  global_custom_UA: string = "";
+  // Statuses
+  main_tab_idx: number = 0;
+  sub_tab_idx: number = 0;
+  current_accessForward: boolean = false;
+  current_accessBackward: boolean = false;
+  // Settings
   new_tab_url: string | undefined = undefined;
   home_url: string | undefined = undefined;
   start_up: string | undefined = undefined;
+  // Private or Temp
   private used_date_ids: number[] = [];
 
   /**
@@ -128,7 +131,7 @@ export class bunch_of_tabs {
   loadUrl_onWorkingTab(url: string) {
     url = url_meow_to_resource(url);
     console.log('[bunch_of_tabs][loadUrl_onWorkingTab] ' + url);
-    this.Tabs[this.current_working_tab_index].controller.loadUrl(url);
+    this.Tabs[this.main_tab_idx].controller.loadUrl(url);
   }
 
   /**
@@ -149,14 +152,14 @@ export class bunch_of_tabs {
    * Refreshes current main tab.
    * */
   refresh_onWorkingTab() {
-    this.Tabs[this.current_working_tab_index].controller.refresh();
+    this.Tabs[this.main_tab_idx].controller.refresh();
   }
 
   /**
    * Stops the load on current main tab.
    * */
   stop_onWorkingTab() {
-    this.Tabs[this.current_working_tab_index].controller.stop();
+    this.Tabs[this.main_tab_idx].controller.stop();
   }
 
   /**
@@ -165,8 +168,8 @@ export class bunch_of_tabs {
    * @returns false if failed, perhaps there is no way forward.
    * */
   goForward_onWorkingTab() {
-    if (this.Tabs[this.current_working_tab_index].controller.accessForward()) {
-      this.Tabs[this.current_working_tab_index].controller.forward();
+    if (this.Tabs[this.main_tab_idx].controller.accessForward()) {
+      this.Tabs[this.main_tab_idx].controller.forward();
     }
   }
 
@@ -176,8 +179,8 @@ export class bunch_of_tabs {
    * @returns false if failed, perhaps there is no way backward.
    * */
   goBackward_onWorkingTab() {
-    if (this.Tabs[this.current_working_tab_index].controller.accessBackward()) {
-      this.Tabs[this.current_working_tab_index].controller.backward();
+    if (this.Tabs[this.main_tab_idx].controller.accessBackward()) {
+      this.Tabs[this.main_tab_idx].controller.backward();
       return true;
     }
     return false;
@@ -190,17 +193,15 @@ export class bunch_of_tabs {
    * @param ua A string, the user agent params.
    * */
   set_global_custom_UA(ua: string) {
-    this.global_custom_UA = ua;
-
-    if (this.global_custom_UA == "") {
+    // Reset default if no input
+    if (ua == "") {
       this.reset_global_custom_UA();
       console.log("[bunch_of_tabs][UA] Reset global_custom_UA to ArkWeb default! ua: " + this.get_global_default_UA())
       return;
-      // Reset default if no input
     }
 
     for (let index = 0; index < this.Tabs.length; index++) {
-      this.Tabs[index].controller.setCustomUserAgent(this.global_custom_UA)
+      this.Tabs[index].controller.setCustomUserAgent(ua)
     }
     console.log("[bunch_of_tabs][UA] Set global_custom_UA! ua: " + ua)
   }
@@ -223,6 +224,22 @@ export class bunch_of_tabs {
     return this.Tabs[0].controller.getUserAgent();
   }
 
+  // Data and Statuses
+
+  /**
+   * Updates the current_accessBackward and current_accessForward statuses.
+   * */
+  update_backward_forward_access() {
+    if (this.workingMainTab()) {
+      try {
+        this.current_accessBackward = this.workingMainTab().controller.accessBackward()
+        this.current_accessForward = this.workingMainTab().controller.accessForward()
+      } catch (e) {
+        console.error('[bunch_of_tabs][update_backward_forward_access] Error: ' + e);
+      }
+    }
+  }
+
   // General Tab Controls
 
   /**
@@ -235,8 +252,8 @@ export class bunch_of_tabs {
     if (target >= this.Tabs.length) {
       target = this.Tabs.length - 1;
     }
-    this.current_working_tab_index = -1; // Weird way to refresh
-    this.current_working_tab_index = target;
+    this.main_tab_idx = -1; // Weird way to refresh
+    this.main_tab_idx = target;
     return target;
   }
 
@@ -262,6 +279,8 @@ export class bunch_of_tabs {
 
     let new_TabInfo: tab_info_packed = new tab_info_packed("Meow", target_url, recover_on_creation);
     let Date_ID = Date.now();
+
+    // TODO: IS THIS EFFICIENT ENOUGH?
     while (this.used_date_ids.includes(Date_ID)) {
       // Date_ID crash prevention
       Date_ID += 1;
@@ -271,9 +290,9 @@ export class bunch_of_tabs {
     this.used_date_ids.push(Date_ID);
     this.Tabs.push(new_TabInfo);
     this.Labels.push(new_TabLabel);
-    this.current_working_tab_index = this.Tabs.length - 1;
+    this.main_tab_idx = this.Tabs.length - 1;
 
-    return this.current_working_tab_index as number;
+    return this.main_tab_idx as number;
   }
 
   /**
@@ -294,10 +313,10 @@ export class bunch_of_tabs {
     }
     // Now at least 2 items are in the Tabs list
 
-    let landing_destination = this.current_working_tab_index;
+    let landing_destination = this.main_tab_idx;
     // Decide where to go
 
-    if (this.current_working_tab_index == target) {
+    if (this.main_tab_idx == target) {
       // If deleting the tab currently viewing
       if (target == 0) {
         landing_destination = 1;
@@ -323,11 +342,11 @@ export class bunch_of_tabs {
       this.Labels[i].index_key -= 1;
     }
 
-    if (this.current_working_tab_index > target) {
-      this.current_working_tab_index -= 1;
+    if (this.main_tab_idx > target) {
+      this.main_tab_idx -= 1;
     }
 
-    return this.current_working_tab_index;
+    return this.main_tab_idx;
   }
 
   /**
@@ -335,7 +354,7 @@ export class bunch_of_tabs {
    * @returns A tab_info_packed object, of the current main tab.
    * */
   workingMainTab() {
-    return this.Tabs[this.current_working_tab_index];
+    return this.Tabs[this.main_tab_idx];
   }
 
   // Data Syncing
@@ -532,5 +551,17 @@ export class bunch_of_tabs {
         sandbox_save(identifier, web_state.buffer);
       }
     }
+  }
+
+  // Data statuses
+
+  /**
+   * Saves current_main_tab_index and current_sub_tab_index to bunch_of_settings.
+   * */
+  save_tab_index_stats(identifier: string) {
+    // Store where am I
+    bunch_of_settings.set("continue_tabs_main_on", this.main_tab_idx);
+    bunch_of_settings.set("continue_tabs_sub_on", this.sub_tab_idx);
+    console.log('[Meow]' + identifier + "[bunch_of_tabs] Stored index stats. Main: " + this.main_tab_idx + ' Sub: ' + this.sub_tab_idx);
   }
 }

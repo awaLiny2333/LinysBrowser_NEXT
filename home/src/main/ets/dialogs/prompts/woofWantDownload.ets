@@ -1,4 +1,3 @@
-import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
@@ -84,12 +83,12 @@ struct woofWantDownload {
 
         linysConfirmDenyButtons({
           confirm_enabled: this.error_code == 0,
-          onConfirm:()=>{
+          onConfirm: () => {
             if (this.error_code == 0) {
               this.submit();
             }
           },
-          onDeny:()=>{
+          onDeny: () => {
             if (this.controller) {
               this.controller.close();
             }

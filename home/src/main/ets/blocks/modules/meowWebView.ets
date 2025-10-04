@@ -16,6 +16,7 @@ import { sync_tabs_list_info } from '../../utils/data_operation_tools';
 import woofPrompt from '../../dialogs/web/woofPrompt';
 import woofConfirm from '../../dialogs/web/woofConfirm';
 import woofAlert from '../../dialogs/web/woofAlert';
+import { determine_extra_background } from '../../processes/tabs_actions';
 
 @Component
 struct meowWebView {
@@ -46,10 +47,6 @@ struct meowWebView {
   @StorageLink('tab_force_dark') tab_force_dark: boolean[] = [false];
   /**
    * Web control statuses */
-  @StorageLink('current_accessForward') current_accessForward: boolean = false;
-  @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
-  @StorageLink('current_main_tab_index') @Watch('on_tab_info_change') current_main_tab_index: number = 0;
-  @StorageLink('current_sub_tab_index') @Watch('on_tab_info_change') current_sub_tab_index: number = -1;
   @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
   // Settings
   @StorageProp('collect_new_history') collect_new_history: boolean = true;
@@ -75,7 +72,6 @@ struct meowWebView {
   /**
    * Visual */
   @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
-  @StorageProp('tab_animation') tab_animation: AnimateParam = animation_default();
   @State last_timeout_id: number | undefined = undefined;
   @State shortcut_scroll_offset: number = 0;
   @State homepage_shortcuts: unified_item[] = [];
@@ -279,8 +275,8 @@ struct meowWebView {
     RelativeContainer() {
       if (this.homepage_background) {
         Image(this.homepage_background)
-          .visibility(this.current_url == 'meow://home' && this.current_sub_tab_index == -1 ? Visibility.Visible : Visibility.Hidden)
-          .transition(TransitionEffect.OPACITY.animation({ duration: 1000 }))
+          .visibility(this.current_url == 'meow://home' && this.bunch_of_tabs.sub_tab_idx == -1 ? Visibility.Visible : Visibility.Hidden)
+          .transition(TransitionEffect.OPACITY.animation({ duration: 400 }))
           .opacity(Math.max(1 - this.shortcut_scroll_offset / this.screen_height, 0.5))
       } // Background
 
@@ -342,9 +338,6 @@ struct meowWebView {
                 return;
               }
 
-              // Update History
-              this.current_accessBackward = this.bunch_of_tabs.Tabs[Label.index_key].controller.accessBackward();
-              this.current_accessForward = this.bunch_of_tabs.Tabs[Label.index_key].controller.accessForward();
               // Ask tab to update its info (Reset)
               this.bunch_of_tabs.Tabs[Label.index_key].update_title()
               this.bunch_of_tabs.Tabs[Label.index_key].update_url()
@@ -360,14 +353,14 @@ struct meowWebView {
               this.bunch_of_tabs.Tabs[Label.index_key].update_title();
               this.bunch_of_tabs.Tabs[Label.index_key].update_url();
               this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(false);
+              this.bunch_of_tabs.update_backward_forward_access();
 
               sync_tabs_list_info();
 
               // Save browse history if is neither resource tab nor a recovery tab
               if (this.collect_new_history
                 && !this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation
-                && !this.tab_urls[Label.index_key].includes("resource://")
-              ) {
+                && !this.tab_urls[Label.index_key].includes("resource://")) {
                 let new_record = new history_record(this.tab_titles[Label.index_key], this.tab_urls[Label.index_key])
                 this.bunch_of_history.add_history(new_record, true, true);
               } else {
@@ -380,7 +373,7 @@ struct meowWebView {
                 }
               }
 
-              this.determine_extra_background();
+              determine_extra_background();
             })
             .onProgressChange((event) => {
               if (!event) {
@@ -403,6 +396,7 @@ struct meowWebView {
               this.bunch_of_tabs.Tabs[Label.index_key].update_title()
               this.bunch_of_tabs.Tabs[Label.index_key].update_url()
               this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(progress)
+              this.bunch_of_tabs.update_backward_forward_access();
 
               sync_tabs_list_info(); // Get synced lists
 
@@ -549,14 +543,14 @@ struct meowWebView {
               }
               return true;
             })
-            .onConfirm((e)=>{
+            .onConfirm((e) => {
               if (e) {
                 this.js_confirm_event = e;
                 this.woofConfirm_control.open();
               }
               return true;
             })
-            .onAlert((e)=>{
+            .onAlert((e) => {
               if (e) {
                 this.js_alert_event = e;
                 this.woofAlert_control.open();
@@ -565,13 +559,12 @@ struct meowWebView {
             })
 
         } // Webs
+        .clip(true)
         .borderColor(this.color_current_secondary)
-        .borderWidth(this.border_width_tab(this.current_sub_tab_index == Label.index_key))
-        .width(this.current_sub_tab_index < 0 ? "100%" : this.width_tab())
-        .height(this.current_sub_tab_index < 0 ? "100%" : this.height_tab())
-        .alignRules(this.current_main_tab_index == Label.index_key ? this.align_rules_main_tab() : this.align_rules_sub_tab())
+        .width(this.bunch_of_tabs.sub_tab_idx < 0 ? "100%" : this.width_tab())
+        .height(this.bunch_of_tabs.sub_tab_idx < 0 ? "100%" : this.height_tab())
+        .alignRules(this.bunch_of_tabs.main_tab_idx == Label.index_key ? this.align_rules_main_tab() : this.align_rules_sub_tab())
         .visibility(this.my_visibility(Label.index_key))
-        .animation(this.tab_animation)
       }, (Label: tab_label) => Label.timestamp.toString())
 
       Scroll(this.shortcut_scroller) {
@@ -596,7 +589,7 @@ struct meowWebView {
       .edgeEffect(EdgeEffect.Spring)
       .animation(animation_default())
       .scrollBar(BarState.Off)
-      .visibility((this.current_url == 'meow://home' && this.current_sub_tab_index == -1) ? Visibility.Visible : Visibility.None)
+      .visibility((this.current_url == 'meow://home' && this.bunch_of_tabs.sub_tab_idx == -1) ? Visibility.Visible : Visibility.None)
       .onDidScroll(() => {
         this.shortcut_scroll_offset = this.shortcut_scroller.currentOffset().yOffset;
       })
@@ -619,15 +612,6 @@ struct meowWebView {
       // Update Input Search Box
     }
     // Update Input Search Box when new page loaded
-  }
-
-  on_tab_info_change() {
-    if (this.last_timeout_id) {
-      clearTimeout(this.last_timeout_id);
-    }
-    this.last_timeout_id = setTimeout(() => {
-      this.tab_animation = animation_default();
-    }, 50)
   }
 
   /**
@@ -723,18 +707,8 @@ struct meowWebView {
     }
   }
 
-  border_width_tab(is_sub: boolean) {
-    let border_width: EdgeWidths;
-    if (this.tablet_mode) {
-      border_width = { left: is_sub ? 2 : 0, top: 0 };
-    } else {
-      border_width = { top: is_sub ? 2 : 0, left: 0 };
-    }
-    return border_width;
-  }
-
   my_visibility(index: number) {
-    if (!(this.current_main_tab_index == index || this.current_sub_tab_index == index)) {
+    if (!(this.bunch_of_tabs.main_tab_idx == index || this.bunch_of_tabs.sub_tab_idx == index)) {
       // Not present
       return Visibility.None;
     }
@@ -759,30 +733,9 @@ struct meowWebView {
       if (target_packed_tab_info.restore_on_creation) {
         return "";
       } else {
-        // console.log('[meowWebView][src_of_tab_index] load: ' + url_meow_to_resource(target_packed_tab_info.url));
         return url_meow_to_resource(target_packed_tab_info.url);
       }
     }
-  }
-
-  private determine_extra_background() {
-    let need_extra_background = true;
-    // Determine background
-    if (!this.init_OK) {
-      need_extra_background = false;
-    }
-    if (this.current_sub_tab_index > -1) {
-      // Paralleowing
-      if (this.current_url == 'meow://home' && this.tab_urls[this.current_sub_tab_index] == 'meow://home') {
-        need_extra_background = false;
-      }
-    } else {
-      // Not Paralleowing
-      if (this.current_url == 'meow://home') {
-        need_extra_background = false;
-      }
-    }
-    this.extra_background = need_extra_background;
   }
 }
 
@@ -872,7 +825,8 @@ struct shortcutButton {
   }
 
   is_right_align() {
-    return this.preferred_hand_left_or_right == 'right' && !this.preferred_hand_reverse_homepage_shortcuts
+    return (this.preferred_hand_left_or_right == 'right' && !this.preferred_hand_reverse_homepage_shortcuts) ||
+      (!(this.preferred_hand_left_or_right == 'right') && this.preferred_hand_reverse_homepage_shortcuts);
   }
 
   get_alignItems() {

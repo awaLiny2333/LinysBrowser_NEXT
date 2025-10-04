@@ -236,6 +236,12 @@ async function restore_tabs(t0: number) {
   let continue_tabs_main_on = bunch_of_settings.get('continue_tabs_main_on') as number;
   let continue_tabs_sub_on = bunch_of_settings.get('continue_tabs_sub_on') as number;
 
+  // TODO: Investigate this weird bug
+  if (continue_tabs_main_on == continue_tabs_sub_on) {
+    console.error('[init][restore_tabs] Weird bug of continue_tabs_main_on == continue_tabs_sub_on occurred!!');
+    continue_tabs_sub_on = -1;
+  }
+
   AppStorage.setOrCreate('continue_tabs_count', continue_tabs_count);
   AppStorage.setOrCreate('continue_tabs_main_on', continue_tabs_main_on);
   AppStorage.setOrCreate('continue_tabs_sub_on', continue_tabs_sub_on);

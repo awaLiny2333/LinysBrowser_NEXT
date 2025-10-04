@@ -202,13 +202,7 @@ let built_ins: string[] = [
 export function url_resource_to_meow(url: string) {
   let result: string = url;
 
-  if (url == undefined) {
-    return result;
-  }
-  if (url == null) {
-    return result;
-  }
-  if (url == "") {
+  if (!url) {
     return result;
   }
   // No process for empty inputs
@@ -234,7 +228,7 @@ export function url_resource_to_meow(url: string) {
 export function url_meow_to_resource(url: string) {
   let result: string = url;
 
-  if (url == undefined || url == null) {
+  if (!url) {
     return result;
   }
   // No process for empty inputs

@@ -1,5 +1,4 @@
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
-import { url_resource_to_meow } from '../../utils/url_tools';
 import { animation_default, click_effect_default, fontSize_Large, fontSize_Normal, url_default_blank } from '../../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { sandbox_read_arrayBuffer_sync, sandbox_unlink_sync } from '../../utils/storage_tools';
@@ -12,6 +11,7 @@ import linysText from '../../components/texts/linysText';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysSymbol from '../../components/texts/linysSymbol';
 import { sync_tabs_list_info } from '../../utils/data_operation_tools';
+import { determine_extra_background, set_search_box_text } from '../../processes/tabs_actions';
 
 @Component
 struct meowTabsVertical {
@@ -33,20 +33,10 @@ struct meowTabsVertical {
   @StorageProp('home_url') home_url: string = '';
   @StorageProp('new_tab_url') new_tab_url: string = '';
   @StorageProp('start_up_option') start_up_option: string = '';
-  /**
-   * Controls */
+  // Controls
   @StorageLink('tab_titles') tab_titles: string[] = []
   @StorageLink('tab_urls') tab_urls: string[] = [];
   @StorageLink('current_url') current_url: string = "=￣ω￣=";
-  /**
-   * Web control statuses */
-  @StorageProp('continue_tabs_count') continue_tabs_count: number = 0;
-  @StorageProp('continue_tabs_main_on') continue_tabs_main_on: number = 0;
-  @StorageProp('continue_tabs_sub_on') continue_tabs_sub_on: number = 0;
-  @StorageLink('current_main_tab_index') @Watch('on_did_switch_tab') current_main_tab_index: number = 0;
-  @StorageLink('current_sub_tab_index') @Watch('on_did_switch_tab') current_sub_tab_index: number = -1;
-  @StorageLink('current_accessForward') current_accessForward: boolean = false;
-  @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
   // Other Info / Statuses
   @State recover_tabs_finished: boolean = false;
   @StorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
@@ -88,19 +78,23 @@ struct meowTabsVertical {
     let t0 = Date.now();
     let t = 0;
 
+    let continue_tabs_sub_on = AppStorage.get('continue_tabs_sub_on') as number;
+    let continue_tabs_main_on = AppStorage.get('continue_tabs_main_on') as number;
+    let continue_tabs_count = AppStorage.get('continue_tabs_count') as number;
+
     // Start Up: generate / recover tabs
     if (this.start_up_option == "new tab") {
-      this.new_tab(this.new_tab_url);
-      this.switch_tab(0, false);
+      this.new_tab(this.new_tab_url, false, false);
+      this.switch_tab(0, false, false);
 
     } else if (this.start_up_option == "home") {
-      this.new_tab((this.home_url == "") ? url_default_blank() : this.home_url);
-      this.switch_tab(0, false);
+      this.new_tab((this.home_url == "") ? url_default_blank() : this.home_url, false, false);
+      this.switch_tab(0, false, false);
 
     } else {
       // Restore. Prepare web states.
       let web_state_arrays_to_restore: Uint8Array[] = [];
-      for (let index = 0; index < this.continue_tabs_count; index++) {
+      for (let index = 0; index < continue_tabs_count; index++) {
         // Read continue tabs data
         let key = "continue/continue_tabs_web_state_array_" + index.toString();
         let array_buffer = sandbox_read_arrayBuffer_sync(key);
@@ -109,8 +103,8 @@ struct meowTabsVertical {
         } else {
           // An unexpected error may occur: array_buffer may be empty.
           web_state_arrays_to_restore.push(new Uint8Array());
-          this.current_sub_tab_index = -1;
-          this.current_main_tab_index = 0;
+          this.bunch_of_tabs.sub_tab_idx = -1;
+          this.bunch_of_tabs.main_tab_idx = 0;
         }
       }
 
@@ -119,17 +113,17 @@ struct meowTabsVertical {
 
       // Create new tabs
       for (let index = 0; index < web_state_arrays_to_restore.length; index++) {
-        this.new_tab("", true);
+        this.new_tab("", true, false);
       }
 
       // Try to switch tab
-      this.tab_animation = { duration: 0 };
-      this.switch_tab(this.continue_tabs_main_on, false);
+      // this.tab_animation = { duration: 0 };
+      this.switch_tab(continue_tabs_main_on, false, false);
       sync_tabs_list_info();
 
       // Recover Paralleow
-      if (this.continue_tabs_sub_on < this.tab_titles.length) {
-        this.current_sub_tab_index = this.continue_tabs_sub_on;
+      if (continue_tabs_sub_on < this.tab_titles.length) {
+        this.bunch_of_tabs.sub_tab_idx = continue_tabs_sub_on;
       }
     }
 
@@ -173,7 +167,7 @@ struct meowTabsVertical {
         .edgeEffect(this.count_down_for_switching_back_to_spring == 0 ? EdgeEffect.Spring : EdgeEffect.None)
         .width("100%")
         .borderRadius(10)
-        .height(this.scroll_area_height - (this.choosing_paralleow || this.current_sub_tab_index >= 0 ? this.paralleow_description_height : 0))
+        .height(this.scroll_area_height - (this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? this.paralleow_description_height : 0))
         .animation(animation_default())
         .nestedScroll({ scrollForward: NestedScrollMode.SELF_ONLY, scrollBackward: NestedScrollMode.SELF_ONLY })
 
@@ -184,14 +178,14 @@ struct meowTabsVertical {
               this.close_all_tabs_gateway = Date.now();
             }
           })
-            .visibility(this.choosing_paralleow || this.current_sub_tab_index >= 0 ? Visibility.None : Visibility.Visible)
+            .visibility(this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? Visibility.None : Visibility.Visible)
             .animation(animation_default())
 
           Blank()
 
           linysShowButton({
             symbol_glyph_target: 'sys.symbol.map',
-            show: this.choosing_paralleow || this.current_sub_tab_index >= 0,
+            show: this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0,
             text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
           })
             .onClick(() => {
@@ -202,7 +196,7 @@ struct meowTabsVertical {
 
           linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
             .onClick(() => {
-              this.new_tab("")
+              this.new_tab("", false, true);
             })
             .keyboardShortcut(this.bunch_of_key_shortcuts.new_tab.main_key, this.bunch_of_key_shortcuts.new_tab.modifier)
         } // New Tab and Paralleow Button
@@ -213,7 +207,7 @@ struct meowTabsVertical {
           .onAreaChange((_o, n) => {
             this.paralleow_description_height = n.height as number + 16;
           })
-          .visibility(this.choosing_paralleow || this.current_sub_tab_index >= 0 ? Visibility.Visible : Visibility.None)
+          .visibility(this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
 
       } // Tabs Panel
@@ -283,18 +277,16 @@ struct meowTabsVertical {
    * @param do_recovery A boolean, if set true, then the tab will restore the serialized web state in
    * @description While if new_tab_url is also not set ("" or undefined), then will load the url_default_blank().
    * */
-  new_tab(target_url: string, do_recovery?: boolean) {
+  new_tab(target_url: string, do_recovery: boolean, save_to_settings: boolean) {
     AppStorage.set('extra_background', false);
 
-    this.tab_animation = { duration: 0 };
-
-    this.current_main_tab_index = this.bunch_of_tabs.newTab(target_url, do_recovery);
+    this.bunch_of_tabs.newTab(target_url, do_recovery);
 
     if (!do_recovery) {
       // Store tabs count
       let store_tabs_count = this.bunch_of_tabs.get_tabs_count();
-      console.log("[Meow][meowTabs] Stored Tabs Count: " + store_tabs_count)
       bunch_of_settings.set("continue_tabs_count", store_tabs_count);
+      console.log("[Meow][meowTabs] Stored Tabs Count: " + store_tabs_count);
     }
 
     // Animation part
@@ -313,9 +305,13 @@ struct meowTabsVertical {
 
     // Scroll to the new tab later
     this.count_down_for_scrolling_to_bottom = 30;
+
+    if (save_to_settings) {
+      this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][new_tab]');
+    }
   }
 
-  switch_tab(target: number, close_tabs_panel: boolean = true) {
+  switch_tab(target: number, close_tabs_panel: boolean, save_to_settings: boolean) {
     if (!this.tablet_mode && close_tabs_panel) {
       // Auto close panel
       if (this.tabs_style_non_tablet_mode == "vertical") {
@@ -326,21 +322,26 @@ struct meowTabsVertical {
     this.choosing_paralleow = false;
 
     // Switch
-    this.current_main_tab_index = this.bunch_of_tabs.switchToTab(target);
-    console.log('[Meow][meowTabs] Switch to tab ' + this.current_main_tab_index.toString())
+    this.bunch_of_tabs.switchToTab(target);
+    console.log('[Meow][meowTabs] Switch to tab ' + this.bunch_of_tabs.main_tab_idx.toString());
+
+    // Update history
     if (this.recover_tabs_finished) {
-      // Update history
-      this.update_backward_forward_access()
+      this.bunch_of_tabs.update_backward_forward_access();
     }
     // Set CURRENT variables
     sync_tabs_list_info();
     // Update Input Search Box
-    this.set_search_box_text(this.current_url)
+    set_search_box_text(this.current_url);
 
-    this.determine_extra_background();
+    determine_extra_background();
+
+    if (save_to_settings) {
+      this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][switch_tab]');
+    }
   }
 
-  close_tab(target: number) {
+  close_tab(target: number, save_to_settings: boolean) {
     if (!this.recover_tabs_finished) {
       return;
     }
@@ -351,24 +352,20 @@ struct meowTabsVertical {
       return;
     }
 
-    // Set animation duration
-    // this is stupid
-    this.tab_animation = { duration: 0 };
-
     // Turn off Paralleow
-    if (target == this.current_sub_tab_index || target == this.current_main_tab_index) {
+    if (target == this.bunch_of_tabs.sub_tab_idx || target == this.bunch_of_tabs.main_tab_idx) {
       console.log('[Meow][LinysTabs] Paralleow off')
-      this.current_sub_tab_index = -1;
+      this.bunch_of_tabs.sub_tab_idx = -1;
     }
 
     // Close
-    this.current_main_tab_index = this.bunch_of_tabs.closeTab(target, this.bunch_of_tabs.new_tab_url || url_default_blank());
+    this.bunch_of_tabs.closeTab(target, this.bunch_of_tabs.new_tab_url || url_default_blank());
     // Update history
-    this.update_backward_forward_access();
+    this.bunch_of_tabs.update_backward_forward_access();
     // Get synced lists
     sync_tabs_list_info();
     // Update Input Search Box
-    this.set_search_box_text(this.current_url);
+    set_search_box_text(this.current_url);
 
     // Store tabs count
     let store_tabs_count = this.tab_titles.length;
@@ -389,18 +386,18 @@ struct meowTabsVertical {
     this.bunch_of_tabs.re_save_web_state(target);
 
     // Paralleow
-    if (this.current_main_tab_index == this.current_sub_tab_index) {
+    if (this.bunch_of_tabs.main_tab_idx == this.bunch_of_tabs.sub_tab_idx) {
       // if Paralleow crash then turn off
-      this.current_sub_tab_index = -1;
+      this.bunch_of_tabs.sub_tab_idx = -1;
     }
 
     // if only 1 tab left then reset Paralleow stuff
     if (this.tab_titles.length == 1) {
-      this.current_sub_tab_index = -1;
+      this.bunch_of_tabs.sub_tab_idx = -1;
       this.choosing_paralleow = false;
     }
-    if (target < this.current_sub_tab_index) {
-      this.current_sub_tab_index -= 1;
+    if (target < this.bunch_of_tabs.sub_tab_idx) {
+      this.bunch_of_tabs.sub_tab_idx -= 1;
     }
 
     // Animation part
@@ -422,13 +419,18 @@ struct meowTabsVertical {
     // Or we'll have to wait for the spring animation to finish, bringing the last tab button down.
     this.count_down_for_switching_back_to_spring += 10;
 
-    this.determine_extra_background();
+    determine_extra_background();
+
+    if (save_to_settings) {
+      this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][close_tab]');
+    }
   }
 
   close_all_tabs() {
     for (let index = this.bunch_of_tabs.Tabs.length - 1; index >= 0; index--) {
-      this.close_tab(0);
+      this.close_tab(0, false);
     }
+    this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][close_all_tabs]');
   }
 
   choose_paralleow() {
@@ -438,22 +440,27 @@ struct meowTabsVertical {
       return;
     }
 
-    if (this.current_sub_tab_index < 0) {
+    if (this.bunch_of_tabs.sub_tab_idx < 0) {
       // if haven't chosen one, then start to choose
       this.choosing_paralleow = true;
     } else {
       // Quit Paralleow
       this.choosing_paralleow = false;
-      this.current_sub_tab_index = -1;
+      this.bunch_of_tabs.sub_tab_idx = -1;
+      this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][choose_paralleow]');
     }
 
-    this.determine_extra_background();
+    determine_extra_background();
   }
 
-  switch_paralleow() {
-    let new_sub = this.current_main_tab_index;
-    this.switch_tab(this.current_sub_tab_index);
-    this.current_sub_tab_index = new_sub;
+  switch_paralleow(save_to_settings: boolean) {
+    let old_main = this.bunch_of_tabs.main_tab_idx;
+    this.switch_tab(this.bunch_of_tabs.sub_tab_idx, true, save_to_settings);
+    this.bunch_of_tabs.sub_tab_idx = old_main;
+
+    if (save_to_settings) {
+      this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][switch_paralleow]');
+    }
   }
 
   // Utils
@@ -477,95 +484,40 @@ struct meowTabsVertical {
     }
   }
 
-  update_backward_forward_access() {
-    try {
-      if (this.bunch_of_tabs.workingMainTab()) {
-        this.current_accessBackward = this.bunch_of_tabs.workingMainTab().controller.accessBackward()
-        this.current_accessForward = this.bunch_of_tabs.workingMainTab().controller.accessForward()
-      } else {
-        setTimeout(() => {
-          this.update_backward_forward_access();
-        }, 100)
-      }
-    } catch (e) {
-      setTimeout(() => {
-        this.update_backward_forward_access();
-      }, 100)
-    }
-  }
-
-  set_search_box_text(text: string) {
-    if (!this.is_search_input_typing && text) {
-      this.search_input = url_resource_to_meow(text);
-      // Update Input Search Box
-    }
-  }
-
-  determine_extra_background() {
-    let need_extra_background = true;
-    // Determine background
-    if (!AppStorage.get('meowWebView_init_OK') as boolean) {
-      need_extra_background = false;
-    }
-    if (this.current_sub_tab_index > -1) {
-      // Paralleowing
-      if (this.current_url == 'meow://home' && this.tab_urls[this.current_sub_tab_index] == 'meow://home') {
-        need_extra_background = false;
-      }
-    } else {
-      // Not Paralleowing
-      if (this.current_url == 'meow://home') {
-        need_extra_background = false;
-      }
-    }
-    AppStorage.set('extra_background', need_extra_background);
-  }
-
   // Events
+
+  on_global_custom_UA_change() {
+    this.bunch_of_tabs.set_global_custom_UA(this.global_custom_UA);
+  }
 
   uni_tab_button_click() {
     let clicked = this.uni_tab_button_clicked;
-    let sub = this.current_sub_tab_index;
-    let main = this.current_main_tab_index;
+    let sub = this.bunch_of_tabs.sub_tab_idx;
+    let main = this.bunch_of_tabs.main_tab_idx;
 
     if (clicked >= 0) {
+      console.log('[Meow][uni_tab_button_click] [' + clicked + '] Clicked!');
       if (this.choosing_paralleow && main != clicked) {
         // if choosing Paralleow
         // and is not selected as main web
         // (this tab is selectable to be a sub view)
         // then set this tab as sub view
         this.choosing_paralleow = false;
-        this.current_sub_tab_index = clicked;
+        this.bunch_of_tabs.sub_tab_idx = clicked;
       } else if (sub >= 0 && (sub == clicked || main == clicked)) {
         // if Paralleow enabled
         // and this tab clicked is one of main or sub
         // then switch the two tabs
-        this.switch_paralleow();
+        this.switch_paralleow(false);
       } else {
         // simply switch tab
-        this.tab_animation = { duration: 0 };
-        this.switch_tab(clicked);
+        // this.tab_animation = { duration: 0 };
+        this.switch_tab(clicked, true, false);
       }
+      this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][uni_tab_button_click]');
     }
     // Reset
     this.uni_tab_button_clicked = -1;
-  }
-
-  on_did_switch_tab() {
-    if (this.recover_tabs_finished) {
-      // Store where am I
-      let where_main_am_i = this.current_main_tab_index;
-      console.log("[Meow][meowTabs] Stored where main am I: " + where_main_am_i);
-      bunch_of_settings.set("continue_tabs_main_on", where_main_am_i);
-
-      let where_sub_am_i = this.current_sub_tab_index;
-      console.log("[Meow][meowTabs] Stored where sub am I: " + where_sub_am_i);
-      bunch_of_settings.set("continue_tabs_sub_on", where_sub_am_i);
-    }
-  }
-
-  on_global_custom_UA_change() {
-    this.bunch_of_tabs.set_global_custom_UA(this.global_custom_UA);
   }
 
   uni_new_tab() {
@@ -581,7 +533,7 @@ struct meowTabsVertical {
       tab = ""
     }
 
-    this.new_tab(tab);
+    this.new_tab(tab, false, true);
     setTimeout(() => {
       // Avoid opening duplicate tabs, idk why
       this.new_tab_gateway = "";
@@ -590,7 +542,7 @@ struct meowTabsVertical {
 
   uni_close_tab() {
     if (this.close_tab_gateway >= 0) {
-      this.close_tab(this.close_tab_gateway);
+      this.close_tab(this.close_tab_gateway, true);
       this.close_tab_gateway = -1;
     }
   }
@@ -620,7 +572,8 @@ struct meowTabsVertical {
   // Data
 
   is_right_align() {
-    return this.preferred_hand_left_or_right == 'right' && !this.preferred_hand_reverse_tabs_panel;
+    return (this.preferred_hand_left_or_right == 'right' && !this.preferred_hand_reverse_tabs_panel) ||
+      (!(this.preferred_hand_left_or_right == 'right') && this.preferred_hand_reverse_tabs_panel);
   }
 }
 
@@ -634,9 +587,8 @@ struct TabButton {
   @Prop Label: tab_label;
   tab_height_default: number = 42;
   // Public
+  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
-  @StorageLink('current_main_tab_index') current_main_tab_index: number = 0;
-  @StorageLink('current_sub_tab_index') current_sub_tab_index: number = -1;
   @StorageLink('tab_titles') tab_titles: string[] = []
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
@@ -664,10 +616,10 @@ struct TabButton {
           .padding({ right: 5 })
           .fontSize(fontSize_Large())
           .fontColor(this.color_current_font)
-          .fontWeight((this.current_main_tab_index == this.Label.index_key ||
-            this.current_sub_tab_index == this.Label.index_key)
+          .fontWeight((this.bunch_of_tabs.main_tab_idx == this.Label.index_key ||
+            this.bunch_of_tabs.sub_tab_idx == this.Label.index_key)
             ? FontWeight.Bold : undefined)
-          .visibility(this.current_sub_tab_index == this.Label.index_key ? Visibility.Visible : Visibility.None)
+          .visibility(this.bunch_of_tabs.sub_tab_idx == this.Label.index_key ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
           .offset({ y: -2 })
 
@@ -675,8 +627,8 @@ struct TabButton {
           .padding({ left: 2 })
           .fontSize(fontSize_Normal())
           .fontColor(this.color_current_font)
-          .fontWeight((this.current_main_tab_index == this.Label.index_key ||
-            this.current_sub_tab_index == this.Label.index_key)
+          .fontWeight((this.bunch_of_tabs.main_tab_idx == this.Label.index_key ||
+            this.bunch_of_tabs.sub_tab_idx == this.Label.index_key)
             ? FontWeight.Bold : undefined)
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -693,8 +645,8 @@ struct TabButton {
       .border({
         radius: 10,
         width: 2,
-        color: (this.current_main_tab_index == this.Label.index_key || this.current_sub_tab_index == this.Label.index_key) ?
-          this.color_current_font : "transparent"
+        color: (this.bunch_of_tabs.main_tab_idx == this.Label.index_key || this.bunch_of_tabs.sub_tab_idx == this.Label.index_key)
+          ? this.color_current_font : "transparent"
       })
       .backgroundColor(this.color_current_secondary)
       .animation(animation_default())
@@ -725,7 +677,7 @@ struct TabButton {
       .onClick(() => {
         this.close_tab_gateway = this.Label.index_key;
       })
-      .keyboardShortcut(this.current_main_tab_index == this.Label.index_key ? this.bunch_of_key_shortcuts.close_tab.main_key : '',
+      .keyboardShortcut(this.bunch_of_tabs.main_tab_idx == this.Label.index_key ? this.bunch_of_key_shortcuts.close_tab.main_key : '',
         this.bunch_of_key_shortcuts.close_tab.modifier)
     }
     .onTouch((event) => {

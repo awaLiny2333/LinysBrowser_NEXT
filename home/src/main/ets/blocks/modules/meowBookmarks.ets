@@ -514,7 +514,8 @@ struct meowBookmarks {
   }
 
   is_right_align() {
-    return this.preferred_hand_left_or_right == 'right' && !this.preferred_hand_reverse_tabs_panel;
+    return (this.preferred_hand_left_or_right == 'right' && !this.preferred_hand_reverse_tabs_panel) ||
+      (!(this.preferred_hand_left_or_right == 'right') && this.preferred_hand_reverse_tabs_panel);
   }
 }
 

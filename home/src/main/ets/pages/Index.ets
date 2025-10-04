@@ -62,9 +62,6 @@ struct Index {
   @StorageLink('current_loading_progress') current_loading_progress: number = 0;
   @StorageLink('current_is_loading') current_is_loading: boolean = true;
   /**
-   * Web control */
-  @StorageLink('current_main_tab_index') current_main_tab_index: number = 0;
-  /**
    * Settings */
   @StorageLink('title_bar_position') @Watch('on_title_bar_position_change') title_bar_position: string = "";
   @StorageLink('sys_back_to_access_backward') sys_back_to_access_backward: boolean = false;
@@ -498,7 +495,7 @@ struct Index {
         stop_system_back = true;
       } else if (this.bunch_of_tabs.get_tabs_count() > 1) {
         // Can close something
-        this.uni_close_tab_gateway = this.current_main_tab_index;
+        this.uni_close_tab_gateway = this.bunch_of_tabs.main_tab_idx;
         stop_system_back = true;
       }
     }

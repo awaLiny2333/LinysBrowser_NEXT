@@ -105,6 +105,10 @@ struct meowSuggestions {
   }
 
   refresh_suggestions() {
+    if (!this.is_search_input_typing) {
+      return;
+    }
+
     this.showing_more_options = false;
     this.showing_app_settings = false;
     this.showing_downloads = false;

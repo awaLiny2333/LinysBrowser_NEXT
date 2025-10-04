@@ -9,6 +9,11 @@ export function meowContext(): common.UIAbilityContext {
   return AppStorage.get('context') as common.UIAbilityContext;
 }
 
+/**
+ * Converts px to vp.
+ * @param px The true px.
+ * @returns The equivalent vp.
+ * */
 export function meowPx2vp(px: number) {
   try {
     return px / display.getDefaultDisplaySync().densityPixels;

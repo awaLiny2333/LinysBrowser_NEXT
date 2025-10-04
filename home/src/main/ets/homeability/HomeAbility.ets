@@ -4,6 +4,7 @@ import { window } from '@kit.ArkUI';
 import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
 import { meow_init } from '../processes/init';
 import { meowPx2vp } from '../utils/environment_tools';
+import lazy { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 
 export default class HomeAbility extends UIAbility {
   storage: LocalStorage = new LocalStorage();
@@ -52,7 +53,8 @@ export default class HomeAbility extends UIAbility {
       wantParam[wantConstant.Params.SUPPORT_CONTINUE_SOURCE_EXIT_KEY] = false;
       // Close tab
       if (close_tab) {
-        AppStorage.set('universal_close_tab_gateway', AppStorage.get('current_main_tab_index') as number);
+        let tabs = AppStorage.get('bunch_of_tabs') as bunch_of_tabs;
+        AppStorage.set('universal_close_tab_gateway', tabs.main_tab_idx);
       }
     }
 
@@ -200,11 +202,13 @@ export default class HomeAbility extends UIAbility {
    * @param windowStage The windowStage.
    * */
   window_load_content(windowStage: window.WindowStage) {
+    this.storage.setOrCreate('windowClass', windowStage); // Save windowClass
+    this.storage.setOrCreate('window_id', Date.now().toString()); // Save my window ID
+
     let windowClass = windowStage.getMainWindowSync(); // Get app main window
-    AppStorage.setOrCreate('windowClass', windowStage);
 
     // Load content
-    windowStage.loadContent('pages/Index', (err) => {
+    windowStage.loadContent('pages/Index', this.storage, (err) => {
       if (err.code) {
         hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
         return;

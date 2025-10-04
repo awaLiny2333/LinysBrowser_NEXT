@@ -6,8 +6,9 @@ import { collections } from '@kit.ArkTS';
  * Syncs all tabs data into AppStorage.
  * */
 export function sync_tabs_list_info() {
-  let t0 = Date.now();
-  let t = 0;
+  // let t0 = Date.now();
+  // let t = 0;
+
   // TODO: Efficiency can be further improved.
   // This should work
   let tabs = AppStorage.get('bunch_of_tabs') as bunch_of_tabs;
@@ -31,7 +32,7 @@ export function sync_tabs_list_info() {
   AppStorage.set('tab_force_dark', tab_force_dark);
 
   // Current
-  let current_index = AppStorage.get('current_main_tab_index') as number;
+  let current_index = tabs.main_tab_idx;
   AppStorage.set('current_title', tab_titles[current_index]);
   AppStorage.set('current_url', url_resource_to_meow(tab_urls[current_index]));
   AppStorage.set('current_loading_progress', tab_loading_progresses[current_index]);
@@ -47,7 +48,7 @@ export function sync_tabs_list_info() {
   AppStorage.set('current_force_dark', tab_force_dark[current_index]);
 
   // Timer
-  t = Date.now() - t0;
+  // t = Date.now() - t0;
   // console.log('[sync_tabs_list_info] Called! (' + t + ' ms)');
 }
 

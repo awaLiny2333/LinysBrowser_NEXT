@@ -93,11 +93,6 @@ struct meowTitleBar {
   @StorageLink('current_disable_image') current_disable_image: boolean = false;
   @StorageLink('tab_force_dark') tab_force_dark: boolean[] = [false];
   @StorageLink('current_force_dark') current_force_dark: boolean = false;
-  // Web control statuses
-  @StorageLink('current_main_tab_index') current_main_tab_index: number = 0;
-  @StorageLink('current_sub_tab_index') current_sub_tab_index: number = -1;
-  @StorageLink('current_accessForward') current_accessForward: boolean = false;
-  @StorageLink('current_accessBackward') current_accessBackward: boolean = false;
   // UI control actions
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
   @StorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
@@ -333,8 +328,8 @@ struct meowTitleBar {
           linysSymbol({
             symbol_glyph_target: 'sys.symbol.arrow_left'
           })// Backward
-            .enabled(this.current_accessBackward)
-            .opacity(this.current_accessBackward ? 1 : 0.5)
+            .enabled(this.bunch_of_tabs.current_accessBackward)
+            .opacity(this.bunch_of_tabs.current_accessBackward ? 1 : 0.5)
             .visibility(this.visible_when_no_panels_open_in_normal_mode())
             .animation(animation_default())
             .onClick(() => {
@@ -344,8 +339,8 @@ struct meowTitleBar {
           linysSymbol({
             symbol_glyph_target: 'sys.symbol.arrow_right'
           })// Forward
-            .enabled(this.current_accessForward)
-            .opacity(this.current_accessForward ? 1 : 0.5)
+            .enabled(this.bunch_of_tabs.current_accessForward)
+            .opacity(this.bunch_of_tabs.current_accessForward ? 1 : 0.5)
             .visibility(this.visible_when_no_panels_open_in_normal_mode())
             .animation(animation_default())
             .onClick(() => {

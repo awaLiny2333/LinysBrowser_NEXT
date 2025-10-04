@@ -17,8 +17,6 @@ struct meowTabsHorizontal {
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
   @StorageLink('showing_more_options') showing_more_options: boolean = false;
   @StorageLink('windowDecorWidth') windowDecorWidth: number = 0;
-  @StorageLink('current_main_tab_index') current_main_tab_index: number = 0;
-  @StorageLink('current_sub_tab_index') current_sub_tab_index: number = -1;
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageProp('pathDir') pathDir: string = "";
   @StorageProp('title_bar_position') title_bar_position: string = "";
@@ -55,7 +53,7 @@ struct meowTabsHorizontal {
             this.close_all_tabs_gateway = Date.now();
           }
         })
-          .visibility(!this.tablet_mode || this.choosing_paralleow || this.current_sub_tab_index >= 0 ? Visibility.None : Visibility.Visible)
+          .visibility(!this.tablet_mode || this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? Visibility.None : Visibility.Visible)
           .animation(animation_default())
           .padding({ left: 5 })
 
@@ -78,8 +76,6 @@ struct meowTabsHorizontal {
           Row({ space: this.tablet_mode ? 7 : 5 }) {
             ForEach(this.tab_titles, (title: string, index: number) => {
               HorizontalTabButton({
-                current_main_tab_index: this.current_main_tab_index,
-                current_sub_tab_index: this.current_sub_tab_index,
                 index: index,
                 title: title,
                 full_area_width: this.full_area_width,
@@ -107,7 +103,7 @@ struct meowTabsHorizontal {
 
         linysShowButton({
           symbol_glyph_target: 'sys.symbol.map',
-          show: this.choosing_paralleow || this.current_sub_tab_index >= 0,
+          show: this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0,
           text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
         })// Paralleow entrance
           .onClick(() => {
@@ -154,7 +150,7 @@ struct meowTabsHorizontal {
             this.close_all_tabs_gateway = Date.now();
           }
         })
-          .visibility(this.choosing_paralleow || this.current_sub_tab_index >= 0 ? Visibility.None : Visibility.Visible)
+          .visibility(this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? Visibility.None : Visibility.Visible)
           .animation(animation_default())
         // .padding({ left: 5 })
 
@@ -162,7 +158,7 @@ struct meowTabsHorizontal {
 
         linysShowButton({
           symbol_glyph_target: 'sys.symbol.map',
-          show: this.choosing_paralleow || this.current_sub_tab_index >= 0,
+          show: this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0,
           text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
         })// Paralleow entrance
           .onClick(() => {
@@ -212,13 +208,14 @@ struct meowTabsHorizontal {
       // if is choosing, cancel choosing, back to no paralleow
       this.choosing_paralleow = false;
     } else {
-      if (this.current_sub_tab_index < 0) {
+      if (this.bunch_of_tabs.sub_tab_idx < 0) {
         // if haven't chosen one, then start to choose
         this.choosing_paralleow = true;
       } else {
         // Quit Paralleow
         this.choosing_paralleow = false;
-        this.current_sub_tab_index = -1;
+        this.bunch_of_tabs.sub_tab_idx = -1;
+        this.bunch_of_tabs.save_tab_index_stats('[meowTabsHorizontal][choose_paralleow]');
       }
     }
   }
@@ -243,13 +240,13 @@ export default meowTabsHorizontal;
 
 @Component
 struct HorizontalTabButton {
-  @Link current_main_tab_index: number;
-  @Link current_sub_tab_index: number;
   @Prop index: number;
   @Prop title: string;
   @Link full_area_width: number;
   @Link tab_titles: string[];
   @StorageProp('tablet_mode') tablet_mode: boolean = false;
+  // Host
+  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   // Gateways
   @StorageLink('universal_close_tab_gateway') close_tab_gateway: number = -1;
   @StorageLink('universal_tab_button_click_gateway') uni_tab_button_clicked: number = -1;
@@ -278,8 +275,8 @@ struct HorizontalTabButton {
       Text("󰇀")// Paralleow icon
         .fontSize(fontSize_Large())
         .fontColor(this.color_current_font)
-        .fontWeight((this.current_main_tab_index == this.index || this.current_sub_tab_index == this.index) ? FontWeight.Bold : undefined)
-        .visibility(this.current_sub_tab_index == this.index ? Visibility.Visible : Visibility.None)
+        .fontWeight((this.bunch_of_tabs.main_tab_idx == this.index || this.bunch_of_tabs.sub_tab_idx == this.index) ? FontWeight.Bold : undefined)
+        .visibility(this.bunch_of_tabs.sub_tab_idx == this.index ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
         .offset({ y: -2 })
 
@@ -316,7 +313,7 @@ struct HorizontalTabButton {
     .border({
       radius: 10,
       width: 2,
-      color: (this.current_main_tab_index == this.index || this.current_sub_tab_index == this.index)
+      color: (this.bunch_of_tabs.main_tab_idx == this.index || this.bunch_of_tabs.sub_tab_idx == this.index)
         ? this.color_current_font : "transparent"
     })
     .backgroundColor(this.color_current_primary)
@@ -341,7 +338,7 @@ struct HorizontalTabButton {
   }
 
   visibility_visible_on_chosen(index: number) {
-    if (this.current_main_tab_index == index || this.current_sub_tab_index == index) {
+    if (this.bunch_of_tabs.main_tab_idx == index || this.bunch_of_tabs.sub_tab_idx == index) {
       return Visibility.Visible;
     }
     return Visibility.None;
