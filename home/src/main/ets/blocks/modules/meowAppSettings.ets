@@ -1401,6 +1401,7 @@ export default meowAppSettings
 
 // Cards
 
+@Reusable
 @Component
 struct settingsCard {
   // Colors
@@ -1435,6 +1436,7 @@ struct settingsCard {
   }
 }
 
+@Reusable
 @Component
 struct settingsSubCard {
   // Colors

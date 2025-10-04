@@ -28,8 +28,6 @@ struct meowSuggestions {
   // Settings
   @StorageProp('max_bookmark_advice') max_bookmark_advice: number = 5;
   @StorageProp('max_history_advice') max_history_advice: number = 5;
-  // @StorageProp('max_bookmark_advice') @Watch('refresh_suggestions') max_bookmark_advice: number = 5;
-  // @StorageProp('max_history_advice') @Watch('refresh_suggestions') max_history_advice: number = 5;
   // Myself
   @State bookmark_suggestions: string[][] = [];
   @State history_suggestions: string[][] = [];
@@ -125,6 +123,7 @@ struct meowSuggestions {
 
 export default meowSuggestions;
 
+// @Reusable
 @Component
 struct meowRelation {
   @Prop relation: string[] = [];
