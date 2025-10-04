@@ -331,15 +331,26 @@ struct Index {
    * Hides and shows system UI components.
    * */
   on_fullscreen_switch() {
+    // TODO: Implement error handling.
     window.getLastWindow(this.getUIContext().getHostContext()).then((win) => {
       if (this.fullscreen_mode) {
+        // win.maximize().catch(() => {
+        // });
         win.setWindowSystemBarEnable([]).catch(() => {
-          // TODO: Implement error handling.
         });
+        try {
+          win.setWindowTitleButtonVisible(false, false, false);
+        } catch (e) {
+        }
       } else {
+        // win.recover().catch(() => {
+        // });
         win.setWindowSystemBarEnable(["status", "navigation"]).catch(() => {
-          // TODO: Implement error handling.
         });
+        try {
+          win.setWindowTitleButtonVisible(true, true, true);
+        } catch (e) {
+        }
       }
     })
   }

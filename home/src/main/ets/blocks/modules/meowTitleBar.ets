@@ -10,7 +10,6 @@ import {
   fontSize_Normal
 } from '../../hosts/bunch_of_defaults';
 import { webview } from '@kit.ArkWeb';
-import { bunch_of_user_agents } from '../../hosts/bunch_of_user_agents';
 import { bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
@@ -873,7 +872,7 @@ struct meowTitleBar {
             .scrollable(ScrollDirection.Horizontal)
             .scrollBar(BarState.Off)
             .edgeEffect(EdgeEffect.Spring)
-            .visibility(this.visible_when_in_page_search())
+            .visibility(this.visible_when_not_in_page_search())
             .animation(animation_default())
 
             Row() {
@@ -881,7 +880,7 @@ struct meowTitleBar {
             } // Debug
             .opacity(0.8)
             .visibility(this.resource_monitor
-              ? (this.visible_when_in_page_search())
+              ? (this.visible_when_not_in_page_search())
               : Visibility.None)
             .animation(animation_default())
 
@@ -890,7 +889,7 @@ struct meowTitleBar {
               progress: this.history_index_loading_progress,
             })
               .opacity(0.8)
-              .visibility(this.history_index_loading_progress != "" ? (this.visible_when_in_page_search()) : Visibility.None)
+              .visibility(this.history_index_loading_progress != "" ? (this.visible_when_not_in_page_search()) : Visibility.None)
               .animation(animation_default())
 
             linysProgressInfo({
@@ -898,7 +897,7 @@ struct meowTitleBar {
               progress: this.reindexing_history_progress,
             })
               .opacity(0.8)
-              .visibility(this.reindexing_history_progress != "" ? (this.visible_when_in_page_search()) : Visibility.None)
+              .visibility(this.reindexing_history_progress != "" ? (this.visible_when_not_in_page_search()) : Visibility.None)
               .animation(animation_default())
 
             linysProgressInfo({
@@ -906,7 +905,7 @@ struct meowTitleBar {
               progress: this.history_index_saving_progress,
             })
               .opacity(0.8)
-              .visibility(this.history_index_saving_progress != "" ? (this.visible_when_in_page_search()) : Visibility.None)
+              .visibility(this.history_index_saving_progress != "" ? (this.visible_when_not_in_page_search()) : Visibility.None)
               .animation(animation_default())
 
           } // Title Bar of More Options
@@ -970,14 +969,16 @@ struct meowTitleBar {
       ? this.color_current_secondary
       : add_transparency(this.color_current_secondary, 128))
     .alignRules(this.title_bar_alignRules)
-    .padding({ left: this.leftAvoidWidth, right: this.rightAvoidWidth })
+    .padding({ top: this.top_title_bar_spacing(), left: this.leftAvoidWidth, right: this.rightAvoidWidth })
     .onAreaChange((_o, n) => {
       if (!this.showing_more_options && !this.is_search_input_typing && !this.showing_app_settings && !this.showing_downloads &&
         !this.showing_scratching_board) {
         this.bar_height = n.height as number;
       }
     })
-    .offset({ y: !this.fullscreen_mode ? 0 : (this.title_bar_position == 'bottom' ? 1.1 : -1.1) * this.bar_height })
+    .offset({
+      y: this.y_offset_title_bar()
+    })
     .animation(animation_default())
     .onAppear(() => {
       // console.log("[Meow][meowTitleBar] Title Bar READY")
@@ -1053,8 +1054,8 @@ struct meowTitleBar {
     return Visibility.None
   }
 
-  visible_when_in_page_search() {
-    return (this.current_in_page_searching_stats_total <= 0 ? Visibility.Visible : Visibility.None);
+  visible_when_not_in_page_search() {
+    return this.current_in_page_searching_stats_total <= 0 ? Visibility.Visible : Visibility.None;
   }
 
   // Events
@@ -1252,6 +1253,31 @@ struct meowTitleBar {
       }
       return this.full_screen_height * 0.75;
     }
+  }
+
+  y_offset_title_bar() {
+    // Normal case, no fullscreen mode.
+    if (!this.fullscreen_mode) {
+      return 0;
+    }
+    // Called something in fullscreen mode.
+    let direction = (this.title_bar_position == 'bottom' ? 1 : -1);
+    if (this.need_full_screen_extent_area()) {
+      return 0;
+    }
+    return direction * 1.1 * this.bar_height;
+  }
+
+  top_title_bar_spacing() {
+    if (this.title_bar_position == 'top' && this.fullscreen_mode && (this.need_full_screen_extent_area())) {
+      return 10;
+    }
+    // Normal case, no fullscreen mode.
+    return 0;
+  }
+
+  need_full_screen_extent_area() {
+    return this.is_search_input_typing || this.showing_more_options || this.showing_app_settings || this.showing_downloads || this.showing_scratching_board;
   }
 
   // Data synchronizing

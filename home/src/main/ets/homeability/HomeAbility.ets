@@ -201,6 +201,7 @@ export default class HomeAbility extends UIAbility {
    * */
   window_load_content(windowStage: window.WindowStage) {
     let windowClass = windowStage.getMainWindowSync(); // Get app main window
+    AppStorage.setOrCreate('windowClass', windowStage);
 
     // Load content
     windowStage.loadContent('pages/Index', (err) => {
