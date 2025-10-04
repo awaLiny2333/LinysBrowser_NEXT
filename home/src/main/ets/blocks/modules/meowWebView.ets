@@ -338,11 +338,16 @@ struct meowWebView {
                 return;
               }
 
-              // Ask tab to update its info (Reset)
-              this.bunch_of_tabs.Tabs[Label.index_key].update_title()
-              this.bunch_of_tabs.Tabs[Label.index_key].update_url()
-              this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(true)
-              this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(0)
+              try {
+                // Ask tab to update its info (Reset)
+                this.bunch_of_tabs.Tabs[Label.index_key].update_title()
+                this.bunch_of_tabs.Tabs[Label.index_key].update_url()
+                this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(true)
+                this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(0)
+              } catch (e) {
+                console.error('[meowWebView][onPageBegin] Update bunch_of_tabs error: ' + e);
+              }
+
               // Get synced lists
               sync_tabs_list_info()
               // Update Input Search Box
@@ -350,10 +355,14 @@ struct meowWebView {
             })
             .onPageEnd(() => {
               // console.log("[Meow][ArkWeb] on page end")
-              this.bunch_of_tabs.Tabs[Label.index_key].update_title();
-              this.bunch_of_tabs.Tabs[Label.index_key].update_url();
-              this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(false);
-              this.bunch_of_tabs.update_backward_forward_access();
+              try {
+                this.bunch_of_tabs.Tabs[Label.index_key].update_title();
+                this.bunch_of_tabs.Tabs[Label.index_key].update_url();
+                this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(false);
+                this.bunch_of_tabs.update_backward_forward_access();
+              } catch (e) {
+                console.error('[meowWebView][onPageEnd] Update bunch_of_tabs error: ' + e);
+              }
 
               sync_tabs_list_info();
 
@@ -392,11 +401,15 @@ struct meowWebView {
                 return;
               }
 
-              // Ask tab to update its info
-              this.bunch_of_tabs.Tabs[Label.index_key].update_title()
-              this.bunch_of_tabs.Tabs[Label.index_key].update_url()
-              this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(progress)
-              this.bunch_of_tabs.update_backward_forward_access();
+              try {
+                // Ask tab to update its info
+                this.bunch_of_tabs.Tabs[Label.index_key].update_title();
+                this.bunch_of_tabs.Tabs[Label.index_key].update_url();
+                this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(progress);
+                this.bunch_of_tabs.update_backward_forward_access();
+              } catch (e) {
+                console.error('[meowWebView][onProgressChange] Update bunch_of_tabs error: ' + e);
+              }
 
               sync_tabs_list_info(); // Get synced lists
 
@@ -407,14 +420,18 @@ struct meowWebView {
                 return;
               }
 
-              // Get web_state
-              let web_state = this.bunch_of_tabs.Tabs[Label.index_key].controller.serializeWebState();
-              // Sync to bunch_of_tabs
-              this.bunch_of_tabs.Tabs[Label.index_key].web_state_array = web_state;
-              // save web state to sandbox storage
-              if (web_state && !this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation) {
-                let identifier = "continue/continue_tabs_web_state_array_" + Label.index_key.toString();
-                sandbox_save(identifier, web_state.buffer);
+              // Get and save web_state
+              try {
+                let web_state = this.bunch_of_tabs.Tabs[Label.index_key].controller.serializeWebState();
+                // Sync to bunch_of_tabs
+                this.bunch_of_tabs.Tabs[Label.index_key].web_state_array = web_state;
+                // save web state to sandbox storage
+                if (web_state && !this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation) {
+                  let identifier = "continue/continue_tabs_web_state_array_" + Label.index_key.toString();
+                  sandbox_save(identifier, web_state.buffer);
+                }
+              } catch (e) {
+                console.error('[meowWebView][onProgressChange] Get and save web_state error: ' + e);
               }
             })
             .onFullScreenEnter((event) => {
@@ -425,17 +442,29 @@ struct meowWebView {
               this.fullscreen_mode = false;
             })
             .onControllerAttached(async () => {
-              // bind blob download delegate
-              this.bunch_of_tabs.Tabs[Label.index_key].controller.setDownloadDelegate(this.dl_delegate);
+              // bind download delegate
+              try {
+                this.bunch_of_tabs.Tabs[Label.index_key].controller.setDownloadDelegate(this.dl_delegate);
+              } catch (e) {
+                console.error('[meowWebView] onControllerAttached setDownloadDelegate error: ' + e);
+              }
 
               // Set UA
               if (this.now_global_custom_UA != "") {
-                this.bunch_of_tabs.Tabs[Label.index_key].controller.setCustomUserAgent(this.now_global_custom_UA);
+                try {
+                  this.bunch_of_tabs.Tabs[Label.index_key].controller.setCustomUserAgent(this.now_global_custom_UA);
+                } catch (e) {
+                  console.error('[meowWebView] onControllerAttached setCustomUserAgent error: ' + e);
+                }
               }
 
               // Set Ads Blocker
               console.log('[Meow][meowWebView] enableAdsBlock: ' + (this.use_adblock ? 'true' : 'false'));
-              this.bunch_of_tabs.Tabs[Label.index_key].controller.enableAdsBlock(this.use_adblock);
+              try {
+                this.bunch_of_tabs.Tabs[Label.index_key].controller.enableAdsBlock(this.use_adblock);
+              } catch (e) {
+                console.error('[meowWebView] onControllerAttached enableAdsBlock error: ' + e);
+              }
 
               // TODO: Find out why this doesn't work sometimes for a recovered webpage :O getting crazy
               // Set Ads Blocker exception list
@@ -447,9 +476,12 @@ struct meowWebView {
               }
 
               // Set intelligent tracking prevention
-              this.bunch_of_tabs.Tabs[Label.index_key].controller.enableIntelligentTrackingPrevention(this.intelligent_tracking_prevention);
-              console.log('[Meow][meowWebView] ArkWeb Intelligent Tracking Prevention ' + this.intelligent_tracking_prevention.toString() + '!');
-
+              try {
+                this.bunch_of_tabs.Tabs[Label.index_key].controller.enableIntelligentTrackingPrevention(this.intelligent_tracking_prevention);
+                console.log('[Meow][meowWebView] ArkWeb Intelligent Tracking Prevention ' + this.intelligent_tracking_prevention.toString() + '!');
+              } catch (e) {
+                console.error('[meowWebView] onControllerAttached enableIntelligentTrackingPrevention error: ' + e);
+              }
               // Restore Web State
               setTimeout(() => {
                 if (this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation) {
@@ -619,8 +651,12 @@ struct meowWebView {
    * */
   on_use_adblock_state_change() {
     console.log('[Meow][meowWebView] enableAdsBlock: ' + (this.use_adblock ? 'true' : 'false'))
-    for (let index = 0; index < this.bunch_of_tabs.Tabs.length; index++) {
-      this.bunch_of_tabs.Tabs[index].controller.enableAdsBlock(this.use_adblock);
+    try {
+      for (let index = 0; index < this.bunch_of_tabs.Tabs.length; index++) {
+        this.bunch_of_tabs.Tabs[index].controller.enableAdsBlock(this.use_adblock);
+      }
+    } catch (e) {
+      console.error('[meowWebView][on_use_adblock_state_change] enableAdsBlock error: ' + e);
     }
   }
 
