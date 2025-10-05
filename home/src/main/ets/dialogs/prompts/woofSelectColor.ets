@@ -23,7 +23,7 @@ struct woofSelectColor {
   // Edit
   @State @Watch('on_color_change') color_hex_display: ResourceColor = this.color;
   @State color_hsv: number[] = hex2hsv(this.color);
-  @StorageProp('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @State dialog_width: number = 0;
   @State dialog_height: number = 0;
   @State max_square_size: number = 0;

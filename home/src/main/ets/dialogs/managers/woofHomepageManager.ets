@@ -18,8 +18,8 @@ struct woofHomepageManager {
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Environment
-  @StorageLink('tablet_mode') tablet_mode: boolean = false;
-  @StorageProp('screen_height') screen_height: number = 0;
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageProp('screen_height') screen_height: number = 0;
   // Select bookmark
   @State @Watch('on_select_change') select_path_result: string = '';
   @StorageLink('homepage_shortcuts_bookmarks_dir') homepage_shortcuts_dir: string = '/';

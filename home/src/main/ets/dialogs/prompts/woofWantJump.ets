@@ -11,7 +11,7 @@ struct woofWantJump {
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   // UI display
-  @StorageLink('screen_height') screen_height: number = 0;
+  @LocalStorageLink('screen_height') screen_height: number = 0;
 
   build() {
     Column({ space: 15 }) {

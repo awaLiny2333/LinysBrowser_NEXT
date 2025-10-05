@@ -11,8 +11,8 @@ import linysSymbol from '../../components/texts/linysSymbol';
 struct woofCookies {
   controller: CustomDialogController;
   // Environment
-  @StorageProp('tablet_mode') tablet_mode: boolean = false;
-  @StorageProp('current_url') current_url: string = "=￣ω￣=";
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageProp('current_url') current_url: string = "=￣ω￣=";
   @State domain_url: string = this.get_domain_url(this.current_url);
   // UI
   @State full_view: boolean = false;

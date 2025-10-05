@@ -12,7 +12,7 @@ export function allow_drop_types() {
  * Pass a DragEvent and some of the contents of correct type would be added to meowScratchingBoard
  * @param e DragEvent
  * */
-export function drop_to_scratching_board(e: DragEvent) {
+export function drop_to_scratching_board(e: DragEvent, storage: LocalStorage) {
   let drop_data_records = e.getData().getRecords();
   let result_list_string: string[] = [];
   for (let i = 0; i < drop_data_records.length; i++) {
@@ -51,7 +51,7 @@ export function drop_to_scratching_board(e: DragEvent) {
     }
   }
   // Append to start of original scratching board content
-  let original_drop_result_strings = AppStorage.get('drop_result_strings') as string[];
-  AppStorage.set('drop_result_strings', result_list_string.concat(original_drop_result_strings));
+  let original_drop_result_strings = storage.get('drop_result_strings') as string[];
+  storage.set('drop_result_strings', result_list_string.concat(original_drop_result_strings));
   e.setResult(DragResult.DRAG_SUCCESSFUL);
 }

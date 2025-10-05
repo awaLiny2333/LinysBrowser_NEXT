@@ -14,7 +14,7 @@ import { bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import { allow_drop_types, drop_to_scratching_board } from '../../utils/drag_drop_tools';
-import { current_tabs_style_is_horizontal } from '../../utils/ui_tools';
+import { current_tabs_style_is_horizontal, storage_of_id } from '../../utils/ui_tools';
 import { search_engine } from '../../hosts/bunch_of_search_engines';
 import lazy { add_transparency } from '../../utils/color_tools';
 import lazy { copy } from '../../utils/clipboard_tools';
@@ -36,22 +36,25 @@ import lazy woofQuickSE from '../../dialogs/quicks/woofQuickSE';
 import lazy woofCookies from '../../dialogs/managers/woofCookies';
 import lazy woofQuickUA from '../../dialogs/quicks/woofQuickUA';
 import lazy woofGeneralManage from '../../dialogs/managers/woofGeneralManage';
-import { sync_tabs_list_info } from '../../utils/data_operation_tools';
+import { sync_tabs_list_info } from '../../processes/tabs_actions';
+import { window } from '@kit.ArkUI';
 
 @Component
 struct meowTitleBar {
+  @LocalStorageLink('my_window_id') my_window_id: string = '';
+  storage: LocalStorage = storage_of_id(this.my_window_id);
   // Hosts
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
-  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
+  @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads(true);
   // Environments
-  @StorageLink('fullscreen_mode') fullscreen_mode: boolean = false;
-  @StorageProp('tablet_mode') tablet_mode: boolean = false;
-  @StorageLink('compact_mode') compact_mode: boolean = false; // Like PuraX
-  @StorageProp('screen_width') screen_width: number = 0;
-  @StorageProp('screen_height') screen_height: number = 0;
-  @StorageLink('full_screen_height') full_screen_height: number = 0;
+  @LocalStorageLink('fullscreen_mode') fullscreen_mode: boolean = false;
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageLink('compact_mode') compact_mode: boolean = false; // Like PuraX
+  @LocalStorageProp('screen_width') screen_width: number = 0;
+  @LocalStorageProp('screen_height') screen_height: number = 0;
+  @LocalStorageLink('full_screen_height') full_screen_height: number = 0;
   @Link bar_height: number;
   @StorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
   @StorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
@@ -61,50 +64,50 @@ struct meowTitleBar {
   // Current environment
   @Link title_bar_alignRules: AlignRuleOption;
   @State search_input_unified: string = "";
-  @StorageLink('search_input') search_input: string = "ଘ*(੭*ˊᵕˋ)੭*";
-  @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
+  @LocalStorageLink('search_input') search_input: string = "ଘ*(੭*ˊᵕˋ)੭*";
+  @LocalStorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
   @StorageLink('uni_webDownloadItem_gateway') @Watch('on_download_start') uni_webDownloadItem_gateway: webview.WebDownloadItem | undefined = undefined;
   @State download_started_popup: boolean = false;
-  @StorageLink('drop_result_strings') drop_result_string: string[] = [];
-  @StorageLink('current_in_page_searching_keyword') current_in_page_searching_keyword: string = "";
-  @StorageLink('current_in_page_searching_stats_current') current_in_page_searching_stats_current: number = 0;
-  @StorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
+  @LocalStorageLink('drop_result_strings') drop_result_string: string[] = [];
+  @LocalStorageLink('current_in_page_searching_keyword') current_in_page_searching_keyword: string = "";
+  @LocalStorageLink('current_in_page_searching_stats_current') current_in_page_searching_stats_current: number = 0;
+  @LocalStorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
   // Search analyze
-  @StorageLink('search_extracted_keyword') search_extracted_keyword: string = '';
+  @LocalStorageLink('search_extracted_keyword') search_extracted_keyword: string = '';
   @State search_extracted_engine: string = '';
   @State showing_search_extracted_field: boolean = false;
   @State search_extracted_field_available: boolean = false;
   @State is_search_input_address: boolean = false;
   @State search_input_unify_scheme_http: boolean = true;
   // Web statuses
-  @StorageLink('tab_titles') tab_titles: string[] = [];
-  @StorageLink('current_title') current_title: string = "=￣ω￣=";
-  @StorageLink('tab_urls') tab_urls: string[] = [];
-  @StorageLink('current_url') @Watch('on_current_url_change') current_url: string = "=￣ω￣=";
-  @StorageLink('tab_match_domains') tab_match_domains: string[][] = [];
-  @StorageLink('current_match_domain') current_match_domain: string[] = ['scheme', 'domain'];
-  @StorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0];
-  @StorageLink('current_loading_progress') current_loading_progress: number = 0;
-  @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true];
-  @StorageLink('current_is_loading') current_is_loading: boolean = true;
-  @StorageLink('tab_disable_js') tab_disable_js: boolean[] = [false];
-  @StorageLink('current_disable_js') current_disable_js: boolean = false;
-  @StorageLink('tab_disable_image') tab_disable_image: boolean[] = [false];
-  @StorageLink('current_disable_image') current_disable_image: boolean = false;
-  @StorageLink('tab_force_dark') tab_force_dark: boolean[] = [false];
-  @StorageLink('current_force_dark') current_force_dark: boolean = false;
+  @LocalStorageLink('tab_titles') tab_titles: string[] = [];
+  @LocalStorageLink('current_title') current_title: string = "=￣ω￣=";
+  @LocalStorageLink('tab_urls') tab_urls: string[] = [];
+  @LocalStorageLink('current_url') @Watch('on_current_url_change') current_url: string = "=￣ω￣=";
+  @LocalStorageLink('tab_match_domains') tab_match_domains: string[][] = [];
+  @LocalStorageLink('current_match_domain') current_match_domain: string[] = ['scheme', 'domain'];
+  @LocalStorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0];
+  @LocalStorageLink('current_loading_progress') current_loading_progress: number = 0;
+  @LocalStorageLink('tab_is_loading') tab_is_loading: boolean[] = [true];
+  @LocalStorageLink('current_is_loading') current_is_loading: boolean = true;
+  @LocalStorageLink('tab_disable_js') tab_disable_js: boolean[] = [false];
+  @LocalStorageLink('current_disable_js') current_disable_js: boolean = false;
+  @LocalStorageLink('tab_disable_image') tab_disable_image: boolean[] = [false];
+  @LocalStorageLink('current_disable_image') current_disable_image: boolean = false;
+  @LocalStorageLink('tab_force_dark') tab_force_dark: boolean[] = [false];
+  @LocalStorageLink('current_force_dark') current_force_dark: boolean = false;
   // UI control actions
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
-  @StorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
-  @StorageLink('showing_more_options') showing_more_options: boolean = false;
-  @StorageLink('showing_app_settings') showing_app_settings: boolean = false;
-  @StorageLink('showing_downloads') showing_downloads: boolean = false;
-  @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
+  @LocalStorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
+  @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
+  @LocalStorageLink('showing_app_settings') showing_app_settings: boolean = false;
+  @LocalStorageLink('showing_downloads') showing_downloads: boolean = false;
+  @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   @State address_analyzers_desc_close_cd: number = 0;
   @State horizontal_tabs_height: number = 120;
-  @StorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
-  @StorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
-  @StorageLink('delayed_load_p2') delayed_load_p2: boolean = false;
+  @LocalStorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
+  @LocalStorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
+  @LocalStorageLink('delayed_load_p2') delayed_load_p2: boolean = false;
   // settings
   @StorageLink('resource_monitor') resource_monitor: boolean = true;
   @StorageLink('disable_js') disable_js: boolean = true;
@@ -946,7 +949,7 @@ struct meowTitleBar {
     .clip(true)
     .allowDrop(allow_drop_types())
     .onDrop((e) => {
-      drop_to_scratching_board(e);
+      drop_to_scratching_board(e, this.storage);
     })
     .onDragEnter(() => {
       this.showing_scratching_board = true;
@@ -1056,13 +1059,20 @@ struct meowTitleBar {
   // Events
 
   on_download_start() {
-    // Show popup when gateway is set back to undefined.
-    if (!this.uni_webDownloadItem_gateway) {
-      this.download_started_popup = true;
-      setTimeout(() => {
-        this.download_started_popup = false;
-      }, animation_popup_duration())
+    if (this.uni_webDownloadItem_gateway) {
+      return;
     }
+
+    window.getLastWindow(this.getUIContext().getHostContext()).then((w: window.Window) => {
+      // Only download if is top window.
+      if (w == (this.storage.get('window') as window.Window)) {
+        // Show popup when gateway is set back to undefined.
+        this.download_started_popup = true;
+        setTimeout(() => {
+          this.download_started_popup = false;
+        }, animation_popup_duration())
+      }
+    })
   }
 
   on_current_url_change() {
@@ -1170,19 +1180,19 @@ struct meowTitleBar {
   show_add_bookmarks() {
     if (this.showing_bookmarks) {
       this.showing_bookmarks = false;
-      AppStorage.set('adding_bookmark', false);
+      this.storage.set('adding_bookmark', false);
     } else {
       // Add Bookmark
-      AppStorage.set('bookmark_add_label', this.bunch_of_tabs.workingMainTab().title);
-      AppStorage.set('bookmark_add_link', url_resource_to_meow(this.bunch_of_tabs.workingMainTab().url));
+      this.storage.set('bookmark_add_label', this.bunch_of_tabs.workingMainTab().title);
+      this.storage.set('bookmark_add_link', url_resource_to_meow(this.bunch_of_tabs.workingMainTab().url));
       this.showing_bookmarks = true;
-      AppStorage.set('adding_bookmark', true);
+      this.storage.set('adding_bookmark', true);
     }
   }
 
   new_tab() {
-    AppStorage.set('extra_background', false);
-    AppStorage.set('universal_new_tab_gateway', "new_tab");
+    this.storage.set('extra_background', false);
+    this.storage.set('universal_new_tab_gateway', "new_tab");
   }
 
   // Web control events
@@ -1225,7 +1235,7 @@ struct meowTitleBar {
   stop_page() {
     this.bunch_of_tabs.stop_onWorkingTab();
     this.bunch_of_tabs.workingMainTab().update_is_loading(false);
-    sync_tabs_list_info();
+    sync_tabs_list_info(this.storage);
   }
 
   // Values
@@ -1235,7 +1245,7 @@ struct meowTitleBar {
     if (this.showing_more_options && this.current_in_page_searching_stats_total > 0) {
       // in-page Searching
       let base_height = this.tablet_mode ? 110 : 190;
-      let tabs_offset = this.showing_tabs && current_tabs_style_is_horizontal() ? this.horizontal_tabs_height : 0;
+      let tabs_offset = this.showing_tabs && current_tabs_style_is_horizontal(this.storage) ? this.horizontal_tabs_height : 0;
       let position_offset = this.title_bar_position == 'top' ? 0 : 15;
       return base_height + tabs_offset + position_offset;
     } else {

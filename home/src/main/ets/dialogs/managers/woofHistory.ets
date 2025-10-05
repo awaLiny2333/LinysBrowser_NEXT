@@ -13,7 +13,7 @@ import woofQR from '../contents/woofQR';
 @CustomDialog
 struct woofHistory {
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
-  @StorageLink('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @State scroll_area_height: number = 0;
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Interactions
@@ -466,10 +466,11 @@ struct meowRelation {
   @Link selected_item_quantity: number;
   @Prop selecting: boolean;
   // UI Effects
+  @LocalStorageLink('showing_app_settings') showing_app_settings: boolean = false;
   @Prop scroll_area_height: number;
   @Prop human_time: string = new Date(this.record.accessed_time).toLocaleString();
   // Gateways
-  @StorageLink('universal_new_tab_gateway') universal_new_tab_gateway: string = "";
+  @LocalStorageLink('universal_new_tab_gateway') universal_new_tab_gateway: string = "";
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -505,7 +506,7 @@ struct meowRelation {
       }
       this.universal_new_tab_gateway = this.record.link;
       if (this.controller) {
-        AppStorage.set('showing_app_settings', false);
+        this.showing_app_settings = false;
         this.controller.close();
       }
     })
@@ -610,7 +611,7 @@ struct LinysSelection {
   @State icons: Resource[] = [$r('sys.symbol.label'), $r('sys.symbol.paperclip'), $r('sys.symbol.pawprint')];
   @State app_storage_link_id: string = 'woofHistory_filter';
   @State index: number = 2;
-  @StorageLink('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   // Options
   @State space: number = 8;
   @State arrowPosition: ArrowPosition = ArrowPosition.END;

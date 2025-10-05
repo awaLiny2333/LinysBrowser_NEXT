@@ -13,11 +13,15 @@ import meowTitleBar from '../blocks/modules/meowTitleBar';
 import lazy meowBookmarks from '../blocks/modules/meowBookmarks';
 import lazy meowWebView from '../blocks/modules/meowWebView';
 import lazy woofPromptFail from '../dialogs/prompts/woofPromptFail';
+import { last_storage, storage_of_id } from '../utils/ui_tools';
 
-@Entry
+// @Entry({ useSharedStorage: true })
+@Entry(last_storage())
 @Component
 struct Index {
-  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
+  @LocalStorageLink('my_window_id') my_window_id: string = '';
+  storage: LocalStorage = storage_of_id(this.my_window_id);
+  @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   /**
    * UI Environment */
@@ -25,22 +29,22 @@ struct Index {
   @StorageLink('topAvoidHeight') topAvoidHeight: number = 1;
   @StorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
   @StorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
-  @StorageLink('tablet_mode') tablet_mode: boolean = false;
-  @StorageLink('compact_mode') compact_mode: boolean = false; // Like PuraX
-  @StorageLink('screen_width') screen_width: number = 0;
-  @StorageLink('screen_height') screen_height: number = 0;
-  @StorageLink('full_screen_height') full_screen_height: number = 0;
-  @StorageLink('fullscreen_mode') @Watch('on_fullscreen_switch') fullscreen_mode: boolean = false;
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageLink('compact_mode') compact_mode: boolean = false; // Like PuraX
+  @LocalStorageLink('screen_width') screen_width: number = 0;
+  @LocalStorageLink('screen_height') screen_height: number = 0;
+  @LocalStorageLink('full_screen_height') full_screen_height: number = 0;
+  @LocalStorageLink('fullscreen_mode') @Watch('on_fullscreen_switch') fullscreen_mode: boolean = false;
   @StorageProp('currentColorMode') @Watch('on_color_mode_change') current_color_mode: number = 0;
   /**
    * UI Statuses */
-  @StorageLink('fullscreen_handler') handler: FullScreenExitHandler | null = null;
-  @StorageLink('showing_downloads') showing_downloads: boolean = false;
-  @StorageLink('showing_more_options') showing_more_options: boolean = false;
-  @StorageLink('showing_app_settings') showing_app_settings: boolean = false;
+  @LocalStorageLink('fullscreen_handler') handler: FullScreenExitHandler | null = null;
+  @LocalStorageLink('showing_downloads') showing_downloads: boolean = false;
+  @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
+  @LocalStorageLink('showing_app_settings') showing_app_settings: boolean = false;
   @StorageLink('showing_tabs') @Watch('on_showing_tabs_change') showing_tabs: boolean = false;
-  @StorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
-  @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
+  @LocalStorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
+  @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   /**
    * UI params */
   @State title_bar_height: number = 0;
@@ -51,16 +55,16 @@ struct Index {
   @StorageLink('bottom_avoid') bottom_avoid: boolean = true;
   /**
    * Delay */
-  @StorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
-  delay_p0: number = 200;
-  @StorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
-  delay_p1: number = 500;
-  @StorageLink('delayed_load_p2') delayed_load_p2: boolean = false;
-  delay_p2: number = 800;
+  @LocalStorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
+  delay_p0: number = 70;
+  @LocalStorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
+  delay_p1: number = 80;
+  @LocalStorageLink('delayed_load_p2') delayed_load_p2: boolean = false;
+  delay_p2: number = 90;
   /**
    * Web Statuses */
-  @StorageLink('current_loading_progress') current_loading_progress: number = 0;
-  @StorageLink('current_is_loading') current_is_loading: boolean = true;
+  @LocalStorageLink('current_loading_progress') current_loading_progress: number = 0;
+  @LocalStorageLink('current_is_loading') current_is_loading: boolean = true;
   /**
    * Settings */
   @StorageLink('title_bar_position') @Watch('on_title_bar_position_change') title_bar_position: string = "";
@@ -73,11 +77,11 @@ struct Index {
   @StorageLink('preferred_hand_reverse_tabs_panel') preferred_hand_reverse_tabs_panel: boolean = false;
   /**
    * Gateways */
-  @StorageLink('universal_close_tab_gateway') uni_close_tab_gateway: number = -1;
-  @StorageLink('universal_new_tab_gateway') uni_new_tab_gateway: string = "";
+  @LocalStorageLink('universal_close_tab_gateway') uni_close_tab_gateway: number = -1;
+  @LocalStorageLink('universal_new_tab_gateway') uni_new_tab_gateway: string = "";
   /**
    * Dialogs */
-  @StorageLink('universal_fail_prompt_desc_gateway') @Watch('on_fail_prompt_gateway') universal_fail_prompt_desc_gateway: ResourceStr = "";
+  @LocalStorageLink('universal_fail_prompt_desc_gateway') @Watch('on_fail_prompt_gateway') universal_fail_prompt_desc_gateway: ResourceStr = "";
   @State fail_prompt_desc: ResourceStr = '';
   moveFailPrompt_control: CustomDialogController = new CustomDialogController({
     builder: woofPromptFail({
@@ -101,12 +105,28 @@ struct Index {
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   async aboutToAppear(): Promise<void> {
-    console.log(' \n[Meow][Index]\n ');
 
     // Determine tablet mode
-    await window.getLastWindow(this.getUIContext().getHostContext()).then((value: window.Window) => {
+    await window.getLastWindow(this.getUIContext().getHostContext()).then((w: window.Window) => {
+      let windowClasses = AppStorage.get('windows') as window.Window[];
+      let windowIds = AppStorage.get('windowIds') as string[];
+      let all_bunch_of_tabs = AppStorage.get('all_bunch_of_tabs') as bunch_of_tabs[];
+
+      const my_index = windowClasses.indexOf(w);
+      let log = [
+        ' ',
+        '[Meow][Index]',
+        '    window.Window #' + my_index,
+        '    my_window_id: ' + windowIds[my_index],
+        '    my_window_id from this.storage: ' + this.storage.get('my_window_id'),
+        '    my_window_id from @LocalStorageLink: ' + this.my_window_id,
+        '    bunch_of_tabs.my_id: ' + all_bunch_of_tabs[my_index].my_id,
+        ' '
+      ].join('\n');
+      console.log(log);
+
       try {
-        const rect: window.Rect = value.getWindowProperties().windowRect;
+        const rect: window.Rect = w.getWindowProperties().windowRect;
         this.tablet_mode = meowPx2vp(rect.width) > 600;
         this.compact_mode = meowPx2vp(rect.height) < 400;
       } catch (error) {

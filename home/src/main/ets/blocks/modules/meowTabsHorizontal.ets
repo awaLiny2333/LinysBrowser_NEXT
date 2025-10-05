@@ -8,41 +8,44 @@ import linysShowButton from '../../components/buttons/linysShowButton';
 import linysSymbol from '../../components/texts/linysSymbol';
 import linysText from '../../components/texts/linysText';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
+import { storage_of_id } from '../../utils/ui_tools';
 
 @Component
 struct meowTabsHorizontal {
+  @LocalStorageLink('my_window_id') my_window_id: string = '';
+  storage: LocalStorage = storage_of_id(this.my_window_id);
   // HOST
-  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
+  @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   // Environments
-  @StorageLink('showing_tabs') showing_tabs: boolean = false;
-  @StorageLink('showing_more_options') showing_more_options: boolean = false;
   @StorageLink('windowDecorWidth') windowDecorWidth: number = 0;
-  @StorageProp('tablet_mode') tablet_mode: boolean = false;
+  @StorageLink('showing_tabs') showing_tabs: boolean = false;
+  @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @StorageProp('pathDir') pathDir: string = "";
   @StorageProp('title_bar_position') title_bar_position: string = "";
   // Controls and environments
-  @StorageLink('tab_titles') tab_titles: string[] = []
-  @StorageLink('current_title') current_title: string = "=￣ω￣=";
-  @StorageLink('tab_urls') tab_urls: string[] = []
-  @StorageLink('current_url') current_url: string = "=￣ω￣=";
-  @StorageLink('tab_match_domains') tab_match_domains: string[][] = [];
-  @StorageLink('current_match_domain') current_match_domain: string[] = ['scheme', 'domain'];
-  @StorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0]
-  @StorageLink('current_loading_progress') current_loading_progress: number = 0
-  @StorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]
-  @StorageLink('current_is_loading') current_is_loading: boolean = true
+  @LocalStorageLink('tab_titles') tab_titles: string[] = []
+  @LocalStorageLink('current_title') current_title: string = "=￣ω￣=";
+  @LocalStorageLink('tab_urls') tab_urls: string[] = []
+  @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
+  @LocalStorageLink('tab_match_domains') tab_match_domains: string[][] = [];
+  @LocalStorageLink('current_match_domain') current_match_domain: string[] = ['scheme', 'domain'];
+  @LocalStorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0]
+  @LocalStorageLink('current_loading_progress') current_loading_progress: number = 0
+  @LocalStorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]
+  @LocalStorageLink('current_is_loading') current_is_loading: boolean = true
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Gateways
-  @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
-  @StorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
-  @StorageLink('universal_close_all_tabs_gateway') close_all_tabs_gateway: number = -1;
+  @LocalStorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
+  @LocalStorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
+  @LocalStorageLink('universal_close_all_tabs_gateway') close_all_tabs_gateway: number = -1;
   // UI statuses
   @State length_width_of_tabs: number = 0;
   @State full_area_width: number = 10;
   @State my_height: number | undefined = 0;
   // Drop
-  @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
+  @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
 
   build() {
     Column() {
@@ -170,7 +173,7 @@ struct meowTabsHorizontal {
 
         linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })// New tab
           .onClick(() => {
-            AppStorage.set('extra_background', false);
+            this.storage.set('extra_background', false);
             this.new_tab_gateway = "new_tab";
           })// .margin({ bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0, right: 8 })
           .animation(animation_default())
@@ -192,7 +195,7 @@ struct meowTabsHorizontal {
       this.my_height = undefined;
     })
     .onDrop((e) => {
-      drop_to_scratching_board(e);
+      drop_to_scratching_board(e, this.storage);
     })
     .onDragEnter(() => {
       this.showing_scratching_board = true;
@@ -244,12 +247,12 @@ struct HorizontalTabButton {
   @Prop title: string;
   @Link full_area_width: number;
   @Link tab_titles: string[];
-  @StorageProp('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   // Host
-  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
+  @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   // Gateways
-  @StorageLink('universal_close_tab_gateway') close_tab_gateway: number = -1;
-  @StorageLink('universal_tab_button_click_gateway') uni_tab_button_clicked: number = -1;
+  @LocalStorageLink('universal_close_tab_gateway') close_tab_gateway: number = -1;
+  @LocalStorageLink('universal_tab_button_click_gateway') uni_tab_button_clicked: number = -1;
   @State offset_y: number = 100;
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';

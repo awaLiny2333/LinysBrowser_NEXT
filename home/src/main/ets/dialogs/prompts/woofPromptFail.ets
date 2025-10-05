@@ -95,13 +95,13 @@ export default woofPromptFail;
 @Component
 struct goodByeLink {
   // Environment
-  @StorageProp('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
-  @StorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
-  @StorageLink('showing_more_options') showing_more_options: boolean = false;
-  @StorageLink('showing_app_settings') showing_app_settings: boolean = false;
-  @StorageLink('showing_downloads') showing_downloads: boolean = false;
-  @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
+  @LocalStorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
+  @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
+  @LocalStorageLink('showing_app_settings') showing_app_settings: boolean = false;
+  @LocalStorageLink('showing_downloads') showing_downloads: boolean = false;
+  @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
@@ -113,7 +113,7 @@ struct goodByeLink {
   @Prop max_lines: number = 1;
   @Prop font_weight: FontWeight = FontWeight.Regular;
   @State link: string = "huawei.com";
-  @StorageLink('universal_new_tab_gateway') universal_new_tab_gateway: string = "";
+  @LocalStorageLink('universal_new_tab_gateway') universal_new_tab_gateway: string = "";
   // This is for status noticing
   @Link meow: boolean;
 

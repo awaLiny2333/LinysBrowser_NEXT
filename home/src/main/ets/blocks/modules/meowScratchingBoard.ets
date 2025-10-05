@@ -15,12 +15,12 @@ import linysTextTitle from '../../components/texts/linysTextTitle';
 @Component
 struct meowScratchingBoard {
   // Links
-  @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
-  @StorageLink('drop_result_strings') @Watch('on_data_change') data_list: string[] = [];
+  @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
+  @LocalStorageLink('drop_result_strings') @Watch('on_data_change') data_list: string[] = [];
   // UI
   @Prop show_feed_prompt: boolean = true;
   @State area_height: number = 200;
-  @StorageProp('screen_height') screen_height: number = 0;
+  @LocalStorageProp('screen_height') screen_height: number = 0;
   @State delete_confirm: number = 0;
   @State only_links: boolean = false;
   // Processed data
@@ -149,9 +149,9 @@ struct data_display {
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Environment
-  @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
-  @StorageProp('tablet_mode') tablet_mode: boolean = false;
-  @StorageProp('screen_width') screen_width: number = 0;
+  @LocalStorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageProp('screen_width') screen_width: number = 0;
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');

@@ -12,16 +12,16 @@ struct meowSuggestions {
   @Prop top_margin: number = 0;
   @Prop bottom_margin: number = 0;
   @State content_height: number = 0;
-  @StorageProp('is_search_input_typing') is_search_input_typing: boolean = false;
-  @StorageProp('search_input') @Watch('refresh_suggestions') search_input: string = "";
-  @StorageLink('search_extracted_keyword') search_extracted_keyword: string = '';
-  @StorageProp('screen_height') screen_height: number = 0;
-  @StorageProp('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageProp('is_search_input_typing') is_search_input_typing: boolean = false;
+  @LocalStorageProp('search_input') @Watch('refresh_suggestions') search_input: string = "";
+  @LocalStorageLink('search_extracted_keyword') search_extracted_keyword: string = '';
+  @LocalStorageProp('screen_height') screen_height: number = 0;
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @StorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
   @StorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
-  @StorageLink('showing_more_options') showing_more_options: boolean = false;
-  @StorageLink('showing_app_settings') showing_app_settings: boolean = false;
-  @StorageLink('showing_downloads') showing_downloads: boolean = false;
+  @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
+  @LocalStorageLink('showing_app_settings') showing_app_settings: boolean = false;
+  @LocalStorageLink('showing_downloads') showing_downloads: boolean = false;
   // Hosts
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
@@ -130,7 +130,7 @@ struct meowRelation {
   @Prop index: number;
   @State offset_y: number = 50;
   @State this_visibility: Visibility = Visibility.Hidden;
-  @StorageLink('universal_load_url_gateway') load_url_gateway: string = "";
+  @LocalStorageLink('universal_load_url_gateway') load_url_gateway: string = "";
 
   build() {
     Column({ space: 2 }) {

@@ -19,7 +19,7 @@ struct woofWantResources {
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // UI display
-  @StorageLink('screen_height') screen_height: number = 0;
+  @LocalStorageLink('screen_height') screen_height: number = 0;
 
   build() {
     Column({ space: 15 }) {

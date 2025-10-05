@@ -15,8 +15,8 @@ import { all_false } from '../../utils/data_operation_tools';
 struct woofGeneralManage {
   controller: CustomDialogController;
   // Environment and Hosts
-  @StorageLink('current_url') current_url: string = "=￣ω￣=";
-  @StorageLink('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @State add_site_edit: string = "";
   @State showing_add_panel: boolean = false;
   // Generals
@@ -69,7 +69,7 @@ struct woofGeneralManage {
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Gateways
-  @StorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
+  @LocalStorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
   // Actions
   onDelete?: (deleted: string[], remaining: string[]) => void;
   onAdd?: (added: string) => void;

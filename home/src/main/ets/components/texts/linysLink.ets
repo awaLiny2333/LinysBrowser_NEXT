@@ -10,7 +10,7 @@ struct linysLink {
   @Prop max_lines: number = 1;
   @Prop font_weight: FontWeight = FontWeight.Regular;
   @State link: string = "huawei.com";
-  @StorageLink('universal_new_tab_gateway') universal_new_tab_gateway: string = "";
+  @LocalStorageLink('universal_new_tab_gateway') universal_new_tab_gateway: string = "";
   // In fact this param is designed for closing some opened panel
   @Link will_be_reversed_boolean: boolean;
 

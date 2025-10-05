@@ -12,42 +12,45 @@ import lazy woofWantJump from '../../dialogs/prompts/woofWantJump';
 import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
 import lazy woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
-import { sync_tabs_list_info } from '../../utils/data_operation_tools';
+import { determine_extra_background, sync_tabs_list_info } from '../../processes/tabs_actions';
 import woofPrompt from '../../dialogs/web/woofPrompt';
 import woofConfirm from '../../dialogs/web/woofConfirm';
 import woofAlert from '../../dialogs/web/woofAlert';
-import { determine_extra_background } from '../../processes/tabs_actions';
+import { window } from '@kit.ArkUI';
+import { storage_of_id } from '../../utils/ui_tools';
 
 @Component
 struct meowWebView {
+  @LocalStorageLink('my_window_id') my_window_id: string = '';
+  storage: LocalStorage = storage_of_id(this.my_window_id);
   // Hosts
-  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
+  @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
   @StorageLink('bunch_of_bookmarks') @Watch('refresh_homepage_shortcuts') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks('Bookmarks~Meow');
   @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads(true);
   // Environments
   @StorageProp('currentColorMode') current_color_mode: number = 0;
   @StorageProp('pathDir') pathDir: string = "";
-  @StorageProp('tablet_mode') tablet_mode: boolean = false;
-  @StorageLink('fullscreen_mode') fullscreen_mode: boolean = false;
-  @StorageLink('fullscreen_handler') handler: FullScreenExitHandler | null = null;
-  @StorageLink('restore_web_state_arrays') restore_web_state_arrays: Uint8Array[] = [];
-  @StorageProp('screen_height') screen_height: number = 100;
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageLink('fullscreen_mode') fullscreen_mode: boolean = false;
+  @LocalStorageLink('fullscreen_handler') handler: FullScreenExitHandler | null = null;
+  @LocalStorageLink('restore_web_state_arrays') restore_web_state_arrays: Uint8Array[] = [];
+  @LocalStorageProp('screen_height') screen_height: number = 100;
   // In-Page Searching
-  @StorageLink('current_in_page_searching_stats_current') current_in_page_searching_stats_current: number = 0;
-  @StorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
+  @LocalStorageLink('current_in_page_searching_stats_current') current_in_page_searching_stats_current: number = 0;
+  @LocalStorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
   /**
    * Controls */
-  @StorageLink('tab_titles') tab_titles: string[] = []
-  @StorageLink('tab_urls') tab_urls: string[] = []
-  @StorageLink('current_url') current_url: string = "=￣ω￣=";
-  @StorageLink('tab_match_domains') tab_match_domains: string[][] = [];
-  @StorageLink('tab_disable_js') tab_disable_js: boolean[] = [false];
-  @StorageLink('tab_disable_image') tab_disable_image: boolean[] = [false];
-  @StorageLink('tab_force_dark') tab_force_dark: boolean[] = [false];
+  @LocalStorageLink('tab_titles') tab_titles: string[] = []
+  @LocalStorageLink('tab_urls') tab_urls: string[] = []
+  @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
+  @LocalStorageLink('tab_match_domains') tab_match_domains: string[][] = [];
+  @LocalStorageLink('tab_disable_js') tab_disable_js: boolean[] = [false];
+  @LocalStorageLink('tab_disable_image') tab_disable_image: boolean[] = [false];
+  @LocalStorageLink('tab_force_dark') tab_force_dark: boolean[] = [false];
   /**
    * Web control statuses */
-  @StorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
+  @LocalStorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
   // Settings
   @StorageProp('collect_new_history') collect_new_history: boolean = true;
   @StorageProp('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
@@ -76,7 +79,7 @@ struct meowWebView {
   @State shortcut_scroll_offset: number = 0;
   @State homepage_shortcuts: unified_item[] = [];
   @State potential_jump_link: string = '';
-  @StorageLink('extra_background') extra_background: boolean = false;
+  @LocalStorageLink('extra_background') extra_background: boolean = false;
   // Download
   @StorageLink('dl_delegate') dl_delegate: webview.WebDownloadDelegate = new webview.WebDownloadDelegate();
   @StorageLink('uni_webDownloadItem_gateway') @Watch('on_download_request') uni_webDownloadItem_gateway: webview.WebDownloadItem | undefined = undefined;
@@ -146,7 +149,7 @@ struct meowWebView {
   // Colors
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   // Else
-  @StorageLink('meowWebView_init_OK') init_OK: boolean = false;
+  @LocalStorageLink('meowWebView_init_OK') init_OK: boolean = false;
   shortcut_scroller: Scroller = new Scroller();
   httpAuth: boolean = false;
 
@@ -249,6 +252,8 @@ struct meowWebView {
   // }
 
   aboutToAppear(): void {
+    console.log(' \n[meowWebView][aboutToAppear] this.bunch_of_tabs.my_id: ' + this.bunch_of_tabs.my_id + '\n ');
+
     // Init download delegate
     this.bunch_of_downloads.init_delegate();
 
@@ -320,7 +325,7 @@ struct meowWebView {
               // TODO: Find out why this triggers twice when click once
               let new_target_url = event.targetUrl;
               console.log('[meowWebView] New tab in new window!');
-              AppStorage.set('universal_new_tab_gateway', new_target_url);
+              this.storage.set('universal_new_tab_gateway', new_target_url);
               event.handler.setWebController(null);
             })
             // .onErrorReceive((e) => {
@@ -349,7 +354,7 @@ struct meowWebView {
               }
 
               // Get synced lists
-              sync_tabs_list_info()
+              sync_tabs_list_info(this.storage)
               // Update Input Search Box
               this.update_search_box_text(this.current_url)
             })
@@ -364,7 +369,7 @@ struct meowWebView {
                 console.error('[meowWebView][onPageEnd] Update bunch_of_tabs error: ' + e);
               }
 
-              sync_tabs_list_info();
+              sync_tabs_list_info(this.storage);
 
               // Save browse history if is neither resource tab nor a recovery tab
               if (this.collect_new_history
@@ -382,7 +387,7 @@ struct meowWebView {
                 }
               }
 
-              determine_extra_background();
+              determine_extra_background(this.storage);
             })
             .onProgressChange((event) => {
               if (!event) {
@@ -411,7 +416,7 @@ struct meowWebView {
                 console.error('[meowWebView][onProgressChange] Update bunch_of_tabs error: ' + e);
               }
 
-              sync_tabs_list_info(); // Get synced lists
+              sync_tabs_list_info(this.storage); // Get synced lists
 
               // Update Input Search Box
               this.update_search_box_text(this.current_url);
@@ -640,7 +645,7 @@ struct meowWebView {
 
   update_search_box_text(text: string) {
     if (!this.is_search_input_typing) {
-      AppStorage.set('search_input', url_resource_to_meow(text));
+      this.storage.set('search_input', url_resource_to_meow(text));
       // Update Input Search Box
     }
     // Update Input Search Box when new page loaded
@@ -688,21 +693,27 @@ struct meowWebView {
       return;
     }
 
-    let file_name = this.uni_webDownloadItem_gateway.getSuggestedFileName();
-    let file_url = this.uni_webDownloadItem_gateway.getUrl();
+    window.getLastWindow(this.getUIContext().getHostContext()).then((w: window.Window) => {
+      // Only load want if is top window.
+      if (w == (this.storage.get('window') as window.Window)) {
 
-    // Call popup
-    this.woofWantDownload_control = new CustomDialogController({
-      builder: woofWantDownload({
-        from: this.current_url,
-        file_name: file_name,
-        url: file_url,
-        item: this.uni_webDownloadItem_gateway,
-      }),
-      alignment: DialogAlignment.Center,
-      cornerRadius: 26
-    });
-    this.woofWantDownload_control.open();
+        let file_name = this.uni_webDownloadItem_gateway!.getSuggestedFileName();
+        let file_url = this.uni_webDownloadItem_gateway!.getUrl();
+
+        // Call popup
+        this.woofWantDownload_control = new CustomDialogController({
+          builder: woofWantDownload({
+            from: this.current_url,
+            file_name: file_name,
+            url: file_url,
+            item: this.uni_webDownloadItem_gateway,
+          }),
+          alignment: DialogAlignment.Center,
+          cornerRadius: 26
+        });
+        this.woofWantDownload_control.open();
+      }
+    })
   }
 
   // Kind of constants
@@ -782,13 +793,13 @@ struct shortcutButton {
   @Prop my_index: number;
   @Prop bookmark: unified_item;
   // Environment
-  @StorageLink('current_url') current_url: string = "=￣ω￣=";
+  @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks('Bookmarks~Meow');
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('preferred_hand_reverse_homepage_shortcuts') preferred_hand_reverse_homepage_shortcuts: boolean = false;
   // Gateways
-  @StorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
+  @LocalStorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');

@@ -57,7 +57,7 @@ struct meowAppSettings {
   @StorageLink('tabs_style') tabs_style: string = "";
   @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
   @StorageLink('title_bar_position') title_bar_position: string = "";
-  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
+  @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   @StorageLink('bunch_of_history_index') bunch_of_history_index: bunch_of_history_index = new bunch_of_history_index();
@@ -66,8 +66,8 @@ struct meowAppSettings {
   @StorageProp('color_current_secondary') @Watch('on_color_change') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') @Watch('on_color_change') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Generals
-  @StorageProp('screen_width') screen_width: number = 0;
-  @StorageProp('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageProp('screen_width') screen_width: number = 0;
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   // Information
   @State versionName: string = "Version Name";
   @State versionNo: number = 0;
@@ -147,7 +147,7 @@ struct meowAppSettings {
     ['Settings_start_up', 'Settings_general', 'Settings_Experience', 'Settings_Accessibility', 'Settings_appearance',
       'Settings_experience_history', 'Settings_storage', 'Settings_security', 'Settings_toolbox', 'Settings_about', 'Settings_update', 'Settings_dev'];
   // Dialogs
-  @StorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
+  @LocalStorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
   woofHistory_control: CustomDialogController = new CustomDialogController({
     builder: woofHistory(),
     alignment: DialogAlignment.Center,

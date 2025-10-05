@@ -10,39 +10,42 @@ import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysText from '../../components/texts/linysText';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysSymbol from '../../components/texts/linysSymbol';
-import { sync_tabs_list_info } from '../../utils/data_operation_tools';
-import { determine_extra_background, set_search_box_text } from '../../processes/tabs_actions';
+import { determine_extra_background, set_search_box_text, sync_tabs_list_info } from '../../processes/tabs_actions';
+import { window } from '@kit.ArkUI';
+import { storage_of_id } from '../../utils/ui_tools';
 
 @Component
 struct meowTabsVertical {
+  @LocalStorageLink('my_window_id') my_window_id: string = '';
+  storage: LocalStorage = storage_of_id(this.my_window_id);
   // Want
   @StorageLink('want_uri') @Watch('on_want') want_uri: string = 'want';
   @StorageLink('want_action') want_action: string = '';
   @StorageLink('want_type') want_type: string = '';
   // Hosts and environments
-  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
-  @StorageProp('tablet_mode') tablet_mode: boolean = false;
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
-  @StorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
-  @StorageLink('showing_more_options') showing_more_options: boolean = false;
-  @StorageLink('search_input') search_input: string = "ଘ*(੭*ˊᵕˋ)੭*";
-  @StorageProp('is_search_input_typing') is_search_input_typing: boolean = false;
+  @LocalStorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
+  @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
+  @LocalStorageLink('search_input') search_input: string = "ଘ*(੭*ˊᵕˋ)੭*";
+  @LocalStorageProp('is_search_input_typing') is_search_input_typing: boolean = false;
   @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
   // Surf
   @StorageProp('home_url') home_url: string = '';
   @StorageProp('new_tab_url') new_tab_url: string = '';
   @StorageProp('start_up_option') start_up_option: string = '';
   // Controls
-  @StorageLink('tab_titles') tab_titles: string[] = []
-  @StorageLink('tab_urls') tab_urls: string[] = [];
-  @StorageLink('current_url') current_url: string = "=￣ω￣=";
+  @LocalStorageLink('tab_titles') tab_titles: string[] = []
+  @LocalStorageLink('tab_urls') tab_urls: string[] = [];
+  @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
   // Other Info / Statuses
   @State recover_tabs_finished: boolean = false;
-  @StorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
+  @LocalStorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
   @StorageLink('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
   // Delay
-  @StorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
+  @LocalStorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
   // Animation info
   @State my_visibility: Visibility = Visibility.Hidden;
   tab_height_default: number = 42;
@@ -59,18 +62,18 @@ struct meowTabsVertical {
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('preferred_hand_reverse_tabs_panel') preferred_hand_reverse_tabs_panel: boolean = false;
   // Gateways
-  @StorageLink('universal_load_url_gateway') @Watch('uni_load_url') load_url_gateway: string = "";
-  @StorageLink('universal_new_tab_gateway') @Watch('uni_new_tab') new_tab_gateway: string = "";
-  @StorageLink('universal_close_tab_gateway') @Watch('uni_close_tab') close_tab_gateway: number = -1;
-  @StorageLink('universal_close_all_tabs_gateway') @Watch('uni_close_all_tabs') close_all_tabs_gateway: number = -1;
-  @StorageLink('universal_tab_button_click_gateway') @Watch('uni_tab_button_click') uni_tab_button_clicked: number = -1;
+  @LocalStorageLink('universal_load_url_gateway') @Watch('uni_load_url') load_url_gateway: string = "";
+  @LocalStorageLink('universal_new_tab_gateway') @Watch('uni_new_tab') new_tab_gateway: string = "";
+  @LocalStorageLink('universal_close_tab_gateway') @Watch('uni_close_tab') close_tab_gateway: number = -1;
+  @LocalStorageLink('universal_close_all_tabs_gateway') @Watch('uni_close_all_tabs') close_all_tabs_gateway: number = -1;
+  @LocalStorageLink('universal_tab_button_click_gateway') @Watch('uni_tab_button_click') uni_tab_button_clicked: number = -1;
   @StorageLink('universal_global_custom_ua_gateway') @Watch('on_global_custom_UA_change') global_custom_UA: string = "";
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Drop
-  @StorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
+  @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   // Pan Gesture
   pan_x: number = 0;
 
@@ -109,7 +112,7 @@ struct meowTabsVertical {
       }
 
       // Save to AppStorage for restoration use
-      AppStorage.setOrCreate('restore_web_state_arrays', web_state_arrays_to_restore);
+      this.storage.setOrCreate('restore_web_state_arrays', web_state_arrays_to_restore);
 
       // Create new tabs
       for (let index = 0; index < web_state_arrays_to_restore.length; index++) {
@@ -119,7 +122,7 @@ struct meowTabsVertical {
       // Try to switch tab
       // this.tab_animation = { duration: 0 };
       this.switch_tab(continue_tabs_main_on, false, false);
-      sync_tabs_list_info();
+      sync_tabs_list_info(this.storage);
 
       // Recover Paralleow
       if (continue_tabs_sub_on < this.tab_titles.length) {
@@ -130,7 +133,7 @@ struct meowTabsVertical {
     this.recover_tabs_finished = true;
 
     // Want
-    check_want(this.want_uri, this.want_action, this.want_type);
+    check_want(this.want_uri, this.want_action, this.want_type, this.storage);
 
     t = Date.now() - t0;
     console.log('[Meow][init][meowTabsVertical] Tabs OK. (' + t + ' ms)');
@@ -237,7 +240,7 @@ struct meowTabsVertical {
       })
       .allowDrop(allow_drop_types())
       .onDrop((e) => {
-        drop_to_scratching_board(e);
+        drop_to_scratching_board(e, this.storage);
       })
       .onDragEnter(() => {
         this.showing_scratching_board = true;
@@ -278,7 +281,7 @@ struct meowTabsVertical {
    * @description While if new_tab_url is also not set ("" or undefined), then will load the url_default_blank().
    * */
   new_tab(target_url: string, do_recovery: boolean, save_to_settings: boolean) {
-    AppStorage.set('extra_background', false);
+    this.storage.set('extra_background', false);
 
     this.bunch_of_tabs.newTab(target_url, do_recovery);
 
@@ -330,11 +333,11 @@ struct meowTabsVertical {
       this.bunch_of_tabs.update_backward_forward_access();
     }
     // Set CURRENT variables
-    sync_tabs_list_info();
+    sync_tabs_list_info(this.storage);
     // Update Input Search Box
-    set_search_box_text(this.current_url);
+    set_search_box_text(this.current_url, this.storage);
 
-    determine_extra_background();
+    determine_extra_background(this.storage);
 
     if (save_to_settings) {
       this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][switch_tab]');
@@ -363,9 +366,9 @@ struct meowTabsVertical {
     // Update history
     this.bunch_of_tabs.update_backward_forward_access();
     // Get synced lists
-    sync_tabs_list_info();
+    sync_tabs_list_info(this.storage);
     // Update Input Search Box
-    set_search_box_text(this.current_url);
+    set_search_box_text(this.current_url, this.storage);
 
     // Store tabs count
     let store_tabs_count = this.tab_titles.length;
@@ -419,7 +422,7 @@ struct meowTabsVertical {
     // Or we'll have to wait for the spring animation to finish, bringing the last tab button down.
     this.count_down_for_switching_back_to_spring += 10;
 
-    determine_extra_background();
+    determine_extra_background(this.storage);
 
     if (save_to_settings) {
       this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][close_tab]');
@@ -450,7 +453,7 @@ struct meowTabsVertical {
       this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][choose_paralleow]');
     }
 
-    determine_extra_background();
+    determine_extra_background(this.storage);
   }
 
   switch_paralleow(save_to_settings: boolean) {
@@ -566,7 +569,12 @@ struct meowTabsVertical {
    * Respond to wants
    * */
   on_want() {
-    check_want(this.want_uri, this.want_action, this.want_type);
+    window.getLastWindow(this.getUIContext().getHostContext()).then((w: window.Window) => {
+      // Only load want if is top window.
+      if (w == (this.storage.get('window') as window.Window)) {
+        check_want(this.want_uri, this.want_action, this.want_type, this.storage);
+      }
+    })
   }
 
   // Data
@@ -587,14 +595,14 @@ struct TabButton {
   @Prop Label: tab_label;
   tab_height_default: number = 42;
   // Public
-  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
+  @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
-  @StorageLink('tab_titles') tab_titles: string[] = []
+  @LocalStorageLink('tab_titles') tab_titles: string[] = []
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Gateways
-  @StorageLink('universal_tab_button_click_gateway') uni_tab_button_clicked: number = -1;
-  @StorageLink('universal_close_tab_gateway') close_tab_gateway: number = -1;
+  @LocalStorageLink('universal_tab_button_click_gateway') uni_tab_button_clicked: number = -1;
+  @LocalStorageLink('universal_close_tab_gateway') close_tab_gateway: number = -1;
   // Colors
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');

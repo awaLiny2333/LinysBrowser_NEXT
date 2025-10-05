@@ -13,9 +13,11 @@ import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 
 /**
- * Executed in async aboutToAppear(): Promise<void> in Index.ets
+ * Initializes all things.
+ *
+ * Should be executed in HomeAbility.ets on each launch of entire app.
  */
-export async function meow_init(context: common.UIAbilityContext) {
+export async function meow_init(context: common.UIAbilityContext, storage: LocalStorage) {
   let t0 = Date.now();
   let t = 0;
 
@@ -26,9 +28,16 @@ export async function meow_init(context: common.UIAbilityContext) {
     sandbox_save("last_app_versionName.txt", bundleInfo.versionName);
   })
 
-  await settings_tabs(t0);
+  // File management
+  clear_web_drag_image_cache(context);
+  clear_profile(context);
+  ensure_continue_folder(context);
+
+  // Hosts
+  await settings(t0);
   await bookmarks(t0);
   await restore_tabs(t0);
+  tabs(t0, storage);
   history(t0);
   downloads(t0);
   user_agents(t0);
@@ -38,15 +47,25 @@ export async function meow_init(context: common.UIAbilityContext) {
   t = Date.now() - t0;
   console.log('[init] bunch_of_init! (' + t + ' ms)')
 
-  // File management
-  clear_web_drag_image_cache(context);
-  clear_profile(context);
-
   t = Date.now() - t0;
   console.log('[Meow][init] OK. (' + t + ' ms)');
 }
 
 // Files
+
+/**
+ * Checks and ensures there is a /continue directory in sandbox.
+ * */
+function ensure_continue_folder(context: common.UIAbilityContext) {
+  let filesDir = context.filesDir;
+  if (!fileIo.accessSync(filesDir + '/continue')) {
+    try {
+      fileIo.mkdirSync(filesDir + '/continue');
+    } catch (e) {
+      console.error('[init][ensure_continue_folder] Error: ' + e);
+    }
+  }
+}
 
 /**
  * Set cache dir of web-dragged image into Scratching Board
@@ -81,11 +100,8 @@ function clear_profile(context: common.UIAbilityContext) {
  * Inits both settings and tabs.
  * @param t0 Start time of the whole initialization process.
  * */
-async function settings_tabs(t0: number) {
+async function settings(t0: number) {
   await bunch_of_settings.init();
-
-  let tabs = new bunch_of_tabs();
-  AppStorage.setOrCreate('bunch_of_tabs', tabs);
 
   // DEV_MODE
   AppStorage.setOrCreate('DEV_MODE', bunch_of_settings.get('DEV_MODE') as boolean);
@@ -147,9 +163,6 @@ async function settings_tabs(t0: number) {
   AppStorage.setOrCreate('home_url', home_url);
   AppStorage.setOrCreate('new_tab_url', new_tab_url);
   AppStorage.setOrCreate('start_up_option', start_up_option);
-  tabs.start_up = start_up_option;
-  tabs.new_tab_url = new_tab_url;
-  tabs.home_url = home_url;
 
   AppStorage.setOrCreate('intelligent_tracking_prevention', bunch_of_settings.get('intelligent_tracking_prevention') as boolean);
 
@@ -228,6 +241,8 @@ async function bookmarks(t0: number) {
 
 /**
  * Retrieves the restore tabs indices.
+ *
+ * MUST BE EXECUTED AFTER INITIALIZATION OF bunch_of_settings!
  * @param t0 Start time of the whole initialization process.
  * */
 async function restore_tabs(t0: number) {
@@ -254,6 +269,39 @@ async function restore_tabs(t0: number) {
   // Timer
   let t = Date.now() - t0;
   console.log('[init] Restore OK. (' + t + ' ms)');
+}
+
+/**
+ * Inits and fills bunch_of_tabs settings.
+ *
+ * MUST BE EXECUTED AFTER INITIALIZATION OF bunch_of_settings!
+ * @param t0 Start time of the whole initialization process.
+ * */
+function tabs(t0: number, storage: LocalStorage) {
+  let tabs = new bunch_of_tabs(false, storage.get('my_window_id') as string);
+  // AppStorage.setOrCreate('bunch_of_tabs', tabs);
+  storage.setOrCreate('bunch_of_tabs', tabs);
+
+  // Store tabs of this window
+  let all_bunch_of_tabs: bunch_of_tabs[] | undefined = AppStorage.get('all_bunch_of_tabs');
+  if (all_bunch_of_tabs == undefined) {
+    AppStorage.setOrCreate('all_bunch_of_tabs', [tabs]);
+  } else {
+    all_bunch_of_tabs.push(tabs);
+    AppStorage.setOrCreate('all_bunch_of_tabs', all_bunch_of_tabs);
+  }
+
+  // Fill back settings
+  let home_url: string = bunch_of_settings.get('home_url') as string
+  let new_tab_url: string = bunch_of_settings.get('new_tab_url') as string
+  let start_up_option: string = bunch_of_settings.get('start_up_option') as string
+  tabs.start_up = start_up_option;
+  tabs.new_tab_url = new_tab_url;
+  tabs.home_url = home_url;
+
+  // Timer
+  let t = Date.now() - t0;
+  console.log('[init] Tabs OK. (' + t + ' ms) id: ' + tabs.my_id);
 }
 
 /**
@@ -292,6 +340,8 @@ function downloads(t0: number) {
 
 /**
  * Inits bunch_of_user_agents.
+ *
+ * MUST BE EXECUTED AFTER INITIALIZATION OF bunch_of_settings!
  * @param t0 Start time of the whole initialization process.
  * */
 function user_agents(t0: number) {
@@ -307,6 +357,8 @@ function user_agents(t0: number) {
 
 /**
  * Inits bunch_of_search_engines.
+ *
+ * MUST BE EXECUTED AFTER INITIALIZATION OF bunch_of_settings!
  * @param t0 Start time of the whole initialization process.
  * */
 function search_engines(t0: number) {

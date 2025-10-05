@@ -4,7 +4,7 @@ import linysText from './texts/linysText';
 @Component
 struct linysPathTree {
   @Link @Watch('on_current_viewing_path_change') current_viewing_path: string;
-  @StorageProp('screen_height') screen_height: number = 100;
+  @LocalStorageProp('screen_height') screen_height: number = 100;
   @Prop max_height_screen_percentage: number = 0.4;
   @State path_stack: string[] = [];
   @State label_stack: string[] = [];

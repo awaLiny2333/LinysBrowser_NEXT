@@ -8,7 +8,7 @@ import lazy { getCPU_sync, getNativeHeapSize_sync } from '../../utils/performanc
 @Component
 struct meowDebug {
   @State data: string[] = ['pss', 'vss', 'shared dirty', 'private dirty', 'cpu', 'native heap', 'vram'];
-  @StorageLink('showing_more_options') showing_more_options: boolean = false;
+  @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
 
@@ -128,7 +128,7 @@ struct dataBoard {
   @Prop symbol_glyph_target: string | undefined = undefined;
   @Prop label: ResourceStr = 'label';
   loop_execution?: () => void;
-  @StorageProp('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @Prop loop_time: number = 1000;
 
   build() {

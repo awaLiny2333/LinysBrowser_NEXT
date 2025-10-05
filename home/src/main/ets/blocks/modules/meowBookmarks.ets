@@ -10,46 +10,46 @@ import linysPathTree from '../../components/linysPathTree';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 import lazy woofSelectBookmarksPath from '../../dialogs/prompts/woofSelectBookmarksPath';
-import { current_tabs_style_is_horizontal } from '../../utils/ui_tools';
+import { current_tabs_style_is_horizontal, storage_of_id } from '../../utils/ui_tools';
 import linysExpandableCardItem from '../../components/layouts/linysExpandableCardItem';
 
 @Component
 struct meowBookmarks {
+  @LocalStorageLink('my_window_id') my_window_id: string = '';
+  storage: LocalStorage = storage_of_id(this.my_window_id);
   // Hosts
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("Bookmarks~Meow");
-  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
+  @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @State viewing_contents: unified_item[] = this.bunch_of_bookmarks.root.get_content();
   @State @Watch('refresh_content_view') looking_at_path: string = "";
   @State current_folder: folder | undefined = undefined;
   // Environments
-  @StorageProp('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   // UI control actions
   @StorageLink('showing_tabs') showing_tabs: boolean = false;
-  @StorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
-  @StorageLink('swapping_bookmarks') swapping_bookmarks: boolean = false;
+  @LocalStorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
+  @LocalStorageLink('swapping_bookmarks') swapping_bookmarks: boolean = false;
   bookmarks_scroller: Scroller = new Scroller();
-  @StorageLink('bookmarks_scroll_by') @Watch('scroll_bookmarks') bookmarks_scroll_by: number = 0;
-  @StorageLink('swapping_offset_timeout') swapping_offset_timeout: number = 0;
+  @LocalStorageLink('bookmarks_scroll_by') @Watch('scroll_bookmarks') bookmarks_scroll_by: number = 0;
+  @LocalStorageLink('swapping_offset_timeout') swapping_offset_timeout: number = 0;
   @State swapping_offset_upper: number = 0;
   @State swapping_offset_downer: number = 0;
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('preferred_hand_reverse_tabs_panel') preferred_hand_reverse_tabs_panel: boolean = false;
   // Input and Interactions
-  @StorageLink('bookmark_add_label') add_label: string = "";
-  @StorageLink('bookmark_add_link') add_link: string = "";
+  @LocalStorageLink('bookmark_add_label') add_label: string = "";
+  @LocalStorageLink('bookmark_add_link') add_link: string = "";
   @State scroll_area_height: number = 0;
   @State adding_folder: boolean = false;
-  @StorageLink('adding_bookmark') adding_bookmark: boolean = false;
+  @LocalStorageLink('adding_bookmark') adding_bookmark: boolean = false;
   @State showing_navigator: boolean = false;
   @State importing_bookmarks: boolean = false;
   @State exporting_bookmarks: boolean = false;
   // Dialogs
-  @StorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
+  @LocalStorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
   /**
    * Colors */
-  // @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  // @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Pan Gesture
   pan_x: number = 0;
@@ -309,7 +309,7 @@ struct meowBookmarks {
           // this.positionY = this.offsetY;
           // console.info('Pan end');
           // console.info('Pan end timeStamp is: ' + event.timestamp);
-          if (!current_tabs_style_is_horizontal()) {
+          if (!current_tabs_style_is_horizontal(this.storage)) {
             if (this.pan_x < 0) {
               // ← CLose if Left align
               if (!this.is_right_align()) {
@@ -525,7 +525,7 @@ export default meowBookmarks;
 struct bookmarkItem {
   @Prop my_index: number = 0;
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
-  @StorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
+  @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @Link looking_at_path: string;
   @Link viewing_contents: unified_item[];
   @Prop parent_path: string;
@@ -538,8 +538,8 @@ struct bookmarkItem {
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // UI
-  @StorageLink('swapping_bookmarks') @Watch('on_swapping_bookmarks') swapping_bookmarks: boolean = false;
-  @StorageLink('bookmarks_scroll_by') bookmarks_scroll_by: number = 0;
+  @LocalStorageLink('swapping_bookmarks') @Watch('on_swapping_bookmarks') swapping_bookmarks: boolean = false;
+  @LocalStorageLink('bookmarks_scroll_by') bookmarks_scroll_by: number = 0;
   @State show: Visibility = this.swapping_bookmarks ? Visibility.Visible : Visibility.Hidden;
   @State offset_y: number = this.swapping_bookmarks ? 0 : 50;
   @State is_editing: boolean = false;
@@ -547,12 +547,12 @@ struct bookmarkItem {
   // Animations statuses
   @State edit_label: string = this.my_label;
   @State edit_link: string = this.my_link;
-  @StorageLink('swapping_offset_timeout') swapping_offset_timeout: number = 0;
+  @LocalStorageLink('swapping_offset_timeout') swapping_offset_timeout: number = 0;
   // Move params
   @State @Watch('on_select_change') select_path_result: string | undefined = undefined;
   @State moving_type: string = "";
   // Dialogs
-  @StorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
+  @LocalStorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
   woofBookmarksPathSelector_control: CustomDialogController = new CustomDialogController({
     builder: woofSelectBookmarksPath({
       prompt_title: $r('app.string.Bookmarks_move_title'),

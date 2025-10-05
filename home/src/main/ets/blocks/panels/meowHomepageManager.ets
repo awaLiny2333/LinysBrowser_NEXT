@@ -13,7 +13,7 @@ struct meowHomepageManager {
   // States
   @State homepage_background_delete_confirm: number = 0;
   // Gateways
-  @StorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
+  @LocalStorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
   // Environments
   @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
   // Colors

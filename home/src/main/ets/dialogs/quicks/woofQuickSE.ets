@@ -20,7 +20,7 @@ struct woofQuickSE {
   @State height_of_add_panel: number = 0;
   button_height_default: number = 42;
   // Gateways
-  @StorageLink('universal_load_url_gateway') load_url_gateway: string = "";
+  @LocalStorageLink('universal_load_url_gateway') load_url_gateway: string = "";
 
   build() {
     woofControlFrame({

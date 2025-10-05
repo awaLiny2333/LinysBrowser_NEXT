@@ -5,11 +5,10 @@ import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
 import { meow_init } from '../processes/init';
 import { meowPx2vp } from '../utils/environment_tools';
 import lazy { bunch_of_tabs } from '../hosts/bunch_of_tabs';
+import { storage_of_window } from '../utils/ui_tools';
 
 export default class HomeAbility extends UIAbility {
-  storage: LocalStorage = new LocalStorage();
-
-  async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): Promise<void> {
+  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam) {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
     console.log('want bundle name: ' + want.bundleName);
     console.log('launchParam launchReason: ' + launchParam.launchReason);
@@ -19,10 +18,12 @@ export default class HomeAbility extends UIAbility {
     AppStorage.setOrCreate('pathDir', this.context.filesDir);
     AppStorage.setOrCreate('currentColorMode', this.context.config.colorMode);
 
+    let storage: LocalStorage = new LocalStorage();
+
     if (launchParam.launchReason === AbilityConstant.LaunchReason.CONTINUATION) {
       this.process_continue(want);
       try {
-        this.context.restoreWindowStage(this.storage);
+        this.context.restoreWindowStage(storage);
       } catch (e) {
         console.error('[onCreate] restoreWindowStage Failed: ' + e);
       }
@@ -32,6 +33,11 @@ export default class HomeAbility extends UIAbility {
     }
   }
 
+  /**
+   * Receives a want.
+   * @param want The want.
+   * @param launchParam The launchParam to determine if this is a continuation or something else.
+   * */
   onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     if (launchParam.launchReason === AbilityConstant.LaunchReason.CONTINUATION) {
       this.process_continue(want);
@@ -40,69 +46,90 @@ export default class HomeAbility extends UIAbility {
     }
   }
 
-  onContinue(wantParam: Record<string, Object>) {
+  /**
+   * Sends a page to another device.
+   * @param wantParam The wantParam.
+   * @returns AbilityConstant.OnContinueResult.
+   * */
+  async onContinue(wantParam: Record<string, Object>) {
     console.info(`onContinue version = ${wantParam.version}, targetDevice: ${wantParam.targetDevice}`);
 
     // Check if continuation_auto_exit
     let auto_exit = AppStorage.get('continuation_auto_exit') as boolean;
     let close_tab = AppStorage.get('continuation_auto_close_tab') as boolean;
 
-    // Pack continue data
-    wantParam['data'] = AppStorage.get('current_url') as string;
-    if (!auto_exit) {
-      wantParam[wantConstant.Params.SUPPORT_CONTINUE_SOURCE_EXIT_KEY] = false;
-      // Close tab
-      if (close_tab) {
-        let tabs = AppStorage.get('bunch_of_tabs') as bunch_of_tabs;
-        AppStorage.set('universal_close_tab_gateway', tabs.main_tab_idx);
-      }
-    }
+    try {
+      let storage = storage_of_window(await window.getLastWindow(this.context));
+      let tabs = storage.get('bunch_of_tabs') as bunch_of_tabs;
+      let url_to_be_sent = tabs.get_current_main_url();
 
-    // No auto recovery
-    wantParam[wantConstant.Params.SUPPORT_CONTINUE_PAGE_STACK_KEY] = false;
-    return AbilityConstant.OnContinueResult.AGREE;
+      // Pack continue data
+      wantParam['data'] = url_to_be_sent;
+      if (!auto_exit) {
+        wantParam[wantConstant.Params.SUPPORT_CONTINUE_SOURCE_EXIT_KEY] = false;
+        // Close tab
+        if (close_tab) {
+          storage.set('universal_close_tab_gateway', tabs.main_tab_idx);
+        }
+      }
+
+      // No auto recovery
+      wantParam[wantConstant.Params.SUPPORT_CONTINUE_PAGE_STACK_KEY] = false;
+      return AbilityConstant.OnContinueResult.AGREE;
+    } catch (e) {
+      console.error('[onContinue] Failure: ' + e);
+      return AbilityConstant.OnContinueResult.REJECT;
+    }
   }
 
-  async onWindowStageCreate(windowStage: window.WindowStage): Promise<void> {
+  async onWindowStageCreate(windowStage: window.WindowStage) {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
+    let is_new_launch = !(AppStorage.get('settings_init_retrieved') as boolean);
 
     // Set window rect auto save
-    try {
-      windowStage.setWindowRectAutoSave(true).then(() => {
-        console.info('[HomeAbility] Succeeded in setting window rect auto-save');
-      }).catch((err: BusinessError) => {
-        console.error(`[HomeAbility] Failed to set window rect auto-save. Cause code: ${err.code}, message: ${err.message}`);
-      });
-    } catch (exception) {
-      console.error(`[HomeAbility] Failed to set window rect auto-save. Cause code: ${exception.code}, message: ${exception.message}`);
-    }
+    windowStage.setWindowRectAutoSave(true).then(() => {
+      console.info('[HomeAbility] Succeeded in setting window rect auto-save');
+    }).catch((err: BusinessError) => {
+      console.error(`[HomeAbility] Failed to set window rect auto-save. Cause code: ${err.code}, message: ${err.message}`);
+    });
 
-    windowStage.getMainWindow((err: BusinessError, win) => {
-      const errCode: number = err.code;
-      if (errCode) {
-        console.error(`[HomeAbility] Failed to obtain the main window. Cause code: ${err.code}, message: ${err.message}`);
-        return;
-      }
-
-      // This does nothing at all. Just to get rid of the warning on ['win' is declared but its value is never read].
-      console.log('[getMainWindow] ' + (win ? 'Window Got' : 'No Window???'))
-    })
+    let windowClass = windowStage.getMainWindowSync(); // Get app main window
+    let storage = new LocalStorage();
+    let my_window_id = Date.now().toString();
+    storage.setOrCreate('windowStage', windowStage); // Save windowStage
+    storage.setOrCreate('window', windowClass); // Save windowClass
+    storage.setOrCreate('my_window_id', my_window_id);
 
     // Init & Load window content
-    await meow_init(this.context);
-    this.window_load_content(windowStage);
+    if (is_new_launch) {
+      await meow_init(this.context, storage);
+    }
+    this.window_load_content(windowStage, windowClass, my_window_id, storage);
   }
 
   async onWindowStageRestore(windowStage: window.WindowStage) {
     let is_new_launch = !(AppStorage.get('settings_init_retrieved') as boolean);
     console.log('[HomeAbility][onWindowStageRestore] is_new_launch? - ' + (is_new_launch ? 'yes!' : 'no...'))
 
+    // Set window rect auto save
+    windowStage.setWindowRectAutoSave(true).then(() => {
+      console.info('[HomeAbility] Succeeded in setting window rect auto-save');
+    }).catch((err: BusinessError) => {
+      console.error(`[HomeAbility] Failed to set window rect auto-save. Cause code: ${err.code}, message: ${err.message}`);
+    });
+
     // Only loads if is new launch
     // Init & Load window content
     if (is_new_launch) {
-      await meow_init(this.context);
-      this.window_load_content(windowStage);
+      let windowClass = windowStage.getMainWindowSync(); // Get app main window
+      let storage = new LocalStorage();
+      let my_window_id = Date.now().toString();
+      storage.setOrCreate('windowStage', windowStage); // Save windowStage
+      storage.setOrCreate('window', windowClass); // Save windowClass
+      storage.setOrCreate('my_window_id', my_window_id);
+      await meow_init(this.context, storage);
+      this.window_load_content(windowStage, windowClass, my_window_id, storage);
     }
   }
 
@@ -199,22 +226,38 @@ export default class HomeAbility extends UIAbility {
 
   /**
    * A general load content function.
+   *
+   * EXECUTED ONLY ONCE FOR EACH WINDOW INSTANCE.
    * @param windowStage The windowStage.
    * */
-  window_load_content(windowStage: window.WindowStage) {
-    this.storage.setOrCreate('windowClass', windowStage); // Save windowClass
-    this.storage.setOrCreate('window_id', Date.now().toString()); // Save my window ID
+  window_load_content(windowStage: window.WindowStage, windowClass: window.Window, my_window_id: string, storage: LocalStorage) {
 
-    let windowClass = windowStage.getMainWindowSync(); // Get app main window
+    // Save my window to AppStorage
+    let windowClasses: window.Window[] | undefined = AppStorage.get('windows');
+    if (windowClasses == undefined) {
+      // IS THE FIRST WINDOW OF APP
+      AppStorage.setOrCreate('windows', [windowClass]);
+      AppStorage.setOrCreate('windowIds', []);
+      AppStorage.setOrCreate('windowStorages', []);
+    } else {
+      // one of the multi-windows
+      windowClasses.push(windowClass);
+      AppStorage.setOrCreate('windows', windowClasses); // Is this needed?
+    }
+
+    // Parallel array of ids
+    let windowIds = AppStorage.get('windowIds') as string[];
+    windowIds.push(my_window_id);
+    let windowStorages = AppStorage.get('windowStorages') as LocalStorage[];
+    windowStorages.push(storage);
 
     // Load content
-    windowStage.loadContent('pages/Index', this.storage, (err) => {
+    windowStage.loadContent('pages/Index', storage, (err) => {
       if (err.code) {
         hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
         return;
       }
       hilog.info(0x0000, 'testTag', 'Succeeded in loading the content.');
-
 
       console.log('Succeeded in obtaining the main window. Data: ' + JSON.stringify(windowClass));
       console.log('[HomeAbility] deviceType: ' + deviceInfo.deviceType);

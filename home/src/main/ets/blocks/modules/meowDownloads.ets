@@ -14,10 +14,10 @@ import linysText from '../../components/texts/linysText';
 @Component
 struct meowDownloads {
   @StorageLink('bunch_of_downloads') @Watch('on_download_state_change') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads(true);
-  @StorageLink('showing_downloads') showing_downloads: boolean = false;
+  @LocalStorageLink('showing_downloads') showing_downloads: boolean = false;
   // Downloads
-  @StorageProp('screen_width') screen_width: number = 0;
-  @StorageProp('screen_height') screen_height: number = 0;
+  @LocalStorageProp('screen_width') screen_width: number = 0;
+  @LocalStorageProp('screen_height') screen_height: number = 0;
   // UI
   @State notice_height: number = 100;
   @State waterflow_height: number = 300;
@@ -149,7 +149,7 @@ struct noticeCard {
 struct meowDownloadCard {
   @Prop my_index: number;
   @Link @Watch('update_progress') bunch_of_downloads: bunch_of_downloads;
-  @StorageLink('showing_downloads') showing_downloads: boolean = false;
+  @LocalStorageLink('showing_downloads') showing_downloads: boolean = false;
   // Statuses
   @State my_progress: number = 0;
   @State my_file_name: string = "";

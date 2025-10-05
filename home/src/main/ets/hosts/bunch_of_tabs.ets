@@ -1,11 +1,10 @@
 import { webview } from '@kit.ArkWeb';
 import { match_domain, url_meow_to_resource, viewable_domains } from '../utils/url_tools';
 import { url_default_blank } from './bunch_of_defaults';
-import { fileIo as fs } from '@kit.CoreFileKit';
 import { sandbox_save } from '../utils/storage_tools';
-import { meowContext } from '../utils/environment_tools';
 import { all_false, all_true } from '../utils/data_operation_tools';
 import { bunch_of_settings } from './bunch_of_settings';
+import { storage_of_id } from '../utils/ui_tools';
 
 @Observed
 export class tab_label {
@@ -89,6 +88,7 @@ export class bunch_of_tabs {
   // Major Data
   Tabs: Array<tab_info_packed> = [];
   Labels: Array<tab_label> = [];
+  my_id: string;
   // Statuses
   main_tab_idx: number = 0;
   sub_tab_idx: number = 0;
@@ -102,24 +102,17 @@ export class bunch_of_tabs {
   private used_date_ids: number[] = [];
 
   /**
-   * A class holding tabs in a list.
-   * Provides methods to operate tabs.
-   * @param no_init Will not check for continue folder nor do anything else.
-   * Usually set true if this object is only created to sit the place of StorageLink initialization.
+   * A class holding tabs in a list which provides methods to operate tabs.
+   *
+   * @param no_init Will not set my_id.
    */
-  constructor(no_init?: boolean) {
-    if (no_init == true) {
+  constructor(no_init: boolean, id?: string) {
+    if (no_init) {
+      this.my_id = '';
       return;
     }
-
-    let filesDir = meowContext().filesDir;
-    try {
-      fs.mkdirSync(filesDir + '/continue');
-    } catch (e) {
-      // console.log('[Meow][bunch_of_tabs] constructor: E: /continue folder already exists.')
-    }
-
-    // console.log('[Meow][bunch_of_tabs] Init success!')
+    this.my_id = id || '';
+    console.log('[Meow][bunch_of_tabs] Init success! ID: ' + this.my_id + '!');
   }
 
   // Operations and Actions
@@ -238,6 +231,22 @@ export class bunch_of_tabs {
         console.error('[bunch_of_tabs][update_backward_forward_access] Error: ' + e);
       }
     }
+  }
+
+  /**
+   * Gets the current url of the main tab.
+   * @returns The url.
+   * */
+  get_current_main_url() {
+    return this.Tabs[this.main_tab_idx].url;
+  }
+
+  /**
+   * Gets the current url of the sub tab.
+   * @returns The url.
+   * */
+  get_current_sub_url() {
+    return this.Tabs[this.sub_tab_idx].url;
   }
 
   // General Tab Controls
@@ -450,6 +459,7 @@ export class bunch_of_tabs {
    * @returns A boolean[] array, the settings are either true or false.
    * */
   get_all_disable_js() {
+    let storage: LocalStorage = storage_of_id(this.my_id);
     let disable_js: boolean[] = [];
     let main_switch = AppStorage.get('disable_js') as boolean;
     let sub_switch = AppStorage.get('disable_js_all_sites') as boolean;
@@ -464,9 +474,9 @@ export class bunch_of_tabs {
       return all_true(this.Tabs.length) as boolean[];
     }
 
+    let disable_these_sites = AppStorage.get('disable_js_these_sites') as string[];
+    let tab_match_domains = storage.get('tab_match_domains') as string[];
     for (let index = 0; index < this.Tabs.length; index++) {
-      let disable_these_sites = AppStorage.get('disable_js_these_sites') as string[];
-      let tab_match_domains = AppStorage.get('tab_match_domains') as string[];
       disable_js.push(disable_these_sites.includes(tab_match_domains[index][1]));
     }
     return disable_js;
@@ -477,6 +487,7 @@ export class bunch_of_tabs {
    * @returns A boolean[] array, the settings are either true or false.
    * */
   get_all_disable_image() {
+    let storage: LocalStorage = storage_of_id(this.my_id);
     let disable: boolean[] = [];
     let main_switch = AppStorage.get('disable_image') as boolean;
     let sub_switch = AppStorage.get('disable_image_all_sites') as boolean;
@@ -491,9 +502,9 @@ export class bunch_of_tabs {
       return all_true(this.Tabs.length) as boolean[];
     }
 
+    let disable_these_sites = AppStorage.get('disable_image_these_sites') as string[];
+    let tab_match_domains = storage.get('tab_match_domains') as string[];
     for (let index = 0; index < this.Tabs.length; index++) {
-      let disable_these_sites = AppStorage.get('disable_image_these_sites') as string[];
-      let tab_match_domains = AppStorage.get('tab_match_domains') as string[];
       disable.push(disable_these_sites.includes(tab_match_domains[index][1]));
     }
     return disable;
@@ -504,6 +515,7 @@ export class bunch_of_tabs {
    * @returns A boolean[] array, the settings are either true or false.
    * */
   get_all_force_dark() {
+    let storage: LocalStorage = storage_of_id(this.my_id);
     let force: boolean[] = [];
     let main_switch = AppStorage.get('web_force_dark_mode') as boolean;
 
@@ -512,9 +524,9 @@ export class bunch_of_tabs {
       return all_false(this.Tabs.length) as boolean[];
     }
 
+    let exempt_sites = AppStorage.get('web_force_dark_mode_exemptions') as string[];
+    let tab_match_domains = storage.get('tab_match_domains') as string[];
     for (let index = 0; index < this.Tabs.length; index++) {
-      let exempt_sites = AppStorage.get('web_force_dark_mode_exemptions') as string[];
-      let tab_match_domains = AppStorage.get('tab_match_domains') as string[];
       force.push(!exempt_sites.includes(tab_match_domains[index][1]));
     }
     return force;
