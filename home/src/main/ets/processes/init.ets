@@ -17,7 +17,7 @@ import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
  *
  * Should be executed in HomeAbility.ets on each launch of entire app.
  */
-export async function meow_init(context: common.UIAbilityContext, storage: LocalStorage) {
+export async function meow_init_main(context: common.UIAbilityContext, storage: LocalStorage) {
   let t0 = Date.now();
   let t = 0;
 
@@ -48,7 +48,22 @@ export async function meow_init(context: common.UIAbilityContext, storage: Local
   console.log('[init] bunch_of_init! (' + t + ' ms)')
 
   t = Date.now() - t0;
-  console.log('[Meow][init] OK. (' + t + ' ms)');
+  console.log('[Meow][init] MAIN OK. (' + t + ' ms)');
+}
+
+/**
+ * Initializes things needed for an extra window.
+ *
+ * Should be executed in HomeAbility.ets on each launch of entire app.
+ */
+export function meow_init_sub(context: common.UIAbilityContext, storage: LocalStorage) {
+  let t0 = Date.now();
+  let t = 0;
+
+  tabs(t0, storage);
+
+  t = Date.now() - t0;
+  console.log('[Meow][init] SUB OK. (' + t + ' ms)');
 }
 
 // Files

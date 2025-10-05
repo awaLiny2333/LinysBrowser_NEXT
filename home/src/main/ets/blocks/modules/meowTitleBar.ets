@@ -14,7 +14,7 @@ import { bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import { allow_drop_types, drop_to_scratching_board } from '../../utils/drag_drop_tools';
-import { current_tabs_style_is_horizontal, storage_of_id } from '../../utils/ui_tools';
+import { current_tabs_style_is_horizontal, storage_of_id, window_id_of_windowClass } from '../../utils/ui_tools';
 import { search_engine } from '../../hosts/bunch_of_search_engines';
 import lazy { add_transparency } from '../../utils/color_tools';
 import lazy { copy } from '../../utils/clipboard_tools';
@@ -1064,8 +1064,9 @@ struct meowTitleBar {
     }
 
     window.getLastWindow(this.getUIContext().getHostContext()).then((w: window.Window) => {
+      let top_window_id = window_id_of_windowClass(w);
       // Only download if is top window.
-      if (w == (this.storage.get('window') as window.Window)) {
+      if (top_window_id == this.my_window_id) {
         // Show popup when gateway is set back to undefined.
         this.download_started_popup = true;
         setTimeout(() => {

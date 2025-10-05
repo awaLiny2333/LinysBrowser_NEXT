@@ -2,10 +2,10 @@ import { AbilityConstant, Configuration, UIAbility, Want, wantConstant } from '@
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
-import { meow_init } from '../processes/init';
+import { meow_init_main, meow_init_sub } from '../processes/init';
 import { meowPx2vp } from '../utils/environment_tools';
 import lazy { bunch_of_tabs } from '../hosts/bunch_of_tabs';
-import { storage_of_window } from '../utils/ui_tools';
+import { storage_of_window, window_id_at_index, window_index_of_windowStage } from '../utils/ui_tools';
 
 export default class HomeAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam) {
@@ -29,7 +29,7 @@ export default class HomeAbility extends UIAbility {
       }
     } else {
       // Normal wants
-      this.process_want(want);
+      this.process_want(want, 'onCreate');
     }
   }
 
@@ -42,7 +42,7 @@ export default class HomeAbility extends UIAbility {
     if (launchParam.launchReason === AbilityConstant.LaunchReason.CONTINUATION) {
       this.process_continue(want);
     } else {
-      this.process_want(want);
+      this.process_want(want, 'onNewWant');
     }
   }
 
@@ -97,13 +97,13 @@ export default class HomeAbility extends UIAbility {
     let windowClass = windowStage.getMainWindowSync(); // Get app main window
     let storage = new LocalStorage();
     let my_window_id = Date.now().toString();
-    storage.setOrCreate('windowStage', windowStage); // Save windowStage
-    storage.setOrCreate('window', windowClass); // Save windowClass
     storage.setOrCreate('my_window_id', my_window_id);
 
     // Init & Load window content
     if (is_new_launch) {
-      await meow_init(this.context, storage);
+      await meow_init_main(this.context, storage);
+    } else {
+      meow_init_sub(this.context, storage);
     }
     this.window_load_content(windowStage, windowClass, my_window_id, storage);
   }
@@ -125,16 +125,34 @@ export default class HomeAbility extends UIAbility {
       let windowClass = windowStage.getMainWindowSync(); // Get app main window
       let storage = new LocalStorage();
       let my_window_id = Date.now().toString();
-      storage.setOrCreate('windowStage', windowStage); // Save windowStage
-      storage.setOrCreate('window', windowClass); // Save windowClass
       storage.setOrCreate('my_window_id', my_window_id);
-      await meow_init(this.context, storage);
+      await meow_init_main(this.context, storage);
       this.window_load_content(windowStage, windowClass, my_window_id, storage);
     }
   }
 
   onConfigurationUpdate(newConfig: Configuration): void {
     AppStorage.setOrCreate('currentColorMode', newConfig.colorMode);
+  }
+
+  onWindowStageWillDestroy(windowStage: window.WindowStage) {
+    let window_index = window_index_of_windowStage(windowStage);
+    let window_id = window_id_at_index(window_index);
+    console.log(' \n[HomeAbility][onWindowStageWillDestroy] Will destroy window #' + window_index + ' (' + window_id + ')!\n ');
+
+    // Delete myself from the lists
+    let windowIds = AppStorage.get('windowIds') as string[];
+    windowIds.splice(window_index, 1);
+    let windowStages = AppStorage.get('windowStages') as window.WindowStage[];
+    windowStages.splice(window_index, 1);
+    let windowClasses = AppStorage.get('windows') as window.Window[];
+    windowClasses.splice(window_index, 1);
+    let windowStorages = AppStorage.get('windowStorages') as LocalStorage[];
+    windowStorages.splice(window_index, 1);
+    let all_bunch_of_tabs = AppStorage.get('all_bunch_of_tabs') as bunch_of_tabs[];
+    all_bunch_of_tabs.splice(window_index, 1);
+
+    hilog.info(0x0000, 'testTag', `onWindowStageWillDestroy`);
   }
 
   onWindowStageDestroy(): void {
@@ -160,8 +178,9 @@ export default class HomeAbility extends UIAbility {
    * Fills the want into AppStorage.
    * @param want the want
    * */
-  process_want(want: Want) {
-    AppStorage.setOrCreate('want_uri', '');
+  process_want(want: Want, source: string) {
+    console.log('[HomeAbility][process_want] Source: ' + source + '!');
+    AppStorage.setOrCreate('want_source', source);
     // want
     let want_uri = want.uri;
     let want_type = want.type;
@@ -203,6 +222,7 @@ export default class HomeAbility extends UIAbility {
 
       // refresh want_uri in the last place
       AppStorage.setOrCreate('want_uri', want_uri);
+      AppStorage.setOrCreate('want_timestamp', Date.now().toString());
     }
   }
 
@@ -238,6 +258,7 @@ export default class HomeAbility extends UIAbility {
       // IS THE FIRST WINDOW OF APP
       AppStorage.setOrCreate('windows', [windowClass]);
       AppStorage.setOrCreate('windowIds', []);
+      AppStorage.setOrCreate('windowStages', []);
       AppStorage.setOrCreate('windowStorages', []);
     } else {
       // one of the multi-windows
@@ -248,6 +269,8 @@ export default class HomeAbility extends UIAbility {
     // Parallel array of ids
     let windowIds = AppStorage.get('windowIds') as string[];
     windowIds.push(my_window_id);
+    let windowStages = AppStorage.get('windowStages') as window.WindowStage[];
+    windowStages.push(windowStage);
     let windowStorages = AppStorage.get('windowStorages') as LocalStorage[];
     windowStorages.push(storage);
 

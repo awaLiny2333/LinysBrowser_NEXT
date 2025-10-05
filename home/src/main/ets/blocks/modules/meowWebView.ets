@@ -1,7 +1,7 @@
 import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large } from '../../hosts/bunch_of_defaults';
 import { bunch_of_history, history_record } from '../../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
-import { arrayBuffer_2_pixelMap, sandbox_read_arrayBuffer, sandbox_save } from '../../utils/storage_tools';
+import { arrayBuffer_2_pixelMap, sandbox_read_arrayBuffer } from '../../utils/storage_tools';
 import { match_domain, url_meow_to_resource, url_resource_to_meow, viewable_domains } from '../../utils/url_tools';
 import { webview } from '@kit.ArkWeb';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
@@ -17,7 +17,7 @@ import woofPrompt from '../../dialogs/web/woofPrompt';
 import woofConfirm from '../../dialogs/web/woofConfirm';
 import woofAlert from '../../dialogs/web/woofAlert';
 import { window } from '@kit.ArkUI';
-import { storage_of_id } from '../../utils/ui_tools';
+import { storage_of_id, window_id_of_windowClass } from '../../utils/ui_tools';
 
 @Component
 struct meowWebView {
@@ -387,6 +387,9 @@ struct meowWebView {
                 }
               }
 
+              // Get and save web_state
+              this.bunch_of_tabs.save_web_state(Label.index_key);
+
               determine_extra_background(this.storage);
             })
             .onProgressChange((event) => {
@@ -426,18 +429,7 @@ struct meowWebView {
               }
 
               // Get and save web_state
-              try {
-                let web_state = this.bunch_of_tabs.Tabs[Label.index_key].controller.serializeWebState();
-                // Sync to bunch_of_tabs
-                this.bunch_of_tabs.Tabs[Label.index_key].web_state_array = web_state;
-                // save web state to sandbox storage
-                if (web_state && !this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation) {
-                  let identifier = "continue/continue_tabs_web_state_array_" + Label.index_key.toString();
-                  sandbox_save(identifier, web_state.buffer);
-                }
-              } catch (e) {
-                console.error('[meowWebView][onProgressChange] Get and save web_state error: ' + e);
-              }
+              this.bunch_of_tabs.save_web_state(Label.index_key);
             })
             .onFullScreenEnter((event) => {
               this.fullscreen_mode = true;
@@ -694,12 +686,11 @@ struct meowWebView {
     }
 
     window.getLastWindow(this.getUIContext().getHostContext()).then((w: window.Window) => {
+      let top_window_id = window_id_of_windowClass(w);
       // Only load want if is top window.
-      if (w == (this.storage.get('window') as window.Window)) {
-
+      if (top_window_id == this.my_window_id) {
         let file_name = this.uni_webDownloadItem_gateway!.getSuggestedFileName();
         let file_url = this.uni_webDownloadItem_gateway!.getUrl();
-
         // Call popup
         this.woofWantDownload_control = new CustomDialogController({
           builder: woofWantDownload({
@@ -712,6 +703,9 @@ struct meowWebView {
           cornerRadius: 26
         });
         this.woofWantDownload_control.open();
+        console.log('[Meow][meowWebView] on_download_request because I AM on top! (' + this.my_window_id + ')');
+      } else {
+        console.log('[Meow][meowWebView] Didn\'t on_download_request because I am not on top. (' + this.my_window_id + ')');
       }
     })
   }

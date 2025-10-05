@@ -12,14 +12,16 @@ import linysShowButton from '../../components/buttons/linysShowButton';
 import linysSymbol from '../../components/texts/linysSymbol';
 import { determine_extra_background, set_search_box_text, sync_tabs_list_info } from '../../processes/tabs_actions';
 import { window } from '@kit.ArkUI';
-import { storage_of_id } from '../../utils/ui_tools';
+import { storage_of_id, window_id_of_windowClass, window_index_of_id } from '../../utils/ui_tools';
 
 @Component
 struct meowTabsVertical {
   @LocalStorageLink('my_window_id') my_window_id: string = '';
   storage: LocalStorage = storage_of_id(this.my_window_id);
   // Want
-  @StorageLink('want_uri') @Watch('on_want') want_uri: string = 'want';
+  @StorageLink('want_timestamp') @Watch('on_want') want_timestamp: string = 'want';
+  @StorageLink('want_source') want_source: string = 'want';
+  @StorageLink('want_uri') want_uri: string = 'want';
   @StorageLink('want_action') want_action: string = '';
   @StorageLink('want_type') want_type: string = '';
   // Hosts and environments
@@ -86,7 +88,10 @@ struct meowTabsVertical {
     let continue_tabs_count = AppStorage.get('continue_tabs_count') as number;
 
     // Start Up: generate / recover tabs
-    if (this.start_up_option == "new tab") {
+    if (window_index_of_id(this.my_window_id) != 0) {
+      // Do nothing if is a new window to a running BrowserCat.
+
+    } else if (this.start_up_option == "new tab") {
       this.new_tab(this.new_tab_url, false, false);
       this.switch_tab(0, false, false);
 
@@ -132,8 +137,9 @@ struct meowTabsVertical {
 
     this.recover_tabs_finished = true;
 
-    // Want
-    check_want(this.want_uri, this.want_action, this.want_type, this.storage);
+    if (this.want_source == 'onCreate') {
+      check_want(this.want_uri, this.want_action, this.want_type, this.storage);
+    }
 
     t = Date.now() - t0;
     console.log('[Meow][init][meowTabsVertical] Tabs OK. (' + t + ' ms)');
@@ -386,6 +392,7 @@ struct meowTabsVertical {
       index += 1;
     }
     // re-save web states
+
     this.bunch_of_tabs.re_save_web_state(target);
 
     // Paralleow
@@ -569,10 +576,20 @@ struct meowTabsVertical {
    * Respond to wants
    * */
   on_want() {
+    if (this.want_source == 'onCreate') {
+      // A good BrowserCat never takes the wants needed by other new-born windows!
+      return;
+    }
+
     window.getLastWindow(this.getUIContext().getHostContext()).then((w: window.Window) => {
+      let top_window_id = window_id_of_windowClass(w);
       // Only load want if is top window.
-      if (w == (this.storage.get('window') as window.Window)) {
+      console.log('[meowTabsVertical] Top window: ' + top_window_id);
+      if (top_window_id == this.my_window_id) {
         check_want(this.want_uri, this.want_action, this.want_type, this.storage);
+        console.log('[Meow][meowTabsVertical] Processed want because I AM on top! (' + this.my_window_id + ')');
+      } else {
+        console.log('[Meow][meowTabsVertical] Didn\'t process want because I am not on top. (' + this.my_window_id + ')');
       }
     })
   }

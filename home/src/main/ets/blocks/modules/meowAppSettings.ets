@@ -9,7 +9,6 @@ import {
   url_default_blank
 } from '../../hosts/bunch_of_defaults';
 import { ItemRestriction, SegmentButton, SegmentButtonOptions, SegmentButtonTextItem } from '@ohos.arkui.advanced.SegmentButton';
-import { bunch_of_user_agents } from '../../hosts/bunch_of_user_agents';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { bunch_of_history } from '../../hosts/bunch_of_history';
 import {
@@ -49,6 +48,8 @@ import lazy woofRecentFaultLogs from '../../dialogs/contents/woofRecentFaultLogs
 import lazy woofUpdateHistory from '../../dialogs/contents/woofUpdateHistory';
 import lazy woofPromptOK from '../../dialogs/prompts/woofPromptOK';
 import lazy woofHistory from '../../dialogs/managers/woofHistory';
+import { new_window } from '../../processes/deveowlopers_options';
+import { common } from '@kit.AbilityKit';
 
 @Component
 struct meowAppSettings {
@@ -1099,6 +1100,14 @@ struct meowAppSettings {
                     is_description: true,
                     is_expanded: true
                   });
+
+                  linysCapsuleButtonWithText({
+                    desc_text: 'Open New Window',
+                    button_text: '  󰅑  ',
+                    onExecution: () => {
+                      new_window(this.getUIContext().getHostContext() as common.UIAbilityContext);
+                    }
+                  })
                 }
               }
             } // Update

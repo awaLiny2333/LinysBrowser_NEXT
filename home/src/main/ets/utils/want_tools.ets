@@ -1,6 +1,4 @@
 // Wants
-import { storage_of_id } from "./ui_tools";
-import { window } from "@kit.ArkUI";
 
 /**
  * Respond to want.
@@ -13,7 +11,7 @@ export function check_want(uri: string, action: string, type: string, storage: L
     console.log('[Meow][init] Didn\'t load want for an empty want.');
     return;
   }
-  console.log('[Meow][want] Load want with action: ' + action + ', type: ' + type);
+  console.log('[Meow][want] Load want with uri: ' + uri + 'action: ' + action + ', type: ' + type + ', storage id: ' + storage.get('my_window_id'));
 
   // Respond to want
   if (uri.substring(0, 7) == 'file://') {
@@ -40,9 +38,7 @@ function want_file(uri: string) {
 
 function want_web(action: string, uri: string, storage: LocalStorage) {
   if (action == "ohos.want.action.viewData") {
-    setTimeout(() => {
-      console.log('[Meow][want] Load want uri: ' + uri);
-      storage.set('universal_new_tab_gateway', uri);
-    }, 0)
+    console.log('[Meow][want] Load want uri: ' + uri);
+    storage.set('universal_new_tab_gateway', uri);
   }
 }

@@ -16,6 +16,8 @@ export function current_tabs_style_is_horizontal(storage: LocalStorage) {
   }
 }
 
+// Windows and their data
+
 /**
  * Gets the last LocalStorage.
  * @returns A LocalStorage.
@@ -31,6 +33,16 @@ export function last_storage() {
 export function window_index_of_windowClass(w: window.Window) {
   let windowClasses = AppStorage.get('windows') as window.Window[];
   let window_idx = windowClasses.indexOf(w);
+  return window_idx;
+}
+
+/**
+ * Infers the index of WindowStage.
+ * @param w The windowStages (window.WindowStage).
+ * */
+export function window_index_of_windowStage(w: window.WindowStage) {
+  let windowStages = AppStorage.get('windowStages') as window.WindowStage[];
+  let window_idx = windowStages.indexOf(w);
   return window_idx;
 }
 
@@ -73,6 +85,16 @@ export function storage_of_id(id: string) {
 export function window_id_of_windowClass(w: window.Window) {
   let windowIds = AppStorage.get('windowIds') as string[];
   let window_id = windowIds[window_index_of_windowClass(w)];
+  return window_id;
+}
+
+/**
+ * Infers the id of window.
+ * @param idx The window index (number).
+ * */
+export function window_id_at_index(idx: number) {
+  let windowIds = AppStorage.get('windowIds') as string[];
+  let window_id = windowIds[idx];
   return window_id;
 }
 

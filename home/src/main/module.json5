@@ -19,6 +19,7 @@
         "srcEntry": "./ets/homeability/HomeAbility.ets",
         "description": "$string:HomeAbility_desc",
         "icon": "$media:layered_image",
+        "launchType": "multiton",
         "label": "$string:HomeAbility_label",
         "startWindowIcon": "$media:startIcon",
         "startWindowBackground": "$color:start_window_background",

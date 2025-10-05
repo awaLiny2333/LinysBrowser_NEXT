@@ -91,7 +91,7 @@ export class bunch_of_tabs {
   my_id: string;
   // Statuses
   main_tab_idx: number = 0;
-  sub_tab_idx: number = 0;
+  sub_tab_idx: number = -1;
   current_accessForward: boolean = false;
   current_accessBackward: boolean = false;
   // Settings
@@ -562,6 +562,25 @@ export class bunch_of_tabs {
       if (web_state != null) {
         sandbox_save(identifier, web_state.buffer);
       }
+    }
+  }
+
+  /**
+   * Saves web state of a specific tab.
+   * @param index The index of tab.
+   * */
+  save_web_state(index: number) {
+    try {
+      let web_state = this.Tabs[index].controller.serializeWebState();
+      this.Tabs[index].web_state_array = web_state;
+
+      // Save to sandbox
+      if (web_state && !this.Tabs[index].restore_on_creation) {
+        let file_name = "continue/continue_tabs_web_state_array_" + index.toString();
+        sandbox_save(file_name, web_state.buffer);
+      }
+    } catch (e) {
+      console.error('[bunch_of_tabs][save_web_state] Error: ' + e);
     }
   }
 
