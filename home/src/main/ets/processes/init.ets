@@ -127,6 +127,10 @@ async function settings(t0: number) {
   AppStorage.setOrCreate('tabs_style_non_tablet_mode', bunch_of_settings.get('tabs_style_non_tablet_mode') as string);
   AppStorage.setOrCreate('showing_tabs', bunch_of_settings.get('status_tabs_open') as boolean);
 
+  // Continuation
+  AppStorage.setOrCreate('continuation_auto_exit', bunch_of_settings.get('continuation_auto_exit') as boolean);
+  AppStorage.setOrCreate('continuation_auto_close_tab', bunch_of_settings.get('continuation_auto_close_tab') as boolean);
+
   // Experience - Suggestions
   AppStorage.setOrCreate('max_bookmark_advice', bunch_of_settings.get('max_bookmark_suggest') as number);
   AppStorage.setOrCreate('max_history_advice', bunch_of_settings.get('max_history_suggest') as number);

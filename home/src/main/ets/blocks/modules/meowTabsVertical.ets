@@ -88,7 +88,7 @@ struct meowTabsVertical {
     let continue_tabs_count = AppStorage.get('continue_tabs_count') as number;
 
     // Start Up: generate / recover tabs
-    if (window_index_of_id(this.my_window_id) != 0) {
+    if (window_index_of_id(this.my_window_id) != 0 && this.want_uri) {
       // Do nothing if is a new window to a running BrowserCat.
 
     } else if (this.start_up_option == "new tab") {

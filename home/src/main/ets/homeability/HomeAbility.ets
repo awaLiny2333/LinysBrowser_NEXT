@@ -21,7 +21,7 @@ export default class HomeAbility extends UIAbility {
     let storage: LocalStorage = new LocalStorage();
 
     if (launchParam.launchReason === AbilityConstant.LaunchReason.CONTINUATION) {
-      this.process_continue(want);
+      this.process_continue(want, 'onCreate');
       try {
         this.context.restoreWindowStage(storage);
       } catch (e) {
@@ -33,18 +33,18 @@ export default class HomeAbility extends UIAbility {
     }
   }
 
-  /**
-   * Receives a want.
-   * @param want The want.
-   * @param launchParam The launchParam to determine if this is a continuation or something else.
-   * */
-  onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {
-    if (launchParam.launchReason === AbilityConstant.LaunchReason.CONTINUATION) {
-      this.process_continue(want);
-    } else {
-      this.process_want(want, 'onNewWant');
-    }
-  }
+  // /**
+  //  * Receives a want.
+  //  * @param want The want.
+  //  * @param launchParam The launchParam to determine if this is a continuation or something else.
+  //  * */
+  // onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+  //   if (launchParam.launchReason === AbilityConstant.LaunchReason.CONTINUATION) {
+  //     this.process_continue(want, 'onNewWant');
+  //   } else {
+  //     this.process_want(want, 'onNewWant');
+  //   }
+  // }
 
   /**
    * Sends a page to another device.
@@ -58,28 +58,36 @@ export default class HomeAbility extends UIAbility {
     let auto_exit = AppStorage.get('continuation_auto_exit') as boolean;
     let close_tab = AppStorage.get('continuation_auto_close_tab') as boolean;
 
-    try {
-      let storage = storage_of_window(await window.getLastWindow(this.context));
-      let tabs = storage.get('bunch_of_tabs') as bunch_of_tabs;
-      let url_to_be_sent = tabs.get_current_main_url();
+    // try {
+    let storage = storage_of_window(await window.getLastWindow(this.context));
+    let tabs = storage.get('bunch_of_tabs') as bunch_of_tabs;
+    let url_to_be_sent = tabs.get_current_main_url();
+    console.log('[onContinue] url_to_be_sent: ' + url_to_be_sent);
 
-      // Pack continue data
-      wantParam['data'] = url_to_be_sent;
-      if (!auto_exit) {
-        wantParam[wantConstant.Params.SUPPORT_CONTINUE_SOURCE_EXIT_KEY] = false;
+    // Pack continue data
+    // wantParam['data'] = 'baidu.com';
+    wantParam['data'] = url_to_be_sent;
+    if (auto_exit) {
+      // Close app
+      wantParam[wantConstant.Params.SUPPORT_CONTINUE_SOURCE_EXIT_KEY] = true;
+      console.log('[onContinue] CLOSE APP');
+    } else {
+      // Doesn't close app
+      wantParam[wantConstant.Params.SUPPORT_CONTINUE_SOURCE_EXIT_KEY] = false;
+      console.log('[onContinue] WON\'T CLOSE APP');
+      if (close_tab) {
         // Close tab
-        if (close_tab) {
-          storage.set('universal_close_tab_gateway', tabs.main_tab_idx);
-        }
+        storage.set('universal_close_tab_gateway', tabs.main_tab_idx);
       }
-
-      // No auto recovery
-      wantParam[wantConstant.Params.SUPPORT_CONTINUE_PAGE_STACK_KEY] = false;
-      return AbilityConstant.OnContinueResult.AGREE;
-    } catch (e) {
-      console.error('[onContinue] Failure: ' + e);
-      return AbilityConstant.OnContinueResult.REJECT;
     }
+
+    // No auto recovery
+    wantParam[wantConstant.Params.SUPPORT_CONTINUE_PAGE_STACK_KEY] = false;
+    return AbilityConstant.OnContinueResult.AGREE;
+    // } catch (e) {
+    //   console.error('[onContinue] Failure: ' + e);
+    //   return AbilityConstant.OnContinueResult.REJECT;
+    // }
   }
 
   async onWindowStageCreate(windowStage: window.WindowStage) {
@@ -119,16 +127,18 @@ export default class HomeAbility extends UIAbility {
       console.error(`[HomeAbility] Failed to set window rect auto-save. Cause code: ${err.code}, message: ${err.message}`);
     });
 
-    // Only loads if is new launch
+    let windowClass = windowStage.getMainWindowSync(); // Get app main window
+    let storage = new LocalStorage();
+    let my_window_id = Date.now().toString();
+    storage.setOrCreate('my_window_id', my_window_id);
+
     // Init & Load window content
     if (is_new_launch) {
-      let windowClass = windowStage.getMainWindowSync(); // Get app main window
-      let storage = new LocalStorage();
-      let my_window_id = Date.now().toString();
-      storage.setOrCreate('my_window_id', my_window_id);
       await meow_init_main(this.context, storage);
-      this.window_load_content(windowStage, windowClass, my_window_id, storage);
+    } else {
+      meow_init_sub(this.context, storage);
     }
+    this.window_load_content(windowStage, windowClass, my_window_id, storage);
   }
 
   onConfigurationUpdate(newConfig: Configuration): void {
@@ -231,16 +241,20 @@ export default class HomeAbility extends UIAbility {
    * Fills the want into AppStorage.
    * @param want the want
    * */
-  process_continue(want: Want) {
-    AppStorage.setOrCreate('want_uri', '');
-    if (want.parameters !== undefined) {
+  process_continue(want: Want, source: string) {
+    AppStorage.setOrCreate('want_source', source);
+    AppStorage.setOrCreate('want_action', 'ohos.want.action.viewData');
+    AppStorage.setOrCreate('want_type', want.type);
+    AppStorage.setOrCreate('want_flags', want.flags);
+    if (want.parameters && want.parameters.data) {
       // Get the data
       let continue_params_data = want.parameters.data.toString();
-      console.info('[Meow][HomeAbility][onNewWant] continue input: ' + continue_params_data);
-      AppStorage.setOrCreate('want_action', 'ohos.want.action.viewData');
-      AppStorage.setOrCreate('want_type', want.type);
-      AppStorage.setOrCreate('want_flags', want.flags);
+      console.info('[Meow][HomeAbility] process_continue url: ' + continue_params_data);
       AppStorage.setOrCreate('want_uri', continue_params_data);
+    } else {
+      // Get failed?
+      console.error('[Meow][HomeAbility] process_continue url get failed? IDK why but I\'ll show you a blank page');
+      AppStorage.setOrCreate('want_uri', '');
     }
   }
 
