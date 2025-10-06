@@ -11,8 +11,7 @@ import linysText from '../../components/texts/linysText';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysSymbol from '../../components/texts/linysSymbol';
 import { determine_extra_background, set_search_box_text, sync_tabs_list_info } from '../../processes/tabs_actions';
-import { window } from '@kit.ArkUI';
-import { storage_of_id, window_id_of_windowClass, window_index_of_id } from '../../utils/ui_tools';
+import { storage_of_id, window_index_of_id } from '../../utils/ui_tools';
 
 @Component
 struct meowTabsVertical {
@@ -20,11 +19,11 @@ struct meowTabsVertical {
   @LocalStorageLink('my_window_id') my_window_id: string = '';
   storage: LocalStorage = storage_of_id(this.my_window_id);
   // Want
-  @StorageLink('want_timestamp') @Watch('on_want') want_timestamp: string = '0';
-  @StorageLink('want_source') want_source: string = 'want';
-  @StorageLink('want_uri') want_uri: string = 'want';
-  @StorageLink('want_action') want_action: string = '';
-  @StorageLink('want_type') want_type: string = '';
+  @LocalStorageLink('want_timestamp') @Watch('on_want') want_timestamp: string = '0';
+  @LocalStorageLink('want_source') want_source: string = 'want';
+  @LocalStorageLink('want_uri') want_uri: string = 'want';
+  @LocalStorageLink('want_action') want_action: string = '';
+  @LocalStorageLink('want_type') want_type: string = '';
   // Hosts and environments
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
@@ -597,20 +596,11 @@ struct meowTabsVertical {
   on_want() {
     if (this.want_source == 'onCreate') {
       // A good BrowserCat never takes the wants needed by other new-born windows!
+      console.log('[Meow][meowTabsVertical] Ignored onCreate want!');
       return;
     }
 
-    window.getLastWindow(this.getUIContext().getHostContext()).then((w: window.Window) => {
-      let top_window_id = window_id_of_windowClass(w);
-      // Only load want if is top window.
-      console.log('[meowTabsVertical] Top window: ' + top_window_id);
-      if (top_window_id == this.my_window_id) {
-        check_want(this.want_uri, this.want_action, this.want_type, this.storage);
-        console.log('[Meow][meowTabsVertical] Processed want because I AM on top! (' + this.my_window_id + ')');
-      } else {
-        console.log('[Meow][meowTabsVertical] Didn\'t process want because I am not on top. (' + this.my_window_id + ')');
-      }
-    })
+    check_want(this.want_uri, this.want_action, this.want_type, this.storage);
   }
 
   /**

@@ -50,10 +50,12 @@ import lazy woofPromptOK from '../../dialogs/prompts/woofPromptOK';
 import lazy woofHistory from '../../dialogs/managers/woofHistory';
 import { new_window } from '../../processes/deveowlopers_options';
 import { common } from '@kit.AbilityKit';
+import { storage_of_id } from '../../utils/ui_tools';
 
 @Component
 struct meowAppSettings {
   @LocalStorageLink('my_window_id') my_window_id: string = '';
+  storage: LocalStorage = storage_of_id(this.my_window_id);
   @StorageLink('windowIds') windowIds: string[] = [];
   @Link @Watch('on_open_or_close_panel') showing_app_settings: boolean;
   // Hosts and environment
@@ -320,6 +322,27 @@ struct meowAppSettings {
   @StorageLink('reindexing_history') reindexing_history: boolean | undefined = undefined;
   @StorageLink('reindexing_history_progress') reindexing_history_progress: number = 100;
   @StorageLink('compressing_output_profile') compressing_output_profile: boolean = false;
+
+  async on_appear() {
+    // Get app version info
+    bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION).then((bundleInfo) => {
+      this.versionName = bundleInfo.versionName;
+      this.versionNo = bundleInfo.versionCode;
+    })
+
+    // Get settings of shortcuts on left or right
+    this.left_or_right_selected = (this.preferred_hand_left_or_right == 'left') ? [0] : [1];
+
+    // Read webview cache size
+    this.web_cache_size = bunch_of_settings.get('webview_cache_size') as number;
+
+    // Read history indexer size
+    this.history_index_size = bunch_of_settings.get('history_index_size') as number;
+
+    // Tag status
+    AppStorage.setOrCreate('settings_init_retrieved', true);
+    this.storage.setOrCreate('settings_init_retrieved', true);
+  }
 
   build() {
     Row() {
@@ -1109,10 +1132,10 @@ struct meowAppSettings {
                     desc_text: 'Open New Window',
                     button_text: '  󰅑  ',
                     onExecution: () => {
-                      new_window(this.getUIContext().getHostContext() as common.UIAbilityContext);
+                      new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString());
                     }
                   });
-                  linysTextTitle({ text: 'W ID: ' + this.my_window_id });
+                  linysTextTitle({ text: this.my_window_id });
                   linysTextTitle({ text: 'Index #' + this.windowIds.indexOf(this.my_window_id) });
                 }
               }
@@ -1168,26 +1191,6 @@ struct meowAppSettings {
   }
 
   // Events
-
-  async on_appear() {
-    // Get app version info
-    bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION).then((bundleInfo) => {
-      this.versionName = bundleInfo.versionName;
-      this.versionNo = bundleInfo.versionCode;
-    })
-
-    // Get settings of shortcuts on left or right
-    this.left_or_right_selected = (this.preferred_hand_left_or_right == 'left') ? [0] : [1];
-
-    // Read webview cache size
-    this.web_cache_size = bunch_of_settings.get('webview_cache_size') as number;
-
-    // Read history indexer size
-    this.history_index_size = bunch_of_settings.get('history_index_size') as number;
-
-    // Tag status
-    AppStorage.setOrCreate('settings_init_retrieved', true);
-  }
 
   on_open_or_close_panel() {
     if (this.showing_app_settings) {

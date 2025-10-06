@@ -16,8 +16,7 @@ import { determine_extra_background, sync_tabs_list_info } from '../../processes
 import woofPrompt from '../../dialogs/web/woofPrompt';
 import woofConfirm from '../../dialogs/web/woofConfirm';
 import woofAlert from '../../dialogs/web/woofAlert';
-import { window } from '@kit.ArkUI';
-import { storage_of_id, window_id_of_windowClass, window_index_of_id } from '../../utils/ui_tools';
+import { storage_of_id, window_index_of_id } from '../../utils/ui_tools';
 
 @Component
 struct meowWebView {
@@ -693,29 +692,21 @@ struct meowWebView {
       return;
     }
 
-    window.getLastWindow(this.getUIContext().getHostContext()).then((w: window.Window) => {
-      let top_window_id = window_id_of_windowClass(w);
-      // Only load want if is top window.
-      if (top_window_id == this.my_window_id) {
-        let file_name = this.uni_webDownloadItem_gateway!.getSuggestedFileName();
-        let file_url = this.uni_webDownloadItem_gateway!.getUrl();
-        // Call popup
-        this.woofWantDownload_control = new CustomDialogController({
-          builder: woofWantDownload({
-            from: this.current_url,
-            file_name: file_name,
-            url: file_url,
-            item: this.uni_webDownloadItem_gateway,
-          }),
-          alignment: DialogAlignment.Center,
-          cornerRadius: 26
-        });
-        this.woofWantDownload_control.open();
-        console.log('[Meow][meowWebView] on_download_request because I AM on top! (' + this.my_window_id + ')');
-      } else {
-        console.log('[Meow][meowWebView] Didn\'t on_download_request because I am not on top. (' + this.my_window_id + ')');
-      }
-    })
+    let file_name = this.uni_webDownloadItem_gateway!.getSuggestedFileName();
+    let file_url = this.uni_webDownloadItem_gateway!.getUrl();
+    // Call popup
+    this.woofWantDownload_control = new CustomDialogController({
+      builder: woofWantDownload({
+        from: this.current_url,
+        file_name: file_name,
+        url: file_url,
+        item: this.uni_webDownloadItem_gateway,
+      }),
+      alignment: DialogAlignment.Center,
+      cornerRadius: 26
+    });
+    this.woofWantDownload_control.open();
+    console.log('[Meow][meowWebView] on_download_request because I AM on top! (' + this.my_window_id + ')');
   }
 
   // Kind of constants

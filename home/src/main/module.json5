@@ -2,6 +2,7 @@
   "module": {
     "name": "home",
     "type": "entry",
+    "srcEntry": "./ets/homeabilitystage/HomeAbilityStage.ets",
     "description": "$string:module_desc",
     "mainElement": "HomeAbility",
     "deviceTypes": [
@@ -19,7 +20,7 @@
         "srcEntry": "./ets/homeability/HomeAbility.ets",
         "description": "$string:HomeAbility_desc",
         "icon": "$media:layered_image",
-        "launchType": "multiton",
+        "launchType": "specified",
         "label": "$string:HomeAbility_label",
         "startWindowIcon": "$media:startIcon",
         "startWindowBackground": "$color:start_window_background",
