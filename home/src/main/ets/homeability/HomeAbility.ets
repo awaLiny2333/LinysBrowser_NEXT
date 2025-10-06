@@ -33,18 +33,18 @@ export default class HomeAbility extends UIAbility {
     }
   }
 
-  // /**
-  //  * Receives a want.
-  //  * @param want The want.
-  //  * @param launchParam The launchParam to determine if this is a continuation or something else.
-  //  * */
-  // onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {
-  //   if (launchParam.launchReason === AbilityConstant.LaunchReason.CONTINUATION) {
-  //     this.process_continue(want, 'onNewWant');
-  //   } else {
-  //     this.process_want(want, 'onNewWant');
-  //   }
-  // }
+  /**
+   * Receives a want.
+   * @param want The want.
+   * @param launchParam The launchParam to determine if this is a continuation or something else.
+   * */
+  onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    if (launchParam.launchReason === AbilityConstant.LaunchReason.CONTINUATION) {
+      this.process_continue(want, 'onNewWant');
+    } else {
+      this.process_want(want, 'onNewWant');
+    }
+  }
 
   /**
    * Sends a page to another device.
@@ -193,7 +193,7 @@ export default class HomeAbility extends UIAbility {
    * @param want the want
    * */
   process_want(want: Want, source: string) {
-    console.log('[HomeAbility][process_want] Source: ' + source + '!');
+    console.log('[Meow][HomeAbility][process_want] Source: ' + source + '!');
     AppStorage.setOrCreate('want_source', source);
     // want
     let want_uri = want.uri;
@@ -253,11 +253,11 @@ export default class HomeAbility extends UIAbility {
     if (want.parameters && want.parameters.data) {
       // Get the data
       let continue_params_data = want.parameters.data.toString();
-      console.info('[Meow][HomeAbility] process_continue url: ' + continue_params_data);
+      console.info('[Meow][HomeAbility][process_continue] url: ' + continue_params_data);
       AppStorage.setOrCreate('want_uri', continue_params_data);
     } else {
       // Get failed?
-      console.error('[Meow][HomeAbility] process_continue url get failed? IDK why but I\'ll show you a blank page');
+      console.error('[Meow][HomeAbility][process_continue] url get failed? IDK why but I\'ll show you a blank page');
       AppStorage.setOrCreate('want_uri', '');
     }
   }

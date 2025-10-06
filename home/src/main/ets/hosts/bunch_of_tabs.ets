@@ -85,6 +85,10 @@ export class tab_info_packed {
 }
 
 export class bunch_of_tabs {
+  // Settings
+  static new_tab_url: string | undefined = undefined;
+  static home_url: string | undefined = undefined;
+  static start_up: string | undefined = undefined;
   // Major Data
   Tabs: Array<tab_info_packed> = [];
   Labels: Array<tab_label> = [];
@@ -94,10 +98,7 @@ export class bunch_of_tabs {
   sub_tab_idx: number = -1;
   current_accessForward: boolean = false;
   current_accessBackward: boolean = false;
-  // Settings
-  new_tab_url: string | undefined = undefined;
-  home_url: string | undefined = undefined;
-  start_up: string | undefined = undefined;
+  status_update_timestamp: number = 0;
   // Private or Temp
   private used_date_ids: number[] = [];
 
@@ -133,10 +134,10 @@ export class bunch_of_tabs {
    * */
   go_home_onWorkingTab() {
     let going_home_url = "";
-    if (this.home_url == undefined || this.home_url == "") {
+    if (bunch_of_tabs.home_url == undefined || bunch_of_tabs.home_url == "") {
       going_home_url = url_default_blank();
     } else {
-      going_home_url = this.home_url;
+      going_home_url = bunch_of_tabs.home_url;
     }
     this.loadUrl_onWorkingTab(going_home_url);
   }
@@ -258,6 +259,14 @@ export class bunch_of_tabs {
     return this.Tabs[this.sub_tab_idx].url;
   }
 
+  get_new_tab_url() {
+    return bunch_of_tabs.new_tab_url;
+  }
+
+  get_home_url() {
+    return bunch_of_tabs.home_url;
+  }
+
   // General Tab Controls
 
   /**
@@ -286,12 +295,12 @@ export class bunch_of_tabs {
     // console.log('[bunch_of_tabs] newTab: [' + target_url + '].');
     if (target_url == "") {
       // If newing an empty tab
-      if (this.new_tab_url == "" || this.new_tab_url == undefined) {
+      if (bunch_of_tabs.new_tab_url == "" || bunch_of_tabs.new_tab_url == undefined) {
         // If new tab not specified
         target_url = url_default_blank();
       } else {
         // If new tab is specified
-        target_url = this.new_tab_url;
+        target_url = bunch_of_tabs.new_tab_url;
       }
     }
 
@@ -606,5 +615,10 @@ export class bunch_of_tabs {
     bunch_of_settings.set("continue_tabs_main_on", this.main_tab_idx);
     bunch_of_settings.set("continue_tabs_sub_on", this.sub_tab_idx);
     console.log('[Meow]' + identifier + "[bunch_of_tabs] Stored index stats. Main: " + this.main_tab_idx + ' Sub: ' + this.sub_tab_idx);
+  }
+
+  // Update
+  update_my_timestamp() {
+    this.status_update_timestamp = Date.now();
   }
 }

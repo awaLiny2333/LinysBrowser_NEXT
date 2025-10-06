@@ -20,7 +20,7 @@ struct meowTabsVertical {
   @LocalStorageLink('my_window_id') my_window_id: string = '';
   storage: LocalStorage = storage_of_id(this.my_window_id);
   // Want
-  @StorageLink('want_timestamp') @Watch('on_want') want_timestamp: string = 'want';
+  @StorageLink('want_timestamp') @Watch('on_want') want_timestamp: string = '0';
   @StorageLink('want_source') want_source: string = 'want';
   @StorageLink('want_uri') want_uri: string = 'want';
   @StorageLink('want_action') want_action: string = '';
@@ -89,13 +89,19 @@ struct meowTabsVertical {
     let continue_tabs_count = AppStorage.get('continue_tabs_count') as number;
 
     if (window_index_of_id(this.my_window_id) != 0) {
-      // Wub windows
-      if (window_index_of_id(this.my_window_id) != 0 && this.want_uri != '') {
-        // Do nothing if is a wanted new window to a running BrowserCat.
-      } else {
+      // Sub windows
+      if (this.want_uri == '') {
         // New window without a want
-        this.new_tab(this.new_tab_url, false, false);
+        let start_tab_url = '';
+        if (this.start_up_option == "new tab") {
+          start_tab_url = this.new_tab_url;
+        } else {
+          start_tab_url = (this.home_url == "") ? url_default_blank() : this.home_url;
+        }
+        this.new_tab(start_tab_url, false, false);
         this.switch_tab(0, false, false);
+      } else {
+        // Do nothing if is a wanted new window to a running BrowserCat.
       }
     } else {
       // Main window
@@ -144,13 +150,13 @@ struct meowTabsVertical {
           this.bunch_of_tabs.sub_tab_idx = continue_tabs_sub_on;
         }
       }
-
-      this.recover_tabs_finished = true;
-
-      if (this.want_source == 'onCreate') {
-        check_want(this.want_uri, this.want_action, this.want_type, this.storage);
-      }
     }
+
+    if (this.want_source == 'onCreate') {
+      check_want(this.want_uri, this.want_action, this.want_type, this.storage);
+    }
+
+    this.recover_tabs_finished = true;
 
     t = Date.now() - t0;
     console.log('[Meow][init][meowTabsVertical] Tabs OK. (' + t + ' ms)');
@@ -381,7 +387,7 @@ struct meowTabsVertical {
     }
 
     // Close
-    this.bunch_of_tabs.closeTab(target, this.bunch_of_tabs.new_tab_url || url_default_blank());
+    this.bunch_of_tabs.closeTab(target, bunch_of_tabs.new_tab_url || url_default_blank());
     // Update history
     this.bunch_of_tabs.update_backward_forward_access();
     // Get synced lists

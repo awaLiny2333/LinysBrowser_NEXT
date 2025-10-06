@@ -106,7 +106,7 @@ struct meowAppSettings {
   @State @Watch('on_title_bar_position_changed') title_bar_position_selected: number[] = [0];
   @State @Watch('on_tabs_style_changed') tabs_style_selected: number[] = [0];
   @State @Watch('on_tabs_style_non_tablet_mode_changed') tabs_style_selected_non_tablet_mode: number[] = [0];
-  @State @Watch('on_start_up_page_changed') start_up_page_selected: number[] = [0];
+  @State @Watch('on_start_up_option_changed') start_up_page_selected: number[] = [0];
   @State @Watch('on_prefer_hand_left_or_right_changed') left_or_right_selected: number[] = [0];
   @StorageLink('max_bookmark_advice') max_bookmark_advice: number = 5;
   @StorageLink('max_history_advice') max_history_advice: number = 5;
@@ -399,7 +399,8 @@ struct meowAppSettings {
                   .height(capsule_bar_height())
 
                 linysCapsuleButton({ text: "  󰀻  " })
-                  .visibility(this.new_tab_url_edit != this.bunch_of_tabs.new_tab_url ? Visibility.Visible : Visibility.None)
+                // (this.new_tab_url_edit != bunch_of_tabs.new_tab_url) doesn't change the UI when bunch_of_tabs.new_tab_url is updated.
+                  .visibility(this.new_tab_url_edit != this.bunch_of_tabs.get_new_tab_url() ? Visibility.Visible : Visibility.None)
                   .onClick(() => {
                     this.set_save_new_tab_url();
                   })
@@ -425,7 +426,8 @@ struct meowAppSettings {
                   .height(capsule_bar_height())
 
                 linysCapsuleButton({ text: "  󰀻  " })
-                  .visibility(this.home_url_edit != this.bunch_of_tabs.home_url ? Visibility.Visible : Visibility.None)
+                // (this.home_url_edit != bunch_of_tabs.home_url) doesn't change the UI when bunch_of_tabs.home_url is updated.
+                  .visibility(this.home_url_edit != this.bunch_of_tabs.get_home_url() ? Visibility.Visible : Visibility.None)
                   .onClick(() => {
                     this.set_save_home_url();
                   })
@@ -1216,14 +1218,14 @@ struct meowAppSettings {
     } else {
       this.tabs_style_selected_non_tablet_mode = [1];
     }
-    if (this.bunch_of_tabs.new_tab_url !== undefined) {
-      this.new_tab_url_edit = this.bunch_of_tabs.new_tab_url;
+    if (bunch_of_tabs.new_tab_url !== undefined) {
+      this.new_tab_url_edit = bunch_of_tabs.new_tab_url;
     }
-    if (this.bunch_of_tabs.home_url !== undefined) {
-      this.home_url_edit = this.bunch_of_tabs.home_url;
+    if (bunch_of_tabs.home_url !== undefined) {
+      this.home_url_edit = bunch_of_tabs.home_url;
     }
-    if (this.bunch_of_tabs.start_up !== undefined) {
-      let start_up = this.bunch_of_tabs.start_up;
+    if (bunch_of_tabs.start_up !== undefined) {
+      let start_up = bunch_of_tabs.start_up;
       if (start_up == "new tab") {
         this.start_up_page_selected = [0];
       }
@@ -1255,7 +1257,17 @@ struct meowAppSettings {
     bunch_of_settings.set('title_bar_position', result);
   }
 
-  on_start_up_page_changed() {
+  on_prefer_hand_left_or_right_changed() {
+    if (this.left_or_right_selected[0] == 0) {
+      bunch_of_settings.set('preferred_hand_left_or_right', 'left');
+      this.preferred_hand_left_or_right = 'left';
+    } else {
+      bunch_of_settings.set('preferred_hand_left_or_right', 'right');
+      this.preferred_hand_left_or_right = 'right';
+    }
+  }
+
+  on_start_up_option_changed() {
     let result: string = "";
     if (this.start_up_page_selected[0] == 0) {
       result = "new tab";
@@ -1265,7 +1277,7 @@ struct meowAppSettings {
       result = "continue";
       // Need modify after update
     }
-    this.bunch_of_tabs.start_up = result;
+    bunch_of_tabs.start_up = result;
     // kv_store_put("start_up_option", result);
     bunch_of_settings.set('start_up_option', result);
   }
@@ -1315,27 +1327,17 @@ struct meowAppSettings {
     })
   }
 
-  // Events
-
-  on_prefer_hand_left_or_right_changed() {
-    if (this.left_or_right_selected[0] == 0) {
-      bunch_of_settings.set('preferred_hand_left_or_right', 'left');
-      this.preferred_hand_left_or_right = 'left';
-    } else {
-      bunch_of_settings.set('preferred_hand_left_or_right', 'right');
-      this.preferred_hand_left_or_right = 'right';
-    }
-  }
-
   // Operations
 
   set_save_new_tab_url() {
-    this.bunch_of_tabs.new_tab_url = this.new_tab_url_edit;
+    bunch_of_tabs.new_tab_url = this.new_tab_url_edit;
+    this.bunch_of_tabs.update_my_timestamp();
     bunch_of_settings.set('new_tab_url', this.new_tab_url_edit);
   }
 
   set_save_home_url() {
-    this.bunch_of_tabs.home_url = this.home_url_edit;
+    bunch_of_tabs.home_url = this.home_url_edit;
+    this.bunch_of_tabs.update_my_timestamp();
     bunch_of_settings.set('home_url', this.home_url_edit);
   }
 

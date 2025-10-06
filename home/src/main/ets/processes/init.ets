@@ -315,9 +315,9 @@ function tabs(t0: number, storage: LocalStorage) {
   let home_url: string = bunch_of_settings.get('home_url') as string
   let new_tab_url: string = bunch_of_settings.get('new_tab_url') as string
   let start_up_option: string = bunch_of_settings.get('start_up_option') as string
-  tabs.start_up = start_up_option;
-  tabs.new_tab_url = new_tab_url;
-  tabs.home_url = home_url;
+  bunch_of_tabs.start_up = start_up_option;
+  bunch_of_tabs.new_tab_url = new_tab_url;
+  bunch_of_tabs.home_url = home_url;
 
   // Timer
   let t = Date.now() - t0;
