@@ -25,10 +25,10 @@ struct Index {
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   /**
    * UI Environment */
-  @StorageLink('bottomAvoidHeight') bottomAvoidHeight: number = 1;
-  @StorageLink('topAvoidHeight') topAvoidHeight: number = 1;
-  @StorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
-  @StorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
+  @LocalStorageLink('bottomAvoidHeight') bottomAvoidHeight: number = 1;
+  @LocalStorageLink('topAvoidHeight') topAvoidHeight: number = 1;
+  @LocalStorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
+  @LocalStorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @LocalStorageLink('compact_mode') compact_mode: boolean = false; // Like PuraX
   @LocalStorageLink('screen_width') screen_width: number = 0;

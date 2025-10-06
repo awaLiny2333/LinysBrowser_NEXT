@@ -214,11 +214,11 @@ export default class HomeAbility extends UIAbility {
         let windowDecorHeight = windowClass.getWindowDecorHeight();
 
         windowClass.on('windowTitleButtonRectChange', (titleButtonRect) => {
-          AppStorage.setOrCreate('windowDecorHeight', titleButtonRect.height);
-          AppStorage.setOrCreate('windowDecorWidth', titleButtonRect.width);
+          storage.setOrCreate('windowDecorHeight', titleButtonRect.height);
+          storage.setOrCreate('windowDecorWidth', titleButtonRect.width);
         })
 
-        AppStorage.setOrCreate('topAvoidHeight', windowDecorHeight);
+        storage.setOrCreate('topAvoidHeight', windowDecorHeight);
         console.log('[HomeAbility] topAvoidHeight: ' + windowDecorHeight);
 
       } else {
@@ -230,25 +230,25 @@ export default class HomeAbility extends UIAbility {
         let type = window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR; // 以导航条避让为例
         let avoidArea = windowClass.getWindowAvoidArea(type);
         let avoidBottom = meowPx2vp(avoidArea.bottomRect.height); // 获取到导航条区域的高度
-        AppStorage.setOrCreate('bottomAvoidHeight', avoidBottom);
+        storage.setOrCreate('bottomAvoidHeight', avoidBottom);
         console.log('\tNew avoidBottomHeight: ' + avoidBottom);
 
         type = window.AvoidAreaType.TYPE_SYSTEM;
         avoidArea = windowClass.getWindowAvoidArea(type);
         let avoidTop = meowPx2vp(avoidArea.topRect.height);
-        AppStorage.setOrCreate('topAvoidHeight', avoidTop + (avoidTop == 0 ? 0 : 2));
+        storage.setOrCreate('topAvoidHeight', avoidTop + (avoidTop == 0 ? 0 : 2));
         console.log('\ttopAvoidHeight: ' + avoidTop + (avoidTop == 0 ? 0 : 2));
 
         type = window.AvoidAreaType.TYPE_CUTOUT;
         avoidArea = windowClass.getWindowAvoidArea(type);
         let avoidLeft = meowPx2vp(avoidArea.leftRect.width);
-        AppStorage.setOrCreate('leftAvoidWidth', avoidLeft + (avoidLeft == 0 ? 0 : 2));
+        storage.setOrCreate('leftAvoidWidth', avoidLeft + (avoidLeft == 0 ? 0 : 2));
         console.log('\tNew leftAvoidWidth: ' + avoidLeft + (avoidLeft == 0 ? 0 : 2));
 
         type = window.AvoidAreaType.TYPE_CUTOUT;
         avoidArea = windowClass.getWindowAvoidArea(type);
         let avoidRight = meowPx2vp(avoidArea.rightRect.width);
-        AppStorage.setOrCreate('rightAvoidWidth', avoidRight + (avoidRight == 0 ? 0 : 2));
+        storage.setOrCreate('rightAvoidWidth', avoidRight + (avoidRight == 0 ? 0 : 2));
         console.log('\tNew avoidRightWidth: ' + avoidRight + (avoidRight == 0 ? 0 : 2));
 
         // Avoid change listener
@@ -257,22 +257,22 @@ export default class HomeAbility extends UIAbility {
 
           if (data.type == window.AvoidAreaType.TYPE_SYSTEM) {
             avoidTop = meowPx2vp(data.area.topRect.height);
-            AppStorage.setOrCreate('topAvoidHeight', avoidTop + (avoidTop == 0 ? 0 : 2));
+            storage.setOrCreate('topAvoidHeight', avoidTop + (avoidTop == 0 ? 0 : 2));
             console.log('\tNew topAvoidHeight: ' + avoidTop + (avoidTop == 0 ? 0 : 2));
           }
           if (data.type == window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
             avoidBottom = meowPx2vp(data.area.bottomRect.height);
-            AppStorage.setOrCreate('bottomAvoidHeight', avoidBottom);
+            storage.setOrCreate('bottomAvoidHeight', avoidBottom);
             console.log('\tNew avoidBottomHeight: ' + avoidBottom);
           }
           if (data.type == window.AvoidAreaType.TYPE_CUTOUT) {
             avoidLeft = meowPx2vp(data.area.leftRect.width);
-            AppStorage.setOrCreate('leftAvoidWidth', avoidLeft + (avoidLeft == 0 ? 0 : 2));
+            storage.setOrCreate('leftAvoidWidth', avoidLeft + (avoidLeft == 0 ? 0 : 2));
             console.log('\tNew leftAvoidWidth: ' + avoidLeft + (avoidLeft == 0 ? 0 : 2));
           }
           if (data.type == window.AvoidAreaType.TYPE_CUTOUT) {
             avoidRight = meowPx2vp(data.area.rightRect.width);
-            AppStorage.setOrCreate('rightAvoidWidth', avoidRight + (avoidRight == 0 ? 0 : 2));
+            storage.setOrCreate('rightAvoidWidth', avoidRight + (avoidRight == 0 ? 0 : 2));
             console.log('\tNew avoidRightWidth: ' + avoidRight + (avoidRight == 0 ? 0 : 2));
           }
         })

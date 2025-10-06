@@ -55,8 +55,8 @@ struct meowTitleBar {
   @LocalStorageProp('screen_height') screen_height: number = 0;
   @LocalStorageLink('full_screen_height') full_screen_height: number = 0;
   @Link bar_height: number;
-  @StorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
-  @StorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
+  @LocalStorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
+  @LocalStorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
   @StorageProp('reindexing_history_progress') reindexing_history_progress: string = "";
   @StorageProp('history_index_loading_progress') history_index_loading_progress: string = "";
   @StorageProp('history_index_saving_progress') history_index_saving_progress: string = "";

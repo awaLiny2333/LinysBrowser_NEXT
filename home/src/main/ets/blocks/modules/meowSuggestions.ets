@@ -17,8 +17,8 @@ struct meowSuggestions {
   @LocalStorageLink('search_extracted_keyword') search_extracted_keyword: string = '';
   @LocalStorageProp('screen_height') screen_height: number = 0;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
-  @StorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
-  @StorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
+  @LocalStorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
+  @LocalStorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
   @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
   @LocalStorageLink('showing_app_settings') showing_app_settings: boolean = false;
   @LocalStorageLink('showing_downloads') showing_downloads: boolean = false;
