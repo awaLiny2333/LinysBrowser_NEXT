@@ -16,6 +16,7 @@ import { storage_of_id, window_id_of_windowClass, window_index_of_id } from '../
 
 @Component
 struct meowTabsVertical {
+  @StorageLink('THE_LORD_OF_THE_WINDOWS') @Watch('on_THE_LORD_OF_THE_WINDOWS_change') THE_LORD_OF_THE_WINDOWS: string = '';
   @LocalStorageLink('my_window_id') my_window_id: string = '';
   storage: LocalStorage = storage_of_id(this.my_window_id);
   // Want
@@ -87,58 +88,68 @@ struct meowTabsVertical {
     let continue_tabs_main_on = AppStorage.get('continue_tabs_main_on') as number;
     let continue_tabs_count = AppStorage.get('continue_tabs_count') as number;
 
-    // Start Up: generate / recover tabs
-    if (window_index_of_id(this.my_window_id) != 0 && this.want_uri) {
-      // Do nothing if is a new window to a running BrowserCat.
-
-    } else if (this.start_up_option == "new tab") {
-      this.new_tab(this.new_tab_url, false, false);
-      this.switch_tab(0, false, false);
-
-    } else if (this.start_up_option == "home") {
-      this.new_tab((this.home_url == "") ? url_default_blank() : this.home_url, false, false);
-      this.switch_tab(0, false, false);
-
+    if (window_index_of_id(this.my_window_id) != 0) {
+      // Wub windows
+      if (window_index_of_id(this.my_window_id) != 0 && this.want_uri != '') {
+        // Do nothing if is a wanted new window to a running BrowserCat.
+      } else {
+        // New window without a want
+        this.new_tab(this.new_tab_url, false, false);
+        this.switch_tab(0, false, false);
+      }
     } else {
-      // Restore. Prepare web states.
-      let web_state_arrays_to_restore: Uint8Array[] = [];
-      for (let index = 0; index < continue_tabs_count; index++) {
-        // Read continue tabs data
-        let key = "continue/continue_tabs_web_state_array_" + index.toString();
-        let array_buffer = sandbox_read_arrayBuffer_sync(key);
-        if (array_buffer) {
-          web_state_arrays_to_restore.push(new Uint8Array(array_buffer));
-        } else {
-          // An unexpected error may occur: array_buffer may be empty.
-          web_state_arrays_to_restore.push(new Uint8Array());
-          this.bunch_of_tabs.sub_tab_idx = -1;
-          this.bunch_of_tabs.main_tab_idx = 0;
+      // Main window
+      // Start Up: generate / recover tabs
+      if (this.start_up_option == "new tab") {
+        this.new_tab(this.new_tab_url, false, false);
+        this.switch_tab(0, false, false);
+
+      } else if (this.start_up_option == "home") {
+        this.new_tab((this.home_url == "") ? url_default_blank() : this.home_url, false, false);
+        this.switch_tab(0, false, false);
+
+      } else {
+        // Restore. Prepare web states.
+
+        let web_state_arrays_to_restore: Uint8Array[] = [];
+        for (let index = 0; index < continue_tabs_count; index++) {
+          // Read continue tabs data
+          let key = "continue/continue_tabs_web_state_array_" + index.toString();
+          let array_buffer = sandbox_read_arrayBuffer_sync(key);
+          if (array_buffer) {
+            web_state_arrays_to_restore.push(new Uint8Array(array_buffer));
+          } else {
+            // An unexpected error may occur: array_buffer may be empty.
+            web_state_arrays_to_restore.push(new Uint8Array());
+            this.bunch_of_tabs.sub_tab_idx = -1;
+            this.bunch_of_tabs.main_tab_idx = 0;
+          }
+        }
+
+        // Save to AppStorage for restoration use
+        this.storage.setOrCreate('restore_web_state_arrays', web_state_arrays_to_restore);
+
+        // Create new tabs
+        for (let index = 0; index < web_state_arrays_to_restore.length; index++) {
+          this.new_tab("", true, false);
+        }
+
+        // Try to switch tab
+        // this.tab_animation = { duration: 0 };
+        this.switch_tab(continue_tabs_main_on, false, false);
+        sync_tabs_list_info(this.storage);
+
+        // Recover Paralleow
+        if (continue_tabs_sub_on < this.tab_titles.length) {
+          this.bunch_of_tabs.sub_tab_idx = continue_tabs_sub_on;
         }
       }
 
-      // Save to AppStorage for restoration use
-      this.storage.setOrCreate('restore_web_state_arrays', web_state_arrays_to_restore);
+      this.recover_tabs_finished = true;
 
-      // Create new tabs
-      for (let index = 0; index < web_state_arrays_to_restore.length; index++) {
-        this.new_tab("", true, false);
+      if (this.want_source == 'onCreate') {
+        check_want(this.want_uri, this.want_action, this.want_type, this.storage);
       }
-
-      // Try to switch tab
-      // this.tab_animation = { duration: 0 };
-      this.switch_tab(continue_tabs_main_on, false, false);
-      sync_tabs_list_info(this.storage);
-
-      // Recover Paralleow
-      if (continue_tabs_sub_on < this.tab_titles.length) {
-        this.bunch_of_tabs.sub_tab_idx = continue_tabs_sub_on;
-      }
-    }
-
-    this.recover_tabs_finished = true;
-
-    if (this.want_source == 'onCreate') {
-      check_want(this.want_uri, this.want_action, this.want_type, this.storage);
     }
 
     t = Date.now() - t0;
@@ -363,8 +374,10 @@ struct meowTabsVertical {
 
     // Turn off Paralleow
     if (target == this.bunch_of_tabs.sub_tab_idx || target == this.bunch_of_tabs.main_tab_idx) {
-      console.log('[Meow][LinysTabs] Paralleow off')
-      this.bunch_of_tabs.sub_tab_idx = -1;
+      if (this.bunch_of_tabs.sub_tab_idx > -1) {
+        console.log('[Meow][LinysTabs] Paralleow off');
+        this.bunch_of_tabs.sub_tab_idx = -1;
+      }
     }
 
     // Close
@@ -378,7 +391,7 @@ struct meowTabsVertical {
 
     // Store tabs count
     let store_tabs_count = this.tab_titles.length;
-    console.log("[Meow][meowTabs] Store Tabs Count: " + store_tabs_count);
+    // console.log("[Meow][meowTabs] Store Tabs Count: " + store_tabs_count);
     bunch_of_settings.set("continue_tabs_count", store_tabs_count);
 
     // clear extra continue storage
@@ -592,6 +605,16 @@ struct meowTabsVertical {
         console.log('[Meow][meowTabsVertical] Didn\'t process want because I am not on top. (' + this.my_window_id + ')');
       }
     })
+  }
+
+  /**
+   * Called when THE_LORD_OF_THE_WINDOWS changes (the #0 is closed).
+   * */
+  on_THE_LORD_OF_THE_WINDOWS_change() {
+    if (this.my_window_id == this.THE_LORD_OF_THE_WINDOWS) {
+      // Save web states
+      this.bunch_of_tabs.re_save_web_state(0);
+    }
   }
 
   // Data

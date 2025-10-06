@@ -17,7 +17,7 @@ import woofPrompt from '../../dialogs/web/woofPrompt';
 import woofConfirm from '../../dialogs/web/woofConfirm';
 import woofAlert from '../../dialogs/web/woofAlert';
 import { window } from '@kit.ArkUI';
-import { storage_of_id, window_id_of_windowClass } from '../../utils/ui_tools';
+import { storage_of_id, window_id_of_windowClass, window_index_of_id } from '../../utils/ui_tools';
 
 @Component
 struct meowWebView {
@@ -387,8 +387,11 @@ struct meowWebView {
                 }
               }
 
+              this.bunch_of_tabs.update_web_state(Label.index_key);
               // Get and save web_state
-              this.bunch_of_tabs.save_web_state(Label.index_key);
+              if (window_index_of_id(this.my_window_id) == 0) {
+                this.bunch_of_tabs.save_web_state_to_sandbox(Label.index_key);
+              }
 
               determine_extra_background(this.storage);
             })
@@ -428,8 +431,13 @@ struct meowWebView {
                 return;
               }
 
+              this.bunch_of_tabs.update_web_state(Label.index_key);
               // Get and save web_state
-              this.bunch_of_tabs.save_web_state(Label.index_key);
+              if (window_index_of_id(this.my_window_id) == 0) {
+                this.bunch_of_tabs.save_web_state_to_sandbox(Label.index_key);
+              }
+
+              determine_extra_background(this.storage);
             })
             .onFullScreenEnter((event) => {
               this.fullscreen_mode = true;
@@ -456,7 +464,7 @@ struct meowWebView {
               }
 
               // Set Ads Blocker
-              console.log('[Meow][meowWebView] enableAdsBlock: ' + (this.use_adblock ? 'true' : 'false'));
+              console.log('[meowWebView] enableAdsBlock: ' + (this.use_adblock ? 'true' : 'false'));
               try {
                 this.bunch_of_tabs.Tabs[Label.index_key].controller.enableAdsBlock(this.use_adblock);
               } catch (e) {
@@ -475,7 +483,7 @@ struct meowWebView {
               // Set intelligent tracking prevention
               try {
                 this.bunch_of_tabs.Tabs[Label.index_key].controller.enableIntelligentTrackingPrevention(this.intelligent_tracking_prevention);
-                console.log('[Meow][meowWebView] ArkWeb Intelligent Tracking Prevention ' + this.intelligent_tracking_prevention.toString() + '!');
+                console.log('[meowWebView] ArkWeb Intelligent Tracking Prevention ' + this.intelligent_tracking_prevention.toString() + '!');
               } catch (e) {
                 console.error('[meowWebView] onControllerAttached enableIntelligentTrackingPrevention error: ' + e);
               }
@@ -647,7 +655,7 @@ struct meowWebView {
    * Enable ads block for all tabs.
    * */
   on_use_adblock_state_change() {
-    console.log('[Meow][meowWebView] enableAdsBlock: ' + (this.use_adblock ? 'true' : 'false'))
+    console.log('[meowWebView] enableAdsBlock: ' + (this.use_adblock ? 'true' : 'false'))
     try {
       for (let index = 0; index < this.bunch_of_tabs.Tabs.length; index++) {
         this.bunch_of_tabs.Tabs[index].controller.enableAdsBlock(this.use_adblock);

@@ -109,6 +109,7 @@ export default class HomeAbility extends UIAbility {
 
     // Init & Load window content
     if (is_new_launch) {
+      AppStorage.set('THE_LORD_OF_THE_WINDOWS', my_window_id);
       await meow_init_main(this.context, storage);
     } else {
       meow_init_sub(this.context, storage);
@@ -134,6 +135,7 @@ export default class HomeAbility extends UIAbility {
 
     // Init & Load window content
     if (is_new_launch) {
+      AppStorage.set('THE_LORD_OF_THE_WINDOWS', my_window_id);
       await meow_init_main(this.context, storage);
     } else {
       meow_init_sub(this.context, storage);
@@ -161,6 +163,8 @@ export default class HomeAbility extends UIAbility {
     windowStorages.splice(window_index, 1);
     let all_bunch_of_tabs = AppStorage.get('all_bunch_of_tabs') as bunch_of_tabs[];
     all_bunch_of_tabs.splice(window_index, 1);
+
+    AppStorage.set('THE_LORD_OF_THE_WINDOWS', windowIds[0]);
 
     hilog.info(0x0000, 'testTag', `onWindowStageWillDestroy`);
   }

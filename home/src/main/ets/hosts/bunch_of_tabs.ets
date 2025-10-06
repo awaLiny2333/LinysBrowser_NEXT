@@ -4,7 +4,7 @@ import { url_default_blank } from './bunch_of_defaults';
 import { sandbox_save } from '../utils/storage_tools';
 import { all_false, all_true } from '../utils/data_operation_tools';
 import { bunch_of_settings } from './bunch_of_settings';
-import { storage_of_id } from '../utils/ui_tools';
+import { storage_of_id, window_index_of_id } from '../utils/ui_tools';
 
 @Observed
 export class tab_label {
@@ -231,6 +231,15 @@ export class bunch_of_tabs {
         console.error('[bunch_of_tabs][update_backward_forward_access] Error: ' + e);
       }
     }
+  }
+
+  /**
+   * Calls the specific tab to sync web_state to bunch_of_tabs.
+   * @param index The index of tab.
+   * */
+  update_web_state(index: number) {
+    let web_state = this.Tabs[index].controller.serializeWebState();
+    this.Tabs[index].web_state_array = web_state;
   }
 
   /**
@@ -556,6 +565,7 @@ export class bunch_of_tabs {
    * @param start A number, all tabs with index greater or equal to start would re-save their web states to disk.
    * */
   re_save_web_state(start: number) {
+    console.log('[Meow][bunch_of_tabs] Re_save_web_state! (' + this.my_id + ') (#' + window_index_of_id(this.my_id) + ') From ' + start + '.');
     for (let index = start; index < this.Tabs.length; index++) {
       let web_state = this.Tabs[index].web_state_array;
       let identifier = "continue/continue_tabs_web_state_array_" + index.toString();
@@ -566,13 +576,15 @@ export class bunch_of_tabs {
   }
 
   /**
-   * Saves web state of a specific tab.
+   * Saves web state of a specific tab to sandbox. Reads the web_state from bunch_of_tabs properties.
+   *
+   * So update_web_state() should be called before this function to keep it up-to-date.
+   *
    * @param index The index of tab.
    * */
-  save_web_state(index: number) {
+  save_web_state_to_sandbox(index: number) {
     try {
-      let web_state = this.Tabs[index].controller.serializeWebState();
-      this.Tabs[index].web_state_array = web_state;
+      let web_state = this.Tabs[index].web_state_array;
 
       // Save to sandbox
       if (web_state && !this.Tabs[index].restore_on_creation) {
