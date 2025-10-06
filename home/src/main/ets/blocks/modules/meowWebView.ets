@@ -354,7 +354,7 @@ struct meowWebView {
 
               try {
                 // Ask tab to update its info (Reset)
-                // this.bunch_of_tabs.Tabs[Label.index_key].update_title();
+                this.bunch_of_tabs.Tabs[Label.index_key].update_title();
                 this.bunch_of_tabs.Tabs[Label.index_key].update_url();
                 this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(true)
                 this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(0)
@@ -370,7 +370,7 @@ struct meowWebView {
             .onPageEnd(() => {
               // console.log("[Meow][ArkWeb] on page end")
               try {
-                // this.bunch_of_tabs.Tabs[Label.index_key].update_title();
+                this.bunch_of_tabs.Tabs[Label.index_key].update_title();
                 this.bunch_of_tabs.Tabs[Label.index_key].update_url();
                 this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(false);
                 this.bunch_of_tabs.update_backward_forward_access();
@@ -423,7 +423,7 @@ struct meowWebView {
 
               try {
                 // Ask tab to update its info
-                // this.bunch_of_tabs.Tabs[Label.index_key].update_title();
+                this.bunch_of_tabs.Tabs[Label.index_key].update_title();
                 this.bunch_of_tabs.Tabs[Label.index_key].update_url();
                 this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(progress);
                 this.bunch_of_tabs.update_backward_forward_access();
