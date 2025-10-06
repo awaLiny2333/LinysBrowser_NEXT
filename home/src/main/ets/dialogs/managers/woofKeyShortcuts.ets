@@ -29,6 +29,7 @@ struct woofKeyShortcuts {
         .justifyContent(FlexAlign.Center)
         .width("100%")
       }
+      .borderRadius(10)
       .constraintSize({ maxHeight: 588 })
       .scrollBar(BarState.Off)
       .edgeEffect(EdgeEffect.Spring)
