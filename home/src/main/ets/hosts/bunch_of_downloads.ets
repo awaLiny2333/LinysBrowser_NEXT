@@ -43,7 +43,7 @@ export class bunch_of_downloads {
    * Initializes the download delegate for blob downloads.
    * Delegate: AppStorage.get('dl_delegate')
    * */
-  init_delegate() {
+  init_delegate(storage: LocalStorage) {
     // Init blob_delegate
     let dl_delegate = AppStorage.get('dl_delegate') as webview.WebDownloadDelegate;
 
@@ -51,7 +51,7 @@ export class bunch_of_downloads {
       console.log('[bunch_of_downloads][init_delegate] onBeforeDownload: [' + webDownloadItem.getSuggestedFileName() + '][' + webDownloadItem.getUrl() + ']');
 
       // See meowWebView and woofWantDownload for further handling
-      AppStorage.set('uni_webDownloadItem_gateway', webDownloadItem);
+      storage.set('uni_webDownloadItem_gateway', webDownloadItem);
 
       this.update_timestamp();
     })

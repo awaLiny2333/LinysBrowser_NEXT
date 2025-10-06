@@ -53,6 +53,8 @@ import { common } from '@kit.AbilityKit';
 
 @Component
 struct meowAppSettings {
+  @LocalStorageLink('my_window_id') my_window_id: string = '';
+  @StorageLink('windowIds') windowIds: string[] = [];
   @Link @Watch('on_open_or_close_panel') showing_app_settings: boolean;
   // Hosts and environment
   @StorageLink('tabs_style') tabs_style: string = "";
@@ -1107,7 +1109,9 @@ struct meowAppSettings {
                     onExecution: () => {
                       new_window(this.getUIContext().getHostContext() as common.UIAbilityContext);
                     }
-                  })
+                  });
+                  linysTextTitle({ text: 'W ID: ' + this.my_window_id });
+                  linysTextTitle({ text: 'Index #' + this.windowIds.indexOf(this.my_window_id) });
                 }
               }
             } // Update

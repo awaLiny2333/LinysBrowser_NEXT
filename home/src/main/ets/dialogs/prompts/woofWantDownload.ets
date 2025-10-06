@@ -8,10 +8,13 @@ import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import { meowContext } from '../../utils/environment_tools';
 import { fileIo } from '@kit.CoreFileKit';
 import linysConfirmDenyButtons from '../../components/buttons/linysConfirmDenyButtons';
+import { storage_of_id } from '../../utils/ui_tools';
 
 @CustomDialog
 struct woofWantDownload {
   controller: CustomDialogController;
+  @LocalStorageLink('my_window_id') my_window_id: string = '';
+  storage: LocalStorage = storage_of_id(this.my_window_id);
   @State from: string = '';
   @State @Watch('refresh') file_name: string = '';
   @State url: string = '';
@@ -158,7 +161,7 @@ struct woofWantDownload {
 
       try {
         this.item.start(this.download_target_path);
-        AppStorage.set('uni_webDownloadItem_gateway', undefined);
+        this.storage.set('uni_webDownloadItem_gateway', undefined);
       } catch (e) {
         console.error('[woofWantDownload] item.start failed! ' + e);
         return;

@@ -82,7 +82,7 @@ struct meowWebView {
   @LocalStorageLink('extra_background') extra_background: boolean = false;
   // Download
   @StorageLink('dl_delegate') dl_delegate: webview.WebDownloadDelegate = new webview.WebDownloadDelegate();
-  @StorageLink('uni_webDownloadItem_gateway') @Watch('on_download_request') uni_webDownloadItem_gateway: webview.WebDownloadItem | undefined = undefined;
+  @LocalStorageLink('uni_webDownloadItem_gateway') @Watch('on_download_request') uni_webDownloadItem_gateway: webview.WebDownloadItem | undefined = undefined;
   @StorageLink('print_adapter') print_adapter: print.PrintDocumentAdapter | undefined = undefined;
   // dialogs
   woofWantDownload_control: CustomDialogController = new CustomDialogController({
@@ -255,7 +255,7 @@ struct meowWebView {
     console.log(' \n[meowWebView][aboutToAppear] this.bunch_of_tabs.my_id: ' + this.bunch_of_tabs.my_id + '\n ');
 
     // Init download delegate
-    this.bunch_of_downloads.init_delegate();
+    this.bunch_of_downloads.init_delegate(this.storage);
 
     // Set image for homepage
     sandbox_read_arrayBuffer('homepage_background_arrayBuffer')?.then((homepage_background_array_buffer) => {

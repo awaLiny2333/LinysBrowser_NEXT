@@ -42,7 +42,7 @@ struct Index {
   @LocalStorageLink('showing_downloads') showing_downloads: boolean = false;
   @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
   @LocalStorageLink('showing_app_settings') showing_app_settings: boolean = false;
-  @StorageLink('showing_tabs') @Watch('on_showing_tabs_change') showing_tabs: boolean = false;
+  @LocalStorageLink('showing_tabs') @Watch('on_showing_tabs_change') showing_tabs: boolean = false;
   @LocalStorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
   @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   /**

@@ -18,7 +18,7 @@ struct meowTabsHorizontal {
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   // Environments
   @StorageLink('windowDecorWidth') windowDecorWidth: number = 0;
-  @StorageLink('showing_tabs') showing_tabs: boolean = false;
+  @LocalStorageLink('showing_tabs') showing_tabs: boolean = false;
   @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @StorageProp('pathDir') pathDir: string = "";

@@ -66,7 +66,7 @@ struct meowTitleBar {
   @State search_input_unified: string = "";
   @LocalStorageLink('search_input') search_input: string = "ଘ*(੭*ˊᵕˋ)੭*";
   @LocalStorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
-  @StorageLink('uni_webDownloadItem_gateway') @Watch('on_download_start') uni_webDownloadItem_gateway: webview.WebDownloadItem | undefined = undefined;
+  @LocalStorageLink('uni_webDownloadItem_gateway') @Watch('on_download_start') uni_webDownloadItem_gateway: webview.WebDownloadItem | undefined = undefined;
   @State download_started_popup: boolean = false;
   @LocalStorageLink('drop_result_strings') drop_result_string: string[] = [];
   @LocalStorageLink('current_in_page_searching_keyword') current_in_page_searching_keyword: string = "";
@@ -97,7 +97,8 @@ struct meowTitleBar {
   @LocalStorageLink('tab_force_dark') tab_force_dark: boolean[] = [false];
   @LocalStorageLink('current_force_dark') current_force_dark: boolean = false;
   // UI control actions
-  @StorageLink('showing_tabs') showing_tabs: boolean = false;
+  @StorageLink('showing_tabs') showing_tabs_global: boolean = false;
+  @LocalStorageLink('showing_tabs') showing_tabs: boolean = false;
   @LocalStorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
   @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
   @LocalStorageLink('showing_app_settings') showing_app_settings: boolean = false;

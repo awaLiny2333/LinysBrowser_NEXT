@@ -26,7 +26,7 @@ struct meowBookmarks {
   // Environments
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   // UI control actions
-  @StorageLink('showing_tabs') showing_tabs: boolean = false;
+  @LocalStorageLink('showing_tabs') showing_tabs: boolean = false;
   @LocalStorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
   @LocalStorageLink('swapping_bookmarks') swapping_bookmarks: boolean = false;
   bookmarks_scroller: Scroller = new Scroller();

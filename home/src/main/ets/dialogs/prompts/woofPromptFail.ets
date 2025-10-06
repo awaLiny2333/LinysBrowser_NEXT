@@ -96,7 +96,7 @@ export default woofPromptFail;
 struct goodByeLink {
   // Environment
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
-  @StorageLink('showing_tabs') showing_tabs: boolean = false;
+  @LocalStorageLink('showing_tabs') showing_tabs: boolean = false;
   @LocalStorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
   @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
   @LocalStorageLink('showing_app_settings') showing_app_settings: boolean = false;

@@ -125,7 +125,7 @@ async function settings(t0: number) {
   AppStorage.setOrCreate('title_bar_position', bunch_of_settings.get('title_bar_position') as string);
   AppStorage.setOrCreate('tabs_style', bunch_of_settings.get('tabs_style') as string);
   AppStorage.setOrCreate('tabs_style_non_tablet_mode', bunch_of_settings.get('tabs_style_non_tablet_mode') as string);
-  AppStorage.setOrCreate('showing_tabs', bunch_of_settings.get('status_tabs_open') as boolean);
+  // storage.setOrCreate('showing_tabs', bunch_of_settings.get('status_tabs_open') as boolean);
 
   // Continuation
   AppStorage.setOrCreate('continuation_auto_exit', bunch_of_settings.get('continuation_auto_exit') as boolean);
@@ -300,6 +300,7 @@ function tabs(t0: number, storage: LocalStorage) {
   let tabs = new bunch_of_tabs(false, storage.get('my_window_id') as string);
   // AppStorage.setOrCreate('bunch_of_tabs', tabs);
   storage.setOrCreate('bunch_of_tabs', tabs);
+  storage.setOrCreate('showing_tabs', bunch_of_settings.get('status_tabs_open') as boolean);
 
   // Store tabs of this window
   let all_bunch_of_tabs: bunch_of_tabs[] | undefined = AppStorage.get('all_bunch_of_tabs');
