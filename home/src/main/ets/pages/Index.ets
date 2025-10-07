@@ -1,7 +1,7 @@
 import { AbilityConstant, common, ConfigurationConstant } from '@kit.AbilityKit';
 import { deviceInfo } from '@kit.BasicServicesKit';
 import { window } from '@kit.ArkUI';
-import { animation_default, default_new_window_name } from '../hosts/bunch_of_defaults';
+import { animation_default } from '../hosts/bunch_of_defaults';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 import { meowPx2vp } from '../utils/environment_tools';
@@ -244,7 +244,8 @@ struct Index {
         }
         .padding({
           top: 8,
-          bottom: 8
+          bottom: 8,
+          right: 25
         })
         .layoutWeight(1)
         .justifyContent(this.justifyContents_of_alias())
