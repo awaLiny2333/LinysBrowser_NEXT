@@ -15,7 +15,6 @@ import lazy meowWebView from '../blocks/modules/meowWebView';
 import lazy woofPromptFail from '../dialogs/prompts/woofPromptFail';
 import { last_storage, storage_of_id, window_index_of_windowClass } from '../utils/ui_tools';
 import linysText from '../components/texts/linysText';
-import linysSymbol from '../components/texts/linysSymbol';
 
 // @Entry({ useSharedStorage: true })
 @Entry(last_storage())
@@ -196,10 +195,10 @@ struct Index {
           linysText({
             text: this.my_window_alias
           })
-          linysSymbol({
-            symbol_glyph_target: 'sys.symbol.square_and_pencil',
-            font_size: 20
-          })
+          // linysSymbol({
+          //   symbol_glyph_target: 'sys.symbol.square_and_pencil',
+          //   font_size: 20
+          // })
             .onClick(() => {
               // Edit
             })
@@ -208,14 +207,17 @@ struct Index {
         .margin({ left: 5, right: 5 })
         .padding(12)
         .opacity(0.7)
+        .width('100%')
+        .justifyContent(FlexAlign.Center)
         .alignItems(this.tablet_mode ? VerticalAlign.Center : VerticalAlign.Bottom)
         .visibility(this.showing_my_window_alias ? Visibility.Visible : Visibility.Hidden)
         .animation(animation_default())
       }
+      .height(this.height_of_top_avoid())
       .clip(true)
       .backgroundColor(this.color_current_secondary)
       .animation(animation_default())
-      .width("100%") // Top Bar Avoid
+      .width('100%') // Top Bar Avoid
 
       // Scroll() {
       //   Column() {

@@ -340,6 +340,9 @@ struct meowWebView {
                 // this.bunch_of_tabs.Tabs[Label.index_key].update_url();
                 this.bunch_of_tabs.Tabs[Label.index_key].update_title();
                 this.bunch_of_tabs.update_backward_forward_access();
+
+                // Get synced lists
+                sync_tabs_list_info(this.storage)
               } catch (e) {
                 console.error('[meowWebView][onProgressChange] Update bunch_of_tabs error: ' + e);
               }
