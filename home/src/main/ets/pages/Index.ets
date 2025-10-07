@@ -245,8 +245,8 @@ struct Index {
         .padding({
           top: 8,
           bottom: 8,
-          right: 25
         })
+        .constraintSize({ maxWidth: this.screen_width * 0.7 })
         .layoutWeight(1)
         .justifyContent(this.justifyContents_of_alias())
         .opacity(0.7)
