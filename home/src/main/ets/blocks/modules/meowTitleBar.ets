@@ -291,7 +291,7 @@ struct meowTitleBar {
   rename_window_woofPrompt_control: CustomDialogController = new CustomDialogController({
     builder: woofPrompt({
       title: $r('app.string.Settings_appearance_windows_rename'),
-      message: this.my_window_id,
+      message: 'ID: ' + this.my_window_id,
       value: this.my_window_alias,
       promptResult: this.rename_window_prompt_result,
       onConfirm: () => {
@@ -829,6 +829,7 @@ struct meowTitleBar {
               }) // Current my_window_alias
                 .padding({ left: 5 })
                 .layoutWeight(1)
+                .clickEffect(click_effect_default())
                 .onClick(() => {
                   this.rename_window_woofPrompt_control.open();
                 })

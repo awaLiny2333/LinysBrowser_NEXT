@@ -233,6 +233,7 @@ struct Index {
               // Edit
               this.rename_window_woofPrompt_control.open();
             })
+            .constraintSize({ maxWidth: this.screen_width * 0.7 })
           linysSymbol({
             symbol_glyph_target: 'sys.symbol.plus',
             font_size: 16,
@@ -246,7 +247,6 @@ struct Index {
           top: 8,
           bottom: 8,
         })
-        .constraintSize({ maxWidth: this.screen_width * 0.7 })
         .layoutWeight(1)
         .justifyContent(this.justifyContents_of_alias())
         .opacity(0.7)
