@@ -5,7 +5,7 @@ import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
 import { meow_init_main, meow_init_sub } from '../processes/init';
 import { meowPx2vp } from '../utils/environment_tools';
 import lazy { bunch_of_tabs } from '../hosts/bunch_of_tabs';
-import { update_window_decor_height, window_index_of_id } from '../utils/ui_tools';
+import { window_index_of_id } from '../utils/ui_tools';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 
 export default class HomeAbility extends UIAbility {
@@ -26,10 +26,6 @@ export default class HomeAbility extends UIAbility {
     // LAST_WINDOW_INSTANCE_KEY is set by HomeAbilityStage.
     this.my_window_id = AppStorage.get('LAST_WINDOW_INSTANCE_KEY') as string;
     this.storage.setOrCreate('my_window_id', this.my_window_id); // Use it as a UNIQUE window id.
-
-    // LAST_WINDOW_INSTANCE_KEY is set by HomeAbilityStage.
-    this.my_window_alias = AppStorage.get('LAST_WINDOW_WINDOW_NAME') as string;
-    this.storage.setOrCreate('my_window_alias', this.my_window_alias); // Use it as a UNIQUE window id.
 
     this.process_want(want, 'onCreate');
 
@@ -147,6 +143,8 @@ export default class HomeAbility extends UIAbility {
     windowStorages.splice(window_index, 1);
     let all_bunch_of_tabs = AppStorage.get('all_bunch_of_tabs') as bunch_of_tabs[];
     all_bunch_of_tabs.splice(window_index, 1);
+    let windowAliases = AppStorage.get('windowAliases') as string[];
+    windowAliases.splice(window_index, 1);
 
     AppStorage.set('THE_LORD_OF_THE_WINDOWS', windowIds[0]);
 
@@ -189,6 +187,7 @@ export default class HomeAbility extends UIAbility {
       AppStorage.setOrCreate('windowIds', []);
       AppStorage.setOrCreate('windowStages', []);
       AppStorage.setOrCreate('windowStorages', []);
+      AppStorage.setOrCreate('windowAliases', []);
     } else {
       // one of the multi-windows
       windowClasses.push(windowClass);
@@ -197,6 +196,10 @@ export default class HomeAbility extends UIAbility {
 
     storage.setOrCreate('my_windowClass', windowClass);
 
+    // LAST_WINDOW_WINDOW_NAME is set by the window who opens this window.
+    this.my_window_alias = AppStorage.get('LAST_WINDOW_WINDOW_NAME') as string;
+    this.storage.setOrCreate('my_window_alias', this.my_window_alias);
+
     // Parallel array of ids
     let windowIds = AppStorage.get('windowIds') as string[];
     windowIds.push(my_window_id);
@@ -204,6 +207,8 @@ export default class HomeAbility extends UIAbility {
     windowStages.push(windowStage);
     let windowStorages = AppStorage.get('windowStorages') as LocalStorage[];
     windowStorages.push(storage);
+    let windowAliases = AppStorage.get('windowAliases') as string[];
+    windowAliases.push(this.my_window_alias);
 
     // Load content
     windowStage.loadContent('pages/Index', storage, (err) => {

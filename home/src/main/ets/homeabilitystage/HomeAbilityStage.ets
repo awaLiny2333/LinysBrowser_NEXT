@@ -1,5 +1,4 @@
 import { AbilityStage, Want } from '@kit.AbilityKit';
-import { default_new_window_name } from '../hosts/bunch_of_defaults';
 
 export default class HomeAbilityStage extends AbilityStage {
   onCreate(): void {
@@ -26,13 +25,6 @@ export default class HomeAbilityStage extends AbilityStage {
           // Initial key for the very first window of the entire app.
           instanceKey = 'Meow_meow';
         }
-      }
-
-      // windowName
-      let name = AppStorage.get('LAST_WINDOW_WINDOW_NAME') as string;
-      if (!name) {
-        // This actually works???
-        AppStorage.setOrCreate('LAST_WINDOW_WINDOW_NAME', default_new_window_name());
       }
     }
     // So that HomeAbility class could read and use this as window id.

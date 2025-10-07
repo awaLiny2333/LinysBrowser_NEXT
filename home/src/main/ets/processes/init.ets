@@ -312,6 +312,9 @@ function tabs(t0: number, storage: LocalStorage) {
     AppStorage.setOrCreate('all_bunch_of_tabs', all_bunch_of_tabs);
   }
 
+  // Name
+  AppStorage.setOrCreate('LAST_WINDOW_WINDOW_NAME', bunch_of_settings.get('my_window_alias_last') as string);
+
   // Fill back settings
   let home_url: string = bunch_of_settings.get('home_url') as string
   let new_tab_url: string = bunch_of_settings.get('new_tab_url') as string

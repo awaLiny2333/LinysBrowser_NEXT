@@ -1,7 +1,7 @@
 import { string_to_boolean } from '../utils/data_operation_tools';
 import { kv_store_get } from '../utils/kv_store_tools';
 import { sandbox_read_text_sync, sandbox_save } from '../utils/storage_tools';
-import { default_user_agents, preset_search_engines } from './bunch_of_defaults';
+import { default_new_window_name, default_user_agents, preset_search_engines } from './bunch_of_defaults';
 
 export class bunch_of_settings {
   static settings_list: settings_item[] = [];
@@ -31,6 +31,7 @@ export class bunch_of_settings {
     bunch_of_settings.register_setting('status_tabs_open', 'boolean', 'false');
     bunch_of_settings.register_setting('status_showing_my_windows_alias', 'boolean', 'false');
     bunch_of_settings.register_setting('my_window_alias_position', 'string', 'center');
+    bunch_of_settings.register_setting('my_window_alias_last', 'string', default_new_window_name());
 
     // Continuation
     bunch_of_settings.register_setting('continuation_auto_exit', 'boolean', 'false');

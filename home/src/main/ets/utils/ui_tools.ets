@@ -2,6 +2,7 @@ import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { common, Want } from '@kit.AbilityKit';
+import { bunch_of_settings } from '../hosts/bunch_of_settings';
 
 // Statuses
 
@@ -182,7 +183,12 @@ export function change_window_alias(id: string, alias: string) {
   let windowClass = window_of_id(id);
   if (windowClass) {
     windowClass.setWindowTitle(alias).catch((e: BusinessError) => {
-      console.error('[change_window_alias] Set alias failed!' + JSON.stringify(e));
+      console.error('[change_window_alias] Set alias failed! ' + JSON.stringify(e));
     });
+  }
+
+  if (window_index_of_id(id) == 0) {
+    bunch_of_settings.set('my_window_alias_last', alias);
+    AppStorage.set('LAST_WINDOW_WINDOW_NAME', alias);
   }
 }

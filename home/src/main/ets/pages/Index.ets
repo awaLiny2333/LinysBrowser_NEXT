@@ -13,7 +13,15 @@ import meowTitleBar from '../blocks/modules/meowTitleBar';
 import lazy meowBookmarks from '../blocks/modules/meowBookmarks';
 import lazy meowWebView from '../blocks/modules/meowWebView';
 import lazy woofPromptFail from '../dialogs/prompts/woofPromptFail';
-import { change_window_alias, last_storage, new_window, storage_of_id, update_window_decor_height, window_index_of_windowClass } from '../utils/ui_tools';
+import {
+  change_window_alias,
+  last_storage,
+  new_window,
+  storage_of_id,
+  update_window_decor_height,
+  window_index_of_id,
+  window_index_of_windowClass
+} from '../utils/ui_tools';
 import linysText from '../components/texts/linysText';
 import woofPrompt from '../dialogs/web/woofPrompt';
 import linysSymbol from '../components/texts/linysSymbol';
@@ -24,7 +32,7 @@ import linysSymbol from '../components/texts/linysSymbol';
 struct Index {
   @LocalStorageLink('my_window_id') my_window_id: string = '';
   @LocalStorageLink('my_windowClass') my_windowClass: window.Window | undefined = undefined;
-  @StorageLink('windowIds') windowIds: string[] = [];
+  @StorageLink('windowIds') @Watch('on_windowIDs_change') windowIds: string[] = [];
   @LocalStorageLink('my_window_alias') my_window_alias: string = '';
   @StorageLink('showing_my_window_alias') @Watch('on_showing_my_window_alias_change') showing_my_window_alias: boolean = false;
   storage: LocalStorage = storage_of_id(this.my_window_id);
@@ -142,6 +150,7 @@ struct Index {
         ' ',
         '[Meow][Index]',
         '    window.Window #' + my_index,
+        '    alias: ' + this.my_window_alias,
         '    my_window_id from this.storage: ' + this.storage.get('my_window_id'),
         '    my_window_id from @LocalStorageLink: ' + this.my_window_id,
         '    bunch_of_tabs.my_id: ' + all_bunch_of_tabs[my_index].my_id,
@@ -230,9 +239,13 @@ struct Index {
             font_weight: FontWeight.Medium
           })
             .onClick(() => {
-              new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), default_new_window_name());
+              new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), this.my_window_alias);
             })
         }
+        .padding({
+          top: 8,
+          bottom: 8
+        })
         .layoutWeight(1)
         .justifyContent(this.justifyContents_of_alias())
         .opacity(0.7)
@@ -242,8 +255,6 @@ struct Index {
       .padding({
         left: 15,
         right: this.tablet_mode ? Math.max(15, this.windowDecorWidth + 5) : 15,
-        top: 8,
-        bottom: 8
       })
       .alignItems(this.tablet_mode ? VerticalAlign.Center : VerticalAlign.Bottom)
       .justifyContent(FlexAlign.Center)
@@ -435,6 +446,13 @@ struct Index {
 
   on_showing_my_window_alias_change() {
     update_window_decor_height(this.my_windowClass!);
+  }
+
+  on_windowIDs_change() {
+    if (window_index_of_id(this.my_window_id) == 0) {
+      bunch_of_settings.set('my_window_alias_last', this.my_window_alias);
+      AppStorage.set('LAST_WINDOW_WINDOW_NAME', this.my_window_alias);
+    }
   }
 
   // kinda params
