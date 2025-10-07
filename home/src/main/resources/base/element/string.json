@@ -133,6 +133,10 @@
       "value": "Enable bottom avoid"
     },
     {
+      "name": "Settings_appearance_status_showing_my_windows_alias",
+      "value": "Show window information"
+    },
+    {
       "name": "Settings_general_custom_ua",
       "value": "User-agent"
     },

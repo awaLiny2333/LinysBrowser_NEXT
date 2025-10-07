@@ -7,11 +7,12 @@ struct linysSymbol {
   @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @Prop color: ResourceColor = "";
   @Prop font_weight: FontWeight = FontWeight.Regular;
+  @Prop font_size: number = fontSize_Icon_Button();
 
   build() {
     SymbolGlyph($r(this.symbol_glyph_target))
       .fontWeight(this.font_weight)
-      .fontSize(fontSize_Icon_Button())
+      .fontSize(this.font_size)
       .fontColor([this.color == "" ? this.color_current_font : this.color])
       .animation(animation_default())
       .clickEffect(click_effect_default())

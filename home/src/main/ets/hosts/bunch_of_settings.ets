@@ -29,6 +29,7 @@ export class bunch_of_settings {
 
     // Statuses
     bunch_of_settings.register_setting('status_tabs_open', 'boolean', 'false');
+    bunch_of_settings.register_setting('status_showing_my_windows_alias', 'boolean', 'false');
 
     // Continuation
     bunch_of_settings.register_setting('continuation_auto_exit', 'boolean', 'false');

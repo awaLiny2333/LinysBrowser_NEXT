@@ -55,6 +55,7 @@ import { storage_of_id } from '../../utils/ui_tools';
 @Component
 struct meowAppSettings {
   @LocalStorageLink('my_window_id') my_window_id: string = '';
+  @StorageLink('showing_my_window_alias') showing_my_window_alias: boolean = false;
   storage: LocalStorage = storage_of_id(this.my_window_id);
   @StorageLink('windowIds') windowIds: string[] = [];
   @Link @Watch('on_open_or_close_panel') showing_app_settings: boolean;
@@ -697,6 +698,13 @@ struct meowAppSettings {
                     bunch_of_settings.set('bottom_avoid', this.bottom_avoid);
                   }
                 }) // Enable bottom_avoid
+                linysSwitchWithText({
+                  text: $r('app.string.Settings_appearance_status_showing_my_windows_alias'),
+                  toggle_state: this.showing_my_window_alias,
+                  onExecution: () => {
+                    bunch_of_settings.set('status_showing_my_windows_alias', this.showing_my_window_alias);
+                  }
+                }) // Enable show my_window_alias
               }
 
               settingsSubCard({

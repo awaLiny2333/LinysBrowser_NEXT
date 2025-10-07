@@ -60,20 +60,20 @@ struct meowTabsHorizontal {
           .animation(animation_default())
           .padding({ left: 5 })
 
-        Row() {
-          linysText({
-            text: $r('app.string.Index_tabs_title_drag')
-          })
-        } // Drag area
-        .visibility(this.visibility_2in1_top())
-        .height(this.length_width_of_tabs > this.full_area_width ? 55 : 40)
-        .animation(animation_default())
-        .justifyContent(FlexAlign.Center)
-        .borderRadius(12)
-        .padding(10)
-        .width(50 + 10)
-        .backgroundColor($r('sys.color.comp_background_tertiary'))
-        .clickEffect(click_effect_default())
+        // Row() {
+        //   linysText({
+        //     text: $r('app.string.Index_tabs_title_drag')
+        //   })
+        // } // Drag area
+        // .visibility(this.visibility_drag_2in1_top())
+        // .height(this.length_width_of_tabs > this.full_area_width ? 55 : 40)
+        // .animation(animation_default())
+        // .justifyContent(FlexAlign.Center)
+        // .borderRadius(12)
+        // .padding(10)
+        // .width(50 + 10)
+        // .backgroundColor($r('sys.color.comp_background_tertiary'))
+        // .clickEffect(click_effect_default())
 
         Scroll() {
           Row({ space: this.tablet_mode ? 7 : 5 }) {
@@ -124,24 +124,24 @@ struct meowTabsHorizontal {
           .visibility(this.tablet_mode ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
 
-        Row() {
-          Row() {
-            linysText({
-              text: $r('app.string.Index_tabs_title_drag')
-            })
-          }
-          .justifyContent(FlexAlign.Center)
-          .padding(10)
-          .height(this.length_width_of_tabs > this.full_area_width ? 55 : 40)
-          .borderRadius(12)
-          .backgroundColor($r('sys.color.comp_background_tertiary'))
-          .width(50 + 10)
-          .clickEffect(click_effect_default())
-        } // Drag area
-        .justifyContent(FlexAlign.Start)
-        .visibility(this.visibility_2in1_top())
-        .width(this.windowDecorWidth + 50)
-        .animation(animation_default())
+        // Row() {
+        //   Row() {
+        //     linysText({
+        //       text: $r('app.string.Index_tabs_title_drag')
+        //     })
+        //   }
+        //   .justifyContent(FlexAlign.Center)
+        //   .padding(10)
+        //   .height(this.length_width_of_tabs > this.full_area_width ? 55 : 40)
+        //   .borderRadius(12)
+        //   .backgroundColor($r('sys.color.comp_background_tertiary'))
+        //   .width(50 + 10)
+        //   .clickEffect(click_effect_default())
+        // } // Drag area
+        // .justifyContent(FlexAlign.Start)
+        // .visibility(this.visibility_drag_2in1_top())
+        // .width(this.windowDecorWidth + 50)
+        // .animation(animation_default())
 
       } // Base container
       .alignItems(VerticalAlign.Center)
@@ -234,7 +234,7 @@ struct meowTabsHorizontal {
     return result;
   }
 
-  visibility_2in1_top() {
+  visibility_drag_2in1_top() {
     return deviceInfo.deviceType == '2in1' && this.title_bar_position == 'top' && this.tablet_mode ? Visibility.Visible : Visibility.None;
   }
 }

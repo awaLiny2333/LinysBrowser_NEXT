@@ -14,12 +14,17 @@ import lazy meowBookmarks from '../blocks/modules/meowBookmarks';
 import lazy meowWebView from '../blocks/modules/meowWebView';
 import lazy woofPromptFail from '../dialogs/prompts/woofPromptFail';
 import { last_storage, storage_of_id, window_index_of_windowClass } from '../utils/ui_tools';
+import linysText from '../components/texts/linysText';
+import linysSymbol from '../components/texts/linysSymbol';
 
 // @Entry({ useSharedStorage: true })
 @Entry(last_storage())
 @Component
 struct Index {
   @LocalStorageLink('my_window_id') my_window_id: string = '';
+  @StorageLink('windowIds') windowIds: string[] = [];
+  @LocalStorageLink('my_window_alias') my_window_alias: string = 'Foxy Meowy Dodgy!';
+  @StorageLink('showing_my_window_alias') showing_my_window_alias: boolean = false;
   storage: LocalStorage = storage_of_id(this.my_window_id);
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
@@ -183,11 +188,34 @@ struct Index {
       //   this.back();
       // })
 
-      Row()// Top Bar Avoid
+      Row() {
+        Row({ space: 10 }) {
+          linysText({
+            text: '#' + this.windowIds.indexOf(this.my_window_id)
+          })
+          linysText({
+            text: this.my_window_alias
+          })
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.square_and_pencil',
+            font_size: 20
+          })
+            .onClick(() => {
+              // Edit
+            })
+        }
         .height(this.height_of_top_avoid())
-        .backgroundColor(this.color_current_secondary)
+        .margin({ left: 5, right: 5 })
+        .padding(12)
+        .opacity(0.7)
+        .alignItems(this.tablet_mode ? VerticalAlign.Center : VerticalAlign.Bottom)
+        .visibility(this.showing_my_window_alias ? Visibility.Visible : Visibility.Hidden)
         .animation(animation_default())
-        .width("100%")
+      }
+      .clip(true)
+      .backgroundColor(this.color_current_secondary)
+      .animation(animation_default())
+      .width("100%") // Top Bar Avoid
 
       // Scroll() {
       //   Column() {
@@ -432,10 +460,11 @@ struct Index {
     if (this.fullscreen_mode) {
       return 0;
     }
-    if (deviceInfo.deviceType == '2in1' && this.title_bar_position == 'top' && this.tabs_style == 'horizontal' && this.showing_tabs && this.tablet_mode) {
-      return 10;
-    }
-    return this.topAvoidHeight;
+    // if (deviceInfo.deviceType == '2in1' && this.title_bar_position == 'top' && this.tabs_style == 'horizontal' && this.showing_tabs && this.tablet_mode) {
+    //   return 10;
+    // }
+    let alias_display_height = this.tablet_mode ? 10 : 35;
+    return this.topAvoidHeight + (this.showing_my_window_alias ? alias_display_height : 0);
   }
 
   height_of_bottom_avoid() {

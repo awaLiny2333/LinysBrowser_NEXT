@@ -301,6 +301,7 @@ function tabs(t0: number, storage: LocalStorage) {
   // AppStorage.setOrCreate('bunch_of_tabs', tabs);
   storage.setOrCreate('bunch_of_tabs', tabs);
   storage.setOrCreate('showing_tabs', bunch_of_settings.get('status_tabs_open') as boolean);
+  AppStorage.setOrCreate('showing_my_window_alias', bunch_of_settings.get('status_showing_my_windows_alias') as boolean);
 
   // Store tabs of this window
   let all_bunch_of_tabs: bunch_of_tabs[] | undefined = AppStorage.get('all_bunch_of_tabs');
