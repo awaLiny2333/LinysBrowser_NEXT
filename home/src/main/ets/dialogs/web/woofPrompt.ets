@@ -5,40 +5,50 @@ import linysTextTitle from '../../components/texts/linysTextTitle';
 
 @CustomDialog
 struct woofPrompt {
-  event: OnPromptEvent | undefined = undefined;
-  @State promptResult: string = '';
+  @State title: ResourceStr = 'Title Meow';
+  @State message: ResourceStr = 'Message Meow';
+  @State value: string = 'Value Meow';
+  @Link promptResult: string;
   controller: CustomDialogController;
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   // UI display
   @LocalStorageLink('screen_height') screen_height: number = 0;
+  // Actions
+  onConfirm?: () => void;
+  onDeny?: () => void;
 
   aboutToDisappear(): void {
-    this.event?.result.handleCancel();
-    // this.controller?.close();
+    if (this.onDeny) {
+      this.onDeny();
+    }
   }
 
   build() {
     Column({ space: 15 }) {
-      linysTextTitle({ text: this.event?.url }) // Page url
+      linysTextTitle({ text: this.title }) // Page url
         .width("100%")
 
-      linysText({ text: this.event?.message }) // Prompt message
+      linysText({ text: this.message }) // Prompt message
         .width("100%")
 
-      linysTextArea({ init_text: this.event?.value, text: this.promptResult }) // Edit
+      linysTextArea({ init_text: this.value, text: this.promptResult }) // Edit
         .constraintSize({ maxHeight: Math.max(0, this.screen_height - 160) })
 
       linysConfirmDenyButtons({
         onConfirm: () => {
           if (this.controller) {
-            this.event?.result.handlePromptConfirm(this.promptResult);
+            if (this.onConfirm) {
+              this.onConfirm();
+            }
             this.controller.close();
           }
         },
         onDeny: () => {
           if (this.controller) {
-            this.event?.result.handleCancel();
+            if (this.onDeny) {
+              this.onDeny();
+            }
             this.controller.close();
           }
         }

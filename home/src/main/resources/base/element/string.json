@@ -133,6 +133,18 @@
       "value": "Enable bottom avoid"
     },
     {
+      "name": "Settings_appearance_windows",
+      "value": "Windows"
+    },
+    {
+      "name": "Settings_appearance_windows_default_name",
+      "value": "Foxy Meowy BrowserCat!"
+    },
+    {
+      "name": "Settings_appearance_windows_rename",
+      "value": "Rename this window!"
+    },
+    {
       "name": "Settings_appearance_status_showing_my_windows_alias",
       "value": "Show window information"
     },

@@ -11,6 +11,7 @@ import linysSymbol from '../../components/texts/linysSymbol';
 import linysText from '../../components/texts/linysText';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysTextTitle from '../../components/texts/linysTextTitle';
+import { storage_of_id } from '../../utils/ui_tools';
 
 @Component
 struct meowScratchingBoard {
@@ -149,6 +150,8 @@ struct data_display {
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Environment
+  @LocalStorageLink('my_window_id') my_window_id: string = '';
+  storage: LocalStorage = storage_of_id(this.my_window_id);
   @LocalStorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @LocalStorageProp('screen_width') screen_width: number = 0;
@@ -183,7 +186,7 @@ struct data_display {
         content: $r('app.string.Save_to_gallery'),
         symbolStartIcon: new SymbolGlyphModifier($r('sys.symbol.picture_badge_arrow_down')).fontSize('24vp'),
       }).onClick(() => {
-        image_save_from_uri(this.text);
+        image_save_from_uri(this.text, this.getUIContext().getHostContext()!);
       })
     }
     .fontColor(this.color_current_font)
@@ -267,7 +270,7 @@ struct data_display {
           })
             .clickEffect(click_effect_default())
             .onClick(() => {
-              preview_image(this.text);
+              preview_image(this.text, this.storage);
             }) // Preview
         } // Buttons
       } else {
@@ -372,7 +375,7 @@ struct data_display {
       this.copy_text(this.text);
     }
     if (this.type == 'image') {
-      preview_image(this.text);
+      preview_image(this.text, this.storage);
     }
   }
 
@@ -400,7 +403,7 @@ struct data_display {
    * */
   download_url(url: string) {
     try {
-      (AppStorage.get('bunch_of_tabs') as bunch_of_tabs).workingMainTab().controller.startDownload(url);
+      (this.storage.get('bunch_of_tabs') as bunch_of_tabs).workingMainTab().controller.startDownload(url);
     } catch (e) {
       console.error('[meowScratchingBoard] Download Url failed! ' + e);
     }

@@ -1,4 +1,6 @@
 import Curves from '@ohos.curves';
+import { resource_to_string } from '../utils/resource_tools';
+import { common } from '@kit.AbilityKit';
 
 /**
  * Default fontSize_Extra for texts.
@@ -127,4 +129,12 @@ export function default_user_agents() {
     "Chrome Android 130\nMozilla/5.0 (Linux; Android 12; ALN-AL80 Build/5.0.0.107) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
   ];
   return result.join("\n");
+}
+
+/**
+ * The default name of a window.
+ * @returns 'Foxy Meowy Dodgy! Welcome to a new window!'
+ * */
+export function default_new_window_name(): string {
+  return resource_to_string($r('app.string.Settings_appearance_windows_default_name'));
 }

@@ -5,11 +5,12 @@ import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
 import { meow_init_main, meow_init_sub } from '../processes/init';
 import { meowPx2vp } from '../utils/environment_tools';
 import lazy { bunch_of_tabs } from '../hosts/bunch_of_tabs';
-import { window_index_of_id } from '../utils/ui_tools';
+import { update_window_decor_height, window_index_of_id } from '../utils/ui_tools';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 
 export default class HomeAbility extends UIAbility {
   my_window_id = '';
+  my_window_alias = '';
   storage: LocalStorage = new LocalStorage();
 
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam) {
@@ -18,13 +19,17 @@ export default class HomeAbility extends UIAbility {
     console.log('launchParam launchReason: ' + launchParam.launchReason);
 
     // save environment
-    AppStorage.setOrCreate('context', this.context);
+    this.storage.setOrCreate('context', this.context);
     AppStorage.setOrCreate('pathDir', this.context.filesDir);
     AppStorage.setOrCreate('currentColorMode', this.context.config.colorMode);
 
     // LAST_WINDOW_INSTANCE_KEY is set by HomeAbilityStage.
     this.my_window_id = AppStorage.get('LAST_WINDOW_INSTANCE_KEY') as string;
     this.storage.setOrCreate('my_window_id', this.my_window_id); // Use it as a UNIQUE window id.
+
+    // LAST_WINDOW_INSTANCE_KEY is set by HomeAbilityStage.
+    this.my_window_alias = AppStorage.get('LAST_WINDOW_WINDOW_NAME') as string;
+    this.storage.setOrCreate('my_window_alias', this.my_window_alias); // Use it as a UNIQUE window id.
 
     this.process_want(want, 'onCreate');
 
@@ -190,6 +195,8 @@ export default class HomeAbility extends UIAbility {
       AppStorage.setOrCreate('windows', windowClasses); // Is this needed?
     }
 
+    storage.setOrCreate('my_windowClass', windowClass);
+
     // Parallel array of ids
     let windowIds = AppStorage.get('windowIds') as string[];
     windowIds.push(my_window_id);
@@ -211,6 +218,8 @@ export default class HomeAbility extends UIAbility {
 
       if (deviceInfo.deviceType == '2in1') {
         windowClass.setWindowDecorVisible(false);
+        // update_window_decor_height(windowClass);
+
         let windowDecorHeight = windowClass.getWindowDecorHeight();
 
         windowClass.on('windowTitleButtonRectChange', (titleButtonRect) => {

@@ -5,6 +5,7 @@ import { image } from '@kit.ImageKit';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { meowContext } from './environment_tools';
+import { common } from '@kit.AbilityKit';
 
 // Pick & Save
 
@@ -14,7 +15,7 @@ import { meowContext } from './environment_tools';
  * */
 export async function download_save_from_path(path: string) {
   let uri: string = '';
-  const documentViewPicker = new picker.DocumentViewPicker(meowContext());
+  const documentViewPicker = new picker.DocumentViewPicker();
   const documentSaveOptions = new picker.DocumentSaveOptions();
   documentSaveOptions.pickerMode = picker.DocumentPickerMode.DOWNLOAD;
   await documentViewPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
@@ -45,7 +46,7 @@ export function document_save_text(file_name: string, content: string) {
     let documentSaveOptions = new picker.DocumentSaveOptions();
     documentSaveOptions.newFileNames = [file_name];
     // documentSaveOptions.fileSuffixChoices = [".html", ".txt", ".json"];
-    let documentPicker = new picker.DocumentViewPicker(meowContext());
+    let documentPicker = new picker.DocumentViewPicker();
 
     documentPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
       target_uri = documentSaveResult
@@ -83,7 +84,7 @@ export async function document_save_from_uri(from: string, file_name_overwrite?:
 
     let documentSaveOptions = new picker.DocumentSaveOptions();
     documentSaveOptions.newFileNames = [file_name];
-    let documentPicker = new picker.DocumentViewPicker(meowContext());
+    let documentPicker = new picker.DocumentViewPicker();
 
     await documentPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
       let target_uri = documentSaveResult
@@ -127,14 +128,13 @@ export async function document_save_from_path(from: string, file_name_overwrite?
  * Save (Copy) an image file from a uri to Gallery.
  * @param from The uri of file.
  * */
-export async function image_save_from_uri(from: string) {
+export async function image_save_from_uri(from: string, context: Context) {
   try {
     let srcFileUris: Array<string> = [from];
     let photoCreationConfigs: Array<photoAccessHelper.PhotoCreationConfig> = [{
       fileNameExtension: get_file_suffix(from),
       photoType: photoAccessHelper.PhotoType.IMAGE,
     }];
-    let context = meowContext();
     let phAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
     let desFileUris: Array<string> = await phAccessHelper.showAssetsCreationDialog(srcFileUris, photoCreationConfigs);
     console.info('[storage_tools][image_save_from_uri] showAssetsCreationDialog success, data is ' + desFileUris);
@@ -162,7 +162,7 @@ export async function document_pick_to_text(suffixFilters?: string[]) {
   let target_uri: string[] = [];
 
   try {
-    let documentPicker = new picker.DocumentViewPicker(meowContext());
+    let documentPicker = new picker.DocumentViewPicker();
     let contents: string = "";
     await documentPicker.select({ maxSelectNumber: 1, fileSuffixFilters: suffixFilters || [".html", ".txt"] })
       .then((documentSelectResult) => {
@@ -199,7 +199,7 @@ export async function image_document_pick_to_ArrayBuffer() {
   let selected_uri: string[] = [];
 
   try {
-    let documentPicker = new picker.DocumentViewPicker(meowContext());
+    let documentPicker = new picker.DocumentViewPicker();
     let buf: ArrayBuffer | undefined = undefined;
 
     await documentPicker.select({
@@ -510,7 +510,7 @@ export function copy_from_rawfile_to_sandbox(from: string, to: string) {
  * */
 export async function get_download_uri() {
   let uri: string = '';
-  const documentViewPicker = new picker.DocumentViewPicker(meowContext());
+  const documentViewPicker = new picker.DocumentViewPicker();
   const documentSaveOptions = new picker.DocumentSaveOptions();
   documentSaveOptions.pickerMode = picker.DocumentPickerMode.DOWNLOAD;
   await documentViewPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
@@ -714,7 +714,7 @@ export async function import_everything() {
 
   // Pick file
   let selected_uri: string[] = [];
-  let documentPicker = new picker.DocumentViewPicker(meowContext());
+  let documentPicker = new picker.DocumentViewPicker();
   try {
     await documentPicker.select({
       maxSelectNumber: 1,

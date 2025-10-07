@@ -1,12 +1,11 @@
-import { common } from '@kit.AbilityKit';
 import { display } from '@kit.ArkUI';
 
 /**
- * Retrieves the context from AppStorage.
- * @returns common.UIAbilityContext
+ * Retrieves the context from AppStorage (from abilityStage).
+ * @returns Context.
  * */
-export function meowContext(): common.UIAbilityContext {
-  return AppStorage.get('context') as common.UIAbilityContext;
+export function meowContext() {
+  return AppStorage.get('context') as Context;
 }
 
 /**

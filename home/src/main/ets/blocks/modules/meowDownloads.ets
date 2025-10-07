@@ -109,7 +109,7 @@ struct noticeCard {
             desc_text: $r('app.string.Index_downloads_direct_desc_check'),
             button_text: '  󰃋  ',
             onExecution: async () => {
-              open_file_uri(await get_download_uri());
+              open_file_uri(await get_download_uri(), this.getUIContext().getHostContext()!);
             }
           })
         } // Direct down

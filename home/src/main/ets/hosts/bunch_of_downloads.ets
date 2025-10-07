@@ -4,6 +4,7 @@ import { webview } from '@kit.ArkWeb';
 import { add_units_to_size, download_save_from_path } from '../utils/storage_tools';
 import { open_file_uri } from '../utils/link_tools';
 import { meowContext } from '../utils/environment_tools';
+import { common } from '@kit.AbilityKit';
 
 export class bunch_of_downloads {
   list_of_on_going_tasks: webview.WebDownloadItem[] = [];
@@ -69,7 +70,7 @@ export class bunch_of_downloads {
     })
 
     dl_delegate.onDownloadFinish((webDownloadItem: webview.WebDownloadItem) => {
-      this.onDownloadFinish(webDownloadItem);
+      this.onDownloadFinish(webDownloadItem, storage);
     })
   }
 
@@ -97,7 +98,7 @@ export class bunch_of_downloads {
     this.last_action = Date.now();
   }
 
-  onDownloadFinish(webDownloadItem: webview.WebDownloadItem) {
+  onDownloadFinish(webDownloadItem: webview.WebDownloadItem, storage: LocalStorage) {
     // console.info('[bunch_of_downloads] Download complete, path: ' + download_target_path);
 
     // Get my index
@@ -113,7 +114,7 @@ export class bunch_of_downloads {
     if (direct_download) {
       this.save_downloaded_item_to_download(my_index).then((uri) => {
         if (uri && direct_download_auto_open) {
-          open_file_uri(uri);
+          open_file_uri(uri, storage.get('context') as common.UIAbilityContext);
         }
       });
     }

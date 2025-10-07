@@ -86,9 +86,9 @@ export class tab_info_packed {
 
 export class bunch_of_tabs {
   // Settings
-  static new_tab_url: string | undefined = undefined;
-  static home_url: string | undefined = undefined;
-  static start_up: string | undefined = undefined;
+  static new_tab_url: string = 'meow://home';
+  static home_url: string = 'meow://home';
+  static start_up: string = 'new tab';
   // Major Data
   Tabs: Array<tab_info_packed> = [];
   Labels: Array<tab_label> = [];

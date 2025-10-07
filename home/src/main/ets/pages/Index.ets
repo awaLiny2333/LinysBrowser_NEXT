@@ -1,10 +1,10 @@
-import { AbilityConstant, ConfigurationConstant } from '@kit.AbilityKit';
-import { window } from '@kit.ArkUI';
+import { AbilityConstant, common, ConfigurationConstant } from '@kit.AbilityKit';
 import { deviceInfo } from '@kit.BasicServicesKit';
-import { animation_default } from '../hosts/bunch_of_defaults';
+import { window } from '@kit.ArkUI';
+import { animation_default, default_new_window_name } from '../hosts/bunch_of_defaults';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
-import { meowContext, meowPx2vp } from '../utils/environment_tools';
+import { meowPx2vp } from '../utils/environment_tools';
 import lazy { print_web } from '../utils/print_tools';
 import lazy { bunch_of_settings } from '../hosts/bunch_of_settings';
 import linysProgress from '../components/linysProgress';
@@ -13,22 +13,27 @@ import meowTitleBar from '../blocks/modules/meowTitleBar';
 import lazy meowBookmarks from '../blocks/modules/meowBookmarks';
 import lazy meowWebView from '../blocks/modules/meowWebView';
 import lazy woofPromptFail from '../dialogs/prompts/woofPromptFail';
-import { last_storage, storage_of_id, window_index_of_windowClass } from '../utils/ui_tools';
+import { change_window_alias, last_storage, new_window, storage_of_id, update_window_decor_height, window_index_of_windowClass } from '../utils/ui_tools';
 import linysText from '../components/texts/linysText';
+import woofPrompt from '../dialogs/web/woofPrompt';
+import linysSymbol from '../components/texts/linysSymbol';
 
 // @Entry({ useSharedStorage: true })
 @Entry(last_storage())
 @Component
 struct Index {
   @LocalStorageLink('my_window_id') my_window_id: string = '';
+  @LocalStorageLink('my_windowClass') my_windowClass: window.Window | undefined = undefined;
   @StorageLink('windowIds') windowIds: string[] = [];
-  @LocalStorageLink('my_window_alias') my_window_alias: string = 'Foxy Meowy Dodgy!';
-  @StorageLink('showing_my_window_alias') showing_my_window_alias: boolean = false;
+  @LocalStorageLink('my_window_alias') my_window_alias: string = '';
+  @StorageLink('showing_my_window_alias') @Watch('on_showing_my_window_alias_change') showing_my_window_alias: boolean = false;
   storage: LocalStorage = storage_of_id(this.my_window_id);
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   /**
    * UI Environment */
+  @StorageLink('my_window_alias_position') my_window_alias_position: string = "center";
+  @LocalStorageLink('windowDecorWidth') windowDecorWidth: number = 0;
   @LocalStorageLink('bottomAvoidHeight') bottomAvoidHeight: number = 1;
   @LocalStorageLink('topAvoidHeight') topAvoidHeight: number = 1;
   @LocalStorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
@@ -67,6 +72,7 @@ struct Index {
   delay_p2: number = 90;
   /**
    * Web Statuses */
+  @LocalStorageLink('current_title') current_title: string = "=￣ω￣=";
   @LocalStorageLink('current_loading_progress') current_loading_progress: number = 0;
   @LocalStorageLink('current_is_loading') current_is_loading: boolean = true;
   /**
@@ -96,6 +102,23 @@ struct Index {
     // showInSubWindow: true,
     width: "90%",
   });
+  @State rename_window_prompt_result: string = '';
+  rename_window_woofPrompt_control: CustomDialogController = new CustomDialogController({
+    builder: woofPrompt({
+      title: $r('app.string.Settings_appearance_windows_rename'),
+      message: this.my_window_id,
+      value: this.my_window_alias,
+      promptResult: this.rename_window_prompt_result,
+      onConfirm: () => {
+        change_window_alias(this.my_window_id, this.rename_window_prompt_result);
+      },
+      onDeny: () => {
+        // Nothing happens
+      }
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 26
+  })
   /**
    * Colors */
   @StorageLink('color_light_primary') @Watch('on_color_change') color_light_primary: ResourceColor = $r('app.color.start_window_background');
@@ -135,6 +158,9 @@ struct Index {
         this.tablet_mode = false;
         this.compact_mode = false;
       }
+
+      // Set window title
+      change_window_alias(this.my_window_id, this.my_window_alias);
     });
 
     // Init title bar
@@ -142,6 +168,8 @@ struct Index {
 
     // Init color
     this.on_color_change();
+
+    update_window_decor_height(this.my_windowClass!);
 
     // Trigger delayed load
     setTimeout(() => {
@@ -161,7 +189,7 @@ struct Index {
 
   onPageShow(): void {
     // Enable continue
-    meowContext().setMissionContinueState(AbilityConstant.ContinueState.ACTIVE).catch(() => {
+    (this.getUIContext().getHostContext() as common.UIAbilityContext).setMissionContinueState(AbilityConstant.ContinueState.ACTIVE).catch(() => {
       // TODO: Implement error handling.
     });
   }
@@ -187,32 +215,38 @@ struct Index {
       //   this.back();
       // })
 
-      Row() {
+      Row({ space: 10 }) {
         Row({ space: 10 }) {
           linysText({
-            text: '#' + this.windowIds.indexOf(this.my_window_id)
+            text: '#' + this.windowIds.indexOf(this.my_window_id) + '｜' + this.current_title + '｜' + this.my_window_alias
           })
-          linysText({
-            text: this.my_window_alias
-          })
-          // linysSymbol({
-          //   symbol_glyph_target: 'sys.symbol.square_and_pencil',
-          //   font_size: 20
-          // })
             .onClick(() => {
               // Edit
+              this.rename_window_woofPrompt_control.open();
+            })
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.plus',
+            font_size: 16,
+            font_weight: FontWeight.Medium
+          })
+            .onClick(() => {
+              new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), default_new_window_name());
             })
         }
-        .height(this.height_of_top_avoid())
-        .margin({ left: 5, right: 5 })
-        .padding(12)
+        .layoutWeight(1)
+        .justifyContent(this.justifyContents_of_alias())
         .opacity(0.7)
-        .width('100%')
-        .justifyContent(FlexAlign.Center)
-        .alignItems(this.tablet_mode ? VerticalAlign.Center : VerticalAlign.Bottom)
         .visibility(this.showing_my_window_alias ? Visibility.Visible : Visibility.Hidden)
         .animation(animation_default())
       }
+      .padding({
+        left: 15,
+        right: this.tablet_mode ? Math.max(15, this.windowDecorWidth + 5) : 15,
+        top: 8,
+        bottom: 8
+      })
+      .alignItems(this.tablet_mode ? VerticalAlign.Center : VerticalAlign.Bottom)
+      .justifyContent(FlexAlign.Center)
       .height(this.height_of_top_avoid())
       .clip(true)
       .backgroundColor(this.color_current_secondary)
@@ -399,6 +433,10 @@ struct Index {
     })
   }
 
+  on_showing_my_window_alias_change() {
+    update_window_decor_height(this.my_windowClass!);
+  }
+
   // kinda params
 
   width_of_Bookmarks_and_Tabs() {
@@ -465,7 +503,7 @@ struct Index {
     // if (deviceInfo.deviceType == '2in1' && this.title_bar_position == 'top' && this.tabs_style == 'horizontal' && this.showing_tabs && this.tablet_mode) {
     //   return 10;
     // }
-    let alias_display_height = this.tablet_mode ? 10 : 35;
+    let alias_display_height = this.tablet_mode ? 5 : 25;
     return this.topAvoidHeight + (this.showing_my_window_alias ? alias_display_height : 0);
   }
 
@@ -489,6 +527,16 @@ struct Index {
       status = !status;
     }
     return status ? Direction.Rtl : Direction.Ltr;
+  }
+
+  justifyContents_of_alias() {
+    if (this.my_window_alias_position == 'left') {
+      return FlexAlign.Start;
+    }
+    if (this.my_window_alias_position == 'right') {
+      return FlexAlign.End;
+    }
+    return FlexAlign.Center;
   }
 
   // Operations

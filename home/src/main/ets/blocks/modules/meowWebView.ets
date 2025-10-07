@@ -103,9 +103,19 @@ struct meowWebView {
     width: "90%"
   });
   @State js_prompt_event: OnPromptEvent | undefined = undefined;
+  @State js_prompt_result: string = '';
   woofPrompt_control: CustomDialogController = new CustomDialogController({
     builder: woofPrompt({
-      event: this.js_prompt_event
+      title: this.js_prompt_event?.url,
+      message: this.js_prompt_event?.message,
+      value: this.js_prompt_event?.value,
+      promptResult: this.js_prompt_result,
+      onConfirm: () => {
+        this.js_prompt_event?.result.handlePromptConfirm(this.js_prompt_result);
+      },
+      onDeny: () => {
+        this.js_prompt_event?.result.handleCancel();
+      }
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 26
@@ -327,13 +337,6 @@ struct meowWebView {
               this.storage.set('universal_new_tab_gateway', new_target_url);
               event.handler.setWebController(null);
             })
-            // .onErrorReceive((e) => {
-            //   if (e) {
-            //     console.error("[ArkWeb][ERROR] " + e.error.getErrorCode() + ", " + e.error.getErrorInfo()
-            //       + " @ " + this.tab_urls[Label.index_key])
-            //     // Log web errors
-            //   }
-            // })
             .onTitleReceive(() => {
               try {
                 // Ask tab to update its info
@@ -346,42 +349,6 @@ struct meowWebView {
               } catch (e) {
                 console.error('[meowWebView][onProgressChange] Update bunch_of_tabs error: ' + e);
               }
-            })
-            .onPageBegin(() => {
-              console.log("[ArkWeb] on page begin");
-
-              if (Label.index_key >= this.bunch_of_tabs.get_tabs_count()) {
-                // If not synced, idk why but o(=•ェ•=)m
-                return;
-              }
-
-              try {
-                // Ask tab to update its info (Reset)
-                this.bunch_of_tabs.Tabs[Label.index_key].update_title();
-                this.bunch_of_tabs.Tabs[Label.index_key].update_url();
-                this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(true)
-                this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(0)
-              } catch (e) {
-                console.error('[meowWebView][onPageBegin] Update bunch_of_tabs error: ' + e);
-              }
-
-              // Get synced lists
-              sync_tabs_list_info(this.storage)
-              // Update Input Search Box
-              this.update_search_box_text(this.current_url)
-            })
-            .onPageEnd(() => {
-              // console.log("[Meow][ArkWeb] on page end")
-              try {
-                this.bunch_of_tabs.Tabs[Label.index_key].update_title();
-                this.bunch_of_tabs.Tabs[Label.index_key].update_url();
-                this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(false);
-                this.bunch_of_tabs.update_backward_forward_access();
-              } catch (e) {
-                console.error('[meowWebView][onPageEnd] Update bunch_of_tabs error: ' + e);
-              }
-
-              sync_tabs_list_info(this.storage);
 
               // Save browse history if is neither resource tab nor a recovery tab
               if (this.collect_new_history
@@ -398,6 +365,42 @@ struct meowWebView {
                   console.log("[meowWebView] Didn't save history for a recovery process in progress");
                 }
               }
+            })
+            .onPageBegin(() => {
+              console.log("[ArkWeb] on page begin");
+
+              if (Label.index_key >= this.bunch_of_tabs.get_tabs_count()) {
+                // If not synced, idk why but o(=•ェ•=)m
+                return;
+              }
+
+              try {
+                // Ask tab to update its info (Reset)
+                // this.bunch_of_tabs.Tabs[Label.index_key].update_title();
+                this.bunch_of_tabs.Tabs[Label.index_key].update_url();
+                this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(true)
+                this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(0)
+              } catch (e) {
+                console.error('[meowWebView][onPageBegin] Update bunch_of_tabs error: ' + e);
+              }
+
+              // Get synced lists
+              sync_tabs_list_info(this.storage)
+              // Update Input Search Box
+              this.update_search_box_text(this.current_url)
+            })
+            .onPageEnd(() => {
+              // console.log("[Meow][ArkWeb] on page end")
+              try {
+                // this.bunch_of_tabs.Tabs[Label.index_key].update_title();
+                this.bunch_of_tabs.Tabs[Label.index_key].update_url();
+                this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(false);
+                this.bunch_of_tabs.update_backward_forward_access();
+              } catch (e) {
+                console.error('[meowWebView][onPageEnd] Update bunch_of_tabs error: ' + e);
+              }
+
+              sync_tabs_list_info(this.storage);
 
               this.bunch_of_tabs.update_web_state(Label.index_key);
               // Get and save web_state
@@ -426,7 +429,7 @@ struct meowWebView {
 
               try {
                 // Ask tab to update its info
-                this.bunch_of_tabs.Tabs[Label.index_key].update_title();
+                // this.bunch_of_tabs.Tabs[Label.index_key].update_title();
                 this.bunch_of_tabs.Tabs[Label.index_key].update_url();
                 this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(progress);
                 this.bunch_of_tabs.update_backward_forward_access();

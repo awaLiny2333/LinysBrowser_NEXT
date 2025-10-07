@@ -137,6 +137,18 @@
       "value": "底部避让"
     },
     {
+      "name": "Settings_appearance_windows",
+      "value": "窗口"
+    },
+    {
+      "name": "Settings_appearance_windows_default_name",
+      "value": "是冲浪喵！咕噜咕噜～"
+    },
+    {
+      "name": "Settings_appearance_windows_rename",
+      "value": "重命名此窗口！"
+    },
+    {
       "name": "Settings_appearance_status_showing_my_windows_alias",
       "value": "显示窗口信息"
     },

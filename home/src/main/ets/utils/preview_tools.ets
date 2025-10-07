@@ -6,7 +6,7 @@ import { meowContext } from './environment_tools';
 const image_suffixes = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
 const image_mimes = ['jpeg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg+xml'];
 
-export function preview_image(uri: string) {
+export function preview_image(uri: string, storage: LocalStorage) {
   // Determine file name
   const split_name_result = uri.split('/');
   const file_name = split_name_result[split_name_result.length-1];
@@ -27,7 +27,9 @@ export function preview_image(uri: string) {
     uri: uri,
     mimeType: mime
   };
-  filePreview.openPreview(meowContext(), fileInfo, displayInfo).then(() => {
+
+  let context = storage.get('context') as Context;
+  filePreview.openPreview(context, fileInfo, displayInfo).then(() => {
     console.info('[preview_image] Succeeded in opening preview');
   }).catch((err: BusinessError) => {
     console.error(`[preview_image] Failed to open preview, err.code = ${err.code}, err.message = ${err.message}`);

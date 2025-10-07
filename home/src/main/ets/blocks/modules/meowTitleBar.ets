@@ -5,6 +5,7 @@ import {
   animation_popup_duration,
   capsule_bar_height,
   click_effect_default,
+  default_new_window_name,
   fontSize_Icon_Button,
   fontSize_Large,
   fontSize_Normal
@@ -14,7 +15,7 @@ import { bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import { allow_drop_types, drop_to_scratching_board } from '../../utils/drag_drop_tools';
-import { current_tabs_style_is_horizontal, storage_of_id } from '../../utils/ui_tools';
+import { change_window_alias, current_tabs_style_is_horizontal, new_window, storage_of_id } from '../../utils/ui_tools';
 import { search_engine } from '../../hosts/bunch_of_search_engines';
 import lazy { add_transparency } from '../../utils/color_tools';
 import lazy { copy } from '../../utils/clipboard_tools';
@@ -37,10 +38,14 @@ import lazy woofCookies from '../../dialogs/managers/woofCookies';
 import lazy woofQuickUA from '../../dialogs/quicks/woofQuickUA';
 import lazy woofGeneralManage from '../../dialogs/managers/woofGeneralManage';
 import { sync_tabs_list_info } from '../../processes/tabs_actions';
+import { common } from '@kit.AbilityKit';
+import woofPrompt from '../../dialogs/web/woofPrompt';
 
 @Component
 struct meowTitleBar {
+  @StorageLink('windowIds') windowIds: string[] = [];
   @LocalStorageLink('my_window_id') my_window_id: string = '';
+  @LocalStorageLink('my_window_alias') my_window_alias: string = '';
   storage: LocalStorage = storage_of_id(this.my_window_id);
   // Hosts
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
@@ -282,6 +287,23 @@ struct meowTitleBar {
     // showInSubWindow: true,
     width: "90%",
   });
+  @State rename_window_prompt_result: string = '';
+  rename_window_woofPrompt_control: CustomDialogController = new CustomDialogController({
+    builder: woofPrompt({
+      title: $r('app.string.Settings_appearance_windows_rename'),
+      message: this.my_window_id,
+      value: this.my_window_alias,
+      promptResult: this.rename_window_prompt_result,
+      onConfirm: () => {
+        change_window_alias(this.my_window_id, this.rename_window_prompt_result);
+      },
+      onDeny: () => {
+        // Nothing happens
+      }
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 26
+  })
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -674,6 +696,8 @@ struct meowTitleBar {
       if (this.delayed_load_p2) {
         Scroll() {
           Column({ space: 10 }) {
+            Row() // To get more space
+
             RelativeContainer() {
               Row({ space: 10 }) {
                 linysSymbol({
@@ -798,6 +822,39 @@ struct meowTitleBar {
             .borderRadius(12)
             .padding(10)
             .animation(animation_default())
+
+            Row({ space: 10 }) {
+              linysText({
+                text: '#' + this.windowIds.indexOf(this.my_window_id) + '｜' + this.my_window_alias
+              }) // Current my_window_alias
+                .padding({ left: 5 })
+                .layoutWeight(1)
+                .onClick(() => {
+                  this.rename_window_woofPrompt_control.open();
+                })
+
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.pencil_and_card',
+              }) // Edit window name
+                .onClick(() => {
+                  this.rename_window_woofPrompt_control.open();
+                })
+              linysSymbol({
+                // symbol_glyph_target: 'sys.symbol.plus_square_dashed_on_square',
+                symbol_glyph_target: 'sys.symbol.plus',
+              }) // New window
+                .onClick(() => {
+                  new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), default_new_window_name());
+                })
+            } // Window man
+            .visibility(this.visible_when_not_in_page_search())
+            .animation(animation_default())
+            .opacity(0.8)
+            // .width( "100%")
+            .constraintSize({ maxWidth: 500 })
+            .backgroundColor($r('sys.color.comp_background_tertiary'))
+            .borderRadius(12)
+            .padding(10)
 
             Scroll() {
               Row({ space: 10 }) {
@@ -1408,7 +1465,7 @@ struct ThisPageInfo {
 
       linysSymbol({ symbol_glyph_target: 'sys.symbol.share' })
         .onClick(() => {
-          share_link(this.current_url, this.current_title);
+          share_link(this.current_url, this.current_title, this.getUIContext().getHostContext()!);
         })
     } // Title Bar for This Page Info display
     .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)

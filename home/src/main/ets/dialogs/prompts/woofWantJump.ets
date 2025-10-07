@@ -29,7 +29,7 @@ struct woofWantJump {
           if (this.controller) {
             this.controller.close();
           }
-          jump_external_link(this.link);
+          jump_external_link(this.link, this.getUIContext().getHostContext()!);
         },
         onDeny: () => {
           if (this.controller) {

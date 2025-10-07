@@ -1,5 +1,9 @@
 import { window } from '@kit.ArkUI';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
+import { common, Want } from '@kit.AbilityKit';
+
+// Statuses
 
 /**
  * Gets current tabs style is whether horizontal or not.
@@ -13,6 +17,40 @@ export function current_tabs_style_is_horizontal(storage: LocalStorage) {
     return tabs_style == 'horizontal';
   } else {
     return tabs_style_non_tablet_mode == 'horizontal';
+  }
+}
+
+// Actions
+
+export function new_window(context: common.UIAbilityContext, instanceKey: string, new_window_alias: string) {
+  // Open new window
+  let wantInfo: Want = {
+    deviceId: '', // This device
+    bundleName: 'com.next.liny.linysbrowserNEXT',
+    moduleName: 'home',
+    abilityName: 'HomeAbility',
+    parameters: {
+      instanceKey: instanceKey,
+    }
+  };
+  AppStorage.setOrCreate('LAST_WINDOW_WINDOW_NAME', new_window_alias);
+  context.startAbility(wantInfo).then(() => {
+    console.log('[meowAppSettings] startAbility success.');
+  }).catch((error: BusinessError) => {
+    console.log('[meowAppSettings] startAbility failed: ' + error);
+  });
+}
+
+/**
+ * Updates window decor height.
+ * @param windowClass The windowClass.
+ * */
+export function update_window_decor_height(windowClass: window.Window) {
+  try {
+    let showing_my_window_alias = AppStorage.get('showing_my_window_alias') as boolean;
+    windowClass.setWindowDecorHeight(showing_my_window_alias ? 45 : 40);
+  } catch (error) {
+    console.error('[window_load_content] setWindowDecorHeight failed: ' + error);
   }
 }
 
@@ -68,6 +106,17 @@ export function window_of_id(id: string) {
 }
 
 /**
+ * Returns windowStage of named by the id.
+ * @param id The id.
+ * @returns The window.WindowStage.
+ * */
+export function windowStage_of_id(id: string) {
+  let windowStages = AppStorage.get('windowStages') as window.WindowStage[];
+  let idx = window_index_of_id(id);
+  return windowStages[idx];
+}
+
+/**
  * Returns storage of named by the id.
  * @param id The id.
  * @returns The LocalStorage.
@@ -116,4 +165,24 @@ export function bunch_of_tabs_of_window(w: window.Window) {
   let all_bunch_of_tabs = AppStorage.get('all_bunch_of_tabs') as bunch_of_tabs[];
   let tabs = all_bunch_of_tabs[window_index_of_windowClass(w)];
   return tabs;
+}
+
+/**
+ * Changes the my_window_alias of a window.
+ * @param id The window id.
+ * @param alias The new alias.
+ * */
+export function change_window_alias(id: string, alias: string) {
+  let storage = storage_of_id(id);
+  if (!storage) {
+    return;
+  }
+  storage.set('my_window_alias', alias);
+
+  let windowClass = window_of_id(id);
+  if (windowClass) {
+    windowClass.setWindowTitle(alias).catch((e: BusinessError) => {
+      console.error('[change_window_alias] Set alias failed!' + JSON.stringify(e));
+    });
+  }
 }

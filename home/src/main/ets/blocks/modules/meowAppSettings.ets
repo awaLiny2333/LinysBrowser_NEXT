@@ -3,6 +3,7 @@ import {
   animation_default,
   capsule_bar_height,
   click_effect_default,
+  default_new_window_name,
   fontSize_Extra,
   fontSize_Large,
   minimum_card_width,
@@ -48,9 +49,8 @@ import lazy woofRecentFaultLogs from '../../dialogs/contents/woofRecentFaultLogs
 import lazy woofUpdateHistory from '../../dialogs/contents/woofUpdateHistory';
 import lazy woofPromptOK from '../../dialogs/prompts/woofPromptOK';
 import lazy woofHistory from '../../dialogs/managers/woofHistory';
-import { new_window } from '../../processes/deveowlopers_options';
 import { common } from '@kit.AbilityKit';
-import { storage_of_id } from '../../utils/ui_tools';
+import { new_window, storage_of_id, window_of_id } from '../../utils/ui_tools';
 
 @Component
 struct meowAppSettings {
@@ -61,6 +61,7 @@ struct meowAppSettings {
   @Link @Watch('on_open_or_close_panel') showing_app_settings: boolean;
   // Hosts and environment
   @StorageLink('tabs_style') tabs_style: string = "";
+  @StorageLink('my_window_alias_position') my_window_alias_position: string = "center";
   @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
   @StorageLink('title_bar_position') title_bar_position: string = "";
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
@@ -99,7 +100,16 @@ struct meowAppSettings {
     selectedBackgroundColor: this.color_current_font,
     selectedFontColor: this.color_current_primary
   })
-  @State left_or_right: SegmentButtonOptions = SegmentButtonOptions.tab({
+  @State my_window_alias_position_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
+    buttons: [
+      { text: '󰈯' },
+      { text: '󰁨' },
+      { text: '󰈰' }
+    ],
+    selectedBackgroundColor: this.color_current_font,
+    selectedFontColor: this.color_current_primary
+  })
+  @State left_or_right_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [{ text: '󰃊' }, { text: '󰈱' }],
     selectedBackgroundColor: this.color_current_font,
     selectedFontColor: this.color_current_primary
@@ -110,6 +120,7 @@ struct meowAppSettings {
   @State @Watch('on_tabs_style_changed') tabs_style_selected: number[] = [0];
   @State @Watch('on_tabs_style_non_tablet_mode_changed') tabs_style_selected_non_tablet_mode: number[] = [0];
   @State @Watch('on_start_up_option_changed') start_up_page_selected: number[] = [0];
+  @State @Watch('on_my_window_alias_position_changed') my_window_alias_position_selected: number[] = [0];
   @State @Watch('on_prefer_hand_left_or_right_changed') left_or_right_selected: number[] = [0];
   @StorageLink('max_bookmark_advice') max_bookmark_advice: number = 5;
   @StorageLink('max_history_advice') max_history_advice: number = 5;
@@ -631,7 +642,7 @@ struct meowAppSettings {
                 highlight: this.settings_scroll_to == 3
               }) {
                 SegmentButton({
-                  options: this.left_or_right,
+                  options: this.left_or_right_tabOptions,
                   selectedIndexes: this.left_or_right_selected
                 }) // Single hand usability
 
@@ -698,17 +709,10 @@ struct meowAppSettings {
                     bunch_of_settings.set('bottom_avoid', this.bottom_avoid);
                   }
                 }) // Enable bottom_avoid
-                linysSwitchWithText({
-                  text: $r('app.string.Settings_appearance_status_showing_my_windows_alias'),
-                  toggle_state: this.showing_my_window_alias,
-                  onExecution: () => {
-                    bunch_of_settings.set('status_showing_my_windows_alias', this.showing_my_window_alias);
-                  }
-                }) // Enable show my_window_alias
-              }
+              } // Individuals
 
               settingsSubCard({
-                icon: '󰍗',
+                icon: '󰰽',
                 title: $r('app.string.Index_layout_title'),
                 timeout: this.settings_scroll_to_highlight_timeout,
                 highlight: this.settings_scroll_to == 4
@@ -737,6 +741,26 @@ struct meowAppSettings {
                   selectedIndexes: this.tabs_style_selected_non_tablet_mode
                 })
               } // Layout
+
+              settingsSubCard({
+                icon: '󰖃',
+                title: $r('app.string.Settings_appearance_windows'),
+                timeout: this.settings_scroll_to_highlight_timeout,
+                highlight: this.settings_scroll_to == 4
+              }) {
+                linysSwitchWithText({
+                  text: $r('app.string.Settings_appearance_status_showing_my_windows_alias'),
+                  toggle_state: this.showing_my_window_alias,
+                  onExecution: () => {
+                    bunch_of_settings.set('status_showing_my_windows_alias', this.showing_my_window_alias);
+                  }
+                }) // Enable show my_window_alias
+                linysText({ text: $r('app.string.Settings_start_up_page') })
+                SegmentButton({
+                  options: this.my_window_alias_position_tabOptions,
+                  selectedIndexes: this.my_window_alias_position_selected
+                }) // Position of my_window_alias
+              } // Windows
 
               settingsSubCard({
                 icon: '󰟠',
@@ -1140,7 +1164,7 @@ struct meowAppSettings {
                     desc_text: 'Open New Window',
                     button_text: '  󰅑  ',
                     onExecution: () => {
-                      new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString());
+                      new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), default_new_window_name());
                     }
                   });
                   linysTextTitle({ text: this.my_window_id });
@@ -1229,26 +1253,30 @@ struct meowAppSettings {
     } else {
       this.tabs_style_selected_non_tablet_mode = [1];
     }
-    if (bunch_of_tabs.new_tab_url !== undefined) {
-      this.new_tab_url_edit = bunch_of_tabs.new_tab_url;
+
+    // Tabs
+    this.new_tab_url_edit = bunch_of_tabs.new_tab_url;
+    this.home_url_edit = bunch_of_tabs.home_url;
+
+    // Start up mode
+    let start_up = bunch_of_tabs.start_up;
+    if (start_up == "new tab") {
+      this.start_up_page_selected = [0];
+    } else if (start_up == "home") {
+      this.start_up_page_selected = [1];
+    } else if (start_up == "continue") {
+      this.start_up_page_selected = [2];
     }
-    if (bunch_of_tabs.home_url !== undefined) {
-      this.home_url_edit = bunch_of_tabs.home_url;
+
+    // Window alias position
+    let my_window_alias_position = this.my_window_alias_position;
+    if (my_window_alias_position == "left") {
+      this.my_window_alias_position_selected = [0];
+    } else if (my_window_alias_position == "center") {
+      this.my_window_alias_position_selected = [1];
+    } else if (my_window_alias_position == "right") {
+      this.my_window_alias_position_selected = [2];
     }
-    if (bunch_of_tabs.start_up !== undefined) {
-      let start_up = bunch_of_tabs.start_up;
-      if (start_up == "new tab") {
-        this.start_up_page_selected = [0];
-      }
-      if (start_up == "home") {
-        this.start_up_page_selected = [1];
-      }
-      if (start_up == "continue") {
-        this.start_up_page_selected = [2];
-      }
-    }
-    // Calculate web cache size
-    // this.web_cache_size = get_folder_size_Sync('/data/storage/el2/base/cache/web/Cache', true)
   }
 
   on_panel_close() {
@@ -1291,6 +1319,19 @@ struct meowAppSettings {
     bunch_of_tabs.start_up = result;
     // kv_store_put("start_up_option", result);
     bunch_of_settings.set('start_up_option', result);
+  }
+
+  on_my_window_alias_position_changed() {
+    let result: string = "";
+    if (this.my_window_alias_position_selected[0] == 0) {
+      result = "left";
+    } else if (this.my_window_alias_position_selected[0] == 1) {
+      result = "center";
+    } else {
+      result = "right";
+    }
+    this.my_window_alias_position = result;
+    bunch_of_settings.set('my_window_alias_position', result);
   }
 
   on_tabs_style_changed() {
