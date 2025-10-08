@@ -29,10 +29,10 @@ struct woofPrompt {
 
   build() {
     Column({ space: 15 }) {
-      linysTextTitle({ text: this.title }) // Page url
+      linysTextTitle({ text: this.title, max_lines: 2 }) // Page url
         .width("100%")
 
-      linysText({ text: this.message }) // Prompt message
+      linysText({ text: this.message, max_lines: 999 }) // Prompt message
         .width("100%")
 
       if (this.single_line) {
@@ -74,7 +74,9 @@ struct woofPrompt {
             }
             this.controller.close();
           }
-        }
+        },
+        deny_double_confirm: true,
+        confirm_double_confirm: true,
       }) // Buttons
     }
     .padding(20)

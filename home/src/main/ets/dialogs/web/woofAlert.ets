@@ -16,10 +16,10 @@ struct woofAlert {
 
   build() {
     Column({ space: 15 }) {
-      linysTextTitle({ text: this.event?.url }) // Page url
+      linysTextTitle({ text: this.event?.url, max_lines: 2 }) // Page url
         .width("100%")
 
-      linysText({ text: this.event?.message }) // Prompt message
+      linysText({ text: this.event?.message, max_lines: 999 }) // Prompt message
         .width("100%")
 
       linysConfirmDenyButtons({
