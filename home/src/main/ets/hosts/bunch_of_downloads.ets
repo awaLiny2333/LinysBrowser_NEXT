@@ -195,7 +195,7 @@ export class bunch_of_downloads {
     try {
       let documentSaveOptions = new picker.DocumentSaveOptions();
       documentSaveOptions.newFileNames = [file_name];
-      let documentPicker = new picker.DocumentViewPicker(meowContext());
+      let documentPicker = new picker.DocumentViewPicker();
 
       await documentPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
         target_uri = documentSaveResult

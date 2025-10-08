@@ -49,12 +49,13 @@ import lazy woofRecentFaultLogs from '../../dialogs/contents/woofRecentFaultLogs
 import lazy woofUpdateHistory from '../../dialogs/contents/woofUpdateHistory';
 import lazy woofPromptOK from '../../dialogs/prompts/woofPromptOK';
 import lazy woofHistory from '../../dialogs/managers/woofHistory';
+import { new_window, storage_of_id } from '../../utils/ui_tools';
 import { common } from '@kit.AbilityKit';
-import { new_window, storage_of_id, window_of_id } from '../../utils/ui_tools';
 
 @Component
 struct meowAppSettings {
   @LocalStorageLink('my_window_id') my_window_id: string = '';
+  @LocalStorageLink('my_window_alias') my_window_alias: string = '';
   @StorageLink('showing_my_window_alias') showing_my_window_alias: boolean = false;
   storage: LocalStorage = storage_of_id(this.my_window_id);
   @StorageLink('windowIds') windowIds: string[] = [];
@@ -1158,8 +1159,20 @@ struct meowAppSettings {
                     max_lines: 99,
                     is_description: true,
                     is_expanded: true
-                  });
+                  }); // Desc
 
+                  linysTextTitle({ text: this.my_window_id });
+                  linysText({
+                    text: [
+                      'Index #' + this.windowIds.indexOf(this.my_window_id),
+                      'ID: ' + this.storage.get('my_window_id'),
+                      'bunch_of_tabs.my_id: ' + this.bunch_of_tabs.my_id,
+                      'Alias: ' + this.my_window_alias,
+                    ].join('\n'),
+                    max_lines: 99,
+                    is_description: true,
+                    is_expanded: true
+                  })
                   linysCapsuleButtonWithText({
                     desc_text: 'Open New Window',
                     button_text: '  󰅑  ',
@@ -1167,8 +1180,6 @@ struct meowAppSettings {
                       new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), default_new_window_name());
                     }
                   });
-                  linysTextTitle({ text: this.my_window_id });
-                  linysTextTitle({ text: 'Index #' + this.windowIds.indexOf(this.my_window_id) });
                 }
               }
             } // Update

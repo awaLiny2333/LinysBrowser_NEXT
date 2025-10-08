@@ -114,9 +114,10 @@ struct Index {
   rename_window_woofPrompt_control: CustomDialogController = new CustomDialogController({
     builder: woofPrompt({
       title: $r('app.string.Settings_appearance_windows_rename'),
-      message: this.my_window_id,
+      message: 'ID: ' + this.my_window_id,
       value: this.my_window_alias,
       promptResult: this.rename_window_prompt_result,
+      single_line: true,
       onConfirm: () => {
         change_window_alias(this.my_window_id, this.rename_window_prompt_result);
       },
@@ -150,10 +151,10 @@ struct Index {
         ' ',
         '[Meow][Index]',
         '    window.Window #' + my_index,
-        '    alias: ' + this.my_window_alias,
         '    my_window_id from this.storage: ' + this.storage.get('my_window_id'),
         '    my_window_id from @LocalStorageLink: ' + this.my_window_id,
-        '    bunch_of_tabs.my_id: ' + all_bunch_of_tabs[my_index].my_id,
+        '    bunch_of_tabs.my_id: ' + this.bunch_of_tabs.my_id,
+        '    alias: ' + this.my_window_alias,
         ' '
       ].join('\n');
       console.log(log);

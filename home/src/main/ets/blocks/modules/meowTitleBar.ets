@@ -294,6 +294,7 @@ struct meowTitleBar {
       message: 'ID: ' + this.my_window_id,
       value: this.my_window_alias,
       promptResult: this.rename_window_prompt_result,
+      single_line: true,
       onConfirm: () => {
         change_window_alias(this.my_window_id, this.rename_window_prompt_result);
       },

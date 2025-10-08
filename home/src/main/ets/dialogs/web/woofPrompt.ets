@@ -2,6 +2,7 @@ import linysConfirmDenyButtons from '../../components/buttons/linysConfirmDenyBu
 import linysText from '../../components/texts/linysText';
 import linysTextArea from '../../components/texts/linysTextArea';
 import linysTextTitle from '../../components/texts/linysTextTitle';
+import { capsule_bar_height } from '../../hosts/bunch_of_defaults';
 
 @CustomDialog
 struct woofPrompt {
@@ -9,9 +10,11 @@ struct woofPrompt {
   @State message: ResourceStr = 'Message Meow';
   @State value: string = 'Value Meow';
   @Link promptResult: string;
+  single_line: boolean = false;
   controller: CustomDialogController;
   // Colors
   @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // UI display
   @LocalStorageLink('screen_height') screen_height: number = 0;
   // Actions
@@ -32,8 +35,28 @@ struct woofPrompt {
       linysText({ text: this.message }) // Prompt message
         .width("100%")
 
-      linysTextArea({ init_text: this.value, text: this.promptResult }) // Edit
-        .constraintSize({ maxHeight: Math.max(0, this.screen_height - 160) })
+      if (this.single_line) {
+        TextInput({ text: this.value })
+          .onChange((value) => {
+            this.promptResult = value;
+          })
+          .fontWeight(FontWeight.Regular)
+          .fontColor(this.color_current_font)
+          .caretColor(this.color_current_font)
+          .selectedBackgroundColor(this.color_current_font)
+          .onSubmit(() => {
+            if (this.controller) {
+              if (this.onConfirm) {
+                this.onConfirm();
+              }
+              this.controller.close();
+            }
+          })
+          .height(capsule_bar_height())
+      } else {
+        linysTextArea({ init_text: this.value, text: this.promptResult }) // Edit
+          .constraintSize({ maxHeight: Math.max(0, this.screen_height - 160) })
+      }
 
       linysConfirmDenyButtons({
         onConfirm: () => {
