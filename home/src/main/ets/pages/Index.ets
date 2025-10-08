@@ -144,7 +144,6 @@ struct Index {
 
     // Determine tablet mode
     await window.getLastWindow(this.getUIContext().getHostContext()).then((w: window.Window) => {
-      let all_bunch_of_tabs = AppStorage.get('all_bunch_of_tabs') as bunch_of_tabs[];
 
       const my_index = window_index_of_windowClass(w);
       let log = [
@@ -221,6 +220,9 @@ struct Index {
         .keyboardShortcut(this.bunch_of_key_shortcuts.print.main_key, this.bunch_of_key_shortcuts.print.modifier, () => {
           print_web(this.bunch_of_tabs.workingMainTab().controller);
         })
+        .keyboardShortcut(this.bunch_of_key_shortcuts.new_window.main_key, this.bunch_of_key_shortcuts.new_window.modifier, () => {
+          this.create_new_window();
+        })
       // .keyboardShortcut(FunctionKey.ESC, [], () => {
       //   this.back();
       // })
@@ -241,7 +243,7 @@ struct Index {
             font_weight: FontWeight.Medium
           })
             .onClick(() => {
-              new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), this.my_window_alias);
+              this.create_new_window();
             })
         }
         .padding({
@@ -621,5 +623,13 @@ struct Index {
 
   go_back_tab(): boolean {
     return this.bunch_of_tabs.goBackward_onWorkingTab();
+  }
+
+  /**
+   * Creates a new window of given alias.
+   * @param alias The alias.
+   * */
+  create_new_window(alias: string = this.my_window_alias) {
+    new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), alias);
   }
 }

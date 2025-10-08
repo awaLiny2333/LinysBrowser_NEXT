@@ -981,6 +981,10 @@
       "value": "打印"
     },
     {
+      "name": "Key_shortcuts_new_window",
+      "value": "新窗口"
+    },
+    {
       "name": "Homepage_background",
       "value": "背景"
     },

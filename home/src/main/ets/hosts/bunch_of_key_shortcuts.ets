@@ -20,11 +20,12 @@ export class bunch_of_key_shortcuts {
   history: key_combination = new key_combination('h', [ModifierKey.CTRL]);
   refresh: key_combination = new key_combination(FunctionKey.F5);
   print: key_combination = new key_combination('p', [ModifierKey.CTRL]);
+  new_window: key_combination = new key_combination('n', [ModifierKey.CTRL]);
   // Lists
   key_shortcut_labels =
-    ['new_tab', 'close_tab', 'show_tabs', 'focus_address', 'in_page_search', 'fullscreen', 'history', 'refresh', 'print'];
+    ['new_tab', 'close_tab', 'show_tabs', 'focus_address', 'in_page_search', 'fullscreen', 'history', 'refresh', 'print', 'new_window'];
   key_shortcut_combinations =
-    [this.new_tab, this.close_tab, this.show_tabs, this.focus_address, this.in_page_search, this.fullscreen, this.history, this.refresh, this.print];
+    [this.new_tab, this.close_tab, this.show_tabs, this.focus_address, this.in_page_search, this.fullscreen, this.history, this.refresh, this.print, this.new_window];
   last_edit: number = 0;
 
   /**

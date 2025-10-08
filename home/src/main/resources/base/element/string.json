@@ -981,6 +981,10 @@
       "value": "Print"
     },
     {
+      "name": "Key_shortcuts_new_window",
+      "value": "New window"
+    },
+    {
       "name": "Homepage_background",
       "value": "Background"
     },
