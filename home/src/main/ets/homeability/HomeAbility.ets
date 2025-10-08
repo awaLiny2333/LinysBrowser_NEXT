@@ -235,6 +235,17 @@ export default class HomeAbility extends UIAbility {
         storage.setOrCreate('topAvoidHeight', windowDecorHeight);
         console.log('[HomeAbility] topAvoidHeight: ' + windowDecorHeight);
 
+        // Focus Listener
+        windowClass.on("windowEvent", (windowEvent) => {
+          if (windowEvent == window.WindowEventType.WINDOW_ACTIVE || windowEvent == window.WindowEventType.WINDOW_SHOWN) {
+            // Focused
+            storage.setOrCreate('on_focus', true);
+          } else {
+            // Lose focus
+            storage.setOrCreate('on_focus', false);
+          }
+        });
+
       } else {
         // 1. Set fullscreen window
         windowClass.setImmersiveModeEnabledState(true);

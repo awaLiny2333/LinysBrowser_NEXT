@@ -24,15 +24,14 @@ import {
 } from '../utils/ui_tools';
 import linysText from '../components/texts/linysText';
 import woofPrompt from '../dialogs/web/woofPrompt';
-import linysSymbol from '../components/texts/linysSymbol';
 
 // @Entry({ useSharedStorage: true })
 @Entry(last_storage())
 @Component
 struct Index {
   @LocalStorageLink('my_window_id') my_window_id: string = '';
+  @LocalStorageLink('on_focus') on_focus: boolean = true;
   @LocalStorageLink('my_windowClass') my_windowClass: window.Window | undefined = undefined;
-  @StorageLink('windowIds') @Watch('on_windowIDs_change') windowIds: string[] = [];
   @LocalStorageLink('my_window_alias') my_window_alias: string = '';
   @StorageLink('showing_my_window_alias') @Watch('on_showing_my_window_alias_change') showing_my_window_alias: boolean = false;
   storage: LocalStorage = storage_of_id(this.my_window_id);
@@ -40,7 +39,6 @@ struct Index {
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   /**
    * UI Environment */
-  @StorageLink('my_window_alias_position') my_window_alias_position: string = "center";
   @LocalStorageLink('windowDecorWidth') windowDecorWidth: number = 0;
   @LocalStorageLink('bottomAvoidHeight') bottomAvoidHeight: number = 1;
   @LocalStorageLink('topAvoidHeight') topAvoidHeight: number = 1;
@@ -70,6 +68,8 @@ struct Index {
     bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
   };
   @StorageLink('bottom_avoid') bottom_avoid: boolean = true;
+  @State hover_on_new_window_button: boolean = false;
+  @State press_on_new_window_button: boolean = false;
   /**
    * Delay */
   @LocalStorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
@@ -80,7 +80,6 @@ struct Index {
   delay_p2: number = 90;
   /**
    * Web Statuses */
-  @LocalStorageLink('current_title') current_title: string = "=￣ω￣=";
   @LocalStorageLink('current_loading_progress') current_loading_progress: number = 0;
   @LocalStorageLink('current_is_loading') current_is_loading: boolean = true;
   /**
@@ -110,24 +109,6 @@ struct Index {
     // showInSubWindow: true,
     width: "90%",
   });
-  @State rename_window_prompt_result: string = '';
-  rename_window_woofPrompt_control: CustomDialogController = new CustomDialogController({
-    builder: woofPrompt({
-      title: $r('app.string.Settings_appearance_windows_rename'),
-      message: 'ID: ' + this.my_window_id,
-      value: this.my_window_alias,
-      promptResult: this.rename_window_prompt_result,
-      single_line: true,
-      onConfirm: () => {
-        change_window_alias(this.my_window_id, this.rename_window_prompt_result);
-      },
-      onDeny: () => {
-        // Nothing happens
-      }
-    }),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 26
-  })
   /**
    * Colors */
   @StorageLink('color_light_primary') @Watch('on_color_change') color_light_primary: ResourceColor = $r('app.color.start_window_background');
@@ -227,38 +208,43 @@ struct Index {
       //   this.back();
       // })
 
-      Row({ space: 10 }) {
-        Row({ space: 10 }) {
-          linysText({
-            text: '#' + this.windowIds.indexOf(this.my_window_id) + '｜' + this.current_title + '｜' + this.my_window_alias
+      Row({ space: 20 }) {
+        WindowTitle();
+        if (this.tablet_mode && this.windowDecorWidth > 10) {
+          Row() {
+            SymbolGlyph($r('sys.symbol.plus'))
+              .fontWeight(FontWeight.Medium)
+              .fontSize(this.hover_on_new_window_button ? 18 : 16)
+              .fontColor([this.color_current_font])
+          }
+          .backgroundColor(this.hover_on_new_window_button ? $r('sys.color.comp_background_secondary') : undefined)
+          // .animation(animation_default())
+          .brightness(this.press_on_new_window_button ? 1.08 : undefined)
+          .alignItems(VerticalAlign.Center)
+          .justifyContent(FlexAlign.Center)
+          .width(29)
+          .height(29)
+          .borderRadius(5)
+          .translate({ y: 1.5 })
+          .onClick(() => {
+            this.create_new_window();
           })
-            .onClick(() => {
-              // Edit
-              this.rename_window_woofPrompt_control.open();
-            })
-            .constraintSize({ maxWidth: this.screen_width * 0.7 })
-          linysSymbol({
-            symbol_glyph_target: 'sys.symbol.plus',
-            font_size: 16,
-            font_weight: FontWeight.Medium
+          .onTouch((e) => {
+            if (e.type == TouchType.Down) {
+              this.press_on_new_window_button = true;
+            } else {
+              this.press_on_new_window_button = false;
+            }
           })
-            .onClick(() => {
-              this.create_new_window();
-            })
+          .opacity(this.on_focus ? 1 : 0.4)
+          .onHover((h) => {
+            this.hover_on_new_window_button = h;
+          })
         }
-        .padding({
-          top: 8,
-          bottom: 8,
-        })
-        .layoutWeight(1)
-        .justifyContent(this.justifyContents_of_alias())
-        .opacity(0.7)
-        .visibility(this.showing_my_window_alias ? Visibility.Visible : Visibility.Hidden)
-        .animation(animation_default())
       }
       .padding({
         left: 15,
-        right: this.tablet_mode ? Math.max(15, this.windowDecorWidth + 5) : 15,
+        right: this.tablet_mode ? Math.max(15, this.windowDecorWidth) : 15,
       })
       .alignItems(this.tablet_mode ? VerticalAlign.Center : VerticalAlign.Bottom)
       .justifyContent(FlexAlign.Center)
@@ -452,13 +438,6 @@ struct Index {
     update_window_decor_height(this.my_windowClass!);
   }
 
-  on_windowIDs_change() {
-    if (window_index_of_id(this.my_window_id) == 0) {
-      bunch_of_settings.set('my_window_alias_last', this.my_window_alias);
-      AppStorage.set('LAST_WINDOW_WINDOW_NAME', this.my_window_alias);
-    }
-  }
-
   // kinda params
 
   width_of_Bookmarks_and_Tabs() {
@@ -551,16 +530,6 @@ struct Index {
     return status ? Direction.Rtl : Direction.Ltr;
   }
 
-  justifyContents_of_alias() {
-    if (this.my_window_alias_position == 'left') {
-      return FlexAlign.Start;
-    }
-    if (this.my_window_alias_position == 'right') {
-      return FlexAlign.End;
-    }
-    return FlexAlign.Center;
-  }
-
   // Operations
 
   /**
@@ -631,5 +600,76 @@ struct Index {
    * */
   create_new_window(alias: string = this.my_window_alias) {
     new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), alias);
+  }
+}
+
+@Component
+struct WindowTitle {
+  // Environment
+  @StorageLink('windowIds') @Watch('on_windowIDs_change') windowIds: string[] = [];
+  @LocalStorageLink('my_window_id') my_window_id: string = '';
+  @LocalStorageLink('my_window_alias') my_window_alias: string = '';
+  @LocalStorageLink('screen_width') screen_width: number = 0;
+  // Statuses
+  @StorageLink('showing_my_window_alias') showing_my_window_alias: boolean = false;
+  @StorageLink('my_window_alias_position') my_window_alias_position: string = "center";
+  @LocalStorageLink('current_title') current_title: string = "=￣ω￣=";
+  // Prompt
+  @State rename_window_prompt_result: string = '';
+  rename_window_woofPrompt_control: CustomDialogController = new CustomDialogController({
+    builder: woofPrompt({
+      title: $r('app.string.Settings_appearance_windows_rename'),
+      message: 'ID: ' + this.my_window_id,
+      value: this.my_window_alias,
+      promptResult: this.rename_window_prompt_result,
+      single_line: true,
+      onConfirm: () => {
+        change_window_alias(this.my_window_id, this.rename_window_prompt_result);
+      },
+      onDeny: () => {
+        // Nothing happens
+      }
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 26
+  })
+
+  build() {
+    Row({ space: 10 }) {
+      linysText({
+        text: '#' + this.windowIds.indexOf(this.my_window_id) + '｜' + this.current_title + '｜' + this.my_window_alias
+      })
+        .onClick(() => {
+          // Edit
+          this.rename_window_woofPrompt_control.open();
+        })
+        .constraintSize({ maxWidth: this.screen_width * 0.7 })
+    }
+    .padding({
+      top: 8,
+      bottom: 8,
+    })
+    .justifyContent(this.justifyContents_of_alias())
+    .visibility(this.showing_my_window_alias ? Visibility.Visible : Visibility.Hidden)
+    .animation(animation_default())
+    .opacity(0.7)
+    .layoutWeight(1)
+  }
+
+  justifyContents_of_alias() {
+    if (this.my_window_alias_position == 'left') {
+      return FlexAlign.Start;
+    }
+    if (this.my_window_alias_position == 'right') {
+      return FlexAlign.End;
+    }
+    return FlexAlign.Center;
+  }
+
+  on_windowIDs_change() {
+    if (window_index_of_id(this.my_window_id) == 0) {
+      bunch_of_settings.set('my_window_alias_last', this.my_window_alias);
+      AppStorage.set('LAST_WINDOW_WINDOW_NAME', this.my_window_alias);
+    }
   }
 }
