@@ -3,9 +3,17 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
 import { meow_init_main, meow_init_sub } from '../processes/init';
-import { meowPx2vp } from '../utils/environment_tools';
 import lazy { bunch_of_tabs } from '../hosts/bunch_of_tabs';
-import { window_index_of_id } from '../utils/ui_tools';
+import {
+  enter_free_window_mode,
+  enter_traditional_window_mode,
+  get_avoid,
+  get_free_window_mode,
+  listen_avoid,
+  listen_focus,
+  listen_free_window_mode,
+  window_index_of_id
+} from '../utils/ui_tools';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 
 export default class HomeAbility extends UIAbility {
@@ -221,88 +229,23 @@ export default class HomeAbility extends UIAbility {
       console.log('Succeeded in obtaining the main window. Data: ' + JSON.stringify(windowClass));
       console.log('[HomeAbility] deviceType: ' + deviceInfo.deviceType);
 
-      if (deviceInfo.deviceType == '2in1') {
-        windowClass.setWindowDecorVisible(false);
-        // update_window_decor_height(windowClass);
+      let free_window_mode = get_free_window_mode(this.context);
 
-        let windowDecorHeight = windowClass.getWindowDecorHeight();
-
-        windowClass.on('windowTitleButtonRectChange', (titleButtonRect) => {
-          storage.setOrCreate('windowDecorHeight', titleButtonRect.height);
-          storage.setOrCreate('windowDecorWidth', titleButtonRect.width);
-        })
-
-        storage.setOrCreate('topAvoidHeight', windowDecorHeight);
-        console.log('[HomeAbility] topAvoidHeight: ' + windowDecorHeight);
-
-        // Focus Listener
-        windowClass.on("windowEvent", (windowEvent) => {
-          if (windowEvent == window.WindowEventType.WINDOW_ACTIVE || windowEvent == window.WindowEventType.WINDOW_SHOWN) {
-            // Focused
-            storage.setOrCreate('on_focus', true);
-          } else {
-            // Lose focus
-            storage.setOrCreate('on_focus', false);
-          }
-        });
-
+      if (free_window_mode) {
+        console.log('[HomeAbility] Free-Window mode! Let\'s GO!');
+        enter_free_window_mode(windowClass, storage, my_window_id);
       } else {
-        // 1. Set fullscreen window
-        windowClass.setImmersiveModeEnabledState(true);
+        console.log('[HomeAbility] Traditional window mode~');
+        enter_traditional_window_mode(windowClass, storage);
+      }
 
-        console.log('[HomeAbility] Get avoid areas:')
-        // 2. Get avoid area
-        let type = window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR; // 以导航条避让为例
-        let avoidArea = windowClass.getWindowAvoidArea(type);
-        let avoidBottom = meowPx2vp(avoidArea.bottomRect.height); // 获取到导航条区域的高度
-        storage.setOrCreate('bottomAvoidHeight', avoidBottom);
-        console.log('\tNew avoidBottomHeight: ' + avoidBottom);
+      // Listen free window mode
+      listen_free_window_mode(this.context, windowClass, storage, this.my_window_id);
 
-        type = window.AvoidAreaType.TYPE_SYSTEM;
-        avoidArea = windowClass.getWindowAvoidArea(type);
-        let avoidTop = meowPx2vp(avoidArea.topRect.height);
-        storage.setOrCreate('topAvoidHeight', avoidTop + (avoidTop == 0 ? 0 : 2));
-        console.log('\ttopAvoidHeight: ' + avoidTop + (avoidTop == 0 ? 0 : 2));
-
-        type = window.AvoidAreaType.TYPE_CUTOUT;
-        avoidArea = windowClass.getWindowAvoidArea(type);
-        let avoidLeft = meowPx2vp(avoidArea.leftRect.width);
-        storage.setOrCreate('leftAvoidWidth', avoidLeft + (avoidLeft == 0 ? 0 : 2));
-        console.log('\tNew leftAvoidWidth: ' + avoidLeft + (avoidLeft == 0 ? 0 : 2));
-
-        type = window.AvoidAreaType.TYPE_CUTOUT;
-        avoidArea = windowClass.getWindowAvoidArea(type);
-        let avoidRight = meowPx2vp(avoidArea.rightRect.width);
-        storage.setOrCreate('rightAvoidWidth', avoidRight + (avoidRight == 0 ? 0 : 2));
-        console.log('\tNew avoidRightWidth: ' + avoidRight + (avoidRight == 0 ? 0 : 2));
-
-        // Avoid change listener
-        windowClass.on('avoidAreaChange', (data) => {
-          console.log('[HomeAbility] Changes on avoid areas:')
-
-          if (data.type == window.AvoidAreaType.TYPE_SYSTEM) {
-            avoidTop = meowPx2vp(data.area.topRect.height);
-            storage.setOrCreate('topAvoidHeight', avoidTop + (avoidTop == 0 ? 0 : 2));
-            console.log('\tNew topAvoidHeight: ' + avoidTop + (avoidTop == 0 ? 0 : 2));
-          }
-          if (data.type == window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
-            avoidBottom = meowPx2vp(data.area.bottomRect.height);
-            storage.setOrCreate('bottomAvoidHeight', avoidBottom);
-            console.log('\tNew avoidBottomHeight: ' + avoidBottom);
-          }
-          if (data.type == window.AvoidAreaType.TYPE_CUTOUT) {
-            avoidLeft = meowPx2vp(data.area.leftRect.width);
-            storage.setOrCreate('leftAvoidWidth', avoidLeft + (avoidLeft == 0 ? 0 : 2));
-            console.log('\tNew leftAvoidWidth: ' + avoidLeft + (avoidLeft == 0 ? 0 : 2));
-          }
-          if (data.type == window.AvoidAreaType.TYPE_CUTOUT) {
-            avoidRight = meowPx2vp(data.area.rightRect.width);
-            storage.setOrCreate('rightAvoidWidth', avoidRight + (avoidRight == 0 ? 0 : 2));
-            console.log('\tNew avoidRightWidth: ' + avoidRight + (avoidRight == 0 ? 0 : 2));
-          }
-        })
-      } // Avoid areas
-
+      // Avoid hosts
+      get_avoid(windowClass, storage);
+      listen_avoid(windowClass, storage);
+      listen_focus(windowClass, storage);
     });
   }
 

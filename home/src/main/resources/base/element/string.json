@@ -149,6 +149,10 @@
       "value": "Show window title"
     },
     {
+      "name": "Settings_appearance_windows_alias_position",
+      "value": "Title position"
+    },
+    {
       "name": "Settings_general_custom_ua",
       "value": "User-agent"
     },

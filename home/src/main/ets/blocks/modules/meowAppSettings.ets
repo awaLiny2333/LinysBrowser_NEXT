@@ -746,7 +746,7 @@ struct meowAppSettings {
                       bunch_of_settings.set('status_showing_my_windows_alias', this.showing_my_window_alias);
                     }
                   }) // Enable show my_window_alias
-                  linysText({ text: $r('app.string.Settings_start_up_page') })
+                  linysText({ text: $r('app.string.Settings_appearance_windows_alias_position') })
                   SegmentButton({
                     options: this.my_window_alias_position_tabOptions,
                     selectedIndexes: this.my_window_alias_position_selected

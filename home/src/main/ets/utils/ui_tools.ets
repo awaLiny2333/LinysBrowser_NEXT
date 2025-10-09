@@ -1,8 +1,11 @@
 import { window } from '@kit.ArkUI';
-import { BusinessError } from '@kit.BasicServicesKit';
+import { BusinessError, settings } from '@kit.BasicServicesKit';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { common, Want } from '@kit.AbilityKit';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
+import { meowPx2vp } from './environment_tools';
+import { default_window_decor_height } from '../hosts/bunch_of_defaults';
+import { deviceInfo } from '@kit.BasicServicesKit';
 
 // Statuses
 
@@ -43,15 +46,190 @@ export function new_window(context: common.UIAbilityContext, instanceKey: string
 }
 
 /**
- * Updates window decor height.
- * @param windowClass The windowClass.
+ * Updates window decor height if is in Free-window Mode.
+ * @param window_id The window id.
  * */
-export function update_window_decor_height(windowClass: window.Window) {
+export function update_window_decor_height(window_id: string) {
+  if (!(AppStorage.get('free_window_mode') as boolean)) {
+    console.log('[update_window_decor_height] Executed nothing because not in Free-window Mode!');
+    return;
+  }
+  let h = default_window_decor_height();
+  let windowClass = window_of_id(window_id);
+  let storage = storage_of_id(window_id);
+  storage.setOrCreate('topAvoidHeight', h);
   try {
-    let showing_my_window_alias = AppStorage.get('showing_my_window_alias') as boolean;
-    windowClass.setWindowDecorHeight(showing_my_window_alias ? 45 : 40);
+    windowClass.setWindowDecorHeight(h);
   } catch (error) {
-    console.error('[window_load_content] setWindowDecorHeight failed: ' + error);
+    console.error('[update_window_decor_height] setWindowDecorHeight failed: ' + error);
+  }
+}
+
+
+// Environment
+
+/**
+ * Enables the listeners for avoid area change.
+ * @param windowClass The window.Window object.
+ * @param storage The LocalStorage of that window.
+ * */
+export function listen_avoid(windowClass: window.Window, storage: LocalStorage) {
+  try {
+    windowClass.on('avoidAreaChange', (data) => {
+      console.log('[listen_avoid] Changes on avoid areas: ')
+      if (data.type == window.AvoidAreaType.TYPE_SYSTEM) {
+        // Only refresh top avoid height from here if is not in free window mode.
+        if (!(AppStorage.get('free_window_mode') as boolean)) {
+          let avoidTop = meowPx2vp(data.area.topRect.height);
+          storage.setOrCreate('topAvoidHeight', avoidTop + (avoidTop == 0 ? 0 : 2));
+          console.log('\tNew topAvoidHeight: ' + avoidTop + (avoidTop == 0 ? 0 : 2));
+        }
+      }
+      if (data.type == window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
+        let avoidBottom = meowPx2vp(data.area.bottomRect.height);
+        storage.setOrCreate('bottomAvoidHeight', avoidBottom);
+        console.log('\tNew avoidBottomHeight: ' + avoidBottom);
+      }
+      if (data.type == window.AvoidAreaType.TYPE_CUTOUT) {
+        let avoidLeft = meowPx2vp(data.area.leftRect.width);
+        storage.setOrCreate('leftAvoidWidth', avoidLeft + (avoidLeft == 0 ? 0 : 2));
+        console.log('\tNew leftAvoidWidth: ' + avoidLeft + (avoidLeft == 0 ? 0 : 2));
+      }
+      if (data.type == window.AvoidAreaType.TYPE_CUTOUT) {
+        let avoidRight = meowPx2vp(data.area.rightRect.width);
+        storage.setOrCreate('rightAvoidWidth', avoidRight + (avoidRight == 0 ? 0 : 2));
+        console.log('\tNew avoidRightWidth: ' + avoidRight + (avoidRight == 0 ? 0 : 2));
+      }
+    })
+  } catch (e) {
+    console.error('[listen_avoid] Failed: ' + e);
+  }
+}
+
+/**
+ * Check avoid area and store them in storage.
+ * @param windowClass The window.Window object.
+ * @param storage The LocalStorage of that window.
+ * @param free_window The type of window: true for free windows
+ * (PC, 2in1, Free-window mode on Tablets),
+ * false for traditional windows (Phones, regular float windows on Tablets).
+ * */
+export function get_avoid(windowClass: window.Window, storage: LocalStorage) {
+  console.log('[get_avoid] Get avoid areas: ');
+  try {
+    let type = window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR;
+    let avoidArea = windowClass.getWindowAvoidArea(type);
+    let avoidBottom = meowPx2vp(avoidArea.bottomRect.height);
+    storage.setOrCreate('bottomAvoidHeight', avoidBottom);
+    console.log('\tNew avoidBottomHeight: ' + avoidBottom);
+
+    if (!(AppStorage.get('free_window_mode') as boolean)) {
+      // Only refresh top avoid height from here if is not in free window mode.
+      type = window.AvoidAreaType.TYPE_SYSTEM;
+      avoidArea = windowClass.getWindowAvoidArea(type);
+      let avoidTop = meowPx2vp(avoidArea.topRect.height);
+      storage.setOrCreate('topAvoidHeight', avoidTop + (avoidTop == 0 ? 0 : 2));
+      console.log('\ttopAvoidHeight: ' + avoidTop + (avoidTop == 0 ? 0 : 2));
+    }
+
+    type = window.AvoidAreaType.TYPE_CUTOUT;
+    avoidArea = windowClass.getWindowAvoidArea(type);
+    let avoidLeft = meowPx2vp(avoidArea.leftRect.width);
+    storage.setOrCreate('leftAvoidWidth', avoidLeft + (avoidLeft == 0 ? 0 : 2));
+    console.log('\tNew leftAvoidWidth: ' + avoidLeft + (avoidLeft == 0 ? 0 : 2));
+
+    type = window.AvoidAreaType.TYPE_CUTOUT;
+    avoidArea = windowClass.getWindowAvoidArea(type);
+    let avoidRight = meowPx2vp(avoidArea.rightRect.width);
+    storage.setOrCreate('rightAvoidWidth', avoidRight + (avoidRight == 0 ? 0 : 2));
+    console.log('\tNew avoidRightWidth: ' + avoidRight + (avoidRight == 0 ? 0 : 2));
+  } catch (e) {
+    console.error('[get_avoid] Failed: ' + e);
+  }
+}
+
+/**
+ * Enables the listeners for avoid area change.
+ *
+ * Works OK in both window modes (free / traditional).
+ *
+ * @param windowClass The window.Window object.
+ * @param storage The LocalStorage of that window.
+ * */
+export function listen_focus(windowClass: window.Window, storage: LocalStorage) {
+  // Focus Listener
+  try {
+    windowClass.on("windowEvent", (windowEvent) => {
+      if (windowEvent == window.WindowEventType.WINDOW_ACTIVE || windowEvent == window.WindowEventType.WINDOW_SHOWN) {
+        // Focused
+        storage.setOrCreate('on_focus', true);
+      } else {
+        // Lose focus
+        storage.setOrCreate('on_focus', false);
+      }
+    });
+  } catch (e) {
+    console.error('[listen_focus] Failed: ' + e);
+  }
+}
+
+/**
+ * Checks settings to figure out if currently is in free window mode.
+ * @param context The UIAbility Context.
+ * @returns A boolean value.
+ * */
+export function get_free_window_mode(context: Context) {
+  if (deviceInfo.deviceType == '2in1') {
+    return true;
+  }
+  return settings.getValueSync(context, 'window_pcmode_switch_status', 'false', settings.domainName.USER_PROPERTY) == 'true';
+}
+
+/**
+ * Listens to the Free-window Mode change and automatically switch modes.
+ * @param context
+ * @param windowClass
+ * @param storage
+ * @param id
+ * */
+export function listen_free_window_mode(context: Context, windowClass: window.Window, storage: LocalStorage, id: string) {
+  settings.registerKeyObserver(context, 'window_pcmode_switch_status', settings.domainName.USER_PROPERTY,
+    () => {
+      settings.getValue(context, 'window_pcmode_switch_status', settings.domainName.USER_PROPERTY)
+        .then((free) => {
+          if (free) {
+            enter_free_window_mode(windowClass, storage, id);
+          } else {
+            enter_traditional_window_mode(windowClass, storage);
+          }
+        });
+    })
+}
+
+export function enter_free_window_mode(windowClass: window.Window, storage: LocalStorage, id: string) {
+  try {
+    windowClass.setImmersiveModeEnabledState(false);
+    windowClass.setWindowDecorVisible(false);
+    windowClass.on('windowTitleButtonRectChange', (titleButtonRect) => {
+      storage.setOrCreate('windowDecorHeight', titleButtonRect.height);
+      storage.setOrCreate('windowDecorWidth', titleButtonRect.width);
+    })
+    update_window_decor_height(id);
+    AppStorage.setOrCreate('free_window_mode', true);
+  } catch (e) {
+    console.error('[enter_free_window_mode] Failed: ' + e);
+  }
+}
+
+export function enter_traditional_window_mode(windowClass: window.Window, storage: LocalStorage) {
+  try {
+    windowClass.setWindowDecorVisible(true);
+    windowClass.off('windowTitleButtonRectChange')
+    windowClass.setImmersiveModeEnabledState(true);
+    get_avoid(windowClass, storage);
+    AppStorage.setOrCreate('free_window_mode', false);
+  } catch (e) {
+    console.error('[enter_free_window_mode] Failed: ' + e);
   }
 }
 

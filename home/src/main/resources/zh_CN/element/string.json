@@ -153,6 +153,10 @@
       "value": "显示窗口标题"
     },
     {
+      "name": "Settings_appearance_windows_alias_position",
+      "value": "标题位置"
+    },
+    {
       "name": "Settings_general_custom_ua",
       "value": "用户代理（UA）"
     },

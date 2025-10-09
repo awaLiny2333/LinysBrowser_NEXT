@@ -30,7 +30,6 @@ import woofPrompt from '../dialogs/web/woofPrompt';
 @Component
 struct Index {
   @LocalStorageLink('my_window_id') my_window_id: string = '';
-  @LocalStorageLink('on_focus') on_focus: boolean = true;
   @LocalStorageLink('my_windowClass') my_windowClass: window.Window | undefined = undefined;
   @LocalStorageLink('my_window_alias') my_window_alias: string = '';
   @StorageLink('showing_my_window_alias') @Watch('on_showing_my_window_alias_change') showing_my_window_alias: boolean = false;
@@ -39,6 +38,7 @@ struct Index {
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   /**
    * UI Environment */
+  @StorageLink('free_window_mode') free_window_mode: boolean = false;
   @LocalStorageLink('windowDecorWidth') windowDecorWidth: number = 0;
   @LocalStorageLink('bottomAvoidHeight') bottomAvoidHeight: number = 1;
   @LocalStorageLink('topAvoidHeight') topAvoidHeight: number = 1;
@@ -68,8 +68,6 @@ struct Index {
     bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
   };
   @StorageLink('bottom_avoid') bottom_avoid: boolean = true;
-  @State hover_on_new_window_button: boolean = false;
-  @State press_on_new_window_button: boolean = false;
   /**
    * Delay */
   @LocalStorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
@@ -159,7 +157,7 @@ struct Index {
     // Init color
     this.on_color_change();
 
-    update_window_decor_height(this.my_windowClass!);
+    update_window_decor_height(this.my_window_id);
 
     // Trigger delayed load
     setTimeout(() => {
@@ -208,46 +206,29 @@ struct Index {
       //   this.back();
       // })
 
-      Row({ space: 20 }) {
-        WindowTitle();
-        if (this.tablet_mode && this.windowDecorWidth > 10) {
-          Row() {
-            SymbolGlyph($r('sys.symbol.plus'))
-              .fontWeight(FontWeight.Medium)
-              .fontSize(this.hover_on_new_window_button ? 18 : 16)
-              .fontColor([this.color_current_font])
-          }
-          .backgroundColor(this.hover_on_new_window_button ? $r('sys.color.comp_background_secondary') : undefined)
-          // .animation(animation_default())
-          .brightness(this.press_on_new_window_button ? 1.08 : undefined)
-          .alignItems(VerticalAlign.Center)
-          .justifyContent(FlexAlign.Center)
-          .width(29)
-          .height(29)
-          .borderRadius(5)
-          .translate({ y: 1.5 })
-          .onClick(() => {
-            this.create_new_window();
+      RelativeContainer() {
+        WindowTitle()
+        // .id('WindowTitle')
+          .padding(this.tablet_mode ? { right: 20, bottom: 5 } : undefined)
+          .alignRules({
+            bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+            left: { anchor: '__container__', align: HorizontalAlign.Start },
+            right: !this.tablet_mode ? { anchor: '__container__', align: HorizontalAlign.End } : { anchor: 'AddWindowButton', align: HorizontalAlign.Start }
           })
-          .onTouch((e) => {
-            if (e.type == TouchType.Down) {
-              this.press_on_new_window_button = true;
-            } else {
-              this.press_on_new_window_button = false;
-            }
-          })
-          .opacity(this.on_focus ? 1 : 0.4)
-          .onHover((h) => {
-            this.hover_on_new_window_button = h;
-          })
+          .animation(animation_default())
+
+        if (this.free_window_mode) {
+          AddWindowButton()
+            .id('AddWindowButton')
+            .padding({ top: 9, right: Math.max(15, this.windowDecorWidth) - 15 })
+            .alignRules({ top: { anchor: '__container__', align: VerticalAlign.Top }, right: { anchor: '__container__', align: HorizontalAlign.End } })
+            .animation(animation_default())
         }
       }
       .padding({
         left: 15,
-        right: this.tablet_mode ? Math.max(15, this.windowDecorWidth) : 15,
+        right: 15
       })
-      .alignItems(this.tablet_mode ? VerticalAlign.Center : VerticalAlign.Bottom)
-      .justifyContent(FlexAlign.Center)
       .height(this.height_of_top_avoid())
       .clip(true)
       .backgroundColor(this.color_current_secondary)
@@ -435,7 +416,7 @@ struct Index {
   }
 
   on_showing_my_window_alias_change() {
-    update_window_decor_height(this.my_windowClass!);
+    update_window_decor_height(this.my_window_id);
   }
 
   // kinda params
@@ -501,11 +482,11 @@ struct Index {
     if (this.fullscreen_mode) {
       return 0;
     }
-    // if (deviceInfo.deviceType == '2in1' && this.title_bar_position == 'top' && this.tabs_style == 'horizontal' && this.showing_tabs && this.tablet_mode) {
-    //   return 10;
-    // }
-    let alias_display_height = this.tablet_mode ? 5 : 25;
-    return this.topAvoidHeight + (this.showing_my_window_alias ? alias_display_height : 0);
+    let tablet_mode_compensation = 0;
+    if (!this.tablet_mode && this.showing_my_window_alias) {
+      tablet_mode_compensation = 20;
+    }
+    return this.topAvoidHeight + tablet_mode_compensation;
   }
 
   height_of_bottom_avoid() {
@@ -606,6 +587,7 @@ struct Index {
 @Component
 struct WindowTitle {
   // Environment
+  @StorageLink('free_window_mode') free_window_mode: boolean = false;
   @StorageLink('windowIds') @Watch('on_windowIDs_change') windowIds: string[] = [];
   @LocalStorageLink('my_window_id') my_window_id: string = '';
   @LocalStorageLink('my_window_alias') my_window_alias: string = '';
@@ -643,8 +625,9 @@ struct WindowTitle {
           // Edit
           this.rename_window_woofPrompt_control.open();
         })
-        .constraintSize({ maxWidth: this.screen_width * 0.7 })
+        .constraintSize(this.free_window_mode ? undefined : { maxWidth: this.screen_width * 0.7 })
     }
+    .width('100%')
     .padding({
       top: 8,
       bottom: 8,
@@ -653,7 +636,6 @@ struct WindowTitle {
     .visibility(this.showing_my_window_alias ? Visibility.Visible : Visibility.Hidden)
     .animation(animation_default())
     .opacity(0.7)
-    .layoutWeight(1)
   }
 
   justifyContents_of_alias() {
@@ -671,5 +653,54 @@ struct WindowTitle {
       bunch_of_settings.set('my_window_alias_last', this.my_window_alias);
       AppStorage.set('LAST_WINDOW_WINDOW_NAME', this.my_window_alias);
     }
+  }
+}
+
+@Component
+struct AddWindowButton {
+  @State hover_on_new_window_button: boolean = false;
+  @State press_on_new_window_button: boolean = false;
+  // Colors
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // Environment
+  @LocalStorageLink('my_window_alias') my_window_alias: string = '';
+  @LocalStorageLink('on_focus') on_focus: boolean = true;
+
+  build() {
+    Row() {
+      SymbolGlyph($r('sys.symbol.plus'))
+        .fontWeight(FontWeight.Medium)
+        .fontSize(this.hover_on_new_window_button ? 18 : 16)
+        .fontColor([this.color_current_font])
+    }
+    .backgroundColor(this.hover_on_new_window_button ? $r('sys.color.comp_background_secondary') : undefined)
+    .brightness(this.press_on_new_window_button ? 1.08 : undefined)
+    .alignItems(VerticalAlign.Center)
+    .justifyContent(FlexAlign.Center)
+    .width(28.5)
+    .height(28.5)
+    .borderRadius(4)
+    .onClick(() => {
+      this.create_new_window();
+    })
+    .onTouch((e) => {
+      if (e.type == TouchType.Down) {
+        this.press_on_new_window_button = true;
+      } else {
+        this.press_on_new_window_button = false;
+      }
+    })
+    .opacity(this.on_focus ? 1 : 0.4)
+    .onHover((h) => {
+      this.hover_on_new_window_button = h;
+    })
+  }
+
+  /**
+   * Creates a new window of given alias.
+   * @param alias The alias.
+   * */
+  create_new_window(alias: string = this.my_window_alias) {
+    new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), alias);
   }
 }

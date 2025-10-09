@@ -1,6 +1,5 @@
 import Curves from '@ohos.curves';
 import { resource_to_string } from '../utils/resource_tools';
-import { common } from '@kit.AbilityKit';
 
 /**
  * Default fontSize_Extra for texts.
@@ -137,4 +136,12 @@ export function default_user_agents() {
  * */
 export function default_new_window_name(): string {
   return resource_to_string($r('app.string.Settings_appearance_windows_default_name'));
+}
+
+/**
+ * Obtains the default window_decor_height.
+ * @returns A number, in vp.
+ * */
+export function default_window_decor_height(): number {
+  return (AppStorage.get('showing_my_window_alias') as boolean) ? 45 : 37;
 }
