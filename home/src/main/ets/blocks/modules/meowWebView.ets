@@ -348,22 +348,6 @@ struct meowWebView {
               } catch (e) {
                 console.error('[meowWebView][onProgressChange] Update bunch_of_tabs error: ' + e);
               }
-
-              // Save browse history if is neither resource tab nor a recovery tab
-              if (this.collect_new_history
-                && !this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation
-                && !this.tab_urls[Label.index_key].includes("resource://")) {
-                let new_record = new history_record(this.tab_titles[Label.index_key], this.tab_urls[Label.index_key])
-                this.bunch_of_history.add_history(new_record, true, true);
-              } else {
-                this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation = false;
-                // log
-                if (!this.collect_new_history) {
-                  console.log("[meowWebView] Didn't save history for settings disabled.");
-                } else {
-                  console.log("[meowWebView] Didn't save history for a recovery process in progress");
-                }
-              }
             })
             .onPageBegin(() => {
               console.log("[ArkWeb] on page begin");
@@ -406,6 +390,8 @@ struct meowWebView {
               if (window_index_of_id(this.my_window_id) == 0) {
                 this.bunch_of_tabs.save_web_state_to_sandbox(Label.index_key);
               }
+
+              this.save_history(Label.index_key);
 
               determine_extra_background(this.storage);
             })
@@ -663,6 +649,24 @@ struct meowWebView {
       // Update Input Search Box
     }
     // Update Input Search Box when new page loaded
+  }
+
+  save_history(index: number) {
+    // Save browse history if is neither resource tab nor a recovery tab
+    if (this.collect_new_history
+      && !this.bunch_of_tabs.Tabs[index].restore_on_creation
+      && !this.tab_urls[index].includes("resource://")) {
+      let new_record = new history_record(this.tab_titles[index], this.tab_urls[index])
+      this.bunch_of_history.add_history(new_record, true, true);
+    } else {
+      this.bunch_of_tabs.Tabs[index].restore_on_creation = false;
+      // log
+      if (!this.collect_new_history) {
+        console.log("[meowWebView] Didn't save history for settings disabled.");
+      } else {
+        console.log("[meowWebView] Didn't save history for a recovery process in progress");
+      }
+    }
   }
 
   /**
