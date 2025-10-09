@@ -62,9 +62,9 @@ struct meowTitleBar {
   @Link bar_height: number;
   @LocalStorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
   @LocalStorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
-  @StorageProp('reindexing_history_progress') reindexing_history_progress: string = "";
-  @StorageProp('history_index_loading_progress') history_index_loading_progress: string = "";
-  @StorageProp('history_index_saving_progress') history_index_saving_progress: string = "";
+  @StorageLink('reindexing_history_progress') reindexing_history_progress: string = "";
+  @StorageLink('history_index_loading_progress') history_index_loading_progress: string = "";
+  @StorageLink('history_index_saving_progress') history_index_saving_progress: string = "";
   // Current environment
   @Link title_bar_alignRules: AlignRuleOption;
   @State search_input_unified: string = "";
@@ -125,7 +125,7 @@ struct meowTitleBar {
   @StorageLink('web_force_dark_mode_exemptions') web_force_dark_mode_exemptions: string[] = [];
   @StorageLink('use_adblock') use_adblock: boolean = true;
   @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
-  @StorageProp('title_bar_position') title_bar_position: string = "";
+  @StorageLink('title_bar_position') title_bar_position: string = "";
   @StorageLink('tabs_style') tabs_style: string = "";
   @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
   // Settings - Accessibility
@@ -306,9 +306,9 @@ struct meowTitleBar {
     cornerRadius: 26
   })
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     Column({ space: 10 }) {
@@ -1360,9 +1360,9 @@ export default meowTitleBar;
 @Component
 struct EstimatedDestination {
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Data
   @Link is_http_no_s: boolean;
   @Link is_search_input_typing: boolean;
@@ -1431,9 +1431,9 @@ struct ThisPageInfo {
   @Prop current_title: string;
   @Prop current_url: string;
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
 

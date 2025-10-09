@@ -12,9 +12,9 @@ struct woofPromptFail {
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     Column({ space: 10 }) {
@@ -104,9 +104,9 @@ struct goodByeLink {
   @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Internal stuff
   @Prop text: ResourceStr = $r('app.string.HomeAbility_label');
   @Prop color: ResourceColor;

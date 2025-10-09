@@ -50,7 +50,7 @@ struct meowBookmarks {
   @LocalStorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
   /**
    * Colors */
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Pan Gesture
   pan_x: number = 0;
 
@@ -565,8 +565,8 @@ struct bookmarkItem {
     width: "90%",
   })
   // Colors
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   @Builder
   contents() {

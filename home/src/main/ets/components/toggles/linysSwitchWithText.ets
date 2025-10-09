@@ -10,8 +10,8 @@ struct linysSwitchWithText {
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand: string = 'right';
   // Colors
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     Row({ space: 10 }) {

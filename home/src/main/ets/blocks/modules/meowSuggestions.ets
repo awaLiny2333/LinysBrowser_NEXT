@@ -26,15 +26,15 @@ struct meowSuggestions {
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
   // Settings
-  @StorageProp('max_bookmark_advice') max_bookmark_advice: number = 5;
-  @StorageProp('max_history_advice') max_history_advice: number = 5;
+  @StorageLink('max_bookmark_advice') max_bookmark_advice: number = 5;
+  @StorageLink('max_history_advice') max_history_advice: number = 5;
   // Myself
   @State bookmark_suggestions: string[][] = [];
   @State history_suggestions: string[][] = [];
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     Scroll() {
@@ -161,7 +161,7 @@ struct meowRelation {
 
 @Component
 struct suggestionList {
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @Prop suggestions: string[][] = [];
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';

@@ -20,8 +20,7 @@ struct meowTabsHorizontal {
   @LocalStorageLink('showing_tabs') showing_tabs: boolean = false;
   @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
-  @StorageProp('pathDir') pathDir: string = "";
-  @StorageProp('title_bar_position') title_bar_position: string = "";
+  @StorageLink('title_bar_position') title_bar_position: string = "";
   // Controls and environments
   @LocalStorageLink('tab_titles') tab_titles: string[] = []
   @LocalStorageLink('current_title') current_title: string = "=￣ω￣=";
@@ -256,8 +255,8 @@ struct HorizontalTabButton {
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     Row({ space: 8 }) {

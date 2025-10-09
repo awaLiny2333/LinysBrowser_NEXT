@@ -12,7 +12,7 @@ struct linysPathTree {
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Colors
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
 
   build() {
     Scroll(this.scroller) {
@@ -81,7 +81,7 @@ struct linysPathButton {
   @Prop my_directory: string = "label";
   @Link current_viewing_path: string;
   // Colors
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
 
   build() {
     Row() {

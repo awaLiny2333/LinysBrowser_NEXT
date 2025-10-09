@@ -28,8 +28,7 @@ struct meowWebView {
   @StorageLink('bunch_of_bookmarks') @Watch('refresh_homepage_shortcuts') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks('Bookmarks~Meow');
   @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads(true);
   // Environments
-  @StorageProp('currentColorMode') current_color_mode: number = 0;
-  @StorageProp('pathDir') pathDir: string = "";
+  @StorageLink('currentColorMode') current_color_mode: number = 0;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @LocalStorageLink('fullscreen_mode') fullscreen_mode: boolean = false;
   @LocalStorageLink('fullscreen_handler') handler: FullScreenExitHandler | null = null;
@@ -51,10 +50,10 @@ struct meowWebView {
    * Web control statuses */
   @LocalStorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
   // Settings
-  @StorageProp('collect_new_history') collect_new_history: boolean = true;
-  @StorageProp('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
+  @StorageLink('collect_new_history') collect_new_history: boolean = true;
+  @StorageLink('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
   @StorageLink('use_adblock') @Watch('on_use_adblock_state_change') use_adblock: boolean = true;
-  @StorageProp('adblock_exceptions') adblock_exceptions: string[] = [];
+  @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
   @StorageLink('homepage_shortcuts_bookmarks_dir') @Watch('refresh_homepage_shortcuts') homepage_shortcuts_dir: string = '/';
   @StorageLink('homepage_shortcuts_init_height') homepage_shortcuts_init_height: number = 50;
   @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
@@ -156,7 +155,7 @@ struct meowWebView {
     cornerRadius: 26,
   });
   // Colors
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   // Else
   @LocalStorageLink('meowWebView_init_OK') init_OK: boolean = false;
   shortcut_scroller: Scroller = new Scroller();
@@ -810,9 +809,9 @@ struct shortcutButton {
   // Gateways
   @LocalStorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // SHow
   @State show_contents: Visibility = Visibility.None;
   @State show: Visibility = Visibility.Hidden;

@@ -9,8 +9,8 @@ import {
 struct linysCapsuleButton {
   @Prop text: ResourceStr = "";
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @Prop color_button: ResourceColor = "";
   @Prop color_text: ResourceColor = "";
 

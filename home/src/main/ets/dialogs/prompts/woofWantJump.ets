@@ -9,7 +9,7 @@ struct woofWantJump {
   controller: CustomDialogController;
   @Prop link: string = '';
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   // UI display
   @LocalStorageLink('screen_height') screen_height: number = 0;
 

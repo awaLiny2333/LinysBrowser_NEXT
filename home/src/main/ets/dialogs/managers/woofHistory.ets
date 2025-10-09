@@ -51,16 +51,16 @@ struct woofHistory {
     right: { anchor: "__container__", align: HorizontalAlign.End }
   };
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Stuffs
   scroller: Scroller = new Scroller();
-  @StorageProp('woofHistory_search_input') woofHistory_search_input: string = '';
-  @StorageProp('woofHistory_shown') woofHistory_shown: boolean[] = all_true(this.opened_month_history_list.length); // If is included in search result
-  @StorageProp('woofHistory_filter') @Watch('submit_search') woofHistory_filter: number = 2; // 0 = label, 1 = link, 2 = both
-  @StorageProp('woofHistory_match_coefficient') @Watch('submit_search') woofHistory_match_coefficient: number = 0.8;
-  @StorageProp('woofHistory_blur') @Watch('on_blur_change') woofHistory_blur: number = 1; // 0 = 0.5, 1 = 0.75, 2 = 1.0
+  @StorageLink('woofHistory_search_input') woofHistory_search_input: string = '';
+  @StorageLink('woofHistory_shown') woofHistory_shown: boolean[] = all_true(this.opened_month_history_list.length); // If is included in search result
+  @StorageLink('woofHistory_filter') @Watch('submit_search') woofHistory_filter: number = 2; // 0 = label, 1 = link, 2 = both
+  @StorageLink('woofHistory_match_coefficient') @Watch('submit_search') woofHistory_match_coefficient: number = 0.8;
+  @StorageLink('woofHistory_blur') @Watch('on_blur_change') woofHistory_blur: number = 1; // 0 = 0.5, 1 = 0.75, 2 = 1.0
   // Dialogs
   @State show_title: string = '';
   @State show_url: string = '';
@@ -472,9 +472,9 @@ struct meowRelation {
   // Gateways
   @LocalStorageLink('universal_new_tab_gateway') universal_new_tab_gateway: string = "";
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     Column({ space: 2 }) {
@@ -544,8 +544,8 @@ struct month_button {
   @Prop month: number;
   @Link viewing_year: number;
   @Link viewing_month: number;
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     Column({ space: 0 }) {
@@ -575,9 +575,9 @@ struct month_button {
 struct SearchInput {
   @StorageLink('woofHistory_search_input') input: string = '';
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Actions
   onSubmitAction?: () => void;
 
@@ -616,9 +616,9 @@ struct LinysSelection {
   @State space: number = 8;
   @State arrowPosition: ArrowPosition = ArrowPosition.END;
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   aboutToAppear(): void {
     this.index = AppStorage.get(this.app_storage_link_id) as number;

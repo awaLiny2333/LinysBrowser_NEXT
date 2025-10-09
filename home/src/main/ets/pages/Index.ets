@@ -50,7 +50,7 @@ struct Index {
   @LocalStorageLink('screen_height') screen_height: number = 0;
   @LocalStorageLink('full_screen_height') full_screen_height: number = 0;
   @LocalStorageLink('fullscreen_mode') @Watch('on_fullscreen_switch') fullscreen_mode: boolean = false;
-  @StorageProp('currentColorMode') @Watch('on_color_mode_change') current_color_mode: number = 0;
+  @StorageLink('currentColorMode') @Watch('on_color_mode_change') current_color_mode: number = 0;
   /**
    * UI Statuses */
   @LocalStorageLink('fullscreen_handler') handler: FullScreenExitHandler | null = null;

@@ -11,7 +11,7 @@ struct woofControlFrame {
   // Control
   controller?: CustomDialogController;
   // Color
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   // animation
   @State off_y_contents: number = 120;
 

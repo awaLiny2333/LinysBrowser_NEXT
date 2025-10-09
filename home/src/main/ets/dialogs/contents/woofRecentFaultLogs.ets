@@ -85,7 +85,7 @@ struct faultItem {
   @Prop fault: string = 'meow meow meow wait a second meow!';
   @Prop idx: number;
   // Colors
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Edit
   @State copied: boolean = false;
   // Settings / Accessibility

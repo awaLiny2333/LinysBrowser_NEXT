@@ -12,14 +12,14 @@ struct woofSelectColor {
   @Prop color_theme_id: string = 'color_light_font';
   @State dark_mode_color: boolean = false;
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
-  @StorageProp('color_light_primary') color_light_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_light_secondary') color_light_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageProp('color_light_font') color_light_font: ResourceColor = $r('app.color.font_color_title');
-  @StorageProp('color_dark_primary') color_dark_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_dark_secondary') color_dark_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageProp('color_dark_font') color_dark_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_light_primary') color_light_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_light_secondary') color_light_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_light_font') color_light_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_dark_primary') color_dark_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_dark_secondary') color_dark_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_dark_font') color_dark_font: ResourceColor = $r('app.color.font_color_title');
   // Edit
   @State @Watch('on_color_change') color_hex_display: ResourceColor = this.color;
   @State color_hsv: number[] = hex2hsv(this.color);

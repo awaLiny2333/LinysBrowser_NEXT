@@ -1,8 +1,8 @@
 @Component
 struct linysProgress {
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @State bar_height: Length = 8;
   @State bar_width: Length = "100%";
   @Watch('on_update') @Prop is_loading: boolean = false;

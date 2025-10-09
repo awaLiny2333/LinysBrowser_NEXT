@@ -12,13 +12,12 @@ struct meowUAManager {
   @StorageLink('user_agent_selected') selected_index: number = -1; // -1 for system default
   @State is_pressing_default_card: boolean = false;
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // UI
   @StorageLink('bunch_of_user_agents_update') bunch_of_user_agents_update: number = 0;
   // Settings / Accessibility
-  @StorageProp('custom_user_agents') custom_user_agents: string = '';
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
 
   aboutToAppear() {
@@ -121,7 +120,7 @@ struct meowUACardItem {
   @State edit_label: string = this.my_label;
   @State edit_content: string = this.my_content;
   // Colors
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   @Builder
   contents() {

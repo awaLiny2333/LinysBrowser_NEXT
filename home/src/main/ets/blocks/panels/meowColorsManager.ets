@@ -7,9 +7,9 @@ import lazy woofSelectColor from '../../dialogs/prompts/woofSelectColor';
 @Component
 struct meowColorsManager {
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @StorageLink('color_light_primary') color_light_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_light_secondary') color_light_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_light_font') color_light_font: ResourceColor = $r('app.color.font_color_title');
@@ -104,8 +104,8 @@ struct colorBlock {
   @Link @Watch('on_color_set') color: ResourceColor;
   @State color_theme_id: string = 'color_light_font';
   @State my_color_mode: number = 0;
-  @StorageProp('currentColorMode') current_color_mode: number = 0;
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('currentColorMode') current_color_mode: number = 0;
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   woofColorSelect_control: CustomDialogController = new CustomDialogController({
     builder: woofSelectColor({ color: this.color, dark_mode_color: false, color_theme_id: this.color_theme_id }),
     alignment: DialogAlignment.Center,

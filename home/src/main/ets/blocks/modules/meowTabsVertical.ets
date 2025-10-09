@@ -35,9 +35,9 @@ struct meowTabsVertical {
   @LocalStorageProp('is_search_input_typing') is_search_input_typing: boolean = false;
   @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
   // Surf
-  @StorageProp('home_url') home_url: string = '';
-  @StorageProp('new_tab_url') new_tab_url: string = '';
-  @StorageProp('start_up_option') start_up_option: string = '';
+  @StorageLink('home_url') home_url: string = '';
+  @StorageLink('new_tab_url') new_tab_url: string = '';
+  @StorageLink('start_up_option') start_up_option: string = '';
   // Controls
   @LocalStorageLink('tab_titles') tab_titles: string[] = []
   @LocalStorageLink('tab_urls') tab_urls: string[] = [];
@@ -72,8 +72,8 @@ struct meowTabsVertical {
   @StorageLink('universal_global_custom_ua_gateway') @Watch('on_global_custom_UA_change') global_custom_UA: string = "";
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Drop
   @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   // Pan Gesture
@@ -640,8 +640,8 @@ struct TabButton {
   @LocalStorageLink('universal_tab_button_click_gateway') uni_tab_button_clicked: number = -1;
   @LocalStorageLink('universal_close_tab_gateway') close_tab_gateway: number = -1;
   // Colors
-  @StorageProp('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Animation
   @State pressing: boolean = false;
 

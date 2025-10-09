@@ -4,8 +4,8 @@ import linysSymbol from '../texts/linysSymbol';
 @Component
 struct linysShowButton {
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @Prop show: boolean = false;
   @Prop symbol_glyph_target: string = "sys.symbol.square_grid_2x2";
   @Prop color_false: ResourceColor = "";

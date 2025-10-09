@@ -13,8 +13,8 @@ struct woofPrompt {
   single_line: boolean = false;
   controller: CustomDialogController;
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // UI display
   @LocalStorageLink('screen_height') screen_height: number = 0;
   // Actions

@@ -3,7 +3,7 @@ import { fontSize_Large } from '../../hosts/bunch_of_defaults';
 @Component
 struct linysTextTitle {
   // Colors
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @Prop text: ResourceStr = $r('app.string.HomeAbility_label');
   @Prop color: ResourceColor = "";
   @Prop max_lines: number = 1;

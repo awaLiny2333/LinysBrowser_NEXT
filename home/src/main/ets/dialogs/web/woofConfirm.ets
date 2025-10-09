@@ -7,7 +7,7 @@ struct woofConfirm {
   event: OnConfirmEvent | undefined = undefined;
   controller: CustomDialogController;
   // Colors
-  @StorageProp('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
 
   aboutToDisappear(): void {
     this.event?.result.handleCancel();

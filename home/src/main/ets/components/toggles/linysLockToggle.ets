@@ -3,7 +3,7 @@ import { fontSize_Large } from '../../hosts/bunch_of_defaults';
 @Component
 struct linysLockToggle {
   @Link locked: boolean;
-  @StorageProp('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @State color: ResourceColor | undefined = undefined;
   // animation
   @State triggerValueReplace: number = 0;
