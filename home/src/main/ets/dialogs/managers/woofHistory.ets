@@ -76,11 +76,6 @@ struct woofHistory {
   // Data
   @StorageLink('woofHistory_data') data: HistoryDataSource = new HistoryDataSource(this.bunch_of_history.get_history_this_month_with_index());
 
-  onPageShow(): void {
-    // initial Refresh
-    this.submit_search();
-  }
-
   build() {
     woofControlFrame({
       title: $r('app.string.Settings_experience_history_view'),
@@ -358,6 +353,12 @@ struct woofHistory {
       .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
       .visibility(this.full_view ? Visibility.None : Visibility.Visible)
       .animation(animation_default())
+      .onAppear(()=>{
+        console.log('[woofHistory] Refresh history search list!');
+        if (this.woofHistory_search_input == '') {
+          this.submit_search();
+        }
+      })
     }
   }
 

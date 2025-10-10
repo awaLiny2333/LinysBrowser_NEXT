@@ -339,18 +339,24 @@ struct meowWebView {
             .onTitleReceive(() => {
               try {
                 // Ask tab to update its info
-                // this.bunch_of_tabs.Tabs[Label.index_key].update_url();
+                this.bunch_of_tabs.Tabs[Label.index_key].update_url();
                 this.bunch_of_tabs.Tabs[Label.index_key].update_title();
                 this.bunch_of_tabs.update_backward_forward_access();
 
                 // Get synced lists
-                sync_tabs_list_info(this.storage)
+                sync_tabs_list_info(this.storage);
               } catch (e) {
                 console.error('[meowWebView][onProgressChange] Update bunch_of_tabs error: ' + e);
               }
+
+              // console.log('[last_saved_url] Last ' + decodeURIComponent(this.bunch_of_tabs.Tabs[Label.index_key].last_saved_url));
+              // console.log('[last_saved_url] This ' + decodeURIComponent(this.bunch_of_tabs.Tabs[Label.index_key].url));
+              // if (!this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation) {
+              //   this.save_history(Label.index_key);
+              // }
             })
             .onPageBegin(() => {
-              console.log("[ArkWeb] on page begin");
+              console.log("[ArkWeb] on page begin!");
 
               if (Label.index_key >= this.bunch_of_tabs.get_tabs_count()) {
                 // If not synced, idk why but o(=•ェ•=)m
@@ -373,7 +379,8 @@ struct meowWebView {
               this.update_search_box_text(this.current_url)
             })
             .onPageEnd(() => {
-              // console.log("[Meow][ArkWeb] on page end")
+              console.log("[Meow][ArkWeb] on page end!");
+
               try {
                 // this.bunch_of_tabs.Tabs[Label.index_key].update_title();
                 this.bunch_of_tabs.Tabs[Label.index_key].update_url();
@@ -652,12 +659,15 @@ struct meowWebView {
   }
 
   save_history(index: number) {
+    let is_new_history = this.bunch_of_tabs.Tabs[index].last_saved_url != this.bunch_of_tabs.Tabs[index].url;
     // Save browse history if is neither resource tab nor a recovery tab
-    if (this.collect_new_history
+    if (this.collect_new_history && is_new_history
       && !this.bunch_of_tabs.Tabs[index].restore_on_creation
       && !this.tab_urls[index].includes("resource://")) {
       let new_record = new history_record(this.tab_titles[index], this.tab_urls[index])
       this.bunch_of_history.add_history(new_record, true, true);
+      // Record last url.
+      this.bunch_of_tabs.Tabs[index].last_saved_url = this.tab_urls[index];
     } else {
       this.bunch_of_tabs.Tabs[index].restore_on_creation = false;
       // log

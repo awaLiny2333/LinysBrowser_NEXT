@@ -33,6 +33,7 @@ export class tab_info_packed {
   searching_keyword_stats_total: number = 0; // Total number of results of in-page search
   restore_on_creation: boolean = false;
   web_state_array: Uint8Array = new Uint8Array();
+  last_saved_url: string = '';
 
   /**
    * A class holding a controller and statuses of a tab.
