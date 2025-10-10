@@ -1,11 +1,10 @@
 import { window } from '@kit.ArkUI';
-import { BusinessError, settings } from '@kit.BasicServicesKit';
+import { BusinessError, deviceInfo, settings } from '@kit.BasicServicesKit';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { common, Want } from '@kit.AbilityKit';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { meowPx2vp } from './environment_tools';
 import { default_window_decor_height } from '../hosts/bunch_of_defaults';
-import { deviceInfo } from '@kit.BasicServicesKit';
 
 // Statuses
 
@@ -51,17 +50,18 @@ export function new_window(context: common.UIAbilityContext, instanceKey: string
  * */
 export function update_window_decor_height(window_id: string) {
   if (!(AppStorage.get('free_window_mode') as boolean)) {
-    console.log('[update_window_decor_height] Executed nothing because not in Free-window Mode!');
+    console.log('[free][update_window_decor_height] Executed nothing because not in Free-window Mode!');
     return;
   }
   let h = default_window_decor_height();
   let windowClass = window_of_id(window_id);
   let storage = storage_of_id(window_id);
   storage.setOrCreate('topAvoidHeight', h);
+  console.log('[free][update_window_decor_height] New height: ' + h);
   try {
     windowClass.setWindowDecorHeight(h);
   } catch (error) {
-    console.error('[update_window_decor_height] setWindowDecorHeight failed: ' + error);
+    console.error('[free][update_window_decor_height] setWindowDecorHeight failed: ' + error);
   }
 }
 
@@ -180,9 +180,16 @@ export function listen_focus(windowClass: window.Window, storage: LocalStorage) 
  * */
 export function get_free_window_mode(context: Context) {
   if (deviceInfo.deviceType == '2in1') {
+    console.log('[free] return true for 2in1 type!');
+    AppStorage.setOrCreate('free_window_mode', true);
     return true;
   }
-  return settings.getValueSync(context, 'window_pcmode_switch_status', 'false', settings.domainName.USER_PROPERTY) == 'true';
+  let free = settings.getValueSync(context, 'window_pcmode_switch_status', 'false', settings.domainName.USER_PROPERTY);
+  console.log('[free] settings.getValueSync "window_pcmode_switch_status" = ' + free);
+  console.log('[free] return ' + (free == 'true'));
+  let in_free = free == 'true'
+  AppStorage.setOrCreate('free_window_mode', in_free);
+  return in_free;
 }
 
 /**
@@ -196,40 +203,82 @@ export function listen_free_window_mode(context: Context, windowClass: window.Wi
   settings.registerKeyObserver(context, 'window_pcmode_switch_status', settings.domainName.USER_PROPERTY,
     () => {
       settings.getValue(context, 'window_pcmode_switch_status', settings.domainName.USER_PROPERTY)
-        .then((free) => {
-          if (free) {
-            enter_free_window_mode(windowClass, storage, id);
-          } else {
-            enter_traditional_window_mode(windowClass, storage);
+        .then((val) => {
+          let free = (val == 'true');
+
+          // Only sets AppStorage if I am the lord of the windows
+          if (AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string == id) {
+            console.log('[free][listen_free_window_mode] Detected Free-window mode change! [' + val + ']');
+            if (free) {
+              AppStorage.setOrCreate('free_window_mode', true);
+              console.log('[free][listen_free_window_mode] Set AppStorage Free-window mode to true!');
+            } else {
+              AppStorage.setOrCreate('free_window_mode', false);
+              console.log('[free][listen_free_window_mode] Set AppStorage Free-window mode to false!');
+            }
           }
         });
     })
 }
 
+/**
+ * Enters free window mode.
+ * @param windowClass The window.Window of that window.
+ * @param storage The LocalStorage of that window.
+ * @param id The window ID.
+ * */
 export function enter_free_window_mode(windowClass: window.Window, storage: LocalStorage, id: string) {
   try {
     windowClass.setImmersiveModeEnabledState(false);
+  } catch (e) {
+    console.error('[free][enter_free_window_mode] 1 Failed: ' + e);
+  }
+  try {
     windowClass.setWindowDecorVisible(false);
+  } catch (e) {
+    console.error('[free][enter_free_window_mode] 2 Failed: ' + e);
+  }
+  try {
     windowClass.on('windowTitleButtonRectChange', (titleButtonRect) => {
       storage.setOrCreate('windowDecorHeight', titleButtonRect.height);
       storage.setOrCreate('windowDecorWidth', titleButtonRect.width);
     })
-    update_window_decor_height(id);
-    AppStorage.setOrCreate('free_window_mode', true);
   } catch (e) {
-    console.error('[enter_free_window_mode] Failed: ' + e);
+    console.error('[free][enter_free_window_mode] 3 Failed: ' + e);
+  }
+  try {
+    update_window_decor_height(id);
+  } catch (e) {
+    console.error('[free][enter_free_window_mode] 4 Failed: ' + e);
   }
 }
 
-export function enter_traditional_window_mode(windowClass: window.Window, storage: LocalStorage) {
+/**
+ * Leaves free window mode.
+ * @param windowClass The window.Window of that window.
+ * @param storage The LocalStorage of that window.
+ * @param id The window ID.
+ * */
+export function enter_traditional_window_mode(windowClass: window.Window, storage: LocalStorage, id: string) {
   try {
     windowClass.setWindowDecorVisible(true);
-    windowClass.off('windowTitleButtonRectChange')
-    windowClass.setImmersiveModeEnabledState(true);
-    get_avoid(windowClass, storage);
-    AppStorage.setOrCreate('free_window_mode', false);
   } catch (e) {
-    console.error('[enter_free_window_mode] Failed: ' + e);
+    console.error('[free][enter_traditional_window_mode] 1 Failed: ' + e);
+  }
+  try {
+    windowClass.off('windowTitleButtonRectChange');
+  } catch (e) {
+    console.error('[free][enter_traditional_window_mode] 2 Failed: ' + e);
+  }
+  try {
+    windowClass.setImmersiveModeEnabledState(true);
+  } catch (e) {
+    console.error('[free][enter_traditional_window_mode] 3 Failed: ' + e);
+  }
+  try {
+    get_avoid(windowClass, storage);
+  } catch (e) {
+    console.error('[free][enter_traditional_window_mode] 4 Failed: ' + e);
   }
 }
 

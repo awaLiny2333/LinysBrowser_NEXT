@@ -236,7 +236,7 @@ export default class HomeAbility extends UIAbility {
         enter_free_window_mode(windowClass, storage, my_window_id);
       } else {
         console.log('[HomeAbility] Traditional window mode~');
-        enter_traditional_window_mode(windowClass, storage);
+        enter_traditional_window_mode(windowClass, storage, my_window_id);
       }
 
       // Listen free window mode

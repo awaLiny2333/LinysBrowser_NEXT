@@ -54,11 +54,12 @@ import { common } from '@kit.AbilityKit';
 
 @Component
 struct meowAppSettings {
+  @StorageLink('showing_my_window_alias') showing_my_window_alias: boolean = false;
+  @StorageLink('windowIds') windowIds: string[] = [];
+  @StorageLink('free_window_mode') free_window_mode: boolean = false;
   @LocalStorageLink('my_window_id') my_window_id: string = '';
   @LocalStorageLink('my_window_alias') my_window_alias: string = '';
-  @StorageLink('showing_my_window_alias') showing_my_window_alias: boolean = false;
   storage: LocalStorage = storage_of_id(this.my_window_id);
-  @StorageLink('windowIds') windowIds: string[] = [];
   @Link @Watch('on_open_or_close_panel') showing_app_settings: boolean;
   // Hosts and environment
   @StorageLink('tabs_style') tabs_style: string = "";
@@ -1159,6 +1160,11 @@ struct meowAppSettings {
                         new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), default_new_window_name());
                       }
                     });
+
+                    linysSwitchWithText({
+                      text: 'Switch Free-window Mode',
+                      toggle_state: this.free_window_mode
+                    })
                   }
                 }
               } // Update

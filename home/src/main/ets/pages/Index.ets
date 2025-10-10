@@ -15,6 +15,8 @@ import lazy meowWebView from '../blocks/modules/meowWebView';
 import lazy woofPromptFail from '../dialogs/prompts/woofPromptFail';
 import {
   change_window_alias,
+  enter_free_window_mode,
+  enter_traditional_window_mode,
   last_storage,
   new_window,
   storage_of_id,
@@ -24,6 +26,7 @@ import {
 } from '../utils/ui_tools';
 import linysText from '../components/texts/linysText';
 import woofPrompt from '../dialogs/web/woofPrompt';
+import linysWindowButton from '../components/buttons/linysWindowButton';
 
 // @Entry({ useSharedStorage: true })
 @Entry(last_storage())
@@ -38,7 +41,7 @@ struct Index {
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   /**
    * UI Environment */
-  @StorageLink('free_window_mode') free_window_mode: boolean = false;
+  @StorageLink('free_window_mode') @Watch('on_free_window_mode_change') free_window_mode: boolean = false;
   @LocalStorageLink('windowDecorWidth') windowDecorWidth: number = 0;
   @LocalStorageLink('bottomAvoidHeight') bottomAvoidHeight: number = 1;
   @LocalStorageLink('topAvoidHeight') topAvoidHeight: number = 1;
@@ -218,9 +221,13 @@ struct Index {
           .animation(animation_default())
 
         if (this.free_window_mode) {
-          AddWindowButton()
+          linysWindowButton({
+            execution: () => {
+              this.create_new_window();
+            }
+          })
             .id('AddWindowButton')
-            .padding({ top: 9, right: Math.max(15, this.windowDecorWidth) - 15 })
+            .padding({ top: this.showing_my_window_alias ? 9 : 5, right: Math.max(15, this.windowDecorWidth) - 15 })
             .alignRules({ top: { anchor: '__container__', align: VerticalAlign.Top }, right: { anchor: '__container__', align: HorizontalAlign.End } })
             .animation(animation_default())
         }
@@ -417,6 +424,16 @@ struct Index {
 
   on_showing_my_window_alias_change() {
     update_window_decor_height(this.my_window_id);
+  }
+
+  on_free_window_mode_change() {
+    if (this.free_window_mode) {
+      console.log('\t[free][@Watch] Trying to enter Free-window mode. [' + this.my_window_id + ']');
+      enter_free_window_mode(this.my_windowClass!, this.storage, this.my_window_id);
+    } else {
+      console.log('\t[free][@Watch] Trying to enter Traditional mode. [' + this.my_window_id + ']');
+      enter_traditional_window_mode(this.my_windowClass!, this.storage, this.my_window_id);
+    }
   }
 
   // kinda params
@@ -653,54 +670,5 @@ struct WindowTitle {
       bunch_of_settings.set('my_window_alias_last', this.my_window_alias);
       AppStorage.set('LAST_WINDOW_WINDOW_NAME', this.my_window_alias);
     }
-  }
-}
-
-@Component
-struct AddWindowButton {
-  @State hover_on_new_window_button: boolean = false;
-  @State press_on_new_window_button: boolean = false;
-  // Colors
-  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
-  // Environment
-  @LocalStorageLink('my_window_alias') my_window_alias: string = '';
-  @LocalStorageLink('on_focus') on_focus: boolean = true;
-
-  build() {
-    Row() {
-      SymbolGlyph($r('sys.symbol.plus'))
-        .fontWeight(FontWeight.Medium)
-        .fontSize(this.hover_on_new_window_button ? 18 : 16)
-        .fontColor([this.color_current_font])
-    }
-    .backgroundColor(this.hover_on_new_window_button ? $r('sys.color.comp_background_secondary') : undefined)
-    .brightness(this.press_on_new_window_button ? 1.08 : undefined)
-    .alignItems(VerticalAlign.Center)
-    .justifyContent(FlexAlign.Center)
-    .width(28.5)
-    .height(28.5)
-    .borderRadius(4)
-    .onClick(() => {
-      this.create_new_window();
-    })
-    .onTouch((e) => {
-      if (e.type == TouchType.Down) {
-        this.press_on_new_window_button = true;
-      } else {
-        this.press_on_new_window_button = false;
-      }
-    })
-    .opacity(this.on_focus ? 1 : 0.4)
-    .onHover((h) => {
-      this.hover_on_new_window_button = h;
-    })
-  }
-
-  /**
-   * Creates a new window of given alias.
-   * @param alias The alias.
-   * */
-  create_new_window(alias: string = this.my_window_alias) {
-    new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), alias);
   }
 }
