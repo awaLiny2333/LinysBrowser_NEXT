@@ -185,8 +185,8 @@ export function get_free_window_mode(context: Context) {
     return true;
   }
   let free = settings.getValueSync(context, 'window_pcmode_switch_status', 'false', settings.domainName.USER_PROPERTY);
-  console.log('[free] settings.getValueSync "window_pcmode_switch_status" = ' + free);
-  console.log('[free] return ' + (free == 'true'));
+  console.log('[free] settings.getValueSync "window_pcmode_switch_status" = [' + free + ']!'
+    + '\n\treturn ' + (free == 'true') + '!');
   let in_free = free == 'true'
   AppStorage.setOrCreate('free_window_mode', in_free);
   return in_free;
