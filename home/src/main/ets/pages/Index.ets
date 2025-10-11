@@ -200,7 +200,7 @@ struct Index {
           this.showing_more_options = false;
         })
         .keyboardShortcut(this.bunch_of_key_shortcuts.print.main_key, this.bunch_of_key_shortcuts.print.modifier, () => {
-          print_web(this.bunch_of_tabs.workingMainTab().controller);
+          print_web(this.bunch_of_tabs.workingMainTab().controller, this.getUIContext().getHostContext()!);
         })
         .keyboardShortcut(this.bunch_of_key_shortcuts.new_window.main_key, this.bunch_of_key_shortcuts.new_window.modifier, () => {
           this.create_new_window();

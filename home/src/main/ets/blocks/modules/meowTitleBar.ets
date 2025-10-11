@@ -864,7 +864,7 @@ struct meowTitleBar {
                   symbol_glyph_target: 'sys.symbol.printer'
                 })// Print
                   .onClick(() => {
-                    print_web(this.bunch_of_tabs.workingMainTab().controller);
+                    print_web(this.bunch_of_tabs.workingMainTab().controller, this.getUIContext().getHostContext()!);
                   })
                 linysSymbol({
                   symbol_glyph_target: 'sys.symbol.star_2_moon'
