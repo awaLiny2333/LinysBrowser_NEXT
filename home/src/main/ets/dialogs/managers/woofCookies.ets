@@ -52,7 +52,6 @@ struct woofCookies {
     woofControlFrame({
       title: $r('app.string.Settings_manage_cookies'),
       controller: this.controller,
-      compact: this.full_view
     }) {
       RelativeContainer() {
         Scroll() {

@@ -80,7 +80,6 @@ struct woofHistory {
     woofControlFrame({
       title: $r('app.string.Settings_experience_history_view'),
       controller: this.controller,
-      compact: this.full_view
     }) {
       // TODO: This is not good for efficiency. Use less UI container layers!
       Column() {

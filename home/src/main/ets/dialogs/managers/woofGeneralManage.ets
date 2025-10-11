@@ -78,7 +78,6 @@ struct woofGeneralManage {
     woofControlFrame({
       title: this.title,
       controller: this.controller,
-      compact: this.full_view
     }) {
       RelativeContainer() {
         Scroll() {
