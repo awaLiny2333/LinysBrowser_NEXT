@@ -8,6 +8,7 @@ struct woofControlFrame {
   @BuilderParam content_section: () => void;
   // Information
   @Prop title: ResourceStr = 'Meow';
+  @Prop compact: boolean = false;
   // Control
   controller?: CustomDialogController;
   // Color
@@ -16,7 +17,7 @@ struct woofControlFrame {
   @State off_y_contents: number = 120;
 
   build() {
-    Column({ space: 15 }) {
+    Column({ space: this.compact ? 10 : 15 }) {
       Row() {
         linysTextTitle({ text: this.title, max_lines: 3 })
           .layoutWeight(1)

@@ -79,286 +79,293 @@ struct woofHistory {
   build() {
     woofControlFrame({
       title: $r('app.string.Settings_experience_history_view'),
-      controller: this.controller
+      controller: this.controller,
+      compact: this.full_view
     }) {
-      RelativeContainer() {
-        Scroll() {
-          Column({ space: 15 }) {
-            linysText({
-              text: $r('app.string.History_desc_1'),
-              max_lines: 6
-            })
-              .width("100%")
-              .opacity(0.9)
-            linysText({
-              text: $r('app.string.History_desc_2'),
-              max_lines: 6,
-              is_description: true,
-              is_expanded: true
-            })
-              .width("100%")
-              .opacity(0.9)
-            linysText({
-              text: $r('app.string.Have_a_Nice_Surf'),
-              max_lines: 2
-            })
-              .width("100%")
-              .opacity(0.9)
-          } // Title
-          .width("100%")
-        } // Title and descriptions
-        .scrollBar(BarState.Off)
-        .align(Alignment.TopStart)
-        .edgeEffect(EdgeEffect.Spring)
-        .padding({ bottom: 10, top: 5, right: this.tablet_mode ? 10 : 0 })
-        .width(this.tablet_mode ? (this.full_view ? '0%' : "35%") : "100%")
-        .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
-        .borderRadius(10)
-        // .clip(true)
-        // .enabled(!this.full_view)
-        // .opacity(this.full_view ? 0 : 1)
-        // .height(this.full_view && !this.tablet_mode ? 0 : undefined)
-        .visibility(this.full_view ? Visibility.None : Visibility.Visible)
-        .animation(animation_default())
-        .id("title_history")
-
-        Column({ space: 10 }) {
-
-          // Sub title
-          Row({ space: 10 }) {
-            linysText({
-              text: $r('app.string.Settings_experience_history_date_format'),
-              font_weight: FontWeight.Bold
-            })
-              .opacity(0.7)
-            linysText({
-              text: "(" +
-                ((this.data.totalCount() != this.opened_month_history_list.length) ? " 󰀩 " + this.data.totalCount().toString() + ' / ' : '') +
-              this.opened_month_history_list.length.toString() + ")",
-              font_weight: FontWeight.Bold
-            })
-              .opacity(0.7)
-              .layoutWeight(1)
-            linysSymbol({
-              symbol_glyph_target: this.full_view ?
-                'sys.symbol.arrow_down_right_and_arrow_up_left' :
-                'sys.symbol.arrow_up_left_and_arrow_down_right'
-            })
-              .onClick(() => {
-                this.full_view = !this.full_view
+      // TODO: This is not good for efficiency. Use less UI container layers!
+      Column() {
+        RelativeContainer() {
+          Scroll() {
+            Column({ space: 15 }) {
+              linysText({
+                text: $r('app.string.History_desc_1'),
+                max_lines: 6
               })
-          } // Time elapse description
-          .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
-          .width("100%")
-
-          Scroll() {
-            List({ scroller: this.scroller }) {
-              LazyForEach(this.data, (_record_item: Array<history_record | number>, _key: number) => {
-                ListItem() {
-                  // linysText({ text: key.toString() })
-                  if (this.opened_month_history_list[_record_item[1] as number]) {
-                    Row({ space: 10 }) {
-                      meowRelation({
-                        index: (_record_item[1] as number),
-                        selected: this.selected,
-                        selected_item_quantity: this.selected_items_quantity,
-                        selecting: this.selecting,
-                        // record: this.opened_month_history_list[(_record_item[1] as number)],
-                        record: _record_item[0] as history_record,
-                        controller: this.controller,
-                      })
-                        .layoutWeight(1)
-
-                      linysSymbol({
-                        symbol_glyph_target: 'sys.symbol.qrcode',
-                        color: !this.selected[_record_item[1] as number] ? this.color_current_font : this.color_current_secondary
-                      })// QRcode
-                        .onClick(() => {
-                          this.show_title = (_record_item[0] as history_record).label;
-                          this.show_url = (_record_item[0] as history_record).link;
-                          this.woofQR_control.open();
-                        })
-                        .opacity(0.7)
-                    }
-                    .padding({
-                      left: 12,
-                      right: 12,
-                      top: 9,
-                      bottom: 3
-                    })
-                    .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
-                    .backgroundColor(this.selected[_record_item[1] as number] ? this.color_current_font : this.color_current_secondary)
-                    .animation(animation_default())
-                  }
-                }
-                .animation(animation_default())
-              }, (item: Array<history_record | number>) => (item[0] as history_record).accessed_time.toString() +
-              this.opened_month_history_list.length.toString()) // Items
-
-              linysTextTitle({
-                text: "¯\\_(ツ)_/¯"
+                .width("100%")
+                .opacity(0.9)
+              linysText({
+                text: $r('app.string.History_desc_2'),
+                max_lines: 6,
+                is_description: true,
+                is_expanded: true
               })
-                .margin(30)
-                .opacity(0.7)
-                .visibility((this.opened_month_history_list.length == 0 || this.data.totalCount() == 0)
-                  ? Visibility.Visible
-                  : Visibility.None)
-                .animation(animation_default())
-            }
+                .width("100%")
+                .opacity(0.9)
+              linysText({
+                text: $r('app.string.Have_a_Nice_Surf'),
+                max_lines: 2
+              })
+                .width("100%")
+                .opacity(0.9)
+            } // Title
             .width("100%")
-            .height("100%")
-          } // Main history list
-          .padding({ bottom: 5 })
-          .scrollable(ScrollDirection.Vertical)
-          .edgeEffect(EdgeEffect.Spring)
-          .onAreaChange((_o, n) => {
-            this.scroll_area_height = n.height as number;
-          })
-          .align(Alignment.Top)
-          .layoutWeight(1)
-          .width("100%")
-          .borderRadius(13.5)
-          .backgroundColor(this.color_current_secondary)
-
-          Scroll() {
-            Row({ space: 5 }) {
-              ForEach(this.available_months, (item: number[], _key: number) => {
-                month_button({
-                  year: item[0],
-                  month: item[1],
-                  viewing_year: this.viewing_year,
-                  viewing_month: this.viewing_month,
-                })
-                  .onClick(() => {
-                    // MEOW
-                    this.bunch_of_history.open_month_from_disk_sync(item[0], item[1]);
-                    this.refresh_current_history_list();
-                    this.viewing_year = item[0];
-                    this.viewing_month = item[1];
-                    this.scroller.scrollToIndex(0, false);
-                    this.data.setData(this.bunch_of_history.get_history_this_month_with_index(this.woofHistory_search_input));
-                  })
-              }) // Month Buttons
-            }
-          } // Available months
-          .scrollable(ScrollDirection.Horizontal)
-          .edgeEffect(EdgeEffect.Spring)
-          .onAreaChange((_o, n) => {
-            this.scroll_area_height = n.height as number;
-          })
-          .padding(5)
-          .align(Alignment.Start)
-          .width("100%")
-          .borderRadius(13.5)
-          .backgroundColor(this.color_current_secondary)
-
-        } // List
-        .width(this.tablet_mode ? (this.full_view ? '100%' : "65%") : "100%")
-        .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)
-        .animation(animation_default())
-
-        Column() {
-          Scroll() {
-            Column({ space: 10 }) {
-              Row() {
-                linysTextTitle({ text: $r("app.string.Settings_edit_selecting") })
-                linysTextTitle({ text: " " + this.selected_items_quantity.toString() + " " })
-                linysTextTitle({ text: $r("app.string.Settings_edit_selecting_items") })
-              } // Selecting ... item(s)
-              Row() {
-                linysSymbol({ symbol_glyph_target: 'sys.symbol.list_checkmask' })
-                  .onClick(() => {
-                    this.select_all();
-                  })
-                Blank()
-                linysTimeoutButton({
-                  text: "  󰀁  ",
-                  onExecution: () => {
-                    this.delete_selected();
-                  }
-                }) // Delete
-              } // Buttons
-              .width("100%")
-            }
-            .padding({ top: 10, right: this.tablet_mode ? 10 : 0, bottom: 5 })
-            .alignItems(HorizontalAlign.Start)
-            .width("100%")
-            .animation(animation_default())
-          } // Select controls
+          } // Title and descriptions
           .scrollBar(BarState.Off)
-          .width("100%")
-          .height(this.selecting ? 80 : 0)
+          .align(Alignment.TopStart)
+          .edgeEffect(EdgeEffect.Spring)
+          .padding({ bottom: 10, top: 5, right: this.tablet_mode ? 10 : 0 })
+          .width(this.tablet_mode ? (this.full_view ? '0%' : "35%") : "100%")
+          .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
+          .borderRadius(10)
+          // .clip(true)
+          // .enabled(!this.full_view)
+          // .opacity(this.full_view ? 0 : 1)
+          // .height(this.full_view && !this.tablet_mode ? 0 : undefined)
+          .visibility(this.full_view ? Visibility.None : Visibility.Visible)
           .animation(animation_default())
-        } // Controls
-        .alignItems(HorizontalAlign.End)
-        .id("controls_history")
-        .alignRules(this.alignRules_foot)
+          .id("title_history")
+
+          Column({ space: 10 }) {
+
+            Row({ space: 10 }) {
+              linysText({
+                text: $r('app.string.Settings_experience_history_date_format'),
+                font_weight: FontWeight.Bold
+              })
+                .opacity(0.7)
+              linysText({
+                text: "(" +
+                  ((this.data.totalCount() != this.opened_month_history_list.length) ? " 󰀩 " + this.data.totalCount().toString() + ' / ' : '') +
+                this.opened_month_history_list.length.toString() + ")",
+                font_weight: FontWeight.Bold
+              })
+                .opacity(0.7)
+                .layoutWeight(1)
+              linysSymbol({
+                symbol_glyph_target: this.full_view ?
+                  'sys.symbol.arrow_down_right_and_arrow_up_left' :
+                  'sys.symbol.arrow_up_left_and_arrow_down_right'
+              })
+                .onClick(() => {
+                  this.full_view = !this.full_view
+                })
+            } // Time elapse description (subtitle)
+            .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
+            .width("100%")
+
+            Scroll() {
+              List({ scroller: this.scroller }) {
+                LazyForEach(this.data, (_record_item: Array<history_record | number>, _key: number) => {
+                  ListItem() {
+                    // linysText({ text: key.toString() })
+                    if (this.opened_month_history_list[_record_item[1] as number]) {
+                      Row({ space: 10 }) {
+                        meowRelation({
+                          index: (_record_item[1] as number),
+                          selected: this.selected,
+                          selected_item_quantity: this.selected_items_quantity,
+                          selecting: this.selecting,
+                          // record: this.opened_month_history_list[(_record_item[1] as number)],
+                          record: _record_item[0] as history_record,
+                          controller: this.controller,
+                        })
+                          .layoutWeight(1)
+
+                        linysSymbol({
+                          symbol_glyph_target: 'sys.symbol.qrcode',
+                          color: !this.selected[_record_item[1] as number] ? this.color_current_font : this.color_current_secondary
+                        })// QRcode
+                          .onClick(() => {
+                            this.show_title = (_record_item[0] as history_record).label;
+                            this.show_url = (_record_item[0] as history_record).link;
+                            this.woofQR_control.open();
+                          })
+                          .opacity(0.7)
+                      }
+                      .padding({
+                        left: 12,
+                        right: 12,
+                        top: 9,
+                        bottom: 3
+                      })
+                      .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
+                      .backgroundColor(this.selected[_record_item[1] as number] ? this.color_current_font : this.color_current_secondary)
+                      .animation(animation_default())
+                    }
+                  }
+                  .animation(animation_default())
+                }, (item: Array<history_record | number>) => (item[0] as history_record).accessed_time.toString() +
+                this.opened_month_history_list.length.toString()) // Items
+
+                linysTextTitle({
+                  text: "¯\\_(ツ)_/¯"
+                })
+                  .margin(30)
+                  .opacity(0.7)
+                  .visibility((this.opened_month_history_list.length == 0 || this.data.totalCount() == 0)
+                    ? Visibility.Visible
+                    : Visibility.None)
+                  .animation(animation_default())
+              }
+              .width("100%")
+              .height("100%")
+            } // Main history list
+            .padding({ bottom: 5 })
+            .scrollable(ScrollDirection.Vertical)
+            .edgeEffect(EdgeEffect.Spring)
+            .onAreaChange((_o, n) => {
+              this.scroll_area_height = n.height as number;
+            })
+            .align(Alignment.Top)
+            .layoutWeight(1)
+            .width("100%")
+            .borderRadius(13.5)
+            .backgroundColor(this.color_current_secondary)
+
+            Scroll() {
+              Row({ space: 5 }) {
+                ForEach(this.available_months, (item: number[], _key: number) => {
+                  month_button({
+                    year: item[0],
+                    month: item[1],
+                    viewing_year: this.viewing_year,
+                    viewing_month: this.viewing_month,
+                  })
+                    .onClick(() => {
+                      // MEOW
+                      this.bunch_of_history.open_month_from_disk_sync(item[0], item[1]);
+                      this.refresh_current_history_list();
+                      this.viewing_year = item[0];
+                      this.viewing_month = item[1];
+                      this.scroller.scrollToIndex(0, false);
+                      this.data.setData(this.bunch_of_history.get_history_this_month_with_index(this.woofHistory_search_input));
+                    })
+                }) // Month Buttons
+              }
+            } // Available months
+            .scrollable(ScrollDirection.Horizontal)
+            .edgeEffect(EdgeEffect.Spring)
+            .onAreaChange((_o, n) => {
+              this.scroll_area_height = n.height as number;
+            })
+            .padding(5)
+            .align(Alignment.Start)
+            .width("100%")
+            .borderRadius(13.5)
+            .backgroundColor(this.color_current_secondary)
+
+          } // List
+          .width(this.tablet_mode ? (this.full_view ? '100%' : "65%") : "100%")
+          .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)
+          .animation(animation_default())
+
+          Column() {
+            Scroll() {
+              Column({ space: 10 }) {
+                Row() {
+                  linysTextTitle({ text: $r("app.string.Settings_edit_selecting") })
+                  linysTextTitle({ text: " " + this.selected_items_quantity.toString() + " " })
+                  linysTextTitle({ text: $r("app.string.Settings_edit_selecting_items") })
+                } // Selecting ... item(s)
+                Row() {
+                  linysSymbol({ symbol_glyph_target: 'sys.symbol.list_checkmask' })
+                    .onClick(() => {
+                      this.select_all();
+                    })
+                  Blank()
+                  linysTimeoutButton({
+                    text: "  󰀁  ",
+                    onExecution: () => {
+                      this.delete_selected();
+                    }
+                  }) // Delete
+                } // Buttons
+                .width("100%")
+              }
+              .padding({ top: 10, right: this.tablet_mode ? 10 : 0, bottom: 5 })
+              .alignItems(HorizontalAlign.Start)
+              .width("100%")
+              .animation(animation_default())
+            } // Select controls
+            .scrollBar(BarState.Off)
+            .width("100%")
+            .height(this.selecting ? 80 : 0)
+            .animation(animation_default())
+          } // Select Controls
+          .alignItems(HorizontalAlign.End)
+          .id("controls_history")
+          .alignRules(this.alignRules_foot)
+          .visibility(this.full_view ? Visibility.None : Visibility.Visible)
+          .backgroundColor(this.color_current_primary)
+          .animation(animation_default())
+          .width(this.tablet_mode ? "35%" : "100%")
+        }
+        .layoutWeight(1)
+
+        Flex({
+          wrap: this.tablet_mode
+            ? FlexWrap.NoWrap
+            : FlexWrap.WrapReverse,
+          space: { main: LengthMetrics.vp(10), cross: LengthMetrics.vp(10) },
+          alignItems: ItemAlign.Center
+        }) {
+          // Search bar
+          Row({ space: 10 }) {
+            // linysTextTitle({ text: '󰀞' }) // This is stupid O.o
+            SearchInput({ onSubmitAction: this.submit_search })
+              .layoutWeight(1)
+              .animation(animation_default())
+
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass' })
+              .onClick(() => {
+                this.submit_search();
+              })
+              .animation(animation_default())
+
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.xmark' })
+              .onClick(() => {
+                // Clear
+                AppStorage.set('woofHistory_search_input', '');
+                this.submit_search();
+              })
+              .visibility(this.woofHistory_search_input ? Visibility.Visible : Visibility.None)
+              .animation(animation_default())
+          }
+          .width(this.tablet_mode ? undefined : '100%')
+          .layoutWeight(this.tablet_mode ? 1 : undefined)
+          .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
+          .animation(animation_default())
+
+          // Range
+          LinysSelection({
+            app_storage_link_id: 'woofHistory_filter',
+            descs: [$r('app.string.History_search_label'), $r('app.string.History_search_link'), $r('app.string.History_search_both_link_and_label')],
+            icons: [$r('sys.symbol.label'), $r('sys.symbol.paperclip'), $r('sys.symbol.pawprint')]
+          })
+            .animation(animation_default())
+
+          // Blur
+          LinysSelection({
+            app_storage_link_id: 'woofHistory_blur',
+            descs: [$r('app.string.History_search_fuzzy_05'), $r('app.string.History_search_fuzzy_075'), $r('app.string.History_search_fuzzy_1')],
+            icons: [$r('sys.symbol.questionmark_circle'), $r('sys.symbol.figure_falling_bed'), $r('sys.symbol.pin')]
+          })
+            .animation(animation_default())
+        }
+        .width('100%')
+        .padding({ top: 15 })
+        .backgroundColor(this.color_current_primary)
+        .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
         .visibility(this.full_view ? Visibility.None : Visibility.Visible)
         .animation(animation_default())
-        .width(this.tablet_mode ? "35%" : "100%")
+        .onAppear(() => {
+          console.log('[woofHistory] Refresh history search list!');
+          if (this.woofHistory_search_input == '') {
+            this.submit_search();
+          }
+        })
       }
       .layoutWeight(1)
-
-      Flex({
-        wrap: this.tablet_mode
-          ? FlexWrap.NoWrap
-          : FlexWrap.WrapReverse,
-        space: { main: LengthMetrics.vp(10), cross: LengthMetrics.vp(10) },
-        alignItems: ItemAlign.Center
-      }) {
-        // Search bar
-        Row({ space: 10 }) {
-          // linysTextTitle({ text: '󰀞' }) // This is stupid O.o
-          SearchInput({ onSubmitAction: this.submit_search })
-            .layoutWeight(1)
-            .animation(animation_default())
-
-          linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass' })
-            .onClick(() => {
-              this.submit_search();
-            })
-            .animation(animation_default())
-
-          linysSymbol({ symbol_glyph_target: 'sys.symbol.xmark' })
-            .onClick(() => {
-              // Clear
-              AppStorage.set('woofHistory_search_input', '');
-              this.submit_search();
-            })
-            .visibility(this.woofHistory_search_input ? Visibility.Visible : Visibility.None)
-            .animation(animation_default())
-        }
-        .width(this.tablet_mode ? undefined : '100%')
-        .layoutWeight(this.tablet_mode ? 1 : undefined)
-        .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
-        .animation(animation_default())
-
-        // Range
-        LinysSelection({
-          app_storage_link_id: 'woofHistory_filter',
-          descs: [$r('app.string.History_search_label'), $r('app.string.History_search_link'), $r('app.string.History_search_both_link_and_label')],
-          icons: [$r('sys.symbol.label'), $r('sys.symbol.paperclip'), $r('sys.symbol.pawprint')]
-        })
-          .animation(animation_default())
-
-        // Blur
-        LinysSelection({
-          app_storage_link_id: 'woofHistory_blur',
-          descs: [$r('app.string.History_search_fuzzy_05'), $r('app.string.History_search_fuzzy_075'), $r('app.string.History_search_fuzzy_1')],
-          icons: [$r('sys.symbol.questionmark_circle'), $r('sys.symbol.figure_falling_bed'), $r('sys.symbol.pin')]
-        })
-          .animation(animation_default())
-      }
-      .width('100%')
-      .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
-      .visibility(this.full_view ? Visibility.None : Visibility.Visible)
-      .animation(animation_default())
-      .onAppear(()=>{
-        console.log('[woofHistory] Refresh history search list!');
-        if (this.woofHistory_search_input == '') {
-          this.submit_search();
-        }
-      })
     }
   }
 

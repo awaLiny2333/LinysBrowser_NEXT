@@ -11,7 +11,7 @@ export function sync_tabs_list_info(storage: LocalStorage) {
   // let t0 = Date.now();
   // let t = 0;
 
-  // TODO: Efficiency can be further improved.
+  // TODO: Efficiency can be further improved. e.g. update only one tab information instead of re-fetching the entire list.
   // This should work
   let tabs = storage.get('bunch_of_tabs') as bunch_of_tabs;
   let tab_titles = tabs.get_all_titles();

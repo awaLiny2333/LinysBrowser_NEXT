@@ -77,7 +77,8 @@ struct woofGeneralManage {
   build() {
     woofControlFrame({
       title: this.title,
-      controller: this.controller
+      controller: this.controller,
+      compact: this.full_view
     }) {
       RelativeContainer() {
         Scroll() {
@@ -300,6 +301,7 @@ struct woofGeneralManage {
         .alignRules(this.alignRules_foot)
         .opacity(this.all_sites_switch || !this.general_switch ? 0.5 : 1)
         .visibility(this.full_view ? Visibility.None : Visibility.Visible)
+        .backgroundColor(this.color_current_primary)
         .animation(animation_default())
         .width(this.tablet_mode ? "40%" : "100%")
         .id("controls")
