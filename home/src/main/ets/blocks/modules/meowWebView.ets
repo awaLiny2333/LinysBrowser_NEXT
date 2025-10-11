@@ -1,13 +1,13 @@
 import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large } from '../../hosts/bunch_of_defaults';
 import { bunch_of_history } from '../../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
-import { arrayBuffer_2_pixelMap, sandbox_read_arrayBuffer } from '../../utils/storage_tools';
+import { arrayBuffer_2_pixelMap, compress_image_arrayBuffer, sandbox_read_arrayBuffer, sandbox_read_arrayBuffer_sync } from '../../utils/storage_tools';
 import { match_domain, url_meow_to_resource, url_resource_to_meow, viewable_domains } from '../../utils/url_tools';
 import { webview } from '@kit.ArkWeb';
+import { print } from '@kit.BasicServicesKit';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { bookmark, bunch_of_bookmarks, folder, unified_item } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
-import { print } from '@kit.BasicServicesKit';
 import lazy woofWantJump from '../../dialogs/prompts/woofWantJump';
 import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
 import lazy woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
@@ -18,11 +18,16 @@ import woofConfirm from '../../dialogs/web/woofConfirm';
 import woofAlert from '../../dialogs/web/woofAlert';
 import { storage_of_id, window_index_of_id } from '../../utils/ui_tools';
 import linysText from '../../components/texts/linysText';
+import { harmonyShare, systemShare } from '@kit.ShareKit';
+import { uniformTypeDescriptor } from '@kit.ArkData';
+import { common } from '@kit.AbilityKit';
+import { window } from '@kit.ArkUI';
 
 @Component
 struct meowWebView {
   @LocalStorageLink('my_window_id') my_window_id: string = '';
   storage: LocalStorage = storage_of_id(this.my_window_id);
+  @LocalStorageLink('my_windowClass') my_windowClass: window.Window | undefined = undefined;
   // Hosts
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
@@ -41,6 +46,7 @@ struct meowWebView {
   /**
    * Controls */
   @LocalStorageLink('tab_titles') tab_titles: string[] = []
+  @LocalStorageLink('current_title') current_title: string = "=￣ω￣=";
   @LocalStorageLink('tab_urls') tab_urls: string[] = []
   @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
   @LocalStorageLink('tab_match_domains') tab_match_domains: string[][] = [];
@@ -285,6 +291,10 @@ struct meowWebView {
     setTimeout(() => {
       this.refresh_homepage_shortcuts();
     }, 10);
+
+    this.register_harmonyShare_gesture_sender();
+
+    this.register_harmonyShare_receiver();
   }
 
   build() {
@@ -514,7 +524,7 @@ struct meowWebView {
               }
               // Restore Web State
               setTimeout(() => {
-                if (this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation) {
+                if (this.bunch_of_tabs.Tabs[Label.index_key]?.restore_on_creation) {
                   if (Label.index_key < this.restore_web_state_arrays.length) {
                     this.bunch_of_tabs.restore_web_state(this.restore_web_state_arrays[Label.index_key],
                       Label.index_key);
@@ -757,6 +767,108 @@ struct meowWebView {
     });
     this.woofWantDownload_control.open();
     console.log('[Meow][meowWebView] on_download_request because I AM on top! (' + this.my_window_id + ')');
+  }
+
+  async general_harmonyShare_current_tab(sharableTarget: harmonyShare.SharableTarget) {
+
+    let img_buffer = sandbox_read_arrayBuffer_sync('homepage_background_arrayBuffer');
+    let thumbnail_buffer: ArrayBuffer = new ArrayBuffer(8);
+
+    // Compress image
+    if (img_buffer) {
+      thumbnail_buffer = await compress_image_arrayBuffer(img_buffer);
+    }
+
+    let share_success = true;
+    // Try to share with or without thumbnail
+    try {
+      let shareData_with_thumbnail: systemShare.SharedData = new systemShare.SharedData({
+        utd: uniformTypeDescriptor.UniformDataType.HYPERLINK,
+        content: this.current_url,
+        title: this.current_title,
+        description: this.current_url,
+        thumbnail: new Uint8Array(thumbnail_buffer)
+      });
+      sharableTarget.share(shareData_with_thumbnail);
+    } catch (e) {
+      try {
+        let shareData: systemShare.SharedData = new systemShare.SharedData({
+          utd: uniformTypeDescriptor.UniformDataType.HYPERLINK,
+          content: this.current_url,
+          title: this.current_title,
+          description: this.current_url,
+        });
+        sharableTarget.share(shareData);
+      } catch (e) {
+        share_success = false;
+      }
+    }
+
+    if (share_success) {
+      console.log('[meowWebView] harmonyShare: URL: ' + this.current_url);
+    } else {
+      console.error('[meowWebView] harmonyShare FAILED: URL: ' + this.current_url);
+    }
+  }
+
+  register_harmonyShare_gesture_sender() {
+    try {
+      harmonyShare.on('gesturesShare', async (sharableTarget: harmonyShare.SharableTarget) => {
+        console.log('[meowWebView] harmonyShare - gesturesShare!');
+        await this.general_harmonyShare_current_tab(sharableTarget);
+      });
+
+      console.log('[meowWebView] Register harmonyShare of gesturesShare!');
+    } catch (e) {
+      console.error('[meowWebView] Register harmonyShare of gesturesShare failed: ' + e);
+    }
+  }
+
+  register_harmonyShare_knock_sender() {
+    try {
+      harmonyShare.on('knockShare', async (sharableTarget: harmonyShare.SharableTarget) => {
+        console.log('[meowWebView] harmonyShare - knockShare!');
+        await this.general_harmonyShare_current_tab(sharableTarget);
+      });
+
+      console.log('[meowWebView] Register harmonyShare of knockShare!');
+    } catch (e) {
+      console.error('[meowWebView] Register harmonyShare of knockShare failed: ' + e);
+    }
+  }
+
+  register_harmonyShare_receiver() {
+    try {
+      let capabilityRegistry: harmonyShare.RecvCapabilityRegistry = {
+        windowId: this.my_windowClass!.getWindowProperties().id,
+        capabilities: [{
+          utd: uniformTypeDescriptor.UniformDataType.HYPERLINK,
+          maxSupportedCount: 1
+        }]
+      }
+
+      // 注册沙箱接收'dataReceive'监听事件
+      harmonyShare.on('dataReceive', capabilityRegistry, (receivableTarget: harmonyShare.ReceivableTarget) => {
+        let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+        receivableTarget.receive(context.filesDir + '/harmonyShare_temp', {
+          onDataReceived: (sharedData: systemShare.SharedData) => {
+            let sharedRecords = sharedData.getRecords();
+            sharedRecords.forEach((record: systemShare.SharedRecord) => {
+              let url = record.content as string;
+              console.log('[meowWebView] harmonyShare received content: ' + url);
+            });
+          },
+          // onResult(resultCode: harmonyShare.ShareResultCode) {
+          //   if (resultCode === harmonyShare.ShareResultCode.SHARE_SUCCESS) {
+          //     // To do things.
+          //   }
+          // }
+        });
+      });
+      console.log('[meowWebView] Register harmonyShare receive OK!');
+    } catch (e) {
+      console.error('[meowWebView] Register harmonyShare receive failed: ' + e);
+    }
   }
 
   // Kind of constants

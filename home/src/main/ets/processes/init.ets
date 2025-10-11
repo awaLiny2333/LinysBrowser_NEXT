@@ -32,6 +32,7 @@ export async function meow_init_main(context: common.UIAbilityContext, storage: 
   clear_web_drag_image_cache(context);
   clear_profile(context);
   ensure_continue_folder(context);
+  clear_harmonyShare_temp_folder(context);
 
   // Hosts
   await settings(t0);
@@ -79,6 +80,23 @@ function ensure_continue_folder(context: common.UIAbilityContext) {
     } catch (e) {
       console.error('[init][ensure_continue_folder] Error: ' + e);
     }
+  }
+}
+
+/**
+ * Clear harmonyShare temp folder.
+ * @param context The UIAbilityContext.
+ * */
+function clear_harmonyShare_temp_folder(context: common.UIAbilityContext) {
+  try {
+    fileIo.rmdirSync(context.filesDir + '/harmonyShare_temp');
+  } catch (e) {
+    console.error('[Index] rmdirSync /harmonyShare_temp failed! ' + e);
+  }
+  try {
+    fileIo.mkdirSync(context.filesDir + '/harmonyShare_temp');
+  } catch (e) {
+    console.error('[Index] mkdirSync /harmonyShare_temp failed! ' + e);
   }
 }
 

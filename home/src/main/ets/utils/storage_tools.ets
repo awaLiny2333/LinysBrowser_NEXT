@@ -5,7 +5,6 @@ import { image } from '@kit.ImageKit';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { meowContext } from './environment_tools';
-import { common } from '@kit.AbilityKit';
 
 // Pick & Save
 
@@ -268,10 +267,10 @@ export async function image_gallery_pick_to_ArrayBuffer() {
       console.info("[image_gallery_pick_to_ArrayBuffer] Read image from " + selected_uri[0] + " Success!");
     })
       .catch((err: BusinessError) => {
-      console.error('[image_gallery_pick_to_ArrayBuffer] DocumentViewPicker.select failed with err: ' +
-      JSON.stringify(err));
-      return undefined;
-    });
+        console.error('[image_gallery_pick_to_ArrayBuffer] DocumentViewPicker.select failed with err: ' +
+        JSON.stringify(err));
+        return undefined;
+      });
     return buf;
 
   } catch (error) {
@@ -658,6 +657,30 @@ export function arrayBuffer_2_pixelMap(buf: ArrayBuffer) {
   let pixelMap = imageSource.createPixelMapSync({});
   imageSource.release();
   return pixelMap;
+}
+
+/**
+ * Compress an image of the form arrayBuffer.
+ * @param img_buffer The image arrayBuffer.
+ * @param qua The quality.
+ * @returns The compressed image buffer.
+ * */
+export async function compress_image_arrayBuffer(img_buffer: ArrayBuffer, qua: number = 10) {
+  let t = Date.now();
+  let compressed_buffer: ArrayBuffer = new ArrayBuffer(8);
+
+  // Compress image
+  let pictureObj: image.Picture = image.createPicture(arrayBuffer_2_pixelMap(img_buffer));
+  await image.createImagePacker().packing(pictureObj, { format: "image/jpeg", quality: qua }).then((data: ArrayBuffer) => {
+    console.info('[compress_image_arrayBuffer] Succeeded in packing the image. (' + add_units_to_size(data.byteLength) + ')');
+    compressed_buffer = data;
+  }).catch((error: BusinessError) => {
+    console.error(`[compress_image_arrayBuffer] Failed to pack the image.code ${error.code},message is ${error.message}`);
+  });
+
+  t = Date.now() - t;
+  console.log('[compress_image_arrayBuffer] Finished! (' + t + ' ms)');
+  return compressed_buffer;
 }
 
 // Global Data
