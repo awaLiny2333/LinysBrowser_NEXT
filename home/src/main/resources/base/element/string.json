@@ -33,6 +33,10 @@
       "value": "Some webpages may request this permission for certain tasks. For example, using a web map. BrowserCat itself won't use this for anything else."
     },
     {
+      "name": "permission_reason_WINDOW_TOPMOST",
+      "value": "You could use this to pin BrowserCat on top of your stack of windows! (On your decision!)"
+    },
+    {
       "name": "protected_resource_TYPE_MIDI_SYSEX",
       "value": "\uDB80\uDCAC MIDI SYSEX Resources"
     },
@@ -991,6 +995,10 @@
     {
       "name": "Key_shortcuts_new_window",
       "value": "New window"
+    },
+    {
+      "name": "Key_shortcuts_pin_to_top",
+      "value": "Pin window to top"
     },
     {
       "name": "Homepage_background",

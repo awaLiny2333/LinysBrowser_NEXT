@@ -133,6 +133,16 @@
           ]
         }
       },
+      {
+        "name": "ohos.permission.WINDOW_TOPMOST",
+        "reason": "$string:permission_reason_CAMERA",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "HomeAbility"
+          ]
+        }
+      },
       //            {
       //              "name" : "ohos.permission.READ_PASTEBOARD",
       //              "reason": "$string:permission_reason_READ_PASTEPOARD",

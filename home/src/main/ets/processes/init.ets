@@ -314,6 +314,7 @@ function tabs(t0: number, storage: LocalStorage) {
 
   // Name
   AppStorage.setOrCreate('LAST_WINDOW_WINDOW_NAME', bunch_of_settings.get('my_window_alias_last') as string);
+  storage.setOrCreate('pin_to_top', false);
 
   // Fill back settings
   let home_url: string = bunch_of_settings.get('home_url') as string

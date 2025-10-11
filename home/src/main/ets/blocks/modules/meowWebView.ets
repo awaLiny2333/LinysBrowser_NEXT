@@ -403,7 +403,9 @@ struct meowWebView {
                 this.bunch_of_tabs.save_web_state_to_sandbox(Label.index_key);
               }
 
-              this.bunch_of_tabs.Tabs[Label.index_key].check_save_history('[onPageEnd]');
+              if (this.bunch_of_tabs.Tabs[Label.index_key].title != '') {
+                this.bunch_of_tabs.Tabs[Label.index_key].check_save_history('[onPageEnd]');
+              }
 
               // Mark End Recovery
               if (this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation) {
@@ -577,8 +579,15 @@ struct meowWebView {
               this.source = event.request.getOrigin();
               console.log('[Meow][meowWebView] Requesting Protected Resources: ' + event.request.getAccessibleResource());
 
+              // TODO: work out a workable permission manager!
+
+              if (this.ask_resources.length == 0) {
+                this.onPermit();
+                console.log('[Meow][meowWebView] Permitted empty request list automatically!');
+                return;
+              }
+
               if (this.ask_resources.length == 1 && this.ask_resources[0] == 'TYPE_SENSOR') {
-                // TODO: work out a workable permission manager!
                 this.onPermit();
                 console.log('[Meow][meowWebView] Permitted TYPE_SENSOR automatically!');
                 return;

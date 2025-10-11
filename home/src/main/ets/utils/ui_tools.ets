@@ -65,6 +65,27 @@ export function update_window_decor_height(window_id: string) {
   }
 }
 
+/**
+ * Pins or unpins a window to the top.
+ * @param id The window id.
+ * */
+export function pin_to_top(id: string) {
+  if (!(AppStorage.get('free_window_mode') as boolean)) {
+    console.log('[pin_to_top] Didn\'t pin window to top because is not in free window mode. But how did you get here?');
+    return;
+  }
+  let window = window_of_id(id);
+  let storage = storage_of_id(id);
+  let pin = storage.get('pin_to_top') as boolean;
+  pin = !pin;
+  storage.set('pin_to_top', pin);
+  try {
+    window.setWindowTopmost(pin);
+  } catch (e) {
+    console.error('[pin_to_top] Failed: ' + e);
+  }
+}
+
 
 // Environment
 

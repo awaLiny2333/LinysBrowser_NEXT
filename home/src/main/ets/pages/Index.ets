@@ -19,6 +19,7 @@ import {
   enter_traditional_window_mode,
   last_storage,
   new_window,
+  pin_to_top,
   storage_of_id,
   update_window_decor_height,
   window_index_of_id,
@@ -51,6 +52,7 @@ struct Index {
   @LocalStorageLink('compact_mode') compact_mode: boolean = false; // Like PuraX
   @LocalStorageLink('screen_width') screen_width: number = 0;
   @LocalStorageLink('screen_height') screen_height: number = 0;
+  @LocalStorageProp('pin_to_top') pin_to_top: boolean = false;
   @LocalStorageLink('full_screen_height') full_screen_height: number = 0;
   @LocalStorageLink('fullscreen_mode') @Watch('on_fullscreen_switch') fullscreen_mode: boolean = false;
   @StorageLink('currentColorMode') @Watch('on_color_mode_change') current_color_mode: number = 0;
@@ -205,6 +207,9 @@ struct Index {
         .keyboardShortcut(this.bunch_of_key_shortcuts.new_window.main_key, this.bunch_of_key_shortcuts.new_window.modifier, () => {
           this.create_new_window();
         })
+        .keyboardShortcut(this.bunch_of_key_shortcuts.pin_to_top.main_key, this.bunch_of_key_shortcuts.pin_to_top.modifier, () => {
+          pin_to_top(this.my_window_id);
+        })
       // .keyboardShortcut(FunctionKey.ESC, [], () => {
       //   this.back();
       // })
@@ -216,20 +221,30 @@ struct Index {
           .alignRules({
             bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
             left: { anchor: '__container__', align: HorizontalAlign.Start },
-            right: !this.tablet_mode ? { anchor: '__container__', align: HorizontalAlign.End } : { anchor: 'AddWindowButton', align: HorizontalAlign.Start }
+            right: !this.tablet_mode ? { anchor: '__container__', align: HorizontalAlign.End } : { anchor: 'window_controls', align: HorizontalAlign.Start }
           })
           .animation(animation_default())
 
         if (this.free_window_mode) {
-          linysWindowButton({
-            execution: () => {
-              this.create_new_window();
-            }
-          })
-            .id('AddWindowButton')
-            .padding({ top: this.showing_my_window_alias ? 9 : 5, right: Math.max(15, this.windowDecorWidth) - 15 })
-            .alignRules({ top: { anchor: '__container__', align: VerticalAlign.Top }, right: { anchor: '__container__', align: HorizontalAlign.End } })
-            .animation(animation_default())
+          Row({ space: 12 }) {
+            linysWindowButton({
+              symbol: this.pin_to_top? $r('sys.symbol.pin_vertical_fill'): $r('sys.symbol.pin'),
+              execution: () => {
+                pin_to_top(this.my_window_id);
+              }
+            })
+
+            linysWindowButton({
+              symbol: $r('sys.symbol.plus'),
+              execution: () => {
+                this.create_new_window();
+              }
+            })
+
+          } // Window control buttons
+          .id('window_controls')
+          .padding({ top: this.showing_my_window_alias ? 9 : 5, right: Math.max(15, this.windowDecorWidth) - 15 })
+          .alignRules({ top: { anchor: '__container__', align: VerticalAlign.Top }, right: { anchor: '__container__', align: HorizontalAlign.End } })
         }
       }
       .padding({
@@ -501,7 +516,7 @@ struct Index {
     }
     let tablet_mode_compensation = 0;
     if (!this.tablet_mode && this.showing_my_window_alias) {
-      tablet_mode_compensation = 20;
+      tablet_mode_compensation = 28;
     }
     return this.topAvoidHeight + tablet_mode_compensation;
   }

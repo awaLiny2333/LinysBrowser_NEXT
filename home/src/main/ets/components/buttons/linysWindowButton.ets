@@ -2,6 +2,7 @@
 struct linysWindowButton {
   @State hover_on_new_window_button: boolean = false;
   @State press_on_new_window_button: boolean = false;
+  @Prop symbol: Resource = $r('sys.symbol.plus');
   // Colors
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Environment
@@ -11,16 +12,15 @@ struct linysWindowButton {
   execution?: () => void;
 
   build() {
-    Row() {
-      SymbolGlyph($r('sys.symbol.plus'))
-        .fontWeight(FontWeight.Medium)
+    RelativeContainer() {
+      SymbolGlyph(this.symbol)
+        .fontWeight(FontWeight.Normal)
         .fontSize(this.hover_on_new_window_button ? 18 : 16)
         .fontColor([this.color_current_font])
+        .alignRules({ center: { anchor: '__container__', align: VerticalAlign.Center }, middle: { anchor: '__container__', align: HorizontalAlign.Center } })
     }
     .backgroundColor(this.hover_on_new_window_button ? $r('sys.color.comp_background_secondary') : undefined)
     .brightness(this.press_on_new_window_button ? 1.08 : undefined)
-    .alignItems(VerticalAlign.Center)
-    .justifyContent(FlexAlign.Center)
     .width(28.5)
     .height(28.5)
     .borderRadius(4)

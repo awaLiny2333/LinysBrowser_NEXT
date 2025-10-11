@@ -31,6 +31,9 @@
     {
       "name": "permission_reason_GEOLOCATION",
       "value": "有些网站可能会为了某些任务而请求这个权限。比如，使用网页地图的时候。冲浪喵本身不会使用这个权限去做任何其他事情。"
+    },{
+      "name": "permission_reason_WINDOW_TOPMOST",
+      "value": "你可以用这个权限把冲浪喵挂在所有窗口的图层之上！（你说了算！）"
     },
     {
       "name": "protected_resource_TYPE_MIDI_SYSEX",
@@ -991,6 +994,10 @@
     {
       "name": "Key_shortcuts_new_window",
       "value": "新窗口"
+    },
+    {
+      "name": "Key_shortcuts_pin_to_top",
+      "value": "置顶窗口"
     },
     {
       "name": "Homepage_background",
