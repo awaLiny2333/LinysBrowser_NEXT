@@ -5,6 +5,7 @@ import { sandbox_save } from '../utils/storage_tools';
 import { all_false, all_true } from '../utils/data_operation_tools';
 import { bunch_of_settings } from './bunch_of_settings';
 import { storage_of_id, window_index_of_id } from '../utils/ui_tools';
+import { save_history } from '../processes/tabs_actions';
 
 @Observed
 export class tab_label {
@@ -34,6 +35,7 @@ export class tab_info_packed {
   restore_on_creation: boolean = false;
   web_state_array: Uint8Array = new Uint8Array();
   last_saved_url: string = '';
+  last_saved_title: string = '';
 
   /**
    * A class holding a controller and statuses of a tab.
@@ -68,6 +70,23 @@ export class tab_info_packed {
       return;
     }
     this.url = this.controller.getUrl();
+  }
+
+  check_save_history(source: string) {
+    let saved = false;
+    if (!this.restore_on_creation) {
+      let is_new_history = (this.last_saved_url != this.url);
+      if (is_new_history) {
+        if (!this.url.includes("resource://")) {
+          console.log('[bunch_of_tabs]' + source + ' Save history for [' + this.title + '](' + this.url + ')!');
+          save_history(this);
+          saved = true;
+        }
+      }
+    }
+    this.last_saved_url = this.url;
+    this.last_saved_title = this.title;
+    console.log('[bunch_of_tabs][check_save_history]' + source + ' ' + (saved ? 'Saved!' : 'Did nothing!'));
   }
 
   /**
@@ -419,6 +438,19 @@ export class bunch_of_tabs {
       urls.push(this.Tabs[index].url);
     }
     return urls;
+  }
+
+  /**
+   * Gets a list of all tabs' current restoring state.
+   * @returns A boolean[] array, the states.
+   * */
+  get_all_restore_on_creations() {
+    let r: boolean[] = [];
+
+    for (let index = 0; index < this.Tabs.length; index++) {
+      r.push(this.Tabs[index].restore_on_creation);
+    }
+    return r;
   }
 
   /**

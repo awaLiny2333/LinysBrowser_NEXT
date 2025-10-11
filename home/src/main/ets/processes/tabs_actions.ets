@@ -1,4 +1,5 @@
-import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
+import { bunch_of_history, history_record } from '../hosts/bunch_of_history';
+import { bunch_of_tabs, tab_info_packed } from '../hosts/bunch_of_tabs';
 import { url_resource_to_meow } from '../utils/url_tools';
 
 // Data and Statuses
@@ -18,11 +19,13 @@ export function sync_tabs_list_info(storage: LocalStorage) {
   let tab_is_loading = tabs.get_all_is_loading();
   let tab_loading_progresses = tabs.get_all_loading_progress();
   let tab_match_domains = tabs.get_all_match_domains();
+  let tab_restore_on_creations = tabs.get_all_restore_on_creations();
   storage.set('tab_titles', tab_titles);
   storage.set('tab_urls', tab_urls);
   storage.set('tab_is_loading', tab_is_loading);
   storage.set('tab_loading_progresses', tab_loading_progresses);
   storage.set('tab_match_domains', tab_match_domains);
+  storage.set('tab_restore_on_creations', tab_restore_on_creations);
 
   // Web Settings
   let tab_disable_js = tabs.get_all_disable_js();
@@ -51,6 +54,17 @@ export function sync_tabs_list_info(storage: LocalStorage) {
   // Timer
   // t = Date.now() - t0;
   // console.log('[sync_tabs_list_info] Called! (' + t + ' ms)');
+}
+
+/**
+ * Saves the history.
+ * @param tab_info The tab_info_packed item of that tab.
+ * */
+export function save_history(tab_info: tab_info_packed) {
+  let new_record = new history_record(tab_info.title, tab_info.url);
+
+  let history = AppStorage.get('bunch_of_history') as bunch_of_history;
+  history.add_history(new_record, true, true);
 }
 
 // UI

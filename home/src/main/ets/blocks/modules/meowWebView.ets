@@ -1,5 +1,5 @@
 import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large } from '../../hosts/bunch_of_defaults';
-import { bunch_of_history, history_record } from '../../hosts/bunch_of_history';
+import { bunch_of_history } from '../../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { arrayBuffer_2_pixelMap, sandbox_read_arrayBuffer } from '../../utils/storage_tools';
 import { match_domain, url_meow_to_resource, url_resource_to_meow, viewable_domains } from '../../utils/url_tools';
@@ -17,6 +17,7 @@ import woofPrompt from '../../dialogs/web/woofPrompt';
 import woofConfirm from '../../dialogs/web/woofConfirm';
 import woofAlert from '../../dialogs/web/woofAlert';
 import { storage_of_id, window_index_of_id } from '../../utils/ui_tools';
+import linysText from '../../components/texts/linysText';
 
 @Component
 struct meowWebView {
@@ -46,6 +47,7 @@ struct meowWebView {
   @LocalStorageLink('tab_disable_js') tab_disable_js: boolean[] = [false];
   @LocalStorageLink('tab_disable_image') tab_disable_image: boolean[] = [false];
   @LocalStorageLink('tab_force_dark') tab_force_dark: boolean[] = [false];
+  @LocalStorageLink('tab_restore_on_creations') tab_restore_on_creations: boolean[] = [false];
   /**
    * Web control statuses */
   @LocalStorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
@@ -156,6 +158,7 @@ struct meowWebView {
   });
   // Colors
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Else
   @LocalStorageLink('meowWebView_init_OK') init_OK: boolean = false;
   shortcut_scroller: Scroller = new Scroller();
@@ -310,7 +313,7 @@ struct meowWebView {
             // renderMode: RenderMode.SYNC_RENDER
           })// Main WEB
             .width("100%")
-            .height("100%")
+            .layoutWeight(1)
             .backgroundColor('transparent')
             .databaseAccess(true)
             .javaScriptAccess(!this.tab_disable_js[Label.index_key])
@@ -339,21 +342,23 @@ struct meowWebView {
             .onTitleReceive(() => {
               try {
                 // Ask tab to update its info
-                this.bunch_of_tabs.Tabs[Label.index_key].update_url();
                 this.bunch_of_tabs.Tabs[Label.index_key].update_title();
+                this.bunch_of_tabs.Tabs[Label.index_key].update_url();
                 this.bunch_of_tabs.update_backward_forward_access();
-
                 // Get synced lists
                 sync_tabs_list_info(this.storage);
               } catch (e) {
                 console.error('[meowWebView][onProgressChange] Update bunch_of_tabs error: ' + e);
               }
 
-              // console.log('[last_saved_url] Last ' + decodeURIComponent(this.bunch_of_tabs.Tabs[Label.index_key].last_saved_url));
-              // console.log('[last_saved_url] This ' + decodeURIComponent(this.bunch_of_tabs.Tabs[Label.index_key].url));
-              // if (!this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation) {
-              //   this.save_history(Label.index_key);
-              // }
+              // Save history if title is really updated
+              if (this.bunch_of_tabs.Tabs[Label.index_key].last_saved_title != this.tab_titles[Label.index_key]) {
+                console.log('[Tabs][onTitleReceive] New title: ' + this.tab_titles[Label.index_key]);
+                if (!this.bunch_of_tabs.Tabs[Label.index_key].is_loading) {
+                  this.bunch_of_tabs.Tabs[Label.index_key].check_save_history('[onTitleReceive]');
+                }
+              }
+
             })
             .onPageBegin(() => {
               console.log("[ArkWeb] on page begin!");
@@ -382,10 +387,10 @@ struct meowWebView {
               console.log("[Meow][ArkWeb] on page end!");
 
               try {
-                // this.bunch_of_tabs.Tabs[Label.index_key].update_title();
+                this.bunch_of_tabs.Tabs[Label.index_key].update_title();
                 this.bunch_of_tabs.Tabs[Label.index_key].update_url();
-                this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(false);
                 this.bunch_of_tabs.update_backward_forward_access();
+                this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(false);
               } catch (e) {
                 console.error('[meowWebView][onPageEnd] Update bunch_of_tabs error: ' + e);
               }
@@ -398,7 +403,16 @@ struct meowWebView {
                 this.bunch_of_tabs.save_web_state_to_sandbox(Label.index_key);
               }
 
-              this.save_history(Label.index_key);
+              this.bunch_of_tabs.Tabs[Label.index_key].check_save_history('[onPageEnd]');
+
+              // Mark End Recovery
+              if (this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation) {
+                setTimeout(() => {
+                  console.log('[Tabs] Restore OK for #' + Label.index_key + ' !');
+                  this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation = false;
+                  this.tab_restore_on_creations = this.bunch_of_tabs.get_all_restore_on_creations();
+                }, 500)
+              }
 
               determine_extra_background(this.storage);
             })
@@ -421,7 +435,7 @@ struct meowWebView {
 
               try {
                 // Ask tab to update its info
-                // this.bunch_of_tabs.Tabs[Label.index_key].update_title();
+                this.bunch_of_tabs.Tabs[Label.index_key].update_title();
                 this.bunch_of_tabs.Tabs[Label.index_key].update_url();
                 this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(progress);
                 this.bunch_of_tabs.update_backward_forward_access();
@@ -430,6 +444,8 @@ struct meowWebView {
               }
 
               sync_tabs_list_info(this.storage); // Get synced lists
+
+              // this.bunch_of_tabs.Tabs[Label.index_key].check_save_history();
 
               // Update Input Search Box
               this.update_search_box_text(this.current_url);
@@ -602,6 +618,23 @@ struct meowWebView {
               return true;
             })
 
+          Column() {
+            linysText({
+              text: $r('app.string.Tabs_recovering'),
+              color: this.color_current_secondary,
+              font_weight: FontWeight.Medium
+            })
+              .padding(6)
+          } // Restore tag notice
+          .height(this.tab_restore_on_creations[Label.index_key] ? undefined : 0)
+          .animation(animation_default())
+          .alignItems(HorizontalAlign.Start)
+          .justifyContent(FlexAlign.Center)
+          .width('100%')
+          .backgroundColor(this.color_current_font)
+          .opacity(0.9)
+          .clip(true)
+
         } // Webs
         .clip(true)
         .borderColor(this.color_current_secondary)
@@ -656,27 +689,6 @@ struct meowWebView {
       // Update Input Search Box
     }
     // Update Input Search Box when new page loaded
-  }
-
-  save_history(index: number) {
-    let is_new_history = this.bunch_of_tabs.Tabs[index].last_saved_url != this.bunch_of_tabs.Tabs[index].url;
-    // Save browse history if is neither resource tab nor a recovery tab
-    if (this.collect_new_history && is_new_history
-      && !this.bunch_of_tabs.Tabs[index].restore_on_creation
-      && !this.tab_urls[index].includes("resource://")) {
-      let new_record = new history_record(this.tab_titles[index], this.tab_urls[index])
-      this.bunch_of_history.add_history(new_record, true, true);
-      // Record last url.
-      this.bunch_of_tabs.Tabs[index].last_saved_url = this.tab_urls[index];
-    } else {
-      this.bunch_of_tabs.Tabs[index].restore_on_creation = false;
-      // log
-      if (!this.collect_new_history) {
-        console.log("[meowWebView] Didn't save history for settings disabled.");
-      } else {
-        console.log("[meowWebView] Didn't save history for a recovery process in progress");
-      }
-    }
   }
 
   /**

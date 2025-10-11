@@ -449,6 +449,10 @@
       "value": "Meowing feature to browse two tabs at the same time!"
     },
     {
+      "name": "Tabs_recovering",
+      "value": "Recovering tab..."
+    },
+    {
       "name": "Settings_appearance_tabs_style",
       "value": "Tabs style \uDB82\uDC3B / \uDB82\uDD42 "
     },
