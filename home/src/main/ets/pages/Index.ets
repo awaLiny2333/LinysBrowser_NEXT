@@ -628,35 +628,12 @@ struct WindowTitle {
   @StorageLink('showing_my_window_alias') showing_my_window_alias: boolean = false;
   @StorageLink('my_window_alias_position') my_window_alias_position: string = "center";
   @LocalStorageLink('current_title') current_title: string = "=￣ω￣=";
-  // Prompt
-  @State rename_window_prompt_result: string = '';
-  rename_window_woofPrompt_control: CustomDialogController = new CustomDialogController({
-    builder: woofPrompt({
-      title: $r('app.string.Settings_appearance_windows_rename'),
-      message: 'ID: ' + this.my_window_id,
-      value: this.my_window_alias,
-      promptResult: this.rename_window_prompt_result,
-      single_line: true,
-      onConfirm: () => {
-        change_window_alias(this.my_window_id, this.rename_window_prompt_result);
-      },
-      onDeny: () => {
-        // Nothing happens
-      }
-    }),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 26
-  })
 
   build() {
     Row({ space: 10 }) {
       linysText({
         text: '#' + this.windowIds.indexOf(this.my_window_id) + '｜' + this.current_title + '｜' + this.my_window_alias
       })
-        .onClick(() => {
-          // Edit
-          this.rename_window_woofPrompt_control.open();
-        })
         .constraintSize(this.free_window_mode ? undefined : { maxWidth: this.screen_width * 0.7 })
     }
     .width('100%')

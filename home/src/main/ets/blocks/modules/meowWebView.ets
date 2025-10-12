@@ -944,6 +944,7 @@ struct meowWebView {
 
 export default meowWebView;
 
+@Reusable
 @Component
 struct shortcutButton {
   @Prop my_index: number;

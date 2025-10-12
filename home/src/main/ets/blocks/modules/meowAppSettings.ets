@@ -52,6 +52,7 @@ import lazy woofHistory from '../../dialogs/managers/woofHistory';
 import { new_window, storage_of_id } from '../../utils/ui_tools';
 import { common } from '@kit.AbilityKit';
 
+@Reusable
 @Component
 struct meowAppSettings {
   @StorageLink('showing_my_window_alias') showing_my_window_alias: boolean = false;

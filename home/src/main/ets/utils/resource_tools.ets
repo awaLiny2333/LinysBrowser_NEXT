@@ -9,9 +9,9 @@ import { meowContext } from './environment_tools';
 export function resource_to_string(resourceStr: Resource, context?: Context) {
   try {
     if (context) {
-      return context.resourceManager.getStringSync(resourceStr);
+      return context.resourceManager.getStringSync(resourceStr.id);
     }
-      return meowContext().resourceManager.getStringSync(resourceStr);
+      return meowContext().resourceManager.getStringSync(resourceStr.id);
     // TODO: replace deprecated getStringSync when api20 is eventually released
   } catch (error) {
     console.error('[resource_to_string] ' + error);
