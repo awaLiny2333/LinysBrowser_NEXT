@@ -294,6 +294,8 @@ struct meowWebView {
 
     this.register_harmonyShare_gesture_sender();
 
+    this.register_harmonyShare_knock_sender();
+
     this.register_harmonyShare_receiver();
   }
 
@@ -847,7 +849,6 @@ struct meowWebView {
         }]
       }
 
-      // 注册沙箱接收'dataReceive'监听事件
       harmonyShare.on('dataReceive', capabilityRegistry, (receivableTarget: harmonyShare.ReceivableTarget) => {
         let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
         receivableTarget.receive(context.filesDir + '/harmonyShare_temp', {
