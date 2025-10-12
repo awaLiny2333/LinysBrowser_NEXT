@@ -16,7 +16,7 @@ import { determine_extra_background, sync_tabs_list_info } from '../../processes
 import woofPrompt from '../../dialogs/web/woofPrompt';
 import woofConfirm from '../../dialogs/web/woofConfirm';
 import woofAlert from '../../dialogs/web/woofAlert';
-import { storage_of_id, window_index_of_id } from '../../utils/ui_tools';
+import { is_address_continuable, set_continuable, storage_of_id, window_index_of_id } from '../../utils/ui_tools';
 import linysText from '../../components/texts/linysText';
 import { harmonyShare, systemShare } from '@kit.ShareKit';
 import { uniformTypeDescriptor } from '@kit.ArkData';
@@ -40,6 +40,8 @@ struct meowWebView {
   @LocalStorageLink('fullscreen_handler') handler: FullScreenExitHandler | null = null;
   @LocalStorageLink('restore_web_state_arrays') restore_web_state_arrays: Uint8Array[] = [];
   @LocalStorageProp('screen_height') screen_height: number = 100;
+  @LocalStorageLink('on_focus') @Watch('on_focus_change') on_focus: boolean = true;
+  @LocalStorageLink('sharable_continuable') sharable_continuable: boolean = false;
   // In-Page Searching
   @LocalStorageLink('current_in_page_searching_stats_current') current_in_page_searching_stats_current: number = 0;
   @LocalStorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
@@ -48,7 +50,7 @@ struct meowWebView {
   @LocalStorageLink('tab_titles') tab_titles: string[] = []
   @LocalStorageLink('current_title') current_title: string = "=￣ω￣=";
   @LocalStorageLink('tab_urls') tab_urls: string[] = []
-  @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
+  @LocalStorageLink('current_url') @Watch('on_current_url_change') current_url: string = "=￣ω￣=";
   @LocalStorageLink('tab_match_domains') tab_match_domains: string[][] = [];
   @LocalStorageLink('tab_disable_js') tab_disable_js: boolean[] = [false];
   @LocalStorageLink('tab_disable_image') tab_disable_image: boolean[] = [false];
@@ -295,8 +297,6 @@ struct meowWebView {
     this.register_harmonyShare_gesture_sender();
 
     this.register_harmonyShare_knock_sender();
-
-    this.register_harmonyShare_receiver();
   }
 
   build() {
@@ -384,16 +384,16 @@ struct meowWebView {
                 // Ask tab to update its info (Reset)
                 // this.bunch_of_tabs.Tabs[Label.index_key].update_title();
                 this.bunch_of_tabs.Tabs[Label.index_key].update_url();
-                this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(true)
-                this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(0)
+                this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(true);
+                this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(0);
               } catch (e) {
                 console.error('[meowWebView][onPageBegin] Update bunch_of_tabs error: ' + e);
               }
 
               // Get synced lists
-              sync_tabs_list_info(this.storage)
+              sync_tabs_list_info(this.storage);
               // Update Input Search Box
-              this.update_search_box_text(this.current_url)
+              this.update_search_box_text(this.current_url);
             })
             .onPageEnd(() => {
               console.log("[Meow][ArkWeb] on page end!");
@@ -702,6 +702,35 @@ struct meowWebView {
     })
   }
 
+  // Events
+
+  on_current_url_change() {
+    // Update continuable state.
+    let original_sharable_continuable = this.sharable_continuable;
+    is_address_continuable(this.current_url, this.storage);
+
+    if (this.sharable_continuable == original_sharable_continuable) {
+      // Nothing changed;
+    } else {
+      set_continuable(this.getUIContext().getHostContext() as common.UIAbilityContext, this.sharable_continuable);
+      if (this.sharable_continuable) {
+        this.register_harmonyShare_gesture_sender();
+        this.register_harmonyShare_knock_sender();
+      } else {
+        this.off_harmonyShare_gesture_sender();
+        this.off_harmonyShare_knock_sender();
+      }
+    }
+  }
+
+  on_focus_change() {
+    if (this.on_focus) {
+      set_continuable(this.getUIContext().getHostContext() as common.UIAbilityContext, is_address_continuable(this.current_url));
+    } else {
+      set_continuable(this.getUIContext().getHostContext() as common.UIAbilityContext, false);
+    }
+  }
+
   // Operations
 
   update_search_box_text(text: string) {
@@ -826,6 +855,14 @@ struct meowWebView {
     }
   }
 
+  off_harmonyShare_gesture_sender() {
+    try {
+      harmonyShare.off('gesturesShare');
+    } catch (e) {
+      console.error('[off_harmonyShare_gesture_sender] Failed: ' + e);
+    }
+  }
+
   register_harmonyShare_knock_sender() {
     try {
       harmonyShare.on('knockShare', async (sharableTarget: harmonyShare.SharableTarget) => {
@@ -839,36 +876,11 @@ struct meowWebView {
     }
   }
 
-  register_harmonyShare_receiver() {
+  off_harmonyShare_knock_sender() {
     try {
-      let capabilityRegistry: harmonyShare.RecvCapabilityRegistry = {
-        windowId: this.my_windowClass!.getWindowProperties().id,
-        capabilities: [{
-          utd: uniformTypeDescriptor.UniformDataType.HYPERLINK,
-          maxSupportedCount: 1
-        }]
-      }
-
-      harmonyShare.on('dataReceive', capabilityRegistry, (receivableTarget: harmonyShare.ReceivableTarget) => {
-        let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-        receivableTarget.receive(context.filesDir + '/harmonyShare_temp', {
-          onDataReceived: (sharedData: systemShare.SharedData) => {
-            let sharedRecords = sharedData.getRecords();
-            sharedRecords.forEach((record: systemShare.SharedRecord) => {
-              let url = record.content as string;
-              console.log('[meowWebView] harmonyShare received content: ' + url);
-            });
-          },
-          // onResult(resultCode: harmonyShare.ShareResultCode) {
-          //   if (resultCode === harmonyShare.ShareResultCode.SHARE_SUCCESS) {
-          //     // To do things.
-          //   }
-          // }
-        });
-      });
-      console.log('[meowWebView] Register harmonyShare receive OK!');
+      harmonyShare.off('knockShare');
     } catch (e) {
-      console.error('[meowWebView] Register harmonyShare receive failed: ' + e);
+      console.error('[off_harmonyShare_gesture_sender] Failed: ' + e);
     }
   }
 

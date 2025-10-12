@@ -1,4 +1,4 @@
-import { AbilityConstant, common, ConfigurationConstant } from '@kit.AbilityKit';
+import { common, ConfigurationConstant } from '@kit.AbilityKit';
 import { deviceInfo } from '@kit.BasicServicesKit';
 import { window } from '@kit.ArkUI';
 import { animation_default } from '../hosts/bunch_of_defaults';
@@ -26,7 +26,6 @@ import {
   window_index_of_windowClass
 } from '../utils/ui_tools';
 import linysText from '../components/texts/linysText';
-import woofPrompt from '../dialogs/web/woofPrompt';
 import linysWindowButton from '../components/buttons/linysWindowButton';
 
 // @Entry({ useSharedStorage: true })
@@ -126,7 +125,7 @@ struct Index {
 
   async aboutToAppear(): Promise<void> {
 
-    // Determine tablet mode
+    // Determine tablet mode and other window data.
     await window.getLastWindow(this.getUIContext().getHostContext()).then((w: window.Window) => {
 
       const my_index = window_index_of_windowClass(w);
@@ -180,13 +179,6 @@ struct Index {
     }, this.delay_p2);
   }
 
-  onPageShow(): void {
-    // Enable continue
-    (this.getUIContext().getHostContext() as common.UIAbilityContext).setMissionContinueState(AbilityConstant.ContinueState.ACTIVE).catch(() => {
-      // TODO: Implement error handling.
-    });
-  }
-
   onBackPress(): boolean {
     return this.back();
   }
@@ -228,7 +220,7 @@ struct Index {
         if (this.free_window_mode) {
           Row({ space: 12 }) {
             linysWindowButton({
-              symbol: this.pin_to_top? $r('sys.symbol.pin_vertical_fill'): $r('sys.symbol.pin'),
+              symbol: this.pin_to_top ? $r('sys.symbol.pin_vertical_fill') : $r('sys.symbol.pin'),
               execution: () => {
                 pin_to_top(this.my_window_id);
               }

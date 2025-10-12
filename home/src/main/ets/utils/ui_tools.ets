@@ -1,7 +1,7 @@
 import { window } from '@kit.ArkUI';
 import { BusinessError, deviceInfo, settings } from '@kit.BasicServicesKit';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
-import { common, Want } from '@kit.AbilityKit';
+import { AbilityConstant, common, Want } from '@kit.AbilityKit';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { meowPx2vp } from './environment_tools';
 import { default_window_decor_height } from '../hosts/bunch_of_defaults';
@@ -86,6 +86,36 @@ export function pin_to_top(id: string) {
   }
 }
 
+// Continue
+
+/**
+ * Determines if the url is ok to be continued on another device.
+ * @param url The url.
+ * @param storage The LocalStorage. If filled then the result is saved to 'sharable_continuable'.
+ * @returns True or false.
+ * */
+export function is_address_continuable(url: string, storage?: LocalStorage) {
+  let result = true;
+  if (url.substring(0, 7) == 'meow://') {
+    // Is internal page
+    result = false
+  }
+  storage?.setOrCreate('sharable_continuable', result);
+  return result;
+}
+
+/**
+ * Sets the continuability (?) of current page.
+ * @param context
+ * @param con
+ * */
+export function set_continuable(context: common.UIAbilityContext, con: boolean) {
+  console.log('[set_continuable] ' + con);
+  let state = con ? AbilityConstant.ContinueState.ACTIVE : AbilityConstant.ContinueState.INACTIVE;
+  context.setMissionContinueState(state).catch((e: BusinessError) => {
+    console.error('[set_continuable] Failed: ' + JSON.stringify(e));
+  });
+}
 
 // Environment
 
