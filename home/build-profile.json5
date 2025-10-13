@@ -7,6 +7,11 @@
         "x86_64"
       ]
     },
+    "arkOptions": {
+      "buildProfileFields": {
+        "linysBuildTime": "0",
+      }
+    },
     "sourceOption": {
       "workers": [
         './src/main/ets/workers/History_indexer.ets',

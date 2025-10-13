@@ -1,4 +1,5 @@
 import { BusinessError } from '@kit.BasicServicesKit';
+import BuildProfile from 'home/BuildProfile';
 import {
   animation_default,
   capsule_bar_height,
@@ -12,14 +13,10 @@ import {
 import { ItemRestriction, SegmentButton, SegmentButtonOptions, SegmentButtonTextItem } from '@ohos.arkui.advanced.SegmentButton';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { bunch_of_history } from '../../hosts/bunch_of_history';
-import {
-  add_units_to_size, document_pick_to_text, document_save_text, export_everything, import_everything
-} from '../../utils/storage_tools';
+import { add_units_to_size, document_pick_to_text, document_save_text, export_everything, import_everything } from '../../utils/storage_tools';
 import lazy { get_sandbox_folder_size } from '../../utils/any_concurrent_tools';
 import { bunch_of_history_index } from '../../hosts/bunch_of_history_index';
-import {
-  history_index_full_rebuild_worker
-} from '../../hosts/bunch_of_history_index_x_functions';
+import { history_index_full_rebuild_worker } from '../../hosts/bunch_of_history_index_x_functions';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { webview } from '@kit.ArkWeb';
@@ -82,6 +79,7 @@ struct meowAppSettings {
   // Information
   @State versionName: string = "Version Name";
   @State versionNo: number = 0;
+  @State buildTime: string = BuildProfile.linysBuildTime;
   @State history_length: number = this.bunch_of_history.get_history_this_month().length;
   // Segment Button Options
   @State title_bar_position_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
@@ -1079,8 +1077,8 @@ struct meowAppSettings {
                     link: "https://gitee.com/awa_Liny/LinysBrowser_NEXT",
                   }) // Gitee
                   linysText({
-                    text: "（ฅ＾・ﻌ・＾）ฅ  - " + this.versionName + " - " + this.versionNo,
-                    max_lines: 3
+                    text: "（ฅ＾・ﻌ・＾）ฅ  - " + this.versionName + " - " + this.versionNo + ' - ' + this.buildTime,
+                    max_lines: 10
                   })// Version Info
                     .onClick(() => {
                       this.version_clicked();
