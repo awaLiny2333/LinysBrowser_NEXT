@@ -12,7 +12,7 @@ import lazy woofWantJump from '../../dialogs/prompts/woofWantJump';
 import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
 import lazy woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
-import { determine_extra_background, sync_tabs_list_info } from '../../processes/tabs_actions';
+import { determine_extra_background, sync_current_tabs_list_info, sync_all_tabs_list_info } from '../../processes/tabs_actions';
 import woofPrompt from '../../dialogs/web/woofPrompt';
 import woofConfirm from '../../dialogs/web/woofConfirm';
 import woofAlert from '../../dialogs/web/woofAlert';
@@ -52,6 +52,8 @@ struct meowWebView {
   @LocalStorageLink('tab_urls') tab_urls: string[] = []
   @LocalStorageLink('current_url') @Watch('on_current_url_change') current_url: string = "=￣ω￣=";
   @LocalStorageLink('tab_match_domains') tab_match_domains: string[][] = [];
+  @LocalStorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0];
+  @LocalStorageLink('tab_is_loading') tab_is_loading: boolean[] = [true];
   @LocalStorageLink('tab_disable_js') tab_disable_js: boolean[] = [false];
   @LocalStorageLink('tab_disable_image') tab_disable_image: boolean[] = [false];
   @LocalStorageLink('tab_force_dark') tab_force_dark: boolean[] = [false];
@@ -286,6 +288,7 @@ struct meowWebView {
 
     // init OK
     setTimeout(() => {
+      sync_all_tabs_list_info(this.storage);
       this.init_OK = true;
     }, 10);
 
@@ -352,13 +355,21 @@ struct meowWebView {
               event.handler.setWebController(null);
             })
             .onTitleReceive(() => {
+              // Ask tab to update its info
               try {
-                // Ask tab to update its info
-                this.bunch_of_tabs.Tabs[Label.index_key].update_title();
-                this.bunch_of_tabs.Tabs[Label.index_key].update_url();
+                let title = this.bunch_of_tabs.Tabs[Label.index_key].update_title();
+                let url = this.bunch_of_tabs.Tabs[Label.index_key].update_url();
                 this.bunch_of_tabs.update_backward_forward_access();
-                // Get synced lists
-                sync_tabs_list_info(this.storage);
+                // sync lists
+                // sync_tabs_list_info(this.storage);
+                this.tab_titles[Label.index_key] = title;
+                this.tab_urls[Label.index_key] = url;
+
+                // this.bunch_of_tabs.sync_web_settings(Label.index_key);
+
+                if (Label.index_key == this.bunch_of_tabs.main_tab_idx) {
+                  sync_current_tabs_list_info(this.storage);
+                }
               } catch (e) {
                 console.error('[meowWebView][onProgressChange] Update bunch_of_tabs error: ' + e);
               }
@@ -380,41 +391,61 @@ struct meowWebView {
                 return;
               }
 
+              // Ask tab to update its info
               try {
-                // Ask tab to update its info (Reset)
-                // this.bunch_of_tabs.Tabs[Label.index_key].update_title();
-                this.bunch_of_tabs.Tabs[Label.index_key].update_url();
-                this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(true);
-                this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(0);
+                let url = this.bunch_of_tabs.Tabs[Label.index_key].update_url();
+                let is_loading = this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(true);
+                let progress = this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(0);
+
+                this.tab_urls[Label.index_key] = url;
+                this.tab_is_loading[Label.index_key] = is_loading;
+                this.tab_loading_progresses[Label.index_key] = progress;
+
+                this.bunch_of_tabs.sync_web_settings(Label.index_key);
+
+                // Get synced lists
+                if (Label.index_key == this.bunch_of_tabs.main_tab_idx) {
+                  sync_current_tabs_list_info(this.storage);
+                }
+
               } catch (e) {
                 console.error('[meowWebView][onPageBegin] Update bunch_of_tabs error: ' + e);
               }
 
-              // Get synced lists
-              sync_tabs_list_info(this.storage);
               // Update Input Search Box
               this.update_search_box_text(this.current_url);
             })
             .onPageEnd(() => {
               console.log("[Meow][ArkWeb] on page end!");
 
+              // Ask tab to update its info
               try {
-                this.bunch_of_tabs.Tabs[Label.index_key].update_title();
-                this.bunch_of_tabs.Tabs[Label.index_key].update_url();
+                let title = this.bunch_of_tabs.Tabs[Label.index_key].update_title();
+                let url = this.bunch_of_tabs.Tabs[Label.index_key].update_url();
+                let is_loading = this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(false);
                 this.bunch_of_tabs.update_backward_forward_access();
-                this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(false);
+
+                this.tab_titles[Label.index_key] = title;
+                this.tab_urls[Label.index_key] = url;
+                this.tab_is_loading[Label.index_key] = is_loading;
+
+                this.bunch_of_tabs.sync_web_settings(Label.index_key);
+
+                // Get synced lists
+                if (Label.index_key == this.bunch_of_tabs.main_tab_idx) {
+                  sync_current_tabs_list_info(this.storage);
+                }
               } catch (e) {
                 console.error('[meowWebView][onPageEnd] Update bunch_of_tabs error: ' + e);
               }
 
-              sync_tabs_list_info(this.storage);
-
-              this.bunch_of_tabs.update_web_state(Label.index_key);
               // Get and save web_state
+              this.bunch_of_tabs.update_web_state(Label.index_key);
               if (window_index_of_id(this.my_window_id) == 0) {
                 this.bunch_of_tabs.save_web_state_to_sandbox(Label.index_key);
               }
 
+              // Save history
               if (this.bunch_of_tabs.Tabs[Label.index_key].title != '') {
                 this.bunch_of_tabs.Tabs[Label.index_key].check_save_history('[onPageEnd]');
               }
@@ -434,44 +465,43 @@ struct meowWebView {
               if (!event) {
                 return;
               }
-
               let progress: number = event.newProgress;
-              // console.log("[Meow][ArkWeb] on progress change: " + progress.toString())
-              // Update current loading progress
               if (progress == 0) {
                 return;
               }
-
               if (Label.index_key >= this.bunch_of_tabs.get_tabs_count()) {
                 // If not synced, idk why but o(=•ェ•=)m
                 return;
               }
 
+              // Ask tab to update its info
               try {
-                // Ask tab to update its info
-                this.bunch_of_tabs.Tabs[Label.index_key].update_title();
-                this.bunch_of_tabs.Tabs[Label.index_key].update_url();
+                let title = this.bunch_of_tabs.Tabs[Label.index_key].update_title();
+                let url = this.bunch_of_tabs.Tabs[Label.index_key].update_url();
                 this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(progress);
                 this.bunch_of_tabs.update_backward_forward_access();
+
+                this.tab_titles[Label.index_key] = title;
+                this.tab_urls[Label.index_key] = url;
+                this.tab_loading_progresses[Label.index_key] = progress;
+
+                // Get synced lists
+                if (Label.index_key == this.bunch_of_tabs.main_tab_idx) {
+                  sync_current_tabs_list_info(this.storage);
+                }
               } catch (e) {
                 console.error('[meowWebView][onProgressChange] Update bunch_of_tabs error: ' + e);
               }
 
-              sync_tabs_list_info(this.storage); // Get synced lists
-
-              // this.bunch_of_tabs.Tabs[Label.index_key].check_save_history();
-
               // Update Input Search Box
               this.update_search_box_text(this.current_url);
 
-              if (this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation) {
-                return;
-              }
-
-              this.bunch_of_tabs.update_web_state(Label.index_key);
               // Get and save web_state
-              if (window_index_of_id(this.my_window_id) == 0) {
-                this.bunch_of_tabs.save_web_state_to_sandbox(Label.index_key);
+              if (!this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation) {
+                this.bunch_of_tabs.update_web_state(Label.index_key);
+                if (window_index_of_id(this.my_window_id) == 0) {
+                  this.bunch_of_tabs.save_web_state_to_sandbox(Label.index_key);
+                }
               }
 
               determine_extra_background(this.storage);

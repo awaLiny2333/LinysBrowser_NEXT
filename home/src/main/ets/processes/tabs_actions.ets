@@ -5,9 +5,10 @@ import { url_resource_to_meow } from '../utils/url_tools';
 // Data and Statuses
 
 /**
- * Syncs all tabs data into AppStorage.
+ * Syncs ALL tabs data into AppStorage.
+ * @param storage The LocalStorage of this window.
  * */
-export function sync_tabs_list_info(storage: LocalStorage) {
+export function sync_all_tabs_list_info(storage: LocalStorage) {
   // let t0 = Date.now();
   // let t = 0;
 
@@ -27,6 +28,21 @@ export function sync_tabs_list_info(storage: LocalStorage) {
   storage.set('tab_match_domains', tab_match_domains);
   storage.set('tab_restore_on_creations', tab_restore_on_creations);
 
+  sync_all_web_settings_to_storage(storage);
+
+  sync_current_tabs_list_info(storage);
+
+  // Timer
+  // t = Date.now() - t0;
+  // console.log('[sync_tabs_list_info] Called! (' + t + ' ms)');
+}
+
+/**
+ * Syncs ALL web settings to storage.
+ * @param storage The LocalStorage of this window.
+ * */
+function sync_all_web_settings_to_storage(storage: LocalStorage) {
+  let tabs = storage.get('bunch_of_tabs') as bunch_of_tabs;
   // Web Settings
   let tab_disable_js = tabs.get_all_disable_js();
   let tab_disable_image = tabs.get_all_disable_image();
@@ -34,6 +50,26 @@ export function sync_tabs_list_info(storage: LocalStorage) {
   storage.set('tab_disable_js', tab_disable_js);
   storage.set('tab_disable_image', tab_disable_image);
   storage.set('tab_force_dark', tab_force_dark);
+}
+
+/**
+ * Updates only current tabs status into LocalStorage.
+ *
+ * Usually used after actions that doesn't modify the data but only changed current index.
+ *
+ * For example, switching tabs.
+ * @param storage The LocalStorage.
+ * */
+export function sync_current_tabs_list_info(storage: LocalStorage) {
+  let tabs = storage.get('bunch_of_tabs') as bunch_of_tabs;
+  let tab_titles = storage.get('tab_titles') as string[];
+  let tab_urls = storage.get('tab_urls') as string[];
+  let tab_is_loading = storage.get('tab_is_loading') as boolean[];
+  let tab_loading_progresses = storage.get('tab_loading_progresses') as number[];
+  let tab_match_domains = storage.get('tab_match_domains') as string[][];
+  let tab_disable_js = storage.get('tab_disable_js') as boolean[];
+  let tab_disable_image = storage.get('tab_disable_image') as boolean[];
+  let tab_force_dark = storage.get('tab_force_dark') as boolean[];
 
   // Current
   let current_index = tabs.main_tab_idx;
@@ -50,10 +86,6 @@ export function sync_tabs_list_info(storage: LocalStorage) {
   storage.set('current_disable_js', tab_disable_js[current_index]);
   storage.set('current_disable_image', tab_disable_image[current_index]);
   storage.set('current_force_dark', tab_force_dark[current_index]);
-
-  // Timer
-  // t = Date.now() - t0;
-  // console.log('[sync_tabs_list_info] Called! (' + t + ' ms)');
 }
 
 /**

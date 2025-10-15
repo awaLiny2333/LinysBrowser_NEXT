@@ -7,103 +7,6 @@ import { bunch_of_settings } from './bunch_of_settings';
 import { storage_of_id, window_index_of_id } from '../utils/ui_tools';
 import { save_history } from '../processes/tabs_actions';
 
-@Observed
-export class tab_label {
-  timestamp: number;
-  index_key: number;
-
-  /**
-   * A class holding a timestamp and an index_key.
-   * @param timestamp A number, usually the creation of the tab.
-   * @param index_key A number, indicating the index of this tab in the tabs list.
-   */
-  constructor(timestamp: number, index: number) {
-    this.index_key = index;
-    this.timestamp = timestamp;
-  }
-}
-
-export class tab_info_packed {
-  controller: WebviewController;
-  title: string;
-  url: string;
-  is_loading: boolean;
-  loading_progress: number;
-  searching_keyword: string = ''; // Keyword of in-page search
-  searching_keyword_stats_current: number = 0; // Index of current viewing result during in-page search
-  searching_keyword_stats_total: number = 0; // Total number of results of in-page search
-  restore_on_creation: boolean = false;
-  web_state_array: Uint8Array = new Uint8Array();
-  last_saved_url: string = '';
-  last_saved_title: string = '';
-
-  /**
-   * A class holding a controller and statuses of a tab.
-   * @param title A string, the initial title when the tab is created.
-   * @param link A string, the initial link when the tab is created.
-   * @param restore_on_creation A boolean, optional, will restore web state on creation if the index in valid.
-   */
-  constructor(title: string, url: string, restore_on_creation?: boolean) {
-    this.controller = new webview.WebviewController();
-    this.title = title;
-    this.url = url;
-    this.is_loading = true;
-    this.loading_progress = 0;
-
-    if (restore_on_creation) {
-      this.restore_on_creation = true;
-    }
-  }
-
-  /**
-   * Asks the tab to update its title, usually called when the tab loads something new.
-   * */
-  update_title() {
-    this.title = this.controller.getTitle();
-  }
-
-  /**
-   * Asks the tab to update its link, usually called when the tab loads something new.
-   * */
-  update_url() {
-    if (!viewable_domains().includes(match_domain(this.controller.getUrl())[0])) {
-      return;
-    }
-    this.url = this.controller.getUrl();
-  }
-
-  check_save_history(source: string) {
-    let saved = false;
-    if (!this.restore_on_creation) {
-      let is_new_history = (this.last_saved_url != this.url);
-      if (is_new_history) {
-        if (!this.url.includes("resource://")) {
-          console.log('[bunch_of_tabs]' + source + ' Save history for [' + this.title + '](' + this.url + ')!');
-          save_history(this);
-          saved = true;
-        }
-      }
-    }
-    this.last_saved_url = this.url;
-    this.last_saved_title = this.title;
-    console.log('[bunch_of_tabs][check_save_history]' + source + ' ' + (saved ? 'Saved!' : 'Did nothing!'));
-  }
-
-  /**
-   * Asks the tab to update its loading state, usually called when the tab starts loading or finishes loading.
-   * */
-  update_is_loading(is_loading: boolean) {
-    this.is_loading = is_loading;
-  }
-
-  /**
-   * Asks the tab to update its loading progress, usually called in the tab's loading progress.
-   * */
-  update_loading_progress(progress: number) {
-    this.loading_progress = progress;
-  }
-}
-
 export class bunch_of_tabs {
   // Settings
   static new_tab_url: string = 'meow://home';
@@ -118,8 +21,8 @@ export class bunch_of_tabs {
   sub_tab_idx: number = -1;
   current_accessForward: boolean = false;
   current_accessBackward: boolean = false;
+  // Private / Temp / Meaningless
   status_update_timestamp: number = 0;
-  // Private or Temp
   private used_date_ids: number[] = [];
 
   /**
@@ -583,6 +486,54 @@ export class bunch_of_tabs {
     return force;
   }
 
+  /**
+   * Syncs the Web Settings (js, image, force dark) to the according LocalStorage.
+   * @param index The index of tab.
+   * */
+  sync_web_settings(index: number) {
+    let storage: LocalStorage = storage_of_id(this.my_id);
+    // JS
+    let main_switch_js = AppStorage.get('disable_js') as boolean;
+    let sub_switch_js = AppStorage.get('disable_js_all_sites') as boolean;
+    let disable_js_these_sites = AppStorage.get('disable_js_these_sites') as string[];
+    let tab_disable_js = storage.get('tab_disable_js') as boolean[];
+    // Image
+    let main_switch_image = AppStorage.get('disable_image') as boolean;
+    let sub_switch_image = AppStorage.get('disable_image_all_sites') as boolean;
+    let disable_image_these_sites = AppStorage.get('disable_image_these_sites') as string[];
+    let tab_disable_image = storage.get('tab_disable_image') as boolean[];
+    // Dark
+    let main_switch_dark = AppStorage.get('web_force_dark_mode') as boolean;
+    let exempt_sites = AppStorage.get('web_force_dark_mode_exemptions') as string[];
+    let tab_force_dark = storage.get('tab_force_dark') as boolean[];
+    // Operation
+    let domain = match_domain(this.Tabs[index].url)[1];
+    if (!main_switch_js) {
+      // Entire feature off, return false;
+      tab_disable_js[index] = false;
+    } else if (sub_switch_js) {
+      // Disable all js, return true;
+      tab_disable_js[index] = true;
+    } else {
+      // Check on case
+      tab_disable_js[index] = disable_js_these_sites.includes(domain);
+    }
+    if (!main_switch_image) {
+      tab_disable_image[index] = false;
+    } else if (sub_switch_image) {
+      tab_disable_image[index] = true;
+    } else {
+      tab_disable_image[index] = disable_image_these_sites.includes(domain);
+    }
+    if (!main_switch_dark) {
+      tab_force_dark[index] = false;
+    } else if (sub_switch_image) {
+      tab_force_dark[index] = true;
+    } else {
+      tab_force_dark[index] = !exempt_sites.includes(domain);
+    }
+  }
+
   // Web states
 
   /**
@@ -650,8 +601,127 @@ export class bunch_of_tabs {
     console.log('[Meow]' + identifier + "[bunch_of_tabs] Stored index stats. Main: " + this.main_tab_idx + ' Sub: ' + this.sub_tab_idx);
   }
 
-  // Update
+  /**
+   * Updates the internal timestamp of this bunch_of_tabs object.
+   *
+   * So that UI refresh would be triggered.
+   *
+   * Currently used only in setting home url and new tab url.
+   * */
   update_my_timestamp() {
     this.status_update_timestamp = Date.now();
+  }
+}
+
+@Observed
+export class tab_label {
+  timestamp: number;
+  index_key: number;
+
+  /**
+   * A class holding a timestamp and an index_key.
+   * @param timestamp A number, usually the creation of the tab.
+   * @param index_key A number, indicating the index of this tab in the tabs list.
+   */
+  constructor(timestamp: number, index: number) {
+    this.index_key = index;
+    this.timestamp = timestamp;
+  }
+}
+
+export class tab_info_packed {
+  controller: WebviewController;
+  title: string = '';
+  url: string = '';
+  is_loading: boolean;
+  loading_progress: number;
+  searching_keyword: string = ''; // Keyword of in-page search
+  searching_keyword_stats_current: number = 0; // Index of current viewing result during in-page search
+  searching_keyword_stats_total: number = 0; // Total number of results of in-page search
+  restore_on_creation: boolean = false;
+  web_state_array: Uint8Array = new Uint8Array();
+  last_saved_url: string = '';
+  last_saved_title: string = '';
+
+  /**
+   * A class holding a controller and statuses of a tab.
+   * @param title A string, the initial title when the tab is created.
+   * @param link A string, the initial link when the tab is created.
+   * @param restore_on_creation A boolean, optional, will restore web state on creation if the index in valid.
+   */
+  constructor(title: string, url: string, restore_on_creation?: boolean) {
+    this.controller = new webview.WebviewController();
+    this.title = title;
+    this.url = url;
+    this.is_loading = true;
+    this.loading_progress = 0;
+
+    if (restore_on_creation) {
+      this.restore_on_creation = true;
+    }
+  }
+
+  /**
+   * Asks the tab to update its title, usually called when the tab loads something new.
+   * */
+  update_title() {
+    try {
+      this.title = this.controller.getTitle();
+    } catch (e) {
+      console.error('[update_title] Failed: ' + e);
+    }
+    return this.title;
+  }
+
+  /**
+   * Asks the tab to update its link, usually called when the tab loads something new.
+   * */
+  update_url() {
+    if (!viewable_domains().includes(match_domain(this.controller.getUrl())[0])) {
+      return this.url;
+    }
+    try {
+      this.url = this.controller.getUrl();
+    } catch (e) {
+      console.error('[update_url] Failed: ' + e);
+    }
+    return this.url;
+  }
+
+  /**
+   * Checks and saves history record under certain conditions (if is a new, legal history entry).
+   * @param source
+   * */
+  check_save_history(source: string) {
+    let saved = false;
+    if (!this.restore_on_creation) {
+      let is_new_history = (this.last_saved_url != this.url);
+      if (is_new_history) {
+        if (!this.url.includes("resource://")) {
+          console.log('[bunch_of_tabs]' + source + ' Save history for [' + this.title + '](' + this.url + ')!');
+          save_history(this);
+          saved = true;
+        }
+      }
+    }
+    this.last_saved_url = this.url;
+    this.last_saved_title = this.title;
+    console.log('[bunch_of_tabs][check_save_history]' + source + ' ' + (saved ? 'Saved!' : 'Did nothing!'));
+  }
+
+  /**
+   * Asks the tab to update its loading state, usually called when the tab starts loading or finishes loading.
+   * */
+  update_is_loading(is_loading: boolean) {
+    this.is_loading = is_loading;
+    return this.is_loading;
+  }
+
+  /**
+   * Asks the tab to update its loading progress, usually called in the tab's loading progress.
+   * */
+  update_loading_progress(progress: number) {
+    this.loading_progress = progress;
+    return progress;
   }
 }

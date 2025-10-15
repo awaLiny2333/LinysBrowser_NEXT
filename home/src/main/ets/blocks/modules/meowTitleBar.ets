@@ -37,7 +37,7 @@ import lazy woofQuickSE from '../../dialogs/quicks/woofQuickSE';
 import lazy woofCookies from '../../dialogs/managers/woofCookies';
 import lazy woofQuickUA from '../../dialogs/quicks/woofQuickUA';
 import lazy woofGeneralManage from '../../dialogs/managers/woofGeneralManage';
-import { sync_tabs_list_info } from '../../processes/tabs_actions';
+import { sync_all_tabs_list_info } from '../../processes/tabs_actions';
 import { common } from '@kit.AbilityKit';
 import woofPrompt from '../../dialogs/web/woofPrompt';
 
@@ -1289,7 +1289,9 @@ struct meowTitleBar {
   stop_page() {
     this.bunch_of_tabs.stop_onWorkingTab();
     this.bunch_of_tabs.workingMainTab().update_is_loading(false);
-    sync_tabs_list_info(this.storage);
+    // Simply directly set the element in list in LocalStorage to false, instead of sync_tabs_list_info(this.storage) to reduce computation and performance lost.
+    this.tab_is_loading[this.bunch_of_tabs.main_tab_idx] = false;
+    // sync_tabs_list_info(this.storage);
   }
 
   // Values

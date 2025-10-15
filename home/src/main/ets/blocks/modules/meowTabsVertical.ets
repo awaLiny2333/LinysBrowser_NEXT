@@ -10,7 +10,7 @@ import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysText from '../../components/texts/linysText';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysSymbol from '../../components/texts/linysSymbol';
-import { determine_extra_background, set_search_box_text, sync_tabs_list_info } from '../../processes/tabs_actions';
+import { determine_extra_background, set_search_box_text, sync_current_tabs_list_info, sync_all_tabs_list_info } from '../../processes/tabs_actions';
 import { storage_of_id, window_index_of_id } from '../../utils/ui_tools';
 
 @Component
@@ -142,7 +142,7 @@ struct meowTabsVertical {
         // Try to switch tab
         // this.tab_animation = { duration: 0 };
         this.switch_tab(continue_tabs_main_on, false, false);
-        sync_tabs_list_info(this.storage);
+        sync_all_tabs_list_info(this.storage);
 
         // Recover Paralleow
         if (continue_tabs_sub_on < this.tab_titles.length) {
@@ -355,7 +355,8 @@ struct meowTabsVertical {
       this.bunch_of_tabs.update_backward_forward_access();
     }
     // Set CURRENT variables
-    sync_tabs_list_info(this.storage);
+    // sync_tabs_list_info(this.storage);
+    sync_current_tabs_list_info(this.storage);
     // Update Input Search Box
     set_search_box_text(this.current_url, this.storage);
 
@@ -390,7 +391,7 @@ struct meowTabsVertical {
     // Update history
     this.bunch_of_tabs.update_backward_forward_access();
     // Get synced lists
-    sync_tabs_list_info(this.storage);
+    sync_all_tabs_list_info(this.storage);
     // Update Input Search Box
     set_search_box_text(this.current_url, this.storage);
 

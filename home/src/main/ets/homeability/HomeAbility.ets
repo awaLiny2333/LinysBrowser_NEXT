@@ -2,7 +2,7 @@ import { AbilityConstant, Configuration, UIAbility, Want, wantConstant } from '@
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
-import { meow_init_main, meow_init_sub } from '../processes/init';
+import { meow_init_main, meow_init_sub } from '../processes/init_process';
 import lazy { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import {
   enter_free_window_mode,
