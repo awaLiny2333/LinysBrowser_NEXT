@@ -661,6 +661,8 @@ export class tab_info_packed {
     }
   }
 
+  // Data Sync
+
   /**
    * Asks the tab to update its title, usually called when the tab loads something new.
    * */
@@ -689,6 +691,40 @@ export class tab_info_packed {
   }
 
   /**
+   * Asks the tab to update its loading state, usually called when the tab starts loading or finishes loading.
+   * */
+  update_is_loading(is_loading: boolean) {
+    this.is_loading = is_loading;
+    return this.is_loading;
+  }
+
+  /**
+   * Asks the tab to update its loading progress, usually called in the tab's loading progress.
+   * */
+  update_loading_progress(progress: number) {
+    this.loading_progress = progress;
+    return progress;
+  }
+
+  /**
+   * Tag myself as restore finished after 500 ms.
+   * */
+  delayed_set_restore_ok(action?: () => void) {
+    setTimeout(() => {
+      this.restore_on_creation = false;
+      if (action) {
+        try {
+          action();
+        } catch (e) {
+          console.error('[delayed_set_restore_ok] Action Failed: ' + e);
+        }
+      }
+    }, 500);
+  }
+
+  // Actions
+
+  /**
    * Checks and saves history record under certain conditions (if is a new, legal history entry).
    * @param source
    * */
@@ -707,21 +743,5 @@ export class tab_info_packed {
     this.last_saved_url = this.url;
     this.last_saved_title = this.title;
     console.log('[bunch_of_tabs][check_save_history]' + source + ' ' + (saved ? 'Saved!' : 'Did nothing!'));
-  }
-
-  /**
-   * Asks the tab to update its loading state, usually called when the tab starts loading or finishes loading.
-   * */
-  update_is_loading(is_loading: boolean) {
-    this.is_loading = is_loading;
-    return this.is_loading;
-  }
-
-  /**
-   * Asks the tab to update its loading progress, usually called in the tab's loading progress.
-   * */
-  update_loading_progress(progress: number) {
-    this.loading_progress = progress;
-    return progress;
   }
 }

@@ -9,7 +9,7 @@ export default {
         buildOption: {
           arkOptions: {
             buildProfileFields: {
-              linysBuildTime: (new Date().toUTCString()),
+              linysBuildTime: (new Date().toLocaleString()),
             }
           }
         }

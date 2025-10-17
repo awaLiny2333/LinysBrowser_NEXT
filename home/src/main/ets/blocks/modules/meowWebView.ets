@@ -12,7 +12,7 @@ import lazy woofWantJump from '../../dialogs/prompts/woofWantJump';
 import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
 import lazy woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
-import { determine_extra_background, sync_current_tabs_list_info, sync_all_tabs_list_info } from '../../processes/tabs_actions';
+import { determine_extra_background, sync_all_tabs_list_info, sync_current_tabs_list_info } from '../../processes/tabs_actions';
 import woofPrompt from '../../dialogs/web/woofPrompt';
 import woofConfirm from '../../dialogs/web/woofConfirm';
 import woofAlert from '../../dialogs/web/woofAlert';
@@ -31,7 +31,6 @@ struct meowWebView {
   // Hosts
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
-  @StorageLink('bunch_of_bookmarks') @Watch('refresh_homepage_shortcuts') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks('Bookmarks~Meow');
   @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads(true);
   // Environments
   @StorageLink('currentColorMode') current_color_mode: number = 0;
@@ -66,8 +65,6 @@ struct meowWebView {
   @StorageLink('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
   @StorageLink('use_adblock') @Watch('on_use_adblock_state_change') use_adblock: boolean = true;
   @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
-  @StorageLink('homepage_shortcuts_bookmarks_dir') @Watch('refresh_homepage_shortcuts') homepage_shortcuts_dir: string = '/';
-  @StorageLink('homepage_shortcuts_init_height') homepage_shortcuts_init_height: number = 50;
   @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
   @StorageLink('web_force_dark_mode_exemptions') web_force_dark_mode_exemptions: string[] = [];
   @StorageLink('disable_js') disable_js: boolean = false;
@@ -76,9 +73,6 @@ struct meowWebView {
   @StorageLink('disable_image') disable_image: boolean = false;
   @StorageLink('disable_image_these_sites') disable_image_these_sites: string[] = [];
   @StorageLink('disable_image_all_sites') disable_image_all_sites: boolean = true;
-  // Settings - Accessibility
-  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
-  @StorageLink('preferred_hand_reverse_homepage_shortcuts') preferred_hand_reverse_homepage_shortcuts: boolean = false;
   /**
    * Stuffs */
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
@@ -87,7 +81,6 @@ struct meowWebView {
   @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
   @State last_timeout_id: number | undefined = undefined;
   @State shortcut_scroll_offset: number = 0;
-  @State homepage_shortcuts: unified_item[] = [];
   @State potential_jump_link: string = '';
   @LocalStorageLink('extra_background') extra_background: boolean = false;
   // Download
@@ -161,17 +154,11 @@ struct meowWebView {
     alignment: DialogAlignment.Center,
     cornerRadius: 26
   });
-  woofHomepageManager_control: CustomDialogController = new CustomDialogController({
-    builder: woofHomepageManager(),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 26,
-  });
   // Colors
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Else
   @LocalStorageLink('meowWebView_init_OK') init_OK: boolean = false;
-  shortcut_scroller: Scroller = new Scroller();
   httpAuth: boolean = false;
 
   // // Menu contents
@@ -290,11 +277,6 @@ struct meowWebView {
     setTimeout(() => {
       sync_all_tabs_list_info(this.storage);
       this.init_OK = true;
-    }, 10);
-
-    // Refresh shortcuts
-    setTimeout(() => {
-      this.refresh_homepage_shortcuts();
     }, 10);
 
     this.register_harmonyShare_gesture_sender();
@@ -452,11 +434,10 @@ struct meowWebView {
 
               // Mark End Recovery
               if (this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation) {
-                setTimeout(() => {
+                this.bunch_of_tabs.Tabs[Label.index_key].delayed_set_restore_ok(() => {
                   console.log('[Tabs] Restore OK for #' + Label.index_key + ' !');
-                  this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation = false;
-                  this.tab_restore_on_creations = this.bunch_of_tabs.get_all_restore_on_creations();
-                }, 500)
+                  this.tab_restore_on_creations[Label.index_key] = false;
+                });
               }
 
               determine_extra_background(this.storage);
@@ -695,35 +676,12 @@ struct meowWebView {
         .visibility(this.my_visibility(Label.index_key))
       }, (Label: tab_label) => Label.timestamp.toString())
 
-      Scroll(this.shortcut_scroller) {
-        Column({ space: 10 }) {
-          ForEach(this.homepage_shortcuts, (shortcut: unified_item, key: number) => {
-            shortcutButton({
-              bookmark: shortcut,
-              my_index: key,
-            })
-          })
-        }
-        .alignItems(this.shortcut_alignItems())
-        .padding({ top: Math.max(18, this.screen_height * (1 - this.homepage_shortcuts_init_height * 0.01)) })
-        .animation(animation_default())
-        .width('100%')
-      } // Shortcuts
-      .padding({ right: 14, left: 14, bottom: 18 })
-      .width('100%')
-      .height('100%')
-      .scrollable(ScrollDirection.Vertical)
-      .align(Alignment.Bottom)
-      .edgeEffect(EdgeEffect.Spring)
-      .animation(animation_default())
-      .scrollBar(BarState.Off)
-      .visibility((this.current_url == 'meow://home' && this.bunch_of_tabs.sub_tab_idx == -1) ? Visibility.Visible : Visibility.None)
-      .onDidScroll(() => {
-        this.shortcut_scroll_offset = this.shortcut_scroller.currentOffset().yOffset;
+      // if (this.current_url == 'meow://home') {
+      shortcuts({
+        shortcut_scroll_offset: this.shortcut_scroll_offset,
       })
-      .onClick(() => {
-        this.woofHomepageManager_control.open();
-      })
+      // }
+
     }
     .width("100%")
     .height("100%")
@@ -782,29 +740,6 @@ struct meowWebView {
       }
     } catch (e) {
       console.error('[meowWebView][on_use_adblock_state_change] enableAdsBlock error: ' + e);
-    }
-  }
-
-  /**
-   * Tries to retrieve homepage shortcuts from bunch_of_bookmarks.
-   * */
-  refresh_homepage_shortcuts() {
-    if (this.homepage_shortcuts_dir == '') {
-      return;
-    }
-    // let result = this.bunch_of_bookmarks.get_folder(this.homepage_shortcuts_dir)?.get_only_bookmarks_content();
-    let result = this.bunch_of_bookmarks.get_folder(this.homepage_shortcuts_dir)?.get_content();
-    if (result) {
-      console.log('[Meow][meowWebView] Directory selected / refreshed for shortcuts: [' + this.homepage_shortcuts_dir + ']');
-      this.homepage_shortcuts = result;
-      bunch_of_settings.set('homepage_shortcuts_bookmarks_dir', this.homepage_shortcuts_dir);
-    } else {
-      // directory doesn't exist
-      console.log('[Meow][meowWebView] Directory selected for shortcuts doesn\'t exist! [' + this.homepage_shortcuts_dir + ']');
-      this.homepage_shortcuts = [];
-      if (this.homepage_shortcuts_dir != '/') {
-        this.homepage_shortcuts_dir = '';
-      }
     }
   }
 
@@ -960,14 +895,6 @@ struct meowWebView {
     return Visibility.Visible;
   }
 
-  shortcut_alignItems() {
-    let status = this.preferred_hand_left_or_right == 'right';
-    if (this.preferred_hand_reverse_homepage_shortcuts) {
-      status = !status;
-    }
-    return status ? HorizontalAlign.End : HorizontalAlign.Start;
-  }
-
   // Ladders
 
   private src_of_tab_index(index: number): string {
@@ -985,6 +912,104 @@ struct meowWebView {
 }
 
 export default meowWebView;
+
+@Component
+struct shortcuts {
+  shortcut_scroller: Scroller = new Scroller();
+  @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
+  @StorageLink('bunch_of_bookmarks') @Watch('refresh_homepage_shortcuts') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks('Bookmarks~Meow');
+  @StorageLink('homepage_shortcuts_bookmarks_dir') @Watch('refresh_homepage_shortcuts') homepage_shortcuts_dir: string = '/';
+  // Environment
+  @LocalStorageProp('screen_height') screen_height: number = 100;
+  // Statuses
+  @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
+  @Link shortcut_scroll_offset: number;
+  @State homepage_shortcuts: unified_item[] = [];
+  // Settings
+  @StorageLink('homepage_shortcuts_init_height') homepage_shortcuts_init_height: number = 50;
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
+  @StorageLink('preferred_hand_reverse_homepage_shortcuts') preferred_hand_reverse_homepage_shortcuts: boolean = false;
+  // Popups
+  woofHomepageManager_control: CustomDialogController = new CustomDialogController({
+    builder: woofHomepageManager(),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 26,
+  });
+
+  aboutToAppear(): void {
+    // Refresh shortcuts
+    setTimeout(() => {
+      this.refresh_homepage_shortcuts();
+    }, 10);
+  }
+
+  build() {
+    Scroll(this.shortcut_scroller) {
+      Column({ space: 10 }) {
+        ForEach(this.homepage_shortcuts, (shortcut: unified_item, key: number) => {
+          shortcutButton({
+            bookmark: shortcut,
+            my_index: key,
+          })
+        })
+      }
+      .alignItems(this.shortcut_alignItems())
+      .padding({ top: Math.max(18, this.screen_height * (1 - this.homepage_shortcuts_init_height * 0.01)) })
+      .animation(animation_default())
+      .width('100%')
+    } // Shortcuts
+    .padding({ right: 14, left: 14, bottom: 18 })
+    .width('100%')
+    .height('100%')
+    .scrollable(ScrollDirection.Vertical)
+    .align(Alignment.Bottom)
+    .edgeEffect(EdgeEffect.Spring)
+    .animation(animation_default())
+    .scrollBar(BarState.Off)
+    .visibility((this.current_url == 'meow://home' && this.bunch_of_tabs.sub_tab_idx == -1) ? Visibility.Visible : Visibility.None)
+    .onDidScroll(() => {
+      this.shortcut_scroll_offset = this.shortcut_scroller.currentOffset().yOffset;
+    })
+    .onClick(() => {
+      this.woofHomepageManager_control.open();
+    })
+  }
+
+  // Values
+
+  shortcut_alignItems() {
+    let status = this.preferred_hand_left_or_right == 'right';
+    if (this.preferred_hand_reverse_homepage_shortcuts) {
+      status = !status;
+    }
+    return status ? HorizontalAlign.End : HorizontalAlign.Start;
+  }
+
+  // Actions
+
+  /**
+   * Tries to retrieve homepage shortcuts from bunch_of_bookmarks.
+   * */
+  refresh_homepage_shortcuts() {
+    if (this.homepage_shortcuts_dir == '') {
+      return;
+    }
+    // let result = this.bunch_of_bookmarks.get_folder(this.homepage_shortcuts_dir)?.get_only_bookmarks_content();
+    let result = this.bunch_of_bookmarks.get_folder(this.homepage_shortcuts_dir)?.get_content();
+    if (result) {
+      console.log('[Meow][meowWebView] Directory selected / refreshed for shortcuts: [' + this.homepage_shortcuts_dir + ']');
+      this.homepage_shortcuts = result;
+      bunch_of_settings.set('homepage_shortcuts_bookmarks_dir', this.homepage_shortcuts_dir);
+    } else {
+      // directory doesn't exist
+      console.log('[Meow][meowWebView] Directory selected for shortcuts doesn\'t exist! [' + this.homepage_shortcuts_dir + ']');
+      this.homepage_shortcuts = [];
+      if (this.homepage_shortcuts_dir != '/') {
+        this.homepage_shortcuts_dir = '';
+      }
+    }
+  }
+}
 
 @Reusable
 @Component

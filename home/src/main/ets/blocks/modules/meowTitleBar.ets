@@ -1266,24 +1266,21 @@ struct meowTitleBar {
   }
 
   go_backward() {
-
     this.bunch_of_tabs.goBackward_onWorkingTab();
   }
 
   go_forward() {
-
     this.bunch_of_tabs.goForward_onWorkingTab();
   }
 
   go_home() {
-
     this.bunch_of_tabs.go_home_onWorkingTab();
   }
 
   refresh_page() {
-
-    this.bunch_of_tabs.refresh_onWorkingTab()
-    this.bunch_of_tabs.workingMainTab().update_is_loading(true)
+    this.bunch_of_tabs.refresh_onWorkingTab();
+    this.bunch_of_tabs.workingMainTab().update_is_loading(true);
+    this.tab_is_loading[this.bunch_of_tabs.main_tab_idx] = true;
   }
 
   stop_page() {
