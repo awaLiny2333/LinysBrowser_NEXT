@@ -200,7 +200,7 @@ let built_ins: string[] = [
  * */
 export function url_resource_to_meow(url: string) {
   let result: string = url;
-
+  
   if (!url) {
     return result;
   }
@@ -208,9 +208,9 @@ export function url_resource_to_meow(url: string) {
 
   if (url.length > 11) {
     if (url.substring(0, 11) == "resource://") {
-      let index = urls.indexOf(url)
+      let index = urls.indexOf(url);
       if (index != -1) {
-        result = built_ins[index]
+        result = built_ins[index];
       } else {
         // If input is a non-existing resource:// link
       }

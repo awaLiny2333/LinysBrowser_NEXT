@@ -308,6 +308,7 @@ export class bunch_of_tabs {
       this.main_tab_idx -= 1;
     }
 
+    console.log('[bunch_of_tabs][closeTab] ' + this.main_tab_idx + '!');
     return this.main_tab_idx;
   }
 

@@ -111,13 +111,19 @@ struct meowTabsVertical {
       // Main window
       // Start Up: generate / recover tabs
       if (this.start_up_option == "new tab") {
-        this.new_tab(this.new_tab_url, false, false);
-        this.switch_tab(0, false, false);
-
+        try {
+          this.new_tab(this.new_tab_url, false, false);
+          this.switch_tab(0, false, false);
+        } catch (e) {
+          console.error('[TabsVertical][NEW_TAB] ' + e);
+        }
       } else if (this.start_up_option == "home") {
-        this.new_tab((this.home_url == "") ? url_default_blank() : this.home_url, false, false);
-        this.switch_tab(0, false, false);
-
+        try {
+          this.new_tab((this.home_url == "") ? url_default_blank() : this.home_url, false, false);
+          this.switch_tab(0, false, false);
+        } catch (e) {
+          console.error('[TabsVertical][HOME] ' + e);
+        }
       } else {
         // Restore. Prepare web states.
 
@@ -140,13 +146,21 @@ struct meowTabsVertical {
         this.storage.setOrCreate('restore_web_state_arrays', web_state_arrays_to_restore);
 
         // Create new tabs
-        for (let index = 0; index < web_state_arrays_to_restore.length; index++) {
-          this.new_tab("", true, false);
+        try {
+          for (let index = 0; index < web_state_arrays_to_restore.length; index++) {
+            this.new_tab("", true, false);
+          }
+        } catch (e) {
+          console.error('[TabsVertical][CONTINUE][new_tab] ' + e);
         }
 
         // Try to switch tab
-        // this.tab_animation = { duration: 0 };
+        // try {
         this.switch_tab(continue_tabs_main_on, false, false);
+        // } catch (e) {
+        //   console.error('[TabsVertical][CONTINUE][switch_tab] ' + e);
+        // }
+
         sync_all_tabs_list_info(this.storage);
 
         // Recover Paralleow
@@ -356,18 +370,24 @@ struct meowTabsVertical {
     }
 
     this.choosing_paralleow = false;
-
-    // Switch
-    this.bunch_of_tabs.switchToTab(target);
-    console.log('[Meow][meowTabs] Switch to tab ' + this.bunch_of_tabs.main_tab_idx.toString());
-
+    try {
+      // Switch
+      this.bunch_of_tabs.switchToTab(target);
+      console.log('[Meow][meowTabs] Switch to tab ' + this.bunch_of_tabs.main_tab_idx.toString());
+    } catch (e) {
+      console.error('[TabsVertical][switch_tab][a] ' + e);
+    }
     // Update history
     if (this.recover_tabs_finished) {
       this.bunch_of_tabs.update_backward_forward_access();
     }
-    // Set CURRENT variables
-    // sync_tabs_list_info(this.storage);
-    sync_current_tabs_list_info(this.storage);
+
+    try {
+      // Set CURRENT variables
+      sync_current_tabs_list_info(this.storage);
+    } catch (e) {
+      console.error('[TabsVertical][switch_tab][b] ' + e);
+    }
     // Update Input Search Box
     set_search_box_text(this.current_url, this.storage);
 
