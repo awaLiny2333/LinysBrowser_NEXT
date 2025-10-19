@@ -104,6 +104,18 @@ export class bunch_of_tabs {
     return false;
   }
 
+  /**
+   * Dispose all nodes.
+   *
+   * USE THIS ONLY WHEN WINDOW IS ABOUT TO DESTROY!
+   * */
+  DISPOSE() {
+    for (let index = 0; index < this.NodeControllers.length; index++) {
+      this.NodeControllers[index].detachWeb();
+      this.NodeControllers[index].dispose();
+    }
+  }
+
   // UA Stuff
 
   /**

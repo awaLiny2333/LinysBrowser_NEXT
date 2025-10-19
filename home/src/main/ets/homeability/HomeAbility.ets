@@ -140,6 +140,10 @@ export default class HomeAbility extends UIAbility {
     let window_index = window_index_of_id(window_id);
     console.log(' \n[HomeAbility][onWindowStageWillDestroy] Will destroy window #' + window_index + ' (' + window_id + ')!\n ');
 
+    // Dispose web nodes.
+    let tabs = this.storage.get('bunch_of_tabs') as bunch_of_tabs;
+    tabs.DISPOSE();
+
     // Delete myself from the lists
     let windowIds = AppStorage.get('windowIds') as string[];
     windowIds.splice(window_index, 1);
