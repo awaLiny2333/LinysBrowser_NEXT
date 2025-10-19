@@ -310,9 +310,11 @@ struct meowTabsVertical {
    * @description While if new_tab_url is also not set ("" or undefined), then will load the url_default_blank().
    * */
   new_tab(target_url: string, do_recovery: boolean, save_to_settings: boolean) {
+    let t0 = Date.now();
+
     this.storage.set('extra_background', false);
 
-    this.bunch_of_tabs.newTab(target_url, do_recovery);
+    this.bunch_of_tabs.newTab(this.getUIContext(), target_url, do_recovery);
 
     if (!do_recovery) {
       // Store tabs count
@@ -341,6 +343,8 @@ struct meowTabsVertical {
     if (save_to_settings) {
       this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][new_tab]');
     }
+
+    console.log('[new_tab] ' + (Date.now() - t0) + ' ms!');
   }
 
   switch_tab(target: number, close_tabs_panel: boolean, save_to_settings: boolean) {
@@ -376,6 +380,7 @@ struct meowTabsVertical {
 
   close_tab(target: number, save_to_settings: boolean) {
     if (!this.recover_tabs_finished) {
+      console.error("[Meow][LinysTabs][ERROR] Recover Not OK (" + target + ')!')
       return;
     }
 
@@ -579,8 +584,8 @@ struct meowTabsVertical {
   uni_close_tab() {
     if (this.close_tab_gateway >= 0) {
       this.close_tab(this.close_tab_gateway, true);
-      this.close_tab_gateway = -1;
     }
+    this.close_tab_gateway = -1;
   }
 
   uni_close_all_tabs() {

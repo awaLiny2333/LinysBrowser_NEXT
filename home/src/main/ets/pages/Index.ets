@@ -254,11 +254,12 @@ struct Index {
       RelativeContainer() {
         Row() {
           Row() {
-            meowTabsVertical()
-              .width(this.showing_tabs ? this.width_of_Tabs() : 0)
-              .padding(this.showing_tabs ? 10 : 0)
-              .animation(animation_default())
-
+            if (this.delayed_load_p0) {
+              meowTabsVertical()
+                .width(this.showing_tabs ? this.width_of_Tabs() : 0)
+                .padding(this.showing_tabs ? 10 : 0)
+                .animation(animation_default())
+            }
             if (this.delayed_load_p1) {
               meowBookmarks()
                 .padding(this.showing_bookmarks ? 10 : 0)
@@ -272,7 +273,7 @@ struct Index {
           .animation(animation_default())
           .height("100%")
 
-          if (this.delayed_load_p0) {
+          if (this.delayed_load_p1) {
             meowWebView()
               .width("100%")
               .backgroundColor(this.color_current_primary)

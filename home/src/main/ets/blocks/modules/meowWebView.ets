@@ -2,7 +2,7 @@ import { animation_default, capsule_bar_height, click_effect_default, fontSize_L
 import { bunch_of_history } from '../../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { arrayBuffer_2_pixelMap, compress_image_arrayBuffer, sandbox_read_arrayBuffer, sandbox_read_arrayBuffer_sync } from '../../utils/storage_tools';
-import { match_domain, url_meow_to_resource, url_resource_to_meow, viewable_domains } from '../../utils/url_tools';
+import { url_meow_to_resource, url_resource_to_meow } from '../../utils/url_tools';
 import { webview } from '@kit.ArkWeb';
 import { print } from '@kit.BasicServicesKit';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
@@ -12,11 +12,11 @@ import lazy woofWantJump from '../../dialogs/prompts/woofWantJump';
 import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
 import lazy woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
-import { determine_extra_background, sync_all_tabs_list_info, sync_current_tabs_list_info } from '../../processes/tabs_actions';
+import { sync_all_tabs_list_info } from '../../processes/tabs_actions';
 import woofPrompt from '../../dialogs/web/woofPrompt';
 import woofConfirm from '../../dialogs/web/woofConfirm';
 import woofAlert from '../../dialogs/web/woofAlert';
-import { is_address_continuable, set_continuable, storage_of_id, window_index_of_id } from '../../utils/ui_tools';
+import { is_address_continuable, set_continuable, storage_of_id } from '../../utils/ui_tools';
 import linysText from '../../components/texts/linysText';
 import { harmonyShare, systemShare } from '@kit.ShareKit';
 import { uniformTypeDescriptor } from '@kit.ArkData';
@@ -51,28 +51,14 @@ struct meowWebView {
   @LocalStorageLink('tab_urls') tab_urls: string[] = []
   @LocalStorageLink('current_url') @Watch('on_current_url_change') current_url: string = "=￣ω￣=";
   @LocalStorageLink('tab_match_domains') tab_match_domains: string[][] = [];
-  @LocalStorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0];
-  @LocalStorageLink('tab_is_loading') tab_is_loading: boolean[] = [true];
-  @LocalStorageLink('tab_disable_js') tab_disable_js: boolean[] = [false];
-  @LocalStorageLink('tab_disable_image') tab_disable_image: boolean[] = [false];
-  @LocalStorageLink('tab_force_dark') tab_force_dark: boolean[] = [false];
   @LocalStorageLink('tab_restore_on_creations') tab_restore_on_creations: boolean[] = [false];
   /**
    * Web control statuses */
   @LocalStorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
   // Settings
-  @StorageLink('collect_new_history') collect_new_history: boolean = true;
-  @StorageLink('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
   @StorageLink('use_adblock') @Watch('on_use_adblock_state_change') use_adblock: boolean = true;
-  @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
   @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
   @StorageLink('web_force_dark_mode_exemptions') web_force_dark_mode_exemptions: string[] = [];
-  @StorageLink('disable_js') disable_js: boolean = false;
-  @StorageLink('disable_js_these_sites') disable_js_these_sites: string[] = [];
-  @StorageLink('disable_js_all_sites') disable_js_all_sites: boolean = true;
-  @StorageLink('disable_image') disable_image: boolean = false;
-  @StorageLink('disable_image_these_sites') disable_image_these_sites: string[] = [];
-  @StorageLink('disable_image_all_sites') disable_image_all_sites: boolean = true;
   /**
    * Stuffs */
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
@@ -81,7 +67,7 @@ struct meowWebView {
   @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
   @State last_timeout_id: number | undefined = undefined;
   @State shortcut_scroll_offset: number = 0;
-  @State potential_jump_link: string = '';
+  @LocalStorageLink('potential_jump_link') @Watch('on_potential_jump_link_change') potential_jump_link: string = '';
   @LocalStorageLink('extra_background') extra_background: boolean = false;
   // Download
   @StorageLink('dl_delegate') dl_delegate: webview.WebDownloadDelegate = new webview.WebDownloadDelegate();
@@ -106,7 +92,7 @@ struct meowWebView {
     cornerRadius: 26,
     width: "90%"
   });
-  @State js_prompt_event: OnPromptEvent | undefined = undefined;
+  @LocalStorageLink('js_prompt_event') @Watch('on_js_prompt_event') js_prompt_event: OnPromptEvent | undefined = undefined;
   @State js_prompt_result: string = '';
   woofPrompt_control: CustomDialogController = new CustomDialogController({
     builder: woofPrompt({
@@ -124,7 +110,7 @@ struct meowWebView {
     alignment: DialogAlignment.Center,
     cornerRadius: 26
   })
-  @State js_confirm_event: OnConfirmEvent | undefined = undefined;
+  @LocalStorageLink('js_confirm_event') @Watch('on_js_confirm_event') js_confirm_event: OnConfirmEvent | undefined = undefined;
   woofConfirm_control: CustomDialogController = new CustomDialogController({
     builder: woofConfirm({
       event: this.js_confirm_event
@@ -132,7 +118,7 @@ struct meowWebView {
     alignment: DialogAlignment.Center,
     cornerRadius: 26
   })
-  @State js_alert_event: OnAlertEvent | undefined = undefined;
+  @LocalStorageLink('js_alert_event') @Watch('on_js_alert_event') js_alert_event: OnAlertEvent | undefined = undefined;
   woofAlert_control: CustomDialogController = new CustomDialogController({
     builder: woofAlert({
       event: this.js_alert_event
@@ -140,6 +126,7 @@ struct meowWebView {
     alignment: DialogAlignment.Center,
     cornerRadius: 26
   })
+  @LocalStorageLink('permission_request_event') @Watch('on_permission_request_event') permission_request_event: OnPermissionRequestEvent | undefined = undefined;
   onPermit?: () => void;
   onDeny?: () => void;
   ask_resources: string[] = [];
@@ -302,353 +289,13 @@ struct meowWebView {
 
       ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
         Column() {
-          Web({
-            src: this.src_of_tab_index(Label.index_key),
-            controller: this.bunch_of_tabs.Tabs[Label.index_key] !== undefined
-              ? this.bunch_of_tabs.Tabs[Label.index_key].controller
-              : undefined,
-            // renderMode: RenderMode.SYNC_RENDER
-          })// Main WEB
+          NodeContainer(this.bunch_of_tabs.NodeControllers[Label.index_key])
+            .onAppear(() => {
+              this.bunch_of_tabs.NodeControllers[Label.index_key].attachWeb();
+              this.bunch_of_tabs.NodeControllers[Label.index_key].rebuild();
+            })
             .width("100%")
             .layoutWeight(1)
-            .backgroundColor('transparent')
-            .databaseAccess(true)
-            .javaScriptAccess(!this.tab_disable_js[Label.index_key])
-            .imageAccess(!this.tab_disable_image[Label.index_key])
-            .onlineImageAccess(!this.tab_disable_image[Label.index_key])
-            .fileAccess(true)
-            .domStorageAccess(true)
-            .multiWindowAccess(true)
-            .mixedMode(MixedMode.All)
-            .allowWindowOpenMethod(true)
-            .onSearchResultReceive((result) => {
-              this.current_in_page_searching_stats_current =
-                Math.min(result.numberOfMatches, result.activeMatchOrdinal + 1);
-              this.current_in_page_searching_stats_total = result.numberOfMatches;
-              this.bunch_of_tabs.workingMainTab().searching_keyword_stats_current =
-                Math.min(result.numberOfMatches, result.activeMatchOrdinal + 1);
-              this.bunch_of_tabs.workingMainTab().searching_keyword_stats_total = result.numberOfMatches;
-            })
-            .onWindowNew((event) => {
-              // TODO: Find out why this triggers twice when click once
-              let new_target_url = event.targetUrl;
-              console.log('[meowWebView] New tab in new window!');
-              this.storage.set('universal_new_tab_gateway', new_target_url);
-              event.handler.setWebController(null);
-            })
-            .onTitleReceive(() => {
-              // Ask tab to update its info
-              try {
-                let title = this.bunch_of_tabs.Tabs[Label.index_key].update_title();
-                let url = this.bunch_of_tabs.Tabs[Label.index_key].update_url();
-                this.bunch_of_tabs.update_backward_forward_access();
-                // sync lists
-                // sync_tabs_list_info(this.storage);
-                this.tab_titles[Label.index_key] = title;
-                this.tab_urls[Label.index_key] = url;
-
-                // this.bunch_of_tabs.sync_web_settings(Label.index_key);
-
-                if (Label.index_key == this.bunch_of_tabs.main_tab_idx) {
-                  sync_current_tabs_list_info(this.storage);
-                }
-              } catch (e) {
-                console.error('[meowWebView][onProgressChange] Update bunch_of_tabs error: ' + e);
-              }
-
-              // Save history if title is really updated
-              if (this.bunch_of_tabs.Tabs[Label.index_key].last_saved_title != this.tab_titles[Label.index_key]) {
-                console.log('[Tabs][onTitleReceive] New title: ' + this.tab_titles[Label.index_key]);
-                if (!this.bunch_of_tabs.Tabs[Label.index_key].is_loading) {
-                  this.bunch_of_tabs.Tabs[Label.index_key].check_save_history('[onTitleReceive]');
-                }
-              }
-
-            })
-            .onPageBegin(() => {
-              console.log("[ArkWeb] on page begin!");
-
-              if (Label.index_key >= this.bunch_of_tabs.get_tabs_count()) {
-                // If not synced, idk why but o(=•ェ•=)m
-                return;
-              }
-
-              // Ask tab to update its info
-              try {
-                let url = this.bunch_of_tabs.Tabs[Label.index_key].update_url();
-                let is_loading = this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(true);
-                let progress = this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(0);
-
-                this.tab_urls[Label.index_key] = url;
-                this.tab_is_loading[Label.index_key] = is_loading;
-                this.tab_loading_progresses[Label.index_key] = progress;
-
-                this.bunch_of_tabs.sync_web_settings(Label.index_key);
-
-                // Get synced lists
-                if (Label.index_key == this.bunch_of_tabs.main_tab_idx) {
-                  sync_current_tabs_list_info(this.storage);
-                }
-
-              } catch (e) {
-                console.error('[meowWebView][onPageBegin] Update bunch_of_tabs error: ' + e);
-              }
-
-              // Update Input Search Box
-              this.update_search_box_text(this.current_url);
-            })
-            .onPageEnd(() => {
-              console.log("[Meow][ArkWeb] on page end!");
-
-              // Ask tab to update its info
-              try {
-                let title = this.bunch_of_tabs.Tabs[Label.index_key].update_title();
-                let url = this.bunch_of_tabs.Tabs[Label.index_key].update_url();
-                let is_loading = this.bunch_of_tabs.Tabs[Label.index_key].update_is_loading(false);
-                this.bunch_of_tabs.update_backward_forward_access();
-
-                this.tab_titles[Label.index_key] = title;
-                this.tab_urls[Label.index_key] = url;
-                this.tab_is_loading[Label.index_key] = is_loading;
-
-                this.bunch_of_tabs.sync_web_settings(Label.index_key);
-
-                // Get synced lists
-                if (Label.index_key == this.bunch_of_tabs.main_tab_idx) {
-                  sync_current_tabs_list_info(this.storage);
-                }
-              } catch (e) {
-                console.error('[meowWebView][onPageEnd] Update bunch_of_tabs error: ' + e);
-              }
-
-              // Get and save web_state
-              this.bunch_of_tabs.update_web_state(Label.index_key);
-              if (window_index_of_id(this.my_window_id) == 0) {
-                this.bunch_of_tabs.save_web_state_to_sandbox(Label.index_key);
-              }
-
-              // Save history
-              if (this.bunch_of_tabs.Tabs[Label.index_key].title != '') {
-                this.bunch_of_tabs.Tabs[Label.index_key].check_save_history('[onPageEnd]');
-              }
-
-              // Mark End Recovery
-              if (this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation) {
-                this.bunch_of_tabs.Tabs[Label.index_key].delayed_set_restore_ok(() => {
-                  console.log('[Tabs] Restore OK for #' + Label.index_key + ' !');
-                  this.tab_restore_on_creations[Label.index_key] = false;
-                });
-              }
-
-              determine_extra_background(this.storage);
-            })
-            .onProgressChange((event) => {
-              if (!event) {
-                return;
-              }
-              let progress: number = event.newProgress;
-              if (progress == 0) {
-                return;
-              }
-              if (Label.index_key >= this.bunch_of_tabs.get_tabs_count()) {
-                // If not synced, idk why but o(=•ェ•=)m
-                return;
-              }
-
-              // Ask tab to update its info
-              try {
-                let title = this.bunch_of_tabs.Tabs[Label.index_key].update_title();
-                let url = this.bunch_of_tabs.Tabs[Label.index_key].update_url();
-                this.bunch_of_tabs.Tabs[Label.index_key].update_loading_progress(progress);
-                this.bunch_of_tabs.update_backward_forward_access();
-
-                this.tab_titles[Label.index_key] = title;
-                this.tab_urls[Label.index_key] = url;
-                this.tab_loading_progresses[Label.index_key] = progress;
-
-                // Get synced lists
-                if (Label.index_key == this.bunch_of_tabs.main_tab_idx) {
-                  sync_current_tabs_list_info(this.storage);
-                }
-              } catch (e) {
-                console.error('[meowWebView][onProgressChange] Update bunch_of_tabs error: ' + e);
-              }
-
-              // Update Input Search Box
-              this.update_search_box_text(this.current_url);
-
-              // Get and save web_state
-              if (!this.bunch_of_tabs.Tabs[Label.index_key].restore_on_creation) {
-                this.bunch_of_tabs.update_web_state(Label.index_key);
-                if (window_index_of_id(this.my_window_id) == 0) {
-                  this.bunch_of_tabs.save_web_state_to_sandbox(Label.index_key);
-                }
-              }
-
-              determine_extra_background(this.storage);
-            })
-            .onFullScreenEnter((event) => {
-              this.fullscreen_mode = true;
-              this.handler = event.handler;
-            })
-            .onFullScreenExit(() => {
-              this.fullscreen_mode = false;
-            })
-            .onControllerAttached(async () => {
-              // bind download delegate
-              try {
-                this.bunch_of_tabs.Tabs[Label.index_key].controller.setDownloadDelegate(this.dl_delegate);
-              } catch (e) {
-                console.error('[meowWebView] onControllerAttached setDownloadDelegate error: ' + e);
-              }
-
-              // Set UA
-              if (this.now_global_custom_UA != "") {
-                try {
-                  this.bunch_of_tabs.Tabs[Label.index_key].controller.setCustomUserAgent(this.now_global_custom_UA);
-                } catch (e) {
-                  console.error('[meowWebView] onControllerAttached setCustomUserAgent error: ' + e);
-                }
-              }
-
-              // Set Ads Blocker
-              console.log('[meowWebView] enableAdsBlock: ' + (this.use_adblock ? 'true' : 'false'));
-              try {
-                this.bunch_of_tabs.Tabs[Label.index_key].controller.enableAdsBlock(this.use_adblock);
-              } catch (e) {
-                console.error('[meowWebView] onControllerAttached enableAdsBlock error: ' + e);
-              }
-
-              // TODO: Find out why this doesn't work sometimes for a recovered webpage :O getting crazy
-              // Set Ads Blocker exception list
-              try {
-                console.log('[init][meowWebView] Trying to add ads blocker exceptions: [' + this.adblock_exceptions + '] Operated by meowWebView ~');
-                webview.AdsBlockManager.addAdsBlockDisallowedList(this.adblock_exceptions);
-              } catch (e) {
-                console.error('[ERROR][Meow][meowWebView] add Ads Blocker Exceptions error: ' + e);
-              }
-
-              // Set intelligent tracking prevention
-              try {
-                this.bunch_of_tabs.Tabs[Label.index_key].controller.enableIntelligentTrackingPrevention(this.intelligent_tracking_prevention);
-                console.log('[meowWebView] ArkWeb Intelligent Tracking Prevention ' + this.intelligent_tracking_prevention.toString() + '!');
-              } catch (e) {
-                console.error('[meowWebView] onControllerAttached enableIntelligentTrackingPrevention error: ' + e);
-              }
-              // Restore Web State
-              setTimeout(() => {
-                if (this.bunch_of_tabs.Tabs[Label.index_key]?.restore_on_creation) {
-                  if (Label.index_key < this.restore_web_state_arrays.length) {
-                    this.bunch_of_tabs.restore_web_state(this.restore_web_state_arrays[Label.index_key],
-                      Label.index_key);
-                  } else {
-                    console.error('[ERROR][Meow][meowWebView] Restore web state failed ' +
-                      'for an out-of-bound index in restore_web_state_arrays.')
-                  }
-                }
-              }, 0);
-
-              // Set allowed resources
-              try {
-                let allowed = [
-                  this.getUIContext().getHostContext()!.resourceDir,
-                  // this.getUIContext().getHostContext()!.filesDir,
-                  // '/data/storage/el2/base/haps/cache'
-                ]
-                this.bunch_of_tabs.Tabs[Label.index_key].controller.setPathAllowingUniversalAccess(allowed);
-                console.log('[meowWebView] Init set allowed resources: [' + allowed.join(", ") + ']');
-              } catch (e) {
-                console.error('[meowWebView] Init set allowed resources error: ' + e);
-              }
-            })
-            .darkMode(WebDarkMode.Auto)// Dark mode!
-            .forceDarkAccess(this.tab_force_dark[Label.index_key])// Force dark mode
-            .onLoadIntercept((event) => {
-              if (event) {
-                let url: string = event.data.getRequestUrl();
-                // Do not intercept data:
-                if (url.substring(0, 5) == 'data:') {
-                  return false;
-                }
-                // Do not intercept blob:
-                if (url.substring(0, 5) == 'blob:') {
-                  return false;
-                }
-                // Links or urls
-                let match_domain_result = match_domain(url);
-                if (viewable_domains().includes(match_domain_result[0])) {
-                  // Viewable
-                  return false;
-                } else {
-                  // Not viewable, perhaps is a link that can jump?
-                  this.potential_jump_link = url;
-                  this.woofLinkJumper_control.open();
-                  return true;
-                }
-              }
-              return false;
-            })
-            .onPermissionRequest((event) => {
-              if (!event) {
-                return;
-              }
-              this.onPermit = () => {
-                event.request.grant(event.request.getAccessibleResource());
-              }
-              this.onDeny = () => {
-                event.request.deny();
-              }
-              this.ask_resources = event.request.getAccessibleResource();
-              this.source = event.request.getOrigin();
-              console.log('[Meow][meowWebView] Requesting Protected Resources: ' + event.request.getAccessibleResource());
-
-              // TODO: work out a workable permission manager!
-
-              if (this.ask_resources.length == 0) {
-                this.onPermit();
-                console.log('[Meow][meowWebView] Permitted empty request list automatically!');
-                return;
-              }
-
-              if (this.ask_resources.length == 1 && this.ask_resources[0] == 'TYPE_SENSOR') {
-                this.onPermit();
-                console.log('[Meow][meowWebView] Permitted TYPE_SENSOR automatically!');
-                return;
-              }
-
-              this.woofWantProtectedResources_control.open();
-            })
-            .onClientAuthenticationRequest((event) => {
-              console.log('[meowWebView] onClientAuthenticationRequest event.host: ' + event.host);
-              console.log('[meowWebView] onClientAuthenticationRequest event.port ' + event.port);
-              console.log('[meowWebView] onClientAuthenticationRequest event.keyTypes: ' + event.keyTypes.join('\n'));
-              console.log('[meowWebView] onClientAuthenticationRequest event.issuers: ' + event.issuers.join('\n'));
-            })
-            .onOverScroll(() => {
-              // console.log('[meowWebView] Over scrolled!')
-            })
-            .nestedScroll({ scrollForward: NestedScrollMode.SELF_FIRST, scrollBackward: NestedScrollMode.SELF_FIRST })
-            .onPrompt((e) => {
-              if (e) {
-                this.js_prompt_event = e;
-                this.woofPrompt_control.open();
-              }
-              return true;
-            })
-            .onConfirm((e) => {
-              if (e) {
-                this.js_confirm_event = e;
-                this.woofConfirm_control.open();
-              }
-              return true;
-            })
-            .onAlert((e) => {
-              if (e) {
-                this.js_alert_event = e;
-                this.woofAlert_control.open();
-              }
-              return true;
-            })
 
           Column() {
             linysText({
@@ -717,6 +364,28 @@ struct meowWebView {
     } else {
       set_continuable(this.getUIContext().getHostContext() as common.UIAbilityContext, false);
     }
+  }
+
+  on_js_prompt_event() {
+    this.woofPrompt_control.open();
+  }
+
+  on_js_alert_event() {
+    this.woofAlert_control.open();
+  }
+
+  on_js_confirm_event() {
+    this.woofConfirm_control.open();
+  }
+
+  on_permission_request_event() {
+    if (this.permission_request_event) {
+      this.process_permission_request(this.permission_request_event);
+    }
+  }
+
+  on_potential_jump_link_change() {
+    this.woofLinkJumper_control.open();
   }
 
   // Operations
@@ -849,6 +518,34 @@ struct meowWebView {
     }
   }
 
+  process_permission_request(event: OnPermissionRequestEvent) {
+    this.onPermit = () => {
+      event.request.grant(event.request.getAccessibleResource());
+    }
+    this.onDeny = () => {
+      event.request.deny();
+    }
+    this.ask_resources = event.request.getAccessibleResource();
+    this.source = event.request.getOrigin();
+    console.log('[Meow][meowWebView] Requesting Protected Resources: ' + event.request.getAccessibleResource());
+
+    // TODO: work out a workable permission manager!
+
+    if (this.ask_resources.length == 0) {
+      this.onPermit();
+      console.log('[Meow][meowWebView] Permitted empty request list automatically!');
+      return;
+    }
+
+    if (this.ask_resources.length == 1 && this.ask_resources[0] == 'TYPE_SENSOR') {
+      this.onPermit();
+      console.log('[Meow][meowWebView] Permitted TYPE_SENSOR automatically!');
+      return;
+    }
+
+    this.woofWantProtectedResources_control.open();
+  }
+
   // Kind of constants
 
   align_rules_main_tab() {
@@ -893,21 +590,6 @@ struct meowWebView {
       return Visibility.None;
     }
     return Visibility.Visible;
-  }
-
-  // Ladders
-
-  private src_of_tab_index(index: number): string {
-    let target_packed_tab_info = this.bunch_of_tabs.Tabs[index];
-    if (target_packed_tab_info == undefined) {
-      return "";
-    } else {
-      if (target_packed_tab_info.restore_on_creation) {
-        return "";
-      } else {
-        return url_meow_to_resource(target_packed_tab_info.url);
-      }
-    }
   }
 }
 

@@ -2,10 +2,10 @@ import { webview } from '@kit.ArkWeb';
 import { match_domain, url_meow_to_resource, viewable_domains } from '../utils/url_tools';
 import { url_default_blank } from './bunch_of_defaults';
 import { sandbox_save } from '../utils/storage_tools';
-import { all_false, all_true } from '../utils/data_operation_tools';
 import { bunch_of_settings } from './bunch_of_settings';
 import { storage_of_id, window_index_of_id } from '../utils/ui_tools';
 import { save_history } from '../processes/tabs_actions';
+import lazy { createNWeb, TabNodeController } from '../objects/WebNode';
 
 export class bunch_of_tabs {
   // Settings
@@ -15,6 +15,7 @@ export class bunch_of_tabs {
   // Major Data
   Tabs: Array<tab_info_packed> = [];
   Labels: Array<tab_label> = [];
+  NodeControllers: Array<TabNodeController> = [];
   my_id: string;
   // Statuses
   main_tab_idx: number = 0;
@@ -162,8 +163,12 @@ export class bunch_of_tabs {
    * @param index The index of tab.
    * */
   update_web_state(index: number) {
-    let web_state = this.Tabs[index].controller.serializeWebState();
-    this.Tabs[index].web_state_array = web_state;
+    try {
+      let web_state = this.Tabs[index].controller.serializeWebState();
+      this.Tabs[index].web_state_array = web_state;
+    } catch (e) {
+      console.error('[update_web_state] Failed: ' + e);
+    }
   }
 
   /**
@@ -214,7 +219,7 @@ export class bunch_of_tabs {
    * @returns A number, the index of the new tab.
    * @description While if new_tab_url is also not set ("" or undefined), then will load the url_default_blank().
    * */
-  newTab(target_url: string, recover_on_creation?: boolean) {
+  newTab(context: UIContext, target_url: string, recover_on_creation?: boolean) {
     // console.log('[bunch_of_tabs] newTab: [' + target_url + '].');
     if (target_url == "") {
       // If newing an empty tab
@@ -227,7 +232,8 @@ export class bunch_of_tabs {
       }
     }
 
-    let new_TabInfo: tab_info_packed = new tab_info_packed("Meow", target_url, recover_on_creation);
+    let idx = this.Tabs.length;
+    let new_TabInfo: tab_info_packed = new tab_info_packed("Meow", target_url, storage_of_id(this.my_id), idx, recover_on_creation);
     let Date_ID = Date.now();
 
     // TODO: IS THIS EFFICIENT ENOUGH?
@@ -235,11 +241,12 @@ export class bunch_of_tabs {
       // Date_ID crash prevention
       Date_ID += 1;
     }
-    let new_TabLabel: tab_label = new tab_label(Date_ID, this.Tabs.length);
+    let new_TabLabel: tab_label = new tab_label(Date_ID, idx);
 
     this.used_date_ids.push(Date_ID);
     this.Tabs.push(new_TabInfo);
     this.Labels.push(new_TabLabel);
+    this.NodeControllers.push(new TabNodeController(createNWeb(context, new_TabInfo)));
     this.main_tab_idx = this.Tabs.length - 1;
 
     return this.main_tab_idx as number;
@@ -286,6 +293,11 @@ export class bunch_of_tabs {
 
     this.Tabs.splice(target, 1)
     this.Labels.splice(target, 1)
+
+    this.NodeControllers[target].detachWeb();
+    this.NodeControllers[target].dispose();
+
+    this.NodeControllers.splice(target, 1)
 
     // Refresh index_keys
     for (let i = target; i < this.Labels.length; ++i) {
@@ -408,150 +420,7 @@ export class bunch_of_tabs {
     return match;
   }
 
-  /**
-   * Gets a list of all tabs' disable js settings.
-   * @returns A boolean[] array, the settings are either true or false.
-   * */
-  get_all_disable_js() {
-    let storage: LocalStorage = storage_of_id(this.my_id);
-    let disable_js: boolean[] = [];
-    let main_switch = AppStorage.get('disable_js') as boolean;
-    let sub_switch = AppStorage.get('disable_js_all_sites') as boolean;
-
-    // Main switch off: NO disable js.
-    if (!main_switch) {
-      return all_false(this.Tabs.length) as boolean[];
-    }
-
-    // Main switch off: disable ALL js.
-    if (sub_switch) {
-      return all_true(this.Tabs.length) as boolean[];
-    }
-
-    let disable_these_sites = AppStorage.get('disable_js_these_sites') as string[];
-    let tab_match_domains = storage.get('tab_match_domains') as string[];
-    for (let index = 0; index < this.Tabs.length; index++) {
-      disable_js.push(disable_these_sites.includes(tab_match_domains[index][1]));
-    }
-    return disable_js;
-  }
-
-  /**
-   * Gets a list of all tabs' disable image settings.
-   * @returns A boolean[] array, the settings are either true or false.
-   * */
-  get_all_disable_image() {
-    let storage: LocalStorage = storage_of_id(this.my_id);
-    let disable: boolean[] = [];
-    let main_switch = AppStorage.get('disable_image') as boolean;
-    let sub_switch = AppStorage.get('disable_image_all_sites') as boolean;
-
-    // Main switch off: NO disable image.
-    if (!main_switch) {
-      return all_false(this.Tabs.length) as boolean[];
-    }
-
-    // Main switch off: disable ALL images.
-    if (sub_switch) {
-      return all_true(this.Tabs.length) as boolean[];
-    }
-
-    let disable_these_sites = AppStorage.get('disable_image_these_sites') as string[];
-    let tab_match_domains = storage.get('tab_match_domains') as string[];
-    for (let index = 0; index < this.Tabs.length; index++) {
-      disable.push(disable_these_sites.includes(tab_match_domains[index][1]));
-    }
-    return disable;
-  }
-
-  /**
-   * Gets a list of all tabs' forced dark mode settings.
-   * @returns A boolean[] array, the settings are either true or false.
-   * */
-  get_all_force_dark() {
-    let storage: LocalStorage = storage_of_id(this.my_id);
-    let force: boolean[] = [];
-    let main_switch = AppStorage.get('web_force_dark_mode') as boolean;
-
-    // Main switch off: NO force dark.
-    if (!main_switch) {
-      return all_false(this.Tabs.length) as boolean[];
-    }
-
-    let exempt_sites = AppStorage.get('web_force_dark_mode_exemptions') as string[];
-    let tab_match_domains = storage.get('tab_match_domains') as string[];
-    for (let index = 0; index < this.Tabs.length; index++) {
-      force.push(!exempt_sites.includes(tab_match_domains[index][1]));
-    }
-    return force;
-  }
-
-  /**
-   * Syncs the Web Settings (js, image, force dark) to the according LocalStorage.
-   * @param index The index of tab.
-   * */
-  sync_web_settings(index: number) {
-    let storage: LocalStorage = storage_of_id(this.my_id);
-    // JS
-    let main_switch_js = AppStorage.get('disable_js') as boolean;
-    let sub_switch_js = AppStorage.get('disable_js_all_sites') as boolean;
-    let disable_js_these_sites = AppStorage.get('disable_js_these_sites') as string[];
-    let tab_disable_js = storage.get('tab_disable_js') as boolean[];
-    // Image
-    let main_switch_image = AppStorage.get('disable_image') as boolean;
-    let sub_switch_image = AppStorage.get('disable_image_all_sites') as boolean;
-    let disable_image_these_sites = AppStorage.get('disable_image_these_sites') as string[];
-    let tab_disable_image = storage.get('tab_disable_image') as boolean[];
-    // Dark
-    let main_switch_dark = AppStorage.get('web_force_dark_mode') as boolean;
-    let exempt_sites = AppStorage.get('web_force_dark_mode_exemptions') as string[];
-    let tab_force_dark = storage.get('tab_force_dark') as boolean[];
-    // Operation
-    let domain = match_domain(this.Tabs[index].url)[1];
-    if (!main_switch_js) {
-      // Entire feature off, return false;
-      tab_disable_js[index] = false;
-    } else if (sub_switch_js) {
-      // Disable all js, return true;
-      tab_disable_js[index] = true;
-    } else {
-      // Check on case
-      tab_disable_js[index] = disable_js_these_sites.includes(domain);
-    }
-    if (!main_switch_image) {
-      tab_disable_image[index] = false;
-    } else if (sub_switch_image) {
-      tab_disable_image[index] = true;
-    } else {
-      tab_disable_image[index] = disable_image_these_sites.includes(domain);
-    }
-    if (!main_switch_dark) {
-      tab_force_dark[index] = false;
-    } else if (sub_switch_image) {
-      tab_force_dark[index] = true;
-    } else {
-      tab_force_dark[index] = !exempt_sites.includes(domain);
-    }
-  }
-
   // Web states
-
-  /**
-   * Asks a tab to restore web state.
-   * @param web_state A Uint8Array, the serialized web state to be recovered of the tab.
-   * @param index_key A number, the index of the tab which is asked to do a recovery.
-   * */
-  restore_web_state(web_state: Uint8Array, index_key: number) {
-    if (web_state !== undefined) {
-      this.Tabs[index_key].url = 'uwu';
-      this.Tabs[index_key].title = 'uwu';
-      console.log("[Meow][meowWebView] Restore web " + index_key.toString() + ", state Length: " + web_state.length.toString())
-      this.Tabs[index_key].controller.clearHistory();
-      this.Tabs[index_key].controller.restoreWebState(web_state);
-    } else {
-      console.error("[ERROR][Meow][meowWebView] Restore web state failed for an undefined web_state!")
-    }
-  }
 
   /**
    * Re-save all web states, usually used to ensure the correct order of tab indices.
@@ -605,8 +474,6 @@ export class bunch_of_tabs {
    * Updates the internal timestamp of this bunch_of_tabs object.
    *
    * So that UI refresh would be triggered.
-   *
-   * Currently used only in setting home url and new tab url.
    * */
   update_my_timestamp() {
     this.status_update_timestamp = Date.now();
@@ -630,16 +497,27 @@ export class tab_label {
 }
 
 export class tab_info_packed {
+  // Environment
+  storage: LocalStorage;
+  // My Major Data
   controller: WebviewController;
   title: string = '';
   url: string = '';
+  index: number = -1;
+  // Settings
+  tab_force_dark: boolean = false;
+  tab_disable_js: boolean = false;
+  tab_disable_image: boolean = false;
+  // Statuses
   is_loading: boolean;
   loading_progress: number;
   searching_keyword: string = ''; // Keyword of in-page search
   searching_keyword_stats_current: number = 0; // Index of current viewing result during in-page search
   searching_keyword_stats_total: number = 0; // Total number of results of in-page search
+  // Restore
   restore_on_creation: boolean = false;
   web_state_array: Uint8Array = new Uint8Array();
+  // Update records
   last_saved_url: string = '';
   last_saved_title: string = '';
 
@@ -649,8 +527,10 @@ export class tab_info_packed {
    * @param link A string, the initial link when the tab is created.
    * @param restore_on_creation A boolean, optional, will restore web state on creation if the index in valid.
    */
-  constructor(title: string, url: string, restore_on_creation?: boolean) {
+  constructor(title: string, url: string, storage: LocalStorage, index: number, restore_on_creation?: boolean) {
+    this.storage = storage;
     this.controller = new webview.WebviewController();
+    this.index = index;
     this.title = title;
     this.url = url;
     this.is_loading = true;
@@ -743,5 +623,49 @@ export class tab_info_packed {
     this.last_saved_url = this.url;
     this.last_saved_title = this.title;
     console.log('[bunch_of_tabs][check_save_history]' + source + ' ' + (saved ? 'Saved!' : 'Did nothing!'));
+  }
+
+  /**
+   * Syncs the Web Settings (js, image, force dark) to the according LocalStorage.
+   * @param index The index of tab.
+   * */
+  update_web_settings() {
+    // JS
+    let main_switch_js = AppStorage.get('disable_js') as boolean;
+    let sub_switch_js = AppStorage.get('disable_js_all_sites') as boolean;
+    let disable_js_these_sites = AppStorage.get('disable_js_these_sites') as string[];
+    // Image
+    let main_switch_image = AppStorage.get('disable_image') as boolean;
+    let sub_switch_image = AppStorage.get('disable_image_all_sites') as boolean;
+    let disable_image_these_sites = AppStorage.get('disable_image_these_sites') as string[];
+    // Dark
+    let main_switch_dark = AppStorage.get('web_force_dark_mode') as boolean;
+    let exempt_sites = AppStorage.get('web_force_dark_mode_exemptions') as string[];
+    // Operation
+    let domain = match_domain(this.url)[1];
+    if (!main_switch_js) {
+      // Entire feature off, return false;
+      this.tab_disable_js = false;
+    } else if (sub_switch_js) {
+      // Disable all js, return true;
+      this.tab_disable_js = true;
+    } else {
+      // Check on case
+      this.tab_disable_js = disable_js_these_sites.includes(domain);
+    }
+    if (!main_switch_image) {
+      this.tab_disable_image = false;
+    } else if (sub_switch_image) {
+      this.tab_disable_image = true;
+    } else {
+      this.tab_disable_image = disable_image_these_sites.includes(domain);
+    }
+    if (!main_switch_dark) {
+      this.tab_force_dark = false;
+    } else if (sub_switch_image) {
+      this.tab_force_dark = true;
+    } else {
+      this.tab_force_dark = !exempt_sites.includes(domain);
+    }
   }
 }

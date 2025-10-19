@@ -1,9 +1,9 @@
-import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import linysConfirmDenyButtons from '../../components/buttons/linysConfirmDenyButtons';
 import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
-import { animation_default, click_effect_default } from '../../hosts/bunch_of_defaults';
+import { click_effect_default } from '../../hosts/bunch_of_defaults';
 import { desc_for_ProtectedResourceTypes, permissions_for_ProtectedResourceTypes, request_user_permission } from '../../utils/permission_tools';
+import { common } from '@kit.AbilityKit';
 
 @CustomDialog
 struct woofWantResources {
@@ -44,8 +44,9 @@ struct woofWantResources {
         .width("100%")
 
       linysConfirmDenyButtons({
-        onConfirm: ()=>{
-          request_user_permission(permissions_for_ProtectedResourceTypes(this.protected_resource_types));
+        onConfirm: () => {
+          request_user_permission(this.getUIContext().getHostContext() as common.UIAbilityContext,
+            permissions_for_ProtectedResourceTypes(this.protected_resource_types));
           if (this.onPermit) {
             this.onPermit();
           }
@@ -53,7 +54,7 @@ struct woofWantResources {
             this.controller.close();
           }
         },
-        onDeny: ()=>{
+        onDeny: () => {
           if (this.onDeny) {
             this.onDeny();
           }

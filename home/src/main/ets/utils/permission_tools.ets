@@ -10,11 +10,11 @@ let atManager = abilityAccessCtrl.createAtManager();
  * Requests permission from user.
  * @param p Permissions[]
  * */
-export function request_user_permission(p: Permissions[]) {
+export function request_user_permission(context:common.UIAbilityContext ,p: Permissions[]) {
   if (p.length == 0) {
     return;
   }
-  atManager.requestPermissionsFromUser(meowContext(), p);
+  atManager.requestPermissionsFromUser(context, p);
 }
 
 /**

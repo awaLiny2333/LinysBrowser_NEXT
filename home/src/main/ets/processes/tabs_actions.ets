@@ -30,28 +30,11 @@ export function sync_all_tabs_list_info(storage: LocalStorage) {
   storage.set('tab_match_domains', tab_match_domains);
   storage.set('tab_restore_on_creations', tab_restore_on_creations);
 
-  sync_all_web_settings_to_storage(storage);
-
   sync_current_tabs_list_info(storage);
 
   // Timer
   // t = Date.now() - t0;
   // console.log('[sync_tabs_list_info] Called! (' + t + ' ms)');
-}
-
-/**
- * Syncs ALL web settings to storage.
- * @param storage The LocalStorage of this window.
- * */
-function sync_all_web_settings_to_storage(storage: LocalStorage) {
-  let tabs = storage.get('bunch_of_tabs') as bunch_of_tabs;
-  // Web Settings
-  let tab_disable_js = tabs.get_all_disable_js();
-  let tab_disable_image = tabs.get_all_disable_image();
-  let tab_force_dark = tabs.get_all_force_dark();
-  storage.set('tab_disable_js', tab_disable_js);
-  storage.set('tab_disable_image', tab_disable_image);
-  storage.set('tab_force_dark', tab_force_dark);
 }
 
 /**
@@ -69,9 +52,6 @@ export function sync_current_tabs_list_info(storage: LocalStorage) {
   let tab_is_loading = storage.get('tab_is_loading') as boolean[];
   let tab_loading_progresses = storage.get('tab_loading_progresses') as number[];
   let tab_match_domains = storage.get('tab_match_domains') as string[][];
-  let tab_disable_js = storage.get('tab_disable_js') as boolean[];
-  let tab_disable_image = storage.get('tab_disable_image') as boolean[];
-  let tab_force_dark = storage.get('tab_force_dark') as boolean[];
 
   // Current
   let current_index = tabs.main_tab_idx;
@@ -84,10 +64,6 @@ export function sync_current_tabs_list_info(storage: LocalStorage) {
   storage.set('current_in_page_searching_keyword', tabs.workingMainTab().searching_keyword);
   storage.set('current_in_page_searching_stats_current', tabs.workingMainTab().searching_keyword_stats_current);
   storage.set('current_in_page_searching_stats_total', tabs.workingMainTab().searching_keyword_stats_total);
-  // Web Settings
-  storage.set('current_disable_js', tab_disable_js[current_index]);
-  storage.set('current_disable_image', tab_disable_image[current_index]);
-  storage.set('current_force_dark', tab_force_dark[current_index]);
 }
 
 /**
@@ -166,5 +142,17 @@ export function unifiedData_drag_tab_from(window_id: string, tab_index: number) 
   record.rawData = u8Array;
   let unifiedData = new unifiedDataChannel.UnifiedData(record);
   return unifiedData;
+}
+
+// Windows
+
+/**
+ * Moves a tab from a window to another window.
+ * @param from_window_index Source window of tab.
+ * @param from_tab_index Tab index.
+ * @param to_window_index Target window index.
+ * */
+export function move_tab(from_window_index: number, from_tab_index: number, to_window_index: number) {
+  console.log(`[move_tab] From window [${from_window_index}]<${from_tab_index}> to window [${to_window_index}]!`);
 }
 

@@ -4,7 +4,7 @@ import linysTextTitle from '../../components/texts/linysTextTitle';
 
 @CustomDialog
 struct woofConfirm {
-  event: OnConfirmEvent | undefined = undefined;
+  @Link event: OnConfirmEvent | undefined;
   controller: CustomDialogController;
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');

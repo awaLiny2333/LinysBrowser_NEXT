@@ -93,12 +93,6 @@ struct meowTitleBar {
   @LocalStorageLink('current_loading_progress') current_loading_progress: number = 0;
   @LocalStorageLink('tab_is_loading') tab_is_loading: boolean[] = [true];
   @LocalStorageLink('current_is_loading') current_is_loading: boolean = true;
-  @LocalStorageLink('tab_disable_js') tab_disable_js: boolean[] = [false];
-  @LocalStorageLink('current_disable_js') current_disable_js: boolean = false;
-  @LocalStorageLink('tab_disable_image') tab_disable_image: boolean[] = [false];
-  @LocalStorageLink('current_disable_image') current_disable_image: boolean = false;
-  @LocalStorageLink('tab_force_dark') tab_force_dark: boolean[] = [false];
-  @LocalStorageLink('current_force_dark') current_force_dark: boolean = false;
   // UI control actions
   @StorageLink('showing_tabs') showing_tabs_global: boolean = false;
   @LocalStorageLink('showing_tabs') showing_tabs: boolean = false;
