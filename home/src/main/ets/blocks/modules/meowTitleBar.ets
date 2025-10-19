@@ -14,7 +14,7 @@ import { webview } from '@kit.ArkWeb';
 import { bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
-import { allow_drop_types, drop_to_scratching_board } from '../../utils/drag_drop_tools';
+import { drop_to_scratching_board } from '../../utils/drag_drop_tools';
 import { change_window_alias, current_tabs_style_is_horizontal, new_window, storage_of_id } from '../../utils/ui_tools';
 import { search_engine } from '../../hosts/bunch_of_search_engines';
 import lazy { add_transparency } from '../../utils/color_tools';
@@ -37,7 +37,6 @@ import lazy woofQuickSE from '../../dialogs/quicks/woofQuickSE';
 import lazy woofCookies from '../../dialogs/managers/woofCookies';
 import lazy woofQuickUA from '../../dialogs/quicks/woofQuickUA';
 import lazy woofGeneralManage from '../../dialogs/managers/woofGeneralManage';
-import { sync_all_tabs_list_info } from '../../processes/tabs_actions';
 import { common } from '@kit.AbilityKit';
 import woofPrompt from '../../dialogs/web/woofPrompt';
 
@@ -1006,9 +1005,15 @@ struct meowTitleBar {
       } // Space
     } // Title Bars
     .clip(true)
-    .allowDrop(allow_drop_types())
     .onDrop((e) => {
-      drop_to_scratching_board(e, this.storage);
+      try {
+        let drop_ok = drop_to_scratching_board(e, this.storage);
+        if (!drop_ok) {
+          this.showing_scratching_board = false;
+        }
+      } catch (e) {
+        console.error('[>>>] ' + e);
+      }
     })
     .onDragEnter(() => {
       this.showing_scratching_board = true;

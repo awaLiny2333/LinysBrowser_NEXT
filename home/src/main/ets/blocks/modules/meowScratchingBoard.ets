@@ -19,7 +19,7 @@ struct meowScratchingBoard {
   @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   @LocalStorageLink('drop_result_strings') @Watch('on_data_change') data_list: string[] = [];
   // UI
-  @Prop show_feed_prompt: boolean = true;
+  @State show_feed_prompt: boolean = true;
   @State area_height: number = 200;
   @LocalStorageProp('screen_height') screen_height: number = 0;
   @State delete_confirm: number = 0;

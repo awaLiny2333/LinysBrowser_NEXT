@@ -3,10 +3,8 @@ import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { LengthMetrics } from '@kit.ArkUI';
 import { deviceInfo } from '@kit.BasicServicesKit';
 import lazy { drop_to_scratching_board } from '../../utils/drag_drop_tools';
-import { allow_drop_types } from '../../utils/drag_drop_tools';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysSymbol from '../../components/texts/linysSymbol';
-import linysText from '../../components/texts/linysText';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import { storage_of_id } from '../../utils/ui_tools';
 
@@ -188,12 +186,14 @@ struct meowTabsHorizontal {
     .padding({ left: 8, right: 8 })
     .animation(animation_default())
     .clip(true)
-    .allowDrop(allow_drop_types())
     .onAppear(() => {
       this.my_height = undefined;
     })
     .onDrop((e) => {
-      drop_to_scratching_board(e, this.storage);
+      let drop_ok = drop_to_scratching_board(e, this.storage);
+      if (!drop_ok) {
+        this.showing_scratching_board = false;
+      }
     })
     .onDragEnter(() => {
       this.showing_scratching_board = true;
@@ -325,6 +325,7 @@ struct HorizontalTabButton {
       }, 50)
     })
     .clickEffect(click_effect_default())
+    .draggable(true)
   }
 
   tab_width() {
@@ -338,6 +339,11 @@ struct HorizontalTabButton {
     return result;
   }
 
+  /**
+   * Visibility value for components like the close button for the tab.
+   * @param index Index of the tab.
+   * @returns Visibility.Visible if is the chosen tab, Visibility.None otherwise.
+   * */
   visibility_visible_on_chosen(index: number) {
     if (this.bunch_of_tabs.main_tab_idx == index || this.bunch_of_tabs.sub_tab_idx == index) {
       return Visibility.Visible;

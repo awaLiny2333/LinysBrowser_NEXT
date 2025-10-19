@@ -5,12 +5,17 @@ import { sandbox_read_arrayBuffer_sync, sandbox_unlink_sync } from '../../utils/
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { check_want } from '../../utils/want_tools';
 import lazy { drop_to_scratching_board } from '../../utils/drag_drop_tools';
-import { allow_drop_types } from '../../utils/drag_drop_tools';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysText from '../../components/texts/linysText';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysSymbol from '../../components/texts/linysSymbol';
-import { determine_extra_background, set_search_box_text, sync_current_tabs_list_info, sync_all_tabs_list_info } from '../../processes/tabs_actions';
+import {
+  determine_extra_background,
+  set_search_box_text,
+  sync_all_tabs_list_info,
+  sync_current_tabs_list_info,
+  unifiedData_drag_tab_from
+} from '../../processes/tabs_actions';
 import { storage_of_id, window_index_of_id } from '../../utils/ui_tools';
 
 @Component
@@ -260,9 +265,11 @@ struct meowTabsVertical {
       .onAreaChange((_o, n) => {
         this.scroll_area_height = n.height as number - 60;
       })
-      .allowDrop(allow_drop_types())
       .onDrop((e) => {
-        drop_to_scratching_board(e, this.storage);
+        let drop_ok = drop_to_scratching_board(e, this.storage);
+        if (!drop_ok) {
+          this.showing_scratching_board = false;
+        }
       })
       .onDragEnter(() => {
         this.showing_scratching_board = true;
@@ -632,6 +639,7 @@ struct TabButton {
   @Prop Label: tab_label;
   tab_height_default: number = 42;
   // Public
+  @LocalStorageLink('my_window_id') my_window_id: string = '';
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   @LocalStorageLink('tab_titles') tab_titles: string[] = []
@@ -737,5 +745,15 @@ struct TabButton {
     .width("100%")
     .height(this.tab_height_default + this.extension_area[this.Label.index_key])
     .clickEffect(click_effect_default())
+    .draggable(true)
+    .onDragStart((event) => {
+      try {
+        // Drag this tab
+        let unifiedData = unifiedData_drag_tab_from(this.my_window_id, this.Label.index_key);
+        (event as DragEvent).setData(unifiedData);
+      } catch (e) {
+        console.error('[Meow][Tabs] Set drag data failed: ' + e);
+      }
+    })
   }
 }

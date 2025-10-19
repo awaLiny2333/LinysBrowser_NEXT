@@ -1,6 +1,8 @@
 import { bunch_of_history, history_record } from '../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_info_packed } from '../hosts/bunch_of_tabs';
 import { url_resource_to_meow } from '../utils/url_tools';
+import { unifiedDataChannel } from '@kit.ArkData';
+import { window_index_of_id } from '../utils/ui_tools';
 
 // Data and Statuses
 
@@ -146,5 +148,23 @@ export function determine_extra_background(storage: LocalStorage) {
     }
   }
   storage.set('extra_background', need_extra_background);
+}
+
+// Drag
+
+/**
+ * Generates the unifiedData object for a drag from a specific tab.
+ * @param window_id The id of the source of the tab.
+ * @param tab_index The index of that tab.
+ * @returns The unifiedData of 'ApplicationDefinedTabDrag' type.
+ * */
+export function unifiedData_drag_tab_from(window_id: string, tab_index: number) {
+  let window_index = window_index_of_id(window_id);
+  let record = new unifiedDataChannel.ApplicationDefinedRecord();
+  let u8Array = new Uint8Array([window_index, tab_index]);
+  record.applicationDefinedType = 'ApplicationDefinedTabDrag';
+  record.rawData = u8Array;
+  let unifiedData = new unifiedDataChannel.UnifiedData(record);
+  return unifiedData;
 }
 
