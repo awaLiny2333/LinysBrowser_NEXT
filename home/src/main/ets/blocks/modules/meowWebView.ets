@@ -2,7 +2,7 @@ import { animation_default, capsule_bar_height, click_effect_default, fontSize_L
 import { bunch_of_history } from '../../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { arrayBuffer_2_pixelMap, compress_image_arrayBuffer, sandbox_read_arrayBuffer, sandbox_read_arrayBuffer_sync } from '../../utils/storage_tools';
-import { url_meow_to_resource, url_resource_to_meow } from '../../utils/url_tools';
+import { url_resource_to_meow } from '../../utils/url_tools';
 import { webview } from '@kit.ArkWeb';
 import { print } from '@kit.BasicServicesKit';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
@@ -263,12 +263,13 @@ struct meowWebView {
     // init OK
     setTimeout(() => {
       sync_all_tabs_list_info(this.storage);
+
+      this.register_harmonyShare_gesture_sender();
+
+      this.register_harmonyShare_knock_sender();
+
       this.init_OK = true;
     }, 10);
-
-    this.register_harmonyShare_gesture_sender();
-
-    this.register_harmonyShare_knock_sender();
   }
 
   build() {
@@ -291,8 +292,12 @@ struct meowWebView {
         Column() {
           NodeContainer(this.bunch_of_tabs.NodeControllers[Label.index_key])
             .onAppear(() => {
-              this.bunch_of_tabs.NodeControllers[Label.index_key].attachWeb();
-              this.bunch_of_tabs.NodeControllers[Label.index_key].rebuild();
+              try {
+                this.bunch_of_tabs.NodeControllers[Label.index_key].attachWeb();
+                this.bunch_of_tabs.NodeControllers[Label.index_key].rebuild();
+              } catch (e) {
+                console.error('[Tab] onAppear Failed: ' + e);
+              }
             })
             .width("100%")
             .layoutWeight(1)
@@ -305,7 +310,7 @@ struct meowWebView {
             })
               .padding(6)
           } // Restore tag notice
-          .height(this.tab_restore_on_creations[Label.index_key] ? undefined : 0)
+          .height(this.tab_restore_on_creations[Label.index_key] && this.init_OK ? undefined : 0)
           .animation(animation_default())
           .alignItems(HorizontalAlign.Start)
           .justifyContent(FlexAlign.Center)
@@ -360,7 +365,7 @@ struct meowWebView {
 
   on_focus_change() {
     if (this.on_focus) {
-      set_continuable(this.getUIContext().getHostContext() as common.UIAbilityContext, is_address_continuable(this.current_url));
+      set_continuable(this.getUIContext().getHostContext() as common.UIAbilityContext, is_address_continuable(this.current_url || ''));
     } else {
       set_continuable(this.getUIContext().getHostContext() as common.UIAbilityContext, false);
     }

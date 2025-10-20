@@ -16,7 +16,7 @@ import {
   sync_current_tabs_list_info,
   unifiedData_drag_tab_from
 } from '../../processes/tabs_actions';
-import { storage_of_id, window_index_of_id } from '../../utils/ui_tools';
+import { storage_of_id, storage_of_index, window_index_of_id } from '../../utils/ui_tools';
 
 @Component
 struct meowTabsVertical {
@@ -72,8 +72,11 @@ struct meowTabsVertical {
   @LocalStorageLink('universal_load_url_gateway') @Watch('uni_load_url') load_url_gateway: string = "";
   @LocalStorageLink('universal_new_tab_gateway') @Watch('uni_new_tab') new_tab_gateway: string = "";
   @LocalStorageLink('universal_close_tab_gateway') @Watch('uni_close_tab') close_tab_gateway: number = -1;
+  @LocalStorageLink('universal_move_tab_gateway') @Watch('uni_move_tab') move_tab_gateway: number = -1; // Source tab index
+  @LocalStorageLink('universal_move_tab_gateway_target') move_tab_gateway_target: number = -1; // Target window index
   @LocalStorageLink('universal_close_all_tabs_gateway') @Watch('uni_close_all_tabs') close_all_tabs_gateway: number = -1;
   @LocalStorageLink('universal_tab_button_click_gateway') @Watch('uni_tab_button_click') uni_tab_button_clicked: number = -1;
+  @LocalStorageLink('receive_tab') @Watch('on_receive_tab') receive_tab: number = -1;
   @StorageLink('universal_global_custom_ua_gateway') @Watch('on_global_custom_UA_change') global_custom_UA: string = "";
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
@@ -323,12 +326,16 @@ struct meowTabsVertical {
    * @param do_recovery A boolean, if set true, then the tab will restore the serialized web state in
    * @description While if new_tab_url is also not set ("" or undefined), then will load the url_default_blank().
    * */
-  new_tab(target_url: string, do_recovery: boolean, save_to_settings: boolean) {
+  new_tab(target_url: string, do_recovery: boolean, save_to_settings: boolean, receive: boolean = false) {
     let t0 = Date.now();
 
     this.storage.set('extra_background', false);
 
-    this.bunch_of_tabs.newTab(this.getUIContext(), target_url, do_recovery);
+    if (receive) {
+      this.bunch_of_tabs.receive_tab(this.storage);
+    } else {
+      this.bunch_of_tabs.newTab(this.getUIContext(), target_url, do_recovery);
+    }
 
     if (!do_recovery) {
       // Store tabs count
@@ -398,15 +405,15 @@ struct meowTabsVertical {
     }
   }
 
-  close_tab(target: number, save_to_settings: boolean) {
+  close_tab(target: number, save_to_settings: boolean, move_target_window: number = -1) {
     if (!this.recover_tabs_finished) {
-      console.error("[Meow][LinysTabs][ERROR] Recover Not OK (" + target + ')!')
+      console.error("[Meow][LinysTabs][ERROR] Recover Not OK (" + target + ')!');
       return;
     }
 
     // Some kind of bug, idk why but this is essential when closing tabs quickly
     if (target >= this.offset_area.length) {
-      console.error("[Meow][LinysTabs][ERROR] Ran into the weird bug of target >= this.offset_area.length")
+      console.error("[Meow][LinysTabs][ERROR] Ran into the weird bug of target >= this.offset_area.length");
       return;
     }
 
@@ -418,8 +425,17 @@ struct meowTabsVertical {
       }
     }
 
+    if (this.bunch_of_tabs.Tabs.length == 1) {
+      this.new_tab('', false, true);
+    }
+
     // Close
-    this.bunch_of_tabs.closeTab(target, bunch_of_tabs.new_tab_url || url_default_blank());
+    if (move_target_window > -1) {
+      this.bunch_of_tabs.closeTab(target, true);
+    } else {
+      this.bunch_of_tabs.closeTab(target, false);
+    }
+
     // Update history
     this.bunch_of_tabs.update_backward_forward_access();
     // Get synced lists
@@ -624,6 +640,23 @@ struct meowTabsVertical {
   }
 
   /**
+   * Send a tab.
+   * */
+  uni_move_tab() {
+    if (this.move_tab_gateway < 0) {
+      return;
+    }
+    let from = this.move_tab_gateway;
+    let to = this.move_tab_gateway_target;
+    console.log(`[uni_move_tab][SEND][${this.my_window_id}] From Tab.${from} to window #${to}!`);
+    // console.log('[tab] \n' + this.offset_area.toString());
+    this.close_tab(from, true, to);
+    let target_storage = storage_of_index(to);
+    target_storage.setOrCreate('receive_tab', Date.now());
+    this.move_tab_gateway = -1;
+  }
+
+  /**
    * Respond to wants
    * */
   on_want() {
@@ -640,10 +673,23 @@ struct meowTabsVertical {
    * Called when THE_LORD_OF_THE_WINDOWS changes (the #0 is closed).
    * */
   on_THE_LORD_OF_THE_WINDOWS_change() {
+    console.warn(`[meowTabsVertical][on_THE_LORD_OF_THE_WINDOWS_change] LORD ${this.THE_LORD_OF_THE_WINDOWS}`);
+    console.warn(`[meowTabsVertical][on_THE_LORD_OF_THE_WINDOWS_change] MYID ${this.my_window_id}`);
     if (this.my_window_id == this.THE_LORD_OF_THE_WINDOWS) {
       // Save web states
       this.bunch_of_tabs.re_save_web_state(0);
     }
+  }
+
+  /**
+   * Receive a tab.
+   * */
+  on_receive_tab() {
+    // Get data from AppStorage.
+    console.log(`[on_receive_tab][RECEIVE][${this.my_window_id}]`);
+    this.new_tab('receive tab', false, true, true);
+    sync_all_tabs_list_info(this.storage); // TODO: this can be optimized
+    this.switch_tab(this.bunch_of_tabs.Tabs.length - 1, false, true);
   }
 
   // Data

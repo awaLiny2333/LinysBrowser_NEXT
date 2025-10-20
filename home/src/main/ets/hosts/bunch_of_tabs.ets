@@ -231,7 +231,7 @@ export class bunch_of_tabs {
    * @returns A number, the index of the new tab.
    * @description While if new_tab_url is also not set ("" or undefined), then will load the url_default_blank().
    * */
-  newTab(context: UIContext, target_url: string, recover_on_creation?: boolean) {
+  newTab(context: UIContext, target_url: string, recover_on_creation: boolean) {
     // console.log('[bunch_of_tabs] newTab: [' + target_url + '].');
     if (target_url == "") {
       // If newing an empty tab
@@ -257,30 +257,48 @@ export class bunch_of_tabs {
 
     this.used_date_ids.push(Date_ID);
     this.Tabs.push(new_TabInfo);
-    this.Labels.push(new_TabLabel);
     this.NodeControllers.push(new TabNodeController(createNWeb(context, new_TabInfo)));
+    this.Labels.push(new_TabLabel);
+    this.main_tab_idx = this.Tabs.length - 1;
+
+    return this.main_tab_idx as number;
+  }
+
+  receive_tab(storage: LocalStorage) {
+    let move_tab_tab_info_packed = AppStorage.get('move_tab_tab_info_packed') as tab_info_packed;
+    let move_tab_TabNodeController = AppStorage.get('move_tab_TabNodeController') as TabNodeController;
+
+    let idx = this.Tabs.length;
+    let Date_ID = Date.now();
+
+    // TODO: IS THIS EFFICIENT ENOUGH?
+    while (this.used_date_ids.includes(Date_ID)) {
+      // Date_ID crash prevention
+      Date_ID += 1;
+    }
+    let new_TabLabel: tab_label = new tab_label(Date_ID, idx);
+
+    // Localize (whar)
+    move_tab_tab_info_packed.index = idx;
+    move_tab_tab_info_packed.storage = storage;
+
+    this.used_date_ids.push(Date_ID);
+    this.Tabs.push(move_tab_tab_info_packed);
+    this.NodeControllers.push(move_tab_TabNodeController);
+    this.Labels.push(new_TabLabel);
     this.main_tab_idx = this.Tabs.length - 1;
 
     return this.main_tab_idx as number;
   }
 
   /**
-   * Closes a tab.
+   * Closes a tab. If isMove is set to true, then the TabNodeController and tab_info_packed is stored to AppStorage.
    * @param target A number, the index of the tab requested to close.
    * @param home_url A string, will load this link if closed the last tab and opened a new one right after it.
+   * @param isMove Is this a moving to another window or just a normal close?
    * @returns A number, the index of current working main tab which eventually switched to.
    * */
-  closeTab(target: number, home_url: string) {
-    if (this.Tabs.length == 1) {
-      // Reset the only tab
-      this.Tabs[0].searching_keyword = '';
-      this.Tabs[0].searching_keyword_stats_current = 0;
-      this.Tabs[0].searching_keyword_stats_total = 0;
-      this.Tabs[0].controller.loadUrl(url_meow_to_resource(home_url));
-      this.Tabs[0].controller.clearHistory();
-      return 0;
-    }
-    // Now at least 2 items are in the Tabs list
+  closeTab(target: number, isMove: boolean) {
 
     let landing_destination = this.main_tab_idx;
     // Decide where to go
@@ -299,21 +317,32 @@ export class bunch_of_tabs {
       }
     }
 
-    this.switchToTab(-1)
+    this.switchToTab(-1);
     // Forces LinysTabs to refresh For Each loop to render
-    this.switchToTab(landing_destination)
+    this.switchToTab(landing_destination);
 
-    this.Tabs.splice(target, 1)
-    this.Labels.splice(target, 1)
+    let tab = this.Tabs.splice(target, 1)[0];
+    this.Labels.splice(target, 1);
 
     this.NodeControllers[target].detachWeb();
-    this.NodeControllers[target].dispose();
+    // Dispose if is not move
+    if (isMove) {
+      this.NodeControllers[target].rebuild();
+    } else {
+      this.NodeControllers[target].dispose();
+    }
 
-    this.NodeControllers.splice(target, 1)
+    let nodeController = this.NodeControllers.splice(target, 1)[0];
+
+    if (isMove) {
+      AppStorage.setOrCreate('move_tab_tab_info_packed', tab);
+      AppStorage.setOrCreate('move_tab_TabNodeController', nodeController);
+    }
 
     // Refresh index_keys
     for (let i = target; i < this.Labels.length; ++i) {
       this.Labels[i].index_key -= 1;
+      this.Tabs[i].index -= 1; // Forgot this and ran into bug. Fixed 20:55 Oct 20 2025.
     }
 
     if (this.main_tab_idx > target) {

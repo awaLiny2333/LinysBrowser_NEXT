@@ -407,6 +407,26 @@ export function storage_of_id(id: string) {
 }
 
 /**
+ * Retrieves the storage of the specific id window.
+ * @param w The windowClass (window.Window).
+ * */
+export function storage_of_window(w: window.Window) {
+  let windowStorages = AppStorage.get('windowStorages') as LocalStorage[];
+  let windowStorage = windowStorages[window_index_of_windowClass(w)];
+  return windowStorage;
+}
+
+/**
+ * Retrieves the storage of the specific index window.
+ * @param i The index of windows.
+ * */
+export function storage_of_index(i: number) {
+  let windowStorages = AppStorage.get('windowStorages') as LocalStorage[];
+  let windowStorage = windowStorages[i];
+  return windowStorage;
+}
+
+/**
  * Infers the id of window.
  * @param w The windowClass (window.Window).
  * */
@@ -424,16 +444,6 @@ export function window_id_at_index(idx: number) {
   let windowIds = AppStorage.get('windowIds') as string[];
   let window_id = windowIds[idx];
   return window_id;
-}
-
-/**
- * Retrieves the storage of the specific id window.
- * @param w The windowClass (window.Window).
- * */
-export function storage_of_window(w: window.Window) {
-  let windowStorages = AppStorage.get('windowStorages') as LocalStorage[];
-  let windowStorage = windowStorages[window_index_of_windowClass(w)];
-  return windowStorage;
 }
 
 /**

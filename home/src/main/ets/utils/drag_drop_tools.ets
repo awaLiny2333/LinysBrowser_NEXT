@@ -1,7 +1,6 @@
 import { unifiedDataChannel, uniformTypeDescriptor } from '@kit.ArkData';
-import { move_tab } from '../processes/tabs_actions';
 import { copy_from_uri_to_sandbox } from './storage_tools';
-import { window_index_of_id } from './ui_tools';
+import { storage_of_index, window_index_of_id } from './ui_tools';
 
 /**
  * Pass a DragEvent and some of the contents of correct type would be added to meowScratchingBoard
@@ -57,7 +56,11 @@ export function drop_to_scratching_board(e: DragEvent, storage: LocalStorage) {
           try {
             let data = Array.from(re.rawData);
             console.log('[drop_to_scratching_board] Got a tab! From: window_index = ' + data[0] + ', tab_index = ' + data[1]);
-            move_tab(data[0], data[1], window_index_of_id(storage.get('my_window_id') as string));
+            // Move tab
+            let to_idx = window_index_of_id(storage.get('my_window_id') as string);
+            let from_storage = storage_of_index(data[0]);
+            from_storage.set('universal_move_tab_gateway_target', to_idx);
+            from_storage.set('universal_move_tab_gateway', data[1]);
           } catch (e) {
             console.error('[drop_to_scratching_board] Tab drop failed: ' + e);
           }

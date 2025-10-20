@@ -143,16 +143,3 @@ export function unifiedData_drag_tab_from(window_id: string, tab_index: number) 
   let unifiedData = new unifiedDataChannel.UnifiedData(record);
   return unifiedData;
 }
-
-// Windows
-
-/**
- * Moves a tab from a window to another window.
- * @param from_window_index Source window of tab.
- * @param from_tab_index Tab index.
- * @param to_window_index Target window index.
- * */
-export function move_tab(from_window_index: number, from_tab_index: number, to_window_index: number) {
-  console.log(`[move_tab] From window [${from_window_index}]<${from_tab_index}> to window [${to_window_index}]!`);
-}
-

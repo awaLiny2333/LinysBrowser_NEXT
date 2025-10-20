@@ -25,6 +25,7 @@
         "startWindowIcon": "$media:startIcon",
         "startWindowBackground": "$color:start_window_background",
         "exported": true,
+        "removeMissionAfterTerminate": true,
         "orientation": "auto_rotation_restricted",
         "continuable": true,
         "skills": [
@@ -49,12 +50,12 @@
               "ohos.want.action.viewData"
             ],
             "uris": [
-//              {
-//                "scheme": "file",
-//                "type": "text/html",
-//                // Accept html
-//                "linkFeature": "FileOpen"
-//              },
+              //              {
+              //                "scheme": "file",
+              //                "type": "text/html",
+              //                // Accept html
+              //                "linkFeature": "FileOpen"
+              //              },
               {
                 "scheme": "https"
               },
