@@ -1,4 +1,5 @@
 import { unifiedDataChannel, uniformTypeDescriptor } from '@kit.ArkData';
+import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { copy_from_uri_to_sandbox } from './storage_tools';
 import { storage_of_index, window_index_of_id } from './ui_tools';
 
@@ -55,12 +56,19 @@ export function drop_to_scratching_board(e: DragEvent, storage: LocalStorage) {
         if (re.applicationDefinedType == 'ApplicationDefinedTabDrag') {
           try {
             let data = Array.from(re.rawData);
-            console.log('[drop_to_scratching_board] Got a tab! From: window_index = ' + data[0] + ', tab_index = ' + data[1]);
-            // Move tab
-            let to_idx = window_index_of_id(storage.get('my_window_id') as string);
+            let from_window = data[0];
+            let from_tab = data[1];
             let from_storage = storage_of_index(data[0]);
-            from_storage.set('universal_move_tab_gateway_target', to_idx);
-            from_storage.set('universal_move_tab_gateway', data[1]);
+            let from_bunch_of_tabs = from_storage.get('bunch_of_tabs') as bunch_of_tabs;
+            let to_window = window_index_of_id(storage.get('my_window_id') as string);
+            console.log('[drop_to_scratching_board] Got a tab! From: window_index = ' + from_window + ', tab_index = ' + from_tab + ', to_window_index = ' + to_window + '.');
+            // Move tab, notify from window.
+            if (from_window == to_window && from_bunch_of_tabs.Labels.length == 1) {
+              // Moving the only tab in a window back into the window. This is meaningless so DO NOTHING.
+            } else {
+              from_storage.set('universal_move_tab_gateway_target', to_window);
+              from_storage.set('universal_move_tab_gateway', data[1]);
+            }
           } catch (e) {
             console.error('[drop_to_scratching_board] Tab drop failed: ' + e);
           }

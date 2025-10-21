@@ -190,9 +190,13 @@ struct meowTabsHorizontal {
       this.my_height = undefined;
     })
     .onDrop((e) => {
-      let drop_ok = drop_to_scratching_board(e, this.storage);
-      if (!drop_ok) {
-        this.showing_scratching_board = false;
+      try {
+        let drop_ok = drop_to_scratching_board(e, this.storage);
+        if (!drop_ok) {
+          this.showing_scratching_board = false;
+        }
+      } catch (e) {
+        console.error('[onDrop] Failed: ' + e);
       }
     })
     .onDragEnter(() => {

@@ -1,12 +1,10 @@
-// 提供动态挂载Web组件能力
-// utils/web_tools.ets
 import { BuilderNode, FrameNode, NodeController, UIContext } from '@kit.ArkUI';
-import { webview } from '@kit.ArkWeb';
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import { bunch_of_tabs, tab_info_packed } from '../hosts/bunch_of_tabs';
 import { determine_extra_background, sync_current_tabs_list_info } from '../processes/tabs_actions';
 import { window_index_of_id } from '../utils/ui_tools';
 import { match_domain, url_meow_to_resource, url_resource_to_meow, viewable_domains } from '../utils/url_tools';
+import lazy { webview } from '@kit.ArkWeb';
+import lazy { hilog } from '@kit.PerformanceAnalysisKit';
 
 export const defaultUrl: string = 'https://www.example.com';
 

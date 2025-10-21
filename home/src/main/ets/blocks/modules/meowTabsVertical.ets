@@ -4,6 +4,7 @@ import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { sandbox_read_arrayBuffer_sync, sandbox_unlink_sync } from '../../utils/storage_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { check_want } from '../../utils/want_tools';
+import { storage_of_id, storage_of_index, window_index_of_id } from '../../utils/ui_tools';
 import lazy { drop_to_scratching_board } from '../../utils/drag_drop_tools';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysText from '../../components/texts/linysText';
@@ -16,7 +17,6 @@ import {
   sync_current_tabs_list_info,
   unifiedData_drag_tab_from
 } from '../../processes/tabs_actions';
-import { storage_of_id, storage_of_index, window_index_of_id } from '../../utils/ui_tools';
 
 @Component
 struct meowTabsVertical {
@@ -283,9 +283,13 @@ struct meowTabsVertical {
         this.scroll_area_height = n.height as number - 60;
       })
       .onDrop((e) => {
-        let drop_ok = drop_to_scratching_board(e, this.storage);
-        if (!drop_ok) {
-          this.showing_scratching_board = false;
+        try {
+          let drop_ok = drop_to_scratching_board(e, this.storage);
+          if (!drop_ok) {
+            this.showing_scratching_board = false;
+          }
+        } catch (e) {
+          console.error('[onDrop] Failed: ' + e);
         }
       })
       .onDragEnter(() => {
@@ -646,13 +650,12 @@ struct meowTabsVertical {
     if (this.move_tab_gateway < 0) {
       return;
     }
-    let from = this.move_tab_gateway;
-    let to = this.move_tab_gateway_target;
-    console.log(`[uni_move_tab][SEND][${this.my_window_id}] From Tab.${from} to window #${to}!`);
-    // console.log('[tab] \n' + this.offset_area.toString());
-    this.close_tab(from, true, to);
-    let target_storage = storage_of_index(to);
-    target_storage.setOrCreate('receive_tab', Date.now());
+    let from_tab_index = this.move_tab_gateway;
+    let to_window = this.move_tab_gateway_target;
+    console.log(`[uni_move_tab][SEND][${this.my_window_id}] From Tab.${from_tab_index} to window #${to_window}!`);
+    this.close_tab(from_tab_index, true, to_window);
+    // Notify target window to receive tab.
+    storage_of_index(to_window).setOrCreate('receive_tab', Date.now());
     this.move_tab_gateway = -1;
   }
 

@@ -1,14 +1,14 @@
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
+import linysConfirmDenyButtons from '../../components/buttons/linysConfirmDenyButtons';
 import { animation_default, capsule_bar_height } from '../../hosts/bunch_of_defaults';
 import { is_legal_filename } from '../../utils/storage_tools';
-import { webview } from '@kit.ArkWeb';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import { meowContext } from '../../utils/environment_tools';
-import { fileIo } from '@kit.CoreFileKit';
-import linysConfirmDenyButtons from '../../components/buttons/linysConfirmDenyButtons';
 import { storage_of_id } from '../../utils/ui_tools';
+import lazy { fileIo } from '@kit.CoreFileKit';
+import lazy { webview } from '@kit.ArkWeb';
 
 @CustomDialog
 struct woofWantDownload {

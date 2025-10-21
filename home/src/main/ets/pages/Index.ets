@@ -5,6 +5,7 @@ import { animation_default } from '../hosts/bunch_of_defaults';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 import { meowPx2vp } from '../utils/environment_tools';
+import { drop_to_scratching_board } from '../utils/drag_drop_tools';
 import lazy { print_web } from '../utils/print_tools';
 import lazy { bunch_of_settings } from '../hosts/bunch_of_settings';
 import linysProgress from '../components/linysProgress';
@@ -248,6 +249,23 @@ struct Index {
       .backgroundColor(this.color_current_secondary)
       .animation(animation_default())
       .width('100%') // Top Bar Avoid
+      .onDrop((e) => {
+        try {
+          let drop_ok = drop_to_scratching_board(e, this.storage);
+          if (!drop_ok) {
+            this.showing_scratching_board = false;
+          }
+        } catch (e) {
+          console.error('[onDrop] Failed: ' + e);
+        }
+      })
+      .onDragEnter(() => {
+        this.showing_scratching_board = true;
+        this.showing_more_options = false;
+      })
+      .onDragLeave(() => {
+        this.showing_scratching_board = false;
+      })
 
       // Scroll() {
       //   Column() {

@@ -3,25 +3,25 @@ import { bunch_of_history } from '../../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { arrayBuffer_2_pixelMap, compress_image_arrayBuffer, sandbox_read_arrayBuffer, sandbox_read_arrayBuffer_sync } from '../../utils/storage_tools';
 import { url_resource_to_meow } from '../../utils/url_tools';
-import { webview } from '@kit.ArkWeb';
-import { print } from '@kit.BasicServicesKit';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { bookmark, bunch_of_bookmarks, folder, unified_item } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
+import { sync_all_tabs_list_info } from '../../processes/tabs_actions';
+import { window } from '@kit.ArkUI';
+import { is_address_continuable, set_continuable, storage_of_id } from '../../utils/ui_tools';
+import lazy { harmonyShare, systemShare } from '@kit.ShareKit';
+import lazy { webview } from '@kit.ArkWeb';
+import lazy { print } from '@kit.BasicServicesKit';
+import lazy { common } from '@kit.AbilityKit';
+import lazy { uniformTypeDescriptor } from '@kit.ArkData';
+import woofPrompt from '../../dialogs/web/woofPrompt';
+import woofConfirm from '../../dialogs/web/woofConfirm';
+import woofAlert from '../../dialogs/web/woofAlert';
+import linysText from '../../components/texts/linysText';
 import lazy woofWantJump from '../../dialogs/prompts/woofWantJump';
 import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
 import lazy woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
-import { sync_all_tabs_list_info } from '../../processes/tabs_actions';
-import woofPrompt from '../../dialogs/web/woofPrompt';
-import woofConfirm from '../../dialogs/web/woofConfirm';
-import woofAlert from '../../dialogs/web/woofAlert';
-import { is_address_continuable, set_continuable, storage_of_id } from '../../utils/ui_tools';
-import linysText from '../../components/texts/linysText';
-import { harmonyShare, systemShare } from '@kit.ShareKit';
-import { uniformTypeDescriptor } from '@kit.ArkData';
-import { common } from '@kit.AbilityKit';
-import { window } from '@kit.ArkUI';
 
 @Component
 struct meowWebView {

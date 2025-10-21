@@ -1,10 +1,10 @@
 import { webview } from '@kit.ArkWeb';
 import { match_domain, url_meow_to_resource, viewable_domains } from '../utils/url_tools';
 import { url_default_blank } from './bunch_of_defaults';
-import { sandbox_save } from '../utils/storage_tools';
-import { bunch_of_settings } from './bunch_of_settings';
-import { storage_of_id, window_index_of_id } from '../utils/ui_tools';
-import { save_history } from '../processes/tabs_actions';
+import lazy { storage_of_id, window_index_of_id } from '../utils/ui_tools';
+import lazy { sandbox_save } from '../utils/storage_tools';
+import lazy { bunch_of_settings } from './bunch_of_settings';
+import lazy { save_history } from '../processes/tabs_actions';
 import lazy { createNWeb, TabNodeController } from '../objects/WebNode';
 
 export class bunch_of_tabs {

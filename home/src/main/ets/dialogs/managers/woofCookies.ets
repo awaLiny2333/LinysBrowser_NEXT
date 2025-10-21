@@ -1,8 +1,8 @@
+import { animation_default, click_effect_default } from '../../hosts/bunch_of_defaults';
+import { match_domain } from '../../utils/url_tools';
+import lazy { webview } from '@kit.ArkWeb';
 import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
-import { animation_default, click_effect_default } from '../../hosts/bunch_of_defaults';
-import { webview } from '@kit.ArkWeb';
-import { match_domain } from '../../utils/url_tools';
 import woofControlFrame from '../woofControlFrame';
 import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
 import linysSymbol from '../../components/texts/linysSymbol';
@@ -191,11 +191,16 @@ struct woofCookies {
   }
 
   get_cookies_site() {
-    let list = webview.WebCookieManager.fetchCookieSync(this.domain_url).split('; ');
-    if (list[list.length-1] == '') {
-      list = list.slice(0, list.length - 1);
+    try {
+      let list = webview.WebCookieManager.fetchCookieSync(this.domain_url).split('; ');
+      if (list[list.length-1] == '') {
+        list = list.slice(0, list.length - 1);
+      }
+      return list;
+    } catch (error) {
+      console.error('[get_cookies_site] Failed: ' + error);
+      return [];
     }
-    return list;
   }
 
   get_domain_url(url: string) {

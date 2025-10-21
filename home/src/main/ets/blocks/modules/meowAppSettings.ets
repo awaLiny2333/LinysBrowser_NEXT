@@ -14,12 +14,14 @@ import { ItemRestriction, SegmentButton, SegmentButtonOptions, SegmentButtonText
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { bunch_of_history } from '../../hosts/bunch_of_history';
 import { add_units_to_size, document_pick_to_text, document_save_text, export_everything, import_everything } from '../../utils/storage_tools';
-import lazy { get_sandbox_folder_size } from '../../utils/any_concurrent_tools';
 import { bunch_of_history_index } from '../../hosts/bunch_of_history_index';
 import { history_index_full_rebuild_worker } from '../../hosts/bunch_of_history_index_x_functions';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
-import { webview } from '@kit.ArkWeb';
+import lazy { get_sandbox_folder_size } from '../../utils/any_concurrent_tools';
+import lazy { new_window, storage_of_id } from '../../utils/ui_tools';
+import lazy { common } from '@kit.AbilityKit';
+import lazy { webview } from '@kit.ArkWeb';
 import bundleManager from '@ohos.bundle.bundleManager';
 import meowSEManager from '../panels/meowSEManager';
 import meowUAManager from '../panels/meowUAManager';
@@ -46,8 +48,6 @@ import lazy woofRecentFaultLogs from '../../dialogs/contents/woofRecentFaultLogs
 import lazy woofUpdateHistory from '../../dialogs/contents/woofUpdateHistory';
 import lazy woofPromptOK from '../../dialogs/prompts/woofPromptOK';
 import lazy woofHistory from '../../dialogs/managers/woofHistory';
-import { new_window, storage_of_id } from '../../utils/ui_tools';
-import { common } from '@kit.AbilityKit';
 
 @Reusable
 @Component

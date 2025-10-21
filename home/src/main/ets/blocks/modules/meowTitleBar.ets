@@ -21,6 +21,7 @@ import lazy { add_transparency } from '../../utils/color_tools';
 import lazy { copy } from '../../utils/clipboard_tools';
 import lazy { print_web } from '../../utils/print_tools';
 import lazy { share_link } from '../../utils/link_tools';
+import lazy { common } from '@kit.AbilityKit';
 import linysText from '../../components/texts/linysText';
 import linysProgressInfo from '../../components/linysProgressInfo';
 import linysSymbol from '../../components/texts/linysSymbol';
@@ -37,8 +38,7 @@ import lazy woofQuickSE from '../../dialogs/quicks/woofQuickSE';
 import lazy woofCookies from '../../dialogs/managers/woofCookies';
 import lazy woofQuickUA from '../../dialogs/quicks/woofQuickUA';
 import lazy woofGeneralManage from '../../dialogs/managers/woofGeneralManage';
-import { common } from '@kit.AbilityKit';
-import woofPrompt from '../../dialogs/web/woofPrompt';
+import lazy woofPrompt from '../../dialogs/web/woofPrompt';
 
 @Component
 struct meowTitleBar {
@@ -1006,7 +1006,7 @@ struct meowTitleBar {
           this.showing_scratching_board = false;
         }
       } catch (e) {
-        console.error('[>>>] ' + e);
+        console.error('[onDrop] Failed: ' + e);
       }
     })
     .onDragEnter(() => {
