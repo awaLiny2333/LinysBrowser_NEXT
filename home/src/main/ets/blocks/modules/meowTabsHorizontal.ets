@@ -7,6 +7,7 @@ import linysShowButton from '../../components/buttons/linysShowButton';
 import linysSymbol from '../../components/texts/linysSymbol';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import { storage_of_id } from '../../utils/ui_tools';
+import { unifiedData_drag_tab_from } from '../../processes/tabs_actions';
 
 @Component
 struct meowTabsHorizontal {
@@ -250,6 +251,7 @@ struct HorizontalTabButton {
   @Link full_area_width: number;
   @Link tab_titles: string[];
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageLink('my_window_id') my_window_id: string = '';
   // Host
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   // Gateways
@@ -330,6 +332,15 @@ struct HorizontalTabButton {
     })
     .clickEffect(click_effect_default())
     .draggable(true)
+    .onDragStart((event) => {
+      try {
+        // Drag this tab
+        let unifiedData = unifiedData_drag_tab_from(this.my_window_id, this.index);
+        (event as DragEvent).setData(unifiedData);
+      } catch (e) {
+        console.error('[Meow][Tabs] Set drag data failed: ' + e);
+      }
+    })
   }
 
   tab_width() {

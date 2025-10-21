@@ -87,7 +87,7 @@ struct meowTabsVertical {
   // Pan Gesture
   pan_x: number = 0;
 
-  async aboutToAppear() {
+  aboutToAppear() {
     let t0 = Date.now();
     let t = 0;
 
@@ -681,6 +681,10 @@ struct meowTabsVertical {
     if (this.my_window_id == this.THE_LORD_OF_THE_WINDOWS) {
       // Save web states
       this.bunch_of_tabs.re_save_web_state(0);
+      // Save tab continue data
+      this.bunch_of_tabs.save_tab_index_stats('[on_THE_LORD_OF_THE_WINDOWS_change]');
+      // Store tabs count
+      bunch_of_settings.set("continue_tabs_count", this.tab_titles.length);
     }
   }
 
