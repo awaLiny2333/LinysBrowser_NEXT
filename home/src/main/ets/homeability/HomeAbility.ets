@@ -158,7 +158,13 @@ export default class HomeAbility extends UIAbility {
     let windowAliases = AppStorage.get('windowAliases') as string[];
     windowAliases.splice(window_index, 1);
 
+    // Set window notes
     AppStorage.set('THE_LORD_OF_THE_WINDOWS', windowIds[0]);
+    if (window_id == AppStorage.get('THE_FOCUS_OF_THE_WINDOWS') as string) {
+      // Reset focus
+      // TODO: Should set this to the second top window! Lazzzy cat!
+      AppStorage.setOrCreate('THE_FOCUS_OF_THE_WINDOWS', '');
+    }
 
     hilog.info(0x0000, 'testTag', `onWindowStageWillDestroy`);
   }
@@ -245,6 +251,7 @@ export default class HomeAbility extends UIAbility {
 
       // Listen free window mode
       listen_free_window_mode(this.context, windowClass, storage, this.my_window_id);
+      AppStorage.setOrCreate('THE_FOCUS_OF_THE_WINDOWS', this.my_window_id);
 
       // Avoid hosts
       get_avoid(windowClass, storage);

@@ -214,6 +214,9 @@ export function listen_focus(windowClass: window.Window, storage: LocalStorage) 
       if (windowEvent == window.WindowEventType.WINDOW_ACTIVE || windowEvent == window.WindowEventType.WINDOW_SHOWN) {
         // Focused
         storage.setOrCreate('on_focus', true);
+        let id = storage.get('my_window_id') as string
+        AppStorage.setOrCreate('THE_FOCUS_OF_THE_WINDOWS', id);
+        console.log(`[Meow][listen_focus] Set THE_FOCUS_OF_THE_WINDOWS to [${id}]!`);
       } else {
         // Lose focus
         storage.setOrCreate('on_focus', false);
