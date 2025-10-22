@@ -279,13 +279,19 @@ struct HorizontalTabButton {
           .animation(animation_default())
       }
 
-      Text("󰇀")// Paralleow icon
-        .fontSize(fontSize_Large())
+      Text(this.tablet_mode ? "󰃊" : "󰃎") // Paralleow icon left
+        .visibility(this.bunch_of_tabs.main_tab_idx == this.index ? Visibility.Visible : Visibility.None)
         .fontColor(this.color_current_font)
-        .fontWeight((this.bunch_of_tabs.main_tab_idx == this.index || this.bunch_of_tabs.sub_tab_idx == this.index) ? FontWeight.Bold : undefined)
-        .visibility(this.bunch_of_tabs.sub_tab_idx == this.index ? Visibility.Visible : Visibility.None)
+        .fontSize(fontSize_Large())
+        .fontWeight(FontWeight.Bold)
         .animation(animation_default())
-        .offset({ y: -2 })
+
+      Text(this.tablet_mode ? "󰈱" : "󰈮") // Paralleow icon right
+        .visibility(this.bunch_of_tabs.sub_tab_idx == this.index ? Visibility.Visible : Visibility.None)
+        .fontColor(this.color_current_font)
+        .fontSize(fontSize_Large())
+        .fontWeight(FontWeight.Bold)
+        .animation(animation_default())
 
       Text(this.title == "" ? "Meow" : this.title)
         .fontColor(this.color_current_font)
@@ -307,15 +313,18 @@ struct HorizontalTabButton {
             // Close tab
           })
           .visibility(this.tab_width() <= 80 ? this.visibility_visible_on_chosen(this.index) : Visibility.Visible)
+          .padding({ right: 10, top: 10, bottom: 10 })
           .animation(animation_default())
       }
     }
+    // .opacity(this.bunch_of_tabs.sub_tab_idx == this.index ? 0.7 : 1)
+    .padding({ left: 10 })
+    .alignItems(VerticalAlign.Center)
     .offset({ y: this.offset_y })
     .width(this.tab_width())
     .onClick(() => {
       this.uni_tab_button_clicked = this.index;
     })
-    .padding(10)
     .height("100%")
     .border({
       radius: 10,

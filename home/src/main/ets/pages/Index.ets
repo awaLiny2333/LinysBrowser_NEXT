@@ -16,6 +16,7 @@ import lazy meowWebView from '../blocks/modules/meowWebView';
 import lazy woofPromptFail from '../dialogs/prompts/woofPromptFail';
 import {
   change_window_alias,
+  current_tabs_style_is_horizontal,
   enter_free_window_mode,
   enter_traditional_window_mode,
   last_storage,
@@ -275,7 +276,7 @@ struct Index {
             if (this.delayed_load_p0) {
               meowTabsVertical()
                 .width(this.showing_tabs ? this.width_of_Tabs() : 0)
-                .padding(this.showing_tabs ? 10 : 0)
+                .padding((this.showing_tabs && !current_tabs_style_is_horizontal(this.storage)) ? 10 : 0)
                 .animation(animation_default())
             }
             if (this.delayed_load_p1) {

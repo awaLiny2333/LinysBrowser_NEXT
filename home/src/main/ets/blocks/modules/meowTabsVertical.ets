@@ -717,6 +717,7 @@ struct TabButton {
   @Prop Label: tab_label;
   tab_height_default: number = 42;
   // Public
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @LocalStorageLink('my_window_id') my_window_id: string = '';
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
@@ -743,16 +744,21 @@ struct TabButton {
           .visibility(this.preferred_hand_left_or_right == 'left' ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
 
-        Text("󰇀")
+        Text(this.tablet_mode ? "󰃊" : "󰃎") // Paralleow icon left
+          .visibility(this.bunch_of_tabs.main_tab_idx == this.Label.index_key ? Visibility.Visible : Visibility.None)
+          .fontColor(this.color_current_font)
+          .animation(animation_default())
           .padding({ right: 5 })
           .fontSize(fontSize_Large())
-          .fontColor(this.color_current_font)
-          .fontWeight((this.bunch_of_tabs.main_tab_idx == this.Label.index_key ||
-            this.bunch_of_tabs.sub_tab_idx == this.Label.index_key)
-            ? FontWeight.Bold : undefined)
+          .fontWeight(FontWeight.Bold)
+
+        Text(this.tablet_mode ? "󰈱" : "󰈮") // Paralleow icon right
           .visibility(this.bunch_of_tabs.sub_tab_idx == this.Label.index_key ? Visibility.Visible : Visibility.None)
+          .fontColor(this.color_current_font)
           .animation(animation_default())
-          .offset({ y: -2 })
+          .padding({ right: 5 })
+          .fontSize(fontSize_Large())
+          .fontWeight(FontWeight.Bold)
 
         Text(this.tab_titles[this.Label.index_key] == "" ? "Meow" : this.tab_titles[this.Label.index_key])
           .padding({ left: 2 })
@@ -811,6 +817,7 @@ struct TabButton {
       .keyboardShortcut(this.bunch_of_tabs.main_tab_idx == this.Label.index_key ? this.bunch_of_key_shortcuts.close_tab.main_key : '',
         this.bunch_of_key_shortcuts.close_tab.modifier)
     }
+    // .opacity(this.bunch_of_tabs.sub_tab_idx == this.Label.index_key ? 0.7 : 1)
     .onTouch((event) => {
       if (event.type == TouchType.Up) {
         this.pressing = false;
