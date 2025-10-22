@@ -21,9 +21,18 @@ struct woofSelectBookmarksPath {
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   controller: CustomDialogController;
+  // Count
+  @LocalStorageLink('opened_dialog_controllers') opened_dialog_controllers: CustomDialogController[] = [];
 
   aboutToAppear(): void {
     this.refresh_dir_content();
+    this.opened_dialog_controllers.push(this.controller);
+    console.log(`[Dialog][Open] Now dialog count: ${this.opened_dialog_controllers.length}!`);
+  }
+
+  aboutToDisappear(): void {
+    this.opened_dialog_controllers.splice(this.opened_dialog_controllers.indexOf(this.controller), 1);
+    console.log(`[Dialog][Close] Now dialog count: ${this.opened_dialog_controllers.length}!`);
   }
 
   build() {

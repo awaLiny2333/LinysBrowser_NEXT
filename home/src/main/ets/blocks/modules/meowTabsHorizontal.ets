@@ -280,7 +280,7 @@ struct HorizontalTabButton {
       }
 
       Text(this.tablet_mode ? "󰃊" : "󰃎") // Paralleow icon left
-        .visibility(this.bunch_of_tabs.main_tab_idx == this.index ? Visibility.Visible : Visibility.None)
+        .visibility((this.bunch_of_tabs.sub_tab_idx > -1 && this.bunch_of_tabs.main_tab_idx == this.index) ? Visibility.Visible : Visibility.None)
         .fontColor(this.color_current_font)
         .fontSize(fontSize_Large())
         .fontWeight(FontWeight.Bold)

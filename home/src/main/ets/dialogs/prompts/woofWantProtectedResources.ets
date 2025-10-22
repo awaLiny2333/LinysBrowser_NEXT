@@ -20,6 +20,18 @@ struct woofWantResources {
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // UI display
   @LocalStorageLink('screen_height') screen_height: number = 0;
+  // Count
+  @LocalStorageLink('opened_dialog_controllers') opened_dialog_controllers: CustomDialogController[] = [];
+
+  aboutToAppear(): void {
+    this.opened_dialog_controllers.push(this.controller);
+    console.log(`[Dialog][Open] Now dialog count: ${this.opened_dialog_controllers.length}!`);
+  }
+
+  aboutToDisappear(): void {
+    this.opened_dialog_controllers.splice(this.opened_dialog_controllers.indexOf(this.controller), 1);
+    console.log(`[Dialog][Close] Now dialog count: ${this.opened_dialog_controllers.length}!`);
+  }
 
   build() {
     Column({ space: 15 }) {

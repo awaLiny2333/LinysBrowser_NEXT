@@ -325,7 +325,7 @@ struct meowTitleBar {
           is_search_input_typing: this.is_search_input_typing,
           is_search_input_address: this.is_search_input_address,
           search_input: this.search_input,
-          search_input_unified: this.search_input_unified
+          search_input_unified: this.search_input_unified,
         })
           .visibility(this.is_search_input_typing && this.title_bar_position == 'bottom' ? Visibility.Visible : Visibility.None)
           .padding({ left: 15, right: 15 })
@@ -1396,6 +1396,14 @@ struct EstimatedDestination {
         .maxLines(4)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
         .layoutWeight(1)
+
+      linysSymbol({
+        symbol_glyph_target: 'sys.symbol.chevron_up'
+      })
+        .onClick(() => {
+          // Clear focus
+          this.getUIContext().getFocusController().clearFocus();
+        })
     } // Title Bar for estimated destination indication
   }
 

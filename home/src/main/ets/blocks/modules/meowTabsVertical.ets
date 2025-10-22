@@ -745,7 +745,7 @@ struct TabButton {
           .animation(animation_default())
 
         Text(this.tablet_mode ? "󰃊" : "󰃎") // Paralleow icon left
-          .visibility(this.bunch_of_tabs.main_tab_idx == this.Label.index_key ? Visibility.Visible : Visibility.None)
+          .visibility((this.bunch_of_tabs.sub_tab_idx > -1 && this.bunch_of_tabs.main_tab_idx == this.Label.index_key) ? Visibility.Visible : Visibility.None)
           .fontColor(this.color_current_font)
           .animation(animation_default())
           .padding({ right: 5 })

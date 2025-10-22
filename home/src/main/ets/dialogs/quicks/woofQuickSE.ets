@@ -21,6 +21,18 @@ struct woofQuickSE {
   button_height_default: number = 42;
   // Gateways
   @LocalStorageLink('universal_load_url_gateway') load_url_gateway: string = "";
+  // Count
+  @LocalStorageLink('opened_dialog_controllers') opened_dialog_controllers: CustomDialogController[] = [];
+
+  aboutToAppear(): void {
+    this.opened_dialog_controllers.push(this.controller);
+    console.log(`[Dialog][Open] Now dialog count: ${this.opened_dialog_controllers.length}!`);
+  }
+
+  aboutToDisappear(): void {
+    this.opened_dialog_controllers.splice(this.opened_dialog_controllers.indexOf(this.controller), 1);
+    console.log(`[Dialog][Close] Now dialog count: ${this.opened_dialog_controllers.length}!`);
+  }
 
   build() {
     woofControlFrame({

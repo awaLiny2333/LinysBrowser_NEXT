@@ -25,9 +25,11 @@ struct linysTimeoutButton {
         width: 2,
         color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
       })
+      .animation(animation_default())
       .fontSize(fontSize_Large())
       .fontWeight(FontWeight.Medium)
       .height(capsule_bar_height())
+      .clickEffect(click_effect_default())
       .onClick(() => {
         this.delete_confirm += 300;
         if (this.delete_confirm >= 301) {
@@ -37,8 +39,6 @@ struct linysTimeoutButton {
           this.delete_confirm = 0;
         }
       })
-      .clickEffect(click_effect_default())
-      .animation(animation_default())
       .onAppear(() => {
         setInterval(() => {
           if (this.delete_confirm > 0) {

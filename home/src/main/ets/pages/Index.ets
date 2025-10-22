@@ -204,13 +204,12 @@ struct Index {
         .keyboardShortcut(this.bunch_of_key_shortcuts.pin_to_top.main_key, this.bunch_of_key_shortcuts.pin_to_top.modifier, () => {
           pin_to_top(this.my_window_id);
         })
-      // .keyboardShortcut(FunctionKey.ESC, [], () => {
-      //   this.back();
-      // })
+        .keyboardShortcut(FunctionKey.ESC, [], () => {
+          this.universal_esc();
+        })
 
       RelativeContainer() {
         WindowTitle()
-        // .id('WindowTitle')
           .padding(this.tablet_mode ? { right: 20, bottom: 5 } : undefined)
           .alignRules({
             bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
@@ -220,7 +219,7 @@ struct Index {
           .animation(animation_default())
 
         if (this.free_window_mode) {
-          Row({ space: 12 }) {
+          Row({ space: 10 }) {
             linysWindowButton({
               symbol: this.pin_to_top ? $r('sys.symbol.pin_vertical_fill') : $r('sys.symbol.pin'),
               execution: () => {
@@ -249,7 +248,7 @@ struct Index {
       .clip(true)
       .backgroundColor(this.color_current_secondary)
       .animation(animation_default())
-      .width('100%') // Top Bar Avoid
+      .width('100%')
       .onDrop((e) => {
         try {
           let drop_ok = drop_to_scratching_board(e, this.storage);
@@ -267,6 +266,7 @@ struct Index {
       .onDragLeave(() => {
         this.showing_scratching_board = false;
       })
+      // Top Bar Avoid (Title)
 
       // Scroll() {
       //   Column() {
@@ -625,6 +625,24 @@ struct Index {
    * */
   create_new_window(alias: string = this.my_window_alias) {
     new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), alias);
+  }
+
+  /**
+   * What happens if esc key is pressed.
+   * */
+  universal_esc() {
+    let opened_dialog_controllers = this.storage.get('opened_dialog_controllers') as CustomDialogController[];
+
+    // Close the top most dialog
+    if (opened_dialog_controllers && opened_dialog_controllers.length > 0) {
+      opened_dialog_controllers[opened_dialog_controllers.length-1].close();
+      return;
+    }
+
+    this.getUIContext().getFocusController().clearFocus();
+
+    // Inheritance (?) from the universal back function.
+    this.back();
   }
 }
 
