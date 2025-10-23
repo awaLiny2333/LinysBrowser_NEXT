@@ -341,6 +341,9 @@ struct meowTabsVertical {
       this.bunch_of_tabs.newTab(this.getUIContext(), target_url, do_recovery);
     }
 
+    // Get synced lists
+    sync_all_tabs_list_info(this.storage);
+
     if (!do_recovery) {
       // Store tabs count
       let store_tabs_count = this.bunch_of_tabs.get_tabs_count();

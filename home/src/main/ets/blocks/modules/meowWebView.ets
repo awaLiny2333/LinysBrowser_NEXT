@@ -6,7 +6,6 @@ import { url_resource_to_meow } from '../../utils/url_tools';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { bookmark, bunch_of_bookmarks, folder, unified_item } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
-import { sync_all_tabs_list_info } from '../../processes/tabs_actions';
 import { window } from '@kit.ArkUI';
 import { is_address_continuable, set_continuable, storage_of_id } from '../../utils/ui_tools';
 import lazy { harmonyShare, systemShare } from '@kit.ShareKit';
@@ -22,6 +21,7 @@ import lazy woofWantJump from '../../dialogs/prompts/woofWantJump';
 import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
 import lazy woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
+import { sync_all_tabs_list_info } from '../../processes/tabs_actions';
 
 @Component
 struct meowWebView {
@@ -246,32 +246,6 @@ struct meowWebView {
   //   // .height(350)
   // }
 
-  aboutToAppear(): void {
-    console.log(' \n[meowWebView][aboutToAppear] this.bunch_of_tabs.my_id: ' + this.bunch_of_tabs.my_id + '\n ');
-
-    // Init download delegate
-    this.bunch_of_downloads.init_delegate(this.storage);
-
-    // Set image for homepage
-    sandbox_read_arrayBuffer('homepage_background_arrayBuffer')?.then((homepage_background_array_buffer) => {
-      if (homepage_background_array_buffer) {
-        this.homepage_background = arrayBuffer_2_pixelMap(homepage_background_array_buffer);
-        console.log("[Meow][meowAppSettings] Finished loading homepage background!");
-      }
-    });
-
-    // init OK
-    setTimeout(() => {
-      sync_all_tabs_list_info(this.storage);
-
-      this.register_harmonyShare_gesture_sender();
-
-      this.register_harmonyShare_knock_sender();
-
-      this.init_OK = true;
-    }, 10);
-  }
-
   build() {
     RelativeContainer() {
       if (this.homepage_background) {
@@ -286,7 +260,7 @@ struct meowWebView {
         .height('100%')
         .width('100%')
         .visibility(this.extra_background ? Visibility.Visible : Visibility.Hidden)
-      // .animation(animation_default())
+        .animation(animation_default())
 
       ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
         Column() {
@@ -327,12 +301,15 @@ struct meowWebView {
         .alignRules(this.bunch_of_tabs.main_tab_idx == Label.index_key ? this.align_rules_main_tab() : this.align_rules_sub_tab())
         .visibility(this.my_visibility(Label.index_key))
       }, (Label: tab_label) => Label.timestamp.toString())
+      // }
 
       // if (this.current_url == 'meow://home') {
       shortcuts({
         shortcut_scroll_offset: this.shortcut_scroll_offset,
       })
-      // }
+        .onAppear(() => {
+          this.on_appear();
+        })
 
     }
     .width("100%")
@@ -344,23 +321,54 @@ struct meowWebView {
 
   // Events
 
-  on_current_url_change() {
-    // Update continuable state.
-    let original_sharable_continuable = this.sharable_continuable;
-    is_address_continuable(this.current_url, this.storage);
+  on_appear() {
+    console.log(' \n[meowWebView][aboutToAppear] this.bunch_of_tabs.my_id: ' + this.bunch_of_tabs.my_id + '\n ');
 
-    if (this.sharable_continuable == original_sharable_continuable) {
-      // Nothing changed;
-    } else {
-      set_continuable(this.getUIContext().getHostContext() as common.UIAbilityContext, this.sharable_continuable);
-      if (this.sharable_continuable) {
-        this.register_harmonyShare_gesture_sender();
-        this.register_harmonyShare_knock_sender();
-      } else {
-        this.off_harmonyShare_gesture_sender();
-        this.off_harmonyShare_knock_sender();
+    // Init download delegate
+    this.bunch_of_downloads.init_delegate(this.storage);
+
+    // Set image for homepage
+    sandbox_read_arrayBuffer('homepage_background_arrayBuffer')?.then((homepage_background_array_buffer) => {
+      if (homepage_background_array_buffer) {
+        this.homepage_background = arrayBuffer_2_pixelMap(homepage_background_array_buffer);
+        console.log("[Meow][meowAppSettings] Finished loading homepage background!");
       }
+    });
+
+    // init OK
+    setTimeout(() => {
+      sync_all_tabs_list_info(this.storage);
+
+      this.register_harmonyShare_gesture_sender();
+
+      this.register_harmonyShare_knock_sender();
+
+      this.init_OK = true;
+    }, 10);
+  }
+
+  on_current_url_change() {
+    try {
+      // Update continuable state.
+      let original_sharable_continuable = this.sharable_continuable;
+      is_address_continuable(this.current_url, this.storage);
+
+      if (this.sharable_continuable == original_sharable_continuable) {
+        // Nothing changed;
+      } else {
+        set_continuable(this.getUIContext().getHostContext() as common.UIAbilityContext, this.sharable_continuable);
+        if (this.sharable_continuable) {
+          this.register_harmonyShare_gesture_sender();
+          this.register_harmonyShare_knock_sender();
+        } else {
+          this.off_harmonyShare_gesture_sender();
+          this.off_harmonyShare_knock_sender();
+        }
+      }
+    } catch (e) {
+      console.error('[on_current_url_change] Failed: ' + e);
     }
+
   }
 
   on_focus_change() {

@@ -20,7 +20,7 @@ function WebBuilder(pk: tab_info_packed) {
     controller: pk?.controller
   })
     .layoutWeight(1)
-    .backgroundColor('transparent') // TODO: Why??
+    .backgroundColor('transparent') // Or the web would flash on load
     .databaseAccess(true)
     .fileAccess(true)
     .domStorageAccess(true)

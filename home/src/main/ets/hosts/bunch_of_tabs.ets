@@ -1,5 +1,5 @@
 import { webview } from '@kit.ArkWeb';
-import { match_domain, url_meow_to_resource, viewable_domains } from '../utils/url_tools';
+import { match_domain, url_meow_to_resource, url_resource_to_meow, viewable_domains } from '../utils/url_tools';
 import { url_default_blank } from './bunch_of_defaults';
 import lazy { storage_of_id, window_index_of_id } from '../utils/ui_tools';
 import lazy { sandbox_save } from '../utils/storage_tools';
@@ -605,7 +605,7 @@ export class tab_info_packed {
       return this.url;
     }
     try {
-      this.url = this.controller.getUrl();
+      this.url = url_resource_to_meow(this.controller.getUrl());
     } catch (e) {
       console.error('[update_url] Failed: ' + e);
     }
