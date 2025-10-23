@@ -39,6 +39,7 @@ import lazy woofCookies from '../../dialogs/managers/woofCookies';
 import lazy woofQuickUA from '../../dialogs/quicks/woofQuickUA';
 import lazy woofGeneralManage from '../../dialogs/managers/woofGeneralManage';
 import lazy woofPrompt from '../../dialogs/web/woofPrompt';
+import { cancel_in_page_search } from '../../processes/tabs_actions';
 
 @Component
 struct meowTitleBar {
@@ -691,6 +692,8 @@ struct meowTitleBar {
         Scroll() {
           Column({ space: 10 }) {
             Row() // To get more space
+              .visibility(this.current_in_page_searching_stats_total > 0 ? Visibility.None : Visibility.Visible)
+              .animation(animation_default())
 
             RelativeContainer() {
               Row({ space: 10 }) {
@@ -706,7 +709,7 @@ struct meowTitleBar {
                     this.current_in_page_searching_keyword = edit;
                     this.bunch_of_tabs.workingMainTab().searching_keyword = edit;
                   })
-                  .visibility(this.showing_scratching_board ? Visibility.Hidden : Visibility.Visible)// .margin({ left: 10 })
+                  .visibility(this.showing_scratching_board ? Visibility.Hidden : Visibility.Visible)
                   .layoutWeight(1)
                   .allowDrop(null)
                   .height(capsule_bar_height())
@@ -728,7 +731,7 @@ struct meowTitleBar {
                   })
                   .id('in_page_search_blank')
 
-                linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass' })
+                linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass' }) // Submit
                   .onClick(() => {
                     try {
                       this.bunch_of_tabs.workingMainTab().controller.searchAllAsync(this.current_in_page_searching_keyword);
@@ -736,22 +739,11 @@ struct meowTitleBar {
                       console.error(e);
                     }
                   })
-                // .margin({ left: 10 })
 
-                linysSymbol({ symbol_glyph_target: 'sys.symbol.xmark' })
+                linysSymbol({ symbol_glyph_target: 'sys.symbol.xmark' }) // Cancel
                   .onClick(() => {
-                    this.current_in_page_searching_keyword = '';
-                    this.current_in_page_searching_stats_current = 0;
-                    this.current_in_page_searching_stats_total = 0;
-                    this.bunch_of_tabs.workingMainTab().searching_keyword_stats_current = 0;
-                    this.bunch_of_tabs.workingMainTab().searching_keyword_stats_total = 0;
-                    this.bunch_of_tabs.workingMainTab().searching_keyword = '';
-                    try {
-                      this.bunch_of_tabs.workingMainTab().controller.clearMatches();
-                    } catch (e) {
-                      console.error(e);
-                    }
-                  })// .margin({ left: 10 })
+                    cancel_in_page_search(this.storage);
+                  })
                   .visibility(this.current_in_page_searching_keyword != "" ? Visibility.Visible : Visibility.None)
                   .animation(animation_default())
               } // Search bar

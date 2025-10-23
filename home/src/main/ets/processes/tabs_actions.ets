@@ -126,6 +126,36 @@ export function determine_extra_background(storage: LocalStorage) {
   storage.set('extra_background', need_extra_background);
 }
 
+// Web and Tabs
+
+/**
+ * Returns true if the current tab is doing in-page searching.
+ * @param storage The LocalStorage.
+ * @returns True if is searching, false otherwise.
+ * */
+export function is_current_in_page_searching(storage: LocalStorage) {
+  return storage.get('current_in_page_searching_stats_total') as number > 0;
+}
+
+/**
+ * Cancel in-page search for current tab.
+ * @param storage The LocalStorage.
+ * */
+export function cancel_in_page_search(storage: LocalStorage) {
+  storage.set('current_in_page_searching_keyword', '');
+  storage.set('current_in_page_searching_stats_current', 0);
+  storage.set('current_in_page_searching_stats_total', 0);
+  let tabs = storage.get('bunch_of_tabs') as bunch_of_tabs;
+  tabs.workingMainTab().searching_keyword_stats_current = 0;
+  tabs.workingMainTab().searching_keyword_stats_total = 0;
+  tabs.workingMainTab().searching_keyword = '';
+  try {
+    tabs.workingMainTab().controller.clearMatches();
+  } catch (e) {
+    console.error('[cancel_in_page_search] Failed: ' + e);
+  }
+}
+
 // Drag
 
 /**

@@ -518,7 +518,11 @@
     },
     {
       "name": "Settings_experience_sys_back_to_access_backward",
-      "value": "Respond to system back"
+      "value": "System back in Web"
+    },
+    {
+      "name": "Settings_experience_sys_back_to_access_backward_desc",
+      "value": "Use system back to access backward in a web page, or to close a tab."
     },
     {
       "name": "Settings_experience_continuation_auto_exit",

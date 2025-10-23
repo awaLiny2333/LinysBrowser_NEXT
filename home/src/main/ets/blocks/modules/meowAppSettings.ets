@@ -378,7 +378,6 @@ struct meowAppSettings {
             scroll_to_gateway: this.settings_scroll_to,
             menu_text: this.menu_text,
           })
-          // .margin({ left: 15, right: 15 })
         } // Quick access on the top
 
         if (this.showing_app_settings) {
@@ -628,7 +627,11 @@ struct meowAppSettings {
                     onExecution: () => {
                       bunch_of_settings.set('sys_back_access_backward', this.sys_back_to_access_backward);
                     }
-                  }) // Use sys back
+                  }) // Use sys back in web
+                  // linysText({
+                  //   text: $r('app.string.Settings_experience_sys_back_to_access_backward_desc'),
+                  //   is_description: true
+                  // }) // Desc
                 }
 
                 settingsSubCard({

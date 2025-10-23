@@ -29,6 +29,7 @@ import {
 } from '../utils/ui_tools';
 import linysText from '../components/texts/linysText';
 import linysWindowButton from '../components/buttons/linysWindowButton';
+import { cancel_in_page_search, is_current_in_page_searching } from '../processes/tabs_actions';
 
 // @Entry({ useSharedStorage: true })
 @Entry(last_storage())
@@ -638,8 +639,19 @@ struct Index {
       opened_dialog_controllers[opened_dialog_controllers.length-1].close();
       return;
     }
+    
+    // Exit in-page searching
+    if (is_current_in_page_searching(this.storage)) {
+      cancel_in_page_search(this.storage);
+      return;
+    }
 
-    this.getUIContext().getFocusController().clearFocus();
+    // Exit typing
+    if (this.storage.get('is_search_input_typing') as boolean) {
+      this.getUIContext().getFocusController().clearFocus();
+      this.storage.set('is_search_input_typing', false);
+      return;
+    }
 
     // Inheritance (?) from the universal back function.
     this.back();

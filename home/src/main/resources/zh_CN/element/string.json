@@ -517,7 +517,11 @@
     },
     {
       "name": "Settings_experience_sys_back_to_access_backward",
-      "value": "响应系统返回"
+      "value": "网页系统返回"
+    },
+    {
+      "name": "Settings_experience_sys_back_to_access_backward_desc",
+      "value": "用系统返回在网页中返回，或是关闭标签页。"
     },
     {
       "name": "Settings_experience_continuation_auto_exit",
