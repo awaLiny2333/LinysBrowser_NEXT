@@ -4,6 +4,7 @@ import { ensure_scheme } from '../utils/url_tools';
 export class bunch_of_bookmarks {
   root: folder;
   last_accessed: number = 0;
+  init: boolean = false;
   private cached_plain_bookmarks: string[][] | undefined = undefined;
 
   /**

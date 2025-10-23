@@ -36,7 +36,11 @@ export async function meow_init_main(context: common.UIAbilityContext, storage: 
 
   // Hosts
   await settings(t0);
-  await bookmarks(t0);
+  // await bookmarks(t0);
+
+  // Placeholder
+  AppStorage.setOrCreate('bunch_of_bookmarks', new bunch_of_bookmarks("Bookmarks~Meow"));
+
   await restore_tabs(t0);
   tabs(t0, storage);
   history(t0);
@@ -251,12 +255,14 @@ async function settings(t0: number) {
 }
 
 /**
+ * Gets bunch_of_bookmarks from AppStorage.
+ *
  * Inits and loads bookmarks from disk.
  * @param t0 Start time of the whole initialization process.
  * */
-async function bookmarks(t0: number) {
-  let bookmarks = new bunch_of_bookmarks("Bookmarks~Meow");
-  AppStorage.setOrCreate('bunch_of_bookmarks', bookmarks);
+export async function bookmarks(t0: number) {
+  let bookmarks = AppStorage.get('bunch_of_bookmarks') as bunch_of_bookmarks;
+  bookmarks.init = true;
 
   // Get bookmarks
   let result: string = sandbox_read_text_sync('html_bookmarks.html');
@@ -274,7 +280,7 @@ async function bookmarks(t0: number) {
 
   // Timer
   let t = Date.now() - t0;
-  console.log('[init] Bookmarks OK. (' + t + ' ms)');
+  console.log('[Meow][init] Bookmarks OK. (' + t + ' ms)');
 }
 
 /**

@@ -713,7 +713,6 @@ struct shortcutButton {
   @Prop bookmark: unified_item;
   // Environment
   @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
-  @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks('Bookmarks~Meow');
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('preferred_hand_reverse_homepage_shortcuts') preferred_hand_reverse_homepage_shortcuts: boolean = false;
