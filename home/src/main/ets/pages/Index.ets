@@ -30,6 +30,7 @@ import {
 import linysText from '../components/texts/linysText';
 import linysWindowButton from '../components/buttons/linysWindowButton';
 import { cancel_in_page_search, is_current_in_page_searching } from '../processes/tabs_actions';
+import woofHistory from '../dialogs/managers/woofHistory';
 
 // @Entry({ useSharedStorage: true })
 @Entry(last_storage())
@@ -112,6 +113,14 @@ struct Index {
     alignment: DialogAlignment.Center,
     cornerRadius: 26,
     // showInSubWindow: true,
+    width: "90%",
+  });
+  woofHistory_control: CustomDialogController = new CustomDialogController({
+    builder: woofHistory({
+      full_view: this.compact_mode
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 26,
     width: "90%",
   });
   /**
@@ -205,6 +214,9 @@ struct Index {
         .keyboardShortcut(this.bunch_of_key_shortcuts.pin_to_top.main_key, this.bunch_of_key_shortcuts.pin_to_top.modifier, () => {
           pin_to_top(this.my_window_id);
         })
+        .keyboardShortcut(this.bunch_of_key_shortcuts.history.main_key, this.bunch_of_key_shortcuts.history.modifier, () => {
+          this.woofHistory_control.open();
+        })
         .keyboardShortcut(FunctionKey.ESC, [], () => {
           this.universal_esc();
         })
@@ -240,7 +252,7 @@ struct Index {
           .padding({ top: this.showing_my_window_alias ? 9 : 5, right: Math.max(15, this.windowDecorWidth) - 15 })
           .alignRules({ top: { anchor: '__container__', align: VerticalAlign.Top }, right: { anchor: '__container__', align: HorizontalAlign.End } })
         }
-      }
+      } // Top Bar Avoid (Title)
       .padding({
         left: 15,
         right: 15
@@ -267,7 +279,6 @@ struct Index {
       .onDragLeave(() => {
         this.showing_scratching_board = false;
       })
-      // Top Bar Avoid (Title)
 
       // Scroll() {
       //   Column() {
@@ -562,7 +573,7 @@ struct Index {
    * Universal Go back function
    * @returns true if successfully executed <Back> for some effects.
    * */
-  back() {
+  back(closeTab: boolean = true) {
     let stop_system_back = false;
 
     if (this.fullscreen_mode) {
@@ -606,7 +617,7 @@ struct Index {
     if (this.sys_back_to_access_backward) {
       if (this.go_back_tab()) {
         stop_system_back = true;
-      } else if (this.bunch_of_tabs.get_tabs_count() > 1) {
+      } else if (this.bunch_of_tabs.get_tabs_count() > 1 && closeTab) {
         // Can close something
         this.uni_close_tab_gateway = this.bunch_of_tabs.main_tab_idx;
         stop_system_back = true;
@@ -639,7 +650,7 @@ struct Index {
       opened_dialog_controllers[opened_dialog_controllers.length-1].close();
       return;
     }
-    
+
     // Exit in-page searching
     if (is_current_in_page_searching(this.storage)) {
       cancel_in_page_search(this.storage);
@@ -654,7 +665,7 @@ struct Index {
     }
 
     // Inheritance (?) from the universal back function.
-    this.back();
+    this.back(false);
   }
 }
 

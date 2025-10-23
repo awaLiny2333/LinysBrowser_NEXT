@@ -39,7 +39,7 @@ struct meowSuggestions {
   build() {
     Scroll() {
       if (this.tablet_mode) {
-        Row({ space: 10 }) {
+        Row({ space: this.bookmark_suggestions.length > 0 && this.history_suggestions.length > 0 ? 10 : 0 }) {
           suggestionList({ suggestions: this.bookmark_suggestions })
             .layoutWeight(1)
             .visibility(this.bookmark_suggestions.length > 0 ? Visibility.Visible : Visibility.None)

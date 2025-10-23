@@ -1,6 +1,7 @@
 import { animation_default, click_effect_default, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import { LengthMetrics } from '@kit.ArkUI';
 
+@Reusable // Will this affect anything?
 @Component
 struct linysText {
   // Colors
