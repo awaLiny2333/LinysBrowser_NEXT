@@ -31,8 +31,8 @@ struct linysTimeoutButton {
       .height(capsule_bar_height())
       .clickEffect(click_effect_default())
       .onClick(() => {
-        this.delete_confirm += 300;
-        if (this.delete_confirm >= 301) {
+        this.delete_confirm += 3000;
+        if (this.delete_confirm >= 3001) {
           if (this.onExecution) {
             this.onExecution();
           }
@@ -42,10 +42,10 @@ struct linysTimeoutButton {
       .onAppear(() => {
         setInterval(() => {
           if (this.delete_confirm > 0) {
-            this.delete_confirm -= 1;
+            this.delete_confirm -= 1000;
           }
           // Reset delete confirm
-        }, 10)
+        }, 1000)
       })
   }
 }

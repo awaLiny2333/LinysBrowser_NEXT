@@ -1210,6 +1210,9 @@ struct meowAppSettings {
       // console.log("[Meow][meowAppSettings] App Settings READY")
       this.on_appear();
       setInterval(() => {
+        if (!this.showing_app_settings) {
+          return;
+        }
         // Deduce timeout for border highlights
         if (this.settings_scroll_to_highlight_timeout < 0) {
           this.settings_scroll_to_highlight_timeout = 0;

@@ -22,7 +22,6 @@ struct meowScratchingBoard {
   @State show_feed_prompt: boolean = true;
   @State area_height: number = 200;
   @LocalStorageProp('screen_height') screen_height: number = 0;
-  @State delete_confirm: number = 0;
   @State only_links: boolean = false;
   // Processed data
   @State extracted_data: string[] = [];
@@ -96,14 +95,6 @@ struct meowScratchingBoard {
     .padding({ left: 15, right: 15 })
     .width("100%")
     .animation(animation_default())
-    .onAppear(() => {
-      setInterval(() => {
-        if (this.delete_confirm > 0) {
-          this.delete_confirm -= 1;
-        }
-        // Reset delete confirm
-      }, 10)
-    })
   }
 
   /**

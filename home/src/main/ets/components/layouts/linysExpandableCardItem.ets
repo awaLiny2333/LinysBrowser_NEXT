@@ -124,13 +124,13 @@ struct linysExpandableCardItem {
     .onAppear(() => {
       setInterval(() => {
         if (this.is_pressing) {
-          this.press_timing += 1;
+          this.press_timing += 10;
         } else {
           this.press_timing = 0;
         }
         this.is_press_timing_ok = this.press_timing > 16;
         // Count press time
-      }, 10)
+      }, 100)
     })
   }
 }

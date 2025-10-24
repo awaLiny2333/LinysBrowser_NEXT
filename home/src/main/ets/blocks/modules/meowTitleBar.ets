@@ -315,7 +315,7 @@ struct meowTitleBar {
                   focusControl.requestFocus('address_bar');
                 }
               }
-              this.address_analyzers_desc_close_cd = 1200;
+              this.address_analyzers_desc_close_cd = 1000;
             })
             .animation(animation_default())
 
@@ -567,9 +567,9 @@ struct meowTitleBar {
       // console.log("[Meow][meowTitleBar] Title Bar READY")
       setInterval(() => {
         if (this.address_analyzers_desc_close_cd > 0) {
-          this.address_analyzers_desc_close_cd -= 10;
+          this.address_analyzers_desc_close_cd -= 1000;
         }
-      }, 10)
+      }, 1000)
     })
     .keyboardShortcut(this.bunch_of_key_shortcuts.in_page_search.main_key, this.bunch_of_key_shortcuts.in_page_search.modifier, () => {
       this.showing_more_options = true;

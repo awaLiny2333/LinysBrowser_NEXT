@@ -212,6 +212,7 @@ function WebBuilder(pk: tab_info_packed) {
       if (!pk.restore_on_creation) {
         tabs.update_web_state(pk.index);
         if (window_index_of_id(tabs.my_id) == 0) {
+          // TODO: Reduce save web_state to sandbox frequency.
           tabs.save_web_state_to_sandbox(pk.index);
         }
       }
