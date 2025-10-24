@@ -80,11 +80,11 @@ struct Index {
   /**
    * Delay */
   @LocalStorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
-  delay_p0: number = 70;
+  delay_p0: number = 30;
   @LocalStorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
-  delay_p1: number = 10;
+  delay_p1: number = 20;
   @LocalStorageLink('delayed_load_p2') delayed_load_p2: boolean = false;
-  delay_p2: number = 10;
+  delay_p2: number = 30;
   /**
    * Web Statuses */
   @LocalStorageLink('current_loading_progress') current_loading_progress: number = 0;

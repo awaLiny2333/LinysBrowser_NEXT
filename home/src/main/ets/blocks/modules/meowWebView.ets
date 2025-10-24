@@ -148,103 +148,9 @@ struct meowWebView {
   @LocalStorageLink('meowWebView_init_OK') init_OK: boolean = false;
   httpAuth: boolean = false;
 
-  // // Menu contents
-  // @State menu_linkUrl: string = '';
-  // @State menu_offsetX: number = 0;
-  // @State menu_offsetY: number = 0;
-  // @State menu_has_link: boolean = false;
-  // @State menu_editable: boolean = false;
-  // @State menu_has_image: boolean = false;
-  // @State menu_imageLink: string = '';
-  // @State menu_mediaType: ContextMenuMediaType | undefined = undefined;
-  // // Menu
-  // private menu_result: WebContextMenuResult | undefined = undefined;
-  // @State menu_showMenu: boolean = false;
-  //
-  // /**
-  //  * Adapted from Huawei HarmonyOS Dev website example code
-  //  * https://developer.huawei.com/consumer/cn/doc/harmonyos-references/ts-basic-components-web#oncontextmenushow9
-  //  * */
-  // @Builder
-  // // 构建自定义菜单及触发功能接口
-  // MenuBuilder() {
-  //   // 以垂直列表形式显示的菜单。
-  //   Menu() {
-  //     // 展示菜单Menu中具体的item菜单项。
-  //     MenuItem({
-  //       content: $r('app.string.Menu_copy'),
-  //     })
-  //       .width(100)
-  //       .height(50)
-  //       .onClick(() => {
-  //         this.menu_result?.copy();
-  //         this.menu_showMenu = false;
-  //       })
-  //     MenuItem({
-  //       content: $r('app.string.Menu_select_all'),
-  //     })
-  //       .width(100)
-  //       .height(50)
-  //       .onClick(() => {
-  //         this.menu_result?.selectAll();
-  //         this.menu_showMenu = false;
-  //       })
-  //     MenuItem({
-  //       content: $r('app.string.Menu_cut'),
-  //     })
-  //       .width(100)
-  //       .height(50)
-  //       .onClick(() => {
-  //         this.menu_result?.cut();
-  //         this.menu_showMenu = false;
-  //       })
-  //       .enabled(this.menu_editable)
-  //     MenuItem({
-  //       content: $r('app.string.Menu_paste'),
-  //     })
-  //       .width(100)
-  //       .height(50)
-  //       .onClick(() => {
-  //         this.menu_result?.paste();
-  //         this.menu_showMenu = false;
-  //       })
-  //       .enabled(this.menu_editable)
-  //     MenuItem({
-  //       content: $r('app.string.Menu_copy_link'),
-  //     })
-  //       .width(100)
-  //       .height(50)
-  //       .onClick(() => {
-  //         copy(this.menu_linkUrl);
-  //         this.menu_showMenu = false;
-  //       })
-  //       .enabled(this.menu_has_link)
-  //     MenuItem({
-  //       content: $r('app.string.Menu_copy_image'),
-  //     })
-  //       .width(100)
-  //       .height(50)
-  //       .onClick(() => {
-  //         this.menu_result?.copyImage();
-  //         this.menu_showMenu = false;
-  //       })
-  //       .enabled(this.menu_has_image)
-  //     MenuItem({
-  //       content: $r('app.string.Menu_download_image'),
-  //     })
-  //       .width(100)
-  //       .height(50)
-  //       .onClick(() => {
-  //         // Download menu
-  //         this.download(this.menu_imageLink, this.now_global_custom_UA, '', -1, 'image');
-  //         this.menu_showMenu = false;
-  //       })
-  //       .enabled(this.menu_has_image)
-  //   }
-  //
-  //   // .width(150)
-  //   // .height(350)
-  // }
+  aboutToAppear(): void {
+    set_continuable(this.getUIContext().getHostContext() as common.UIAbilityContext, false);
+  }
 
   build() {
     RelativeContainer() {
@@ -339,9 +245,10 @@ struct meowWebView {
     setTimeout(() => {
       sync_all_tabs_list_info(this.storage);
 
-      this.register_harmonyShare_gesture_sender();
+      this.on_current_url_change();
 
-      this.register_harmonyShare_knock_sender();
+      // this.register_harmonyShare_gesture_sender();
+      // this.register_harmonyShare_knock_sender();
 
       this.init_OK = true;
     }, 10);
@@ -368,7 +275,6 @@ struct meowWebView {
     } catch (e) {
       console.error('[on_current_url_change] Failed: ' + e);
     }
-
   }
 
   on_focus_change() {

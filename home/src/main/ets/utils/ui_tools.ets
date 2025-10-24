@@ -98,7 +98,10 @@ export function is_address_continuable(url: string, storage?: LocalStorage) {
   let result = true;
   if (url.substring(0, 7) == 'meow://') {
     // Is internal page
+    console.log('[is_address_continuable] False! [' + url + '].');
     result = false
+  } else {
+    console.log('[is_address_continuable] True! [' + url + '].');
   }
   storage?.setOrCreate('sharable_continuable', result);
   return result;
@@ -110,7 +113,7 @@ export function is_address_continuable(url: string, storage?: LocalStorage) {
  * @param con
  * */
 export function set_continuable(context: common.UIAbilityContext, con: boolean) {
-  console.log('[set_continuable] ' + con);
+  // console.log('[set_continuable] ' + con);
   let state = con ? AbilityConstant.ContinueState.ACTIVE : AbilityConstant.ContinueState.INACTIVE;
   context.setMissionContinueState(state).catch((e: BusinessError) => {
     console.error('[set_continuable] Failed: ' + JSON.stringify(e));
