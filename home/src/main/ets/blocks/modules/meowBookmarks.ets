@@ -12,7 +12,6 @@ import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleBut
 import lazy woofSelectBookmarksPath from '../../dialogs/prompts/woofSelectBookmarksPath';
 import { current_tabs_style_is_horizontal, storage_of_id } from '../../utils/ui_tools';
 import linysExpandableCardItem from '../../components/layouts/linysExpandableCardItem';
-import { bookmarks } from '../../processes/init_process';
 
 @Component
 struct meowBookmarks {
@@ -291,9 +290,9 @@ struct meowBookmarks {
     .justifyContent(FlexAlign.End)
     .width("100%")
     .height("100%")
-    .onAppear(async () => {
+    .onAppear(() => {
       // console.log("[Meow][meowBookmarks] Bookmarks READY")
-      await this.on_appear();
+      this.on_appear();
     })
     .gesture(
       PanGesture({ direction: PanDirection.Left | PanDirection.Right })

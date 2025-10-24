@@ -274,6 +274,9 @@ struct meowTabsVertical {
 
         // Init extension_area
         setInterval(() => {
+          if (!this.showing_tabs) {
+            return;
+          }
           this.on_timer();
         }, 10)
         // Set Task to calculate animation

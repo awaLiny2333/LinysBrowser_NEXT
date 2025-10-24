@@ -7,7 +7,7 @@ import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { bookmark, bunch_of_bookmarks, folder, unified_item } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import { window } from '@kit.ArkUI';
-import { is_address_continuable, set_continuable, storage_of_id } from '../../utils/ui_tools';
+import { is_address_continuable, run_time, set_continuable, storage_of_id } from '../../utils/ui_tools';
 import lazy { harmonyShare, systemShare } from '@kit.ShareKit';
 import lazy { webview } from '@kit.ArkWeb';
 import lazy { print } from '@kit.BasicServicesKit';
@@ -149,7 +149,37 @@ struct meowWebView {
   httpAuth: boolean = false;
 
   aboutToAppear(): void {
+    console.log(' \n[meowWebView][aboutToAppear] this.bunch_of_tabs.my_id: ' + this.bunch_of_tabs.my_id + '\n ');
+
     set_continuable(this.getUIContext().getHostContext() as common.UIAbilityContext, false);
+
+    // Set image for homepage
+    if (!this.homepage_background) {
+      console.log("[Meow][meowAppSettings] Start loading homepage background! (" + run_time(this.storage) + " ms)");
+      sandbox_read_arrayBuffer('homepage_background_arrayBuffer')?.then((homepage_background_array_buffer) => {
+        if (homepage_background_array_buffer) {
+          this.homepage_background = arrayBuffer_2_pixelMap(homepage_background_array_buffer);
+          console.log("[Meow][meowAppSettings] Finished loading homepage background! (" + run_time(this.storage) + " ms)");
+        }
+      });
+    } else {
+      console.log("[Meow][meowAppSettings] Using loaded homepage background! (" + run_time(this.storage) + " ms)");
+    }
+
+    // Init download delegate
+    this.bunch_of_downloads.init_delegate(this.storage);
+
+    // init OK
+    setTimeout(() => {
+      sync_all_tabs_list_info(this.storage);
+
+      this.on_current_url_change();
+
+      // this.register_harmonyShare_gesture_sender();
+      // this.register_harmonyShare_knock_sender();
+
+      this.init_OK = true;
+    }, 10);
   }
 
   build() {
@@ -228,30 +258,7 @@ struct meowWebView {
   // Events
 
   on_appear() {
-    console.log(' \n[meowWebView][aboutToAppear] this.bunch_of_tabs.my_id: ' + this.bunch_of_tabs.my_id + '\n ');
 
-    // Init download delegate
-    this.bunch_of_downloads.init_delegate(this.storage);
-
-    // Set image for homepage
-    sandbox_read_arrayBuffer('homepage_background_arrayBuffer')?.then((homepage_background_array_buffer) => {
-      if (homepage_background_array_buffer) {
-        this.homepage_background = arrayBuffer_2_pixelMap(homepage_background_array_buffer);
-        console.log("[Meow][meowAppSettings] Finished loading homepage background!");
-      }
-    });
-
-    // init OK
-    setTimeout(() => {
-      sync_all_tabs_list_info(this.storage);
-
-      this.on_current_url_change();
-
-      // this.register_harmonyShare_gesture_sender();
-      // this.register_harmonyShare_knock_sender();
-
-      this.init_OK = true;
-    }, 10);
   }
 
   on_current_url_change() {
@@ -354,6 +361,7 @@ struct meowWebView {
   }
 
   async general_harmonyShare_current_tab(sharableTarget: harmonyShare.SharableTarget) {
+    let t0 = Date.now();
 
     let img_buffer = sandbox_read_arrayBuffer_sync('homepage_background_arrayBuffer');
     let thumbnail_buffer: ArrayBuffer = new ArrayBuffer(8);
@@ -389,9 +397,9 @@ struct meowWebView {
     }
 
     if (share_success) {
-      console.log('[meowWebView] harmonyShare: URL: ' + this.current_url);
+      console.log('[meowWebView] harmonyShare: URL: ' + this.current_url + ' (' + (Date.now() - t0) + ' ms)');
     } else {
-      console.error('[meowWebView] harmonyShare FAILED: URL: ' + this.current_url);
+      console.error('[meowWebView] harmonyShare FAILED: URL: ' + this.current_url + ' (' + (Date.now() - t0) + ' ms)');
     }
   }
 

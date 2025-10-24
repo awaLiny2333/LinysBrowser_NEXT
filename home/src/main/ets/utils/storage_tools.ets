@@ -429,16 +429,17 @@ export function sandbox_read_arrayBuffer(file_path_name: string, context_filesDi
     // file doesn't exist
     return undefined;
   }
-  let file = fs.openSync(file_path_name, fs.OpenMode.READ_WRITE);
-  let stat = fs.statSync(file_path_name);
-  let size = stat.size;
-  let buf = new ArrayBuffer(size);
-  return fs.read(file.fd, buf).then((l) => {
-    let readLen = l;
-    console.info("[sandbox_open] read file data succeed, Length: " + readLen.toString());
-    fs.close(file);
-    let result = buf.slice(0, readLen);
-    return result;
+  return fs.open(file_path_name, fs.OpenMode.READ_WRITE).then((file) => {
+    return fs.stat(file_path_name).then((stat) => {
+      let buf = new ArrayBuffer(stat.size);
+      return fs.read(file.fd, buf).then((l) => {
+        let readLen = l;
+        console.info("[sandbox_open] read file data succeed, Length: " + readLen.toString());
+        let result = buf.slice(0, readLen);
+        fs.close(file);
+        return result;
+      })
+    });
   })
 }
 
@@ -677,6 +678,8 @@ export async function compress_image_arrayBuffer(img_buffer: ArrayBuffer, qua: n
   }).catch((error: BusinessError) => {
     console.error(`[compress_image_arrayBuffer] Failed to pack the image.code ${error.code},message is ${error.message}`);
   });
+
+  pictureObj.release();
 
   t = Date.now() - t;
   console.log('[compress_image_arrayBuffer] Finished! (' + t + ' ms)');

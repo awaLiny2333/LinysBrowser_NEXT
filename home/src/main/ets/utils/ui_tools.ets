@@ -123,6 +123,15 @@ export function set_continuable(context: common.UIAbilityContext, con: boolean) 
 // Environment
 
 /**
+ * Returns the window run time in ms.
+ * @param storage The LocalStorage.
+ * @returns Time in ms.
+ * */
+export function run_time(storage: LocalStorage) {
+  return Date.now() - (storage.get('START_TIME') as number);
+}
+
+/**
  * Enables the listeners for avoid area change.
  * @param windowClass The window.Window object.
  * @param storage The LocalStorage of that window.

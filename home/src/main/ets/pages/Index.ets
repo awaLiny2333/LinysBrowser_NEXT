@@ -22,6 +22,7 @@ import {
   last_storage,
   new_window,
   pin_to_top,
+  run_time,
   storage_of_id,
   update_window_decor_height,
   window_index_of_id,
@@ -176,25 +177,30 @@ struct Index {
 
     update_window_decor_height(this.my_window_id);
 
+    console.log(`[Meow][Index] Load Index! (${run_time(this.storage)} ms)`);
+
     setTimeout(async () => {
       let time_on_bookmarks = 0;
       try {
-        time_on_bookmarks = await bookmarks(Date.now());
+        time_on_bookmarks = await bookmarks(this.storage);
       } catch (e) {
         console.error('[Meow][Index] INIT bookmarks failed: ' + e);
       }
-      this.delay_p0 = Math.max(this.delay_p0 - time_on_bookmarks, 0);
+      let justified_delay_p0 = Math.max(this.delay_p0 - time_on_bookmarks, 0);
 
       // Trigger delayed load
       setTimeout(() => {
         this.delayed_load_p0 = true;
+        console.log(`[Meow][Index] Delay P0! (${run_time(this.storage)} ms)`);
         setTimeout(() => {
           this.delayed_load_p1 = true;
+          console.log(`[Meow][Index] Delay P1! (${run_time(this.storage)} ms)`);
           setTimeout(() => {
             this.delayed_load_p2 = true;
+            console.log(`[Meow][Index] Delay P2! (${run_time(this.storage)} ms)`);
           }, this.delay_p2);
         }, this.delay_p1);
-      }, this.delay_p0);
+      }, justified_delay_p0);
 
       // Reopen tabs panel
       // this.bunch_of_settings.get('status_tabs_open').then((status_tabs_open) => {

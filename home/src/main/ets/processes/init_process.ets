@@ -11,6 +11,7 @@ import { kv_store_get } from '../utils/kv_store_tools';
 import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
+import { run_time } from '../utils/ui_tools';
 
 /**
  * Initializes all things.
@@ -18,9 +19,6 @@ import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
  * Should be executed in HomeAbility.ets on each launch of entire app.
  */
 export async function meow_init_main(context: common.UIAbilityContext, storage: LocalStorage) {
-  let t0 = Date.now();
-  let t = 0;
-
   // Get and set app version info
   bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION).then((bundleInfo) => {
     console.log('[Meow][history] Saving app version: ' + bundleInfo.versionName + "(" + bundleInfo.versionCode.toString() + ")");
@@ -35,25 +33,22 @@ export async function meow_init_main(context: common.UIAbilityContext, storage: 
   clear_harmonyShare_temp_folder(context);
 
   // Hosts
-  await settings(t0);
+  await settings(storage);
   // await bookmarks(t0);
 
   // Placeholder
   AppStorage.setOrCreate('bunch_of_bookmarks', new bunch_of_bookmarks("Bookmarks~Meow"));
 
-  await restore_tabs(t0);
-  tabs(t0, storage);
-  history(t0);
-  downloads(t0);
-  user_agents(t0);
-  search_engines(t0);
+  await restore_tabs(storage);
+  tabs(storage);
+  history(storage);
+  downloads(storage);
+  user_agents(storage);
+  search_engines(storage);
 
   AppStorage.setOrCreate('bunch_of_key_shortcuts', new bunch_of_key_shortcuts());
-  t = Date.now() - t0;
-  console.log('[init] bunch_of_init! (' + t + ' ms)')
 
-  t = Date.now() - t0;
-  console.log('[Meow][init] MAIN OK. (' + t + ' ms)');
+  console.log('[Meow][init] MAIN OK. (' + run_time(storage) + ' ms)');
 }
 
 /**
@@ -65,7 +60,7 @@ export function meow_init_sub(context: common.UIAbilityContext, storage: LocalSt
   let t0 = Date.now();
   let t = 0;
 
-  tabs(t0, storage);
+  tabs(storage);
 
   t = Date.now() - t0;
   console.log('[Meow][init] SUB OK. (' + t + ' ms)');
@@ -137,7 +132,7 @@ function clear_profile(context: common.UIAbilityContext) {
  * Inits both settings and tabs.
  * @param t0 Start time of the whole initialization process.
  * */
-async function settings(t0: number) {
+async function settings(storage: LocalStorage) {
   await bunch_of_settings.init();
 
   // DEV_MODE
@@ -250,8 +245,7 @@ async function settings(t0: number) {
   AppStorage.setOrCreate('resource_monitor', bunch_of_settings.get('resource_monitor') as boolean);
 
   // Timer
-  let t = Date.now() - t0;
-  console.log('[init] Settings OK. (' + t + ' ms)');
+  console.log('[init] Settings OK. (' + run_time(storage) + ' ms)');
 }
 
 /**
@@ -261,7 +255,8 @@ async function settings(t0: number) {
  * @param t0 Start time of the whole initialization process.
  * @returns The time in ms of execution.
  * */
-export async function bookmarks(t0: number) {
+export async function bookmarks(storage: LocalStorage) {
+  let t0 = Date.now();
   let bookmarks = AppStorage.get('bunch_of_bookmarks') as bunch_of_bookmarks;
   bookmarks.init = true;
 
@@ -280,9 +275,8 @@ export async function bookmarks(t0: number) {
   }
 
   // Timer
-  let t = Date.now() - t0;
-  console.log('[Meow][init] Bookmarks OK. (' + t + ' ms)');
-  return t;
+  console.log('[Meow][init] Bookmarks OK. (' + run_time(storage) + ' ms)');
+  return Date.now() - t0;
 }
 
 /**
@@ -291,7 +285,7 @@ export async function bookmarks(t0: number) {
  * MUST BE EXECUTED AFTER INITIALIZATION OF bunch_of_settings!
  * @param t0 Start time of the whole initialization process.
  * */
-async function restore_tabs(t0: number) {
+async function restore_tabs(storage: LocalStorage) {
   // Get Data
   let continue_tabs_count = bunch_of_settings.get('continue_tabs_count') as number;
   let continue_tabs_main_on = bunch_of_settings.get('continue_tabs_main_on') as number;
@@ -313,8 +307,7 @@ async function restore_tabs(t0: number) {
   console.log("[Meow][init] Got continue_tabs_sub_on: " + continue_tabs_sub_on);
 
   // Timer
-  let t = Date.now() - t0;
-  console.log('[init] Restore OK. (' + t + ' ms)');
+  console.log('[init] Restore OK. (' + run_time(storage) + ' ms)');
 }
 
 /**
@@ -323,7 +316,7 @@ async function restore_tabs(t0: number) {
  * MUST BE EXECUTED AFTER INITIALIZATION OF bunch_of_settings!
  * @param t0 Start time of the whole initialization process.
  * */
-function tabs(t0: number, storage: LocalStorage) {
+function tabs(storage: LocalStorage) {
   let tabs = new bunch_of_tabs(false, storage.get('my_window_id') as string);
   // AppStorage.setOrCreate('bunch_of_tabs', tabs);
   storage.setOrCreate('bunch_of_tabs', tabs);
@@ -351,15 +344,14 @@ function tabs(t0: number, storage: LocalStorage) {
   bunch_of_tabs.home_url = home_url;
 
   // Timer
-  let t = Date.now() - t0;
-  console.log('[init] Tabs OK. (' + t + ' ms) id: ' + tabs.my_id);
+  console.log('[init] Tabs OK. (' + run_time(storage) + ' ms) id: ' + tabs.my_id);
 }
 
 /**
  * Inits history.
  * @param t0 Start time of the whole initialization process.
  * */
-function history(t0: number) {
+function history(storage: LocalStorage) {
   AppStorage.setOrCreate('bunch_of_history', new bunch_of_history());
 
   // Initialize statuses
@@ -371,22 +363,20 @@ function history(t0: number) {
   AppStorage.setOrCreate('history_index_saving_progress', '');
 
   // Timer
-  let t = Date.now() - t0;
-  console.log('[init] History OK. (' + t + ' ms)');
+  console.log('[init] History OK. (' + run_time(storage) + ' ms)');
 }
 
 /**
  * Inits downloads.
  * @param t0 Start time of the whole initialization process.
  * */
-function downloads(t0: number) {
+function downloads(storage: LocalStorage) {
   let downloads = new bunch_of_downloads();
   downloads.delete_all_downloaded_files_sync();
   AppStorage.setOrCreate('bunch_of_downloads', downloads);
 
   // Timer
-  let t = Date.now() - t0;
-  console.log('[init] Downloads OK. (' + t + ' ms)');
+  console.log('[init] Downloads OK. (' + run_time(storage) + ' ms)');
 }
 
 /**
@@ -395,15 +385,14 @@ function downloads(t0: number) {
  * MUST BE EXECUTED AFTER INITIALIZATION OF bunch_of_settings!
  * @param t0 Start time of the whole initialization process.
  * */
-function user_agents(t0: number) {
+function user_agents(storage: LocalStorage) {
   let custom_user_agents = bunch_of_settings.get('custom_user_agents') as string;
   let user_agent_selected = bunch_of_settings.get('custom_user_agents_selected_index') as number;
   bunch_of_user_agents.import_string(custom_user_agents);
   bunch_of_user_agents.set_global_UA(user_agent_selected);
 
   // Timer
-  let t = Date.now() - t0;
-  console.log('[init] UA OK. (' + t + ' ms)');
+  console.log('[init] UA OK. (' + run_time(storage) + ' ms)');
 }
 
 /**
@@ -412,13 +401,12 @@ function user_agents(t0: number) {
  * MUST BE EXECUTED AFTER INITIALIZATION OF bunch_of_settings!
  * @param t0 Start time of the whole initialization process.
  * */
-function search_engines(t0: number) {
+function search_engines(storage: LocalStorage) {
   let custom_search_engines = bunch_of_settings.get('custom_search_engines') as string;
   let search_engines_selected = bunch_of_settings.get('custom_search_engines_selected_index') as number;
   bunch_of_search_engines.import_string(custom_search_engines);
   bunch_of_search_engines.set_global_SE(search_engines_selected);
 
   // Timer
-  let t = Date.now() - t0;
-  console.log('[init] SE OK. (' + t + ' ms)');
+  console.log('[init] SE OK. (' + run_time(storage) + ' ms)');
 }
