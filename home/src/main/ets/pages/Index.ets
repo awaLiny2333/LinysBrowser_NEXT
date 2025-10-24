@@ -31,6 +31,7 @@ import linysText from '../components/texts/linysText';
 import linysWindowButton from '../components/buttons/linysWindowButton';
 import { cancel_in_page_search, is_current_in_page_searching } from '../processes/tabs_actions';
 import woofHistory from '../dialogs/managers/woofHistory';
+import { bookmarks } from '../processes/init_process';
 
 // @Entry({ useSharedStorage: true })
 @Entry(last_storage())
@@ -81,9 +82,9 @@ struct Index {
   @LocalStorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
   delay_p0: number = 70;
   @LocalStorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
-  delay_p1: number = 80;
+  delay_p1: number = 10;
   @LocalStorageLink('delayed_load_p2') delayed_load_p2: boolean = false;
-  delay_p2: number = 90;
+  delay_p2: number = 10;
   /**
    * Web Statuses */
   @LocalStorageLink('current_loading_progress') current_loading_progress: number = 0;
@@ -175,20 +176,31 @@ struct Index {
 
     update_window_decor_height(this.my_window_id);
 
-    // Trigger delayed load
-    setTimeout(() => {
-      this.delayed_load_p0 = true;
-    }, this.delay_p0);
-    setTimeout(() => {
-      this.delayed_load_p1 = true;
+    setTimeout(async () => {
+      let time_on_bookmarks = 0;
+      try {
+        time_on_bookmarks = await bookmarks(Date.now());
+      } catch (e) {
+        console.error('[Meow][Index] INIT bookmarks failed: ' + e);
+      }
+      this.delay_p0 = Math.max(this.delay_p0 - time_on_bookmarks, 0);
+
+      // Trigger delayed load
+      setTimeout(() => {
+        this.delayed_load_p0 = true;
+        setTimeout(() => {
+          this.delayed_load_p1 = true;
+          setTimeout(() => {
+            this.delayed_load_p2 = true;
+          }, this.delay_p2);
+        }, this.delay_p1);
+      }, this.delay_p0);
+
       // Reopen tabs panel
       // this.bunch_of_settings.get('status_tabs_open').then((status_tabs_open) => {
       //   AppStorage.setOrCreate('showing_tabs', status_tabs_open as boolean);
       // })
-    }, this.delay_p1);
-    setTimeout(() => {
-      this.delayed_load_p2 = true;
-    }, this.delay_p2);
+    }, 10) // Delayed loading
   }
 
   onBackPress(): boolean {

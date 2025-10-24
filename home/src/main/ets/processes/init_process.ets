@@ -259,6 +259,7 @@ async function settings(t0: number) {
  *
  * Inits and loads bookmarks from disk.
  * @param t0 Start time of the whole initialization process.
+ * @returns The time in ms of execution.
  * */
 export async function bookmarks(t0: number) {
   let bookmarks = AppStorage.get('bunch_of_bookmarks') as bunch_of_bookmarks;
@@ -281,6 +282,7 @@ export async function bookmarks(t0: number) {
   // Timer
   let t = Date.now() - t0;
   console.log('[Meow][init] Bookmarks OK. (' + t + ' ms)');
+  return t;
 }
 
 /**

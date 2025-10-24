@@ -234,6 +234,7 @@ struct meowMoreOptions {
 
   build() {
     Scroll() {
+      // if (true) {
       Column({ space: 10 }) {
         Row() // To get more space
           .visibility(this.current_in_page_searching_stats_total > 0 ? Visibility.None : Visibility.Visible)
@@ -306,8 +307,7 @@ struct meowMoreOptions {
 
           Row({ space: 10 }) {
             linysText({
-              text: this.current_in_page_searching_stats_current.toString() + '／' +
-              this.current_in_page_searching_stats_total.toString()
+              text: this.current_in_page_searching_stats_current.toString() + '／' + this.current_in_page_searching_stats_total.toString()
             })
               .animation(animation_default())
             linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_up' })
@@ -353,39 +353,40 @@ struct meowMoreOptions {
         .padding(10)
         .animation(animation_default())
 
-        Row({ space: 10 }) {
-          linysText({
-            text: '#' + this.windowIds.indexOf(this.my_window_id) + '｜' + this.my_window_alias
-          }) // Current my_window_alias
-            .padding({ left: 5 })
-            .layoutWeight(1)
-            .clickEffect(click_effect_default())
-            .onClick(() => {
-              this.rename_window_woofPrompt_control.open();
-            })
+        if (this.showing_more_options) {
+          Row({ space: 10 }) {
+            linysText({
+              text: '#' + this.windowIds.indexOf(this.my_window_id) + '｜' + this.my_window_alias
+            }) // Current my_window_alias
+              .padding({ left: 5 })
+              .layoutWeight(1)
+              .clickEffect(click_effect_default())
+              .onClick(() => {
+                this.rename_window_woofPrompt_control.open();
+              })
 
-          linysSymbol({
-            symbol_glyph_target: 'sys.symbol.pencil_and_card',
-          }) // Edit window name
-            .onClick(() => {
-              this.rename_window_woofPrompt_control.open();
-            })
-          linysSymbol({
-            // symbol_glyph_target: 'sys.symbol.plus_square_dashed_on_square',
-            symbol_glyph_target: 'sys.symbol.plus',
-          }) // New window
-            .onClick(() => {
-              new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), default_new_window_name());
-            })
-        } // Window man
-        .visibility(this.visible_when_not_in_page_search())
-        .animation(animation_default())
-        .opacity(0.8)
-        // .width( "100%")
-        .constraintSize({ maxWidth: 500 })
-        .backgroundColor($r('sys.color.comp_background_tertiary'))
-        .borderRadius(12)
-        .padding(10)
+            linysSymbol({
+              symbol_glyph_target: 'sys.symbol.pencil_and_card',
+            }) // Edit window name
+              .onClick(() => {
+                this.rename_window_woofPrompt_control.open();
+              })
+            linysSymbol({
+              // symbol_glyph_target: 'sys.symbol.plus_square_dashed_on_square',
+              symbol_glyph_target: 'sys.symbol.plus',
+            }) // New window
+              .onClick(() => {
+                new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), default_new_window_name());
+              })
+          } // Window man
+          .visibility(this.visible_when_not_in_page_search())
+          .animation(animation_default())
+          .opacity(0.8)
+          .constraintSize({ maxWidth: 500 })
+          .backgroundColor($r('sys.color.comp_background_tertiary'))
+          .borderRadius(12)
+          .padding(10)
+        }
 
         Scroll() {
           Row({ space: 10 }) {
@@ -454,57 +455,60 @@ struct meowMoreOptions {
               })
           } // Small buttons
           .justifyContent(FlexAlign.End)
-        }
+        } // Buttons
         .scrollable(ScrollDirection.Horizontal)
         .scrollBar(BarState.Off)
         .edgeEffect(EdgeEffect.Spring)
         .visibility(this.visible_when_not_in_page_search())
         .animation(animation_default())
 
-        Row() {
+        if (this.showing_more_options) {
+          // Row() {
           meowDebug()
-        } // Debug
-        .opacity(0.8)
-        .visibility(this.resource_monitor
-          ? (this.visible_when_not_in_page_search())
-          : Visibility.None)
-        .animation(animation_default())
+          // } // Debug
+            .opacity(0.8)
+            .visibility(this.resource_monitor
+              ? (this.visible_when_not_in_page_search())
+              : Visibility.None)
+            .animation(animation_default())
 
-        linysProgressInfo({
-          notification: $r('app.string.Settings_experience_history_index_loading_index_from_disk'),
-          progress: this.history_index_loading_progress,
-        })
-          .opacity(0.8)
-          .visibility(this.history_index_loading_progress != "" ? (this.visible_when_not_in_page_search()) : Visibility.None)
-          .animation(animation_default())
+          linysProgressInfo({
+            notification: $r('app.string.Settings_experience_history_index_loading_index_from_disk'),
+            progress: this.history_index_loading_progress,
+          })
+            .opacity(0.8)
+            .visibility(this.history_index_loading_progress != "" ? (this.visible_when_not_in_page_search()) : Visibility.None)
+            .animation(animation_default())
 
-        linysProgressInfo({
-          notification: $r('app.string.Settings_experience_history_index_reindexing'),
-          progress: this.reindexing_history_progress,
-        })
-          .opacity(0.8)
-          .visibility(this.reindexing_history_progress != "" ? (this.visible_when_not_in_page_search()) : Visibility.None)
-          .animation(animation_default())
+          linysProgressInfo({
+            notification: $r('app.string.Settings_experience_history_index_reindexing'),
+            progress: this.reindexing_history_progress,
+          })
+            .opacity(0.8)
+            .visibility(this.reindexing_history_progress != "" ? (this.visible_when_not_in_page_search()) : Visibility.None)
+            .animation(animation_default())
 
-        linysProgressInfo({
-          notification: $r('app.string.Settings_experience_history_index_saving_to_disk'),
-          progress: this.history_index_saving_progress,
-        })
-          .opacity(0.8)
-          .visibility(this.history_index_saving_progress != "" ? (this.visible_when_not_in_page_search()) : Visibility.None)
-          .animation(animation_default())
-
+          linysProgressInfo({
+            notification: $r('app.string.Settings_experience_history_index_saving_to_disk'),
+            progress: this.history_index_saving_progress,
+          })
+            .opacity(0.8)
+            .visibility(this.history_index_saving_progress != "" ? (this.visible_when_not_in_page_search()) : Visibility.None)
+            .animation(animation_default())
+        }
       } // Title Bar of More Options
       .alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
       .animation(animation_default())
       .width("100%")
+
+      // }
     } // More Options
-    .margin({ left: 15, right: 15 })
-    .align(Alignment.Bottom)
-    .borderRadius(10)
     .layoutWeight(this.showing_more_options ? 1 : undefined)
     .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
     .animation(animation_default())
+    .margin({ left: 15, right: 15 })
+    .align(Alignment.Bottom)
+    .borderRadius(10)
     .scrollable(ScrollDirection.Vertical)
     .edgeEffect(EdgeEffect.Spring)
     .scrollBar(BarState.Off)

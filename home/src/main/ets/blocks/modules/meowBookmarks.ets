@@ -338,13 +338,7 @@ struct meowBookmarks {
 
   // Event
 
-  async on_appear() {
-    try {
-      await bookmarks(Date.now());
-    } catch (e) {
-      console.error('[Meow] INIT bookmarks failed: ' + e);
-    }
-
+  on_appear() {
     this.refresh_content_view();
 
     setInterval(() => {

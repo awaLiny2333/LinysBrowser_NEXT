@@ -33,6 +33,8 @@ function WebBuilder(pk: tab_info_packed) {
     .imageAccess(!pk.tab_disable_image)
     .onlineImageAccess(!pk.tab_disable_image) // TODO: Do these update with change?
     .onSearchResultReceive((result) => {
+      console.log('[Meow][onSearchResultReceive]! ' + Math.min(result.numberOfMatches, result.activeMatchOrdinal + 1));
+      console.log('[Meow][onSearchResultReceive]! ' + result.numberOfMatches);
       pk.storage.set('current_in_page_searching_stats_current', Math.min(result.numberOfMatches, result.activeMatchOrdinal + 1));
       pk.storage.set('current_in_page_searching_stats_total', result.numberOfMatches);
       let tabs = pk.storage.get('bunch_of_tabs') as bunch_of_tabs;
