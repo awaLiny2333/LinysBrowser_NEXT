@@ -36,8 +36,6 @@ struct meowTabsVertical {
   @LocalStorageLink('showing_tabs') showing_tabs: boolean = false;
   @LocalStorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
   @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
-  @LocalStorageLink('search_input') search_input: string = "ଘ*(੭*ˊᵕˋ)੭*";
-  @LocalStorageProp('is_search_input_typing') is_search_input_typing: boolean = false;
   @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
   // Surf
   @StorageLink('home_url') home_url: string = '';
@@ -45,26 +43,19 @@ struct meowTabsVertical {
   @StorageLink('start_up_option') start_up_option: string = '';
   // Controls
   @LocalStorageLink('tab_titles') tab_titles: string[] = []
-  @LocalStorageLink('tab_urls') tab_urls: string[] = [];
   @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
   // Other Info / Statuses
-  @State recover_tabs_finished: boolean = false;
+  @State pre_recover_tabs_finished: boolean = false;
   @LocalStorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
   @StorageLink('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
   // Delay
   @LocalStorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
   // Animation info
   @State my_visibility: Visibility = Visibility.Hidden;
-  tab_height_default: number = 42;
   scroll_controller: Scroller = new Scroller();
-  @State extension_area: number[] = [];
-  @State offset_area: number[] = [];
-  @State count_down_for_switching_back_to_spring: number = 0;
-  @State count_down_for_scrolling_to_bottom: number = 0;
   @State scroll_area_height: number = 0;
-  @State scroll_animation_enabled: boolean = true;
+  @State need_help_scroll: boolean = true;
   @State paralleow_description_height: number = 0;
-  @StorageLink('tab_animation') tab_animation: AnimateParam = animation_default();
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('preferred_hand_reverse_tabs_panel') preferred_hand_reverse_tabs_panel: boolean = false;
@@ -86,6 +77,8 @@ struct meowTabsVertical {
   @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   // Pan Gesture
   pan_x: number = 0;
+  // Timeout
+  scroll_2_bottom_timeout_handle_id: number | undefined = undefined;
 
   aboutToAppear() {
     let t0 = Date.now();
@@ -177,7 +170,7 @@ struct meowTabsVertical {
       check_want(this.want_uri, this.want_action, this.want_type, this.storage);
     }
 
-    this.recover_tabs_finished = true;
+    this.pre_recover_tabs_finished = true;
 
     t = Date.now() - t0;
     console.log('[Meow][init][meowTabsVertical] Tabs OK. (' + t + ' ms)');
@@ -191,27 +184,18 @@ struct meowTabsVertical {
             ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
               TabButton({
                 Label: Label,
-                extension_area: this.extension_area,
-                offset_area: this.offset_area,
               })
             }, (Label: tab_label) => Label.timestamp.toString())
           }
           .width("100%")
           .onAreaChange((_o, n) => {
-            let my_height = n.height as number;
-            if (my_height > this.scroll_area_height) {
-              // Scroll Enabled, animation disabled
-              this.scroll_animation_enabled = false;
-            } else {
-              // Scroll Disabled, animation enabled
-              this.scroll_animation_enabled = true;
-            }
+            this.need_help_scroll = (n.height as number) > this.scroll_area_height;
           })
 
         } // Tab Buttons List
         .direction(Direction.Rtl)
         .align(Alignment.Bottom)
-        .edgeEffect(this.count_down_for_switching_back_to_spring == 0 ? EdgeEffect.Spring : EdgeEffect.None)
+        .edgeEffect(EdgeEffect.Spring)
         .width("100%")
         .borderRadius(10)
         .height(this.scroll_area_height - (this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? this.paralleow_description_height : 0))
@@ -264,23 +248,7 @@ struct meowTabsVertical {
       .width("100%")
       .height("100%")
       .onAppear(() => {
-        this.extension_area = [];
-        this.offset_area = [];
-        for (let i = 0; i < this.bunch_of_tabs.Tabs.length; i++) {
-          this.extension_area.push(0);
-          this.offset_area.push(0);
-        }
         this.my_visibility = Visibility.Visible;
-
-        // Init extension_area
-        setInterval(() => {
-          if (!this.showing_tabs) {
-            return;
-          }
-          this.on_timer();
-        }, 10)
-        // Set Task to calculate animation
-        // console.log("[Meow][meowTabs] Tabs Panel READY")
       })
       .onAreaChange((_o, n) => {
         this.scroll_area_height = n.height as number - 60;
@@ -355,21 +323,16 @@ struct meowTabsVertical {
     }
 
     // Animation part
-    this.extension_area.push(0);
-
-    if (this.scroll_animation_enabled) {
-      for (let index = 0; index < this.offset_area.length; index++) {
-        this.offset_area[index] += this.tab_height_default + 5;
-        // Move downward for up going animation
+    if (this.need_help_scroll) {
+      if (this.scroll_2_bottom_timeout_handle_id !== undefined) {
+        // Cancel existing timeout;
+        clearTimeout(this.scroll_2_bottom_timeout_handle_id);
+        this.scroll_2_bottom_timeout_handle_id = undefined;
       }
-      // Set offset for the new tab
-      this.offset_area.push(this.tab_height_default + 1000)
-    } else {
-      this.offset_area.push(this.tab_height_default)
+      this.scroll_2_bottom_timeout_handle_id = setTimeout(() => {
+        this.scroll_controller.scrollEdge(Edge.Bottom);
+      }, 500);
     }
-
-    // Scroll to the new tab later
-    this.count_down_for_scrolling_to_bottom = 30;
 
     if (save_to_settings) {
       this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][new_tab]');
@@ -395,7 +358,7 @@ struct meowTabsVertical {
       console.error('[TabsVertical][switch_tab][a] ' + e);
     }
     // Update history
-    if (this.recover_tabs_finished) {
+    if (this.pre_recover_tabs_finished) {
       this.bunch_of_tabs.update_backward_forward_access();
     }
 
@@ -416,13 +379,13 @@ struct meowTabsVertical {
   }
 
   close_tab(target: number, save_to_settings: boolean, move_target_window: number = -1) {
-    if (!this.recover_tabs_finished) {
+    if (!this.pre_recover_tabs_finished) {
       console.error("[Meow][LinysTabs][ERROR] Recover Not OK (" + target + ')!');
       return;
     }
 
     // Some kind of bug, idk why but this is essential when closing tabs quickly
-    if (target >= this.offset_area.length) {
+    if (target >= this.bunch_of_tabs.Tabs.length) {
       console.error("[Meow][LinysTabs][ERROR] Ran into the weird bug of target >= this.offset_area.length");
       return;
     }
@@ -487,25 +450,6 @@ struct meowTabsVertical {
       this.bunch_of_tabs.sub_tab_idx -= 1;
     }
 
-    // Animation part
-    if (target != 0) {
-      this.extension_area[target-1] += this.tab_height_default + this.extension_area[target];
-      // If isn't closing the top most tab
-    }
-    if (this.offset_area.length == 1) {
-      // If closing the last tab
-      this.offset_area[0] = this.tab_height_default + 1000;
-    } else {
-      // If not closing the last tab
-      this.extension_area.splice(target, 1)
-      this.offset_area.splice(target, 1)
-    }
-
-    // Set Scroll spring on edge effect off
-    // So that when closing the last tab, it is always stuck at the bottom
-    // Or we'll have to wait for the spring animation to finish, bringing the last tab button down.
-    this.count_down_for_switching_back_to_spring += 10;
-
     determine_extra_background(this.storage);
 
     if (save_to_settings) {
@@ -547,27 +491,6 @@ struct meowTabsVertical {
 
     if (save_to_settings) {
       this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][switch_paralleow]');
-    }
-  }
-
-  // Utils
-
-  on_timer() {
-    for (let index = 0; index < this.extension_area.length; index++) {
-      this.extension_area[index] += (0 - this.extension_area[index]) / 6;
-      this.offset_area[index] += (0 - this.offset_area[index]) / 5;
-      // Shrink areas
-    }
-    if (this.count_down_for_switching_back_to_spring > 0) {
-      this.count_down_for_switching_back_to_spring -= 1;
-    }
-    // Count down
-    if (this.count_down_for_scrolling_to_bottom > 0) {
-      this.count_down_for_scrolling_to_bottom -= 1;
-      if (this.count_down_for_scrolling_to_bottom == 1) {
-        this.scroll_controller.scrollEdge(Edge.Bottom)
-        // Execute
-      }
     }
   }
 
@@ -715,13 +638,13 @@ struct meowTabsVertical {
 
 export default meowTabsVertical;
 
+// @Reusable // Is this safe? No, this loses the height animation
 @Component
 struct TabButton {
   // Sync
-  @Link offset_area: number[];
-  @Link extension_area: number[];
   @Prop Label: tab_label;
   tab_height_default: number = 42;
+  @State tab_height: number = 0;
   // Public
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @LocalStorageLink('my_window_id') my_window_id: string = '';
@@ -792,11 +715,11 @@ struct TabButton {
           ? this.color_current_font : "transparent"
       })
       .backgroundColor(this.color_current_secondary)
+      // .offset({ y: this.offset_area[this.Label.index_key] })
       .animation(animation_default())
       .width("100%")
       .height(this.tab_height_default)
       .padding(10)
-      .offset({ y: this.offset_area[this.Label.index_key] })
       .alignRules({
         middle: { anchor: "__container__", align: HorizontalAlign.Center },
         top: { anchor: "__container__", align: VerticalAlign.Top }
@@ -823,7 +746,9 @@ struct TabButton {
       .keyboardShortcut(this.bunch_of_tabs.main_tab_idx == this.Label.index_key ? this.bunch_of_key_shortcuts.close_tab.main_key : '',
         this.bunch_of_key_shortcuts.close_tab.modifier)
     }
-    // .opacity(this.bunch_of_tabs.sub_tab_idx == this.Label.index_key ? 0.7 : 1)
+    // .clip(true)
+    .height(this.tab_height)
+    .animation(animation_default())
     .onTouch((event) => {
       if (event.type == TouchType.Up) {
         this.pressing = false;
@@ -834,7 +759,6 @@ struct TabButton {
       }
     })
     .width("100%")
-    .height(this.tab_height_default + this.extension_area[this.Label.index_key])
     .clickEffect(click_effect_default())
     .draggable(true)
     .onDragStart((event) => {
@@ -845,6 +769,9 @@ struct TabButton {
       } catch (e) {
         console.error('[Meow][Tabs] Set drag data failed: ' + e);
       }
+    })
+    .onAppear(() => {
+      this.tab_height = this.tab_height_default;
     })
   }
 }

@@ -188,7 +188,6 @@ function WebBuilder(pk: tab_info_packed) {
         pk.update_loading_progress(progress);
         tabs.update_backward_forward_access();
 
-
         (pk.storage.get('tab_titles') as string[])[pk.index] = title;
         (pk.storage.get('tab_urls') as string[])[pk.index] = url;
         (pk.storage.get('tab_loading_progresses') as number[])[pk.index] = progress;

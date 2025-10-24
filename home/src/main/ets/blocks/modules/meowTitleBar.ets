@@ -73,7 +73,7 @@ struct meowTitleBar {
   @LocalStorageLink('tab_urls') tab_urls: string[] = [];
   @LocalStorageLink('current_url') @Watch('on_current_url_change') current_url: string = "=￣ω￣=";
   @LocalStorageLink('tab_match_domains') tab_match_domains: string[][] = [];
-  @LocalStorageLink('current_match_domain') current_match_domain: string[] = ['scheme', 'domain'];
+  // @LocalStorageLink('current_match_domain') current_match_domain: string[] = ['scheme', 'domain'];
   @LocalStorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0];
   @LocalStorageLink('current_loading_progress') current_loading_progress: number = 0;
   @LocalStorageLink('tab_is_loading') tab_is_loading: boolean[] = [true];
@@ -120,12 +120,16 @@ struct meowTitleBar {
       } // Suggestions
 
       if (this.delayed_load_p1) {
-        meowTabsHorizontal()
-          .visibility(this.visibility_of_horizontal_tabs())
-          .animation(animation_default())
-          .onAreaChange((_o, n) => {
-            this.horizontal_tabs_height = Math.max(0, n.height as number + 10);
-          })
+        Column() {
+          if (this.tablet_mode && this.tabs_style == 'horizontal' || !this.tablet_mode && this.tabs_style_non_tablet_mode == 'horizontal') {
+            meowTabsHorizontal()
+          }
+        }
+        .onAreaChange((_o, n) => {
+          this.horizontal_tabs_height = Math.max(0, n.height as number + 10);
+        })
+        .visibility(this.visibility_of_horizontal_tabs())
+        .animation(animation_default())
       } // Horizontal tabs
 
       if (this.delayed_load_p0) {

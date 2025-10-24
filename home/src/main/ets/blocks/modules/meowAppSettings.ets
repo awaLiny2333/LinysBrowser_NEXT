@@ -1184,8 +1184,13 @@ struct meowAppSettings {
           .layoutWeight(1)
           .animation(animation_default())
           .onScrollIndex((first, last) => {
-            this.scroll_first = first;
-            this.scroll_last = last;
+            // Reduce @State / @Link calls on UI refresh
+            if (this.scroll_first != first) {
+              this.scroll_first = first;
+            }
+            if (this.scroll_last != last) {
+              this.scroll_last = last;
+            }
           })
         }
       } // Main
@@ -1216,11 +1221,13 @@ struct meowAppSettings {
         // Deduce timeout for border highlights
         if (this.settings_scroll_to_highlight_timeout < 0) {
           this.settings_scroll_to_highlight_timeout = 0;
+        } else if (this.settings_scroll_to_highlight_timeout == 0) {
+          // Do nothing
         } else {
-          this.settings_scroll_to_highlight_timeout -= 100;
+          this.settings_scroll_to_highlight_timeout -= 200;
         }
         // console.log(this.settings_scroll_to_highlight_timeout.toString())
-      }, 100)
+      }, 200);
     })
   }
 
@@ -1476,7 +1483,6 @@ struct settingsCard {
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
-  @LocalStorageLink('settings_scroll_to_highlight_timeout') timeout: number = 0;
   // Contents
   @BuilderParam contents: () => void;
   title: ResourceStr = $r('app.string.Settings_start_up');
@@ -1490,7 +1496,7 @@ struct settingsCard {
         .fontColor(this.color_current_font)
         .fontSize(fontSize_Extra())
         .fontWeight(FontWeight.Bold)
-        .opacity((!(this.my_index == this.settings_scroll_to) && this.timeout > 0) ? 0.5 : 0.8)
+        .opacity(0.8)
         .animation(animation_default())
         .padding({ left: 5 })
 
@@ -1560,6 +1566,7 @@ struct settingsSubCard {
   }
 }
 
+// @Reusable // Is this ok? Nope, animation would be lost
 @Component
 struct aniContainer {
   // Contents
@@ -1657,8 +1664,10 @@ struct menuScrollVertical {
             scroll_to_gateway: this.scroll_to_gateway,
           })
             .onAreaChange((_old, n) => {
-              // Record button
-              this.button_Lengths[index] = n.width as number;
+              // Refresh button width
+              if ((n.width as number) != this.button_Lengths[index]) {
+                this.button_Lengths[index] = n.width as number;
+              }
             })
             .backgroundColor(this.on_index_first <= index && index <= this.on_index_last ?
               this.color_current_font : "transparent")
@@ -1734,8 +1743,7 @@ struct menuItem {
   build() {
     Row() {
       Text(this.my_text)
-        .fontColor(this.on_index_first <= this.my_index && this.my_index <= this.on_index_last ?
-          this.color_current_secondary : this.color_current_font)
+        .fontColor(this.on_index_first <= this.my_index && this.my_index <= this.on_index_last ? this.color_current_secondary : this.color_current_font)
         .fontSize(fontSize_Large() - 2)
     }
     .clickEffect(click_effect_default())

@@ -1,4 +1,4 @@
-import { hidebug } from '@kit.PerformanceAnalysisKit';
+import lazy { hidebug } from '@kit.PerformanceAnalysisKit';
 
 @Concurrent
 export function getPss_sync(): bigint {

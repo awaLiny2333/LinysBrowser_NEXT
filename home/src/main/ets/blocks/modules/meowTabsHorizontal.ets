@@ -26,7 +26,7 @@ struct meowTabsHorizontal {
   @LocalStorageLink('tab_urls') tab_urls: string[] = []
   @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
   @LocalStorageLink('tab_match_domains') tab_match_domains: string[][] = [];
-  @LocalStorageLink('current_match_domain') current_match_domain: string[] = ['scheme', 'domain'];
+  // @LocalStorageLink('current_match_domain') current_match_domain: string[] = ['scheme', 'domain'];
   @LocalStorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0]
   @LocalStorageLink('current_loading_progress') current_loading_progress: number = 0
   @LocalStorageLink('tab_is_loading') tab_is_loading: boolean[] = [true]
@@ -45,168 +45,155 @@ struct meowTabsHorizontal {
   @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
 
   build() {
-    Column() {
-      Row({ space: 10 }) {
-        linysTimeoutButton({
-          text: '  󰀁  ',
-          onExecution: () => {
-            this.close_all_tabs_gateway = Date.now();
-          }
-        })
-          .visibility(!this.tablet_mode || this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? Visibility.None : Visibility.Visible)
-          .animation(animation_default())
-          .padding({ left: 5 })
+    // if (this.tablet_mode && this.tabs_style == 'horizontal' || !this.tablet_mode && this.tabs_style_non_tablet_mode == 'horizontal') {
+      Column() {
+        Row({ space: 10 }) {
+          linysTimeoutButton({
+            text: '  󰀁  ',
+            onExecution: () => {
+              this.close_all_tabs_gateway = Date.now();
+            }
+          })
+            .visibility(!this.tablet_mode || this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? Visibility.None : Visibility.Visible)
+            .animation(animation_default())
+            .padding({ left: 5 })
 
-        // Row() {
-        //   linysText({
-        //     text: $r('app.string.Index_tabs_title_drag')
-        //   })
-        // } // Drag area
-        // .visibility(this.visibility_drag_2in1_top())
-        // .height(this.length_width_of_tabs > this.full_area_width ? 55 : 40)
-        // .animation(animation_default())
-        // .justifyContent(FlexAlign.Center)
-        // .borderRadius(12)
-        // .padding(10)
-        // .width(50 + 10)
-        // .backgroundColor($r('sys.color.comp_background_tertiary'))
-        // .clickEffect(click_effect_default())
-
-        Scroll() {
-          Row({ space: this.tablet_mode ? 7 : 5 }) {
-            ForEach(this.tab_titles, (title: string, index: number) => {
-              HorizontalTabButton({
-                index: index,
-                title: title,
-                full_area_width: this.full_area_width,
-                tab_titles: this.tab_titles
+          Scroll() {
+            Row({ space: this.tablet_mode ? 7 : 5 }) {
+              ForEach(this.tab_titles, (title: string, index: number) => {
+                HorizontalTabButton({
+                  index: index,
+                  title: title,
+                  full_area_width: this.full_area_width,
+                  tab_titles: this.tab_titles
+                })
               })
+            }
+            .onAreaChange((_old, n) => {
+              this.length_width_of_tabs = n.width as number;
             })
-          }
+            .margin({ bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0 })
+            .animation(animation_default())
+          } // Scroll of tab buttons
+          .scrollBarWidth(5)
+          .scrollBar(this.tab_width() == 80 ? BarState.On : BarState.Off)
+          .scrollable(ScrollDirection.Horizontal)
+          .edgeEffect(EdgeEffect.Spring)
+          .align(Alignment.Start)
+          .layoutWeight(1)
+          .height(this.length_width_of_tabs > this.full_area_width ? 55 : 40)
+          .animation(animation_default())
           .onAreaChange((_old, n) => {
-            this.length_width_of_tabs = n.width as number;
+            this.full_area_width = n.width as number;
           })
-          .margin({ bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0 })
-          .animation(animation_default())
-        } // Scroll of tab buttons
-        .scrollBarWidth(5)
-        .scrollBar(this.tab_width() == 80 ? BarState.On : BarState.Off)
-        .scrollable(ScrollDirection.Horizontal)
-        .edgeEffect(EdgeEffect.Spring)
-        .align(Alignment.Start)
-        .layoutWeight(1)
-        .height(this.length_width_of_tabs > this.full_area_width ? 55 : 40)
+
+          linysShowButton({
+            symbol_glyph_target: 'sys.symbol.map',
+            show: this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0,
+            text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
+          })// Paralleow entrance
+            .onClick(() => {
+              this.choose_paralleow();
+            })
+            .visibility(this.tablet_mode ? (this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden) : Visibility.None)
+            .margin({ left: 4 })
+            .animation(animation_default())
+
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })// New tab
+            .onClick(() => {
+              this.new_tab_gateway = "new_tab";
+            })
+            .margin({ right: 8 })
+            .visibility(this.tablet_mode ? Visibility.Visible : Visibility.None)
+            .animation(animation_default())
+
+          // Row() {
+          //   Row() {
+          //     linysText({
+          //       text: $r('app.string.Index_tabs_title_drag')
+          //     })
+          //   }
+          //   .justifyContent(FlexAlign.Center)
+          //   .padding(10)
+          //   .height(this.length_width_of_tabs > this.full_area_width ? 55 : 40)
+          //   .borderRadius(12)
+          //   .backgroundColor($r('sys.color.comp_background_tertiary'))
+          //   .width(50 + 10)
+          //   .clickEffect(click_effect_default())
+          // } // Drag area
+          // .justifyContent(FlexAlign.Start)
+          // .visibility(this.visibility_drag_2in1_top())
+          // .width(this.windowDecorWidth + 50)
+          // .animation(animation_default())
+
+        } // Base container
+        .alignItems(VerticalAlign.Center)
+
+        Row({ space: 5 }) {
+          linysTimeoutButton({
+            text: '  󰀁  ',
+            onExecution: () => {
+              this.close_all_tabs_gateway = Date.now();
+            }
+          })
+            .visibility(this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? Visibility.None : Visibility.Visible)
+            .animation(animation_default())
+          // .padding({ left: 5 })
+
+          Blank()
+
+          linysShowButton({
+            symbol_glyph_target: 'sys.symbol.map',
+            show: this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0,
+            text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
+          })// Paralleow entrance
+            .onClick(() => {
+              this.choose_paralleow();
+            })
+            .visibility(this.tab_titles.length > 1 ? Visibility.Visible :
+              Visibility.Hidden)// .margin({ left: 4, bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0 })
+            .animation(animation_default())
+
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })// New tab
+            .onClick(() => {
+              this.storage.set('extra_background', false);
+              this.new_tab_gateway = "new_tab";
+            })// .margin({ bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0, right: 8 })
+            .animation(animation_default())
+        } // Extension for compact (non-tablet mode) layout
+        .alignItems(VerticalAlign.Center)
+        .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
+        .visibility(this.tablet_mode ? Visibility.None : Visibility.Visible)
+        .padding({ left: 7, right: 7, top: this.length_width_of_tabs > this.full_area_width ? 0 : 10 })
         .animation(animation_default())
-        .onAreaChange((_old, n) => {
-          this.full_area_width = n.width as number;
-        })
-
-        linysShowButton({
-          symbol_glyph_target: 'sys.symbol.map',
-          show: this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0,
-          text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
-        })// Paralleow entrance
-          .onClick(() => {
-            this.choose_paralleow();
-          })
-          .visibility(this.tablet_mode ? (this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden) : Visibility.None)
-          .margin({ left: 4 })
-          .animation(animation_default())
-
-        linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })// New tab
-          .onClick(() => {
-            this.new_tab_gateway = "new_tab";
-          })
-          .margin({ right: 8 })
-          .visibility(this.tablet_mode ? Visibility.Visible : Visibility.None)
-          .animation(animation_default())
-
-        // Row() {
-        //   Row() {
-        //     linysText({
-        //       text: $r('app.string.Index_tabs_title_drag')
-        //     })
-        //   }
-        //   .justifyContent(FlexAlign.Center)
-        //   .padding(10)
-        //   .height(this.length_width_of_tabs > this.full_area_width ? 55 : 40)
-        //   .borderRadius(12)
-        //   .backgroundColor($r('sys.color.comp_background_tertiary'))
-        //   .width(50 + 10)
-        //   .clickEffect(click_effect_default())
-        // } // Drag area
-        // .justifyContent(FlexAlign.Start)
-        // .visibility(this.visibility_drag_2in1_top())
-        // .width(this.windowDecorWidth + 50)
-        // .animation(animation_default())
-
-      } // Base container
-      .alignItems(VerticalAlign.Center)
-
-      Row({ space: 5 }) {
-        linysTimeoutButton({
-          text: '  󰀁  ',
-          onExecution: () => {
-            this.close_all_tabs_gateway = Date.now();
-          }
-        })
-          .visibility(this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? Visibility.None : Visibility.Visible)
-          .animation(animation_default())
-        // .padding({ left: 5 })
-
-        Blank()
-
-        linysShowButton({
-          symbol_glyph_target: 'sys.symbol.map',
-          show: this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0,
-          text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
-        })// Paralleow entrance
-          .onClick(() => {
-            this.choose_paralleow();
-          })
-          .visibility(this.tab_titles.length > 1 ? Visibility.Visible :
-            Visibility.Hidden)// .margin({ left: 4, bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0 })
-          .animation(animation_default())
-
-        linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })// New tab
-          .onClick(() => {
-            this.storage.set('extra_background', false);
-            this.new_tab_gateway = "new_tab";
-          })// .margin({ bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0, right: 8 })
-          .animation(animation_default())
-      } // Extension for compact (non-tablet mode) layout
-      .alignItems(VerticalAlign.Center)
-      .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
-      .visibility(this.tablet_mode ? Visibility.None : Visibility.Visible)
-      .padding({ left: 7, right: 7, top: this.length_width_of_tabs > this.full_area_width ? 0 : 10 })
-      .animation(animation_default())
-      .width('100%')
-
-    }
-    .height(this.my_height)
-    .padding({ left: 8, right: 8 })
-    .animation(animation_default())
-    .clip(true)
-    .onAppear(() => {
-      this.my_height = undefined;
-    })
-    .onDrop((e) => {
-      try {
-        let drop_ok = drop_to_scratching_board(e, this.storage);
-        if (!drop_ok) {
-          this.showing_scratching_board = false;
-        }
-      } catch (e) {
-        console.error('[onDrop] Failed: ' + e);
+        .width('100%')
       }
-    })
-    .onDragEnter(() => {
-      this.showing_scratching_board = true;
-      this.showing_more_options = false;
-    })
-    .onDragLeave(() => {
-      this.showing_scratching_board = false;
-    })
+      .height(this.my_height)
+      .padding({ left: 8, right: 8 })
+      .animation(animation_default())
+      .clip(true)
+      .onAppear(() => {
+        this.my_height = undefined;
+        console.log('[Meow][meowTabsHorizontal] Created HorizontalTabs!')
+      })
+      .onDrop((e) => {
+        try {
+          let drop_ok = drop_to_scratching_board(e, this.storage);
+          if (!drop_ok) {
+            this.showing_scratching_board = false;
+          }
+        } catch (e) {
+          console.error('[onDrop] Failed: ' + e);
+        }
+      })
+      .onDragEnter(() => {
+        this.showing_scratching_board = true;
+        this.showing_more_options = false;
+      })
+      .onDragLeave(() => {
+        this.showing_scratching_board = false;
+      })
+    // }
   }
 
   choose_paralleow() {

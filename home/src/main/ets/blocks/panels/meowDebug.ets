@@ -1,7 +1,7 @@
 import linysSymbol from '../../components/texts/linysSymbol';
 import linysText from '../../components/texts/linysText';
 import { click_effect_default } from '../../hosts/bunch_of_defaults';
-import { add_units_to_size } from '../../utils/storage_tools';
+import lazy { add_units_to_size } from '../../utils/storage_tools';
 import lazy { getPrivateDirty, getPss, getSharedDirty, getVRAM, getVss } from '../../utils/any_concurrent_tools';
 import lazy { getCPU_sync, getNativeHeapSize_sync } from '../../utils/performance_tools';
 
