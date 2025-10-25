@@ -14,7 +14,7 @@ import { bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import { drop_to_scratching_board } from '../../utils/drag_drop_tools';
-import { current_tabs_style_is_horizontal, storage_of_id } from '../../utils/ui_tools';
+import { current_tabs_style_is_horizontal, is_some_dialogs_opened, storage_of_id } from '../../utils/ui_tools';
 import { search_engine } from '../../hosts/bunch_of_search_engines';
 import lazy { add_transparency } from '../../utils/color_tools';
 import lazy { copy } from '../../utils/clipboard_tools';
@@ -576,8 +576,7 @@ struct meowTitleBar {
       }, 1000)
     })
     .keyboardShortcut(this.bunch_of_key_shortcuts.in_page_search.main_key, this.bunch_of_key_shortcuts.in_page_search.modifier, () => {
-      this.showing_more_options = true;
-      focusControl.requestFocus("in_page_search_blank");
+      this.on_search_in_page_key_shortcut();
     })
   }
 
@@ -665,6 +664,14 @@ struct meowTitleBar {
         this.search_extracted_field_available = true;
       }
     }
+  }
+
+  on_search_in_page_key_shortcut() {
+    if (is_some_dialogs_opened(this.storage)) {
+      return;
+    }
+    this.showing_more_options = true;
+    focusControl.requestFocus("in_page_search_blank");
   }
 
   // UI controls

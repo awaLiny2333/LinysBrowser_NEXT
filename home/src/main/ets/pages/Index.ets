@@ -19,6 +19,7 @@ import {
   current_tabs_style_is_horizontal,
   enter_free_window_mode,
   enter_traditional_window_mode,
+  is_some_dialogs_opened,
   last_storage,
   new_window,
   pin_to_top,
@@ -224,6 +225,9 @@ struct Index {
           this.showing_more_options = false;
         })
         .keyboardShortcut(this.bunch_of_key_shortcuts.print.main_key, this.bunch_of_key_shortcuts.print.modifier, () => {
+          if (is_some_dialogs_opened(this.storage)) {
+            return;
+          }
           print_web(this.bunch_of_tabs.workingMainTab().controller, this.getUIContext().getHostContext()!);
         })
         .keyboardShortcut(this.bunch_of_key_shortcuts.new_window.main_key, this.bunch_of_key_shortcuts.new_window.modifier, () => {
@@ -233,10 +237,17 @@ struct Index {
           pin_to_top(this.my_window_id);
         })
         .keyboardShortcut(this.bunch_of_key_shortcuts.history.main_key, this.bunch_of_key_shortcuts.history.modifier, () => {
+          if (is_some_dialogs_opened(this.storage)) {
+            return;
+          }
           this.woofHistory_control.open();
         })
         .keyboardShortcut(FunctionKey.ESC, [], () => {
-          this.universal_esc();
+          try {
+            this.universal_esc();
+          } catch (e) {
+            console.error('[ESC] Failed! ' + e);
+          }
         })
 
       RelativeContainer() {
@@ -668,12 +679,14 @@ struct Index {
     // Close the top most dialog
     if (opened_dialog_controllers && opened_dialog_controllers.length > 0) {
       opened_dialog_controllers[opened_dialog_controllers.length-1].close();
+      console.log('[universal_esc] Exit a dialog!');
       return;
     }
 
     // Exit in-page searching
     if (is_current_in_page_searching(this.storage)) {
       cancel_in_page_search(this.storage);
+      console.log('[universal_esc] Exit In-page searching!');
       return;
     }
 
@@ -681,11 +694,13 @@ struct Index {
     if (this.storage.get('is_search_input_typing') as boolean) {
       this.getUIContext().getFocusController().clearFocus();
       this.storage.set('is_search_input_typing', false);
+      console.log('[universal_esc] Exit Typing!');
       return;
     }
 
     // Inheritance (?) from the universal back function.
     this.back(true);
+    console.log('[universal_esc] UNIVERSAL BACK!!');
   }
 }
 

@@ -250,7 +250,7 @@ struct meowWebView {
         })
 
       // Notices
-      Column() {
+      Column({ space: (this.show_toast_fullscreen) ? 10 : 0 }) {
         toast({
           show: this.show_toast_fullscreen,
           info: $r('app.string.fullscreen_notice')
@@ -758,19 +758,22 @@ struct toast {
   timeout_id: number | undefined = undefined;
   // Color
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     Row() {
       linysText({
-        text: this.info
+        text: this.info,
+        color: this.color_current_primary,
+        font_weight: FontWeight.Bold
       })
     }
-    .backgroundColor(this.color_current_primary)
+    .backgroundColor(this.color_current_font)
     .height(this.show ? undefined : 0)
     .width(this.show ? undefined : 0)
     .padding(this.show ? 15 : 0)
     .animation(animation_default())
-    .borderRadius(12)
+    .borderRadius(13.5)
     .onClick(() => {
       // Close toast
       this.show = false;
@@ -783,7 +786,7 @@ struct toast {
       clearTimeout(this.timeout_id);
       this.timeout_id = setTimeout(() => {
         this.show = false;
-      }, 3000)
+      }, 2000)
     }
   }
 }

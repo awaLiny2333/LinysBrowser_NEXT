@@ -599,6 +599,8 @@ struct SearchInput {
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Actions
   onSubmitAction?: () => void;
+  // Info
+  my_id: string = 'woofHistory_search_input_' + Date.now().toString();
 
   build() {
     TextInput({ text: this.input })
@@ -617,10 +619,24 @@ struct SearchInput {
           this.onSubmitAction();
         }
       })
+      .id(this.my_id)
+      .onAppear(() => {
+        // Auto focus on history
+        if (AppStorage.get('free_window_mode') as boolean) {
+          this.focus_search();
+        }
+      })
   }
 
   submit() {
 
+  }
+
+  /**
+   * Focus on the search input.
+   * */
+  focus_search() {
+    focusControl.requestFocus(this.my_id);
   }
 }
 

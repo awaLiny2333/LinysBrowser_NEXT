@@ -23,6 +23,20 @@ export function current_tabs_style_is_horizontal(storage: LocalStorage) {
   }
 }
 
+/**
+ * Checks if some dialogs are already opened.
+ * @param storage The LocalStorage
+ * @returns True or False.
+ * */
+export function is_some_dialogs_opened(storage: LocalStorage) {
+  let opened_dialog_controllers = storage.get('opened_dialog_controllers') as CustomDialogController[];
+  if (opened_dialog_controllers && opened_dialog_controllers.length > 0) {
+    // console.log('[is_some_dialogs_opened] True! ' + opened_dialog_controllers.length);
+    return true;
+  }
+  return false;
+}
+
 // Actions
 
 export function new_window(context: common.UIAbilityContext, instanceKey: string, new_window_alias: string) {

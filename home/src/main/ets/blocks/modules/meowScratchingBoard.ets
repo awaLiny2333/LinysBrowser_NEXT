@@ -36,9 +36,18 @@ struct meowScratchingBoard {
   build() {
     Column({ space: 10 }) {
       linysTextTitle({
-        text: this.show_feed_prompt ? $r('app.string.Index_drop_please') : $r('app.string.Index_drop_ok')
+        text: this.show_feed_prompt ? $r('app.string.Index_drop_please') : $r('app.string.Index_drop_ok'),
+        max_lines: 999
       })
         .width(this.show_feed_prompt ? undefined : "100%")
+        .animation(animation_default())
+
+      linysTextTitle({
+        text: $r('app.string.Index_drop_cat_0'),
+        max_lines: 999
+      })
+        .padding({ top: 20 })
+        .visibility(this.show_feed_prompt ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
 
       Scroll(this.scroll_controller) {
@@ -84,16 +93,17 @@ struct meowScratchingBoard {
           .onClick(() => {
             this.only_links = !this.only_links;
           })
-      }
+      } // Ctrl buttons
       .justifyContent(FlexAlign.End)
       .width("100%")
-      .visibility(this.data_list.length > 0 ? Visibility.Visible : Visibility.None)
+      .visibility(!this.show_feed_prompt && this.data_list.length > 0 ? Visibility.Visible : Visibility.None)
       .animation(animation_default())
 
     }
     .justifyContent(FlexAlign.Center)
     .padding({ left: 15, right: 15 })
-    .width("100%")
+    .width('100%')
+    .height('100%')
     .animation(animation_default())
   }
 
