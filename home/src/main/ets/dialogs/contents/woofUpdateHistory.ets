@@ -11,9 +11,10 @@ struct woofUpdateHistory {
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @State texts: string[] = [
-    'v1.7.9-beta 2025 09',
-    '一个修缮性的更新！将更稳定的使用体验带入冲浪喵～',
-    'A maintenance update! Bringing a more stable using experience into BrowserCat~',
+    'v1.7.9-beta 2025 10',
+    '一个突破性的更新！将多窗口支持、PC / 2in1 使用特化、完全性能优化、启动速度优化……以及更全面的使用体验带入冲浪喵～',
+    'A breakthrough update! Bringing multi-window support, PC / 2in1 optimization, full performance optimization, ' +
+      'launch speed optimization... and a more well-rounded using experience into BrowserCat~',
 
     'v1.7.8-beta 2025 07',
     '一个补充性的更新！将浏览器界面右键支持、权限申请、更好的页面内搜索、网页打印、Blob 下载支持、代理下载支持、跨设备接续等功能带入冲浪喵～',

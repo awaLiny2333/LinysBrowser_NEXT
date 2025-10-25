@@ -35,7 +35,7 @@ struct meowWebView {
   // Environments
   @StorageLink('currentColorMode') current_color_mode: number = 0;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
-  @LocalStorageLink('fullscreen_mode') fullscreen_mode: boolean = false;
+  @LocalStorageLink('fullscreen_mode') @Watch('on_fullscreen_change') fullscreen_mode: boolean = false;
   @LocalStorageLink('fullscreen_handler') handler: FullScreenExitHandler | null = null;
   @LocalStorageLink('restore_web_state_arrays') restore_web_state_arrays: Uint8Array[] = [];
   @LocalStorageProp('screen_height') screen_height: number = 100;
@@ -147,6 +147,8 @@ struct meowWebView {
   // Else
   @LocalStorageLink('meowWebView_init_OK') init_OK: boolean = false;
   httpAuth: boolean = false;
+  // Toasts
+  @State show_toast_fullscreen: boolean = false;
 
   aboutToAppear(): void {
     console.log(' \n[meowWebView][aboutToAppear] this.bunch_of_tabs.my_id: ' + this.bunch_of_tabs.my_id + '\n ');
@@ -247,6 +249,18 @@ struct meowWebView {
           this.on_appear();
         })
 
+      // Notices
+      Column() {
+        toast({
+          show: this.show_toast_fullscreen,
+          info: $r('app.string.fullscreen_notice')
+        })
+      }
+      .translate({ y: -20 })
+      .alignRules({
+        bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+        middle: { anchor: '__container__', align: HorizontalAlign.Center },
+      })
     }
     .width("100%")
     .height("100%")
@@ -281,6 +295,12 @@ struct meowWebView {
       }
     } catch (e) {
       console.error('[on_current_url_change] Failed: ' + e);
+    }
+  }
+
+  on_fullscreen_change() {
+    if (this.fullscreen_mode) {
+      this.show_toast_fullscreen = true;
     }
   }
 
@@ -643,8 +663,8 @@ struct shortcutButton {
 
   build() {
     Column({ space: 10 }) {
-      Button((this.bookmark.get_item().get_type() == 'folder' ? (this.show_contents == Visibility.Visible ? '󰃆  ' : '󰃅  ') : '')
-        + this.bookmark.get_item().get_label())// Shortcut "󰄏"
+      Button((this.bookmark.get_item().get_type() == 'folder' ? (this.show_contents == Visibility.Visible ? '󰃆  ' : '󰃅  ') : '') +
+      this.bookmark.get_item().get_label())// Shortcut "󰄏"
         .type(ButtonType.Capsule)
         .backgroundColor(this.color_current_secondary)
         .fontColor(this.color_current_font)
@@ -726,5 +746,44 @@ struct shortcutButton {
       unit_interval = 60;
     }
     return this.my_index * unit_interval + 0;
+  }
+}
+
+@Component
+struct toast {
+  info: ResourceStr = '';
+  my_id: string = '';
+  @Link @Watch('show_toast') show: boolean;
+  // Timeout
+  timeout_id: number | undefined = undefined;
+  // Color
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+
+  build() {
+    Row() {
+      linysText({
+        text: this.info
+      })
+    }
+    .backgroundColor(this.color_current_primary)
+    .height(this.show ? undefined : 0)
+    .width(this.show ? undefined : 0)
+    .padding(this.show ? 15 : 0)
+    .animation(animation_default())
+    .borderRadius(12)
+    .onClick(() => {
+      // Close toast
+      this.show = false;
+    })
+    .clip(true)
+  }
+
+  show_toast() {
+    if (this.show) {
+      clearTimeout(this.timeout_id);
+      this.timeout_id = setTimeout(() => {
+        this.show = false;
+      }, 3000)
+    }
   }
 }

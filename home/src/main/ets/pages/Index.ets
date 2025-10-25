@@ -591,7 +591,7 @@ struct Index {
    * Universal Go back function
    * @returns true if successfully executed <Back> for some effects.
    * */
-  back(closeTab: boolean = true) {
+  back(isESC: boolean = false) {
     let stop_system_back = false;
 
     if (this.fullscreen_mode) {
@@ -630,12 +630,14 @@ struct Index {
       }
     }
 
+    let esc_to_access_backward = AppStorage.get('esc_to_access_backward') as boolean;
+
     // Other returns
     // Only triggers if no closable UI panels are opened
-    if (this.sys_back_to_access_backward) {
+    if (this.sys_back_to_access_backward && (esc_to_access_backward || !isESC)) {
       if (this.go_back_tab()) {
         stop_system_back = true;
-      } else if (this.bunch_of_tabs.get_tabs_count() > 1 && closeTab) {
+      } else if (this.bunch_of_tabs.get_tabs_count() > 1) {
         // Can close something
         this.uni_close_tab_gateway = this.bunch_of_tabs.main_tab_idx;
         stop_system_back = true;
@@ -683,7 +685,7 @@ struct Index {
     }
 
     // Inheritance (?) from the universal back function.
-    this.back(false);
+    this.back(true);
   }
 }
 

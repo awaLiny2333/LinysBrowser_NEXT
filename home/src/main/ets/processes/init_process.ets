@@ -159,6 +159,7 @@ async function settings(storage: LocalStorage) {
 
   // Accessibility
   AppStorage.setOrCreate('sys_back_to_access_backward', bunch_of_settings.get('sys_back_access_backward') as boolean);
+  AppStorage.setOrCreate('esc_to_access_backward', bunch_of_settings.get('esc_to_access_backward') as boolean);
   AppStorage.setOrCreate('preferred_hand_left_or_right', bunch_of_settings.get('preferred_hand_left_or_right') as string);
   AppStorage.setOrCreate('preferred_hand_reverse_tabs_panel', bunch_of_settings.get('preferred_hand_reverse_tabs_panel') as boolean);
   AppStorage.setOrCreate('preferred_hand_reverse_settings_menu', bunch_of_settings.get('preferred_hand_reverse_settings_menu') as boolean);

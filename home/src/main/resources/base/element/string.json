@@ -525,6 +525,10 @@
       "value": "Use system back to access backward in a web page, or to close a tab."
     },
     {
+      "name": "Settings_experience_esc_to_access_backward",
+      "value": "ESC backward in Web"
+    },
+    {
       "name": "Settings_experience_continuation_auto_exit",
       "value": "Close app after continuation"
     },
@@ -979,6 +983,10 @@
     {
       "name": "Key_shortcuts_in_page_search",
       "value": "Search in page"
+    },
+    {
+      "name": "fullscreen_notice",
+      "value": "Press Back to Exit Fullscreen"
     },
     {
       "name": "Key_shortcuts_fullscreen",

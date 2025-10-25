@@ -24,6 +24,7 @@ export class bunch_of_settings {
 
     // Experience
     bunch_of_settings.register_setting('sys_back_access_backward', 'boolean', 'true');
+    bunch_of_settings.register_setting('esc_to_access_backward', 'boolean', 'false');
     bunch_of_settings.register_setting('max_bookmark_suggest', 'number', '5');
     bunch_of_settings.register_setting('max_history_suggest', 'number', '5');
 
@@ -239,7 +240,7 @@ export class bunch_of_settings {
     Object.entries(jsonObject as Record<string, string>).forEach((item) => {
       const key = item[0];
       const val = item[1];
-      bunch_of_settings.import_one_kv(key, val);
+      bunch_of_settings.import_one_pair(key, val);
     });
     console.log('[Meow][bunch_of_settings] Import settings:\n' + text);
     return true;
@@ -250,7 +251,7 @@ export class bunch_of_settings {
    * @param key A string, the key of the setting.
    * @param value A string, the corresponding value of key to be set.
    * */
-  static import_one_kv(key: string, value: string) {
+  static import_one_pair(key: string, value: string) {
     let key_default_index = bunch_of_settings.settings_defaults_key.indexOf(key);
     if (key_default_index == -1) {
       // unregistered setting

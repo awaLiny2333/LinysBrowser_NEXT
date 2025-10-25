@@ -128,6 +128,7 @@ struct meowAppSettings {
   @StorageLink('max_history_advice') max_history_advice: number = 5;
   @StorageLink('history_index_load_quantity') history_index_load_quantity: number = 6;
   @StorageLink('sys_back_to_access_backward') sys_back_to_access_backward: boolean = false;
+  @StorageLink('esc_to_access_backward') esc_to_access_backward: boolean = false;
   @StorageLink('bottom_avoid') bottom_avoid: boolean = true;
   @StorageLink('resource_monitor') resource_monitor: boolean = true;
   @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
@@ -626,6 +627,13 @@ struct meowAppSettings {
                     toggle_state: this.sys_back_to_access_backward,
                     onExecution: () => {
                       bunch_of_settings.set('sys_back_access_backward', this.sys_back_to_access_backward);
+                    }
+                  }) // Use sys back in web
+                  linysSwitchWithText({
+                    text: $r('app.string.Settings_experience_esc_to_access_backward'),
+                    toggle_state: this.esc_to_access_backward,
+                    onExecution: () => {
+                      bunch_of_settings.set('esc_to_access_backward', this.esc_to_access_backward);
                     }
                   }) // Use sys back in web
                   // linysText({

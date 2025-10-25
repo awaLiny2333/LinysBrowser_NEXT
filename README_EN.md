@@ -102,7 +102,7 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 ### Features
 
 - [x] Multi-window / Multi-instance mode
-- [ ] Move tabs between windows
+- [x] Move tabs between windows
 - [x] Cookies management (and clearing)
 - [x] Cache management and clear
 - [x] Ads blocking
