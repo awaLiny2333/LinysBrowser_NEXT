@@ -1,10 +1,10 @@
-import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large } from '../../hosts/bunch_of_defaults';
+import { animation_default, animation_popup_duration, capsule_bar_height, click_effect_default, fontSize_Large } from '../../hosts/bunch_of_defaults';
 
 @Component
 struct linysTimeoutButton {
   @Prop text: ResourceStr = '  󰃈  ';
   // editing
-  @State delete_confirm: number = 0;
+  @State one_more_step: boolean = false;
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor =
     $r('app.color.start_window_background');
@@ -14,16 +14,18 @@ struct linysTimeoutButton {
     $r('app.color.font_color_title');
   // Operations
   onExecution?: () => void;
+  // Timeout
+  confirm_timeout_id: number | undefined = undefined;
 
   build() {
     Button(this.text)// Reset
       .opacity(0.9)
       .type(ButtonType.Capsule)
-      .backgroundColor(this.delete_confirm > 0 ? this.color_current_primary : this.color_current_font)
-      .fontColor(this.delete_confirm > 0 ? this.color_current_font : this.color_current_primary)
+      .backgroundColor(this.one_more_step ? this.color_current_primary : this.color_current_font)
+      .fontColor(this.one_more_step ? this.color_current_font : this.color_current_primary)
       .border({
         width: 2,
-        color: this.delete_confirm > 0 ? this.color_current_font : "transparent"
+        color: this.one_more_step ? this.color_current_font : "transparent"
       })
       .animation(animation_default())
       .fontSize(fontSize_Large())
@@ -31,21 +33,18 @@ struct linysTimeoutButton {
       .height(capsule_bar_height())
       .clickEffect(click_effect_default())
       .onClick(() => {
-        this.delete_confirm += 3000;
-        if (this.delete_confirm >= 3001) {
+        if (this.one_more_step) {
           if (this.onExecution) {
             this.onExecution();
           }
-          this.delete_confirm = 0;
+          this.one_more_step = false;
+          return;
         }
-      })
-      .onAppear(() => {
-        setInterval(() => {
-          if (this.delete_confirm > 0) {
-            this.delete_confirm -= 1000;
-          }
-          // Reset delete confirm
-        }, 1000)
+        this.one_more_step = true;
+        clearTimeout(this.confirm_timeout_id);
+        this.confirm_timeout_id = setTimeout(() => {
+          this.one_more_step = false;
+        }, animation_popup_duration())
       })
   }
 }

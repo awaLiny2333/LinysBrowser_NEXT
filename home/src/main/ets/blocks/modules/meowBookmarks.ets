@@ -53,6 +53,8 @@ struct meowBookmarks {
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Pan Gesture
   pan_x: number = 0;
+  // Intervals
+  swap_setInterval_id: number | undefined = undefined;
 
   build() {
     Column() {
@@ -118,6 +120,27 @@ struct meowBookmarks {
             this.adding_folder = false;
             this.adding_bookmark = false;
             this.swapping_bookmarks = !this.swapping_bookmarks;
+            clearInterval(this.swap_setInterval_id);
+            if (this.swapping_bookmarks) {
+              this.swap_setInterval_id = setInterval(() => {
+                if (this.swapping_offset_timeout == 100) {
+                  this.getUIContext().animateTo(animation_default(), () => {
+                    this.swapping_offset_upper = 0;
+                    this.swapping_offset_downer = 0;
+                  })
+                }
+                this.swapping_offset_timeout -= 100;
+                if (this.swapping_offset_timeout <= 0) {
+                  this.swapping_offset_timeout = 0;
+                }
+              }, 100)
+            } else {
+              this.getUIContext().animateTo(animation_default(), () => {
+                this.swapping_offset_upper = 0;
+                this.swapping_offset_downer = 0;
+                this.swapping_offset_timeout = 0;
+              })
+            }
           })
 
         Blank()
@@ -339,22 +362,6 @@ struct meowBookmarks {
 
   on_appear() {
     this.refresh_content_view();
-
-    setInterval(() => {
-      if (!this.showing_bookmarks) {
-        return;
-      }
-      if (this.swapping_offset_timeout == 100) {
-        this.getUIContext().animateTo(animation_default(), () => {
-          this.swapping_offset_upper = 0;
-          this.swapping_offset_downer = 0;
-        })
-      }
-      this.swapping_offset_timeout -= 100;
-      if (this.swapping_offset_timeout <= 0) {
-        this.swapping_offset_timeout = 0;
-      }
-    }, 100)
   }
 
   // Misc

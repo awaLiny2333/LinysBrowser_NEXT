@@ -161,7 +161,8 @@ struct data_display {
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Status
-  @State copied: number = 0;
+  @State copied: boolean = false;
+  copied_timeout_id: number | undefined = undefined;
   @State image_height: number = 0;
   @State image_width: number = 0;
 
@@ -335,13 +336,6 @@ struct data_display {
         this.offset_y = 0;
         this.this_visibility = Visibility.Visible;
       }, Math.min((this.index) * 60, 600))
-
-      setInterval(() => {
-        if (this.copied > 0) {
-          this.copied -= 10;
-        }
-        // Reset copy
-      }, 10)
     })
     .clickEffect(click_effect_default())
     .onClick(() => {
@@ -386,7 +380,11 @@ struct data_display {
    * */
   copy_text(text: string) {
     copy(text);
-    this.copied = animation_popup_duration();
+    this.copied = true;
+    clearTimeout(this.copied_timeout_id);
+    this.copied_timeout_id = setTimeout(() => {
+      this.copied = false;
+    }, animation_popup_duration())
   }
 
   /**
