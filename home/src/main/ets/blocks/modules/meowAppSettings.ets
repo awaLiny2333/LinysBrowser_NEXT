@@ -1162,19 +1162,39 @@ struct meowAppSettings {
                       max_lines: 99,
                       is_description: true,
                       is_expanded: true
-                    })
+                    });
                     linysCapsuleButtonWithText({
                       desc_text: 'Open New Window',
                       button_text: '  󰅑  ',
                       onExecution: () => {
                         new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), default_new_window_name());
                       }
-                    });
+                    }); // New window
 
                     linysSwitchWithText({
                       text: 'Switch Free-window Mode',
                       toggle_state: this.free_window_mode
+                    }); // Toggle free window mode
+                    linysCapsuleButton({
+                      text: 'Enable Ads Blocker'
                     })
+                      .onClick(() => {
+                        // Set Ads Blocker
+                        let use_adblock = AppStorage.get('use_adblock') as boolean;
+                        let tabs = this.storage.get('bunch_of_tabs') as bunch_of_tabs;
+                        console.log('[meowWebView] enableAdsBlock: ' + (use_adblock ? 'true' : 'false'));
+                        try {
+                          tabs.workingMainTab().controller.enableAdsBlock(use_adblock);
+                          console.info('[meowWebView] onControllerAttached enableAdsBlock! [' + tabs.workingMainTab().url + ']');
+                        } catch (e) {
+                          console.error('[meowWebView] onControllerAttached enableAdsBlock error: ' + e);
+                        }
+                        setTimeout(() => {
+                          tabs.NodeControllers[tabs.main_tab_idx].update(tabs.workingMainTab());
+                          console.log('[isAdsBlockEnabled()] ' + tabs.workingMainTab().controller.isAdsBlockEnabled());
+                          console.log('[isAdsBlockEnabledForCurPage()] ' + tabs.workingMainTab().controller.isAdsBlockEnabledForCurPage());
+                        }, 1000)
+                      })
                   }
                 }
               } // Update

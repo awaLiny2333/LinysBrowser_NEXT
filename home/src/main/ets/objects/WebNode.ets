@@ -258,6 +258,7 @@ function WebBuilder(pk: tab_info_packed) {
       console.log('[meowWebView] enableAdsBlock: ' + (use_adblock ? 'true' : 'false'));
       try {
         pk.controller.enableAdsBlock(use_adblock);
+        console.info('[meowWebView] onControllerAttached enableAdsBlock! [' + pk.url + ']');
       } catch (e) {
         console.error('[meowWebView] onControllerAttached enableAdsBlock error: ' + e);
       }
@@ -302,6 +303,9 @@ function WebBuilder(pk: tab_info_packed) {
           }
         }
       }, 0);
+    })
+    .onAdsBlocked((e) => {
+      console.log(`[onAdsBlocked] ${e.url}: ${e.adsBlocked}`);
     })
     .onLoadIntercept((event) => {
       if (event) {
@@ -394,7 +398,11 @@ export class TabNodeController extends NodeController {
   // Update?
   update(pk: tab_info_packed) {
     if (this.builderNode) {
-      this.builderNode.update(pk);
+      try {
+        this.builderNode.update(pk);
+      } catch (e) {
+        console.error(`[WebNode][update] Failed: ${e}!`);
+      }
     }
   }
 
