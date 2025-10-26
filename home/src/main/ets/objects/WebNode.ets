@@ -8,7 +8,6 @@ import lazy { hilog } from '@kit.PerformanceAnalysisKit';
 
 export const defaultUrl: string = 'https://www.example.com';
 
-// @Builder中为动态组件的具体组件内容
 @Builder
 function WebBuilder(pk: tab_info_packed) {
   // Column() {
@@ -31,7 +30,11 @@ function WebBuilder(pk: tab_info_packed) {
     .forceDarkAccess(pk.tab_force_dark)// Force dark mode
     .javaScriptAccess(!pk.tab_disable_js)
     .imageAccess(!pk.tab_disable_image)
-    .onlineImageAccess(!pk.tab_disable_image) // TODO: Do these update with change?
+    .onlineImageAccess(!pk.tab_disable_image)
+    .onActivateContent(() => {
+      pk.storage.set('universal_tab_button_click_gateway', pk.index);
+      console.log(`[Meow][onActivateContent] Switched to Tab No.${pk.index}!`)
+    })
     .onSearchResultReceive((result) => {
       console.log('[Meow][onSearchResultReceive]! ' + Math.min(result.numberOfMatches, result.activeMatchOrdinal + 1));
       console.log('[Meow][onSearchResultReceive]! ' + result.numberOfMatches);
@@ -233,6 +236,13 @@ function WebBuilder(pk: tab_info_packed) {
         console.error('[meowWebView] onControllerAttached setDownloadDelegate error: ' + e);
       }
 
+      // Set Default error page
+      try {
+        pk.controller.setErrorPageEnabled(true);
+      } catch (e) {
+        console.error(`[Web][setErrorPageEnabled] Failed: ${e}`)
+      }
+
       // Set UA
       let now_global_custom_UA = AppStorage.get('universal_global_custom_ua_gateway') as string;
       if (now_global_custom_UA != "") {
@@ -341,10 +351,17 @@ function WebBuilder(pk: tab_info_packed) {
       }
       return true;
     })
+    .onHttpAuthRequest((event) => {
+      console.log(`[onHttpAuthRequest] Host: [${event.host}], Realm: [${event.realm}]!`)
+      return true;
+    })
+    .onClientAuthenticationRequest((_event) => {
+      console.info("[onClientAuthenticationRequest]!");
+      return true;
+    })
   // }
 }
 
-// 用于控制和反馈对应的NodeContainer上的节点的行为，需要与NodeContainer一起使用
 export class TabNodeController extends NodeController {
   private builderNode: BuilderNode<[tab_info_packed]> | null | undefined = null;
   private rootNode: FrameNode | null = null;
@@ -361,12 +378,10 @@ export class TabNodeController extends NodeController {
     return this.rootNode;
   }
 
-  // 挂载Webview
   attachWeb(): void {
     if (this.builderNode) {
       let frameNode: FrameNode | null = this.builderNode.getFrameNode();
       if (frameNode?.getParent() != null) {
-        // 挂载自定义节点前判断该节点是否已经被挂载
         hilog.error(0x0000, 'testTag', '%{public}s', 'The frameNode is already attached');
         return;
       }
@@ -394,7 +409,6 @@ export class TabNodeController extends NodeController {
   }
 }
 
-// 初始化需要UIContext对象，UIContext对象可通过窗口或自定义组件的getUIContext方法获取
 export const createNWeb = (uiContext: UIContext, tab: tab_info_packed) => {
   // 创建BuilderNode
   let builderNode: BuilderNode<[tab_info_packed]> = new BuilderNode(uiContext);

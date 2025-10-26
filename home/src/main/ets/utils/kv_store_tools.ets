@@ -79,7 +79,7 @@ async function get_kv_store_into_app_storage() {
 
   const kvManagerConfig: distributedKVStore.KVManagerConfig = {
     context: meowContext(),
-    bundleName: 'com.next.liny.linysbrowserNEXT',
+    bundleName: 'meow.liny.browser.cat.uwu',
   }
 
   try {

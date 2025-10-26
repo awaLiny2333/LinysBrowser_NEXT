@@ -37,6 +37,10 @@
       "value": "You could use this to pin BrowserCat on top of your stack of windows! (On your decision!)"
     },
     {
+      "name": "permission_reason_ACCESS_FIDO2_ONLINEAUTH",
+      "value": "For web authentications!"
+    },
+    {
       "name": "protected_resource_TYPE_MIDI_SYSEX",
       "value": "\uDB80\uDCAC MIDI SYSEX Resources"
     },

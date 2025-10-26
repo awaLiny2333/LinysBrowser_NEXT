@@ -43,7 +43,7 @@ export function new_window(context: common.UIAbilityContext, instanceKey: string
   // Open new window
   let wantInfo: Want = {
     deviceId: '', // This device
-    bundleName: 'com.next.liny.linysbrowserNEXT',
+    bundleName: 'meow.liny.browser.cat.uwu',
     moduleName: 'home',
     abilityName: 'HomeAbility',
     parameters: {

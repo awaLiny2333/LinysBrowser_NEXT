@@ -34,6 +34,7 @@ import linysWindowButton from '../components/buttons/linysWindowButton';
 import { cancel_in_page_search, is_current_in_page_searching } from '../processes/tabs_actions';
 import woofHistory from '../dialogs/managers/woofHistory';
 import { bookmarks } from '../processes/init_process';
+import { init_passkey } from '../utils/passkey_tools';
 
 // @Entry({ useSharedStorage: true })
 @Entry(last_storage())
@@ -179,6 +180,9 @@ struct Index {
     update_window_decor_height(this.my_window_id);
 
     console.log(`[Meow][Index] Load Index! (${run_time(this.storage)} ms)`);
+
+    // Init Auth
+    init_passkey(this.getUIContext());
 
     setTimeout(async () => {
       let time_on_bookmarks = 0;

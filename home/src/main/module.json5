@@ -144,6 +144,16 @@
           ]
         }
       },
+      {
+        "name": "ohos.permission.ACCESS_FIDO2_ONLINEAUTH",
+        "reason": "$string:permission_reason_ACCESS_FIDO2_ONLINEAUTH",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "HomeAbility"
+          ]
+        }
+      },
       //            {
       //              "name" : "ohos.permission.READ_PASTEBOARD",
       //              "reason": "$string:permission_reason_READ_PASTEPOARD",

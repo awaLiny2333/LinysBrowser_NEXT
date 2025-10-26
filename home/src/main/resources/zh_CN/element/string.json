@@ -36,6 +36,10 @@
       "value": "你可以用这个权限把冲浪喵挂在所有窗口的图层之上！（你说了算！）"
     },
     {
+      "name": "permission_reason_ACCESS_FIDO2_ONLINEAUTH",
+      "value": "给网页登录验证！"
+    },
+    {
       "name": "protected_resource_TYPE_MIDI_SYSEX",
       "value": "\uDB80\uDCAC MIDI SYSEX 资源"
     },
