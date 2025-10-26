@@ -351,14 +351,11 @@ function WebBuilder(pk: tab_info_packed) {
       }
       return true;
     })
-    .onHttpAuthRequest((event) => {
-      console.log(`[onHttpAuthRequest] Host: [${event.host}], Realm: [${event.realm}]!`)
-      return true;
-    })
-    .onClientAuthenticationRequest((_event) => {
-      console.info("[onClientAuthenticationRequest]!");
-      return true;
-    })
+  // TODO: Handle Http Auth Request!
+  // .onHttpAuthRequest((event) => {
+  //   console.log(`[onHttpAuthRequest] Host: [${event.host}], Realm: [${event.realm}]!`)
+  //   return true;
+  // })
   // }
 }
 

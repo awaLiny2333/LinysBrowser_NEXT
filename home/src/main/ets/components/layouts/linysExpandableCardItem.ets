@@ -23,6 +23,8 @@ struct linysExpandableCardItem {
   // Pass in content components
   @BuilderParam content_edit: () => void;
   @BuilderParam title_extras: () => void;
+  // Press
+  press_interval_id: number | undefined = undefined;
 
   build() {
     Column() {
@@ -64,7 +66,8 @@ struct linysExpandableCardItem {
       .backgroundColor(this.is_pressing ? this.color_current_font : (this.default_background_color || this.color_current_primary))
       .animation(animation_default())
       .clip(true)
-      .padding(10)
+      .padding({ left: 10, right: 10 })
+      .alignItems(VerticalAlign.Center)
       .alignRules({
         middle: { anchor: "__container__", align: HorizontalAlign.Center },
         top: { anchor: "__container__", align: VerticalAlign.Top }
@@ -122,16 +125,26 @@ struct linysExpandableCardItem {
     .width("100%")
     .animation(animation_default())
     .onAppear(() => {
-      setInterval(() => {
-        if (this.is_pressing) {
-          this.press_timing += 10;
-        } else {
-          this.press_timing = 0;
-        }
-        this.is_press_timing_ok = this.press_timing > 16;
-        // Count press time
-      }, 100)
+      this.enable_press();
     })
+  }
+
+  enable_press() {
+    clearInterval(this.press_interval_id);
+    this.press_interval_id = setInterval(() => {
+      if (this.is_pressing) {
+        this.press_timing += 10;
+      } else {
+        this.press_timing = 0;
+      }
+      this.is_press_timing_ok = this.press_timing > 16;
+      // Count press time
+    }, 100)
+  }
+
+  disable_press() {
+    clearInterval(this.press_interval_id);
+    this.press_interval_id = undefined;
   }
 }
 

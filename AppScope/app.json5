@@ -2,8 +2,8 @@
   "app": {
     "bundleName": "meow.liny.browser.cat.uwu",
     "vendor": "Linys Workshop of Cats and Catzardry",
-    "versionCode": 1000027,
-    "versionName": "1.7.9",
+    "versionCode": 1000028,
+    "versionName": "1.7.10",
     "icon": "$media:layered_image",
     "label": "$string:app_name",
     "multiAppMode": {
