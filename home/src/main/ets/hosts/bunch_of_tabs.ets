@@ -1,5 +1,5 @@
 import { webview } from '@kit.ArkWeb';
-import { match_domain, url_meow_to_resource, url_resource_to_meow, viewable_domains } from '../utils/url_tools';
+import { match_domain, url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
 import { url_default_blank } from './bunch_of_defaults';
 import lazy { storage_of_id, window_index_of_id } from '../utils/ui_tools';
 import lazy { sandbox_save } from '../utils/storage_tools';
@@ -562,6 +562,8 @@ export class tab_info_packed {
   // Update records
   last_saved_url: string = '';
   last_saved_title: string = '';
+  // Update url change
+  last_updated_url: string = '';
 
   /**
    * A class holding a controller and statuses of a tab.
@@ -599,15 +601,26 @@ export class tab_info_packed {
 
   /**
    * Asks the tab to update its link, usually called when the tab loads something new.
+   *
+   * This automatically updates the web settings as well!
+   *
+   * @returns The updated url.
    * */
   update_url() {
-    if (!viewable_domains().includes(match_domain(this.controller.getUrl())[0])) {
-      return this.url;
-    }
+    let url_got = this.url;
     try {
-      this.url = url_resource_to_meow(this.controller.getUrl());
+      url_got = this.controller.getUrl();
     } catch (e) {
       console.error('[update_url] Failed: ' + e);
+    }
+    this.url = url_resource_to_meow(url_got);
+    if (this.url != this.last_updated_url) {
+      // Update web view
+      this.update_web_settings();
+      let tabs = this.storage.get('bunch_of_tabs') as bunch_of_tabs;
+      tabs.NodeControllers[this.index].update(tabs.Tabs[this.index]);
+      console.log('[update_url] Update webview for a change in url: [' + this.url + ']!');
+      this.last_updated_url = this.url;
     }
     return this.url;
   }

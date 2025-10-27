@@ -107,20 +107,20 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 - [x] Cache management and clear
 - [x] Ads blocking
 - [x] Share / Copy link
+- [ ] Distributed data sync for History & Bookmarks, etc
 - [ ] Require biometric access control for History
 - [ ] Require biometric access control for Bookmarks
-- [ ] Distributed data sync for History & Bookmarks, etc
 - [ ] Open HTML files
-- [ ] Search History
+- [x] Search History
 - [x] Customizable homepage background
 - [x] Customizable homepage shortcuts
-- [ ] Private mode
 - [x] Customizable download options: ask each time
 - [x] Direct download to system download directory
 - [x] In-page text search
 - [x] Disable JavaScript
-- [ ] Right click or long press menu on web links. (For preview and operations)
 - [x] No picture mode
+- [ ] Private mode
+- [ ] Right click or long press menu on web links. (For preview and operations)
 - [ ] Reading mode
 - [ ] Search suggestion
 - [ ] Plugins / custom scripts
@@ -138,6 +138,7 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 - [x] Customizable position for Tabs bar. (Side or Top)
 - [x] Adapt to system Back operations.
 - [x] Customizable global animation curve.
+- [ ] More advanced HarmonyOS-style visual effects.
 
 ## Constraints and limits
 

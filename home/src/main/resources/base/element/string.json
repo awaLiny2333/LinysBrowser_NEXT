@@ -738,7 +738,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "Feat: now auto remembers and recovers the window status (size, position, etc.);\nFeat: history searching!\nFeat: allow forced dark mode exemptions!\nImprove: Moved dark mode settings under Colors;\nImprove: Tried to boost launch speed...\nCode: Increased Stability!"
+      "value": "Improve: improved many details for user experience, e.g. auto focus on search input in History panel;\nFix: tens of minor bugs;\nImprove: Significant optimization of CPU usage when idle!"
     },
     {
       "name": "Whats_new_content_extra",

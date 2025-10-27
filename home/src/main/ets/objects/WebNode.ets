@@ -102,9 +102,6 @@ function WebBuilder(pk: tab_info_packed) {
         (pk.storage.get('tab_is_loading') as boolean[])[pk.index] = is_loading;
         (pk.storage.get('tab_loading_progresses') as number[])[pk.index] = progress;
 
-        pk.update_web_settings();
-        tabs.NodeControllers[pk.index].update(tabs.Tabs[pk.index]);
-
         // Get synced lists
         if (pk.index == tabs.main_tab_idx) {
           sync_current_tabs_list_info(pk.storage);
@@ -135,9 +132,6 @@ function WebBuilder(pk: tab_info_packed) {
         (pk.storage.get('tab_titles') as string[])[pk.index] = title;
         (pk.storage.get('tab_urls') as string[])[pk.index] = url;
         (pk.storage.get('tab_is_loading') as boolean[])[pk.index] = is_loading;
-
-        pk.update_web_settings();
-        tabs.NodeControllers[pk.index].update(tabs.Tabs[pk.index]);
 
         // Get synced lists
         if (pk.index == tabs.main_tab_idx) {
@@ -327,10 +321,7 @@ function WebBuilder(pk: tab_info_packed) {
         }
         // Determine web settings
         if (!intercept) {
-          pk.url = url;
-          pk.update_web_settings();
-          let tabs = pk.storage.get('bunch_of_tabs') as bunch_of_tabs;
-          tabs.NodeControllers[pk.index].update(tabs.Tabs[pk.index]);
+          pk.update_url();
         }
       }
       return intercept;
