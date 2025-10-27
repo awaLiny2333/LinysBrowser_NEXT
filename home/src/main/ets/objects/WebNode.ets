@@ -308,28 +308,32 @@ function WebBuilder(pk: tab_info_packed) {
       console.log(`[onAdsBlocked] ${e.url}: ${e.adsBlocked}`);
     })
     .onLoadIntercept((event) => {
+      let intercept = false;
       if (event) {
         let url: string = event.data.getRequestUrl();
         // Do not intercept data:
         if (url.substring(0, 5) == 'data:') {
-          return false;
-        }
-        // Do not intercept blob:
-        if (url.substring(0, 5) == 'blob:') {
-          return false;
-        }
-        // Links or urls
-        let match_domain_result = match_domain(url);
-        if (viewable_domains().includes(match_domain_result[0])) {
-          // Viewable
-          return false;
+          intercept = false;
+        } else if (url.substring(0, 5) == 'blob:') {
+          // Do not intercept blob:
+          intercept = false;
+        } else if (viewable_domains().includes(match_domain(url)[0])) {
+          // Viewable Links or urls
+          intercept = false;
         } else {
           // Not viewable, perhaps is a link that can jump?
           pk.storage.set('potential_jump_link', url);
-          return true;
+          intercept = true;
+        }
+        // Determine web settings
+        if (!intercept) {
+          pk.url = url;
+          pk.update_web_settings();
+          let tabs = pk.storage.get('bunch_of_tabs') as bunch_of_tabs;
+          tabs.NodeControllers[pk.index].update(tabs.Tabs[pk.index]);
         }
       }
-      return false;
+      return intercept;
     })
     .onPermissionRequest((event) => {
       if (!event) {
