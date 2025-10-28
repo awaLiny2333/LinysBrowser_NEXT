@@ -216,7 +216,6 @@ struct meowTitleBar {
               .allowDrop(null)
               .visibility(this.showing_scratching_board ? Visibility.Hidden : Visibility.Visible)
               .height(!this.showing_search_extracted_field ? capsule_bar_height() : 0)
-              .padding(!this.showing_search_extracted_field ? { left: 16, right: 16 } : {})
               .fontWeight(FontWeight.Regular)
               .fontColor(this.color_current_font)
               .caretColor(this.color_current_font)
@@ -224,6 +223,7 @@ struct meowTitleBar {
               .translate({ y: !this.showing_search_extracted_field ? 0 : -50 })
               .opacity(!this.showing_search_extracted_field ? (this.showing_scratching_board ? 0.8 : 1) : 0)
               .animation(animation_default())
+              .padding(!this.showing_search_extracted_field ? { left: 16, right: 16 } : {})
               .onDragEnter(() => {
                 this.showing_scratching_board = false;
               })
@@ -249,13 +249,13 @@ struct meowTitleBar {
               .allowDrop(null)
               .visibility(this.showing_scratching_board ? Visibility.Hidden : Visibility.Visible)
               .height(this.showing_search_extracted_field ? capsule_bar_height() : 0)
-              .padding(this.showing_search_extracted_field ? { left: 16, right: 16 } : {})
               .fontWeight(FontWeight.Regular)
               .fontColor(this.color_current_font)
               .caretColor(this.color_current_font)
               .translate({ y: this.showing_search_extracted_field ? 0 : 50 })
               .opacity(this.showing_search_extracted_field ? (this.showing_scratching_board ? 0.8 : 1) : 0)
               .animation(animation_default())
+              .padding(this.showing_search_extracted_field ? { left: 16, right: 16 } : {})
               .onDragEnter(() => {
                 this.showing_scratching_board = false;
               })
