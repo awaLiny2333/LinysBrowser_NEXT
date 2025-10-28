@@ -1,7 +1,7 @@
 import { animation_default, click_effect_default, fontSize_Large } from '../../hosts/bunch_of_defaults';
 import linysSymbol from '../texts/linysSymbol';
 
-// @Reusable // Is this OK?
+// @Reusable // Is this OK? // No, will cause some show buttons fail to switch state.
 @Component
 struct linysShowButton {
   // Colors
