@@ -4,7 +4,7 @@ import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { sandbox_read_arrayBuffer_sync, sandbox_unlink_sync } from '../../utils/storage_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { check_want } from '../../utils/want_tools';
-import { storage_of_id, storage_of_index, window_index_of_id } from '../../utils/ui_tools';
+import { run_time, storage_of_id, storage_of_index, window_index_of_id } from '../../utils/ui_tools';
 import lazy { drop_to_scratching_board } from '../../utils/drag_drop_tools';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysText from '../../components/texts/linysText';
@@ -30,13 +30,13 @@ struct meowTabsVertical {
   @LocalStorageLink('want_action') want_action: string = '';
   @LocalStorageLink('want_type') want_type: string = '';
   // Hosts and environments
+  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
+  @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
-  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   @LocalStorageLink('showing_tabs') showing_tabs: boolean = false;
   @LocalStorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
   @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
-  @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
   // Surf
   @StorageLink('home_url') home_url: string = '';
   @StorageLink('new_tab_url') new_tab_url: string = '';
@@ -249,6 +249,7 @@ struct meowTabsVertical {
       .height("100%")
       .onAppear(() => {
         this.my_visibility = Visibility.Visible;
+        console.log(`[Meow][meowTabsvertical] onAppear! (${run_time(this.storage)} ms)`)
       })
       .onAreaChange((_o, n) => {
         this.scroll_area_height = n.height as number - 60;
@@ -656,11 +657,11 @@ struct TabButton {
   tab_height_default: number = 42;
   @State tab_height: number = 0;
   // Public
+  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @LocalStorageLink('my_window_id') my_window_id: string = '';
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
-  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
-  @LocalStorageLink('tab_titles') tab_titles: string[] = []
+  @LocalStorageLink('tab_titles') tab_titles: string[] = [];
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Gateways
@@ -669,8 +670,6 @@ struct TabButton {
   // Colors
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
-  // Animation
-  @State pressing: boolean = false;
 
   build() {
     RelativeContainer() {
@@ -759,15 +758,6 @@ struct TabButton {
     // .clip(true)
     .height(this.tab_height)
     .animation(animation_default())
-    .onTouch((event) => {
-      if (event.type == TouchType.Up) {
-        this.pressing = false;
-        // If touch ends
-      } else {
-        this.pressing = true;
-        // If touching
-      }
-    })
     .width("100%")
     .clickEffect(click_effect_default())
     .draggable(true)

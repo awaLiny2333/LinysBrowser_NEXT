@@ -14,7 +14,7 @@ import { bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import { drop_to_scratching_board } from '../../utils/drag_drop_tools';
-import { current_tabs_style_is_horizontal, is_some_dialogs_opened, storage_of_id } from '../../utils/ui_tools';
+import { current_tabs_style_is_horizontal, is_some_dialogs_opened, run_time, storage_of_id } from '../../utils/ui_tools';
 import { search_engine } from '../../hosts/bunch_of_search_engines';
 import lazy { add_transparency } from '../../utils/color_tools';
 import lazy { copy } from '../../utils/clipboard_tools';
@@ -86,7 +86,8 @@ struct meowTitleBar {
   @LocalStorageLink('showing_app_settings') showing_app_settings: boolean = false;
   @LocalStorageLink('showing_downloads') showing_downloads: boolean = false;
   @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
-  @State address_analyzers_desc_close_cd: number = 0;
+  @State address_analyzers_desc_showing: boolean = false;
+  address_analyzers_desc_close_cd_timeout_id: number | undefined = undefined;
   @State horizontal_tabs_height: number = 120;
   @LocalStorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
   @LocalStorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
@@ -145,15 +146,12 @@ struct meowTitleBar {
           .width("100%")
           .animation(animation_default())
           .constraintSize({ minHeight: 20 })
-      } // Estimated Destination
 
-      ThisPageInfo({
-        current_title: this.current_title,
-        current_url: this.current_url
-      }) // Page Info
-        .visibility(this.current_in_page_searching_stats_total <= 0 && this.showing_more_options && !this.showing_scratching_board
-          ? Visibility.Visible : Visibility.None)
-        .animation(animation_default())
+        ThisPageInfo({
+          current_title: this.current_title,
+          current_url: this.current_url
+        })
+      } // Estimated Destination & This Page Info
 
       RelativeContainer() {
         Row({ space: this.tablet_mode ? 10 : 6 }) {
@@ -179,12 +177,13 @@ struct meowTitleBar {
               this.go_forward();
             })
 
-          SymbolGlyph(!this.current_is_loading ? $r('sys.symbol.arrow_clockwise') : $r('sys.symbol.xmark'))
+          SymbolGlyph(!this.current_is_loading ? $r('sys.symbol.arrow_clockwise') : $r('sys.symbol.xmark')) // Refresh
             .fontSize(fontSize_Icon_Button())
             .fontColor([this.color_current_font])
             .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.current_is_loading)
             .visibility(this.visible_when_no_panels_open_in_normal_mode())
             .animation(animation_default())
+            .keyboardShortcut(this.bunch_of_key_shortcuts.refresh.main_key, this.bunch_of_key_shortcuts.refresh.modifier)
             .onClick(() => {
               if (this.current_is_loading) {
                 this.stop_page()
@@ -192,7 +191,6 @@ struct meowTitleBar {
                 this.refresh_page()
               }
             })
-            .keyboardShortcut(this.bunch_of_key_shortcuts.refresh.main_key, this.bunch_of_key_shortcuts.refresh.modifier)
 
           linysSymbol({
             symbol_glyph_target: 'sys.symbol.house'
@@ -213,18 +211,18 @@ struct meowTitleBar {
         .id('left_controls')
 
         Row({ space: 10 }) {
-          RelativeContainer() {
+          Column() {
             TextInput({ text: this.search_input })
               .allowDrop(null)
               .visibility(this.showing_scratching_board ? Visibility.Hidden : Visibility.Visible)
-              .height(capsule_bar_height())
+              .height(!this.showing_search_extracted_field ? capsule_bar_height() : 0)
+              .padding(!this.showing_search_extracted_field ? { left: 16, right: 16 } : {})
               .fontWeight(FontWeight.Regular)
               .fontColor(this.color_current_font)
               .caretColor(this.color_current_font)
               .selectedBackgroundColor(this.color_current_font)
-              .offset({ y: !this.showing_search_extracted_field ? 0 : -50 })
+              .translate({ y: !this.showing_search_extracted_field ? 0 : -50 })
               .opacity(!this.showing_search_extracted_field ? (this.showing_scratching_board ? 0.8 : 1) : 0)
-              .height(this.showing_search_extracted_field ? 0 : 36)
               .animation(animation_default())
               .onDragEnter(() => {
                 this.showing_scratching_board = false;
@@ -246,18 +244,17 @@ struct meowTitleBar {
               .id('address_bar')
               .keyboardShortcut(!this.showing_search_extracted_field ? this.bunch_of_key_shortcuts.focus_address.main_key : '',
                 this.bunch_of_key_shortcuts.focus_address.modifier)
-              .clip(true)
 
             TextInput({ text: this.search_extracted_keyword })
               .allowDrop(null)
               .visibility(this.showing_scratching_board ? Visibility.Hidden : Visibility.Visible)
-              .height(capsule_bar_height())
+              .height(this.showing_search_extracted_field ? capsule_bar_height() : 0)
+              .padding(this.showing_search_extracted_field ? { left: 16, right: 16 } : {})
               .fontWeight(FontWeight.Regular)
               .fontColor(this.color_current_font)
               .caretColor(this.color_current_font)
-              .offset({ y: this.showing_search_extracted_field ? 0 : 50 })
+              .translate({ y: this.showing_search_extracted_field ? 0 : 50 })
               .opacity(this.showing_search_extracted_field ? (this.showing_scratching_board ? 0.8 : 1) : 0)
-              .height(this.showing_search_extracted_field ? 36 : 0)
               .animation(animation_default())
               .onDragEnter(() => {
                 this.showing_scratching_board = false;
@@ -289,9 +286,9 @@ struct meowTitleBar {
               .id('key_bar')
               .keyboardShortcut(this.showing_search_extracted_field ? this.bunch_of_key_shortcuts.focus_address.main_key : '',
                 this.bunch_of_key_shortcuts.focus_address.modifier)
-              .clip(true)
 
           } // Two inputs
+          .clip(true)
           .layoutWeight(1)
 
           linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right' }) // Search
@@ -306,7 +303,7 @@ struct meowTitleBar {
             text: $r(this.showing_search_extracted_field ?
               'app.string.Address_analyzer_keyword' :
               'app.string.Address_analyzer_address'),
-            show: this.address_analyzers_desc_close_cd > 0,
+            show: this.address_analyzers_desc_showing,
           })// Key Link
             .visibility(this.showing_scratching_board ? Visibility.None : this.search_extracted_field_available ? Visibility.Visible : Visibility.None)
             .onClick(() => {
@@ -319,7 +316,12 @@ struct meowTitleBar {
                   focusControl.requestFocus('address_bar');
                 }
               }
-              this.address_analyzers_desc_close_cd = 1000;
+              this.address_analyzers_desc_showing = true;
+              clearTimeout(this.address_analyzers_desc_close_cd_timeout_id);
+              this.address_analyzers_desc_close_cd_timeout_id = setTimeout(() => {
+                this.address_analyzers_desc_showing = false;
+                this.address_analyzers_desc_close_cd_timeout_id = undefined;
+              }, 1200)
             })
             .animation(animation_default())
 
@@ -569,11 +571,12 @@ struct meowTitleBar {
     .animation(animation_default())
     .onAppear(() => {
       // console.log("[Meow][meowTitleBar] Title Bar READY")
-      setInterval(() => {
-        if (this.address_analyzers_desc_close_cd > 0) {
-          this.address_analyzers_desc_close_cd -= 1000;
-        }
-      }, 1000)
+      // setInterval(() => {
+      //   if (this.address_analyzers_desc_close_cd > 0) {
+      //     this.address_analyzers_desc_close_cd -= 1000;
+      //   }
+      // }, 1000);
+      console.log(`[Meow][meowTitleBar] onAppear! (${run_time(this.storage)} ms)`);
     })
     .keyboardShortcut(this.bunch_of_key_shortcuts.in_page_search.main_key, this.bunch_of_key_shortcuts.in_page_search.modifier, () => {
       this.on_search_in_page_key_shortcut();
@@ -973,6 +976,10 @@ struct ThisPageInfo {
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
+  // UI
+  @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
+  @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
+  @LocalStorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
 
   build() {
     Row({ space: 15 }) {
@@ -1008,6 +1015,9 @@ struct ThisPageInfo {
         })
     } // Title Bar for This Page Info display
     .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
+    .visibility(this.current_in_page_searching_stats_total <= 0 && this.showing_more_options && !this.showing_scratching_board
+      ? Visibility.Visible : Visibility.None)
+    .animation(animation_default())
     .padding({ left: 15, right: 15, top: 6 })
     .width("100%")
   }

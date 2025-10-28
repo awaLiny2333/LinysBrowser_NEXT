@@ -10,7 +10,7 @@ import linysPathTree from '../../components/linysPathTree';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 import lazy woofSelectBookmarksPath from '../../dialogs/prompts/woofSelectBookmarksPath';
-import { current_tabs_style_is_horizontal, storage_of_id } from '../../utils/ui_tools';
+import { current_tabs_style_is_horizontal, run_time, storage_of_id } from '../../utils/ui_tools';
 import linysExpandableCardItem from '../../components/layouts/linysExpandableCardItem';
 import { unifiedDataChannel } from '@kit.ArkData';
 
@@ -315,7 +315,7 @@ struct meowBookmarks {
     .width("100%")
     .height("100%")
     .onAppear(() => {
-      // console.log("[Meow][meowBookmarks] Bookmarks READY")
+      console.log(`[Meow][meowBookmarks] onAppear! (${run_time(this.storage)} ms)`);
       this.on_appear();
     })
     .gesture(

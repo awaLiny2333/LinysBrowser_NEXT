@@ -266,6 +266,7 @@ struct meowWebView {
     .height("100%")
     .onAppear(() => {
       // console.log("[Meow][meowWebView] WebViews READY")
+      console.log(`[Meow][meowWebView] onAppear! (${run_time(this.storage)} ms)`);
     })
   }
 
