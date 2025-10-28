@@ -527,7 +527,7 @@ struct meowTitleBar {
     .clip(true)
     .onDrop((e) => {
       try {
-        let drop_ok = drop_to_scratching_board(e, this.storage);
+        let drop_ok = drop_to_scratching_board(e, this.storage, false);
         if (!drop_ok) {
           this.showing_scratching_board = false;
         }

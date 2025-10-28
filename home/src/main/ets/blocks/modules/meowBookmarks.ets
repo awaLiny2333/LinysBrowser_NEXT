@@ -12,6 +12,7 @@ import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleBut
 import lazy woofSelectBookmarksPath from '../../dialogs/prompts/woofSelectBookmarksPath';
 import { current_tabs_style_is_horizontal, storage_of_id } from '../../utils/ui_tools';
 import linysExpandableCardItem from '../../components/layouts/linysExpandableCardItem';
+import { unifiedDataChannel } from '@kit.ArkData';
 
 @Component
 struct meowBookmarks {
@@ -79,7 +80,7 @@ struct meowBookmarks {
                 // To ask webViews to show
                 height_of_panel: this.scroll_area_height, // for animation params
                 parent_path: this.looking_at_path, // for get_my_path()
-              });
+              })
             },)
 
             Column()
@@ -303,13 +304,12 @@ struct meowBookmarks {
           .onClick(() => {
             this.showing_navigator = !this.showing_navigator;
           })
-
-        linysPathTree({
-          current_viewing_path: this.looking_at_path,
-        })// Path indicator
-          .height(this.showing_navigator ? undefined : 0)
-          .animation(animation_default())
       }
+      linysPathTree({
+        current_viewing_path: this.looking_at_path,
+      })// Path indicator
+        .height(this.showing_navigator ? undefined : 0)
+        .animation(animation_default())
     } // List of directory, Operation buttons and edit TextInputs
     .justifyContent(FlexAlign.End)
     .width("100%")
@@ -334,25 +334,35 @@ struct meowBookmarks {
           // console.info('Pan end');
           // console.info('Pan end timeStamp is: ' + event.timestamp);
           if (!current_tabs_style_is_horizontal(this.storage)) {
-            if (this.pan_x < 0) {
-              // ← CLose if Left align
-              if (!this.is_right_align()) {
+            if (this.is_right_align()) {
+              if (this.pan_x < 0) {
+                // Nothing happens
+                this.showing_tabs = true;
+              } else {
+                // → Close panel
                 this.showing_bookmarks = false;
               }
             } else {
-              // → Switch to Tabs
-              this.showing_bookmarks = false;
-              this.showing_tabs = true;
+              if (this.pan_x < 0) {
+                // ← Close panel
+                this.showing_bookmarks = false;
+              } else {
+                // → Nothing happens
+                this.showing_tabs = true;
+              }
             }
           } else {
-            // Directly Close if Horizontal tab
-            if (this.pan_x > 0 && this.is_right_align()) {
-              // →
-              this.showing_bookmarks = false;
-            }
-            if (this.pan_x < 0 && !this.is_right_align()) {
-              // →
-              this.showing_bookmarks = false;
+            if (this.is_right_align()) {
+              // Directly Close if Horizontal tab
+              if (this.pan_x > 0) {
+                // →
+                this.showing_bookmarks = false;
+              }
+            } else {
+              if (this.pan_x < 0) {
+                // →
+                this.showing_bookmarks = false;
+              }
             }
           }
         })
@@ -713,6 +723,19 @@ struct bookmarkItem {
       },
       content_edit: (): void => {
         this.contents();
+      },
+      can_drag: this.my_type == 'bookmark',
+      onDrag: (event) => {
+        try {
+          // Drag this tab
+          let record = new unifiedDataChannel.Hyperlink();
+          record.url = this.my_link;
+          record.description = this.my_label;
+          let unifiedData = new unifiedDataChannel.UnifiedData(record);
+          (event as DragEvent).setData(unifiedData);
+        } catch (e) {
+          console.error('[Meow][Tabs] Set drag data failed: ' + e);
+        }
       }
     })
       .onAppear(() => {

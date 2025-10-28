@@ -178,7 +178,7 @@ struct meowTabsHorizontal {
       })
       .onDrop((e) => {
         try {
-          let drop_ok = drop_to_scratching_board(e, this.storage);
+          let drop_ok = drop_to_scratching_board(e, this.storage, true);
           if (!drop_ok) {
             this.showing_scratching_board = false;
           }
@@ -187,7 +187,8 @@ struct meowTabsHorizontal {
         }
       })
       .onDragEnter(() => {
-        this.showing_scratching_board = true;
+        // this.showing_scratching_board = true;
+        this.showing_scratching_board = false;
         this.showing_more_options = false;
       })
       .onDragLeave(() => {

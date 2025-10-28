@@ -7,7 +7,7 @@ import { storage_of_index, window_index_of_id } from './ui_tools';
  * Pass a DragEvent and some of the contents of correct type would be added to meowScratchingBoard
  * @param e DragEvent
  * */
-export function drop_to_scratching_board(e: DragEvent, storage: LocalStorage) {
+export function drop_to_scratching_board(e: DragEvent, storage: LocalStorage, openLinks: boolean) {
   let drop_ok = false;
   try {
     let drop_data_records = e.getData().getRecords();
@@ -16,20 +16,26 @@ export function drop_to_scratching_board(e: DragEvent, storage: LocalStorage) {
       let record = drop_data_records[i];
       console.log('[Meow][drop_to_scratching_board][record.getType()][' + i + '] ' + record.getType());
       if (record.getType() == uniformTypeDescriptor.UniformDataType.HYPERLINK) {
-        // Push Hyperlink
         let desc = (record as unifiedDataChannel.Hyperlink).description;
         let url = (record as unifiedDataChannel.Hyperlink).url;
-        if (desc && !result_list_string.includes(desc)) {
-          // Push link description
-          result_list_string.push(desc);
-          drop_ok = true;
+
+        if (openLinks) {
+          // Directly open
+          storage.set('universal_new_tab_gateway', url);
+        } else {
+          // Push Hyperlink
+          if (desc && !result_list_string.includes(desc)) {
+            // Push link description
+            result_list_string.push(desc);
+            drop_ok = true;
+          }
+          if (!result_list_string.includes(url)) {
+            // Push link
+            result_list_string.push(url);
+            drop_ok = true;
+          }
+          console.log("[drop_to_scratching_board] Hyperlink url: [" + url + "]");
         }
-        if (!result_list_string.includes(url)) {
-          // Push link
-          result_list_string.push(url);
-          drop_ok = true;
-        }
-        console.log("[drop_to_scratching_board] Hyperlink url: [" + url + "]");
 
       } else if (record.getType() == uniformTypeDescriptor.UniformDataType.PLAIN_TEXT) {
         // Push text
@@ -61,7 +67,8 @@ export function drop_to_scratching_board(e: DragEvent, storage: LocalStorage) {
             let from_storage = storage_of_index(data[0]);
             let from_bunch_of_tabs = from_storage.get('bunch_of_tabs') as bunch_of_tabs;
             let to_window = window_index_of_id(storage.get('my_window_id') as string);
-            console.log('[drop_to_scratching_board] Got a tab! From: window_index = ' + from_window + ', tab_index = ' + from_tab + ', to_window_index = ' + to_window + '.');
+            console.log('[drop_to_scratching_board] Got a tab! From: window_index = ' + from_window + ', tab_index = ' + from_tab + ', to_window_index = ' + to_window +
+              '.');
             // Move tab, notify from window.
             if (from_window == to_window && from_bunch_of_tabs.Labels.length == 1) {
               // Moving the only tab in a window back into the window. This is meaningless so DO NOTHING.

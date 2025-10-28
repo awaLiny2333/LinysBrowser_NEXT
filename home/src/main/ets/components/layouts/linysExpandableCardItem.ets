@@ -11,8 +11,9 @@ struct linysExpandableCardItem {
   @Prop default_background_color: ResourceColor | undefined = undefined;
   @Prop show_border: boolean | undefined = undefined;
   @State is_pressing: boolean = false;
+  @State is_dragging: boolean = false;
   @State is_press_timing_ok: boolean = false;
-  press_timing: number = 0;
+  press_start_time: number | undefined = undefined;
   button_height_default: number = 42;
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
@@ -20,11 +21,12 @@ struct linysExpandableCardItem {
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // execution
   onExecution?: () => void;
+  onDrag?: (event: DragEvent) => void;
   // Pass in content components
   @BuilderParam content_edit: () => void;
   @BuilderParam title_extras: () => void;
-  // Press
-  press_interval_id: number | undefined = undefined;
+  // Actions
+  @Prop can_drag: boolean = false;
 
   build() {
     Column() {
@@ -73,21 +75,39 @@ struct linysExpandableCardItem {
         top: { anchor: "__container__", align: VerticalAlign.Top }
       })
       .onTouch((event) => {
-        if (event.type == TouchType.Up) {
-          this.is_pressing = false;
-          // If touch ends
-        } else {
-          this.is_pressing = true;
-          // If touching
-        }
-      })
-      .onClick(() => {
-        if (this.is_press_timing_ok) {
-          this.is_editing = !this.is_editing;
+        if (this.is_dragging) {
           return;
-        } // Toggle Edit Panel
-        if (this.onExecution) {
-          this.onExecution();
+        }
+        // Up
+        if (event.type == TouchType.Up) {
+          console.log('[linysExpandableCardItem] onTouch UP!')
+          this.is_pressing = false;
+          this.press_start_time = undefined;
+          // If touch ends, determine if is click or long press
+          if (this.is_press_timing_ok) {
+            // Toggle Edit Panel
+            this.is_editing = !this.is_editing;
+            this.is_press_timing_ok = false;
+          } else {
+            // Click Execution
+            if (this.onExecution) {
+              this.onExecution();
+            }
+          }
+          return;
+        }
+        // If is touching
+        this.is_pressing = true;
+        if (this.press_start_time) {
+          // See if time is enough to trigger long press action
+          let press_time = Date.now() - this.press_start_time;
+          if (press_time > 160) {
+            this.is_press_timing_ok = true;
+          }
+        } else {
+          // Set press start time
+          console.log('[linysExpandableCardItem] onTouch DOWN!')
+          this.press_start_time = Date.now();
         }
       })
       .height(this.button_height_default)
@@ -99,11 +119,10 @@ struct linysExpandableCardItem {
       })
 
       Column({ space: 10 }) {
-        // Contents
         if (this.content_edit) {
           this.content_edit();
         }
-      }
+      } // Contents
       .padding({
         top: 6,
         left: 14,
@@ -124,27 +143,22 @@ struct linysExpandableCardItem {
     })
     .width("100%")
     .animation(animation_default())
-    .onAppear(() => {
-      this.enable_press();
-    })
-  }
-
-  enable_press() {
-    clearInterval(this.press_interval_id);
-    this.press_interval_id = setInterval(() => {
-      if (this.is_pressing) {
-        this.press_timing += 10;
-      } else {
-        this.press_timing = 0;
+    .draggable(this.can_drag)
+    .onDragStart((event) => {
+      this.is_dragging = true;
+      console.log('[linysExpandableCardItem] onDragStart!');
+      this.press_start_time = undefined;
+      this.is_pressing = false;
+      this.is_press_timing_ok = false;
+      this.is_editing = false;
+      if (this.onDrag) {
+        this.onDrag(event);
       }
-      this.is_press_timing_ok = this.press_timing > 16;
-      // Count press time
-    }, 100)
-  }
-
-  disable_press() {
-    clearInterval(this.press_interval_id);
-    this.press_interval_id = undefined;
+    })
+    .onDragEnd(()=>{
+      this.is_dragging = false;
+      console.log('[linysExpandableCardItem] onDragEnd!');
+    })
   }
 }
 

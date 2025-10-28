@@ -738,7 +738,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "Improve: improved many details for user experience, e.g. auto focus on search input in History panel;\nFix: tens of minor bugs;\nImprove: Significant optimization of CPU usage when idle!"
+      "value": "feat: HyperLinks dragged into Tabs panel would be directly opened!\nImprove: improved many details for user experience, e.g. auto focus on search input in History panel;\nFix: tens of minor bugs;\nImprove: Significant optimization of CPU usage when idle!"
     },
     {
       "name": "Whats_new_content_extra",

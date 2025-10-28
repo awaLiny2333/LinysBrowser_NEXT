@@ -255,7 +255,7 @@ struct meowTabsVertical {
       })
       .onDrop((e) => {
         try {
-          let drop_ok = drop_to_scratching_board(e, this.storage);
+          let drop_ok = drop_to_scratching_board(e, this.storage, true);
           if (!drop_ok) {
             this.showing_scratching_board = false;
           }
@@ -264,7 +264,8 @@ struct meowTabsVertical {
         }
       })
       .onDragEnter(() => {
-        this.showing_scratching_board = true;
+        // this.showing_scratching_board = true;
+        this.showing_scratching_board = false;
         this.showing_more_options = false;
       })
       .onDragLeave(() => {
@@ -279,14 +280,23 @@ struct meowTabsVertical {
             this.pan_x += e.offsetX;
           })
           .onActionEnd(() => {
-            if (this.pan_x < 0) {
-              // ← Switch to Bookmarks
-              this.showing_bookmarks = true;
-              this.showing_tabs = false;
-            }
-            if (this.pan_x > 0 && this.is_right_align()) {
-              // → Right Align Close panel
-              this.showing_tabs = false;
+            if (this.is_right_align()) {
+              if (this.pan_x < 0) {
+                // ← Switch to Bookmarks
+                this.showing_bookmarks = true;
+                // this.showing_tabs = false;
+              } else {
+                // → Right Align Close panel
+                this.showing_tabs = false;
+              }
+            } else {
+              if (this.pan_x < 0) {
+                // ← Close panel
+                this.showing_tabs = false;
+              } else {
+                // → Open bookmarks
+                this.showing_bookmarks = true;
+              }
             }
           })
       )
