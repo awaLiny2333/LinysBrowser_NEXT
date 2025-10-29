@@ -143,7 +143,7 @@ function WebBuilder(pk: tab_info_packed) {
 
       // Get and save web_state
       tabs.update_web_state(pk.index);
-      if (window_index_of_id(tabs.my_id) == 0) {
+      if (window_index_of_id(tabs.my_id) == 0 && !pk.pre_restoration_stage) {
         tabs.save_web_state_to_sandbox(pk.index);
       }
 
@@ -153,7 +153,7 @@ function WebBuilder(pk: tab_info_packed) {
       }
 
       // Mark End Recovery
-      if (pk.restore_on_creation) {
+      if (pk.pre_restoration_stage) {
         pk.delayed_set_restore_ok(() => {
           console.log('[Tabs] Restore OK for #' + pk.index + ' !');
           (pk.storage.get('tab_restore_on_creations') as boolean[])[pk.index] = false;
@@ -205,7 +205,7 @@ function WebBuilder(pk: tab_info_packed) {
       }
 
       // Get and save web_state
-      if (!pk.restore_on_creation) {
+      if (!pk.pre_restoration_stage) {
         tabs.update_web_state(pk.index);
         if (window_index_of_id(tabs.my_id) == 0) {
           // TODO: Reduce save web_state to sandbox frequency.
@@ -277,26 +277,12 @@ function WebBuilder(pk: tab_info_packed) {
         console.error('[meowWebView] onControllerAttached enableIntelligentTrackingPrevention error: ' + e);
       }
 
+      let tabs = pk.storage.get('bunch_of_tabs') as bunch_of_tabs;
+
       // Restore Web State
-      setTimeout(() => {
-        if (pk?.restore_on_creation) {
-          try {
-            let web_states = pk.storage.get('restore_web_state_arrays') as Uint8Array[];
-            let web_state = web_states[pk.index];
-            if (web_state) {
-              pk.url = 'uwu';
-              pk.title = 'uwu';
-              pk.controller.clearHistory();
-              pk.controller.restoreWebState(web_state);
-              console.log("[Meow][meowWebView] Restore web " + pk.index.toString() + ", state Length: " + web_state.length.toString());
-            } else {
-              console.error("[Meow][meowWebView] Restore web state failed for an undefined web_state!")
-            }
-          } catch (e) {
-            console.error("[Meow][meowWebView] Restore web state failed! " + e);
-          }
-        }
-      }, 0);
+      if (pk.index == tabs.main_tab_idx || pk.index == tabs.sub_tab_idx) {
+        pk.restore();
+      }
     })
     .onAdsBlocked((e) => {
       console.log(`[onAdsBlocked] ${e.url}: ${e.adsBlocked}`);
@@ -421,7 +407,7 @@ function src_of_tab_index(target_packed_tab_info: tab_info_packed): string {
   if (target_packed_tab_info == undefined) {
     return "";
   } else {
-    if (target_packed_tab_info.restore_on_creation) {
+    if (target_packed_tab_info.pre_restoration_stage) {
       return "";
     } else {
       return url_meow_to_resource(target_packed_tab_info.url);

@@ -242,6 +242,8 @@ struct HorizontalTabButton {
   @LocalStorageLink('my_window_id') my_window_id: string = '';
   // Host
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
+  // Data
+  @LocalStorageLink('tab_restore_on_creations') tab_restore_on_creations: boolean[] = [false];
   // Gateways
   @LocalStorageLink('universal_close_tab_gateway') close_tab_gateway: number = -1;
   @LocalStorageLink('universal_tab_button_click_gateway') uni_tab_button_clicked: number = -1;
@@ -321,6 +323,7 @@ struct HorizontalTabButton {
         ? this.color_current_font : "transparent"
     })
     .backgroundColor(this.color_current_primary)
+    .opacity(this.tab_restore_on_creations[this.index] ? 0.5 : 1)
     .animation(animation_default())
     .onAppear(() => {
       setTimeout(() => {

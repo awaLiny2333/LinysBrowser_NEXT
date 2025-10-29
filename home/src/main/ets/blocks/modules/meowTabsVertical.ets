@@ -1,7 +1,7 @@
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { animation_default, click_effect_default, fontSize_Large, fontSize_Normal, url_default_blank } from '../../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
-import { sandbox_read_arrayBuffer_sync, sandbox_unlink_sync } from '../../utils/storage_tools';
+import { sandbox_read_arrayBuffer_sync, sandbox_read_text_sync, sandbox_unlink_sync } from '../../utils/storage_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { check_want } from '../../utils/want_tools';
 import { run_time, storage_of_id, storage_of_index, window_index_of_id } from '../../utils/ui_tools';
@@ -45,7 +45,7 @@ struct meowTabsVertical {
   @LocalStorageLink('tab_titles') tab_titles: string[] = []
   @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
   // Other Info / Statuses
-  @State pre_recover_tabs_finished: boolean = false;
+  pre_recover_tabs_finished: boolean = false;
   @LocalStorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
   @StorageLink('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
   // Delay
@@ -54,7 +54,7 @@ struct meowTabsVertical {
   @State my_visibility: Visibility = Visibility.Hidden;
   scroll_controller: Scroller = new Scroller();
   @State scroll_area_height: number = 0;
-  @State need_help_scroll: boolean = true;
+  need_help_scroll: boolean = true;
   @State paralleow_description_height: number = 0;
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
@@ -124,6 +124,7 @@ struct meowTabsVertical {
         // Restore. Prepare web states.
 
         let web_state_arrays_to_restore: Uint8Array[] = [];
+        let labels: string[] = [];
         for (let index = 0; index < continue_tabs_count; index++) {
           // Read continue tabs data
           let key = "continue/continue_tabs_web_state_array_" + index.toString();
@@ -136,27 +137,29 @@ struct meowTabsVertical {
             this.bunch_of_tabs.sub_tab_idx = -1;
             this.bunch_of_tabs.main_tab_idx = 0;
           }
+          // Tabs labels
+          let label_file = "continue/continue_tabs_web_state_array_" + index.toString() + '_label';
+          let label = sandbox_read_text_sync(label_file); // Name of that tab
+          label = (label == 'undefined' ? 'Meow' : label);
+          labels.push(label);
         }
 
         // Save to AppStorage for restoration use
         this.storage.setOrCreate('restore_web_state_arrays', web_state_arrays_to_restore);
 
         // Create new tabs
-        try {
-          for (let index = 0; index < web_state_arrays_to_restore.length; index++) {
-            this.new_tab("", true, false);
+        for (let index = 0; index < web_state_arrays_to_restore.length; index++) {
+          try {
+            this.new_tab("", false, false, web_state_arrays_to_restore[index], labels[index]);
+          } catch (e) {
+            console.error('[TabsVertical][CONTINUE][new_tab] ' + e);
           }
-        } catch (e) {
-          console.error('[TabsVertical][CONTINUE][new_tab] ' + e);
         }
 
-        // Try to switch tab
-        // try {
+        // Switch to *THE* tab
         this.switch_tab(continue_tabs_main_on, false, false);
-        // } catch (e) {
-        //   console.error('[TabsVertical][CONTINUE][switch_tab] ' + e);
-        // }
 
+        // Retrieve all data
         sync_all_tabs_list_info(this.storage);
 
         // Recover Paralleow
@@ -166,7 +169,7 @@ struct meowTabsVertical {
       }
     }
 
-    if (this.want_source == 'onCreate') {
+    if (this.want_source == 'onCreate') { // TODO: Is this check necessary?
       check_want(this.want_uri, this.want_action, this.want_type, this.storage);
     }
 
@@ -227,7 +230,7 @@ struct meowTabsVertical {
 
           linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
             .onClick(() => {
-              this.new_tab("", false, true);
+              this.new_tab("", true, false);
             })
             .keyboardShortcut(this.bunch_of_key_shortcuts.new_tab.main_key, this.bunch_of_key_shortcuts.new_tab.modifier)
         } // New Tab and Paralleow Button
@@ -309,24 +312,28 @@ struct meowTabsVertical {
   /**
    * Creates a new tab.
    * @param target_url A string, if link is "", then load the default new_tab_url set in this object.
-   * @param do_recovery A boolean, if set true, then the tab will restore the serialized web state in
+   * @param save_to_settings if set true, then will save the tabs index status to app settings for next launch to continue.
+   * @param is_from_receive if set true, will get tab from AppStorage instead of creating a new one.
+   * @param init_state if set value, then the tab will restore the passed serialized web state.
    * @description While if new_tab_url is also not set ("" or undefined), then will load the url_default_blank().
    * */
-  new_tab(target_url: string, do_recovery: boolean, save_to_settings: boolean, receive: boolean = false) {
+  new_tab(target_url: string, save_to_settings: boolean, is_from_receive: boolean, init_state?: Uint8Array, placeholder_label?: string) {
     let t0 = Date.now();
 
     this.storage.set('extra_background', false);
 
-    if (receive) {
+    if (is_from_receive) {
       this.bunch_of_tabs.receive_tab(this.storage);
     } else {
-      this.bunch_of_tabs.newTab(this.getUIContext(), target_url, do_recovery);
+      this.bunch_of_tabs.newTab(this.getUIContext(), target_url, init_state, placeholder_label);
     }
 
     // Get synced lists
     sync_all_tabs_list_info(this.storage);
 
-    if (!do_recovery) {
+    if (init_state) {
+      // Nothing happens
+    } else {
       // Store tabs count
       let store_tabs_count = this.bunch_of_tabs.get_tabs_count();
       bunch_of_settings.set("continue_tabs_count", store_tabs_count);
@@ -366,7 +373,7 @@ struct meowTabsVertical {
       this.bunch_of_tabs.switchToTab(target);
       console.log('[Meow][meowTabs] Switch to tab ' + this.bunch_of_tabs.main_tab_idx.toString());
     } catch (e) {
-      console.error('[TabsVertical][switch_tab][a] ' + e);
+      console.error('[Meow][TabsVertical][switch_tab][a] ' + e);
     }
     // Update history
     if (this.pre_recover_tabs_finished) {
@@ -410,7 +417,7 @@ struct meowTabsVertical {
     }
 
     if (this.bunch_of_tabs.Tabs.length == 1) {
-      this.new_tab('', false, true);
+      this.new_tab('', true, false);
     }
 
     // Close
@@ -554,7 +561,7 @@ struct meowTabsVertical {
       tab = ""
     }
 
-    this.new_tab(tab, false, true);
+    this.new_tab(tab, true, false);
     setTimeout(() => {
       // Avoid opening duplicate tabs, idk why
       this.new_tab_gateway = "";
@@ -634,7 +641,7 @@ struct meowTabsVertical {
   on_receive_tab() {
     // Get data from AppStorage.
     console.log(`[on_receive_tab][RECEIVE][${this.my_window_id}]`);
-    this.new_tab('receive tab', false, true, true);
+    this.new_tab('receive tab', true, true);
     sync_all_tabs_list_info(this.storage); // TODO: this can be optimized
     this.switch_tab(this.bunch_of_tabs.Tabs.length - 1, false, true);
   }
@@ -661,7 +668,9 @@ struct TabButton {
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @LocalStorageLink('my_window_id') my_window_id: string = '';
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
+  // Data
   @LocalStorageLink('tab_titles') tab_titles: string[] = [];
+  @LocalStorageLink('tab_restore_on_creations') tab_restore_on_creations: boolean[] = [false];
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Gateways
@@ -755,7 +764,7 @@ struct TabButton {
       .keyboardShortcut(this.bunch_of_tabs.main_tab_idx == this.Label.index_key ? this.bunch_of_key_shortcuts.close_tab.main_key : '',
         this.bunch_of_key_shortcuts.close_tab.modifier)
     }
-    // .clip(true)
+    .opacity(this.tab_restore_on_creations[this.Label.index_key] ? 0.5 : 1)
     .height(this.tab_height)
     .animation(animation_default())
     .width("100%")

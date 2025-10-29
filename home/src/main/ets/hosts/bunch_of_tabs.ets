@@ -222,6 +222,11 @@ export class bunch_of_tabs {
     }
     this.main_tab_idx = -1; // Weird way to refresh
     this.main_tab_idx = target;
+
+    // Restore
+    if (target >= 0 && this.Tabs[target].still_need_restoration) {
+      this.Tabs[target].restore();
+    }
     return target;
   }
 
@@ -232,7 +237,7 @@ export class bunch_of_tabs {
    * @returns A number, the index of the new tab.
    * @description While if new_tab_url is also not set ("" or undefined), then will load the url_default_blank().
    * */
-  newTab(context: UIContext, target_url: string, recover_on_creation: boolean) {
+  newTab(context: UIContext, target_url: string, init_state?: Uint8Array, placeholder_label?: string) {
     // console.log('[bunch_of_tabs] newTab: [' + target_url + '].');
     if (target_url == "") {
       // If newing an empty tab
@@ -246,7 +251,7 @@ export class bunch_of_tabs {
     }
 
     let idx = this.Tabs.length;
-    let new_TabInfo: tab_info_packed = new tab_info_packed("Meow", target_url, storage_of_id(this.my_id), idx, recover_on_creation);
+    let new_TabInfo: tab_info_packed = new tab_info_packed(placeholder_label || 'Meow', target_url, storage_of_id(this.my_id), idx, init_state);
     let Date_ID = Date.now();
 
     // TODO: IS THIS EFFICIENT ENOUGH?
@@ -406,7 +411,7 @@ export class bunch_of_tabs {
     let r: boolean[] = [];
 
     for (let index = 0; index < this.Tabs.length; index++) {
-      r.push(this.Tabs[index].restore_on_creation);
+      r.push(this.Tabs[index].pre_restoration_stage);
     }
     return r;
   }
@@ -476,6 +481,8 @@ export class bunch_of_tabs {
       let identifier = "continue/continue_tabs_web_state_array_" + index.toString();
       if (web_state != null) {
         sandbox_save(identifier, web_state.buffer);
+        let label_identifier = "continue/continue_tabs_web_state_array_" + index.toString() + '_label';
+        sandbox_save(label_identifier, this.Tabs[index].title);
       }
     }
   }
@@ -488,13 +495,14 @@ export class bunch_of_tabs {
    * @param index The index of tab.
    * */
   save_web_state_to_sandbox(index: number) {
+    // Save to sandbox
     try {
       let web_state = this.Tabs[index].web_state_array;
-
-      // Save to sandbox
-      if (web_state && !this.Tabs[index].restore_on_creation) {
+      if (web_state) {
         let file_name = "continue/continue_tabs_web_state_array_" + index.toString();
         sandbox_save(file_name, web_state.buffer);
+        let label_identifier = "continue/continue_tabs_web_state_array_" + index.toString() + '_label';
+        sandbox_save(label_identifier, this.Tabs[index].title);
       }
     } catch (e) {
       console.error('[bunch_of_tabs][save_web_state] Error: ' + e);
@@ -558,8 +566,9 @@ export class tab_info_packed {
   searching_keyword_stats_current: number = 0; // Index of current viewing result during in-page search
   searching_keyword_stats_total: number = 0; // Total number of results of in-page search
   // Restore
-  restore_on_creation: boolean = false;
-  web_state_array: Uint8Array = new Uint8Array();
+  pre_restoration_stage: boolean = false;
+  still_need_restoration: boolean = false;
+  web_state_array: Uint8Array | undefined = undefined;
   // Update records
   last_saved_url: string = '';
   last_saved_title: string = '';
@@ -572,7 +581,7 @@ export class tab_info_packed {
    * @param link A string, the initial link when the tab is created.
    * @param restore_on_creation A boolean, optional, will restore web state on creation if the index in valid.
    */
-  constructor(title: string, url: string, storage: LocalStorage, index: number, restore_on_creation?: boolean) {
+  constructor(title: string, url: string, storage: LocalStorage, index: number, init_state?: Uint8Array) {
     this.storage = storage;
     this.controller = new webview.WebviewController();
     this.index = index;
@@ -580,9 +589,10 @@ export class tab_info_packed {
     this.url = url;
     this.is_loading = true;
     this.loading_progress = 0;
-
-    if (restore_on_creation) {
-      this.restore_on_creation = true;
+    this.web_state_array = init_state;
+    if (init_state) {
+      this.pre_restoration_stage = true;
+      this.still_need_restoration = true;
     }
   }
 
@@ -648,7 +658,7 @@ export class tab_info_packed {
    * */
   delayed_set_restore_ok(action?: () => void) {
     setTimeout(() => {
-      this.restore_on_creation = false;
+      this.pre_restoration_stage = false;
       if (action) {
         try {
           action();
@@ -667,7 +677,7 @@ export class tab_info_packed {
    * */
   check_save_history(source: string) {
     let saved = false;
-    if (!this.restore_on_creation) {
+    if (!this.pre_restoration_stage) {
       let is_new_history = (this.last_saved_url != this.url);
       if (is_new_history) {
         if (!this.url.includes("resource://")) {
@@ -723,6 +733,25 @@ export class tab_info_packed {
       this.tab_force_dark = true;
     } else {
       this.tab_force_dark = !exempt_sites.includes(domain);
+    }
+  }
+
+  /**
+   * Restores my self if possible.
+   * */
+  restore() {
+    // Restore Web State
+    if (this.pre_restoration_stage && this.web_state_array) {
+      // Restore
+      try {
+        this.url = 'uwu';
+        this.title = 'uwu';
+        this.controller.clearHistory();
+        this.controller.restoreWebState(this.web_state_array);
+        console.log("[Meow][meowWebView] Restore web " + this.index.toString() + ", state Length: " + this.web_state_array.length.toString());
+      } catch (e) {
+        console.error("[Meow][meowWebView] Restore web state failed! " + e);
+      }
     }
   }
 }
