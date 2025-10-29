@@ -110,7 +110,7 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 - [ ] Distributed data sync for History & Bookmarks, etc
 - [ ] Require biometric access control for History
 - [ ] Require biometric access control for Bookmarks
-- [ ] Open HTML files
+- [x] Open HTML files
 - [x] Search History
 - [x] Customizable homepage background
 - [x] Customizable homepage shortcuts

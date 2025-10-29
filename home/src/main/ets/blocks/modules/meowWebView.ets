@@ -198,7 +198,7 @@ struct meowWebView {
         .height('100%')
         .width('100%')
         .visibility(this.extra_background ? Visibility.Visible : Visibility.Hidden)
-        .animation(animation_default())
+        // .animation(animation_default())
 
       ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
         Column() {

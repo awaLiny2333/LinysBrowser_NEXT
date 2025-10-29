@@ -71,6 +71,7 @@ export class bunch_of_tabs {
    * */
   refresh_onWorkingTab() {
     this.Tabs[this.main_tab_idx].controller.refresh();
+    this.Tabs[this.main_tab_idx].update_url(true);
   }
 
   /**
@@ -604,9 +605,10 @@ export class tab_info_packed {
    *
    * This automatically updates the web settings as well!
    *
+   * @param force_update_web_settings Set to true if you want to force refresh web settings and trigger UI update.
    * @returns The updated url.
    * */
-  update_url() {
+  update_url(force_update_web_settings: boolean = false) {
     let url_got = this.url;
     try {
       url_got = this.controller.getUrl();
@@ -614,13 +616,13 @@ export class tab_info_packed {
       console.error('[update_url] Failed: ' + e);
     }
     this.url = url_resource_to_meow(url_got);
-    if (this.url != this.last_updated_url) {
-      // Update web view
+    if (force_update_web_settings || this.url != this.last_updated_url) {
       this.update_web_settings();
       let tabs = this.storage.get('bunch_of_tabs') as bunch_of_tabs;
+      // Update web view
       tabs.NodeControllers[this.index].update(tabs.Tabs[this.index]);
-      console.log('[update_url] Update webview for a change in url: [' + this.url + ']!');
       this.last_updated_url = this.url;
+      console.log('[update_url] Update webview for a change in url: [' + this.url + ']!');
     }
     return this.url;
   }
