@@ -65,13 +65,11 @@ export function drop_to_scratching_board(e: DragEvent, storage: LocalStorage, op
             let from_window = data[0];
             let from_tab = data[1];
             let from_storage = storage_of_index(data[0]);
-            let from_bunch_of_tabs = from_storage.get('bunch_of_tabs') as bunch_of_tabs;
             let to_window = window_index_of_id(storage.get('my_window_id') as string);
-            console.log('[drop_to_scratching_board] Got a tab! From: window_index = ' + from_window + ', tab_index = ' + from_tab + ', to_window_index = ' + to_window +
-              '.');
+            console.log('[drop_to_scratching_board] Got a tab! window_index = ' + from_window + ', tab_index = ' + from_tab + ', to_window_index = ' + to_window + '.');
             // Move tab, notify from window.
-            if (from_window == to_window && from_bunch_of_tabs.Labels.length == 1) {
-              // Moving the only tab in a window back into the window. This is meaningless so DO NOTHING.
+            if (from_window == to_window) {
+              // Moving a tab in back into its home window. This is meaningless so DO NOTHING.
             } else {
               from_storage.set('universal_move_tab_gateway_target', to_window);
               from_storage.set('universal_move_tab_gateway', data[1]);
@@ -80,6 +78,8 @@ export function drop_to_scratching_board(e: DragEvent, storage: LocalStorage, op
             console.error('[drop_to_scratching_board] Tab drop failed: ' + e);
           }
         }
+      } else {
+        console.log(`[drop_to_scratching_board] Unrecognized data type!`);
       }
     }
     // Append to start of original scratching board content
