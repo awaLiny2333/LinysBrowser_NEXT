@@ -23,11 +23,10 @@ struct meowBookmarks {
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @State viewing_contents: unified_item[] = this.bunch_of_bookmarks.root.get_content();
   @State @Watch('refresh_content_view') looking_at_path: string = "";
-  @State current_folder: folder | undefined = undefined;
+  current_folder: folder | undefined = undefined;
   // Environments
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   // UI control actions
-  @LocalStorageLink('showing_tabs') showing_tabs: boolean = false;
   @LocalStorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
   @LocalStorageLink('swapping_bookmarks') swapping_bookmarks: boolean = false;
   bookmarks_scroller: Scroller = new Scroller();
@@ -337,7 +336,7 @@ struct meowBookmarks {
             if (this.is_right_align()) {
               if (this.pan_x < 0) {
                 // Nothing happens
-                this.showing_tabs = true;
+                this.storage.set('showing_tabs', true);
               } else {
                 // → Close panel
                 this.showing_bookmarks = false;
@@ -348,7 +347,7 @@ struct meowBookmarks {
                 this.showing_bookmarks = false;
               } else {
                 // → Nothing happens
-                this.showing_tabs = true;
+                this.storage.set('showing_tabs', true);
               }
             }
           } else {

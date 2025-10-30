@@ -198,50 +198,24 @@ struct meowWebView {
         .height('100%')
         .width('100%')
         .visibility(this.extra_background ? Visibility.Visible : Visibility.Hidden)
-        // .animation(animation_default())
 
       ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
-        Column() {
-          NodeContainer(this.bunch_of_tabs.NodeControllers[Label.index_key])
-            .onAppear(() => {
-              try {
-                this.bunch_of_tabs.NodeControllers[Label.index_key].attachWeb();
-                this.bunch_of_tabs.NodeControllers[Label.index_key].rebuild();
-              } catch (e) {
-                console.error('[Tab] onAppear Failed: ' + e);
-              }
-            })
-            .width("100%")
-            .layoutWeight(1)
-
-          Column() {
-            linysText({
-              text: $r('app.string.Tabs_recovering'),
-              color: this.color_current_secondary,
-              font_weight: FontWeight.Medium
-            })
-              .padding(6)
-          } // Restore tag notice
-          .height(this.tab_restore_on_creations[Label.index_key] && this.init_OK ? undefined : 0)
-          .animation(animation_default())
-          .alignItems(HorizontalAlign.Start)
-          .justifyContent(FlexAlign.Center)
-          .width('100%')
-          .backgroundColor(this.color_current_font)
-          .opacity(0.9)
-          .clip(true)
-
-        } // Webs
-        .clip(true)
-        .borderColor(this.color_current_secondary)
-        .width(this.bunch_of_tabs.sub_tab_idx < 0 ? "100%" : this.width_tab())
-        .height(this.bunch_of_tabs.sub_tab_idx < 0 ? "100%" : this.height_tab())
-        .alignRules(this.bunch_of_tabs.main_tab_idx == Label.index_key ? this.align_rules_main_tab() : this.align_rules_sub_tab())
-        .visibility(this.my_visibility(Label.index_key))
+        NodeContainer(this.bunch_of_tabs.NodeControllers[Label.index_key])
+          .onAppear(() => {
+            try {
+              this.bunch_of_tabs.NodeControllers[Label.index_key].attachWeb();
+              this.bunch_of_tabs.NodeControllers[Label.index_key].rebuild();
+            } catch (e) {
+              console.error('[Tab] onAppear Failed: ' + e);
+            }
+          })
+          .width(this.bunch_of_tabs.sub_tab_idx < 0 ? "100%" : this.width_tab())
+          .height(this.bunch_of_tabs.sub_tab_idx < 0 ? "100%" : this.height_tab())
+          .alignRules(this.bunch_of_tabs.main_tab_idx == Label.index_key ? this.align_rules_main_tab() : this.align_rules_sub_tab())
+          .visibility(this.my_visibility(Label.index_key))
+        // Webs
       }, (Label: tab_label) => Label.timestamp.toString())
-      // }
 
-      // if (this.current_url == 'meow://home') {
       shortcuts({
         shortcut_scroll_offset: this.shortcut_scroll_offset,
       })

@@ -10,19 +10,17 @@ import {
   fontSize_Normal
 } from '../../hosts/bunch_of_defaults';
 import { webview } from '@kit.ArkWeb';
-import { bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
-import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
-import { drop_to_scratching_board } from '../../utils/drag_drop_tools';
 import { current_tabs_style_is_horizontal, is_some_dialogs_opened, run_time, storage_of_id } from '../../utils/ui_tools';
 import { search_engine } from '../../hosts/bunch_of_search_engines';
+import lazy { drop_to_scratching_board } from '../../utils/drag_drop_tools';
 import lazy { add_transparency } from '../../utils/color_tools';
 import lazy { copy } from '../../utils/clipboard_tools';
 import lazy { share_link } from '../../utils/link_tools';
-import linysText from '../../components/texts/linysText';
-import linysSymbol from '../../components/texts/linysSymbol';
-import linysShowButton from '../../components/buttons/linysShowButton';
-import meowMoreOptions from './meowMoreOptions';
+import lazy linysText from '../../components/texts/linysText';
+import lazy linysSymbol from '../../components/texts/linysSymbol';
+import lazy linysShowButton from '../../components/buttons/linysShowButton';
+import lazy meowMoreOptions from './meowMoreOptions';
 import lazy meowSuggestions from './meowSuggestions';
 import lazy meowTabsHorizontal from './meowTabsHorizontal';
 import lazy meowScratchingBoard from './meowScratchingBoard';
@@ -37,10 +35,8 @@ struct meowTitleBar {
   @LocalStorageLink('my_window_alias') my_window_alias: string = '';
   storage: LocalStorage = storage_of_id(this.my_window_id);
   // Hosts
-  @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
-  @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads(true);
   // Environments
   @LocalStorageLink('fullscreen_mode') fullscreen_mode: boolean = false;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
@@ -91,7 +87,7 @@ struct meowTitleBar {
   @State horizontal_tabs_height: number = 120;
   @LocalStorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
   @LocalStorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
-  @LocalStorageLink('delayed_load_p2') delayed_load_p2: boolean = false;
+  @LocalStorageLink('delayed_load_p3') delayed_load_p3: boolean = false;
   // settings
   @StorageLink('title_bar_position') title_bar_position: string = "";
   @StorageLink('tabs_style') tabs_style: string = "";
@@ -155,54 +151,55 @@ struct meowTitleBar {
 
       RelativeContainer() {
         Row({ space: this.tablet_mode ? 10 : 6 }) {
-          linysSymbol({
-            symbol_glyph_target: 'sys.symbol.arrow_left'
-          })// Backward
-            .enabled(this.bunch_of_tabs.current_accessBackward)
-            .opacity(this.bunch_of_tabs.current_accessBackward ? 1 : 0.5)
-            .visibility(this.visible_when_no_panels_open_in_normal_mode())
-            .animation(animation_default())
-            .onClick(() => {
-              this.go_backward();
-            })
+          if (this.delayed_load_p0) {
+            linysSymbol({
+              symbol_glyph_target: 'sys.symbol.arrow_left'
+            })// Backward
+              .enabled(this.bunch_of_tabs.current_accessBackward)
+              .opacity(this.bunch_of_tabs.current_accessBackward ? 1 : 0.5)
+              .visibility(this.visible_when_no_panels_open_in_normal_mode())
+              .animation(animation_default())
+              .onClick(() => {
+                this.go_backward();
+              })
 
-          linysSymbol({
-            symbol_glyph_target: 'sys.symbol.arrow_right'
-          })// Forward
-            .enabled(this.bunch_of_tabs.current_accessForward)
-            .opacity(this.bunch_of_tabs.current_accessForward ? 1 : 0.5)
-            .visibility(this.visible_when_no_panels_open_in_normal_mode())
-            .animation(animation_default())
-            .onClick(() => {
-              this.go_forward();
-            })
+            linysSymbol({
+              symbol_glyph_target: 'sys.symbol.arrow_right'
+            })// Forward
+              .enabled(this.bunch_of_tabs.current_accessForward)
+              .opacity(this.bunch_of_tabs.current_accessForward ? 1 : 0.5)
+              .visibility(this.visible_when_no_panels_open_in_normal_mode())
+              .animation(animation_default())
+              .onClick(() => {
+                this.go_forward();
+              })
 
-          SymbolGlyph(!this.current_is_loading ? $r('sys.symbol.arrow_clockwise') : $r('sys.symbol.xmark')) // Refresh
-            .fontSize(fontSize_Icon_Button())
-            .fontColor([this.color_current_font])
-            .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.current_is_loading)
-            .visibility(this.visible_when_no_panels_open_in_normal_mode())
-            .animation(animation_default())
-            .keyboardShortcut(this.bunch_of_key_shortcuts.refresh.main_key, this.bunch_of_key_shortcuts.refresh.modifier)
-            .onClick(() => {
-              if (this.current_is_loading) {
-                this.stop_page()
-              } else {
-                this.refresh_page()
-              }
-            })
+            SymbolGlyph(!this.current_is_loading ? $r('sys.symbol.arrow_clockwise') : $r('sys.symbol.xmark')) // Refresh
+              .fontSize(fontSize_Icon_Button())
+              .fontColor([this.color_current_font])
+              .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.current_is_loading)
+              .visibility(this.visible_when_no_panels_open_in_normal_mode())
+              .animation(animation_default())
+              .keyboardShortcut(this.bunch_of_key_shortcuts.refresh.main_key, this.bunch_of_key_shortcuts.refresh.modifier)
+              .onClick(() => {
+                if (this.current_is_loading) {
+                  this.stop_page()
+                } else {
+                  this.refresh_page()
+                }
+              })
 
-          linysSymbol({
-            symbol_glyph_target: 'sys.symbol.house'
-          })// Home
-            .visibility(this.visible_when_no_panels_open_in_normal_mode())
-            .animation(animation_default())
-            .onClick(() => {
-              this.go_home()
-            })
-
+            linysSymbol({
+              symbol_glyph_target: 'sys.symbol.house'
+            })// Home
+              .visibility(this.visible_when_no_panels_open_in_normal_mode())
+              .animation(animation_default())
+              .onClick(() => {
+                this.go_home()
+              })
+          }
         } // Title Bar of left controls
-        .height(36)
+        .height(capsule_bar_height())
         .alignRules({
           left: { anchor: '__container__', align: HorizontalAlign.Start },
           top: { anchor: '__container__', align: VerticalAlign.Top }
@@ -291,65 +288,67 @@ struct meowTitleBar {
           .clip(true)
           .layoutWeight(1)
 
-          linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right' }) // Search
-            .visibility(this.visible_when_typing())
-            .onClick(() => {
-              this.submit_searching()
-            })
-            .animation(animation_default())
+          if (this.delayed_load_p0) {
 
-          linysShowButton({
-            symbol_glyph_target: this.showing_search_extracted_field ? 'sys.symbol.text_and_t' : 'sys.symbol.link',
-            text: $r(this.showing_search_extracted_field ?
-              'app.string.Address_analyzer_keyword' :
-              'app.string.Address_analyzer_address'),
-            show: this.address_analyzers_desc_showing,
-          })// Key Link
-            .visibility(this.showing_scratching_board ? Visibility.None : this.search_extracted_field_available ? Visibility.Visible : Visibility.None)
-            .onClick(() => {
-              this.showing_search_extracted_field = !this.showing_search_extracted_field;
-              if (this.is_search_input_typing) {
-                // Switch focus
-                if (this.showing_search_extracted_field) {
-                  focusControl.requestFocus('key_bar');
-                } else {
-                  focusControl.requestFocus('address_bar');
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right' }) // Search
+              .visibility(this.visible_when_typing())
+              .onClick(() => {
+                this.submit_searching()
+              })
+              .animation(animation_default())
+
+            linysShowButton({
+              symbol_glyph_target: this.showing_search_extracted_field ? 'sys.symbol.text_and_t' : 'sys.symbol.link',
+              text: $r(this.showing_search_extracted_field ?
+                'app.string.Address_analyzer_keyword' :
+                'app.string.Address_analyzer_address'),
+              show: this.address_analyzers_desc_showing,
+            })// Key Link
+              .visibility(this.showing_scratching_board ? Visibility.None : this.search_extracted_field_available ? Visibility.Visible : Visibility.None)
+              .onClick(() => {
+                this.showing_search_extracted_field = !this.showing_search_extracted_field;
+                if (this.is_search_input_typing) {
+                  // Switch focus
+                  if (this.showing_search_extracted_field) {
+                    focusControl.requestFocus('key_bar');
+                  } else {
+                    focusControl.requestFocus('address_bar');
+                  }
                 }
-              }
-              this.address_analyzers_desc_showing = true;
-              clearTimeout(this.address_analyzers_desc_close_cd_timeout_id);
-              this.address_analyzers_desc_close_cd_timeout_id = setTimeout(() => {
-                this.address_analyzers_desc_showing = false;
-                this.address_analyzers_desc_close_cd_timeout_id = undefined;
-              }, 1200)
-            })
-            .animation(animation_default())
+                this.address_analyzers_desc_showing = true;
+                clearTimeout(this.address_analyzers_desc_close_cd_timeout_id);
+                this.address_analyzers_desc_close_cd_timeout_id = setTimeout(() => {
+                  this.address_analyzers_desc_showing = false;
+                  this.address_analyzers_desc_close_cd_timeout_id = undefined;
+                }, 1200)
+              })
+              .animation(animation_default())
 
-          linysSymbol({
-            symbol_glyph_target: 'sys.symbol.magnifyingglass',
-          })// Add Search Engine
-            .enabled(this.showing_scratching_board ? false : true)
-            .visibility((this.is_search_input_typing || this.search_extracted_field_available) && !this.showing_scratching_board
-              ? Visibility.Visible : Visibility.None)
-            .onClick(() => {
-              let extract: string[] = extract_search(this.search_input);
-              let key = extract[1];
-              let link = extract[0];
-              if (key == '' && link == '') {
-                this.quick_keyword = this.search_input;
-                this.quick_se = undefined;
-              } else {
-                this.quick_keyword = this.search_extracted_keyword;
-                // Set default add Search engine
-                let label = this.current_title;
-                label = label.replaceAll(key, '');
-                label = label.replace(/ ?[_-] ?/g, '');
-                this.quick_se = new search_engine(label, link);
-              }
-              this.woofQuickSE_control.open();
-            })
-            .animation(animation_default())
-
+            linysSymbol({
+              symbol_glyph_target: 'sys.symbol.magnifyingglass',
+            })// Add Search Engine
+              .enabled(this.showing_scratching_board ? false : true)
+              .visibility((this.is_search_input_typing || this.search_extracted_field_available) && !this.showing_scratching_board
+                ? Visibility.Visible : Visibility.None)
+              .onClick(() => {
+                let extract: string[] = extract_search(this.search_input);
+                let key = extract[1];
+                let link = extract[0];
+                if (key == '' && link == '') {
+                  this.quick_keyword = this.search_input;
+                  this.quick_se = undefined;
+                } else {
+                  this.quick_keyword = this.search_extracted_keyword;
+                  // Set default add Search engine
+                  let label = this.current_title;
+                  label = label.replaceAll(key, '');
+                  label = label.replace(/ ?[_-] ?/g, '');
+                  this.quick_se = new search_engine(label, link);
+                }
+                this.woofQuickSE_control.open();
+              })
+              .animation(animation_default())
+          }
         } // Searching bar
         .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
         .height(capsule_bar_height())
@@ -362,115 +361,116 @@ struct meowTitleBar {
         .animation(animation_default())
 
         Row({ space: this.tablet_mode ? 10 : 6 }) {
-          linysShowButton({
-            show: this.showing_scratching_board,
-            text: $r('app.string.Index_drop_scratching_board'),
-            symbol_glyph_target: this.showing_scratching_board ? 'sys.symbol.chevron_down' : 'sys.symbol.doc_rectify'
-          })// Scratching board
-            .visibility(this.drop_result_string.length > 0 ? Visibility.Visible : Visibility.None)
-            .onClick(() => {
-              this.show_scratching_board();
-            })
-
-          linysShowButton({
-            show: this.showing_more_options,
-            text: $r('app.string.Index_more_title'),
-            symbol_glyph_target: this.showing_more_options ? 'sys.symbol.chevron_down' : 'sys.symbol.dot_grid_2x2'
-          })// More options
-            .onClick(() => {
-              this.show_more_options()
-            })
-            .opacity(this.delayed_load_p2 ? 1 : 0.5)
-            .animation(animation_default())
-            .enabled(this.delayed_load_p2)
-
-          linysShowButton({
-            symbol_glyph_target: 'sys.symbol.rectangle_stack',
-            show: this.showing_tabs
-          })// Tabs
-            .onClick(() => {
-              this.show_tabs();
-            })
-            .gesture(
-              LongPressGesture({ repeat: false })
-                .onAction(() => {
-                  this.new_tab();
-                }))
-            .onMouse((e) => {
-              if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
-                // Right click
-                this.new_tab();
-              }
-            })
-            .keyboardShortcut(this.bunch_of_key_shortcuts.show_tabs.main_key, this.bunch_of_key_shortcuts.show_tabs.modifier)
-
-          linysShowButton({
-            show: this.showing_bookmarks,
-            text: $r('app.string.Index_bookmarks_title'),
-            symbol_glyph_target: 'sys.symbol.bookmark'
-          })// Bookmarks
-            .gesture(
-              LongPressGesture({ repeat: false })
-                .onAction(() => {
-                  this.show_add_bookmarks();
-                }))
-            .onMouse((e) => {
-              if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
-                // Right click
-                this.show_add_bookmarks();
-              }
-            })
-            .onClick(() => {
-              this.show_bookmarks();
-            })
-            .opacity(this.delayed_load_p1 ? 1 : 0.5)
-            .animation(animation_default())
-            .enabled(this.delayed_load_p1)
-
-          Row() {
+          if (this.delayed_load_p0) {
             linysShowButton({
-              text: $r('app.string.Index_downloads_title'),
-              symbol_glyph_target: this.showing_downloads ? 'sys.symbol.chevron_down' : 'sys.symbol.download',
-              show: this.showing_downloads,
-              color_false: !this.showing_downloads && this.download_started_popup ?
-                this.color_current_primary : this.color_current_font
-            })
-            Text($r('app.string.Index_download_task_start'))
-              .fontSize(fontSize_Large() - 2)
-              .fontColor(this.color_current_primary)
-              .margin({ right: this.showing_downloads ? 5 : 0 })
-              .visibility(this.download_started_popup ? Visibility.Visible : Visibility.None)
+              show: this.showing_scratching_board,
+              text: $r('app.string.Index_drop_scratching_board'),
+              symbol_glyph_target: this.showing_scratching_board ? 'sys.symbol.chevron_down' : 'sys.symbol.doc_rectify'
+            })// Scratching board
+              .visibility(this.drop_result_string.length > 0 ? Visibility.Visible : Visibility.None)
+              .onClick(() => {
+                this.show_scratching_board();
+              })
+
+            linysShowButton({
+              show: this.showing_more_options,
+              text: $r('app.string.Index_more_title'),
+              symbol_glyph_target: this.showing_more_options ? 'sys.symbol.chevron_down' : 'sys.symbol.dot_grid_2x2'
+            })// More options
+              .onClick(() => {
+                this.show_more_options()
+              })
+              .opacity(this.delayed_load_p3 ? 1 : 0.5)
               .animation(animation_default())
-          } // Downloads
-          .padding(!this.showing_downloads && this.download_started_popup ? 5 : 0)
-          .backgroundColor(this.download_started_popup ? this.color_current_font : "transparent")
-          .borderRadius(10)
-          .clickEffect(click_effect_default())
-          .opacity(this.delayed_load_p2 ? 1 : 0.5)
-          .animation(animation_default())
-          .onClick(() => {
-            if (this.download_started_popup) {
-              this.download_started_popup = false;
-            } else {
-              this.show_downloads();
-            }
-          })
-          .enabled(this.delayed_load_p2)
+              .enabled(this.delayed_load_p3)
 
-          linysShowButton({
-            show: this.showing_app_settings,
-            text: $r('app.string.Index_app_settings_title'),
-            symbol_glyph_target: this.showing_app_settings ? 'sys.symbol.chevron_down' : 'sys.symbol.gearshape'
-          })// Settings
-            .onClick(() => {
-              this.show_app_settings()
-            })
-            .opacity(this.delayed_load_p2 ? 1 : 0.5)
+            linysShowButton({
+              symbol_glyph_target: 'sys.symbol.rectangle_stack',
+              show: this.showing_tabs
+            })// Tabs
+              .onClick(() => {
+                this.show_tabs();
+              })
+              .gesture(
+                LongPressGesture({ repeat: false })
+                  .onAction(() => {
+                    this.new_tab();
+                  }))
+              .onMouse((e) => {
+                if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
+                  // Right click
+                  this.new_tab();
+                }
+              })
+              .keyboardShortcut(this.bunch_of_key_shortcuts.show_tabs.main_key, this.bunch_of_key_shortcuts.show_tabs.modifier)
+
+            linysShowButton({
+              show: this.showing_bookmarks,
+              text: $r('app.string.Index_bookmarks_title'),
+              symbol_glyph_target: 'sys.symbol.bookmark'
+            })// Bookmarks
+              .gesture(
+                LongPressGesture({ repeat: false })
+                  .onAction(() => {
+                    this.show_add_bookmarks();
+                  }))
+              .onMouse((e) => {
+                if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
+                  // Right click
+                  this.show_add_bookmarks();
+                }
+              })
+              .onClick(() => {
+                this.show_bookmarks();
+              })
+              .opacity(this.delayed_load_p3 ? 1 : 0.5)
+              .animation(animation_default())
+              .enabled(this.delayed_load_p3)
+
+            Row() {
+              linysShowButton({
+                text: $r('app.string.Index_downloads_title'),
+                symbol_glyph_target: this.showing_downloads ? 'sys.symbol.chevron_down' : 'sys.symbol.download',
+                show: this.showing_downloads,
+                color_false: !this.showing_downloads && this.download_started_popup ?
+                  this.color_current_primary : this.color_current_font
+              })
+              Text($r('app.string.Index_download_task_start'))
+                .fontSize(fontSize_Large() - 2)
+                .fontColor(this.color_current_primary)
+                .margin({ right: this.showing_downloads ? 5 : 0 })
+                .visibility(this.download_started_popup ? Visibility.Visible : Visibility.None)
+                .animation(animation_default())
+            } // Downloads
+            .padding(!this.showing_downloads && this.download_started_popup ? 5 : 0)
+            .backgroundColor(this.download_started_popup ? this.color_current_font : "transparent")
+            .borderRadius(10)
+            .clickEffect(click_effect_default())
+            .opacity(this.delayed_load_p3 ? 1 : 0.5)
             .animation(animation_default())
-            .enabled(this.delayed_load_p2)
+            .onClick(() => {
+              if (this.download_started_popup) {
+                this.download_started_popup = false;
+              } else {
+                this.show_downloads();
+              }
+            })
+            .enabled(this.delayed_load_p3)
 
+            linysShowButton({
+              show: this.showing_app_settings,
+              text: $r('app.string.Index_app_settings_title'),
+              symbol_glyph_target: this.showing_app_settings ? 'sys.symbol.chevron_down' : 'sys.symbol.gearshape'
+            })// Settings
+              .onClick(() => {
+                this.show_app_settings()
+              })
+              .opacity(this.delayed_load_p3 ? 1 : 0.5)
+              .animation(animation_default())
+              .enabled(this.delayed_load_p3)
+          }
         } // Title Bar of right controls
-        .height(36)
+        .height(capsule_bar_height())
         .alignRules({
           right: { anchor: '__container__', align: HorizontalAlign.End },
           top: { anchor: '__container__', align: VerticalAlign.Top }
@@ -499,7 +499,7 @@ struct meowTitleBar {
           .constraintSize({ minHeight: 20 })
       } // Estimated Destination
 
-      if (this.delayed_load_p2) {
+      if (this.delayed_load_p3) {
         meowMoreOptions() // More Options
 
         meowAppSettings({ showing_app_settings: this.showing_app_settings })// Settings

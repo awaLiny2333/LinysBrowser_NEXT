@@ -604,7 +604,10 @@ export class tab_info_packed {
    * */
   update_title() {
     try {
-      this.title = this.controller.getTitle();
+      let title = this.controller.getTitle();
+      if (this.title != title) { // Update on change;
+        this.title = title;
+      }
     } catch (e) {
       console.error('[update_title] Failed: ' + e);
     }

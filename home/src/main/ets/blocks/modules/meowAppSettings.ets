@@ -75,7 +75,6 @@ struct meowAppSettings {
   // Generals
   @LocalStorageProp('screen_width') screen_width: number = 0;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
-  @LocalStorageLink('delayed_load_p2') delayed_load_p2: boolean = false;
   // Information
   @State versionName: string = "Version Name";
   @State versionNo: number = 0;

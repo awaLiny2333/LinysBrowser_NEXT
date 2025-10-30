@@ -82,11 +82,13 @@ struct Index {
   /**
    * Delay */
   @LocalStorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
-  delay_p0: number = 30;
+  delay_p0: number = 20;
   @LocalStorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
   delay_p1: number = 20;
   @LocalStorageLink('delayed_load_p2') delayed_load_p2: boolean = false;
-  delay_p2: number = 30;
+  delay_p2: number = 20;
+  @LocalStorageLink('delayed_load_p3') delayed_load_p3: boolean = false;
+  delay_p3: number = 20;
   /**
    * Web Statuses */
   @LocalStorageLink('current_loading_progress') current_loading_progress: number = 0;
@@ -139,6 +141,7 @@ struct Index {
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   async aboutToAppear(): Promise<void> {
+    console.log(`[Meow][Index] aboutToLoad Index! (${run_time(this.storage)} ms)`);
 
     // Determine tablet mode and other window data.
     await window.getLastWindow(this.getUIContext().getHostContext()).then((w: window.Window) => {
@@ -178,7 +181,7 @@ struct Index {
 
     update_window_decor_height(this.my_window_id);
 
-    console.log(`[Meow][Index] Load Index! (${run_time(this.storage)} ms)`);
+    console.log(`[Meow][Index] Finished Loading Index! (${run_time(this.storage)} ms)`);
 
     setTimeout(async () => {
       let time_on_bookmarks = 0;
@@ -199,6 +202,10 @@ struct Index {
           setTimeout(() => {
             this.delayed_load_p2 = true;
             console.log(`[Meow][Index] Delay P2! (${run_time(this.storage)} ms)`);
+            setTimeout(() => {
+              this.delayed_load_p3 = true;
+              console.log(`[Meow][Index] Delay P3! (${run_time(this.storage)} ms)`);
+            }, this.delay_p3);
           }, this.delay_p2);
         }, this.delay_p1);
       }, justified_delay_p0);
@@ -258,35 +265,37 @@ struct Index {
 
 
       RelativeContainer() {
-        WindowTitle()
-          .padding(this.tablet_mode ? { right: 20, bottom: 5 } : undefined)
-          .alignRules({
-            bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
-            left: { anchor: '__container__', align: HorizontalAlign.Start },
-            right: !this.tablet_mode ? { anchor: '__container__', align: HorizontalAlign.End } : { anchor: 'window_controls', align: HorizontalAlign.Start }
-          })
-          .animation(animation_default())
-
-        if (this.free_window_mode) {
-          Row({ space: 10 }) {
-            linysWindowButton({
-              symbol: this.pin_to_top ? $r('sys.symbol.pin_vertical_fill') : $r('sys.symbol.pin'),
-              execution: () => {
-                pin_to_top(this.my_window_id);
-              }
+        if (this.delayed_load_p0) {
+          WindowTitle()
+            .padding(this.tablet_mode ? { right: 20, bottom: 5 } : undefined)
+            .alignRules({
+              bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+              left: { anchor: '__container__', align: HorizontalAlign.Start },
+              right: !this.tablet_mode ? { anchor: '__container__', align: HorizontalAlign.End } : { anchor: 'window_controls', align: HorizontalAlign.Start }
             })
+            .animation(animation_default())
 
-            linysWindowButton({
-              symbol: $r('sys.symbol.plus'),
-              execution: () => {
-                this.create_new_window();
-              }
-            })
+          if (this.free_window_mode) {
+            Row({ space: 10 }) {
+              linysWindowButton({
+                symbol: this.pin_to_top ? $r('sys.symbol.pin_vertical_fill') : $r('sys.symbol.pin'),
+                execution: () => {
+                  pin_to_top(this.my_window_id);
+                }
+              })
 
-          } // Window control buttons
-          .id('window_controls')
-          .padding({ top: this.showing_my_window_alias ? 9 : 5, right: Math.max(15, this.windowDecorWidth) - 15 })
-          .alignRules({ top: { anchor: '__container__', align: VerticalAlign.Top }, right: { anchor: '__container__', align: HorizontalAlign.End } })
+              linysWindowButton({
+                symbol: $r('sys.symbol.plus'),
+                execution: () => {
+                  this.create_new_window();
+                }
+              })
+
+            } // Window control buttons
+            .id('window_controls')
+            .padding({ top: this.showing_my_window_alias ? 9 : 5, right: Math.max(15, this.windowDecorWidth) - 15 })
+            .alignRules({ top: { anchor: '__container__', align: VerticalAlign.Top }, right: { anchor: '__container__', align: HorizontalAlign.End } })
+          }
         }
       } // Top Bar Avoid (Title)
       .padding({
@@ -327,7 +336,7 @@ struct Index {
                 .padding((this.showing_tabs && !current_tabs_style_is_horizontal(this.storage)) ? 10 : 0)
                 .animation(animation_default())
             }
-            if (this.delayed_load_p1) {
+            if (this.delayed_load_p3) {
               meowBookmarks()
                 .padding(this.showing_bookmarks ? 10 : 0)
                 .height("100%")

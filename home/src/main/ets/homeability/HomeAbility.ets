@@ -12,6 +12,7 @@ import {
   listen_avoid,
   listen_focus,
   listen_free_window_mode,
+  run_time,
   window_index_of_id
 } from '../utils/ui_tools';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
@@ -228,6 +229,8 @@ export default class HomeAbility extends UIAbility {
     windowStorages.push(storage);
     let windowAliases = AppStorage.get('windowAliases') as string[];
     windowAliases.push(this.my_window_alias);
+
+    console.log(`[Meow][HomeAbility] loadContent! (${run_time(this.storage)} ms)`);
 
     // Load content
     windowStage.loadContent('pages/Index', storage, (err) => {
