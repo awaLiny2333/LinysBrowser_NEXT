@@ -300,32 +300,25 @@ export class bunch_of_tabs {
   /**
    * Closes a tab. If isMove is set to true, then the TabNodeController and tab_info_packed is stored to AppStorage.
    * @param target A number, the index of the tab requested to close.
-   * @param home_url A string, will load this link if closed the last tab and opened a new one right after it.
    * @param isMove Is this a moving to another window or just a normal close?
+   * @param preferred_destination usually the last tab index.
    * @returns A number, the index of current working main tab which eventually switched to.
    * */
-  closeTab(target: number, isMove: boolean) {
+  closeTab(target: number, isMove: boolean, preferred_destination: number) {
 
-    let landing_destination = this.main_tab_idx;
+    // let landing_destination = preferred_destination;
     // Decide where to go
 
-    if (this.main_tab_idx == target) {
-      // If deleting the tab currently viewing
-      if (target == 0) {
-        landing_destination = 1;
-        // If deleting the top tab
-      } else if (target == this.Tabs.length - 1) {
-        landing_destination = this.Tabs.length - 2;
-        // If deleting the last tab
-      } else {
-        landing_destination = target - 1;
-        // If in the middle
-      }
+    if (preferred_destination < 0) {
+      preferred_destination = 0;
+    }
+    if (preferred_destination == target) {
+      preferred_destination = this.main_tab_idx;
     }
 
     this.switchToTab(-1);
     // Forces LinysTabs to refresh For Each loop to render
-    this.switchToTab(landing_destination);
+    this.switchToTab(preferred_destination);
 
     let tab = this.Tabs.splice(target, 1)[0];
     this.Labels.splice(target, 1);

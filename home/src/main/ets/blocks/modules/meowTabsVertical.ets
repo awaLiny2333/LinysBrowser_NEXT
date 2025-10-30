@@ -47,6 +47,7 @@ struct meowTabsVertical {
   // Other Info / Statuses
   pre_recover_tabs_finished: boolean = false;
   @LocalStorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
+  @LocalStorageLink('last_tab_index') last_tab_index: number = -1;
   @StorageLink('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
   // Delay
   @LocalStorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
@@ -174,6 +175,8 @@ struct meowTabsVertical {
     }
 
     this.pre_recover_tabs_finished = true;
+
+    this.last_tab_index = this.bunch_of_tabs.main_tab_idx; // Set last_tab_index
 
     t = Date.now() - t0;
     console.log('[Meow][init][meowTabsVertical] Tabs OK. (' + t + ' ms)');
@@ -360,6 +363,9 @@ struct meowTabsVertical {
   }
 
   switch_tab(target: number, close_tabs_panel: boolean, save_to_settings: boolean) {
+    this.last_tab_index = this.bunch_of_tabs.main_tab_idx; // Remember last tab
+    console.log('[switch_tab] Last tab index [' + this.last_tab_index + '][' + this.tab_titles[this.last_tab_index] + ']')
+
     if (!this.tablet_mode && close_tabs_panel) {
       // Auto close panel
       if (this.tabs_style_non_tablet_mode == "vertical") {
@@ -422,9 +428,9 @@ struct meowTabsVertical {
 
     // Close
     if (move_target_window > -1) {
-      this.bunch_of_tabs.closeTab(target, true);
+      this.bunch_of_tabs.closeTab(target, true, this.last_tab_index);
     } else {
-      this.bunch_of_tabs.closeTab(target, false);
+      this.bunch_of_tabs.closeTab(target, false, this.last_tab_index);
     }
 
     // Update history
@@ -523,7 +529,7 @@ struct meowTabsVertical {
     let sub = this.bunch_of_tabs.sub_tab_idx;
     let main = this.bunch_of_tabs.main_tab_idx;
 
-    if (clicked >= 0) {
+    if (clicked >= 0 && clicked != this.bunch_of_tabs.main_tab_idx) {
       console.log('[Meow][uni_tab_button_click] [' + clicked + '] Clicked!');
       if (this.choosing_paralleow && main != clicked) {
         // if choosing Paralleow
