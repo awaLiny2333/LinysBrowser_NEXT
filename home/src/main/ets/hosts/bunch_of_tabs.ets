@@ -684,7 +684,7 @@ export class tab_info_packed {
     if (!this.pre_restoration_stage) {
       let is_new_history = (this.last_saved_url != this.url);
       if (is_new_history) {
-        if (!this.url.includes("resource://")) {
+        if (!this.url.includes("meow://") && !this.url.includes("resource://")) {
           console.log('[bunch_of_tabs]' + source + ' Save history for [' + this.title + '](' + this.url + ')!');
           save_history(this);
           saved = true;
