@@ -312,9 +312,10 @@ export class bunch_of_tabs {
     if (preferred_destination < 0) {
       preferred_destination = 0;
     }
-    if (preferred_destination == target) {
-      preferred_destination = this.main_tab_idx;
+    if (preferred_destination > this.Tabs.length - 1) {
+      preferred_destination = this.Tabs.length - 1;
     }
+    console.log('[closeTab][preferred_destination] ' + preferred_destination + '!');
 
     this.switchToTab(-1);
     // Forces LinysTabs to refresh For Each loop to render

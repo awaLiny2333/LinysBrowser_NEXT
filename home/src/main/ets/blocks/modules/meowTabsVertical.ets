@@ -407,11 +407,16 @@ struct meowTabsVertical {
       console.error("[Meow][LinysTabs][ERROR] Recover Not OK (" + target + ')!');
       return;
     }
-
     // Some kind of bug, idk why but this is essential when closing tabs quickly
     if (target >= this.bunch_of_tabs.Tabs.length) {
       console.error("[Meow][LinysTabs][ERROR] Ran into the weird bug of target >= this.offset_area.length");
       return;
+    }
+
+    // Reset last tab index
+    if (target == this.last_tab_index) {
+      this.last_tab_index = -1;
+      console.log('[close_tab] Reset last tab index!');
     }
 
     // Turn off Paralleow
@@ -426,11 +431,16 @@ struct meowTabsVertical {
       this.new_tab('', true, false);
     }
 
+    let destination = this.bunch_of_tabs.main_tab_idx;
+    if (target == this.bunch_of_tabs.main_tab_idx) {
+      destination = this.last_tab_index;
+    } // Closing current tab, jump back to last tab.
+
     // Close
     if (move_target_window > -1) {
-      this.bunch_of_tabs.closeTab(target, true, this.last_tab_index);
+      this.bunch_of_tabs.closeTab(target, true, destination);
     } else {
-      this.bunch_of_tabs.closeTab(target, false, this.last_tab_index);
+      this.bunch_of_tabs.closeTab(target, false, destination);
     }
 
     // Update history
@@ -529,7 +539,7 @@ struct meowTabsVertical {
     let sub = this.bunch_of_tabs.sub_tab_idx;
     let main = this.bunch_of_tabs.main_tab_idx;
 
-    if (clicked >= 0 && clicked != this.bunch_of_tabs.main_tab_idx) {
+    if (clicked >= 0) {
       console.log('[Meow][uni_tab_button_click] [' + clicked + '] Clicked!');
       if (this.choosing_paralleow && main != clicked) {
         // if choosing Paralleow
@@ -546,7 +556,9 @@ struct meowTabsVertical {
       } else {
         // simply switch tab
         // this.tab_animation = { duration: 0 };
-        this.switch_tab(clicked, true, false);
+        if (clicked != this.bunch_of_tabs.main_tab_idx) {
+          this.switch_tab(clicked, true, false);
+        }
       }
       this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][uni_tab_button_click]');
     }
