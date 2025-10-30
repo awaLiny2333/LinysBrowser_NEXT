@@ -323,6 +323,7 @@ struct meowTabsVertical {
   new_tab(target_url: string, save_to_settings: boolean, is_from_receive: boolean, init_state?: Uint8Array, placeholder_label?: string) {
     let t0 = Date.now();
 
+    this.last_tab_index = this.bunch_of_tabs.main_tab_idx; // Remember last tab
     this.storage.set('extra_background', false);
 
     if (is_from_receive) {
