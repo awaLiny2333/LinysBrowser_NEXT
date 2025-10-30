@@ -311,7 +311,7 @@ struct meowMoreOptions {
             })
               .animation(animation_default())
             linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_up' })
-              .keyboardShortcut(FunctionKey.DPAD_UP, [])
+              // .keyboardShortcut(FunctionKey.DPAD_UP, [])
               .onClick(() => {
                 try {
                   this.bunch_of_tabs.workingMainTab().controller.searchNext(false);
@@ -320,7 +320,7 @@ struct meowMoreOptions {
                 }
               })
             linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_down' })
-              .keyboardShortcut(FunctionKey.DPAD_DOWN, [])
+              // .keyboardShortcut(FunctionKey.DPAD_DOWN, [])
               .onClick(() => {
                 try {
                   this.bunch_of_tabs.workingMainTab().controller.searchNext(true);

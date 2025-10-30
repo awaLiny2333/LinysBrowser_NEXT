@@ -249,6 +249,13 @@ struct Index {
             console.error('[ESC] Failed! ' + e);
           }
         })
+        .keyboardShortcut(FunctionKey.DPAD_UP, [], () => {
+          this.in_page_search_last();
+        })
+        .keyboardShortcut(FunctionKey.DPAD_DOWN, [], () => {
+          this.in_page_search_next();
+        })
+
 
       RelativeContainer() {
         WindowTitle()
@@ -701,6 +708,24 @@ struct Index {
     // Inheritance (?) from the universal back function.
     this.back(true);
     console.log('[universal_esc] UNIVERSAL BACK!!');
+  }
+
+  // Web
+
+  in_page_search_last() {
+    try {
+      this.bunch_of_tabs.workingMainTab().controller.searchNext(false);
+    } catch (e) {
+      console.error('[in_page_search_last] Failed: ' + e);
+    }
+  }
+
+  in_page_search_next() {
+    try {
+      this.bunch_of_tabs.workingMainTab().controller.searchNext(true);
+    } catch (e) {
+      console.error('[in_page_search_last] Failed: ' + e);
+    }
   }
 }
 
