@@ -309,11 +309,18 @@ export class bunch_of_tabs {
     // let landing_destination = preferred_destination;
     // Decide where to go
 
-    if (preferred_destination < 0) {
-      preferred_destination = 0;
+    // Check if is reset
+    if (preferred_destination == -1) {
+      preferred_destination = target - 1; // Switch to the last tab of closing
     }
     if (preferred_destination > this.Tabs.length - 1) {
       preferred_destination = this.Tabs.length - 1;
+    }
+    if (preferred_destination == target) {
+      preferred_destination -= 1;
+    }
+    if (preferred_destination < 0) {
+      preferred_destination = 0;
     }
     console.log('[closeTab][preferred_destination] ' + preferred_destination + '!');
 
