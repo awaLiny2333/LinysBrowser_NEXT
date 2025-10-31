@@ -684,7 +684,7 @@ export class tab_info_packed {
     if (!this.pre_restoration_stage) {
       let is_new_history = (this.last_saved_url != this.url);
       if (is_new_history) {
-        if (!this.url.includes("meow://") && !this.url.includes("resource://")) {
+        if (this.url_save_history(this.url)) {
           console.log('[bunch_of_tabs]' + source + ' Save history for [' + this.title + '](' + this.url + ')!');
           save_history(this);
           saved = true;
@@ -757,5 +757,17 @@ export class tab_info_packed {
         console.error("[Meow][meowWebView] Restore web state failed! " + e);
       }
     }
+  }
+
+  /**
+   * Checks if this url can be saved to history. meow:// pages are not allowed.
+   * @param url The url.
+   * @returns True if can.
+   * */
+  private url_save_history(url: string) {
+    if (url.substring(0, 7) == 'meow://') {
+      return false;
+    }
+    return true;
   }
 }
