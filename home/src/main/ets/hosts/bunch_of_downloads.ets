@@ -1,10 +1,10 @@
-import { BusinessError } from '@kit.BasicServicesKit';
 import { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
 import { webview } from '@kit.ArkWeb';
 import { add_units_to_size, download_save_from_path } from '../utils/storage_tools';
-import { open_file_uri } from '../utils/link_tools';
 import { meowContext } from '../utils/environment_tools';
 import { common } from '@kit.AbilityKit';
+import lazy { BusinessError } from '@kit.BasicServicesKit';
+import lazy { open_file_uri } from '../utils/link_tools';
 
 export class bunch_of_downloads {
   list_of_on_going_tasks: webview.WebDownloadItem[] = [];
@@ -32,7 +32,7 @@ export class bunch_of_downloads {
     }
     let filesDir = meowContext().filesDir;
     try {
-      fs.mkdirSync(filesDir + '/downloads');
+      fs.mkdirSync(filesDir + '/downloads', true);
     } catch (e) {
       // console.log('[Meow][bunch_of_downloads] Init: E: /downloads already exists.')
     }
@@ -128,7 +128,11 @@ export class bunch_of_downloads {
    * @param index The index of target task in the tasks list to be paused.
    * */
   pause_task(index: number) {
-    this.list_of_on_going_tasks[index].pause();
+    try {
+      this.list_of_on_going_tasks[index].pause();
+    } catch (e) {
+      console.error('[pause_task] Failed: ' + e);
+    }
     // this.list_of_paused[index] = true;
 
     // Refresh
@@ -140,7 +144,11 @@ export class bunch_of_downloads {
    * @param index The index of target task in the tasks list to be resumed.
    * */
   continue_task(index: number) {
-    this.list_of_on_going_tasks[index].resume();
+    try {
+      this.list_of_on_going_tasks[index].resume();
+    } catch (e) {
+      console.error('[pause_task] Failed: ' + e);
+    }
     // this.list_of_paused[index] = false;
 
     // Refresh
@@ -152,13 +160,18 @@ export class bunch_of_downloads {
    * @param index The index of target task in the tasks list to be deleted.
    * */
   delete_task(index: number) {
-
-    this.list_of_on_going_tasks[index].cancel();
+    try {
+      this.list_of_on_going_tasks[index].cancel();
+    } catch (e) {
+      console.error('[bunch_of_downloads][delete_task] Cancel task failed: ' + e);
+    }
 
     try {
-      fs.rmdir(this.list_of_target_folders[index]);
+      fs.rmdir(this.list_of_target_folders[index]).catch((e: BusinessError) => {
+        console.error("[ERROR][bunch_of_downloads][delete_task] Delete task file failed. " + e);
+      });
     } catch (e) {
-      console.error("[ERROR][bunch_of_downloads][delete_task] Delete task file failed. " + e)
+      console.error("[ERROR][bunch_of_downloads][delete_task] Delete task file failed. " + e);
     }
 
     this.list_of_on_going_tasks.splice(index, 1);
@@ -207,7 +220,9 @@ export class bunch_of_downloads {
         // to be identified as unauthorized!
 
         let writeLen = file_size;
-        fs.copy(fileUri.getUriFromPath(file_path + file_name), target_uri[0])
+        fs.copy(fileUri.getUriFromPath(file_path + file_name), target_uri[0]).catch((e: BusinessError) => {
+          console.error('[save_downloaded_item_to_local][fs.copy] Failed: ' + e);
+        })
         // .then(() => {
         //   fs.rmdir(this.list_of_target_folders[index]);
         // });
@@ -252,7 +267,7 @@ export class bunch_of_downloads {
     try {
       let filesDir = meowContext().filesDir;
       fs.rmdirSync(filesDir + "/downloads");
-      fs.mkdirSync(filesDir + "/downloads")
+      fs.mkdirSync(filesDir + "/downloads", true);
 
       // let list = fs.listFileSync(filesDir + "/downloads");
       //

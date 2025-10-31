@@ -54,7 +54,7 @@ function rebuild_full_history_index_sync(context_filesDir: string) {
   // Clear all previous index
   try {
     fs.rmdirSync(context_filesDir + "/history-index");
-    fs.mkdirSync(context_filesDir + "/history-index");
+    fs.mkdirSync(context_filesDir + "/history-index", true);
   } catch (e) {
 
   }

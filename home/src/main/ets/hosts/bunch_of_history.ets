@@ -65,12 +65,12 @@ export class bunch_of_history {
 
     // Creates folders for history and index
     try {
-      fs.mkdirSync(meowContext().filesDir + '/history');
+      fs.mkdirSync(meowContext().filesDir + '/history', true);
     } catch (e) {
       // console.log('[Meow][bunch_of_history] Check disk of month: E: /history folder already exists.')
     }
     try {
-      fs.mkdirSync(meowContext().filesDir + '/history-index');
+      fs.mkdirSync(meowContext().filesDir + '/history-index', true);
     } catch (e) {
       // console.log('[Meow][bunch_of_history] Check disk of month: E: /history folder already exists.')
     }
@@ -507,7 +507,7 @@ export class bunch_of_history {
     try {
       let filesDir = meowContext().filesDir;
       fs.rmdirSync(filesDir + "/history");
-      fs.mkdirSync(filesDir + "/history")
+      fs.mkdirSync(filesDir + "/history", true);
     } catch (e) {
       console.error(e)
     }

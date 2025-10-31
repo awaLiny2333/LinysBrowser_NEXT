@@ -74,7 +74,7 @@ function save_index_ext(file_name: string, map: collections.Map<string, collecti
     // Clear all previous index
     try {
       fileIo.rmdirSync(context_filesDir + "/history-index");
-      fileIo.mkdirSync(context_filesDir + "/history-index");
+      fileIo.mkdirSync(context_filesDir + "/history-index", true);
     } catch (e) {
 
     }

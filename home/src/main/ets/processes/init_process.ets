@@ -56,7 +56,7 @@ export async function meow_init_main(context: common.UIAbilityContext, storage: 
  *
  * Should be executed in HomeAbility.ets on each launch of entire app.
  */
-export function meow_init_sub(context: common.UIAbilityContext, storage: LocalStorage) {
+export function meow_init_sub(_context: common.UIAbilityContext, storage: LocalStorage) {
   let t0 = Date.now();
   let t = 0;
 
@@ -73,12 +73,12 @@ export function meow_init_sub(context: common.UIAbilityContext, storage: LocalSt
  * */
 function ensure_continue_folder(context: common.UIAbilityContext) {
   let filesDir = context.filesDir;
-  if (!fileIo.accessSync(filesDir + '/continue')) {
-    try {
-      fileIo.mkdirSync(filesDir + '/continue');
-    } catch (e) {
-      console.error('[init][ensure_continue_folder] Error: ' + e);
+  try {
+    if (!fileIo.accessSync(filesDir + '/continue')) {
+      fileIo.mkdirSync(filesDir + '/continue', true);
     }
+  } catch (e) {
+    console.error('[init][ensure_continue_folder] Error: ' + e);
   }
 }
 
@@ -93,7 +93,7 @@ function clear_harmonyShare_temp_folder(context: common.UIAbilityContext) {
     console.error('[Index] rmdirSync /harmonyShare_temp failed! ' + e);
   }
   try {
-    fileIo.mkdirSync(context.filesDir + '/harmonyShare_temp');
+    fileIo.mkdirSync(context.filesDir + '/harmonyShare_temp', true);
   } catch (e) {
     console.error('[Index] mkdirSync /harmonyShare_temp failed! ' + e);
   }
@@ -109,7 +109,7 @@ function clear_web_drag_image_cache(context: common.UIAbilityContext) {
     console.error('[Index] rmdirSync /web-drag-image-cache failed! ' + e);
   }
   try {
-    fileIo.mkdirSync(context.filesDir + '/web-drag-image-cache');
+    fileIo.mkdirSync(context.filesDir + '/web-drag-image-cache', true);
   } catch (e) {
     console.error('[Index] mkdirSync /web-drag-image-cache failed! ' + e);
   }

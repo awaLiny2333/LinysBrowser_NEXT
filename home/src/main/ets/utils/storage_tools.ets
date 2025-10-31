@@ -488,7 +488,7 @@ export function copy_from_rawfile_to_sandbox(from: string, to: string) {
 
   // 创建沙箱目录
   try {
-    fs.mkdirSync(folderPath)
+    fs.mkdirSync(folderPath, true);
   } catch (e) {
   }
 
@@ -733,7 +733,7 @@ export async function export_everything() {
 export async function import_everything() {
   // Make temp dir
   try {
-    fs.mkdirSync(meowContext().filesDir + '/temp')
+    fs.mkdirSync(meowContext().filesDir + '/temp', true);
   } catch (e) {
     console.error('[storage_tools][import_everything] Create temp dir error: ' + e);
   }

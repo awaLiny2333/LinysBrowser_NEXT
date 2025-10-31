@@ -2,8 +2,6 @@ import { AbilityConstant, Configuration, UIAbility, Want, wantConstant } from '@
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
-import { meow_init_main, meow_init_sub } from '../processes/init_process';
-import lazy { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import {
   enter_free_window_mode,
   enter_traditional_window_mode,
@@ -15,7 +13,10 @@ import {
   run_time,
   window_index_of_id
 } from '../utils/ui_tools';
-import { bunch_of_settings } from '../hosts/bunch_of_settings';
+import lazy { meow_init_main, meow_init_sub } from '../processes/init_process';
+import lazy { bunch_of_tabs } from '../hosts/bunch_of_tabs';
+import lazy { bunch_of_settings } from '../hosts/bunch_of_settings';
+import lazy { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 
 export default class HomeAbility extends UIAbility {
   my_window_id = '';
@@ -179,6 +180,14 @@ export default class HomeAbility extends UIAbility {
   onForeground(): void {
     // Ability has brought to foreground
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability (' + this.my_window_id + ') onForeground');
+    // Update downloads to refresh downloads UI.
+    try {
+      let downloads = AppStorage.get('bunch_of_downloads') as bunch_of_downloads;
+      downloads.update_timestamp();
+      console.log('[onForeground][bunch_of_downloads][update_timestamp]');
+    } catch (e) {
+      console.error('[onForeground][bunch_of_downloads][update_timestamp] Failed: ' + e);
+    }
   }
 
   onBackground(): void {

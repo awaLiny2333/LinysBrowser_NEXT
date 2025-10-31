@@ -12,7 +12,7 @@ export class bunch_of_history_index {
   constructor() {
     // Create history index folder
     try {
-      fs.mkdirSync(meowContext().filesDir + '/history-index');
+      fs.mkdirSync(meowContext().filesDir + '/history-index', true);
     } catch (e) {
       // console.log(log_head() + 'Check disk of month: E: /history-index folder already exists.')
     }

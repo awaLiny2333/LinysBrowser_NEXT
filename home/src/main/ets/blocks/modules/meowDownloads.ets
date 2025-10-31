@@ -169,7 +169,8 @@ struct meowDownloadCard {
   @State y_off_set: number = 50;
   @State visible: Visibility = Visibility.Hidden;
   @State exporting: boolean = false;
-  @State copied: number = 0;
+  @State copied: boolean = false;
+  copied_timeout_id: number | undefined = undefined;
   @State showing_additional_info: boolean = false;
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
@@ -193,7 +194,11 @@ struct meowDownloadCard {
             .clickEffect(click_effect_default())
             .onClick(() => {
               copy(this.my_link);
-              this.copied = animation_popup_duration();
+              this.copied = true;
+              clearTimeout(this.copied_timeout_id);
+              this.copied_timeout_id = setTimeout(() => {
+                this.copied = false;
+              }, animation_popup_duration());
             })
             .opacity(0.85)
             .layoutWeight(1)
@@ -201,9 +206,9 @@ struct meowDownloadCard {
           linysTextTitle({
             text: $r('app.string.Downloads_copied'),
           })// Copied!
-            .offset({ x: this.copied > 0 ? 0 : 50 })
+            .offset({ x: this.copied ? 0 : 50 })
             .opacity(0.85)
-            .visibility(this.copied > 0 ? Visibility.Visible : Visibility.Hidden)
+            .visibility(this.copied ? Visibility.Visible : Visibility.Hidden)
             .animation(animation_default())
         }
         .visibility(!this.showing_additional_info ? Visibility.Visible : Visibility.None)
@@ -321,14 +326,7 @@ struct meowDownloadCard {
         this.y_off_set = 0;
         this.visible = Visibility.Visible;
         // Animation
-      }, 10)
-
-      setInterval(() => {
-        // Reset copy
-        if (this.copied > 0) {
-          this.copied -= 10;
-        }
-      }, 10)
+      }, 10);
     })
   }
 
@@ -350,25 +348,37 @@ struct meowDownloadCard {
   }
 
   pause_or_continue_task() {
-    if (this.my_paused) {
-      this.bunch_of_downloads.continue_task(this.my_index);
-    } else {
-      this.bunch_of_downloads.pause_task(this.my_index);
+    try {
+      if (this.my_paused) {
+        this.bunch_of_downloads.continue_task(this.my_index);
+      } else {
+        this.bunch_of_downloads.pause_task(this.my_index);
+      }
+    } catch (e) {
+      console.error('[pause_or_continue_task] Failed: ' + e);
     }
   }
 
   delete_task() {
     // Delete
-    this.bunch_of_downloads.delete_task(this.my_index);
-    if (this.bunch_of_downloads.list_of_on_going_tasks.length == 0) {
-      this.showing_downloads = false;
+    try {
+      this.bunch_of_downloads.delete_task(this.my_index);
+      if (this.bunch_of_downloads.list_of_on_going_tasks.length == 0) {
+        this.showing_downloads = false;
+      }
+    } catch (e) {
+      console.error('[delete_task] Failed: ' + e);
     }
   }
 
   export_file() {
-    this.bunch_of_downloads.save_downloaded_item_to_local(this.my_index).then(() => {
-      this.exporting = false;
-    })
+    try {
+      this.bunch_of_downloads.save_downloaded_item_to_local(this.my_index).then(() => {
+        this.exporting = false;
+      })
+    } catch (e) {
+      console.error('[export_file] Failed: ' + e);
+    }
   }
 
   private set_formatted_download_progress() {

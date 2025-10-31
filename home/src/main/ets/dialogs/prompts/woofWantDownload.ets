@@ -149,9 +149,10 @@ struct woofWantDownload {
       // Make directory
       console.log('[Meow][bunch_of_downloads] Task folder creation: ' + this.file_dir);
       try {
-        fileIo.mkdirSync(this.file_dir);
+        fileIo.mkdirSync(this.file_dir, true);
       } catch (e) {
         console.log('[Meow][bunch_of_downloads] Task folder creation failed! ' + e);
+        return;
       }
 
       // Register on download start
@@ -173,6 +174,8 @@ struct woofWantDownload {
         this.storage.set('uni_webDownloadItem_gateway', undefined);
       } catch (e) {
         console.error('[woofWantDownload] item.start failed! ' + e);
+        let task_idx = this.bunch_of_downloads.list_of_on_going_tasks.length - 1;
+        this.bunch_of_downloads.delete_task(task_idx);
         return;
       }
       console.log('[bunch_of_downloads] dl_delegate.onBeforeDownload! download_target_path: [' + this.download_target_path + ']')
