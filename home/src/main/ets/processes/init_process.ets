@@ -1,6 +1,6 @@
 // The initialization of the entire app
 import { bundleManager, common } from '@kit.AbilityKit';
-import { sandbox_read_text_sync, sandbox_save, sandbox_unlink } from '../utils/storage_tools';
+import { arrayBuffer_2_pixelMap, sandbox_read_arrayBuffer, sandbox_read_text_sync, sandbox_save, sandbox_unlink } from '../utils/storage_tools';
 import { fileIo } from '@kit.CoreFileKit';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { bunch_of_history } from '../hosts/bunch_of_history';
@@ -27,6 +27,7 @@ export async function meow_init_main(context: common.UIAbilityContext, storage: 
   })
 
   // File management
+  load_homepage_background(context, storage);
   clear_web_drag_image_cache(context);
   clear_profile(context);
   ensure_continue_folder(context);
@@ -126,6 +127,20 @@ function clear_profile(context: common.UIAbilityContext) {
   }
 }
 
+/**
+ * Read and set image for homepage from disk.
+ * @param storage The LocalStorage.
+ * */
+function load_homepage_background(context: common.UIAbilityContext, storage: LocalStorage) {
+  console.log("[Meow][meowAppSettings] Start loading homepage background! (" + run_time(storage) + " ms)");
+  sandbox_read_arrayBuffer('homepage_background_arrayBuffer', context.filesDir)?.then((homepage_background_array_buffer) => {
+    if (homepage_background_array_buffer) {
+      AppStorage.setOrCreate('homepage_background', arrayBuffer_2_pixelMap(homepage_background_array_buffer));
+      console.log("[Meow][meowAppSettings] Finished loading homepage background! (" + run_time(storage) + " ms)");
+    }
+  });
+}
+
 // Hosts
 
 /**
@@ -207,6 +222,7 @@ async function settings(storage: LocalStorage) {
   // General - Homepage
   AppStorage.setOrCreate('homepage_shortcuts_init_height', bunch_of_settings.get('homepage_shortcuts_init_height') as number);
   AppStorage.setOrCreate('homepage_shortcuts_bookmarks_dir', bunch_of_settings.get('homepage_shortcuts_bookmarks_dir') as string);
+  // console.log('[Meow] homepage_shortcuts_bookmarks_dir: ' + bunch_of_settings.get('homepage_shortcuts_bookmarks_dir') as string);
 
   let sites_got: string;
 
@@ -259,7 +275,6 @@ async function settings(storage: LocalStorage) {
 export async function bookmarks(storage: LocalStorage) {
   let t0 = Date.now();
   let bookmarks = AppStorage.get('bunch_of_bookmarks') as bunch_of_bookmarks;
-  bookmarks.init = true;
 
   // Get bookmarks
   let result: string = sandbox_read_text_sync('html_bookmarks.html');
@@ -274,6 +289,8 @@ export async function bookmarks(storage: LocalStorage) {
     let html_bookmarks = result;
     bookmarks.import_html(html_bookmarks, true);
   }
+
+  bookmarks.init = true;
 
   // Timer
   console.log('[Meow][init] Bookmarks OK. (' + run_time(storage) + ' ms)');

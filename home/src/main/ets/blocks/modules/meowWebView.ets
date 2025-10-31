@@ -1,7 +1,7 @@
 import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large } from '../../hosts/bunch_of_defaults';
 import { bunch_of_history } from '../../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
-import { arrayBuffer_2_pixelMap, compress_image_arrayBuffer, sandbox_read_arrayBuffer, sandbox_read_arrayBuffer_sync } from '../../utils/storage_tools';
+import { compress_image_arrayBuffer, sandbox_read_arrayBuffer_sync } from '../../utils/storage_tools';
 import { url_resource_to_meow } from '../../utils/url_tools';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { bookmark, bunch_of_bookmarks, folder, unified_item } from '../../hosts/bunch_of_bookmarks';
@@ -21,7 +21,6 @@ import lazy woofWantJump from '../../dialogs/prompts/woofWantJump';
 import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
 import lazy woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
-import { sync_all_tabs_list_info } from '../../processes/tabs_actions';
 
 @Component
 struct meowWebView {
@@ -69,6 +68,10 @@ struct meowWebView {
   @State shortcut_scroll_offset: number = 0;
   @LocalStorageLink('potential_jump_link') @Watch('on_potential_jump_link_change') potential_jump_link: string = '';
   @LocalStorageLink('extra_background') extra_background: boolean = false;
+  @State my_opacity: number = 0;
+  // Delay
+  @LocalStorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
+  @LocalStorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
   // Download
   @StorageLink('dl_delegate') dl_delegate: webview.WebDownloadDelegate = new webview.WebDownloadDelegate();
   @LocalStorageLink('uni_webDownloadItem_gateway') @Watch('on_download_request') uni_webDownloadItem_gateway: webview.WebDownloadItem | undefined = undefined;
@@ -154,42 +157,13 @@ struct meowWebView {
     console.log(' \n[meowWebView][aboutToAppear] this.bunch_of_tabs.my_id: ' + this.bunch_of_tabs.my_id + '\n ');
 
     set_continuable(this.getUIContext().getHostContext() as common.UIAbilityContext, false);
-
-    // Set image for homepage
-    if (!this.homepage_background) {
-      console.log("[Meow][meowAppSettings] Start loading homepage background! (" + run_time(this.storage) + " ms)");
-      sandbox_read_arrayBuffer('homepage_background_arrayBuffer')?.then((homepage_background_array_buffer) => {
-        if (homepage_background_array_buffer) {
-          this.homepage_background = arrayBuffer_2_pixelMap(homepage_background_array_buffer);
-          console.log("[Meow][meowAppSettings] Finished loading homepage background! (" + run_time(this.storage) + " ms)");
-        }
-      });
-    } else {
-      console.log("[Meow][meowAppSettings] Using loaded homepage background! (" + run_time(this.storage) + " ms)");
-    }
-
-    // Init download delegate
-    this.bunch_of_downloads.init_delegate(this.storage);
-
-    // init OK
-    setTimeout(() => {
-      sync_all_tabs_list_info(this.storage);
-
-      this.on_current_url_change();
-
-      // this.register_harmonyShare_gesture_sender();
-      // this.register_harmonyShare_knock_sender();
-
-      this.init_OK = true;
-    }, 10);
   }
 
   build() {
     RelativeContainer() {
       if (this.homepage_background) {
         Image(this.homepage_background)
-          .visibility(this.current_url == 'meow://home' && this.bunch_of_tabs.sub_tab_idx == -1 ? Visibility.Visible : Visibility.Hidden)
-          .transition(TransitionEffect.OPACITY.animation({ duration: 400 }))
+          .visibility((this.current_url == 'meow://home') && this.bunch_of_tabs.sub_tab_idx == -1 ? Visibility.Visible : Visibility.Hidden)
           .opacity(Math.max(1 - this.shortcut_scroll_offset / this.screen_height, 0.5))
       } // Background
 
@@ -199,57 +173,69 @@ struct meowWebView {
         .width('100%')
         .visibility(this.extra_background ? Visibility.Visible : Visibility.Hidden)
 
-      ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
-        NodeContainer(this.bunch_of_tabs.NodeControllers[Label.index_key])
-          .onAppear(() => {
-            try {
-              this.bunch_of_tabs.NodeControllers[Label.index_key].attachWeb();
-              this.bunch_of_tabs.NodeControllers[Label.index_key].rebuild();
-            } catch (e) {
-              console.error('[Tab] onAppear Failed: ' + e);
-            }
-          })
-          .width(this.bunch_of_tabs.sub_tab_idx < 0 ? "100%" : this.width_tab())
-          .height(this.bunch_of_tabs.sub_tab_idx < 0 ? "100%" : this.height_tab())
-          .alignRules(this.bunch_of_tabs.main_tab_idx == Label.index_key ? this.align_rules_main_tab() : this.align_rules_sub_tab())
-          .visibility(this.my_visibility(Label.index_key))
-        // Webs
-      }, (Label: tab_label) => Label.timestamp.toString())
+      if (this.delayed_load_p1) {
+        ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
+          NodeContainer(this.bunch_of_tabs.NodeControllers[Label.index_key])
+            .onAppear(() => {
+              try {
+                this.bunch_of_tabs.NodeControllers[Label.index_key].attachWeb();
+                this.bunch_of_tabs.NodeControllers[Label.index_key].rebuild();
+              } catch (e) {
+                console.error('[Tab] onAppear Failed: ' + e);
+              }
+            })
+            .width(this.bunch_of_tabs.sub_tab_idx < 0 ? "100%" : this.width_tab())
+            .height(this.bunch_of_tabs.sub_tab_idx < 0 ? "100%" : this.height_tab())
+            .alignRules(this.bunch_of_tabs.main_tab_idx == Label.index_key ? this.align_rules_main_tab() : this.align_rules_sub_tab())
+            .visibility(this.my_visibility(Label.index_key))
+          // Webs
+        }, (Label: tab_label) => Label.timestamp.toString())
+      }
 
       shortcuts({
         shortcut_scroll_offset: this.shortcut_scroll_offset,
       })
-        .onAppear(() => {
-          this.on_appear();
-        })
 
       // Notices
-      Column({ space: (this.show_toast_fullscreen) ? 10 : 0 }) {
-        toast({
-          show: this.show_toast_fullscreen,
-          info: $r('app.string.fullscreen_notice')
+      if (this.delayed_load_p1) {
+        Column({ space: (this.show_toast_fullscreen) ? 10 : 0 }) {
+          toast({
+            show: this.show_toast_fullscreen,
+            info: $r('app.string.fullscreen_notice')
+          })
+        }
+        .translate({ y: -20 })
+        .alignRules({
+          bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+          middle: { anchor: '__container__', align: HorizontalAlign.Center },
+        })
+        .onAppear(() => {
+          // Init download delegate
+          this.bunch_of_downloads.init_delegate(this.storage);
+
+          // init OK
+          this.on_current_url_change();
+
+          this.init_OK = true;
         })
       }
-      .translate({ y: -20 })
-      .alignRules({
-        bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
-        middle: { anchor: '__container__', align: HorizontalAlign.Center },
-      })
     }
+    .opacity(this.my_opacity)
+    .animation({ duration: 200 })
     .width("100%")
     .height("100%")
     .onAppear(() => {
       // console.log("[Meow][meowWebView] WebViews READY")
+      this.my_opacity = 1;
       console.log(`[Meow][meowWebView] onAppear! (${run_time(this.storage)} ms)`);
     })
   }
 
   // Events
 
-  on_appear() {
-
-  }
-
+  /**
+   * Manage continuable and sharing statuses.
+   * */
   on_current_url_change() {
     try {
       // Update continuable state.
@@ -541,10 +527,7 @@ struct shortcuts {
   });
 
   aboutToAppear(): void {
-    // Refresh shortcuts
-    setTimeout(() => {
-      this.refresh_homepage_shortcuts();
-    }, 10);
+    this.refresh_homepage_shortcuts();
   }
 
   build() {
@@ -608,9 +591,9 @@ struct shortcuts {
       // directory doesn't exist
       console.log('[Meow][meowWebView] Directory selected for shortcuts doesn\'t exist! [' + this.homepage_shortcuts_dir + ']');
       this.homepage_shortcuts = [];
-      if (this.homepage_shortcuts_dir != '/') {
-        this.homepage_shortcuts_dir = '';
-      }
+      // if (this.homepage_shortcuts_dir != '/') {
+      //   this.homepage_shortcuts_dir = '';
+      // }
     }
   }
 }
@@ -622,9 +605,11 @@ struct shortcutButton {
   @Prop bookmark: unified_item;
   // Environment
   @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
+  @LocalStorageProp('screen_height') screen_height: number = 100;
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('preferred_hand_reverse_homepage_shortcuts') preferred_hand_reverse_homepage_shortcuts: boolean = false;
+  @StorageLink('homepage_shortcuts_init_height') homepage_shortcuts_init_height: number = 50;
   // Gateways
   @LocalStorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
   // Colors
@@ -712,15 +697,8 @@ struct shortcutButton {
   }
 
   get_animation_timeout() {
-    let unit_interval = 40;
-    if (this.my_index < 5) {
-      unit_interval = 80;
-    } else if (this.my_index < 10) {
-      unit_interval = 70;
-    } else {
-      unit_interval = 60;
-    }
-    return this.my_index * unit_interval + 0;
+    let interval = 400 / (this.homepage_shortcuts_init_height / 100 * this.screen_height / (capsule_bar_height() + 10));
+    return this.my_index * interval;
   }
 }
 

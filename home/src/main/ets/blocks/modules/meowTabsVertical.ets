@@ -160,14 +160,14 @@ struct meowTabsVertical {
         // Switch to *THE* tab
         this.switch_tab(continue_tabs_main_on, false, false);
 
-        // Retrieve all data
-        sync_all_tabs_list_info(this.storage);
-
         // Recover Paralleow
         if (continue_tabs_sub_on < this.tab_titles.length) {
           this.bunch_of_tabs.sub_tab_idx = continue_tabs_sub_on;
         }
       }
+
+      // Retrieve all data
+      sync_all_tabs_list_info(this.storage);
     }
 
     if (this.want_source == 'onCreate') { // TODO: Is this check necessary?

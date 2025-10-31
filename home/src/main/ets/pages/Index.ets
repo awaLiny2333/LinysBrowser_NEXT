@@ -265,7 +265,7 @@ struct Index {
 
 
       RelativeContainer() {
-        if (this.delayed_load_p0) {
+        if (this.delayed_load_p3) {
           WindowTitle()
             .padding(this.tablet_mode ? { right: 20, bottom: 5 } : undefined)
             .alignRules({
@@ -349,7 +349,7 @@ struct Index {
           .animation(animation_default())
           .height("100%")
 
-          if (this.delayed_load_p1) {
+          if (this.delayed_load_p0) {
             meowWebView()
               .width("100%")
               .backgroundColor(this.color_current_primary)
@@ -750,6 +750,8 @@ struct WindowTitle {
   @StorageLink('showing_my_window_alias') showing_my_window_alias: boolean = false;
   @StorageLink('my_window_alias_position') my_window_alias_position: string = "center";
   @LocalStorageLink('current_title') current_title: string = "=￣ω￣=";
+  // UI
+  @State my_opacity: number = 0;
 
   build() {
     Row({ space: 10 }) {
@@ -765,8 +767,11 @@ struct WindowTitle {
     })
     .justifyContent(this.justifyContents_of_alias())
     .visibility(this.showing_my_window_alias ? Visibility.Visible : Visibility.Hidden)
+    .opacity(this.my_opacity)
     .animation(animation_default())
-    .opacity(0.7)
+    .onAppear(() => {
+      this.my_opacity = 0.7;
+    })
   }
 
   justifyContents_of_alias() {

@@ -95,7 +95,13 @@ function WebBuilder(pk: tab_info_packed) {
       // Ask tab to update its info
       try {
         let url = pk.update_url();
-        let is_loading = pk.update_is_loading(true);
+        let is_loading = false;
+        if (url.substring(0,7) == 'meow://') {
+          // Don't show progress bar for meow:// pages
+          is_loading = pk.update_is_loading(false);
+        } else {
+          is_loading = pk.update_is_loading(true);
+        }
         let progress = pk.update_loading_progress(0);
 
         (pk.storage.get('tab_urls') as string[])[pk.index] = url;

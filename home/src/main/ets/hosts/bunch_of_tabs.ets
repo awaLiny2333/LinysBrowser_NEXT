@@ -588,7 +588,7 @@ export class tab_info_packed {
     this.index = index;
     this.title = title;
     this.url = url;
-    this.is_loading = true;
+    this.is_loading = url.substring(0, 7) != 'meow://';
     this.loading_progress = 0;
     this.web_state_array = init_state;
     if (init_state) {

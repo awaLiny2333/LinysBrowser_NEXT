@@ -57,6 +57,8 @@ export class bunch_of_history {
    * Usually set true if this object is only created to sit the place of StorageLink initialization.
    */
   constructor(no_init?: boolean) {
+    let t0 = Date.now();
+
     if (no_init == true) {
       return;
     }
@@ -102,7 +104,6 @@ export class bunch_of_history {
         }
       } else {
         // Load index
-        // In a concurrent way?!
         history_index_load_from_disk_worker("normal");
       }
     } catch (e) {
@@ -125,7 +126,7 @@ export class bunch_of_history {
     }
 
     // Log
-    // console.log('[Meow][bunch_of_history] bunch_of_history initialization finished!');
+    console.log('[Meow][bunch_of_history] bunch_of_history initialization finished! (Used ' + (Date.now() - t0) + ' ms)');
   }
 
   // Statics

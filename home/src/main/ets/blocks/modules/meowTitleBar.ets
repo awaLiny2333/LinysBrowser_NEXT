@@ -129,7 +129,7 @@ struct meowTitleBar {
         .animation(animation_default())
       } // Horizontal tabs
 
-      if (this.delayed_load_p0) {
+      if (this.delayed_load_p1) {
         EstimatedDestination({
           is_http_no_s: this.search_input_unify_scheme_http,
           is_search_input_typing: this.is_search_input_typing,
@@ -484,7 +484,7 @@ struct meowTitleBar {
       .height(this.tablet_mode || this.showing_scratching_board ? capsule_bar_height() : 2 * capsule_bar_height() + 10)
       .animation(animation_default())
 
-      if (this.delayed_load_p0) {
+      if (this.delayed_load_p1) {
         EstimatedDestination({
           is_http_no_s: this.search_input_unify_scheme_http,
           is_search_input_typing: this.is_search_input_typing,

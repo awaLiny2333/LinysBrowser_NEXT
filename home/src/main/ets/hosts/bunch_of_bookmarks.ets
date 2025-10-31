@@ -53,7 +53,9 @@ export class bunch_of_bookmarks {
       }
       // Update plain_bookmarks
       this.reconstruct_cached_plain_bookmarks();
-      this.last_accessed = Date.now();
+      if (this.init) {
+        this.last_accessed = Date.now();
+      }
       return add_result;
     }
   }
@@ -88,7 +90,9 @@ export class bunch_of_bookmarks {
     }
     // Update plain_bookmarks
     this.reconstruct_cached_plain_bookmarks();
-    this.last_accessed = Date.now();
+    if (this.init) {
+      this.last_accessed = Date.now();
+    }
     return add_result;
   }
 

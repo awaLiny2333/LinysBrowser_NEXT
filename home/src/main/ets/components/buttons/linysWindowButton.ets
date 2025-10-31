@@ -1,3 +1,5 @@
+import { animation_default } from '../../hosts/bunch_of_defaults';
+
 @Component
 struct linysWindowButton {
   @State hover_on_new_window_button: boolean = false;
@@ -10,6 +12,8 @@ struct linysWindowButton {
   @LocalStorageLink('on_focus') on_focus: boolean = true;
   // Actions
   execution?: () => void;
+  // UI
+  @State my_vis: Visibility = Visibility.Hidden;
 
   build() {
     RelativeContainer() {
@@ -19,6 +23,8 @@ struct linysWindowButton {
         .fontColor([this.color_current_font])
         .alignRules({ center: { anchor: '__container__', align: VerticalAlign.Center }, middle: { anchor: '__container__', align: HorizontalAlign.Center } })
     }
+    .visibility(this.my_vis)
+    .animation(animation_default())
     .backgroundColor(this.hover_on_new_window_button ? $r('sys.color.comp_background_secondary') : undefined)
     .brightness(this.press_on_new_window_button ? 1.08 : undefined)
     .width(28.5)
@@ -39,6 +45,9 @@ struct linysWindowButton {
     .opacity(this.on_focus ? 1 : 0.4)
     .onHover((h) => {
       this.hover_on_new_window_button = h;
+    })
+    .onAppear(() => {
+      this.my_vis = Visibility.Visible;
     })
   }
 }
