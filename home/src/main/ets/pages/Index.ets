@@ -1,5 +1,5 @@
 import { common, ConfigurationConstant } from '@kit.AbilityKit';
-import { deviceInfo } from '@kit.BasicServicesKit';
+import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
 import { window } from '@kit.ArkUI';
 import { animation_default } from '../hosts/bunch_of_defaults';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
@@ -487,6 +487,9 @@ struct Index {
       if (this.fullscreen_mode) {
         // win.maximize().catch(() => {
         // });
+        win.enableLandscapeMultiWindow().catch((e: BusinessError) => {
+          console.error(`[on_fullscreen_switch][enableLandscapeMultiWindow] Failed: ${e}`);
+        });
         win.setWindowSystemBarEnable([]).catch(() => {
         });
         try {
@@ -496,6 +499,9 @@ struct Index {
       } else {
         // win.recover().catch(() => {
         // });
+        win.disableLandscapeMultiWindow().catch((e: BusinessError) => {
+          console.error(`[on_fullscreen_switch][enableLandscapeMultiWindow] Failed: ${e}`);
+        });
         win.setWindowSystemBarEnable(["status", "navigation"]).catch(() => {
         });
         try {

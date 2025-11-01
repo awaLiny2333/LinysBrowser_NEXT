@@ -28,6 +28,7 @@
         "removeMissionAfterTerminate": true,
         "orientation": "auto_rotation_restricted",
         "continuable": true,
+        "preferMultiWindowOrientation": "landscape_auto",
         "skills": [
           {
             "entities": [
