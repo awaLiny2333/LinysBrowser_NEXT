@@ -1053,6 +1053,22 @@
       "value": "SSL Error Warning! Proceed?"
     },
     {
+      "name": "http_auth_title",
+      "value": "Basic Auth"
+    },
+    {
+      "name": "http_auth_desc",
+      "value": "This site is asking you to sign in:"
+    },
+    {
+      "name": "username",
+      "value": "Username"
+    },
+    {
+      "name": "password",
+      "value": "Password"
+    },
+    {
       "name": "Permission_Manager_webpage_asks_for_permission",
       "value": "The page is asking for a permission!"
     },

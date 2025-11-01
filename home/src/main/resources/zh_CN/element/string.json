@@ -1052,6 +1052,22 @@
       "value": "SSL 错误警告！要继续访问吗？"
     },
     {
+      "name": "http_auth_title",
+      "value": "Basic Auth"
+    },
+    {
+      "name": "http_auth_desc",
+      "value": "这个网站正在要求你登录："
+    },
+    {
+      "name": "username",
+      "value": "账号"
+    },
+    {
+      "name": "password",
+      "value": "密码"
+    },
+    {
       "name": "Permission_Manager_webpage_asks_for_permission",
       "value": "网页想要权限!"
     },

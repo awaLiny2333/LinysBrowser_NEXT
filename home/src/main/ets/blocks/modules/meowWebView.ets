@@ -22,6 +22,7 @@ import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResou
 import lazy woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
+import woofHttpAuthPrompt from '../../dialogs/web/woofHttpAuthPrompt';
 
 @Component
 struct meowWebView {
@@ -120,16 +121,24 @@ struct meowWebView {
     alignment: DialogAlignment.Center,
     cornerRadius: 26
   })
+  @LocalStorageLink('js_alert_event') @Watch('on_js_alert_event') js_alert_event: OnAlertEvent | undefined = undefined;
+  woofAlert_control: CustomDialogController = new CustomDialogController({
+    builder: woofAlert({
+      event: this.js_alert_event
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 26
+  })
   @LocalStorageLink('ssl_error_event') @Watch('on_ssl_error_event') ssl_error_event: SslErrorEvent | undefined = undefined;
   woof_SSL_error_control: CustomDialogController = new CustomDialogController({
     builder: woofConfirm(),
     alignment: DialogAlignment.Center,
     cornerRadius: 26
   })
-  @LocalStorageLink('js_alert_event') @Watch('on_js_alert_event') js_alert_event: OnAlertEvent | undefined = undefined;
-  woofAlert_control: CustomDialogController = new CustomDialogController({
-    builder: woofAlert({
-      event: this.js_alert_event
+  @LocalStorageLink('http_auth_event') @Watch('on_http_auth_event') http_auth_event: OnHttpAuthRequestEvent | undefined = undefined;
+  woof_http_auth_control: CustomDialogController = new CustomDialogController({
+    builder: woofHttpAuthPrompt({
+      e: this.http_auth_event
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 26
@@ -323,6 +332,16 @@ struct meowWebView {
       cornerRadius: 26
     });
     this.woof_SSL_error_control.open();
+  }
+
+  on_http_auth_event() {
+    if (this.http_auth_event) {
+      if (this.http_auth_event.handler.isHttpAuthInfoSaved()) {
+        // Use auto cache
+      } else {
+        this.woof_http_auth_control.open();
+      }
+    }
   }
 
   on_permission_request_event() {

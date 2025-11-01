@@ -5,7 +5,6 @@ import { window_index_of_id } from '../utils/ui_tools';
 import { match_domain, url_meow_to_resource, url_resource_to_meow, viewable_domains } from '../utils/url_tools';
 import lazy { webview } from '@kit.ArkWeb';
 import lazy { hilog } from '@kit.PerformanceAnalysisKit';
-import woofConfirm from '../dialogs/web/woofConfirm';
 
 export const defaultUrl: string = 'https://www.example.com';
 
@@ -348,12 +347,11 @@ function WebBuilder(pk: tab_info_packed) {
         pk.storage.set('ssl_error_event', e);
       }
     })
-  // TODO: Handle Http Auth Request!
-  // .onHttpAuthRequest((event) => {
-  //   console.log(`[onHttpAuthRequest] Host: [${event.host}], Realm: [${event.realm}]!`)
-  //   return true;
-  // })
-  // }
+    .onHttpAuthRequest((e) => {
+      console.log(`[onHttpAuthRequest] Host: [${e.host}], Realm: [${e.realm}]!`);
+      pk.storage.set('http_auth_event', e);
+      return true;
+    })
 }
 
 export class TabNodeController extends NodeController {

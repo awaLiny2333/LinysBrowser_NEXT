@@ -226,7 +226,7 @@ struct Index {
       // I know this is stupid
       // Forgive me
       // O.o
-      Row()// Keyboard shortcuts
+      Row() // Keyboard shortcuts
         .keyboardShortcut(this.bunch_of_key_shortcuts.fullscreen.main_key, this.bunch_of_key_shortcuts.fullscreen.modifier, () => {
           this.fullscreen_mode = !this.fullscreen_mode;
           this.showing_more_options = false;
