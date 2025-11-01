@@ -291,9 +291,6 @@ struct meowWebView {
       builder: woofConfirm({
         title: this.js_confirm_event?.url,
         desc: this.js_confirm_event?.message,
-        onAboutToDisappear: () => {
-          this.js_confirm_event?.result.handleCancel();
-        },
         onConfirm: () => {
           this.js_confirm_event?.result.handleConfirm();
         },
@@ -314,10 +311,7 @@ struct meowWebView {
     this.woof_SSL_error_control = new CustomDialogController({
       builder: woofConfirm({
         title: $r('app.string.SSL_error_title'),
-        desc: this.human_desc_of_ssl_error(this.ssl_error_event.error),
-        onAboutToDisappear: () => {
-          this.ssl_error_event?.handler.handleCancel(true);
-        },
+        desc: this.human_desc_of_ssl_error(this.ssl_error_event),
         onConfirm: () => {
           this.ssl_error_event?.handler.handleConfirm();
         },
@@ -546,9 +540,14 @@ struct meowWebView {
     return Visibility.Visible;
   }
 
-  human_desc_of_ssl_error(e: SslError) {
+  human_desc_of_ssl_error(e: SslErrorEvent) {
     let error_descs: string[] = ['Invalid', 'HostMismatch', 'DateInvalid', 'Untrusted'];
-    return '(　o=^•ェ•)o : ' + error_descs[e as number];
+    return `(　o=^•ェ•)o : ${error_descs[e.error as number]}
+url: ${e.url}
+originalUrl: ${e.originalUrl}
+referrer: ${e.referrer}
+isFatalError: ${e.isFatalError}
+isMainFrame: ${e.isMainFrame}`;
   }
 }
 

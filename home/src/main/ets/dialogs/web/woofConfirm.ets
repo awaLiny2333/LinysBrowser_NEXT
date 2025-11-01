@@ -1,21 +1,23 @@
 import linysConfirmDenyButtons from '../../components/buttons/linysConfirmDenyButtons';
 import linysText from '../../components/texts/linysText';
+import linysTextArea from '../../components/texts/linysTextArea';
 import linysTextTitle from '../../components/texts/linysTextTitle';
 
 @CustomDialog
 struct woofConfirm {
   // @Link event: OnConfirmEvent | undefined;
   controller: CustomDialogController;
+  @LocalStorageLink('screen_height') screen_height: number = 0;
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   // Count
   @LocalStorageLink('opened_dialog_controllers') opened_dialog_controllers: CustomDialogController[] = [];
   // Actions
   title: ResourceStr = '';
-  desc: ResourceStr = '';
+  desc: string = '';
+  @State desc_edit: string = ''; // To fool the TextArea
   onConfirm?: () => void;
   onDeny?: () => void;
-  onAboutToDisappear?: () => void;
 
   aboutToAppear(): void {
     this.opened_dialog_controllers.push(this.controller);
@@ -23,8 +25,8 @@ struct woofConfirm {
   }
 
   aboutToDisappear(): void {
-    if (this.onAboutToDisappear) {
-      this.onAboutToDisappear();
+    if (this.onDeny) {
+      this.onDeny();
     }
     this.opened_dialog_controllers.splice(this.opened_dialog_controllers.indexOf(this.controller), 1);
     console.log(`[Dialog][Close] Now dialog count: ${this.opened_dialog_controllers.length}!`);
@@ -35,8 +37,11 @@ struct woofConfirm {
       linysTextTitle({ text: this.title, max_lines: 2 }) // Page url
         .width("100%")
 
-      linysText({ text: this.desc, max_lines: 999 }) // Prompt message
-        .width("100%")
+      linysTextArea({
+        init_text:this.desc,
+        text: this.desc_edit
+      })
+        .constraintSize({ maxHeight: Math.max(0, this.screen_height - 160) })
 
       linysConfirmDenyButtons({
         onConfirm: () => {
