@@ -83,17 +83,6 @@ struct linysExpandableCardItem {
           console.log('[linysExpandableCardItem] onTouch UP!')
           this.is_pressing = false;
           this.press_start_time = undefined;
-          // If touch ends, determine if is click or long press
-          if (this.is_press_timing_ok) {
-            // Toggle Edit Panel
-            this.is_editing = !this.is_editing;
-            this.is_press_timing_ok = false;
-          } else {
-            // Click Execution
-            if (this.onExecution) {
-              this.onExecution();
-            }
-          }
           return;
         }
         // If is touching
@@ -108,6 +97,19 @@ struct linysExpandableCardItem {
           // Set press start time
           console.log('[linysExpandableCardItem] onTouch DOWN!')
           this.press_start_time = Date.now();
+        }
+      })
+      .onClick(() => {
+        // If touch ends, determine if is click or long press
+        if (this.is_press_timing_ok) {
+          // Toggle Edit Panel
+          this.is_editing = !this.is_editing;
+          this.is_press_timing_ok = false;
+        } else {
+          // Click Execution
+          if (this.onExecution) {
+            this.onExecution();
+          }
         }
       })
       .height(this.button_height_default)
@@ -155,7 +157,7 @@ struct linysExpandableCardItem {
         this.onDrag(event);
       }
     })
-    .onDragEnd(()=>{
+    .onDragEnd(() => {
       this.is_dragging = false;
       console.log('[linysExpandableCardItem] onDragEnd!');
     })

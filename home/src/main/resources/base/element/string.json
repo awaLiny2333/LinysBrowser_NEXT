@@ -1049,6 +1049,10 @@
       "value": "Allow this jump?"
     },
     {
+      "name": "SSL_error_title",
+      "value": "SSL Error Warning! Proceed?"
+    },
+    {
       "name": "Permission_Manager_webpage_asks_for_permission",
       "value": "The page is asking for a permission!"
     },

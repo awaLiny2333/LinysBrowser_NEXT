@@ -1,4 +1,4 @@
-import { animation_default, capsule_bar_height, click_effect_default } from '../../hosts/bunch_of_defaults';
+import { animation_default, capsule_bar_height } from '../../hosts/bunch_of_defaults';
 import { bunch_of_history } from '../../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { compress_image_arrayBuffer, sandbox_read_arrayBuffer_sync } from '../../utils/storage_tools';
@@ -116,9 +116,13 @@ struct meowWebView {
   })
   @LocalStorageLink('js_confirm_event') @Watch('on_js_confirm_event') js_confirm_event: OnConfirmEvent | undefined = undefined;
   woofConfirm_control: CustomDialogController = new CustomDialogController({
-    builder: woofConfirm({
-      event: this.js_confirm_event
-    }),
+    builder: woofConfirm(),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 26
+  })
+  @LocalStorageLink('ssl_error_event') @Watch('on_ssl_error_event') ssl_error_event: SslErrorEvent | undefined = undefined;
+  woof_SSL_error_control: CustomDialogController = new CustomDialogController({
+    builder: woofConfirm(),
     alignment: DialogAlignment.Center,
     cornerRadius: 26
   })
@@ -283,7 +287,48 @@ struct meowWebView {
   }
 
   on_js_confirm_event() {
+    this.woofConfirm_control = new CustomDialogController({
+      builder: woofConfirm({
+        title: this.js_confirm_event?.url,
+        desc: this.js_confirm_event?.message,
+        onAboutToDisappear: () => {
+          this.js_confirm_event?.result.handleCancel();
+        },
+        onConfirm: () => {
+          this.js_confirm_event?.result.handleConfirm();
+        },
+        onDeny: () => {
+          this.js_confirm_event?.result.handleCancel();
+        }
+      }),
+      alignment: DialogAlignment.Center,
+      cornerRadius: 26
+    });
     this.woofConfirm_control.open();
+  }
+
+  on_ssl_error_event() {
+    if (this.ssl_error_event == undefined) {
+      return;
+    }
+    this.woof_SSL_error_control = new CustomDialogController({
+      builder: woofConfirm({
+        title: $r('app.string.SSL_error_title'),
+        desc: this.human_desc_of_ssl_error(this.ssl_error_event.error),
+        onAboutToDisappear: () => {
+          this.ssl_error_event?.handler.handleCancel(true);
+        },
+        onConfirm: () => {
+          this.ssl_error_event?.handler.handleConfirm();
+        },
+        onDeny: () => {
+          this.ssl_error_event?.handler.handleCancel(true);
+        }
+      }),
+      alignment: DialogAlignment.Center,
+      cornerRadius: 26
+    });
+    this.woof_SSL_error_control.open();
   }
 
   on_permission_request_event() {
@@ -499,6 +544,11 @@ struct meowWebView {
       return Visibility.None;
     }
     return Visibility.Visible;
+  }
+
+  human_desc_of_ssl_error(e: SslError) {
+    let error_descs: string[] = ['Invalid', 'HostMismatch', 'DateInvalid', 'Untrusted'];
+    return '(　o=^•ェ•)o : ' + error_descs[e as number];
   }
 }
 

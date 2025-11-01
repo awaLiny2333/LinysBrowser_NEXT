@@ -1048,6 +1048,10 @@
       "value": "同意它跳吗？"
     },
     {
+      "name": "SSL_error_title",
+      "value": "SSL 错误警告！要继续访问吗？"
+    },
+    {
       "name": "Permission_Manager_webpage_asks_for_permission",
       "value": "网页想要权限!"
     },

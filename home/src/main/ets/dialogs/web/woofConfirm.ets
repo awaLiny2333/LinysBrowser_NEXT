@@ -4,12 +4,18 @@ import linysTextTitle from '../../components/texts/linysTextTitle';
 
 @CustomDialog
 struct woofConfirm {
-  @Link event: OnConfirmEvent | undefined;
+  // @Link event: OnConfirmEvent | undefined;
   controller: CustomDialogController;
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   // Count
   @LocalStorageLink('opened_dialog_controllers') opened_dialog_controllers: CustomDialogController[] = [];
+  // Actions
+  title: ResourceStr = '';
+  desc: ResourceStr = '';
+  onConfirm?: () => void;
+  onDeny?: () => void;
+  onAboutToDisappear?: () => void;
 
   aboutToAppear(): void {
     this.opened_dialog_controllers.push(this.controller);
@@ -17,29 +23,35 @@ struct woofConfirm {
   }
 
   aboutToDisappear(): void {
-    this.event?.result.handleCancel();
+    if (this.onAboutToDisappear) {
+      this.onAboutToDisappear();
+    }
     this.opened_dialog_controllers.splice(this.opened_dialog_controllers.indexOf(this.controller), 1);
     console.log(`[Dialog][Close] Now dialog count: ${this.opened_dialog_controllers.length}!`);
   }
 
   build() {
     Column({ space: 15 }) {
-      linysTextTitle({ text: this.event?.url, max_lines: 2 }) // Page url
+      linysTextTitle({ text: this.title, max_lines: 2 }) // Page url
         .width("100%")
 
-      linysText({ text: this.event?.message, max_lines: 999 }) // Prompt message
+      linysText({ text: this.desc, max_lines: 999 }) // Prompt message
         .width("100%")
 
       linysConfirmDenyButtons({
         onConfirm: () => {
+          if (this.onConfirm) {
+            this.onConfirm();
+          }
           if (this.controller) {
-            this.event?.result.handleConfirm();
             this.controller.close();
           }
         },
         onDeny: () => {
+          if (this.onDeny) {
+            this.onDeny();
+          }
           if (this.controller) {
-            this.event?.result.handleCancel();
             this.controller.close();
           }
         },
