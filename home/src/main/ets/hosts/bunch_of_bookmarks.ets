@@ -21,9 +21,9 @@ export class bunch_of_bookmarks {
    * consumes another a lot of performance and time.
    * */
   reconstruct_cached_plain_bookmarks() {
+    let t0 = Date.now();
     this.cached_plain_bookmarks = this.root.get_plain_bookmarks();
-    console.log("[bunch_of_bookmarks][plain_bookmarks] Reconstructed plain bookmarks! length: " +
-    this.cached_plain_bookmarks.length.toString());
+    console.log(`[bunch_of_bookmarks][plain_bookmarks] Reconstructed plain bookmarks! length: ${this.cached_plain_bookmarks.length} (${(Date.now() - t0)} ms)`);
   }
 
   /**
@@ -350,11 +350,11 @@ export class bunch_of_bookmarks {
       return -1; // -1 for no <H3> error
     }
 
-    one_line_data = one_line_data.substring(first_H3)
-    let lines_split = one_line_data.split("\n")
+    one_line_data = one_line_data.substring(first_H3);
+    let lines_split = one_line_data.split("\n");
     // Split Into lines
 
-    let new_bunch_of_bookmarks_label = new Date().toLocaleString()
+    let new_bunch_of_bookmarks_label = new Date().toLocaleString();
     let new_bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks(new_bunch_of_bookmarks_label);
     let now_path_stack: string[] = [];
     // Set new bookmarks bundle
@@ -366,6 +366,7 @@ export class bunch_of_bookmarks {
         // Skip empty lines
         continue;
       }
+
       let now_path_string = now_path_stack.join("/");
       // Connect now path
 
@@ -373,9 +374,7 @@ export class bunch_of_bookmarks {
       if (position_of_label == -1) {
         return 1; // 1 for no label error
       }
-      // if (position_of_label + 1 == line.length) {
-      //   return 1;
-      // }
+
       let label = line.substring(position_of_label + 1);
       label = decode_html_code_to_string(label);
       // Extract Label
@@ -406,7 +405,6 @@ export class bunch_of_bookmarks {
         now_path_stack.pop();
         // go back to upper class folder
       }
-
     }
 
     let final_add_result = false;

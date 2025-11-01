@@ -5,6 +5,7 @@ import {
   fontSize_Large
 } from '../../hosts/bunch_of_defaults';
 
+@Reusable // Can I?
 @Component
 struct linysCapsuleButton {
   @Prop text: ResourceStr = "";
@@ -13,10 +14,10 @@ struct linysCapsuleButton {
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @Prop color_button: ResourceColor = "";
   @Prop color_text: ResourceColor = "";
-
+  opa: number = 0.9;
   build() {
     Button(this.text)
-      .opacity(0.9)
+      .opacity(this.opa)
       .type(ButtonType.Capsule)
       .backgroundColor(this.color_button == "" ? this.color_current_font : this.color_button)
       .fontColor(this.color_text == "" ? this.color_current_primary : this.color_text)

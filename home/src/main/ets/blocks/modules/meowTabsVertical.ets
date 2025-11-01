@@ -331,9 +331,13 @@ struct meowTabsVertical {
     } else {
       this.bunch_of_tabs.newTab(this.getUIContext(), target_url, init_state, placeholder_label);
     }
-
+    
     // Get synced lists
-    sync_all_tabs_list_info(this.storage);
+    if (init_state) {
+      // Restore tab, no need to sync now
+    } else {
+      sync_all_tabs_list_info(this.storage);
+    }
 
     if (init_state) {
       // Nothing happens

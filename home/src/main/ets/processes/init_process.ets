@@ -1,6 +1,8 @@
 // The initialization of the entire app
 import { bundleManager, common } from '@kit.AbilityKit';
-import { arrayBuffer_2_pixelMap, sandbox_read_arrayBuffer, sandbox_read_text_sync, sandbox_save, sandbox_unlink } from '../utils/storage_tools';
+import {
+  arrayBuffer_2_pixelMap, sandbox_read_arrayBuffer, sandbox_read_text_sync, sandbox_save, sandbox_unlink
+} from '../utils/storage_tools';
 import { fileIo } from '@kit.CoreFileKit';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { bunch_of_history } from '../hosts/bunch_of_history';
@@ -135,8 +137,10 @@ function load_homepage_background(context: common.UIAbilityContext, storage: Loc
   console.log("[Meow][meowAppSettings] Start loading homepage background! (" + run_time(storage) + " ms)");
   sandbox_read_arrayBuffer('homepage_background_arrayBuffer', context.filesDir)?.then((homepage_background_array_buffer) => {
     if (homepage_background_array_buffer) {
-      AppStorage.setOrCreate('homepage_background', arrayBuffer_2_pixelMap(homepage_background_array_buffer));
-      console.log("[Meow][meowAppSettings] Finished loading homepage background! (" + run_time(storage) + " ms)");
+      arrayBuffer_2_pixelMap(homepage_background_array_buffer).then((pm) => {
+        AppStorage.setOrCreate('homepage_background', pm);
+        console.log("[Meow][meowAppSettings] Finished loading homepage background! (" + run_time(storage) + " ms)");
+      })
     }
   });
 }
@@ -278,6 +282,10 @@ export async function bookmarks(storage: LocalStorage) {
 
   // Get bookmarks
   let result: string = sandbox_read_text_sync('html_bookmarks.html');
+  let tt = Date.now() - t0;
+  console.log(`[Meow][init] Bookmarks sandbox_read_text_sync (${tt}/${run_time(storage)} ms)`);
+
+  // Work on retrieved data
   if (result == "undefined") {
     // Check old kv_store
     result = await kv_store_get("html_bookmarks") as string;
@@ -293,9 +301,11 @@ export async function bookmarks(storage: LocalStorage) {
   bookmarks.init = true;
 
   // Timer
-  console.log('[Meow][init] Bookmarks OK. (' + run_time(storage) + ' ms)');
-  return Date.now() - t0;
+  tt = Date.now() - t0;
+  console.log(`[Meow][init] Bookmarks OK. (${tt}/${run_time(storage)} ms)`);
+  return tt;
 }
+
 
 /**
  * Retrieves the restore tabs indices.

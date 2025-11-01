@@ -647,6 +647,21 @@ export function path_2_uri(path: string) {
 }
 
 /**
+ * Converts an ArrayBuffer to image.PixelMap object. In a sync way.
+ * @param buf the ArrayBuffer
+ * @returns an image.PixelMap
+ * */
+export function arrayBuffer_2_pixelMap_sync(buf: ArrayBuffer) {
+  // ArrayBuffer => PixelMap
+  const imageSource = image.createImageSource(buf);
+  console.log('imageSource: ' + JSON.stringify(imageSource));
+  let pixelMap = imageSource.createPixelMapSync({});
+  imageSource.release();
+  console.log('[arrayBuffer_2_pixelMap_sync] Released imageSource!');
+  return pixelMap;
+}
+
+/**
  * Converts an ArrayBuffer to image.PixelMap object.
  * @param buf the ArrayBuffer
  * @returns an image.PixelMap
@@ -655,9 +670,13 @@ export function arrayBuffer_2_pixelMap(buf: ArrayBuffer) {
   // ArrayBuffer => PixelMap
   const imageSource = image.createImageSource(buf);
   console.log('imageSource: ' + JSON.stringify(imageSource));
-  let pixelMap = imageSource.createPixelMapSync({});
-  imageSource.release();
-  return pixelMap;
+  return imageSource.createPixelMap({}).then((pm) => {
+    let pixelMap = pm;
+    return pixelMap;
+  }).finally(() => {
+    imageSource.release();
+    console.log('[arrayBuffer_2_pixelMap] Released imageSource!');
+  })
 }
 
 /**
@@ -671,7 +690,7 @@ export async function compress_image_arrayBuffer(img_buffer: ArrayBuffer, qua: n
   let compressed_buffer: ArrayBuffer = new ArrayBuffer(8);
 
   // Compress image
-  let pictureObj: image.Picture = image.createPicture(arrayBuffer_2_pixelMap(img_buffer));
+  let pictureObj: image.Picture = image.createPicture(arrayBuffer_2_pixelMap_sync(img_buffer));
   await image.createImagePacker().packing(pictureObj, { format: "image/jpeg", quality: qua }).then((data: ArrayBuffer) => {
     console.info('[compress_image_arrayBuffer] Succeeded in packing the image. (' + add_units_to_size(data.byteLength) + ')');
     compressed_buffer = data;

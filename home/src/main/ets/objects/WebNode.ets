@@ -96,7 +96,7 @@ function WebBuilder(pk: tab_info_packed) {
       try {
         let url = pk.update_url();
         let is_loading = false;
-        if (url.substring(0,7) == 'meow://') {
+        if (url.substring(0, 7) == 'meow://') {
           // Don't show progress bar for meow:// pages
           is_loading = pk.update_is_loading(false);
         } else {
@@ -268,7 +268,7 @@ function WebBuilder(pk: tab_info_packed) {
         let adblock_exceptions = AppStorage.get('adblock_exceptions') as string[];
         console.log('[init][meowWebView] Trying to add ads blocker exceptions: [' + adblock_exceptions + '] Operated by meowWebView ~');
         // webview.AdsBlockManager.addAdsBlockDisallowedList(adblock_exceptions);
-        webview.AdsBlockManager.addAdsBlockDisallowedList(Array.from(adblock_exceptions)); // wtf??? 做这个接口的人脑子简直有病，直接拿的数组用了报错，还得从头创建 O.o
+        webview.AdsBlockManager.addAdsBlockDisallowedList(Array.from(adblock_exceptions)); // wtf??? why???
       } catch (e) {
         console.error('[ERROR][Meow][meowWebView] add Ads Blocker Exceptions error: ' + e);
       }

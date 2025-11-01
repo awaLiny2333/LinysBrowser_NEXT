@@ -1,5 +1,5 @@
 import lazy {
-  arrayBuffer_2_pixelMap,
+  arrayBuffer_2_pixelMap_sync,
   image_document_pick_to_ArrayBuffer,
   image_gallery_pick_to_ArrayBuffer,
   sandbox_save,
@@ -68,7 +68,7 @@ struct meowHomepageManager {
       if (result !== undefined) {
         let buf = result as ArrayBuffer;
         // Set image for homepage
-        this.homepage_background = arrayBuffer_2_pixelMap(buf);
+        this.homepage_background = arrayBuffer_2_pixelMap_sync(buf);
         // Save this to sandbox
         sandbox_save('homepage_background_arrayBuffer', buf);
       } else {
@@ -86,7 +86,7 @@ struct meowHomepageManager {
       if (result !== undefined) {
         let buf = result as ArrayBuffer;
         // Set image for homepage
-        this.homepage_background = arrayBuffer_2_pixelMap(buf);
+        this.homepage_background = arrayBuffer_2_pixelMap_sync(buf);
         // Save this to sandbox
         sandbox_save('homepage_background_arrayBuffer', buf);
       } else {

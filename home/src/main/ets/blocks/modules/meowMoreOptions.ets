@@ -310,24 +310,24 @@ struct meowMoreOptions {
               text: this.current_in_page_searching_stats_current.toString() + '／' + this.current_in_page_searching_stats_total.toString()
             })
               .animation(animation_default())
-            linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_up' })
-              // .keyboardShortcut(FunctionKey.DPAD_UP, [])
-              .onClick(() => {
-                try {
-                  this.bunch_of_tabs.workingMainTab().controller.searchNext(false);
-                } catch (e) {
-                  console.error(e);
-                }
-              })
-            linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_down' })
-              // .keyboardShortcut(FunctionKey.DPAD_DOWN, [])
-              .onClick(() => {
-                try {
-                  this.bunch_of_tabs.workingMainTab().controller.searchNext(true);
-                } catch (e) {
-                  console.error(e);
-                }
-              })
+            if (this.showing_more_options) {
+              linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_up' })
+                .onClick(() => {
+                  try {
+                    this.bunch_of_tabs.workingMainTab().controller.searchNext(false);
+                  } catch (e) {
+                    console.error(e);
+                  }
+                })
+              linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_down' })
+                .onClick(() => {
+                  try {
+                    this.bunch_of_tabs.workingMainTab().controller.searchNext(true);
+                  } catch (e) {
+                    console.error(e);
+                  }
+                })
+            }
           } // Operation buttons
           .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
           .margin(!this.tablet_mode ? { left: 5, right: 5 } : 0)
@@ -342,6 +342,7 @@ struct meowMoreOptions {
             bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
           })
           .animation(animation_default())
+
         } // Search in page
         .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
         .width("100%")
@@ -386,83 +387,84 @@ struct meowMoreOptions {
           .backgroundColor($r('sys.color.comp_background_tertiary'))
           .borderRadius(12)
           .padding(10)
-        }
 
-        Scroll() {
-          Row({ space: 10 }) {
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.printer'
-            })// Print
-              .onClick(() => {
-                print_web(this.bunch_of_tabs.workingMainTab().controller, this.getUIContext().getHostContext()!);
-              })
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.star_2_moon'
-            })// Dark
-              .onClick(() => {
-                this.woofDarkExempts_control.open();
-              })
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.tracking_cookie_interception'
-            })// Cookies
-              .onClick(() => {
-                this.cookies_control.open();
-              })
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.picture_2'
-            })// Image
-              .onClick(() => {
-                this.image_manage_control.open();
-              })
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.electric_install'
-            })// JS
-              .onClick(() => {
-                this.js_manage_control.open();
-              })
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.ad_circle_slash'
-            })// Enable ads blocker
-              .onClick(() => {
-                this.woofAdsBlocker_control.open();
-              })
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.arrow_counterclockwise_clock'
-            })// History
-              .onClick(() => {
-                this.woofHistory_control.open();
-              })
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.label'
-            })// UA
-              .onClick(() => {
-                this.woofQuickUA_control.open();
-              })
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.qrcode'
-            })// QRcode
-              .onClick(() => {
-                this.woofQR_control.open();
-              })
-            linysSymbol({
-              symbol_glyph_target: this.fullscreen_mode ?
-                'sys.symbol.arrow_down_right_and_arrow_up_left' :
-                'sys.symbol.arrow_up_left_and_arrow_down_right'
-            })// FullScreen
-              .onClick(() => {
-                this.fullscreen_mode = !this.fullscreen_mode;
-                this.showing_more_options = false;
-              })
-          } // Small buttons
-          .justifyContent(FlexAlign.End)
-        } // Buttons
-        .scrollable(ScrollDirection.Horizontal)
-        .scrollBar(BarState.Off)
-        .edgeEffect(EdgeEffect.Spring)
-        .visibility(this.visible_when_not_in_page_search())
-        .animation(animation_default())
+          // }
 
-        if (this.showing_more_options) {
+          Scroll() {
+            Row({ space: 10 }) {
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.printer'
+              })// Print
+                .onClick(() => {
+                  print_web(this.bunch_of_tabs.workingMainTab().controller, this.getUIContext().getHostContext()!);
+                })
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.star_2_moon'
+              })// Dark
+                .onClick(() => {
+                  this.woofDarkExempts_control.open();
+                })
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.tracking_cookie_interception'
+              })// Cookies
+                .onClick(() => {
+                  this.cookies_control.open();
+                })
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.picture_2'
+              })// Image
+                .onClick(() => {
+                  this.image_manage_control.open();
+                })
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.electric_install'
+              })// JS
+                .onClick(() => {
+                  this.js_manage_control.open();
+                })
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.ad_circle_slash'
+              })// Enable ads blocker
+                .onClick(() => {
+                  this.woofAdsBlocker_control.open();
+                })
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.arrow_counterclockwise_clock'
+              })// History
+                .onClick(() => {
+                  this.woofHistory_control.open();
+                })
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.label'
+              })// UA
+                .onClick(() => {
+                  this.woofQuickUA_control.open();
+                })
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.qrcode'
+              })// QRcode
+                .onClick(() => {
+                  this.woofQR_control.open();
+                })
+              linysSymbol({
+                symbol_glyph_target: this.fullscreen_mode ?
+                  'sys.symbol.arrow_down_right_and_arrow_up_left' :
+                  'sys.symbol.arrow_up_left_and_arrow_down_right'
+              })// FullScreen
+                .onClick(() => {
+                  this.fullscreen_mode = !this.fullscreen_mode;
+                  this.showing_more_options = false;
+                })
+            } // Small buttons
+            .justifyContent(FlexAlign.End)
+          } // Buttons
+          .scrollable(ScrollDirection.Horizontal)
+          .scrollBar(BarState.Off)
+          .edgeEffect(EdgeEffect.Spring)
+          .visibility(this.visible_when_not_in_page_search())
+          .animation(animation_default())
+
+          // if (this.showing_more_options) {
           // Row() {
           meowDebug()
           // } // Debug

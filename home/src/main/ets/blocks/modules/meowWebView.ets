@@ -1,4 +1,4 @@
-import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large } from '../../hosts/bunch_of_defaults';
+import { animation_default, capsule_bar_height, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { bunch_of_history } from '../../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { compress_image_arrayBuffer, sandbox_read_arrayBuffer_sync } from '../../utils/storage_tools';
@@ -21,6 +21,7 @@ import lazy woofWantJump from '../../dialogs/prompts/woofWantJump';
 import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
 import lazy woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
+import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 
 @Component
 struct meowWebView {
@@ -598,7 +599,7 @@ struct shortcuts {
   }
 }
 
-@Reusable
+// @Reusable // Lost of animation
 @Component
 struct shortcutButton {
   @Prop my_index: number;
@@ -613,32 +614,26 @@ struct shortcutButton {
   // Gateways
   @LocalStorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
   // Colors
-  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // SHow
-  @State show_contents: Visibility = Visibility.None;
-  @State show: Visibility = Visibility.Hidden;
+  @State vis_contents: Visibility = Visibility.None;
+  @State render_contents: boolean = false;
+  render_contents_timeout_id: number | undefined = undefined;
+  @State show: Visibility = Visibility.None;
   @State offset_y: number = 50;
 
   build() {
     Column({ space: 10 }) {
-      Button((this.bookmark.get_item().get_type() == 'folder' ? (this.show_contents == Visibility.Visible ? '󰃆  ' : '󰃅  ') : '') +
-      this.bookmark.get_item().get_label())// Shortcut "󰄏"
-        .type(ButtonType.Capsule)
-        .backgroundColor(this.color_current_secondary)
-        .fontColor(this.color_current_font)
-        .border({
-          width: 2,
-          color: "transparent"
-        })
-        .fontSize(fontSize_Large())
-        .fontWeight(FontWeight.Regular)
-        .height(capsule_bar_height())
+      linysCapsuleButton({
+        text: this.get_label_name(),
+        color_button: this.color_current_secondary,
+        color_text: this.color_current_font,
+        opa: 1
+      })
         .visibility(this.show)
-        .offset({ y: this.offset_y })
-        .clickEffect(click_effect_default())
         .animation(animation_default())
+        .offset({ y: this.offset_y })
         .onAppear(() => {
           setTimeout(() => {
             this.show = Visibility.Visible;
@@ -656,31 +651,48 @@ struct shortcutButton {
             }, 100)
           } else {
             // Is folder, expand contents
-            if (this.show_contents == Visibility.None) {
-              this.show_contents = Visibility.Visible;
+            clearTimeout(this.render_contents_timeout_id);
+            if (this.vis_contents == Visibility.None) {
+              this.vis_contents = Visibility.Visible;
+              this.render_contents = true;
             } else {
-              this.show_contents = Visibility.None;
+              this.vis_contents = Visibility.None;
+              this.render_contents_timeout_id = setTimeout(() => {
+                this.render_contents = false;
+              }, 300)
             }
           }
         })
 
       if (this.bookmark.get_item().get_type() == 'folder') {
         Column({ space: 10 }) {
-          ForEach((this.bookmark.get_item() as folder).get_content(), (shortcut: unified_item, key: number) => {
-            shortcutButton({
-              bookmark: shortcut,
-              my_index: key,
+          if (this.render_contents) {
+            ForEach((this.bookmark.get_item() as folder).get_content(), (shortcut: unified_item, key: number) => {
+              shortcutButton({
+                bookmark: shortcut,
+                my_index: key,
+              })
             })
-          })
+          }
         }
         .alignItems(this.get_alignItems())
-        .visibility(this.show_contents)
+        .visibility(this.vis_contents)
         .animation(animation_default())
       }
     }
     .alignItems(this.get_alignItems())
-    .padding(this.show_contents == Visibility.Visible ? (this.is_right_align() ? { right: 30 } : { left: 30 }) : {})
+    .padding(this.vis_contents == Visibility.Visible ? (this.is_right_align() ? { right: 30 } : { left: 30 }) : {})
     .animation(animation_default())
+  }
+
+  get_label_name() {
+    let name = '';
+    if (this.bookmark.get_item().get_type() == 'folder') {
+      name = (this.vis_contents == Visibility.Visible ? '󰃆  ' : '󰃅  ');
+    }
+    let label = this.bookmark.get_item().get_label();
+    name += label;
+    return name;
   }
 
   is_right_align() {
@@ -697,8 +709,8 @@ struct shortcutButton {
   }
 
   get_animation_timeout() {
-    let interval = 400 / (this.homepage_shortcuts_init_height / 100 * this.screen_height / (capsule_bar_height() + 10));
-    return this.my_index * interval;
+    let interval = 800 / (this.screen_height / (capsule_bar_height() + 10));
+    return (this.my_index + 0) * interval;
   }
 }
 
