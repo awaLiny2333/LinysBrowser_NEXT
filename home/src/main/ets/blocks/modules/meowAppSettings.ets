@@ -1178,7 +1178,7 @@ struct meowAppSettings {
                       text: 'Free Memory'
                     })
                       .onClick(() => {
-                        webview.WebviewController.trimMemoryByPressureLevel(webview.PressureLevel.MEMORY_PRESSURE_LEVEL_CRITICAL);
+                        webview.WebviewController.trimMemoryByPressureLevel(webview.PressureLevel.MEMORY_PRESSURE_LEVEL_MODERATE);
                       })
                     linysCapsuleButton({
                       text: 'Save Page'

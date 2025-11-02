@@ -87,6 +87,7 @@ struct meowTitleBar {
   @State horizontal_tabs_height: number = 120;
   @LocalStorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
   @LocalStorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
+  @LocalStorageLink('delayed_load_p2') delayed_load_p2: boolean = false;
   @LocalStorageLink('delayed_load_p3') delayed_load_p3: boolean = false;
   // settings
   @StorageLink('title_bar_position') title_bar_position: string = "";
@@ -112,7 +113,7 @@ struct meowTitleBar {
 
   build() {
     Column({ space: 10 }) {
-      if (this.title_bar_position == "bottom") {
+      if (this.title_bar_position == "bottom" && this.delayed_load_p2) {
         meowSuggestions({ top_margin: 5 })
       } // Suggestions
 
@@ -129,7 +130,7 @@ struct meowTitleBar {
         .animation(animation_default())
       } // Horizontal tabs
 
-      if (this.delayed_load_p1) {
+      if (this.delayed_load_p2) {
         EstimatedDestination({
           is_http_no_s: this.search_input_unify_scheme_http,
           is_search_input_typing: this.is_search_input_typing,
@@ -484,7 +485,7 @@ struct meowTitleBar {
       .height(this.tablet_mode || this.showing_scratching_board ? capsule_bar_height() : 2 * capsule_bar_height() + 10)
       .animation(animation_default())
 
-      if (this.delayed_load_p1) {
+      if (this.delayed_load_p2) {
         EstimatedDestination({
           is_http_no_s: this.search_input_unify_scheme_http,
           is_search_input_typing: this.is_search_input_typing,
@@ -518,7 +519,7 @@ struct meowTitleBar {
           .animation(animation_default())
       } // All the panels
 
-      if (this.title_bar_position == "top") {
+      if (this.title_bar_position == "top" && this.delayed_load_p2) {
         meowSuggestions({ bottom_margin: 5 })
       } // Suggestions
 

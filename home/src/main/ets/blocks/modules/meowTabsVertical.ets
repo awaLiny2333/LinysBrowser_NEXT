@@ -83,7 +83,6 @@ struct meowTabsVertical {
 
   aboutToAppear() {
     let t0 = Date.now();
-    let t = 0;
 
     let continue_tabs_sub_on = AppStorage.get('continue_tabs_sub_on') as number;
     let continue_tabs_main_on = AppStorage.get('continue_tabs_main_on') as number;
@@ -123,7 +122,6 @@ struct meowTabsVertical {
         }
       } else {
         // Restore. Prepare web states.
-
         let web_state_arrays_to_restore: Uint8Array[] = [];
         let labels: string[] = [];
         for (let index = 0; index < continue_tabs_count; index++) {
@@ -166,8 +164,10 @@ struct meowTabsVertical {
         }
       }
 
-      // Retrieve all data
-      sync_all_tabs_list_info(this.storage);
+      setTimeout(() => {
+        // Retrieve all data, avoid blocks on the main thread
+        sync_all_tabs_list_info(this.storage);
+      }, 1)
     }
 
     if (this.want_source == 'onCreate') { // TODO: Is this check necessary?
@@ -178,8 +178,7 @@ struct meowTabsVertical {
 
     this.last_tab_index = this.bunch_of_tabs.main_tab_idx; // Set last_tab_index
 
-    t = Date.now() - t0;
-    console.log('[Meow][init][meowTabsVertical] Tabs OK. (' + t + ' ms)');
+    console.log('[Meow][init][meowTabsVertical] Tabs OK. (' + (Date.now() - t0) + ' ms)');
   }
 
   build() {
@@ -331,7 +330,7 @@ struct meowTabsVertical {
     } else {
       this.bunch_of_tabs.newTab(this.getUIContext(), target_url, init_state, placeholder_label);
     }
-    
+
     // Get synced lists
     if (init_state) {
       // Restore tab, no need to sync now
