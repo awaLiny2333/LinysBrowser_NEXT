@@ -9,7 +9,7 @@ import { meowContext } from './environment_tools';
 // Pick & Save
 
 /**
- * Save (Copy) any file from a path to download folder.
+ * Save (Copy) any file from a path to download folder. Without pulling up a DocumentViewPicker interface.
  * @param path source path of object to be stored.
  * */
 export async function download_save_from_path(path: string) {

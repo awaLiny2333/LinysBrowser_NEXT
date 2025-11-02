@@ -1020,6 +1020,10 @@
       "value": "置顶窗口"
     },
     {
+      "name": "Key_shortcuts_save_page",
+      "value": "保存／归档页面"
+    },
+    {
       "name": "Homepage_background",
       "value": "背景"
     },

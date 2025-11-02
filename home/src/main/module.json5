@@ -53,8 +53,25 @@
             "uris": [
               {
                 "scheme": "file",
+                // Accept All Files
+                "linkFeature": "FileOpen"
+              },
+              {
+                "scheme": "file",
                 "type": "text/html",
                 // Accept html
+                "linkFeature": "FileOpen"
+              },
+              {
+                "scheme": "file",
+                "type": "application/xhtml+xml",
+                // Accept xhtml
+                "linkFeature": "FileOpen"
+              },
+              {
+                "scheme": "file",
+                "type": "message/rfc822",
+                // Accept mht
                 "linkFeature": "FileOpen"
               },
               {

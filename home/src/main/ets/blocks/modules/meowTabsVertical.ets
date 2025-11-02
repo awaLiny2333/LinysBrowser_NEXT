@@ -470,6 +470,14 @@ struct meowTabsVertical {
       }
       index += 1;
     }
+    while (true) {
+      let key = "continue/continue_tabs_web_state_array_" + index.toString() + "_label";
+      // console.log('awa')
+      if (!sandbox_unlink_sync(key)) {
+        break;
+      }
+      index += 1;
+    }
     // re-save web states
 
     this.bunch_of_tabs.re_save_web_state(target);

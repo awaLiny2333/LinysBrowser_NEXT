@@ -1175,24 +1175,23 @@ struct meowAppSettings {
                       toggle_state: this.free_window_mode
                     }); // Toggle free window mode
                     linysCapsuleButton({
-                      text: 'Enable Ads Blocker'
+                      text: 'Free Memory'
                     })
                       .onClick(() => {
-                        // Set Ads Blocker
-                        let use_adblock = AppStorage.get('use_adblock') as boolean;
-                        let tabs = this.storage.get('bunch_of_tabs') as bunch_of_tabs;
-                        console.log('[meowWebView] enableAdsBlock: ' + (use_adblock ? 'true' : 'false'));
-                        try {
-                          tabs.workingMainTab().controller.enableAdsBlock(use_adblock);
-                          console.info('[meowWebView] onControllerAttached enableAdsBlock! [' + tabs.workingMainTab().url + ']');
-                        } catch (e) {
-                          console.error('[meowWebView] onControllerAttached enableAdsBlock error: ' + e);
-                        }
-                        setTimeout(() => {
-                          tabs.NodeControllers[tabs.main_tab_idx].update(tabs.workingMainTab());
-                          console.log('[isAdsBlockEnabled()] ' + tabs.workingMainTab().controller.isAdsBlockEnabled());
-                          console.log('[isAdsBlockEnabledForCurPage()] ' + tabs.workingMainTab().controller.isAdsBlockEnabledForCurPage());
-                        }, 1000)
+                        webview.WebviewController.trimMemoryByPressureLevel(webview.PressureLevel.MEMORY_PRESSURE_LEVEL_CRITICAL);
+                      })
+                    linysCapsuleButton({
+                      text: 'Save Page'
+                    })
+                      .onClick(() => {
+                        this.bunch_of_tabs.workingMainTab().controller.storeWebArchive('/data/storage/el2/base/', true, ((e, filename) => {
+                          if (e) {
+                            console.error('[Save Page] Failed: ' + e);
+                          }
+                          if (filename) {
+                            console.log('[Save Page] OK: ' + filename);
+                          }
+                        }))
                       })
                   }
                 }

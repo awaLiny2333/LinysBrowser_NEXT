@@ -1021,6 +1021,10 @@
       "value": "Pin window to top"
     },
     {
+      "name": "Key_shortcuts_save_page",
+      "value": "Save / archive web"
+    },
+    {
       "name": "Homepage_background",
       "value": "Background"
     },

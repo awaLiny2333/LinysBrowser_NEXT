@@ -393,6 +393,12 @@ struct meowMoreOptions {
           Scroll() {
             Row({ space: 10 }) {
               linysSymbol({
+                symbol_glyph_target: 'sys.symbol.save'
+              })// Save Page
+                .onClick(() => {
+                  this.bunch_of_tabs.archive_onWorkingTab(this.getUIContext().getHostContext()?.tempDir);
+                })
+              linysSymbol({
                 symbol_glyph_target: 'sys.symbol.printer'
               })// Print
                 .onClick(() => {

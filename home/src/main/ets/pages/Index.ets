@@ -249,6 +249,9 @@ struct Index {
           }
           this.woofHistory_control.open();
         })
+        .keyboardShortcut(this.bunch_of_key_shortcuts.save_page.main_key, this.bunch_of_key_shortcuts.save_page.modifier, () => {
+          this.bunch_of_tabs.archive_onWorkingTab(this.getUIContext().getHostContext()?.tempDir);
+        })
         .keyboardShortcut(FunctionKey.ESC, [], () => {
           try {
             this.universal_esc();
