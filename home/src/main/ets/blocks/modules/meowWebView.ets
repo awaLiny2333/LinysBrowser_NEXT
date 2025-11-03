@@ -4,7 +4,7 @@ import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { compress_image_arrayBuffer, sandbox_read_arrayBuffer_sync } from '../../utils/storage_tools';
 import { url_resource_to_meow } from '../../utils/url_tools';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
-import { bookmark, bunch_of_bookmarks, folder, unified_item } from '../../hosts/bunch_of_bookmarks';
+import { bookmark, bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import { window } from '@kit.ArkUI';
 import { is_address_continuable, run_time, set_continuable, storage_of_id } from '../../utils/ui_tools';
@@ -583,7 +583,7 @@ struct shortcuts {
   // Statuses
   @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
   @Link shortcut_scroll_offset: number;
-  @State homepage_shortcuts: unified_item[] = [];
+  @State homepage_shortcuts: bookmark[] = [];
   // Settings
   @StorageLink('homepage_shortcuts_init_height') homepage_shortcuts_init_height: number = 50;
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
@@ -602,7 +602,7 @@ struct shortcuts {
   build() {
     Scroll(this.shortcut_scroller) {
       Column({ space: 10 }) {
-        ForEach(this.homepage_shortcuts, (shortcut: unified_item, key: number) => {
+        ForEach(this.homepage_shortcuts, (shortcut: bookmark, key: number) => {
           shortcutButton({
             bookmark: shortcut,
             my_index: key,
@@ -654,7 +654,7 @@ struct shortcuts {
     let result = this.bunch_of_bookmarks.get_folder(this.homepage_shortcuts_dir)?.get_content();
     if (result) {
       console.log('[Meow][meowWebView] Directory selected / refreshed for shortcuts: [' + this.homepage_shortcuts_dir + ']');
-      this.homepage_shortcuts = result;
+      this.homepage_shortcuts = Array.from(result);
       bunch_of_settings.set('homepage_shortcuts_bookmarks_dir', this.homepage_shortcuts_dir);
     } else {
       // directory doesn't exist
@@ -671,7 +671,7 @@ struct shortcuts {
 @Component
 struct shortcutButton {
   @Prop my_index: number;
-  @Prop bookmark: unified_item;
+  @Prop bookmark: bookmark;
   // Environment
   @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
   @LocalStorageProp('screen_height') screen_height: number = 100;
@@ -710,7 +710,7 @@ struct shortcutButton {
           }, this.get_animation_timeout())
         })
         .onClick(() => {
-          let item = this.bookmark.get_item();
+          let item = this.bookmark;
           if (item.get_type() == 'bookmark') {
             // Is bookmark, access website
             setTimeout(() => {
@@ -732,10 +732,10 @@ struct shortcutButton {
           }
         })
 
-      if (this.bookmark.get_item().get_type() == 'folder') {
+      if (this.bookmark.get_type() == 'folder') {
         Column({ space: 10 }) {
           if (this.render_contents) {
-            ForEach((this.bookmark.get_item() as folder).get_content(), (shortcut: unified_item, key: number) => {
+            ForEach(Array.from(this.bookmark.get_content()), (shortcut: bookmark, key: number) => {
               shortcutButton({
                 bookmark: shortcut,
                 my_index: key,
@@ -755,10 +755,10 @@ struct shortcutButton {
 
   get_label_name() {
     let name = '';
-    if (this.bookmark.get_item().get_type() == 'folder') {
+    if (this.bookmark.get_type() == 'folder') {
       name = (this.vis_contents == Visibility.Visible ? '󰃆  ' : '󰃅  ');
     }
-    let label = this.bookmark.get_item().get_label();
+    let label = this.bookmark.get_label();
     name += label;
     return name;
   }

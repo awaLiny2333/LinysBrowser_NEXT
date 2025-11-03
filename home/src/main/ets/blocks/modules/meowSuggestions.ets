@@ -114,7 +114,11 @@ struct meowSuggestions {
       this.bookmark_suggestions = [];
       this.history_suggestions = [];
     } else {
-      let label_link_bookmark = this.bunch_of_bookmarks.get_all_plain_label_link();
+      let all_plain_label_link_collection = this.bunch_of_bookmarks.get_all_plain_label_link();
+      let label_link_bookmark: string[][] = [];
+      for (let index = 0; index < all_plain_label_link_collection.length; index++) {
+        label_link_bookmark.push(Array.from(all_plain_label_link_collection[index]));
+      }
       this.bookmark_suggestions = search_label_link(label_link_bookmark, this.search_input, 0.8, this.max_bookmark_advice);
       this.history_suggestions = bunch_of_history.search_with_index(this.search_input.toUpperCase(), this.max_history_advice);
     }

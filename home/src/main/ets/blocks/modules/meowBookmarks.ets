@@ -1,4 +1,4 @@
-import { bookmark, bunch_of_bookmarks, folder, unified_item } from '../../hosts/bunch_of_bookmarks';
+import { bookmark, bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { document_pick_to_text, document_save_text, sandbox_save } from '../../utils/storage_tools';
 import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large, fontSize_Normal } from '../../hosts/bunch_of_defaults';
@@ -21,9 +21,9 @@ struct meowBookmarks {
   // Hosts
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("Bookmarks~Meow");
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
-  @State viewing_contents: unified_item[] = this.bunch_of_bookmarks.root.get_content();
+  @State viewing_contents: bookmark[] = Array.from(this.bunch_of_bookmarks.root.get_content());
   @State @Watch('refresh_content_view') looking_at_path: string = "";
-  current_folder: folder | undefined = undefined;
+  current_folder: bookmark | undefined = undefined;
   // Environments
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   // UI control actions
@@ -70,7 +70,7 @@ struct meowBookmarks {
               }
             }
 
-            ForEach(this.viewing_contents, (_unified_item: unified_item, key: number) => {
+            ForEach(this.viewing_contents, (item: bookmark, key: number) => {
               bookmarkItem({
                 // Generals
                 my_index: key,
@@ -387,12 +387,12 @@ struct meowBookmarks {
   refresh_content_view() {
     if (this.looking_at_path == "") {
       // Go to root
-      this.viewing_contents = this.bunch_of_bookmarks.root.get_content();
+      this.viewing_contents = Array.from(this.bunch_of_bookmarks.root.get_content());
     } else {
       // Go to a directory
       this.current_folder = this.bunch_of_bookmarks.get_folder(this.looking_at_path);
       if (this.current_folder !== undefined) {
-        this.viewing_contents = this.current_folder.get_content();
+        this.viewing_contents = Array.from(this.current_folder.get_content());
       }
     }
     // this.bookmarks_scroller.scrollTo({ xOffset: 0, yOffset: this.scroll_area_height * 0.75, animation: false });
@@ -428,7 +428,7 @@ struct meowBookmarks {
       this.uni_fail_prompt_gateway = $r('app.string.Fail_desc_no_name');
       return;
     }
-    let result = this.bunch_of_bookmarks.add_folder(new folder(this.add_label), this.looking_at_path);
+    let result = this.bunch_of_bookmarks.add_folder(new bookmark(this.add_label, '', undefined, undefined, true), this.looking_at_path);
 
     if (!result) {
       // If add failed
@@ -487,7 +487,7 @@ struct meowBookmarks {
   export_bookmarks_html() {
     this.exporting_bookmarks = false;
 
-    document_save_text("Bookmarks_" + Math.round(new Date().getTime() / 1000),
+    document_save_text("Bookmarks_" + Math.round(new Date().getTime() / 1000) + '.html',
       this.bunch_of_bookmarks.get_export_html().join("\n"))
   }
 
@@ -547,14 +547,14 @@ struct bookmarkItem {
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @Link looking_at_path: string;
-  @Link viewing_contents: unified_item[];
+  @Link viewing_contents: bookmark[];
   @Prop parent_path: string;
   @Prop height_of_panel: number;
   // Me
-  @State item: unified_item = this.viewing_contents[this.my_index];
-  @State my_type: string = this.item.get_item().get_type();
-  @State my_label: string = this.item.get_item().get_label();
-  @State my_link: string = this.my_type == "bookmark" ? (this.item.get_item() as bookmark).get_link() : "";
+  @State item: bookmark = this.viewing_contents[this.my_index];
+  @State my_type: string = this.item.get_type();
+  @State my_label: string = this.item.get_label();
+  @State my_link: string = this.item.get_link();
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // UI
@@ -760,7 +760,7 @@ struct bookmarkItem {
     } else {
       // Load web
       this.bunch_of_tabs.stop_onWorkingTab()
-      this.bunch_of_tabs.loadUrl_onWorkingTab((this.item.get_item() as bookmark).get_link())
+      this.bunch_of_tabs.loadUrl_onWorkingTab(this.item.get_link())
     }
   }
 
@@ -809,15 +809,15 @@ struct bookmarkItem {
   }
 
   save_changes_folder() {
-    this.item.get_item().set_label(this.edit_label);
+    this.item.set_label(this.edit_label);
     this.my_label = this.edit_label;
     this.bunch_of_bookmarks.reconstruct_cached_plain_bookmarks();
     this.save_bookmarks();
   }
 
   save_changes_bookmark() {
-    this.item.get_item().set_label(this.edit_label);
-    (this.item.get_item() as bookmark).set_link(this.edit_link);
+    this.item.set_label(this.edit_label);
+    this.item.set_link(this.edit_link);
     this.my_label = this.edit_label;
     this.my_link = this.edit_link;
     this.bunch_of_bookmarks.reconstruct_cached_plain_bookmarks();

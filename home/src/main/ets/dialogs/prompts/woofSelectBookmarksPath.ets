@@ -2,8 +2,9 @@ import linysConfirmDenyButtons from '../../components/buttons/linysConfirmDenyBu
 import linysPathTree from '../../components/linysPathTree';
 import linysSymbol from '../../components/texts/linysSymbol';
 import linysTextTitle from '../../components/texts/linysTextTitle';
-import { bookmark, bunch_of_bookmarks, folder, unified_item } from '../../hosts/bunch_of_bookmarks';
+import { bookmark, bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import { animation_default, click_effect_default, fontSize_Large, fontSize_Normal } from '../../hosts/bunch_of_defaults';
+import { collections } from '@kit.ArkTS';
 
 @CustomDialog
 struct woofSelectBookmarksPath {
@@ -11,7 +12,7 @@ struct woofSelectBookmarksPath {
   @Prop prompt_title: ResourceStr = ':O';
   @State scroll_area_height: number = 0;
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
-  @State viewing_contents: unified_item[] = this.filter_only_folders(this.bunch_of_bookmarks.root.get_content());
+  @State viewing_contents: bookmark[] = this.filter_only_folders(this.bunch_of_bookmarks.root.get_content());
   @Prop @Watch('refresh_dir_content') looking_at_path: string;
   @State showing_navigator: boolean = false;
   // Settings / Accessibility
@@ -42,17 +43,15 @@ struct woofSelectBookmarksPath {
 
       Scroll() {
         Column({ space: 5 }) {
-          ForEach(
-            this.viewing_contents,
-            (_unified_item: unified_item, key: number) => {
-              bookmarkItem({
-                my_index: key,
-                viewing_contents: this.viewing_contents, // For editing
-                looking_at_path: this.looking_at_path, // the path of now showing list (directory) on the panel
-                height_of_panel: this.scroll_area_height, // for animation params
-                my_parent_path: this.looking_at_path, // for get_my_path()
-              });
-            },
+          ForEach(this.viewing_contents, (item: bookmark, key: number) => {
+            bookmarkItem({
+              my_index: key,
+              viewing_contents: this.viewing_contents, // For editing
+              looking_at_path: this.looking_at_path, // the path of now showing list (directory) on the panel
+              height_of_panel: this.scroll_area_height, // for animation params
+              my_parent_path: this.looking_at_path, // for get_my_path()
+            });
+          },
           )
 
           linysTextTitle({ text: "¯\\_(ツ)_/¯" })
@@ -145,7 +144,7 @@ struct woofSelectBookmarksPath {
     if (this.looking_at_path == "/") {
       this.looking_at_path = '';
     }
-    let got_folder: folder | undefined;
+    let got_folder: bookmark | undefined;
     if (this.looking_at_path == "") {
       got_folder = this.bunch_of_bookmarks.root;
     } else {
@@ -158,11 +157,11 @@ struct woofSelectBookmarksPath {
     }
   }
 
-  filter_only_folders(raw: unified_item[]) {
+  filter_only_folders(raw: collections.Array<bookmark>) {
     let raw_content = raw;
-    let folder_only_content: unified_item[] = [];
+    let folder_only_content: bookmark[] = [];
     for (let index = 0; index < raw_content.length; index++) {
-      if (raw_content[index].get_item().get_type() == "folder") {
+      if (raw_content[index].get_type() == "folder") {
         folder_only_content.push(raw_content[index]);
       }
     }
@@ -192,15 +191,15 @@ struct bookmarkItem {
   // Public stuffs
   @StorageLink('bunch_of_bookmarks') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks("meow");
   @Link looking_at_path: string;
-  @Link viewing_contents: unified_item[];
+  @Link viewing_contents: bookmark[];
   @Prop height_of_panel: number;
   // Basic this properties
   @Prop my_index: number = 0;
   @Prop my_parent_path: string;
-  @State my_item: unified_item = this.viewing_contents[this.my_index];
-  @State my_type: string = this.my_item.get_item().get_type();
-  @State my_label: string = this.my_item.get_item().get_label();
-  @State my_link: string = this.my_type == "bookmark" ? (this.my_item.get_item() as bookmark).get_link() : "";
+  @State my_item: bookmark = this.viewing_contents[this.my_index];
+  @State my_type: string = this.my_item.get_type();
+  @State my_label: string = this.my_item.get_label();
+  @State my_link: string = this.my_type == "bookmark" ? this.my_item.get_link() : "";
   bookmark_height_default: number = 42;
   // Animations statuses
   @State pressing: boolean = false;

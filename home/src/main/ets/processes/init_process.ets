@@ -306,7 +306,6 @@ export async function bookmarks(storage: LocalStorage) {
   return tt;
 }
 
-
 /**
  * Retrieves the restore tabs indices.
  *

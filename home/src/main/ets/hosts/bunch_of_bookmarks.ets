@@ -1,18 +1,20 @@
 import { decode_html_code_to_string, encode_string_to_html_code } from '../utils/html_tools';
 import { ensure_scheme } from '../utils/url_tools';
+import { collections } from '@kit.ArkTS';
 
+@Sendable
 export class bunch_of_bookmarks {
-  root: folder;
+  root: bookmark;
   last_accessed: number = 0;
   init: boolean = false;
-  private cached_plain_bookmarks: string[][] | undefined = undefined;
+  private cached_plain_bookmarks: collections.Array<collections.Array<string>> | undefined = undefined;
 
   /**
    * A class holding a root folder, in which there stores bookmarks and folders.
    * @param root_label The label of root folder.
    */
   constructor(root_label: string) {
-    this.root = new folder(root_label);
+    this.root = new bookmark(root_label, '', undefined, undefined, true);
   }
 
   /**
@@ -69,7 +71,7 @@ export class bunch_of_bookmarks {
    * @returns true if success.
    * @returns false if failed (for a name crash or a nonexistent destination).
    * */
-  add_folder(item: folder, path: string, no_reconstruct_plain_bookmarks?: boolean) {
+  add_folder(item: bookmark, path: string, no_reconstruct_plain_bookmarks?: boolean) {
     let check_path = "";
     if (path == "") {
       check_path = item.get_label()
@@ -96,7 +98,7 @@ export class bunch_of_bookmarks {
     return add_result;
   }
 
-  get_bookmark(path: string, base_folder?: folder): bookmark | undefined {
+  get_bookmark(path: string, base_folder?: bookmark): bookmark | undefined {
     // Basic idea:
     // Will recursively open folders and sub folders, until the path is chopped down to a single level.
     // Then just pick the bookmark requested.
@@ -112,7 +114,7 @@ export class bunch_of_bookmarks {
       // if at destination folder
       for (let index = 0; index < base_content.length; index++) {
         // Temporarily get the item
-        let item = base_content[index].get_item();
+        let item = base_content[index];
         if (item.get_type() == "bookmark" && item.get_label() == path) {
           return item as bookmark;
         }
@@ -124,9 +126,9 @@ export class bunch_of_bookmarks {
       let next_folder_label = path.split("/")[0];
       for (let index = 0; index < base_content.length; index++) {
         // Temporarily get the item
-        let item = base_content[index].get_item();
+        let item = base_content[index];
         if (item.get_type() == "folder" && item.get_label() == next_folder_label) {
-          return this.get_bookmark(rest_path, item as folder);
+          return this.get_bookmark(rest_path, item);
         }
       }
       // not found
@@ -134,7 +136,7 @@ export class bunch_of_bookmarks {
     }
   }
 
-  get_folder(path: string, base_folder?: folder): folder | undefined {
+  get_folder(path: string, base_folder?: bookmark): bookmark | undefined {
     // Basic idea:
     // Will recursively open folders and sub folders, until the path is chopped down to a single level.
     // Then just pick the folder requested.
@@ -158,9 +160,9 @@ export class bunch_of_bookmarks {
       // if at destination folder
       for (let index = 0; index < base_content.length; index++) {
         // Temporarily get the item
-        let item = base_content[index].get_item();
+        let item = base_content[index];
         if (item.get_type() == "folder" && item.get_label() == path) {
-          return item as folder;
+          return item;
         }
       }
       // not found
@@ -169,9 +171,9 @@ export class bunch_of_bookmarks {
       let rest_path = path.split("/").slice(1).join("/");
       for (let index = 0; index < base_content.length; index++) {
         // Temporarily get the item
-        let item = base_content[index].get_item();
+        let item = base_content[index];
         if (item.get_type() == "folder" && item.get_label() == path.split("/")[0]) {
-          return this.get_folder(rest_path, item as folder);
+          return this.get_folder(rest_path, item);
         }
       }
       return undefined;
@@ -219,7 +221,7 @@ export class bunch_of_bookmarks {
     }
     // Get objects
     let item_bookmark = this.get_bookmark(bookmark_path);
-    let target_folder: folder | undefined;
+    let target_folder: bookmark | undefined;
     if (to_path == "") {
       target_folder = this.root;
     } else {
@@ -241,7 +243,7 @@ export class bunch_of_bookmarks {
         return 2;
       }
       // All OK
-      target_folder.add_content(new unified_item(item_bookmark, undefined));
+      target_folder.add_content(item_bookmark);
       this.del_bookmark(bookmark_path);
     }
     this.last_accessed = Date.now();
@@ -269,7 +271,7 @@ export class bunch_of_bookmarks {
 
     // Get objects
     let item_folder = this.get_folder(folder_path);
-    let target_folder: folder | undefined;
+    let target_folder: bookmark | undefined;
     if (to_path == "") {
       target_folder = this.root;
     } else {
@@ -291,7 +293,7 @@ export class bunch_of_bookmarks {
         return 2;
       }
       // All OK
-      target_folder.add_content(new unified_item(undefined, item_folder));
+      target_folder.add_content(item_folder);
       this.del_folder(folder_path);
     }
     this.last_accessed = Date.now();
@@ -389,7 +391,7 @@ export class bunch_of_bookmarks {
 
       if (line.includes("<H3 ")) {
         // is a folder
-        new_bunch_of_bookmarks.add_folder(new folder(label, add_date, last_modified), now_path_string, true);
+        new_bunch_of_bookmarks.add_folder(new bookmark(label, '', add_date, last_modified, true), now_path_string, true);
         now_path_stack.push(label)
 
       } else if (line.includes("<A HREF=\"")) {
@@ -409,7 +411,7 @@ export class bunch_of_bookmarks {
 
     let final_add_result = false;
     if (overwrite_data) {
-      let root_contents: folder = (new_bunch_of_bookmarks.root.get_content()[0].get_item() as folder);
+      let root_contents: bookmark = (new_bunch_of_bookmarks.root.get_content()[0]);
       this.root = root_contents;
     } else {
       final_add_result = this.add_folder(new_bunch_of_bookmarks.root, "", true) as boolean;
@@ -431,11 +433,11 @@ export class bunch_of_bookmarks {
    * @returns A string[][] array, cached_plain_bookmarks, which consists of plain label and link pairs.
    * @example [['bing', 'www.bing.com'], ['loading', 'www.google.com']]
    * */
-  get_all_plain_label_link(): string[][] {
+  get_all_plain_label_link(): collections.Array<collections.Array<string>> {
     if (!this.cached_plain_bookmarks) {
       this.reconstruct_cached_plain_bookmarks();
     }
-    return this.cached_plain_bookmarks as string[][];
+    return this.cached_plain_bookmarks as collections.Array<collections.Array<string>>;
   }
 
   private import_html_get_key(key: string, from: string) {
@@ -453,7 +455,7 @@ export class bunch_of_bookmarks {
     return from.substring(start, end);
   }
 
-  private delete_bookmark_process(path: string, base_folder?: folder): boolean {
+  private delete_bookmark_process(path: string, base_folder?: bookmark): boolean {
     if (base_folder === undefined) {
       base_folder = this.root;
       // use root as default;
@@ -461,12 +463,12 @@ export class bunch_of_bookmarks {
 
     if (!path.includes("/")) {
       // Directly delete in this folder
-      let dir: unified_item[] = base_folder.get_content();
+      let dir: collections.Array<bookmark> = base_folder.get_content();
       let target: number = -1;
 
       for (let index = 0; index < dir.length; index++) {
-        if (dir[index].get_item().get_type() == "bookmark") {
-          if (dir[index].get_item().get_label() == path) {
+        if (dir[index].get_type() == "bookmark") {
+          if (dir[index].get_label() == path) {
             target = index;
           }
         }
@@ -484,9 +486,8 @@ export class bunch_of_bookmarks {
       let base_content = base_folder.get_content()
 
       for (let index = 0; index < base_content.length; index++) {
-        let item = base_content[index].get_item()
+        let item = base_content[index];
         if (item.get_type() == "folder" && item.get_label() == path.split("/")[0]) {
-          item = item as folder;
           return this.delete_bookmark_process(rest_path, item);
         }
       }
@@ -495,7 +496,7 @@ export class bunch_of_bookmarks {
     }
   }
 
-  private delete_folder_process(path: string, base_folder?: folder): boolean {
+  private delete_folder_process(path: string, base_folder?: bookmark): boolean {
     if (base_folder === undefined) {
       base_folder = this.root;
       // use root as default;
@@ -503,12 +504,12 @@ export class bunch_of_bookmarks {
 
     if (!path.includes("/")) {
       // Directly delete in this folder
-      let dir: unified_item[] = base_folder.get_content();
+      let dir: collections.Array<bookmark> = base_folder.get_content();
       let target: number = -1;
 
       for (let index = 0; index < dir.length; index++) {
-        if (dir[index].get_item().get_type() == "folder") {
-          if (dir[index].get_item().get_label() == path) {
+        if (dir[index].get_type() == "folder") {
+          if (dir[index].get_label() == path) {
             target = index;
           }
         }
@@ -526,9 +527,8 @@ export class bunch_of_bookmarks {
       let base_content = base_folder.get_content()
 
       for (let index = 0; index < base_content.length; index++) {
-        let item = base_content[index].get_item()
+        let item = base_content[index];
         if (item.get_type() == "folder" && item.get_label() == path.split("/")[0]) {
-          item = item as folder;
           return this.delete_folder_process(rest_path, item);
         }
       }
@@ -537,7 +537,7 @@ export class bunch_of_bookmarks {
     }
   }
 
-  private add_bookmark_process(item: bookmark, path: string, base_folder?: folder): boolean {
+  private add_bookmark_process(item: bookmark, path: string, base_folder?: bookmark): boolean {
     if (base_folder === undefined) {
       base_folder = this.root;
       // use root as default;
@@ -551,17 +551,17 @@ export class bunch_of_bookmarks {
 
     if (path == "") {
       // if at root of this base_folder
-      base_folder.add_content(new unified_item(item));
+      base_folder.add_content(item);
       // console.log("[Meow][BunchOfBookmarks] Added bookmark [" + item.get_label() + "]!")
       return true;
       // Directly add
     } else {
       // continue to open folders
       for (let index = 0; index < this_folder.length; index++) {
-        let checking = this_folder[index].get_item();
+        let checking = this_folder[index];
         if (checking.get_type() == "folder") {
           if (checking.get_label() == next_folder) {
-            return this.add_bookmark_process(item, rest_path, checking as folder);
+            return this.add_bookmark_process(item, rest_path, checking);
             // next target found
           }
         }
@@ -571,7 +571,7 @@ export class bunch_of_bookmarks {
     }
   }
 
-  private add_folder_process(item: folder, path: string, base_folder?: folder): boolean {
+  private add_folder_process(item: bookmark, path: string, base_folder?: bookmark): boolean {
     if (base_folder === undefined) {
       base_folder = this.root;
       // use root as default;
@@ -586,17 +586,17 @@ export class bunch_of_bookmarks {
 
     if (path == "") {
       // if at root of this base_folder
-      base_folder.add_content(new unified_item(undefined, item));
+      base_folder.add_content(item);
       // console.log("[Meow][BunchOfBookmarks] Added folder [" + item.get_label() + "]!")
       return true;
       // Directly add
     } else {
       // continue to open folders
       for (let index = 0; index < this_folder.length; index++) {
-        let checking = this_folder[index].get_item();
+        let checking = this_folder[index];
         if (checking.get_type() == "folder") {
           if (checking.get_label() == next_folder) {
-            return this.add_folder_process(item, rest_path, checking as folder);
+            return this.add_folder_process(item, rest_path, checking);
             // next target found
           }
         }
@@ -606,7 +606,11 @@ export class bunch_of_bookmarks {
   }
 }
 
+@Sendable
 export class bookmark {
+  private contents: collections.Array<bookmark> = new collections.Array();
+  private is_folder: boolean = false;
+  private last_modified: number;
   private label: string;
   private link: string;
   private add_date: number;
@@ -617,11 +621,13 @@ export class bookmark {
    * @param link A string, the link of this bookmark.
    * @param add_date A number, the add date of this folder (timestamp in seconds).
    * */
-  constructor(label: string, link: string, add_date?: number) {
+  constructor(label: string, link: string, add_date?: number, last_modified?: number, is_folder: boolean = false) {
     let date = new Date();
     this.label = label.replaceAll("/", "／");
     this.link = link;
-    this.add_date = add_date !== undefined ? add_date : Math.round(date.getTime() / 1000);
+    this.add_date = add_date || Math.round(date.getTime() / 1000);
+    this.last_modified = last_modified || Math.round(date.getTime() / 1000);
+    this.is_folder = is_folder;
   }
 
   set_label(set: string) {
@@ -630,7 +636,15 @@ export class bookmark {
     this.label = set.replaceAll("/", "／");
   }
 
+  /**
+   * Sets the link of current bookmark. Doesn't take effect if is a folder.
+   * @param set The new link.
+   * */
   set_link(set: string) {
+    if (this.is_folder) {
+      this.link = '';
+      return;
+    }
     this.link = set;
   }
 
@@ -638,6 +652,10 @@ export class bookmark {
     return this.label;
   }
 
+  /**
+   * Link of this bookmark object.
+   * @returns The link if is a bookmark, empty string if is a folder.
+   * */
   get_link() {
     return this.link;
   }
@@ -651,58 +669,77 @@ export class bookmark {
    * @returns "bookmark"
    * */
   get_type() {
-    return "bookmark";
-  }
-}
-
-export class folder {
-  private contents: unified_item[] = [];
-  private add_date: number;
-  private last_modified: number;
-  private label: string;
-
-  /**
-   * folder item, consists of a label, an add timestamp, and a last modified timestamp.
-   * @param label A string, the name of this folder.
-   * @param add_date A number, the add date of this folder (timestamp in seconds).
-   * @param last_modified A number, the last modified date of this folder (timestamp in seconds).
-   * */
-  constructor(label: string, add_date?: number, last_modified?: number) {
-    let date = new Date();
-    this.label = label.replaceAll("/", "／");
-    this.add_date = add_date !== undefined ? add_date : Math.round(date.getTime() / 1000);
-    this.last_modified = last_modified !== undefined ? last_modified : Math.round(date.getTime() / 1000);
+    return this.is_folder ? "folder" : "bookmark";
   }
 
-  set_label(set: string) {
-    // TODO: Find a better way to access a bookmark directory or store labels
-    // Avoid slash collision in directory access
-    this.label = set.replaceAll("/", "／");
-    // Record last modified time
-    this.last_modified = Math.round((new Date()).getTime() / 1000);
-  }
-
-  get_add_date() {
-    return this.add_date;
-  }
+  // Folder
 
   get_last_modified() {
     return this.last_modified;
   }
 
-  get_label() {
-    return this.label;
+  /**
+   * Get plain information of all bookmarks in this folder and sub folders.
+   * @returns A string[][] array consists of labels and links.
+   * @example [['bing','www.bing.com'],['google','www.google.com']]
+   * */
+  get_plain_bookmarks() {
+    let type: string = "";
+    let item: bookmark;
+    let result: collections.Array<collections.Array<string>> = new collections.Array();
+    for (let index = 0; index < this.contents.length; index++) {
+      item = this.contents[index];
+      type = item.get_type();
+      // Get item data
+      if (type == "bookmark") {
+        // item = item as bookmark;
+        result.push(collections.Array.from([item.get_label(), item.get_link()])); // Push bookmark
+      } else if (type == "folder") {
+        // item = item as folder;
+        result = result.concat(item.get_plain_bookmarks());
+      }
+    }
+    return result;
   }
 
   /**
-   * gets the type of this object
-   * @returns "folder"
+   * Encode this folder into HTML style text.
+   * @param number_of_spaces The number of spaces in the front the line (forming an indent).
+   * @returns The encoded HTML style text of this folder, containing its sub folders.
    * */
-  get_type() {
-    return "folder";
+  get_contents_in_html(number_of_spaces: number) {
+    let spaces: number = number_of_spaces;
+    let type: string = "";
+    let item: bookmark;
+    let result: string[] = [];
+    result.push(" ".repeat(spaces) +
+      "<DT><H3 ADD_DATE=\"" + this.add_date.toString() +
+      "\" LAST_MODIFIED=\"" + this.last_modified.toString() +
+      "\">" + encode_string_to_html_code(this.label) +
+      "</H3>\n" + " ".repeat(spaces) + "<DL><p>"); // Head of folder
+    for (let index = 0; index < this.contents.length; index++) {
+      item = this.contents[index];
+      type = item.get_type();
+      // Get item data
+      if (type == "bookmark") {
+        // item = item as bookmark;
+        result.push(
+          " ".repeat(spaces + 4) +
+            "<DT><A HREF=\"" + ensure_scheme(item.get_link()) +
+            "\" ADD_DATE=\"" + item.get_add_date().toString() +
+            "\">" + encode_string_to_html_code(item.get_label()) + "</A>"
+        ); // Push bookmark
+      } else if (type == "folder") {
+        // item = item as folder;
+        result = result.concat(item.get_contents_in_html(spaces + 4));
+      }
+    }
+    result.push(" ".repeat(spaces) + "</DL><p>"); // END of folder
+    return result;
   }
 
-  add_content(item: unified_item) {
+
+  add_content(item: bookmark) {
     this.contents.push(item);
   }
 
@@ -723,10 +760,10 @@ export class folder {
 
   /**
    * Returns The contents of this folder.
-   * @returns A unified_item[] array.
+   * @returns A bookmark[] array.
    * */
   get_content() {
-    return this.contents as unified_item[];
+    return this.contents as collections.Array<bookmark>;
   }
 
   /**
@@ -734,114 +771,13 @@ export class folder {
    * @returns A bookmark[] array.
    * */
   get_only_bookmarks_content() {
-    let result_bookmarks: bookmark[] = [];
+    let result_bookmarks: Array<bookmark> = [];
     for (let index = 0; index < this.contents.length; index++) {
-      let this_item = this.contents[index].get_item();
+      let this_item = this.contents[index];
       if (this_item.get_type() == 'bookmark') {
         result_bookmarks.push(this_item as bookmark);
       }
     }
     return result_bookmarks;
-  }
-
-  /**
-   * Get plain information of all bookmarks in this folder and sub folders.
-   * @returns A string[][] array consists of labels and links.
-   * @example [['bing','www.bing.com'],['google','www.google.com']]
-   * */
-  get_plain_bookmarks() {
-    let type: string = "";
-    let item: bookmark | folder;
-    let result: string[][] = [];
-    for (let index = 0; index < this.contents.length; index++) {
-      item = this.contents[index].get_item();
-      type = item.get_type();
-      // Get item data
-      if (type == "bookmark") {
-        item = item as bookmark;
-        result.push([item.get_label(), item.get_link()]); // Push bookmark
-      } else if (type == "folder") {
-        item = item as folder;
-        result = result.concat(item.get_plain_bookmarks());
-      }
-    }
-    return result;
-  }
-
-  /**
-   * Encode this folder into HTML style text.
-   * @param number_of_spaces The number of spaces in the front the line (forming an indent).
-   * @returns The encoded HTML style text of this folder, containing its sub folders.
-   * */
-  get_contents_in_html(number_of_spaces: number) {
-    let spaces: number = number_of_spaces;
-    let type: string = "";
-    let item: bookmark | folder;
-    let result: string[] = [];
-    result.push(" ".repeat(spaces) +
-      "<DT><H3 ADD_DATE=\"" + this.add_date.toString() +
-      "\" LAST_MODIFIED=\"" + this.last_modified.toString() +
-      "\">" + encode_string_to_html_code(this.label) +
-      "</H3>\n" + " ".repeat(spaces) + "<DL><p>"); // Head of folder
-    for (let index = 0; index < this.contents.length; index++) {
-      item = this.contents[index].get_item();
-      type = item.get_type();
-      // Get item data
-      if (type == "bookmark") {
-        item = item as bookmark;
-        result.push(
-          " ".repeat(spaces + 4) +
-            "<DT><A HREF=\"" + ensure_scheme(item.get_link()) +
-            "\" ADD_DATE=\"" + item.get_add_date().toString() +
-            "\">" + encode_string_to_html_code(item.get_label()) + "</A>"
-        ); // Push bookmark
-      } else if (type == "folder") {
-        item = item as folder;
-        result = result.concat(item.get_contents_in_html(spaces + 4));
-      }
-    }
-    result.push(" ".repeat(spaces) + "</DL><p>"); // END of folder
-    return result;
-  }
-}
-
-export class unified_item {
-  private bookmark: bookmark | undefined;
-  private folder: folder | undefined;
-
-  /**
-   * The packaged item of a folder or a bookmark.
-   *
-   * This design is intended to enable bookmarks and folders to be put into the same array.
-   * @param A bookmark or folder item. If is packaging a folder, then should fill an *undefined* for the first field.
-   * @summary Perhaps this is stupid. :P
-   * */
-  constructor(bm?: bookmark, fd?: folder) {
-    if (bm === undefined && fd === undefined) {
-      // If is creating an empty one, then set default
-      this.bookmark = new bookmark("Liny's Browser", "https://github.com/awaLiny2333/LinysBrowser_NEXT");
-      console.error("[Meow][BunchOfBookmarks][ERROR] Creating an empty unified_item, set default.")
-    } else {
-      // at least one of them is not undefined
-      if (bm !== undefined) {
-        // If is packaging a bookmark
-        this.bookmark = bm;
-      } else if (fd !== undefined) {
-        // If is packaging a folder
-        this.folder = fd;
-      }
-    }
-  }
-
-  /**
-   * Get the packaged item of this unified_item.
-   * @returns A bookmark or folder object.
-   * */
-  get_item() {
-    if (this.bookmark !== undefined) {
-      return this.bookmark as bookmark;
-    } else {
-      return this.folder as folder;
-    }
   }
 }
