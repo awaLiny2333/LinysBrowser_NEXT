@@ -3,9 +3,7 @@ import { sandbox_read_text_sync, sandbox_save } from '../utils/storage_tools';
 import { bunch_of_history_index } from './bunch_of_history_index';
 import { bunch_of_history_index_lite } from './bunch_of_history_index_lite';
 import { fileIo } from '@kit.CoreFileKit';
-import { common } from '@kit.AbilityKit';
 import { meowContext } from '../utils/environment_tools';
-import App from '@system.app';
 
 
 /**

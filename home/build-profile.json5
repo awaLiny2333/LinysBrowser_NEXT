@@ -16,7 +16,8 @@
       "workers": [
         './src/main/ets/workers/History_indexer.ets',
         './src/main/ets/workers/History_index_loader.ets',
-        './src/main/ets/workers/History_index_saver.ets'
+        './src/main/ets/workers/History_index_saver.ets',
+        './src/main/ets/workers/Bookmarks_loader.ets'
       ]
     },
   },

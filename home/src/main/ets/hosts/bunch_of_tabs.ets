@@ -235,9 +235,10 @@ export class bunch_of_tabs {
   /**
    * Switches to another tab.
    * @param target A number, the index of target tab.
+   * @param restore A boolean. Will try to restore the tab if set true.
    * @returns A number, the index of target tab.
    * */
-  switchToTab(target: number) {
+  switchToTab(target: number, restore: boolean) {
     // Switch
     if (target >= this.Tabs.length) {
       target = this.Tabs.length - 1;
@@ -246,8 +247,10 @@ export class bunch_of_tabs {
     this.main_tab_idx = target;
 
     // Restore
-    if (target >= 0 && this.Tabs[target].still_need_restoration) {
-      this.Tabs[target].restore();
+    if (restore) {
+      if (target >= 0 && this.Tabs[target].still_need_restoration) {
+        this.Tabs[target].restore();
+      }
     }
     return target;
   }
@@ -346,9 +349,9 @@ export class bunch_of_tabs {
     }
     console.log('[closeTab][preferred_destination] ' + preferred_destination + '!');
 
-    this.switchToTab(-1);
+    this.switchToTab(-1, true);
     // Forces LinysTabs to refresh For Each loop to render
-    this.switchToTab(preferred_destination);
+    this.switchToTab(preferred_destination, true);
 
     let tab = this.Tabs.splice(target, 1)[0];
     this.Labels.splice(target, 1);
@@ -774,9 +777,9 @@ export class tab_info_packed {
         this.title = 'uwu';
         this.controller.clearHistory();
         this.controller.restoreWebState(this.web_state_array);
-        console.log("[Meow][meowWebView] Restore web " + this.index.toString() + ", state Length: " + this.web_state_array.length.toString());
+        console.log("[Meow][bunch_of_tabs] Restore web " + this.index.toString() + ", state Length: " + this.web_state_array.length.toString());
       } catch (e) {
-        console.error("[Meow][meowWebView] Restore web state failed! " + e);
+        console.error("[Meow][bunch_of_tabs] Restore web state failed! " + e);
       }
     }
   }

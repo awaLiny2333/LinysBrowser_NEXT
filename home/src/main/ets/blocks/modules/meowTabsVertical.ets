@@ -380,7 +380,7 @@ struct meowTabsVertical {
     this.choosing_paralleow = false;
     try {
       // Switch
-      this.bunch_of_tabs.switchToTab(target);
+      this.bunch_of_tabs.switchToTab(target, false);
       console.log('[Meow][meowTabs] Switch to tab ' + this.bunch_of_tabs.main_tab_idx.toString());
     } catch (e) {
       console.error('[Meow][TabsVertical][switch_tab][a] ' + e);

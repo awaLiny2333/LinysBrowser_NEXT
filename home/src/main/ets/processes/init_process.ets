@@ -14,6 +14,7 @@ import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 import { run_time } from '../utils/ui_tools';
+import { MessageEvents, worker } from '@kit.ArkTS';
 
 /**
  * Initializes all things.
@@ -37,7 +38,7 @@ export async function meow_init_main(context: common.UIAbilityContext, storage: 
 
   // Hosts
   await settings(storage);
-  // await bookmarks(t0);
+  await bookmarks(storage);
 
   // Placeholder
   AppStorage.setOrCreate('bunch_of_bookmarks', new bunch_of_bookmarks("Bookmarks~Meow"));
@@ -295,14 +296,24 @@ export async function bookmarks(storage: LocalStorage) {
     // First use bookmarks
   } else {
     let html_bookmarks = result;
-    bookmarks.import_html(html_bookmarks, true);
+    let workerInstance = new worker.ThreadWorker("home/ets/workers/Bookmarks_loader.ets");
+    workerInstance.onmessage = (e: MessageEvents): void => {
+      // Coming back with the bookmark
+      let bookmarks = e.data as bunch_of_bookmarks;
+      console.log(`[Meow][init] Bookmarks load thread message. Root label: ${bookmarks.root.get_label()}!`);
+      AppStorage.set('bunch_of_bookmarks', bookmarks);
+      workerInstance.terminate();
+    };
+    workerInstance.onexit = (() => {
+      console.log(`[Meow][init] Bookmarks load thread terminated. (${run_time(storage)} ms)`);
+    })
+    workerInstance.postMessage(html_bookmarks);
+    // bookmarks.import_html(html_bookmarks, true);
   }
-
-  bookmarks.init = true;
 
   // Timer
   tt = Date.now() - t0;
-  console.log(`[Meow][init] Bookmarks OK. (${tt}/${run_time(storage)} ms)`);
+  console.log(`[Meow][init] Bookmarks main thread OK. (${tt}/${run_time(storage)} ms)`);
   return tt;
 }
 

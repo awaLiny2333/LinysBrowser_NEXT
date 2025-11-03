@@ -33,7 +33,6 @@ import linysText from '../components/texts/linysText';
 import linysWindowButton from '../components/buttons/linysWindowButton';
 import { cancel_in_page_search, is_current_in_page_searching } from '../processes/tabs_actions';
 import woofHistory from '../dialogs/managers/woofHistory';
-import { bookmarks } from '../processes/init_process';
 
 // @Entry({ useSharedStorage: true })
 @Entry(last_storage())
@@ -140,11 +139,11 @@ struct Index {
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
-  async aboutToAppear(): Promise<void> {
+  aboutToAppear(): void {
     console.log(`[Meow][Index] aboutToLoad Index! (${run_time(this.storage)} ms)`);
 
     // Determine tablet mode and other window data.
-    await window.getLastWindow(this.getUIContext().getHostContext()).then((w: window.Window) => {
+    window.getLastWindow(this.getUIContext().getHostContext()).then((w: window.Window) => {
 
       const my_index = window_index_of_windowClass(w);
       let log = [
@@ -184,14 +183,6 @@ struct Index {
     console.log(`[Meow][Index] Finished Loading Index! (${run_time(this.storage)} ms)`);
 
     setTimeout(async () => {
-      let time_on_bookmarks = 0;
-      try {
-        time_on_bookmarks = await bookmarks(this.storage);
-      } catch (e) {
-        console.error('[Meow][Index] INIT bookmarks failed: ' + e);
-      }
-      let justified_delay_p0 = Math.max(this.delay_p0 - time_on_bookmarks, 0);
-
       // Trigger delayed load
       setTimeout(() => {
         this.delayed_load_p0 = true;
@@ -208,7 +199,7 @@ struct Index {
             }, this.delay_p3);
           }, this.delay_p2);
         }, this.delay_p1);
-      }, justified_delay_p0);
+      }, this.delay_p0);
 
       // Reopen tabs panel
       // this.bunch_of_settings.get('status_tabs_open').then((status_tabs_open) => {
@@ -268,7 +259,7 @@ struct Index {
 
 
       RelativeContainer() {
-        if (this.delayed_load_p3) {
+        if (this.delayed_load_p0) {
           WindowTitle()
             .padding(this.tablet_mode ? { right: 20, bottom: 5 } : undefined)
             .alignRules({
