@@ -692,7 +692,7 @@ struct shortcutButton {
   @State offset_y: number = 50;
 
   build() {
-    Column({ space: 10 }) {
+    Column({ space: this.render_contents ? 10 : 0 }) {
       linysCapsuleButton({
         text: this.get_label_name(),
         color_button: this.color_current_secondary,
@@ -733,7 +733,7 @@ struct shortcutButton {
         })
 
       if (this.bookmark.get_type() == 'folder') {
-        Column({ space: 10 }) {
+        Column({ space: this.render_contents ? 10 : 0 }) {
           if (this.render_contents) {
             ForEach(Array.from(this.bookmark.get_content()), (shortcut: bookmark, key: number) => {
               shortcutButton({
