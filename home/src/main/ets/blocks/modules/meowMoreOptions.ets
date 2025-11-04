@@ -273,6 +273,7 @@ struct meowMoreOptions {
                 } catch (e) {
                   console.error(e);
                 }
+                focusControl.requestFocus("in_page_search_blank");
               })
               .id('in_page_search_blank')
 

@@ -7,7 +7,7 @@ import { bunch_of_history, history_record } from '../../hosts/bunch_of_history';
 import woofControlFrame from '../woofControlFrame';
 import HistoryDataSource from '../../objects/HistoryDataSource';
 import { all_false, all_true } from '../../utils/data_operation_tools';
-import { LengthMetrics } from '@kit.ArkUI';
+import { LengthMetrics, SymbolGlyphModifier } from '@kit.ArkUI';
 import woofQR from '../contents/woofQR';
 
 @CustomDialog
@@ -484,6 +484,7 @@ struct meowRelation {
   @Link selected: boolean[];
   @Link selected_item_quantity: number;
   @Prop selecting: boolean;
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   // UI Effects
   @LocalStorageLink('showing_app_settings') showing_app_settings: boolean = false;
   @Prop scroll_area_height: number;
@@ -502,17 +503,26 @@ struct meowRelation {
         text: this.record.label.length == 0 ? "　" : this.record.label,
         font_weight: this.selected[this.index] ? FontWeight.Bold : FontWeight.Regular
       })
-      linysText({
-        color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
-        text: this.record.link,
-        max_lines: 2
-      })
-        .opacity(0.88) // Happy New Year!
-      linysText({
-        color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
-        text: this.human_time
-      })
-        .opacity(0.7)
+      if (this.tablet_mode) {
+        linysText({
+          color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
+          text: this.human_time + '\t· ' + this.record.link,
+          overflow_type: TextOverflow.Clip,
+        })
+          .opacity(0.6)
+      } else {
+        linysText({
+          color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
+          text: this.record.link,
+          overflow_type: TextOverflow.Clip,
+        })
+          .opacity(0.6)
+        linysText({
+          color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
+          text: this.human_time
+        })
+          .opacity(0.45)
+      }
     }
     .alignItems(HorizontalAlign.Start)
     .width("100%")
@@ -686,8 +696,5 @@ struct LinysSelection {
         AppStorage.set(this.app_storage_link_id, index);
         this.index = index;
       })
-    // TODO: enable this when upgrade to api 20
-    // .arrowModifier(new SymbolGlyphModifier().fontColor([this.color_current_font]))
-    // .avoidance(AvoidanceMode.COVER_TARGET)
   }
 }

@@ -705,6 +705,11 @@ struct Index {
       console.log('[universal_esc] Exit In-page searching!');
       return;
     }
+    if (this.showing_more_options && (this.storage.get('current_in_page_searching_keyword') as string != '')) {
+      cancel_in_page_search(this.storage);
+      console.log('[universal_esc] Cleared In-page search key!');
+      return;
+    }
 
     // Exit typing
     if (this.storage.get('is_search_input_typing') as boolean) {

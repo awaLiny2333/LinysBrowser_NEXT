@@ -1,17 +1,19 @@
 import { animation_default, click_effect_default, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import { LengthMetrics } from '@kit.ArkUI';
 
-@Reusable // Will this affect anything?
+@Reusable
+  // Will this affect anything?
 @Component
 struct linysText {
   // Colors
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @Prop text: ResourceStr = $r('app.string.HomeAbility_label');
   @Prop color: ResourceColor = "";
-  @Prop max_lines: number = 1;
   @Prop font_weight: FontWeight = FontWeight.Regular;
   @Prop is_description: boolean = false;
   @Prop is_expanded: boolean = false;
+  @Prop max_lines: number = 1;
+  @Prop overflow_type: TextOverflow = TextOverflow.Ellipsis;
 
   build() {
     if (this.is_description) {
@@ -22,10 +24,10 @@ struct linysText {
           .fontWeight(this.font_weight)
           .maxLines(!this.is_expanded ? 1 : undefined)
           .lineSpacing(LengthMetrics.vp(4))
-          .textOverflow({ overflow: TextOverflow.Ellipsis })
+          .textOverflow({ overflow: this.overflow_type })
           .animation(animation_default())
       }
-      .nestedScroll({scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.PARENT_FIRST })
+      .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.PARENT_FIRST })
       .align(Alignment.TopStart)
       .scrollable(ScrollDirection.Vertical)
       .scrollBar(BarState.Off)
@@ -47,7 +49,7 @@ struct linysText {
         .fontWeight(this.font_weight)
         .maxLines(this.max_lines)
         .lineSpacing(LengthMetrics.vp(4))
-        .textOverflow({ overflow: TextOverflow.Ellipsis })
+        .textOverflow({ overflow: this.overflow_type })
     }
   }
 }

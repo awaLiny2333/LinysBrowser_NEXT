@@ -146,10 +146,10 @@ export function is_current_in_page_searching(storage: LocalStorage) {
  * @param storage The LocalStorage.
  * */
 export function cancel_in_page_search(storage: LocalStorage) {
+  let tabs = storage.get('bunch_of_tabs') as bunch_of_tabs;
   storage.set('current_in_page_searching_keyword', '');
   storage.set('current_in_page_searching_stats_current', 0);
   storage.set('current_in_page_searching_stats_total', 0);
-  let tabs = storage.get('bunch_of_tabs') as bunch_of_tabs;
   tabs.workingMainTab().searching_keyword_stats_current = 0;
   tabs.workingMainTab().searching_keyword_stats_total = 0;
   tabs.workingMainTab().searching_keyword = '';
