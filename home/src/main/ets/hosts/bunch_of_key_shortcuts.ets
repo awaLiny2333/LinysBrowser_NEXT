@@ -52,12 +52,26 @@ export class bunch_of_key_shortcuts {
    * @returns A string[], an array containing keys in the shortcut.
    * e.g. ['a', 'ctrl', 'shift']
    * */
-  get_shortcut(label: string): string[] {
+  get_shortcut_string(label: string): string[] {
     let index = this.key_shortcut_labels.indexOf(label);
     if (index > -1) {
       return this.key_shortcut_combinations[index].to_string_array();
     } else {
       return [];
+    }
+  }
+
+  /**
+   * Gets the key_combination of shortcut of a specific action.
+   * @param label A string, the label of the action. e.g. 'show_tabs'.
+   * @returns A key_combination.
+   * */
+  get_shortcut(label: string): key_combination | undefined {
+    let index = this.key_shortcut_labels.indexOf(label);
+    if (index > -1) {
+      return this.key_shortcut_combinations[index];
+    } else {
+      return undefined;
     }
   }
 
@@ -70,8 +84,13 @@ export class bunch_of_key_shortcuts {
   set_shortcut(label: string, key_com: string[]) {
     let index = this.key_shortcut_labels.indexOf(label);
     if (index > -1) {
-      this.key_shortcut_combinations[index].load_string_array(key_com);
-      this.save_to_disk();
+      this.key_shortcut_combinations[index].clear_combination();
+      this.last_edit = Date.now(); // Trigger refresh and rebinding of key shortcuts in Index.ets
+      setTimeout(() => {
+        this.key_shortcut_combinations[index].load_string_array(key_com);
+        this.last_edit = Date.now();
+        this.save_to_disk();
+      }, 300);
     }
   }
 
@@ -156,6 +175,14 @@ class key_combination {
   }
 
   /**
+   * Clears current combination.
+   * */
+  clear_combination() {
+    // this.modifier = [];
+    this.main_key = '';
+  }
+
+  /**
    * Loads a string array as a key combination, OVERWRITING whatever this combination was.
    * @param combination A string[], containing the keys.
    * e.g. ['a', 'ctrl', 'shift']
@@ -164,24 +191,31 @@ class key_combination {
     if (combination.length == 0) {
       return;
     }
-    // clear modifiers
-    this.modifier.splice(0, this.modifier.length);
-    // determine modifiers
+    // clear keys
+    this.clear_combination();
+
+    // Determine new keys
+    let new_modifiers: Array<ModifierKey> = [];
+    let new_main_key: string | FunctionKey = '';
     for (let index = 0; index < combination.length; index++) {
       let key_str = combination[index];
       if (modifier_strings.includes(key_str)) {
         // Is a modifier
         let modifier_index = modifier_strings.indexOf(key_str);
-        this.modifier.push(modifier_keys[modifier_index]);
+        new_modifiers.push(modifier_keys[modifier_index]);
       } else if (function_strings.includes(key_str)) {
         // Is a function key
         let index_of_first_key = function_strings.indexOf(key_str);
-        this.main_key = function_keys[index_of_first_key];
+        new_main_key = function_keys[index_of_first_key];
       } else {
         // Is a normal letter
-        this.main_key = key_str;
+        new_main_key = key_str;
       }
     }
+
+    // Set keys
+    this.modifier = new_modifiers;
+    this.main_key = new_main_key;
   }
 
   /**

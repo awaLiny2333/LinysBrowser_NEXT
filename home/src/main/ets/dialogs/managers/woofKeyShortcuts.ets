@@ -54,7 +54,7 @@ export default woofKeyShortcuts;
 
 @Component
 struct KeyDisplayCard {
-  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(false);
+  @StorageLink('bunch_of_key_shortcuts') @Watch('on_refresh') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(false);
   @Prop key_settings_id: string;
   @State showing_keyboard: boolean = false;
   @State keys_edit: string[] = [];
@@ -63,11 +63,15 @@ struct KeyDisplayCard {
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
 
   aboutToAppear(): void {
+    this.on_refresh();
+  }
+
+  on_refresh() {
     // Set display text
-    this.key_binds = this.bunch_of_key_shortcuts.get_shortcut(this.key_settings_id)
-      .reverse()
-      .join(' + ')
-      .toUpperCase();
+    let got_shortcut = this.bunch_of_key_shortcuts.get_shortcut_string(this.key_settings_id);
+    if (this.bunch_of_key_shortcuts.get_shortcut(this.key_settings_id)?.main_key) {
+      this.key_binds = got_shortcut.reverse().join(' + ').toUpperCase();
+    }
   }
 
   build() {
@@ -90,7 +94,7 @@ struct KeyDisplayCard {
           .onClick(() => {
             if (this.keys_edit.length < 1) {
               // Init
-              this.keys_edit = this.bunch_of_key_shortcuts.get_shortcut(this.key_settings_id);
+              this.keys_edit = this.bunch_of_key_shortcuts.get_shortcut_string(this.key_settings_id);
             }
             this.showing_keyboard = !this.showing_keyboard;
           })
@@ -103,7 +107,6 @@ struct KeyDisplayCard {
           KeyBoard({
             keys_edit: this.keys_edit,
             key_settings_id: this.key_settings_id,
-            display_text: this.key_binds,
             showing_keyboard: this.showing_keyboard
           })
             .width('100%')
@@ -126,7 +129,6 @@ struct KeyBoard {
   @State key_settings_id: string = '';
   @Link keys_edit: string[];
   @Link showing_keyboard: boolean;
-  @Link display_text: string;
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts();
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
@@ -193,10 +195,6 @@ struct KeyBoard {
         linysCapsuleButton({ text: '  󰀓  ' })
           .onClick(() => {
             this.bunch_of_key_shortcuts.set_shortcut(this.key_settings_id, this.keys_edit);
-            this.display_text = this.bunch_of_key_shortcuts.get_shortcut(this.key_settings_id)
-              .reverse()
-              .join(' + ')
-              .toUpperCase();
             this.showing_keyboard = false;
           })
       } // Confirm

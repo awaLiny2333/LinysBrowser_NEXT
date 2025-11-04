@@ -7,7 +7,7 @@ import { bunch_of_history, history_record } from '../../hosts/bunch_of_history';
 import woofControlFrame from '../woofControlFrame';
 import HistoryDataSource from '../../objects/HistoryDataSource';
 import { all_false, all_true } from '../../utils/data_operation_tools';
-import { LengthMetrics, SymbolGlyphModifier } from '@kit.ArkUI';
+import { LengthMetrics } from '@kit.ArkUI';
 import woofQR from '../contents/woofQR';
 
 @CustomDialog
@@ -628,6 +628,7 @@ struct SearchInput {
         if (this.onSubmitAction) {
           this.onSubmitAction();
         }
+        this.focus_search();
       })
       .id(this.my_id)
       .onAppear(() => {
@@ -636,10 +637,6 @@ struct SearchInput {
           this.focus_search();
         }
       })
-  }
-
-  submit() {
-
   }
 
   /**

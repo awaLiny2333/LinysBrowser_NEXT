@@ -59,7 +59,7 @@ struct meowTitleBar {
   // Search analyze
   @LocalStorageLink('search_extracted_keyword') search_extracted_keyword: string = '';
   @State search_extracted_engine: string = '';
-  @State showing_search_extracted_field: boolean = false;
+  @LocalStorageLink('showing_search_extracted_field') showing_search_extracted_field: boolean = false;
   @State search_extracted_field_available: boolean = false;
   @State is_search_input_address: boolean = false;
   @State search_input_unify_scheme_http: boolean = true;
@@ -240,8 +240,6 @@ struct meowTitleBar {
               })
               .selectAll(true)
               .id('address_bar')
-              .keyboardShortcut(!this.showing_search_extracted_field ? this.bunch_of_key_shortcuts.focus_address.main_key : '',
-                this.bunch_of_key_shortcuts.focus_address.modifier)
 
             TextInput({ text: this.search_extracted_keyword })
               .allowDrop(null)
@@ -282,8 +280,6 @@ struct meowTitleBar {
               .selectAll(true)
               .selectedBackgroundColor(this.color_current_font)
               .id('key_bar')
-              .keyboardShortcut(this.showing_search_extracted_field ? this.bunch_of_key_shortcuts.focus_address.main_key : '',
-                this.bunch_of_key_shortcuts.focus_address.modifier)
 
           } // Two inputs
           .clip(true)
@@ -579,9 +575,6 @@ struct meowTitleBar {
       // }, 1000);
       console.log(`[Meow][meowTitleBar] onAppear! (${run_time(this.storage)} ms)`);
     })
-    .keyboardShortcut(this.bunch_of_key_shortcuts.in_page_search.main_key, this.bunch_of_key_shortcuts.in_page_search.modifier, () => {
-      this.on_search_in_page_key_shortcut();
-    })
   }
 
   // Visibility
@@ -668,14 +661,6 @@ struct meowTitleBar {
         this.search_extracted_field_available = true;
       }
     }
-  }
-
-  on_search_in_page_key_shortcut() {
-    if (is_some_dialogs_opened(this.storage)) {
-      return;
-    }
-    this.showing_more_options = true;
-    focusControl.requestFocus("in_page_search_blank");
   }
 
   // UI controls

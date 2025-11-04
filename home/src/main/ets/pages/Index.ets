@@ -217,46 +217,55 @@ struct Index {
       // I know this is stupid
       // Forgive me
       // O.o
-      Row() // Keyboard shortcuts
-        .keyboardShortcut(this.bunch_of_key_shortcuts.fullscreen.main_key, this.bunch_of_key_shortcuts.fullscreen.modifier, () => {
-          this.fullscreen_mode = !this.fullscreen_mode;
-          this.showing_more_options = false;
-        })
-        .keyboardShortcut(this.bunch_of_key_shortcuts.print.main_key, this.bunch_of_key_shortcuts.print.modifier, () => {
-          if (is_some_dialogs_opened(this.storage)) {
-            return;
-          }
-          print_web(this.bunch_of_tabs.workingMainTab().controller, this.getUIContext().getHostContext()!);
-        })
-        .keyboardShortcut(this.bunch_of_key_shortcuts.new_window.main_key, this.bunch_of_key_shortcuts.new_window.modifier, () => {
-          this.create_new_window();
-        })
-        .keyboardShortcut(this.bunch_of_key_shortcuts.pin_to_top.main_key, this.bunch_of_key_shortcuts.pin_to_top.modifier, () => {
-          pin_to_top(this.my_window_id);
-        })
-        .keyboardShortcut(this.bunch_of_key_shortcuts.history.main_key, this.bunch_of_key_shortcuts.history.modifier, () => {
-          if (is_some_dialogs_opened(this.storage)) {
-            return;
-          }
-          this.woofHistory_control.open();
-        })
-        .keyboardShortcut(this.bunch_of_key_shortcuts.save_page.main_key, this.bunch_of_key_shortcuts.save_page.modifier, () => {
-          this.bunch_of_tabs.archive_onWorkingTab(this.getUIContext().getHostContext()?.tempDir);
-        })
-        .keyboardShortcut(FunctionKey.ESC, [], () => {
-          try {
-            this.universal_esc();
-          } catch (e) {
-            console.error('[ESC] Failed! ' + e);
-          }
-        })
-        .keyboardShortcut(FunctionKey.DPAD_UP, [], () => {
-          this.in_page_search_last();
-        })
-        .keyboardShortcut(FunctionKey.DPAD_DOWN, [], () => {
-          this.in_page_search_next();
-        })
-
+      if (this.delay_p0) {
+        // Keyboard shortcuts
+        Row() {
+          Row().keyboardShortcut(this.bunch_of_key_shortcuts.fullscreen.main_key, this.bunch_of_key_shortcuts.fullscreen.modifier, () => {
+            this.fullscreen_mode = !this.fullscreen_mode;
+            this.showing_more_options = false;
+          })
+          Row().keyboardShortcut(this.bunch_of_key_shortcuts.print.main_key, this.bunch_of_key_shortcuts.print.modifier, () => {
+            if (is_some_dialogs_opened(this.storage)) {
+              return;
+            }
+            print_web(this.bunch_of_tabs.workingMainTab().controller, this.getUIContext().getHostContext()!);
+          })
+          Row().keyboardShortcut(this.bunch_of_key_shortcuts.new_window.main_key, this.bunch_of_key_shortcuts.new_window.modifier, () => {
+            this.create_new_window();
+          })
+          Row().keyboardShortcut(this.bunch_of_key_shortcuts.pin_to_top.main_key, this.bunch_of_key_shortcuts.pin_to_top.modifier, () => {
+            pin_to_top(this.my_window_id);
+          })
+          Row().keyboardShortcut(this.bunch_of_key_shortcuts.history.main_key, this.bunch_of_key_shortcuts.history.modifier, () => {
+            if (is_some_dialogs_opened(this.storage)) {
+              return;
+            }
+            this.woofHistory_control.open();
+          })
+          Row().keyboardShortcut(this.bunch_of_key_shortcuts.save_page.main_key, this.bunch_of_key_shortcuts.save_page.modifier, () => {
+            this.bunch_of_tabs.archive_onWorkingTab(this.getUIContext().getHostContext()?.tempDir);
+          })
+          Row().keyboardShortcut(this.bunch_of_key_shortcuts.in_page_search.main_key, this.bunch_of_key_shortcuts.in_page_search.modifier, () => {
+            this.universal_find();
+          })
+          Row().keyboardShortcut(this.bunch_of_key_shortcuts.focus_address.main_key, this.bunch_of_key_shortcuts.focus_address.modifier, () => {
+            this.universal_focus_address();
+          })
+          Row().keyboardShortcut(FunctionKey.ESC, [], () => {
+            try {
+              this.universal_esc();
+            } catch (e) {
+              console.error('[ESC] Failed! ' + e);
+            }
+          })
+          Row().keyboardShortcut(FunctionKey.DPAD_UP, [], () => {
+            this.in_page_search_last();
+          })
+          Row().keyboardShortcut(FunctionKey.DPAD_DOWN, [], () => {
+            this.in_page_search_next();
+          })
+        }.height(0)
+      }
 
       RelativeContainer() {
         if (this.delayed_load_p0) {
@@ -722,6 +731,32 @@ struct Index {
     // Inheritance (?) from the universal back function.
     this.back(true);
     console.log('[universal_esc] UNIVERSAL BACK!!');
+  }
+
+  /**
+   * Technically executed everytime the key shortcut in_page_search is triggered. (Ctrl + F by default)
+   * */
+  universal_find() {
+    if (is_some_dialogs_opened(this.storage)) {
+      return;
+    }
+    // In page search
+    this.storage.set('showing_more_options', true);
+    focusControl.requestFocus("in_page_search_blank");
+  }
+
+  /**
+   * Triggered each time when key shortcut focus_address is pressed. (Alt + D by default)
+   * */
+  universal_focus_address() {
+    if (is_some_dialogs_opened(this.storage)) {
+      return;
+    }
+    if (this.storage.get('showing_search_extracted_field') as boolean) {
+      focusControl.requestFocus('key_bar');
+    } else {
+      focusControl.requestFocus('address_bar');
+    }
   }
 
   // Web
