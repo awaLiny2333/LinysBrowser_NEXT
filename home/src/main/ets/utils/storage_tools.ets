@@ -444,15 +444,15 @@ export function sandbox_read_arrayBuffer(file_path_name: string, context_filesDi
 }
 
 /**
- * Copy a text file to sandbox storage, overwrites whatever that was at that place.
+ * Copy a text file to sandbox temp directory, overwrites whatever that was at that place.
  *
  * THIS IS A SYNC FUNCTION
  * @param from from a uri (file://).
  * @param to a sandbox directory, the new parent folder of this file (in sandbox).
  * @returns a sandbox uri, root is meowContext().filesDir.
  * */
-export function copy_from_uri_to_sandbox(from: string, to: string, max_name_length?: number): string {
-  let filesDir: string = meowContext().filesDir;
+export function copy_from_uri_to_sandbox_temp(from: string, to: string, max_name_length?: number): string {
+  let filesDir: string = meowContext().tempDir;
   let max_name_l: number = max_name_length || 64;
   // Get from path
   const from_path = new fileUri.FileUri(from).path;

@@ -1,7 +1,6 @@
 import { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
 import { webview } from '@kit.ArkWeb';
 import { add_units_to_size, download_save_from_path } from '../utils/storage_tools';
-import { meowContext } from '../utils/environment_tools';
 import { common } from '@kit.AbilityKit';
 import lazy { BusinessError } from '@kit.BasicServicesKit';
 import lazy { open_file_uri } from '../utils/link_tools';
@@ -30,14 +29,8 @@ export class bunch_of_downloads {
     if (no_init == true) {
       return;
     }
-    let filesDir = meowContext().filesDir;
-    try {
-      fs.mkdirSync(filesDir + '/downloads', true);
-    } catch (e) {
-      // console.log('[Meow][bunch_of_downloads] Init: E: /downloads already exists.')
-    }
 
-    // console.log('[Meow][bunch_of_downloads] Init success!')
+    console.log('[Meow][bunch_of_downloads] Init success!');
   }
 
   /**
@@ -62,10 +55,12 @@ export class bunch_of_downloads {
     })
 
     dl_delegate.onDownloadFailed((webDownloadItem: webview.WebDownloadItem) => {
+      let index = this.index_of_task(webDownloadItem);
+      console.error("[bunch_of_downloads] download failed index: " + index);
       console.error("[bunch_of_downloads] download failed guid: " + webDownloadItem.getGuid());
       console.error("[bunch_of_downloads] download failed error: " + webDownloadItem.getLastErrorCode());
-      this.list_of_failed[this.index_of_task(webDownloadItem)] = true;
-      this.list_of_paused[this.index_of_task(webDownloadItem)] = true;
+      this.list_of_failed[index] = true;
+      this.list_of_paused[index] = true;
       this.last_action = Date.now();
     })
 
@@ -257,27 +252,6 @@ export class bunch_of_downloads {
     console.log('[bunch_of_downloads] Trying to save_downloaded_item_to_download: [' + from_path + ']');
     let uri_back = await download_save_from_path(from_path);
     return uri_back;
-  }
-
-  /**
-   * Delete all downloaded files in sandbox storage,
-   * usually executed when the app launches.
-   * */
-  delete_all_downloaded_files_sync() {
-    try {
-      let filesDir = meowContext().filesDir;
-      fs.rmdirSync(filesDir + "/downloads");
-      fs.mkdirSync(filesDir + "/downloads", true);
-
-      // let list = fs.listFileSync(filesDir + "/downloads");
-      //
-      // for (let index = 0; index < list.length; index++) {
-      //   fs.rmdir(filesDir + "/downloads/" + list[index]);
-      // }
-      // Delete all downloaded files
-    } catch (e) {
-      console.error(e)
-    }
   }
 
   /**

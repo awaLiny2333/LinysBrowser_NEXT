@@ -31,10 +31,12 @@ export async function meow_init_main(context: common.UIAbilityContext, storage: 
 
   // File management
   load_homepage_background(context, storage);
-  clear_web_drag_image_cache(context);
   clear_profile(context);
   ensure_continue_folder(context);
-  clear_harmonyShare_temp_folder(context);
+  create_download(context);
+  create_web_drag_image_cache(context);
+  create_harmony_share_temp(context);
+  delete_old_temp_files(context);
 
   // Hosts
   await settings(storage);
@@ -87,35 +89,37 @@ function ensure_continue_folder(context: common.UIAbilityContext) {
 }
 
 /**
- * Clear harmonyShare temp folder.
+ * Set Harmony Share temp folder.
  * @param context The UIAbilityContext.
  * */
-function clear_harmonyShare_temp_folder(context: common.UIAbilityContext) {
+function create_harmony_share_temp(context: common.UIAbilityContext) {
   try {
-    fileIo.rmdirSync(context.filesDir + '/harmonyShare_temp');
+    fileIo.mkdirSync(context.tempDir + '/harmony-share-temp', true);
   } catch (e) {
-    console.error('[Index] rmdirSync /harmonyShare_temp failed! ' + e);
-  }
-  try {
-    fileIo.mkdirSync(context.filesDir + '/harmonyShare_temp', true);
-  } catch (e) {
-    console.error('[Index] mkdirSync /harmonyShare_temp failed! ' + e);
+    console.error('[Index] mkdirSync temp/harmony-share-temp failed! ' + e);
   }
 }
 
 /**
- * Set cache dir of web-dragged image into Scratching Board
+ * Set cache dir of web-dragged image into Scratching Board.
  * */
-function clear_web_drag_image_cache(context: common.UIAbilityContext) {
+function create_web_drag_image_cache(context: common.UIAbilityContext) {
   try {
-    fileIo.rmdirSync(context.filesDir + '/web-drag-image-cache');
+    fileIo.mkdirSync(context.tempDir + '/web-drag-image-cache', true);
   } catch (e) {
-    console.error('[Index] rmdirSync /web-drag-image-cache failed! ' + e);
+    console.error('[Index] mkdirSync temp/web-drag-image-cache failed! ' + e);
   }
+}
+
+/**
+ * Set temp dir for downloads.
+ * @param context
+ * */
+function create_download(context: common.UIAbilityContext) {
   try {
-    fileIo.mkdirSync(context.filesDir + '/web-drag-image-cache', true);
+    fileIo.mkdirSync(context.tempDir + '/downloads', true);
   } catch (e) {
-    console.error('[Index] mkdirSync /web-drag-image-cache failed! ' + e);
+    console.error('[Index] mkdirSync temp/downloads failed! ' + e);
   }
 }
 
@@ -144,6 +148,21 @@ function load_homepage_background(context: common.UIAbilityContext, storage: Loc
       })
     }
   });
+}
+
+/**
+ * Deletes old temp directories. (They are all moved to tempDir after Nov. 4, 2025)
+ * */
+function delete_old_temp_files(context: common.UIAbilityContext) {
+  try {
+    if (fileIo.accessSync(context.filesDir + '/web-drag-image-cache')) {
+      fileIo.rmdirSync(context.filesDir + '/web-drag-image-cache');
+      fileIo.rmdirSync(context.filesDir + '/downloads');
+      fileIo.rmdirSync(context.filesDir + '/harmonyShare_temp');
+    }
+  } catch (e) {
+    console.error('[Index] rmdirSync temp/web-drag-image-cache failed! ' + e);
+  }
 }
 
 // Hosts
@@ -410,7 +429,6 @@ function history(storage: LocalStorage) {
  * */
 function downloads(storage: LocalStorage) {
   let downloads = new bunch_of_downloads();
-  downloads.delete_all_downloaded_files_sync();
   AppStorage.setOrCreate('bunch_of_downloads', downloads);
 
   // Timer

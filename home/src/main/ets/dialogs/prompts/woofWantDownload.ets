@@ -126,7 +126,7 @@ struct woofWantDownload {
    * Also updates additional info.
    * */
   refresh() {
-    this.file_dir = meowContext().filesDir + '/downloads/' + this.file_name + '/' + Date.now().toString() + '/';
+    this.file_dir = meowContext().tempDir + '/downloads/' + this.file_name + '/' + Date.now().toString() + '/';
     this.download_target_path = this.file_dir + this.file_name;
 
     this.try_additional_info = [

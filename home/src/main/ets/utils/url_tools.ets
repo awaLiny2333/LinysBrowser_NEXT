@@ -200,7 +200,7 @@ let built_ins: string[] = [
  * */
 export function url_resource_to_meow(url: string) {
   let result: string = url;
-  
+
   if (!url) {
     return result;
   }
@@ -372,6 +372,54 @@ export function extract_links_from_text(data_list: string[]) {
   }
 
   return [extracted_data, extracted_type]
+}
+
+/**
+ * Determines if a url is a web page or not.
+ * @param url The url to be checked.
+ * @returns True if is a web page that can be displayed.
+ */
+export function is_web_page(url: string): boolean {
+  // 常见的网页文件扩展名
+  const webPageExtensions = [
+    '.html', '.htm', '.xhtml', '.shtml',
+    '.php', '.php3', '.php4', '.php5', '.phtml',
+    '.asp', '.aspx',
+    '.jsp', '.jspx',
+    '.cgi',
+    '.pl',
+    '.rb',
+    '.py',
+    '.do',
+    '.action',
+    '.cfm',
+    '.dhtml',
+    '.md',
+    '.markdown',
+    '.xml',
+    '.json',
+    '.rss',
+    '.atom'
+  ];
+
+  // Remove query and hash part.
+  const cleanUrl = url.split('?')[0].split('#')[0];
+
+  // Check if there are any extension names.
+  const lastSlashIndex = cleanUrl.lastIndexOf('/');
+  const lastPart = cleanUrl.substring(lastSlashIndex + 1);
+
+  // No extension name, is webpage.
+  if (!lastPart.includes('.') || lastPart.endsWith('/')) {
+    return true;
+  }
+
+  // Get extension name
+  const extension = '.' + lastPart.toLowerCase().split('.').pop()!;
+  console.log(`[is_web_page] extension: [${extension}]`);
+
+  // Check if is in list
+  return webPageExtensions.includes(extension);
 }
 
 /**

@@ -2,7 +2,7 @@ import { BuilderNode, FrameNode, NodeController, UIContext } from '@kit.ArkUI';
 import { bunch_of_tabs, tab_info_packed } from '../hosts/bunch_of_tabs';
 import { determine_extra_background, sync_current_tabs_list_info } from '../processes/tabs_actions';
 import { window_index_of_id } from '../utils/ui_tools';
-import { match_domain, url_meow_to_resource, url_resource_to_meow, viewable_domains } from '../utils/url_tools';
+import { is_web_page, match_domain, url_meow_to_resource, url_resource_to_meow, viewable_domains } from '../utils/url_tools';
 import lazy { webview } from '@kit.ArkWeb';
 import lazy { hilog } from '@kit.PerformanceAnalysisKit';
 
@@ -47,8 +47,19 @@ function WebBuilder(pk: tab_info_packed) {
     .onWindowNew((event) => {
       // TODO: Find out why this triggers twice when click once
       let new_target_url = event.targetUrl;
-      console.log('[meowWebView] New tab in new window!');
-      pk.storage.set('universal_new_tab_gateway', new_target_url);
+      if (!is_web_page(new_target_url)) {
+        console.log('[meowWebView] Intercepted new window request for a potential download!');
+        try {
+          pk.controller.startDownload(new_target_url);
+        } catch (e) {
+          console.error('[onLoadIntercept] webview.WebviewController.startDownload Failed! ' + e);
+          console.log('[meowWebView] Download failed! Giving back control to new tab...');
+          pk.storage.set('universal_new_tab_gateway', new_target_url);
+        }
+      } else {
+        console.log('[meowWebView] New tab in new window!');
+        pk.storage.set('universal_new_tab_gateway', new_target_url);
+      }
       event.handler.setWebController(null);
     })
     .onTitleReceive(() => {
@@ -297,8 +308,8 @@ function WebBuilder(pk: tab_info_packed) {
       let intercept = false;
       if (event) {
         let url: string = event.data.getRequestUrl();
-        // Do not intercept data:
         if (url.substring(0, 5) == 'data:') {
+          // Do not intercept data:
           intercept = false;
         } else if (url.substring(0, 5) == 'blob:') {
           // Do not intercept blob:
