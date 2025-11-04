@@ -441,6 +441,10 @@
       "value": "Select a folder directory"
     },
     {
+      "name": "Settings_homepage_shortcuts_reset_dir",
+      "value": "Unselect current folder"
+    },
+    {
       "name": "Settings_single_hand_preference",
       "value": "Single hand use"
     },

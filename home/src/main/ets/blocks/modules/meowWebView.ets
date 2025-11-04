@@ -647,9 +647,9 @@ struct shortcuts {
    * Tries to retrieve homepage shortcuts from bunch_of_bookmarks.
    * */
   refresh_homepage_shortcuts() {
-    if (this.homepage_shortcuts_dir == '') {
-      return;
-    }
+    // if (this.homepage_shortcuts_dir == '') {
+    //   return;
+    // }
     // let result = this.bunch_of_bookmarks.get_folder(this.homepage_shortcuts_dir)?.get_only_bookmarks_content();
     let result = this.bunch_of_bookmarks.get_folder(this.homepage_shortcuts_dir)?.get_content();
     if (result) {
@@ -658,11 +658,15 @@ struct shortcuts {
       bunch_of_settings.set('homepage_shortcuts_bookmarks_dir', this.homepage_shortcuts_dir);
     } else {
       // directory doesn't exist
-      console.log('[Meow][meowWebView] Directory selected for shortcuts doesn\'t exist! [' + this.homepage_shortcuts_dir + ']');
       this.homepage_shortcuts = [];
-      // if (this.homepage_shortcuts_dir != '/') {
-      //   this.homepage_shortcuts_dir = '';
-      // }
+
+      if (this.homepage_shortcuts_dir == '/') {
+        // Save empty selection
+        bunch_of_settings.set('homepage_shortcuts_bookmarks_dir', this.homepage_shortcuts_dir);
+        console.log('[Meow][meowWebView] Directory selection cleared! [' + this.homepage_shortcuts_dir + ']');
+      } else {
+        console.log('[Meow][meowWebView] Directory selected for shortcuts doesn\'t exist! [' + this.homepage_shortcuts_dir + ']');
+      }
     }
   }
 }

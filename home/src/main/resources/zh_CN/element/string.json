@@ -444,6 +444,10 @@
       "value": "选择书签文件夹路径"
     },
     {
+      "name": "Settings_homepage_shortcuts_reset_dir",
+      "value": "取消选择当前文件夹"
+    },
+    {
       "name": "Settings_single_hand_preference",
       "value": "单手优化"
     },

@@ -1,5 +1,6 @@
 import meowHomepageManager from '../../blocks/panels/meowHomepageManager';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
+import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
 import linysLockSlider from '../../components/linysLockSlider';
 import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
@@ -63,7 +64,7 @@ struct woofHomepageManager {
             max_lines: 3,
             is_description: true,
             is_expanded: true
-          })// Desc
+          }) // Desc
 
           linysTextTitle({ text: $r('app.string.Homepage_background') })// Title
             .width('100%')
@@ -97,13 +98,24 @@ struct woofHomepageManager {
             }
           }) // Select shortcuts directory
 
+          linysTimeoutButtonWithText({
+            desc_text: $r('app.string.Settings_homepage_shortcuts_reset_dir'),
+            button_text: "  󰃑  ",
+            onExecution: () => {
+              this.select_path_result = '/';
+            }
+          }) // Cancel current selection
+
           linysTextTitle({
             text: $r('app.string.Settings_homepage_shortcuts_init_height'),
             max_lines: 5
           }) // Display height of shortcuts
 
           linysText({
-            text: $r('app.string.Settings_homepage_shortcuts_init_height_desc'), max_lines: 5, is_description: true, is_expanded: true
+            text: $r('app.string.Settings_homepage_shortcuts_init_height_desc'),
+            max_lines: 5,
+            is_description: true,
+            is_expanded: true
           }) // Desc
 
           linysLockSlider({
