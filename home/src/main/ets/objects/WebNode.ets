@@ -231,7 +231,7 @@ function WebBuilder(pk: tab_info_packed) {
     .onControllerAttached(async () => {
       // bind download delegate
       try {
-        pk.controller.setDownloadDelegate(AppStorage.get('dl_delegate') as webview.WebDownloadDelegate);
+        pk.controller.setDownloadDelegate(pk.storage.get('dl_delegate') as webview.WebDownloadDelegate);
       } catch (e) {
         console.error('[meowWebView] onControllerAttached setDownloadDelegate error: ' + e);
       }

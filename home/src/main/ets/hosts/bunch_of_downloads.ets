@@ -46,7 +46,7 @@ export class bunch_of_downloads {
    * */
   init_delegate(storage: LocalStorage) {
     // Init blob_delegate
-    let dl_delegate = AppStorage.get('dl_delegate') as webview.WebDownloadDelegate;
+    let dl_delegate = storage.get('dl_delegate') as webview.WebDownloadDelegate;
 
     dl_delegate.onBeforeDownload((webDownloadItem: webview.WebDownloadItem) => {
       console.log('[bunch_of_downloads][init_delegate] onBeforeDownload: [' + webDownloadItem.getSuggestedFileName() + '][' + webDownloadItem.getUrl() + ']');

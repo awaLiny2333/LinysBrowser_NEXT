@@ -75,7 +75,7 @@ struct meowWebView {
   @LocalStorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
   @LocalStorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
   // Download
-  @StorageLink('dl_delegate') dl_delegate: webview.WebDownloadDelegate = new webview.WebDownloadDelegate();
+  @LocalStorageLink('dl_delegate') dl_delegate: webview.WebDownloadDelegate = new webview.WebDownloadDelegate();
   @LocalStorageLink('uni_webDownloadItem_gateway') @Watch('on_download_request') uni_webDownloadItem_gateway: webview.WebDownloadItem | undefined = undefined;
   @StorageLink('print_adapter') print_adapter: print.PrintDocumentAdapter | undefined = undefined;
   // dialogs

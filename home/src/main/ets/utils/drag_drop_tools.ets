@@ -1,7 +1,6 @@
 import { unifiedDataChannel, uniformTypeDescriptor } from '@kit.ArkData';
-import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
-import { copy_from_uri_to_sandbox } from './storage_tools';
-import { storage_of_index, window_index_of_id } from './ui_tools';
+import lazy { copy_from_uri_to_sandbox } from './storage_tools';
+import lazy { storage_of_index, window_index_of_id } from './ui_tools';
 
 /**
  * Pass a DragEvent and some of the contents of correct type would be added to meowScratchingBoard
@@ -12,16 +11,24 @@ export function drop_to_scratching_board(e: DragEvent, storage: LocalStorage, op
   try {
     let drop_data_records = e.getData().getRecords();
     let result_list_string: string[] = [];
+    let last_link: string = ''; // For comparision and avoid opening duplicate links!~
     for (let i = 0; i < drop_data_records.length; i++) {
       let record = drop_data_records[i];
       console.log('[Meow][drop_to_scratching_board][record.getType()][' + i + '] ' + record.getType());
+
       if (record.getType() == uniformTypeDescriptor.UniformDataType.HYPERLINK) {
         let desc = (record as unifiedDataChannel.Hyperlink).description;
         let url = (record as unifiedDataChannel.Hyperlink).url;
 
         if (openLinks) {
           // Directly open
-          storage.set('universal_new_tab_gateway', url);
+          if (url != last_link) {
+            storage.set('universal_new_tab_gateway', url);
+            console.log("[drop_to_scratching_board] Hyperlink url: [" + url + "] Opened!");
+          } else {
+            console.log("[drop_to_scratching_board] Hyperlink url: [" + url + "] Duplication Avoided!");
+          }
+          last_link = url;
         } else {
           // Push Hyperlink
           if (desc && !result_list_string.includes(desc)) {
@@ -36,7 +43,6 @@ export function drop_to_scratching_board(e: DragEvent, storage: LocalStorage, op
           }
           console.log("[drop_to_scratching_board] Hyperlink url: [" + url + "]");
         }
-
       } else if (record.getType() == uniformTypeDescriptor.UniformDataType.PLAIN_TEXT) {
         // Push text
         let textContent = (record as unifiedDataChannel.PlainText).textContent;

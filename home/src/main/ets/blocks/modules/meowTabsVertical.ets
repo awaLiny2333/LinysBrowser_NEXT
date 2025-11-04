@@ -63,6 +63,8 @@ struct meowTabsVertical {
   // Gateways
   @LocalStorageLink('universal_load_url_gateway') @Watch('uni_load_url') load_url_gateway: string = "";
   @LocalStorageLink('universal_new_tab_gateway') @Watch('uni_new_tab') new_tab_gateway: string = "";
+  last_tab_gateway_url: string = "";
+  last_tab_gateway_reset_timeout_id: number | undefined = undefined;
   @LocalStorageLink('universal_close_tab_gateway') @Watch('uni_close_tab') close_tab_gateway: number = -1;
   @LocalStorageLink('universal_move_tab_gateway') @Watch('uni_move_tab') move_tab_gateway: number = -1; // Source tab index
   @LocalStorageLink('universal_move_tab_gateway_target') move_tab_gateway_target: number = -1; // Target window index
@@ -592,10 +594,12 @@ struct meowTabsVertical {
     }
 
     this.new_tab(tab, true, false);
-    setTimeout(() => {
+
+    clearTimeout(this.last_tab_gateway_reset_timeout_id);
+    this.last_tab_gateway_reset_timeout_id = setTimeout(() => {
       // Avoid opening duplicate tabs, idk why
       this.new_tab_gateway = "";
-    }, 20)
+    }, 300);
   }
 
   uni_close_tab() {
