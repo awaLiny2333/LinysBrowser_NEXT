@@ -38,7 +38,6 @@ struct meowWebView {
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @LocalStorageLink('fullscreen_mode') @Watch('on_fullscreen_change') fullscreen_mode: boolean = false;
   @LocalStorageLink('fullscreen_handler') handler: FullScreenExitHandler | null = null;
-  @LocalStorageLink('restore_web_state_arrays') restore_web_state_arrays: Uint8Array[] = [];
   @LocalStorageProp('screen_height') screen_height: number = 100;
   @LocalStorageLink('on_focus') @Watch('on_focus_change') on_focus: boolean = true;
   @LocalStorageLink('sharable_continuable') sharable_continuable: boolean = false;

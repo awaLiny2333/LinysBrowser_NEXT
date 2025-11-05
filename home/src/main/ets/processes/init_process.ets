@@ -27,7 +27,7 @@ export async function meow_init_main(context: common.UIAbilityContext, storage: 
     console.log('[Meow][history] Saving app version: ' + bundleInfo.versionName + "(" + bundleInfo.versionCode.toString() + ")");
     sandbox_save("last_app_versionCode.txt", bundleInfo.versionCode.toString());
     sandbox_save("last_app_versionName.txt", bundleInfo.versionName);
-  })
+  });
 
   // File management
   load_homepage_background(context, storage);

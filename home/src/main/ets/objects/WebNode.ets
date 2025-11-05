@@ -47,6 +47,7 @@ function WebBuilder(pk: tab_info_packed) {
     .onWindowNew((event) => {
       // TODO: Find out why this triggers twice when click once
       let new_target_url = event.targetUrl;
+      console.info('[Meow][onWindowNew] ' + new_target_url);
       if (!is_web_page(new_target_url)) {
         console.log('[meowWebView] Intercepted new window request for a potential download!');
         try {

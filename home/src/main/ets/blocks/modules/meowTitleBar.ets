@@ -11,7 +11,7 @@ import {
 } from '../../hosts/bunch_of_defaults';
 import { webview } from '@kit.ArkWeb';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
-import { current_tabs_style_is_horizontal, is_some_dialogs_opened, run_time, storage_of_id } from '../../utils/ui_tools';
+import { current_tabs_style_is_horizontal, run_time, storage_of_id } from '../../utils/ui_tools';
 import { search_engine } from '../../hosts/bunch_of_search_engines';
 import lazy { drop_to_scratching_board } from '../../utils/drag_drop_tools';
 import lazy { add_transparency } from '../../utils/color_tools';
@@ -178,8 +178,8 @@ struct meowTitleBar {
             SymbolGlyph(!this.current_is_loading ? $r('sys.symbol.arrow_clockwise') : $r('sys.symbol.xmark')) // Refresh
               .fontSize(fontSize_Icon_Button())
               .fontColor([this.color_current_font])
-              .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.current_is_loading)
               .visibility(this.visible_when_no_panels_open_in_normal_mode())
+              .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.current_is_loading)
               .animation(animation_default())
               .keyboardShortcut(this.bunch_of_key_shortcuts.refresh.main_key, this.bunch_of_key_shortcuts.refresh.modifier)
               .onClick(() => {
@@ -877,6 +877,8 @@ export default meowTitleBar;
 
 @Component
 struct EstimatedDestination {
+  // Env
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -887,6 +889,9 @@ struct EstimatedDestination {
   @Link is_search_input_address: boolean;
   @Link search_input: string;
   @Link search_input_unified: string;
+  // UI
+  @State copied_icon: boolean = false;
+  copy_timeout_id: number | undefined = undefined;
 
   build() {
     Row({ space: 10 }) {
@@ -916,6 +921,24 @@ struct EstimatedDestination {
         .maxLines(4)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
         .layoutWeight(1)
+
+      if (this.tablet_mode) {
+        linysSymbol({
+          symbol_glyph_target: this.copied_icon ? 'sys.symbol.checkmark_clipboard_fill' : 'sys.symbol.plus_square_on_square'
+        })
+          .opacity(this.search_input_unified != '' ? 1 : 0.7)
+          .enabled(this.search_input_unified != '')
+          .animation(animation_default())
+          .onClick(() => {
+            // Copy
+            copy(this.search_input_unified);
+            this.copied_icon = true;
+            clearTimeout(this.copy_timeout_id);
+            this.copy_timeout_id = setTimeout(() => {
+              this.copied_icon = false;
+            }, animation_popup_duration())
+          })
+      }
 
       linysSymbol({
         symbol_glyph_target: 'sys.symbol.chevron_up'

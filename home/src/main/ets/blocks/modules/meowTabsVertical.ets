@@ -145,9 +145,6 @@ struct meowTabsVertical {
           labels.push(label);
         }
 
-        // Save to AppStorage for restoration use
-        this.storage.setOrCreate('restore_web_state_arrays', web_state_arrays_to_restore);
-
         // Create new tabs
         for (let index = 0; index < web_state_arrays_to_restore.length; index++) {
           try {
@@ -382,7 +379,7 @@ struct meowTabsVertical {
     this.choosing_paralleow = false;
     try {
       // Switch
-      this.bunch_of_tabs.switchToTab(target, false);
+      this.bunch_of_tabs.switchToTab(target);
       console.log('[Meow][meowTabs] Switch to tab ' + this.bunch_of_tabs.main_tab_idx.toString());
     } catch (e) {
       console.error('[Meow][TabsVertical][switch_tab][a] ' + e);
@@ -402,6 +399,9 @@ struct meowTabsVertical {
     set_search_box_text(this.current_url, this.storage);
 
     determine_extra_background(this.storage);
+
+    // Restore
+    this.bunch_of_tabs.callRestore();
 
     if (save_to_settings) {
       this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][switch_tab]');
@@ -432,7 +432,7 @@ struct meowTabsVertical {
         this.bunch_of_tabs.sub_tab_idx = -1;
       }
     }
-
+    // Ensure at least one tab is in the app
     if (this.bunch_of_tabs.Tabs.length == 1) {
       this.new_tab('', true, false);
     }
@@ -458,7 +458,6 @@ struct meowTabsVertical {
 
     // Store tabs count
     let store_tabs_count = this.tab_titles.length;
-    // console.log("[Meow][meowTabs] Store Tabs Count: " + store_tabs_count);
     bunch_of_settings.set("continue_tabs_count", store_tabs_count);
 
     // clear extra continue storage
@@ -479,8 +478,8 @@ struct meowTabsVertical {
       }
       index += 1;
     }
-    // re-save web states
 
+    // re-save web states
     this.bunch_of_tabs.re_save_web_state(target);
 
     // Paralleow
@@ -488,17 +487,18 @@ struct meowTabsVertical {
       // if Paralleow crash then turn off
       this.bunch_of_tabs.sub_tab_idx = -1;
     }
-
-    // if only 1 tab left then reset Paralleow stuff
     if (this.tab_titles.length == 1) {
       this.bunch_of_tabs.sub_tab_idx = -1;
       this.choosing_paralleow = false;
-    }
+    } // if only 1 tab left then reset Paralleow stuff
     if (target < this.bunch_of_tabs.sub_tab_idx) {
       this.bunch_of_tabs.sub_tab_idx -= 1;
     }
 
     determine_extra_background(this.storage);
+
+    // Restore
+    this.bunch_of_tabs.callRestore();
 
     if (save_to_settings) {
       this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][close_tab]');

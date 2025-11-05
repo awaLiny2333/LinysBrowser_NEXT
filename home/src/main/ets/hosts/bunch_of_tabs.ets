@@ -238,7 +238,7 @@ export class bunch_of_tabs {
    * @param restore A boolean. Will try to restore the tab if set true.
    * @returns A number, the index of target tab.
    * */
-  switchToTab(target: number, restore: boolean) {
+  switchToTab(target: number) {
     // Switch
     if (target >= this.Tabs.length) {
       target = this.Tabs.length - 1;
@@ -246,13 +246,18 @@ export class bunch_of_tabs {
     this.main_tab_idx = -1; // Weird way to refresh
     this.main_tab_idx = target;
 
-    // Restore
-    if (restore) {
-      if (target >= 0 && this.Tabs[target].still_need_restoration) {
-        this.Tabs[target].restore();
-      }
-    }
     return target;
+  }
+
+  /**
+   * Calls a tab to restore if possible.
+   * @param target The target index.
+   * */
+  callRestore(target: number = this.main_tab_idx) {
+    console.log(`[switchToTab] Call of Restore! target: ${target}, this.Tabs[target].pre_restoration_stage: ${this.Tabs[target]?.pre_restoration_stage}`);
+    if (target >= 0 && this.Tabs[target].pre_restoration_stage) {
+      this.Tabs[target].restore();
+    }
   }
 
   /**
@@ -349,9 +354,9 @@ export class bunch_of_tabs {
     }
     console.log('[closeTab][preferred_destination] ' + preferred_destination + '!');
 
-    this.switchToTab(-1, true);
+    this.switchToTab(-1);
     // Forces LinysTabs to refresh For Each loop to render
-    this.switchToTab(preferred_destination, true);
+    this.switchToTab(preferred_destination);
 
     let tab = this.Tabs.splice(target, 1)[0];
     this.Labels.splice(target, 1);
@@ -593,7 +598,6 @@ export class tab_info_packed {
   searching_keyword_stats_total: number = 0; // Total number of results of in-page search
   // Restore
   pre_restoration_stage: boolean = false;
-  still_need_restoration: boolean = false;
   web_state_array: Uint8Array | undefined = undefined;
   // Update records
   last_saved_url: string = '';
@@ -617,8 +621,8 @@ export class tab_info_packed {
     this.loading_progress = 0;
     this.web_state_array = init_state;
     if (init_state) {
+      console.log(`[tab_info_packed] New pack: ${url}, this.pre_restoration_stage = true!`);
       this.pre_restoration_stage = true;
-      this.still_need_restoration = true;
     }
   }
 
@@ -688,6 +692,7 @@ export class tab_info_packed {
   delayed_set_restore_ok(action?: () => void) {
     setTimeout(() => {
       this.pre_restoration_stage = false;
+      console.log(`[tab_info_packed] pack: ${this.url}, this.pre_restoration_stage = false!`);
       if (action) {
         try {
           action();
@@ -695,7 +700,7 @@ export class tab_info_packed {
           console.error('[delayed_set_restore_ok] Action Failed: ' + e);
         }
       }
-    }, 500);
+    }, 10);
   }
 
   // Actions
@@ -770,7 +775,8 @@ export class tab_info_packed {
    * */
   restore() {
     // Restore Web State
-    if (this.pre_restoration_stage && this.web_state_array) {
+    console.log(`[restore] pre_restoration_stage: ${this.pre_restoration_stage}, web_state_array.length: ${this.web_state_array?.length}`);
+    if (this.web_state_array) {
       // Restore
       try {
         this.url = 'uwu';
