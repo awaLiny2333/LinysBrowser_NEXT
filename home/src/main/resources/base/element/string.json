@@ -126,7 +126,7 @@
     },
     {
       "name": "Settings_dev",
-      "value": "Dev Ops"
+      "value": "Deveowlopers"
     },
     {
       "name": "Settings_dev_desc",
@@ -585,6 +585,30 @@
       "value": "Manage Ads Blocker"
     },
     {
+      "name": "Settings_experience_manage_adblock_rules",
+      "value": "Manage Block Rules"
+    },
+    {
+      "name": "Settings_experience_manage_adblock_rules_desc_1",
+      "value": "EasyLists are lists of rules that filter out unwanted frames, images and objects from webpages."
+    },
+    {
+      "name": "Settings_experience_manage_adblock_rules_desc_2",
+      "value": "Using an EasyList can help to filter out specific types of adverts from your browsing!"
+    },
+    {
+      "name": "Settings_experience_manage_adblock_rules_active",
+      "value": "Here are activate EasyList files:"
+    },
+    {
+      "name": "Settings_experience_manage_adblock_rules_submit",
+      "value": "Confirm to enable selected rules!"
+    },
+    {
+      "name": "Settings_experience_manage_adblock_rules_add",
+      "value": "Add a new EasyList file:"
+    },
+    {
       "name": "Ads_block_dont_block_sites",
       "value": "Exceptions (Allow ads on)"
     },
@@ -723,6 +747,10 @@
     {
       "name": "Fail_select_bad_everything",
       "value": "Selected a broken profile data file? Or you selected nothing at all!"
+    },
+    {
+      "name": "Fail_select_bad_file",
+      "value": "Selected a broken file? Or you selected nothing at all!"
     },
     {
       "name": "Update_record",

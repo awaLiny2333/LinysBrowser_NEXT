@@ -1,14 +1,15 @@
 import linysSymbol from '../../components/texts/linysSymbol';
 import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
-import { animation_default, capsule_bar_height, click_effect_default } from '../../hosts/bunch_of_defaults';
-import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
-import { match_domain } from '../../utils/url_tools';
 import woofControlFrame from '../woofControlFrame';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysSwitchWithText from '../../components/toggles/linysSwitchWithText';
+import ManageListElement from './ManageListElement';
+import { animation_default, capsule_bar_height } from '../../hosts/bunch_of_defaults';
+import { bunch_of_settings } from '../../hosts/bunch_of_settings';
+import { match_domain } from '../../utils/url_tools';
 import { all_false } from '../../utils/data_operation_tools';
 
 @CustomDialog
@@ -172,8 +173,8 @@ struct woofGeneralManage {
           Scroll() {
             Column() {
               ForEach(this.sites_list, (item: string, index: number) => {
-                Element({
-                  domain: item,
+                ManageListElement({
+                  text: item,
                   index: index,
                   selected: this.selected,
                   selected_number: this.selected_number,
@@ -428,67 +429,3 @@ struct woofGeneralManage {
 }
 
 export default woofGeneralManage;
-
-@Component
-struct Element {
-  @State domain: string = "huawei.com";
-  @Prop index: number;
-  @Link selected: boolean[];
-  @Link selected_number: number;
-  @Prop selecting: boolean;
-  // Color
-  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
-
-  build() {
-    Column() {
-      linysText({
-        color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
-        text: this.domain,
-        font_weight: this.selected[this.index] ? FontWeight.Bold : FontWeight.Regular
-      })
-    }
-    .alignItems(HorizontalAlign.Start)
-    .width("100%")
-    .backgroundColor(this.selected[this.index] ? this.color_current_font : 'transparent')
-    .animation(animation_default())
-    .padding({
-      left: 10,
-      right: 10,
-      top: 5,
-      bottom: 5
-    })
-    .clickEffect(click_effect_default())
-    .onClick(() => {
-      if (this.selecting) {
-        // Select
-        this.select_unselect();
-      }
-    })
-    .width("100%")
-    .gesture(
-      LongPressGesture({ repeat: false })
-        .onAction(() => {
-          this.select_unselect();
-        })
-    )
-    .onMouse((e) => {
-      if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
-        // Right click
-        this.select_unselect();
-      }
-    })
-  }
-
-  /**
-   * Toggles the state
-   * */
-  select_unselect() {
-    if (this.selected[this.index]) {
-      this.selected_number -= 1;
-    } else {
-      this.selected_number += 1;
-    }
-    this.selected[this.index] = !this.selected[this.index];
-  }
-}

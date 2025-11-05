@@ -13,7 +13,15 @@ import {
 import { ItemRestriction, SegmentButton, SegmentButtonOptions, SegmentButtonTextItem } from '@ohos.arkui.advanced.SegmentButton';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { bunch_of_history } from '../../hosts/bunch_of_history';
-import { add_units_to_size, document_pick_to_text, document_save_text, export_everything, import_everything } from '../../utils/storage_tools';
+import {
+  add_units_to_size,
+  document_pick_to_text,
+  document_pick_to_uri,
+  document_save_text,
+  export_everything,
+  import_everything,
+  uri_2_path
+} from '../../utils/storage_tools';
 import { bunch_of_history_index } from '../../hosts/bunch_of_history_index';
 import { history_index_full_rebuild_worker } from '../../hosts/bunch_of_history_index_x_functions';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
@@ -48,6 +56,7 @@ import lazy woofRecentFaultLogs from '../../dialogs/contents/woofRecentFaultLogs
 import lazy woofUpdateHistory from '../../dialogs/contents/woofUpdateHistory';
 import lazy woofPromptOK from '../../dialogs/prompts/woofPromptOK';
 import lazy woofHistory from '../../dialogs/managers/woofHistory';
+import woofEasyList from '../../dialogs/managers/woofEasylist';
 
 @Reusable
 @Component
@@ -283,6 +292,12 @@ struct meowAppSettings {
     alignment: DialogAlignment.Center,
     cornerRadius: 26,
     // showInSubWindow: true,
+    width: "90%",
+  });
+  EasyList_control: CustomDialogController = new CustomDialogController({
+    builder: woofEasyList(),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 26,
     width: "90%",
   });
   key_shortcuts_control: CustomDialogController = new CustomDialogController({
@@ -582,6 +597,13 @@ struct meowAppSettings {
                       this.adsBlocker_control.open();
                     }
                   })
+                  linysCapsuleButtonWithText({
+                    desc_text: $r('app.string.Settings_experience_manage_adblock_rules'),
+                    button_text: "  󰖿  ",
+                    onExecution: () => {
+                      this.EasyList_control.open();
+                    }
+                  })
                   linysSwitchWithText({
                     text: $r('app.string.Settings_image_disable_image'),
                     toggle_state: this.disable_image,
@@ -757,10 +779,14 @@ struct meowAppSettings {
                     }
                   }) // Enable show my_window_alias
                   linysText({ text: $r('app.string.Settings_appearance_windows_alias_position') })
+                    .opacity(this.showing_my_window_alias ? 1 : 0.5)
+                    .animation(animation_default())
                   SegmentButton({
                     options: this.my_window_alias_position_tabOptions,
                     selectedIndexes: this.my_window_alias_position_selected
                   }) // Position of my_window_alias
+                    .opacity(this.showing_my_window_alias ? 1 : 0.5)
+                    .animation(animation_default())
                 } // Windows
 
                 settingsSubCard({
@@ -829,7 +855,7 @@ struct meowAppSettings {
                       history_index_full_rebuild_worker();
                     }
                   })// History Indexing
-                    .opacity(this.reindexing_history ? 0.4 : 1)
+                    .opacity(this.reindexing_history ? 0.5 : 1)
                     .enabled(!this.reindexing_history)
                   linysText({ text: $r('app.string.Settings_experience_history_index_load_quantity') }) // index load quantity
                   linysText({ text: $r('app.string.Settings_experience_history_index_load_quantity_desc'), is_description: true }) // index load quantity desc
@@ -863,7 +889,7 @@ struct meowAppSettings {
                       .onClick(() => {
                         this.refresh_web_cache_size();
                       })
-                      .opacity(this.calculating_web_cache_size ? 0.4 : 1)
+                      .opacity(this.calculating_web_cache_size ? 0.5 : 1)
                       .enabled(!this.calculating_web_cache_size)
                       .animation(animation_default())
 
@@ -881,7 +907,7 @@ struct meowAppSettings {
                         this.refresh_web_cache_size();
                       }
                     })// Clear Cache
-                      .opacity(this.calculating_web_cache_size ? 0.4 : 1)
+                      .opacity(this.calculating_web_cache_size ? 0.5 : 1)
                       .enabled(!this.calculating_web_cache_size)
                       .animation(animation_default())
                   } // buttons
@@ -902,7 +928,7 @@ struct meowAppSettings {
                       .onClick(() => {
                         this.refresh_history_index_size();
                       })
-                      .opacity(this.calculating_history_index_size ? 0.4 : 1)
+                      .opacity(this.calculating_history_index_size ? 0.5 : 1)
                       .enabled(!this.calculating_history_index_size)
                       .animation(animation_default())
                   } // buttons
@@ -1175,23 +1201,28 @@ struct meowAppSettings {
                       toggle_state: this.free_window_mode
                     }); // Toggle free window mode
                     linysCapsuleButton({
-                      text: 'Free Memory'
+                      text: 'Trim Memory'
                     })
                       .onClick(() => {
-                        webview.WebviewController.trimMemoryByPressureLevel(webview.PressureLevel.MEMORY_PRESSURE_LEVEL_MODERATE);
+                        webview.WebviewController.trimMemoryByPressureLevel(webview.PressureLevel.MEMORY_PRESSURE_LEVEL_CRITICAL);
                       })
                     linysCapsuleButton({
-                      text: 'Save Page'
+                      text: 'Load Easy List'
                     })
                       .onClick(() => {
-                        this.bunch_of_tabs.workingMainTab().controller.storeWebArchive('/data/storage/el2/base/', true, ((e, filename) => {
-                          if (e) {
-                            console.error('[Save Page] Failed: ' + e);
+                        document_pick_to_uri(['txt']).then(result => {
+                          if (!result) {
+                            this.uni_fail_prompt_gateway = $r('app.string.Fail_select_bad_file');
+                            return;
                           }
-                          if (filename) {
-                            console.log('[Save Page] OK: ' + filename);
+                          console.log(`[Load Easy List] ${result}`);
+                          try {
+                            webview.AdsBlockManager.setAdsBlockRules(uri_2_path(result), true);
+                            console.log('[Load Easy List] webview.AdsBlockManager.setAdsBlockRules!')
+                          } catch (e) {
+                            this.uni_fail_prompt_gateway = e.toString();
                           }
-                        }))
+                        });
                       })
                   }
                 }

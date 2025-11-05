@@ -1,5 +1,5 @@
 import { unifiedDataChannel, uniformTypeDescriptor } from '@kit.ArkData';
-import lazy { copy_from_uri_to_sandbox_temp } from './storage_tools';
+import lazy { copy_from_uri_to_sandbox_temp_with_timestamp } from './storage_tools';
 import lazy { storage_of_index, window_index_of_id } from './ui_tools';
 
 /**
@@ -57,7 +57,7 @@ export function drop_to_scratching_board(e: DragEvent, storage: LocalStorage, op
         let image_uri = (record as unifiedDataChannel.Image).imageUri;
         console.log("[drop_to_scratching_board] image uri: [" + image_uri + "]");
         try {
-          result_list_string.push(copy_from_uri_to_sandbox_temp(image_uri, 'web-drag-image-cache'));
+          result_list_string.push(copy_from_uri_to_sandbox_temp_with_timestamp(image_uri, 'web-drag-image-cache'));
           drop_ok = true;
         } catch (e) {
           console.error('[drop_to_scratching_board] Plan A of Image drop failed: ' + e);

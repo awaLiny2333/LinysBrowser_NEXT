@@ -33,6 +33,7 @@ export async function meow_init_main(context: common.UIAbilityContext, storage: 
   load_homepage_background(context, storage);
   clear_profile(context);
   ensure_continue_folder(context);
+  ensure_easylist_folder(context);
   create_download(context);
   create_web_drag_image_cache(context);
   create_harmony_share_temp(context);
@@ -85,6 +86,20 @@ function ensure_continue_folder(context: common.UIAbilityContext) {
     }
   } catch (e) {
     console.error('[init][ensure_continue_folder] Error: ' + e);
+  }
+}
+
+/**
+ * Checks and ensures there is a /easylist directory in sandbox.
+ * */
+function ensure_easylist_folder(context: common.UIAbilityContext) {
+  let filesDir = context.filesDir;
+  try {
+    if (!fileIo.accessSync(filesDir + '/easylist')) {
+      fileIo.mkdirSync(filesDir + '/easylist', true);
+    }
+  } catch (e) {
+    console.error('[init][ensure_easylist_folder] Error: ' + e);
   }
 }
 

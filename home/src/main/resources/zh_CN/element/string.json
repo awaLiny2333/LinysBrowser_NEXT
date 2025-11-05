@@ -584,6 +584,30 @@
       "value": "管理广告过滤"
     },
     {
+      "name": "Settings_experience_manage_adblock_rules",
+      "value": "管理过滤规则"
+    },
+    {
+      "name": "Settings_experience_manage_adblock_rules_desc_1",
+      "value": "EasyList 是一种能够从网页上过滤掉不想要的 Frame，图像和对象的规则列表。"
+    },
+    {
+      "name": "Settings_experience_manage_adblock_rules_desc_2",
+      "value": "使用 EasyList 可以帮助你过滤掉特定的网络广告！"
+    },
+    {
+      "name": "Settings_experience_manage_adblock_rules_active",
+      "value": "以下是已经导入并激活的 EasyList 文件："
+    },
+    {
+      "name": "Settings_experience_manage_adblock_rules_submit",
+      "value": "确认启用所选择的规则！"
+    },
+    {
+      "name": "Settings_experience_manage_adblock_rules_add",
+      "value": "添加一个新 EasyList 文件："
+    },
+    {
       "name": "Ads_block_dont_block_sites",
       "value": "白名单（允许广告显示于）"
     },
@@ -722,6 +746,10 @@
     {
       "name": "Fail_select_bad_everything",
       "value": "选择的数据文件有问题？或者你什么也没有选！"
+    },
+    {
+      "name": "Fail_select_bad_file",
+      "value": "选择的文件有问题？或者你什么也没有选！"
     },
     {
       "name": "Update_record",

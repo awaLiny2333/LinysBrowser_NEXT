@@ -5,6 +5,7 @@ import { image } from '@kit.ImageKit';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { meowContext } from './environment_tools';
+import { apply_EasyList } from '../processes/web_actions';
 
 // Pick & Save
 
@@ -280,6 +281,23 @@ export async function image_gallery_pick_to_ArrayBuffer() {
   }
 }
 
+/**
+ * Pick a text file from device storage, pulling up a DocumentViewPicker.
+ * @returns A string, of the chosen file's uri.
+ * */
+export async function document_pick_to_uri(suffixFilters?: string[]) {
+  try {
+    let documentPicker = new picker.DocumentViewPicker();
+    let documentSelectResult = await documentPicker.select({ maxSelectNumber: 1, fileSuffixFilters: suffixFilters || [".html", ".txt"] });
+    console.info('[document_reader] DocumentViewPicker.select successfully, documentSelectResult uri: ' + documentSelectResult[0]);
+    return documentSelectResult[0];
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    console.error('[ERROR][document_reader] DocumentViewPicker failed with err: ' + JSON.stringify(err));
+    return undefined;
+  }
+}
+
 // Sandbox Operations
 
 /**
@@ -446,12 +464,14 @@ export function sandbox_read_arrayBuffer(file_path_name: string, context_filesDi
 /**
  * Copy a text file to sandbox temp directory, overwrites whatever that was at that place.
  *
+ * Adds a timestamp in the file's name.
+ *
  * THIS IS A SYNC FUNCTION
  * @param from from a uri (file://).
  * @param to a sandbox directory, the new parent folder of this file (in sandbox).
  * @returns a sandbox uri, root is meowContext().filesDir.
  * */
-export function copy_from_uri_to_sandbox_temp(from: string, to: string, max_name_length?: number): string {
+export function copy_from_uri_to_sandbox_temp_with_timestamp(from: string, to: string, max_name_length?: number): string {
   let filesDir: string = meowContext().tempDir;
   let max_name_l: number = max_name_length || 64;
   // Get from path
@@ -464,6 +484,32 @@ export function copy_from_uri_to_sandbox_temp(from: string, to: string, max_name
   }
   // Try to prevent collision
   file_name = Date.now().toString() + '-' + file_name;
+  // Combine target path
+  let target_path = filesDir + '/' + to + '/' + file_name;
+  console.log('[uri_copy_sandbox_temp] Copy from [' + from_path + '] to [' + target_path + '] return [' + to + '/' + file_name + ']');
+  fs.copyFileSync(from_path, target_path);
+  return path_2_uri(target_path);
+}
+
+/**
+ * Copy a text file to sandbox directory, overwrites whatever that was at that place.
+ *
+ * THIS IS A SYNC FUNCTION
+ * @param from from a uri (file://).
+ * @param to a sandbox directory, the new parent folder of this file (in sandbox).
+ * @returns a sandbox uri, root is meowContext().filesDir.
+ * */
+export function copy_from_uri_to_sandbox(from: string, to: string, max_name_length?: number): string {
+  let filesDir: string = meowContext().filesDir;
+  let max_name_l: number = max_name_length || 64;
+  // Get from path
+  const from_path = new fileUri.FileUri(from).path;
+  // Get file name
+  const split_result = from.split('/');
+  let file_name = decodeURI(split_result[split_result.length-1]);
+  if (file_name.length > max_name_l) {
+    file_name = file_name.substring(file_name.length - max_name_l, file_name.length + 1);
+  }
   // Combine target path
   let target_path = filesDir + '/' + to + '/' + file_name;
   console.log('[uri_copy_sandbox] Copy from [' + from_path + '] to [' + target_path + '] return [' + to + '/' + file_name + ']');
@@ -827,8 +873,11 @@ export async function import_everything() {
       } else {
         bunch_of_settings.save_to_disk();
       }
-
     })
+
+    // Import EasyList
+    apply_EasyList();
+
   } catch (e) {
     console.error('[import_everything] zip error: ' + e);
     return false;
