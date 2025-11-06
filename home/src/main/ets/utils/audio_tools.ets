@@ -9,6 +9,12 @@ export function activate_mix_audio_session() {
     concurrencyMode: audio.AudioConcurrencyMode.CONCURRENCY_MIX_WITH_OTHERS
   };
 
+  try {
+    audioSessionManager.setAudioSessionScene(audio.AudioSessionScene.AUDIO_SESSION_SCENE_MEDIA);
+  } catch (error) {
+    console.error(`[activate_mix_audio_session] Failed: ${error}`);
+  }
+
   audioSessionManager.activateAudioSession(strategy).then(() => {
     console.info('[activate_mix_audio_session] Succeeded in doing activateAudioSession! CONCURRENCY_MIX_WITH_OTHERS!');
   }).catch((err: BusinessError) => {
