@@ -105,9 +105,9 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 - [x] Move tabs between windows
 - [x] Cookies management (and clearing)
 - [x] Cache management and clear
-- [x] Ads blocking
+- [x] Ads blocking + EasyList
 - [x] Share / Copy link
-- [ ] Distributed data sync for History & Bookmarks, etc
+- [ ] Distributed data sync for History & Bookmarks, etc.
 - [ ] Require biometric access control for History
 - [ ] Require biometric access control for Bookmarks
 - [x] Open HTML files
@@ -147,7 +147,7 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 1. As a result of Liny's unsystematic programming thoughts and rubbish codes,
    this application may contain performance problems.
    Liny would appreciate that so much if you wish to report a problem, big or small!
-2. Couldn't get pass Cloudflare CAPTCHA.
+2. Couldn't get pass Cloudflare CAPTCHA. (Using an Android UA can fix)
 3. Due to a mysterious problem and a temporary but necessary compromise,
    sometimes the AD blocking whitelist may not take effect in time after launching,
    resulting in ads on the web page being blocked.
@@ -157,9 +157,8 @@ or some of them will even lie on the table for ever... (ง •_•)ง
    resulting in ads on the web page not being blocked.
    (Trying to solve)
 5. HarmonyOS UA is not understood by plenty of websites (But UA is customizable now).
-6. The vertical tabs panel animations may seem weird when the scroll is longer than the screen.
-7. This project requires HarmonyOS NEXT API17 to run.
-8. OHOS Comes with no Share Kit, what can I do? Help needed.
+6. This project requires HarmonyOS NEXT API20 to run.
+7. OHOS Comes with no Share Kit, what can I do??? Help needed.
 
 ### Seems to be Solved?
 

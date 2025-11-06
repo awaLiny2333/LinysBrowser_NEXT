@@ -152,11 +152,11 @@ struct woofGeneralManage {
               text: this.subtitle_sites_list,
               max_lines: 3
             }) // Subtitle on list of domains
-              .padding({ top: this.tablet_mode ? 0 : 10 })
               .width("100%")
+              .layoutWeight(1)
+              .padding({ top: this.tablet_mode ? 0 : 10 })
               .opacity(this.all_sites_switch || !this.general_switch ? 0.5 : 1)
               .animation(animation_default())
-              .layoutWeight(1)
 
             linysSymbol({
               symbol_glyph_target: this.full_view ?

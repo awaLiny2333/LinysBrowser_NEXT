@@ -74,63 +74,66 @@ struct woofEasyList {
       controller: this.controller,
     }) {
       RelativeContainer() {
-        Scroll() {
-          Column({ space: 10 }) {
-            linysText({
-              text: $r('app.string.Settings_experience_manage_adblock_rules_desc_1'),
-              max_lines: 10
-            })
-              .width("100%")
-            linysText({
-              text: $r('app.string.Settings_experience_manage_adblock_rules_desc_2'),
-              max_lines: 10
-            })
-              .width("100%")
-            linysText({
-              text: $r('app.string.General_select_guide'),
-              max_lines: 10,
-              is_description: true,
-              is_expanded: true
-            })
-              .width("100%")
-            linysText({
-              text: $r('app.string.Have_a_Nice_Surf'),
-              max_lines: 2
-            })
-              .width("100%")
-              .opacity(0.9)
-          }
-          .width("100%")
-        } // Descriptions
-        .align(Alignment.TopStart)
-        .edgeEffect(EdgeEffect.Spring)
-        .padding({ bottom: 10, top: 5, right: this.tablet_mode ? 10 : 0 })
+        Column() {
+          Scroll() {
+            Column({ space: 10 }) {
+              linysText({
+                text: $r('app.string.Settings_experience_manage_adblock_rules_desc_1'),
+                max_lines: 10
+              })
+                .width("100%")
+              linysText({
+                text: $r('app.string.Settings_experience_manage_adblock_rules_desc_2'),
+                max_lines: 10
+              })
+                .width("100%")
+              linysText({
+                text: $r('app.string.General_select_guide'),
+                max_lines: 10,
+                is_description: true,
+                is_expanded: true
+              })
+                .width("100%")
+              linysText({
+                text: $r('app.string.Have_a_Nice_Surf'),
+                max_lines: 2
+              })
+                .width("100%")
+                .opacity(0.9)
+            }
+            .width("100%")
+          } // Descriptions
+          .scrollBar(BarState.Off)
+          .align(Alignment.TopStart)
+          .edgeEffect(EdgeEffect.Spring)
+          .padding({ bottom: 10, top: 5 })
+          .borderRadius(10)
+        }
+        .padding({ right: this.tablet_mode ? 10 : 0 })
         .width(this.tablet_mode ? (this.full_view ? "0%" : "40%") : "100%")
         .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
-        .borderRadius(10)
         .visibility(this.full_view ? Visibility.None : Visibility.Visible)
         .animation(animation_default())
         .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })
         .id("title_rules_manager")
 
-        Column() {
+        Column({ space: 10 }) {
           Row({ space: 10 }) {
             linysText({ text: $r('app.string.Settings_experience_manage_adblock_rules_active'), max_lines: 3 }) // Rules active
               .width("100%")
               .layoutWeight(1)
-              .padding({ top: 5, bottom: 5 })
+              .padding({ top: this.tablet_mode ? 0 : 10 })
 
             linysSymbol({
               symbol_glyph_target: this.full_view ?
                 'sys.symbol.arrow_down_right_and_arrow_up_left' :
                 'sys.symbol.arrow_up_left_and_arrow_down_right'
             })
-              .padding(5)
+              .padding({ top: 5 })
               .onClick(() => {
                 this.full_view = !this.full_view
               })
           }
-          .padding({ top: 5, bottom: 5 })
           .alignItems(VerticalAlign.Center)
           .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
           .width('100%')
