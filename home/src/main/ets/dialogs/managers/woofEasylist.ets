@@ -22,7 +22,7 @@ struct woofEasyList {
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Interfaces
-  @State lists: string[] = get_EasyLists();
+  @State lists: string[][] = get_EasyLists();
   // alignRules
   alignRules_head_non_tablet: AlignRuleOption = {
     top: { anchor: "__container__", align: VerticalAlign.Top },
@@ -88,7 +88,7 @@ struct woofEasyList {
               })
                 .width("100%")
               linysText({
-                text: $r('app.string.General_select_guide'),
+                text: $r('app.string.Settings_experience_manage_adblock_rules_desc_3'),
                 max_lines: 10,
                 is_description: true,
                 is_expanded: true
@@ -140,9 +140,9 @@ struct woofEasyList {
 
           Scroll() {
             Column() {
-              ForEach(this.lists, (item: string, index: number) => {
+              ForEach(this.lists, (item: string[], index: number) => {
                 ManageListElement({
-                  text: item,
+                  text: item[0] + ' (' + item[1] + ')',
                   index: index,
                   selected: this.selected,
                   selecting: this.selecting,
@@ -283,7 +283,7 @@ struct woofEasyList {
   delete_selected() {
     for (let index = 0; index < this.selected.length; index++) {
       if (this.selected[index]) {
-        sandbox_unlink_sync('easylist/' + this.lists[index]);
+        sandbox_unlink_sync('easylist/' + this.lists[index][0]);
       }
     }
     this.lists = get_EasyLists();

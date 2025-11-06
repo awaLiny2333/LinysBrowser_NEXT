@@ -596,8 +596,12 @@
       "value": "使用 EasyList 可以帮助你过滤掉特定的网络广告！"
     },
     {
+      "name": "Settings_experience_manage_adblock_rules_desc_3",
+      "value": "长按一条规则文件以开始选择，进入选择模式后点击其他规则文件就可以多选。"
+    },
+    {
       "name": "Settings_experience_manage_adblock_rules_active",
-      "value": "以下是已经导入并激活的 EasyList 文件："
+      "value": "已经导入并激活的 EasyList 文件："
     },
     {
       "name": "Settings_experience_manage_adblock_rules_submit",

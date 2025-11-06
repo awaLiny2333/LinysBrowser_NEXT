@@ -597,6 +597,10 @@
       "value": "Using an EasyList can help to filter out specific types of adverts from your browsing!"
     },
     {
+      "name": "Settings_experience_manage_adblock_rules_desc_3",
+      "value": "Long press a rule file to select. After entering selecting mode, tap on other rule files to multi-select."
+    },
+    {
       "name": "Settings_experience_manage_adblock_rules_active",
       "value": "Here are the active EasyList files:"
     },

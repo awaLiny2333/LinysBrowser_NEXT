@@ -1,13 +1,16 @@
 import lazy { fileIo } from '@kit.CoreFileKit';
 import lazy { meowContext } from '../utils/environment_tools';
-import lazy { sandbox_read_text_sync, sandbox_save } from '../utils/storage_tools';
+import lazy { add_units_to_size, sandbox_read_text_sync, sandbox_save } from '../utils/storage_tools';
 import lazy { webview } from '@kit.ArkWeb';
 
+/**
+ * Apply all files of EasyList rules in directory of filesDir/easylist.
+ */
 export function apply_EasyList() {
   let lists = get_EasyLists();
   let overall_rules = '';
   for (let index = 0; index < lists.length; index++) {
-    let new_paragraph = sandbox_read_text_sync('easylist/' + lists[index]);
+    let new_paragraph = sandbox_read_text_sync('easylist/' + lists[index][0]);
     if (new_paragraph != 'undefined') {
       overall_rules += '\n' + new_paragraph;
     }
@@ -20,12 +23,19 @@ export function apply_EasyList() {
   }
 }
 
+/**
+ * Get all file names of EasyList rules in directory of filesDir/easylist.
+ */
 export function get_EasyLists() {
-  let results: string[] = [];
+  let result: string[][] = [];
   try {
-    results = fileIo.listFileSync(meowContext().filesDir + '/easylist', { recursion: false });
+    const files = fileIo.listFileSync(meowContext().filesDir + '/easylist', { recursion: false });
+    for (let index = 0; index < files.length; index++) {
+      const filename = meowContext().filesDir + '/easylist/' + files[index];
+      result.push([files[index], add_units_to_size(fileIo.statSync(filename).size)]);
+    }
   } catch (e) {
     console.error('[refresh_easy_list] Failed: ' + e);
   }
-  return results;
+  return result;
 }
