@@ -96,42 +96,41 @@ struct woofHistory {
       // TODO: This is not good for efficiency. Use less UI container layers!
       Column() {
         RelativeContainer() {
-          Scroll() {
-            Column({ space: 15 }) {
-              linysText({
-                text: $r('app.string.History_desc_1'),
-                max_lines: 6
-              })
-                .width("100%")
-                .opacity(0.9)
-              linysText({
-                text: $r('app.string.History_desc_2'),
-                max_lines: 6,
-                is_description: true,
-                is_expanded: true
-              })
-                .width("100%")
-                .opacity(0.9)
-              linysText({
-                text: $r('app.string.Have_a_Nice_Surf'),
-                max_lines: 2
-              })
-                .width("100%")
-                .opacity(0.9)
-            } // Title
-            .width("100%")
-          } // Title and descriptions
-          .scrollBar(BarState.Off)
-          .align(Alignment.TopStart)
-          .edgeEffect(EdgeEffect.Spring)
-          .padding({ bottom: 10, top: 5, right: this.tablet_mode ? 10 : 0 })
+          Column() {
+            Scroll() {
+              Column({ space: 15 }) {
+                linysText({
+                  text: $r('app.string.History_desc_1'),
+                  max_lines: 6
+                })
+                  .width("100%")
+                  .opacity(0.9)
+                linysText({
+                  text: $r('app.string.History_desc_2'),
+                  max_lines: 6,
+                  is_description: true,
+                  is_expanded: true
+                })
+                  .width("100%")
+                  .opacity(0.9)
+                linysText({
+                  text: $r('app.string.Have_a_Nice_Surf'),
+                  max_lines: 2
+                })
+                  .width("100%")
+                  .opacity(0.9)
+              } // Title
+              .width("100%")
+            } // Title and descriptions
+            .scrollBar(BarState.Off)
+            .align(Alignment.TopStart)
+            .edgeEffect(EdgeEffect.Spring)
+            .borderRadius(10)
+            .padding({ bottom: 10, top: 5 })
+          } // Descriptions
+          .padding({ right: this.tablet_mode ? 10 : 0 })
           .width(this.tablet_mode ? (this.full_view ? '0%' : "35%") : "100%")
           .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
-          .borderRadius(10)
-          // .clip(true)
-          // .enabled(!this.full_view)
-          // .opacity(this.full_view ? 0 : 1)
-          // .height(this.full_view && !this.tablet_mode ? 0 : undefined)
           .visibility(this.full_view ? Visibility.None : Visibility.Visible)
           .animation(animation_default())
           .id("title_history")

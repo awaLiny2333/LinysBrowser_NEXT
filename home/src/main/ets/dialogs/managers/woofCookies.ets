@@ -66,7 +66,8 @@ struct woofCookies {
       controller: this.controller,
     }) {
       RelativeContainer() {
-        Scroll() {
+        Column() {
+          Scroll() {
           Column({ space: 10 }) {
             linysText({
               text: $r('app.string.Settings_manage_cookies_desc_1'),
@@ -91,17 +92,16 @@ struct woofCookies {
               .opacity(0.9)
           }
           .width("100%")
+        }
+          .scrollBar(BarState.Off)
+          .align(Alignment.TopStart)
+          .edgeEffect(EdgeEffect.Spring)
+          .padding({ bottom: 10, top: 5})
+          .borderRadius(10)
         } // Descriptions
-        .align(Alignment.TopStart)
-        .edgeEffect(EdgeEffect.Spring)
-        .padding({ bottom: 10, top: 5, right: this.tablet_mode ? 10 : 0 })
+        .padding({ right: this.tablet_mode ? 10 : 0 })
         .width(this.tablet_mode ? (this.full_view ? "0%" : "40%") : "100%")
         .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
-        .borderRadius(10)
-        // .clip(true)
-        // .enabled(!this.full_view)
-        // .opacity(this.full_view ? 0 : 1)
-        // .height(this.full_view && !this.tablet_mode ? 0 : undefined)
         .visibility(this.full_view ? Visibility.None : Visibility.Visible)
         .animation(animation_default())
         .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })

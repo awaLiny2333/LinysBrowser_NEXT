@@ -35,6 +35,8 @@ struct woofGeneralManage {
   @State switch_all_sites_id: string = '';
   // UI
   @State full_view: boolean = false;
+  // Pass in content components
+  @BuilderParam extra_manage: () => void;
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Manage
@@ -93,53 +95,53 @@ struct woofGeneralManage {
       controller: this.controller,
     }) {
       RelativeContainer() {
-        Scroll() {
-          Column({ space: 10 }) {
-            ForEach(this.descriptions, (desc: ResourceStr, _index: number) => {
-              linysText({
-                text: desc,
-                max_lines: 10
+        Column() {
+          Scroll() {
+            Column({ space: 10 }) {
+              ForEach(this.descriptions, (desc: ResourceStr, _index: number) => {
+                linysText({
+                  text: desc,
+                  max_lines: 10
+                })
+                  .width("100%")
               })
-                .width("100%")
-            })
-            linysText({
-              text: $r('app.string.General_select_guide'),
-              max_lines: 10,
-              is_description: true,
-              is_expanded: true
-            })
-              .width("100%")
-            if (this.tips) {
               linysText({
-                text: this.tips,
-                max_lines: 3,
+                text: $r('app.string.General_select_guide'),
+                max_lines: 10,
                 is_description: true,
                 is_expanded: true
               })
                 .width("100%")
-                .visibility(this.match_this_domain(this.current_url) ? Visibility.None : Visibility.Visible)
-                .animation(animation_default())
-            } // Tips on status of current site.
-            linysText({
-              text: $r('app.string.Have_a_Nice_Surf'),
-              max_lines: 2
-            })
-              .width("100%")
-              .opacity(0.9)
-          }
-          .width("100%")
-        } // Descriptions
-        .align(Alignment.TopStart)
-        .edgeEffect(EdgeEffect.Spring)
-        .padding({ bottom: 10, top: 5, right: this.tablet_mode ? 10 : 0 })
+              if (this.tips) {
+                linysText({
+                  text: this.tips,
+                  max_lines: 3,
+                  is_description: true,
+                  is_expanded: true
+                })
+                  .width("100%")
+                  .visibility(this.match_this_domain(this.current_url) ? Visibility.None : Visibility.Visible)
+                  .animation(animation_default())
+              } // Tips on status of current site.
+              linysText({
+                text: $r('app.string.Have_a_Nice_Surf'),
+                max_lines: 2
+              })
+                .width("100%")
+                .opacity(0.9)
+            }
+            .width("100%")
+          } // Descriptions
+          .scrollBar(BarState.Off)
+          .align(Alignment.TopStart)
+          .edgeEffect(EdgeEffect.Spring)
+          .padding({ bottom: 10, top: 5 })
+          .borderRadius(10)
+        } // TODO: Such nesting is bad O.o
+        .padding({ right: this.tablet_mode ? 10 : 0 })
         .width(this.tablet_mode ? (this.full_view ? "0%" : "40%") : "100%")
         .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })
         .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
-        .borderRadius(10)
-        // .clip(true)
-        // .enabled(!this.full_view)
-        // .opacity(this.full_view ? 0 : 1)
-        // .height(this.full_view && !this.tablet_mode ? 0 : undefined)
         .visibility(this.full_view ? Visibility.None : Visibility.Visible)
         .animation(animation_default())
         .id("title")
@@ -230,6 +232,11 @@ struct woofGeneralManage {
         .animation(animation_default())
 
         Column() {
+          if (this.extra_manage) {
+            this.extra_manage();
+            Row().height(10)
+          }
+
           linysShowButton({
             show: this.showing_add_panel,
             symbol_glyph_target: "sys.symbol.plus",

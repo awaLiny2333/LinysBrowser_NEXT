@@ -205,42 +205,6 @@ struct meowAppSettings {
     // showInSubWindow: true,
     width: "90%",
   });
-  adsBlocker_control: CustomDialogController = new CustomDialogController({
-    builder: woofGeneralManage({
-      general_switch: this.use_adblock,
-      sites_list: this.adblock_exceptions,
-      descriptions: [
-        $r('app.string.Ads_block_desc_1'),
-        $r('app.string.Ads_block_desc_2')],
-      tips: '',
-      title: $r('app.string.Settings_experience_manage_adblock'),
-      switch_desc: $r('app.string.Settings_experience_use_adblock'),
-      subtitle_sites_list: $r('app.string.Ads_block_dont_block_sites'),
-      switch_id: 'use_adblock',
-      sites_list_id: 'adblock_exceptions',
-      subtitle_all_sites: '',
-      all_sites_switch: this.to_fool_woofGeneralManage,
-      switch_all_sites_id: '',
-      onAdd: (added) => {
-        try {
-          webview.AdsBlockManager.addAdsBlockDisallowedList([added]);
-        } catch (e) {
-          console.error('[woofAdsBlocker][add_exception] ' + e);
-        }
-      },
-      onDelete: (deleted) => {
-        try {
-          webview.AdsBlockManager.removeAdsBlockDisallowedList(deleted);
-        } catch (e) {
-          console.error('[woofAdsBlocker][delete_selected] ' + e);
-        }
-      }
-    }),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 26,
-    // showInSubWindow: true,
-    width: "90%",
-  });
   js_manage_control: CustomDialogController = new CustomDialogController({
     builder: woofGeneralManage({
       general_switch: this.disable_js,
@@ -300,6 +264,45 @@ struct meowAppSettings {
     cornerRadius: 26,
     width: "90%",
   });
+  adsBlocker_control: CustomDialogController = new CustomDialogController({
+    builder: woofGeneralManage({
+      general_switch: this.use_adblock,
+      sites_list: this.adblock_exceptions,
+      descriptions: [
+        $r('app.string.Ads_block_desc_1'),
+        $r('app.string.Ads_block_desc_2')],
+      tips: '',
+      title: $r('app.string.Settings_experience_manage_adblock'),
+      switch_desc: $r('app.string.Settings_experience_use_adblock'),
+      subtitle_sites_list: $r('app.string.Ads_block_dont_block_sites'),
+      switch_id: 'use_adblock',
+      sites_list_id: 'adblock_exceptions',
+      subtitle_all_sites: '',
+      all_sites_switch: this.to_fool_woofGeneralManage,
+      switch_all_sites_id: '',
+      onAdd: (added) => {
+        try {
+          webview.AdsBlockManager.addAdsBlockDisallowedList([added]);
+        } catch (e) {
+          console.error('[woofAdsBlocker][add_exception] ' + e);
+        }
+      },
+      onDelete: (deleted) => {
+        try {
+          webview.AdsBlockManager.removeAdsBlockDisallowedList(deleted);
+        } catch (e) {
+          console.error('[woofAdsBlocker][delete_selected] ' + e);
+        }
+      },
+      extra_manage: () => {
+        this.EasyList_entry_button();
+      }
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 26,
+    // showInSubWindow: true,
+    width: "90%",
+  });
   key_shortcuts_control: CustomDialogController = new CustomDialogController({
     builder: woofKeyShortcuts(),
     alignment: DialogAlignment.Center,
@@ -351,6 +354,17 @@ struct meowAppSettings {
   @StorageLink('reindexing_history') reindexing_history: boolean | undefined = undefined;
   @StorageLink('reindexing_history_progress') reindexing_history_progress: number = 100;
   @StorageLink('compressing_output_profile') compressing_output_profile: boolean = false;
+
+  @Builder
+  EasyList_entry_button() {
+    linysCapsuleButtonWithText({
+      desc_text: $r('app.string.Settings_experience_manage_adblock_rules'),
+      button_text: "  󰖿  ",
+      onExecution: () => {
+        this.EasyList_control.open();
+      }
+    })
+  }
 
   async on_appear() {
     // Get app version info

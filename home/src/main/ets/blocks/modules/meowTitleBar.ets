@@ -27,6 +27,7 @@ import lazy meowScratchingBoard from './meowScratchingBoard';
 import lazy meowAppSettings from './meowAppSettings';
 import lazy meowDownloads from './meowDownloads';
 import lazy woofQuickSE from '../../dialogs/quicks/woofQuickSE';
+import lazy woofEasyList from '../../dialogs/managers/woofEasylist';
 
 @Component
 struct meowTitleBar {
@@ -105,6 +106,12 @@ struct meowTitleBar {
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 26
+  });
+  EasyList_control: CustomDialogController = new CustomDialogController({
+    builder: woofEasyList(),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 26,
+    width: "90%",
   });
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
@@ -578,7 +585,6 @@ struct meowTitleBar {
   }
 
   // Visibility
-
 
   visible_when_typing() {
     return this.is_search_input_typing ? Visibility.Visible : Visibility.None

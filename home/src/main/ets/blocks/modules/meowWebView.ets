@@ -13,16 +13,17 @@ import lazy { webview } from '@kit.ArkWeb';
 import lazy { print } from '@kit.BasicServicesKit';
 import lazy { common } from '@kit.AbilityKit';
 import lazy { uniformTypeDescriptor } from '@kit.ArkData';
+import lazy { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import woofPrompt from '../../dialogs/web/woofPrompt';
 import woofConfirm from '../../dialogs/web/woofConfirm';
 import woofAlert from '../../dialogs/web/woofAlert';
+import woofHttpAuthPrompt from '../../dialogs/web/woofHttpAuthPrompt';
 import linysText from '../../components/texts/linysText';
 import lazy woofWantJump from '../../dialogs/prompts/woofWantJump';
 import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
 import lazy woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
-import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
-import woofHttpAuthPrompt from '../../dialogs/web/woofHttpAuthPrompt';
+import lazy linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 
 @Component
 struct meowWebView {
@@ -33,6 +34,7 @@ struct meowWebView {
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
   @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads(true);
+  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts();
   // Environments
   @StorageLink('currentColorMode') current_color_mode: number = 0;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
@@ -168,7 +170,6 @@ struct meowWebView {
 
   aboutToAppear(): void {
     console.log(' \n[meowWebView][aboutToAppear] this.bunch_of_tabs.my_id: ' + this.bunch_of_tabs.my_id + '\n ');
-
     set_continuable(this.getUIContext().getHostContext() as common.UIAbilityContext, false);
   }
 
@@ -214,6 +215,10 @@ struct meowWebView {
         Column({ space: (this.show_toast_fullscreen) ? 10 : 0 }) {
           toast({
             show: this.show_toast_fullscreen,
+            extra: this.bunch_of_key_shortcuts.get_shortcut_string('fullscreen')
+              .reverse()
+              .join(' + ')
+              .toUpperCase(),
             info: $r('app.string.fullscreen_notice')
           })
         }
@@ -788,8 +793,8 @@ struct shortcutButton {
 @Component
 struct toast {
   info: ResourceStr = '';
-  my_id: string = '';
   @Link @Watch('show_toast') show: boolean;
+  @Prop extra: ResourceStr = '';
   // Timeout
   timeout_id: number | undefined = undefined;
   // Color
@@ -798,6 +803,13 @@ struct toast {
 
   build() {
     Row() {
+      if (this.extra) {
+        linysText({
+          text: this.extra + ' / ',
+          color: this.color_current_primary,
+          font_weight: FontWeight.Bold
+        })
+      }
       linysText({
         text: this.info,
         color: this.color_current_primary,

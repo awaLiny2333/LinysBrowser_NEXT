@@ -18,6 +18,8 @@ import lazy woofCookies from '../../dialogs/managers/woofCookies';
 import lazy woofQuickUA from '../../dialogs/quicks/woofQuickUA';
 import lazy woofGeneralManage from '../../dialogs/managers/woofGeneralManage';
 import lazy woofPrompt from '../../dialogs/web/woofPrompt';
+import lazy linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
+import lazy woofEasyList from '../../dialogs/managers/woofEasylist';
 
 @Component
 struct meowMoreOptions {
@@ -100,7 +102,10 @@ struct meowMoreOptions {
           console.error('[woofAdsBlocker][delete_selected] ' + e);
         }
       },
-      full_view: this.compact_mode
+      full_view: this.compact_mode,
+      extra_manage: () => {
+        this.EasyList_entry_button();
+      }
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 26,
@@ -231,6 +236,23 @@ struct meowMoreOptions {
     cornerRadius: 26,
     width: "90%",
   });
+  EasyList_control: CustomDialogController = new CustomDialogController({
+    builder: woofEasyList(),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 26,
+    width: "90%",
+  });
+
+  @Builder
+  EasyList_entry_button() {
+    linysCapsuleButtonWithText({
+      desc_text: $r('app.string.Settings_experience_manage_adblock_rules'),
+      button_text: "  󰖿  ",
+      onExecution: () => {
+        this.EasyList_control.open();
+      }
+    })
+  }
 
   build() {
     Scroll() {
