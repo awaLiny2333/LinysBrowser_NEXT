@@ -1,10 +1,9 @@
 import { BuilderNode, FrameNode, NodeController, UIContext } from '@kit.ArkUI';
 import { bunch_of_tabs, tab_info_packed } from '../hosts/bunch_of_tabs';
-import { determine_extra_background, sync_current_tabs_list_info } from '../processes/tabs_actions';
-import { window_index_of_id } from '../utils/ui_tools';
-import { is_web_page, match_domain, url_meow_to_resource, url_resource_to_meow, viewable_domains } from '../utils/url_tools';
-import lazy { webview } from '@kit.ArkWeb';
+import { is_web_page, match_domain, url_meow_to_resource, viewable_domains } from '../utils/url_tools';
+import { on_controller_attached, on_page_begin, on_page_end, on_progress_change, on_title_receive } from '../processes/web_actions';
 import lazy { hilog } from '@kit.PerformanceAnalysisKit';
+import lazy { JSON } from '@kit.ArkTS';
 
 export const defaultUrl: string = 'https://www.example.com';
 
@@ -47,7 +46,7 @@ function WebBuilder(pk: tab_info_packed) {
     .onWindowNew((event) => {
       // TODO: Find out why this triggers twice when click once
       let new_target_url = event.targetUrl;
-      console.info('[Meow][onWindowNew] ' + new_target_url);
+      console.info(`[Meow][onWindowNew] isAlert=${event.isAlert}, targetUrl=${event.targetUrl}`);
       if (!is_web_page(new_target_url)) {
         console.log('[meowWebView] Intercepted new window request for a potential download!');
         try {
@@ -64,174 +63,16 @@ function WebBuilder(pk: tab_info_packed) {
       event.handler.setWebController(null);
     })
     .onTitleReceive(() => {
-      // Ask tab to update its info
-      let tabs = pk.storage.get('bunch_of_tabs') as bunch_of_tabs;
-
-      try {
-        let title = pk.update_title();
-        let url = pk.update_url();
-        tabs.update_backward_forward_access();
-        // sync lists
-        // sync_tabs_list_info(tab.storage);
-        (pk.storage.get('tab_titles') as string[])[pk.index] = title;
-        (pk.storage.get('tab_urls') as string[])[pk.index] = url;
-
-        // tabs.sync_web_settings(tab.index);
-
-        if (pk.index == tabs.main_tab_idx) {
-          sync_current_tabs_list_info(pk.storage);
-        }
-      } catch (e) {
-        console.error('[meowWebView][onProgressChange] Update bunch_of_tabs error: ' + e);
-      }
-
-      // Save history if title is really updated
-      let tab_titles = (pk.storage.get('tab_titles') as string[]);
-      if (pk.last_saved_title != tab_titles[pk.index]) {
-        console.log('[Tabs][onTitleReceive] New title: ' + tab_titles[pk.index]);
-        if (!pk.is_loading) {
-          pk.check_save_history('[onTitleReceive]');
-        }
-      }
-
+      on_title_receive(pk);
     })
     .onPageBegin(() => {
-      console.log("[ArkWeb] on page begin!");
-      let tabs = pk.storage.get('bunch_of_tabs') as bunch_of_tabs;
-
-      if (pk.index >= tabs.get_tabs_count()) {
-        // If not synced, idk why but o(=•ェ•=)m
-        return;
-      }
-
-      // Ask tab to update its info
-      try {
-        let url = pk.update_url();
-        let is_loading = false;
-        if (url.substring(0, 7) == 'meow://') {
-          // Don't show progress bar for meow:// pages
-          is_loading = pk.update_is_loading(false);
-        } else {
-          is_loading = pk.update_is_loading(true);
-        }
-        let progress = pk.update_loading_progress(0);
-
-        (pk.storage.get('tab_urls') as string[])[pk.index] = url;
-        (pk.storage.get('tab_is_loading') as boolean[])[pk.index] = is_loading;
-        (pk.storage.get('tab_loading_progresses') as number[])[pk.index] = progress;
-
-        // Get synced lists
-        if (pk.index == tabs.main_tab_idx) {
-          sync_current_tabs_list_info(pk.storage);
-        }
-
-      } catch (e) {
-        console.error('[meowWebView][onPageBegin] Update bunch_of_tabs error: ' + e);
-      }
-
-      // Update Input Search Box
-      // this.update_search_box_text(tab.url);
-      if (!(pk.storage.get('is_search_input_typing') as boolean) && pk.index == tabs.main_tab_idx) {
-        pk.storage.set('search_input', url_resource_to_meow(pk.url));
-        // Update Input Search Box
-      }
+      on_page_begin(pk);
     })
     .onPageEnd(() => {
-      console.log(`[Meow][ArkWeb][${pk.index}] tab on page end! `);
-      let tabs = pk.storage.get('bunch_of_tabs') as bunch_of_tabs;
-
-      // Ask tab to update its info
-      try {
-        let title = pk.update_title();
-        let url = pk.update_url();
-        let is_loading = pk.update_is_loading(false);
-        tabs.update_backward_forward_access();
-
-        (pk.storage.get('tab_titles') as string[])[pk.index] = title;
-        (pk.storage.get('tab_urls') as string[])[pk.index] = url;
-        (pk.storage.get('tab_is_loading') as boolean[])[pk.index] = is_loading;
-
-        // Get synced lists
-        if (pk.index == tabs.main_tab_idx) {
-          sync_current_tabs_list_info(pk.storage);
-        }
-      } catch (e) {
-        console.error('[meowWebView][onPageEnd] Update bunch_of_tabs error: ' + e);
-      }
-
-      // Get and save web_state
-      tabs.update_web_state(pk.index);
-      if (window_index_of_id(tabs.my_id) == 0 && !pk.pre_restoration_stage) {
-        tabs.save_web_state_to_sandbox(pk.index);
-      }
-
-      // Save history
-      if (pk.title != '') {
-        pk.check_save_history('[onPageEnd]');
-      }
-
-      // Mark End Recovery
-      if (pk.pre_restoration_stage) {
-        pk.delayed_set_restore_ok(() => {
-          console.log('[Tabs] Restore OK for #' + pk.index + ' !');
-          (pk.storage.get('tab_restore_on_creations') as boolean[])[pk.index] = false;
-        });
-      }
-
-      determine_extra_background(pk.storage);
+      on_page_end(pk);
     })
     .onProgressChange((event) => {
-      if (!event) {
-        return;
-      }
-      let progress: number = event.newProgress;
-      if (progress == 0) {
-        return;
-      }
-
-      let tabs = pk.storage.get('bunch_of_tabs') as bunch_of_tabs;
-
-      if (pk.index >= tabs.get_tabs_count()) {
-        // If not synced, idk why but o(=•ェ•=)m
-        return;
-      }
-
-      // Ask tab to update its info
-      try {
-        let title = pk.update_title();
-        let url = pk.update_url();
-        pk.update_loading_progress(progress);
-        tabs.update_backward_forward_access();
-
-        (pk.storage.get('tab_titles') as string[])[pk.index] = title;
-        (pk.storage.get('tab_urls') as string[])[pk.index] = url;
-        (pk.storage.get('tab_loading_progresses') as number[])[pk.index] = progress;
-
-        // Get synced lists
-        if (pk.index == tabs.main_tab_idx) {
-          sync_current_tabs_list_info(pk.storage);
-        }
-      } catch (e) {
-        console.error('[meowWebView][onProgressChange] Update bunch_of_tabs error: ' + e);
-      }
-
-      // Update Input Search Box
-      // this.update_search_box_text(tab.url);
-      if (!(pk.storage.get('is_search_input_typing') as boolean) && pk.index == tabs.main_tab_idx) {
-        pk.storage.set('search_input', url_resource_to_meow(pk.url));
-        // Update Input Search Box
-      }
-
-      // Get and save web_state
-      if (!pk.pre_restoration_stage) {
-        tabs.update_web_state(pk.index);
-        if (window_index_of_id(tabs.my_id) == 0) {
-          // TODO: Reduce save web_state to sandbox frequency.
-          tabs.save_web_state_to_sandbox(pk.index);
-        }
-      }
-
-      determine_extra_background(pk.storage);
+      on_progress_change(pk, event);
     })
     .onFullScreenEnter((event) => {
       pk.storage.set('fullscreen_mode', true);
@@ -240,67 +81,8 @@ function WebBuilder(pk: tab_info_packed) {
     .onFullScreenExit(() => {
       pk.storage.set('fullscreen_mode', false);
     })
-    .onControllerAttached(async () => {
-      // bind download delegate
-      try {
-        pk.controller.setDownloadDelegate(pk.storage.get('dl_delegate') as webview.WebDownloadDelegate);
-      } catch (e) {
-        console.error('[meowWebView] onControllerAttached setDownloadDelegate error: ' + e);
-      }
-
-      // Set Default error page
-      try {
-        pk.controller.setErrorPageEnabled(true);
-      } catch (e) {
-        console.error(`[Web][setErrorPageEnabled] Failed: ${e}`)
-      }
-
-      // Set UA
-      let now_global_custom_UA = AppStorage.get('universal_global_custom_ua_gateway') as string;
-      if (now_global_custom_UA != "") {
-        try {
-          pk.controller.setCustomUserAgent(now_global_custom_UA);
-        } catch (e) {
-          console.error('[meowWebView] onControllerAttached setCustomUserAgent error: ' + e);
-        }
-      }
-
-      // Set Ads Blocker
-      let use_adblock = AppStorage.get('use_adblock') as boolean;
-      console.log('[meowWebView] enableAdsBlock: ' + (use_adblock ? 'true' : 'false'));
-      try {
-        pk.controller.enableAdsBlock(use_adblock);
-        console.info('[meowWebView] onControllerAttached enableAdsBlock! [' + pk.url + ']');
-      } catch (e) {
-        console.error('[meowWebView] onControllerAttached enableAdsBlock error: ' + e);
-      }
-
-      // Set Ads Blocker exception list
-      try {
-        let adblock_exceptions = AppStorage.get('adblock_exceptions') as string[];
-        console.log('[init][meowWebView] Trying to add ads blocker exceptions: [' + adblock_exceptions + '] Operated by meowWebView ~');
-        // webview.AdsBlockManager.addAdsBlockDisallowedList(adblock_exceptions);
-        webview.AdsBlockManager.addAdsBlockDisallowedList(Array.from(adblock_exceptions)); // wtf??? why???
-      } catch (e) {
-        console.error('[ERROR][Meow][meowWebView] add Ads Blocker Exceptions error: ' + e);
-      }
-      // TODO: Find out why this doesn't work sometimes for a recovered webpage :O getting crazy
-
-      // Set intelligent tracking prevention
-      try {
-        let intelligent_tracking_prevention = AppStorage.get('intelligent_tracking_prevention') as boolean;
-        pk.controller.enableIntelligentTrackingPrevention(intelligent_tracking_prevention);
-        console.log('[meowWebView] ArkWeb Intelligent Tracking Prevention ' + intelligent_tracking_prevention.toString() + '!');
-      } catch (e) {
-        console.error('[meowWebView] onControllerAttached enableIntelligentTrackingPrevention error: ' + e);
-      }
-
-      let tabs = pk.storage.get('bunch_of_tabs') as bunch_of_tabs;
-
-      // Restore Web State
-      if (pk.index == tabs.main_tab_idx || pk.index == tabs.sub_tab_idx) {
-        pk.restore();
-      }
+    .onControllerAttached(() => {
+      on_controller_attached(pk);
     })
     .onAdsBlocked((e) => {
       console.log(`[onAdsBlocked] ${e.url}: ${e.adsBlocked}`);

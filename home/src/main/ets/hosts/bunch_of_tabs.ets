@@ -692,7 +692,7 @@ export class tab_info_packed {
   delayed_set_restore_ok(action?: () => void) {
     setTimeout(() => {
       this.pre_restoration_stage = false;
-      console.log(`[tab_info_packed] pack: ${this.url}, this.pre_restoration_stage = false!`);
+      console.log(`[delayed_set_restore_ok] pack: ${this.url}, this.pre_restoration_stage = false!`);
       if (action) {
         try {
           action();

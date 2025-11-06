@@ -773,7 +773,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "功能：拖拽 HyperLink 进入标签页面板可以直接打开！\n改进：优化了许多用户体验细节，例如历史面板中的搜索输入自动聚焦；\n修复：几十个小错误；\n改进：显著优化空闲时 CPU 占用！"
+      "value": "功能：在 设置 - 安全 - 曲奇饼干 中可以选择允许第三方 Cookies，这样就可以使用 Google 登录了！\n功能：支持 EasyList 规则！\n功能：拖拽 HyperLink 进入标签页面板可以直接打开！\n改进：优化了许多用户体验细节，例如历史面板中的搜索输入自动聚焦；\n修复：几十个小错误；\n改进：显著优化空闲时 CPU 占用！"
     },
     {
       "name": "Whats_new_content_extra",
@@ -886,6 +886,10 @@
     {
       "name": "intelligent_tracking_prevention",
       "value": "方舟智能防跟踪"
+    },
+    {
+      "name": "enable_third_party_cookies",
+      "value": "允许第三方 Cookies"
     },
     {
       "name": "intelligent_tracking_prevention_desc",

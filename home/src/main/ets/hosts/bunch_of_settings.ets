@@ -46,6 +46,7 @@ export class bunch_of_settings {
     bunch_of_settings.register_setting('new_tab_url', 'string', '');
     bunch_of_settings.register_setting('start_up_option', 'string', 'new tab');
     bunch_of_settings.register_setting('intelligent_tracking_prevention', 'boolean', 'false');
+    bunch_of_settings.register_setting('enable_third_party_cookies', 'boolean', 'false');
     bunch_of_settings.register_setting('continue_tabs_count', 'number', '0');
     bunch_of_settings.register_setting('continue_tabs_main_on', 'number', '0');
     bunch_of_settings.register_setting('continue_tabs_sub_on', 'number', '-1');

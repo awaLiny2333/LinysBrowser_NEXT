@@ -145,6 +145,7 @@ struct meowAppSettings {
   @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
   @StorageLink('collect_new_history') collect_new_history: boolean = true;
   @StorageLink('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
+  @StorageLink('enable_third_party_cookies') enable_third_party_cookies: boolean = false;
   @StorageLink('disable_js') disable_js: boolean = true;
   @StorageLink('disable_js_these_sites') disable_js_these_sites: string[] = [];
   @StorageLink('disable_js_all_sites') disable_js_all_sites: boolean = false;
@@ -978,7 +979,7 @@ struct meowAppSettings {
                           this.bunch_of_tabs.Tabs[index].controller.enableIntelligentTrackingPrevention(this.intelligent_tracking_prevention);
                           console.log('[Meow][meowAppSettings] Intelligent Tracking Prevention now ' + this.intelligent_tracking_prevention.toString() + '!')
                         } catch (e) {
-                          console.log('[Meow][meowAppSettings] Toggle Intelligent Tracking Prevention Failed! ' +
+                          console.error('[Meow][meowAppSettings] Toggle Intelligent Tracking Prevention Failed! ' +
                             'But perhaps this doesn\'t really matter?')
                           // In most cases this fails on app launch, because the webViews are not initialized.
                           // If the user has set this settings to true, then this will be triggered since the default is false
@@ -990,6 +991,19 @@ struct meowAppSettings {
                       }
                     }
                   }) // Intelligent tracking prevention
+                  linysSwitchWithText({
+                    text: $r('app.string.enable_third_party_cookies'),
+                    toggle_state: this.enable_third_party_cookies,
+                    onExecution: () => {
+                      bunch_of_settings.set('enable_third_party_cookies', this.enable_third_party_cookies);
+                      try {
+                        webview.WebCookieManager.putAcceptThirdPartyCookieEnabled(this.enable_third_party_cookies);
+                        console.log('[Meow][meowAppSettings] enable_third_party_cookies now ' + this.enable_third_party_cookies + '!')
+                      } catch (e) {
+                        console.error('[Meow][meowAppSettings] Toggle enable_third_party_cookies Failed! '+e);
+                      }
+                    }
+                  }) // enable_third_party_cookies
 
                   linysCapsuleButtonWithText({
                     desc_text: $r('app.string.Settings_manage_cookies'),

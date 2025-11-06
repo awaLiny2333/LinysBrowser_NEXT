@@ -257,6 +257,7 @@ async function settings(storage: LocalStorage) {
   AppStorage.setOrCreate('start_up_option', start_up_option);
 
   AppStorage.setOrCreate('intelligent_tracking_prevention', bunch_of_settings.get('intelligent_tracking_prevention') as boolean);
+  AppStorage.setOrCreate('enable_third_party_cookies', bunch_of_settings.get('enable_third_party_cookies') as boolean);
 
   // General - Homepage
   AppStorage.setOrCreate('homepage_shortcuts_init_height', bunch_of_settings.get('homepage_shortcuts_init_height') as number);

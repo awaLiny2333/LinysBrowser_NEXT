@@ -774,7 +774,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "feat: HyperLinks dragged into Tabs panel would be directly opened!\nImprove: improved many details for user experience, e.g. auto focus on search input in History panel;\nFix: tens of minor bugs;\nImprove: Significant optimization of CPU usage when idle!"
+      "value": "feat: Can now allow 3rd party cookies in Settings - Security - Cookies so that Log In with Google can work!\nfeat: Support for EasyList rules!\nfeat: HyperLinks dragged into Tabs panel would be directly opened!\nImprove: improved many details for user experience, e.g. auto focus on search input in History panel;\nFix: tens of minor bugs;\nImprove: Significant optimization of CPU usage when idle!"
     },
     {
       "name": "Whats_new_content_extra",
@@ -887,6 +887,10 @@
     {
       "name": "intelligent_tracking_prevention",
       "value": "ArkWeb Intelligent Tracking Prevention"
+    },
+    {
+      "name": "enable_third_party_cookies",
+      "value": "Allow Third Party Cookies"
     },
     {
       "name": "intelligent_tracking_prevention_desc",

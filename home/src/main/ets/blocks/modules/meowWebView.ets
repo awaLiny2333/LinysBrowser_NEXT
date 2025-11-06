@@ -24,6 +24,7 @@ import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResou
 import lazy woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
 import lazy linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
+import { init_web } from '../../processes/web_actions';
 
 @Component
 struct meowWebView {
@@ -228,12 +229,8 @@ struct meowWebView {
           middle: { anchor: '__container__', align: HorizontalAlign.Center },
         })
         .onAppear(() => {
-          // Init download delegate
-          this.bunch_of_downloads.init_delegate(this.storage);
-
-          // init OK
           this.on_current_url_change();
-
+          // init OK
           this.init_OK = true;
         })
       }
@@ -244,6 +241,7 @@ struct meowWebView {
     .height("100%")
     .onAppear(() => {
       // console.log("[Meow][meowWebView] WebViews READY")
+      init_web(this.storage);
       this.my_opacity = 1;
       console.log(`[Meow][meowWebView] onAppear! (${run_time(this.storage)} ms)`);
     })
