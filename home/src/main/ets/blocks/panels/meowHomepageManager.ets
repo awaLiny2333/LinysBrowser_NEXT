@@ -10,8 +10,6 @@ import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutBut
 
 @Component
 struct meowHomepageManager {
-  // States
-  @State homepage_background_delete_confirm: number = 0;
   // Gateways
   @LocalStorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
   // Environments
@@ -50,14 +48,6 @@ struct meowHomepageManager {
       }) // Homepage background delete
     }
     .alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
-    .onAppear(() => {
-      setInterval(() => {
-        if (this.homepage_background_delete_confirm > 0) {
-          this.homepage_background_delete_confirm -= 1;
-        }
-        // Reset homepage_background_delete_confirm
-      }, 10)
-    })
   }
 
   /**

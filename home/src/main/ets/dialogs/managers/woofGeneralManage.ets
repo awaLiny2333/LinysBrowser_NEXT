@@ -43,7 +43,6 @@ struct woofGeneralManage {
   @State @Watch('on_select_change') selected: boolean[] = all_false(this.sites_list.length);
   @State selecting: boolean = false;
   @State selected_number: number = 0;
-  @State delete_confirm: number = 0;
   // alignRules
   alignRules_head_non_tablet: AlignRuleOption = {
     top: { anchor: "__container__", align: VerticalAlign.Top },
@@ -324,14 +323,6 @@ struct woofGeneralManage {
         .animation(animation_default())
         .width(this.tablet_mode ? "40%" : "100%")
         .id("controls")
-        .onAppear(() => {
-          setInterval(() => {
-            if (this.delete_confirm > 0) {
-              this.delete_confirm -= 1;
-            }
-            // Reset delete confirm
-          }, 10)
-        })
 
       }.layoutWeight(1)
     }
@@ -346,7 +337,6 @@ struct woofGeneralManage {
     } else {
       this.selecting = false;
     }
-    this.delete_confirm = 0;
   }
 
   /**
@@ -406,7 +396,6 @@ struct woofGeneralManage {
       this.onDelete(delete_exceptions, new_exceptions);
     }
     this.sites_list = new_exceptions;
-    this.delete_confirm = 0;
     this.selecting = false;
     this.selected_number = 0;
     this.selected = all_false(this.sites_list.length);

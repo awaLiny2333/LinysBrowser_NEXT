@@ -30,6 +30,7 @@ import lazy { get_sandbox_folder_size } from '../../utils/any_concurrent_tools';
 import lazy { new_window, storage_of_id } from '../../utils/ui_tools';
 import lazy { common } from '@kit.AbilityKit';
 import lazy { webview } from '@kit.ArkWeb';
+import lazy { activate_mix_audio_session } from '../../utils/audio_tools';
 import bundleManager from '@ohos.bundle.bundleManager';
 import meowSEManager from '../panels/meowSEManager';
 import meowUAManager from '../panels/meowUAManager';
@@ -56,7 +57,7 @@ import lazy woofRecentFaultLogs from '../../dialogs/contents/woofRecentFaultLogs
 import lazy woofUpdateHistory from '../../dialogs/contents/woofUpdateHistory';
 import lazy woofPromptOK from '../../dialogs/prompts/woofPromptOK';
 import lazy woofHistory from '../../dialogs/managers/woofHistory';
-import woofEasyList from '../../dialogs/managers/woofEasylist';
+import lazy woofEasyList from '../../dialogs/managers/woofEasylist';
 
 @Reusable
 @Component
@@ -1235,8 +1236,8 @@ struct meowAppSettings {
                         webview.WebviewController.trimMemoryByPressureLevel(webview.PressureLevel.MEMORY_PRESSURE_LEVEL_CRITICAL);
                       })
                     linysCapsuleButton({
-                      text: 'Load Easy List'
-                    })
+                      text: 'Overwrite Easy List'
+                    }) // Load Easy List
                       .onClick(() => {
                         document_pick_to_uri(['txt']).then(result => {
                           if (!result) {
@@ -1251,6 +1252,13 @@ struct meowAppSettings {
                             this.uni_fail_prompt_gateway = e.toString();
                           }
                         });
+                      })
+
+                    linysCapsuleButton({
+                      text: 'Enable Mix Audio'
+                    }) // Enable mix audio
+                      .onClick(() => {
+                        activate_mix_audio_session();
                       })
                   }
                 }
