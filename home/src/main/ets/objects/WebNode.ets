@@ -1,7 +1,7 @@
 import { BuilderNode, FrameNode, NodeController, UIContext } from '@kit.ArkUI';
 import { bunch_of_tabs, tab_info_packed } from '../hosts/bunch_of_tabs';
-import { is_web_page, match_domain, url_meow_to_resource, viewable_domains } from '../utils/url_tools';
-import { on_controller_attached, on_new_window, on_page_begin, on_page_end, on_progress_change, on_title_receive } from '../processes/web_actions';
+import { url_meow_to_resource } from '../utils/url_tools';
+import { on_controller_attached, on_load_intercept, on_new_window, on_page_begin, on_page_end, on_progress_change, on_title_receive } from '../processes/web_actions';
 import lazy { hilog } from '@kit.PerformanceAnalysisKit';
 
 export const defaultUrl: string = 'https://www.example.com';
@@ -44,7 +44,7 @@ function WebBuilder(pk: tab_info_packed) {
       tabs.workingMainTab().searching_keyword_stats_total = result.numberOfMatches;
     })
     .onWindowNew((event) => {
-      on_new_window(pk,event);
+      on_new_window(pk, event);
     })
     .onTitleReceive(() => {
       on_title_receive(pk);
@@ -75,29 +75,7 @@ function WebBuilder(pk: tab_info_packed) {
       console.log(`[onAdsBlocked] ${e.url}: ${e.adsBlocked}`);
     })
     .onLoadIntercept((event) => {
-      let intercept = false;
-      if (event) {
-        let url: string = event.data.getRequestUrl();
-        if (url.substring(0, 5) == 'data:') {
-          // Do not intercept data:
-          intercept = false;
-        } else if (url.substring(0, 5) == 'blob:') {
-          // Do not intercept blob:
-          intercept = false;
-        } else if (viewable_domains().includes(match_domain(url)[0])) {
-          // Viewable Links or urls
-          intercept = false;
-        } else {
-          // Not viewable, perhaps is a link that can jump?
-          pk.storage.set('potential_jump_link', url);
-          intercept = true;
-        }
-        // Determine web settings
-        if (!intercept) {
-          pk.update_url();
-        }
-      }
-      return intercept;
+      return on_load_intercept(pk, pk.storage, event);
     })
     .onPermissionRequest((event) => {
       if (!event) {

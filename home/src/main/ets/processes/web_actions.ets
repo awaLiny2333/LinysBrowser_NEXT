@@ -5,7 +5,7 @@ import lazy { webview } from '@kit.ArkWeb';
 import lazy { bunch_of_tabs, tab_info_packed } from '../hosts/bunch_of_tabs';
 import lazy { determine_extra_background, sync_current_tabs_list_info } from './tabs_actions';
 import lazy { window_index_of_id } from '../utils/ui_tools';
-import lazy { is_web_page, url_resource_to_meow } from '../utils/url_tools';
+import lazy { is_web_page, match_domain, url_resource_to_meow, viewable_domains } from '../utils/url_tools';
 import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 
 // Ads Blocker
@@ -196,6 +196,7 @@ export function on_page_end(pk: tab_info_packed) {
 /**
  * Should be called when a tab has a change on its progress.
  * @param pk The tab_info_packed.
+ * @param event The OnProgressChangeEvent.
  * */
 export function on_progress_change(pk: tab_info_packed, event: OnProgressChangeEvent) {
   if (!event) {
@@ -318,6 +319,47 @@ export function on_controller_attached(pk: tab_info_packed) {
   }
 }
 
+/**
+ * Should be called when a tab is about to intercept a loading request.
+ *
+ * For a Web in main window, the pk field is required. For a Web in a popup, please ignore pk.
+ *
+ * @param pk The tab_info_packed.
+ * @param storage The LocalStorage.
+ * @param event The OnLoadInterceptEvent.
+ * */
+export function on_load_intercept(pk: tab_info_packed | undefined, storage: LocalStorage, event: OnLoadInterceptEvent) {
+  let intercept = false;
+  if (event) {
+    let url: string = event.data.getRequestUrl();
+    if (url.substring(0, 5) == 'data:') {
+      // Do not intercept data:
+      intercept = false;
+    } else if (url.substring(0, 5) == 'blob:') {
+      // Do not intercept blob:
+      intercept = false;
+    } else if (viewable_domains().includes(match_domain(url)[0])) {
+      // Viewable Links or urls
+      intercept = false;
+    } else {
+      // Not viewable, perhaps is a link that can jump?
+      storage.set('potential_jump_link', url);
+      intercept = true;
+    }
+    // Determine web settings
+    if (!intercept) {
+      pk?.update_url();
+    }
+  }
+  return intercept;
+}
+
+/**
+ * Should be called when a new window is called.
+ *
+ * @param pk The tab_info_packed.
+ * @param event The OnWindowNewEvent.
+ */
 export function on_new_window(pk: tab_info_packed, event: OnWindowNewEvent) {
   // TODO: Find out why this triggers twice when click once
   let new_target_url = event.targetUrl;
@@ -336,19 +378,7 @@ export function on_new_window(pk: tab_info_packed, event: OnWindowNewEvent) {
   } else {
     // Open new tab
     if (event.isAlert) {
-      console.log('[meowWebView] Is an Alert! Looking for existing dialogs!');
-      try {
-        let tabs = pk.storage.get('bunch_of_tabs') as bunch_of_tabs;
-        for (let index = 0; index < tabs.Tabs.length; index++) {
-          if (tabs.Tabs[index].is_dialog) {
-            console.error(`[on_new_window] Found an existing dialog! Load URL (${new_target_url}) on that tab...`);
-            // tabs.Tabs[index].controller.loadUrl(new_target_url);
-            // need_new_tab = false;
-          }
-        }
-      } catch (e) {
-        console.error('[on_new_window] Look for existing dialog failed! ' + e);
-      }
+      console.log('[meowWebView] Is an Alert!');
     }
     // Open new tab
     if (need_new_tab) {

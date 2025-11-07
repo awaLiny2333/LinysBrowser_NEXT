@@ -27,10 +27,9 @@ import { history_index_full_rebuild_worker } from '../../hosts/bunch_of_history_
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import lazy { get_sandbox_folder_size } from '../../utils/any_concurrent_tools';
-import lazy { new_window, storage_of_id } from '../../utils/ui_tools';
+import lazy { createSubWindow, destroySubWindow, new_window, storage_of_id } from '../../utils/ui_tools';
 import lazy { common } from '@kit.AbilityKit';
 import lazy { webview } from '@kit.ArkWeb';
-import lazy { activate_mix_audio_session } from '../../utils/audio_tools';
 import bundleManager from '@ohos.bundle.bundleManager';
 import meowSEManager from '../panels/meowSEManager';
 import meowUAManager from '../panels/meowUAManager';
@@ -1001,7 +1000,7 @@ struct meowAppSettings {
                         webview.WebCookieManager.putAcceptThirdPartyCookieEnabled(this.enable_third_party_cookies);
                         console.log('[Meow][meowAppSettings] enable_third_party_cookies now ' + this.enable_third_party_cookies + '!')
                       } catch (e) {
-                        console.error('[Meow][meowAppSettings] Toggle enable_third_party_cookies Failed! '+e);
+                        console.error('[Meow][meowAppSettings] Toggle enable_third_party_cookies Failed! ' + e);
                       }
                     }
                   }) // enable_third_party_cookies
@@ -1255,10 +1254,17 @@ struct meowAppSettings {
                       })
 
                     linysCapsuleButton({
-                      text: 'Enable Mix Audio'
+                      text: 'Open Subwindow'
                     }) // Enable mix audio
                       .onClick(() => {
-                        activate_mix_audio_session();
+                        this.storage.setOrCreate('universal_popup_tab_gateway', 'huawei.com');
+                        createSubWindow(this.storage, 'Meow~~!!', this.getUIContext());
+                      })
+                    linysCapsuleButton({
+                      text: 'Destroy Subwindow'
+                    }) // Enable mix audio
+                      .onClick(() => {
+                        destroySubWindow(this.storage);
                       })
                   }
                 }

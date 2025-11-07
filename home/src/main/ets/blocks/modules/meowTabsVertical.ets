@@ -4,7 +4,7 @@ import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { sandbox_read_arrayBuffer_sync, sandbox_read_text_sync, sandbox_unlink_sync } from '../../utils/storage_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { check_want } from '../../utils/want_tools';
-import { run_time, storage_of_id, storage_of_index, window_index_of_id } from '../../utils/ui_tools';
+import { createSubWindow, is_subwindow_opened, run_time, storage_of_id, storage_of_index, window_index_of_id } from '../../utils/ui_tools';
 import lazy { drop_to_scratching_board } from '../../utils/drag_drop_tools';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysText from '../../components/texts/linysText';
@@ -320,7 +320,7 @@ struct meowTabsVertical {
    * @param is_dialog if set true, then this is considered a dialog. One BrowserCat window can only own one dialog and all new opens of dialogs are loaded on THAT tab.
    * @description While if new_tab_url is also not set ("" or undefined), then will load the url_default_blank().
    * */
-  new_tab(target_url: string, save_to_settings: boolean, is_from_receive: boolean, init_state?: Uint8Array, placeholder_label?: string, is_dialog?: boolean) {
+  new_tab(target_url: string, save_to_settings: boolean, is_from_receive: boolean, init_state?: Uint8Array, placeholder_label?: string) {
     let t0 = Date.now();
 
     this.last_tab_index = this.bunch_of_tabs.main_tab_idx; // Remember last tab
@@ -329,7 +329,7 @@ struct meowTabsVertical {
     if (is_from_receive) {
       this.bunch_of_tabs.receive_tab(this.storage);
     } else {
-      this.bunch_of_tabs.newTab(this.getUIContext(), target_url, init_state, placeholder_label, is_dialog);
+      this.bunch_of_tabs.newTab(this.getUIContext(), target_url, init_state, placeholder_label);
     }
 
     // Get synced lists
@@ -583,24 +583,39 @@ struct meowTabsVertical {
   }
 
   uni_new_tab() {
-    // console.log('qwq_new_tab')
-    let tab = this.new_tab_gateway;
-    console.log(`[meowTabsVertical][uni_new_tab] url=${this.new_tab_gateway}!`);
+    // console.log('qwq_new_tab');
+    let url = this.new_tab_gateway[0] as string;
+    let is_popup = this.new_tab_gateway[1] as boolean;
 
-    if (tab[0] as string == "") {
+    // Intercept
+    if (url == "" || url == this.last_tab_gateway_url) {
+      console.warn(`[meowTabsVertical][uni_new_tab] INTERCEPTED url=${url}, last_tab_gateway_url=${this.last_tab_gateway_url}, isAlert=${is_popup}!`);
       return;
+    } else {
+      console.log(`[meowTabsVertical][uni_new_tab] url=${url}, last_tab_gateway_url=${this.last_tab_gateway_url}, isAlert=${is_popup}!`);
     }
 
-    if (tab[0] as string == this.last_tab_gateway_url) {
-      return;
+    if (url == "new_tab") {
+      url = ""
     }
 
-    if (tab[0] as string == "new_tab") {
-      tab[0] = ""
+
+    let is_free_window_mode = AppStorage.get('free_window_mode') as boolean;
+    console.log(`[uni_new_tab] free_window_mode: ${is_free_window_mode}`)
+
+    if (is_popup && is_free_window_mode) {
+      this.storage.setOrCreate('universal_popup_tab_gateway', url);
+      if (is_subwindow_opened(this.storage)) {
+        // Do nothing;
+      } else {
+        // Open window;
+        createSubWindow(this.storage, 'meow', this.getUIContext());
+      }
+    } else {
+      this.new_tab(url, true, false, undefined, undefined);
     }
 
-    this.new_tab(tab[0] as string, true, false, undefined, undefined, tab[1] as boolean);
-    this.last_tab_gateway_url = tab[0] as string;
+    this.last_tab_gateway_url = url;
     this.new_tab_gateway = ["", false];
 
     clearTimeout(this.last_tab_gateway_reset_timeout_id);

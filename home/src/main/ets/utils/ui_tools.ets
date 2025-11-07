@@ -3,7 +3,7 @@ import { BusinessError, deviceInfo, settings } from '@kit.BasicServicesKit';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { AbilityConstant, common, Want } from '@kit.AbilityKit';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
-import { meowPx2vp } from './environment_tools';
+import { meowContext, meowPx2vp } from './environment_tools';
 import { default_window_decor_height } from '../hosts/bunch_of_defaults';
 
 // Statuses
@@ -508,4 +508,131 @@ export function change_window_alias(id: string, alias: string) {
     bunch_of_settings.set('my_window_alias_last', alias);
     AppStorage.set('LAST_WINDOW_WINDOW_NAME', alias);
   }
+}
+
+// Sub window
+
+/**
+ * Checks if a subwindow is already there.
+ * @param storage The LocalStorage.
+ * @returns True or false.
+ * */
+export function is_subwindow_opened(storage: LocalStorage) {
+  if (storage.get('sub_windowClass') as window.Window) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+/**
+ * Creates a sub window of web view.
+ * @param storage The LocalStorage.
+ * @param title The title of window.
+ * */
+export function createSubWindow(storage: LocalStorage, title: string, context: UIContext) {
+  // Only allow one sub window for one BrowserCat window.
+  if (is_subwindow_opened(storage)) {
+    console.error('[createSubWindow] Failed to create the subwindow. Cause: exist one subwindow already!');
+    return;
+  }
+
+  // Get windowStage
+  // 1. Create sub window
+  let windowStage_ = windowStage_of_id(storage.get('my_window_id') as string);
+  if (windowStage_ == null) {
+    console.error('[createSubWindow] Failed to create the subwindow. Cause: windowStage_ is null');
+    return;
+  }
+
+  windowStage_.createSubWindowWithOptions(title, { decorEnabled: true, title: title, maximizeSupported: true })
+    .catch((err: BusinessError) => {
+      let errCode: number = err.code;
+      if (errCode) {
+        console.error(`[createSubWindow] Failed to create the subwindow. Cause: ${err.name}, ${err.code}, ${err.message}`);
+        return;
+      }
+    })
+    .then((data) => {
+
+      let sub_windowClass = data;
+
+      if (!sub_windowClass) {
+        console.error('[createSubWindow] sub_windowClass is null');
+        return;
+      }
+      console.info('[createSubWindow] Succeeded in creating the subwindow. Data: ' + JSON.stringify(data));
+
+      // 2. Set properties.
+      sub_windowClass.moveWindowTo(300, 300, (err: BusinessError) => {
+        let errCode: number = err.code;
+        if (errCode) {
+          console.error('[createSubWindow] Failed to move the window. Cause:' + JSON.stringify(err));
+          return;
+        }
+        console.info('[createSubWindow] Succeeded in moving the window.');
+      });
+
+      sub_windowClass.resize(context.vp2px(1024), context.vp2px(1024), (err: BusinessError) => {
+        let errCode: number = err.code;
+        if (errCode) {
+          console.error('[createSubWindow] Failed to change the window size. Cause:' + JSON.stringify(err));
+          return;
+        }
+        console.info('[createSubWindow] Succeeded in changing the window size.');
+      });
+      sub_windowClass.setResizeByDragEnabled(true).catch((err: BusinessError) => {
+        console.error(`[createSubWindow] Failed to setResizeByDragEnabled(true). Cause: ${err.name}, ${err.code}, ${err.message}`);
+      });
+
+      // 3. Load target page.
+      sub_windowClass.loadContent("pages/Popup", storage, (err: BusinessError) => {
+        let errCode: number = err.code;
+        if (errCode) {
+          console.error(`[createSubWindow] Failed to setUIContent. Cause: ${err.name}, ${err.code}, ${err.message}`);
+          return;
+        }
+        console.info('[createSubWindow] Succeeded in loading the content.');
+        if (!sub_windowClass) {
+          console.error('[createSubWindow] sub_windowClass is null');
+          return;
+        }
+
+        // Show.
+        sub_windowClass.showWindow((err: BusinessError) => {
+          let errCode: number = err.code;
+          if (errCode) {
+            console.error('[createSubWindow] Failed to show the window. Cause: ' + JSON.stringify(err));
+            return;
+          }
+
+          console.info('[createSubWindow] Succeeded in showing the window.');
+          // Store to window LocalStorage
+          storage.setOrCreate('sub_windowClass', sub_windowClass);
+        });
+      });
+    })
+}
+
+/**
+ * Destroys the sub window;
+ * @param storage The LocalStorage.
+ * */
+export function destroySubWindow(storage: LocalStorage) {
+  let sub_windowClass = storage.get('sub_windowClass') as window.Window;
+
+  if (!sub_windowClass) {
+    console.error('[destroySubWindow] sub_windowClass is null');
+    return;
+  }
+  // 4. Destroy.
+  sub_windowClass.destroyWindow((err: BusinessError) => {
+    let errCode: number = err.code;
+    if (errCode) {
+      console.error('[destroySubWindow] Failed to destroy the window. Cause: ' + JSON.stringify(err));
+      return;
+    }
+    storage.setOrCreate('sub_windowClass', undefined);
+    console.info('[destroySubWindow] Succeeded in destroying the window.');
+  });
 }

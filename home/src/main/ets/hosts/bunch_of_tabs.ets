@@ -267,8 +267,8 @@ export class bunch_of_tabs {
    * @returns A number, the index of the new tab.
    * @description While if new_tab_url is also not set ("" or undefined), then will load the url_default_blank().
    * */
-  newTab(context: UIContext, target_url: string, init_state?: Uint8Array, placeholder_label?: string, is_dialog?: boolean) {
-    console.log(`[bunch_of_tabs] newTab: url=${target_url}, isAlert=${is_dialog}.`);
+  newTab(context: UIContext, target_url: string, init_state?: Uint8Array, placeholder_label?: string) {
+    console.log(`[bunch_of_tabs] newTab: url=${target_url}`);
     if (target_url == "") {
       // If newing an empty tab
       if (bunch_of_tabs.new_tab_url == "" || bunch_of_tabs.new_tab_url == undefined) {
@@ -281,7 +281,7 @@ export class bunch_of_tabs {
     }
 
     let idx = this.Tabs.length;
-    let new_TabInfo: tab_info_packed = new tab_info_packed(placeholder_label || 'Meow', target_url, storage_of_id(this.my_id), idx, init_state, is_dialog);
+    let new_TabInfo: tab_info_packed = new tab_info_packed(placeholder_label || 'Meow', target_url, storage_of_id(this.my_id), idx, init_state);
     let Date_ID = Date.now();
 
     // TODO: IS THIS EFFICIENT ENOUGH?
@@ -586,7 +586,6 @@ export class tab_info_packed {
   title: string = '';
   url: string = '';
   index: number = -1;
-  is_dialog: boolean = false;
   // Settings
   tab_force_dark: boolean = false;
   tab_disable_js: boolean = false;
@@ -612,7 +611,7 @@ export class tab_info_packed {
    * @param link A string, the initial link when the tab is created.
    * @param restore_on_creation A boolean, optional, will restore web state on creation if the index in valid.
    */
-  constructor(title: string, url: string, storage: LocalStorage, index: number, init_state?: Uint8Array, is_dialog?: boolean) {
+  constructor(title: string, url: string, storage: LocalStorage, index: number, init_state?: Uint8Array) {
     this.storage = storage;
     this.controller = new webview.WebviewController();
     this.index = index;
@@ -624,9 +623,6 @@ export class tab_info_packed {
     if (init_state) {
       console.log(`[tab_info_packed] New pack: ${url}, this.pre_restoration_stage = true!`);
       this.pre_restoration_stage = true;
-    }
-    if (is_dialog) {
-      this.is_dialog = true;
     }
   }
 
