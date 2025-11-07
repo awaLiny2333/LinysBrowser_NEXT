@@ -489,7 +489,7 @@ struct meowRelation {
   @Prop scroll_area_height: number;
   @Prop human_time: string = new Date(this.record.accessed_time).toLocaleString();
   // Gateways
-  @LocalStorageLink('universal_new_tab_gateway') universal_new_tab_gateway: string = "";
+  @LocalStorageLink('universal_new_tab_gateway') universal_new_tab_gateway: (string | boolean)[] = ['', false];
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -532,7 +532,7 @@ struct meowRelation {
         this.select_unselect();
         return;
       }
-      this.universal_new_tab_gateway = this.record.link;
+      this.universal_new_tab_gateway = [this.record.link, false];
       if (this.controller) {
         this.showing_app_settings = false;
         this.controller.close();

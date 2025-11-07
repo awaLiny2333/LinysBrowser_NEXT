@@ -153,7 +153,7 @@ struct data_display {
   // Environment
   @LocalStorageLink('my_window_id') my_window_id: string = '';
   storage: LocalStorage = storage_of_id(this.my_window_id);
-  @LocalStorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
+  @LocalStorageLink('universal_new_tab_gateway') new_tab_gateway: (string | boolean)[] = ['', false];
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @LocalStorageProp('screen_width') screen_width: number = 0;
   // Colors
@@ -392,7 +392,7 @@ struct data_display {
    * @param link the link of new tab
    * */
   open_url(url: string) {
-    this.new_tab_gateway = url;
+    this.new_tab_gateway = [url, false];
     this.showing_scratching_board = false;
   }
 

@@ -5,7 +5,7 @@ import lazy { webview } from '@kit.ArkWeb';
 import lazy { bunch_of_tabs, tab_info_packed } from '../hosts/bunch_of_tabs';
 import lazy { determine_extra_background, sync_current_tabs_list_info } from './tabs_actions';
 import lazy { window_index_of_id } from '../utils/ui_tools';
-import lazy { url_resource_to_meow } from '../utils/url_tools';
+import lazy { is_web_page, url_resource_to_meow } from '../utils/url_tools';
 import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 
 // Ads Blocker
@@ -316,4 +316,45 @@ export function on_controller_attached(pk: tab_info_packed) {
   if (pk.index == tabs.main_tab_idx || pk.index == tabs.sub_tab_idx) {
     pk.restore();
   }
+}
+
+export function on_new_window(pk: tab_info_packed, event: OnWindowNewEvent) {
+  // TODO: Find out why this triggers twice when click once
+  let new_target_url = event.targetUrl;
+  console.info(`[Meow][onWindowNew] isAlert=${event.isAlert}, targetUrl=${event.targetUrl}`);
+  let need_new_tab = true;
+
+  if (!is_web_page(new_target_url)) {
+    // Is a download, intercept!
+    console.log('[meowWebView] Intercepted new window request for a potential download!');
+    try {
+      pk.controller.startDownload(new_target_url);
+      need_new_tab = false;
+    } catch (e) {
+      console.error('[meowWebView] webview.WebviewController.startDownload failed! Giving back control to new tab...');
+    }
+  } else {
+    // Open new tab
+    if (event.isAlert) {
+      console.log('[meowWebView] Is an Alert! Looking for existing dialogs!');
+      try {
+        let tabs = pk.storage.get('bunch_of_tabs') as bunch_of_tabs;
+        for (let index = 0; index < tabs.Tabs.length; index++) {
+          if (tabs.Tabs[index].is_dialog) {
+            console.error(`[on_new_window] Found an existing dialog! Load URL (${new_target_url}) on that tab...`);
+            // tabs.Tabs[index].controller.loadUrl(new_target_url);
+            // need_new_tab = false;
+          }
+        }
+      } catch (e) {
+        console.error('[on_new_window] Look for existing dialog failed! ' + e);
+      }
+    }
+    // Open new tab
+    if (need_new_tab) {
+      console.log('[meowWebView] New tab in new window!');
+      pk.storage.set('universal_new_tab_gateway', [new_target_url, event.isAlert]);
+    }
+  }
+  event.handler.setWebController(null);
 }

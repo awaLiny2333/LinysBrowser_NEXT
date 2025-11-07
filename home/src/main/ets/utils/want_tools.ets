@@ -24,12 +24,12 @@ export function check_want(uri: string, action: string, type: string, storage: L
 
 function want_file(uri: string, storage: LocalStorage) {
   console.log('[Meow][Want] Want uri is [' + uri + '].');
-  storage.set('universal_new_tab_gateway', uri);
+  storage.set('universal_new_tab_gateway', [uri, false]);
 }
 
 function want_web(action: string, uri: string, storage: LocalStorage) {
   if (action == 'ohos.want.action.viewData') {
     console.log('[Meow][want] Load want uri: ' + uri);
-    storage.set('universal_new_tab_gateway', uri);
+    storage.set('universal_new_tab_gateway', [uri, false]);
   }
 }

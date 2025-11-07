@@ -125,7 +125,7 @@ struct goodByeLink {
   @Prop max_lines: number = 1;
   @Prop font_weight: FontWeight = FontWeight.Regular;
   @State link: string = "huawei.com";
-  @LocalStorageLink('universal_new_tab_gateway') universal_new_tab_gateway: string = "";
+  @LocalStorageLink('universal_new_tab_gateway') universal_new_tab_gateway: (string | boolean)[] = ['', false];
   // This is for status noticing
   @Link meow: boolean;
 
@@ -142,7 +142,7 @@ struct goodByeLink {
         // Reverse meow to trigger something
         this.meow = !this.meow;
         // New tab!
-        this.universal_new_tab_gateway = this.link;
+        this.universal_new_tab_gateway = [this.link, false];
         // Close all panels
         if (!this.tablet_mode) {
           // These are expected to remain open in tablet mode

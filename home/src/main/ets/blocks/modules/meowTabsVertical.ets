@@ -62,7 +62,7 @@ struct meowTabsVertical {
   @StorageLink('preferred_hand_reverse_tabs_panel') preferred_hand_reverse_tabs_panel: boolean = false;
   // Gateways
   @LocalStorageLink('universal_load_url_gateway') @Watch('uni_load_url') load_url_gateway: string = "";
-  @LocalStorageLink('universal_new_tab_gateway') @Watch('uni_new_tab') new_tab_gateway: string = "";
+  @LocalStorageLink('universal_new_tab_gateway') @Watch('uni_new_tab') new_tab_gateway: (string | boolean)[] = ['', false];
   last_tab_gateway_url: string = "";
   last_tab_gateway_reset_timeout_id: number | undefined = undefined;
   @LocalStorageLink('universal_close_tab_gateway') @Watch('uni_close_tab') close_tab_gateway: number = -1;
@@ -316,9 +316,11 @@ struct meowTabsVertical {
    * @param save_to_settings if set true, then will save the tabs index status to app settings for next launch to continue.
    * @param is_from_receive if set true, will get tab from AppStorage instead of creating a new one.
    * @param init_state if set value, then the tab will restore the passed serialized web state.
+   * @param placeholder_label The display name of the tab when it's not restored.
+   * @param is_dialog if set true, then this is considered a dialog. One BrowserCat window can only own one dialog and all new opens of dialogs are loaded on THAT tab.
    * @description While if new_tab_url is also not set ("" or undefined), then will load the url_default_blank().
    * */
-  new_tab(target_url: string, save_to_settings: boolean, is_from_receive: boolean, init_state?: Uint8Array, placeholder_label?: string) {
+  new_tab(target_url: string, save_to_settings: boolean, is_from_receive: boolean, init_state?: Uint8Array, placeholder_label?: string, is_dialog?: boolean) {
     let t0 = Date.now();
 
     this.last_tab_index = this.bunch_of_tabs.main_tab_idx; // Remember last tab
@@ -327,7 +329,7 @@ struct meowTabsVertical {
     if (is_from_receive) {
       this.bunch_of_tabs.receive_tab(this.storage);
     } else {
-      this.bunch_of_tabs.newTab(this.getUIContext(), target_url, init_state, placeholder_label);
+      this.bunch_of_tabs.newTab(this.getUIContext(), target_url, init_state, placeholder_label, is_dialog);
     }
 
     // Get synced lists
@@ -581,24 +583,30 @@ struct meowTabsVertical {
   }
 
   uni_new_tab() {
-    console.log('[meowTabsVertical][uni_new_tab] ' + this.new_tab_gateway);
     // console.log('qwq_new_tab')
     let tab = this.new_tab_gateway;
+    console.log(`[meowTabsVertical][uni_new_tab] url=${this.new_tab_gateway}!`);
 
-    if (tab == "") {
+    if (tab[0] as string == "") {
       return;
     }
 
-    if (tab == "new_tab") {
-      tab = ""
+    if (tab[0] as string == this.last_tab_gateway_url) {
+      return;
     }
 
-    this.new_tab(tab, true, false);
+    if (tab[0] as string == "new_tab") {
+      tab[0] = ""
+    }
+
+    this.new_tab(tab[0] as string, true, false, undefined, undefined, tab[1] as boolean);
+    this.last_tab_gateway_url = tab[0] as string;
+    this.new_tab_gateway = ["", false];
 
     clearTimeout(this.last_tab_gateway_reset_timeout_id);
     this.last_tab_gateway_reset_timeout_id = setTimeout(() => {
       // Avoid opening duplicate tabs, idk why
-      this.new_tab_gateway = "";
+      this.last_tab_gateway_url = '';
     }, 300);
   }
 

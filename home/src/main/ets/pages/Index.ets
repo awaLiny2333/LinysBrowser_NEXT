@@ -105,7 +105,7 @@ struct Index {
   /**
    * Gateways */
   @LocalStorageLink('universal_close_tab_gateway') uni_close_tab_gateway: number = -1;
-  @LocalStorageLink('universal_new_tab_gateway') uni_new_tab_gateway: string = "";
+  @LocalStorageLink('universal_new_tab_gateway') uni_new_tab_gateway: (string | boolean)[] = ['', false];
   /**
    * Dialogs */
   @LocalStorageLink('universal_fail_prompt_desc_gateway') @Watch('on_fail_prompt_gateway') universal_fail_prompt_desc_gateway: ResourceStr = "";

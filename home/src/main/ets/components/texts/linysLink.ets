@@ -10,7 +10,7 @@ struct linysLink {
   @Prop max_lines: number = 1;
   @Prop font_weight: FontWeight = FontWeight.Regular;
   @State link: string = "huawei.com";
-  @LocalStorageLink('universal_new_tab_gateway') universal_new_tab_gateway: string = "";
+  @LocalStorageLink('universal_new_tab_gateway') universal_new_tab_gateway: (string | boolean)[] = ['', false];
   // In fact this param is designed for closing some opened panel
   @Link will_be_reversed_boolean: boolean;
 
@@ -24,7 +24,7 @@ struct linysLink {
       .lineSpacing(LengthMetrics.vp(4))
       .textOverflow({ overflow: TextOverflow.Ellipsis })
       .onClick(() => {
-        this.universal_new_tab_gateway = this.link;
+        this.universal_new_tab_gateway = [this.link, false];
         this.will_be_reversed_boolean = !this.will_be_reversed_boolean;
       })
       .accessibilityText(this.text + ',' + this.link)

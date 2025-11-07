@@ -771,7 +771,7 @@ struct meowTitleBar {
 
   new_tab() {
     this.storage.set('extra_background', false);
-    this.storage.set('universal_new_tab_gateway', "new_tab");
+    this.storage.set('universal_new_tab_gateway', ["new_tab", false]);
   }
 
   // Web control events

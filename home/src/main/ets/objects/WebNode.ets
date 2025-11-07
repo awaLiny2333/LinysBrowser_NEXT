@@ -1,7 +1,7 @@
 import { BuilderNode, FrameNode, NodeController, UIContext } from '@kit.ArkUI';
 import { bunch_of_tabs, tab_info_packed } from '../hosts/bunch_of_tabs';
 import { is_web_page, match_domain, url_meow_to_resource, viewable_domains } from '../utils/url_tools';
-import { on_controller_attached, on_page_begin, on_page_end, on_progress_change, on_title_receive } from '../processes/web_actions';
+import { on_controller_attached, on_new_window, on_page_begin, on_page_end, on_progress_change, on_title_receive } from '../processes/web_actions';
 import lazy { hilog } from '@kit.PerformanceAnalysisKit';
 
 export const defaultUrl: string = 'https://www.example.com';
@@ -44,23 +44,7 @@ function WebBuilder(pk: tab_info_packed) {
       tabs.workingMainTab().searching_keyword_stats_total = result.numberOfMatches;
     })
     .onWindowNew((event) => {
-      // TODO: Find out why this triggers twice when click once
-      let new_target_url = event.targetUrl;
-      console.info(`[Meow][onWindowNew] isAlert=${event.isAlert}, targetUrl=${event.targetUrl}`);
-      if (!is_web_page(new_target_url)) {
-        console.log('[meowWebView] Intercepted new window request for a potential download!');
-        try {
-          pk.controller.startDownload(new_target_url);
-        } catch (e) {
-          console.error('[onLoadIntercept] webview.WebviewController.startDownload Failed! ' + e);
-          console.log('[meowWebView] Download failed! Giving back control to new tab...');
-          pk.storage.set('universal_new_tab_gateway', new_target_url);
-        }
-      } else {
-        console.log('[meowWebView] New tab in new window!');
-        pk.storage.set('universal_new_tab_gateway', new_target_url);
-      }
-      event.handler.setWebController(null);
+      on_new_window(pk,event);
     })
     .onTitleReceive(() => {
       on_title_receive(pk);

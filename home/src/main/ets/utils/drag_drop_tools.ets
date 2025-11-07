@@ -23,7 +23,7 @@ export function drop_to_scratching_board(e: DragEvent, storage: LocalStorage, op
         if (openLinks) {
           // Directly open
           if (url != last_link) {
-            storage.set('universal_new_tab_gateway', url);
+            storage.set('universal_new_tab_gateway', [url, false]);
             console.log("[drop_to_scratching_board] Hyperlink url: [" + url + "] Opened!");
           } else {
             console.log("[drop_to_scratching_board] Hyperlink url: [" + url + "] Duplication Avoided!");

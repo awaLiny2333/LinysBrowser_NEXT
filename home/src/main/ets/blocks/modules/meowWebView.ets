@@ -686,7 +686,7 @@ struct shortcutButton {
   @StorageLink('preferred_hand_reverse_homepage_shortcuts') preferred_hand_reverse_homepage_shortcuts: boolean = false;
   @StorageLink('homepage_shortcuts_init_height') homepage_shortcuts_init_height: number = 50;
   // Gateways
-  @LocalStorageLink('universal_new_tab_gateway') new_tab_gateway: string = "";
+  @LocalStorageLink('universal_new_tab_gateway') new_tab_gateway: (string | boolean)[] = ['', false];
   // Colors
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
@@ -720,7 +720,7 @@ struct shortcutButton {
           if (item.get_type() == 'bookmark') {
             // Is bookmark, access website
             setTimeout(() => {
-              this.new_tab_gateway = (item as bookmark).get_link();
+              this.new_tab_gateway = [(item as bookmark).get_link(), false];
               this.current_url = (item as bookmark).get_link();
             }, 100)
           } else {
