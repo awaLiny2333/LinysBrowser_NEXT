@@ -57,7 +57,7 @@ export function init_web(storage: LocalStorage) {
   (AppStorage.get('bunch_of_downloads') as bunch_of_downloads).init_delegate(storage);
   // Enable third party cookies
   webview.WebCookieManager.putAcceptThirdPartyCookieEnabled(AppStorage.get('enable_third_party_cookies') as boolean);
-  webview.WebviewController.enablePrivateNetworkAccess(false);
+  // webview.WebviewController.enablePrivateNetworkAccess(false);
 }
 
 // Web UI Events

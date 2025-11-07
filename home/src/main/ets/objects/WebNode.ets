@@ -3,7 +3,6 @@ import { bunch_of_tabs, tab_info_packed } from '../hosts/bunch_of_tabs';
 import { is_web_page, match_domain, url_meow_to_resource, viewable_domains } from '../utils/url_tools';
 import { on_controller_attached, on_page_begin, on_page_end, on_progress_change, on_title_receive } from '../processes/web_actions';
 import lazy { hilog } from '@kit.PerformanceAnalysisKit';
-import lazy { JSON } from '@kit.ArkTS';
 
 export const defaultUrl: string = 'https://www.example.com';
 
@@ -25,8 +24,9 @@ function WebBuilder(pk: tab_info_packed) {
     .multiWindowAccess(true)
     .mixedMode(MixedMode.All)
     .allowWindowOpenMethod(true)
-    .darkMode(WebDarkMode.Auto)// Dark mode!
-    .forceDarkAccess(pk.tab_force_dark)// Force dark mode
+    .mediaOptions({ audioExclusive: false })
+    .darkMode(WebDarkMode.Auto) // Dark mode!
+    .forceDarkAccess(pk.tab_force_dark) // Force dark mode
     .javaScriptAccess(!pk.tab_disable_js)
     .imageAccess(!pk.tab_disable_image)
     .onlineImageAccess(!pk.tab_disable_image)
@@ -73,6 +73,9 @@ function WebBuilder(pk: tab_info_packed) {
     })
     .onProgressChange((event) => {
       on_progress_change(pk, event);
+    })
+    .onErrorReceive((e) => {
+      console.error(`[ArkWeb][onErrorReceive] [${e.request.getRequestUrl()}], isMainFrame=${e.request.isMainFrame()}, ${e.error.getErrorInfo()}, ${JSON.stringify(e.request.getRequestHeader())}`)
     })
     .onFullScreenEnter((event) => {
       pk.storage.set('fullscreen_mode', true);
