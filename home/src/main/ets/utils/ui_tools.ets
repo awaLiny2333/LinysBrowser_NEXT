@@ -3,7 +3,7 @@ import { BusinessError, deviceInfo, settings } from '@kit.BasicServicesKit';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { AbilityConstant, common, Want } from '@kit.AbilityKit';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
-import { meowContext, meowPx2vp } from './environment_tools';
+import { meowPx2vp } from './environment_tools';
 import { default_window_decor_height } from '../hosts/bunch_of_defaults';
 
 // Statuses
@@ -545,7 +545,7 @@ export function createSubWindow(storage: LocalStorage, title: string, context: U
     return;
   }
 
-  windowStage_.createSubWindowWithOptions(title, { decorEnabled: true, title: title, maximizeSupported: true })
+  windowStage_.createSubWindowWithOptions(Date.now().toString(), { decorEnabled: true, title: title, maximizeSupported: true })
     .catch((err: BusinessError) => {
       let errCode: number = err.code;
       if (errCode) {
@@ -564,7 +564,25 @@ export function createSubWindow(storage: LocalStorage, title: string, context: U
       console.info('[createSubWindow] Succeeded in creating the subwindow. Data: ' + JSON.stringify(data));
 
       // 2. Set properties.
-      sub_windowClass.moveWindowTo(300, 300, (err: BusinessError) => {
+
+      let screen_height = storage.get('full_screen_height') as number;
+      let screen_width = storage.get('screen_width') as number;
+      let free_window_mode = AppStorage.get('free_window_mode') as boolean;
+
+      // Default for free window mode
+      let subwindow_height = 1024;
+      let subwindow_width = 1024;
+      let move_x = screen_width * 0.2;
+      let move_y = screen_height * 0.2;
+
+      if (!free_window_mode) {
+        subwindow_height = screen_height * 0.9;
+        subwindow_width = screen_width * 0.9;
+        move_x = screen_width * 0.05;
+        move_y = screen_height * 0.05;
+      }
+
+      sub_windowClass.moveWindowTo(context.vp2px(move_x), context.vp2px(move_y), (err: BusinessError) => {
         let errCode: number = err.code;
         if (errCode) {
           console.error('[createSubWindow] Failed to move the window. Cause:' + JSON.stringify(err));
@@ -573,7 +591,7 @@ export function createSubWindow(storage: LocalStorage, title: string, context: U
         console.info('[createSubWindow] Succeeded in moving the window.');
       });
 
-      sub_windowClass.resize(context.vp2px(1024), context.vp2px(1024), (err: BusinessError) => {
+      sub_windowClass.resize(context.vp2px(subwindow_width), context.vp2px(subwindow_height), (err: BusinessError) => {
         let errCode: number = err.code;
         if (errCode) {
           console.error('[createSubWindow] Failed to change the window size. Cause:' + JSON.stringify(err));
