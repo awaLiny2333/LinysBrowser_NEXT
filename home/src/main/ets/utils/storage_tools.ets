@@ -342,6 +342,7 @@ export function sandbox_unlink_sync(file_name: string, context_filesDir?: string
   let full_file_directory = filesDir + '/' + file_name;
   try {
     fs.unlinkSync(full_file_directory);
+    console.info('[storage_tools][sandbox_unlink_sync][' + file_name + ']!');
   } catch (e) {
     console.error('[storage_tools][sandbox_unlink_sync][' + file_name + '] ' + e);
     return false;

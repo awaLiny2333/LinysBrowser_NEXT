@@ -100,7 +100,7 @@ export default class HomeAbility extends UIAbility {
     if (this.is_new_window()) {
       this.storage.setOrCreate('START_TIME', Date.now());
       if (this.is_new_launch()) {
-        AppStorage.set('THE_LORD_OF_THE_WINDOWS', this.my_window_id);
+        AppStorage.setOrCreate('THE_LORD_OF_THE_WINDOWS', this.my_window_id);
         await meow_init_main(this.context, this.storage);
       } else {
         meow_init_sub(this.context, this.storage);

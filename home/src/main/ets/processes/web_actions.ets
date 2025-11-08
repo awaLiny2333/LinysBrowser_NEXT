@@ -75,12 +75,10 @@ export function on_title_receive(pk: tab_info_packed) {
     let url = pk.update_url();
     tabs.update_backward_forward_access();
     // sync lists
-    // sync_tabs_list_info(tab.storage);
     (pk.storage.get('tab_titles') as string[])[pk.index] = title;
     (pk.storage.get('tab_urls') as string[])[pk.index] = url;
 
-    // tabs.sync_web_settings(tab.index);
-
+    // If i am the current tab on display
     if (pk.index == tabs.main_tab_idx) {
       sync_current_tabs_list_info(pk.storage);
     }
@@ -88,13 +86,15 @@ export function on_title_receive(pk: tab_info_packed) {
     console.error('[meowWebView][onProgressChange] Update bunch_of_tabs error: ' + e);
   }
 
-  // Save history if title is really updated
+  // Save history & update storage if title is really updated
   let tab_titles = (pk.storage.get('tab_titles') as string[]);
   if (pk.last_saved_title != tab_titles[pk.index]) {
     console.log('[Tabs][onTitleReceive] New title: ' + tab_titles[pk.index]);
     if (!pk.is_loading) {
       pk.check_save_history('[onTitleReceive]');
     }
+
+    tabs.save_web_label_to_sandbox(pk.index);
   }
 }
 
@@ -137,7 +137,6 @@ export function on_page_begin(pk: tab_info_packed) {
   }
 
   // Update Input Search Box
-  // this.update_search_box_text(tab.url);
   if (!(pk.storage.get('is_search_input_typing') as boolean) && pk.index == tabs.main_tab_idx) {
     pk.storage.set('search_input', url_resource_to_meow(pk.url));
     // Update Input Search Box
@@ -172,9 +171,16 @@ export function on_page_end(pk: tab_info_packed) {
   }
 
   // Get and save web_state
-  tabs.update_web_state(pk.index);
-  if (window_index_of_id(tabs.my_id) == 0 && !pk.pre_restoration_stage) {
+  tabs.update_web_state(pk.index, true);
+  // if (window_index_of_id(tabs.my_id) == 0 && !pk.pre_restoration_stage) {
+  let is_lord = (pk.storage.get('my_window_id') as string) == (AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string);
+  if (is_lord && !pk.pre_restoration_stage) {
+    console.log('[on_page_end] Save web state!');
     tabs.save_web_state_to_sandbox(pk.index);
+    tabs.save_web_label_to_sandbox(pk.index);
+  } else {
+    console.warn(`[on_page_end] Didn't save web_state, is_lord=${is_lord}, pre_restoration_stage=${!pk.pre_restoration_stage}, `
+      + `my_window_id=${(pk.storage.get('my_window_id') as string)}, THE_LORD_OF_THE_WINDOWS=${(AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string)}`);
   }
 
   // Save history
@@ -242,11 +248,13 @@ export function on_progress_change(pk: tab_info_packed, event: OnProgressChangeE
 
   // Get and save web_state
   if (!pk.pre_restoration_stage) {
-    tabs.update_web_state(pk.index);
-    if (window_index_of_id(tabs.my_id) == 0) {
-      // TODO: Reduce save web_state to sandbox frequency.
+    let update_result = tabs.update_web_state(pk.index, false);
+    if (update_result && window_index_of_id(tabs.my_id) == 0) {
       tabs.save_web_state_to_sandbox(pk.index);
+      tabs.save_web_label_to_sandbox(pk.index);
     }
+  } else {
+    console.warn('[on_progress_change][update_web_state] Intercepted for restoring!');
   }
 
   determine_extra_background(pk.storage);

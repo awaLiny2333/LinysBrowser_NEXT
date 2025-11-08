@@ -2,10 +2,12 @@ import { webview } from '@kit.ArkWeb';
 import { match_domain, url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
 import { url_default_blank } from './bunch_of_defaults';
 import lazy { storage_of_id, window_index_of_id } from '../utils/ui_tools';
-import lazy { document_save_from_path, sandbox_save } from '../utils/storage_tools';
+import lazy { document_save_from_path, sandbox_save, sandbox_unlink_sync } from '../utils/storage_tools';
 import lazy { bunch_of_settings } from './bunch_of_settings';
 import lazy { save_history } from '../processes/tabs_actions';
 import lazy { createNWeb, TabNodeController } from '../objects/WebNode';
+import lazy { fileIo } from '@kit.CoreFileKit';
+import lazy { meowContext } from '../utils/environment_tools';
 
 export class bunch_of_tabs {
   // Settings
@@ -196,14 +198,10 @@ export class bunch_of_tabs {
   /**
    * Calls the specific tab to sync web_state to bunch_of_tabs.
    * @param index The index of tab.
+   * @param force Set to true if want to ignore frequency limit.
    * */
-  update_web_state(index: number) {
-    try {
-      let web_state = this.Tabs[index].controller.serializeWebState();
-      this.Tabs[index].web_state_array = web_state;
-    } catch (e) {
-      console.error('[update_web_state] Failed: ' + e);
-    }
+  update_web_state(index: number, force: boolean): boolean {
+    return this.Tabs[index].update_web_state(force);
   }
 
   /**
@@ -222,10 +220,18 @@ export class bunch_of_tabs {
     return this.Tabs[this.sub_tab_idx].url;
   }
 
+  /**
+   * Gets the new tab url.
+   * @returns The new_tab_url.
+   * */
   get_new_tab_url() {
     return bunch_of_tabs.new_tab_url;
   }
 
+  /**
+   * Gets the home url.
+   * @returns The home_url.
+   * */
   get_home_url() {
     return bunch_of_tabs.home_url;
   }
@@ -297,9 +303,19 @@ export class bunch_of_tabs {
     this.Labels.push(new_TabLabel);
     this.main_tab_idx = this.Tabs.length - 1;
 
+    // Turn on auto save web state
+    new_TabInfo.on_regular_save();
+
     return this.main_tab_idx as number;
   }
 
+  /**
+   * Receives a tab from LocalStorage, usually transferred from another window.
+   *
+   * This acts very like method newTab(...).
+   * @param storage The LocalStorage.
+   * @returns The new main tab index (idx of the new, received tab).
+   * */
   receive_tab(storage: LocalStorage) {
     let move_tab_tab_info_packed = AppStorage.get('move_tab_tab_info_packed') as tab_info_packed;
     let move_tab_TabNodeController = AppStorage.get('move_tab_TabNodeController') as TabNodeController;
@@ -358,6 +374,9 @@ export class bunch_of_tabs {
     // Forces LinysTabs to refresh For Each loop to render
     this.switchToTab(preferred_destination);
 
+    // Turn off web state regular save
+    this.Tabs[target].off_regular_save();
+
     let tab = this.Tabs.splice(target, 1)[0];
     this.Labels.splice(target, 1);
 
@@ -387,6 +406,12 @@ export class bunch_of_tabs {
     }
 
     console.log('[bunch_of_tabs][closeTab] ' + this.main_tab_idx + '!');
+
+    // Clear used date ids
+    if (this.Tabs.length == 1) {
+      this.used_date_ids = [this.Labels[0].timestamp];
+    }
+
     return this.main_tab_idx;
   }
 
@@ -503,18 +528,41 @@ export class bunch_of_tabs {
 
   /**
    * Re-save all web states, usually used to ensure the correct order of tab indices.
+   *
+   * Clears whatever was in sandbox filesDir/continue directory.
    * @param start A number, all tabs with index greater or equal to start would re-save their web states to disk.
    * */
   re_save_web_state(start: number) {
     console.log('[Meow][bunch_of_tabs] Re_save_web_state! (' + this.my_id + ') (#' + window_index_of_id(this.my_id) + ') From ' + start + '.');
+    // Save
     for (let index = start; index < this.Tabs.length; index++) {
-      let web_state = this.Tabs[index].web_state_array;
-      let identifier = "continue/continue_tabs_web_state_array_" + index.toString();
-      if (web_state != null) {
-        sandbox_save(identifier, web_state.buffer);
-        let label_identifier = "continue/continue_tabs_web_state_array_" + index.toString() + '_label';
-        sandbox_save(label_identifier, this.Tabs[index].title);
+      this.save_web_state_to_sandbox(index);
+      this.save_web_label_to_sandbox(index);
+    }
+  }
+
+  /**
+   * Clears extra web states. Usually called after deleting some tab.
+   * @param start A number, all web state files of tabs with index greater or equal to start would be deleted.
+   * */
+  clear_web_state(start: number) {
+    // Clear extra files
+    try {
+      let k = start;
+      let filesDir = meowContext().filesDir;
+      while (true) {
+        let key_state = "continue/continue_tabs_web_state_array_" + k.toString();
+        let key_label = "continue/continue_tabs_web_state_array_" + k.toString() + "_label";
+        if (!fileIo.accessSync(filesDir + '/' + key_state) || !fileIo.accessSync(filesDir + '/' + key_label)) {
+          break;
+        }
+        sandbox_unlink_sync(key_state);
+        sandbox_unlink_sync(key_label);
+        k += 1;
       }
+      console.info(`[re_save_web_state] Clear directory from ${start} OK!`);
+    } catch (e) {
+      console.error(`[re_save_web_state] Clear directory from ${start} failed!`);
     }
   }
 
@@ -527,17 +575,19 @@ export class bunch_of_tabs {
    * */
   save_web_state_to_sandbox(index: number) {
     // Save to sandbox
-    try {
-      let web_state = this.Tabs[index].web_state_array;
-      if (web_state) {
-        let file_name = "continue/continue_tabs_web_state_array_" + index.toString();
-        sandbox_save(file_name, web_state.buffer);
-        let label_identifier = "continue/continue_tabs_web_state_array_" + index.toString() + '_label';
-        sandbox_save(label_identifier, this.Tabs[index].title);
-      }
-    } catch (e) {
-      console.error('[bunch_of_tabs][save_web_state] Error: ' + e);
-    }
+    this.Tabs[index].save_web_state_to_sandbox();
+  }
+
+  /**
+   * Saves web label (title) of a specific tab to sandbox. Reads the title from bunch_of_tabs properties.
+   *
+   * So update_title() should be called before this function to keep it up-to-date.
+   *
+   * @param index The index of tab.
+   * */
+  save_web_label_to_sandbox(index: number) {
+    let label_identifier = "continue/continue_tabs_web_state_array_" + index.toString() + '_label';
+    sandbox_save(label_identifier, this.Tabs[index].title);
   }
 
   // Data statuses
@@ -604,6 +654,9 @@ export class tab_info_packed {
   last_saved_title: string = '';
   // Update url change
   last_updated_url: string = '';
+  last_update_web_state_time: number = 0;
+  // Web sate
+  regular_save_interval_id: number | undefined = undefined;
 
   /**
    * A class holding a controller and statuses of a tab.
@@ -684,6 +737,26 @@ export class tab_info_packed {
   update_loading_progress(progress: number) {
     this.loading_progress = progress;
     return progress;
+  }
+
+  /**
+   * Asks the tab to update its web_state array, usually called when loading or finished loading.
+   *
+   * @param force Set to true if want to ignore frequency limit.
+   * */
+  update_web_state(force: boolean) {
+    if (!force && ((Date.now() - this.last_update_web_state_time) < 200)) {
+      console.warn('[update_web_state] Intercepted for too frequent update! (' + (Date.now() - this.last_update_web_state_time) + 'ms)');
+      return false;
+    }
+    try {
+      this.web_state_array = this.controller.serializeWebState();
+      this.last_update_web_state_time = Date.now();
+      return true;
+    } catch (e) {
+      console.error('[update_web_state] Failed: ' + e);
+      return false;
+    }
   }
 
   /**
@@ -788,6 +861,61 @@ export class tab_info_packed {
         console.error("[Meow][bunch_of_tabs] Restore web state failed! " + e);
       }
     }
+  }
+
+  /**
+   * Saves my web state to the storage.
+   * */
+  save_web_state_to_sandbox() {
+    try {
+      let web_state = this.web_state_array;
+      if (web_state) {
+        let file_name = "continue/continue_tabs_web_state_array_" + this.index.toString();
+        sandbox_save(file_name, web_state.buffer);
+      }
+    } catch (e) {
+      console.error('[tab_info_packed][save_web_state] Error: ' + e);
+    }
+  }
+
+  /**
+   * Regularly saves a tab's web state to storage.
+   * @param index The tab index.
+   * */
+  on_regular_save() {
+    // If is already on
+    if (this.regular_save_interval_id != undefined) {
+      return;
+    }
+    console.info(`[on_regular_save] Turned on regular save of web_state for tab #${this.index}, [${this.url}]!`);
+    this.regular_save_interval_id = setInterval(() => {
+      let is_lord = (this.storage.get('my_window_id') as string) == (AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string);
+      // Update if is restored, and is the lord of the window.
+      if (is_lord && !this.pre_restoration_stage) {
+        console.info(`[on_regular_save] Regular save of web_state for tab #${this.index}, url=${this.url}:`);
+        this.update_web_state(true);
+        this.save_web_state_to_sandbox();
+      } else {
+        console.warn(`[on_page_end] Didn't save web_state, is_lord=${is_lord}, pre_restoration_stage=${!this.pre_restoration_stage}, `
+          + `my_window_id=${(this.storage.get('my_window_id') as string)}, THE_LORD_OF_THE_WINDOWS=${(AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string)}`);
+      }
+    }, 5000);
+  }
+
+  /**
+   * Turn of regular saving of a tab's web state to storage.
+   *
+   * MUST BE CALLED BEFORE DELETE TAB!
+   * @param index The tab index.
+   * */
+  off_regular_save() {
+    // If is already off
+    if (this.regular_save_interval_id == undefined) {
+      return;
+    }
+    console.info(`[off_regular_save] Turned off regular save of web_state for tab #${this.index}, url=${this.url}`);
+    clearInterval(this.regular_save_interval_id);
+    this.regular_save_interval_id = undefined;
   }
 
   /**

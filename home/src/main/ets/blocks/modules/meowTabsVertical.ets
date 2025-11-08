@@ -1,7 +1,7 @@
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { animation_default, click_effect_default, fontSize_Large, fontSize_Normal, url_default_blank } from '../../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
-import { sandbox_read_arrayBuffer_sync, sandbox_read_text_sync, sandbox_unlink_sync } from '../../utils/storage_tools';
+import { sandbox_read_arrayBuffer_sync, sandbox_read_text_sync } from '../../utils/storage_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { check_want } from '../../utils/want_tools';
 import { createSubWindow, is_subwindow_opened, run_time, storage_of_id, storage_of_index, window_index_of_id } from '../../utils/ui_tools';
@@ -462,26 +462,30 @@ struct meowTabsVertical {
     let store_tabs_count = this.tab_titles.length;
     bunch_of_settings.set("continue_tabs_count", store_tabs_count);
 
-    // clear extra continue storage
-    let index = this.bunch_of_tabs.Tabs.length;
-    while (true) {
-      let key = "continue/continue_tabs_web_state_array_" + index.toString();
-      // console.log('awa')
-      if (!sandbox_unlink_sync(key)) {
-        break;
-      }
-      index += 1;
-    }
-    while (true) {
-      let key = "continue/continue_tabs_web_state_array_" + index.toString() + "_label";
-      // console.log('awa')
-      if (!sandbox_unlink_sync(key)) {
-        break;
-      }
-      index += 1;
-    }
+    // // clear extra continue storage
+
+    // // Nov 8 2025: Now included in clear_web_state(target) method.
+
+    // let index = this.bunch_of_tabs.Tabs.length;
+    // while (true) {
+    //   let key = "continue/continue_tabs_web_state_array_" + index.toString();
+    //   // console.log('awa')
+    //   if (!sandbox_unlink_sync(key)) {
+    //     break;
+    //   }
+    //   index += 1;
+    // }
+    // while (true) {
+    //   let key = "continue/continue_tabs_web_state_array_" + index.toString() + "_label";
+    //   // console.log('awa')
+    //   if (!sandbox_unlink_sync(key)) {
+    //     break;
+    //   }
+    //   index += 1;
+    // }
 
     // re-save web states
+    this.bunch_of_tabs.clear_web_state(this.bunch_of_tabs.Tabs.length);
     this.bunch_of_tabs.re_save_web_state(target);
 
     // Paralleow
@@ -684,6 +688,7 @@ struct meowTabsVertical {
     console.warn(`[meowTabsVertical][on_THE_LORD_OF_THE_WINDOWS_change] MYID ${this.my_window_id}`);
     if (this.my_window_id == this.THE_LORD_OF_THE_WINDOWS) {
       // Save web states
+      this.bunch_of_tabs.clear_web_state(this.bunch_of_tabs.Tabs.length);
       this.bunch_of_tabs.re_save_web_state(0);
       // Save tab continue data
       this.bunch_of_tabs.save_tab_index_stats('[on_THE_LORD_OF_THE_WINDOWS_change]');
