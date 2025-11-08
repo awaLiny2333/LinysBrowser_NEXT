@@ -33,6 +33,7 @@ import linysText from '../components/texts/linysText';
 import linysWindowButton from '../components/buttons/linysWindowButton';
 import { cancel_in_page_search, is_current_in_page_searching } from '../processes/tabs_actions';
 import woofHistory from '../dialogs/managers/woofHistory';
+import meowShortcuts from '../blocks/modules/meowShortcuts';
 
 // @Entry({ useSharedStorage: true })
 @Entry(last_storage())
@@ -71,6 +72,9 @@ struct Index {
   @LocalStorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
   @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   /**
+   * Web Statuses*/
+  @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
+  /**
    * UI params */
   @State title_bar_height: number = 0;
   @State title_bar_alignRules: AlignRuleOption = {
@@ -78,6 +82,9 @@ struct Index {
     bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
   };
   @StorageLink('bottom_avoid') bottom_avoid: boolean = true;
+  @LocalStorageLink('shortcut_scroll_offset') shortcut_scroll_offset: number = 0;
+  @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
+  homepage_background_finish_early: boolean = (this.homepage_background ? true : false);
   /**
    * Delay */
   @LocalStorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
@@ -352,12 +359,22 @@ struct Index {
           .animation(animation_default())
           .height("100%")
 
-          if (this.delayed_load_p0) {
-            meowWebView()
-              .width("100%")
-              .backgroundColor(this.color_current_primary)
-              .layoutWeight(this.tablet_mode ? 1 : 0)
-          } // WebViews
+          Stack() {
+            if (this.homepage_background) {
+              Image(this.homepage_background)
+                .visibility((this.current_url == 'meow://home') && this.bunch_of_tabs.sub_tab_idx == -1 ? Visibility.Visible : Visibility.Hidden)
+                .animation({ duration: 140 })
+                .opacity(Math.max(1 - this.shortcut_scroll_offset / this.screen_height, 0.5))
+            } // Background
+
+            if (this.delayed_load_p0) {
+              meowWebView()
+            } // WebViews
+
+            meowShortcuts()
+          }
+          .backgroundColor(this.color_current_primary)
+          .layoutWeight(this.tablet_mode ? 1 : 0)
 
         } // Main Web
         .direction(this.direction_of_web_and_side_panels())

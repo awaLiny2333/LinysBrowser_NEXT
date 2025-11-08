@@ -1,7 +1,7 @@
 import { BusinessError, zlib } from '@kit.BasicServicesKit';
 import { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
 import { buffer } from '@kit.ArkTS';
-import { image } from '@kit.ImageKit';
+import { image, sendableImage } from '@kit.ImageKit';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { meowContext } from './environment_tools';
@@ -723,6 +723,24 @@ export function arrayBuffer_2_pixelMap(buf: ArrayBuffer) {
   }).finally(() => {
     imageSource.release();
     console.log('[arrayBuffer_2_pixelMap] Released imageSource!');
+  })
+}
+
+/**
+ * Converts an ArrayBuffer to sendableImage.PixelMap object.
+ * @param buf the ArrayBuffer
+ * @returns an image.PixelMap
+ * */
+export function arrayBuffer_2_sendable_pixelMap(buf: ArrayBuffer) {
+  // ArrayBuffer => PixelMap
+  const imageSource = sendableImage.createImageSource(buf);
+  console.log('imageSource: ' + JSON.stringify(imageSource));
+  return imageSource.createPixelMap({}).then((pm) => {
+    let pixelMap = pm;
+    return pixelMap;
+  }).finally(() => {
+    imageSource.release();
+    console.log('[arrayBuffer_2_sendable_pixelMap] Released imageSource!');
   })
 }
 

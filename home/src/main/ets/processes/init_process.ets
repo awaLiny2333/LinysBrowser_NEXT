@@ -1,8 +1,6 @@
 // The initialization of the entire app
 import { bundleManager, common } from '@kit.AbilityKit';
-import {
-  arrayBuffer_2_pixelMap, sandbox_read_arrayBuffer, sandbox_read_text_sync, sandbox_save, sandbox_unlink
-} from '../utils/storage_tools';
+import { sandbox_read_text_sync, sandbox_save, sandbox_unlink } from '../utils/storage_tools';
 import { fileIo } from '@kit.CoreFileKit';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { bunch_of_history } from '../hosts/bunch_of_history';
@@ -15,6 +13,7 @@ import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 import { run_time } from '../utils/ui_tools';
 import { MessageEvents, worker } from '@kit.ArkTS';
+import { sendableImage } from '@kit.ImageKit';
 
 /**
  * Initializes all things.
@@ -30,7 +29,7 @@ export async function meow_init_main(context: common.UIAbilityContext, storage: 
   });
 
   // File management
-  load_homepage_background(context, storage);
+  load_homepage_background(context.filesDir, storage);
   clear_profile(context);
   ensure_continue_folder(context);
   ensure_easylist_folder(context);
@@ -150,19 +149,26 @@ function clear_profile(context: common.UIAbilityContext) {
 }
 
 /**
- * Read and set image for homepage from disk.
+ * Read and set image for homepage from disk, using a worker.
  * @param storage The LocalStorage.
  * */
-function load_homepage_background(context: common.UIAbilityContext, storage: LocalStorage) {
-  console.log("[Meow][meowAppSettings] Start loading homepage background! (" + run_time(storage) + " ms)");
-  sandbox_read_arrayBuffer('homepage_background_arrayBuffer', context.filesDir)?.then((homepage_background_array_buffer) => {
-    if (homepage_background_array_buffer) {
-      arrayBuffer_2_pixelMap(homepage_background_array_buffer).then((pm) => {
-        AppStorage.setOrCreate('homepage_background', pm);
-        console.log("[Meow][meowAppSettings] Finished loading homepage background! (" + run_time(storage) + " ms)");
-      })
+function load_homepage_background(filesDir: string, storage: LocalStorage) {
+  let workerInstance = new worker.ThreadWorker("home/ets/workers/Homepage_background_loader.ets");
+  workerInstance.onmessage = (e: MessageEvents): void => {
+    // Coming back with the pixelMap
+    let pm = e.data as sendableImage.PixelMap;
+    try {
+      AppStorage.setOrCreate('homepage_background', sendableImage.convertToPixelMap(pm));
+    } catch (e) {
+      console.error(`[Meow][init] load homepage background set AppStorage failed: ` + e);
     }
-  });
+    console.log(`[Meow][init] Receive load homepage background thread PixelMap. (${run_time(storage)} ms)!`);
+    workerInstance.terminate();
+  };
+  workerInstance.onexit = (() => {
+    console.log(`[Meow][init] Load homepage background thread terminated. (${run_time(storage)} ms)`);
+  })
+  workerInstance.postMessage(filesDir);
 }
 
 /**
@@ -314,7 +320,6 @@ async function settings(storage: LocalStorage) {
  * */
 export async function bookmarks(storage: LocalStorage) {
   let t0 = Date.now();
-  let bookmarks = AppStorage.get('bunch_of_bookmarks') as bunch_of_bookmarks;
 
   // Get bookmarks
   let result: string = sandbox_read_text_sync('html_bookmarks.html');
@@ -335,7 +340,7 @@ export async function bookmarks(storage: LocalStorage) {
     workerInstance.onmessage = (e: MessageEvents): void => {
       // Coming back with the bookmark
       let bookmarks = e.data as bunch_of_bookmarks;
-      console.log(`[Meow][init] Bookmarks load thread message. Root label: ${bookmarks.root.get_label()}!`);
+      console.log(`[Meow][init] Bookmarks load thread message. Root label: ${bookmarks.root.get_label()}, (${run_time(storage)} ms)!`);
       AppStorage.set('bunch_of_bookmarks', bookmarks);
       workerInstance.terminate();
     };

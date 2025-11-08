@@ -334,6 +334,8 @@ export class bunch_of_bookmarks {
    * @returns 3 for add_folder method fail (Perhaps because label collision).
    * */
   import_html(html: string, overwrite?: boolean) {
+    let t0 = Date.now();
+
     let overwrite_data = false;
     if (overwrite !== undefined) {
       overwrite_data = overwrite;
@@ -419,6 +421,8 @@ export class bunch_of_bookmarks {
 
     // Update plain_bookmarks
     this.reconstruct_cached_plain_bookmarks();
+
+    console.log(`[bunch_of_bookmarks][import_html] OK! (${(Date.now() - t0)} ms)`);
 
     if (final_add_result) {
       this.last_accessed = Date.now();

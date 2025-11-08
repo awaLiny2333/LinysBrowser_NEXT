@@ -1,10 +1,8 @@
-import { animation_default, capsule_bar_height } from '../../hosts/bunch_of_defaults';
+import { animation_default } from '../../hosts/bunch_of_defaults';
 import { bunch_of_history } from '../../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { compress_image_arrayBuffer, sandbox_read_arrayBuffer_sync } from '../../utils/storage_tools';
 import { url_resource_to_meow } from '../../utils/url_tools';
-import { bunch_of_settings } from '../../hosts/bunch_of_settings';
-import { bookmark, bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import { window } from '@kit.ArkUI';
 import { is_address_continuable, run_time, set_continuable, storage_of_id } from '../../utils/ui_tools';
@@ -21,10 +19,9 @@ import woofHttpAuthPrompt from '../../dialogs/web/woofHttpAuthPrompt';
 import linysText from '../../components/texts/linysText';
 import lazy woofWantJump from '../../dialogs/prompts/woofWantJump';
 import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
-import lazy woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
-import lazy linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import { init_web } from '../../processes/web_actions';
+import meowShortcuts from './meowShortcuts';
 
 @Component
 struct meowWebView {
@@ -67,9 +64,7 @@ struct meowWebView {
   @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
   /**
    * Visual */
-  @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
   @State last_timeout_id: number | undefined = undefined;
-  @State shortcut_scroll_offset: number = 0;
   @LocalStorageLink('potential_jump_link') @Watch('on_potential_jump_link_change') potential_jump_link: string = '';
   @LocalStorageLink('extra_background') extra_background: boolean = false;
   @State my_opacity: number = 0;
@@ -170,18 +165,12 @@ struct meowWebView {
   @State show_toast_fullscreen: boolean = false;
 
   aboutToAppear(): void {
-    console.log(' \n[meowWebView][aboutToAppear] this.bunch_of_tabs.my_id: ' + this.bunch_of_tabs.my_id + '\n ');
+    console.log(' \n[meowWebView][aboutToAppear] this.bunch_of_tabs.my_id: ' + this.bunch_of_tabs.my_id + ' (' + run_time(this.storage) + 'ms)\n ');
     set_continuable(this.getUIContext().getHostContext() as common.UIAbilityContext, false);
   }
 
   build() {
     RelativeContainer() {
-      if (this.homepage_background) {
-        Image(this.homepage_background)
-          .visibility((this.current_url == 'meow://home') && this.bunch_of_tabs.sub_tab_idx == -1 ? Visibility.Visible : Visibility.Hidden)
-          .opacity(Math.max(1 - this.shortcut_scroll_offset / this.screen_height, 0.5))
-      } // Background
-
       Row() // Background color
         .backgroundColor(this.current_color_mode == 0 ? (this.web_force_dark_mode ? 'black' : 'white') : 'white')
         .height('100%')
@@ -206,10 +195,6 @@ struct meowWebView {
           // Webs
         }, (Label: tab_label) => Label.timestamp.toString())
       }
-
-      shortcuts({
-        shortcut_scroll_offset: this.shortcut_scroll_offset,
-      })
 
       // Notices
       if (this.delayed_load_p1) {
@@ -573,220 +558,6 @@ isMainFrame: ${e.isMainFrame}`;
 }
 
 export default meowWebView;
-
-@Component
-struct shortcuts {
-  shortcut_scroller: Scroller = new Scroller();
-  @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
-  @StorageLink('bunch_of_bookmarks') @Watch('refresh_homepage_shortcuts') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks('Bookmarks~Meow');
-  @StorageLink('homepage_shortcuts_bookmarks_dir') @Watch('refresh_homepage_shortcuts') homepage_shortcuts_dir: string = '/';
-  // Environment
-  @LocalStorageProp('screen_height') screen_height: number = 100;
-  // Statuses
-  @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
-  @Link shortcut_scroll_offset: number;
-  @State homepage_shortcuts: bookmark[] = [];
-  // Settings
-  @StorageLink('homepage_shortcuts_init_height') homepage_shortcuts_init_height: number = 50;
-  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
-  @StorageLink('preferred_hand_reverse_homepage_shortcuts') preferred_hand_reverse_homepage_shortcuts: boolean = false;
-  // Popups
-  woofHomepageManager_control: CustomDialogController = new CustomDialogController({
-    builder: woofHomepageManager(),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 26,
-  });
-
-  aboutToAppear(): void {
-    this.refresh_homepage_shortcuts();
-  }
-
-  build() {
-    Scroll(this.shortcut_scroller) {
-      Column({ space: 10 }) {
-        ForEach(this.homepage_shortcuts, (shortcut: bookmark, key: number) => {
-          shortcutButton({
-            bookmark: shortcut,
-            my_index: key,
-          })
-        })
-      }
-      .alignItems(this.shortcut_alignItems())
-      .padding({ top: Math.max(18, this.screen_height * (1 - this.homepage_shortcuts_init_height * 0.01)) })
-      .animation(animation_default())
-      .width('100%')
-    } // Shortcuts
-    .padding({ right: 14, left: 14, bottom: 18 })
-    .width('100%')
-    .height('100%')
-    .scrollable(ScrollDirection.Vertical)
-    .align(Alignment.Bottom)
-    .edgeEffect(EdgeEffect.Spring)
-    .animation(animation_default())
-    .scrollBar(BarState.Off)
-    .visibility((this.current_url == 'meow://home' && this.bunch_of_tabs.sub_tab_idx == -1) ? Visibility.Visible : Visibility.None)
-    .onDidScroll(() => {
-      this.shortcut_scroll_offset = this.shortcut_scroller.currentOffset().yOffset;
-    })
-    .onClick(() => {
-      this.woofHomepageManager_control.open();
-    })
-  }
-
-  // Values
-
-  shortcut_alignItems() {
-    let status = this.preferred_hand_left_or_right == 'right';
-    if (this.preferred_hand_reverse_homepage_shortcuts) {
-      status = !status;
-    }
-    return status ? HorizontalAlign.End : HorizontalAlign.Start;
-  }
-
-  // Actions
-
-  /**
-   * Tries to retrieve homepage shortcuts from bunch_of_bookmarks.
-   * */
-  refresh_homepage_shortcuts() {
-    // if (this.homepage_shortcuts_dir == '') {
-    //   return;
-    // }
-    // let result = this.bunch_of_bookmarks.get_folder(this.homepage_shortcuts_dir)?.get_only_bookmarks_content();
-    let result = this.bunch_of_bookmarks.get_folder(this.homepage_shortcuts_dir)?.get_content();
-    if (result) {
-      console.log('[Meow][meowWebView] Directory selected / refreshed for shortcuts: [' + this.homepage_shortcuts_dir + ']');
-      this.homepage_shortcuts = Array.from(result);
-      bunch_of_settings.set('homepage_shortcuts_bookmarks_dir', this.homepage_shortcuts_dir);
-    } else {
-      // directory doesn't exist
-      this.homepage_shortcuts = [];
-
-      if (this.homepage_shortcuts_dir == '/') {
-        // Save empty selection
-        bunch_of_settings.set('homepage_shortcuts_bookmarks_dir', this.homepage_shortcuts_dir);
-        console.log('[Meow][meowWebView] Directory selection cleared! [' + this.homepage_shortcuts_dir + ']');
-      } else {
-        console.log('[Meow][meowWebView] Directory selected for shortcuts doesn\'t exist! [' + this.homepage_shortcuts_dir + ']');
-      }
-    }
-  }
-}
-
-// @Reusable // Lost of animation
-@Component
-struct shortcutButton {
-  @Prop my_index: number;
-  @Prop bookmark: bookmark;
-  // Environment
-  @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
-  @LocalStorageProp('screen_height') screen_height: number = 100;
-  // Settings - Accessibility
-  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
-  @StorageLink('preferred_hand_reverse_homepage_shortcuts') preferred_hand_reverse_homepage_shortcuts: boolean = false;
-  @StorageLink('homepage_shortcuts_init_height') homepage_shortcuts_init_height: number = 50;
-  // Gateways
-  @LocalStorageLink('universal_new_tab_gateway') new_tab_gateway: (string | boolean)[] = ['', false];
-  // Colors
-  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
-  // SHow
-  @State vis_contents: Visibility = Visibility.None;
-  @State render_contents: boolean = false;
-  render_contents_timeout_id: number | undefined = undefined;
-  @State show: Visibility = Visibility.None;
-  @State offset_y: number = 50;
-
-  build() {
-    Column({ space: this.render_contents ? 10 : 0 }) {
-      linysCapsuleButton({
-        text: this.get_label_name(),
-        color_button: this.color_current_secondary,
-        color_text: this.color_current_font,
-        opa: 1
-      })
-        .visibility(this.show)
-        .animation(animation_default())
-        .offset({ y: this.offset_y })
-        .onAppear(() => {
-          setTimeout(() => {
-            this.show = Visibility.Visible;
-            this.offset_y = 0;
-            // Animation of floating up
-          }, this.get_animation_timeout())
-        })
-        .onClick(() => {
-          let item = this.bookmark;
-          if (item.get_type() == 'bookmark') {
-            // Is bookmark, access website
-            setTimeout(() => {
-              this.new_tab_gateway = [(item as bookmark).get_link(), false];
-              this.current_url = (item as bookmark).get_link();
-            }, 100)
-          } else {
-            // Is folder, expand contents
-            clearTimeout(this.render_contents_timeout_id);
-            if (this.vis_contents == Visibility.None) {
-              this.vis_contents = Visibility.Visible;
-              this.render_contents = true;
-            } else {
-              this.vis_contents = Visibility.None;
-              this.render_contents_timeout_id = setTimeout(() => {
-                this.render_contents = false;
-              }, 300)
-            }
-          }
-        })
-
-      if (this.bookmark.get_type() == 'folder') {
-        Column({ space: this.render_contents ? 10 : 0 }) {
-          if (this.render_contents) {
-            ForEach(Array.from(this.bookmark.get_content()), (shortcut: bookmark, key: number) => {
-              shortcutButton({
-                bookmark: shortcut,
-                my_index: key,
-              })
-            })
-          }
-        }
-        .alignItems(this.get_alignItems())
-        .visibility(this.vis_contents)
-        .animation(animation_default())
-      }
-    }
-    .alignItems(this.get_alignItems())
-    .padding(this.vis_contents == Visibility.Visible ? (this.is_right_align() ? { right: 30 } : { left: 30 }) : {})
-    .animation(animation_default())
-  }
-
-  get_label_name() {
-    let name = '';
-    if (this.bookmark.get_type() == 'folder') {
-      name = (this.vis_contents == Visibility.Visible ? '󰃆  ' : '󰃅  ');
-    }
-    let label = this.bookmark.get_label();
-    name += label;
-    return name;
-  }
-
-  is_right_align() {
-    return (this.preferred_hand_left_or_right == 'right' && !this.preferred_hand_reverse_homepage_shortcuts) ||
-      (!(this.preferred_hand_left_or_right == 'right') && this.preferred_hand_reverse_homepage_shortcuts);
-  }
-
-  get_alignItems() {
-    if (this.is_right_align()) {
-      return HorizontalAlign.End;
-    } else {
-      return HorizontalAlign.Start
-    }
-  }
-
-  get_animation_timeout() {
-    let interval = 800 / (this.screen_height / (capsule_bar_height() + 10));
-    return (this.my_index + 0) * interval;
-  }
-}
 
 @Component
 struct toast {
