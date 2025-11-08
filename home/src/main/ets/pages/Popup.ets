@@ -8,6 +8,7 @@ import { add_transparency } from '../utils/color_tools';
 import linysSymbol from '../components/texts/linysSymbol';
 import { copy } from '../utils/clipboard_tools';
 import { animation_default, animation_popup_duration } from '../hosts/bunch_of_defaults';
+import linysProgress from '../components/linysProgress';
 
 @Entry({ useSharedStorage: true })
 @Component
@@ -25,6 +26,8 @@ struct Popup {
   // UI
   @State copied_icon: boolean = false;
   copy_timeout_id: number | undefined = undefined;
+  @State current_loading_progress: number = 0;
+  @State current_is_loading: boolean = true;
 
   aboutToAppear(): void {
     console.log('[onSubWindow][Popup] my_window_id: ' + this.my_window_id);
@@ -64,9 +67,11 @@ struct Popup {
                 this.copied_icon = false;
               }, animation_popup_duration())
             })
-        }
+        } // Address
         .width('100%')
         .padding(10)
+
+        linysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
 
         Web({
           src: this.url,
@@ -76,7 +81,7 @@ struct Popup {
           .databaseAccess(true)
           .fileAccess(true)
           .domStorageAccess(true)
-          .multiWindowAccess(true)
+          // .multiWindowAccess(true)
           .mixedMode(MixedMode.All)
           .allowWindowOpenMethod(true)
           .mediaOptions({ audioExclusive: false })
@@ -87,6 +92,13 @@ struct Popup {
           .onlineImageAccess(true)
           .onPageBegin((e) => {
             this.url = e.url;
+            this.current_is_loading = true;
+          })
+          .onProgressChange((e)=>{
+            this.current_loading_progress = e.newProgress;
+          })
+          .onPageEnd(()=>{
+            this.current_is_loading = false;
           })
           .onTitleReceive((e) => {
             let window_class = this.storage.get('sub_windowClass') as window.Window;
