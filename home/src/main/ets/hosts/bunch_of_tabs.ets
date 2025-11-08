@@ -304,7 +304,7 @@ export class bunch_of_tabs {
     this.main_tab_idx = this.Tabs.length - 1;
 
     // Turn on auto save web state
-    new_TabInfo.on_regular_save();
+    // new_TabInfo.on_regular_save();
 
     return this.main_tab_idx as number;
   }
@@ -375,7 +375,7 @@ export class bunch_of_tabs {
     this.switchToTab(preferred_destination);
 
     // Turn off web state regular save
-    this.Tabs[target].off_regular_save();
+    // this.Tabs[target].off_regular_save();
 
     let tab = this.Tabs.splice(target, 1)[0];
     this.Labels.splice(target, 1);
@@ -752,6 +752,7 @@ export class tab_info_packed {
     try {
       this.web_state_array = this.controller.serializeWebState();
       this.last_update_web_state_time = Date.now();
+      console.log('[update_web_state] new web state length: ' + this.web_state_array?.length);
       return true;
     } catch (e) {
       console.error('[update_web_state] Failed: ' + e);
@@ -887,16 +888,16 @@ export class tab_info_packed {
     if (this.regular_save_interval_id != undefined) {
       return;
     }
-    console.info(`[on_regular_save] Turned on regular save of web_state for tab #${this.index}, [${this.url}]!`);
+    console.log(`[on_regular_save] Turned on regular save of web_state for tab #${this.index}, [${this.url}]!`);
     this.regular_save_interval_id = setInterval(() => {
       let is_lord = (this.storage.get('my_window_id') as string) == (AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string);
       // Update if is restored, and is the lord of the window.
       if (is_lord && !this.pre_restoration_stage) {
-        console.info(`[on_regular_save] Regular save of web_state for tab #${this.index}, url=${this.url}:`);
+        console.log(`[on_regular_save] Regular save of web_state for tab #${this.index}, url=${this.url}:`);
         this.update_web_state(true);
         this.save_web_state_to_sandbox();
       } else {
-        console.warn(`[on_page_end] Didn't save web_state, is_lord=${is_lord}, pre_restoration_stage=${!this.pre_restoration_stage}, `
+        console.warn(`[on_page_end] Didn't save web_state, is_lord=${is_lord}, !pre_restoration_stage=${!this.pre_restoration_stage}, `
           + `my_window_id=${(this.storage.get('my_window_id') as string)}, THE_LORD_OF_THE_WINDOWS=${(AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string)}`);
       }
     }, 5000);

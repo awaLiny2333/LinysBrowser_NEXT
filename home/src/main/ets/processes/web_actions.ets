@@ -179,7 +179,7 @@ export function on_page_end(pk: tab_info_packed) {
     tabs.save_web_state_to_sandbox(pk.index);
     tabs.save_web_label_to_sandbox(pk.index);
   } else {
-    console.warn(`[on_page_end] Didn't save web_state, is_lord=${is_lord}, pre_restoration_stage=${!pk.pre_restoration_stage}, `
+    console.warn(`[on_page_end] Didn't save web_state, is_lord=${is_lord}, !pre_restoration_stage=${!pk.pre_restoration_stage}, `
       + `my_window_id=${(pk.storage.get('my_window_id') as string)}, THE_LORD_OF_THE_WINDOWS=${(AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string)}`);
   }
 
