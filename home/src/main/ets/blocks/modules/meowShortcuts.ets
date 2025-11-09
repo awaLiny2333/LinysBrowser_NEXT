@@ -32,10 +32,9 @@ struct meowShortcuts {
   });
 
   aboutToAppear(): void {
-    // console.log(`[meow][meowShortcuts][aboutToAppear] Shortcuts length: ${this.homepage_shortcuts.length} (${run_time(this.storage)} ms)!`);
-    // if (this.homepage_shortcuts.length == 0) {
-    //   this.refresh_homepage_shortcuts();
-    // }
+    if (this.homepage_shortcuts.length > 0) {
+      this.storage.setOrCreate('homepage_shortcuts_no_start_animation', true);
+    }
   }
 
   build() {
@@ -61,7 +60,7 @@ struct meowShortcuts {
     .edgeEffect(EdgeEffect.Spring)
     .animation(animation_default())
     .scrollBar(BarState.Off)
-    .visibility((this.current_url == 'meow://home' && this.bunch_of_tabs.sub_tab_idx == -1) ? Visibility.Visible : Visibility.None)
+    .visibility(this.visibility_of_shortcuts())
     .onDidScroll(() => {
       this.shortcut_scroll_offset = this.shortcut_scroller.currentOffset().yOffset;
     })
@@ -81,6 +80,16 @@ struct meowShortcuts {
       status = !status;
     }
     return status ? HorizontalAlign.End : HorizontalAlign.Start;
+  }
+
+  visibility_of_shortcuts() {
+    let vis = true;
+    const pre_init = this.current_url == '=￣ω￣=' || this.current_url == undefined;
+    const on_home = this.current_url == 'meow://home' && this.bunch_of_tabs.sub_tab_idx == -1;
+    if (!(pre_init || on_home)) {
+      vis = false;
+    }
+    return vis ? Visibility.Visible : Visibility.Hidden;
   }
 
   // Actions
@@ -116,7 +125,8 @@ struct shortcutButton {
   @Prop bookmark: bookmark;
   // Environment
   @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
-  @LocalStorageProp('screen_height') screen_height: number = 100;
+  @LocalStorageLink('screen_height') screen_height: number = 100;
+  @LocalStorageLink('homepage_shortcuts_no_start_animation') homepage_shortcuts_no_start_animation: boolean = false;
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('preferred_hand_reverse_homepage_shortcuts') preferred_hand_reverse_homepage_shortcuts: boolean = false;
@@ -130,8 +140,8 @@ struct shortcutButton {
   @State vis_contents: Visibility = Visibility.None;
   @State render_contents: boolean = false;
   render_contents_timeout_id: number | undefined = undefined;
-  @State show: Visibility = Visibility.None;
-  @State offset_y: number = 50;
+  @State show: Visibility = this.homepage_shortcuts_no_start_animation ? Visibility.Visible : Visibility.None;
+  @State offset_y: number = this.homepage_shortcuts_no_start_animation ? 0 : 50;
 
   build() {
     Column({ space: this.render_contents ? 10 : 0 }) {
@@ -145,11 +155,13 @@ struct shortcutButton {
         .animation(animation_default())
         .offset({ y: this.offset_y })
         .onAppear(() => {
-          setTimeout(() => {
-            this.show = Visibility.Visible;
-            this.offset_y = 0;
-            // Animation of floating up
-          }, this.get_animation_timeout())
+          if (!this.homepage_shortcuts_no_start_animation) {
+            setTimeout(() => {
+              this.show = Visibility.Visible;
+              this.offset_y = 0;
+              // Animation of floating up
+            }, this.get_animation_timeout())
+          }
         })
         .onClick(() => {
           let item = this.bookmark;

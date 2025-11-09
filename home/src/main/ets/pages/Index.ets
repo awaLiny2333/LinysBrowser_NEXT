@@ -87,13 +87,14 @@ struct Index {
   /**
    * Delay */
   @LocalStorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
-  delay_p0: number = 20;
+  delay_p0: number = 30;
   @LocalStorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
-  delay_p1: number = 20;
+  delay_p1: number = 30;
   @LocalStorageLink('delayed_load_p2') delayed_load_p2: boolean = false;
-  delay_p2: number = 20;
+  delay_p2: number = 30;
   @LocalStorageLink('delayed_load_p3') delayed_load_p3: boolean = false;
-  delay_p3: number = 20;
+  delay_p3: number = 30;
+  @LocalStorageLink('index_init_ok') index_init_ok: boolean = false;
   /**
    * Web Statuses */
   @LocalStorageLink('current_loading_progress') current_loading_progress: number = 0;
@@ -206,11 +207,7 @@ struct Index {
           }, this.delay_p2);
         }, this.delay_p1);
       }, this.delay_p0);
-
-      // Reopen tabs panel
-      // this.bunch_of_settings.get('status_tabs_open').then((status_tabs_open) => {
-      //   AppStorage.setOrCreate('showing_tabs', status_tabs_open as boolean);
-      // })
+      this.index_init_ok = true;
     }, 10) // Delayed loading
   }
 
@@ -274,7 +271,7 @@ struct Index {
       }
 
       RelativeContainer() {
-        if (this.delayed_load_p0) {
+        if (this.index_init_ok) {
           WindowTitle()
             .padding(this.tablet_mode ? { right: 20, bottom: 5 } : undefined)
             .alignRules({
@@ -382,13 +379,8 @@ struct Index {
           ? { bottom: this.fullscreen_mode ? 0 : this.title_bar_height }
           : { top: this.fullscreen_mode ? 0 : this.title_bar_height })
         .backgroundColor(this.color_current_primary)
-        .alignRules(this.title_bar_alignRules)
         .animation(animation_default())
-        .layoutWeight(1)
         .width("100%")
-        .onAreaChange((o, n) => {
-          this.on_main_area_change(o, n);
-        })
 
         linysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
           .alignRules(this.title_bar_alignRules)
@@ -402,6 +394,9 @@ struct Index {
           title_bar_alignRules: this.title_bar_alignRules,
         }) // Title Bar
       } // Web, progress, and Title bar
+      .onAreaChange((o, n) => {
+        this.on_main_area_change(o, n);
+      })
       .layoutWeight(1)
       .animation(animation_default())
 
@@ -444,6 +439,7 @@ struct Index {
   on_main_area_change(_old: Area, n: Area) {
     this.screen_width = n.width as number;
     this.screen_height = n.height as number;
+    console.log(`[Index][on_main_area_change] screen_width: ${this.screen_width}, screen_height: ${this.screen_height}`);
     this.tablet_mode = this.screen_width > 600;
     this.compact_mode = this.screen_height < 400;
 

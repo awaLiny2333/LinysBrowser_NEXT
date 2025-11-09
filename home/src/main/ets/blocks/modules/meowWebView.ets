@@ -1,11 +1,7 @@
 import { animation_default } from '../../hosts/bunch_of_defaults';
-import { bunch_of_history } from '../../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
-import { compress_image_arrayBuffer, sandbox_read_arrayBuffer_sync } from '../../utils/storage_tools';
-import { url_resource_to_meow } from '../../utils/url_tools';
-import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
-import { window } from '@kit.ArkUI';
 import { is_address_continuable, run_time, set_continuable, storage_of_id } from '../../utils/ui_tools';
+import lazy { compress_image_arrayBuffer, sandbox_read_arrayBuffer_sync } from '../../utils/storage_tools';
 import lazy { harmonyShare, systemShare } from '@kit.ShareKit';
 import lazy { webview } from '@kit.ArkWeb';
 import lazy { print } from '@kit.BasicServicesKit';
@@ -26,44 +22,25 @@ import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
 struct meowWebView {
   @LocalStorageLink('my_window_id') my_window_id: string = '';
   storage: LocalStorage = storage_of_id(this.my_window_id);
-  @LocalStorageLink('my_windowClass') my_windowClass: window.Window | undefined = undefined;
   // Hosts
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
-  @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
-  @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads(true);
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts();
   // Environments
   @StorageLink('currentColorMode') current_color_mode: number = 0;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @LocalStorageLink('fullscreen_mode') @Watch('on_fullscreen_change') fullscreen_mode: boolean = false;
   @LocalStorageLink('fullscreen_handler') handler: FullScreenExitHandler | null = null;
-  @LocalStorageProp('screen_height') screen_height: number = 100;
   @LocalStorageLink('on_focus') @Watch('on_focus_change') on_focus: boolean = true;
   @LocalStorageLink('sharable_continuable') sharable_continuable: boolean = false;
-  // In-Page Searching
-  @LocalStorageLink('current_in_page_searching_stats_current') current_in_page_searching_stats_current: number = 0;
-  @LocalStorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
   /**
    * Controls */
-  @LocalStorageLink('tab_titles') tab_titles: string[] = []
   @LocalStorageLink('current_title') current_title: string = "=￣ω￣=";
-  @LocalStorageLink('tab_urls') tab_urls: string[] = []
   @LocalStorageLink('current_url') @Watch('on_current_url_change') current_url: string = "=￣ω￣=";
-  @LocalStorageLink('tab_match_domains') tab_match_domains: string[][] = [];
-  @LocalStorageLink('tab_restore_on_creations') tab_restore_on_creations: boolean[] = [false];
-  /**
-   * Web control statuses */
-  @LocalStorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
   // Settings
   @StorageLink('use_adblock') @Watch('on_use_adblock_state_change') use_adblock: boolean = true;
   @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
-  @StorageLink('web_force_dark_mode_exemptions') web_force_dark_mode_exemptions: string[] = [];
-  /**
-   * Stuffs */
-  @StorageLink('universal_global_custom_ua_gateway') now_global_custom_UA: string = "";
   /**
    * Visual */
-  @State last_timeout_id: number | undefined = undefined;
   @LocalStorageLink('potential_jump_link') @Watch('on_potential_jump_link_change') potential_jump_link: string = '';
   @LocalStorageLink('extra_background') extra_background: boolean = false;
   @State my_opacity: number = 0;
@@ -154,12 +131,8 @@ struct meowWebView {
     alignment: DialogAlignment.Center,
     cornerRadius: 26
   });
-  // Colors
-  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Else
   @LocalStorageLink('meowWebView_init_OK') init_OK: boolean = false;
-  httpAuth: boolean = false;
   // Toasts
   @State show_toast_fullscreen: boolean = false;
 
@@ -342,14 +315,6 @@ struct meowWebView {
 
   // Operations
 
-  update_search_box_text(text: string) {
-    if (!this.is_search_input_typing) {
-      this.storage.set('search_input', url_resource_to_meow(text));
-      // Update Input Search Box
-    }
-    // Update Input Search Box when new page loaded
-  }
-
   /**
    * Enable ads block for all tabs.
    * */
@@ -383,7 +348,7 @@ struct meowWebView {
       cornerRadius: 26
     });
     this.woofWantDownload_control.open();
-    console.log('[Meow][meowWebView] on_download_request because I AM on top! (' + this.my_window_id + ')');
+    console.log('[Meow][meowWebView] on_download_request!');
   }
 
   async general_harmonyShare_current_tab(sharableTarget: harmonyShare.SharableTarget) {

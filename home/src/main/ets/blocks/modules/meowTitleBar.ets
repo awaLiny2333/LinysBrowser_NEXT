@@ -86,6 +86,7 @@ struct meowTitleBar {
   @State address_analyzers_desc_showing: boolean = false;
   address_analyzers_desc_close_cd_timeout_id: number | undefined = undefined;
   @State horizontal_tabs_height: number = 120;
+  @LocalStorageLink('index_init_ok') index_init_ok: boolean = false;
   @LocalStorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
   @LocalStorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
   @LocalStorageLink('delayed_load_p2') delayed_load_p2: boolean = false;
@@ -159,7 +160,7 @@ struct meowTitleBar {
 
       RelativeContainer() {
         Row({ space: this.tablet_mode ? 10 : 6 }) {
-          if (this.delayed_load_p0) {
+          if (this.index_init_ok) {
             linysSymbol({
               symbol_glyph_target: 'sys.symbol.arrow_left'
             })// Backward
@@ -365,7 +366,7 @@ struct meowTitleBar {
         .animation(animation_default())
 
         Row({ space: this.tablet_mode ? 10 : 6 }) {
-          if (this.delayed_load_p0) {
+          if (this.index_init_ok) {
             linysShowButton({
               show: this.showing_scratching_board,
               text: $r('app.string.Index_drop_scratching_board'),
@@ -567,6 +568,7 @@ struct meowTitleBar {
       if (!this.showing_more_options && !this.is_search_input_typing && !this.showing_app_settings && !this.showing_downloads &&
         !this.showing_scratching_board) {
         this.bar_height = n.height as number;
+        console.log(`[meowTitleBar][onAreaChange] bar_height: ${this.bar_height}`);
       }
     })
     .offset({
