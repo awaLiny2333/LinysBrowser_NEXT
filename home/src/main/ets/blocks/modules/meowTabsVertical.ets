@@ -167,7 +167,7 @@ struct meowTabsVertical {
       setTimeout(() => {
         // Retrieve all data, avoid blocks on the main thread
         sync_all_tabs_list_info(this.storage);
-      }, 1)
+      }, 1);
     }
 
     if (this.want_source == 'onCreate') { // TODO: Is this check necessary?
@@ -845,6 +845,7 @@ struct TabButton {
     })
     .onAppear(() => {
       this.tab_height = this.tab_height_default;
+      this.tab_restore_on_creations[this.Label.index_key] = this.bunch_of_tabs.Tabs[this.Label.index_key].pre_restoration_stage;
     })
   }
 }
