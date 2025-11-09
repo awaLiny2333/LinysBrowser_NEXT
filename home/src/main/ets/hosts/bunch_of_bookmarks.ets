@@ -122,45 +122,25 @@ export class bunch_of_bookmarks {
   }
 
   access_bookmark(path: string): boolean {
-    if (this.last_add_path && this.last_add_path_bookmark && (path.indexOf(this.last_add_path) == 0)) {
-      let target_label = path.split('/').pop();
-      let base_content = this.last_add_path_bookmark.get_content();
-      for (let index = 0; index < base_content.length; index++) {
-        let item = base_content[index];
-        // console.log(`[access_bookmark] Trying to find:
-        //   ${target_label}
-        //   ${item.get_label()}`);
-        if ((item.get_type() == "bookmark") && (item.get_label() == target_label)) {
-          // console.log('[bunch_of_bookmarks][access_bookmark] Hit Cache! True!');
-          return true;
-        }
-      }
-      // console.log('[bunch_of_bookmarks][access_bookmark] Hit Cache! False');
+    let access_result = this.access(path, 'bookmark');
+    if (access_result == true) {
+      return true;
+    } else if (access_result == false) {
       return false;
+    } else {
+      return this.get_bookmark(path) ? true : false;
     }
-
-    return this.get_bookmark(path) ? true : false;
   }
 
   access_folder(path: string): boolean {
-    if (this.last_add_path && this.last_add_path_bookmark && (path.indexOf(this.last_add_path) == 0)) {
-      let target_label = path.split('/').pop();
-      let base_content = this.last_add_path_bookmark.get_content();
-      for (let index = 0; index < base_content.length; index++) {
-        let item = base_content[index];
-        // console.log(`[access_folder] Trying to find:
-        //   ${target_label}
-        //   ${item.get_label()}`);
-        if ((item.get_type() == "folder") && (item.get_label() == target_label)) {
-          // console.log('[bunch_of_bookmarks][access_folder] Hit Cache! True!');
-          return true;
-        }
-      }
-      // console.log('[bunch_of_bookmarks][access_folder] Hit Cache! False');
+    let access_result = this.access(path, 'folder');
+    if (access_result == true) {
+      return true;
+    } else if (access_result == false) {
       return false;
+    } else {
+      return this.get_folder(path) ? true : false;
     }
-
-    return this.get_folder(path) ? true : false;
   }
 
   get_bookmark(path: string, base_folder?: bookmark): bookmark | undefined {
@@ -677,6 +657,26 @@ export class bunch_of_bookmarks {
       }
       return false;
     }
+  }
+
+  private access(path: string, type: string) {
+    let target_label = path.split('/').pop();
+    if (target_label && this.last_add_path && this.last_add_path_bookmark && (path.indexOf(this.last_add_path) == 0)) {
+      // See if is exactly one level up
+      if (this.last_add_path.length + target_label.length + 1 == path.length) {
+        let base_content = this.last_add_path_bookmark.get_content();
+        for (let index = 0; index < base_content.length; index++) {
+          let item = base_content[index];
+          if ((item.get_type() == type) && (item.get_label() == target_label)) {
+            // console.log('[bunch_of_bookmarks][access] Hit Cache! True!');
+            return true;
+          }
+        }
+        // console.log('[bunch_of_bookmarks][access] Hit Cache! False');
+        return false;
+      }
+    }
+    return undefined;
   }
 }
 
