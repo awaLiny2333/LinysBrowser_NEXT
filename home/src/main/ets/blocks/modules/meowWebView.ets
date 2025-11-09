@@ -12,6 +12,7 @@ import lazy { print } from '@kit.BasicServicesKit';
 import lazy { common } from '@kit.AbilityKit';
 import lazy { uniformTypeDescriptor } from '@kit.ArkData';
 import lazy { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
+import lazy { init_web } from '../../processes/web_actions';
 import woofPrompt from '../../dialogs/web/woofPrompt';
 import woofConfirm from '../../dialogs/web/woofConfirm';
 import woofAlert from '../../dialogs/web/woofAlert';
@@ -20,8 +21,6 @@ import linysText from '../../components/texts/linysText';
 import lazy woofWantJump from '../../dialogs/prompts/woofWantJump';
 import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
 import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
-import { init_web } from '../../processes/web_actions';
-import meowShortcuts from './meowShortcuts';
 
 @Component
 struct meowWebView {

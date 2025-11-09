@@ -1,22 +1,23 @@
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { animation_default, click_effect_default, fontSize_Large, fontSize_Normal, url_default_blank } from '../../hosts/bunch_of_defaults';
-import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { sandbox_read_arrayBuffer_sync, sandbox_read_text_sync } from '../../utils/storage_tools';
+import lazy { createSubWindow, is_subwindow_opened } from '../../utils/ui_tools';
+import { run_time, storage_of_id, storage_of_index, window_index_of_id } from '../../utils/ui_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { check_want } from '../../utils/want_tools';
-import { createSubWindow, is_subwindow_opened, run_time, storage_of_id, storage_of_index, window_index_of_id } from '../../utils/ui_tools';
-import lazy { drop_to_scratching_board } from '../../utils/drag_drop_tools';
-import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
-import linysText from '../../components/texts/linysText';
-import linysShowButton from '../../components/buttons/linysShowButton';
-import linysSymbol from '../../components/texts/linysSymbol';
-import {
+import lazy { bunch_of_settings } from '../../hosts/bunch_of_settings';
+import lazy {
   determine_extra_background,
   set_search_box_text,
   sync_all_tabs_list_info,
   sync_current_tabs_list_info,
   unifiedData_drag_tab_from
 } from '../../processes/tabs_actions';
+import lazy { drop_to_scratching_board } from '../../utils/drag_drop_tools';
+import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
+import linysText from '../../components/texts/linysText';
+import linysShowButton from '../../components/buttons/linysShowButton';
+import linysSymbol from '../../components/texts/linysSymbol';
 
 @Component
 struct meowTabsVertical {
@@ -177,7 +178,7 @@ struct meowTabsVertical {
 
     this.last_tab_index = this.bunch_of_tabs.main_tab_idx; // Set last_tab_index
 
-    console.log('[Meow][init][meowTabsVertical] Tabs OK. (' + (Date.now() - t0) + ' ms)');
+    console.log(`[Meow][init][meowTabsVertical] Tabs OK. (${(Date.now() - t0)}/${run_time(this.storage)} ms)`);
   }
 
   build() {
@@ -485,8 +486,9 @@ struct meowTabsVertical {
     // }
 
     // re-save web states
-    this.bunch_of_tabs.clear_web_state(this.bunch_of_tabs.Tabs.length);
-    this.bunch_of_tabs.re_save_web_state(target);
+    // this.bunch_of_tabs.clear_web_state(this.bunch_of_tabs.Tabs.length);
+    // this.bunch_of_tabs.re_save_web_state(target);
+    this.bunch_of_tabs.delete_shift_web_state(target);
 
     // Paralleow
     if (this.bunch_of_tabs.main_tab_idx == this.bunch_of_tabs.sub_tab_idx) {
@@ -688,7 +690,7 @@ struct meowTabsVertical {
     console.warn(`[meowTabsVertical][on_THE_LORD_OF_THE_WINDOWS_change] MYID ${this.my_window_id}`);
     if (this.my_window_id == this.THE_LORD_OF_THE_WINDOWS) {
       // Save web states
-      this.bunch_of_tabs.clear_web_state(this.bunch_of_tabs.Tabs.length);
+      this.bunch_of_tabs.clear_all_web_state();
       this.bunch_of_tabs.re_save_web_state(0);
       // Save tab continue data
       this.bunch_of_tabs.save_tab_index_stats('[on_THE_LORD_OF_THE_WINDOWS_change]');

@@ -301,6 +301,21 @@ export async function document_pick_to_uri(suffixFilters?: string[]) {
 // Sandbox Operations
 
 /**
+ * Checks if a file exists in sandbox.
+ * @param file_name The file name.
+ * @returns True if exist, false otherwise.
+ * */
+export function sandbox_access(file_name: string, context_filesDir?: string) {
+  let filesDir: string = context_filesDir || meowContext().filesDir;
+  let full_file_directory = filesDir + '/' + file_name;
+  try {
+    return fs.accessSync(full_file_directory);
+  } catch (error) {
+    return false;
+  }
+}
+
+/**
  * Save a text file or ArrayBuffer to sandbox storage, overwrites whatever that was at that place.
  * @param file_name A string, setting the file's name.
  * @param content A string or an ArrayBuffer, fills the file's content.
@@ -325,7 +340,9 @@ export function sandbox_unlink(file_name: string, context_filesDir?: string) {
   let filesDir: string = context_filesDir || meowContext().filesDir;
   let full_file_directory = filesDir + '/' + file_name;
   try {
-    fs.unlink(full_file_directory);
+    fs.unlink(full_file_directory).catch((err: BusinessError) => {
+      console.error(`[sandbox_unlink] Caught error: ${err.code}, ${err.name}, ${err.message}`);
+    });
   } catch (e) {
     console.error('[storage_tools][sandbox_unlink] [' + file_name + ']' + e);
     return false;
@@ -351,6 +368,26 @@ export function sandbox_unlink_sync(file_name: string, context_filesDir?: string
 }
 
 /**
+ * Renames a file in a sync way.
+ * @param file_name The old file name.
+ * @param rename The new file name.
+ * @returns True if success, false otherwise.
+ * */
+export function sandbox_rename_sync(file_name: string, rename: string, context_filesDir?: string) {
+  let filesDir: string = context_filesDir || meowContext().filesDir;
+  let full_old_directory = filesDir + '/' + file_name;
+  let full_new_directory = filesDir + '/' + rename;
+  try {
+    fs.renameSync(full_old_directory, full_new_directory);
+    console.info('[storage_tools][sandbox_rename_sync][' + file_name + '] => [' + rename + ']!');
+  } catch (e) {
+    console.error('[storage_tools][sandbox_rename_sync][' + file_name + '] => [' + rename + ']: ' + e);
+    return false;
+  }
+  return true;
+}
+
+/**
  * Unlink (delete) a directory in a sync way.
  * @param dir_name A string, the path of the file.
  * */
@@ -361,6 +398,22 @@ export function sandbox_rmdir_sync(dir_name: string, context_filesDir?: string) 
     fs.rmdirSync(full_dir_directory);
   } catch (e) {
     console.error('[storage_tools][sandbox_rmdir_sync] [' + dir_name + ']' + e);
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Make (create) a directory in a sync way.
+ * @param dir_name A string, the path of the file.
+ * */
+export function sandbox_mkdir_sync(dir_name: string, context_filesDir?: string) {
+  let filesDir: string = context_filesDir || meowContext().filesDir;
+  let full_dir_directory = filesDir + '/' + dir_name;
+  try {
+    fs.mkdirSync(full_dir_directory);
+  } catch (e) {
+    console.error('[storage_tools][sandbox_mkdir_sync] [' + dir_name + ']' + e);
     return false;
   }
   return true;

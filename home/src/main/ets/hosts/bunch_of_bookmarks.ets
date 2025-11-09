@@ -7,7 +7,10 @@ export class bunch_of_bookmarks {
   root: bookmark;
   last_accessed: number = 0;
   init: boolean = false;
-  private cached_plain_bookmarks: collections.Array<collections.Array<string>> | undefined = undefined;
+  cached_plain_bookmarks: collections.Array<collections.Array<string>> | undefined = undefined;
+  // Temp
+  private last_add_path: string | undefined = undefined;
+  private last_add_path_bookmark: bookmark | undefined = undefined;
 
   /**
    * A class holding a root folder, in which there stores bookmarks and folders.
@@ -25,7 +28,7 @@ export class bunch_of_bookmarks {
   reconstruct_cached_plain_bookmarks() {
     let t0 = Date.now();
     this.cached_plain_bookmarks = this.root.get_plain_bookmarks();
-    console.log(`[bunch_of_bookmarks][plain_bookmarks] Reconstructed plain bookmarks! length: ${this.cached_plain_bookmarks.length} (${(Date.now() - t0)} ms)`);
+    console.log(`[bunch_of_bookmarks][plain_bookmarks] Reconstructed plain bookmarks! length: ${this.cached_plain_bookmarks.length} (Used ${(Date.now() - t0)} ms)`);
   }
 
   /**
@@ -44,22 +47,33 @@ export class bunch_of_bookmarks {
     } else {
       check_path = path + "/" + item.get_label()
     }
-    if (this.get_bookmark(check_path)) {
+
+    // Add
+    let add_result: boolean;
+    if (this.access_bookmark(check_path)) {
       // already exist
       return false;
     } else {
-      let add_result = this.add_bookmark_process(item, path);
+      if (this.last_add_path == path && this.last_add_path_bookmark) {
+        // Direct add in cached bookmark
+        this.last_add_path_bookmark.add_content(item);
+        // console.log('[bunch_of_bookmarks][add_bookmark] Hit Cache!');
+        add_result = true;
+      } else {
+        add_result = this.add_bookmark_process(item, path);
+        this.last_add_path = path;
+      }
+    }
 
-      if (no_reconstruct_plain_bookmarks) {
-        return add_result;
-      }
-      // Update plain_bookmarks
-      this.reconstruct_cached_plain_bookmarks();
-      if (this.init) {
-        this.last_accessed = Date.now();
-      }
+    if (no_reconstruct_plain_bookmarks) {
       return add_result;
     }
+    // Update plain_bookmarks
+    this.reconstruct_cached_plain_bookmarks();
+    if (this.init) {
+      this.last_accessed = Date.now();
+    }
+    return add_result;
   }
 
   /**
@@ -79,12 +93,21 @@ export class bunch_of_bookmarks {
       check_path = path + "/" + item.get_label()
     }
 
+    // Add
     let add_result: boolean;
-    if (this.get_folder(check_path)) {
+    if (this.access_folder(check_path)) {
       // already exist
       add_result = false;
     } else {
-      add_result = this.add_folder_process(item, path);
+      if (this.last_add_path == path && this.last_add_path_bookmark) {
+        // Direct add in cached bookmark
+        this.last_add_path_bookmark.add_content(item);
+        // console.log('[bunch_of_bookmarks][add_folder] Hit Cache!');
+        add_result = true;
+      } else {
+        add_result = this.add_folder_process(item, path);
+        this.last_add_path = path;
+      }
     }
 
     if (no_reconstruct_plain_bookmarks) {
@@ -96,6 +119,48 @@ export class bunch_of_bookmarks {
       this.last_accessed = Date.now();
     }
     return add_result;
+  }
+
+  access_bookmark(path: string): boolean {
+    if (this.last_add_path && this.last_add_path_bookmark && (path.indexOf(this.last_add_path) == 0)) {
+      let target_label = path.split('/').pop();
+      let base_content = this.last_add_path_bookmark.get_content();
+      for (let index = 0; index < base_content.length; index++) {
+        let item = base_content[index];
+        // console.log(`[access_bookmark] Trying to find:
+        //   ${target_label}
+        //   ${item.get_label()}`);
+        if ((item.get_type() == "bookmark") && (item.get_label() == target_label)) {
+          // console.log('[bunch_of_bookmarks][access_bookmark] Hit Cache! True!');
+          return true;
+        }
+      }
+      // console.log('[bunch_of_bookmarks][access_bookmark] Hit Cache! False');
+      return false;
+    }
+
+    return this.get_bookmark(path) ? true : false;
+  }
+
+  access_folder(path: string): boolean {
+    if (this.last_add_path && this.last_add_path_bookmark && (path.indexOf(this.last_add_path) == 0)) {
+      let target_label = path.split('/').pop();
+      let base_content = this.last_add_path_bookmark.get_content();
+      for (let index = 0; index < base_content.length; index++) {
+        let item = base_content[index];
+        // console.log(`[access_folder] Trying to find:
+        //   ${target_label}
+        //   ${item.get_label()}`);
+        if ((item.get_type() == "folder") && (item.get_label() == target_label)) {
+          // console.log('[bunch_of_bookmarks][access_folder] Hit Cache! True!');
+          return true;
+        }
+      }
+      // console.log('[bunch_of_bookmarks][access_folder] Hit Cache! False');
+      return false;
+    }
+
+    return this.get_folder(path) ? true : false;
   }
 
   get_bookmark(path: string, base_folder?: bookmark): bookmark | undefined {
@@ -306,13 +371,13 @@ export class bunch_of_bookmarks {
    * */
   get_export_html() {
     let result: string[] = [];
-    let head: string = "<!DOCTYPE NETSCAPE-Bookmark-file-1>\n" +
+    let head: string = "<!DOCTYPE NETSCAPE-bookmark-file-1>\n" +
       "<!-- This is an automatically generated file.\n" +
       "     It will be read and overwritten.\n" +
       "     DO NOT EDIT! -->\n" +
       "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=UTF-8\">\n" +
-      "<TITLE>Bookmarks Meow</TITLE>\n" +
-      "<H1>Bookmarks Meow</H1>\n"
+      "<TITLE>bookmarks Meow</TITLE>\n" +
+      "<H1>bookmarks Meow</H1>\n"
     result.push(head);
     result.push("<!-- Meow, Meow, Meow -->\n");
     result.push("<DL><p>");
@@ -342,14 +407,17 @@ export class bunch_of_bookmarks {
     }
     // Set overwrite options
 
-    let one_line_data: string = html.replace(/\s*\n+\s*/g, "") // Eliminate all returns
-    one_line_data = one_line_data.replace(/<p>/g, "") // Eliminate all <p>
-    one_line_data = one_line_data.replace(/<DT>/g, "") // Eliminate all <DT>
-    one_line_data = one_line_data.replace(/<DL>/g, "") // Eliminate all <DL>
-    one_line_data = one_line_data.replace(/<\/A>/g, "") // Eliminate all </A>
-    one_line_data = one_line_data.replace(/<\/H3>/g, "") // Eliminate all </H3>
+    // let one_line_data: string = html.replace(/\s*\n+\s*/g, "") // Eliminate all returns
+    // one_line_data = one_line_data.replace(/<p>/g, "") // Eliminate all <p>
+    // one_line_data = one_line_data.replace(/<DT>/g, "") // Eliminate all <DT>
+    // one_line_data = one_line_data.replace(/<DL>/g, "") // Eliminate all <DL>
+    // one_line_data = one_line_data.replace(/<\/A>/g, "") // Eliminate all </A>
+    // one_line_data = one_line_data.replace(/<\/H3>/g, "") // Eliminate all </H3>
+
+    let one_line_data: string = html.replace(/<p>|<DT>|<DL>|<\/A>|<\/H3>|\s*\n+\s*/g, '');
     one_line_data = one_line_data.replace(/</g, "\n<") // Put returns
-    let first_H3 = one_line_data.indexOf("<H3")
+
+    let first_H3 = one_line_data.indexOf("<H3");
     if (first_H3 == -1) {
       return -1; // -1 for no <H3> error
     }
@@ -413,7 +481,7 @@ export class bunch_of_bookmarks {
 
     let final_add_result = false;
     if (overwrite_data) {
-      let root_contents: bookmark = (new_bunch_of_bookmarks.root.get_content()[0]);
+      let root_contents: bookmark = new_bunch_of_bookmarks.root.get_content()[0];
       this.root = root_contents;
     } else {
       final_add_result = this.add_folder(new_bunch_of_bookmarks.root, "", true) as boolean;
@@ -556,7 +624,8 @@ export class bunch_of_bookmarks {
     if (path == "") {
       // if at root of this base_folder
       base_folder.add_content(item);
-      // console.log("[Meow][BunchOfBookmarks] Added bookmark [" + item.get_label() + "]!")
+      this.last_add_path_bookmark = base_folder;
+      // console.log("[Meow][BunchOfbookmarks] Added bookmark [" + item.get_label() + "]!")
       return true;
       // Directly add
     } else {
@@ -591,7 +660,8 @@ export class bunch_of_bookmarks {
     if (path == "") {
       // if at root of this base_folder
       base_folder.add_content(item);
-      // console.log("[Meow][BunchOfBookmarks] Added folder [" + item.get_label() + "]!")
+      this.last_add_path_bookmark = base_folder;
+      // console.log("[Meow][BunchOfbookmarks] Added folder [" + item.get_label() + "]!")
       return true;
       // Directly add
     } else {
@@ -612,7 +682,7 @@ export class bunch_of_bookmarks {
 
 @Sendable
 export class bookmark {
-  private contents: collections.Array<bookmark> = new collections.Array();
+  contents: collections.Array<bookmark> = new collections.Array();
   private is_folder: boolean = false;
   private last_modified: number;
   private label: string;
@@ -741,7 +811,6 @@ export class bookmark {
     result.push(" ".repeat(spaces) + "</DL><p>"); // END of folder
     return result;
   }
-
 
   add_content(item: bookmark) {
     this.contents.push(item);

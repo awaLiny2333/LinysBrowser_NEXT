@@ -887,6 +887,13 @@ struct bookmarkItem {
   }
 
   swap(idx_a: number, idx_b: number) {
+    let folder_contents = this.bunch_of_bookmarks.get_folder(this.looking_at_path);
+    if (folder_contents) {
+      let c = folder_contents.contents[idx_a];
+      folder_contents.contents[idx_a] = folder_contents.contents[idx_b];
+      folder_contents.contents[idx_b] = c;
+    }
+
     this.bunch_of_bookmarks.last_accessed = Date.now();
     let c = this.viewing_contents[idx_a];
     this.viewing_contents[idx_a] = this.viewing_contents[idx_b];

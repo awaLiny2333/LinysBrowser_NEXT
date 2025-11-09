@@ -84,7 +84,6 @@ struct Index {
   @StorageLink('bottom_avoid') bottom_avoid: boolean = true;
   @LocalStorageLink('shortcut_scroll_offset') shortcut_scroll_offset: number = 0;
   @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
-  homepage_background_finish_early: boolean = (this.homepage_background ? true : false);
   /**
    * Delay */
   @LocalStorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
@@ -353,7 +352,7 @@ struct Index {
                 .width(this.showing_bookmarks ? this.width_of_Bookmarks() : 0)
                 .animation(animation_default())
             }
-          }
+          } // Tabs and bookmarks
           .width(this.width_of_Bookmarks_and_Tabs())
           .margin(this.margin_of_Bookmarks_and_Tabs())
           .animation(animation_default())
@@ -362,16 +361,17 @@ struct Index {
           Stack() {
             if (this.homepage_background) {
               Image(this.homepage_background)
-                .visibility((this.current_url == 'meow://home') && this.bunch_of_tabs.sub_tab_idx == -1 ? Visibility.Visible : Visibility.Hidden)
-                .animation({ duration: 140 })
                 .opacity(Math.max(1 - this.shortcut_scroll_offset / this.screen_height, 0.5))
+                .visibility(this.visibility_of_background_image())
             } // Background
 
             if (this.delayed_load_p0) {
               meowWebView()
             } // WebViews
 
+            // if (this.delayed_load_p0) {
             meowShortcuts()
+            // }
           }
           .backgroundColor(this.color_current_primary)
           .layoutWeight(this.tablet_mode ? 1 : 0)
@@ -636,6 +636,16 @@ struct Index {
       status = !status;
     }
     return status ? Direction.Rtl : Direction.Ltr;
+  }
+
+  visibility_of_background_image() {
+    let vis = true;
+    const pre_init = this.current_url == '=￣ω￣=' || this.current_url == undefined;
+    const on_home = this.current_url == 'meow://home' && this.bunch_of_tabs.sub_tab_idx == -1;
+    if (!(pre_init || on_home)) {
+      vis = false;
+    }
+    return vis ? Visibility.Visible : Visibility.Hidden;
   }
 
   // Operations

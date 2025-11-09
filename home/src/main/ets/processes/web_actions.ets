@@ -6,7 +6,7 @@ import lazy { bunch_of_tabs, tab_info_packed } from '../hosts/bunch_of_tabs';
 import lazy { determine_extra_background, sync_current_tabs_list_info } from './tabs_actions';
 import lazy { window_index_of_id } from '../utils/ui_tools';
 import lazy { is_web_page, match_domain, url_resource_to_meow, viewable_domains } from '../utils/url_tools';
-import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
+import lazy { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 
 // Ads Blocker
 

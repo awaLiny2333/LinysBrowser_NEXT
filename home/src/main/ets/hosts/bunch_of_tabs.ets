@@ -2,12 +2,18 @@ import { webview } from '@kit.ArkWeb';
 import { match_domain, url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
 import { url_default_blank } from './bunch_of_defaults';
 import lazy { storage_of_id, window_index_of_id } from '../utils/ui_tools';
-import lazy { document_save_from_path, sandbox_save, sandbox_unlink_sync } from '../utils/storage_tools';
+import lazy {
+  document_save_from_path,
+  sandbox_access,
+  sandbox_mkdir_sync,
+  sandbox_rename_sync,
+  sandbox_rmdir_sync,
+  sandbox_save,
+  sandbox_unlink_sync
+} from '../utils/storage_tools';
 import lazy { bunch_of_settings } from './bunch_of_settings';
 import lazy { save_history } from '../processes/tabs_actions';
 import lazy { createNWeb, TabNodeController } from '../objects/WebNode';
-import lazy { fileIo } from '@kit.CoreFileKit';
-import lazy { meowContext } from '../utils/environment_tools';
 
 export class bunch_of_tabs {
   // Settings
@@ -527,6 +533,20 @@ export class bunch_of_tabs {
   // Web states
 
   /**
+   * Clears all web states.
+   * */
+  clear_all_web_state() {
+    // Clear extra files
+    try {
+      sandbox_rmdir_sync('continue');
+      sandbox_mkdir_sync('continue');
+      console.info(`[re_save_web_state] Clear web state (continue) directory OK!`);
+    } catch (e) {
+      console.error(`[re_save_web_state] Clear web state (continue) directory failed!`);
+    }
+  }
+
+  /**
    * Re-save all web states, usually used to ensure the correct order of tab indices.
    *
    * Clears whatever was in sandbox filesDir/continue directory.
@@ -536,33 +556,49 @@ export class bunch_of_tabs {
     console.log('[Meow][bunch_of_tabs] Re_save_web_state! (' + this.my_id + ') (#' + window_index_of_id(this.my_id) + ') From ' + start + '.');
     // Save
     for (let index = start; index < this.Tabs.length; index++) {
+      this.Tabs[index].update_web_state(false);
       this.save_web_state_to_sandbox(index);
       this.save_web_label_to_sandbox(index);
     }
   }
 
   /**
-   * Clears extra web states. Usually called after deleting some tab.
-   * @param start A number, all web state files of tabs with index greater or equal to start would be deleted.
+   * Deletes a tab's web state and shifts all after it forward 1 unit.
+   *
+   * Also checks and delete extra web states.
+   * @param del The tab index to be deleted.
    * */
-  clear_web_state(start: number) {
-    // Clear extra files
+  delete_shift_web_state(del: number) {
+    // Delete
+    let key_state = "continue/continue_tabs_web_state_array_" + del.toString();
+    let key_label = "continue/continue_tabs_web_state_array_" + del.toString() + "_label";
+    sandbox_unlink_sync(key_state);
+    sandbox_unlink_sync(key_label);
+    // Shift
+    for (let sft = del + 1; sft < this.Tabs.length + 1; sft++) {
+      let old_key_state = "continue/continue_tabs_web_state_array_" + sft.toString();
+      let old_key_label = "continue/continue_tabs_web_state_array_" + sft.toString() + "_label";
+      let new_key_state = "continue/continue_tabs_web_state_array_" + (sft - 1).toString();
+      let new_key_label = "continue/continue_tabs_web_state_array_" + (sft - 1).toString() + "_label";
+      sandbox_rename_sync(old_key_state, new_key_state);
+      sandbox_rename_sync(old_key_label, new_key_label);
+    }
+    // Clear extra files. This looks unnecessary but who knows if anything happens and files run into bugs? ¯\_(ツ)_/¯
     try {
-      let k = start;
-      let filesDir = meowContext().filesDir;
+      let k = this.Tabs.length;
       while (true) {
         let key_state = "continue/continue_tabs_web_state_array_" + k.toString();
         let key_label = "continue/continue_tabs_web_state_array_" + k.toString() + "_label";
-        if (!fileIo.accessSync(filesDir + '/' + key_state) || !fileIo.accessSync(filesDir + '/' + key_label)) {
+        if (!sandbox_access(key_state) || !sandbox_access(key_label)) {
           break;
         }
         sandbox_unlink_sync(key_state);
         sandbox_unlink_sync(key_label);
         k += 1;
       }
-      console.info(`[re_save_web_state] Clear directory from ${start} OK!`);
+      console.info(`[delete_shift_web_state] Clear extra files OK!`);
     } catch (e) {
-      console.error(`[re_save_web_state] Clear directory from ${start} failed!`);
+      console.error(`[delete_shift_web_state] Clear extra files failed!`);
     }
   }
 

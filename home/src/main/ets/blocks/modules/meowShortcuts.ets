@@ -14,12 +14,12 @@ struct meowShortcuts {
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_bookmarks') @Watch('refresh_homepage_shortcuts') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks('Bookmarks~Meow');
   @StorageLink('homepage_shortcuts_bookmarks_dir') @Watch('refresh_homepage_shortcuts') homepage_shortcuts_dir: string = '/';
+  @StorageLink('homepage_shortcuts') homepage_shortcuts: bookmark[] = []; // Ideally this is loaded after init_process.
   // Environment
   @LocalStorageProp('screen_height') screen_height: number = 100;
   // Statuses
   @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
   @LocalStorageLink('shortcut_scroll_offset') shortcut_scroll_offset: number = 0;
-  @State homepage_shortcuts: bookmark[] = [];
   // Settings
   @StorageLink('homepage_shortcuts_init_height') homepage_shortcuts_init_height: number = 50;
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
@@ -32,7 +32,10 @@ struct meowShortcuts {
   });
 
   aboutToAppear(): void {
-    this.refresh_homepage_shortcuts();
+    // console.log(`[meow][meowShortcuts][aboutToAppear] Shortcuts length: ${this.homepage_shortcuts.length} (${run_time(this.storage)} ms)!`);
+    // if (this.homepage_shortcuts.length == 0) {
+    //   this.refresh_homepage_shortcuts();
+    // }
   }
 
   build() {
@@ -47,7 +50,7 @@ struct meowShortcuts {
       }
       .alignItems(this.shortcut_alignItems())
       .padding({ top: Math.max(18, this.screen_height * (1 - this.homepage_shortcuts_init_height * 0.01)) })
-      .animation(animation_default())
+      // .animation(animation_default())
       .width('100%')
     } // Shortcuts
     .padding({ right: 14, left: 14, bottom: 18 })
@@ -65,8 +68,8 @@ struct meowShortcuts {
     .onClick(() => {
       this.woofHomepageManager_control.open();
     })
-    .onAppear(()=>{
-      console.log(`[meowShortcuts] Bookmarks Shortcuts OK! (${run_time(this.storage)})`)
+    .onAppear(() => {
+      console.log(`[meowShortcuts] Bookmarks Shortcuts OK! (${run_time(this.storage)} ms)`)
     })
   }
 
@@ -86,14 +89,10 @@ struct meowShortcuts {
    * Tries to retrieve homepage shortcuts from bunch_of_bookmarks.
    * */
   refresh_homepage_shortcuts() {
-    // if (this.homepage_shortcuts_dir == '') {
-    //   return;
-    // }
-    // let result = this.bunch_of_bookmarks.get_folder(this.homepage_shortcuts_dir)?.get_only_bookmarks_content();
     let result = this.bunch_of_bookmarks.get_folder(this.homepage_shortcuts_dir)?.get_content();
     if (result) {
-      console.log('[Meow][meowWebView] Directory selected / refreshed for shortcuts: [' + this.homepage_shortcuts_dir + ']');
       this.homepage_shortcuts = Array.from(result);
+      console.log(`[Meow][meowWebView] Directory selected / refreshed for shortcuts: [${this.homepage_shortcuts_dir}] (${run_time(this.storage)} ms)`);
       bunch_of_settings.set('homepage_shortcuts_bookmarks_dir', this.homepage_shortcuts_dir);
     } else {
       // directory doesn't exist

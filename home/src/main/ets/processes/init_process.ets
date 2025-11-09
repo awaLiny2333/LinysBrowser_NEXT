@@ -340,8 +340,17 @@ export async function bookmarks(storage: LocalStorage) {
     workerInstance.onmessage = (e: MessageEvents): void => {
       // Coming back with the bookmark
       let bookmarks = e.data as bunch_of_bookmarks;
-      console.log(`[Meow][init] Bookmarks load thread message. Root label: ${bookmarks.root.get_label()}, (${run_time(storage)} ms)!`);
+      console.log(`[Meow][init] Bookmarks load thread message. Root label: ${bookmarks.root.get_label()}, (${run_time(storage)} ms)`);
       AppStorage.set('bunch_of_bookmarks', bookmarks);
+      // Process shortcuts
+      let shortcuts_dir = AppStorage.get('homepage_shortcuts_bookmarks_dir') as string;
+      if (shortcuts_dir) {
+        let shortcuts = bookmarks.get_folder(shortcuts_dir)?.get_content();
+        if (shortcuts) {
+          AppStorage.setOrCreate('homepage_shortcuts', Array.from(shortcuts));
+          console.log(`[Meow][init] Bookmarks shortcuts processed! (${run_time(storage)} ms)`);
+        }
+      }
       workerInstance.terminate();
     };
     workerInstance.onexit = (() => {
