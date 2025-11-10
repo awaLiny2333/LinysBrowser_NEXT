@@ -269,17 +269,20 @@ export class bunch_of_tabs {
   callRestore(context: UIContext, target: number = this.main_tab_idx) {
     let t0 = Date.now();
     console.log(`[switchToTab] Call of Restore! target: ${target}, this.Tabs[target].pre_restoration_stage: ${this.Tabs[target]?.pre_restoration_stage}`);
-    if (target >= 0 && this.Tabs[target].pre_restoration_stage) {
-      // Before Restore create a web first.
-      if (this.NodeControllers[target] == undefined) {
-        console.log(`[callRestore] of tab #${target}, Creating NWeb!`);
-        this.NodeControllers[target] = new TabNodeController(createNWeb(context, this.Tabs[target]));
-        this.NodeControllers[target]?.attachWeb();
-        this.NodeControllers[target]?.rebuild();
-      }
-      this.Tabs[target].restore();
+    if (target >= 0 && this.Tabs[target].pre_restoration_stage && this.NodeControllers[target] == undefined) {
+      // Creating a web will trigger its controller attached event, which includes the true restore() call.
+      // See on_controller_attached(pk: tab_info_packed) in web_actions.ets
+      console.log(`[callRestore] of tab #${target}, Creating NWeb!`);
+      this.NodeControllers[target] = new TabNodeController(createNWeb(context, this.Tabs[target]));
+      this.NodeControllers[target]?.attachWeb();
+      this.NodeControllers[target]?.rebuild();
       console.log(`[callRestore] Restore of tab #${target} finished! (Used ${(Date.now() - t0)} ms)`);
+      return true;
     }
+    console.warn(`[callRestore] Restore of tab #${target} Intercepted! ` +
+      `target=${target}, this.Tabs[target]=${this.Tabs[target]}, NodeController=${this.NodeControllers[target]} ` +
+      `How did you get here?? (Used ${(Date.now() - t0)} ms)`);
+    return false;
   }
 
   /**
@@ -898,18 +901,21 @@ export class tab_info_packed {
 
   /**
    * Restores my self if possible.
+   *
+   * @returns True if restoration is successful.
    * */
-  restore() {
+  try_restore() {
     // Restore Web State
-    console.log(`[restore] pre_restoration_stage: ${this.pre_restoration_stage}, web_state_array.length: ${this.web_state_array?.length}`);
-    if (this.pre_restoration_stage) {
-      let array_file = "continue/continue_tabs_web_state_array_" + this.index.toString();
-      let array_buffer = sandbox_read_arrayBuffer_sync(array_file);
-      if (array_buffer) {
-        this.web_state_array = new Uint8Array(array_buffer);
-      }
+    if (!this.pre_restoration_stage) {
+      console.warn(`[tab_info_packed][restore] Rejected as is not in pre_restoration_stage! #${this.index}, [${this.title}]`);
+      return false;
     }
-    if (this.web_state_array) {
+
+    console.log(`[tab_info_packed][restore] pre_restoration_stage: ${this.pre_restoration_stage}, web_state_array.length: ${this.web_state_array?.length}`);
+    let array_file = "continue/continue_tabs_web_state_array_" + this.index.toString();
+    let array_buffer = sandbox_read_arrayBuffer_sync(array_file);
+    if (array_buffer) {
+      this.web_state_array = new Uint8Array(array_buffer);
       // Restore
       try {
         this.url = 'uwu';
@@ -917,10 +923,12 @@ export class tab_info_packed {
         this.controller.clearHistory();
         this.controller.restoreWebState(this.web_state_array);
         console.log("[Meow][bunch_of_tabs] Restore web " + this.index.toString() + ", state Length: " + this.web_state_array.length.toString());
+        return true; // The only path to success
       } catch (e) {
         console.error("[Meow][bunch_of_tabs] Restore web state failed! " + e);
       }
     }
+    return false;
   }
 
   /**

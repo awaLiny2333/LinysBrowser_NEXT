@@ -323,7 +323,7 @@ export function on_controller_attached(pk: tab_info_packed) {
 
   // Restore Web State
   if (pk.index == tabs.main_tab_idx || pk.index == tabs.sub_tab_idx) {
-    pk.restore();
+    pk.try_restore();
   }
 }
 

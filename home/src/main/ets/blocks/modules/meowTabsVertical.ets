@@ -291,7 +291,10 @@ struct meowTabsVertical {
         // Recover Paralleow
         if (continue_tabs_sub_on < this.tab_titles.length) {
           this.bunch_of_tabs.sub_tab_idx = continue_tabs_sub_on;
-          this.bunch_of_tabs.callRestore(this.getUIContext(), continue_tabs_sub_on);
+          // Restore sub tab;
+          if (continue_tabs_sub_on >= 0) {
+            this.bunch_of_tabs.callRestore(this.getUIContext(), continue_tabs_sub_on);
+          }
         }
       }, 10);
     }
@@ -340,9 +343,11 @@ struct meowTabsVertical {
       sync_all_tabs_list_info(this.storage);
 
       // Store tabs count
-      let store_tabs_count = this.bunch_of_tabs.get_tabs_count();
-      bunch_of_settings.set("continue_tabs_count", store_tabs_count);
-      console.log("[Meow][meowTabs] Stored Tabs Count: " + store_tabs_count);
+      if (this.my_window_id == this.THE_LORD_OF_THE_WINDOWS) {
+        let store_tabs_count = this.bunch_of_tabs.get_tabs_count();
+        bunch_of_settings.set("continue_tabs_count", store_tabs_count);
+        console.log("[Meow][meowTabs] Stored Tabs Count: " + store_tabs_count);
+      }
 
       // Animation part
       if (this.need_help_scroll) {
@@ -460,31 +465,7 @@ struct meowTabsVertical {
     let store_tabs_count = this.tab_titles.length;
     bunch_of_settings.set("continue_tabs_count", store_tabs_count);
 
-    // // clear extra continue storage
-
-    // // Nov 8 2025: Now included in clear_web_state(target) method.
-
-    // let index = this.bunch_of_tabs.Tabs.length;
-    // while (true) {
-    //   let key = "continue/continue_tabs_web_state_array_" + index.toString();
-    //   // console.log('awa')
-    //   if (!sandbox_unlink_sync(key)) {
-    //     break;
-    //   }
-    //   index += 1;
-    // }
-    // while (true) {
-    //   let key = "continue/continue_tabs_web_state_array_" + index.toString() + "_label";
-    //   // console.log('awa')
-    //   if (!sandbox_unlink_sync(key)) {
-    //     break;
-    //   }
-    //   index += 1;
-    // }
-
     // re-save web states
-    // this.bunch_of_tabs.clear_web_state(this.bunch_of_tabs.Tabs.length);
-    // this.bunch_of_tabs.re_save_web_state(target);
     this.bunch_of_tabs.delete_shift_web_state(target);
 
     // Paralleow
