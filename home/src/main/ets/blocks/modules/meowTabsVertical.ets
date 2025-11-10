@@ -1,6 +1,6 @@
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { animation_default, click_effect_default, fontSize_Large, fontSize_Normal, url_default_blank } from '../../hosts/bunch_of_defaults';
-import { sandbox_read_arrayBuffer_sync, sandbox_read_text_sync } from '../../utils/storage_tools';
+import { sandbox_read_text_sync } from '../../utils/storage_tools';
 import lazy { createSubWindow, is_subwindow_opened } from '../../utils/ui_tools';
 import { run_time, storage_of_id, storage_of_index, window_index_of_id } from '../../utils/ui_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
@@ -124,32 +124,13 @@ struct meowTabsVertical {
           console.error('[TabsVertical][HOME] ' + e);
         }
       } else {
-        // Restore. Prepare web states.
-        let web_state_arrays_to_restore: Uint8Array[] = [];
-        let labels: string[] = [];
-        for (let index = 0; index < continue_tabs_count; index++) {
-          // Read continue tabs data
-          let key = "continue/continue_tabs_web_state_array_" + index.toString();
-          let array_buffer = sandbox_read_arrayBuffer_sync(key);
-          if (array_buffer) {
-            web_state_arrays_to_restore.push(new Uint8Array(array_buffer));
-          } else {
-            // An unexpected error may occur: array_buffer may be empty.
-            web_state_arrays_to_restore.push(new Uint8Array());
-            this.bunch_of_tabs.sub_tab_idx = -1;
-            this.bunch_of_tabs.main_tab_idx = 0;
-          }
-          // Tabs labels
-          let label_file = "continue/continue_tabs_web_state_array_" + index.toString() + '_label';
-          let label = sandbox_read_text_sync(label_file); // Name of that tab
-          label = (label == 'undefined' ? 'Meow' : label);
-          labels.push(label);
-        }
 
         // Create new tabs
-        for (let index = 0; index < web_state_arrays_to_restore.length; index++) {
+        for (let index = 0; index < continue_tabs_count; index++) {
           try {
-            this.new_tab("", false, false, web_state_arrays_to_restore[index], labels[index]);
+            let label_file = "continue/continue_tabs_web_state_array_" + index.toString() + '_label';
+            let label = sandbox_read_text_sync(label_file); // Name of that tab
+            this.new_tab("", false, false, true, label);
           } catch (e) {
             console.error('[TabsVertical][CONTINUE][new_tab] ' + e);
           }
@@ -157,17 +138,17 @@ struct meowTabsVertical {
 
         // Switch to *THE* tab
         this.switch_tab(continue_tabs_main_on, false, false);
-
-        // Recover Paralleow
-        if (continue_tabs_sub_on < this.tab_titles.length) {
-          this.bunch_of_tabs.sub_tab_idx = continue_tabs_sub_on;
-        }
       }
 
       setTimeout(() => {
         // Retrieve all data, avoid blocks on the main thread
         sync_all_tabs_list_info(this.storage);
-      }, 1);
+        // Recover Paralleow
+        if (continue_tabs_sub_on < this.tab_titles.length) {
+          this.bunch_of_tabs.sub_tab_idx = continue_tabs_sub_on;
+          this.bunch_of_tabs.callRestore(continue_tabs_sub_on);
+        }
+      }, 10);
     }
 
     if (this.want_source == 'onCreate') { // TODO: Is this check necessary?
@@ -321,7 +302,7 @@ struct meowTabsVertical {
    * @param is_dialog if set true, then this is considered a dialog. One BrowserCat window can only own one dialog and all new opens of dialogs are loaded on THAT tab.
    * @description While if new_tab_url is also not set ("" or undefined), then will load the url_default_blank().
    * */
-  new_tab(target_url: string, save_to_settings: boolean, is_from_receive: boolean, init_state?: Uint8Array, placeholder_label?: string) {
+  new_tab(target_url: string, save_to_settings: boolean, is_from_receive: boolean, init_state: boolean = false, placeholder_label?: string) {
     let t0 = Date.now();
 
     this.last_tab_index = this.bunch_of_tabs.main_tab_idx; // Remember last tab
@@ -570,6 +551,7 @@ struct meowTabsVertical {
         // then set this tab as sub view
         this.choosing_paralleow = false;
         this.bunch_of_tabs.sub_tab_idx = clicked;
+        this.bunch_of_tabs.callRestore(clicked);
       } else if (sub >= 0 && (sub == clicked || main == clicked)) {
         // if Paralleow enabled
         // and this tab clicked is one of main or sub

@@ -6,6 +6,7 @@ import lazy {
   document_save_from_path,
   sandbox_access,
   sandbox_mkdir_sync,
+  sandbox_read_arrayBuffer_sync,
   sandbox_rename_sync,
   sandbox_rmdir_sync,
   sandbox_save,
@@ -279,7 +280,7 @@ export class bunch_of_tabs {
    * @returns A number, the index of the new tab.
    * @description While if new_tab_url is also not set ("" or undefined), then will load the url_default_blank().
    * */
-  newTab(context: UIContext, target_url: string, init_state?: Uint8Array, placeholder_label?: string) {
+  newTab(context: UIContext, target_url: string, init_state: boolean, placeholder_label?: string) {
     console.log(`[bunch_of_tabs] newTab: url=${target_url}`);
     if (target_url == "") {
       // If newing an empty tab
@@ -305,7 +306,10 @@ export class bunch_of_tabs {
 
     this.used_date_ids.push(Date_ID);
     this.Tabs.push(new_TabInfo);
+
+    // TODO: Create this on demand for restoration, or we will stuck at aboutToAppear in meowTabsView for a long time
     this.NodeControllers.push(new TabNodeController(createNWeb(context, new_TabInfo)));
+
     this.Labels.push(new_TabLabel);
     this.main_tab_idx = this.Tabs.length - 1;
 
@@ -700,7 +704,7 @@ export class tab_info_packed {
    * @param link A string, the initial link when the tab is created.
    * @param restore_on_creation A boolean, optional, will restore web state on creation if the index in valid.
    */
-  constructor(title: string, url: string, storage: LocalStorage, index: number, init_state?: Uint8Array) {
+  constructor(title: string, url: string, storage: LocalStorage, index: number, init_state: boolean) {
     this.storage = storage;
     this.controller = new webview.WebviewController();
     this.index = index;
@@ -708,7 +712,6 @@ export class tab_info_packed {
     this.url = url;
     this.is_loading = url.substring(0, 7) != 'meow://';
     this.loading_progress = 0;
-    this.web_state_array = init_state;
     if (init_state) {
       console.log(`[tab_info_packed] New pack: ${url}, this.pre_restoration_stage = true!`);
       this.pre_restoration_stage = true;
@@ -886,6 +889,13 @@ export class tab_info_packed {
   restore() {
     // Restore Web State
     console.log(`[restore] pre_restoration_stage: ${this.pre_restoration_stage}, web_state_array.length: ${this.web_state_array?.length}`);
+    if (this.pre_restoration_stage) {
+      let array_file = "continue/continue_tabs_web_state_array_" + this.index.toString();
+      let array_buffer = sandbox_read_arrayBuffer_sync(array_file);
+      if (array_buffer) {
+        this.web_state_array = new Uint8Array(array_buffer);
+      }
+    }
     if (this.web_state_array) {
       // Restore
       try {
