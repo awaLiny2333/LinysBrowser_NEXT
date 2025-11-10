@@ -24,7 +24,7 @@ export class bunch_of_tabs {
   // Major Data
   Tabs: Array<tab_info_packed> = [];
   Labels: Array<tab_label> = [];
-  NodeControllers: Array<TabNodeController> = [];
+  NodeControllers: Array<TabNodeController | undefined> = [];
   my_id: string;
   // Statuses
   main_tab_idx: number = 0;
@@ -143,8 +143,8 @@ export class bunch_of_tabs {
    * */
   DISPOSE() {
     for (let index = 0; index < this.NodeControllers.length; index++) {
-      this.NodeControllers[index].detachWeb();
-      this.NodeControllers[index].dispose();
+      this.NodeControllers[index]?.detachWeb();
+      this.NodeControllers[index]?.dispose();
     }
   }
 
@@ -266,10 +266,19 @@ export class bunch_of_tabs {
    * Calls a tab to restore if possible.
    * @param target The target index.
    * */
-  callRestore(target: number = this.main_tab_idx) {
+  callRestore(context: UIContext, target: number = this.main_tab_idx) {
+    let t0 = Date.now();
     console.log(`[switchToTab] Call of Restore! target: ${target}, this.Tabs[target].pre_restoration_stage: ${this.Tabs[target]?.pre_restoration_stage}`);
     if (target >= 0 && this.Tabs[target].pre_restoration_stage) {
+      // Before Restore create a web first.
+      if (this.NodeControllers[target] == undefined) {
+        console.log(`[callRestore] of tab #${target}, Creating NWeb!`);
+        this.NodeControllers[target] = new TabNodeController(createNWeb(context, this.Tabs[target]));
+        this.NodeControllers[target]?.attachWeb();
+        this.NodeControllers[target]?.rebuild();
+      }
       this.Tabs[target].restore();
+      console.log(`[callRestore] Restore of tab #${target} finished! (Used ${(Date.now() - t0)} ms)`);
     }
   }
 
@@ -308,7 +317,11 @@ export class bunch_of_tabs {
     this.Tabs.push(new_TabInfo);
 
     // TODO: Create this on demand for restoration, or we will stuck at aboutToAppear in meowTabsView for a long time
-    this.NodeControllers.push(new TabNodeController(createNWeb(context, new_TabInfo)));
+    if (init_state) {
+      this.NodeControllers.push(undefined);
+    } else {
+      this.NodeControllers.push(new TabNodeController(createNWeb(context, new_TabInfo)));
+    }
 
     this.Labels.push(new_TabLabel);
     this.main_tab_idx = this.Tabs.length - 1;
@@ -390,12 +403,12 @@ export class bunch_of_tabs {
     let tab = this.Tabs.splice(target, 1)[0];
     this.Labels.splice(target, 1);
 
-    this.NodeControllers[target].detachWeb();
+    this.NodeControllers[target]?.detachWeb();
     // Dispose if is not move
     if (isMove) {
-      this.NodeControllers[target].rebuild();
+      this.NodeControllers[target]?.rebuild();
     } else {
-      this.NodeControllers[target].dispose();
+      this.NodeControllers[target]?.dispose();
     }
 
     let nodeController = this.NodeControllers.splice(target, 1)[0];
@@ -755,7 +768,7 @@ export class tab_info_packed {
       this.update_web_settings();
       let tabs = this.storage.get('bunch_of_tabs') as bunch_of_tabs;
       // Update web view
-      tabs.NodeControllers[this.index].update(tabs.Tabs[this.index]);
+      tabs.NodeControllers[this.index]?.update(tabs.Tabs[this.index]);
       this.last_updated_url = this.url;
       console.log('[update_url] Update webview for a change in url: [' + this.url + ']!');
     }

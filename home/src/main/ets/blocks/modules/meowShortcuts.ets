@@ -33,7 +33,7 @@ struct meowShortcuts {
 
   aboutToAppear(): void {
     if (this.homepage_shortcuts.length > 0) {
-      this.storage.setOrCreate('homepage_shortcuts_no_start_animation', true);
+      this.storage.setOrCreate('homepage_shortcuts_no_animation', true);
     }
   }
 
@@ -68,6 +68,9 @@ struct meowShortcuts {
       this.woofHomepageManager_control.open();
     })
     .onAppear(() => {
+      setTimeout(() => {
+        this.storage.setOrCreate('homepage_shortcuts_no_animation', false);
+      }, 1)
       console.log(`[meowShortcuts] Bookmarks Shortcuts OK! (${run_time(this.storage)} ms)`)
     })
   }
@@ -126,7 +129,7 @@ struct shortcutButton {
   // Environment
   @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
   @LocalStorageLink('screen_height') screen_height: number = 100;
-  @LocalStorageLink('homepage_shortcuts_no_start_animation') homepage_shortcuts_no_start_animation: boolean = false;
+  @LocalStorageLink('homepage_shortcuts_no_animation') homepage_shortcuts_no_animation: boolean = false;
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('preferred_hand_reverse_homepage_shortcuts') preferred_hand_reverse_homepage_shortcuts: boolean = false;
@@ -140,10 +143,11 @@ struct shortcutButton {
   @State vis_contents: Visibility = Visibility.None;
   @State render_contents: boolean = false;
   render_contents_timeout_id: number | undefined = undefined;
-  @State show: Visibility = Visibility.None;
+  // @State show: Visibility = Visibility.None;
+
   // @State offset_y: number = 50;
 
-  // @State show: Visibility = this.homepage_shortcuts_no_start_animation ? Visibility.Visible : Visibility.None;
+  @State show: Visibility = this.homepage_shortcuts_no_animation ? Visibility.Visible : Visibility.None;
 
   build() {
     Column({ space: this.render_contents ? 10 : 0 }) {
@@ -156,10 +160,12 @@ struct shortcutButton {
         .visibility(this.show)
         .animation(animation_default())
         .onAppear(() => {
-          setTimeout(() => {
-            this.show = Visibility.Visible;
-            // Animation of floating up
-          }, this.get_animation_timeout())
+          if (!this.homepage_shortcuts_no_animation) {
+            setTimeout(() => {
+              this.show = Visibility.Visible;
+              // Animation of floating up
+            }, this.get_animation_timeout())
+          }
         })
         .onClick(() => {
           let item = this.bookmark;

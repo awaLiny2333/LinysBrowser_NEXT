@@ -2,7 +2,7 @@ import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { animation_default, click_effect_default, fontSize_Large, fontSize_Normal, url_default_blank } from '../../hosts/bunch_of_defaults';
 import { sandbox_read_text_sync } from '../../utils/storage_tools';
 import lazy { createSubWindow, is_subwindow_opened } from '../../utils/ui_tools';
-import { run_time, storage_of_id, storage_of_index, window_index_of_id } from '../../utils/ui_tools';
+import { run_time, storage_of_id, storage_of_index } from '../../utils/ui_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { check_want } from '../../utils/want_tools';
 import lazy { bunch_of_settings } from '../../hosts/bunch_of_settings';
@@ -84,83 +84,10 @@ struct meowTabsVertical {
   // Timeout
   scroll_2_bottom_timeout_handle_id: number | undefined = undefined;
 
-  aboutToAppear() {
-    let t0 = Date.now();
-
-    let continue_tabs_sub_on = AppStorage.get('continue_tabs_sub_on') as number;
-    let continue_tabs_main_on = AppStorage.get('continue_tabs_main_on') as number;
-    let continue_tabs_count = AppStorage.get('continue_tabs_count') as number;
-
-    if (window_index_of_id(this.my_window_id) != 0) {
-      // Sub windows
-      if (this.want_uri == '') {
-        // New window without a want
-        let start_tab_url = '';
-        if (this.start_up_option == "new tab") {
-          start_tab_url = this.new_tab_url;
-        } else {
-          start_tab_url = (this.home_url == "") ? url_default_blank() : this.home_url;
-        }
-        this.new_tab(start_tab_url, false, false);
-        this.switch_tab(0, false, false);
-      } else {
-        // Do nothing if is a wanted new window to a running BrowserCat.
-      }
-    } else {
-      // Main window
-      // Start Up: generate / recover tabs
-      if (this.start_up_option == "new tab") {
-        try {
-          this.new_tab(this.new_tab_url, false, false);
-          this.switch_tab(0, false, false);
-        } catch (e) {
-          console.error('[TabsVertical][NEW_TAB] ' + e);
-        }
-      } else if (this.start_up_option == "home") {
-        try {
-          this.new_tab((this.home_url == "") ? url_default_blank() : this.home_url, false, false);
-          this.switch_tab(0, false, false);
-        } catch (e) {
-          console.error('[TabsVertical][HOME] ' + e);
-        }
-      } else {
-
-        // Create new tabs
-        for (let index = 0; index < continue_tabs_count; index++) {
-          try {
-            let label_file = "continue/continue_tabs_web_state_array_" + index.toString() + '_label';
-            let label = sandbox_read_text_sync(label_file); // Name of that tab
-            this.new_tab("", false, false, true, label);
-          } catch (e) {
-            console.error('[TabsVertical][CONTINUE][new_tab] ' + e);
-          }
-        }
-
-        // Switch to *THE* tab
-        this.switch_tab(continue_tabs_main_on, false, false);
-      }
-
-      setTimeout(() => {
-        // Retrieve all data, avoid blocks on the main thread
-        sync_all_tabs_list_info(this.storage);
-        // Recover Paralleow
-        if (continue_tabs_sub_on < this.tab_titles.length) {
-          this.bunch_of_tabs.sub_tab_idx = continue_tabs_sub_on;
-          this.bunch_of_tabs.callRestore(continue_tabs_sub_on);
-        }
-      }, 10);
-    }
-
-    if (this.want_source == 'onCreate') { // TODO: Is this check necessary?
-      check_want(this.want_uri, this.want_action, this.want_type, this.storage);
-    }
-
-    this.pre_recover_tabs_finished = true;
-
-    this.last_tab_index = this.bunch_of_tabs.main_tab_idx; // Set last_tab_index
-
-    console.log(`[Meow][init][meowTabsVertical] Tabs OK. (${(Date.now() - t0)}/${run_time(this.storage)} ms)`);
-  }
+  // ABANDONED. Logics moved to onAppear to avoid block in UI rendering.
+  // aboutToAppear() {
+  //   this.preprocessing();
+  // }
 
   build() {
     if (this.delayed_load_p1) {
@@ -235,7 +162,8 @@ struct meowTabsVertical {
       .height("100%")
       .onAppear(() => {
         this.my_visibility = Visibility.Visible;
-        console.log(`[Meow][meowTabsvertical] onAppear! (${run_time(this.storage)} ms)`)
+        console.log(`[Meow][meowTabsvertical] onAppear! (${run_time(this.storage)} ms)`);
+        this.preprocessing(this.storage);
       })
       .onAreaChange((_o, n) => {
         this.scroll_area_height = n.height as number - 60;
@@ -292,6 +220,95 @@ struct meowTabsVertical {
 
   // Tab controls
 
+  preprocessing(storage: LocalStorage) {
+    let t0 = Date.now();
+
+    // Start
+    let continue_tabs_sub_on = AppStorage.get('continue_tabs_sub_on') as number;
+    let continue_tabs_main_on = AppStorage.get('continue_tabs_main_on') as number;
+    let continue_tabs_count = AppStorage.get('continue_tabs_count') as number;
+    let start_up_option = AppStorage.get('start_up_option') as string;
+    // Want
+    let want_uri = storage.get('want_uri') as string;
+    let want_source = storage.get('want_source') as string;
+    let want_action = storage.get('want_action') as string;
+    let want_type = storage.get('want_type') as string;
+
+    if ((AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string) != this.my_window_id) {
+      // Sub windows
+      if (want_uri == '') {
+        // New window without a want
+        let start_tab_url = '';
+        if (start_up_option == "new tab") {
+          start_tab_url = this.new_tab_url;
+        } else {
+          start_tab_url = (this.home_url == "") ? url_default_blank() : this.home_url;
+        }
+        this.new_tab(start_tab_url, false, false);
+        this.switch_tab(0, false, false);
+      } else {
+        // Do nothing if is a wanted new window to a running BrowserCat.
+      }
+    } else {
+      // Main window
+      // Start Up: generate / recover tabs
+      if (start_up_option == "new tab") {
+        try {
+          this.new_tab(this.new_tab_url, false, false);
+          this.switch_tab(0, false, false);
+        } catch (e) {
+          console.error('[TabsVertical][NEW_TAB] ' + e);
+        }
+      } else if (start_up_option == "home") {
+        try {
+          this.new_tab((this.home_url == "") ? url_default_blank() : this.home_url, false, false);
+          this.switch_tab(0, false, false);
+        } catch (e) {
+          console.error('[TabsVertical][HOME] ' + e);
+        }
+      } else {
+
+        console.log(`[Meow][init][meowTabsVertical] about to restore tabs. (${(Date.now() - t0)}/${run_time(storage)} ms)`);
+
+        // Create new tabs
+        for (let index = 0; index < continue_tabs_count; index++) {
+          try {
+            let label_file = "continue/continue_tabs_web_state_array_" + index.toString() + '_label';
+            let label = sandbox_read_text_sync(label_file); // Name of that tab
+            this.new_tab("", false, false, true, label);
+          } catch (e) {
+            console.error('[TabsVertical][CONTINUE][new_tab] ' + e);
+          }
+        }
+
+        // Switch to *THE* tab
+        this.switch_tab(continue_tabs_main_on, false, false);
+      }
+
+      setTimeout(() => {
+        // Retrieve all data, avoid blocks on the main thread
+        sync_all_tabs_list_info(this.storage);
+        // Recover Paralleow
+        if (continue_tabs_sub_on < this.tab_titles.length) {
+          this.bunch_of_tabs.sub_tab_idx = continue_tabs_sub_on;
+          this.bunch_of_tabs.callRestore(this.getUIContext(), continue_tabs_sub_on);
+        }
+      }, 10);
+    }
+
+    console.log(`[Meow][init][meowTabsVertical] about to check want. (${(Date.now() - t0)}/${run_time(storage)} ms)`);
+
+    if (want_source == 'onCreate') { // TODO: Is this check necessary?
+      check_want(want_uri, want_action, want_type, storage);
+    }
+
+    this.pre_recover_tabs_finished = true;
+
+    this.last_tab_index = this.bunch_of_tabs.main_tab_idx; // Set last_tab_index
+
+    console.log(`[Meow][init][meowTabsVertical] Preprocessing Tabs OK. (${(Date.now() - t0)}/${run_time(storage)} ms)`);
+  }
+
   /**
    * Creates a new tab.
    * @param target_url A string, if link is "", then load the default new_tab_url set in this object.
@@ -305,8 +322,11 @@ struct meowTabsVertical {
   new_tab(target_url: string, save_to_settings: boolean, is_from_receive: boolean, init_state: boolean = false, placeholder_label?: string) {
     let t0 = Date.now();
 
-    this.last_tab_index = this.bunch_of_tabs.main_tab_idx; // Remember last tab
-    this.storage.set('extra_background', false);
+    // Remember last tab & background stuffs
+    if (!init_state) {
+      this.last_tab_index = this.bunch_of_tabs.main_tab_idx;
+      this.storage.set('extra_background', false);
+    }
 
     if (is_from_receive) {
       this.bunch_of_tabs.receive_tab(this.storage);
@@ -314,36 +334,32 @@ struct meowTabsVertical {
       this.bunch_of_tabs.newTab(this.getUIContext(), target_url, init_state, placeholder_label);
     }
 
-    // Get synced lists
-    if (init_state) {
-      // Restore tab, no need to sync now
-    } else {
+    // Following processing for non init tabs;
+    if (!init_state) {
+      // Get synced lists
       sync_all_tabs_list_info(this.storage);
-    }
 
-    if (init_state) {
-      // Nothing happens
-    } else {
       // Store tabs count
       let store_tabs_count = this.bunch_of_tabs.get_tabs_count();
       bunch_of_settings.set("continue_tabs_count", store_tabs_count);
       console.log("[Meow][meowTabs] Stored Tabs Count: " + store_tabs_count);
-    }
 
-    // Animation part
-    if (this.need_help_scroll) {
-      if (this.scroll_2_bottom_timeout_handle_id !== undefined) {
-        // Cancel existing timeout;
-        clearTimeout(this.scroll_2_bottom_timeout_handle_id);
-        this.scroll_2_bottom_timeout_handle_id = undefined;
+      // Animation part
+      if (this.need_help_scroll) {
+        if (this.scroll_2_bottom_timeout_handle_id !== undefined) {
+          // Cancel existing timeout;
+          clearTimeout(this.scroll_2_bottom_timeout_handle_id);
+          this.scroll_2_bottom_timeout_handle_id = undefined;
+        }
+        this.scroll_2_bottom_timeout_handle_id = setTimeout(() => {
+          this.scroll_controller.scrollEdge(Edge.Bottom);
+        }, 500);
       }
-      this.scroll_2_bottom_timeout_handle_id = setTimeout(() => {
-        this.scroll_controller.scrollEdge(Edge.Bottom);
-      }, 500);
-    }
 
-    if (save_to_settings) {
-      this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][new_tab]');
+      // Save to settings
+      if (save_to_settings) {
+        this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][new_tab]');
+      }
     }
 
     console.log('[new_tab] ' + (Date.now() - t0) + ' ms!');
@@ -385,7 +401,7 @@ struct meowTabsVertical {
     determine_extra_background(this.storage);
 
     // Restore
-    this.bunch_of_tabs.callRestore();
+    this.bunch_of_tabs.callRestore(this.getUIContext());
 
     if (save_to_settings) {
       this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][switch_tab]');
@@ -487,7 +503,7 @@ struct meowTabsVertical {
     determine_extra_background(this.storage);
 
     // Restore
-    this.bunch_of_tabs.callRestore();
+    this.bunch_of_tabs.callRestore(this.getUIContext());
 
     if (save_to_settings) {
       this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][close_tab]');
@@ -551,7 +567,7 @@ struct meowTabsVertical {
         // then set this tab as sub view
         this.choosing_paralleow = false;
         this.bunch_of_tabs.sub_tab_idx = clicked;
-        this.bunch_of_tabs.callRestore(clicked);
+        this.bunch_of_tabs.callRestore(this.getUIContext(), clicked);
       } else if (sub >= 0 && (sub == clicked || main == clicked)) {
         // if Paralleow enabled
         // and this tab clicked is one of main or sub

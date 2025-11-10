@@ -44,9 +44,6 @@ struct meowWebView {
   @LocalStorageLink('potential_jump_link') @Watch('on_potential_jump_link_change') potential_jump_link: string = '';
   @LocalStorageLink('extra_background') extra_background: boolean = false;
   @State my_opacity: number = 0;
-  // Delay
-  @LocalStorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
-  @LocalStorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
   // Download
   @LocalStorageLink('dl_delegate') dl_delegate: webview.WebDownloadDelegate = new webview.WebDownloadDelegate();
   @LocalStorageLink('uni_webDownloadItem_gateway') @Watch('on_download_request') uni_webDownloadItem_gateway: webview.WebDownloadItem | undefined = undefined;
@@ -149,13 +146,13 @@ struct meowWebView {
         .width('100%')
         .visibility(this.extra_background ? Visibility.Visible : Visibility.Hidden)
 
-      if (this.delayed_load_p1) {
-        ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
+      ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
+        if (this.bunch_of_tabs.NodeControllers[Label.index_key]) {
           NodeContainer(this.bunch_of_tabs.NodeControllers[Label.index_key])
             .onAppear(() => {
               try {
-                this.bunch_of_tabs.NodeControllers[Label.index_key].attachWeb();
-                this.bunch_of_tabs.NodeControllers[Label.index_key].rebuild();
+                this.bunch_of_tabs.NodeControllers[Label.index_key]?.attachWeb();
+                this.bunch_of_tabs.NodeControllers[Label.index_key]?.rebuild();
               } catch (e) {
                 console.error('[Tab] onAppear Failed: ' + e);
               }
@@ -164,33 +161,30 @@ struct meowWebView {
             .height(this.bunch_of_tabs.sub_tab_idx < 0 ? "100%" : this.height_tab())
             .alignRules(this.bunch_of_tabs.main_tab_idx == Label.index_key ? this.align_rules_main_tab() : this.align_rules_sub_tab())
             .visibility(this.my_visibility(Label.index_key))
-          // Webs
-        }, (Label: tab_label) => Label.timestamp.toString())
-      }
+        } // Webs
+      }, (Label: tab_label) => Label.timestamp.toString())
 
       // Notices
-      if (this.delayed_load_p1) {
-        Column({ space: (this.show_toast_fullscreen) ? 10 : 0 }) {
-          toast({
-            show: this.show_toast_fullscreen,
-            extra: this.bunch_of_key_shortcuts.get_shortcut_string('fullscreen')
-              .reverse()
-              .join(' + ')
-              .toUpperCase(),
-            info: $r('app.string.fullscreen_notice')
-          })
-        }
-        .translate({ y: -20 })
-        .alignRules({
-          bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
-          middle: { anchor: '__container__', align: HorizontalAlign.Center },
-        })
-        .onAppear(() => {
-          this.on_current_url_change();
-          // init OK
-          this.init_OK = true;
+      Column({ space: (this.show_toast_fullscreen) ? 10 : 0 }) {
+        toast({
+          show: this.show_toast_fullscreen,
+          extra: this.bunch_of_key_shortcuts.get_shortcut_string('fullscreen')
+            .reverse()
+            .join(' + ')
+            .toUpperCase(),
+          info: $r('app.string.fullscreen_notice')
         })
       }
+      .translate({ y: -20 })
+      .alignRules({
+        bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+        middle: { anchor: '__container__', align: HorizontalAlign.Center },
+      })
+      .onAppear(() => {
+        this.on_current_url_change();
+        // init OK
+        this.init_OK = true;
+      })
     }
     .opacity(this.my_opacity)
     .animation({ duration: 200 })
