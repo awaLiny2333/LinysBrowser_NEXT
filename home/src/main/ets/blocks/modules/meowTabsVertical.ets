@@ -567,7 +567,6 @@ struct meowTabsVertical {
   }
 
   uni_new_tab() {
-    // console.log('qwq_new_tab');
     let url = this.new_tab_gateway[0] as string;
     let is_popup = this.new_tab_gateway[1] as boolean;
 
@@ -583,20 +582,7 @@ struct meowTabsVertical {
       url = ""
     }
 
-    let is_free_window_mode = AppStorage.get('free_window_mode') as boolean;
-    console.log(`[uni_new_tab] free_window_mode: ${is_free_window_mode}`)
-
-    // if (is_popup && is_free_window_mode) {
-    //   this.storage.setOrCreate('universal_popup_tab_gateway', url);
-    //   if (is_subwindow_opened(this.storage)) {
-    //     // Do nothing;
-    //   } else {
-    //     // Open window;
-    //     createSubWindow(this.storage, 'meow', this.getUIContext());
-    //   }
-    // } else {
     this.new_tab(url, true, false, undefined, undefined);
-    // }
 
     this.last_tab_gateway_url = url;
     this.new_tab_gateway = ["", false];

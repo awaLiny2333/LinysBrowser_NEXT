@@ -27,7 +27,7 @@ import { history_index_full_rebuild_worker } from '../../hosts/bunch_of_history_
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import lazy { get_sandbox_folder_size } from '../../utils/any_concurrent_tools';
-import lazy { createSubWindow, destroySubWindow, new_window, storage_of_id } from '../../utils/ui_tools';
+import lazy { new_window, storage_of_id } from '../../utils/ui_tools';
 import lazy { common } from '@kit.AbilityKit';
 import lazy { webview } from '@kit.ArkWeb';
 import bundleManager from '@ohos.bundle.bundleManager';
@@ -1251,20 +1251,6 @@ struct meowAppSettings {
                             this.uni_fail_prompt_gateway = e.toString();
                           }
                         });
-                      })
-
-                    linysCapsuleButton({
-                      text: 'Open Subwindow'
-                    }) // Enable mix audio
-                      .onClick(() => {
-                        this.storage.setOrCreate('universal_popup_tab_gateway', 'huawei.com');
-                        createSubWindow(this.storage, 'Meow~~!!', this.getUIContext());
-                      })
-                    linysCapsuleButton({
-                      text: 'Destroy Subwindow'
-                    }) // Enable mix audio
-                      .onClick(() => {
-                        destroySubWindow(this.storage);
                       })
                   }
                 }
