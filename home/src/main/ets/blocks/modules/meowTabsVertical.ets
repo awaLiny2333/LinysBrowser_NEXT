@@ -1,7 +1,6 @@
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { animation_default, click_effect_default, fontSize_Large, fontSize_Normal, url_default_blank } from '../../hosts/bunch_of_defaults';
 import { sandbox_read_text_sync } from '../../utils/storage_tools';
-import lazy { createSubWindow, is_subwindow_opened } from '../../utils/ui_tools';
 import { run_time, storage_of_id, storage_of_index } from '../../utils/ui_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { check_want } from '../../utils/want_tools';
@@ -584,21 +583,20 @@ struct meowTabsVertical {
       url = ""
     }
 
-
     let is_free_window_mode = AppStorage.get('free_window_mode') as boolean;
     console.log(`[uni_new_tab] free_window_mode: ${is_free_window_mode}`)
 
-    if (is_popup && is_free_window_mode) {
-      this.storage.setOrCreate('universal_popup_tab_gateway', url);
-      if (is_subwindow_opened(this.storage)) {
-        // Do nothing;
-      } else {
-        // Open window;
-        createSubWindow(this.storage, 'meow', this.getUIContext());
-      }
-    } else {
-      this.new_tab(url, true, false, undefined, undefined);
-    }
+    // if (is_popup && is_free_window_mode) {
+    //   this.storage.setOrCreate('universal_popup_tab_gateway', url);
+    //   if (is_subwindow_opened(this.storage)) {
+    //     // Do nothing;
+    //   } else {
+    //     // Open window;
+    //     createSubWindow(this.storage, 'meow', this.getUIContext());
+    //   }
+    // } else {
+    this.new_tab(url, true, false, undefined, undefined);
+    // }
 
     this.last_tab_gateway_url = url;
     this.new_tab_gateway = ["", false];
