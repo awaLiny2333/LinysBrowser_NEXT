@@ -91,7 +91,7 @@ struct meowTitleBar {
   @LocalStorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
   @LocalStorageLink('delayed_load_p2') delayed_load_p2: boolean = false;
   @LocalStorageLink('delayed_load_p3') delayed_load_p3: boolean = false;
-  // settings
+  // Settings
   @StorageLink('title_bar_position') title_bar_position: string = "";
   @StorageLink('tabs_style') tabs_style: string = "";
   @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
@@ -574,14 +574,8 @@ struct meowTitleBar {
     .offset({
       y: this.y_offset_title_bar()
     })
-    .animation(animation_default())
+    .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
     .onAppear(() => {
-      // console.log("[Meow][meowTitleBar] Title Bar READY")
-      // setInterval(() => {
-      //   if (this.address_analyzers_desc_close_cd > 0) {
-      //     this.address_analyzers_desc_close_cd -= 1000;
-      //   }
-      // }, 1000);
       console.log(`[Meow][meowTitleBar] onAppear! (${run_time(this.storage)} ms)`);
     })
   }

@@ -17,6 +17,7 @@ import lazy { meow_init_main, meow_init_sub } from '../processes/init_process';
 import lazy { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import lazy { bunch_of_settings } from '../hosts/bunch_of_settings';
 import lazy { bunch_of_downloads } from '../hosts/bunch_of_downloads';
+import { meowPx2vp } from '../utils/environment_tools';
 
 export default class HomeAbility extends UIAbility {
   my_window_id = '';
@@ -210,8 +211,10 @@ export default class HomeAbility extends UIAbility {
   window_load_content(windowStage: window.WindowStage, windowClass: window.Window, my_window_id: string, storage: LocalStorage) {
     // Save my window to AppStorage
     let windowClasses: window.Window[] | undefined = AppStorage.get('windows');
+    let my_index: number;
     if (windowClasses == undefined) {
       // IS THE FIRST WINDOW OF APP
+      my_index = 0;
       AppStorage.setOrCreate('windows', [windowClass]);
       AppStorage.setOrCreate('windowIds', []);
       AppStorage.setOrCreate('windowStages', []);
@@ -219,11 +222,36 @@ export default class HomeAbility extends UIAbility {
       AppStorage.setOrCreate('windowAliases', []);
     } else {
       // one of the multi-windows
+      my_index = windowClasses.length;
       windowClasses.push(windowClass);
       AppStorage.setOrCreate('windows', windowClasses); // Is this needed?
     }
 
     storage.setOrCreate('my_windowClass', windowClass);
+
+    // windowClass operations
+    let log = [
+      ' ',
+      '[Meow][HomeAbility][window_load_content]',
+      '    window.Window #' + my_index,
+      '    my_window_id: ' + this.my_window_id,
+      '    alias: ' + this.my_window_alias,
+      ' '
+    ].join('\n');
+    console.log(log);
+    let tablet_mode: boolean;
+    let compact_mode: boolean;
+    try {
+      const rect: window.Rect = windowClass.getWindowProperties().windowRect;
+      tablet_mode = meowPx2vp(rect.width) > 600;
+      compact_mode = meowPx2vp(rect.height) < 400;
+    } catch (error) {
+      // Leave tablet_mode there to be negative
+      tablet_mode = false;
+      compact_mode = false;
+    }
+    this.storage.setOrCreate('tablet_mode', tablet_mode);
+    this.storage.setOrCreate('compact_mode', compact_mode);
 
     // LAST_WINDOW_WINDOW_NAME is set by the window who opens this window.
     this.my_window_alias = AppStorage.get('LAST_WINDOW_WINDOW_NAME') as string;

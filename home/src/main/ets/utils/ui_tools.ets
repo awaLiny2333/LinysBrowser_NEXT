@@ -63,10 +63,12 @@ export function new_window(context: common.UIAbilityContext, instanceKey: string
  * @param window_id The window id.
  * */
 export function update_window_decor_height(window_id: string) {
-  if (!(AppStorage.get('free_window_mode') as boolean)) {
-    console.log('[free][update_window_decor_height] Executed nothing because not in Free-window Mode!');
+  let free_window_mode = AppStorage.get('free_window_mode') as boolean;
+  if (!free_window_mode) {
+    console.warn('[free][update_window_decor_height] INTERCEPTED & Executed nothing because not in Free-window Mode!');
     return;
   }
+  // Process
   let h = default_window_decor_height();
   let windowClass = window_of_id(window_id);
   let storage = storage_of_id(window_id);

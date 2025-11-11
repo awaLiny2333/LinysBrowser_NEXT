@@ -4,7 +4,6 @@ import { window } from '@kit.ArkUI';
 import { animation_default } from '../hosts/bunch_of_defaults';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
-import { meowPx2vp } from '../utils/environment_tools';
 import { drop_to_scratching_board } from '../utils/drag_drop_tools';
 import lazy { print_web } from '../utils/print_tools';
 import lazy { bunch_of_settings } from '../hosts/bunch_of_settings';
@@ -26,8 +25,7 @@ import {
   run_time,
   storage_of_id,
   update_window_decor_height,
-  window_index_of_id,
-  window_index_of_windowClass
+  window_index_of_id
 } from '../utils/ui_tools';
 import linysText from '../components/texts/linysText';
 import linysWindowButton from '../components/buttons/linysWindowButton';
@@ -147,37 +145,10 @@ struct Index {
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   aboutToAppear(): void {
-    console.log(`[Meow][Index] aboutToLoad Index! (${run_time(this.storage)} ms)`);
+    // console.log(`[Meow][Index] aboutToLoad Index! (${run_time(this.storage)} ms)`);
 
-    // Determine tablet mode and other window data.
-    window.getLastWindow(this.getUIContext().getHostContext()).then((w: window.Window) => {
-
-      const my_index = window_index_of_windowClass(w);
-      let log = [
-        ' ',
-        '[Meow][Index]',
-        '    window.Window #' + my_index,
-        '    my_window_id from this.storage: ' + this.storage.get('my_window_id'),
-        '    my_window_id from @LocalStorageLink: ' + this.my_window_id,
-        '    bunch_of_tabs.my_id: ' + this.bunch_of_tabs.my_id,
-        '    alias: ' + this.my_window_alias,
-        ' '
-      ].join('\n');
-      console.log(log);
-
-      try {
-        const rect: window.Rect = w.getWindowProperties().windowRect;
-        this.tablet_mode = meowPx2vp(rect.width) > 600;
-        this.compact_mode = meowPx2vp(rect.height) < 400;
-      } catch (error) {
-        // Leave tablet_mode there to be negative
-        this.tablet_mode = false;
-        this.compact_mode = false;
-      }
-
-      // Set window title
-      change_window_alias(this.my_window_id, this.my_window_alias);
-    });
+    // Set window title
+    change_window_alias(this.my_window_id, this.my_window_alias);
 
     // Init title bar
     this.on_title_bar_position_change();
@@ -185,30 +156,7 @@ struct Index {
     // Init color
     this.on_color_change();
 
-    update_window_decor_height(this.my_window_id);
-
     console.log(`[Meow][Index] Finished Loading Index! (${run_time(this.storage)} ms)`);
-
-    setTimeout(async () => {
-      // Trigger delayed load
-      setTimeout(() => {
-        this.delayed_load_p0 = true;
-        console.log(`[Meow][Index] Delay P0! (${run_time(this.storage)} ms)`);
-        setTimeout(() => {
-          this.delayed_load_p1 = true;
-          console.log(`[Meow][Index] Delay P1! (${run_time(this.storage)} ms)`);
-          setTimeout(() => {
-            this.delayed_load_p2 = true;
-            console.log(`[Meow][Index] Delay P2! (${run_time(this.storage)} ms)`);
-            setTimeout(() => {
-              this.delayed_load_p3 = true;
-              console.log(`[Meow][Index] Delay P3! (${run_time(this.storage)} ms)`);
-            }, this.delay_p3);
-          }, this.delay_p2);
-        }, this.delay_p1);
-      }, this.delay_p0);
-      this.index_init_ok = true;
-    }, 10) // Delayed loading
   }
 
   onBackPress(): boolean {
@@ -379,7 +327,7 @@ struct Index {
           ? { bottom: this.fullscreen_mode ? 0 : this.title_bar_height }
           : { top: this.fullscreen_mode ? 0 : this.title_bar_height })
         .backgroundColor(this.color_current_primary)
-        .animation(animation_default())
+        .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
         .width("100%")
 
         linysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
@@ -416,8 +364,35 @@ struct Index {
       this.full_screen_height = n.height as number;
     })
     .onAppear(() => {
-      // console.log("[Meow][Index] Home Index READY")
+
+      // Determine window decor height
+      update_window_decor_height(this.my_window_id);
+
+      this.delayed_loading();
     })
+  }
+
+  delayed_loading() {
+    setTimeout(() => {
+      // Trigger delayed load
+      setTimeout(() => {
+        this.delayed_load_p0 = true;
+        console.log(`[Meow][Index] Delay P0! (${run_time(this.storage)} ms)`);
+        setTimeout(() => {
+          this.delayed_load_p1 = true;
+          console.log(`[Meow][Index] Delay P1! (${run_time(this.storage)} ms)`);
+          setTimeout(() => {
+            this.delayed_load_p2 = true;
+            console.log(`[Meow][Index] Delay P2! (${run_time(this.storage)} ms)`);
+            setTimeout(() => {
+              this.delayed_load_p3 = true;
+              console.log(`[Meow][Index] Delay P3! (${run_time(this.storage)} ms)`);
+            }, this.delay_p3);
+          }, this.delay_p2);
+        }, this.delay_p1);
+      }, this.delay_p0);
+      this.index_init_ok = true;
+    }, 1) // Delayed loading
   }
 
   // @Watch or environment Reactions
