@@ -5,11 +5,12 @@
  * @param uri the want uri
  * @param action the want action
  * @param type the want type
+ * @returns True if a want is detected and processed.
  * */
 export function check_want(uri: string, action: string, type: string, storage: LocalStorage) {
   if (uri.length == 0) {
     console.log('[Meow][init] Didn\'t load want for an empty want.');
-    return;
+    return false;
   }
   console.log('[Meow][want] Load want with uri: ' + uri + ', action: ' + action + ', type: ' + type + ', storage id: ' + storage.get('my_window_id'));
 
@@ -20,6 +21,7 @@ export function check_want(uri: string, action: string, type: string, storage: L
     want_web(action, uri, storage);
   }
   uri = "";
+  return true;
 }
 
 function want_file(uri: string, storage: LocalStorage) {

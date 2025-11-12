@@ -233,9 +233,12 @@ struct meowTabsVertical {
     let want_action = storage.get('want_action') as string;
     let want_type = storage.get('want_type') as string;
 
+    let go_want = want_uri.length > 0 && want_source == 'onCreate';
+
+    // Tabs
     if ((AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string) != this.my_window_id) {
       // Sub windows
-      if (want_uri == '') {
+      if (!go_want) {
         // New window without a want
         let start_tab_url = '';
         if (start_up_option == "new tab") {
@@ -280,8 +283,12 @@ struct meowTabsVertical {
           }
         }
 
-        // Switch to *THE* tab
-        this.switch_tab(continue_tabs_main_on, false, false);
+        // Switch to *THE* tab if there is no want,
+        // and DON'T switch if there IS a want
+        // (or that tab would be woken at the same time as the loading of the wanted tab)
+        if (!go_want) {
+          this.switch_tab(continue_tabs_main_on, false, false);
+        }
       }
 
       setTimeout(() => {
@@ -298,14 +305,15 @@ struct meowTabsVertical {
       }, 10);
     }
 
-    console.log(`[Meow][init][meowTabsVertical] about to check want. (${(Date.now() - t0)}/${run_time(storage)} ms)`);
-
     if (want_source == 'onCreate') { // TODO: Is this check necessary?
-      check_want(want_uri, want_action, want_type, storage);
+      setTimeout(() => {
+        // Don't block first
+        console.log(`[Meow][init][meowTabsVertical] check want. (${(Date.now() - t0)}/${run_time(storage)} ms)`);
+        check_want(want_uri, want_action, want_type, storage);
+      }, 10)
     }
 
     this.pre_recover_tabs_finished = true;
-
     this.last_tab_index = this.bunch_of_tabs.main_tab_idx; // Set last_tab_index
 
     console.log(`[Meow][init][meowTabsVertical] Preprocessing Tabs OK. (${(Date.now() - t0)}/${run_time(storage)} ms)`);
