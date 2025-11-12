@@ -18,7 +18,9 @@ export function check_want(uri: string, action: string, type: string, storage: L
   if (uri.substring(0, 7) == 'file://') {
     want_file(uri, storage);
   } else {
-    want_web(action, uri, storage);
+    if (action == 'ohos.want.action.viewData') {
+      want_web(uri, storage);
+    }
   }
   uri = "";
   return true;
@@ -29,9 +31,7 @@ function want_file(uri: string, storage: LocalStorage) {
   storage.set('universal_new_tab_gateway', [uri, false]);
 }
 
-function want_web(action: string, uri: string, storage: LocalStorage) {
-  if (action == 'ohos.want.action.viewData') {
-    console.log('[Meow][want] Load want uri: ' + uri);
-    storage.set('universal_new_tab_gateway', [uri, false]);
-  }
+function want_web(uri: string, storage: LocalStorage) {
+  console.log('[Meow][want] Load want uri: ' + uri);
+  storage.set('universal_new_tab_gateway', [uri, false]);
 }

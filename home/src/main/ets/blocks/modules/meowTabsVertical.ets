@@ -55,7 +55,7 @@ struct meowTabsVertical {
   @State my_visibility: Visibility = Visibility.Hidden;
   scroll_controller: Scroller = new Scroller();
   @State scroll_area_height: number = 0;
-  need_help_scroll: boolean = true;
+  // need_help_scroll: boolean = true;
   @State paralleow_description_height: number = 0;
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
@@ -100,19 +100,21 @@ struct meowTabsVertical {
             }, (Label: tab_label) => Label.timestamp.toString())
           }
           .width("100%")
-          .onAreaChange((_o, n) => {
-            this.need_help_scroll = (n.height as number) > this.scroll_area_height;
-          })
 
+          // .onAreaChange((_o, n) => {
+          //   this.need_help_scroll = (n.height as number) > this.scroll_area_height;
+          // })
         } // Tab Buttons List
         .direction(Direction.Rtl)
         .align(Alignment.Bottom)
         .edgeEffect(EdgeEffect.Spring)
         .width("100%")
         .borderRadius(10)
-        .height(this.scroll_area_height - (this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? this.paralleow_description_height : 0))
+        // .height(this.scroll_area_height - (this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? this.paralleow_description_height : 0))
+        .layoutWeight(1)
         .animation(animation_default())
-        .nestedScroll({ scrollForward: NestedScrollMode.SELF_ONLY, scrollBackward: NestedScrollMode.SELF_ONLY })
+
+        // .nestedScroll({ scrollForward: NestedScrollMode.SELF_ONLY, scrollBackward: NestedScrollMode.SELF_ONLY })
 
         Row({ space: 10 }) {
           linysTimeoutButton({
@@ -148,7 +150,7 @@ struct meowTabsVertical {
 
         linysText({ text: $r('app.string.Paralleow_description'), max_lines: 4 })
           .onAreaChange((_o, n) => {
-            this.paralleow_description_height = n.height as number + 16;
+            this.paralleow_description_height = n.height as number + 10;
           })
           .visibility(this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
@@ -165,7 +167,7 @@ struct meowTabsVertical {
         this.preprocessing(this.storage);
       })
       .onAreaChange((_o, n) => {
-        this.scroll_area_height = n.height as number - 60;
+        this.scroll_area_height = n.height as number - 50;
       })
       .onDrop((e) => {
         try {
@@ -238,7 +240,9 @@ struct meowTabsVertical {
     // Tabs
     if ((AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string) != this.my_window_id) {
       // Sub windows
-      if (!go_want) {
+      if (go_want) {
+        // Do nothing if is a wanted new window to a running BrowserCat.
+      } else {
         // New window without a want
         let start_tab_url = '';
         if (start_up_option == "new tab") {
@@ -248,8 +252,6 @@ struct meowTabsVertical {
         }
         this.new_tab(start_tab_url, false, false);
         this.switch_tab(0, false, false);
-      } else {
-        // Do nothing if is a wanted new window to a running BrowserCat.
       }
     } else {
       // Main window
@@ -288,6 +290,7 @@ struct meowTabsVertical {
         // (or that tab would be woken at the same time as the loading of the wanted tab)
         if (!go_want) {
           this.switch_tab(continue_tabs_main_on, false, false);
+          this.try_scroll_to(continue_tabs_main_on);
         }
       }
 
@@ -305,12 +308,12 @@ struct meowTabsVertical {
       }, 10);
     }
 
-    if (want_source == 'onCreate') { // TODO: Is this check necessary?
+    if (want_source == 'onCreate' && go_want) { // TODO: Is this check necessary?
       setTimeout(() => {
         // Don't block first
         console.log(`[Meow][init][meowTabsVertical] check want. (${(Date.now() - t0)}/${run_time(storage)} ms)`);
         check_want(want_uri, want_action, want_type, storage);
-      }, 10)
+      }, 10);
     }
 
     this.pre_recover_tabs_finished = true;
@@ -356,17 +359,7 @@ struct meowTabsVertical {
         console.log("[Meow][meowTabs] Stored Tabs Count: " + store_tabs_count);
       }
 
-      // Animation part
-      if (this.need_help_scroll) {
-        if (this.scroll_2_bottom_timeout_handle_id !== undefined) {
-          // Cancel existing timeout;
-          clearTimeout(this.scroll_2_bottom_timeout_handle_id);
-          this.scroll_2_bottom_timeout_handle_id = undefined;
-        }
-        this.scroll_2_bottom_timeout_handle_id = setTimeout(() => {
-          this.scroll_controller.scrollEdge(Edge.Bottom);
-        }, 500);
-      }
+      this.try_scroll_to(this.bunch_of_tabs.Tabs.length - 1);
 
       // Save to settings
       if (save_to_settings) {
@@ -533,6 +526,23 @@ struct meowTabsVertical {
     if (save_to_settings) {
       this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][switch_paralleow]');
     }
+  }
+
+  try_scroll_to(idx: number) {
+    // Animation part
+    clearTimeout(this.scroll_2_bottom_timeout_handle_id); // Cancel existing timeout;
+    this.scroll_2_bottom_timeout_handle_id = setTimeout(() => {
+      let need_ani = this.bunch_of_tabs.Tabs.length * 42 + (this.bunch_of_tabs.Tabs.length - 1) * 5 > this.scroll_area_height;
+      let tar = (idx + 1) * 42 + (idx) * 5;
+      console.log(`[try_scroll_to] need_ani=${need_ani}, idx=${idx}, tar=${tar}, scroll_area_height=${this.scroll_area_height}`);
+      if (need_ani) {
+        this.scroll_controller.scrollTo({
+          xOffset: 0,
+          yOffset: tar - this.scroll_area_height,
+          animation: true,
+        });
+      }
+    }, 50);
   }
 
   // Events

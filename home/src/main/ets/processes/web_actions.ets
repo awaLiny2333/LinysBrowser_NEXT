@@ -167,36 +167,45 @@ export function on_page_end(pk: tab_info_packed) {
       sync_current_tabs_list_info(pk.storage);
     }
   } catch (e) {
-    console.error('[meowWebView][onPageEnd] Update bunch_of_tabs error: ' + e);
+    console.error('[meowWebView][onPageEnd] Update bunch_of_tabs Phase I error: ' + e);
   }
 
-  // Get and save web_state
-  tabs.update_web_state(pk.index, true);
-  // if (window_index_of_id(tabs.my_id) == 0 && !pk.pre_restoration_stage) {
-  let is_lord = (pk.storage.get('my_window_id') as string) == (AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string);
-  if (is_lord && !pk.pre_restoration_stage) {
-    console.log('[on_page_end] Save web state!');
-    tabs.save_web_state_to_sandbox(pk.index);
-    tabs.save_web_label_to_sandbox(pk.index);
-  } else {
-    console.warn(`[on_page_end] Didn't save web_state, is_lord=${is_lord}, !pre_restoration_stage=${!pk.pre_restoration_stage}, `
-      + `my_window_id=${(pk.storage.get('my_window_id') as string)}, THE_LORD_OF_THE_WINDOWS=${(AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string)}`);
+  try {
+    // Get and save web_state
+    tabs.update_web_state(pk.index, true);
+    // if (window_index_of_id(tabs.my_id) == 0 && !pk.pre_restoration_stage) {
+    let is_lord = (pk.storage.get('my_window_id') as string) == (AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string);
+    if (is_lord && !pk.pre_restoration_stage) {
+      console.log('[on_page_end] Save web state!');
+      tabs.save_web_state_to_sandbox(pk.index);
+      tabs.save_web_label_to_sandbox(pk.index);
+    } else {
+      console.warn(`[on_page_end] Didn't save web_state, is_lord=${is_lord}, !pre_restoration_stage=${!pk.pre_restoration_stage}, `
+        + `my_window_id=${(pk.storage.get('my_window_id') as string)}, THE_LORD_OF_THE_WINDOWS=${(AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string)}`);
+    }
+  } catch (e) {
+    console.error('[meowWebView][onPageEnd] Update bunch_of_tabs Phase II error: ' + e);
   }
 
-  // Save history
-  if (pk.title != '') {
-    pk.check_save_history('[onPageEnd]');
+  try {
+    // Save history
+    if (pk.title != '') {
+      pk.check_save_history('[onPageEnd]');
+    }
+
+    // Mark End Recovery
+    if (pk.pre_restoration_stage) {
+      pk.delayed_set_restore_ok(() => {
+        console.log('[Tabs] Restore OK for #' + pk.index + ' !');
+        (pk.storage.get('tab_restore_on_creations') as boolean[])[pk.index] = false;
+      });
+    }
+
+    determine_extra_background(pk.storage);
+  } catch (e) {
+    console.error('[meowWebView][onPageEnd] Update bunch_of_tabs Phase II error: ' + e);
   }
 
-  // Mark End Recovery
-  if (pk.pre_restoration_stage) {
-    pk.delayed_set_restore_ok(() => {
-      console.log('[Tabs] Restore OK for #' + pk.index + ' !');
-      (pk.storage.get('tab_restore_on_creations') as boolean[])[pk.index] = false;
-    });
-  }
-
-  determine_extra_background(pk.storage);
 }
 
 /**
