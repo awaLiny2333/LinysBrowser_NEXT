@@ -45,7 +45,7 @@ struct meowTabsVertical {
   @LocalStorageLink('tab_titles') tab_titles: string[] = []
   @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
   // Other Info / Statuses
-  pre_recover_tabs_finished: boolean = false;
+  @LocalStorageLink('tabs_init_ok') tabs_init_ok: boolean = false;
   @LocalStorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
   @LocalStorageLink('last_tab_index') last_tab_index: number = -1;
   @StorageLink('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
@@ -83,11 +83,6 @@ struct meowTabsVertical {
   // Timeout
   scroll_2_bottom_timeout_handle_id: number | undefined = undefined;
 
-  // ABANDONED. Logics moved to onAppear to avoid block in UI rendering.
-  // aboutToAppear() {
-  //   this.preprocessing();
-  // }
-
   build() {
     if (this.delayed_load_p1) {
       Column({ space: 10 }) {
@@ -100,21 +95,14 @@ struct meowTabsVertical {
             }, (Label: tab_label) => Label.timestamp.toString())
           }
           .width("100%")
-
-          // .onAreaChange((_o, n) => {
-          //   this.need_help_scroll = (n.height as number) > this.scroll_area_height;
-          // })
         } // Tab Buttons List
         .direction(Direction.Rtl)
         .align(Alignment.Bottom)
         .edgeEffect(EdgeEffect.Spring)
         .width("100%")
         .borderRadius(10)
-        // .height(this.scroll_area_height - (this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? this.paralleow_description_height : 0))
         .layoutWeight(1)
         .animation(animation_default())
-
-        // .nestedScroll({ scrollForward: NestedScrollMode.SELF_ONLY, scrollBackward: NestedScrollMode.SELF_ONLY })
 
         Row({ space: 10 }) {
           linysTimeoutButton({
@@ -316,10 +304,10 @@ struct meowTabsVertical {
       }, 10);
     }
 
-    this.pre_recover_tabs_finished = true;
     this.last_tab_index = this.bunch_of_tabs.main_tab_idx; // Set last_tab_index
 
     console.log(`[Meow][init][meowTabsVertical] Preprocessing Tabs OK. (${(Date.now() - t0)}/${run_time(storage)} ms)`);
+    this.tabs_init_ok = true;
   }
 
   /**
@@ -390,7 +378,7 @@ struct meowTabsVertical {
       console.error('[Meow][TabsVertical][switch_tab][a] ' + e);
     }
     // Update history
-    if (this.pre_recover_tabs_finished) {
+    if (this.tabs_init_ok) {
       this.bunch_of_tabs.update_backward_forward_access();
     }
 
@@ -414,7 +402,7 @@ struct meowTabsVertical {
   }
 
   close_tab(target: number, save_to_settings: boolean, move_target_window: number = -1) {
-    if (!this.pre_recover_tabs_finished) {
+    if (!this.tabs_init_ok) {
       console.error("[Meow][LinysTabs][ERROR] Recover Not OK (" + target + ')!');
       return;
     }
@@ -528,17 +516,35 @@ struct meowTabsVertical {
     }
   }
 
+  /**
+   * Tries to scroll to a tab of specific index.
+   * @param idx The index of the target tab.
+   * */
   try_scroll_to(idx: number) {
-    // Animation part
+    let tab_height_default: number = 42;
     clearTimeout(this.scroll_2_bottom_timeout_handle_id); // Cancel existing timeout;
     this.scroll_2_bottom_timeout_handle_id = setTimeout(() => {
-      let need_ani = this.bunch_of_tabs.Tabs.length * 42 + (this.bunch_of_tabs.Tabs.length - 1) * 5 > this.scroll_area_height;
-      let tar = (idx + 1) * 42 + (idx) * 5;
-      console.log(`[try_scroll_to] need_ani=${need_ani}, idx=${idx}, tar=${tar}, scroll_area_height=${this.scroll_area_height}`);
+      let current = this.scroll_controller.currentOffset().yOffset;
+      let tar = (idx + 1) * tab_height_default + (idx) * 5;
+      let need_ani = (tar > this.scroll_area_height + current) || (tar < current); // Out of vision
+
+      // Determine scroll distance
+      const max_y = (this.bunch_of_tabs.Tabs.length) * tab_height_default + (this.bunch_of_tabs.Tabs.length - 1) * 5;
+      let scroll_y = tar - 0.5 * this.scroll_area_height - (tab_height_default + 5) * 0.5;
+      // Limit range
+      if (scroll_y > max_y - this.scroll_area_height) {
+        scroll_y = max_y - this.scroll_area_height;
+      }
+      if (scroll_y < 0) {
+        scroll_y = 0;
+      }
+
+      // Scroll
+      console.log(`[try_scroll_to] need_ani=${need_ani}, idx=${idx}, tar=${tar}, scroll_y=${scroll_y}`);
       if (need_ani) {
         this.scroll_controller.scrollTo({
           xOffset: 0,
-          yOffset: tar - this.scroll_area_height,
+          yOffset: scroll_y,
           animation: true,
         });
       }
@@ -716,7 +722,7 @@ struct TabButton {
   // Data
   @LocalStorageLink('tab_titles') tab_titles: string[] = [];
   @LocalStorageLink('tab_restore_on_creations') tab_restore_on_creations: boolean[] = [false];
-  // Settings - Accessibility
+  // Settings
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Gateways
   @LocalStorageLink('universal_tab_button_click_gateway') uni_tab_button_clicked: number = -1;
