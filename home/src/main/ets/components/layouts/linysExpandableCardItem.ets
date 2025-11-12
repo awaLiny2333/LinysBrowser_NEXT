@@ -27,6 +27,7 @@ struct linysExpandableCardItem {
   @BuilderParam title_extras: () => void;
   // Actions
   @Prop can_drag: boolean = false;
+  up_timeout_id: number | undefined = undefined;
 
   build() {
     Column() {
@@ -75,14 +76,19 @@ struct linysExpandableCardItem {
         top: { anchor: "__container__", align: VerticalAlign.Top }
       })
       .onTouch((event) => {
+        // console.log(`[linysExpandableCardItem][uwu] ${event.type}, is_dragging=${this.is_dragging}`)
         if (this.is_dragging) {
           return;
         }
         // Up
-        if (event.type == TouchType.Up) {
-          console.log('[linysExpandableCardItem] onTouch UP!')
-          this.is_pressing = false;
-          this.press_start_time = undefined;
+        if (event.type == TouchType.Up || event.type == TouchType.Cancel) {
+          clearTimeout(this.up_timeout_id);
+          this.up_timeout_id = setTimeout(() => {
+            console.log('[linysExpandableCardItem] onTouch UP or CANCEL!')
+            this.is_pressing = false;
+            this.press_start_time = undefined;
+            this.is_press_timing_ok = false;
+          }, 10)
           return;
         }
         // If is touching

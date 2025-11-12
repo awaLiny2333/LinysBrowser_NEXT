@@ -255,12 +255,14 @@ async function settings(storage: LocalStorage) {
   AppStorage.setOrCreate('bottom_avoid', bunch_of_settings.get('bottom_avoid') as boolean);
 
   // General - Surf
-  let home_url: string = bunch_of_settings.get('home_url') as string
-  let new_tab_url: string = bunch_of_settings.get('new_tab_url') as string
-  let start_up_option: string = bunch_of_settings.get('start_up_option') as string
-  AppStorage.setOrCreate('home_url', home_url);
-  AppStorage.setOrCreate('new_tab_url', new_tab_url);
-  AppStorage.setOrCreate('start_up_option', start_up_option);
+  // NO NEED, as these data would be put to bunch_of_tabs
+
+  // let home_url: string = bunch_of_settings.get('home_url') as string
+  // let new_tab_url: string = bunch_of_settings.get('new_tab_url') as string
+  // let start_up_option: string = bunch_of_settings.get('start_up_option') as string
+  // AppStorage.setOrCreate('home_url', home_url);
+  // AppStorage.setOrCreate('new_tab_url', new_tab_url);
+  // AppStorage.setOrCreate('start_up_option', start_up_option);
 
   AppStorage.setOrCreate('intelligent_tracking_prevention', bunch_of_settings.get('intelligent_tracking_prevention') as boolean);
   AppStorage.setOrCreate('enable_third_party_cookies', bunch_of_settings.get('enable_third_party_cookies') as boolean);
@@ -404,7 +406,7 @@ async function restore_tabs(storage: LocalStorage) {
  * @param t0 Start time of the whole initialization process.
  * */
 function tabs(storage: LocalStorage) {
-  let tabs = new bunch_of_tabs(false, storage.get('my_window_id') as string);
+  let tabs = new bunch_of_tabs(false, storage);
   // AppStorage.setOrCreate('bunch_of_tabs', tabs);
   storage.setOrCreate('bunch_of_tabs', tabs);
   storage.setOrCreate('showing_tabs', bunch_of_settings.get('status_tabs_open') as boolean);

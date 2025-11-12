@@ -310,7 +310,7 @@ struct Index {
                 .visibility(this.visibility_of_background_image())
             } // Background
 
-            if (this.delayed_load_p0) {
+            if (this.delayed_load_p1) {
               meowWebView()
             } // WebViews
 

@@ -25,38 +25,20 @@ struct meowTabsVertical {
   storage: LocalStorage = storage_of_id(this.my_window_id);
   // Want
   @LocalStorageLink('want_timestamp') @Watch('on_want') want_timestamp: string = '0';
-  @LocalStorageLink('want_source') want_source: string = 'want';
-  @LocalStorageLink('want_uri') want_uri: string = 'want';
-  @LocalStorageLink('want_action') want_action: string = '';
-  @LocalStorageLink('want_type') want_type: string = '';
-  // Hosts and environments
+  /**
+   * Hosts and environments */
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
-  @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
-  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
-  @LocalStorageLink('showing_tabs') showing_tabs: boolean = false;
-  @LocalStorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
-  @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
-  // Surf
-  @StorageLink('home_url') home_url: string = '';
-  @StorageLink('new_tab_url') new_tab_url: string = '';
-  @StorageLink('start_up_option') start_up_option: string = '';
   // Controls
   @LocalStorageLink('tab_titles') tab_titles: string[] = []
-  @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
   // Other Info / Statuses
   @LocalStorageLink('tabs_init_ok') tabs_init_ok: boolean = false;
   @LocalStorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
   @LocalStorageLink('last_tab_index') last_tab_index: number = -1;
-  @StorageLink('intelligent_tracking_prevention') intelligent_tracking_prevention: boolean = false;
-  // Delay
-  @LocalStorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
   // Animation info
   @State my_visibility: Visibility = Visibility.Hidden;
   scroll_controller: Scroller = new Scroller();
-  @State scroll_area_height: number = 0;
-  // need_help_scroll: boolean = true;
-  @State paralleow_description_height: number = 0;
+  scroll_area_height: number = 0;
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('preferred_hand_reverse_tabs_panel') preferred_hand_reverse_tabs_panel: boolean = false;
@@ -76,135 +58,132 @@ struct meowTabsVertical {
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
-  // Drop
-  @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   // Pan Gesture
   pan_x: number = 0;
   // Timeout
   scroll_2_bottom_timeout_handle_id: number | undefined = undefined;
 
   build() {
-    if (this.delayed_load_p1) {
-      Column({ space: 10 }) {
-        Scroll(this.scroll_controller) {
-          Column({ space: 5 }) {
-            ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
-              TabButton({
-                Label: Label,
-              })
-            }, (Label: tab_label) => Label.timestamp.toString())
+    // if (this.delayed_load_p1) {
+    Column({ space: 10 }) {
+      Scroll(this.scroll_controller) {
+        Column({ space: 5 }) {
+          ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
+            TabButton({
+              Label: Label,
+            })
+          }, (Label: tab_label) => Label.timestamp.toString())
+        }
+        .width("100%")
+      } // Tab Buttons List
+      .direction(Direction.Rtl)
+      .align(Alignment.Bottom)
+      .edgeEffect(EdgeEffect.Spring)
+      .width("100%")
+      .borderRadius(10)
+      .layoutWeight(1)
+      .animation(animation_default())
+
+      Row({ space: 10 }) {
+        linysTimeoutButton({
+          text: '  󰀁  ',
+          onExecution: () => {
+            this.close_all_tabs_gateway = Date.now();
           }
-          .width("100%")
-        } // Tab Buttons List
-        .direction(Direction.Rtl)
-        .align(Alignment.Bottom)
-        .edgeEffect(EdgeEffect.Spring)
-        .width("100%")
-        .borderRadius(10)
-        .layoutWeight(1)
-        .animation(animation_default())
-
-        Row({ space: 10 }) {
-          linysTimeoutButton({
-            text: '  󰀁  ',
-            onExecution: () => {
-              this.close_all_tabs_gateway = Date.now();
-            }
-          })
-            .visibility(this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? Visibility.None : Visibility.Visible)
-            .animation(animation_default())
-
-          Blank()
-
-          linysShowButton({
-            symbol_glyph_target: 'sys.symbol.map',
-            show: this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0,
-            text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
-          })
-            .onClick(() => {
-              this.choose_paralleow();
-            })
-            .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden)
-            .animation(animation_default())
-
-          linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
-            .onClick(() => {
-              this.new_tab("", true, false);
-            })
-            .keyboardShortcut(this.bunch_of_key_shortcuts.new_tab.main_key, this.bunch_of_key_shortcuts.new_tab.modifier)
-        } // New Tab and Paralleow Button
-        .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
-        .width("100%")
-
-        linysText({ text: $r('app.string.Paralleow_description'), max_lines: 4 })
-          .onAreaChange((_o, n) => {
-            this.paralleow_description_height = n.height as number + 10;
-          })
-          .visibility(this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? Visibility.Visible : Visibility.None)
+        })
+          .visibility(this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? Visibility.None : Visibility.Visible)
           .animation(animation_default())
 
-      } // Tabs Panel
-      .visibility(this.my_visibility)
-      .animation(animation_default())
-      .justifyContent(FlexAlign.End)
+        Blank()
+
+        linysShowButton({
+          symbol_glyph_target: 'sys.symbol.map',
+          show: this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0,
+          text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
+        })
+          .onClick(() => {
+            this.choose_paralleow();
+          })
+          .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden)
+          .animation(animation_default())
+
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
+          .onClick(() => {
+            this.new_tab("", true, false);
+          })
+          .keyboardShortcut(this.bunch_of_key_shortcuts.new_tab.main_key, this.bunch_of_key_shortcuts.new_tab.modifier)
+      } // New Tab and Paralleow Button
+      .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
       .width("100%")
-      .height("100%")
-      .onAppear(() => {
-        this.my_visibility = Visibility.Visible;
-        console.log(`[Meow][meowTabsvertical] onAppear! (${run_time(this.storage)} ms)`);
+
+      linysText({ text: $r('app.string.Paralleow_description'), max_lines: 4 })
+        .visibility(this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? Visibility.Visible : Visibility.None)
+        .animation(animation_default())
+
+    } // Tabs Panel
+    .visibility(this.my_visibility)
+    .animation(animation_default())
+    .justifyContent(FlexAlign.End)
+    .width("100%")
+    .height("100%")
+    .onAppear(() => {
+      this.my_visibility = Visibility.Visible;
+      console.log(`[Meow][meowTabsvertical] onAppear! (${run_time(this.storage)} ms)`);
+      setTimeout(() => {
         this.preprocessing(this.storage);
-      })
-      .onAreaChange((_o, n) => {
-        this.scroll_area_height = n.height as number - 50;
-      })
-      .onDrop((e) => {
-        try {
-          let drop_ok = drop_to_scratching_board(e, this.storage, true);
-          if (!drop_ok) {
-            this.showing_scratching_board = false;
-          }
-        } catch (e) {
-          console.error('[onDrop] Failed: ' + e);
+      }, 1)
+    })
+    .onAreaChange((_o, n) => {
+      this.scroll_area_height = n.height as number - 50;
+    })
+    .onDrop((e) => {
+      try {
+        let drop_ok = drop_to_scratching_board(e, this.storage, true);
+        if (!drop_ok) {
+          this.storage.set('showing_scratching_board', false);
         }
-      })
-      .onDragEnter(() => {
-        // this.showing_scratching_board = true;
-        this.showing_scratching_board = false;
-        this.showing_more_options = false;
-      })
-      .onDragLeave(() => {
-        this.showing_scratching_board = false;
-      })
-      .gesture(
-        PanGesture({ direction: PanDirection.Left | PanDirection.Right })
-          .onActionStart(() => {
-            this.pan_x = 0;
-          })
-          .onActionUpdate((e) => {
-            this.pan_x += e.offsetX;
-          })
-          .onActionEnd(() => {
-            if (this.is_right_align()) {
-              if (this.pan_x < 0) {
-                // ← Switch to Bookmarks
-                this.showing_bookmarks = true;
-                // this.showing_tabs = false;
-              } else {
-                // → Right Align Close panel
-                this.showing_tabs = false;
-              }
+      } catch (e) {
+        console.error('[onDrop] Failed: ' + e);
+      }
+    })
+    .onDragEnter(() => {
+      this.storage.set('showing_scratching_board', false);
+      this.storage.set('showing_more_options', false);
+    })
+    .onDragLeave(() => {
+      this.storage.set('showing_scratching_board', false);
+    })
+    .gesture(
+      PanGesture({ direction: PanDirection.Left | PanDirection.Right })
+        .onActionStart(() => {
+          this.pan_x = 0;
+        })
+        .onActionUpdate((e) => {
+          this.pan_x += e.offsetX;
+        })
+        .onActionEnd(() => {
+          if (this.is_right_align()) {
+            if (this.pan_x < 0) {
+              // ← Switch to Bookmarks
+              this.storage.set('showing_bookmarks', true);
+              // this.showing_tabs = false;
             } else {
-              if (this.pan_x < 0) {
-                // ← Close panel
-                this.showing_tabs = false;
-              } else {
-                // → Open bookmarks
-                this.showing_bookmarks = true;
-              }
+              // → Right Align Close panel
+              this.storage.set('showing_tabs', false);
             }
-          })
-      )
-    }
+          } else {
+            if (this.pan_x < 0) {
+              // ← Close panel
+              this.storage.set('showing_tabs', false);
+            } else {
+              // → Open bookmarks
+              this.storage.set('showing_bookmarks', true);
+            }
+          }
+        })
+    )
+
+    // }
   }
 
   // Tab controls
@@ -216,7 +195,7 @@ struct meowTabsVertical {
     let continue_tabs_sub_on = AppStorage.get('continue_tabs_sub_on') as number;
     let continue_tabs_main_on = AppStorage.get('continue_tabs_main_on') as number;
     let continue_tabs_count = AppStorage.get('continue_tabs_count') as number;
-    let start_up_option = AppStorage.get('start_up_option') as string;
+    let start_up_option = bunch_of_tabs.start_up;
     // Want
     let want_uri = storage.get('want_uri') as string;
     let want_source = storage.get('want_source') as string;
@@ -234,9 +213,9 @@ struct meowTabsVertical {
         // New window without a want
         let start_tab_url = '';
         if (start_up_option == "new tab") {
-          start_tab_url = this.new_tab_url;
+          start_tab_url = bunch_of_tabs.new_tab_url;
         } else {
-          start_tab_url = (this.home_url == "") ? url_default_blank() : this.home_url;
+          start_tab_url = (bunch_of_tabs.home_url == "") ? url_default_blank() : bunch_of_tabs.home_url;
         }
         this.new_tab(start_tab_url, false, false);
         this.switch_tab(0, false, false);
@@ -246,20 +225,19 @@ struct meowTabsVertical {
       // Start Up: generate / recover tabs
       if (start_up_option == "new tab") {
         try {
-          this.new_tab(this.new_tab_url, false, false);
+          this.new_tab(bunch_of_tabs.new_tab_url, false, false);
           this.switch_tab(0, false, false);
         } catch (e) {
           console.error('[TabsVertical][NEW_TAB] ' + e);
         }
       } else if (start_up_option == "home") {
         try {
-          this.new_tab((this.home_url == "") ? url_default_blank() : this.home_url, false, false);
+          this.new_tab((bunch_of_tabs.home_url == "") ? url_default_blank() : bunch_of_tabs.home_url, false, false);
           this.switch_tab(0, false, false);
         } catch (e) {
           console.error('[TabsVertical][HOME] ' + e);
         }
       } else {
-
         console.log(`[Meow][init][meowTabsVertical] about to restore tabs. (${(Date.now() - t0)}/${run_time(storage)} ms)`);
 
         // Create new tabs
@@ -267,6 +245,7 @@ struct meowTabsVertical {
           try {
             let label_file = "continue/continue_tabs_web_state_array_" + index.toString() + '_label';
             let label = sandbox_read_text_sync(label_file); // Name of that tab
+            console.log(`[Meow][init][meowTabsVertical] Tab #${index}!`);
             this.new_tab("", false, false, true, label);
           } catch (e) {
             console.error('[TabsVertical][CONTINUE][new_tab] ' + e);
@@ -329,6 +308,7 @@ struct meowTabsVertical {
       this.storage.set('extra_background', false);
     }
 
+    // Main process
     if (is_from_receive) {
       this.bunch_of_tabs.receive_tab(this.storage);
     } else {
@@ -362,10 +342,12 @@ struct meowTabsVertical {
     this.last_tab_index = this.bunch_of_tabs.main_tab_idx; // Remember last tab
     console.log('[switch_tab] Last tab index [' + this.last_tab_index + '][' + this.tab_titles[this.last_tab_index] + ']')
 
-    if (!this.tablet_mode && close_tabs_panel) {
+    let tablet_mode = this.storage.get('tablet_mode') as boolean;
+    let tabs_style_non_tablet_mode = AppStorage.get('tabs_style_non_tablet_mode') as string;
+    if (!tablet_mode && close_tabs_panel) {
       // Auto close panel
-      if (this.tabs_style_non_tablet_mode == "vertical") {
-        this.showing_tabs = false;
+      if (tabs_style_non_tablet_mode == "vertical") {
+        this.storage.set('showing_tabs', false);
       }
     }
 
@@ -389,7 +371,8 @@ struct meowTabsVertical {
       console.error('[TabsVertical][switch_tab][b] ' + e);
     }
     // Update Input Search Box
-    set_search_box_text(this.current_url, this.storage);
+    let current_url = this.storage.get('current_url') as string;
+    set_search_box_text(current_url, this.storage);
 
     determine_extra_background(this.storage);
 
@@ -447,7 +430,8 @@ struct meowTabsVertical {
     // Get synced lists
     sync_all_tabs_list_info(this.storage);
     // Update Input Search Box
-    set_search_box_text(this.current_url, this.storage);
+    let current_url = this.storage.get('current_url') as string;
+    set_search_box_text(current_url, this.storage);
 
     // Store tabs count
     let store_tabs_count = this.tab_titles.length;
@@ -660,13 +644,13 @@ struct meowTabsVertical {
    * Respond to wants
    * */
   on_want() {
-    if (this.want_source == 'onCreate') {
+    if ((this.storage.get('want_source') as string) == 'onCreate') {
       // A good BrowserCat never takes the wants needed by other new-born windows!
       console.log('[Meow][meowTabsVertical] Ignored onCreate want!');
       return;
     }
 
-    check_want(this.want_uri, this.want_action, this.want_type, this.storage);
+    check_want(this.storage.get('want_uri') as string, this.storage.get('want_action') as string, this.storage.get('want_type') as string, this.storage);
   }
 
   /**
@@ -732,94 +716,81 @@ struct TabButton {
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
-    RelativeContainer() {
-      Row() {
+    Row({ space: 5 }) {
+      if (this.preferred_hand_left_or_right == 'left') {
         SymbolGlyph($r('sys.symbol.xmark'))
-          .padding({ right: 5 })
           .fontSize(fontSize_Normal())
           .fontColor([this.color_current_font])
           .fontWeight(FontWeight.Bold)
-          .visibility(this.preferred_hand_left_or_right == 'left' ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
+          .height('100%')
+          .padding(10)
+          .onClick(() => {
+            this.close_tab_gateway = this.Label.index_key;
+          })
+      }
 
+      if (this.bunch_of_tabs.sub_tab_idx > -1 && this.bunch_of_tabs.main_tab_idx == this.Label.index_key) {
         Text(this.tablet_mode ? "󰃊" : "󰃎") // Paralleow icon left
-          .visibility((this.bunch_of_tabs.sub_tab_idx > -1 && this.bunch_of_tabs.main_tab_idx == this.Label.index_key) ? Visibility.Visible : Visibility.None)
           .fontColor(this.color_current_font)
           .animation(animation_default())
-          .padding({ right: 5 })
           .fontSize(fontSize_Large())
           .fontWeight(FontWeight.Bold)
+      }
 
+      if (this.bunch_of_tabs.sub_tab_idx == this.Label.index_key) {
         Text(this.tablet_mode ? "󰈱" : "󰈮") // Paralleow icon right
-          .visibility(this.bunch_of_tabs.sub_tab_idx == this.Label.index_key ? Visibility.Visible : Visibility.None)
           .fontColor(this.color_current_font)
           .animation(animation_default())
-          .padding({ right: 5 })
           .fontSize(fontSize_Large())
           .fontWeight(FontWeight.Bold)
+      }
 
-        Text(this.tab_titles[this.Label.index_key] == "" ? "Meow" : this.tab_titles[this.Label.index_key])
-          .padding({ left: 2 })
-          .fontSize(fontSize_Normal())
-          .fontColor(this.color_current_font)
-          .fontWeight((this.bunch_of_tabs.main_tab_idx == this.Label.index_key ||
-            this.bunch_of_tabs.sub_tab_idx == this.Label.index_key)
-            ? FontWeight.Bold : undefined)
-          .maxLines(1)
-          .textOverflow({ overflow: TextOverflow.Ellipsis })
-          .layoutWeight(1)
+      Text(this.tab_titles[this.Label.index_key] == "" ? "Meow" : this.tab_titles[this.Label.index_key])
+        .fontSize(fontSize_Normal())
+        .fontColor(this.color_current_font)
+        .fontWeight((this.bunch_of_tabs.main_tab_idx == this.Label.index_key ||
+          this.bunch_of_tabs.sub_tab_idx == this.Label.index_key)
+          ? FontWeight.Bold : undefined)
+        .maxLines(1)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
+        .layoutWeight(1)
+        .keyboardShortcut(this.bunch_of_tabs.main_tab_idx == this.Label.index_key ? this.bunch_of_key_shortcuts.close_tab.main_key : '',
+          this.bunch_of_key_shortcuts.close_tab.modifier, () => {
+            this.close_tab_gateway = this.Label.index_key;
+          })
 
+      if (this.preferred_hand_left_or_right == 'right') {
         SymbolGlyph($r('sys.symbol.xmark'))
           .fontSize(fontSize_Normal())
           .fontColor([this.color_current_font])
           .fontWeight(FontWeight.Bold)
-          .visibility(this.preferred_hand_left_or_right == 'right' ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
+          .height('100%')
+          .padding(10)
+          .onClick(() => {
+            this.close_tab_gateway = this.Label.index_key;
+          })
+      }
 
-      } // Title and xmark
-      .border({
-        radius: 10,
-        width: 2,
-        color: (this.bunch_of_tabs.main_tab_idx == this.Label.index_key || this.bunch_of_tabs.sub_tab_idx == this.Label.index_key)
-          ? this.color_current_font : "transparent"
-      })
-      .backgroundColor(this.color_current_secondary)
-      // .offset({ y: this.offset_area[this.Label.index_key] })
-      .animation(animation_default())
-      .width("100%")
-      .height(this.tab_height_default)
-      .padding(10)
-      .alignRules({
-        middle: { anchor: "__container__", align: HorizontalAlign.Center },
-        top: { anchor: "__container__", align: VerticalAlign.Top }
-      })
-      .onClick(() => {
-        this.uni_tab_button_clicked = this.Label.index_key;
-      })
-
-      Column() {
-      } // The True Tab Closer
-      .width(35)
-      .height("100%")
-      .alignRules(this.preferred_hand_left_or_right == 'right' ?
-        {
-          right: { anchor: "__container__", align: HorizontalAlign.End },
-          center: { anchor: "__container__", align: VerticalAlign.Center }
-        } : {
-          left: { anchor: "__container__", align: HorizontalAlign.Start },
-          center: { anchor: "__container__", align: VerticalAlign.Center }
-        })
-      .onClick(() => {
-        this.close_tab_gateway = this.Label.index_key;
-      })
-      .keyboardShortcut(this.bunch_of_tabs.main_tab_idx == this.Label.index_key ? this.bunch_of_key_shortcuts.close_tab.main_key : '',
-        this.bunch_of_key_shortcuts.close_tab.modifier)
-    }
+    } // Title and xmark
+    .border({
+      radius: 10,
+      width: 2,
+      color: (this.bunch_of_tabs.main_tab_idx == this.Label.index_key || this.bunch_of_tabs.sub_tab_idx == this.Label.index_key)
+        ? this.color_current_font : "transparent"
+    })
+    .backgroundColor(this.color_current_secondary)
     .opacity(this.tab_restore_on_creations[this.Label.index_key] ? 0.5 : 1)
     .height(this.tab_height)
+    .padding(this.preferred_hand_left_or_right == 'right' ? { left: 10 } : { right: 10 })
     .animation(animation_default())
-    .width("100%")
+    .alignItems(VerticalAlign.Center)
     .clickEffect(click_effect_default())
+    .width("100%")
+    .onClick(() => {
+      this.uni_tab_button_clicked = this.Label.index_key;
+    })
     .draggable(true)
     .onDragStart((event) => {
       try {

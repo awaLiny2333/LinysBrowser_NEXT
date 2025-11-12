@@ -174,7 +174,7 @@ struct shortcutButton {
             setTimeout(() => {
               this.new_tab_gateway = [(item as bookmark).get_link(), false];
               this.current_url = (item as bookmark).get_link();
-            }, 100)
+            }, 5);
           } else {
             // Is folder, expand contents
             clearTimeout(this.render_contents_timeout_id);

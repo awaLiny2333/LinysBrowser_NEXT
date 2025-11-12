@@ -1,7 +1,7 @@
 import { webview } from '@kit.ArkWeb';
 import { match_domain, url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
 import { url_default_blank } from './bunch_of_defaults';
-import lazy { storage_of_id, window_index_of_id } from '../utils/ui_tools';
+import lazy { window_index_of_id } from '../utils/ui_tools';
 import lazy {
   document_save_from_path,
   sandbox_access,
@@ -25,7 +25,8 @@ export class bunch_of_tabs {
   Tabs: Array<tab_info_packed> = [];
   Labels: Array<tab_label> = [];
   NodeControllers: Array<TabNodeController | undefined> = [];
-  my_id: string;
+  my_id: string = '';
+  my_storage: LocalStorage | undefined = undefined;
   // Statuses
   main_tab_idx: number = 0;
   sub_tab_idx: number = -1;
@@ -33,19 +34,22 @@ export class bunch_of_tabs {
   current_accessBackward: boolean = false;
   // Private / Temp / Meaningless
   status_update_timestamp: number = 0;
-  private used_date_ids: number[] = [];
+  private used_timestamps: Set<number> = new Set();
 
   /**
    * A class holding tabs in a list which provides methods to operate tabs.
    *
    * @param no_init Will not set my_id.
    */
-  constructor(no_init: boolean, id?: string) {
+  constructor(no_init: boolean, storage?: LocalStorage) {
     if (no_init) {
       this.my_id = '';
       return;
     }
-    this.my_id = id || '';
+    if (storage) {
+      this.my_storage = storage;
+      this.my_id = storage.get('my_window_id') as string;
+    }
     console.log('[Meow][bunch_of_tabs] Init success! ID: ' + this.my_id + '!');
   }
 
@@ -293,6 +297,10 @@ export class bunch_of_tabs {
    * @description While if new_tab_url is also not set ("" or undefined), then will load the url_default_blank().
    * */
   newTab(context: UIContext, target_url: string, init_state: boolean, placeholder_label?: string) {
+    if (!this.my_storage) {
+      console.warn(`[bunch_of_tabs] INTERCEPTED for undefined my_storage! newTab: url=${target_url}`);
+      return;
+    }
     console.log(`[bunch_of_tabs] newTab: url=${target_url}`);
     if (target_url == "") {
       // If newing an empty tab
@@ -306,20 +314,18 @@ export class bunch_of_tabs {
     }
 
     let idx = this.Tabs.length;
-    let new_TabInfo: tab_info_packed = new tab_info_packed(placeholder_label || 'Meow', target_url, storage_of_id(this.my_id), idx, init_state);
+    let new_TabInfo: tab_info_packed = new tab_info_packed(placeholder_label || 'Meow', target_url, this.my_storage, idx, init_state);
     let Date_ID = Date.now();
 
-    // TODO: IS THIS EFFICIENT ENOUGH?
-    while (this.used_date_ids.includes(Date_ID)) {
+    while (this.tab_timestamp_collide(Date_ID)) {
       // Date_ID crash prevention
       Date_ID += 1;
     }
+    this.used_timestamps.add(Date_ID);
     let new_TabLabel: tab_label = new tab_label(Date_ID, idx);
 
-    this.used_date_ids.push(Date_ID);
     this.Tabs.push(new_TabInfo);
 
-    // TODO: Create this on demand for restoration, or we will stuck at aboutToAppear in meowTabsView for a long time
     if (init_state) {
       this.NodeControllers.push(undefined);
     } else {
@@ -349,18 +355,17 @@ export class bunch_of_tabs {
     let idx = this.Tabs.length;
     let Date_ID = Date.now();
 
-    // TODO: IS THIS EFFICIENT ENOUGH?
-    while (this.used_date_ids.includes(Date_ID)) {
+    while (this.tab_timestamp_collide(Date_ID)) {
       // Date_ID crash prevention
       Date_ID += 1;
     }
+    this.used_timestamps.add(Date_ID);
     let new_TabLabel: tab_label = new tab_label(Date_ID, idx);
 
     // Localize (whar)
     move_tab_tab_info_packed.index = idx;
     move_tab_tab_info_packed.storage = storage;
 
-    this.used_date_ids.push(Date_ID);
     this.Tabs.push(move_tab_tab_info_packed);
     this.NodeControllers.push(move_tab_TabNodeController);
     this.Labels.push(new_TabLabel);
@@ -404,7 +409,7 @@ export class bunch_of_tabs {
     // this.Tabs[target].off_regular_save();
 
     let tab = this.Tabs.splice(target, 1)[0];
-    this.Labels.splice(target, 1);
+    let label = this.Labels.splice(target, 1)[0];
 
     this.NodeControllers[target]?.detachWeb();
     // Dispose if is not move
@@ -415,7 +420,6 @@ export class bunch_of_tabs {
     }
 
     let nodeController = this.NodeControllers.splice(target, 1)[0];
-
     if (isMove) {
       AppStorage.setOrCreate('move_tab_tab_info_packed', tab);
       AppStorage.setOrCreate('move_tab_TabNodeController', nodeController);
@@ -431,12 +435,10 @@ export class bunch_of_tabs {
       this.main_tab_idx -= 1;
     }
 
-    console.log('[bunch_of_tabs][closeTab] ' + this.main_tab_idx + '!');
+    // Delete timestamp from used set
+    this.used_timestamps.delete(label.timestamp);
 
-    // Clear used date ids
-    if (this.Tabs.length == 1) {
-      this.used_date_ids = [this.Labels[0].timestamp];
-    }
+    console.log('[bunch_of_tabs][closeTab] ' + this.main_tab_idx + '!');
 
     return this.main_tab_idx;
   }
@@ -665,6 +667,15 @@ export class bunch_of_tabs {
    * */
   update_my_timestamp() {
     this.status_update_timestamp = Date.now();
+  }
+
+  /**
+   * Checks if collide with some timestamps in the existing tabs.
+   * @param stamp The new time stamp
+   * @returns True if collides, false otherwise.
+   * */
+  private tab_timestamp_collide(stamp: number) {
+    return this.used_timestamps.has(stamp);
   }
 }
 

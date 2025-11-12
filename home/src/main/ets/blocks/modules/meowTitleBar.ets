@@ -125,7 +125,7 @@ struct meowTitleBar {
         meowSuggestions({ top_margin: 5 })
       } // Suggestions
 
-      if (this.delayed_load_p1) {
+      if (this.delayed_load_p0) {
         Column() {
           if (this.tablet_mode && this.tabs_style == 'horizontal' || !this.tablet_mode && this.tabs_style_non_tablet_mode == 'horizontal') {
             meowTabsHorizontal()
@@ -294,7 +294,6 @@ struct meowTitleBar {
           .layoutWeight(1)
 
           if (this.delayed_load_p0) {
-
             linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right' }) // Search
               .visibility(this.visible_when_typing())
               .onClick(() => {
