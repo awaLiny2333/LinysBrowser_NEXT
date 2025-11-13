@@ -30,9 +30,9 @@ export function sync_all_tabs_list_info(storage: LocalStorage) {
   storage.set('tab_match_domains', tab_match_domains);
   storage.set('tab_restore_on_creations', tab_restore_on_creations);
 
-  console.log('[Meow][tab_match_domains]: ' + tab_match_domains);
-  console.log('[Meow][tab_is_loading]: ' + tab_is_loading);
-  console.log('[Meow][tab_loading_progresses]: ' + tab_loading_progresses);
+  console.log('[tab_match_domains]: ' + tab_match_domains);
+  console.log('[tab_is_loading]: ' + tab_is_loading);
+  console.log('[tab_loading_progresses]: ' + tab_loading_progresses);
 
   sync_current_tabs_list_info(storage);
 

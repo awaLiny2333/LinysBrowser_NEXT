@@ -38,7 +38,7 @@ struct meowTabsVertical {
   // Animation info
   @State my_visibility: Visibility = Visibility.Hidden;
   scroll_controller: Scroller = new Scroller();
-  scroll_area_height: number = 0;
+  @LocalStorageLink('vertical_tabs_scroll_area_height') scroll_area_height: number = 0;
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('preferred_hand_reverse_tabs_panel') preferred_hand_reverse_tabs_panel: boolean = false;
@@ -64,7 +64,6 @@ struct meowTabsVertical {
   scroll_2_bottom_timeout_handle_id: number | undefined = undefined;
 
   build() {
-    // if (this.delayed_load_p1) {
     Column({ space: 10 }) {
       Scroll(this.scroll_controller) {
         Column({ space: 5 }) {
@@ -95,6 +94,9 @@ struct meowTabsVertical {
           .animation(animation_default())
 
         Blank()
+          .onClick(() => {
+            this.try_scroll_to(this.bunch_of_tabs.main_tab_idx);
+          })
 
         linysShowButton({
           symbol_glyph_target: 'sys.symbol.map',
@@ -182,8 +184,6 @@ struct meowTabsVertical {
           }
         })
     )
-
-    // }
   }
 
   // Tab controls
@@ -245,7 +245,7 @@ struct meowTabsVertical {
           try {
             let label_file = "continue/continue_tabs_web_state_array_" + index.toString() + '_label';
             let label = sandbox_read_text_sync(label_file); // Name of that tab
-            console.log(`[Meow][init][meowTabsVertical] Tab #${index}!`);
+            // console.log(`[Meow][init][meowTabsVertical] Tab #${index}!`);
             this.new_tab("", false, false, true, label);
           } catch (e) {
             console.error('[TabsVertical][CONTINUE][new_tab] ' + e);
@@ -275,7 +275,7 @@ struct meowTabsVertical {
       }, 10);
     }
 
-    if (want_source == 'onCreate' && go_want) { // TODO: Is this check necessary?
+    if (want_source == 'onCreate' && go_want) {
       setTimeout(() => {
         // Don't block first
         console.log(`[Meow][init][meowTabsVertical] check want. (${(Date.now() - t0)}/${run_time(storage)} ms)`);
@@ -508,9 +508,7 @@ struct meowTabsVertical {
     let tab_height_default: number = 42;
     clearTimeout(this.scroll_2_bottom_timeout_handle_id); // Cancel existing timeout;
     this.scroll_2_bottom_timeout_handle_id = setTimeout(() => {
-      let current = this.scroll_controller.currentOffset().yOffset;
       let tar = (idx + 1) * tab_height_default + (idx) * 5;
-      let need_ani = (tar > this.scroll_area_height + current) || (tar < current); // Out of vision
 
       // Determine scroll distance
       const max_y = (this.bunch_of_tabs.Tabs.length) * tab_height_default + (this.bunch_of_tabs.Tabs.length - 1) * 5;
@@ -524,14 +522,12 @@ struct meowTabsVertical {
       }
 
       // Scroll
-      console.log(`[try_scroll_to] need_ani=${need_ani}, idx=${idx}, tar=${tar}, scroll_y=${scroll_y}`);
-      if (need_ani) {
-        this.scroll_controller.scrollTo({
-          xOffset: 0,
-          yOffset: scroll_y,
-          animation: true,
-        });
-      }
+      console.log(`[try_scroll_to] idx=${idx}, tar=${tar}, scroll_y=${scroll_y}`);
+      this.scroll_controller.scrollTo({
+        xOffset: 0,
+        yOffset: scroll_y,
+        animation: true,
+      });
     }, 50);
   }
 
@@ -696,13 +692,12 @@ export default meowTabsVertical;
 struct TabButton {
   // Sync
   @Prop Label: tab_label;
-  tab_height_default: number = 42;
-  @State tab_height: number = 0;
   // Public
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @LocalStorageLink('my_window_id') my_window_id: string = '';
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
+  @LocalStorageLink('vertical_tabs_scroll_area_height') scroll_area_height: number = 0;
   // Data
   @LocalStorageLink('tab_titles') tab_titles: string[] = [];
   @LocalStorageLink('tab_restore_on_creations') tab_restore_on_creations: boolean[] = [false];
@@ -714,6 +709,11 @@ struct TabButton {
   // Colors
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // UI
+  tab_height_default: number = 42;
+  @State tab_height: number = (this.bunch_of_tabs.Tabs.length * (this.tab_height_default + 5) - 5 < this.scroll_area_height)
+    ? 0 : this.tab_height_default;
+  @State my_vis: Visibility = Visibility.Hidden;
 
   build() {
     Row({ space: 5 }) {
@@ -781,6 +781,7 @@ struct TabButton {
         ? this.color_current_font : "transparent"
     })
     .backgroundColor(this.color_current_secondary)
+    .visibility(this.my_vis)
     .opacity(this.tab_restore_on_creations[this.Label.index_key] ? 0.5 : 1)
     .height(this.tab_height)
     .padding(this.preferred_hand_left_or_right == 'right' ? { left: 10 } : { right: 10 })
@@ -802,6 +803,7 @@ struct TabButton {
       }
     })
     .onAppear(() => {
+      this.my_vis = Visibility.Visible;
       this.tab_height = this.tab_height_default;
       this.tab_restore_on_creations[this.Label.index_key] = this.bunch_of_tabs.Tabs[this.Label.index_key].pre_restoration_stage;
     })

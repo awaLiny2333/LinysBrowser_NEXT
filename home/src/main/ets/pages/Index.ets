@@ -227,7 +227,7 @@ struct Index {
               left: { anchor: '__container__', align: HorizontalAlign.Start },
               right: !this.tablet_mode ? { anchor: '__container__', align: HorizontalAlign.End } : { anchor: 'window_controls', align: HorizontalAlign.Start }
             })
-            .animation(animation_default())
+            .animation(this.delayed_load_p3 ? animation_default() : {})
 
           if (this.free_window_mode) {
             Row({ space: 10 }) {
@@ -259,7 +259,7 @@ struct Index {
       .height(this.height_of_top_avoid())
       .clip(true)
       .backgroundColor(this.color_current_secondary)
-      .animation(animation_default())
+      .animation(this.delayed_load_p3 ? animation_default() : {})
       .width('100%')
       .onDrop((e) => {
         try {
@@ -288,19 +288,19 @@ struct Index {
               meowTabsVertical()
                 .width(this.showing_tabs ? this.width_of_Tabs() : 0)
                 .padding((this.showing_tabs && !current_tabs_style_is_horizontal(this.storage)) ? 10 : 0)
-                .animation(animation_default())
+                .animation(this.delayed_load_p3 ? animation_default() : {})
             }
             if (this.delayed_load_p3) {
               meowBookmarks()
                 .padding(this.showing_bookmarks ? 10 : 0)
                 .height("100%")
                 .width(this.showing_bookmarks ? this.width_of_Bookmarks() : 0)
-                .animation(animation_default())
+                .animation(this.delayed_load_p3 ? animation_default() : {})
             }
           } // Tabs and bookmarks
           .width(this.width_of_Bookmarks_and_Tabs())
           .margin(this.margin_of_Bookmarks_and_Tabs())
-          .animation(animation_default())
+          .animation(this.delayed_load_p3 ? animation_default() : {})
           .height("100%")
 
           Stack() {
@@ -335,7 +335,7 @@ struct Index {
           .margin(this.title_bar_position == "bottom"
             ? { bottom: this.fullscreen_mode ? 0 : this.title_bar_height }
             : { top: this.fullscreen_mode ? 0 : this.title_bar_height })
-          .animation(animation_default())
+          .animation(this.delayed_load_p3 ? animation_default() : {})
 
         meowTitleBar({
           bar_height: this.title_bar_height,
@@ -346,20 +346,20 @@ struct Index {
         this.on_main_area_change(o, n);
       })
       .layoutWeight(1)
-      .animation(animation_default())
+      .animation(this.delayed_load_p3 ? animation_default() : {})
 
       Row()// Bottom Bar Avoid
         .height((this.title_bar_position == "bottom" || this.bottom_avoid) ? this.height_of_bottom_avoid() : 0)
         .backgroundColor(this.title_bar_position == "bottom" ? "transparent" : this.color_current_secondary)
-        .animation(animation_default())
+        .animation(this.delayed_load_p3 ? animation_default() : {})
         .width("100%")
 
     }
     .height("100%")
     .width("100%")
     .alignItems(HorizontalAlign.Start)
-    .animation(animation_default())
     .backgroundColor(this.color_current_secondary)
+    .animation(this.delayed_load_p3 ? animation_default() : {})
     .onAreaChange((_o, n) => {
       this.full_screen_height = n.height as number;
     })
@@ -785,11 +785,8 @@ struct WindowTitle {
   @LocalStorageLink('my_window_alias') my_window_alias: string = '';
   @LocalStorageLink('screen_width') screen_width: number = 0;
   // Statuses
-  @StorageLink('showing_my_window_alias') showing_my_window_alias: boolean = false;
   @StorageLink('my_window_alias_position') my_window_alias_position: string = "center";
   @LocalStorageLink('current_title') current_title: string = "=￣ω￣=";
-  // UI
-  @State my_opacity: number = 0;
 
   build() {
     Row({ space: 10 }) {
@@ -803,13 +800,8 @@ struct WindowTitle {
       top: 8,
       bottom: 8,
     })
+    .opacity(0.7)
     .justifyContent(this.justifyContents_of_alias())
-    .visibility(this.showing_my_window_alias ? Visibility.Visible : Visibility.Hidden)
-    .opacity(this.my_opacity)
-    .animation(animation_default())
-    .onAppear(() => {
-      this.my_opacity = 0.7;
-    })
   }
 
   justifyContents_of_alias() {
