@@ -70,7 +70,7 @@ struct woofWantDownload {
 
       TextInput({ text: this.file_name })// Edit file name
         .onSubmit(() => {
-          if (is_legal_filename(this.file_name)) {
+          if (this.error_code == 0) {
             this.submit();
           }
         })
@@ -82,6 +82,14 @@ struct woofWantDownload {
         .caretColor(this.color_current_font)
         .selectedBackgroundColor(this.color_current_font)
         .height(capsule_bar_height())
+        .id('woofWantDownload_TextInput_filename')
+        .onAppear(() => {
+          // Focus to TextInput if is free window mode
+          let free_window = AppStorage.get('free_window_mode') as boolean;
+          if (free_window) {
+            focusControl.requestFocus('woofWantDownload_TextInput_filename');
+          }
+        })
 
       Row({ space: 10 }) {
         linysShowButton({

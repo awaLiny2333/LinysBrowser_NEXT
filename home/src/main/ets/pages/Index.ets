@@ -4,34 +4,30 @@ import { window } from '@kit.ArkUI';
 import { animation_default } from '../hosts/bunch_of_defaults';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
-import { drop_to_scratching_board } from '../utils/drag_drop_tools';
+import lazy { drop_to_scratching_board } from '../utils/drag_drop_tools';
 import lazy { print_web } from '../utils/print_tools';
 import lazy { bunch_of_settings } from '../hosts/bunch_of_settings';
-import linysProgress from '../components/linysProgress';
-import meowTabsVertical from '../blocks/modules/meowTabsVertical';
-import meowTitleBar from '../blocks/modules/meowTitleBar';
-import lazy meowBookmarks from '../blocks/modules/meowBookmarks';
-import lazy meowWebView from '../blocks/modules/meowWebView';
-import lazy woofPromptFail from '../dialogs/prompts/woofPromptFail';
-import {
-  change_window_alias,
-  current_tabs_style_is_horizontal,
+import lazy {
   enter_free_window_mode,
   enter_traditional_window_mode,
   is_some_dialogs_opened,
-  last_storage,
   new_window,
   pin_to_top,
-  run_time,
-  storage_of_id,
   update_window_decor_height,
-  window_index_of_id
 } from '../utils/ui_tools';
-import linysText from '../components/texts/linysText';
-import linysWindowButton from '../components/buttons/linysWindowButton';
-import { cancel_in_page_search, is_current_in_page_searching } from '../processes/tabs_actions';
-import woofHistory from '../dialogs/managers/woofHistory';
+import { change_window_alias, current_tabs_style_is_horizontal, last_storage, run_time, storage_of_id, window_index_of_id } from '../utils/ui_tools';
+import lazy { cancel_in_page_search, is_current_in_page_searching } from '../processes/tabs_actions';
+import lazy { webview } from '@kit.ArkWeb';
+import lazy meowTabsVertical from '../blocks/modules/meowTabsVertical';
+import lazy meowTitleBar from '../blocks/modules/meowTitleBar';
+import lazy meowBookmarks from '../blocks/modules/meowBookmarks';
+import lazy meowWebView from '../blocks/modules/meowWebView';
+import lazy woofPromptFail from '../dialogs/prompts/woofPromptFail';
+import lazy linysWindowButton from '../components/buttons/linysWindowButton';
+import lazy woofHistory from '../dialogs/managers/woofHistory';
 import meowShortcuts from '../blocks/modules/meowShortcuts';
+import linysProgress from '../components/linysProgress';
+import linysText from '../components/texts/linysText';
 
 // @Entry({ useSharedStorage: true })
 @Entry(last_storage())
@@ -95,6 +91,7 @@ struct Index {
   @LocalStorageLink('index_init_ok') index_init_ok: boolean = false;
   /**
    * Web Statuses */
+  @LocalStorageLink('dl_delegate') dl_delegate: webview.WebDownloadDelegate = new webview.WebDownloadDelegate();
   @LocalStorageLink('current_loading_progress') current_loading_progress: number = 0;
   @LocalStorageLink('current_is_loading') current_is_loading: boolean = true;
   /**
