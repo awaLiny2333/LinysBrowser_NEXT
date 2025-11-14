@@ -85,7 +85,6 @@ struct meowTitleBar {
   @State address_analyzers_desc_showing: boolean = false;
   address_analyzers_desc_close_cd_timeout_id: number | undefined = undefined;
   @State horizontal_tabs_height: number = 120;
-  @LocalStorageLink('index_init_ok') index_init_ok: boolean = false;
   @LocalStorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
   @LocalStorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
   @LocalStorageLink('delayed_load_p2') delayed_load_p2: boolean = false;
@@ -159,53 +158,52 @@ struct meowTitleBar {
 
       RelativeContainer() {
         Row({ space: this.tablet_mode ? 10 : 6 }) {
-          if (this.index_init_ok) {
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.arrow_left'
-            })// Backward
-              .enabled(this.bunch_of_tabs.current_accessBackward)
-              .opacity(this.bunch_of_tabs.current_accessBackward ? 1 : 0.5)
-              .visibility(this.visible_when_no_panels_open_in_normal_mode())
-              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-              .onClick(() => {
-                this.go_backward();
-              })
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.arrow_left'
+          })// Backward
+            .enabled(this.bunch_of_tabs.current_accessBackward)
+            .opacity(this.bunch_of_tabs.current_accessBackward ? 1 : 0.5)
+            .visibility(this.visible_when_no_panels_open_in_normal_mode())
+            .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+            .onClick(() => {
+              this.go_backward();
+            })
 
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.arrow_right'
-            })// Forward
-              .enabled(this.bunch_of_tabs.current_accessForward)
-              .opacity(this.bunch_of_tabs.current_accessForward ? 1 : 0.5)
-              .visibility(this.visible_when_no_panels_open_in_normal_mode())
-              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-              .onClick(() => {
-                this.go_forward();
-              })
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.arrow_right'
+          })// Forward
+            .enabled(this.bunch_of_tabs.current_accessForward)
+            .opacity(this.bunch_of_tabs.current_accessForward ? 1 : 0.5)
+            .visibility(this.visible_when_no_panels_open_in_normal_mode())
+            .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+            .onClick(() => {
+              this.go_forward();
+            })
 
-            SymbolGlyph(!this.current_is_loading ? $r('sys.symbol.arrow_clockwise') : $r('sys.symbol.xmark')) // Refresh
-              .fontSize(fontSize_Icon_Button())
-              .fontColor([this.color_current_font])
-              .visibility(this.visible_when_no_panels_open_in_normal_mode())
-              .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.current_is_loading)
-              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-              .keyboardShortcut(this.bunch_of_key_shortcuts.refresh.main_key, this.bunch_of_key_shortcuts.refresh.modifier)
-              .onClick(() => {
-                if (this.current_is_loading) {
-                  this.stop_page()
-                } else {
-                  this.refresh_page()
-                }
-              })
+          SymbolGlyph(!this.current_is_loading ? $r('sys.symbol.arrow_clockwise') : $r('sys.symbol.xmark')) // Refresh
+            .fontSize(fontSize_Icon_Button())
+            .fontColor([this.color_current_font])
+            .visibility(this.visible_when_no_panels_open_in_normal_mode())
+            .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.current_is_loading)
+            .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+            .keyboardShortcut(this.bunch_of_key_shortcuts.refresh.main_key, this.bunch_of_key_shortcuts.refresh.modifier)
+            .onClick(() => {
+              if (this.current_is_loading) {
+                this.stop_page()
+              } else {
+                this.refresh_page()
+              }
+            })
 
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.house'
-            })// Home
-              .visibility(this.visible_when_no_panels_open_in_normal_mode())
-              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-              .onClick(() => {
-                this.go_home()
-              })
-          }
+          linysSymbol({
+            symbol_glyph_target: 'sys.symbol.house'
+          })// Home
+            .visibility(this.visible_when_no_panels_open_in_normal_mode())
+            .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+            .onClick(() => {
+              this.go_home()
+            })
+
         } // Title Bar of left controls
         .height(capsule_bar_height())
         .alignRules({
@@ -364,114 +362,112 @@ struct meowTitleBar {
         .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
 
         Row({ space: this.tablet_mode ? 10 : 6 }) {
-          if (this.index_init_ok) {
-            linysShowButton({
-              show: this.showing_scratching_board,
-              text: $r('app.string.Index_drop_scratching_board'),
-              symbol_glyph_target: this.showing_scratching_board ? 'sys.symbol.chevron_down' : 'sys.symbol.doc_rectify'
-            })// Scratching board
-              .visibility(this.drop_result_string.length > 0 ? Visibility.Visible : Visibility.None)
-              .onClick(() => {
-                this.show_scratching_board();
-              })
+          linysShowButton({
+            show: this.showing_scratching_board,
+            text: $r('app.string.Index_drop_scratching_board'),
+            symbol_glyph_target: this.showing_scratching_board ? 'sys.symbol.chevron_down' : 'sys.symbol.doc_rectify'
+          })// Scratching board
+            .visibility(this.drop_result_string.length > 0 ? Visibility.Visible : Visibility.None)
+            .onClick(() => {
+              this.show_scratching_board();
+            })
 
-            linysShowButton({
-              show: this.showing_more_options,
-              text: $r('app.string.Index_more_title'),
-              symbol_glyph_target: this.showing_more_options ? 'sys.symbol.chevron_down' : 'sys.symbol.dot_grid_2x2'
-            })// More options
-              .onClick(() => {
-                this.show_more_options()
-              })
-              .opacity(this.delayed_load_p3 ? 1 : 0.5)
-              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-              .enabled(this.delayed_load_p3)
-
-            linysShowButton({
-              symbol_glyph_target: 'sys.symbol.rectangle_stack',
-              show: this.showing_tabs
-            })// Tabs
-              .onClick(() => {
-                this.show_tabs();
-              })
-              .gesture(
-                LongPressGesture({ repeat: false })
-                  .onAction(() => {
-                    this.new_tab();
-                  }))
-              .onMouse((e) => {
-                if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
-                  // Right click
-                  this.new_tab();
-                }
-              })
-              .keyboardShortcut(this.bunch_of_key_shortcuts.show_tabs.main_key, this.bunch_of_key_shortcuts.show_tabs.modifier)
-
-            linysShowButton({
-              show: this.showing_bookmarks,
-              text: $r('app.string.Index_bookmarks_title'),
-              symbol_glyph_target: 'sys.symbol.bookmark'
-            })// Bookmarks
-              .gesture(
-                LongPressGesture({ repeat: false })
-                  .onAction(() => {
-                    this.show_add_bookmarks();
-                  }))
-              .onMouse((e) => {
-                if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
-                  // Right click
-                  this.show_add_bookmarks();
-                }
-              })
-              .onClick(() => {
-                this.show_bookmarks();
-              })
-              .opacity(this.delayed_load_p3 ? 1 : 0.5)
-              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-              .enabled(this.delayed_load_p3)
-
-            Row() {
-              linysShowButton({
-                text: $r('app.string.Index_downloads_title'),
-                symbol_glyph_target: this.showing_downloads ? 'sys.symbol.chevron_down' : 'sys.symbol.download',
-                show: this.showing_downloads,
-                color_false: !this.showing_downloads && this.download_started_popup ?
-                  this.color_current_primary : this.color_current_font
-              })
-              Text($r('app.string.Index_download_task_start'))
-                .fontSize(fontSize_Large() - 2)
-                .fontColor(this.color_current_primary)
-                .margin({ right: this.showing_downloads ? 5 : 0 })
-                .visibility(this.download_started_popup ? Visibility.Visible : Visibility.None)
-                .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-            } // Downloads
-            .padding(!this.showing_downloads && this.download_started_popup ? 5 : 0)
-            .backgroundColor(this.download_started_popup ? this.color_current_font : "transparent")
-            .borderRadius(10)
-            .clickEffect(click_effect_default())
+          linysShowButton({
+            show: this.showing_more_options,
+            text: $r('app.string.Index_more_title'),
+            symbol_glyph_target: this.showing_more_options ? 'sys.symbol.chevron_down' : 'sys.symbol.dot_grid_2x2'
+          })// More options
+            .onClick(() => {
+              this.show_more_options()
+            })
             .opacity(this.delayed_load_p3 ? 1 : 0.5)
             .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-            .onClick(() => {
-              if (this.download_started_popup) {
-                this.download_started_popup = false;
-              } else {
-                this.show_downloads();
-              }
-            })
             .enabled(this.delayed_load_p3)
 
+          linysShowButton({
+            symbol_glyph_target: 'sys.symbol.rectangle_stack',
+            show: this.showing_tabs
+          })// Tabs
+            .onClick(() => {
+              this.show_tabs();
+            })
+            .gesture(
+              LongPressGesture({ repeat: false })
+                .onAction(() => {
+                  this.new_tab();
+                }))
+            .onMouse((e) => {
+              if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
+                // Right click
+                this.new_tab();
+              }
+            })
+            .keyboardShortcut(this.bunch_of_key_shortcuts.show_tabs.main_key, this.bunch_of_key_shortcuts.show_tabs.modifier)
+
+          linysShowButton({
+            show: this.showing_bookmarks,
+            text: $r('app.string.Index_bookmarks_title'),
+            symbol_glyph_target: 'sys.symbol.bookmark'
+          })// Bookmarks
+            .gesture(
+              LongPressGesture({ repeat: false })
+                .onAction(() => {
+                  this.show_add_bookmarks();
+                }))
+            .onMouse((e) => {
+              if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
+                // Right click
+                this.show_add_bookmarks();
+              }
+            })
+            .onClick(() => {
+              this.show_bookmarks();
+            })
+            .opacity(this.delayed_load_p3 ? 1 : 0.5)
+            .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+            .enabled(this.delayed_load_p3)
+
+          Row() {
             linysShowButton({
-              show: this.showing_app_settings,
-              text: $r('app.string.Index_app_settings_title'),
-              symbol_glyph_target: this.showing_app_settings ? 'sys.symbol.chevron_down' : 'sys.symbol.gearshape'
-            })// Settings
-              .onClick(() => {
-                this.show_app_settings()
-              })
-              .opacity(this.delayed_load_p3 ? 1 : 0.5)
+              text: $r('app.string.Index_downloads_title'),
+              symbol_glyph_target: this.showing_downloads ? 'sys.symbol.chevron_down' : 'sys.symbol.download',
+              show: this.showing_downloads,
+              color_false: !this.showing_downloads && this.download_started_popup ?
+                this.color_current_primary : this.color_current_font
+            })
+            Text($r('app.string.Index_download_task_start'))
+              .fontSize(fontSize_Large() - 2)
+              .fontColor(this.color_current_primary)
+              .margin({ right: this.showing_downloads ? 5 : 0 })
+              .visibility(this.download_started_popup ? Visibility.Visible : Visibility.None)
               .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-              .enabled(this.delayed_load_p3)
-          }
+          } // Downloads
+          .padding(!this.showing_downloads && this.download_started_popup ? 5 : 0)
+          .backgroundColor(this.download_started_popup ? this.color_current_font : "transparent")
+          .borderRadius(10)
+          .clickEffect(click_effect_default())
+          .opacity(this.delayed_load_p3 ? 1 : 0.5)
+          .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+          .onClick(() => {
+            if (this.download_started_popup) {
+              this.download_started_popup = false;
+            } else {
+              this.show_downloads();
+            }
+          })
+          .enabled(this.delayed_load_p3)
+
+          linysShowButton({
+            show: this.showing_app_settings,
+            text: $r('app.string.Index_app_settings_title'),
+            symbol_glyph_target: this.showing_app_settings ? 'sys.symbol.chevron_down' : 'sys.symbol.gearshape'
+          })// Settings
+            .onClick(() => {
+              this.show_app_settings()
+            })
+            .opacity(this.delayed_load_p3 ? 1 : 0.5)
+            .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+            .enabled(this.delayed_load_p3)
         } // Title Bar of right controls
         .height(capsule_bar_height())
         .alignRules({

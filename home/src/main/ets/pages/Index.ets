@@ -285,25 +285,27 @@ struct Index {
       //   Column() {
       RelativeContainer() {
         Row() {
-          Row() {
-            if (this.delayed_load_p0) {
-              meowTabsVertical()
-                .width(this.showing_tabs ? this.width_of_Tabs() : 0)
-                .padding((this.showing_tabs && !current_tabs_style_is_horizontal(this.storage)) ? 10 : 0)
-                .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+          if (this.index_init_ok) {
+            Row() {
+              if (this.delayed_load_p0) {
+                meowTabsVertical()
+                  .width(this.showing_tabs ? this.width_of_Tabs() : 0)
+                  .padding((this.showing_tabs && !current_tabs_style_is_horizontal(this.storage)) ? 10 : 0)
+                  .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+              }
+              if (this.delayed_load_p3) {
+                meowBookmarks()
+                  .padding(this.showing_bookmarks ? 10 : 0)
+                  .height("100%")
+                  .width(this.showing_bookmarks ? this.width_of_Bookmarks() : 0)
+                  .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+              }
             }
-            if (this.delayed_load_p3) {
-              meowBookmarks()
-                .padding(this.showing_bookmarks ? 10 : 0)
-                .height("100%")
-                .width(this.showing_bookmarks ? this.width_of_Bookmarks() : 0)
-                .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-            }
+            .width(this.width_of_Bookmarks_and_Tabs())
+            .margin(this.margin_of_Bookmarks_and_Tabs())
+            .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+            .height("100%")
           } // Tabs and bookmarks
-          .width(this.width_of_Bookmarks_and_Tabs())
-          .margin(this.margin_of_Bookmarks_and_Tabs())
-          .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-          .height("100%")
 
           Stack() {
             if (this.homepage_background) {
@@ -332,17 +334,19 @@ struct Index {
         .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
         .width("100%")
 
-        linysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
-          .alignRules(this.title_bar_alignRules)
-          .margin(this.title_bar_position == "bottom"
-            ? { bottom: this.fullscreen_mode ? 0 : this.title_bar_height }
-            : { top: this.fullscreen_mode ? 0 : this.title_bar_height })
-          .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+        if (this.index_init_ok) {
+          linysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
+            .alignRules(this.title_bar_alignRules)
+            .margin(this.title_bar_position == "bottom"
+              ? { bottom: this.fullscreen_mode ? 0 : this.title_bar_height }
+              : { top: this.fullscreen_mode ? 0 : this.title_bar_height })
+            .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
 
-        meowTitleBar({
-          bar_height: this.title_bar_height,
-          title_bar_alignRules: this.title_bar_alignRules,
-        }) // Title Bar
+          meowTitleBar({
+            bar_height: this.title_bar_height,
+            title_bar_alignRules: this.title_bar_alignRules,
+          })
+        } // Title Bar
       } // Web, progress, and Title bar
       .onAreaChange((o, n) => {
         this.on_main_area_change(o, n);
