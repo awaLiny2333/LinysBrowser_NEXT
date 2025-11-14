@@ -276,14 +276,14 @@ export function on_progress_change(pk: tab_info_packed, event: OnProgressChangeE
 export function on_controller_attached(pk: tab_info_packed) {
   // bind download delegate
   try {
-    pk.controller.setDownloadDelegate(pk.storage.get('dl_delegate') as webview.WebDownloadDelegate);
+    pk.controller!.setDownloadDelegate(pk.storage.get('dl_delegate') as webview.WebDownloadDelegate);
   } catch (e) {
     console.error('[meowWebView] onControllerAttached setDownloadDelegate error: ' + e);
   }
 
   // Set Default error page
   try {
-    pk.controller.setErrorPageEnabled(true);
+    pk.controller!.setErrorPageEnabled(true);
   } catch (e) {
     console.error(`[Web][setErrorPageEnabled] Failed: ${e}`)
   }
@@ -292,7 +292,7 @@ export function on_controller_attached(pk: tab_info_packed) {
   let now_global_custom_UA = AppStorage.get('universal_global_custom_ua_gateway') as string;
   if (now_global_custom_UA != "") {
     try {
-      pk.controller.setCustomUserAgent(now_global_custom_UA);
+      pk.controller!.setCustomUserAgent(now_global_custom_UA);
     } catch (e) {
       console.error('[meowWebView] onControllerAttached setCustomUserAgent error: ' + e);
     }
@@ -302,7 +302,7 @@ export function on_controller_attached(pk: tab_info_packed) {
   let use_adblock = AppStorage.get('use_adblock') as boolean;
   console.log('[meowWebView] enableAdsBlock: ' + (use_adblock ? 'true' : 'false'));
   try {
-    pk.controller.enableAdsBlock(use_adblock);
+    pk.controller!.enableAdsBlock(use_adblock);
     console.info('[meowWebView] onControllerAttached enableAdsBlock! [' + pk.url + ']');
   } catch (e) {
     console.error('[meowWebView] onControllerAttached enableAdsBlock error: ' + e);
@@ -322,7 +322,7 @@ export function on_controller_attached(pk: tab_info_packed) {
   // Set intelligent tracking prevention
   try {
     let intelligent_tracking_prevention = AppStorage.get('intelligent_tracking_prevention') as boolean;
-    pk.controller.enableIntelligentTrackingPrevention(intelligent_tracking_prevention);
+    pk.controller!.enableIntelligentTrackingPrevention(intelligent_tracking_prevention);
     console.log('[meowWebView] ArkWeb Intelligent Tracking Prevention ' + intelligent_tracking_prevention.toString() + '!');
   } catch (e) {
     console.error('[meowWebView] onControllerAttached enableIntelligentTrackingPrevention error: ' + e);
@@ -387,7 +387,7 @@ export function on_new_window(pk: tab_info_packed, event: OnWindowNewEvent) {
     // Is a download, intercept!
     console.log('[meowWebView] Intercepted new window request for a potential download!');
     try {
-      pk.controller.startDownload(new_target_url);
+      pk.controller!.startDownload(new_target_url);
       need_new_tab = false;
     } catch (e) {
       console.error('[meowWebView] webview.WebviewController.startDownload failed! Giving back control to new tab...');

@@ -154,7 +154,7 @@ export function cancel_in_page_search(storage: LocalStorage) {
   tabs.workingMainTab().searching_keyword_stats_total = 0;
   tabs.workingMainTab().searching_keyword = '';
   try {
-    tabs.workingMainTab().controller.clearMatches();
+    tabs.workingMainTab().controller?.clearMatches();
   } catch (e) {
     console.error('[cancel_in_page_search] Failed: ' + e);
   }

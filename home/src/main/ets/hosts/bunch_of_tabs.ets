@@ -62,7 +62,7 @@ export class bunch_of_tabs {
   loadUrl_onWorkingTab(url: string) {
     url = url_meow_to_resource(url);
     console.log('[bunch_of_tabs][loadUrl_onWorkingTab] ' + url);
-    this.Tabs[this.main_tab_idx].controller.loadUrl(url);
+    this.Tabs[this.main_tab_idx].controller?.loadUrl(url);
   }
 
   /**
@@ -83,7 +83,7 @@ export class bunch_of_tabs {
    * Refreshes current main tab.
    * */
   refresh_onWorkingTab() {
-    this.Tabs[this.main_tab_idx].controller.refresh();
+    this.Tabs[this.main_tab_idx].controller?.refresh();
     this.Tabs[this.main_tab_idx].update_url(true);
   }
 
@@ -91,7 +91,7 @@ export class bunch_of_tabs {
    * Stops the load on current main tab.
    * */
   stop_onWorkingTab() {
-    this.Tabs[this.main_tab_idx].controller.stop();
+    this.Tabs[this.main_tab_idx].controller?.stop();
   }
 
   /**
@@ -100,8 +100,8 @@ export class bunch_of_tabs {
    * @returns false if failed, perhaps there is no way forward.
    * */
   goForward_onWorkingTab() {
-    if (this.Tabs[this.main_tab_idx].controller.accessForward()) {
-      this.Tabs[this.main_tab_idx].controller.forward();
+    if (this.Tabs[this.main_tab_idx].controller?.accessForward()) {
+      this.Tabs[this.main_tab_idx].controller?.forward();
     }
   }
 
@@ -111,8 +111,8 @@ export class bunch_of_tabs {
    * @returns false if failed, perhaps there is no way backward.
    * */
   goBackward_onWorkingTab() {
-    if (this.Tabs[this.main_tab_idx].controller.accessBackward()) {
-      this.Tabs[this.main_tab_idx].controller.backward();
+    if (this.Tabs[this.main_tab_idx].controller?.accessBackward()) {
+      this.Tabs[this.main_tab_idx].controller?.backward();
       return true;
     }
     return false;
@@ -128,7 +128,7 @@ export class bunch_of_tabs {
   archive_onWorkingTab(dir?: string) {
     // let dir = this.getUIContext().getHostContext()?.tempDir;
     if (dir) {
-      this.workingMainTab().controller.storeWebArchive(dir + '/meow_save.mht', false, ((e, filename) => {
+      this.workingMainTab().controller?.storeWebArchive(dir + '/meow_save.mht', false, ((e, filename) => {
         if (e) {
           console.error(`[Save Page] Failed: ${e.name}, ${e.message}, ${e.code}`);
         }
@@ -167,7 +167,7 @@ export class bunch_of_tabs {
     }
 
     for (let index = 0; index < this.Tabs.length; index++) {
-      this.Tabs[index].controller.setCustomUserAgent(ua)
+      this.Tabs[index].controller?.setCustomUserAgent(ua)
     }
     console.log("[bunch_of_tabs][UA] Set global_custom_UA! ua: " + ua)
   }
@@ -178,7 +178,7 @@ export class bunch_of_tabs {
   reset_global_custom_UA() {
     let default_ua = this.get_global_default_UA();
     for (let index = 0; index < this.Tabs.length; index++) {
-      this.Tabs[index].controller.setCustomUserAgent(default_ua)
+      this.Tabs[index].controller?.setCustomUserAgent(default_ua)
     }
   }
 
@@ -187,7 +187,7 @@ export class bunch_of_tabs {
    * @returns A string, the default user agent
    * */
   get_global_default_UA() {
-    return this.Tabs[0].controller.getUserAgent();
+    return this.Tabs[0].controller?.getUserAgent();
   }
 
   // Data and Statuses
@@ -198,8 +198,8 @@ export class bunch_of_tabs {
   update_backward_forward_access() {
     if (this.workingMainTab()) {
       try {
-        this.current_accessBackward = this.workingMainTab().controller.accessBackward()
-        this.current_accessForward = this.workingMainTab().controller.accessForward()
+        this.current_accessBackward = this.workingMainTab().controller?.accessBackward() || false;
+        this.current_accessForward = this.workingMainTab().controller?.accessForward() || false;
       } catch (e) {
         console.error('[bunch_of_tabs][update_backward_forward_access] Error: ' + e);
       }
@@ -277,6 +277,7 @@ export class bunch_of_tabs {
       // Creating a web will trigger its controller attached event, which includes the true restore() call.
       // See on_controller_attached(pk: tab_info_packed) in web_actions.ets
       console.log(`[callRestore] of tab #${target}, Creating NWeb!`);
+      this.Tabs[target].controller = new webview.WebviewController();
       this.NodeControllers[target] = new TabNodeController(createNWeb(context, this.Tabs[target]));
       this.NodeControllers[target]?.attachWeb();
       this.NodeControllers[target]?.rebuild();
@@ -699,7 +700,7 @@ export class tab_info_packed {
   // Environment
   storage: LocalStorage;
   // My Major Data
-  controller: WebviewController;
+  controller: WebviewController | undefined;
   title: string = '';
   url: string = '';
   index: number = -1;
@@ -733,7 +734,6 @@ export class tab_info_packed {
    */
   constructor(title: string, url: string, storage: LocalStorage, index: number, init_state: boolean) {
     this.storage = storage;
-    this.controller = new webview.WebviewController();
     this.index = index;
     this.title = title;
     this.url = url;
@@ -742,6 +742,8 @@ export class tab_info_packed {
     if (init_state) {
       console.log(`[tab_info_packed] New pack: ${url}, this.pre_restoration_stage = true!`);
       this.pre_restoration_stage = true;
+    } else {
+      this.controller = new webview.WebviewController();
     }
   }
 
@@ -752,8 +754,8 @@ export class tab_info_packed {
    * */
   update_title() {
     try {
-      let title = this.controller.getTitle();
-      if (this.title != title) { // Update on change;
+      let title = this.controller?.getTitle();
+      if (title && this.title != title) { // Update on change;
         this.title = title;
       }
     } catch (e) {
@@ -771,21 +773,24 @@ export class tab_info_packed {
    * @returns The updated url.
    * */
   update_url(force_update_web_settings: boolean = false) {
-    let url_got = this.url;
+    let url_got: string | undefined = this.url;
     try {
-      url_got = this.controller.getUrl();
+      url_got = this.controller?.getUrl();
     } catch (e) {
       console.error('[update_url] Failed: ' + e);
     }
-    this.url = url_resource_to_meow(url_got);
-    if (force_update_web_settings || this.url != this.last_updated_url) {
-      this.update_web_settings();
-      let tabs = this.storage.get('bunch_of_tabs') as bunch_of_tabs;
-      // Update web view
-      tabs.NodeControllers[this.index]?.update(tabs.Tabs[this.index]);
-      this.last_updated_url = this.url;
-      console.log('[update_url] Update webview for a change in url: [' + this.url + ']!');
+    if (url_got) {
+      this.url = url_resource_to_meow(url_got);
+      if (force_update_web_settings || this.url != this.last_updated_url) {
+        this.update_web_settings();
+        let tabs = this.storage.get('bunch_of_tabs') as bunch_of_tabs;
+        // Update web view
+        tabs.NodeControllers[this.index]?.update(tabs.Tabs[this.index]);
+        this.last_updated_url = this.url;
+        console.log('[update_url] Update webview for a change in url: [' + this.url + ']!');
+      }
     }
+
     return this.url;
   }
 
@@ -816,7 +821,7 @@ export class tab_info_packed {
       return false;
     }
     try {
-      this.web_state_array = this.controller.serializeWebState();
+      this.web_state_array = this.controller?.serializeWebState();
       this.last_update_web_state_time = Date.now();
       console.log('[update_web_state] new web state length: ' + this.web_state_array?.length);
       return true;
@@ -931,8 +936,8 @@ export class tab_info_packed {
       try {
         this.url = 'uwu';
         this.title = 'uwu';
-        this.controller.clearHistory();
-        this.controller.restoreWebState(this.web_state_array);
+        this.controller?.clearHistory();
+        this.controller?.restoreWebState(this.web_state_array);
         console.log("[Meow][bunch_of_tabs] Restore web " + this.index.toString() + ", state Length: " + this.web_state_array.length.toString());
         return true; // The only path to success
       } catch (e) {

@@ -179,7 +179,9 @@ struct Index {
             if (is_some_dialogs_opened(this.storage)) {
               return;
             }
-            print_web(this.bunch_of_tabs.workingMainTab().controller, this.getUIContext().getHostContext()!);
+            if (this.bunch_of_tabs.workingMainTab().controller) {
+              print_web(this.bunch_of_tabs.workingMainTab().controller!, this.getUIContext().getHostContext()!);
+            }
           })
           Row().keyboardShortcut(this.bunch_of_key_shortcuts.new_window.main_key, this.bunch_of_key_shortcuts.new_window.modifier, () => {
             this.create_new_window();
@@ -761,7 +763,7 @@ struct Index {
 
   in_page_search_last() {
     try {
-      this.bunch_of_tabs.workingMainTab().controller.searchNext(false);
+      this.bunch_of_tabs.workingMainTab().controller!.searchNext(false);
     } catch (e) {
       console.error('[in_page_search_last] Failed: ' + e);
     }
@@ -769,7 +771,7 @@ struct Index {
 
   in_page_search_next() {
     try {
-      this.bunch_of_tabs.workingMainTab().controller.searchNext(true);
+      this.bunch_of_tabs.workingMainTab().controller!.searchNext(true);
     } catch (e) {
       console.error('[in_page_search_last] Failed: ' + e);
     }

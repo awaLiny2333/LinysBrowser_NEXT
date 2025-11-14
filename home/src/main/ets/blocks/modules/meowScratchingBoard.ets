@@ -402,7 +402,7 @@ struct data_display {
    * */
   download_url(url: string) {
     try {
-      (this.storage.get('bunch_of_tabs') as bunch_of_tabs).workingMainTab().controller.startDownload(url);
+      (this.storage.get('bunch_of_tabs') as bunch_of_tabs).workingMainTab().controller!.startDownload(url);
     } catch (e) {
       console.error('[meowScratchingBoard] Download Url failed! ' + e);
     }

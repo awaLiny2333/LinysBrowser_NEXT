@@ -291,7 +291,7 @@ struct meowMoreOptions {
               .opacity(this.showing_scratching_board ? 0.8 : 1)
               .onSubmit(() => {
                 try {
-                  this.bunch_of_tabs.workingMainTab().controller.searchAllAsync(this.current_in_page_searching_keyword);
+                  this.bunch_of_tabs.workingMainTab().controller!.searchAllAsync(this.current_in_page_searching_keyword);
                 } catch (e) {
                   console.error(e);
                 }
@@ -302,7 +302,7 @@ struct meowMoreOptions {
             linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass' }) // Submit
               .onClick(() => {
                 try {
-                  this.bunch_of_tabs.workingMainTab().controller.searchAllAsync(this.current_in_page_searching_keyword);
+                  this.bunch_of_tabs.workingMainTab().controller!.searchAllAsync(this.current_in_page_searching_keyword);
                 } catch (e) {
                   console.error(e);
                 }
@@ -337,7 +337,7 @@ struct meowMoreOptions {
               linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_up' })
                 .onClick(() => {
                   try {
-                    this.bunch_of_tabs.workingMainTab().controller.searchNext(false);
+                    this.bunch_of_tabs.workingMainTab().controller!.searchNext(false);
                   } catch (e) {
                     console.error(e);
                   }
@@ -345,7 +345,7 @@ struct meowMoreOptions {
               linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_down' })
                 .onClick(() => {
                   try {
-                    this.bunch_of_tabs.workingMainTab().controller.searchNext(true);
+                    this.bunch_of_tabs.workingMainTab().controller!.searchNext(true);
                   } catch (e) {
                     console.error(e);
                   }
@@ -425,7 +425,9 @@ struct meowMoreOptions {
                 symbol_glyph_target: 'sys.symbol.printer'
               })// Print
                 .onClick(() => {
-                  print_web(this.bunch_of_tabs.workingMainTab().controller, this.getUIContext().getHostContext()!);
+                  if (this.bunch_of_tabs.workingMainTab().controller) {
+                    print_web(this.bunch_of_tabs.workingMainTab().controller!, this.getUIContext().getHostContext()!);
+                  }
                 })
               linysSymbol({
                 symbol_glyph_target: 'sys.symbol.star_2_moon'

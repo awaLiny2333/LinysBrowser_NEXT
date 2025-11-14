@@ -316,7 +316,7 @@ struct meowWebView {
     console.log('[meowWebView] enableAdsBlock: ' + (this.use_adblock ? 'true' : 'false'))
     try {
       for (let index = 0; index < this.bunch_of_tabs.Tabs.length; index++) {
-        this.bunch_of_tabs.Tabs[index].controller.enableAdsBlock(this.use_adblock);
+        this.bunch_of_tabs.Tabs[index].controller!.enableAdsBlock(this.use_adblock);
       }
     } catch (e) {
       console.error('[meowWebView][on_use_adblock_state_change] enableAdsBlock error: ' + e);

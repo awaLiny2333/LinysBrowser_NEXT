@@ -912,7 +912,7 @@ struct meowAppSettings {
                       text: '  󰀖  ',
                       onExecution: () => {
                         try {
-                          this.bunch_of_tabs.Tabs[0].controller.removeCache(true);
+                          this.bunch_of_tabs.Tabs[0].controller!.removeCache(true);
                           console.log('[Meow][meowAppSettings] Clear webview cache!')
                         } catch (error) {
                           console.error(`[Meow][meowAppSettings] Clear webview cache.
@@ -976,7 +976,7 @@ struct meowAppSettings {
                       bunch_of_settings.set('intelligent_tracking_prevention', this.intelligent_tracking_prevention);
                       for (let index = 0; index < this.bunch_of_tabs.Tabs.length; index++) {
                         try {
-                          this.bunch_of_tabs.Tabs[index].controller.enableIntelligentTrackingPrevention(this.intelligent_tracking_prevention);
+                          this.bunch_of_tabs.Tabs[index].controller!.enableIntelligentTrackingPrevention(this.intelligent_tracking_prevention);
                           console.log('[Meow][meowAppSettings] Intelligent Tracking Prevention now ' + this.intelligent_tracking_prevention.toString() + '!')
                         } catch (e) {
                           console.error('[Meow][meowAppSettings] Toggle Intelligent Tracking Prevention Failed! ' +
