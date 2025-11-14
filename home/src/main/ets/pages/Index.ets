@@ -227,7 +227,7 @@ struct Index {
               left: { anchor: '__container__', align: HorizontalAlign.Start },
               right: !this.tablet_mode ? { anchor: '__container__', align: HorizontalAlign.End } : { anchor: 'window_controls', align: HorizontalAlign.Start }
             })
-            .animation(this.delayed_load_p3 ? animation_default() : {})
+            .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
 
           if (this.free_window_mode) {
             Row({ space: 10 }) {
@@ -259,7 +259,7 @@ struct Index {
       .height(this.height_of_top_avoid())
       .clip(true)
       .backgroundColor(this.color_current_secondary)
-      .animation(this.delayed_load_p3 ? animation_default() : {})
+      .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
       .width('100%')
       .onDrop((e) => {
         try {
@@ -288,19 +288,19 @@ struct Index {
               meowTabsVertical()
                 .width(this.showing_tabs ? this.width_of_Tabs() : 0)
                 .padding((this.showing_tabs && !current_tabs_style_is_horizontal(this.storage)) ? 10 : 0)
-                .animation(this.delayed_load_p3 ? animation_default() : {})
+                .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
             }
             if (this.delayed_load_p3) {
               meowBookmarks()
                 .padding(this.showing_bookmarks ? 10 : 0)
                 .height("100%")
                 .width(this.showing_bookmarks ? this.width_of_Bookmarks() : 0)
-                .animation(this.delayed_load_p3 ? animation_default() : {})
+                .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
             }
           } // Tabs and bookmarks
           .width(this.width_of_Bookmarks_and_Tabs())
           .margin(this.margin_of_Bookmarks_and_Tabs())
-          .animation(this.delayed_load_p3 ? animation_default() : {})
+          .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
           .height("100%")
 
           Stack() {
@@ -335,7 +335,7 @@ struct Index {
           .margin(this.title_bar_position == "bottom"
             ? { bottom: this.fullscreen_mode ? 0 : this.title_bar_height }
             : { top: this.fullscreen_mode ? 0 : this.title_bar_height })
-          .animation(this.delayed_load_p3 ? animation_default() : {})
+          .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
 
         meowTitleBar({
           bar_height: this.title_bar_height,
@@ -346,12 +346,12 @@ struct Index {
         this.on_main_area_change(o, n);
       })
       .layoutWeight(1)
-      .animation(this.delayed_load_p3 ? animation_default() : {})
+      .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
 
       Row()// Bottom Bar Avoid
         .height((this.title_bar_position == "bottom" || this.bottom_avoid) ? this.height_of_bottom_avoid() : 0)
         .backgroundColor(this.title_bar_position == "bottom" ? "transparent" : this.color_current_secondary)
-        .animation(this.delayed_load_p3 ? animation_default() : {})
+        .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
         .width("100%")
 
     }
@@ -359,7 +359,7 @@ struct Index {
     .width("100%")
     .alignItems(HorizontalAlign.Start)
     .backgroundColor(this.color_current_secondary)
-    .animation(this.delayed_load_p3 ? animation_default() : {})
+    .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
     .onAreaChange((_o, n) => {
       this.full_screen_height = n.height as number;
     })

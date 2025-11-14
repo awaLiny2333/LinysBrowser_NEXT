@@ -70,7 +70,6 @@ struct meowTitleBar {
   @LocalStorageLink('tab_urls') tab_urls: string[] = [];
   @LocalStorageLink('current_url') @Watch('on_current_url_change') current_url: string = "=￣ω￣=";
   @LocalStorageLink('tab_match_domains') tab_match_domains: string[][] = [];
-  // @LocalStorageLink('current_match_domain') current_match_domain: string[] = ['scheme', 'domain'];
   @LocalStorageLink('tab_loading_progresses') tab_loading_progresses: number[] = [0];
   @LocalStorageLink('current_loading_progress') current_loading_progress: number = 0;
   @LocalStorageLink('tab_is_loading') tab_is_loading: boolean[] = [true];
@@ -135,7 +134,7 @@ struct meowTitleBar {
           this.horizontal_tabs_height = Math.max(0, n.height as number + 10);
         })
         .visibility(this.visibility_of_horizontal_tabs())
-        .animation(this.delayed_load_p3 ? animation_default() : {})
+        .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
       } // Horizontal tabs
 
       if (this.delayed_load_p2) {
@@ -149,7 +148,7 @@ struct meowTitleBar {
           .visibility(this.is_search_input_typing && this.title_bar_position == 'bottom' ? Visibility.Visible : Visibility.None)
           .padding({ left: 15, right: 15 })
           .width("100%")
-          .animation(this.delayed_load_p3 ? animation_default() : {})
+          .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
           .constraintSize({ minHeight: 20 })
 
         ThisPageInfo({
@@ -167,7 +166,7 @@ struct meowTitleBar {
               .enabled(this.bunch_of_tabs.current_accessBackward)
               .opacity(this.bunch_of_tabs.current_accessBackward ? 1 : 0.5)
               .visibility(this.visible_when_no_panels_open_in_normal_mode())
-              .animation(this.delayed_load_p3 ? animation_default() : {})
+              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
               .onClick(() => {
                 this.go_backward();
               })
@@ -178,7 +177,7 @@ struct meowTitleBar {
               .enabled(this.bunch_of_tabs.current_accessForward)
               .opacity(this.bunch_of_tabs.current_accessForward ? 1 : 0.5)
               .visibility(this.visible_when_no_panels_open_in_normal_mode())
-              .animation(this.delayed_load_p3 ? animation_default() : {})
+              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
               .onClick(() => {
                 this.go_forward();
               })
@@ -188,7 +187,7 @@ struct meowTitleBar {
               .fontColor([this.color_current_font])
               .visibility(this.visible_when_no_panels_open_in_normal_mode())
               .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.current_is_loading)
-              .animation(this.delayed_load_p3 ? animation_default() : {})
+              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
               .keyboardShortcut(this.bunch_of_key_shortcuts.refresh.main_key, this.bunch_of_key_shortcuts.refresh.modifier)
               .onClick(() => {
                 if (this.current_is_loading) {
@@ -202,7 +201,7 @@ struct meowTitleBar {
               symbol_glyph_target: 'sys.symbol.house'
             })// Home
               .visibility(this.visible_when_no_panels_open_in_normal_mode())
-              .animation(this.delayed_load_p3 ? animation_default() : {})
+              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
               .onClick(() => {
                 this.go_home()
               })
@@ -213,7 +212,7 @@ struct meowTitleBar {
           left: { anchor: '__container__', align: HorizontalAlign.Start },
           top: { anchor: '__container__', align: VerticalAlign.Top }
         })
-        .animation(this.delayed_load_p3 ? animation_default() : {})
+        .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
         .id('left_controls')
 
         Row({ space: 10 }) {
@@ -228,7 +227,7 @@ struct meowTitleBar {
               .selectedBackgroundColor(this.color_current_font)
               .translate({ y: !this.showing_search_extracted_field ? 0 : -50 })
               .opacity(!this.showing_search_extracted_field ? (this.showing_scratching_board ? 0.8 : 1) : 0)
-              .animation(this.delayed_load_p3 ? animation_default() : {})
+              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
               .padding(!this.showing_search_extracted_field ? { left: 16, right: 16 } : {})
               .onDragEnter(() => {
                 this.showing_scratching_board = false;
@@ -258,7 +257,7 @@ struct meowTitleBar {
               .caretColor(this.color_current_font)
               .translate({ y: this.showing_search_extracted_field ? 0 : 50 })
               .opacity(this.showing_search_extracted_field ? (this.showing_scratching_board ? 0.8 : 1) : 0)
-              .animation(this.delayed_load_p3 ? animation_default() : {})
+              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
               .padding(this.showing_search_extracted_field ? { left: 16, right: 16 } : {})
               .onDragEnter(() => {
                 this.showing_scratching_board = false;
@@ -299,7 +298,7 @@ struct meowTitleBar {
               .onClick(() => {
                 this.submit_searching()
               })
-              .animation(this.delayed_load_p3 ? animation_default() : {})
+              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
 
             linysShowButton({
               symbol_glyph_target: this.showing_search_extracted_field ? 'sys.symbol.text_and_t' : 'sys.symbol.link',
@@ -326,7 +325,7 @@ struct meowTitleBar {
                   this.address_analyzers_desc_close_cd_timeout_id = undefined;
                 }, 1200)
               })
-              .animation(this.delayed_load_p3 ? animation_default() : {})
+              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
 
             linysSymbol({
               symbol_glyph_target: 'sys.symbol.magnifyingglass',
@@ -351,7 +350,7 @@ struct meowTitleBar {
                 }
                 this.woofQuickSE_control.open();
               })
-              .animation(this.delayed_load_p3 ? animation_default() : {})
+              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
           }
         } // Searching bar
         .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
@@ -362,7 +361,7 @@ struct meowTitleBar {
           right: { anchor: 'right_controls', align: HorizontalAlign.Start },
           bottom: { anchor: '__container__', align: VerticalAlign.Bottom }
         } : { bottom: { anchor: '__container__', align: VerticalAlign.Bottom } })
-        .animation(this.delayed_load_p3 ? animation_default() : {})
+        .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
 
         Row({ space: this.tablet_mode ? 10 : 6 }) {
           if (this.index_init_ok) {
@@ -385,7 +384,7 @@ struct meowTitleBar {
                 this.show_more_options()
               })
               .opacity(this.delayed_load_p3 ? 1 : 0.5)
-              .animation(this.delayed_load_p3 ? animation_default() : {})
+              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
               .enabled(this.delayed_load_p3)
 
             linysShowButton({
@@ -428,7 +427,7 @@ struct meowTitleBar {
                 this.show_bookmarks();
               })
               .opacity(this.delayed_load_p3 ? 1 : 0.5)
-              .animation(this.delayed_load_p3 ? animation_default() : {})
+              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
               .enabled(this.delayed_load_p3)
 
             Row() {
@@ -444,14 +443,14 @@ struct meowTitleBar {
                 .fontColor(this.color_current_primary)
                 .margin({ right: this.showing_downloads ? 5 : 0 })
                 .visibility(this.download_started_popup ? Visibility.Visible : Visibility.None)
-                .animation(this.delayed_load_p3 ? animation_default() : {})
+                .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
             } // Downloads
             .padding(!this.showing_downloads && this.download_started_popup ? 5 : 0)
             .backgroundColor(this.download_started_popup ? this.color_current_font : "transparent")
             .borderRadius(10)
             .clickEffect(click_effect_default())
             .opacity(this.delayed_load_p3 ? 1 : 0.5)
-            .animation(this.delayed_load_p3 ? animation_default() : {})
+            .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
             .onClick(() => {
               if (this.download_started_popup) {
                 this.download_started_popup = false;
@@ -470,7 +469,7 @@ struct meowTitleBar {
                 this.show_app_settings()
               })
               .opacity(this.delayed_load_p3 ? 1 : 0.5)
-              .animation(this.delayed_load_p3 ? animation_default() : {})
+              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
               .enabled(this.delayed_load_p3)
           }
         } // Title Bar of right controls
@@ -479,14 +478,14 @@ struct meowTitleBar {
           right: { anchor: '__container__', align: HorizontalAlign.End },
           top: { anchor: '__container__', align: VerticalAlign.Top }
         })
-        .animation(this.delayed_load_p3 ? animation_default() : {})
+        .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
         .id('right_controls')
 
       } // Button controls and search
       .padding({ left: 15, right: 15 })
       .width("100%")
       .height(this.tablet_mode || this.showing_scratching_board ? capsule_bar_height() : 2 * capsule_bar_height() + 10)
-      .animation(this.delayed_load_p3 ? animation_default() : {})
+      .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
 
       if (this.delayed_load_p2) {
         EstimatedDestination({
@@ -499,7 +498,7 @@ struct meowTitleBar {
           .visibility(this.is_search_input_typing && this.title_bar_position == 'top' ? Visibility.Visible : Visibility.None)
           .padding({ left: 15, right: 15 })
           .width("100%")
-          .animation(this.delayed_load_p3 ? animation_default() : {})
+          .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
           .constraintSize({ minHeight: 20 })
       } // Estimated Destination
 
@@ -509,17 +508,17 @@ struct meowTitleBar {
         meowAppSettings({ showing_app_settings: this.showing_app_settings })// Settings
           .visibility(this.showing_app_settings ? Visibility.Visible : Visibility.None)
           .layoutWeight(this.showing_app_settings ? 1 : undefined)
-          .animation(this.delayed_load_p3 ? animation_default() : {})
+          .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
 
         meowDownloads()
           .visibility(this.showing_downloads ? Visibility.Visible : Visibility.None)
           .layoutWeight(this.showing_downloads ? 1 : undefined)
-          .animation(this.delayed_load_p3 ? animation_default() : {})
+          .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
 
         meowScratchingBoard()
           .visibility(this.showing_scratching_board ? Visibility.Visible : Visibility.None)
           .layoutWeight(this.showing_scratching_board ? 1 : undefined)
-          .animation(this.delayed_load_p3 ? animation_default() : {})
+          .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
       } // All the panels
 
       if (this.title_bar_position == "top" && this.delayed_load_p2) {
@@ -880,6 +879,7 @@ export default meowTitleBar;
 struct EstimatedDestination {
   // Env
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
+  @StorageLink('title_bar_position') title_bar_position: string = "";
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -942,7 +942,7 @@ struct EstimatedDestination {
       }
 
       linysSymbol({
-        symbol_glyph_target: 'sys.symbol.chevron_up'
+        symbol_glyph_target: this.title_bar_position == 'top' ? 'sys.symbol.chevron_up' : 'sys.symbol.chevron_down'
       })
         .onClick(() => {
           // Clear focus
