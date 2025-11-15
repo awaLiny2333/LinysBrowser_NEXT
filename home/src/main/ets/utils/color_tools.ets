@@ -183,6 +183,6 @@ export function is_legal_hex(hex: ResourceColor) {
  * Adds transparency (0-255) to a ResourceColor
  * */
 export function add_transparency(color: ResourceColor, transparency: number) {
-  let transparency_hex = (transparency & 0xff).toString(16).padStart(2, '0');
+  let transparency_hex = ((255 - transparency) & 0xff).toString(16).padStart(2, '0');
   return '#' + transparency_hex + (color as string).substring(1);
 }

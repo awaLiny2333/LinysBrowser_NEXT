@@ -14,6 +14,7 @@ struct meowSEManager {
   @StorageLink('search_engine_selected') selected_index: number = -2; // -1 for system default
   @State is_pressing_default_card: boolean = false;
   // Colors
+  @StorageLink('effects') effects: boolean = false;
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
@@ -47,8 +48,8 @@ struct meowSEManager {
         .width("100%")
         .height("100%")
         .borderRadius(7)
-        .backgroundColor(this.is_pressing_default_card ? this.color_current_font :
-          this.color_current_primary)
+        .backgroundColor(this.is_pressing_default_card ? this.color_current_font : this.color_current_primary)
+        .useEffect(this.effects, EffectType.WINDOW_EFFECT)
         .animation(animation_default())
 
       } // Default
@@ -183,6 +184,7 @@ struct meowSECardItem {
       my_label: this.my_label,
       show_border: this.my_index == this.selected_index,
       is_editing: this.is_editing,
+      allow_effects: true,
       onExecution: () => {
         if (this.onExecution) {
           this.onExecution(this.my_index, this.my_se);

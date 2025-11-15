@@ -51,6 +51,7 @@ struct woofHistory {
     right: { anchor: "__container__", align: HorizontalAlign.End }
   };
   // Colors
+  @StorageLink('effects') effects: boolean = false;
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
@@ -175,7 +176,6 @@ struct woofHistory {
                           selected: this.selected,
                           selected_item_quantity: this.selected_items_quantity,
                           selecting: this.selecting,
-                          // record: this.opened_month_history_list[(_record_item[1] as number)],
                           record: _record_item[0] as history_record,
                           controller: this.controller,
                         })
@@ -183,7 +183,7 @@ struct woofHistory {
 
                         linysSymbol({
                           symbol_glyph_target: 'sys.symbol.qrcode',
-                          color: !this.selected[_record_item[1] as number] ? this.color_current_font : this.color_current_secondary
+                          color: this.selected[_record_item[1] as number] && !this.effects ? this.color_current_secondary : this.color_current_font
                         })// QRcode
                           .onClick(() => {
                             this.show_title = (_record_item[0] as history_record).label;
@@ -199,7 +199,7 @@ struct woofHistory {
                         bottom: 3
                       })
                       .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
-                      .backgroundColor(this.selected[_record_item[1] as number] ? this.color_current_font : this.color_current_secondary)
+                      .backgroundColor(this.selected[_record_item[1] as number] ? (this.effects ? this.color_current_primary : this.color_current_font) : undefined)
                       .animation(animation_default())
                     }
                   }
@@ -306,7 +306,7 @@ struct woofHistory {
           .id("controls_history")
           .alignRules(this.alignRules_foot)
           .visibility(this.full_view ? Visibility.None : Visibility.Visible)
-          .backgroundColor(this.color_current_primary)
+          // .backgroundColor(this.color_current_primary)
           .animation(animation_default())
           .width(this.tablet_mode ? "35%" : "100%")
         }
@@ -364,7 +364,7 @@ struct woofHistory {
         }
         .width('100%')
         .padding({ top: 15 })
-        .backgroundColor(this.color_current_primary)
+        // .backgroundColor(this.color_current_primary)
         .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
         .visibility(this.full_view ? Visibility.None : Visibility.Visible)
         .animation(animation_default())
@@ -491,6 +491,7 @@ struct meowRelation {
   // Gateways
   @LocalStorageLink('universal_new_tab_gateway') universal_new_tab_gateway: (string | boolean)[] = ['', false];
   // Colors
+  @StorageLink('effects') effects: boolean = false;
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
@@ -498,26 +499,26 @@ struct meowRelation {
   build() {
     Column({ space: 2 }) {
       linysText({
-        color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
+        color: this.selected[this.index] && !this.effects ? this.color_current_secondary : this.color_current_font,
         text: this.record.label.length == 0 ? "　" : this.record.label,
         font_weight: this.selected[this.index] ? FontWeight.Bold : FontWeight.Regular
       })
       if (this.tablet_mode) {
         linysText({
-          color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
+          color: this.selected[this.index] && !this.effects ? this.color_current_secondary : this.color_current_font,
           text: this.human_time + '\t· ' + this.record.link,
           overflow_type: TextOverflow.Clip,
         })
           .opacity(0.6)
       } else {
         linysText({
-          color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
+          color: this.selected[this.index] && !this.effects ? this.color_current_secondary : this.color_current_font,
           text: this.record.link,
           overflow_type: TextOverflow.Clip,
         })
           .opacity(0.6)
         linysText({
-          color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
+          color: this.selected[this.index] && !this.effects ? this.color_current_secondary : this.color_current_font,
           text: this.human_time
         })
           .opacity(0.45)
@@ -660,6 +661,7 @@ struct LinysSelection {
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('effects') effects: boolean = false;
 
   aboutToAppear(): void {
     this.index = AppStorage.get(this.app_storage_link_id) as number;
@@ -676,7 +678,7 @@ struct LinysSelection {
       .value(this.descs[this.index])
       // .animation(animation_default())
       .fontColor(this.color_current_font)
-      .menuBackgroundBlurStyle(BlurStyle.NONE)
+      .menuBackgroundBlurStyle(this.effects ? BlurStyle.Regular : BlurStyle.NONE)
       .menuBackgroundColor(this.color_current_primary)
       .optionFontColor(this.color_current_font)
       .selectedOptionFontColor(this.color_current_font)

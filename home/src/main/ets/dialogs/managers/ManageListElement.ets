@@ -1,5 +1,5 @@
-import linysText from "../../components/texts/linysText";
-import { animation_default, click_effect_default } from "../../hosts/bunch_of_defaults";
+import linysText from '../../components/texts/linysText';
+import { animation_default, click_effect_default } from '../../hosts/bunch_of_defaults';
 
 @Component
 struct ManageListElement {
@@ -9,20 +9,21 @@ struct ManageListElement {
   @Link selected_number: number;
   @Prop selecting: boolean;
   // Color
+  @StorageLink('effects') effects: boolean = false;
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     Column() {
       linysText({
-        color: this.selected[this.index] ? this.color_current_secondary : this.color_current_font,
+        color: this.selected[this.index] && !this.effects ? this.color_current_secondary : this.color_current_font,
         text: this.text,
         font_weight: this.selected[this.index] ? FontWeight.Bold : FontWeight.Regular
       })
     }
     .alignItems(HorizontalAlign.Start)
     .width("100%")
-    .backgroundColor(this.selected[this.index] ? this.color_current_font : 'transparent')
+    .backgroundColor(this.selected[this.index] ? (this.effects ? this.color_current_secondary : this.color_current_font) : 'transparent')
     .animation(animation_default())
     .padding({
       left: 10,

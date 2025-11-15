@@ -78,9 +78,11 @@ struct meowAppSettings {
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   @StorageLink('bunch_of_history_index') bunch_of_history_index: bunch_of_history_index = new bunch_of_history_index();
   // Colors
+  @StorageLink('effects') effects: boolean = false;
   @StorageLink('color_current_primary') @Watch('on_color_change') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') @Watch('on_color_change') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') @Watch('on_color_change') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_back') color_current_back: ResourceColor = $r('app.color.font_color_title');
   // Generals
   @LocalStorageProp('screen_width') screen_width: number = 0;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
@@ -92,14 +94,14 @@ struct meowAppSettings {
   // Segment Button Options
   @State title_bar_position_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [{ text: '  󰀐  ' }, { text: '  󰃐  ' }],
-    selectedBackgroundColor: this.color_current_font,
-    selectedFontColor: this.color_current_primary
+    selectedBackgroundColor: this.color_current_back,
+    selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary
   })
   @State tabs_style_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [{ text: $r('app.string.Settings_appearance_tabs_style_vertical') },
       { text: $r('app.string.Settings_appearance_tabs_style_horizontal') }],
-    selectedBackgroundColor: this.color_current_font,
-    selectedFontColor: this.color_current_primary
+    selectedBackgroundColor: this.color_current_back,
+    selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary
   })
   @State start_up_page_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [
@@ -107,8 +109,8 @@ struct meowAppSettings {
       { text: $r('app.string.Settings_start_up_home') },
       { text: $r('app.string.Settings_start_up_continue') }
     ],
-    selectedBackgroundColor: this.color_current_font,
-    selectedFontColor: this.color_current_primary
+    selectedBackgroundColor: this.color_current_back,
+    selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary
   })
   @State my_window_alias_position_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [
@@ -116,13 +118,13 @@ struct meowAppSettings {
       { text: '󰁨' },
       { text: '󰈰' }
     ],
-    selectedBackgroundColor: this.color_current_font,
-    selectedFontColor: this.color_current_primary
+    selectedBackgroundColor: this.color_current_back,
+    selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary
   })
   @State left_or_right_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [{ text: '󰃊' }, { text: '󰈱' }],
-    selectedBackgroundColor: this.color_current_font,
-    selectedFontColor: this.color_current_primary
+    selectedBackgroundColor: this.color_current_back,
+    selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary
   })
   // Settings
   @StorageLink('DEV_MODE') DEV_MODE: boolean = false;
@@ -802,6 +804,13 @@ struct meowAppSettings {
                   }) // Position of my_window_alias
                     .opacity(this.showing_my_window_alias ? 1 : 0.5)
                     .animation(animation_default())
+                  linysSwitchWithText({
+                    text: $r('app.string.Settings_appearance_effects'),
+                    toggle_state: this.effects,
+                    onExecution: () => {
+                      bunch_of_settings.set('effects', this.effects);
+                    }
+                  }) // Enable advanced effects
                 } // Windows
 
                 settingsSubCard({
@@ -1682,9 +1691,7 @@ struct menuScrollHorizontal {
   @Link scroll_to_gateway: number;
   @State menu_text: string[] = [];
   // Colors
-  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_back') color_current_back: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     Scroll() {
@@ -1697,8 +1704,7 @@ struct menuScrollHorizontal {
             on_index_last: this.on_index_last,
             scroll_to_gateway: this.scroll_to_gateway,
           })
-            .backgroundColor(this.on_index_first <= index && index <= this.on_index_last ?
-              this.color_current_font : "transparent")
+            .backgroundColor(this.on_index_first <= index && index <= this.on_index_last ? this.color_current_back : "transparent")
             .borderRadius(this.border_radius(index))
             .animation(animation_default())
         })
@@ -1735,7 +1741,7 @@ struct menuScrollVertical {
   @State menu_text: string[] = [];
   @State button_Lengths: number[] = new Array(this.menu_text.length).fill(0);
   // Colors
-  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_back') color_current_back: ResourceColor = $r('app.color.font_color_title');
 
   build() {
     Scroll() {
@@ -1755,7 +1761,7 @@ struct menuScrollVertical {
               }
             })
             .backgroundColor(this.on_index_first <= index && index <= this.on_index_last ?
-              this.color_current_font : "transparent")
+              this.color_current_back : "transparent")
             .borderRadius(this.border_radius(index))
             .animation(animation_default())
         })
@@ -1824,11 +1830,13 @@ struct menuItem {
   // Colors
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('effects') effects: boolean = false;
 
   build() {
     Row() {
       Text(this.my_text)
-        .fontColor(this.on_index_first <= this.my_index && this.my_index <= this.on_index_last ? this.color_current_secondary : this.color_current_font)
+        .fontColor(this.on_index_first <= this.my_index && this.my_index <= this.on_index_last && !this.effects
+          ? this.color_current_secondary : this.color_current_font)
         .fontSize(fontSize_Large() - 2)
     }
     .clickEffect(click_effect_default())

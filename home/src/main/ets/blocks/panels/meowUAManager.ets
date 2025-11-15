@@ -12,6 +12,7 @@ struct meowUAManager {
   @StorageLink('user_agent_selected') selected_index: number = -1; // -1 for system default
   @State is_pressing_default_card: boolean = false;
   // Colors
+  @StorageLink('effects') effects: boolean = false;
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
@@ -43,6 +44,7 @@ struct meowUAManager {
         .width("100%")
         .height("100%")
         .borderRadius(7)
+        .useEffect(this.effects, EffectType.WINDOW_EFFECT)
         .backgroundColor(this.is_pressing_default_card ? this.color_current_font : this.color_current_primary)
         .animation(animation_default())
 
@@ -174,6 +176,7 @@ struct meowUACardItem {
       my_label: this.my_label,
       show_border: this.my_index == this.selected_index,
       is_editing: this.is_editing,
+      allow_effects: true,
       onExecution: () => {
         bunch_of_user_agents.set_global_UA(this.my_index);
       },

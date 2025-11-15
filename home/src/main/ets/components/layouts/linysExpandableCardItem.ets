@@ -6,6 +6,7 @@ struct linysExpandableCardItem {
   @Prop my_label: ResourceStr = 'Label';
   @Prop my_icon: Resource | undefined = undefined; // $r('sys.symbol.cat_fill')
   @Prop my_icon_press_edit: Resource | undefined = $r('sys.symbol.square_and_pencil'); // $r('sys.symbol.square_and_pencil')
+  allow_effects: boolean = false;
   @Link is_editing: boolean;
   // UI effects
   @Prop default_background_color: ResourceColor | undefined = undefined;
@@ -16,6 +17,7 @@ struct linysExpandableCardItem {
   press_start_time: number | undefined = undefined;
   button_height_default: number = 42;
   // Colors
+  @StorageLink('effects') effects: boolean = false;
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
@@ -66,7 +68,9 @@ struct linysExpandableCardItem {
         }
       } // Item Button with Title
       .borderRadius(this.is_editing ? { topLeft: 7, topRight: 7 } : 7)
-      .backgroundColor(this.is_pressing ? this.color_current_font : (this.default_background_color || this.color_current_primary))
+      .useEffect(this.effects && this.allow_effects, EffectType.WINDOW_EFFECT)
+      .backgroundColor(this.is_pressing ? (this.effects ? this.color_current_primary : this.color_current_font) :
+        (this.default_background_color || this.color_current_primary))
       .animation(animation_default())
       .clip(true)
       .padding({ left: 10, right: 10 })
@@ -137,7 +141,8 @@ struct linysExpandableCardItem {
         right: 14,
         bottom: 14
       })
-      .backgroundColor((this.default_background_color || this.color_current_primary))
+      .useEffect(this.effects && this.allow_effects, EffectType.WINDOW_EFFECT)
+      .backgroundColor(this.default_background_color || this.color_current_primary)
       .border({
         radius: { bottomLeft: 7, bottomRight: 7 }
       })

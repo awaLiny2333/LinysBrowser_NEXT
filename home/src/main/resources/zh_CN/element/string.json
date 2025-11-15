@@ -160,6 +160,10 @@
       "value": "显示窗口标题"
     },
     {
+      "name": "Settings_appearance_effects",
+      "value": "高级效果 \uDB82\uDD42"
+    },
+    {
       "name": "Settings_appearance_windows_alias_position",
       "value": "标题位置"
     },

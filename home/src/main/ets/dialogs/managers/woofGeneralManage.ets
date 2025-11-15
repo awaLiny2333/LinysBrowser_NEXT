@@ -181,7 +181,7 @@ struct woofGeneralManage {
                   selected_number: this.selected_number,
                   selecting: this.selecting
                 })
-                  .width("100%")
+                  // .width("100%")
               })
               if (this.sites_list.length == 0) {
                 linysTextTitle({
@@ -319,7 +319,7 @@ struct woofGeneralManage {
         .alignRules(this.alignRules_foot)
         .opacity(this.all_sites_switch || !this.general_switch ? 0.5 : 1)
         .visibility(this.full_view ? Visibility.None : Visibility.Visible)
-        .backgroundColor(this.color_current_primary)
+        // .backgroundColor(this.color_current_primary)
         .animation(animation_default())
         .width(this.tablet_mode ? "40%" : "100%")
         .id("controls")

@@ -157,6 +157,10 @@
       "value": "Show window title"
     },
     {
+      "name": "Settings_appearance_effects",
+      "value": "Effects \uDB82\uDD42"
+    },
+    {
       "name": "Settings_appearance_windows_alias_position",
       "value": "Title position"
     },

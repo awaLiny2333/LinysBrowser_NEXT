@@ -148,7 +148,7 @@ struct woofEasyList {
                   selecting: this.selecting,
                   selected_number: this.selected_number
                 })
-                  .width("100%")
+                  // .width("100%")
               })
               if (this.lists.length == 0) {
                 linysTextTitle({

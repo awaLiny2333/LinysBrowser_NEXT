@@ -33,7 +33,7 @@ struct woofQuickUA {
       .layoutWeight(1)
       .scrollable(ScrollDirection.Vertical)
       .edgeEffect(EdgeEffect.Spring)
-      .backgroundColor(this.color_current_primary)
+      // .backgroundColor(this.color_current_primary)
       .constraintSize({ maxHeight: 92.5 + 48.5 * bunch_of_user_agents.list_of_user_agents.length })
       .animation(animation_default())
     }

@@ -370,9 +370,7 @@ struct meowMoreOptions {
         .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
         .width("100%")
         .height(20 + (this.tablet_mode ? capsule_bar_height() : 2 * capsule_bar_height()))
-        .backgroundColor(this.current_in_page_searching_stats_total <= 0
-          ? this.color_current_primary
-          : add_transparency(this.color_current_primary, 128))
+        .backgroundColor(this.color_current_primary)
         .borderRadius(12)
         .padding(10)
         .animation(animation_default())

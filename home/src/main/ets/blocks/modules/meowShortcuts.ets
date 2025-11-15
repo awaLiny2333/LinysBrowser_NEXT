@@ -1,7 +1,7 @@
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import { bookmark, bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
-import { animation_default, capsule_bar_height } from '../../hosts/bunch_of_defaults';
+import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large } from '../../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { run_time, storage_of_id } from '../../utils/ui_tools';
@@ -137,26 +137,32 @@ struct shortcutButton {
   // Gateways
   @LocalStorageLink('universal_new_tab_gateway') new_tab_gateway: (string | boolean)[] = ['', false];
   // Colors
+  @StorageLink('effects') effects: boolean = false;
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // SHow
   @State vis_contents: Visibility = Visibility.None;
   @State render_contents: boolean = false;
   render_contents_timeout_id: number | undefined = undefined;
-  // @State show: Visibility = Visibility.None;
-
-  // @State offset_y: number = 50;
 
   @State show: Visibility = this.homepage_shortcuts_no_animation ? Visibility.Visible : Visibility.None;
 
   build() {
     Column({ space: this.render_contents ? 10 : 0 }) {
-      linysCapsuleButton({
-        text: this.get_label_name(),
-        color_button: this.color_current_secondary,
-        color_text: this.color_current_font,
-        opa: 1
-      })
+      Button(this.get_label_name())
+        .type(ButtonType.Capsule)
+        .backgroundColor(this.color_current_secondary)
+        .useEffect(this.effects, EffectType.WINDOW_EFFECT)
+        .fontColor(this.color_current_font)
+        .fontSize(fontSize_Large())
+        .fontWeight(FontWeight.Medium)
+        .height(capsule_bar_height())
+        .border({
+          width: 2,
+          color: "transparent"
+        })
+        .clickEffect(click_effect_default())
         .visibility(this.show)
         .animation(animation_default())
         .onAppear(() => {

@@ -12,6 +12,8 @@ struct linysSwitchWithText {
   // Colors
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_back') color_current_back: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('effects') effects: boolean = false;
 
   build() {
     Row({ space: 10 }) {
@@ -23,8 +25,8 @@ struct linysSwitchWithText {
       .justifyContent(FlexAlign.Start)
 
       Toggle({ isOn: this.toggle_state, type: ToggleType.Switch })
-        .switchPointColor(this.color_current_secondary)
-        .selectedColor(this.color_current_font)
+        .switchPointColor(this.effects ? this.color_current_font : this.color_current_secondary)
+        .selectedColor(this.color_current_back)
         .onChange(isOn => {
           this.toggle_state = isOn;
           if (this.onExecution) {

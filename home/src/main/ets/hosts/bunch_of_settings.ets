@@ -21,6 +21,7 @@ export class bunch_of_settings {
     bunch_of_settings.register_setting('tabs_style', 'string', 'vertical');
     bunch_of_settings.register_setting('tabs_style_non_tablet_mode', 'string', 'vertical');
     bunch_of_settings.register_setting('bottom_avoid', 'boolean', 'true');
+    bunch_of_settings.register_setting('effects', 'boolean', 'false');
 
     // Experience
     bunch_of_settings.register_setting('sys_back_access_backward', 'boolean', 'true');

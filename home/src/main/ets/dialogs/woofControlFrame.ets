@@ -14,6 +14,7 @@ struct woofControlFrame {
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   // animation
   @State off_y_contents: number = 120;
+  @StorageLink('effects') effects: boolean = false;
 
   build() {
     Column({ space: 13.5 }) {
@@ -32,6 +33,7 @@ struct woofControlFrame {
       this.content_section();
     }
     .offset({ y: this.off_y_contents })
+    .useEffect(this.effects, EffectType.WINDOW_EFFECT)
     .animation(animation_default())
     .padding(15)
     .backgroundColor(this.color_current_primary)

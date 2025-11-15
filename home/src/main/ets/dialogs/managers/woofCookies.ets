@@ -160,7 +160,7 @@ struct woofCookies {
           .layoutWeight(1)
         } // Cookies
         .clip(true)
-        .backgroundColor(this.color_current_primary)
+        // .backgroundColor(this.color_current_primary)
         .width(this.tablet_mode ? (this.full_view ? "100%" : "60%") : "100%")
         .height(this.tablet_mode ? "100%" : undefined)
         .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)
@@ -184,7 +184,7 @@ struct woofCookies {
         .alignItems(HorizontalAlign.End)
         .alignRules(this.alignRules_foot)
         .visibility(this.full_view ? Visibility.None : Visibility.Visible)
-        .backgroundColor(this.color_current_primary)
+        // .backgroundColor(this.color_current_primary)
         .animation(animation_default())
         .width(this.tablet_mode ? "40%" : "100%")
         .id("controls_cookies")
@@ -245,7 +245,7 @@ struct Cookie {
       bottom: 5
     })
     .alignItems(HorizontalAlign.Start)
-    .backgroundColor(this.color_current_secondary)
+    // .backgroundColor(this.color_current_secondary)
     .animation(animation_default())
     .clickEffect(click_effect_default())
     .width("100%")

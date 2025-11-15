@@ -3,15 +3,13 @@ import { animation_default, animation_popup_duration, capsule_bar_height, click_
 @Component
 struct linysTimeoutButton {
   @Prop text: ResourceStr = '  󰃈  ';
+  @StorageLink('effects') effects: boolean = false;
   // editing
   @State one_more_step: boolean = false;
   // Colors
-  @StorageLink('color_current_primary') color_current_primary: ResourceColor =
-    $r('app.color.start_window_background');
-  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor =
-    $r('app.color.block_color');
-  @StorageLink('color_current_font') color_current_font: ResourceColor =
-    $r('app.color.font_color_title');
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_back') color_current_back: ResourceColor = $r('app.color.font_color_title');
   // Operations
   onExecution?: () => void;
   // Timeout
@@ -21,8 +19,9 @@ struct linysTimeoutButton {
     Button(this.text)// Reset
       .opacity(0.9)
       .type(ButtonType.Capsule)
-      .backgroundColor(this.one_more_step ? this.color_current_primary : this.color_current_font)
-      .fontColor(this.one_more_step ? this.color_current_font : this.color_current_primary)
+      // .useEffect(this.effects, EffectType.WINDOW_EFFECT)
+      .backgroundColor(this.one_more_step ? this.color_current_primary : this.color_current_back)
+      .fontColor(this.one_more_step ? this.color_current_font :(this.effects ? this.color_current_font : this.color_current_primary))
       .border({
         width: 2,
         color: this.one_more_step ? this.color_current_font : "transparent"

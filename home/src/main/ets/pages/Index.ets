@@ -4,7 +4,6 @@ import { window } from '@kit.ArkUI';
 import { animation_default } from '../hosts/bunch_of_defaults';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
-import lazy { drop_to_scratching_board } from '../utils/drag_drop_tools';
 import lazy { print_web } from '../utils/print_tools';
 import lazy { bunch_of_settings } from '../hosts/bunch_of_settings';
 import lazy {
@@ -15,7 +14,7 @@ import lazy {
   pin_to_top,
   update_window_decor_height,
 } from '../utils/ui_tools';
-import { change_window_alias, current_tabs_style_is_horizontal, last_storage, run_time, storage_of_id, window_index_of_id } from '../utils/ui_tools';
+import { change_window_alias, current_tabs_style_is_horizontal, last_storage, run_time, storage_of_id } from '../utils/ui_tools';
 import lazy { cancel_in_page_search, is_current_in_page_searching } from '../processes/tabs_actions';
 import lazy { webview } from '@kit.ArkWeb';
 import lazy meowTabsVertical from '../blocks/modules/meowTabsVertical';
@@ -23,11 +22,9 @@ import lazy meowTitleBar from '../blocks/modules/meowTitleBar';
 import lazy meowBookmarks from '../blocks/modules/meowBookmarks';
 import lazy meowWebView from '../blocks/modules/meowWebView';
 import lazy woofPromptFail from '../dialogs/prompts/woofPromptFail';
-import lazy linysWindowButton from '../components/buttons/linysWindowButton';
 import lazy woofHistory from '../dialogs/managers/woofHistory';
 import meowShortcuts from '../blocks/modules/meowShortcuts';
 import linysProgress from '../components/linysProgress';
-import linysText from '../components/texts/linysText';
 
 // @Entry({ useSharedStorage: true })
 @Entry(last_storage())
@@ -70,6 +67,7 @@ struct Index {
   @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
   /**
    * UI params */
+  @StorageLink('effects') @Watch('on_effects_change') effects: boolean = false;
   @State title_bar_height: number = 0;
   @State title_bar_alignRules: AlignRuleOption = {
     middle: { anchor: "__container__", align: HorizontalAlign.Center },
@@ -140,6 +138,7 @@ struct Index {
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_back') color_current_back: ResourceColor = $r('app.color.font_color_title');
 
   aboutToAppear(): void {
     // console.log(`[Meow][Index] aboutToLoad Index! (${run_time(this.storage)} ms)`);
@@ -214,67 +213,6 @@ struct Index {
         }.height(0)
       }
 
-      RelativeContainer() {
-        if (this.index_init_ok) {
-          WindowTitle()
-            .padding(this.tablet_mode ? { right: 20, bottom: 5 } : undefined)
-            .alignRules({
-              bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
-              left: { anchor: '__container__', align: HorizontalAlign.Start },
-              right: !this.tablet_mode ? { anchor: '__container__', align: HorizontalAlign.End } : { anchor: 'window_controls', align: HorizontalAlign.Start }
-            })
-            .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-
-          if (this.free_window_mode) {
-            Row({ space: 10 }) {
-              linysWindowButton({
-                symbol: this.pin_to_top ? $r('sys.symbol.pin_vertical_fill') : $r('sys.symbol.pin'),
-                execution: () => {
-                  pin_to_top(this.my_window_id);
-                }
-              })
-
-              linysWindowButton({
-                symbol: $r('sys.symbol.plus'),
-                execution: () => {
-                  this.create_new_window();
-                }
-              })
-
-            } // Window control buttons
-            .id('window_controls')
-            .padding({ top: this.showing_my_window_alias ? 9 : 5, right: Math.max(15, this.windowDecorWidth) - 15 })
-            .alignRules({ top: { anchor: '__container__', align: VerticalAlign.Top }, right: { anchor: '__container__', align: HorizontalAlign.End } })
-          }
-        }
-      } // Top Bar Avoid (Title)
-      .padding({
-        left: 15,
-        right: 15
-      })
-      .height(this.height_of_top_avoid())
-      .clip(true)
-      .backgroundColor(this.color_current_secondary)
-      .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-      .width('100%')
-      .onDrop((e) => {
-        try {
-          let drop_ok = drop_to_scratching_board(e, this.storage, false);
-          if (!drop_ok) {
-            this.showing_scratching_board = false;
-          }
-        } catch (e) {
-          console.error('[onDrop] Failed: ' + e);
-        }
-      })
-      .onDragEnter(() => {
-        this.showing_scratching_board = true;
-        this.showing_more_options = false;
-      })
-      .onDragLeave(() => {
-        this.showing_scratching_board = false;
-      })
-
       // Scroll() {
       //   Column() {
       RelativeContainer() {
@@ -322,7 +260,6 @@ struct Index {
         .margin(this.title_bar_position == "bottom"
           ? { bottom: this.fullscreen_mode ? 0 : this.title_bar_height }
           : { top: this.fullscreen_mode ? 0 : this.title_bar_height })
-        .backgroundColor(this.color_current_primary)
         .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
         .width("100%")
 
@@ -356,7 +293,8 @@ struct Index {
     .height("100%")
     .width("100%")
     .alignItems(HorizontalAlign.Start)
-    .backgroundColor(this.color_current_secondary)
+    .backgroundColor(this.color_current_primary)
+    .useEffect(this.effects, EffectType.WINDOW_EFFECT)
     .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
     .onAreaChange((_o, n) => {
       this.full_screen_height = n.height as number;
@@ -441,7 +379,7 @@ struct Index {
     }
   }
 
-  on_color_mode_change() {
+  refresh_colors() {
     if (this.current_color_mode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK) {
       // Is dark mode
       this.color_current_primary = this.color_dark_primary;
@@ -452,21 +390,34 @@ struct Index {
       this.color_current_secondary = this.color_light_secondary;
       this.color_current_font = this.color_light_font;
     }
+    this.color_current_back = this.color_current_font;
+    if (this.effects) {
+      this.color_current_primary = $r('sys.color.comp_background_secondary');
+      this.color_current_secondary = $r('sys.color.comp_background_secondary');
+      this.color_current_back = $r('sys.color.comp_background_tertiary');
+    }
+  }
+
+  on_color_mode_change() {
+    if (this.effects) {
+      if (this.current_color_mode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK) {
+        this.color_current_font = this.color_dark_font;
+      } else {
+        this.color_current_font = this.color_light_font;
+      }
+      return;
+    }
+    this.refresh_colors();
   }
 
   on_color_change() {
     console.log('[Meow][Index] Color theme changed!');
     // Refresh current color
-    if (this.current_color_mode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK) {
-      // Is dark mode
-      this.color_current_primary = this.color_dark_primary;
-      this.color_current_secondary = this.color_dark_secondary;
-      this.color_current_font = this.color_dark_font;
-    } else {
-      this.color_current_primary = this.color_light_primary;
-      this.color_current_secondary = this.color_light_secondary;
-      this.color_current_font = this.color_light_font;
-    }
+    this.refresh_colors();
+  }
+
+  on_effects_change() {
+    this.refresh_colors();
   }
 
   /**
@@ -574,17 +525,6 @@ struct Index {
         return 0.9 * this.screen_width;
       }
     }
-  }
-
-  height_of_top_avoid() {
-    if (this.fullscreen_mode) {
-      return 0;
-    }
-    let tablet_mode_compensation = 0;
-    if (!this.tablet_mode && this.showing_my_window_alias) {
-      tablet_mode_compensation = 28;
-    }
-    return this.topAvoidHeight + tablet_mode_compensation;
   }
 
   height_of_bottom_avoid() {
@@ -772,52 +712,6 @@ struct Index {
       this.bunch_of_tabs.workingMainTab().controller!.searchNext(true);
     } catch (e) {
       console.error('[in_page_search_last] Failed: ' + e);
-    }
-  }
-}
-
-@Component
-struct WindowTitle {
-  // Environment
-  @StorageLink('free_window_mode') free_window_mode: boolean = false;
-  @StorageLink('windowIds') @Watch('on_windowIDs_change') windowIds: string[] = [];
-  @LocalStorageLink('my_window_id') my_window_id: string = '';
-  @LocalStorageLink('my_window_alias') my_window_alias: string = '';
-  @LocalStorageLink('screen_width') screen_width: number = 0;
-  // Statuses
-  @StorageLink('my_window_alias_position') my_window_alias_position: string = "center";
-  @LocalStorageLink('current_title') current_title: string = "=￣ω￣=";
-
-  build() {
-    Row({ space: 10 }) {
-      linysText({
-        text: '#' + this.windowIds.indexOf(this.my_window_id) + '｜' + this.current_title + '｜' + this.my_window_alias
-      })
-        .constraintSize(this.free_window_mode ? undefined : { maxWidth: this.screen_width * 0.7 })
-    }
-    .width('100%')
-    .padding({
-      top: 8,
-      bottom: 8,
-    })
-    .opacity(0.7)
-    .justifyContent(this.justifyContents_of_alias())
-  }
-
-  justifyContents_of_alias() {
-    if (this.my_window_alias_position == 'left') {
-      return FlexAlign.Start;
-    }
-    if (this.my_window_alias_position == 'right') {
-      return FlexAlign.End;
-    }
-    return FlexAlign.Center;
-  }
-
-  on_windowIDs_change() {
-    if (window_index_of_id(this.my_window_id) == 0) {
-      bunch_of_settings.set('my_window_alias_last', this.my_window_alias);
-      AppStorage.set('LAST_WINDOW_WINDOW_NAME', this.my_window_alias);
     }
   }
 }
