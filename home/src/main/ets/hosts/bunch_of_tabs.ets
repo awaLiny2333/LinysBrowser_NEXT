@@ -187,12 +187,11 @@ export class bunch_of_tabs {
    * @returns A string, the default user agent
    * */
   get_global_default_UA() {
-    for (let index = 0; index < this.Tabs.length; index++) {
-      if (this.Tabs[index].controller) {
-        return this.Tabs[index].controller!.getUserAgent();
-      }
+    if (this.Tabs[this.main_tab_idx].controller) {
+      return this.Tabs[this.main_tab_idx].controller!.getUserAgent();
+    } else {
+      return '';
     }
-    return '';
   }
 
   // Data and Statuses

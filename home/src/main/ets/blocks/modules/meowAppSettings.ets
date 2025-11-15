@@ -912,7 +912,7 @@ struct meowAppSettings {
                       text: '  󰀖  ',
                       onExecution: () => {
                         try {
-                          this.bunch_of_tabs.Tabs[0].controller!.removeCache(true);
+                          this.bunch_of_tabs.workingMainTab().controller!.removeCache(true);
                           console.log('[Meow][meowAppSettings] Clear webview cache!')
                         } catch (error) {
                           console.error(`[Meow][meowAppSettings] Clear webview cache.

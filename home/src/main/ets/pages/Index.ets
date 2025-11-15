@@ -144,9 +144,6 @@ struct Index {
   aboutToAppear(): void {
     // console.log(`[Meow][Index] aboutToLoad Index! (${run_time(this.storage)} ms)`);
 
-    // Set window title
-    change_window_alias(this.my_window_id, this.my_window_alias);
-
     // Init title bar
     this.on_title_bar_position_change();
 
@@ -282,27 +279,25 @@ struct Index {
       //   Column() {
       RelativeContainer() {
         Row() {
-          if (this.index_init_ok) {
-            Row() {
-              if (this.delayed_load_p0) {
-                meowTabsVertical()
-                  .width(this.showing_tabs ? this.width_of_Tabs() : 0)
-                  .padding((this.showing_tabs && !current_tabs_style_is_horizontal(this.storage)) ? 10 : 0)
-                  .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-              }
-              if (this.delayed_load_p3) {
-                meowBookmarks()
-                  .padding(this.showing_bookmarks ? 10 : 0)
-                  .height("100%")
-                  .width(this.showing_bookmarks ? this.width_of_Bookmarks() : 0)
-                  .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-              }
+          Row() {
+            if (this.delayed_load_p0) {
+              meowTabsVertical()
+                .width(this.showing_tabs ? this.width_of_Tabs() : 0)
+                .padding((this.showing_tabs && !current_tabs_style_is_horizontal(this.storage)) ? 10 : 0)
+                .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
             }
-            .width(this.width_of_Bookmarks_and_Tabs())
-            .margin(this.margin_of_Bookmarks_and_Tabs())
-            .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-            .height("100%")
+            if (this.delayed_load_p3) {
+              meowBookmarks()
+                .padding(this.showing_bookmarks ? 10 : 0)
+                .height("100%")
+                .width(this.showing_bookmarks ? this.width_of_Bookmarks() : 0)
+                .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+            }
           } // Tabs and bookmarks
+          .width(this.width_of_Bookmarks_and_Tabs())
+          .margin(this.margin_of_Bookmarks_and_Tabs())
+          .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+          .height("100%")
 
           Stack() {
             if (this.homepage_background) {
@@ -367,6 +362,8 @@ struct Index {
       this.full_screen_height = n.height as number;
     })
     .onAppear(() => {
+      // Set window title
+      change_window_alias(this.my_window_id, this.my_window_alias);
 
       // Determine window decor height
       update_window_decor_height(this.my_window_id);
