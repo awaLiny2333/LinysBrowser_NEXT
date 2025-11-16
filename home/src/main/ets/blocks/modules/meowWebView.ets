@@ -526,22 +526,24 @@ struct toast {
   // Color
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('effects') effects: boolean = false;
 
   build() {
     Row() {
       if (this.extra) {
         linysText({
           text: this.extra + ' / ',
-          color: this.color_current_primary,
+          color: this.effects ? this.color_current_font : this.color_current_primary,
           font_weight: FontWeight.Bold
         })
       }
       linysText({
         text: this.info,
-        color: this.color_current_primary,
+        color: this.effects ? this.color_current_font : this.color_current_primary,
         font_weight: FontWeight.Bold
       })
     }
+    .useEffect(this.effects, EffectType.WINDOW_EFFECT)
     .backgroundColor(this.color_current_font)
     .height(this.show ? undefined : 0)
     .width(this.show ? undefined : 0)
