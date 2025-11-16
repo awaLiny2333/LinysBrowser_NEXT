@@ -910,11 +910,10 @@ struct meowTitleBar {
     return this.is_search_input_typing || this.showing_more_options || this.showing_app_settings || this.showing_downloads || this.showing_scratching_board;
   }
 
-  background_color(): ResourceColor | undefined {
-    // if (this.showing_more_options && this.current_in_page_searching_stats_total > 0) {
-    //   // Search has results
-    //   return add_transparency(this.color_current_secondary, 128);
-    // }
+  background_color(): ResourceColor {
+    if (this.effects) {
+      return $r('sys.color.background_tertiary');
+    }
     return this.color_current_secondary;
   }
 

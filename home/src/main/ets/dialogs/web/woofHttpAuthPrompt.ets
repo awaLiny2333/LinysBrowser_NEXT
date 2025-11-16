@@ -11,6 +11,7 @@ struct woofHttpAuthPrompt {
   controller: CustomDialogController;
   @StorageLink('woofHttpAuthPrompt_result') woofHttpAuthPrompt_result: boolean = false;
   // Colors
+  @StorageLink('effects') effects: boolean = false;
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // UI display
@@ -93,6 +94,7 @@ struct woofHttpAuthPrompt {
     .alignItems(HorizontalAlign.Start)
     .justifyContent(FlexAlign.Center)
     .width("100%")
+    .useEffect(this.effects, EffectType.WINDOW_EFFECT)
     .backgroundColor(this.color_current_primary)
   }
 

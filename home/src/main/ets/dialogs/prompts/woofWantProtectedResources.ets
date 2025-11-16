@@ -13,9 +13,9 @@ struct woofWantResources {
   onPermit?: () => void;
   onDeny?: () => void;
   // Colors
+  @StorageLink('effects') effects: boolean = false;
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // UI display
@@ -81,6 +81,7 @@ struct woofWantResources {
     .justifyContent(FlexAlign.Center)
     .width("100%")
     .backgroundColor(this.color_current_primary)
+    .useEffect(this.effects, EffectType.WINDOW_EFFECT)
   }
 }
 

@@ -18,7 +18,7 @@ struct linysCapsuleButton {
 
   build() {
     Button(this.text)
-      .opacity(this.opa)
+      .opacity(this.effects ? 1 : this.opa)
       .type(ButtonType.Capsule)
       .backgroundColor(this.color_button == "" ? this.color_current_back : this.color_button)
       // .useEffect(this.effects, EffectType.WINDOW_EFFECT)

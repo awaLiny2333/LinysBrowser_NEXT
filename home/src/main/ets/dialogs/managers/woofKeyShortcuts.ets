@@ -216,14 +216,16 @@ struct KeyButton {
   @State key_id: string = '';
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('effects') effects: boolean = false;
 
   build() {
     Text(this.id_to_display())
       .padding(10)
       .borderRadius(7)
       .fontWeight(this.keys_selected.includes(this.key_id) ? FontWeight.Bold : FontWeight.Regular)
-      .fontColor(this.keys_selected.includes(this.key_id) ? this.color_current_primary : this.color_current_font)
-      .backgroundColor(this.keys_selected.includes(this.key_id) ? this.color_current_font : this.color_current_primary)
+      .fontColor(this.keys_selected.includes(this.key_id) && !this.effects ? this.color_current_primary : this.color_current_font)
+      .backgroundColor(this.keys_selected.includes(this.key_id) && !this.effects ? this.color_current_font : this.color_current_primary)
+      .brightness(this.keys_selected.includes(this.key_id) && this.effects ? 1.2 : 1)
       .clickEffect(click_effect_default())
       .animation(animation_default())
       .constraintSize({ minWidth: 40 })

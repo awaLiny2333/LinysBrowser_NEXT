@@ -18,6 +18,7 @@ struct woofSelectBookmarksPath {
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Colors
+  @StorageLink('effects') effects: boolean = false;
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
@@ -51,8 +52,7 @@ struct woofSelectBookmarksPath {
               height_of_panel: this.scroll_area_height, // for animation params
               my_parent_path: this.looking_at_path, // for get_my_path()
             });
-          },
-          )
+          })
 
           linysTextTitle({ text: "¯\\_(ツ)_/¯" })
             .visibility(this.viewing_contents.length == 0 ? Visibility.Visible : Visibility.None)
@@ -134,6 +134,7 @@ struct woofSelectBookmarksPath {
         .animation(animation_default())
     }
     .alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
+    .useEffect(this.effects, EffectType.WINDOW_EFFECT)
     .backgroundColor(this.color_current_primary)
     .animation(animation_default())
     .padding(15)
@@ -212,6 +213,7 @@ struct bookmarkItem {
   @State edit_link: string = this.my_link;
   @State delete_confirm: number = 0;
   // Colors
+  @StorageLink('effects') effects: boolean = false;
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
@@ -253,7 +255,7 @@ struct bookmarkItem {
         width: 2,
         color: "transparent"
       })
-      .backgroundColor(this.pressing ? this.color_current_font : this.color_current_secondary)
+      .backgroundColor(this.pressing && !this.effects ? this.color_current_font : this.color_current_secondary)
       .animation(animation_default())
       .padding(10)
       .alignRules({

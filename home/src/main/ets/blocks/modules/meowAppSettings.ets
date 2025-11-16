@@ -82,7 +82,7 @@ struct meowAppSettings {
   @StorageLink('color_current_primary') @Watch('on_color_change') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') @Watch('on_color_change') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') @Watch('on_color_change') color_current_font: ResourceColor = $r('app.color.font_color_title');
-  @StorageLink('color_current_back') color_current_back: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('color_current_back') @Watch('on_color_change') color_current_back: ResourceColor = $r('app.color.font_color_title');
   // Generals
   @LocalStorageProp('screen_width') screen_width: number = 0;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
@@ -95,13 +95,15 @@ struct meowAppSettings {
   @State title_bar_position_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [{ text: '  󰀐  ' }, { text: '  󰃐  ' }],
     selectedBackgroundColor: this.color_current_back,
-    selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary
+    selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
+    selectedFontWeight:FontWeight.Medium
   })
   @State tabs_style_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [{ text: $r('app.string.Settings_appearance_tabs_style_vertical') },
       { text: $r('app.string.Settings_appearance_tabs_style_horizontal') }],
     selectedBackgroundColor: this.color_current_back,
-    selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary
+    selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
+    selectedFontWeight:FontWeight.Medium
   })
   @State start_up_page_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [
@@ -110,7 +112,8 @@ struct meowAppSettings {
       { text: $r('app.string.Settings_start_up_continue') }
     ],
     selectedBackgroundColor: this.color_current_back,
-    selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary
+    selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
+    selectedFontWeight:FontWeight.Medium
   })
   @State my_window_alias_position_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [
@@ -119,12 +122,14 @@ struct meowAppSettings {
       { text: '󰈰' }
     ],
     selectedBackgroundColor: this.color_current_back,
-    selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary
+    selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
+    selectedFontWeight:FontWeight.Medium
   })
   @State left_or_right_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [{ text: '󰃊' }, { text: '󰈱' }],
     selectedBackgroundColor: this.color_current_back,
-    selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary
+    selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
+    selectedFontWeight:FontWeight.Medium
   })
   // Settings
   @StorageLink('DEV_MODE') DEV_MODE: boolean = false;
@@ -415,7 +420,7 @@ struct meowAppSettings {
         if (this.showing_app_settings) {
           WaterFlow({ scroller: this.waterFlow_control }) {
             FlowItem() {
-              settingsCard({
+              settingsModule({
                 title: $r('app.string.Settings_start_up'),
                 my_index: 0
               }) {
@@ -431,7 +436,7 @@ struct meowAppSettings {
             .width("100%")
 
             FlowItem() {
-              settingsCard({
+              settingsModule({
                 title: $r('app.string.Settings_general'),
                 my_index: 1
               }) {
@@ -520,7 +525,7 @@ struct meowAppSettings {
             .width("100%")
 
             FlowItem() {
-              settingsCard({
+              settingsModule({
                 title: $r('app.string.Settings_Experience'),
                 my_index: 2,
               }) {
@@ -655,7 +660,7 @@ struct meowAppSettings {
             .width("100%")
 
             FlowItem() {
-              settingsCard({
+              settingsModule({
                 title: $r('app.string.Settings_Accessibility'),
                 my_index: 3,
               }) {
@@ -737,7 +742,7 @@ struct meowAppSettings {
             .width('100%')
 
             FlowItem() {
-              settingsCard({
+              settingsModule({
                 title: $r('app.string.Settings_appearance'),
                 my_index: 4,
               }) {
@@ -847,7 +852,7 @@ struct meowAppSettings {
             .width("100%")
 
             FlowItem() {
-              settingsCard({
+              settingsModule({
                 title: $r('app.string.Settings_experience_history'),
                 my_index: 5,
               }) {
@@ -897,7 +902,7 @@ struct meowAppSettings {
             .width("100%")
 
             FlowItem() {
-              settingsCard({
+              settingsModule({
                 title: $r('app.string.Settings_storage'),
                 my_index: 6,
               }) {
@@ -965,7 +970,7 @@ struct meowAppSettings {
             .width("100%")
 
             FlowItem() {
-              settingsCard({
+              settingsModule({
                 title: $r('app.string.Settings_security'),
                 my_index: 7,
               }) {
@@ -1028,7 +1033,7 @@ struct meowAppSettings {
             .width("100%")
 
             FlowItem() {
-              settingsCard({
+              settingsModule({
                 title: $r('app.string.Settings_toolbox'),
                 my_index: 8,
               }) {
@@ -1125,7 +1130,7 @@ struct meowAppSettings {
             .width("100%")
 
             FlowItem() {
-              settingsCard({
+              settingsModule({
                 title: $r('app.string.Settings_about'),
                 my_index: 9,
               }) {
@@ -1168,7 +1173,7 @@ struct meowAppSettings {
             .width("100%")
 
             FlowItem() {
-              settingsCard({
+              settingsModule({
                 title: $r('app.string.Whats_new'),
                 my_index: 10,
               }) {
@@ -1197,7 +1202,7 @@ struct meowAppSettings {
 
             if (this.DEV_MODE) {
               FlowItem() {
-                settingsCard({
+                settingsModule({
                   title: $r('app.string.Settings_dev'),
                   my_index: 11,
                 }) {
@@ -1462,14 +1467,16 @@ struct meowAppSettings {
   on_color_change() {
     this.title_bar_position_tabOptions = SegmentButtonOptions.tab({
       buttons: [{ text: '  󰀐  ' }, { text: '  󰃐  ' }] as ItemRestriction<SegmentButtonTextItem>,
-      selectedBackgroundColor: this.color_current_font,
-      selectedFontColor: this.color_current_primary
+      selectedBackgroundColor: this.color_current_back,
+      selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
+      selectedFontWeight:FontWeight.Medium
     })
     this.tabs_style_tabOptions = SegmentButtonOptions.tab({
       buttons: [{ text: $r('app.string.Settings_appearance_tabs_style_vertical') },
         { text: $r('app.string.Settings_appearance_tabs_style_horizontal') }] as ItemRestriction<SegmentButtonTextItem>,
-      selectedBackgroundColor: this.color_current_font,
-      selectedFontColor: this.color_current_primary
+      selectedBackgroundColor: this.color_current_back,
+      selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
+      selectedFontWeight:FontWeight.Medium
     })
     this.start_up_page_tabOptions = SegmentButtonOptions.tab({
       buttons: [
@@ -1477,8 +1484,25 @@ struct meowAppSettings {
         { text: $r('app.string.Settings_start_up_home') },
         { text: $r('app.string.Settings_start_up_continue') }
       ] as ItemRestriction<SegmentButtonTextItem>,
-      selectedBackgroundColor: this.color_current_font,
-      selectedFontColor: this.color_current_primary
+      selectedBackgroundColor: this.color_current_back,
+      selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
+      selectedFontWeight:FontWeight.Medium
+    })
+    this.my_window_alias_position_tabOptions = SegmentButtonOptions.tab({
+      buttons: [
+        { text: '󰈯' },
+        { text: '󰁨' },
+        { text: '󰈰' }
+      ],
+      selectedBackgroundColor: this.color_current_back,
+      selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
+      selectedFontWeight:FontWeight.Medium
+    })
+    this.left_or_right_tabOptions = SegmentButtonOptions.tab({
+      buttons: [{ text: '󰃊' }, { text: '󰈱' }],
+      selectedBackgroundColor: this.color_current_back,
+      selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
+      selectedFontWeight:FontWeight.Medium
     })
   }
 
@@ -1573,7 +1597,7 @@ export default meowAppSettings
 
 // @Reusable
 @Component
-struct settingsCard {
+struct settingsModule {
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
@@ -1618,6 +1642,7 @@ struct settingsSubCard {
   @LocalStorageLink('settings_scroll_to') settings_scroll_to: number = 0;
   my_index: number = 0;
   @LocalStorageLink('settings_scroll_to_highlight_timeout') timeout: number = 0;
+  @StorageLink('effects') effects: boolean = false;
   // Title
   icon: ResourceStr | undefined = undefined;
   title: ResourceStr | undefined = undefined;
@@ -1647,7 +1672,7 @@ struct settingsSubCard {
       .clip(true)
       .padding({ top: 12, left: 12, right: 12 })
     }
-    .borderColor(((this.my_index == this.settings_scroll_to) && this.timeout > 0) ? this.color_current_font : this.color_current_primary)
+    .borderColor(this.border_color())
     .opacity((!(this.my_index == this.settings_scroll_to) && this.timeout > 0) ? 0.5 : 1)
     .backgroundColor(this.color_current_primary)
     .animation(animation_default())
@@ -1657,6 +1682,17 @@ struct settingsSubCard {
     .width("100%")
     .borderRadius(10)
     .borderWidth(2)
+  }
+
+  border_color() {
+    let highlight = (this.my_index == this.settings_scroll_to) && this.timeout > 0;
+    if (highlight) {
+      return this.color_current_font;
+    } else if (this.effects) {
+      return 'transparent';
+    } else {
+      return this.color_current_primary;
+    }
   }
 }
 

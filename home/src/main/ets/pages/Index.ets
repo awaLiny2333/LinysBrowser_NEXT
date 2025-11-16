@@ -392,8 +392,8 @@ struct Index {
     }
     this.color_current_back = this.color_current_font;
     if (this.effects) {
-      this.color_current_primary = $r('sys.color.comp_background_secondary');
-      this.color_current_secondary = $r('sys.color.comp_background_secondary');
+      this.color_current_primary = $r('sys.color.comp_background_tertiary');
+      this.color_current_secondary = $r('sys.color.comp_background_tertiary');
       this.color_current_back = $r('sys.color.comp_background_tertiary');
     }
   }

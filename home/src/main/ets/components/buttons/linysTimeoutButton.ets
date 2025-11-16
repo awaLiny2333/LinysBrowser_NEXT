@@ -14,10 +14,11 @@ struct linysTimeoutButton {
   onExecution?: () => void;
   // Timeout
   confirm_timeout_id: number | undefined = undefined;
+  opa: number = 0.9;
 
   build() {
     Button(this.text)// Reset
-      .opacity(0.9)
+      .opacity(this.effects ? 1 : this.opa)
       .type(ButtonType.Capsule)
       // .useEffect(this.effects, EffectType.WINDOW_EFFECT)
       .backgroundColor(this.one_more_step ? this.color_current_primary : this.color_current_back)

@@ -9,6 +9,7 @@ struct woofWantJump {
   controller: CustomDialogController;
   @Prop link: string = '';
   // Colors
+  @StorageLink('effects') effects: boolean = false;
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   // UI display
   @LocalStorageLink('screen_height') screen_height: number = 0;
@@ -55,6 +56,7 @@ struct woofWantJump {
     .justifyContent(FlexAlign.Center)
     .width("100%")
     .backgroundColor(this.color_current_primary)
+    .useEffect(this.effects, EffectType.WINDOW_EFFECT)
   }
 }
 

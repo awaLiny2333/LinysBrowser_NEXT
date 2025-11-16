@@ -152,6 +152,8 @@ struct woofUpdateHistory {
         .justifyContent(FlexAlign.Center)
         .width("100%")
       }
+      .borderRadius(10)
+      .clip(true)
       .edgeEffect(EdgeEffect.Spring)
       .layoutWeight(1)
     }

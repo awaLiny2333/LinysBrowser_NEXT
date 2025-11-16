@@ -7,6 +7,7 @@ struct woofAlert {
   @Link event: OnAlertEvent | undefined;
   controller: CustomDialogController;
   // Colors
+  @StorageLink('effects') effects: boolean = false;
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   // Count
   @LocalStorageLink('opened_dialog_controllers') opened_dialog_controllers: CustomDialogController[] = [];
@@ -45,6 +46,7 @@ struct woofAlert {
     .justifyContent(FlexAlign.Center)
     .width("100%")
     .backgroundColor(this.color_current_primary)
+    .useEffect(this.effects, EffectType.WINDOW_EFFECT)
   }
 }
 
