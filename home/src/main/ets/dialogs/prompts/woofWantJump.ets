@@ -12,7 +12,9 @@ struct woofWantJump {
   @StorageLink('effects') effects: boolean = false;
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   // UI display
-  @LocalStorageLink('screen_height') screen_height: number = 0;
+  @LocalStorageLink('full_screen_height') full_screen_height: number = 0;
+  @State fixed_height_title: number = 0;
+  @State fixed_height_quest: number = 0;
   // Count
   @LocalStorageLink('opened_dialog_controllers') opened_dialog_controllers: CustomDialogController[] = [];
 
@@ -30,12 +32,18 @@ struct woofWantJump {
     Column({ space: 15 }) {
       linysTextTitle({ text: $r('app.string.LinkJumper_webpage_asks_for_jump') })// This page is asking for a jump
         .width("100%")
+        .onAreaChange((o, n) => {
+          this.fixed_height_title = n.height as number;
+        })
 
       linysTextArea({ init_text: this.link, text: this.link }) // Edit
-        .constraintSize({ maxHeight: Math.max(0, this.screen_height - 160) })
+        .constraintSize({ maxHeight: Math.max(0, this.full_screen_height * 0.9 - this.fixed_height_quest - this.fixed_height_title - 35 - 45 - 40) })
 
       linysText({ text: $r('app.string.LinkJumper_allow_jump') })// allow?
         .width("100%")
+        .onAreaChange((o, n) => {
+          this.fixed_height_quest = n.height as number;
+        })
 
       linysConfirmDenyButtons({
         onConfirm: () => {

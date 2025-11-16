@@ -1,7 +1,7 @@
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { animation_default, click_effect_default, fontSize_Large, fontSize_Normal, url_default_blank } from '../../hosts/bunch_of_defaults';
 import { sandbox_read_text_sync } from '../../utils/storage_tools';
-import { run_time, storage_of_id, storage_of_index } from '../../utils/ui_tools';
+import { current_tabs_style_is_horizontal, run_time, storage_of_id, storage_of_index } from '../../utils/ui_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { check_want } from '../../utils/want_tools';
 import lazy { bunch_of_settings } from '../../hosts/bunch_of_settings';
@@ -29,7 +29,14 @@ struct meowTabsVertical {
    * Hosts and environments */
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
+  // Environments
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageLink('screen_width') screen_width: number = 0;
+  @StorageLink('tabs_style') tabs_style: string = "";
+  @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
   // Controls
+  @LocalStorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
+  @LocalStorageLink('showing_tabs') showing_tabs: boolean = false;
   @LocalStorageLink('tab_titles') tab_titles: string[] = []
   // Other Info / Statuses
   @LocalStorageLink('tabs_init_ok') tabs_init_ok: boolean = false;
@@ -55,9 +62,7 @@ struct meowTabsVertical {
   @LocalStorageLink('receive_tab') @Watch('on_receive_tab') receive_tab: number = -1;
   @StorageLink('universal_global_custom_ua_gateway') @Watch('on_global_custom_UA_change') global_custom_UA: string = "";
   // Colors
-  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @StorageLink('effects') effects: boolean = false;
   // Pan Gesture
   pan_x: number = 0;
   // Timeout
@@ -124,10 +129,18 @@ struct meowTabsVertical {
 
     } // Tabs Panel
     .visibility(this.my_visibility)
+    .width(this.showing_tabs ? this.width_of_Tabs() : 0)
+    .padding((this.showing_tabs && !current_tabs_style_is_horizontal(this.storage))
+      ? {
+        top: !this.effects ? 10 : 0,
+        left: 10,
+        right: this.showing_bookmarks ? 0 : 10,
+        bottom: 10,
+      } : 0)
     .animation(animation_default())
-    .justifyContent(FlexAlign.End)
-    .width("100%")
     .height("100%")
+    .justifyContent(FlexAlign.End)
+    .clip(true)
     .onAppear(() => {
       this.my_visibility = Visibility.Visible;
       console.log(`[Meow][meowTabsvertical] onAppear! (${run_time(this.storage)} ms)`);
@@ -682,6 +695,24 @@ struct meowTabsVertical {
   is_right_align() {
     return (this.preferred_hand_left_or_right == 'right' && !this.preferred_hand_reverse_tabs_panel) ||
       (!(this.preferred_hand_left_or_right == 'right') && this.preferred_hand_reverse_tabs_panel);
+  }
+
+  width_of_Tabs() {
+    if (this.tablet_mode) {
+      // Tablet mode
+      if (this.tabs_style == 'horizontal') {
+        return 0;
+      } else {
+        return 250;
+      }
+    } else {
+      // non_tablet_mode
+      if (this.tabs_style_non_tablet_mode == 'horizontal') {
+        return 0;
+      } else {
+        return 0.9 * this.screen_width;
+      }
+    }
   }
 }
 

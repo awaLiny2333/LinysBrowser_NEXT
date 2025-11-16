@@ -26,6 +26,7 @@ struct meowBookmarks {
   current_folder: bookmark | undefined = undefined;
   // Environments
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageLink('screen_width') screen_width: number = 0;
   // UI control actions
   @LocalStorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
   @LocalStorageLink('swapping_bookmarks') swapping_bookmarks: boolean = false;
@@ -50,6 +51,7 @@ struct meowBookmarks {
   @LocalStorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
   /**
    * Colors */
+  @StorageLink('effects') effects: boolean = false;
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Pan Gesture
   pan_x: number = 0;
@@ -60,7 +62,7 @@ struct meowBookmarks {
     Column() {
       if (this.showing_bookmarks) {
         Scroll(this.bookmarks_scroller) {
-          Column({ space: 5 }) {
+          Column() {
             Column() {
               Column()
                 .height(this.swapping_offset_upper)
@@ -70,17 +72,19 @@ struct meowBookmarks {
               }
             }
 
-            ForEach(this.viewing_contents, (item: bookmark, key: number) => {
-              bookmarkItem({
-                // Generals
-                my_index: key,
-                viewing_contents: this.viewing_contents, // For editing
-                looking_at_path: this.looking_at_path, // the path of now showing list (directory) on the panel
-                // To ask webViews to show
-                height_of_panel: this.scroll_area_height, // for animation params
-                parent_path: this.looking_at_path, // for get_my_path()
-              })
-            },)
+            Column({ space: 5 }) {
+              ForEach(this.viewing_contents, (item: bookmark, key: number) => {
+                bookmarkItem({
+                  // Generals
+                  my_index: key,
+                  viewing_contents: this.viewing_contents, // For editing
+                  looking_at_path: this.looking_at_path, // the path of now showing list (directory) on the panel
+                  // To ask webViews to show
+                  height_of_panel: this.scroll_area_height, // for animation params
+                  parent_path: this.looking_at_path, // for get_my_path()
+                })
+              },)
+            }
 
             Column()
               .height(this.swapping_offset_downer)
@@ -100,7 +104,8 @@ struct meowBookmarks {
           // So that bookmark buttons will know if they are out of visible area
           // and reduce their appearance animation time.
         })
-        .nestedScroll({ scrollForward: NestedScrollMode.SELF_ONLY, scrollBackward: NestedScrollMode.SELF_ONLY })
+
+        // .nestedScroll({ scrollForward: NestedScrollMode.SELF_ONLY, scrollBackward: NestedScrollMode.SELF_ONLY })
 
         Row({ space: this.tablet_mode ? 12 : 9 }) {
           linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left' })// Go back button
@@ -310,9 +315,17 @@ struct meowBookmarks {
         .height(this.showing_navigator ? undefined : 0)
         .animation(animation_default())
     } // List of directory, Operation buttons and edit TextInputs
-    .justifyContent(FlexAlign.End)
-    .width("100%")
+    .padding(this.showing_bookmarks? {
+      top: !this.effects ? 10 : 0,
+      left: 10,
+      right: 10,
+      bottom: 10,
+    } : 0)
+    .width(this.width_of_Bookmarks())
+    .animation(animation_default())
     .height("100%")
+    .justifyContent(FlexAlign.End)
+    .clip(true)
     .onAppear(() => {
       console.log(`[Meow][meowBookmarks] onAppear! (${run_time(this.storage)} ms)`);
       this.on_appear();
@@ -536,6 +549,13 @@ struct meowBookmarks {
   is_right_align() {
     return (this.preferred_hand_left_or_right == 'right' && !this.preferred_hand_reverse_tabs_panel) ||
       (!(this.preferred_hand_left_or_right == 'right') && this.preferred_hand_reverse_tabs_panel);
+  }
+
+  width_of_Bookmarks() {
+    if (this.tablet_mode) {
+      return 350;
+    }
+    return 0.9 * this.screen_width;
   }
 }
 

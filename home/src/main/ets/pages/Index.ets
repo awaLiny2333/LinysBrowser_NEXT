@@ -7,14 +7,16 @@ import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 import lazy { print_web } from '../utils/print_tools';
 import lazy { bunch_of_settings } from '../hosts/bunch_of_settings';
 import lazy {
+  current_tabs_style_is_horizontal,
   enter_free_window_mode,
   enter_traditional_window_mode,
   is_some_dialogs_opened,
   new_window,
   pin_to_top,
   update_window_decor_height,
+  window_index_of_id,
 } from '../utils/ui_tools';
-import { change_window_alias, current_tabs_style_is_horizontal, last_storage, run_time, storage_of_id } from '../utils/ui_tools';
+import { change_window_alias, last_storage, run_time, storage_of_id } from '../utils/ui_tools';
 import lazy { cancel_in_page_search, is_current_in_page_searching } from '../processes/tabs_actions';
 import lazy { webview } from '@kit.ArkWeb';
 import lazy meowTabsVertical from '../blocks/modules/meowTabsVertical';
@@ -25,6 +27,8 @@ import lazy woofPromptFail from '../dialogs/prompts/woofPromptFail';
 import lazy woofHistory from '../dialogs/managers/woofHistory';
 import meowShortcuts from '../blocks/modules/meowShortcuts';
 import linysProgress from '../components/linysProgress';
+import linysWindowButton from '../components/buttons/linysWindowButton';
+import linysText from '../components/texts/linysText';
 
 // @Entry({ useSharedStorage: true })
 @Entry(last_storage())
@@ -213,6 +217,49 @@ struct Index {
         }.height(0)
       }
 
+      RelativeContainer() {
+        WindowTitle()
+          .padding(this.tablet_mode ? { right: 20, bottom: 5 } : undefined)
+          .alignRules({
+            bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+            left: { anchor: '__container__', align: HorizontalAlign.Start },
+            right: !this.tablet_mode ? { anchor: '__container__', align: HorizontalAlign.End } : { anchor: 'window_controls', align: HorizontalAlign.Start }
+          })
+          .visibility(this.showing_my_window_alias ? Visibility.Visible : Visibility.Hidden)
+          .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+
+        if (this.free_window_mode) {
+          Row({ space: 10 }) {
+            linysWindowButton({
+              symbol: this.pin_to_top ? $r('sys.symbol.pin_vertical_fill') : $r('sys.symbol.pin'),
+              execution: () => {
+                pin_to_top(this.my_window_id);
+              }
+            })
+
+            linysWindowButton({
+              symbol: $r('sys.symbol.plus'),
+              execution: () => {
+                this.create_new_window();
+              }
+            })
+
+          } // Window control buttons
+          .id('window_controls')
+          .padding({ top: this.showing_my_window_alias ? 9 : 5, right: Math.max(15, this.windowDecorWidth) - 15 })
+          .alignRules({ top: { anchor: '__container__', align: VerticalAlign.Top }, right: { anchor: '__container__', align: HorizontalAlign.End } })
+        }
+      } // Top Bar Avoid (Title)
+      .backgroundColor(this.title_background_color())
+      .height(this.height_of_top_avoid())
+      .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+      .padding({
+        left: 15,
+        right: 15
+      })
+      .clip(true)
+      .width('100%')
+
       // Scroll() {
       //   Column() {
       RelativeContainer() {
@@ -220,16 +267,9 @@ struct Index {
           Row() {
             if (this.delayed_load_p0) {
               meowTabsVertical()
-                .width(this.showing_tabs ? this.width_of_Tabs() : 0)
-                .padding((this.showing_tabs && !current_tabs_style_is_horizontal(this.storage)) ? 10 : 0)
-                .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
             }
             if (this.delayed_load_p3) {
               meowBookmarks()
-                .padding(this.showing_bookmarks ? 10 : 0)
-                .height("100%")
-                .width(this.showing_bookmarks ? this.width_of_Bookmarks() : 0)
-                .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
             }
           } // Tabs and bookmarks
           .width(this.width_of_Bookmarks_and_Tabs())
@@ -252,6 +292,14 @@ struct Index {
             meowShortcuts()
             // }
           }
+          .clip(true)
+          .margin(this.effects && !this.fullscreen_mode ? {
+            bottom: this.title_bar_position == 'bottom' ? 0 : 10,
+            right: this.need_right_margin() ? 10 : 0,
+            left: this.need_left_margin() ? 10 : 0
+          } : 0)
+          .borderRadius(this.effects && !this.fullscreen_mode ? 10 : 0)
+          .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
           .backgroundColor(this.color_current_primary)
           .layoutWeight(this.tablet_mode ? 1 : 0)
 
@@ -502,31 +550,6 @@ struct Index {
     return status ? { right: this.rightAvoidWidth } : { left: this.leftAvoidWidth };
   }
 
-  width_of_Bookmarks() {
-    if (this.tablet_mode) {
-      return 350;
-    }
-    return 0.9 * this.screen_width;
-  }
-
-  width_of_Tabs() {
-    if (this.tablet_mode) {
-      // Tablet mode
-      if (this.tabs_style == 'horizontal') {
-        return 0;
-      } else {
-        return 250;
-      }
-    } else {
-      // non_tablet_mode
-      if (this.tabs_style_non_tablet_mode == 'horizontal') {
-        return 0;
-      } else {
-        return 0.9 * this.screen_width;
-      }
-    }
-  }
-
   height_of_bottom_avoid() {
     if (this.fullscreen_mode) {
       return 0;
@@ -539,6 +562,17 @@ struct Index {
       target -= 20;
     }
     return Math.max(0, target);
+  }
+
+  height_of_top_avoid() {
+    if (this.fullscreen_mode) {
+      return 0;
+    }
+    let tablet_mode_compensation = 0;
+    if (!this.tablet_mode && this.showing_my_window_alias) {
+      tablet_mode_compensation = 28;
+    }
+    return this.topAvoidHeight + tablet_mode_compensation;
   }
 
   direction_of_web_and_side_panels() {
@@ -557,6 +591,38 @@ struct Index {
       vis = false;
     }
     return vis ? Visibility.Visible : Visibility.Hidden;
+  }
+
+  need_right_margin() {
+    let has_side_bars = (this.showing_tabs && !current_tabs_style_is_horizontal(this.storage)) || this.showing_bookmarks;
+    if (has_side_bars) {
+      if (this.is_right_align()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  need_left_margin() {
+    let has_side_bars = (this.showing_tabs && !current_tabs_style_is_horizontal(this.storage)) || this.showing_bookmarks;
+    if (has_side_bars) {
+      if (!this.is_right_align()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  is_right_align() {
+    return (this.preferred_hand_left_or_right == 'right' && !this.preferred_hand_reverse_tabs_panel) ||
+      (!(this.preferred_hand_left_or_right == 'right') && this.preferred_hand_reverse_tabs_panel);
+  }
+
+  title_background_color(): ResourceColor | undefined {
+    if (this.effects) {
+      return undefined;
+    }
+    return this.color_current_secondary;
   }
 
   // Operations
@@ -712,6 +778,54 @@ struct Index {
       this.bunch_of_tabs.workingMainTab().controller!.searchNext(true);
     } catch (e) {
       console.error('[in_page_search_last] Failed: ' + e);
+    }
+  }
+}
+
+
+@Component
+struct WindowTitle {
+  // Environment
+  @StorageLink('free_window_mode') free_window_mode: boolean = false;
+  @StorageLink('windowIds') @Watch('on_windowIDs_change') windowIds: string[] = [];
+  @LocalStorageLink('my_window_id') my_window_id: string = '';
+  @LocalStorageLink('my_window_alias') my_window_alias: string = '';
+  @LocalStorageLink('screen_width') screen_width: number = 0;
+  // Statuses
+  @StorageLink('my_window_alias_position') my_window_alias_position: string = "center";
+  @LocalStorageLink('current_title') current_title: string = "=￣ω￣=";
+
+  build() {
+    Row({ space: 10 }) {
+      linysText({
+        text: '#' + this.windowIds.indexOf(this.my_window_id) + '｜' + this.current_title + '｜' + this.my_window_alias
+      })
+        .constraintSize(this.free_window_mode ? undefined : { maxWidth: this.screen_width * 0.7 })
+    }
+    .justifyContent(this.justifyContents_of_alias())
+    .animation(animation_default())
+    .width('100%')
+    .padding({
+      top: 8,
+      bottom: 8,
+    })
+    .opacity(0.7)
+  }
+
+  justifyContents_of_alias() {
+    if (this.my_window_alias_position == 'left') {
+      return FlexAlign.Start;
+    }
+    if (this.my_window_alias_position == 'right') {
+      return FlexAlign.End;
+    }
+    return FlexAlign.Center;
+  }
+
+  on_windowIDs_change() {
+    if (window_index_of_id(this.my_window_id) == 0) {
+      bunch_of_settings.set('my_window_alias_last', this.my_window_alias);
+      AppStorage.set('LAST_WINDOW_WINDOW_NAME', this.my_window_alias);
     }
   }
 }
