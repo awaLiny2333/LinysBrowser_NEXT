@@ -1,6 +1,6 @@
 import linysSymbol from '../../components/texts/linysSymbol';
 import linysText from '../../components/texts/linysText';
-import { click_effect_default } from '../../hosts/bunch_of_defaults';
+import { animation_default, click_effect_default } from '../../hosts/bunch_of_defaults';
 import lazy { add_units_to_size } from '../../utils/storage_tools';
 import lazy { getPrivateDirty, getPss, getSharedDirty, getVRAM, getVss } from '../../utils/any_concurrent_tools';
 import lazy { getCPU_sync, getNativeHeapSize_sync } from '../../utils/performance_tools';
@@ -130,6 +130,7 @@ struct dataBoard {
   loop_execution?: () => void;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @Prop loop_time: number = 1000;
+  @State is_hov: boolean = false;
 
   build() {
     Row({ space: 10 }) {
@@ -149,6 +150,8 @@ struct dataBoard {
       }
       .alignItems(HorizontalAlign.Start)
     }
+    .brightness(this.is_hov ? 1.1 : 1)
+    .animation(animation_default())
     .clickEffect(click_effect_default())
     .padding(10)
     .backgroundColor($r('sys.color.comp_background_tertiary'))
@@ -160,6 +163,9 @@ struct dataBoard {
           this.loop_execution();
         }
       }, this.loop_time)
+    })
+    .onHover((ish) => {
+      this.is_hov = ish;
     })
   }
 }

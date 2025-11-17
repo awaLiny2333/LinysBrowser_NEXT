@@ -1,5 +1,4 @@
 import { animation_default, capsule_bar_height, click_effect_default, default_new_window_name } from '../../hosts/bunch_of_defaults';
-import { add_transparency } from '../../utils/color_tools';
 import { print_web } from '../../utils/print_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { change_window_alias, new_window, storage_of_id } from '../../utils/ui_tools';
@@ -263,9 +262,9 @@ struct meowMoreOptions {
           .animation(animation_default())
 
         RelativeContainer() {
-          Row({ space: 10 }) {
+          Row() {
             linysSymbol({
-              symbol_glyph_target: 'sys.symbol.doc_text_badge_magnifyingglass'
+              symbol_glyph_target: 'sys.symbol.doc_text_badge_magnifyingglass', can_hover: true
             }) // in-page Search
 
             TextInput({
@@ -279,6 +278,7 @@ struct meowMoreOptions {
               .visibility(this.showing_scratching_board ? Visibility.Hidden : Visibility.Visible)
               .layoutWeight(1)
               .allowDrop(null)
+              .margin({ left: 5, right: 5 })
               .height(capsule_bar_height())
               .fontWeight(FontWeight.Regular)
               .fontColor(this.color_current_font)
@@ -299,7 +299,7 @@ struct meowMoreOptions {
               })
               .id('in_page_search_blank')
 
-            linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass' }) // Submit
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass', can_hover: true }) // Submit
               .onClick(() => {
                 try {
                   this.bunch_of_tabs.workingMainTab().controller!.searchAllAsync(this.current_in_page_searching_keyword);
@@ -308,14 +308,13 @@ struct meowMoreOptions {
                 }
               })
 
-            linysSymbol({ symbol_glyph_target: 'sys.symbol.xmark' }) // Cancel
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.xmark', can_hover: true }) // Cancel
               .onClick(() => {
                 cancel_in_page_search(this.storage);
               })
               .visibility(this.current_in_page_searching_keyword != "" ? Visibility.Visible : Visibility.None)
               .animation(animation_default())
           } // Search bar
-          .margin(this.tablet_mode ? (this.preferred_hand_left_or_right == 'right' ? { right: 10, left: 5 } : { left: 10, right: 5 }) : { left: 5, right: 5 })
           .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
           .id('in_page_search_bar')
           .alignRules(this.tablet_mode ? {
@@ -328,13 +327,14 @@ struct meowMoreOptions {
           })
           .animation(animation_default())
 
-          Row({ space: 10 }) {
+          Row() {
             linysText({
               text: this.current_in_page_searching_stats_current.toString() + '／' + this.current_in_page_searching_stats_total.toString()
             })
+              .padding({ right: 5 })
               .animation(animation_default())
             if (this.showing_more_options) {
-              linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_up' })
+              linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_up', can_hover: true })
                 .onClick(() => {
                   try {
                     this.bunch_of_tabs.workingMainTab().controller!.searchNext(false);
@@ -342,7 +342,7 @@ struct meowMoreOptions {
                     console.error(e);
                   }
                 })
-              linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_down' })
+              linysSymbol({ symbol_glyph_target: 'sys.symbol.chevron_down', can_hover: true })
                 .onClick(() => {
                   try {
                     this.bunch_of_tabs.workingMainTab().controller!.searchNext(true);
@@ -353,7 +353,6 @@ struct meowMoreOptions {
             }
           } // Operation buttons
           .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
-          .margin(!this.tablet_mode ? { left: 5, right: 5 } : 0)
           .id('in_page_search_operation_buttons')
           .padding({ left: this.tablet_mode ? 10 : 0 })
           .alignRules(this.tablet_mode ? {
@@ -369,18 +368,18 @@ struct meowMoreOptions {
         } // Search in page
         .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
         .width("100%")
-        .height(20 + (this.tablet_mode ? capsule_bar_height() : 2 * capsule_bar_height()))
+        .height(20 + (this.tablet_mode ? capsule_bar_height() : 2 * capsule_bar_height() + 5))
         .backgroundColor(this.color_current_primary)
         .borderRadius(12)
         .padding(10)
         .animation(animation_default())
 
         if (this.showing_more_options) {
-          Row({ space: 10 }) {
+          Row() {
             linysText({
               text: '#' + this.windowIds.indexOf(this.my_window_id) + '｜' + this.my_window_alias
             }) // Current my_window_alias
-              .padding({ left: 5 })
+              .padding({ left: 5, right: 5 })
               .layoutWeight(1)
               .clickEffect(click_effect_default())
               .onClick(() => {
@@ -388,14 +387,14 @@ struct meowMoreOptions {
               })
 
             linysSymbol({
-              symbol_glyph_target: 'sys.symbol.pencil_and_card',
+              symbol_glyph_target: 'sys.symbol.pencil_and_card', can_hover: true
             }) // Edit window name
               .onClick(() => {
                 this.rename_window_woofPrompt_control.open();
               })
             linysSymbol({
               // symbol_glyph_target: 'sys.symbol.plus_square_dashed_on_square',
-              symbol_glyph_target: 'sys.symbol.plus',
+              symbol_glyph_target: 'sys.symbol.plus', can_hover: true,
             }) // New window
               .onClick(() => {
                 new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), default_new_window_name());
@@ -407,7 +406,12 @@ struct meowMoreOptions {
           .constraintSize({ maxWidth: 500 })
           .backgroundColor($r('sys.color.comp_background_tertiary'))
           .borderRadius(12)
-          .padding(10)
+          .padding({
+            left: 10,
+            right: 6,
+            top: 5,
+            bottom: 5
+          })
 
           // }
 

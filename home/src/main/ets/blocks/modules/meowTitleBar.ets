@@ -994,11 +994,17 @@ struct ThisPageInfo {
   @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
   @LocalStorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
+  @State is_hov_title: boolean = false;
+  @State is_hov_url: boolean = false;
 
   build() {
-    Row({ space: 15 }) {
-      Column({ space: 2.5 }) {
+    Row({ space: 5 }) {
+      Column() {
         Text(this.current_title)
+          .brightness(this.is_hov_title ? 1.1 : 1)
+          .animation(animation_default())
+          .borderRadius(5)
+          .padding(2.5)
           .fontColor(this.color_current_font)
           .fontWeight(FontWeight.Bold)
           .fontSize(fontSize_Large())
@@ -1008,7 +1014,14 @@ struct ThisPageInfo {
           .onClick(() => {
             copy(this.current_title);
           })
+          .onHover((ish) => {
+            this.is_hov_title = ish;
+          })
         Text(this.current_url)
+          .brightness(this.is_hov_url ? 1.1 : 1)
+          .animation(animation_default())
+          .borderRadius(5)
+          .padding(2.5)
           .fontColor(this.color_current_font)
           .fontWeight(FontWeight.Bold)
           .fontSize(fontSize_Normal())
@@ -1019,11 +1032,14 @@ struct ThisPageInfo {
           .onClick(() => {
             copy(this.current_url);
           })
+          .onHover((ish) => {
+            this.is_hov_url = ish;
+          })
       }
       .alignItems(HorizontalAlign.Start)
       .layoutWeight(1)
 
-      linysSymbol({ symbol_glyph_target: 'sys.symbol.share' })
+      linysSymbol({ symbol_glyph_target: 'sys.symbol.share', can_hover: true })
         .onClick(() => {
           share_link(this.current_url, this.current_title, this.getUIContext().getHostContext()!);
         })
