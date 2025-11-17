@@ -145,10 +145,12 @@ struct shortcutButton {
   @State render_contents: boolean = false;
   render_contents_timeout_id: number | undefined = undefined;
   @State show: Visibility = this.homepage_shortcuts_no_animation ? Visibility.Visible : Visibility.None;
+  @State isHov: boolean = false;
 
   build() {
     Column({ space: this.render_contents ? 10 : 0 }) {
       Button(this.get_label_name())
+        .brightness(this.isHov ? 1.1 : 1)
         .type(ButtonType.Capsule)
         .backgroundColor(this.background_color())
         .useEffect(this.effects, EffectType.WINDOW_EFFECT)
@@ -192,6 +194,9 @@ struct shortcutButton {
               }, 300)
             }
           }
+        })
+        .onHover((isHv) => {
+          this.isHov = isHv;
         })
 
       if (this.bookmark.get_type() == 'folder') {

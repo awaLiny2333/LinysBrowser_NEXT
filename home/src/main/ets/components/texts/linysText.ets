@@ -1,8 +1,7 @@
 import { animation_default, click_effect_default, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import { LengthMetrics } from '@kit.ArkUI';
 
-@Reusable
-  // Will this affect anything?
+// @Reusable  // Will this affect anything?
 @Component
 struct linysText {
   // Colors
@@ -11,9 +10,12 @@ struct linysText {
   @Prop color: ResourceColor = "";
   @Prop font_weight: FontWeight = FontWeight.Regular;
   is_description: boolean = false;
-  @Prop is_expanded: boolean = false;
   max_lines: number = 1;
   overflow_type: TextOverflow = TextOverflow.Ellipsis;
+  // UI
+  @Prop is_expanded: boolean = false;
+  can_hover: boolean = false;
+  @State isHov: boolean = false;
 
   build() {
     if (this.is_description) {
@@ -33,6 +35,7 @@ struct linysText {
       .scrollBar(BarState.Off)
       // .edgeEffect(EdgeEffect.Spring)
       .constraintSize(this.is_expanded ? {} : { maxHeight: 40 })
+      .brightness(this.isHov ? 1.1 : 1)
       .animation(animation_default())
       .borderRadius(12)
       .padding(10)
@@ -42,14 +45,31 @@ struct linysText {
         this.is_expanded = !this.is_expanded;
       })
       .clickEffect(click_effect_default())
+      .onHover((isHv) => {
+        this.isHov = isHv;
+      })
     } else {
       Text(this.text)
+        .brightness(this.isHov ? 1.1 : 1)
+        .animation(animation_default())
+        .padding(this.can_hover ? {
+          left: 7,
+          right: 7,
+          top: 5,
+          bottom: 5
+        } : 0)
+        .borderRadius(this.can_hover ? 7.5 : 0)
         .fontColor(this.color == "" ? this.color_current_font : this.color)
         .fontSize(fontSize_Normal())
         .fontWeight(this.font_weight)
         .maxLines(this.max_lines)
         .lineSpacing(LengthMetrics.vp(4))
         .textOverflow({ overflow: this.overflow_type })
+        .onHover((isHv) => {
+          if (this.can_hover) {
+            this.isHov = isHv;
+          }
+        })
     }
   }
 }

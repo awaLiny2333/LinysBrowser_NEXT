@@ -377,9 +377,11 @@ struct meowMoreOptions {
         if (this.showing_more_options) {
           Row() {
             linysText({
-              text: '#' + this.windowIds.indexOf(this.my_window_id) + '｜' + this.my_window_alias
+              text: '#' + this.windowIds.indexOf(this.my_window_id) + '｜' + this.my_window_alias,
+              can_hover: true,
             }) // Current my_window_alias
-              .padding({ left: 5, right: 5 })
+            // .padding({ left: 5, right: 5 })
+              .margin({ left: 3 })
               .layoutWeight(1)
               .clickEffect(click_effect_default())
               .onClick(() => {
@@ -406,12 +408,7 @@ struct meowMoreOptions {
           .constraintSize({ maxWidth: 500 })
           .backgroundColor($r('sys.color.comp_background_tertiary'))
           .borderRadius(12)
-          .padding({
-            left: 10,
-            right: 6,
-            top: 5,
-            bottom: 5
-          })
+          .padding(5)
 
           // }
 

@@ -16,6 +16,7 @@ struct linysExpandableCardItem {
   @State is_press_timing_ok: boolean = false;
   press_start_time: number | undefined = undefined;
   button_height_default: number = 42;
+  @State isHov: boolean = false;
   // Colors
   @StorageLink('effects') effects: boolean = false;
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
@@ -71,6 +72,7 @@ struct linysExpandableCardItem {
       .useEffect(this.effects && this.allow_effects, EffectType.WINDOW_EFFECT)
       .backgroundColor(this.is_pressing ? (this.effects ? this.color_current_primary : this.color_current_font) :
         (this.default_background_color || this.color_current_primary))
+      .brightness(this.isHov ? (this.is_editing ? 1.04 : 1.1) : 1)
       .animation(animation_default())
       .clip(true)
       .padding({ left: 10, right: 10 })
@@ -147,6 +149,7 @@ struct linysExpandableCardItem {
         radius: { bottomLeft: 7, bottomRight: 7 }
       })
       .visibility(this.is_editing ? Visibility.Visible : Visibility.None)
+      .brightness(this.isHov ? (this.is_editing ? 1.04 : 1.1) : 1)
       .animation(animation_default())
     }
     .border(this.show_border === undefined ? undefined : {
@@ -154,8 +157,8 @@ struct linysExpandableCardItem {
       width: 2,
       color: this.show_border ? this.color_current_font : "transparent"
     })
-    .width("100%")
     .animation(animation_default())
+    .width("100%")
     .draggable(this.can_drag)
     .onDragStart((event) => {
       this.is_dragging = true;
@@ -171,6 +174,9 @@ struct linysExpandableCardItem {
     .onDragEnd(() => {
       this.is_dragging = false;
       console.log('[linysExpandableCardItem] onDragEnd!');
+    })
+    .onHover((isHv) => {
+      this.isHov = isHv;
     })
   }
 }

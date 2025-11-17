@@ -26,7 +26,7 @@ struct linysSwitchWithText {
 
       Toggle({ isOn: this.toggle_state, type: ToggleType.Switch })
         .switchPointColor(this.effects ? this.color_current_font : this.color_current_secondary)
-        .opacity(!this.toggle_state && this.effects ? 0.5 : 1)
+        .opacity(!this.toggle_state && this.effects ? 0.85 : 1)
         .selectedColor(this.color_current_back)
         .onChange(isOn => {
           this.toggle_state = isOn;

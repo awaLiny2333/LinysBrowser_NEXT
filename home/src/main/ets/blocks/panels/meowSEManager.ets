@@ -20,6 +20,7 @@ struct meowSEManager {
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // UI
   @StorageLink('bunch_of_search_engines_update') bunch_of_search_engines_update: number = 0;
+  @State isHov: boolean = false;
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // execution
@@ -45,12 +46,13 @@ struct meowSEManager {
             .margin(10)
             .animation(animation_default())
         }
+        .backgroundColor(this.is_pressing_default_card ? this.color_current_font : this.color_current_primary)
+        .useEffect(this.effects, EffectType.WINDOW_EFFECT)
+        .brightness(this.isHov ? 1.1 : 1)
+        .animation(animation_default())
         .width("100%")
         .height("100%")
         .borderRadius(7)
-        .backgroundColor(this.is_pressing_default_card ? this.color_current_font : this.color_current_primary)
-        .useEffect(this.effects, EffectType.WINDOW_EFFECT)
-        .animation(animation_default())
 
       } // Default
       .width("100%")
@@ -82,6 +84,9 @@ struct meowSEManager {
       })
       .height(46)
       .animation(animation_default())
+      .onHover((isHv) => {
+        this.isHov = isHv;
+      })
 
       ForEach(this.bunch_of_search_engines_update ? bunch_of_search_engines.list_of_search_engines : [], (_se: search_engine, key: number) => {
         meowSECardItem({
@@ -91,14 +96,14 @@ struct meowSEManager {
       })
 
       Row() {
-        linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square', can_hover: true })
           .onClick(() => {
             this.add_new_custom_search_engine(this.default_new_se);
           })
       } // Add Button
       .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
       .width("100%")
-      .padding(5)
+      // .padding(5)
     }
     .padding(5)
     .borderRadius(13.5)

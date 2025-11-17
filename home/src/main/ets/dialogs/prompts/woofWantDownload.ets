@@ -133,6 +133,7 @@ struct woofWantDownload {
         Row() {
           linysText({
             text: $r('app.string.Index_downloads_prompt_direct_browse'),
+            can_hover: true
           })
         }
         .width('100%')

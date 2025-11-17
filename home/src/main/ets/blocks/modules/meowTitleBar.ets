@@ -12,6 +12,7 @@ import { webview } from '@kit.ArkWeb';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { current_tabs_style_is_horizontal, new_window, run_time, storage_of_id } from '../../utils/ui_tools';
 import { search_engine } from '../../hosts/bunch_of_search_engines';
+import lazy { common } from '@kit.AbilityKit';
 import lazy { drop_to_scratching_board } from '../../utils/drag_drop_tools';
 import lazy { copy } from '../../utils/clipboard_tools';
 import lazy { share_link } from '../../utils/link_tools';
@@ -26,7 +27,6 @@ import lazy meowAppSettings from './meowAppSettings';
 import lazy meowDownloads from './meowDownloads';
 import lazy woofQuickSE from '../../dialogs/quicks/woofQuickSE';
 import lazy woofEasyList from '../../dialogs/managers/woofEasylist';
-import { common } from '@kit.AbilityKit';
 
 @Component
 struct meowTitleBar {

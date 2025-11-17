@@ -96,14 +96,14 @@ struct meowAppSettings {
     buttons: [{ text: '  󰀐  ' }, { text: '  󰃐  ' }],
     selectedBackgroundColor: this.color_current_back,
     selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
-    selectedFontWeight:FontWeight.Medium
+    selectedFontWeight: FontWeight.Medium
   })
   @State tabs_style_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [{ text: $r('app.string.Settings_appearance_tabs_style_vertical') },
       { text: $r('app.string.Settings_appearance_tabs_style_horizontal') }],
     selectedBackgroundColor: this.color_current_back,
     selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
-    selectedFontWeight:FontWeight.Medium
+    selectedFontWeight: FontWeight.Medium
   })
   @State start_up_page_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [
@@ -113,7 +113,7 @@ struct meowAppSettings {
     ],
     selectedBackgroundColor: this.color_current_back,
     selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
-    selectedFontWeight:FontWeight.Medium
+    selectedFontWeight: FontWeight.Medium
   })
   @State my_window_alias_position_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [
@@ -123,13 +123,13 @@ struct meowAppSettings {
     ],
     selectedBackgroundColor: this.color_current_back,
     selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
-    selectedFontWeight:FontWeight.Medium
+    selectedFontWeight: FontWeight.Medium
   })
   @State left_or_right_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [{ text: '󰃊' }, { text: '󰈱' }],
     selectedBackgroundColor: this.color_current_back,
     selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
-    selectedFontWeight:FontWeight.Medium
+    selectedFontWeight: FontWeight.Medium
   })
   // Settings
   @StorageLink('DEV_MODE') DEV_MODE: boolean = false;
@@ -1469,14 +1469,14 @@ struct meowAppSettings {
       buttons: [{ text: '  󰀐  ' }, { text: '  󰃐  ' }] as ItemRestriction<SegmentButtonTextItem>,
       selectedBackgroundColor: this.color_current_back,
       selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
-      selectedFontWeight:FontWeight.Medium
+      selectedFontWeight: FontWeight.Medium
     })
     this.tabs_style_tabOptions = SegmentButtonOptions.tab({
       buttons: [{ text: $r('app.string.Settings_appearance_tabs_style_vertical') },
         { text: $r('app.string.Settings_appearance_tabs_style_horizontal') }] as ItemRestriction<SegmentButtonTextItem>,
       selectedBackgroundColor: this.color_current_back,
       selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
-      selectedFontWeight:FontWeight.Medium
+      selectedFontWeight: FontWeight.Medium
     })
     this.start_up_page_tabOptions = SegmentButtonOptions.tab({
       buttons: [
@@ -1486,7 +1486,7 @@ struct meowAppSettings {
       ] as ItemRestriction<SegmentButtonTextItem>,
       selectedBackgroundColor: this.color_current_back,
       selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
-      selectedFontWeight:FontWeight.Medium
+      selectedFontWeight: FontWeight.Medium
     })
     this.my_window_alias_position_tabOptions = SegmentButtonOptions.tab({
       buttons: [
@@ -1496,13 +1496,13 @@ struct meowAppSettings {
       ],
       selectedBackgroundColor: this.color_current_back,
       selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
-      selectedFontWeight:FontWeight.Medium
+      selectedFontWeight: FontWeight.Medium
     })
     this.left_or_right_tabOptions = SegmentButtonOptions.tab({
       buttons: [{ text: '󰃊' }, { text: '󰈱' }],
       selectedBackgroundColor: this.color_current_back,
       selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
-      selectedFontWeight:FontWeight.Medium
+      selectedFontWeight: FontWeight.Medium
     })
   }
 
@@ -1648,6 +1648,7 @@ struct settingsSubCard {
   title: ResourceStr | undefined = undefined;
   // Stats
   @State show: boolean = false;
+  @State isHov: boolean = false;
 
   build() {
     Column() {
@@ -1675,6 +1676,7 @@ struct settingsSubCard {
     .borderColor(this.border_color())
     .opacity((!(this.my_index == this.settings_scroll_to) && this.timeout > 0) ? 0.5 : 1)
     .backgroundColor(this.color_current_primary)
+    .brightness(this.isHov ? (this.show ? 1.02 : 1.08) : 1)
     .animation(animation_default())
     .padding({ bottom: 12 })
     .alignItems(HorizontalAlign.Start)
@@ -1682,6 +1684,9 @@ struct settingsSubCard {
     .width("100%")
     .borderRadius(10)
     .borderWidth(2)
+    .onHover((isHv) => {
+      this.isHov = isHv;
+    })
   }
 
   border_color() {
@@ -1743,6 +1748,7 @@ struct menuScrollHorizontal {
             .backgroundColor(this.on_index_first <= index && index <= this.on_index_last ? this.color_current_back : "transparent")
             .borderRadius(this.border_radius(index))
             .animation(animation_default())
+            .clip(true)
         })
       }
     }
@@ -1754,6 +1760,11 @@ struct menuScrollHorizontal {
   }
 
   border_radius(index: number) {
+    if (!(this.on_index_first <= index && index <= this.on_index_last)) {
+      // Not in range
+      return 10;
+    }
+
     if (index == this.on_index_first && index == this.on_index_last) {
       return 10;
     }
@@ -1796,9 +1807,9 @@ struct menuScrollVertical {
                 this.button_Lengths[index] = n.width as number;
               }
             })
-            .backgroundColor(this.on_index_first <= index && index <= this.on_index_last ?
-              this.color_current_back : "transparent")
+            .backgroundColor(this.on_index_first <= index && index <= this.on_index_last ? this.color_current_back : "transparent")
             .borderRadius(this.border_radius(index))
+            .clip(true)
             .animation(animation_default())
         })
       }
@@ -1812,6 +1823,11 @@ struct menuScrollVertical {
   }
 
   border_radius(index: number) {
+    if (!(this.on_index_first <= index && index <= this.on_index_last)) {
+      // Not in range
+      return 10;
+    }
+
     if (index == this.on_index_first && index == this.on_index_last) {
       // If I am the only one in range
       return 10;
@@ -1867,6 +1883,8 @@ struct menuItem {
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @StorageLink('effects') effects: boolean = false;
+  // UI
+  @State isHov: boolean = false;
 
   build() {
     Row() {
@@ -1875,12 +1893,16 @@ struct menuItem {
           ? this.color_current_secondary : this.color_current_font)
         .fontSize(fontSize_Large() - 2)
     }
+    .brightness(this.isHov ? 1.1 : 1)
     .clickEffect(click_effect_default())
     .padding(7)
     .animation(animation_default())
     .onClick(() => {
       this.scroll_to_gateway = -1;
       this.scroll_to_gateway = this.my_index;
+    })
+    .onHover((isHv) => {
+      this.isHov = isHv;
     })
   }
 }
