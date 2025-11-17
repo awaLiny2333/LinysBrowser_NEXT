@@ -83,7 +83,7 @@ struct meowBookmarks {
                   height_of_panel: this.scroll_area_height, // for animation params
                   parent_path: this.looking_at_path, // for get_my_path()
                 })
-              },)
+              })
             }
 
             Column()
@@ -107,7 +107,7 @@ struct meowBookmarks {
 
         // .nestedScroll({ scrollForward: NestedScrollMode.SELF_ONLY, scrollBackward: NestedScrollMode.SELF_ONLY })
 
-        Row({ space: this.tablet_mode ? 12 : 9 }) {
+        Row({ space: this.tablet_mode ? 2 : 0 }) {
           linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left' })// Go back button
             .onClick(() => {
               this.go_back();
@@ -118,6 +118,7 @@ struct meowBookmarks {
           linysShowButton({
             symbol_glyph_target: 'sys.symbol.swap',
             show: this.swapping_bookmarks,
+            show_margin: { left: 0, right: 5 },
             text: $r('app.string.Bookmarks_move_order')
           })// Swap Button
             .onClick(() => {
@@ -202,6 +203,7 @@ struct meowBookmarks {
           linysShowButton({
             show: this.adding_bookmark,
             symbol_glyph_target: 'sys.symbol.plus_square',
+            show_margin: { left: 5, right: 0 },
             text: $r('app.string.Index_add_bookmark_title')
           })
             .onClick(() => {
@@ -315,7 +317,7 @@ struct meowBookmarks {
         .height(this.showing_navigator ? undefined : 0)
         .animation(animation_default())
     } // List of directory, Operation buttons and edit TextInputs
-    .padding(this.showing_bookmarks? {
+    .padding(this.showing_bookmarks ? {
       top: !this.effects ? 10 : 0,
       left: 10,
       right: 10,

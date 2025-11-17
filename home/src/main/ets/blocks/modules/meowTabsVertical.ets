@@ -88,7 +88,7 @@ struct meowTabsVertical {
       .layoutWeight(1)
       .animation(animation_default())
 
-      Row({ space: 10 }) {
+      Row({ space: 5 }) {
         linysTimeoutButton({
           text: '  󰀁  ',
           onExecution: () => {

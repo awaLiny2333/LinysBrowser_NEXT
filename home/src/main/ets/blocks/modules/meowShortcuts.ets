@@ -1,4 +1,3 @@
-import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import { bookmark, bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large } from '../../hosts/bunch_of_defaults';
@@ -145,14 +144,13 @@ struct shortcutButton {
   @State vis_contents: Visibility = Visibility.None;
   @State render_contents: boolean = false;
   render_contents_timeout_id: number | undefined = undefined;
-
   @State show: Visibility = this.homepage_shortcuts_no_animation ? Visibility.Visible : Visibility.None;
 
   build() {
     Column({ space: this.render_contents ? 10 : 0 }) {
       Button(this.get_label_name())
         .type(ButtonType.Capsule)
-        .backgroundColor(this.color_current_secondary)
+        .backgroundColor(this.background_color())
         .useEffect(this.effects, EffectType.WINDOW_EFFECT)
         .fontColor(this.color_current_font)
         .fontSize(fontSize_Large())
@@ -243,6 +241,13 @@ struct shortcutButton {
   get_animation_timeout() {
     let interval = 800 / (this.screen_height / (capsule_bar_height() + 10));
     return (this.my_index + 0) * interval;
+  }
+
+  background_color(): ResourceColor {
+    if (this.effects) {
+      return $r('sys.color.background_tertiary');
+    }
+    return this.color_current_secondary;
   }
 }
 

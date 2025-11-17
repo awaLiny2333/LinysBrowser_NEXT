@@ -239,6 +239,7 @@ struct woofGeneralManage {
           linysShowButton({
             show: this.showing_add_panel,
             symbol_glyph_target: "sys.symbol.plus",
+            show_margin: { left: 0, right: 0 },
             text: $r("app.string.Settings_woof_add_a_domain")
           })// Add Button
             .onClick(() => {

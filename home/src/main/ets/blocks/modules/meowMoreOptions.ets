@@ -412,15 +412,17 @@ struct meowMoreOptions {
           // }
 
           Scroll() {
-            Row({ space: 10 }) {
+            Row() {
               linysSymbol({
-                symbol_glyph_target: 'sys.symbol.save'
+                symbol_glyph_target: 'sys.symbol.save',
+                can_hover: true,
               })// Save Page
                 .onClick(() => {
                   this.bunch_of_tabs.archive_onWorkingTab(this.getUIContext().getHostContext()?.tempDir);
                 })
               linysSymbol({
-                symbol_glyph_target: 'sys.symbol.printer'
+                symbol_glyph_target: 'sys.symbol.printer',
+                can_hover: true,
               })// Print
                 .onClick(() => {
                   if (this.bunch_of_tabs.workingMainTab().controller) {
@@ -428,49 +430,57 @@ struct meowMoreOptions {
                   }
                 })
               linysSymbol({
-                symbol_glyph_target: 'sys.symbol.star_2_moon'
+                symbol_glyph_target: 'sys.symbol.star_2_moon',
+                can_hover: true,
               })// Dark
                 .onClick(() => {
                   this.woofDarkExempts_control.open();
                 })
               linysSymbol({
-                symbol_glyph_target: 'sys.symbol.tracking_cookie_interception'
+                symbol_glyph_target: 'sys.symbol.tracking_cookie_interception',
+                can_hover: true,
               })// Cookies
                 .onClick(() => {
                   this.cookies_control.open();
                 })
               linysSymbol({
-                symbol_glyph_target: 'sys.symbol.picture_2'
+                symbol_glyph_target: 'sys.symbol.picture_2',
+                can_hover: true,
               })// Image
                 .onClick(() => {
                   this.image_manage_control.open();
                 })
               linysSymbol({
-                symbol_glyph_target: 'sys.symbol.electric_install'
+                symbol_glyph_target: 'sys.symbol.electric_install',
+                can_hover: true,
               })// JS
                 .onClick(() => {
                   this.js_manage_control.open();
                 })
               linysSymbol({
-                symbol_glyph_target: 'sys.symbol.ad_circle_slash'
+                symbol_glyph_target: 'sys.symbol.ad_circle_slash',
+                can_hover: true,
               })// Enable ads blocker
                 .onClick(() => {
                   this.woofAdsBlocker_control.open();
                 })
               linysSymbol({
-                symbol_glyph_target: 'sys.symbol.arrow_counterclockwise_clock'
+                symbol_glyph_target: 'sys.symbol.arrow_counterclockwise_clock',
+                can_hover: true,
               })// History
                 .onClick(() => {
                   this.woofHistory_control.open();
                 })
               linysSymbol({
-                symbol_glyph_target: 'sys.symbol.label'
+                symbol_glyph_target: 'sys.symbol.label',
+                can_hover: true,
               })// UA
                 .onClick(() => {
                   this.woofQuickUA_control.open();
                 })
               linysSymbol({
-                symbol_glyph_target: 'sys.symbol.qrcode'
+                symbol_glyph_target: 'sys.symbol.qrcode',
+                can_hover: true,
               })// QRcode
                 .onClick(() => {
                   this.woofQR_control.open();
@@ -478,7 +488,8 @@ struct meowMoreOptions {
               linysSymbol({
                 symbol_glyph_target: this.fullscreen_mode ?
                   'sys.symbol.arrow_down_right_and_arrow_up_left' :
-                  'sys.symbol.arrow_up_left_and_arrow_down_right'
+                  'sys.symbol.arrow_up_left_and_arrow_down_right',
+                can_hover: true,
               })// FullScreen
                 .onClick(() => {
                   this.fullscreen_mode = !this.fullscreen_mode;

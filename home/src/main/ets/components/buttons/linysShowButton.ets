@@ -5,15 +5,19 @@ import linysSymbol from '../texts/linysSymbol';
 @Component
 struct linysShowButton {
   // Colors
+  @StorageLink('effects') effects: boolean = false;
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @StorageLink('color_current_back') color_current_back: ResourceColor = $r('app.color.font_color_title');
+  // Statuses
   @Prop show: boolean = false;
   @Prop symbol_glyph_target: string = "sys.symbol.square_grid_2x2";
   @Prop color_false: ResourceColor = "";
   @Prop color_true: ResourceColor = "";
   @Prop text: ResourceStr = $r('app.string.Index_tabs_title');
-  @StorageLink('effects') effects: boolean = false;
+  // UI
+  show_margin: Padding | number = { left: 5, right: 5 }
+  @State isHov: boolean = false;
 
   build() {
     Row() {
@@ -31,11 +35,17 @@ struct linysShowButton {
         .visibility(this.show ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
     }
-    .padding(this.show ? 5 : 0)
+    .brightness(this.isHov ? 1.1 : 1)
+    .padding(this.show ? 5 : 4)
+    .margin(this.show ? this.show_margin : 0)
     .backgroundColor(this.show ? (this.color_false == "" ? this.color_current_back : this.color_false) : "transparent")
+    .animation(animation_default())
+    .onHover((isHv) => {
+      this.isHov = isHv;
+    })
+    .clip(true)
     .borderRadius(10)
     .clickEffect(click_effect_default())
-    .animation(animation_default())
     .accessibilityText(this.text as string)
     .accessibilityDescription($r('app.string.Accessibility_desc_linysShowButton'))
     .accessibilityGroup(true)

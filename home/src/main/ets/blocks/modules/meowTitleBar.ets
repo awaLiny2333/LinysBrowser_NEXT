@@ -5,7 +5,6 @@ import {
   animation_popup_duration,
   capsule_bar_height,
   click_effect_default,
-  fontSize_Icon_Button,
   fontSize_Large,
   fontSize_Normal
 } from '../../hosts/bunch_of_defaults';
@@ -163,9 +162,10 @@ struct meowTitleBar {
       } // Estimated Destination & This Page Info
 
       RelativeContainer() {
-        Row({ space: this.tablet_mode ? 10 : 6 }) {
+        Row() {
           linysSymbol({
-            symbol_glyph_target: 'sys.symbol.arrow_left'
+            symbol_glyph_target: 'sys.symbol.arrow_left',
+            can_hover: true,
           })// Backward
             .enabled(this.bunch_of_tabs.current_accessBackward)
             .opacity(this.bunch_of_tabs.current_accessBackward ? 1 : 0.5)
@@ -176,7 +176,8 @@ struct meowTitleBar {
             })
 
           linysSymbol({
-            symbol_glyph_target: 'sys.symbol.arrow_right'
+            symbol_glyph_target: 'sys.symbol.arrow_right',
+            can_hover: true,
           })// Forward
             .enabled(this.bunch_of_tabs.current_accessForward)
             .opacity(this.bunch_of_tabs.current_accessForward ? 1 : 0.5)
@@ -186,13 +187,12 @@ struct meowTitleBar {
               this.go_forward();
             })
 
-          SymbolGlyph(!this.current_is_loading ? $r('sys.symbol.arrow_clockwise') : $r('sys.symbol.xmark')) // Refresh
-            .fontSize(fontSize_Icon_Button())
-            .fontColor([this.color_current_font])
+          linysSymbol({
+            symbol_glyph_target: !this.current_is_loading ? 'sys.symbol.arrow_clockwise' : 'sys.symbol.xmark',
+            can_hover: true,
+          })// Refresh
             .visibility(this.visible_when_no_panels_open_in_normal_mode())
-            .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.current_is_loading)
             .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-            .keyboardShortcut(this.bunch_of_key_shortcuts.refresh.main_key, this.bunch_of_key_shortcuts.refresh.modifier)
             .onClick(() => {
               if (this.current_is_loading) {
                 this.stop_page()
@@ -200,9 +200,11 @@ struct meowTitleBar {
                 this.refresh_page()
               }
             })
+            .keyboardShortcut(this.bunch_of_key_shortcuts.refresh.main_key, this.bunch_of_key_shortcuts.refresh.modifier)
 
           linysSymbol({
-            symbol_glyph_target: 'sys.symbol.house'
+            symbol_glyph_target: 'sys.symbol.house',
+            can_hover: true,
           })// Home
             .visibility(this.visible_when_no_panels_open_in_normal_mode())
             .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
@@ -359,7 +361,7 @@ struct meowTitleBar {
         } // Searching bar
         .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
         .height(capsule_bar_height())
-        .padding(this.tablet_mode ? { left: 10, right: 10 } : {})
+        .padding(this.tablet_mode ? { left: 7, right: 7 } : {})
         .alignRules(this.tablet_mode ? {
           left: { anchor: 'left_controls', align: HorizontalAlign.End },
           right: { anchor: 'right_controls', align: HorizontalAlign.Start },
@@ -367,7 +369,7 @@ struct meowTitleBar {
         } : { bottom: { anchor: '__container__', align: VerticalAlign.Bottom } })
         .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
 
-        Row({ space: this.tablet_mode ? 10 : 6 }) {
+        Row() {
           linysShowButton({
             show: this.showing_scratching_board,
             text: $r('app.string.Index_drop_scratching_board'),
@@ -449,6 +451,7 @@ struct meowTitleBar {
 
           linysShowButton({
             show: this.showing_app_settings,
+            show_margin: { left: 5, right: 0 },
             text: $r('app.string.Index_app_settings_title'),
             symbol_glyph_target: this.showing_app_settings ? 'sys.symbol.chevron_down' : 'sys.symbol.gearshape'
           })// Settings

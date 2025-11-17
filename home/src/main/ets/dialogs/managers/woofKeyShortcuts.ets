@@ -89,6 +89,7 @@ struct KeyDisplayCard {
         linysShowButton({
           symbol_glyph_target: 'sys.symbol.square_and_pencil',
           text: $r('app.string.Key_shortcuts_modify'),
+          show_margin: { left: 0, right: 0 },
           show: this.showing_keyboard
         })
           .onClick(() => {

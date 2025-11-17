@@ -170,7 +170,7 @@ struct woofEasyList {
           .layoutWeight(1)
         } // Rules
         .clip(true)
-        .backgroundColor(this.color_current_primary)
+        // .backgroundColor(this.color_current_primary)
         .width(this.tablet_mode ? (this.full_view ? "100%" : "60%") : "100%")
         .height(this.tablet_mode ? "100%" : undefined)
         .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)
@@ -236,7 +236,7 @@ struct woofEasyList {
         .alignItems(HorizontalAlign.End)
         .alignRules(this.alignRules_foot)
         .visibility(this.full_view ? Visibility.None : Visibility.Visible)
-        .backgroundColor(this.color_current_primary)
+        // .backgroundColor(this.color_current_primary)
         .animation(animation_default())
         .width(this.tablet_mode ? "40%" : "100%")
         .id("controls_rules")

@@ -96,6 +96,7 @@ struct woofWantDownload {
         linysShowButton({
           symbol_glyph_target: 'sys.symbol.info_circle',
           show: this.showing_additional_info,
+          show_margin: { left: 0, right: 5 },
           text: $r('app.string.Index_downloads_additional_info')
         })// Info
           .onClick(() => {
