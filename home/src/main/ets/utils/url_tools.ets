@@ -380,15 +380,15 @@ export function extract_links_from_text(data_list: string[]) {
  * @returns True if is a web page that can be displayed.
  */
 export function is_web_page(url: string): boolean {
-  // 常见的网页文件扩展名
+  // Commonly seen web extensions
   const webPageExtensions = [
     '.html', '.htm', '.xhtml', '.shtml',
-    '.php', '.php3', '.php4', '.php5', '.phtml',
+    '.php', '.php3', '.php4', '.php5', '.phtml', '.pdf',
     '.asp', '.aspx',
     '.jsp', '.jspx',
     '.cgi',
     '.pl',
-    '.rb',
+    '.rb', '.r', // '.r' is what?
     '.py',
     '.do',
     '.action',

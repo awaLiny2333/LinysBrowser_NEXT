@@ -2,7 +2,7 @@ import linysShowButton from '../../components/buttons/linysShowButton';
 import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
 import linysConfirmDenyButtons from '../../components/buttons/linysConfirmDenyButtons';
-import { animation_default, capsule_bar_height } from '../../hosts/bunch_of_defaults';
+import { animation_default, capsule_bar_height, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { is_legal_filename } from '../../utils/storage_tools';
 import { bunch_of_downloads } from '../../hosts/bunch_of_downloads';
 import { meowContext } from '../../utils/environment_tools';
@@ -38,6 +38,12 @@ struct woofWantDownload {
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Count
   @LocalStorageLink('opened_dialog_controllers') opened_dialog_controllers: CustomDialogController[] = [];
+  viewable_contents: string[] = [
+    'text/html',
+    'application/xhtml+xml',
+    'application/xml',
+    'text/xml'
+  ];
 
   aboutToAppear(): void {
     this.refresh();
@@ -55,7 +61,7 @@ struct woofWantDownload {
       linysTextTitle({ text: $r('app.string.Index_downloads_prompt') })// prompt
         .width("100%")
 
-      linysText({ text: this.from, max_lines: 10 })// from website
+      linysText({ text: this.from, max_lines: 10 }) // from website
         .width("100%")
         .opacity(0.9)
         .visibility(!this.showing_additional_info ? Visibility.Visible : Visibility.None)
@@ -69,7 +75,7 @@ struct woofWantDownload {
 
       fileNameErrorDisplay({ file_name: this.file_name, error_code: this.error_code });
 
-      TextInput({ text: this.file_name })// Edit file name
+      TextInput({ text: this.file_name }) // Edit file name
         .onSubmit(() => {
           if (this.error_code == 0) {
             this.submit();
@@ -122,6 +128,27 @@ struct woofWantDownload {
       .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.End : FlexAlign.Start)
       .animation(animation_default())
       .width('100%')
+
+      if (this.is_viewable()) {
+        Row() {
+          linysText({
+            text: $r('app.string.Index_downloads_prompt_direct_browse'),
+          })
+        }
+        .width('100%')
+        .justifyContent(FlexAlign.End)
+        .clickEffect(click_effect_default())
+        .onClick(() => {
+          this.storage.set('universal_new_tab_gateway', [this.item?.getUrl(), false]);
+          this.storage.set('showing_downloads', false);
+          this.storage.set('showing_scratching_board', false);
+          this.storage.set('showing_settings', false);
+          this.storage.set('showing_more_options', false);
+          if (this.controller) {
+            this.controller.close();
+          }
+        })
+      }
     }
     .padding(20)
     .alignItems(HorizontalAlign.Start)
@@ -198,6 +225,25 @@ struct woofWantDownload {
       this.controller.close();
     }
   }
+
+  /**
+   * Checks if current download content can be directly viewed in the browser.
+   * @returns True if viewable;
+   * */
+  is_viewable() {
+    try {
+      if (this.item) {
+        console.log(`[woofWantDownload][is_viewable] Check if is viewable for ${this.item.getUrl()}... MimeType=${this.item.getMimeType()}!`);
+        if (this.viewable_contents.includes(this.item.getMimeType())) {
+          return true;
+        }
+      }
+    } catch (e) {
+      console.error(`[woofWantDownload][is_viewable] Returning a false due to Error: ` + e);
+    }
+
+    return false;
+  }
 }
 
 export default woofWantDownload;
@@ -267,6 +313,7 @@ struct fileNameErrorDisplay {
       .visibility(this.error_code >= 2 ? Visibility.Visible : Visibility.None)
       .animation(animation_default())
     }
+    .visibility(this.error_code > 0 ? Visibility.Visible : Visibility.None)
     .alignItems(HorizontalAlign.Start)
   }
 }

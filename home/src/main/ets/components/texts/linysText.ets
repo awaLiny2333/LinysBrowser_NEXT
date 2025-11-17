@@ -10,10 +10,10 @@ struct linysText {
   @Prop text: ResourceStr = $r('app.string.HomeAbility_label');
   @Prop color: ResourceColor = "";
   @Prop font_weight: FontWeight = FontWeight.Regular;
-  @Prop is_description: boolean = false;
+  is_description: boolean = false;
   @Prop is_expanded: boolean = false;
-  @Prop max_lines: number = 1;
-  @Prop overflow_type: TextOverflow = TextOverflow.Ellipsis;
+  max_lines: number = 1;
+  overflow_type: TextOverflow = TextOverflow.Ellipsis;
 
   build() {
     if (this.is_description) {

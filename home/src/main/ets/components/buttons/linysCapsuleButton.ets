@@ -15,6 +15,7 @@ struct linysCapsuleButton {
   @Prop color_text: ResourceColor = "";
   @StorageLink('effects') effects: boolean = false;
   opa: number = 0.9;
+  font_weight: FontWeight = FontWeight.Medium;
 
   build() {
     Button(this.text)
@@ -24,7 +25,7 @@ struct linysCapsuleButton {
       // .useEffect(this.effects, EffectType.WINDOW_EFFECT)
       .fontColor(this.color_text == "" ? (this.effects ? this.color_current_font : this.color_current_primary) : this.color_text)
       .fontSize(fontSize_Large())
-      .fontWeight(FontWeight.Medium)
+      .fontWeight(this.font_weight)
       .height(capsule_bar_height())
       .border({
         width: 2,
