@@ -33,16 +33,17 @@ struct woofQR {
       controller: this.controller
     }) {
       Scroll() {
-        Column({ space: 15 }) {
+        Column({ space: 10 }) {
           QRCode(this.link)
             .color(this.color_current_font)
             .backgroundColor("transparent")
             .padding(20)
 
-          Column({ space: 5 }) {
+          Column() {
             linysTextTitle({
               text: this.title,
-              max_lines: 5
+              max_lines: 5,
+              can_hover: true
             })
               .width("100%")
               .clickEffect(click_effect_default())
@@ -53,7 +54,8 @@ struct woofQR {
             linysText({
               text: this.link,
               font_weight: FontWeight.Bold,
-              max_lines: 10
+              max_lines: 10,
+              can_hover: true
             })
               .width("100%")
               .opacity(0.7)

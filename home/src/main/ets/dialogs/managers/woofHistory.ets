@@ -166,40 +166,41 @@ struct woofHistory {
 
             Scroll() {
               List({ scroller: this.scroller }) {
-                LazyForEach(this.data, (_record_item: Array<history_record | number>, _key: number) => {
+                LazyForEach(this.data, (record_item: Array<history_record | number>, key: number) => {
                   ListItem() {
                     // linysText({ text: key.toString() })
-                    if (this.opened_month_history_list[_record_item[1] as number]) {
-                      Row({ space: 10 }) {
+                    if (this.opened_month_history_list[record_item[1] as number]) {
+                      Row({ space: 5 }) {
                         meowRelation({
-                          index: (_record_item[1] as number),
+                          index: (record_item[1] as number),
                           selected: this.selected,
                           selected_item_quantity: this.selected_items_quantity,
                           selecting: this.selecting,
-                          record: _record_item[0] as history_record,
+                          record: record_item[0] as history_record,
                           controller: this.controller,
                         })
                           .layoutWeight(1)
 
                         linysSymbol({
                           symbol_glyph_target: 'sys.symbol.qrcode',
-                          color: this.selected[_record_item[1] as number] && !this.effects ? this.color_current_secondary : this.color_current_font
+                          color: this.selected[record_item[1] as number] && !this.effects ? this.color_current_secondary : this.color_current_font,
+                          can_hover: true
                         })// QRcode
                           .onClick(() => {
-                            this.show_title = (_record_item[0] as history_record).label;
-                            this.show_url = (_record_item[0] as history_record).link;
+                            this.show_title = (record_item[0] as history_record).label;
+                            this.show_url = (record_item[0] as history_record).link;
                             this.woofQR_control.open();
                           })
                           .opacity(0.7)
                       }
                       .padding({
-                        left: 12,
-                        right: 12,
-                        top: 9,
-                        bottom: 3
+                        top: (key == 0) ? 6 : 0,
+                        left: 6,
+                        right: 6,
+                        bottom: (key == this.selected.length - 1) ? 6 : 0,
                       })
                       .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
-                      .backgroundColor(this.selected[_record_item[1] as number] ? (this.effects ? this.color_current_primary : this.color_current_font) : undefined)
+                      .backgroundColor(this.selected[record_item[1] as number] ? (this.effects ? this.color_current_primary : this.color_current_font) : undefined)
                       .animation(animation_default())
                     }
                   }
@@ -220,7 +221,6 @@ struct woofHistory {
               .width("100%")
               .height("100%")
             } // Main history list
-            .padding({ bottom: 5 })
             .scrollable(ScrollDirection.Vertical)
             .edgeEffect(EdgeEffect.Spring)
             .onAreaChange((_o, n) => {
@@ -488,6 +488,7 @@ struct meowRelation {
   @LocalStorageLink('showing_app_settings') showing_app_settings: boolean = false;
   @Prop scroll_area_height: number;
   @Prop human_time: string = new Date(this.record.accessed_time).toLocaleString();
+  @State isHov: boolean = false;
   // Gateways
   @LocalStorageLink('universal_new_tab_gateway') universal_new_tab_gateway: (string | boolean)[] = ['', false];
   // Colors
@@ -524,9 +525,17 @@ struct meowRelation {
           .opacity(0.45)
       }
     }
+    .padding({
+      left: 6,
+      right: 6,
+      top: 6,
+      bottom: 6
+    })
+    .borderRadius(10)
+    .brightness(this.isHov ? 1.1 : 1)
+    .animation(animation_default())
     .alignItems(HorizontalAlign.Start)
     .width("100%")
-    .animation(animation_default())
     .onClick(() => {
       if (this.selecting) {
         // Select
@@ -551,6 +560,9 @@ struct meowRelation {
         // Right click
         this.select_unselect();
       }
+    })
+    .onHover((isHv) => {
+      this.isHov = isHv;
     })
   }
 

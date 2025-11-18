@@ -1,4 +1,5 @@
-import { animation_default, click_effect_default, fontSize_Normal } from '../../hosts/bunch_of_defaults';
+import lazy { animation_default } from '../../hosts/bunch_of_defaults';
+import { click_effect_default, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import { LengthMetrics } from '@kit.ArkUI';
 
 // @Reusable  // Will this affect anything?
@@ -51,7 +52,7 @@ struct linysText {
     } else {
       Text(this.text)
         .brightness(this.isHov ? 1.1 : 1)
-        .animation(animation_default())
+        .animation(this.can_hover ? animation_default() : { duration: 0 })
         .padding(this.can_hover ? {
           left: 7,
           right: 7,

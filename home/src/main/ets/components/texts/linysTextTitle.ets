@@ -1,3 +1,4 @@
+import lazy { animation_default } from '../../hosts/bunch_of_defaults';
 import { fontSize_Large } from '../../hosts/bunch_of_defaults';
 
 @Component
@@ -7,14 +8,29 @@ struct linysTextTitle {
   @Prop text: ResourceStr = $r('app.string.HomeAbility_label');
   @Prop color: ResourceColor = "";
   @Prop max_lines: number = 1;
+  // UI
+  can_hover: boolean = false;
+  @State isHov: boolean = false;
 
   build() {
     Text(this.text)
+      .brightness(this.isHov ? 1.1 : 1)
+      .animation(this.can_hover ? animation_default() : { duration: 0 })
+      .padding(this.can_hover ? {
+        left: 7,
+        right: 7,
+        top: 5,
+        bottom: 5
+      } : 0)
+      .borderRadius(this.can_hover ? 7.5 : 0)
       .fontColor(this.color == "" ? this.color_current_font : this.color)
       .fontSize(fontSize_Large())
       .fontWeight(FontWeight.Bold)
       .maxLines(this.max_lines)
       .textOverflow({ overflow: TextOverflow.Ellipsis })
+      .onHover((isHv) => {
+        this.isHov = isHv;
+      })
   }
 }
 

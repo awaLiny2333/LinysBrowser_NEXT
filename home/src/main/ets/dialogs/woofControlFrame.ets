@@ -17,11 +17,11 @@ struct woofControlFrame {
   @StorageLink('effects') effects: boolean = false;
 
   build() {
-    Column({ space: 13.5 }) {
+    Column({ space: 10 }) {
       Row() {
         linysTextTitle({ text: this.title, max_lines: 3 })
           .layoutWeight(1)
-        linysSymbol({ symbol_glyph_target: 'sys.symbol.xmark' })
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.xmark', can_hover: true })
           .onClick(() => {
             if (this.controller) {
               this.controller.close();

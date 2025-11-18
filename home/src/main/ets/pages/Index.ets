@@ -522,7 +522,7 @@ struct Index {
     let result = 0;
     if (this.tablet_mode) {
       if (this.showing_tabs && this.tabs_style != 'horizontal') {
-        result += 250;
+        result += 244;
       }
       if (this.showing_bookmarks) {
         result += 350;
