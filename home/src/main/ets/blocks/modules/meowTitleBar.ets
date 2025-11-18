@@ -221,7 +221,7 @@ struct meowTitleBar {
         .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
         .id('left_controls')
 
-        Row({ space: 7 }) {
+        Row() {
           Column() {
             TextInput({ text: this.search_input })
               .allowDrop(null)
@@ -363,7 +363,7 @@ struct meowTitleBar {
         } // Searching bar
         .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
         .height(capsule_bar_height())
-        .padding(this.tablet_mode ? (this.preferred_hand_left_or_right == 'right' ? { left: 7 } : { right: 7 }) : {})
+        .padding(this.tablet_mode ? { left: 7, right: 7 } : 0)
         .alignRules(this.tablet_mode ? {
           left: { anchor: 'left_controls', align: HorizontalAlign.End },
           right: { anchor: 'right_controls', align: HorizontalAlign.Start },
