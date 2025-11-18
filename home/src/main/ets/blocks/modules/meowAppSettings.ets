@@ -758,6 +758,7 @@ struct meowAppSettings {
                   }) // Enable bottom_avoid
                 } // Individuals
 
+
                 settingsSubCard({
                   icon: '󰰽',
                   title: $r('app.string.Index_layout_title'),
@@ -857,8 +858,6 @@ struct meowAppSettings {
                 my_index: 5,
               }) {
                 settingsSubCard({
-                  icon: '󰏕',
-                  title: $r('app.string.Settings_experience_history'),
                   my_index: 5,
                 }) {
                   linysSwitchWithText({
@@ -867,7 +866,14 @@ struct meowAppSettings {
                     onExecution: () => {
                       bunch_of_settings.set('collect_new_history', this.collect_new_history);
                     }
-                  }) // Toggle History
+                  })
+                } // Individuals // Toggle History
+
+                settingsSubCard({
+                  icon: '󰏕',
+                  title: $r('app.string.Settings_experience_history'),
+                  my_index: 5,
+                }) {
                   linysCapsuleButtonWithText({
                     desc_text: $r('app.string.Settings_experience_history_view'),
                     button_text: "  󰀩  ",

@@ -22,9 +22,10 @@ struct woofSelectBookmarksPath {
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
-  controller: CustomDialogController;
+  @State isHov_path_tree_dir: boolean = false;
   // Count
   @LocalStorageLink('opened_dialog_controllers') opened_dialog_controllers: CustomDialogController[] = [];
+  controller: CustomDialogController;
 
   aboutToAppear(): void {
     this.refresh_dir_content();
@@ -77,7 +78,7 @@ struct woofSelectBookmarksPath {
       })
 
       Row({ space: 10 }) {
-        linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left' })
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left', can_hover: true })
           .onClick(() => {
             this.go_back();
           })
@@ -112,26 +113,33 @@ struct woofSelectBookmarksPath {
       } // Buttons of submit and cancel
       .width("100%")
 
-      Text(this.looking_at_path == "" ? this.showing_navigator ? $r('app.string.Bookmarks_root_path_expanded') : $r('app.string.Bookmarks_root_path') :
-        "@ " + this.looking_at_path + "/")
-        .fontColor(this.color_current_font)
-        .fontWeight(FontWeight.Bold)
-        .fontSize(fontSize_Normal())
-        .textAlign(TextAlign.End)
-        .margin({ top: 5 })
-        .opacity(0.7)
-        .animation(animation_default())
-        .clickEffect(click_effect_default())
-        .onClick(() => {
-          this.showing_navigator = !this.showing_navigator;
-        })
+      Column() {
+        Text(this.looking_at_path == "" ? this.showing_navigator ? $r('app.string.Bookmarks_root_path_expanded') : $r('app.string.Bookmarks_root_path') :
+          "@ " + this.looking_at_path + "/")
+          .fontColor(this.color_current_font)
+          .fontWeight(FontWeight.Bold)
+          .fontSize(fontSize_Normal())
+          .textAlign(TextAlign.End)
+          .padding(5)
+          .opacity(0.7)
+          .brightness(this.isHov_path_tree_dir ? 1.1 : 1)
+          .animation(animation_default())
+          .borderRadius(5)
+          .clickEffect(click_effect_default())
+          .onClick(() => {
+            this.showing_navigator = !this.showing_navigator;
+          })
+          .onHover((isHv) => {
+            this.isHov_path_tree_dir = isHv;
+          })
 
-      linysPathTree({
-        current_viewing_path: this.looking_at_path,
-        max_height_screen_percentage: 0.2,
-      })
-        .height(this.showing_navigator ? undefined : 0)
-        .animation(animation_default())
+        linysPathTree({
+          current_viewing_path: this.looking_at_path,
+          max_height_screen_percentage: 0.2,
+        })
+          .height(this.showing_navigator ? undefined : 0)
+          .animation(animation_default())
+      }.alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
     }
     .alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
     .useEffect(this.effects, EffectType.WINDOW_EFFECT)
@@ -204,10 +212,9 @@ struct bookmarkItem {
   bookmark_height_default: number = 42;
   // Animations statuses
   @State pressing: boolean = false;
-  @State press_timing_ok: boolean = false;
   @State show: Visibility = Visibility.Hidden;
   @State offset_y: number = 50;
-  @State editing: boolean = false;
+  @State isHov: boolean = false;
   // Edit
   @State edit_label: string = this.my_label;
   @State edit_link: string = this.my_link;
@@ -239,22 +246,14 @@ struct bookmarkItem {
             .fontColor([!this.pressing ? this.color_current_font : this.color_current_secondary])
             .animation(animation_default())
         } // Folder Icon
-        Scroll() {
-          SymbolGlyph($r('sys.symbol.square_and_pencil'))
-            .fontSize(fontSize_Large())
-            .fontColor([this.color_current_secondary])
-        } // Edit Icon
-        .scrollable(ScrollDirection.Horizontal)
-        .width(this.press_timing_ok ? 22 : 0)
-        .margin({ left: this.press_timing_ok ? 10 : 0 })
-        .animation(animation_default())
 
       } // Bookmark button
       .border({
-        radius: this.editing ? { topLeft: 10, topRight: 10 } : 10,
+        radius: 10,
         width: 2,
         color: "transparent"
       })
+      .brightness(this.isHov ? 1.1 : 1)
       .backgroundColor(this.pressing && !this.effects ? this.color_current_font : this.color_current_secondary)
       .animation(animation_default())
       .padding(10)
@@ -279,7 +278,6 @@ struct bookmarkItem {
       })
       .height(this.bookmark_height_default)
     }
-    .width("100%")
     .visibility(this.show)
     .offset({ y: this.offset_y })
     .animation(animation_default())
@@ -289,6 +287,10 @@ struct bookmarkItem {
         this.offset_y = 0;
         // Animation of floating up
       }, this.get_animation_timeout())
+    })
+    .width("100%")
+    .onHover((isHv) => {
+      this.isHov = isHv;
     })
   }
 

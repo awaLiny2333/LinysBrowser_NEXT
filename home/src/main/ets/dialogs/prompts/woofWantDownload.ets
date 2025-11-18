@@ -61,7 +61,7 @@ struct woofWantDownload {
       linysTextTitle({ text: $r('app.string.Index_downloads_prompt') })// prompt
         .width("100%")
 
-      linysText({ text: this.from, max_lines: 10 }) // from website
+      linysText({ text: this.from, max_lines: 10 }) // from website // TODO: This is technically with flaw
         .width("100%")
         .opacity(0.9)
         .visibility(!this.showing_additional_info ? Visibility.Visible : Visibility.None)
@@ -140,7 +140,9 @@ struct woofWantDownload {
         .justifyContent(FlexAlign.End)
         .clickEffect(click_effect_default())
         .onClick(() => {
-          this.storage.set('universal_new_tab_gateway', [this.item?.getUrl(), false]);
+          if (this.url) {
+            this.storage.set('universal_new_tab_gateway', [this.url, false]);
+          }
           this.storage.set('showing_downloads', false);
           this.storage.set('showing_scratching_board', false);
           this.storage.set('showing_settings', false);
@@ -234,7 +236,7 @@ struct woofWantDownload {
   is_viewable() {
     try {
       if (this.item) {
-        console.log(`[woofWantDownload][is_viewable] Check if is viewable for ${this.item.getUrl()}... MimeType=${this.item.getMimeType()}!`);
+        console.log(`[woofWantDownload][is_viewable] Check if is viewable for ${this.url}... MimeType=${this.item.getMimeType()}!`);
         if (this.viewable_contents.includes(this.item.getMimeType())) {
           return true;
         }

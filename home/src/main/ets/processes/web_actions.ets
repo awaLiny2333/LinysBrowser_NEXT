@@ -86,15 +86,19 @@ export function on_title_receive(pk: tab_info_packed) {
     console.error('[meowWebView][onProgressChange] Update bunch_of_tabs error: ' + e);
   }
 
-  // Save history & update storage if title is really updated
-  let tab_titles = (pk.storage.get('tab_titles') as string[]);
-  if (pk.last_saved_title != tab_titles[pk.index]) {
-    console.log('[Tabs][onTitleReceive] New title: ' + tab_titles[pk.index]);
-    if (!pk.is_loading) {
-      pk.check_save_history('[onTitleReceive]');
-    }
+  let collect_new_history = AppStorage.get('collect_new_history') as boolean;
+  // Check if need to collect new history
+  if (collect_new_history) {
+    // Save history & update storage if title is really updated
+    let tab_titles = (pk.storage.get('tab_titles') as string[]);
+    if (pk.last_saved_title != tab_titles[pk.index]) {
+      console.log('[Tabs][onTitleReceive] New title: ' + tab_titles[pk.index]);
+      if (!pk.is_loading) {
+        pk.check_save_history('[onTitleReceive]');
+      }
 
-    tabs.save_web_label_to_sandbox(pk.index);
+      tabs.save_web_label_to_sandbox(pk.index);
+    }
   }
 }
 
@@ -188,9 +192,13 @@ export function on_page_end(pk: tab_info_packed) {
   }
 
   try {
-    // Save history
-    if (pk.title != '') {
-      pk.check_save_history('[onPageEnd]');
+    let collect_new_history = AppStorage.get('collect_new_history') as boolean;
+    // Check if need to collect new history
+    if (collect_new_history) {
+      // Save history
+      if (pk.title != '') {
+        pk.check_save_history('[onPageEnd]');
+      }
     }
 
     // Mark End Recovery

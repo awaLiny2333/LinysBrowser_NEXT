@@ -13,6 +13,7 @@ struct linysPathTree {
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Colors
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @State isHov: boolean = false;
 
   build() {
     Scroll(this.scroller) {
@@ -20,13 +21,17 @@ struct linysPathTree {
         Row() {
           linysText({ text: " 󰀧 ", font_weight: FontWeight.Bold });
         }
-        .borderRadius(10)
-        .padding(10)
+        .brightness(this.isHov ? 1.1 : 1)
         .backgroundColor(this.color_current_secondary)
         .animation(animation_default())
+        .borderRadius(10)
+        .padding(10)
         .clickEffect(click_effect_default())
         .onClick(() => {
           this.current_viewing_path = "";
+        })
+        .onHover((isHv) => {
+          this.isHov = isHv;
         })
 
         ForEach(this.label_stack, (item: string, index: number) => {
@@ -41,8 +46,9 @@ struct linysPathTree {
       .width("100%")
       .animation(animation_default())
     }
+    .padding({ top: 5 })
     .scrollBar(BarState.Off)
-    .height(42 + Math.min(this.screen_height * this.max_height_screen_percentage, 45 * this.label_stack.length))
+    .height(5 + 42 + Math.min(this.screen_height * this.max_height_screen_percentage, 45 * this.label_stack.length))
     .animation(animation_default())
     .edgeEffect(EdgeEffect.Spring)
   }
@@ -82,18 +88,23 @@ struct linysPathButton {
   @Link current_viewing_path: string;
   // Colors
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @State isHov: boolean = false;
 
   build() {
     Row() {
       linysText({ text: this.label });
     }
-    .borderRadius(10)
-    .padding(10)
+    .brightness(this.isHov ? 1.1 : 1)
     .backgroundColor(this.color_current_secondary)
     .animation(animation_default())
+    .borderRadius(10)
+    .padding(10)
     .clickEffect(click_effect_default())
     .onClick(() => {
       this.current_viewing_path = this.my_directory;
+    })
+    .onHover((isHv) => {
+      this.isHov = isHv;
     })
   }
 }

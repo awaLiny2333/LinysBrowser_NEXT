@@ -35,6 +35,7 @@ struct meowBookmarks {
   @LocalStorageLink('swapping_offset_timeout') swapping_offset_timeout: number = 0;
   @State swapping_offset_upper: number = 0;
   @State swapping_offset_downer: number = 0;
+  @State isHov_path_tree_dir: boolean = false;
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('preferred_hand_reverse_tabs_panel') preferred_hand_reverse_tabs_panel: boolean = false;
@@ -108,7 +109,7 @@ struct meowBookmarks {
         // .nestedScroll({ scrollForward: NestedScrollMode.SELF_ONLY, scrollBackward: NestedScrollMode.SELF_ONLY })
 
         Row({ space: this.tablet_mode ? 2 : 0 }) {
-          linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left' })// Go back button
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left', can_hover: true })// Go back button
             .onClick(() => {
               this.go_back();
             })
@@ -303,12 +304,17 @@ struct meowBookmarks {
           .fontSize(fontSize_Normal())
           .textAlign(this.preferred_hand_left_or_right == 'right' ? TextAlign.End : TextAlign.Start)
           .width("100%")
-          .margin({ top: 5, bottom: 5 })
-          .opacity(0.7)
+          .padding(5)
+          .brightness(this.isHov_path_tree_dir ? 1.1 : 1)
           .animation(animation_default())
+          .borderRadius(5)
+          .opacity(0.7)
           .clickEffect(click_effect_default())
           .onClick(() => {
             this.showing_navigator = !this.showing_navigator;
+          })
+          .onHover((isHv) => {
+            this.isHov_path_tree_dir = isHv;
           })
       }
       linysPathTree({

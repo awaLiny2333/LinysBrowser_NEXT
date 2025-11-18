@@ -221,7 +221,7 @@ struct meowTitleBar {
         .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
         .id('left_controls')
 
-        Row({ space: 10 }) {
+        Row({ space: 7 }) {
           Column() {
             TextInput({ text: this.search_input })
               .allowDrop(null)
@@ -299,69 +299,71 @@ struct meowTitleBar {
           .layoutWeight(1)
 
           if (this.delayed_load_p0) {
-            linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right' }) // Search
-              .visibility(this.visible_when_typing())
-              .onClick(() => {
-                this.submit_searching()
-              })
-              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+            Row() {
+              linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right', can_hover: true }) // Search
+                .visibility(this.visible_when_typing())
+                .onClick(() => {
+                  this.submit_searching()
+                })
+                .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
 
-            linysShowButton({
-              symbol_glyph_target: this.showing_search_extracted_field ? 'sys.symbol.text_and_t' : 'sys.symbol.link',
-              text: $r(this.showing_search_extracted_field ?
-                'app.string.Address_analyzer_keyword' :
-                'app.string.Address_analyzer_address'),
-              show: this.address_analyzers_desc_showing,
-            })// Key Link
-              .visibility(this.showing_scratching_board ? Visibility.None : this.search_extracted_field_available ? Visibility.Visible : Visibility.None)
-              .onClick(() => {
-                this.showing_search_extracted_field = !this.showing_search_extracted_field;
-                if (this.is_search_input_typing) {
-                  // Switch focus
-                  if (this.showing_search_extracted_field) {
-                    focusControl.requestFocus('key_bar');
-                  } else {
-                    focusControl.requestFocus('address_bar');
+              linysShowButton({
+                symbol_glyph_target: this.showing_search_extracted_field ? 'sys.symbol.text_and_t' : 'sys.symbol.link',
+                text: $r(this.showing_search_extracted_field ?
+                  'app.string.Address_analyzer_keyword' :
+                  'app.string.Address_analyzer_address'),
+                show: this.address_analyzers_desc_showing,
+              })// Key Link
+                .visibility(this.showing_scratching_board ? Visibility.None : this.search_extracted_field_available ? Visibility.Visible : Visibility.None)
+                .onClick(() => {
+                  this.showing_search_extracted_field = !this.showing_search_extracted_field;
+                  if (this.is_search_input_typing) {
+                    // Switch focus
+                    if (this.showing_search_extracted_field) {
+                      focusControl.requestFocus('key_bar');
+                    } else {
+                      focusControl.requestFocus('address_bar');
+                    }
                   }
-                }
-                this.address_analyzers_desc_showing = true;
-                clearTimeout(this.address_analyzers_desc_close_cd_timeout_id);
-                this.address_analyzers_desc_close_cd_timeout_id = setTimeout(() => {
-                  this.address_analyzers_desc_showing = false;
-                  this.address_analyzers_desc_close_cd_timeout_id = undefined;
-                }, 1200)
-              })
-              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+                  this.address_analyzers_desc_showing = true;
+                  clearTimeout(this.address_analyzers_desc_close_cd_timeout_id);
+                  this.address_analyzers_desc_close_cd_timeout_id = setTimeout(() => {
+                    this.address_analyzers_desc_showing = false;
+                    this.address_analyzers_desc_close_cd_timeout_id = undefined;
+                  }, 1200)
+                })
+                .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
 
-            linysSymbol({
-              symbol_glyph_target: 'sys.symbol.magnifyingglass',
-            })// Add Search Engine
-              .enabled(this.showing_scratching_board ? false : true)
-              .visibility((this.is_search_input_typing || this.search_extracted_field_available) && !this.showing_scratching_board
-                ? Visibility.Visible : Visibility.None)
-              .onClick(() => {
-                let extract: string[] = extract_search(this.search_input);
-                let key = extract[1];
-                let link = extract[0];
-                if (key == '' && link == '') {
-                  this.quick_keyword = this.search_input;
-                  this.quick_se = undefined;
-                } else {
-                  this.quick_keyword = this.search_extracted_keyword;
-                  // Set default add Search engine
-                  let label = this.current_title;
-                  label = label.replaceAll(key, '');
-                  label = label.replace(/ ?[_-] ?/g, '');
-                  this.quick_se = new search_engine(label, link);
-                }
-                this.woofQuickSE_control.open();
-              })
-              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.magnifyingglass', can_hover: true
+              })// Add Search Engine
+                .enabled(this.showing_scratching_board ? false : true)
+                .visibility((this.is_search_input_typing || this.search_extracted_field_available) && !this.showing_scratching_board
+                  ? Visibility.Visible : Visibility.None)
+                .onClick(() => {
+                  let extract: string[] = extract_search(this.search_input);
+                  let key = extract[1];
+                  let link = extract[0];
+                  if (key == '' && link == '') {
+                    this.quick_keyword = this.search_input;
+                    this.quick_se = undefined;
+                  } else {
+                    this.quick_keyword = this.search_extracted_keyword;
+                    // Set default add Search engine
+                    let label = this.current_title;
+                    label = label.replaceAll(key, '');
+                    label = label.replace(/ ?[_-] ?/g, '');
+                    this.quick_se = new search_engine(label, link);
+                  }
+                  this.woofQuickSE_control.open();
+                })
+                .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+            }
           }
         } // Searching bar
         .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
         .height(capsule_bar_height())
-        .padding(this.tablet_mode ? { left: 7, right: 7 } : {})
+        .padding(this.tablet_mode ? (this.preferred_hand_left_or_right == 'right' ? { left: 7 } : { right: 7 }) : {})
         .alignRules(this.tablet_mode ? {
           left: { anchor: 'left_controls', align: HorizontalAlign.End },
           right: { anchor: 'right_controls', align: HorizontalAlign.Start },

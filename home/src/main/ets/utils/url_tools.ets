@@ -388,7 +388,7 @@ export function is_web_page(url: string): boolean {
     '.jsp', '.jspx',
     '.cgi',
     '.pl',
-    '.rb', '.r', // '.r' is what?
+    '.rb', // '.r', // '.r' is what?
     '.py',
     '.do',
     '.action',

@@ -165,6 +165,7 @@ struct data_display {
   copied_timeout_id: number | undefined = undefined;
   @State image_height: number = 0;
   @State image_width: number = 0;
+  @State isHov: boolean = false;
 
   aboutToAppear(): void {
     if (this.type == 'url') {
@@ -249,26 +250,26 @@ struct data_display {
               top: { anchor: 'image', align: VerticalAlign.Bottom },
               left: { anchor: 'image', align: HorizontalAlign.Start }
             })
-        }
+        } // Contents
         .width('auto')
         .height('auto')
         .animation(animation_default())
 
-        Column({ space: 10 }) {
+        Column() {
           linysSymbol({
-            symbol_glyph_target: 'sys.symbol.save'
+            symbol_glyph_target: 'sys.symbol.save', can_hover: true
           }) // Save
             .clickEffect(click_effect_default())
             .bindMenu(this.SaveMenu)
           linysSymbol({
-            symbol_glyph_target: 'sys.symbol.magnifyingglass'
+            symbol_glyph_target: 'sys.symbol.magnifyingglass', can_hover: true
           }) // Search
             .clickEffect(click_effect_default())
             .onClick(() => {
               // Search online
             })
           linysSymbol({
-            symbol_glyph_target: 'sys.symbol.arrow_up_left_and_arrow_down_right'
+            symbol_glyph_target: 'sys.symbol.arrow_up_left_and_arrow_down_right', can_hover: true
           })
             .clickEffect(click_effect_default())
             .onClick(() => {
@@ -288,11 +289,12 @@ struct data_display {
           font_weight: this.type == "text" ? FontWeight.Regular : FontWeight.Bold,
         })
           .layoutWeight(1)
-        // Buttons
-        Row({ space: 10 }) {
+        // Contents
+
+        Row() {
           // Text copy
           linysSymbol({
-            symbol_glyph_target: this.copied ? 'sys.symbol.checkmark_clipboard_fill' : 'sys.symbol.text_clipboard'
+            symbol_glyph_target: this.copied ? 'sys.symbol.checkmark_clipboard_fill' : 'sys.symbol.text_clipboard', can_hover: true
           })
             .clickEffect(click_effect_default())
             .onClick(() => {
@@ -301,7 +303,7 @@ struct data_display {
           // Download button
           if (this.downloadable) {
             linysSymbol({
-              symbol_glyph_target: 'sys.symbol.download'
+              symbol_glyph_target: 'sys.symbol.download', can_hover: true
             })
               .clickEffect(click_effect_default())
               .onClick(() => {
@@ -311,7 +313,7 @@ struct data_display {
           // Url visit button
           if (this.type == 'url') {
             linysSymbol({
-              symbol_glyph_target: 'sys.symbol.arrow_right'
+              symbol_glyph_target: 'sys.symbol.arrow_right', can_hover: true
             })
               .clickEffect(click_effect_default())
               .onClick(() => {
@@ -319,17 +321,18 @@ struct data_display {
               })
           }
 
-        }
+        } // Buttons
       } // Content display with Controls
     }
     .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
-    .padding(15)
+    .padding(10)
     .borderRadius(20)
     .backgroundColor(this.color_current_primary)
     .justifyContent(FlexAlign.Start)
     .width(this.type == 'image' ? undefined : "100%")
     .visibility(this.this_visibility)
     .offset({ y: this.offset_y })
+    .brightness(this.isHov ? 1.04 : 1)
     .animation(animation_default())
     .onAppear(() => {
       setTimeout(() => {
@@ -340,6 +343,9 @@ struct data_display {
     .clickEffect(click_effect_default())
     .onClick(() => {
       this.default_action();
+    })
+    .onHover((isHv) => {
+      this.isHov = isHv;
     })
   }
 

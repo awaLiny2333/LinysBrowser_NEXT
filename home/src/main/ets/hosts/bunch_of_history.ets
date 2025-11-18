@@ -151,17 +151,21 @@ export class bunch_of_history {
     ensure_this_month_history_file(context_filesDir);
     // Traverse directory
     let result: number[][] = [];
-    let history_files = fs.listFileSync(filesDir + '/history', { recursion: false });
-    for (let index = 0; index < history_files.length; index++) {
-      let f_name = history_files[index].split('.')[0];
-      // 'history_2024_02.txt'
-      let f_split = f_name.split('_');
-      let year = parseInt(f_split[1]);
-      let month = parseInt(f_split[2]);
-      result.push([year, month]);
+    try {
+      let history_files = fs.listFileSync(filesDir + '/history', { recursion: false });
+      for (let index = 0; index < history_files.length; index++) {
+        let f_name = history_files[index].split('.')[0];
+        // 'history_2024_02.txt'
+        let f_split = f_name.split('_');
+        let year = parseInt(f_split[1]);
+        let month = parseInt(f_split[2]);
+        result.push([year, month]);
+      }
+      result = result.sort((a, b) => (b[0] * 12 + b[1]) - (a[0] * 12 + a[1]));
+      console.log('[Meow][bunch_of_history] Got_available_months. Result: ' + result.join(' ') + '.')
+    } catch (e) {
+      console.error(`[get_history_months] Failed! ` + e);
     }
-    result = result.sort((a, b) => (b[0] * 12 + b[1]) - (a[0] * 12 + a[1]));
-    console.log('[Meow][bunch_of_history] Got_available_months. Result: ' + result.join(' ') + '.')
     return result;
   }
 
