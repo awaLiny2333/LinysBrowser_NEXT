@@ -12,6 +12,7 @@ struct linysSymbol {
   @Prop font_size: number = fontSize_Icon_Button();
   // Settings
   can_hover: boolean = false;
+  radius: number = 10;
   // UI
   @State isHov: boolean = false;
 
@@ -23,7 +24,7 @@ struct linysSymbol {
       .brightness(this.isHov ? 1.1 : 1)
       .animation(animation_default())
       .padding(this.can_hover ? 5 : 0)
-      .borderRadius(this.can_hover ? 10 : 0)
+      .borderRadius(this.can_hover ? this.radius : 0)
       .clickEffect(click_effect_default())
       .onHover((isHv) => {
         if (this.can_hover) {

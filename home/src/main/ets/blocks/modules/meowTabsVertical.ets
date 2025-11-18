@@ -1,5 +1,5 @@
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
-import { animation_default, click_effect_default, fontSize_Large, fontSize_Normal, url_default_blank } from '../../hosts/bunch_of_defaults';
+import { animation_default, click_effect_default, fontSize_Icon_Button, fontSize_Large, fontSize_Normal, url_default_blank } from '../../hosts/bunch_of_defaults';
 import { sandbox_read_text_sync } from '../../utils/storage_tools';
 import { current_tabs_style_is_horizontal, run_time, storage_of_id, storage_of_index } from '../../utils/ui_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
@@ -88,7 +88,7 @@ struct meowTabsVertical {
       .layoutWeight(1)
       .animation(animation_default())
 
-      Row({ space: 5 }) {
+      Row() {
         linysTimeoutButton({
           text: '  󰀁  ',
           onExecution: () => {
@@ -114,7 +114,7 @@ struct meowTabsVertical {
           .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden)
           .animation(animation_default())
 
-        linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square', can_hover: true })
           .onClick(() => {
             this.new_tab("", true, false);
           })
@@ -742,23 +742,24 @@ struct TabButton {
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // UI
   tab_height_default: number = 42;
-  @State tab_height: number = (this.bunch_of_tabs.Tabs.length * (this.tab_height_default + 5) - 5 < this.scroll_area_height)
-    ? 0 : this.tab_height_default;
+  @State tab_height: number = (this.bunch_of_tabs.Tabs.length * (this.tab_height_default + 5) - 5 < this.scroll_area_height) ? 0 : this.tab_height_default;
   @State my_vis: Visibility = Visibility.Hidden;
+  @State isHov: boolean = false;
 
   build() {
     Row({ space: 5 }) {
       if (this.preferred_hand_left_or_right == 'left') {
-        SymbolGlyph($r('sys.symbol.xmark'))
-          .fontSize(fontSize_Normal())
-          .fontColor([this.color_current_font])
-          .fontWeight(FontWeight.Bold)
-          .animation(animation_default())
-          .height('100%')
-          .padding(10)
+        linysSymbol({
+          symbol_glyph_target: 'sys.symbol.xmark',
+          can_hover: true,
+          font_size: fontSize_Icon_Button() * 0.85,
+          radius: 6
+        })
           .onClick(() => {
             this.close_tab_gateway = this.Label.index_key;
+            // Close tab
           })
+          .margin({ right: 4 })
       }
 
       if (this.bunch_of_tabs.sub_tab_idx > -1 && this.bunch_of_tabs.main_tab_idx == this.Label.index_key) {
@@ -792,16 +793,17 @@ struct TabButton {
           })
 
       if (this.preferred_hand_left_or_right == 'right') {
-        SymbolGlyph($r('sys.symbol.xmark'))
-          .fontSize(fontSize_Normal())
-          .fontColor([this.color_current_font])
-          .fontWeight(FontWeight.Bold)
-          .animation(animation_default())
-          .height('100%')
-          .padding(10)
+        linysSymbol({
+          symbol_glyph_target: 'sys.symbol.xmark',
+          can_hover: true,
+          font_size: fontSize_Icon_Button() * 0.85,
+          radius: 6
+        })
           .onClick(() => {
             this.close_tab_gateway = this.Label.index_key;
+            // Close tab
           })
+          .margin({ right: 4 })
       }
 
     } // Title and xmark
@@ -816,6 +818,7 @@ struct TabButton {
     .opacity(this.tab_restore_on_creations[this.Label.index_key] ? 0.5 : 1)
     .height(this.tab_height)
     .padding(this.preferred_hand_left_or_right == 'right' ? { left: 10 } : { right: 10 })
+    .brightness(this.isHov ? 1.1 : 1)
     .animation(animation_default())
     .alignItems(VerticalAlign.Center)
     .clickEffect(click_effect_default())
@@ -837,6 +840,9 @@ struct TabButton {
       this.my_vis = Visibility.Visible;
       this.tab_height = this.tab_height_default;
       this.tab_restore_on_creations[this.Label.index_key] = this.bunch_of_tabs.Tabs[this.Label.index_key].pre_restoration_stage;
+    })
+    .onHover((isHv) => {
+      this.isHov = isHv;
     })
   }
 }

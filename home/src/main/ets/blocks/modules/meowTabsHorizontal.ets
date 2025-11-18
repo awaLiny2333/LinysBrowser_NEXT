@@ -1,4 +1,4 @@
-import { animation_default, click_effect_default, fontSize_Large, fontSize_Normal } from '../../hosts/bunch_of_defaults';
+import { animation_default, click_effect_default, fontSize_Icon_Button, fontSize_Large, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { LengthMetrics } from '@kit.ArkUI';
 import { deviceInfo } from '@kit.BasicServicesKit';
@@ -56,7 +56,7 @@ struct meowTabsHorizontal {
         })
           .visibility(!this.tablet_mode || this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? Visibility.None : Visibility.Visible)
           .animation(animation_default())
-          .padding({ left: 5 })
+          .padding(5)
 
         Scroll() {
           Row({ space: this.tablet_mode ? 7 : 5 }) {
@@ -87,50 +87,32 @@ struct meowTabsHorizontal {
           this.full_area_width = n.width as number;
         })
 
-        linysShowButton({
-          symbol_glyph_target: 'sys.symbol.map',
-          show: this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0,
-          show_margin: 0,
-          text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
-        })// Paralleow entrance
-          .onClick(() => {
-            this.choose_paralleow();
-          })
-          .visibility(this.tablet_mode ? (this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden) : Visibility.None)
-          .margin({ left: 4 })
-          .animation(animation_default())
+        Row() {
+          linysShowButton({
+            symbol_glyph_target: 'sys.symbol.map',
+            show: this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0,
+            show_margin: 0,
+            text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
+          })// Paralleow entrance
+            .onClick(() => {
+              this.choose_paralleow();
+            })
+            .visibility(this.tablet_mode ? (this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden) : Visibility.None)
+            .margin({ left: 4 })
+            .animation(animation_default())
 
-        linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })// New tab
-          .onClick(() => {
-            this.new_tab_gateway = ["new_tab", false];
-          })
-          .margin({ right: 8 })
-          .visibility(this.tablet_mode ? Visibility.Visible : Visibility.None)
-          .animation(animation_default())
-
-        // Row() {
-        //   Row() {
-        //     linysText({
-        //       text: $r('app.string.Index_tabs_title_drag')
-        //     })
-        //   }
-        //   .justifyContent(FlexAlign.Center)
-        //   .padding(10)
-        //   .height(this.length_width_of_tabs > this.full_area_width ? 55 : 40)
-        //   .borderRadius(12)
-        //   .backgroundColor($r('sys.color.comp_background_tertiary'))
-        //   .width(50 + 10)
-        //   .clickEffect(click_effect_default())
-        // } // Drag area
-        // .justifyContent(FlexAlign.Start)
-        // .visibility(this.visibility_drag_2in1_top())
-        // .width(this.windowDecorWidth + 50)
-        // .animation(animation_default())
-
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square', can_hover: true })// New tab
+            .onClick(() => {
+              this.new_tab_gateway = ["new_tab", false];
+            })
+            .margin({ right: 5 })
+            .visibility(this.tablet_mode ? Visibility.Visible : Visibility.None)
+            .animation(animation_default())
+        }
       } // Base container
       .alignItems(VerticalAlign.Center)
 
-      Row({ space: 5 }) {
+      Row() {
         linysTimeoutButton({
           text: '  󰀁  ',
           onExecution: () => {
@@ -151,11 +133,10 @@ struct meowTabsHorizontal {
           .onClick(() => {
             this.choose_paralleow();
           })
-          .visibility(this.tab_titles.length > 1 ? Visibility.Visible :
-            Visibility.Hidden)// .margin({ left: 4, bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0 })
+          .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden)
           .animation(animation_default())
 
-        linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square' })// New tab
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square', can_hover: true })// New tab
           .onClick(() => {
             this.storage.set('extra_background', false);
             this.new_tab_gateway = ["new_tab", false];
@@ -165,12 +146,12 @@ struct meowTabsHorizontal {
       .alignItems(VerticalAlign.Center)
       .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
       .visibility(this.tablet_mode ? Visibility.None : Visibility.Visible)
-      .padding({ left: 7, right: 7, top: this.length_width_of_tabs > this.full_area_width ? 0 : 10 })
+      .padding({ left: 5, right: 5, top: this.length_width_of_tabs > this.full_area_width ? 0 : 10 })
       .animation(animation_default())
       .width('100%')
     }
     .height(this.my_height)
-    .padding({ left: 8, right: 8 })
+    .padding({ left: 10, right: 10 })
     .animation(animation_default())
     .clip(true)
     .onAppear(() => {
@@ -255,20 +236,23 @@ struct HorizontalTabButton {
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  @State isHov: boolean = false;
 
   build() {
     Row({ space: 8 }) {
       if (this.preferred_hand_left_or_right == 'left') {
-        SymbolGlyph($r('sys.symbol.xmark'))// Close icon
-          .fontSize(fontSize_Normal())
-          .fontColor([this.color_current_font])
-          .fontWeight(FontWeight.Bold)
+        linysSymbol({
+          symbol_glyph_target: 'sys.symbol.xmark',
+          can_hover: true,
+          font_size: fontSize_Icon_Button() * 0.85,
+          radius: 6
+        })
+          .visibility(this.tab_width() <= 80 ? this.visibility_visible_on_chosen(this.index) : Visibility.Visible)
           .onClick(() => {
             this.close_tab_gateway = this.index;
             // Close tab
           })
-          .visibility(this.tab_width() <= 80 ? this.visibility_visible_on_chosen(this.index) : Visibility.Visible)
-          .animation(animation_default())
+          .margin({ right: 4 })
       }
 
       Text(this.tablet_mode ? "󰃊" : "󰃎") // Paralleow icon left
@@ -296,27 +280,23 @@ struct HorizontalTabButton {
         .layoutWeight(1)
 
       if (this.preferred_hand_left_or_right == 'right') {
-        SymbolGlyph($r('sys.symbol.xmark'))// Close icon
-          .fontSize(fontSize_Normal())
-          .fontColor([this.color_current_font])
-          .fontWeight(FontWeight.Bold)
+        linysSymbol({
+          symbol_glyph_target: 'sys.symbol.xmark',
+          can_hover: true,
+          font_size: fontSize_Icon_Button() * 0.85,
+          radius: 6
+        })
+          .visibility(this.tab_width() <= 80 ? this.visibility_visible_on_chosen(this.index) : Visibility.Visible)
           .onClick(() => {
             this.close_tab_gateway = this.index;
             // Close tab
           })
-          .visibility(this.tab_width() <= 80 ? this.visibility_visible_on_chosen(this.index) : Visibility.Visible)
-          .padding({ right: 10, top: 10, bottom: 10 })
-          .animation(animation_default())
+          .margin({ right: 4 })
       }
     }
-    // .opacity(this.bunch_of_tabs.sub_tab_idx == this.index ? 0.7 : 1)
     .padding({ left: 10 })
-    .alignItems(VerticalAlign.Center)
     .offset({ y: this.offset_y })
     .width(this.tab_width())
-    .onClick(() => {
-      this.uni_tab_button_clicked = this.index;
-    })
     .height("100%")
     .border({
       radius: 10,
@@ -326,6 +306,7 @@ struct HorizontalTabButton {
     })
     .backgroundColor(this.color_current_primary)
     .opacity(this.tab_restore_on_creations[this.index] ? 0.5 : 1)
+    .brightness(this.isHov ? 1.1 : 1)
     .animation(animation_default())
     .onAppear(() => {
       setTimeout(() => {
@@ -342,6 +323,13 @@ struct HorizontalTabButton {
       } catch (e) {
         console.error('[Meow][Tabs] Set drag data failed: ' + e);
       }
+    })
+    .alignItems(VerticalAlign.Center)
+    .onClick(() => {
+      this.uni_tab_button_clicked = this.index;
+    })
+    .onHover((isHv) => {
+      this.isHov = isHv;
     })
   }
 
