@@ -221,7 +221,7 @@ struct meowTitleBar {
         .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
         .id('left_controls')
 
-        Row() {
+        Row(this.search_input_has_buttons() && !this.tablet_mode ? { space: 7 } : { space: 0 }) {
           Column() {
             TextInput({ text: this.search_input })
               .allowDrop(null)
@@ -297,6 +297,7 @@ struct meowTitleBar {
           } // Two inputs
           .clip(true)
           .layoutWeight(1)
+          .padding(this.tablet_mode ? { left: 7, right: 7 } : 0)
 
           if (this.delayed_load_p0) {
             Row() {
@@ -314,7 +315,7 @@ struct meowTitleBar {
                   'app.string.Address_analyzer_address'),
                 show: this.address_analyzers_desc_showing,
               })// Key Link
-                .visibility(this.showing_scratching_board ? Visibility.None : this.search_extracted_field_available ? Visibility.Visible : Visibility.None)
+                .visibility(!this.showing_scratching_board && this.search_extracted_field_available ? Visibility.Visible : Visibility.None)
                 .onClick(() => {
                   this.showing_search_extracted_field = !this.showing_search_extracted_field;
                   if (this.is_search_input_typing) {
@@ -363,7 +364,6 @@ struct meowTitleBar {
         } // Searching bar
         .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
         .height(capsule_bar_height())
-        .padding(this.tablet_mode ? { left: 7, right: 7 } : 0)
         .alignRules(this.tablet_mode ? {
           left: { anchor: 'left_controls', align: HorizontalAlign.End },
           right: { anchor: 'right_controls', align: HorizontalAlign.Start },
@@ -861,6 +861,24 @@ struct meowTitleBar {
       return $r('sys.color.background_tertiary');
     }
     return this.color_current_secondary;
+  }
+
+  /**
+   * Returns true if there are some buttons showing next to the search input.
+   * */
+  search_input_has_buttons() {
+    if (this.is_search_input_typing) {
+      return true;
+    }
+    if (!this.showing_scratching_board) {
+      if (this.search_extracted_field_available) {
+        return true;
+      }
+      if (this.is_search_input_typing || this.search_extracted_field_available) {
+        return true;
+      }
+    }
+    return false;
   }
 
   // Data synchronizing

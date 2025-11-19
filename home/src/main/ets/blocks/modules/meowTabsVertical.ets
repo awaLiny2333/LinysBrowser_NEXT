@@ -703,7 +703,7 @@ struct meowTabsVertical {
       if (this.tabs_style == 'horizontal') {
         return 0;
       } else {
-        return 244;
+        return this.storage.get('right_control_width') as number;
       }
     } else {
       // non_tablet_mode

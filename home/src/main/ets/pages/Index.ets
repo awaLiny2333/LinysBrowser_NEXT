@@ -80,6 +80,7 @@ struct Index {
   @StorageLink('bottom_avoid') bottom_avoid: boolean = true;
   @LocalStorageLink('shortcut_scroll_offset') shortcut_scroll_offset: number = 0;
   @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
+  @LocalStorageLink('right_control_width') right_control_width: number = 222 + 15 + 7; // To align the vertical tabs panel with title bar elements
   /**
    * Delay */
   @LocalStorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
@@ -522,7 +523,7 @@ struct Index {
     let result = 0;
     if (this.tablet_mode) {
       if (this.showing_tabs && this.tabs_style != 'horizontal') {
-        result += 244;
+        result += this.storage.get('right_control_width') as number;
       }
       if (this.showing_bookmarks) {
         result += 350;
