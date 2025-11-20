@@ -9,7 +9,7 @@ struct linysSymbol {
   // Status
   @Prop color: ResourceColor = "";
   @Prop font_weight: FontWeight = FontWeight.Regular;
-  @Prop font_size: number = fontSize_Icon_Button();
+  @Prop font_size: number | undefined = undefined;
   // Settings
   can_hover: boolean = false;
   radius: number = 10;
@@ -19,7 +19,7 @@ struct linysSymbol {
   build() {
     SymbolGlyph($r(this.symbol_glyph_target))
       .fontWeight(this.font_weight)
-      .fontSize(this.font_size)
+      .fontSize(this.font_size || fontSize_Icon_Button())
       .fontColor([this.color == "" ? this.color_current_font : this.color])
       .brightness(this.isHov ? 1.1 : 1)
       .animation(animation_default())

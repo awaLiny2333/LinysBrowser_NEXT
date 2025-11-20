@@ -17,6 +17,8 @@ struct woofEasyList {
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @LocalStorageProp('current_url') current_url: string = "=￣ω￣=";
   @LocalStorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
+  @StorageLink('effects') effects: boolean = false;
+  @LocalStorageLink('compact_mode') compact_mode: boolean = false;
   // UI
   @State full_view: boolean = false;
   // Settings / Accessibility
@@ -72,6 +74,7 @@ struct woofEasyList {
     woofControlFrame({
       title: $r('app.string.Settings_experience_manage_adblock_rules'),
       controller: this.controller,
+      show_title: !(this.full_view && this.compact_mode)
     }) {
       RelativeContainer() {
         Column() {
@@ -112,24 +115,23 @@ struct woofEasyList {
         .padding({ right: this.tablet_mode ? 10 : 0 })
         .width(this.tablet_mode ? (this.full_view ? "0%" : "40%") : "100%")
         .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
-        .visibility(this.full_view ? Visibility.None : Visibility.Visible)
+        .visibility(this.full_view || this.compact_mode ? Visibility.None : Visibility.Visible)
         .animation(animation_default())
         .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })
         .id("title_rules_manager")
 
-        Column({ space: 10 }) {
-          Row({ space: 10 }) {
+        Column({ space: this.compact_mode ? 5 : 10 }) {
+          Row() {
             linysText({ text: $r('app.string.Settings_experience_manage_adblock_rules_active'), max_lines: 3 }) // Rules active
               .width("100%")
               .layoutWeight(1)
-              .padding({ top: this.tablet_mode ? 0 : 10 })
 
             linysSymbol({
               symbol_glyph_target: this.full_view ?
                 'sys.symbol.arrow_down_right_and_arrow_up_left' :
-                'sys.symbol.arrow_up_left_and_arrow_down_right'
+                'sys.symbol.arrow_up_left_and_arrow_down_right',
+              can_hover: true
             })
-              .padding({ top: 5 })
               .onClick(() => {
                 this.full_view = !this.full_view
               })
@@ -148,7 +150,7 @@ struct woofEasyList {
                   selecting: this.selecting,
                   selected_number: this.selected_number
                 })
-                  // .width("100%")
+                // .width("100%")
               })
               if (this.lists.length == 0) {
                 linysTextTitle({
@@ -236,7 +238,8 @@ struct woofEasyList {
         .alignItems(HorizontalAlign.End)
         .alignRules(this.alignRules_foot)
         .visibility(this.full_view ? Visibility.None : Visibility.Visible)
-        // .backgroundColor(this.color_current_primary)
+        .backgroundColor(this.effects ? undefined : this.color_current_primary)
+        .useEffect(this.effects, EffectType.WINDOW_EFFECT)
         .animation(animation_default())
         .width(this.tablet_mode ? "40%" : "100%")
         .id("controls_rules")

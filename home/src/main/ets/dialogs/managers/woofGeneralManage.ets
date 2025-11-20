@@ -20,6 +20,8 @@ struct woofGeneralManage {
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @State add_site_edit: string = "";
   @State showing_add_panel: boolean = false;
+  @StorageLink('effects') effects: boolean = false;
+  @LocalStorageLink('compact_mode') compact_mode: boolean = false;
   // Generals
   @Link general_switch: boolean;
   @Link all_sites_switch: boolean;
@@ -92,6 +94,7 @@ struct woofGeneralManage {
     woofControlFrame({
       title: this.title,
       controller: this.controller,
+      show_title: !(this.full_view && this.compact_mode)
     }) {
       RelativeContainer() {
         Column() {
@@ -141,28 +144,27 @@ struct woofGeneralManage {
         .width(this.tablet_mode ? (this.full_view ? "0%" : "40%") : "100%")
         .constraintSize(this.tablet_mode ? {} : { maxHeight: '35%' })
         .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
-        .visibility(this.full_view ? Visibility.None : Visibility.Visible)
+        .visibility(this.full_view || this.compact_mode ? Visibility.None : Visibility.Visible)
         .animation(animation_default())
         .id("title")
 
-        Column({ space: 10 }) {
-          Row({ space: 10 }) {
+        Column({ space: this.compact_mode ? 5 : 10 }) {
+          Row() {
             linysText({
               text: this.subtitle_sites_list,
               max_lines: 3
             }) // Subtitle on list of domains
               .width("100%")
               .layoutWeight(1)
-              .padding({ top: this.tablet_mode ? 0 : 10 })
               .opacity(this.all_sites_switch || !this.general_switch ? 0.5 : 1)
               .animation(animation_default())
 
             linysSymbol({
               symbol_glyph_target: this.full_view ?
                 'sys.symbol.arrow_down_right_and_arrow_up_left' :
-                'sys.symbol.arrow_up_left_and_arrow_down_right'
+                'sys.symbol.arrow_up_left_and_arrow_down_right',
+              can_hover: true
             })
-              .padding({ top: 5 })
               .onClick(() => {
                 this.full_view = !this.full_view
               })
@@ -224,7 +226,7 @@ struct woofGeneralManage {
             }
           }) // Feature enable
 
-        } // Whitelist
+        } // List
         .width(this.tablet_mode ? (this.full_view ? "100%" : "60%") : "100%")
         .height(this.tablet_mode ? "100%" : undefined)
         .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)
@@ -320,7 +322,8 @@ struct woofGeneralManage {
         .alignRules(this.alignRules_foot)
         .opacity(this.all_sites_switch || !this.general_switch ? 0.5 : 1)
         .visibility(this.full_view ? Visibility.None : Visibility.Visible)
-        // .backgroundColor(this.color_current_primary)
+        .backgroundColor(this.effects ? undefined : this.color_current_primary)
+        .useEffect(this.effects, EffectType.WINDOW_EFFECT)
         .animation(animation_default())
         .width(this.tablet_mode ? "40%" : "100%")
         .id("controls")

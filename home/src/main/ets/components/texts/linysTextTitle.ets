@@ -8,6 +8,7 @@ struct linysTextTitle {
   @Prop text: ResourceStr = $r('app.string.HomeAbility_label');
   @Prop color: ResourceColor = "";
   @Prop max_lines: number = 1;
+  @Prop font_size: number | undefined = undefined;
   // UI
   can_hover: boolean = false;
   @State isHov: boolean = false;
@@ -15,6 +16,7 @@ struct linysTextTitle {
   build() {
     Text(this.text)
       .brightness(this.isHov ? 1.1 : 1)
+      .fontSize(this.font_size || fontSize_Large())
       .animation(this.can_hover ? animation_default() : { duration: 0 })
       .padding(this.can_hover ? {
         left: 7,
@@ -24,12 +26,13 @@ struct linysTextTitle {
       } : 0)
       .borderRadius(this.can_hover ? 7.5 : 0)
       .fontColor(this.color == "" ? this.color_current_font : this.color)
-      .fontSize(fontSize_Large())
       .fontWeight(FontWeight.Bold)
       .maxLines(this.max_lines)
       .textOverflow({ overflow: TextOverflow.Ellipsis })
       .onHover((isHv) => {
-        this.isHov = isHv;
+        if (this.can_hover) {
+          this.isHov = isHv;
+        }
       })
   }
 }

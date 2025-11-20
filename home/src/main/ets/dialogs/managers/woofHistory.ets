@@ -20,6 +20,7 @@ struct woofHistory {
   @State viewing_year: number = this.bunch_of_history.get_current_year();
   @State viewing_month: number = this.bunch_of_history.get_current_month();
   @State full_view: boolean = false;
+  @LocalStorageLink('compact_mode') compact_mode: boolean = false;
   // Dates
   @State available_months: number[][] = bunch_of_history.get_history_months();
   @State opened_month_history_list: history_record[] = this.bunch_of_history.get_history_this_month();
@@ -93,6 +94,7 @@ struct woofHistory {
     woofControlFrame({
       title: $r('app.string.Settings_experience_history_view'),
       controller: this.controller,
+      show_title: !(this.full_view && this.compact_mode)
     }) {
       // TODO: This is not good for efficiency. Use less UI container layers!
       Column() {
@@ -132,18 +134,18 @@ struct woofHistory {
           .padding({ right: this.tablet_mode ? 10 : 0 })
           .width(this.tablet_mode ? (this.full_view ? '0%' : "35%") : "100%")
           .alignRules(this.tablet_mode ? this.alignRules_head_tablet : this.alignRules_head_non_tablet)
-          .visibility(this.full_view ? Visibility.None : Visibility.Visible)
+          .visibility(this.full_view || this.compact_mode ? Visibility.None : Visibility.Visible)
           .animation(animation_default())
           .id("title_history")
 
-          Column({ space: 10 }) {
-
-            Row({ space: 10 }) {
+          Column({ space: this.compact_mode ? 8 : 10 }) {
+            Row() {
               linysText({
                 text: $r('app.string.Settings_experience_history_date_format'),
                 font_weight: FontWeight.Bold
               })
                 .opacity(0.7)
+                .margin({ right: 10 })
               linysText({
                 text: "(" +
                   ((this.data.totalCount() != this.opened_month_history_list.length) ? " 󰀩 " + this.data.totalCount().toString() + ' / ' : '') +
@@ -155,7 +157,8 @@ struct woofHistory {
               linysSymbol({
                 symbol_glyph_target: this.full_view ?
                   'sys.symbol.arrow_down_right_and_arrow_up_left' :
-                  'sys.symbol.arrow_up_left_and_arrow_down_right'
+                  'sys.symbol.arrow_up_left_and_arrow_down_right',
+                can_hover: true
               })
                 .onClick(() => {
                   this.full_view = !this.full_view
@@ -306,7 +309,6 @@ struct woofHistory {
           .id("controls_history")
           .alignRules(this.alignRules_foot)
           .visibility(this.full_view ? Visibility.None : Visibility.Visible)
-          // .backgroundColor(this.color_current_primary)
           .animation(animation_default())
           .width(this.tablet_mode ? "35%" : "100%")
         }
@@ -320,19 +322,20 @@ struct woofHistory {
           alignItems: ItemAlign.Center
         }) {
           // Search bar
-          Row({ space: 10 }) {
+          Row() {
             // linysTextTitle({ text: '󰀞' }) // This is stupid O.o
             SearchInput({ onSubmitAction: this.submit_search })
               .layoutWeight(1)
+              .margin(this.preferred_hand_left_or_right == 'right' ? { right: 10 } : { left: 10 })
               .animation(animation_default())
 
-            linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass' })
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass', can_hover: true })
               .onClick(() => {
                 this.submit_search();
               })
               .animation(animation_default())
 
-            linysSymbol({ symbol_glyph_target: 'sys.symbol.xmark' })
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.xmark', can_hover: true })
               .onClick(() => {
                 // Clear
                 AppStorage.set('woofHistory_search_input', '');
@@ -364,7 +367,8 @@ struct woofHistory {
         }
         .width('100%')
         .padding({ top: 15 })
-        // .backgroundColor(this.color_current_primary)
+        .backgroundColor(this.effects ? undefined : this.color_current_primary)
+        .useEffect(this.effects, EffectType.WINDOW_EFFECT)
         .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
         .visibility(this.full_view ? Visibility.None : Visibility.Visible)
         .animation(animation_default())
@@ -587,6 +591,8 @@ struct month_button {
   @Link viewing_month: number;
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // UI
+  @State isHov: boolean = false;
 
   build() {
     Column({ space: 0 }) {
@@ -600,11 +606,15 @@ struct month_button {
       })
     }
     .border({ color: this.selected() ? this.color_current_font : 'transparent', width: 2, radius: 10 })
+    .brightness(this.isHov ? 1.1 : 1)
+    .backgroundColor(this.color_current_primary)
+    .animation(animation_default())
     .alignItems(HorizontalAlign.Start)
     .clickEffect(click_effect_default())
     .padding(8)
-    .backgroundColor(this.color_current_primary)
-    .animation(animation_default())
+    .onHover((isHv) => {
+      this.isHov = isHv;
+    })
   }
 
   selected() {
