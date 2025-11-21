@@ -758,7 +758,6 @@ struct meowAppSettings {
                   }) // Enable bottom_avoid
                 } // Individuals
 
-
                 settingsSubCard({
                   icon: '󰰽',
                   title: $r('app.string.Index_layout_title'),
@@ -810,13 +809,6 @@ struct meowAppSettings {
                   }) // Position of my_window_alias
                     .opacity(this.showing_my_window_alias ? 1 : 0.5)
                     .animation(animation_default())
-                  linysSwitchWithText({
-                    text: $r('app.string.Settings_appearance_effects'),
-                    toggle_state: this.effects,
-                    onExecution: () => {
-                      bunch_of_settings.set('effects', this.effects);
-                    }
-                  }) // Enable advanced effects
                 } // Windows
 
                 settingsSubCard({
@@ -832,7 +824,15 @@ struct meowAppSettings {
                   title: $r('app.string.Index_colors_title'),
                   my_index: 4,
                 }) {
+                  linysSwitchWithText({
+                    text: $r('app.string.Settings_appearance_effects'),
+                    toggle_state: this.effects,
+                    onExecution: () => {
+                      bunch_of_settings.set('effects', this.effects);
+                    }
+                  }) // Enable advanced effects
                   meowColorsManager() // Colors manager
+                    .opacity(this.effects ? 0.5 : 1)
                   linysSwitchWithText({
                     text: $r('app.string.Settings_experience_web_force_dark_mode'),
                     toggle_state: this.web_force_dark_mode,

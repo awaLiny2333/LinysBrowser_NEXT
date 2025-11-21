@@ -87,6 +87,9 @@ struct meowTabsVertical {
       .borderRadius(10)
       .layoutWeight(1)
       .animation(animation_default())
+      .onAreaChange((_o, n) => {
+        this.scroll_area_height = n.height as number;
+      })
 
       Row() {
         linysTimeoutButton({
@@ -147,9 +150,6 @@ struct meowTabsVertical {
       setTimeout(() => {
         this.preprocessing(this.storage);
       }, 1)
-    })
-    .onAreaChange((_o, n) => {
-      this.scroll_area_height = n.height as number - 50;
     })
     .onDrop((e) => {
       try {

@@ -334,7 +334,8 @@ struct Index {
 
       Row()// Bottom Bar Avoid
         .height((this.title_bar_position == "bottom" || this.bottom_avoid) ? this.height_of_bottom_avoid() : 0)
-        .backgroundColor(this.title_bar_position == "bottom" ? "transparent" : this.color_current_secondary)
+        .backgroundColor(this.background_color())
+        .useEffect(this.effects, EffectType.WINDOW_EFFECT)
         .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
         .width("100%")
 
@@ -622,6 +623,13 @@ struct Index {
   title_background_color(): ResourceColor | undefined {
     if (this.effects) {
       return undefined;
+    }
+    return this.color_current_secondary;
+  }
+
+  background_color(): ResourceColor {
+    if (this.effects) {
+      return $r('sys.color.background_tertiary');
     }
     return this.color_current_secondary;
   }
