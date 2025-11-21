@@ -1,6 +1,6 @@
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { animation_default, click_effect_default, fontSize_Icon_Button, fontSize_Large, fontSize_Normal, url_default_blank } from '../../hosts/bunch_of_defaults';
-import { sandbox_read_text_sync } from '../../utils/storage_tools';
+import { sandbox_read_arrayBuffer_sync, sandbox_read_text_sync } from '../../utils/storage_tools';
 import { current_tabs_style_is_horizontal, run_time, storage_of_id, storage_of_index } from '../../utils/ui_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { check_want } from '../../utils/want_tools';
@@ -324,6 +324,14 @@ struct meowTabsVertical {
     // Main process
     if (is_from_receive) {
       this.bunch_of_tabs.receive_tab(this.storage);
+      // re-save web states
+      let is_lord = (this.storage.get('my_window_id') as string) == (AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string);
+      if (is_lord) {
+        console.log('[new_tab][is_from_receive] Save web state!');
+        let idx = this.bunch_of_tabs.Tabs.length - 1;
+        this.bunch_of_tabs.save_web_state_to_sandbox(idx);
+        this.bunch_of_tabs.save_web_label_to_sandbox(idx);
+      }
     } else {
       this.bunch_of_tabs.newTab(this.getUIContext(), target_url, init_state, placeholder_label);
     }
@@ -643,6 +651,15 @@ struct meowTabsVertical {
     let from_tab_index = this.move_tab_gateway;
     let to_window = this.move_tab_gateway_target;
     console.log(`[uni_move_tab][SEND][${this.my_window_id}] From Tab.${from_tab_index} to window #${to_window}!`);
+    if (this.bunch_of_tabs.Tabs[from_tab_index].pre_restoration_stage) {
+      // Need restore
+      let array_buffer = sandbox_read_arrayBuffer_sync("continue/continue_tabs_web_state_array_" + from_tab_index.toString());
+      if (array_buffer) {
+        this.bunch_of_tabs.Tabs[from_tab_index].web_state_array = new Uint8Array(array_buffer);
+      } else {
+        console.error("[Meow][uni_move_tab] Restore web state failed! Read NOTHING from disk???");
+      }
+    }
     this.close_tab(from_tab_index, true, to_window);
     // Notify target window to receive tab.
     storage_of_index(to_window).setOrCreate('receive_tab', Date.now());
@@ -843,6 +860,16 @@ struct TabButton {
     })
     .onHover((isHv) => {
       this.isHov = isHv;
+    })
+    .onMouse((e) => {
+      if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
+        // Right click
+        let unload_result = this.bunch_of_tabs.callUnload(this.Label.index_key);
+        if (unload_result) {
+          this.tab_restore_on_creations[this.Label.index_key] = true;
+          this.bunch_of_tabs.update_my_timestamp(); // Try to call UI refresh;
+        }
+      }
     })
   }
 }

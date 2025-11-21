@@ -276,8 +276,12 @@ export class bunch_of_tabs {
    * */
   callRestore(context: UIContext, target: number = this.main_tab_idx) {
     let t0 = Date.now();
-    console.log(`[switchToTab] Call of Restore! target: ${target}, this.Tabs[target].pre_restoration_stage: ${this.Tabs[target]?.pre_restoration_stage}`);
-    if (target >= 0 && this.Tabs[target].pre_restoration_stage && this.NodeControllers[target] == undefined) {
+    console.log(`[callRestore] Call of Restore! target: ${target}, this.Tabs[target].pre_restoration_stage: ${this.Tabs[target]?.pre_restoration_stage}`);
+    if (target > this.Tabs.length - 1) {
+      target = this.Tabs.length - 1;
+      console.warn(`[callRestore] Call of Restore degraded! adjusted target: ${target}, this.Tabs[target].pre_restoration_stage: ${this.Tabs[target]?.pre_restoration_stage}`);
+    }
+    if (target >= 0 && this.Tabs[target] && this.Tabs[target].pre_restoration_stage && this.NodeControllers[target] == undefined) {
       // Creating a web will trigger its controller attached event, which includes the true restore() call.
       // See on_controller_attached(pk: tab_info_packed) in web_actions.ets
       console.log(`[callRestore] of tab #${target}, Creating NWeb!`);
@@ -289,8 +293,38 @@ export class bunch_of_tabs {
       return true;
     }
     console.warn(`[callRestore] Restore of tab #${target} Intercepted! ` +
-      `target=${target}, this.Tabs[target]=${this.Tabs[target]}, NodeController=${this.NodeControllers[target]} ` +
+      `target=${target}, this.Tabs[target]=${this.Tabs[target]}, this.Tabs[target].pre_restoration_stage=${this.Tabs[target]?.pre_restoration_stage}, ` +
+      `NodeController=${this.NodeControllers[target]} ` +
       `How did you get here?? (Used ${(Date.now() - t0)} ms)`);
+    return false;
+  }
+
+  /**
+   * Calls a tab to unload it if possible.
+   * @param target The target index.
+   * @returns True if success.
+   * */
+  callUnload(target: number) {
+    let t0 = Date.now();
+    console.log(`[callUnload] Call of Unload! target: ${target}, this.Tabs[target].pre_restoration_stage: ${this.Tabs[target]?.pre_restoration_stage}`);
+    if (target >= 0 && !this.Tabs[target].pre_restoration_stage && target != this.main_tab_idx && target != this.sub_tab_idx) {
+      console.log(`[callUnload] of tab #${target}, Disposing NWeb!`);
+      if (this.NodeControllers[target]) {
+        this.NodeControllers[target]!.detachWeb();
+        this.NodeControllers[target]!.dispose();
+      } else {
+        return false;
+      }
+      this.NodeControllers[target] = undefined;
+      this.Tabs[target].controller = undefined;
+      // this.Tabs[target].web_state_array = undefined; // Don't set undefined so that it can be still restored without reading disk;
+      this.Tabs[target].pre_restoration_stage = true;
+      console.log(`[callUnload] Unload of tab #${target} finished! (Used ${(Date.now() - t0)} ms)`);
+      return true;
+    }
+    console.warn(`[callUnload] Unload of tab #${target} Intercepted! ` +
+      `this.main_tab_idx=${this.main_tab_idx}, this.sub_tab_idx=${this.sub_tab_idx} ` +
+      `(Used ${(Date.now() - t0)} ms)`);
     return false;
   }
 
@@ -355,17 +389,20 @@ export class bunch_of_tabs {
    * */
   receive_tab(storage: LocalStorage) {
     let move_tab_tab_info_packed = AppStorage.get('move_tab_tab_info_packed') as tab_info_packed;
+    let move_tab_tab_label = AppStorage.get('move_tab_tab_label') as tab_label;
     let move_tab_TabNodeController = AppStorage.get('move_tab_TabNodeController') as TabNodeController;
 
     let idx = this.Tabs.length;
-    let Date_ID = Date.now();
+    // let Date_ID = Date.now();
 
-    while (this.tab_timestamp_collide(Date_ID)) {
-      // Date_ID crash prevention
-      Date_ID += 1;
-    }
-    this.used_timestamps.add(Date_ID);
-    let new_TabLabel: tab_label = new tab_label(Date_ID, idx);
+    // while (this.tab_timestamp_collide(Date_ID)) {
+    //   // Date_ID crash prevention
+    //   Date_ID += 1;
+    // }
+    // this.used_timestamps.add(Date_ID);
+    // let new_TabLabel: tab_label = new tab_label(Date_ID, idx);
+    this.used_timestamps.add(move_tab_tab_label.timestamp);
+    move_tab_tab_label.index_key = idx;
 
     // Localize (whar)
     move_tab_tab_info_packed.index = idx;
@@ -373,7 +410,7 @@ export class bunch_of_tabs {
 
     this.Tabs.push(move_tab_tab_info_packed);
     this.NodeControllers.push(move_tab_TabNodeController);
-    this.Labels.push(new_TabLabel);
+    this.Labels.push(move_tab_tab_label);
     this.main_tab_idx = this.Tabs.length - 1;
 
     return this.main_tab_idx as number;
@@ -427,6 +464,7 @@ export class bunch_of_tabs {
     let nodeController = this.NodeControllers.splice(target, 1)[0];
     if (isMove) {
       AppStorage.setOrCreate('move_tab_tab_info_packed', tab);
+      AppStorage.setOrCreate('move_tab_tab_label', label);
       AppStorage.setOrCreate('move_tab_TabNodeController', nodeController);
     }
 
@@ -825,7 +863,9 @@ export class tab_info_packed {
       return false;
     }
     try {
-      this.web_state_array = this.controller?.serializeWebState();
+      if (this.controller) {
+        this.web_state_array = this.controller.serializeWebState();
+      }
       this.last_update_web_state_time = Date.now();
       console.log('[update_web_state] new web state length: ' + this.web_state_array?.length);
       return true;
@@ -920,7 +960,7 @@ export class tab_info_packed {
   }
 
   /**
-   * Restores my self if possible.
+   * Restores myself if possible.
    *
    * @returns True if restoration is successful.
    * */
@@ -932,21 +972,28 @@ export class tab_info_packed {
     }
 
     console.log(`[tab_info_packed][restore] pre_restoration_stage: ${this.pre_restoration_stage}, web_state_array.length: ${this.web_state_array?.length}`);
-    let array_file = "continue/continue_tabs_web_state_array_" + this.index.toString();
-    let array_buffer = sandbox_read_arrayBuffer_sync(array_file);
-    if (array_buffer) {
-      this.web_state_array = new Uint8Array(array_buffer);
-      // Restore
-      try {
-        this.url = 'uwu';
-        this.title = 'uwu';
-        this.controller?.clearHistory();
-        this.controller?.restoreWebState(this.web_state_array);
-        console.log("[Meow][bunch_of_tabs] Restore web " + this.index.toString() + ", state Length: " + this.web_state_array.length.toString());
-        return true; // The only path to success
-      } catch (e) {
-        console.error("[Meow][bunch_of_tabs] Restore web state failed! " + e);
+    if (!this.web_state_array) {
+      let array_buffer = sandbox_read_arrayBuffer_sync("continue/continue_tabs_web_state_array_" + this.index.toString());
+      if (array_buffer) {
+        this.web_state_array = new Uint8Array(array_buffer);
+      } else {
+        console.error("[Meow][bunch_of_tabs] Restore web state failed! Read NOTHING from disk???");
+        return false;
       }
+    } else {
+      // Already read into web state, just use it.
+      // Usually in the case of receiving a tab from another window.
+    }
+    // Restore
+    try {
+      this.url = 'uwu';
+      this.title = 'uwu';
+      this.controller?.clearHistory();
+      this.controller?.restoreWebState(this.web_state_array);
+      console.log("[Meow][bunch_of_tabs] Restore web " + this.index.toString() + ", state Length: " + this.web_state_array.length.toString());
+      return true; // The only path to success
+    } catch (e) {
+      console.error("[Meow][bunch_of_tabs] Restore web state failed! " + e);
     }
     return false;
   }

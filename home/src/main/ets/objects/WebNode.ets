@@ -160,6 +160,9 @@ export class TabNodeController extends NodeController {
   dispose() {
     if (this.builderNode) {
       this.builderNode.dispose();
+      console.log(`[WebNode][dispose] OK!`);
+    } else {
+      console.warn(`[WebNode][dispose] Failed!`);
     }
   }
 }

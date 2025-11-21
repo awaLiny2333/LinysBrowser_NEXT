@@ -160,8 +160,16 @@ struct meowWebView {
             .height(this.bunch_of_tabs.sub_tab_idx < 0 ? "100%" : this.height_tab())
             .alignRules(this.bunch_of_tabs.main_tab_idx == Label.index_key ? this.align_rules_main_tab() : this.align_rules_sub_tab())
             .visibility(this.my_visibility(Label.index_key))
+        } else {
+          Column()
+            .onAppear(() => {
+              console.log(`[meowWebView] An unloaded tab! #${Label.index_key};`);
+            })
         } // Webs
-      }, (Label: tab_label) => Label.timestamp.toString())
+      }, (Label: tab_label, index: number) => {
+        let k = Label.timestamp.toString() + (this.bunch_of_tabs.NodeControllers[index] ? 't' : 'f');
+        return k;
+      })
 
       // Notices
       Column({ space: (this.show_toast_fullscreen) ? 10 : 0 }) {
