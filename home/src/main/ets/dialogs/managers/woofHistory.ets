@@ -281,7 +281,7 @@ struct woofHistory {
                   linysTextTitle({ text: $r("app.string.Settings_edit_selecting_items") })
                 } // Selecting ... item(s)
                 Row() {
-                  linysSymbol({ symbol_glyph_target: 'sys.symbol.list_checkmask' })
+                  linysSymbol({ symbol_glyph_target: 'sys.symbol.list_checkmask', can_hover: true })
                     .onClick(() => {
                       this.select_all();
                     })

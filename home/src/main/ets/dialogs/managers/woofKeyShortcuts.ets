@@ -29,7 +29,8 @@ struct woofKeyShortcuts {
   build() {
     woofControlFrame({
       title: $r('app.string.Key_shortcuts_manage'),
-      controller: this.controller
+      controller: this.controller,
+      space_column: 10
     }) {
       Scroll() {
         Column({ space: 10 }) {
@@ -218,17 +219,19 @@ struct KeyButton {
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @StorageLink('effects') effects: boolean = false;
+  // UI
+  @State isHov: boolean = false;
 
   build() {
     Text(this.id_to_display())
-      .padding(10)
-      .borderRadius(7)
       .fontWeight(this.keys_selected.includes(this.key_id) ? FontWeight.Bold : FontWeight.Regular)
       .fontColor(this.keys_selected.includes(this.key_id) && !this.effects ? this.color_current_primary : this.color_current_font)
       .backgroundColor(this.keys_selected.includes(this.key_id) && !this.effects ? this.color_current_font : this.color_current_primary)
-      .brightness(this.keys_selected.includes(this.key_id) && this.effects ? 1.2 : 1)
-      .clickEffect(click_effect_default())
+      .brightness(this.keys_selected.includes(this.key_id) && this.effects ? 1.2 : this.isHov ? 1.1 : 1)
       .animation(animation_default())
+      .clickEffect(click_effect_default())
+      .padding(10)
+      .borderRadius(7)
       .constraintSize({ minWidth: 40 })
       .textAlign(TextAlign.Center)
       .onClick(() => {
@@ -265,6 +268,9 @@ struct KeyButton {
             this.keys_selected.push('ctrl');
           }
         }
+      })
+      .onHover((isHv) => {
+        this.isHov = isHv;
       })
   }
 

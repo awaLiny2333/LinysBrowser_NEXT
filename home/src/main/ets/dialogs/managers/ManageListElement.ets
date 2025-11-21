@@ -12,6 +12,8 @@ struct ManageListElement {
   @StorageLink('effects') effects: boolean = false;
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // UI
+  @State isHov: boolean = false;
 
   build() {
     Column() {
@@ -21,10 +23,11 @@ struct ManageListElement {
         font_weight: this.selected[this.index] ? FontWeight.Bold : FontWeight.Regular
       })
     }
+    .backgroundColor(this.selected[this.index] ? (this.effects ? this.color_current_secondary : this.color_current_font) : 'transparent')
+    .brightness(this.isHov ? 1.1 : 1)
+    .animation(animation_default())
     .alignItems(HorizontalAlign.Start)
     .width("100%")
-    .backgroundColor(this.selected[this.index] ? (this.effects ? this.color_current_secondary : this.color_current_font) : 'transparent')
-    .animation(animation_default())
     .padding({
       left: 10,
       right: 10,
@@ -50,6 +53,9 @@ struct ManageListElement {
         // Right click
         this.select_unselect();
       }
+    })
+    .onHover((isHv) => {
+      this.isHov = isHv;
     })
   }
 

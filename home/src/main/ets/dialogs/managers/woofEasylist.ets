@@ -189,7 +189,7 @@ struct woofEasyList {
               }
 
               Row() {
-                linysSymbol({ symbol_glyph_target: 'sys.symbol.list_checkmask' })
+                linysSymbol({ symbol_glyph_target: 'sys.symbol.list_checkmask', can_hover: true })
                   .onClick(() => {
                     this.select_unselect_all();
                   })

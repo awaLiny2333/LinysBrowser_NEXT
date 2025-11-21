@@ -57,27 +57,31 @@ struct woofPromptFail {
       })
         .width("100%")
 
-      goodByeLink({
-        meow: this.meow,
-        text: $r('app.string.About_bilibili'),
-        link: "https://space.bilibili.com/678438347",
-      })
-        .opacity(0.8)
+      Column() {
+        goodByeLink({
+          meow: this.meow,
+          text: $r('app.string.About_bilibili'),
+          link: "https://space.bilibili.com/678438347",
+        })
+          .opacity(0.8)
 
-      goodByeLink({
-        meow: this.meow,
-        text: $r('app.string.About_GitHub'),
-        link: "https://github.com/awaLiny2333/LinysBrowser_NEXT",
-      })
-        .opacity(0.8)
+        goodByeLink({
+          meow: this.meow,
+          text: $r('app.string.About_GitHub'),
+          link: "https://github.com/awaLiny2333/LinysBrowser_NEXT",
+        })
+          .opacity(0.8)
 
-      goodByeLink({
-        meow: this.meow,
-        text: $r('app.string.About_Gitee'),
-        link: "https://gitee.com/awa_Liny/LinysBrowser_NEXT",
-      })
-        .opacity(0.8)
-
+        goodByeLink({
+          meow: this.meow,
+          text: $r('app.string.About_Gitee'),
+          link: "https://gitee.com/awa_Liny/LinysBrowser_NEXT",
+        })
+          .opacity(0.8)
+      }
+      .width('100%')
+      .alignItems(HorizontalAlign.Start)
+      
       linysCapsuleButton({
         text: $r('app.string.OK')
       })
@@ -130,10 +134,20 @@ struct goodByeLink {
   @LocalStorageLink('universal_new_tab_gateway') universal_new_tab_gateway: (string | boolean)[] = ['', false];
   // This is for status noticing
   @Link meow: boolean;
+  @State isHov: boolean = false;
 
   build() {
     Text(this.text)
+      .brightness(this.isHov ? 1.1 : 1)
       .fontColor(this.color || this.color_current_font)
+      .animation(animation_default())
+      .padding({
+        left: 7,
+        right: 7,
+        top: 5,
+        bottom: 5
+      })
+      .borderRadius(7.5)
       .fontSize(fontSize_Normal())
       .fontWeight(this.font_weight)
       .textAlign(TextAlign.Start)
@@ -158,6 +172,9 @@ struct goodByeLink {
         this.showing_downloads = false;
         this.showing_scratching_board = false;
       })
-      .width("100%")
+      // .width("100%")
+      .onHover((isHv) => {
+        this.isHov = isHv;
+      })
   }
 }

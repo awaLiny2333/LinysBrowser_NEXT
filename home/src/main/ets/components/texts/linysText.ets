@@ -52,6 +52,7 @@ struct linysText {
     } else {
       Text(this.text)
         .brightness(this.isHov ? 1.1 : 1)
+        .fontWeight(this.font_weight)
         .animation(this.can_hover ? animation_default() : { duration: 0 })
         .padding(this.can_hover ? {
           left: 7,
@@ -62,7 +63,6 @@ struct linysText {
         .borderRadius(this.can_hover ? 7.5 : 0)
         .fontColor(this.color == "" ? this.color_current_font : this.color)
         .fontSize(fontSize_Normal())
-        .fontWeight(this.font_weight)
         .maxLines(this.max_lines)
         .lineSpacing(LengthMetrics.vp(4))
         .textOverflow({ overflow: this.overflow_type })
