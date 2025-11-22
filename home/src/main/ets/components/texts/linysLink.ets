@@ -1,4 +1,4 @@
-import { fontSize_Normal } from '../../hosts/bunch_of_defaults';
+import { animation_default, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import { LengthMetrics } from '@kit.ArkUI';
 
 @Component
@@ -13,9 +13,19 @@ struct linysLink {
   @LocalStorageLink('universal_new_tab_gateway') universal_new_tab_gateway: (string | boolean)[] = ['', false];
   // In fact this param is designed for closing some opened panel
   @Link will_be_reversed_boolean: boolean;
+  @State isHov: boolean = false;
 
   build() {
     Text(this.text)
+      .brightness(this.isHov ? 1.1 : 1)
+      .animation(animation_default())
+      .padding({
+        left: 7,
+        right: 7,
+        top: 5,
+        bottom: 5
+      })
+      .borderRadius(7.5)
       .fontColor(this.color == "" ? this.color_current_font : this.color)
       .fontSize(fontSize_Normal())
       .fontWeight(this.font_weight)
@@ -26,6 +36,9 @@ struct linysLink {
       .onClick(() => {
         this.universal_new_tab_gateway = [this.link, false];
         this.will_be_reversed_boolean = !this.will_be_reversed_boolean;
+      })
+      .onHover((isHv) => {
+        this.isHov = isHv;
       })
       .accessibilityText(this.text + ',' + this.link)
       .accessibilityDescription($r('app.string.Accessibility_desc_linysLink'))

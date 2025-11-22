@@ -1145,21 +1145,24 @@ struct meowAppSettings {
                   title: $r('app.string.Settings_about'),
                   my_index: 9,
                 }) {
-                  linysLink({
-                    will_be_reversed_boolean: this.showing_app_settings,
-                    text: $r('app.string.About_bilibili'),
-                    link: "https://space.bilibili.com/678438347",
-                  }) // bili
-                  linysLink({
-                    will_be_reversed_boolean: this.showing_app_settings,
-                    text: $r('app.string.About_GitHub'),
-                    link: "https://github.com/awaLiny2333/LinysBrowser_NEXT",
-                  }) // GitHub
-                  linysLink({
-                    will_be_reversed_boolean: this.showing_app_settings,
-                    text: $r('app.string.About_Gitee'),
-                    link: "https://gitee.com/awa_Liny/LinysBrowser_NEXT",
-                  }) // Gitee
+                  Column() {
+                    linysLink({
+                      will_be_reversed_boolean: this.showing_app_settings,
+                      text: $r('app.string.About_bilibili'),
+                      link: "https://space.bilibili.com/678438347",
+                    }) // bili
+                    linysLink({
+                      will_be_reversed_boolean: this.showing_app_settings,
+                      text: $r('app.string.About_GitHub'),
+                      link: "https://github.com/awaLiny2333/LinysBrowser_NEXT",
+                    }) // GitHub
+                    linysLink({
+                      will_be_reversed_boolean: this.showing_app_settings,
+                      text: $r('app.string.About_Gitee'),
+                      link: "https://gitee.com/awa_Liny/LinysBrowser_NEXT",
+                    }) // Gitee
+                  }
+                  .alignItems(HorizontalAlign.Start)
                   linysText({
                     text: "（ฅ＾・ﻌ・＾）ฅ  - " + this.versionName + " - " + this.versionNo + ' - ' + this.buildTime,
                     max_lines: 10

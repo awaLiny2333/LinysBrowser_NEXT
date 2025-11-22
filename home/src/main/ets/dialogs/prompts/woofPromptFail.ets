@@ -134,6 +134,7 @@ struct goodByeLink {
   @LocalStorageLink('universal_new_tab_gateway') universal_new_tab_gateway: (string | boolean)[] = ['', false];
   // This is for status noticing
   @Link meow: boolean;
+  // UI
   @State isHov: boolean = false;
 
   build() {
