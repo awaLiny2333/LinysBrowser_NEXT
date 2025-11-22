@@ -476,6 +476,14 @@
       "value": "正恢复标签页……"
     },
     {
+      "name": "Tabs_unload",
+      "value": "睡眠标签页"
+    },
+    {
+      "name": "Tabs_unload_description",
+      "value": "让标签页睡眠以节约内存和电量！但是你无法催眠当下正显示的标签页～"
+    },
+    {
       "name": "Settings_appearance_tabs_style",
       "value": "标签页栏样式 \uDB82\uDC3B / \uDB82\uDD42 "
     },

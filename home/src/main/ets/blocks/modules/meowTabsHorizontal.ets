@@ -36,6 +36,7 @@ struct meowTabsHorizontal {
   // Gateways
   @LocalStorageLink('universal_new_tab_gateway') new_tab_gateway: (string | boolean)[] = ['', false];
   @LocalStorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
+  @LocalStorageLink('unloading_tabs') unloading_tabs: boolean = false;
   @LocalStorageLink('universal_close_all_tabs_gateway') close_all_tabs_gateway: number = -1;
   // UI statuses
   @State length_width_of_tabs: number = 0;
@@ -89,26 +90,39 @@ struct meowTabsHorizontal {
 
         Row() {
           linysShowButton({
+            symbol_glyph_target: 'sys.symbol.moon_z',
+            show: this.unloading_tabs,
+            text: $r('app.string.Tabs_unload')
+          }) // Sleep
+            .onClick(() => {
+              this.choosing_paralleow = false;
+              this.unloading_tabs = !this.unloading_tabs;
+            })
+            .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.None)
+            .animation(animation_default())
+
+          linysShowButton({
             symbol_glyph_target: 'sys.symbol.map',
             show: this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0,
             show_margin: 0,
             text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
           })// Paralleow entrance
             .onClick(() => {
+              this.unloading_tabs = false;
               this.choose_paralleow();
             })
-            .visibility(this.tablet_mode ? (this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden) : Visibility.None)
-            .margin({ left: 4 })
+            .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.None)
             .animation(animation_default())
 
           linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square', can_hover: true })// New tab
             .onClick(() => {
               this.new_tab_gateway = ["new_tab", false];
             })
-            .margin({ right: 5 })
-            .visibility(this.tablet_mode ? Visibility.Visible : Visibility.None)
             .animation(animation_default())
         }
+        .visibility(this.tablet_mode ? Visibility.Visible : Visibility.None)
+        .animation(animation_default())
+
       } // Base container
       .alignItems(VerticalAlign.Center)
 
@@ -126,21 +140,34 @@ struct meowTabsHorizontal {
         Blank()
 
         linysShowButton({
+          symbol_glyph_target: 'sys.symbol.moon_z',
+          show: this.unloading_tabs,
+          text: $r('app.string.Tabs_unload')
+        }) // Sleep
+          .onClick(() => {
+            this.choosing_paralleow = false;
+            this.unloading_tabs = !this.unloading_tabs;
+          })
+          .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.None)
+          .animation(animation_default())
+
+        linysShowButton({
           symbol_glyph_target: 'sys.symbol.map',
           show: this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0,
           text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
         })// Paralleow entrance
           .onClick(() => {
+            this.unloading_tabs = false;
             this.choose_paralleow();
           })
-          .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden)
+          .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
 
         linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square', can_hover: true })// New tab
           .onClick(() => {
             this.storage.set('extra_background', false);
             this.new_tab_gateway = ["new_tab", false];
-          })// .margin({ bottom: this.length_width_of_tabs > this.full_area_width ? 15 : 0, right: 8 })
+          })
           .animation(animation_default())
       } // Extension for compact (non-tablet mode) layout
       .alignItems(VerticalAlign.Center)
@@ -151,7 +178,7 @@ struct meowTabsHorizontal {
       .width('100%')
     }
     .height(this.my_height)
-    .padding({ left: 10, right: 10 })
+    .padding({ right: this.tablet_mode ? 15 : 10, left: 10 })
     .animation(animation_default())
     .clip(true)
     .onAppear(() => {

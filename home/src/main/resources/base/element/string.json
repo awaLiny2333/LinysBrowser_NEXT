@@ -473,6 +473,14 @@
       "value": "Recovering tab..."
     },
     {
+      "name": "Tabs_unload",
+      "value": "Unload tabs"
+    },
+    {
+      "name": "Tabs_unload_description",
+      "value": "Unload tabs to save memory and power! But you can't unload the current tab being viewed."
+    },
+    {
       "name": "Settings_appearance_tabs_style",
       "value": "Tabs style \uDB82\uDC3B / \uDB82\uDD42 "
     },

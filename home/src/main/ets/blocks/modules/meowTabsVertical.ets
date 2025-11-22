@@ -41,6 +41,7 @@ struct meowTabsVertical {
   // Other Info / Statuses
   @LocalStorageLink('tabs_init_ok') tabs_init_ok: boolean = false;
   @LocalStorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
+  @LocalStorageLink('unloading_tabs') unloading_tabs: boolean = false;
   @LocalStorageLink('last_tab_index') last_tab_index: number = -1;
   // Animation info
   @State my_visibility: Visibility = Visibility.Hidden;
@@ -91,45 +92,65 @@ struct meowTabsVertical {
         this.scroll_area_height = n.height as number;
       })
 
-      Row() {
-        linysTimeoutButton({
-          text: '  󰀁  ',
-          onExecution: () => {
-            this.close_all_tabs_gateway = Date.now();
-          }
-        })
-          .visibility(this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? Visibility.None : Visibility.Visible)
+      Column({ space: 10 }) {
+        Row() {
+          linysTimeoutButton({
+            text: '  󰀁  ',
+            onExecution: () => {
+              this.close_all_tabs_gateway = Date.now();
+            }
+          })
+            .visibility(this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 || this.unloading_tabs ? Visibility.None : Visibility.Visible)
+            .animation(animation_default())
+
+          Blank()
+            .onClick(() => {
+              this.try_scroll_to(this.bunch_of_tabs.main_tab_idx);
+            })
+
+          linysShowButton({
+            symbol_glyph_target: 'sys.symbol.moon_z',
+            show: this.unloading_tabs,
+            text: $r('app.string.Tabs_unload')
+          }) // Sleep
+            .onClick(() => {
+              this.choosing_paralleow = false;
+              this.unloading_tabs = !this.unloading_tabs;
+            })
+            .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden)
+            .animation(animation_default())
+
+          linysShowButton({
+            symbol_glyph_target: 'sys.symbol.map',
+            show: this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0,
+            text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
+          }) // Paralleow
+            .onClick(() => {
+              this.unloading_tabs = false;
+              this.choose_paralleow();
+            })
+            .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden)
+            .animation(animation_default())
+
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square', can_hover: true }) // New Tab
+            .onClick(() => {
+              this.new_tab("", true, false);
+            })
+            .keyboardShortcut(this.bunch_of_key_shortcuts.new_tab.main_key, this.bunch_of_key_shortcuts.new_tab.modifier)
+        } // New Tab and Paralleow Button
+        .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
+        .width("100%")
+
+        linysText({ text: $r('app.string.Paralleow_description'), max_lines: 4 })
+          .visibility(this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
+          .width('100%')
 
-        Blank()
-          .onClick(() => {
-            this.try_scroll_to(this.bunch_of_tabs.main_tab_idx);
-          })
-
-        linysShowButton({
-          symbol_glyph_target: 'sys.symbol.map',
-          show: this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0,
-          text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
-        })
-          .onClick(() => {
-            this.choose_paralleow();
-          })
-          .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.Hidden)
+        linysText({ text: $r('app.string.Tabs_unload_description'), max_lines: 4 })
+          .visibility(this.unloading_tabs ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
-
-        linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square', can_hover: true })
-          .onClick(() => {
-            this.new_tab("", true, false);
-          })
-          .keyboardShortcut(this.bunch_of_key_shortcuts.new_tab.main_key, this.bunch_of_key_shortcuts.new_tab.modifier)
-      } // New Tab and Paralleow Button
-      .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
-      .width("100%")
-
-      linysText({ text: $r('app.string.Paralleow_description'), max_lines: 4 })
-        .visibility(this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0 ? Visibility.Visible : Visibility.None)
-        .animation(animation_default())
-
+          .width('100%')
+      }
     } // Tabs Panel
     .visibility(this.my_visibility)
     .width(this.showing_tabs ? this.width_of_Tabs() : 0)
@@ -484,6 +505,18 @@ struct meowTabsVertical {
     }
   }
 
+  /**
+   * Unloads a tab.
+   * @param target The index of the tab.
+   * */
+  unload(target: number) {
+    let unload_result = this.bunch_of_tabs.callUnload(target);
+    if (unload_result) {
+      (this.storage.get('tab_restore_on_creations') as boolean[])[target] = true;
+      this.bunch_of_tabs.update_my_timestamp(); // Try to call UI refresh;
+    }
+  }
+
   close_all_tabs() {
     for (let index = this.bunch_of_tabs.Tabs.length - 1; index >= 0; index--) {
       this.close_tab(0, false);
@@ -563,32 +596,45 @@ struct meowTabsVertical {
     let sub = this.bunch_of_tabs.sub_tab_idx;
     let main = this.bunch_of_tabs.main_tab_idx;
 
-    if (clicked >= 0) {
-      console.log('[Meow][uni_tab_button_click] [' + clicked + '] Clicked!');
-      if (this.choosing_paralleow && main != clicked) {
-        // if choosing Paralleow
-        // and is not selected as main web
-        // (this tab is selectable to be a sub view)
-        // then set this tab as sub view
-        this.choosing_paralleow = false;
-        this.bunch_of_tabs.sub_tab_idx = clicked;
-        this.bunch_of_tabs.callRestore(this.getUIContext(), clicked);
-      } else if (sub >= 0 && (sub == clicked || main == clicked)) {
-        // if Paralleow enabled
-        // and this tab clicked is one of main or sub
-        // then switch the two tabs
-        this.switch_paralleow(false);
-      } else {
-        // simply switch tab
-        // this.tab_animation = { duration: 0 };
-        if (clicked != this.bunch_of_tabs.main_tab_idx) {
-          this.switch_tab(clicked, true, false);
-        }
-      }
-      this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][uni_tab_button_click]');
+    if (clicked < 0) {
+      // Reset
+      return;
     }
+
+    // Unload
+    if (this.unloading_tabs) {
+      this.unload(clicked);
+      // Reset
+      this.uni_tab_button_clicked = -1;
+      return;
+    }
+
+    console.log('[Meow][uni_tab_button_click] [' + clicked + '] Clicked!');
+    if (this.choosing_paralleow && main != clicked) {
+      // if choosing Paralleow
+      // and is not selected as main web
+      // (this tab is selectable to be a sub view)
+      // then set this tab as sub view
+      this.choosing_paralleow = false;
+      this.bunch_of_tabs.sub_tab_idx = clicked;
+      this.bunch_of_tabs.callRestore(this.getUIContext(), clicked);
+    } else if (sub >= 0 && (sub == clicked || main == clicked)) {
+      // if Paralleow enabled
+      // and this tab clicked is one of main or sub
+      // then switch the two tabs
+      this.switch_paralleow(false);
+    } else {
+      // simply switch tab
+      // this.tab_animation = { duration: 0 };
+      if (clicked != this.bunch_of_tabs.main_tab_idx) {
+        this.switch_tab(clicked, true, false);
+      }
+    }
+    this.bunch_of_tabs.save_tab_index_stats('[meowTabsVertical][uni_tab_button_click]');
+
     // Reset
     this.uni_tab_button_clicked = -1;
+    return;
   }
 
   uni_new_tab() {
@@ -802,7 +848,6 @@ struct TabButton {
           this.bunch_of_tabs.sub_tab_idx == this.Label.index_key)
           ? FontWeight.Bold : undefined)
         .maxLines(1)
-        .textOverflow({ overflow: TextOverflow.Ellipsis })
         .layoutWeight(1)
         .keyboardShortcut(this.bunch_of_tabs.main_tab_idx == this.Label.index_key ? this.bunch_of_key_shortcuts.close_tab.main_key : '',
           this.bunch_of_key_shortcuts.close_tab.modifier, () => {
@@ -861,15 +906,12 @@ struct TabButton {
     .onHover((isHv) => {
       this.isHov = isHv;
     })
-    .onMouse((e) => {
-      if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
-        // Right click
-        let unload_result = this.bunch_of_tabs.callUnload(this.Label.index_key);
-        if (unload_result) {
-          this.tab_restore_on_creations[this.Label.index_key] = true;
-          this.bunch_of_tabs.update_my_timestamp(); // Try to call UI refresh;
-        }
-      }
-    })
+
+    // .onMouse((e) => {
+    //   if (e.button == MouseButton.Right && e.action == MouseAction.Press) {
+    //     // Right click
+    //     this.unload_me();
+    //   }
+    // })
   }
 }
