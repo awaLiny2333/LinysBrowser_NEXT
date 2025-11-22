@@ -856,7 +856,7 @@ struct meowTitleBar {
     return this.is_search_input_typing || this.showing_more_options || this.showing_app_settings || this.showing_downloads || this.showing_scratching_board;
   }
 
-  background_color(): ResourceColor {
+  background_color() {
     if (this.effects) {
       return $r('sys.color.background_tertiary');
     }

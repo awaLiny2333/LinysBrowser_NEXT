@@ -305,6 +305,8 @@ struct Index {
           .layoutWeight(this.tablet_mode ? 1 : 0)
 
         } // Main Web
+        .backgroundColor(this.effects ? undefined : this.color_current_primary)
+        .useEffect(this.effects, EffectType.WINDOW_EFFECT)
         .direction(this.direction_of_web_and_side_panels())
         .margin(this.title_bar_position == "bottom"
           ? { bottom: this.fullscreen_mode ? 0 : this.title_bar_height }
@@ -334,8 +336,8 @@ struct Index {
 
       Row()// Bottom Bar Avoid
         .height((this.title_bar_position == "bottom" || this.bottom_avoid) ? this.height_of_bottom_avoid() : 0)
-        .backgroundColor(this.background_color())
-        .useEffect(this.effects, EffectType.WINDOW_EFFECT)
+        // .backgroundColor(this.background_color())
+        // .useEffect(this.effects, EffectType.WINDOW_EFFECT)
         .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
         .width("100%")
 
@@ -343,7 +345,7 @@ struct Index {
     .height("100%")
     .width("100%")
     .alignItems(HorizontalAlign.Start)
-    .backgroundColor(this.color_current_primary)
+    .backgroundColor(this.color_current_secondary)
     .useEffect(this.effects, EffectType.WINDOW_EFFECT)
     .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
     .onAreaChange((_o, n) => {
