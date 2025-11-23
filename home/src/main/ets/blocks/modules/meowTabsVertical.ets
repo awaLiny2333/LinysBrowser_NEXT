@@ -239,10 +239,13 @@ struct meowTabsVertical {
     let go_want = want_uri.length > 0 && want_source == 'onCreate';
 
     // Tabs
-    if ((AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string) != this.my_window_id) {
+    let lord = AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string;
+    console.log(`[Meow][init][meowTabsVertical] Lord=${lord}, this.my_window_id=${this.my_window_id}`);
+    if (lord != this.my_window_id) {
       // Sub windows
       if (go_want) {
         // Do nothing if is a wanted new window to a running BrowserCat.
+        console.log(`[Meow][init][meowTabsVertical] Is a sub window! And there are wants?`);
       } else {
         // New window without a want
         let start_tab_url = '';
@@ -253,6 +256,7 @@ struct meowTabsVertical {
         }
         this.new_tab(start_tab_url, false, false);
         this.switch_tab(0, false, false);
+        console.log(`[Meow][init][meowTabsVertical] Is a sub window!`);
       }
     } else {
       // Main window

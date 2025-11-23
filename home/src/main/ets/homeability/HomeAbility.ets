@@ -101,9 +101,11 @@ export default class HomeAbility extends UIAbility {
     if (this.is_new_window()) {
       this.storage.setOrCreate('START_TIME', Date.now());
       if (this.is_new_launch()) {
+        console.log(`[HomeAbility][onWindowStageCreate] Is new launch! this.my_window_id=${this.my_window_id}`);
         AppStorage.setOrCreate('THE_LORD_OF_THE_WINDOWS', this.my_window_id);
         await meow_init_main(this.context, this.storage);
       } else {
+        console.log(`[HomeAbility][onWindowStageCreate] Is sub window! this.my_window_id=${this.my_window_id}`);
         meow_init_sub(this.context, this.storage);
       }
 
@@ -113,7 +115,7 @@ export default class HomeAbility extends UIAbility {
   }
 
   async onWindowStageRestore(windowStage: window.WindowStage) {
-    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageRestore');
 
     windowStage.setWindowRectAutoSave(true).then(() => {
       console.info('[HomeAbility] Succeeded in setting window rect auto-save');
@@ -123,10 +125,13 @@ export default class HomeAbility extends UIAbility {
 
     // Init & Load window content
     if (this.is_new_window()) {
+      this.storage.setOrCreate('START_TIME', Date.now());
       if (this.is_new_launch()) {
-        AppStorage.set('THE_LORD_OF_THE_WINDOWS', this.my_window_id);
+        console.log(`[HomeAbility][onWindowStageRestore] Is new launch! this.my_window_id=${this.my_window_id}`);
+        AppStorage.setOrCreate('THE_LORD_OF_THE_WINDOWS', this.my_window_id);
         await meow_init_main(this.context, this.storage);
       } else {
+        console.log(`[HomeAbility][onWindowStageRestore] Is sub window! this.my_window_id=${this.my_window_id}`);
         meow_init_sub(this.context, this.storage);
       }
 
