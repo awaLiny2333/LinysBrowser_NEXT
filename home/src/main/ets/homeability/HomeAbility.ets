@@ -91,16 +91,16 @@ export default class HomeAbility extends UIAbility {
   async onWindowStageCreate(windowStage: window.WindowStage) {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
 
-    windowStage.setWindowRectAutoSave(true).then(() => {
-      console.info('[HomeAbility] Succeeded in setting window rect auto-save');
-    }).catch((err: BusinessError) => {
-      console.error(`[HomeAbility] Failed to set window rect auto-save. Cause code: ${err.code}, message: ${err.message}`);
-    });
-
     // Init & Load window content
     if (this.is_new_window()) {
       this.storage.setOrCreate('START_TIME', Date.now());
-      if (this.is_new_launch()) {
+      let is_app_start = this.is_new_launch();
+      if (is_app_start) {
+        windowStage.setWindowRectAutoSave(true).then(() => {
+          console.info('[HomeAbility] Succeeded in setting window rect auto-save');
+        }).catch((err: BusinessError) => {
+          console.error(`[HomeAbility] Failed to set window rect auto-save. Cause code: ${err.code}, message: ${err.message}`);
+        });
         console.log(`[HomeAbility][onWindowStageCreate] Is new launch! this.my_window_id=${this.my_window_id}`);
         AppStorage.setOrCreate('THE_LORD_OF_THE_WINDOWS', this.my_window_id);
         await meow_init_main(this.context, this.storage);
@@ -110,23 +110,23 @@ export default class HomeAbility extends UIAbility {
       }
 
       let windowClass = windowStage.getMainWindowSync(); // Get app main window
-      this.window_load_content(windowStage, windowClass, this.my_window_id, this.storage);
+      this.window_load_content(windowStage, windowClass, this.my_window_id, this.storage, is_app_start);
     }
   }
 
   async onWindowStageRestore(windowStage: window.WindowStage) {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageRestore');
 
-    windowStage.setWindowRectAutoSave(true).then(() => {
-      console.info('[HomeAbility] Succeeded in setting window rect auto-save');
-    }).catch((err: BusinessError) => {
-      console.error(`[HomeAbility] Failed to set window rect auto-save. Cause code: ${err.code}, message: ${err.message}`);
-    });
-
     // Init & Load window content
     if (this.is_new_window()) {
       this.storage.setOrCreate('START_TIME', Date.now());
-      if (this.is_new_launch()) {
+      let is_app_start = this.is_new_launch();
+      if (is_app_start) {
+        windowStage.setWindowRectAutoSave(true).then(() => {
+          console.info('[HomeAbility] Succeeded in setting window rect auto-save');
+        }).catch((err: BusinessError) => {
+          console.error(`[HomeAbility] Failed to set window rect auto-save. Cause code: ${err.code}, message: ${err.message}`);
+        });
         console.log(`[HomeAbility][onWindowStageRestore] Is new launch! this.my_window_id=${this.my_window_id}`);
         AppStorage.setOrCreate('THE_LORD_OF_THE_WINDOWS', this.my_window_id);
         await meow_init_main(this.context, this.storage);
@@ -136,7 +136,7 @@ export default class HomeAbility extends UIAbility {
       }
 
       let windowClass = windowStage.getMainWindowSync(); // Get app main window
-      this.window_load_content(windowStage, windowClass, this.my_window_id, this.storage);
+      this.window_load_content(windowStage, windowClass, this.my_window_id, this.storage, is_app_start);
     }
   }
 
@@ -213,7 +213,7 @@ export default class HomeAbility extends UIAbility {
    * EXECUTED ONLY ONCE FOR EACH WINDOW INSTANCE.
    * @param windowStage The windowStage.
    * */
-  window_load_content(windowStage: window.WindowStage, windowClass: window.Window, my_window_id: string, storage: LocalStorage) {
+  window_load_content(windowStage: window.WindowStage, windowClass: window.Window, my_window_id: string, storage: LocalStorage, is_app_start: boolean) {
     // Save my window to AppStorage
     let windowClasses: window.Window[] | undefined = AppStorage.get('windows');
     let my_index: number;
@@ -295,8 +295,10 @@ export default class HomeAbility extends UIAbility {
         enter_traditional_window_mode(windowClass, storage, my_window_id);
       }
 
-      // Listen free window mode
-      listen_free_window_mode(this.context, windowClass, storage, this.my_window_id);
+      if (is_app_start) {
+        // Listen free window mode
+        listen_free_window_mode(this.context, windowClass, storage, this.my_window_id);
+      }
       AppStorage.setOrCreate('THE_FOCUS_OF_THE_WINDOWS', this.my_window_id);
 
       // Avoid hosts

@@ -104,7 +104,6 @@ struct meowTabsHorizontal {
           linysShowButton({
             symbol_glyph_target: 'sys.symbol.map',
             show: this.choosing_paralleow || this.bunch_of_tabs.sub_tab_idx >= 0,
-            show_margin: 0,
             text: this.choosing_paralleow ? $r('app.string.Paralleow_choose_a_tab') : $r('app.string.Paralleow')
           })// Paralleow entrance
             .onClick(() => {

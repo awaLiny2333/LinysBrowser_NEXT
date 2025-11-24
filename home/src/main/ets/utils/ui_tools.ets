@@ -267,8 +267,7 @@ export function get_free_window_mode(context: Context) {
     return true;
   }
   let free = settings.getValueSync(context, 'window_pcmode_switch_status', 'false', settings.domainName.USER_PROPERTY);
-  console.log('[free] settings.getValueSync "window_pcmode_switch_status" = [' + free + ']!'
-    + '\n\treturn ' + (free == 'true') + '!');
+  console.log('[free] settings.getValueSync "window_pcmode_switch_status" = [' + free + ']!\n\treturn ' + (free == 'true') + '!');
   let in_free = free == 'true'
   AppStorage.setOrCreate('free_window_mode', in_free);
   return in_free;
@@ -282,6 +281,7 @@ export function get_free_window_mode(context: Context) {
  * @param id
  * */
 export function listen_free_window_mode(context: Context, windowClass: window.Window, storage: LocalStorage, id: string) {
+  console.log(`[listen_free_window_mode] ON for window ${id}!`)
   settings.registerKeyObserver(context, 'window_pcmode_switch_status', settings.domainName.USER_PROPERTY,
     () => {
       settings.getValue(context, 'window_pcmode_switch_status', settings.domainName.USER_PROPERTY)
