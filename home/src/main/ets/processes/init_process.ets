@@ -7,13 +7,13 @@ import { bunch_of_history } from '../hosts/bunch_of_history';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
-import { kv_store_get } from '../utils/kv_store_tools';
+import lazy { kv_store_get } from '../utils/kv_store_tools';
 import { bunch_of_bookmarks } from '../hosts/bunch_of_bookmarks';
 import { bunch_of_user_agents } from '../hosts/bunch_of_user_agents';
 import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 import { run_time } from '../utils/ui_tools';
 import { MessageEvents, worker } from '@kit.ArkTS';
-import { sendableImage } from '@kit.ImageKit';
+import lazy { sendableImage } from '@kit.ImageKit';
 
 /**
  * Initializes all things.

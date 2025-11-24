@@ -1,6 +1,6 @@
 import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
-import woofControlFrame from '../woofControlFrame';
+import lazy woofControlFrame from '../woofControlFrame';
 import linysSymbol from '../../components/texts/linysSymbol';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';

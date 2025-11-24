@@ -1,4 +1,4 @@
-import woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
+import lazy woofHomepageManager from '../../dialogs/managers/woofHomepageManager';
 import { bookmark, bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large } from '../../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';

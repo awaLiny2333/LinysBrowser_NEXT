@@ -3,7 +3,7 @@ import linysConfirmDenyButtons from '../../components/buttons/linysConfirmDenyBu
 import linysText from '../../components/texts/linysText';
 import { animation_default, capsule_bar_height } from '../../hosts/bunch_of_defaults';
 import { hex2hsv, hsv2hex, is_legal_hex } from '../../utils/color_tools';
-import woofControlFrame from '../woofControlFrame';
+import lazy woofControlFrame from '../woofControlFrame';
 
 @CustomDialog
 struct woofSelectColor {

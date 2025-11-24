@@ -3,16 +3,16 @@ import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { document_pick_to_text, document_save_text, sandbox_save } from '../../utils/storage_tools';
 import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import lazy { url_resource_to_meow } from '../../utils/url_tools';
+import { current_tabs_style_is_horizontal, run_time, storage_of_id } from '../../utils/ui_tools';
+import lazy { unifiedDataChannel } from '@kit.ArkData';
 import linysSymbol from '../../components/texts/linysSymbol';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import linysPathTree from '../../components/linysPathTree';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
+import lazy linysExpandableCardItem from '../../components/layouts/linysExpandableCardItem';
 import lazy woofSelectBookmarksPath from '../../dialogs/prompts/woofSelectBookmarksPath';
-import { current_tabs_style_is_horizontal, run_time, storage_of_id } from '../../utils/ui_tools';
-import linysExpandableCardItem from '../../components/layouts/linysExpandableCardItem';
-import { unifiedDataChannel } from '@kit.ArkData';
 
 @Component
 struct meowBookmarks {

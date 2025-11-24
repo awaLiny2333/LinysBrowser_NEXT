@@ -1,7 +1,7 @@
 import { bunch_of_history, history_record } from '../hosts/bunch_of_history';
 import { bunch_of_tabs, tab_info_packed } from '../hosts/bunch_of_tabs';
 import { url_resource_to_meow } from '../utils/url_tools';
-import { unifiedDataChannel } from '@kit.ArkData';
+import lazy { unifiedDataChannel } from '@kit.ArkData';
 import { window_index_of_id } from '../utils/ui_tools';
 
 // Data and Statuses

@@ -6,8 +6,8 @@ import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
 import { animation_default } from '../../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
-import woofSelectBookmarksPath from '../prompts/woofSelectBookmarksPath';
-import woofControlFrame from '../woofControlFrame';
+import lazy woofSelectBookmarksPath from '../prompts/woofSelectBookmarksPath';
+import lazy woofControlFrame from '../woofControlFrame';
 
 @CustomDialog
 struct woofHomepageManager {

@@ -3,7 +3,7 @@ import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
-import woofControlFrame from '../woofControlFrame';
+import lazy woofControlFrame from '../woofControlFrame';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysSwitchWithText from '../../components/toggles/linysSwitchWithText';
 import ManageListElement from './ManageListElement';

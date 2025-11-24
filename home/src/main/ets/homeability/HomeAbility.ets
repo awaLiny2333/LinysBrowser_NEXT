@@ -1,4 +1,4 @@
-import { AbilityConstant, Configuration, UIAbility, Want, wantConstant } from '@kit.AbilityKit';
+import lazy { AbilityConstant, Configuration, UIAbility, Want, wantConstant } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';

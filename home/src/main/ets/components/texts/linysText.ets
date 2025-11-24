@@ -36,7 +36,6 @@ struct linysText {
       .scrollBar(BarState.Off)
       // .edgeEffect(EdgeEffect.Spring)
       .constraintSize(this.is_expanded ? {} : { maxHeight: 40 })
-      .brightness(this.isHov ? 1.1 : 1)
       .animation(animation_default())
       .borderRadius(12)
       .padding(10)
@@ -46,9 +45,8 @@ struct linysText {
         this.is_expanded = !this.is_expanded;
       })
       .clickEffect(click_effect_default())
-      .onHover((isHv) => {
-        this.isHov = isHv;
-      })
+      .hoverEffect(HoverEffect.Highlight)
+
     } else {
       Text(this.text)
         .brightness(this.isHov ? 1.1 : 1)

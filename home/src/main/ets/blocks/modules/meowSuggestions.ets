@@ -1,9 +1,9 @@
-import { animation_default } from '../../hosts/bunch_of_defaults';
+import { animation_default, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import { bunch_of_history } from '../../hosts/bunch_of_history';
 import linysText from '../../components/texts/linysText';
 import { search_label_link } from '../../utils/data_operation_tools';
-import woofQR from '../../dialogs/contents/woofQR';
+import lazy woofQR from '../../dialogs/contents/woofQR';
 import linysSymbol from '../../components/texts/linysSymbol';
 
 @Component
@@ -135,25 +135,64 @@ struct meowRelation {
   @State offset_y: number = 50;
   @State this_visibility: Visibility = Visibility.Hidden;
   @LocalStorageLink('universal_load_url_gateway') load_url_gateway: string = "";
+  // Env
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
+  // Dialogs
+  @State show_title: string = '';
+  @State show_url: string = '';
+  woofQR_control: CustomDialogController = new CustomDialogController({
+    builder: woofQR({
+      title: this.show_title,
+      link: this.show_url
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 26
+  });
+  // UI
+  @State isEntireHov: boolean = false;
 
   build() {
-    Column({ space: 2 }) {
-      linysText({
-        text: this.relation[0].length == 0 ? "　" : this.relation[0]
+    Row({ space: 6 }) {
+      Column({ space: 2 }) {
+        linysText({
+          text: this.relation[0].length == 0 ? "　" : this.relation[0]
+        })
+        linysText({
+          text: this.relation[1]
+        })
+          .opacity(0.7)
+      }
+      .borderRadius(8)
+      .brightness(this.isEntireHov ? 1.1 : 1)
+      .animation(animation_default())
+      .padding(7)
+      .alignItems(HorizontalAlign.Start)
+      // .width("100%")
+      .layoutWeight(1)
+      .clickEffect(click_effect_default())
+      .onClick(() => {
+        this.load_url_gateway = this.relation[1];
       })
-      linysText({
-        text: this.relation[1]
+      .onHover((isHv) => {
+        this.isEntireHov = isHv;
       })
+
+      linysSymbol({
+        symbol_glyph_target: 'sys.symbol.qrcode',
+        can_hover: true
+      })// QRcode
+        .onClick(() => {
+          this.show_title = this.relation[0];
+          this.show_url = this.relation[1];
+          this.woofQR_control.open();
+        })
         .opacity(0.7)
+        .padding(10)
     }
-    .alignItems(HorizontalAlign.Start)
-    .width("100%")
+    .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
     .visibility(this.this_visibility)
     .offset({ y: this.offset_y })
     .animation(animation_default())
-    .onClick(() => {
-      this.load_url_gateway = this.relation[1];
-    })
     .onAppear(() => {
       setTimeout(() => {
         this.offset_y = 0;
@@ -167,45 +206,17 @@ struct meowRelation {
 struct suggestionList {
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @Prop suggestions: string[][] = [];
-  // Settings / Accessibility
-  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
-  // Dialogs
-  @State show_title: string = '';
-  @State show_url: string = '';
-  woofQR_control: CustomDialogController = new CustomDialogController({
-    builder: woofQR({
-      title: this.show_title,
-      link: this.show_url
-    }),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 26
-  });
 
   build() {
-    Column({ space: 8 }) {
+    Column() {
       ForEach(this.suggestions, (item: string[], index: number) => {
-        Row({ space: 10 }) {
-          meowRelation({
-            relation: item,
-            index: index
-          })
-            .layoutWeight(1)
-
-          linysSymbol({
-            symbol_glyph_target: 'sys.symbol.qrcode'
-          })// QRcode
-            .onClick(() => {
-              this.show_title = item[0];
-              this.show_url = item[1];
-              this.woofQR_control.open();
-            })
-            .opacity(0.7)
-        }
-        .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
-        .animation(animation_default())
+        meowRelation({
+          relation: item,
+          index: index
+        })
       })
     }
-    .padding(15)
+    .padding(6)
     .backgroundColor(this.color_current_primary)
     .borderRadius(12)
     .visibility(this.suggestions.length > 0 ? Visibility.Visible : Visibility.None)

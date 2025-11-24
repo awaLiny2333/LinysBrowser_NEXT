@@ -4,11 +4,11 @@ import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysTextTitle from '../../components/texts/linysTextTitle';
 import { animation_default, capsule_bar_height, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { bunch_of_history, history_record } from '../../hosts/bunch_of_history';
-import woofControlFrame from '../woofControlFrame';
+import lazy woofControlFrame from '../woofControlFrame';
 import HistoryDataSource from '../../objects/HistoryDataSource';
 import { all_false, all_true } from '../../utils/data_operation_tools';
 import { LengthMetrics } from '@kit.ArkUI';
-import woofQR from '../contents/woofQR';
+import lazy woofQR from '../contents/woofQR';
 
 @CustomDialog
 struct woofHistory {

@@ -1,5 +1,5 @@
 import { string_to_boolean } from '../utils/data_operation_tools';
-import { kv_store_get } from '../utils/kv_store_tools';
+import lazy { kv_store_get } from '../utils/kv_store_tools';
 import { sandbox_read_text_sync, sandbox_save } from '../utils/storage_tools';
 import { default_new_window_name, default_user_agents, preset_search_engines } from './bunch_of_defaults';
 

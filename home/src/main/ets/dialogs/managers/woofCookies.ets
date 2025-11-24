@@ -3,7 +3,7 @@ import { match_domain } from '../../utils/url_tools';
 import lazy { webview } from '@kit.ArkWeb';
 import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
-import woofControlFrame from '../woofControlFrame';
+import lazy woofControlFrame from '../woofControlFrame';
 import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
 import linysSymbol from '../../components/texts/linysSymbol';
 

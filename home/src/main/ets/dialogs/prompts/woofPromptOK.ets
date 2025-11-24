@@ -1,7 +1,7 @@
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import linysText from '../../components/texts/linysText';
 import { animation_default } from '../../hosts/bunch_of_defaults';
-import woofControlFrame from '../woofControlFrame';
+import lazy woofControlFrame from '../woofControlFrame';
 
 @CustomDialog
 struct woofPromptOK {

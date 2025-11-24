@@ -1,6 +1,6 @@
 import { animation_default, animation_popup_duration, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { extract_links_from_text, is_downloadable } from '../../utils/url_tools';
-import { LengthMetrics, SymbolGlyphModifier } from '@kit.ArkUI';
+import { LengthMetrics } from '@kit.ArkUI';
 import lazy { copy } from '../../utils/clipboard_tools';
 import lazy { preview_image } from '../../utils/preview_tools';
 import lazy { document_save_from_uri, image_save_from_uri } from '../../utils/storage_tools';
@@ -180,14 +180,12 @@ struct data_display {
     Menu() {
       MenuItem({
         content: $r('app.string.Save_to_files'),
-        symbolStartIcon: new SymbolGlyphModifier($r('sys.symbol.arrow_right_folder_circle')).fontSize('24vp'),
       })
         .onClick(() => {
           document_save_from_uri(this.text);
         })
       MenuItem({
         content: $r('app.string.Save_to_gallery'),
-        symbolStartIcon: new SymbolGlyphModifier($r('sys.symbol.picture_badge_arrow_down')).fontSize('24vp'),
       }).onClick(() => {
         image_save_from_uri(this.text, this.getUIContext().getHostContext()!);
       })

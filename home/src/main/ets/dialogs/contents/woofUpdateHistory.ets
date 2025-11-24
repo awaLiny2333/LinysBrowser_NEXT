@@ -1,7 +1,7 @@
 import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
 import { animation_default, click_effect_default } from '../../hosts/bunch_of_defaults';
-import woofControlFrame from '../woofControlFrame';
+import lazy woofControlFrame from '../woofControlFrame';
 
 @CustomDialog
 struct woofUpdateHistory {

@@ -1,4 +1,4 @@
-import { BusinessError, pasteboard } from '@kit.BasicServicesKit';
+import lazy { BusinessError, pasteboard } from '@kit.BasicServicesKit';
 
 export function copy(content: string) {
   let systemPasteboard: pasteboard.SystemPasteboard = pasteboard.getSystemPasteboard();

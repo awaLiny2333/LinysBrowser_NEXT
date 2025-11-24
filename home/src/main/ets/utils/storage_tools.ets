@@ -1,9 +1,10 @@
-import { BusinessError, zlib } from '@kit.BasicServicesKit';
-import { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import lazy { zlib } from '@kit.BasicServicesKit';
+import lazy { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
 import { buffer } from '@kit.ArkTS';
-import { image, sendableImage } from '@kit.ImageKit';
-import { bunch_of_settings } from '../hosts/bunch_of_settings';
-import { photoAccessHelper } from '@kit.MediaLibraryKit';
+import lazy { image, sendableImage } from '@kit.ImageKit';
+import lazy { bunch_of_settings } from '../hosts/bunch_of_settings';
+import lazy { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { meowContext } from './environment_tools';
 import { apply_EasyList } from '../processes/web_actions';
 

@@ -1,7 +1,7 @@
 import meowUAManager from '../../blocks/panels/meowUAManager';
 import { animation_default } from '../../hosts/bunch_of_defaults';
 import { bunch_of_user_agents } from '../../hosts/bunch_of_user_agents';
-import woofControlFrame from '../woofControlFrame';
+import lazy woofControlFrame from '../woofControlFrame';
 
 @CustomDialog
 struct woofQuickUA {

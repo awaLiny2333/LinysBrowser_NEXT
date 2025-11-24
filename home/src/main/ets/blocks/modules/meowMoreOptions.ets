@@ -1,5 +1,5 @@
 import { animation_default, capsule_bar_height, click_effect_default, default_new_window_name } from '../../hosts/bunch_of_defaults';
-import { print_web } from '../../utils/print_tools';
+import lazy { print_web } from '../../utils/print_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { change_window_alias, new_window, storage_of_id } from '../../utils/ui_tools';
 import { cancel_in_page_search } from '../../processes/tabs_actions';
@@ -380,7 +380,6 @@ struct meowMoreOptions {
               text: '#' + this.windowIds.indexOf(this.my_window_id) + '｜' + this.my_window_alias,
               can_hover: true,
             }) // Current my_window_alias
-            // .padding({ left: 5, right: 5 })
               .margin({ left: 3 })
               .layoutWeight(1)
               .clickEffect(click_effect_default())

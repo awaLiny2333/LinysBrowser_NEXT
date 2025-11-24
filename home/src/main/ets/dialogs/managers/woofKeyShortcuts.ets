@@ -3,7 +3,7 @@ import linysShowButton from '../../components/buttons/linysShowButton';
 import linysText from '../../components/texts/linysText';
 import { animation_default, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
-import woofControlFrame from '../woofControlFrame';
+import lazy woofControlFrame from '../woofControlFrame';
 
 @CustomDialog
 struct woofKeyShortcuts {

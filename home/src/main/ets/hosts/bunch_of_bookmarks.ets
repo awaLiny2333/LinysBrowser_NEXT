@@ -1,4 +1,4 @@
-import { decode_html_code_to_string, encode_string_to_html_code } from '../utils/html_tools';
+import lazy { decode_html_code_to_string, encode_string_to_html_code } from '../utils/html_tools';
 import { ensure_scheme } from '../utils/url_tools';
 import { collections } from '@kit.ArkTS';
 

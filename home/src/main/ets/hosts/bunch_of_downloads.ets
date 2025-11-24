@@ -1,4 +1,5 @@
-import { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
+import { fileIo as fs, } from '@kit.CoreFileKit';
+import lazy { fileUri, picker } from '@kit.CoreFileKit';
 import { webview } from '@kit.ArkWeb';
 import { add_units_to_size, download_save_from_path } from '../utils/storage_tools';
 import { common } from '@kit.AbilityKit';

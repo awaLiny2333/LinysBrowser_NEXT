@@ -2,7 +2,7 @@ import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
 import { click_effect_default } from '../../hosts/bunch_of_defaults';
 import { copy } from '../../utils/clipboard_tools';
-import woofControlFrame from '../woofControlFrame';
+import lazy woofControlFrame from '../woofControlFrame';
 
 @CustomDialog
 struct woofQR {

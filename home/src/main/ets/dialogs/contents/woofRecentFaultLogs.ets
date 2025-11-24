@@ -1,7 +1,7 @@
 import { FaultLogger } from '@kit.PerformanceAnalysisKit';
 // TODO: switch to https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hiappevent-watcher-crash-events-arkts
 import { BusinessError } from '@kit.BasicServicesKit';
-import woofControlFrame from '../woofControlFrame';
+import lazy woofControlFrame from '../woofControlFrame';
 import { copy } from '../../utils/clipboard_tools';
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
 import linysTextTitle from '../../components/texts/linysTextTitle';

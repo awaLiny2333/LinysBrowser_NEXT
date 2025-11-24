@@ -1,6 +1,6 @@
 import { animation_default, click_effect_default, default_search_engine } from '../../hosts/bunch_of_defaults';
 import { bunch_of_search_engines, search_engine } from '../../hosts/bunch_of_search_engines';
-import woofControlFrame from '../woofControlFrame';
+import lazy woofControlFrame from '../woofControlFrame';
 import meowSEManager from '../../blocks/panels/meowSEManager';
 import linysText from '../../components/texts/linysText';
 

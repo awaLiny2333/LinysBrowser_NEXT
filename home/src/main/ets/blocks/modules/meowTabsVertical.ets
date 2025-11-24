@@ -3,7 +3,7 @@ import { animation_default, click_effect_default, fontSize_Icon_Button, fontSize
 import { sandbox_read_arrayBuffer_sync, sandbox_read_text_sync } from '../../utils/storage_tools';
 import { current_tabs_style_is_horizontal, run_time, storage_of_id, storage_of_index } from '../../utils/ui_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
-import { check_want } from '../../utils/want_tools';
+import lazy { check_want } from '../../utils/want_tools';
 import lazy { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import lazy {
   determine_extra_background,

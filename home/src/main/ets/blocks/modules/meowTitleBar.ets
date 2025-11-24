@@ -925,7 +925,7 @@ struct EstimatedDestination {
           symbol_glyph_target: this.is_http_no_s ? "sys.symbol.lock_open" : "sys.symbol.lock"
         })
         linysText({
-          text: this.is_http_no_s ? "http" : "https"
+          text: this.is_http_no_s ? "HTTP" : "HTTPS"
         })
       } // Https icon
       .padding(8)
@@ -933,11 +933,12 @@ struct EstimatedDestination {
         this.is_http_no_s = !this.is_http_no_s;
         this.update_search_input_unified(this.search_input);
       })
-      .borderRadius(8)
+      .borderRadius(12)
       .backgroundColor(this.color_current_primary)
       .visibility(this.visible_when_input_is_a_scheme_less_address())
       .clickEffect(click_effect_default())
       .animation(animation_default())
+      .hoverEffect(HoverEffect.Highlight)
 
       Text("→ " + (this.search_input_unified == "" ? "(　o=^•ェ•)o ?" : this.search_input_unified))
         .fontColor(this.color_current_font)
@@ -947,31 +948,35 @@ struct EstimatedDestination {
         .textOverflow({ overflow: TextOverflow.Ellipsis })
         .layoutWeight(1)
 
-      if (this.tablet_mode) {
+      Row() {
+        if (this.tablet_mode) {
+          linysSymbol({
+            symbol_glyph_target: this.copied_icon ? 'sys.symbol.checkmark_clipboard_fill' : 'sys.symbol.plus_square_on_square',
+            can_hover: true
+          })
+            .opacity(this.search_input_unified != '' ? 1 : 0.7)
+            .enabled(this.search_input_unified != '')
+            .animation(animation_default())
+            .onClick(() => {
+              // Copy
+              copy(this.search_input_unified);
+              this.copied_icon = true;
+              clearTimeout(this.copy_timeout_id);
+              this.copy_timeout_id = setTimeout(() => {
+                this.copied_icon = false;
+              }, animation_popup_duration())
+            })
+        }
+
         linysSymbol({
-          symbol_glyph_target: this.copied_icon ? 'sys.symbol.checkmark_clipboard_fill' : 'sys.symbol.plus_square_on_square'
+          symbol_glyph_target: this.title_bar_position == 'top' ? 'sys.symbol.chevron_up' : 'sys.symbol.chevron_down',
+          can_hover: true
         })
-          .opacity(this.search_input_unified != '' ? 1 : 0.7)
-          .enabled(this.search_input_unified != '')
-          .animation(animation_default())
           .onClick(() => {
-            // Copy
-            copy(this.search_input_unified);
-            this.copied_icon = true;
-            clearTimeout(this.copy_timeout_id);
-            this.copy_timeout_id = setTimeout(() => {
-              this.copied_icon = false;
-            }, animation_popup_duration())
+            // Clear focus
+            this.getUIContext().getFocusController().clearFocus();
           })
       }
-
-      linysSymbol({
-        symbol_glyph_target: this.title_bar_position == 'top' ? 'sys.symbol.chevron_up' : 'sys.symbol.chevron_down'
-      })
-        .onClick(() => {
-          // Clear focus
-          this.getUIContext().getFocusController().clearFocus();
-        })
     } // Title Bar for estimated destination indication
   }
 
@@ -1014,14 +1019,11 @@ struct ThisPageInfo {
   @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
   @LocalStorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
-  @State is_hov_title: boolean = false;
-  @State is_hov_url: boolean = false;
 
   build() {
     Row({ space: 5 }) {
       Column() {
         Text(this.current_title)
-          .brightness(this.is_hov_title ? 1.1 : 1)
           .animation(animation_default())
           .borderRadius(5)
           .padding(2.5)
@@ -1034,11 +1036,9 @@ struct ThisPageInfo {
           .onClick(() => {
             copy(this.current_title);
           })
-          .onHover((ish) => {
-            this.is_hov_title = ish;
-          })
+          .hoverEffect(HoverEffect.Highlight)
+
         Text(this.current_url)
-          .brightness(this.is_hov_url ? 1.1 : 1)
           .animation(animation_default())
           .borderRadius(5)
           .padding(2.5)
@@ -1052,9 +1052,7 @@ struct ThisPageInfo {
           .onClick(() => {
             copy(this.current_url);
           })
-          .onHover((ish) => {
-            this.is_hov_url = ish;
-          })
+          .hoverEffect(HoverEffect.Highlight)
       }
       .alignItems(HorizontalAlign.Start)
       .layoutWeight(1)
