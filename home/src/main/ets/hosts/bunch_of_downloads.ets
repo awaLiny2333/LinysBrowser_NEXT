@@ -26,11 +26,7 @@ export class bunch_of_downloads {
    * @param no_init Will not check directory existence nor do anything else.
    * Usually set true if this object is only created to sit the place of StorageLink initialization.
    */
-  constructor(no_init?: boolean) {
-    if (no_init == true) {
-      return;
-    }
-
+  constructor() {
     console.log('[Meow][bunch_of_downloads] Init success!');
   }
 

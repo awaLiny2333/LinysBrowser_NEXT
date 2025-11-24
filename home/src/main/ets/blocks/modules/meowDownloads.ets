@@ -13,7 +13,7 @@ import linysText from '../../components/texts/linysText';
 
 @Component
 struct meowDownloads {
-  @StorageLink('bunch_of_downloads') @Watch('on_download_state_change') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads(true);
+  @StorageLink('bunch_of_downloads') @Watch('on_download_state_change') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads();
   @LocalStorageLink('showing_downloads') showing_downloads: boolean = false;
   // Downloads
   @LocalStorageProp('screen_width') screen_width: number = 0;

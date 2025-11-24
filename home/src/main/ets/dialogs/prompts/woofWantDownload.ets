@@ -28,7 +28,7 @@ struct woofWantDownload {
   @State showing_additional_info: boolean = false;
   @State showing_illegal_chars: boolean = false;
   // Hosts
-  @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads(true);
+  @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads();
   // Colors
   @StorageLink('effects') effects: boolean = false;
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
