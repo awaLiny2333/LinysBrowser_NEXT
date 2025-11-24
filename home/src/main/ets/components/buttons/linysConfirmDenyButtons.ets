@@ -2,6 +2,7 @@ import { animation_default } from '../../hosts/bunch_of_defaults';
 import linysCapsuleButton from './linysCapsuleButton';
 import linysTimeoutButton from './linysTimeoutButton';
 
+// @Reusable
 @Component
 struct linysConfirmDenyButtons {
   onConfirm?: () => void;

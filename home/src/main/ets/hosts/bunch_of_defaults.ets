@@ -1,5 +1,5 @@
-import Curves from '@ohos.curves';
-import { resource_to_string } from '../utils/resource_tools';
+import lazy Curves from '@ohos.curves';
+import lazy { resource_to_string } from '../utils/resource_tools';
 
 /**
  * Default fontSize_Extra for texts.

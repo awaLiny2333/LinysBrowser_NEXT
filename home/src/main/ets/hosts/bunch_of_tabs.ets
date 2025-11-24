@@ -1,6 +1,6 @@
 import { webview } from '@kit.ArkWeb';
 import { match_domain, url_meow_to_resource, url_resource_to_meow } from '../utils/url_tools';
-import { url_default_blank } from './bunch_of_defaults';
+import lazy { url_default_blank } from './bunch_of_defaults';
 import lazy { window_index_of_id } from '../utils/ui_tools';
 import lazy {
   document_save_from_path,

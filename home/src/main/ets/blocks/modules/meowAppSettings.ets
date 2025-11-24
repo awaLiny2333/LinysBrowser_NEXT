@@ -58,7 +58,7 @@ import lazy woofPromptOK from '../../dialogs/prompts/woofPromptOK';
 import lazy woofHistory from '../../dialogs/managers/woofHistory';
 import lazy woofEasyList from '../../dialogs/managers/woofEasylist';
 
-@Reusable
+// @Reusable
 @Component
 struct meowAppSettings {
   @StorageLink('showing_my_window_alias') showing_my_window_alias: boolean = false;
@@ -417,7 +417,7 @@ struct meowAppSettings {
           })
         } // Quick access on the top
 
-        if (this.showing_app_settings) {
+        // if (this.showing_app_settings) {
           WaterFlow({ scroller: this.waterFlow_control }) {
             FlowItem() {
               settingsModule({
@@ -1300,7 +1300,7 @@ struct meowAppSettings {
               this.scroll_last = last;
             }
           })
-        }
+        // }
       } // Main
       .padding({ left: 15, right: 15 })
       .layoutWeight(1)

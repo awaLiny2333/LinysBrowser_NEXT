@@ -1,6 +1,7 @@
 import { animation_default } from '../../hosts/bunch_of_defaults';
 import linysText from '../texts/linysText';
 
+@Reusable
 @Component
 struct linysSwitchWithText {
   // Links
