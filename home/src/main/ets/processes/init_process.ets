@@ -226,6 +226,7 @@ async function settings(storage: LocalStorage) {
   AppStorage.setOrCreate('showing_my_window_alias', bunch_of_settings.get('status_showing_my_windows_alias') as boolean);
   AppStorage.setOrCreate('my_window_alias_position', bunch_of_settings.get('my_window_alias_position') as string);
   AppStorage.setOrCreate('effects', bunch_of_settings.get('effects') as boolean);
+  AppStorage.setOrCreate('last_zone', bunch_of_settings.get('last_zone') as string);
 
   // Continuation
   AppStorage.setOrCreate('continuation_auto_exit', bunch_of_settings.get('continuation_auto_exit') as boolean);

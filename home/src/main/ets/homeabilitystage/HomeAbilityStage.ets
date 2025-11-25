@@ -20,7 +20,7 @@ export default class HomeAbilityStage extends AbilityStage {
         console.log('[Meow][HomeAbility][onAcceptWant]! Key is undefined.');
         if (windowIds) {
           // Call the last of the already opened windows.
-          let focus_window_id = AppStorage.get('THE_FOCUS_OF_THE_WINDOWS') as string;
+          let focus_window_id = AppStorage.get('THE_WANT_HANDLER_OF_THE_WINDOWS') as string;
           if (focus_window_id == '') {
             // That window is closed;
             instanceKey = windowIds[windowIds.length-1];

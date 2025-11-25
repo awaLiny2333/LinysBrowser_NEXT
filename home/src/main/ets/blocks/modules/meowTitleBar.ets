@@ -759,14 +759,6 @@ struct meowTitleBar {
     this.storage.set('universal_new_tab_gateway', ["new_tab", false]);
   }
 
-  /**
-   * Creates a new window of given alias.
-   * @param alias The alias.
-   * */
-  create_new_window(alias: string = this.my_window_alias) {
-    new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), alias);
-  }
-
   // Web control events
 
   submit_searching() {

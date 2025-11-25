@@ -51,6 +51,7 @@ export class bunch_of_settings {
     bunch_of_settings.register_setting('continue_tabs_count', 'number', '0'); // Deprecated
     bunch_of_settings.register_setting('continue_tabs_main_on', 'number', '0');
     bunch_of_settings.register_setting('continue_tabs_sub_on', 'number', '-1');
+    bunch_of_settings.register_setting('last_zone', 'string', ''); // Empty for a temp windows
 
     // Animation defaults
     bunch_of_settings.register_setting('animation_response', 'number', '36');

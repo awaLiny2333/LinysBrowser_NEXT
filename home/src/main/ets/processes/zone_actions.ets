@@ -38,6 +38,18 @@ export function modify_zone_name(original: string, after: string) {
 }
 
 /**
+ * Marks the zone open state in AppStorage. Usually used to update shortcut button statuses.
+ * @param alias The alias of window / zone.
+ * @param stat The status to be put.
+ * */
+export function mark_zone_opened(alias: string, stat: boolean) {
+  let zones = AppStorage.get('zones') as string[];
+  let idx = zones.indexOf(alias);
+  let zones_opened = AppStorage.get('zones_opened') as boolean[];
+  zones_opened[idx] = stat;
+}
+
+/**
  * Refreshes the zones entries in AppStorage.
  * */
 export function refresh_AppStorage_zones() {

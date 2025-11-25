@@ -59,6 +59,13 @@ export function new_window(context: common.UIAbilityContext, instanceKey: string
   });
 }
 
+export function close_window(storage: LocalStorage) {
+  let windowClass = storage.get('my_windowClass') as window.Window;
+  windowClass.destroyWindow().catch((e: BusinessError) => {
+    console.error('[close_window] Failed: ' + e);
+  });
+}
+
 /**
  * Updates window decor height if is in Free-window Mode.
  * @param window_id The window id.
@@ -244,8 +251,8 @@ export function listen_focus(windowClass: window.Window, storage: LocalStorage) 
         // Focused
         storage.setOrCreate('on_focus', true);
         let id = storage.get('my_window_id') as string
-        AppStorage.setOrCreate('THE_FOCUS_OF_THE_WINDOWS', id);
-        console.log(`[Meow][listen_focus] Set THE_FOCUS_OF_THE_WINDOWS to [${id}]!`);
+        AppStorage.setOrCreate('THE_WANT_HANDLER_OF_THE_WINDOWS', id);
+        console.log(`[Meow][listen_focus] Set THE_WANT_HANDLER_OF_THE_WINDOWS to [${id}]!`);
       } else {
         // Lose focus
         storage.setOrCreate('on_focus', false);

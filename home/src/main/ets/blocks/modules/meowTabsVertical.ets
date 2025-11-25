@@ -16,7 +16,7 @@ import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysText from '../../components/texts/linysText';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysSymbol from '../../components/texts/linysSymbol';
-import { web_state_dir } from '../../processes/zone_actions';
+import { mark_zone_opened, web_state_dir } from '../../processes/zone_actions';
 import { fileIo } from '@kit.CoreFileKit';
 import { meowContext } from '../../utils/environment_tools';
 
@@ -247,51 +247,7 @@ struct meowTabsVertical {
     if (lord != this.my_window_id) {
       // Sub windows
       if (this.is_zone) {
-        // Restore zones
-        console.log(`[Meow][init][meowTabsVertical][is_zone] about to restore tabs. (${(Date.now() - t0)}/${run_time(storage)} ms)`);
-
-        // Create new tabs
-        let dir = web_state_dir(this.storage);
-        let tabs_stat = sandbox_read_text_sync(dir + '/stat');
-        if (tabs_stat != 'undefined') {
-          // Set stat
-          let stat = tabs_stat.split(' ');
-          continue_tabs_main_on = Number.parseInt(stat[0]);
-          continue_tabs_sub_on = Number.parseInt(stat[1]);
-        }
-        let tabs_list = fileIo.listFileSync(meowContext().filesDir + '/' + dir);
-        for (let index = 0; index < Math.floor(tabs_list.length / 2); index++) {
-          try {
-            let label_file = dir + "/continue_tabs_web_state_array_" + index.toString() + '_label';
-            let label = sandbox_read_text_sync(label_file); // Name of that tab
-            console.log(`[Meow][init][meowTabsVertical] Tab #${index}! label=${label}`);
-            this.new_tab("", false, false, true, label);
-          } catch (e) {
-            console.error('[TabsVertical][is_zone][new_tab] ' + e);
-          }
-        }
-
-        // Switch to *THE* tab if there is no want,
-        // and DON'T switch if there IS a want
-        // (or that tab would be woken at the same time as the loading of the wanted tab)
-        if (!go_want) {
-          this.switch_tab(continue_tabs_main_on, false, false);
-          this.try_scroll_to(continue_tabs_main_on);
-        }
-
-        setTimeout(() => {
-          // Retrieve all data, avoid blocks on the main thread
-          sync_all_tabs_list_info(this.storage);
-          // Recover Paralleow
-          if (continue_tabs_sub_on < this.tab_titles.length) {
-            this.bunch_of_tabs.sub_tab_idx = continue_tabs_sub_on;
-            // Restore sub tab;
-            if (continue_tabs_sub_on >= 0) {
-              this.bunch_of_tabs.callRestore(this.getUIContext(), continue_tabs_sub_on);
-            }
-          }
-        }, 10);
-
+        this.restore_zone(storage, go_want, t0);
       } else if (go_want) {
         // Do nothing if is a wanted new window to a running BrowserCat.
         console.log(`[Meow][init][meowTabsVertical] Is a sub window! And there are wants?`);
@@ -308,44 +264,57 @@ struct meowTabsVertical {
         console.log(`[Meow][init][meowTabsVertical] Is a sub window!`);
       }
     } else {
-      // Main window
-      // Start Up: generate / recover tabs
-      let tabs_list = fileIo.listFileSync(meowContext().filesDir + '/continue');
-      if (tabs_list.length == 0 || start_up_option == "new tab") {
-        try {
-          this.new_tab(bunch_of_tabs.new_tab_url, false, false);
-          this.switch_tab(0, false, false);
-        } catch (e) {
-          console.error('[TabsVertical][NEW_TAB] ' + e);
-        }
-      } else if (start_up_option == "home") {
-        try {
-          this.new_tab((bunch_of_tabs.home_url == "") ? url_default_blank() : bunch_of_tabs.home_url, false, false);
-          this.switch_tab(0, false, false);
-        } catch (e) {
-          console.error('[TabsVertical][HOME] ' + e);
-        }
+      // Main / Lord window
+
+      let last_zone = AppStorage.get('last_zone') as string;
+      if (last_zone != '') {
+        // Need restore
+        this.my_window_alias = last_zone;
+        this.is_zone = true;
+        this.restore_zone(storage, go_want, t0);
+        // Mark restore OK
+        mark_zone_opened(this.storage.get('my_window_alias') as string, true);
+        // Log
+        console.log(`[Meow][init][meowTabsVertical] Is a LORD zone restore!`);
       } else {
-        console.log(`[Meow][init][meowTabsVertical] about to restore tabs. (${(Date.now() - t0)}/${run_time(storage)} ms)`);
-
-        // Create new tabs
-        for (let index = 0; index < Math.floor(tabs_list.length / 2); index++) {
+        // Start Up: generate / recover tabs
+        let tabs_list = fileIo.listFileSync(meowContext().filesDir + '/continue');
+        if (tabs_list.length == 0 || start_up_option == "new tab") {
           try {
-            let label_file = "continue/continue_tabs_web_state_array_" + index.toString() + '_label';
-            let label = sandbox_read_text_sync(label_file); // Name of that tab
-            // console.log(`[Meow][init][meowTabsVertical] Tab #${index}!`);
-            this.new_tab("", false, false, true, label);
+            this.new_tab(bunch_of_tabs.new_tab_url, false, false);
+            this.switch_tab(0, false, false);
           } catch (e) {
-            console.error('[TabsVertical][CONTINUE][new_tab] ' + e);
+            console.error('[TabsVertical][NEW_TAB] ' + e);
           }
-        }
+        } else if (start_up_option == "home") {
+          try {
+            this.new_tab((bunch_of_tabs.home_url == "") ? url_default_blank() : bunch_of_tabs.home_url, false, false);
+            this.switch_tab(0, false, false);
+          } catch (e) {
+            console.error('[TabsVertical][HOME] ' + e);
+          }
+        } else {
+          console.log(`[Meow][init][meowTabsVertical] about to restore tabs. (${(Date.now() - t0)}/${run_time(storage)} ms)`);
 
-        // Switch to *THE* tab if there is no want,
-        // and DON'T switch if there IS a want
-        // (or that tab would be woken at the same time as the loading of the wanted tab)
-        if (!go_want) {
-          this.switch_tab(continue_tabs_main_on, false, false);
-          this.try_scroll_to(continue_tabs_main_on);
+          // Create new tabs
+          for (let index = 0; index < Math.floor(tabs_list.length / 2); index++) {
+            try {
+              let label_file = "continue/continue_tabs_web_state_array_" + index.toString() + '_label';
+              let label = sandbox_read_text_sync(label_file); // Name of that tab
+              // console.log(`[Meow][init][meowTabsVertical] Tab #${index}!`);
+              this.new_tab("", false, false, true, label);
+            } catch (e) {
+              console.error('[TabsVertical][CONTINUE][new_tab] ' + e);
+            }
+          }
+
+          // Switch to *THE* tab if there is no want,
+          // and DON'T switch if there IS a want
+          // (or that tab would be woken at the same time as the loading of the wanted tab)
+          if (!go_want) {
+            this.switch_tab(continue_tabs_main_on, false, false);
+            this.try_scroll_to(continue_tabs_main_on);
+          }
         }
       }
 
@@ -375,6 +344,56 @@ struct meowTabsVertical {
 
     console.log(`[Meow][init][meowTabsVertical] Preprocessing Tabs OK. (${(Date.now() - t0)}/${run_time(storage)} ms)`);
     this.tabs_init_ok = true;
+  }
+
+  restore_zone(storage: LocalStorage, go_want: boolean, t0: number) {
+    // Restore zones
+    console.log(`[Meow][init][meowTabsVertical][is_zone] about to restore tabs. (${(Date.now() - t0)}/${run_time(storage)} ms)`);
+
+    let continue_tabs_sub_on = AppStorage.get('continue_tabs_sub_on') as number;
+    let continue_tabs_main_on = AppStorage.get('continue_tabs_main_on') as number;
+
+    // Create new tabs
+    let dir = web_state_dir(this.storage);
+    let tabs_stat = sandbox_read_text_sync(dir + '/stat');
+    if (tabs_stat != 'undefined') {
+      // Set stat
+      let stat = tabs_stat.split(' ');
+      continue_tabs_main_on = Number.parseInt(stat[0]);
+      continue_tabs_sub_on = Number.parseInt(stat[1]);
+    }
+    let tabs_list = fileIo.listFileSync(meowContext().filesDir + '/' + dir);
+    for (let index = 0; index < Math.floor(tabs_list.length / 2); index++) {
+      try {
+        let label_file = dir + "/continue_tabs_web_state_array_" + index.toString() + '_label';
+        let label = sandbox_read_text_sync(label_file); // Name of that tab
+        console.log(`[Meow][init][meowTabsVertical] Tab #${index}! label=${label}`);
+        this.new_tab("", false, false, true, label);
+      } catch (e) {
+        console.error('[TabsVertical][is_zone][new_tab] ' + e);
+      }
+    }
+
+    // Switch to *THE* tab if there is no want,
+    // and DON'T switch if there IS a want
+    // (or that tab would be woken at the same time as the loading of the wanted tab)
+    if (!go_want) {
+      this.switch_tab(continue_tabs_main_on, false, false);
+      this.try_scroll_to(continue_tabs_main_on);
+    }
+
+    setTimeout(() => {
+      // Retrieve all data, avoid blocks on the main thread
+      sync_all_tabs_list_info(this.storage);
+      // Recover Paralleow
+      if (continue_tabs_sub_on < this.tab_titles.length) {
+        this.bunch_of_tabs.sub_tab_idx = continue_tabs_sub_on;
+        // Restore sub tab;
+        if (continue_tabs_sub_on >= 0) {
+          this.bunch_of_tabs.callRestore(this.getUIContext(), continue_tabs_sub_on);
+        }
+      }
+    }, 10);
   }
 
   /**

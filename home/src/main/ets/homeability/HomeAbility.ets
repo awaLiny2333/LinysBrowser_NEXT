@@ -167,19 +167,25 @@ export default class HomeAbility extends UIAbility {
 
     // Set window notes
     AppStorage.set('THE_LORD_OF_THE_WINDOWS', windowIds[0]);
-    if (window_id == AppStorage.get('THE_FOCUS_OF_THE_WINDOWS') as string) {
+    if (window_id == AppStorage.get('THE_WANT_HANDLER_OF_THE_WINDOWS') as string) {
       // Reset focus
       // TODO: Should set this to the second top window! Lazzzy cat!
-      AppStorage.setOrCreate('THE_FOCUS_OF_THE_WINDOWS', '');
+      AppStorage.setOrCreate('THE_WANT_HANDLER_OF_THE_WINDOWS', '');
     }
 
     // Mark zone closed
     if (this.storage.get('is_zone') as boolean) {
       let zones = AppStorage.get('zones') as string[];
-      let idx = zones.indexOf(this.storage.get('my_window_alias') as string);
+      let alias = this.storage.get('my_window_alias') as string;
+      let idx = zones.indexOf(alias);
       let zones_opened = AppStorage.get('zones_opened') as boolean[];
       console.log(`[onWindowStageWillDestroy] Mark zones_opened of #${idx} to false!`);
       zones_opened[idx] = false;
+      bunch_of_settings.set('last_zone', alias);
+      AppStorage.set('last_zone', alias)
+    } else {
+      bunch_of_settings.set('last_zone', '');
+      AppStorage.set('last_zone', '');
     }
 
     hilog.info(0x0000, 'testTag', `onWindowStageWillDestroy`);
@@ -309,7 +315,7 @@ export default class HomeAbility extends UIAbility {
         // Listen free window mode
         listen_free_window_mode(this.context, windowClass, storage, this.my_window_id);
       }
-      AppStorage.setOrCreate('THE_FOCUS_OF_THE_WINDOWS', this.my_window_id);
+      AppStorage.setOrCreate('THE_WANT_HANDLER_OF_THE_WINDOWS', this.my_window_id);
 
       // Avoid hosts
       get_avoid(windowClass, storage);
