@@ -1,7 +1,7 @@
 import { common, ConfigurationConstant } from '@kit.AbilityKit';
 import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
 import { window } from '@kit.ArkUI';
-import { animation_default, default_new_window_name } from '../hosts/bunch_of_defaults';
+import { animation_default } from '../hosts/bunch_of_defaults';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 import lazy { print_web } from '../utils/print_tools';

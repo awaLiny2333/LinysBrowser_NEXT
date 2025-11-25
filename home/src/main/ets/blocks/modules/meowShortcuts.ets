@@ -4,8 +4,8 @@ import { animation_default, capsule_bar_height, click_effect_default, fontSize_L
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { new_window, run_time, storage_of_id } from '../../utils/ui_tools';
-import { common } from '@kit.AbilityKit';
-import { zone_opened } from '../../processes/zone_actions';
+import lazy { common } from '@kit.AbilityKit';
+import lazy { zone_opened } from '../../processes/zone_actions';
 
 @Component
 struct meowShortcuts {

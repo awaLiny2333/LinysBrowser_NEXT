@@ -13,10 +13,10 @@ import lazy woofPrompt from '../../dialogs/web/woofPrompt';
 import lazy woofConfirm from '../../dialogs/web/woofConfirm';
 import lazy woofAlert from '../../dialogs/web/woofAlert';
 import lazy woofHttpAuthPrompt from '../../dialogs/web/woofHttpAuthPrompt';
-import linysText from '../../components/texts/linysText';
 import lazy woofWantJump from '../../dialogs/prompts/woofWantJump';
 import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
 import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
+import linysText from '../../components/texts/linysText';
 
 @Component
 struct meowWebView {

@@ -3,7 +3,7 @@ import {
 } from '../../hosts/bunch_of_defaults';
 
 // @Reusable
-  // Can I?
+// Can I?
 @Component
 struct linysCapsuleButton {
   @Prop text: ResourceStr = "";

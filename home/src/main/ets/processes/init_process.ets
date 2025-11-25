@@ -445,8 +445,8 @@ function tabs(storage: LocalStorage) {
   if (name == '') {
     name = default_new_window_name();
   }
-  console.log(`[init][tabs] my_window_alias=${name}`)
-  storage.setOrCreate('my_window_alias', name)
+  console.log(`[init][tabs] my_window_alias=${name}`);
+  storage.setOrCreate('my_window_alias', name);
   storage.setOrCreate('pin_to_top', false);
 
   // Fill back settings
