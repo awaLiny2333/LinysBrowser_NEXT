@@ -252,8 +252,15 @@ struct meowTabsVertical {
 
         // Create new tabs
         let dir = web_state_dir(this.storage);
+        let tabs_stat = sandbox_read_text_sync(dir + '/stat');
+        if (tabs_stat != 'undefined') {
+          // Set stat
+          let stat = tabs_stat.split(' ');
+          continue_tabs_main_on = Number.parseInt(stat[0]);
+          continue_tabs_sub_on = Number.parseInt(stat[1]);
+        }
         let tabs_list = fileIo.listFileSync(meowContext().filesDir + '/' + dir);
-        for (let index = 0; index < tabs_list.length / 2; index++) {
+        for (let index = 0; index < Math.floor(tabs_list.length / 2); index++) {
           try {
             let label_file = dir + "/continue_tabs_web_state_array_" + index.toString() + '_label';
             let label = sandbox_read_text_sync(label_file); // Name of that tab
@@ -268,14 +275,21 @@ struct meowTabsVertical {
         // and DON'T switch if there IS a want
         // (or that tab would be woken at the same time as the loading of the wanted tab)
         if (!go_want) {
-          this.switch_tab(0, false, false);
-          this.try_scroll_to(0);
+          this.switch_tab(continue_tabs_main_on, false, false);
+          this.try_scroll_to(continue_tabs_main_on);
         }
 
         setTimeout(() => {
           // Retrieve all data, avoid blocks on the main thread
           sync_all_tabs_list_info(this.storage);
           // Recover Paralleow
+          if (continue_tabs_sub_on < this.tab_titles.length) {
+            this.bunch_of_tabs.sub_tab_idx = continue_tabs_sub_on;
+            // Restore sub tab;
+            if (continue_tabs_sub_on >= 0) {
+              this.bunch_of_tabs.callRestore(this.getUIContext(), continue_tabs_sub_on);
+            }
+          }
         }, 10);
 
       } else if (go_want) {
@@ -315,7 +329,7 @@ struct meowTabsVertical {
         console.log(`[Meow][init][meowTabsVertical] about to restore tabs. (${(Date.now() - t0)}/${run_time(storage)} ms)`);
 
         // Create new tabs
-        for (let index = 0; index < tabs_list.length / 2; index++) {
+        for (let index = 0; index < Math.floor(tabs_list.length / 2); index++) {
           try {
             let label_file = "continue/continue_tabs_web_state_array_" + index.toString() + '_label';
             let label = sandbox_read_text_sync(label_file); // Name of that tab
@@ -386,12 +400,12 @@ struct meowTabsVertical {
     if (is_from_receive) {
       this.bunch_of_tabs.receive_tab(this.storage);
       // re-save web states
-      let is_lord = (this.storage.get('my_window_id') as string) == (AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string);
-      if (is_lord) {
+      let dir = web_state_dir(this.storage);
+      if (dir) {
         console.log('[new_tab][is_from_receive] Save web state!');
         let idx = this.bunch_of_tabs.Tabs.length - 1;
-        this.bunch_of_tabs.save_web_state_to_sandbox(idx, 'continue');
-        this.bunch_of_tabs.save_web_label_to_sandbox(idx, 'continue');
+        this.bunch_of_tabs.save_web_state_to_sandbox(idx, dir);
+        this.bunch_of_tabs.save_web_label_to_sandbox(idx, dir);
       }
     } else {
       this.bunch_of_tabs.newTab(this.getUIContext(), target_url, init_state, placeholder_label);

@@ -2,7 +2,7 @@ import { animation_default } from '../hosts/bunch_of_defaults';
 import linysLockToggle from './toggles/linysLockToggle';
 import linysText from './texts/linysText';
 
-@Reusable
+// @Reusable
 @Component
 struct linysLockSlider {
   @State is_locked: boolean = true;

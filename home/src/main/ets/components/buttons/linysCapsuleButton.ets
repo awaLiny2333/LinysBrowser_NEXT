@@ -2,7 +2,7 @@ import {
   animation_default, capsule_bar_height, click_effect_default, fontSize_Large
 } from '../../hosts/bunch_of_defaults';
 
-@Reusable
+// @Reusable
   // Can I?
 @Component
 struct linysCapsuleButton {

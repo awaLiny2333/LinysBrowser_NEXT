@@ -14,7 +14,7 @@ import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 import { run_time } from '../utils/ui_tools';
 import { MessageEvents, worker } from '@kit.ArkTS';
 import lazy { sendableImage } from '@kit.ImageKit';
-import { scan_zones } from './zone_actions';
+import { refresh_AppStorage_zones } from './zone_actions';
 import { default_new_window_name } from '../hosts/bunch_of_defaults';
 
 /**
@@ -101,9 +101,8 @@ function ensure_zones_folder(context: common.UIAbilityContext) {
       fileIo.mkdirSync(filesDir + '/zones', true);
     } else {
       // Zones exist
-      let zones = scan_zones();
-      AppStorage.setOrCreate('zones', zones);
-      console.log('[init][ensure_zones_folder] Found zones: \n' + zones);
+      refresh_AppStorage_zones();
+      console.log('[init][ensure_zones_folder] Found zones: ' + (AppStorage.get('zones') as string[]));
     }
   } catch (e) {
     console.error('[init][ensure_zones_folder] Error: ' + e);

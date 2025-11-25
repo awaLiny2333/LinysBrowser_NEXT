@@ -5,6 +5,7 @@ import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { new_window, run_time, storage_of_id } from '../../utils/ui_tools';
 import { common } from '@kit.AbilityKit';
+import { zone_opened } from '../../processes/zone_actions';
 
 @Component
 struct meowShortcuts {
@@ -16,6 +17,7 @@ struct meowShortcuts {
   @StorageLink('homepage_shortcuts_bookmarks_dir') @Watch('refresh_homepage_shortcuts') homepage_shortcuts_dir: string = '/';
   @StorageLink('homepage_shortcuts') homepage_shortcuts: bookmark[] = []; // Ideally this is loaded after init_process.
   @StorageLink('zones') zones: string[] = [];
+  @StorageLink('zones_opened') zones_opened: boolean[] = [];
   // Environment
   @LocalStorageProp('screen_height') screen_height: number = 100;
   // Statuses
@@ -46,6 +48,7 @@ struct meowShortcuts {
             zone_alias: alias,
             my_index: key,
           })
+            .opacity(this.zones_opened[key] ? 0.5 : 1)
         })
 
         ForEach(this.homepage_shortcuts, (shortcut: bookmark, key: number) => {
@@ -57,7 +60,6 @@ struct meowShortcuts {
       }
       .alignItems(this.shortcut_alignItems())
       .padding({ top: Math.max(18, this.screen_height * (1 - this.homepage_shortcuts_init_height * 0.01)) })
-      // .animation(animation_default())
       .width('100%')
     } // Shortcuts
     .padding({ right: 14, left: 14, bottom: 18 })
@@ -277,68 +279,54 @@ struct zoneButton {
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('preferred_hand_reverse_homepage_shortcuts') preferred_hand_reverse_homepage_shortcuts: boolean = false;
-  @StorageLink('homepage_shortcuts_init_height') homepage_shortcuts_init_height: number = 50;
-  // Gateways
-  @LocalStorageLink('universal_new_tab_gateway') new_tab_gateway: (string | boolean)[] = ['', false];
   // Colors
   @StorageLink('effects') effects: boolean = false;
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // SHow
-  @State vis_contents: Visibility = Visibility.None;
-  @State render_contents: boolean = false;
-  render_contents_timeout_id: number | undefined = undefined;
   @State show: Visibility = this.homepage_shortcuts_no_animation ? Visibility.Visible : Visibility.None;
   @State isHov: boolean = false;
 
   build() {
-    Column({ space: this.render_contents ? 10 : 0 }) {
-      Button('󰙟 ' + this.zone_alias)
-        .brightness(this.isHov ? 1.1 : 1)
-        .type(ButtonType.Capsule)
-        .backgroundColor(this.background_color())
-        .useEffect(this.effects, EffectType.WINDOW_EFFECT)
-        .fontColor(this.color_current_font)
-        .fontSize(fontSize_Large())
-        .fontWeight(FontWeight.Medium)
-        .height(capsule_bar_height())
-        .border({
-          width: 2,
-          color: "transparent"
-        })
-        .clickEffect(click_effect_default())
-        .visibility(this.show)
-        .animation(animation_default())
-        .onAppear(() => {
-          if (!this.homepage_shortcuts_no_animation) {
-            setTimeout(() => {
-              this.show = Visibility.Visible;
-              // Animation of floating up
-            }, this.get_animation_timeout())
-          }
-        })
-        .onClick(() => {
-          // Prevent opening 2 same zones.
-          let windowStorages = AppStorage.get('windowStorages') as LocalStorage[];
-          for (let index = 0; index < windowStorages.length; index++) {
-            let is_zone = windowStorages[index].get('is_zone') as boolean;
-            let alias = windowStorages[index].get('my_window_alias') as string;
-            if (is_zone && alias == this.zone_alias) {
-              return;
-            }
-          }
-          // Open zone
-          console.log(`[zoneButton] Load zone! ${this.zone_alias}`);
-          new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), this.zone_alias, true);
-        })
-        .onHover((isHv) => {
-          this.isHov = isHv;
-        })
-    }
-    .alignItems(this.get_alignItems())
-    .padding(this.vis_contents == Visibility.Visible ? (this.is_right_align() ? { right: 30 } : { left: 30 }) : {})
-    .animation(animation_default())
+    Button('󰙟 ' + this.zone_alias)
+      .brightness(this.isHov ? 1.1 : 1)
+      .type(ButtonType.Capsule)
+      .backgroundColor(this.background_color())
+      .useEffect(this.effects, EffectType.WINDOW_EFFECT)
+      .fontColor(this.color_current_font)
+      .fontSize(fontSize_Large())
+      .fontWeight(FontWeight.Medium)
+      .height(capsule_bar_height())
+      .border({
+        width: 2,
+        color: "transparent"
+      })
+      .clickEffect(click_effect_default())
+      .visibility(this.show)
+      .animation(animation_default())
+      .onAppear(() => {
+        if (!this.homepage_shortcuts_no_animation) {
+          setTimeout(() => {
+            this.show = Visibility.Visible;
+            // Animation of floating up
+          }, this.get_animation_timeout())
+        }
+      })
+      .onClick(() => {
+        // Prevent opening 2 same zones.
+        let is_opened = zone_opened(this.zone_alias);
+        // Open zone
+        if (is_opened) {
+          console.warn(`[zoneButton] INTERCEPTED Load zone! Zone already opened. ${this.zone_alias}`);
+          return;
+        }
+        console.log(`[zoneButton] Load zone! ${this.zone_alias}`);
+        new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), this.zone_alias, true);
+      })
+      .onHover((isHv) => {
+        this.isHov = isHv;
+      })
   }
 
   is_right_align() {

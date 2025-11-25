@@ -9,14 +9,29 @@ import lazy { storage_of_id } from '../utils/ui_tools';
  * @returns The list of zone names.
  * */
 export function scan_zones() {
+  let opened: boolean[] = [];
+  let zones: string[] = [];
   try {
-    let zones = fileIo.listFileSync(meowContext().filesDir + '/zones', { recursion: false });
-    return zones;
+    zones = fileIo.listFileSync(meowContext().filesDir + '/zones', { recursion: false });
   } catch (error) {
-    return [];
+    return [[], []];
   }
+  console.log('[zone_actions][scan_zones] Result: ' + zones);
+  try {
+    for (let index = 0; index < zones.length; index++) {
+      opened.push(zone_opened(zones[index]));
+    }
+  } catch (e) {
+    console.error('[zone_actions][scan_zones] Failed: ' + e);
+  }
+  return [zones, opened];
 }
 
+/**
+ * Modifies the zone's name, renaming the folder on disk.
+ * @param original Original name.
+ * @param after New name.
+ * */
 export function modify_zone_name(original: string, after: string) {
   sandbox_rename_sync('zones/' + original, 'zones/' + after);
   refresh_AppStorage_zones();
@@ -26,7 +41,28 @@ export function modify_zone_name(original: string, after: string) {
  * Refreshes the zones entries in AppStorage.
  * */
 export function refresh_AppStorage_zones() {
-  AppStorage.setOrCreate('zones', scan_zones());
+  let zones = scan_zones();
+  AppStorage.setOrCreate('zones', zones[0] as string[]);
+  AppStorage.setOrCreate('zones_opened', zones[1] as boolean[]);
+}
+
+/**
+ * Checks if a zone is opened.
+ * @param zone_alias The alias of zone / window.
+ * */
+export function zone_opened(zone_alias: string) {
+  let windowStorages = AppStorage.get('windowStorages') as LocalStorage[];
+  if (windowStorages) {
+    // windowStorages may be undefined, if is called before any window creation
+    for (let index = 0; index < windowStorages.length; index++) {
+      let is_zone = windowStorages[index].get('is_zone') as boolean;
+      let alias = windowStorages[index].get('my_window_alias') as string;
+      if (is_zone && alias == zone_alias) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 /**
@@ -37,14 +73,8 @@ export function refresh_AppStorage_zones() {
 export function set_zone(window_id: string) {
   let storage = storage_of_id(window_id);
   let alias = storage.get('my_window_alias') as string;
-  let is_zone = storage.get('is_zone') as boolean;
-  // If already is a zone
-  // if (is_zone) {
-  //   console.log(`[zone_actions][set_zone] Failed, is already a zone!`);
-  //   return undefined;
-  // }
   // Do not allow duplicate aliases
-  if (scan_zones().includes(alias)) {
+  if ((scan_zones()[0] as string[]).includes(alias)) {
     console.log(`[zone_actions][set_zone] Failed, duplicated alias!`);
     return false;
   }
@@ -54,15 +84,11 @@ export function set_zone(window_id: string) {
   let lord = AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string;
   if (window_id == lord) {
     // If is lord, Clean current continue file;
-    // try {
     let src = meowContext().filesDir + '/continue/';
     let des = meowContext().filesDir + '/zones/' + alias + '/';
     sandbox_mkdir_sync('zones/' + alias);
     console.log(`[set_zone] About to copyDirSync! src=${src}, des=${des}`);
     fileIo.copyDirSync(src, des, 1);
-    // } catch (e) {
-    //   console.error(`[set_zone] copyDirSync Failed: ` + e);
-    // }
     sandbox_rmdir_sync('continue');
     sandbox_mkdir_sync('continue');
   } else {
@@ -83,11 +109,6 @@ export function set_zone(window_id: string) {
 export function off_zone(window_id: string) {
   let storage = storage_of_id(window_id);
   let alias = storage.get('my_window_alias') as string;
-  let is_zone = storage.get('is_zone') as boolean;
-  // If is NOT a zone
-  // if (!is_zone) {
-  //   return undefined;
-  // }
   // After work
   sandbox_rmdir_sync('zones/' + alias);
   let lord = AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string;
@@ -120,5 +141,6 @@ export function web_state_dir(storage: LocalStorage) {
   if (is_lord) {
     return 'continue';
   }
+  // Neither zone, nor lord
   return undefined;
 }

@@ -1879,7 +1879,7 @@ struct menuScrollVertical {
   }
 }
 
-@Reusable
+// @Reusable
 @Component
 struct menuItem {
   @State my_index: number = 0;

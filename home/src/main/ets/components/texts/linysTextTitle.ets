@@ -1,7 +1,7 @@
 import lazy { animation_default } from '../../hosts/bunch_of_defaults';
 import { fontSize_Large } from '../../hosts/bunch_of_defaults';
 
-@Reusable
+// @Reusable
 @Component
 struct linysTextTitle {
   // Colors

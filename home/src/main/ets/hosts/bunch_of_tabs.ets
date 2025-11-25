@@ -16,6 +16,7 @@ import lazy { bunch_of_settings } from './bunch_of_settings';
 import lazy { save_history } from '../processes/tabs_actions';
 import lazy { createNWeb, TabNodeController } from '../objects/WebNode';
 import { web_state_dir } from '../processes/zone_actions';
+import { meowContext } from '../utils/environment_tools';
 
 export class bunch_of_tabs {
   // Settings
@@ -396,12 +397,6 @@ export class bunch_of_tabs {
     let idx = this.Tabs.length;
     // let Date_ID = Date.now();
 
-    // while (this.tab_timestamp_collide(Date_ID)) {
-    //   // Date_ID crash prevention
-    //   Date_ID += 1;
-    // }
-    // this.used_timestamps.add(Date_ID);
-    // let new_TabLabel: tab_label = new tab_label(Date_ID, idx);
     this.used_timestamps.add(move_tab_tab_label.timestamp);
     move_tab_tab_label.index_key = idx;
 
@@ -695,13 +690,24 @@ export class bunch_of_tabs {
   // Data statuses
 
   /**
-   * Saves current_main_tab_index and current_sub_tab_index to bunch_of_settings.
+   * Saves current_main_tab_index and current_sub_tab_index to bunch_of_settings (lord) or disk (zone).
    * */
   save_tab_index_stats(identifier: string) {
+    let is_zone = this.my_storage!.get('is_zone') as boolean;
+    let is_lord = (this.my_storage!.get('my_window_id') as string) == (AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string);
+
     // Store where am I
-    bunch_of_settings.set("continue_tabs_main_on", this.main_tab_idx);
-    bunch_of_settings.set("continue_tabs_sub_on", this.sub_tab_idx);
-    console.log('[Meow]' + identifier + "[bunch_of_tabs] Stored index stats. Main: " + this.main_tab_idx + ' Sub: ' + this.sub_tab_idx);
+    if (is_zone) {
+
+      sandbox_save(web_state_dir(this.my_storage!) + '/stat', this.main_tab_idx + ' ' + this.sub_tab_idx);
+      console.log('[Meow][is_zone]' + identifier + "[bunch_of_tabs] Stored index stats. Main: " + this.main_tab_idx + ' Sub: ' + this.sub_tab_idx);
+    } else if (is_lord) {
+      bunch_of_settings.set('continue_tabs_main_on', this.main_tab_idx);
+      bunch_of_settings.set('continue_tabs_sub_on', this.sub_tab_idx);
+      console.log('[Meow][is_lord]' + identifier + "[bunch_of_tabs] Stored index stats. Main: " + this.main_tab_idx + ' Sub: ' + this.sub_tab_idx);
+    } else {
+      console.warn('[Meow][temp_window]' + identifier + "[bunch_of_tabs] REJECTED Store index stats request. Main: " + this.main_tab_idx + ' Sub: ' + this.sub_tab_idx);
+    }
   }
 
   /**

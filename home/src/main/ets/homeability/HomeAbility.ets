@@ -22,7 +22,6 @@ import { meowPx2vp } from '../utils/environment_tools';
 export default class HomeAbility extends UIAbility {
   my_window_id = '';
   my_window_alias = '';
-  is_zone = false;
   storage: LocalStorage = new LocalStorage();
 
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam) {
@@ -165,8 +164,6 @@ export default class HomeAbility extends UIAbility {
     windowStorages.splice(window_index, 1);
     let all_bunch_of_tabs = AppStorage.get('all_bunch_of_tabs') as bunch_of_tabs[];
     all_bunch_of_tabs.splice(window_index, 1);
-    let windowAliases = AppStorage.get('windowAliases') as string[];
-    windowAliases.splice(window_index, 1);
 
     // Set window notes
     AppStorage.set('THE_LORD_OF_THE_WINDOWS', windowIds[0]);
@@ -174,6 +171,14 @@ export default class HomeAbility extends UIAbility {
       // Reset focus
       // TODO: Should set this to the second top window! Lazzzy cat!
       AppStorage.setOrCreate('THE_FOCUS_OF_THE_WINDOWS', '');
+    }
+
+    // Mark zone closed
+    if (this.storage.get('is_zone') as boolean) {
+      let zones = AppStorage.get('zones') as string[];
+      let idx = zones.indexOf(this.storage.get('my_window_alias') as string);
+      let zones_opened = AppStorage.get('zones_opened') as boolean[];
+      zones_opened[idx] = false;
     }
 
     hilog.info(0x0000, 'testTag', `onWindowStageWillDestroy`);
@@ -225,7 +230,6 @@ export default class HomeAbility extends UIAbility {
       AppStorage.setOrCreate('windowIds', []);
       AppStorage.setOrCreate('windowStages', []);
       AppStorage.setOrCreate('windowStorages', []);
-      AppStorage.setOrCreate('windowAliases', []);
     } else {
       // one of the multi-windows
       my_index = windowClasses.length;
@@ -262,8 +266,14 @@ export default class HomeAbility extends UIAbility {
     // my_window_alias is set by the window who opens this window. See init_process - tabs()
     // this.storage.setOrCreate('my_window_alias', this.my_window_alias);
     // Save is_zone mark
-    this.is_zone = AppStorage.get('LAST_WINDOW_WINDOW_IS_ZONE') as boolean;
-    this.storage.setOrCreate('is_zone', this.is_zone);
+    let is_zone =AppStorage.get('LAST_WINDOW_WINDOW_IS_ZONE') as boolean;
+    this.storage.setOrCreate('is_zone',is_zone );
+    if (is_zone) {
+      let zones = AppStorage.get('zones') as string[];
+      let idx = zones.indexOf(this.storage.get('my_window_alias') as string);
+      let zones_opened = AppStorage.get('zones_opened') as boolean[];
+      zones_opened[idx] = true;
+    }
 
     // Parallel array of ids
     let windowIds = AppStorage.get('windowIds') as string[];
@@ -272,8 +282,6 @@ export default class HomeAbility extends UIAbility {
     windowStages.push(windowStage);
     let windowStorages = AppStorage.get('windowStorages') as LocalStorage[];
     windowStorages.push(storage);
-    let windowAliases = AppStorage.get('windowAliases') as string[];
-    windowAliases.push(this.my_window_alias);
 
     console.log(`[Meow][HomeAbility] loadContent! (${run_time(this.storage)} ms)`);
 
