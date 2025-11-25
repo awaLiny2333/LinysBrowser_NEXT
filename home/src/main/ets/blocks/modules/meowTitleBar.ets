@@ -244,7 +244,7 @@ struct meowTitleBar {
               .onBlur(() => {
                 this.is_search_input_typing = false;
               })
-              .enabled(this.showing_scratching_board ? false : true)
+              .enabled(this.showing_scratching_board || this.showing_search_extracted_field ? false : true)
               .onChange((content) => {
                 this.update_search_input(content);
               })
@@ -274,7 +274,7 @@ struct meowTitleBar {
               .onBlur(() => {
                 this.is_search_input_typing = false;
               })
-              .enabled(this.showing_scratching_board ? false : true)
+              .enabled(this.showing_scratching_board || !this.showing_search_extracted_field ? false : true)
               .onChange((content) => {
                 this.search_extracted_keyword = content;
                 if (content == '') {
@@ -822,7 +822,7 @@ struct meowTitleBar {
     } else {
       // Normal height
       if (this.showing_more_options) {
-        return Math.min(this.full_screen_height, (this.tablet_mode ? 400 : 460));
+        return Math.min(this.full_screen_height, 450 + (this.tablet_mode ? 0 : 50));
       }
       if (this.full_screen_height < 400) {
         return this.full_screen_height

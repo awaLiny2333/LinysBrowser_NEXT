@@ -17,7 +17,6 @@ struct meowShortcuts {
   @StorageLink('homepage_shortcuts_bookmarks_dir') @Watch('refresh_homepage_shortcuts') homepage_shortcuts_dir: string = '/';
   @StorageLink('homepage_shortcuts') homepage_shortcuts: bookmark[] = []; // Ideally this is loaded after init_process.
   @StorageLink('zones') zones: string[] = [];
-  @StorageLink('zones_opened') zones_opened: boolean[] = [];
   // Environment
   @LocalStorageProp('screen_height') screen_height: number = 100;
   // Statuses
@@ -48,7 +47,6 @@ struct meowShortcuts {
             zone_alias: alias,
             my_index: key,
           })
-            .opacity(this.zones_opened[key] ? 0.5 : 1)
         })
 
         ForEach(this.homepage_shortcuts, (shortcut: bookmark, key: number) => {
@@ -160,12 +158,20 @@ struct shortcutButton {
 
   build() {
     Column({ space: this.render_contents ? 10 : 0 }) {
-      Button(this.get_label_name())
+      Text(this.get_label_name())
         .brightness(this.isHov ? 1.1 : 1)
-        .type(ButtonType.Capsule)
         .backgroundColor(this.background_color())
         .useEffect(this.effects, EffectType.WINDOW_EFFECT)
         .fontColor(this.color_current_font)
+        .visibility(this.show)
+        .animation(animation_default())
+        .padding({
+          left: 0.5 * capsule_bar_height(),
+          right: 0.5 * capsule_bar_height(),
+          top: 5,
+          bottom: 5
+        })
+        .borderRadius(0.5 * capsule_bar_height())
         .fontSize(fontSize_Large())
         .fontWeight(FontWeight.Medium)
         .height(capsule_bar_height())
@@ -174,8 +180,6 @@ struct shortcutButton {
           color: "transparent"
         })
         .clickEffect(click_effect_default())
-        .visibility(this.show)
-        .animation(animation_default())
         .onAppear(() => {
           if (!this.homepage_shortcuts_no_animation) {
             setTimeout(() => {
@@ -276,6 +280,7 @@ struct zoneButton {
   @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
   @LocalStorageLink('screen_height') screen_height: number = 100;
   @LocalStorageLink('homepage_shortcuts_no_animation') homepage_shortcuts_no_animation: boolean = false;
+  @StorageLink('zones_opened') zones_opened: boolean[] = [];
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('preferred_hand_reverse_homepage_shortcuts') preferred_hand_reverse_homepage_shortcuts: boolean = false;
@@ -289,12 +294,21 @@ struct zoneButton {
   @State isHov: boolean = false;
 
   build() {
-    Button('󰙟 ' + this.zone_alias)
+    Text('󰙟 ' + this.zone_alias)
       .brightness(this.isHov ? 1.1 : 1)
-      .type(ButtonType.Capsule)
+      .opacity(this.zones_opened[this.my_index] ? 0.5 : 1)
       .backgroundColor(this.background_color())
       .useEffect(this.effects, EffectType.WINDOW_EFFECT)
       .fontColor(this.color_current_font)
+      .visibility(this.show)
+      .animation(animation_default())
+      .padding({
+        left: 0.5 * capsule_bar_height(),
+        right: 0.5 * capsule_bar_height(),
+        top: 5,
+        bottom: 5
+      })
+      .borderRadius(0.5 * capsule_bar_height())
       .fontSize(fontSize_Large())
       .fontWeight(FontWeight.Medium)
       .height(capsule_bar_height())
@@ -303,8 +317,6 @@ struct zoneButton {
         color: "transparent"
       })
       .clickEffect(click_effect_default())
-      .visibility(this.show)
-      .animation(animation_default())
       .onAppear(() => {
         if (!this.homepage_shortcuts_no_animation) {
           setTimeout(() => {
@@ -321,6 +333,7 @@ struct zoneButton {
           console.warn(`[zoneButton] INTERCEPTED Load zone! Zone already opened. ${this.zone_alias}`);
           return;
         }
+        this.zones_opened[this.my_index] = true; // TODO: investigate appearance flash bug
         console.log(`[zoneButton] Load zone! ${this.zone_alias}`);
         new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), this.zone_alias, true);
       })
@@ -347,7 +360,7 @@ struct zoneButton {
     return (this.my_index + 0) * interval;
   }
 
-  background_color(): ResourceColor {
+  background_color() {
     if (this.effects) {
       return $r('sys.color.background_tertiary');
     }

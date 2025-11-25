@@ -417,7 +417,7 @@ struct meowAppSettings {
           })
         } // Quick access on the top
 
-        // if (this.showing_app_settings) {
+        if (this.showing_app_settings) {
           WaterFlow({ scroller: this.waterFlow_control }) {
             FlowItem() {
               settingsModule({
@@ -1162,6 +1162,7 @@ struct meowAppSettings {
                     }) // Gitee
                   }
                   .alignItems(HorizontalAlign.Start)
+
                   linysText({
                     text: "（ฅ＾・ﻌ・＾）ฅ  - " + this.versionName + " - " + this.versionNo + ' - ' + this.buildTime,
                     max_lines: 10
@@ -1299,7 +1300,7 @@ struct meowAppSettings {
               this.scroll_last = last;
             }
           })
-        // }
+        }
       } // Main
       .padding({ left: 15, right: 15 })
       .layoutWeight(1)

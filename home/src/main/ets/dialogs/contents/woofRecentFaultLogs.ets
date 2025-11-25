@@ -27,7 +27,8 @@ struct woofRecentFaultLogs {
   build() {
     woofControlFrame({
       title: $r('app.string.Fault_logs'),
-      controller: this.controller
+      controller: this.controller,
+      space_column: 5
     }) {
       Scroll() {
         Column({ space: 10 }) {
