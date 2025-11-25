@@ -2,7 +2,7 @@ import lazy { animation_default } from '../../hosts/bunch_of_defaults';
 import { click_effect_default, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import { LengthMetrics } from '@kit.ArkUI';
 
-@Reusable  // Will this affect anything?
+// @Reusable  // Will this affect anything?
 @Component
 struct linysText {
   // Colors

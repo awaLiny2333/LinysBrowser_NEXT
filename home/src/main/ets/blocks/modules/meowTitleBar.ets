@@ -827,7 +827,7 @@ struct meowTitleBar {
       if (this.full_screen_height < 400) {
         return this.full_screen_height
       }
-      return this.full_screen_height * 0.75;
+      return Math.max(this.full_screen_height * 0.75, 400);
     }
   }
 

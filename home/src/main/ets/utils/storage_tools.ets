@@ -940,7 +940,6 @@ export async function import_everything() {
       if (original_kv != 'undefined') {
         sandbox_unlink_sync('kv_store.json.browsercatstore.txt');
         bunch_of_settings.set('start_up_option', 'new tab');
-        bunch_of_settings.set('continue_tabs_count', 0);
         bunch_of_settings.set('continue_tabs_main_on', 0);
         bunch_of_settings.set('continue_tabs_sub_on', 0);
       } else {

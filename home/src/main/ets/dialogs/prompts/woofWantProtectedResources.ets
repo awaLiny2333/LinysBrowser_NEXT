@@ -80,7 +80,7 @@ struct woofWantResources {
     .alignItems(HorizontalAlign.Start)
     .justifyContent(FlexAlign.Center)
     .width("100%")
-    .backgroundColor(this.color_current_primary)
+    .backgroundColor(this.effects ? undefined : this.color_current_primary)
     .useEffect(this.effects, EffectType.WINDOW_EFFECT)
   }
 }

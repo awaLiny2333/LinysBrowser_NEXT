@@ -39,7 +39,7 @@ export function is_some_dialogs_opened(storage: LocalStorage) {
 
 // Actions
 
-export function new_window(context: common.UIAbilityContext, instanceKey: string, new_window_alias: string) {
+export function new_window(context: common.UIAbilityContext, instanceKey: string, new_window_alias: string, is_zone: boolean = false) {
   // Open new window
   let wantInfo: Want = {
     deviceId: '', // This device
@@ -50,7 +50,8 @@ export function new_window(context: common.UIAbilityContext, instanceKey: string
       instanceKey: instanceKey,
     }
   };
-  AppStorage.setOrCreate('LAST_WINDOW_WINDOW_NAME', new_window_alias);
+  bunch_of_settings.set('my_window_alias_last', new_window_alias);
+  AppStorage.setOrCreate('LAST_WINDOW_WINDOW_IS_ZONE', is_zone);
   context.startAbility(wantInfo).then(() => {
     console.log('[meowAppSettings] startAbility success.');
   }).catch((error: BusinessError) => {
@@ -508,6 +509,5 @@ export function change_window_alias(id: string, alias: string) {
 
   if (window_index_of_id(id) == 0) {
     bunch_of_settings.set('my_window_alias_last', alias);
-    AppStorage.set('LAST_WINDOW_WINDOW_NAME', alias);
   }
 }

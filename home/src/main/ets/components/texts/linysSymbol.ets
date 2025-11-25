@@ -1,6 +1,6 @@
 import { animation_default, click_effect_default, fontSize_Icon_Button } from '../../hosts/bunch_of_defaults';
 
-@Reusable // Will this affect anything? // Weird layout bugs
+// @Reusable // Will this affect anything? // Weird layout bugs
 @Component
 struct linysSymbol {
   @Prop symbol_glyph_target: string = 'sys.symbol.arrow_left';

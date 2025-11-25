@@ -92,7 +92,7 @@ struct woofPromptFail {
         })
     }
     .padding(15)
-    .backgroundColor(this.color_current_primary)
+    .backgroundColor(this.effects ? undefined : this.color_current_primary)
     .useEffect(this.effects, EffectType.WINDOW_EFFECT)
     .alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
     .animation(animation_default())

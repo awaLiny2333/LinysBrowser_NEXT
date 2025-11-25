@@ -23,6 +23,8 @@ struct woofPrompt {
   onDeny?: () => void;
   // Count
   @LocalStorageLink('opened_dialog_controllers') opened_dialog_controllers: CustomDialogController[] = [];
+  // Focus
+  my_id: string = 'woofHistory_search_input_' + Date.now().toString();
 
   aboutToAppear(): void {
     this.opened_dialog_controllers.push(this.controller);
@@ -63,9 +65,23 @@ struct woofPrompt {
             }
           })
           .height(capsule_bar_height())
+          .id(this.my_id)
+          .onAppear(() => {
+            // Auto focus on history
+            if (AppStorage.get('free_window_mode') as boolean) {
+              this.focus_input();
+            }
+          })
       } else {
         linysTextArea({ init_text: this.value, text: this.promptResult }) // Edit
           .constraintSize({ maxHeight: Math.max(0, this.screen_height - 160) })
+          .id(this.my_id)
+          .onAppear(() => {
+            // Auto focus on history
+            if (AppStorage.get('free_window_mode') as boolean) {
+              this.focus_input();
+            }
+          })
       }
 
       linysConfirmDenyButtons({
@@ -93,8 +109,15 @@ struct woofPrompt {
     .alignItems(HorizontalAlign.Start)
     .justifyContent(FlexAlign.Center)
     .width("100%")
+    .backgroundColor(this.effects ? undefined : this.color_current_primary)
     .useEffect(this.effects, EffectType.WINDOW_EFFECT)
-    .backgroundColor(this.color_current_primary)
+  }
+
+  /**
+   * Focus on the search input.
+   * */
+  focus_input() {
+    focusControl.requestFocus(this.my_id);
   }
 }
 

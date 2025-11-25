@@ -143,7 +143,7 @@ struct woofSelectBookmarksPath {
     }
     .alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
     .useEffect(this.effects, EffectType.WINDOW_EFFECT)
-    .backgroundColor(this.color_current_primary)
+    .backgroundColor(this.effects ? undefined : this.color_current_primary)
     .animation(animation_default())
     .padding(15)
     .height("80%")

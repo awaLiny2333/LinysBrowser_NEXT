@@ -9,6 +9,7 @@ import { meowContext } from '../../utils/environment_tools';
 import { storage_of_id } from '../../utils/ui_tools';
 import lazy { fileIo } from '@kit.CoreFileKit';
 import lazy { webview } from '@kit.ArkWeb';
+import linysFileNameErrorDisplay from '../../components/linysFileNameErrorDisplay';
 
 @CustomDialog
 struct woofWantDownload {
@@ -73,7 +74,7 @@ struct woofWantDownload {
         .visibility(this.showing_additional_info ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
 
-      fileNameErrorDisplay({ file_name: this.file_name, error_code: this.error_code });
+      linysFileNameErrorDisplay({ file_name: this.file_name, error_code: this.error_code });
 
       TextInput({ text: this.file_name }) // Edit file name
         .onSubmit(() => {
@@ -158,7 +159,7 @@ struct woofWantDownload {
     .justifyContent(FlexAlign.Center)
     .width("100%")
     .useEffect(this.effects, EffectType.WINDOW_EFFECT)
-    .backgroundColor(this.color_current_primary)
+    .backgroundColor(this.effects ? undefined : this.color_current_primary)
   }
 
   /**
@@ -269,54 +270,5 @@ struct additionalInfoDisplay {
     .scrollBar(BarState.On)
     .scrollable(ScrollDirection.Horizontal)
     .edgeEffect(EdgeEffect.Spring)
-  }
-}
-
-
-@Component
-struct fileNameErrorDisplay {
-  @Prop file_name: string = 'uwu';
-  @Prop error_code: number = 0;
-  chars: string[] = ['', '', '\\', '/', ':', '*', '?', '\'', '<', '>', '|'];
-
-  build() {
-    Column({ space: 10 }) {
-      linysText({
-        text: $r('app.string.Index_downloads_illegal_chars_in_filename'),
-        max_lines: 3,
-        is_description: true,
-        is_expanded: true
-      }) // File name error prompt
-        .visibility(this.error_code > 0 ? Visibility.Visible : Visibility.None)
-        .animation(animation_default())
-
-      Row() {
-        linysText({
-          text: $r('app.string.Index_downloads_filename_length'),
-          max_lines: 3,
-        })
-        linysText({
-          text: this.file_name.length.toString(),
-          max_lines: 3,
-        })
-      } // File name too long
-      .visibility(this.error_code == 1 ? Visibility.Visible : Visibility.None)
-      .animation(animation_default())
-
-      Row() {
-        linysText({
-          text: $r('app.string.Index_downloads_filename_illegal'),
-          max_lines: 3,
-        })
-        linysText({
-          text: this.chars[this.error_code],
-          max_lines: 3,
-        })
-      } // File name illegal
-      .visibility(this.error_code >= 2 ? Visibility.Visible : Visibility.None)
-      .animation(animation_default())
-    }
-    .visibility(this.error_code > 0 ? Visibility.Visible : Visibility.None)
-    .alignItems(HorizontalAlign.Start)
   }
 }

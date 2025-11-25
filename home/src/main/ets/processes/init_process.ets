@@ -14,6 +14,8 @@ import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 import { run_time } from '../utils/ui_tools';
 import { MessageEvents, worker } from '@kit.ArkTS';
 import lazy { sendableImage } from '@kit.ImageKit';
+import { scan_zones } from './zone_actions';
+import { default_new_window_name } from '../hosts/bunch_of_defaults';
 
 /**
  * Initializes all things.
@@ -33,6 +35,7 @@ export async function meow_init_main(context: common.UIAbilityContext, storage: 
   clear_profile(context);
   ensure_continue_folder(context);
   ensure_easylist_folder(context);
+  ensure_zones_folder(context);
   create_download(context);
   create_web_drag_image_cache(context);
   create_harmony_share_temp(context);
@@ -85,6 +88,25 @@ function ensure_continue_folder(context: common.UIAbilityContext) {
     }
   } catch (e) {
     console.error('[init][ensure_continue_folder] Error: ' + e);
+  }
+}
+
+/**
+ * Checks and ensures there is a /zones directory in sandbox.
+ * */
+function ensure_zones_folder(context: common.UIAbilityContext) {
+  let filesDir = context.filesDir;
+  try {
+    if (!fileIo.accessSync(filesDir + '/zones')) {
+      fileIo.mkdirSync(filesDir + '/zones', true);
+    } else {
+      // Zones exist
+      let zones = scan_zones();
+      AppStorage.setOrCreate('zones', zones);
+      console.log('[init][ensure_zones_folder] Found zones: \n' + zones);
+    }
+  } catch (e) {
+    console.error('[init][ensure_zones_folder] Error: ' + e);
   }
 }
 
@@ -377,7 +399,6 @@ export async function bookmarks(storage: LocalStorage) {
  * */
 async function restore_tabs(storage: LocalStorage) {
   // Get Data
-  let continue_tabs_count = bunch_of_settings.get('continue_tabs_count') as number;
   let continue_tabs_main_on = bunch_of_settings.get('continue_tabs_main_on') as number;
   let continue_tabs_sub_on = bunch_of_settings.get('continue_tabs_sub_on') as number;
 
@@ -387,12 +408,10 @@ async function restore_tabs(storage: LocalStorage) {
     continue_tabs_sub_on = -1;
   }
 
-  AppStorage.setOrCreate('continue_tabs_count', continue_tabs_count);
   AppStorage.setOrCreate('continue_tabs_main_on', continue_tabs_main_on);
   AppStorage.setOrCreate('continue_tabs_sub_on', continue_tabs_sub_on);
 
   // Log
-  console.log("[Meow][init] Got continue_tabs_count: " + continue_tabs_count);
   console.log("[Meow][init] Got continue_tabs_main_on: " + continue_tabs_main_on);
   console.log("[Meow][init] Got continue_tabs_sub_on: " + continue_tabs_sub_on);
 
@@ -422,7 +441,12 @@ function tabs(storage: LocalStorage) {
   }
 
   // Name
-  AppStorage.setOrCreate('LAST_WINDOW_WINDOW_NAME', bunch_of_settings.get('my_window_alias_last') as string);
+  let name = bunch_of_settings.get('my_window_alias_last') as string;
+  if (name == '') {
+    name = default_new_window_name();
+  }
+  console.log(`[init][tabs] my_window_alias=${name}`)
+  storage.setOrCreate('my_window_alias', name)
   storage.setOrCreate('pin_to_top', false);
 
   // Fill back settings

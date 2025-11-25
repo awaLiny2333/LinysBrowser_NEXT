@@ -4,7 +4,6 @@ import { sandbox_read_arrayBuffer_sync, sandbox_read_text_sync } from '../../uti
 import { current_tabs_style_is_horizontal, run_time, storage_of_id, storage_of_index } from '../../utils/ui_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import lazy { check_want } from '../../utils/want_tools';
-import lazy { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import lazy {
   determine_extra_background,
   set_search_box_text,
@@ -17,11 +16,16 @@ import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysText from '../../components/texts/linysText';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysSymbol from '../../components/texts/linysSymbol';
+import { web_state_dir } from '../../processes/zone_actions';
+import { fileIo } from '@kit.CoreFileKit';
+import { meowContext } from '../../utils/environment_tools';
 
 @Component
 struct meowTabsVertical {
   @StorageLink('THE_LORD_OF_THE_WINDOWS') @Watch('on_THE_LORD_OF_THE_WINDOWS_change') THE_LORD_OF_THE_WINDOWS: string = '';
   @LocalStorageLink('my_window_id') my_window_id: string = '';
+  @LocalStorageLink('is_zone') is_zone: boolean = false;
+  @LocalStorageLink('my_window_alias') my_window_alias: string = '';
   storage: LocalStorage = storage_of_id(this.my_window_id);
   // Want
   @LocalStorageLink('want_timestamp') @Watch('on_want') want_timestamp: string = '0';
@@ -228,7 +232,6 @@ struct meowTabsVertical {
     // Start
     let continue_tabs_sub_on = AppStorage.get('continue_tabs_sub_on') as number;
     let continue_tabs_main_on = AppStorage.get('continue_tabs_main_on') as number;
-    let continue_tabs_count = AppStorage.get('continue_tabs_count') as number;
     let start_up_option = bunch_of_tabs.start_up;
     // Want
     let want_uri = storage.get('want_uri') as string;
@@ -243,7 +246,39 @@ struct meowTabsVertical {
     console.log(`[Meow][init][meowTabsVertical] Lord=${lord}, this.my_window_id=${this.my_window_id}`);
     if (lord != this.my_window_id) {
       // Sub windows
-      if (go_want) {
+      if (this.is_zone) {
+        // Restore zones
+        console.log(`[Meow][init][meowTabsVertical][is_zone] about to restore tabs. (${(Date.now() - t0)}/${run_time(storage)} ms)`);
+
+        // Create new tabs
+        let dir = web_state_dir(this.storage);
+        let tabs_list = fileIo.listFileSync(meowContext().filesDir + '/' + dir);
+        for (let index = 0; index < tabs_list.length / 2; index++) {
+          try {
+            let label_file = dir + "/continue_tabs_web_state_array_" + index.toString() + '_label';
+            let label = sandbox_read_text_sync(label_file); // Name of that tab
+            console.log(`[Meow][init][meowTabsVertical] Tab #${index}! label=${label}`);
+            this.new_tab("", false, false, true, label);
+          } catch (e) {
+            console.error('[TabsVertical][is_zone][new_tab] ' + e);
+          }
+        }
+
+        // Switch to *THE* tab if there is no want,
+        // and DON'T switch if there IS a want
+        // (or that tab would be woken at the same time as the loading of the wanted tab)
+        if (!go_want) {
+          this.switch_tab(0, false, false);
+          this.try_scroll_to(0);
+        }
+
+        setTimeout(() => {
+          // Retrieve all data, avoid blocks on the main thread
+          sync_all_tabs_list_info(this.storage);
+          // Recover Paralleow
+        }, 10);
+
+      } else if (go_want) {
         // Do nothing if is a wanted new window to a running BrowserCat.
         console.log(`[Meow][init][meowTabsVertical] Is a sub window! And there are wants?`);
       } else {
@@ -261,7 +296,8 @@ struct meowTabsVertical {
     } else {
       // Main window
       // Start Up: generate / recover tabs
-      if (start_up_option == "new tab") {
+      let tabs_list = fileIo.listFileSync(meowContext().filesDir + '/continue');
+      if (tabs_list.length == 0 || start_up_option == "new tab") {
         try {
           this.new_tab(bunch_of_tabs.new_tab_url, false, false);
           this.switch_tab(0, false, false);
@@ -279,7 +315,7 @@ struct meowTabsVertical {
         console.log(`[Meow][init][meowTabsVertical] about to restore tabs. (${(Date.now() - t0)}/${run_time(storage)} ms)`);
 
         // Create new tabs
-        for (let index = 0; index < continue_tabs_count; index++) {
+        for (let index = 0; index < tabs_list.length / 2; index++) {
           try {
             let label_file = "continue/continue_tabs_web_state_array_" + index.toString() + '_label';
             let label = sandbox_read_text_sync(label_file); // Name of that tab
@@ -354,8 +390,8 @@ struct meowTabsVertical {
       if (is_lord) {
         console.log('[new_tab][is_from_receive] Save web state!');
         let idx = this.bunch_of_tabs.Tabs.length - 1;
-        this.bunch_of_tabs.save_web_state_to_sandbox(idx);
-        this.bunch_of_tabs.save_web_label_to_sandbox(idx);
+        this.bunch_of_tabs.save_web_state_to_sandbox(idx, 'continue');
+        this.bunch_of_tabs.save_web_label_to_sandbox(idx, 'continue');
       }
     } else {
       this.bunch_of_tabs.newTab(this.getUIContext(), target_url, init_state, placeholder_label);
@@ -365,13 +401,6 @@ struct meowTabsVertical {
     if (!init_state) {
       // Get synced lists
       sync_all_tabs_list_info(this.storage);
-
-      // Store tabs count
-      if (this.my_window_id == this.THE_LORD_OF_THE_WINDOWS) {
-        let store_tabs_count = this.bunch_of_tabs.get_tabs_count();
-        bunch_of_settings.set("continue_tabs_count", store_tabs_count);
-        console.log("[Meow][meowTabs] Stored Tabs Count: " + store_tabs_count);
-      }
 
       this.try_scroll_to(this.bunch_of_tabs.Tabs.length - 1);
 
@@ -478,10 +507,6 @@ struct meowTabsVertical {
     // Update Input Search Box
     let current_url = this.storage.get('current_url') as string;
     set_search_box_text(current_url, this.storage);
-
-    // Store tabs count
-    let store_tabs_count = this.tab_titles.length;
-    bunch_of_settings.set("continue_tabs_count", store_tabs_count);
 
     // re-save web states
     this.bunch_of_tabs.delete_shift_web_state(target);
@@ -703,7 +728,7 @@ struct meowTabsVertical {
     console.log(`[uni_move_tab][SEND][${this.my_window_id}] From Tab.${from_tab_index} to window #${to_window}!`);
     if (this.bunch_of_tabs.Tabs[from_tab_index].pre_restoration_stage) {
       // Need restore
-      let array_buffer = sandbox_read_arrayBuffer_sync("continue/continue_tabs_web_state_array_" + from_tab_index.toString());
+      let array_buffer = sandbox_read_arrayBuffer_sync(web_state_dir(this.storage) + "/continue_tabs_web_state_array_" + from_tab_index.toString());
       if (array_buffer) {
         this.bunch_of_tabs.Tabs[from_tab_index].web_state_array = new Uint8Array(array_buffer);
       } else {
@@ -738,11 +763,11 @@ struct meowTabsVertical {
     if (this.my_window_id == this.THE_LORD_OF_THE_WINDOWS) {
       // Save web states
       this.bunch_of_tabs.clear_all_web_state();
-      this.bunch_of_tabs.re_save_web_state(0);
-      // Save tab continue data
-      this.bunch_of_tabs.save_tab_index_stats('[on_THE_LORD_OF_THE_WINDOWS_change]');
-      // Store tabs count
-      bunch_of_settings.set("continue_tabs_count", this.tab_titles.length);
+      if (!this.is_zone) {
+        this.bunch_of_tabs.re_save_web_state(0, 'continue');
+        // Save tab continue data
+        this.bunch_of_tabs.save_tab_index_stats('[on_THE_LORD_OF_THE_WINDOWS_change]');
+      }
     }
   }
 

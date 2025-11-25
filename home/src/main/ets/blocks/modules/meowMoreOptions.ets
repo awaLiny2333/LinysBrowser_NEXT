@@ -19,11 +19,17 @@ import lazy woofGeneralManage from '../../dialogs/managers/woofGeneralManage';
 import lazy woofPrompt from '../../dialogs/web/woofPrompt';
 import lazy linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 import lazy woofEasyList from '../../dialogs/managers/woofEasylist';
+import linysSwitchWithText from '../../components/toggles/linysSwitchWithText';
+import { modify_zone_name, off_zone, set_zone } from '../../processes/zone_actions';
+import { is_legal_filename } from '../../utils/storage_tools';
+import linysFileNameErrorDisplay from '../../components/linysFileNameErrorDisplay';
 
 @Component
 struct meowMoreOptions {
   @StorageLink('windowIds') windowIds: string[] = [];
   @LocalStorageLink('my_window_id') my_window_id: string = '';
+  @LocalStorageLink('is_zone') is_zone: boolean = false;
+  @StorageLink('zones') zones: string[] = [];
   @LocalStorageLink('my_window_alias') my_window_alias: string = '';
   storage: LocalStorage = storage_of_id(this.my_window_id);
   // Hosts
@@ -197,6 +203,7 @@ struct meowMoreOptions {
     width: "90%",
   });
   @State rename_window_prompt_result: string = '';
+  @State window_alias_legal_err: number = 1;
   rename_window_woofPrompt_control: CustomDialogController = new CustomDialogController({
     builder: woofPrompt({
       title: $r('app.string.Settings_appearance_windows_rename'),
@@ -205,7 +212,16 @@ struct meowMoreOptions {
       promptResult: this.rename_window_prompt_result,
       single_line: true,
       onConfirm: () => {
-        change_window_alias(this.my_window_id, this.rename_window_prompt_result);
+        this.window_alias_legal_err = is_legal_filename(this.rename_window_prompt_result);
+        let old_name = this.my_window_alias;
+        if (this.is_zone) {
+          if (this.window_alias_legal_err == 0) {
+            change_window_alias(this.my_window_id, this.rename_window_prompt_result);
+            modify_zone_name(old_name, this.my_window_alias);
+          }
+        } else {
+          change_window_alias(this.my_window_id, this.rename_window_prompt_result);
+        }
       },
       onDeny: () => {
         // Nothing happens
@@ -241,6 +257,10 @@ struct meowMoreOptions {
     cornerRadius: 26,
     width: "90%",
   });
+
+  aboutToAppear(): void {
+    this.window_alias_legal_err = is_legal_filename(this.my_window_alias);
+  }
 
   @Builder
   EasyList_entry_button() {
@@ -409,6 +429,56 @@ struct meowMoreOptions {
           .borderRadius(12)
           .padding(5)
 
+          Column({ space: 5 }) {
+            Row() {
+              linysSwitchWithText({
+                text: $r('app.string.Tabs_save_as_zone'),
+                toggle_state: this.is_zone,
+                onExecution: () => {
+                  if (this.is_zone) {
+                    console.log(`[zone_actions] SET ZONE!`);
+                    set_zone(this.my_window_id);
+                  } else {
+                    console.log(`[zone_actions] OFF ZONE!`);
+                    off_zone(this.my_window_id);
+                  }
+                }
+              })
+                .layoutWeight(1)
+            }
+
+            linysText({
+              text: $r('app.string.Tabs_save_as_zone_alias_crash'), max_lines: 999
+            })
+              .visibility(this.can_save_zone() ? Visibility.None : Visibility.Visible)
+              .animation(animation_default())
+
+            Row() {
+              linysFileNameErrorDisplay({
+                file_name: this.my_window_alias,
+                error_code: this.window_alias_legal_err
+              })
+                .layoutWeight(1)
+            }
+            .visibility(this.window_alias_legal_err == 0 ? Visibility.None : Visibility.Visible)
+
+          } // Window man
+          .enabled(this.can_save_zone() && this.window_alias_legal_err == 0)
+          .visibility(this.visible_when_not_in_page_search())
+          .animation(animation_default())
+          .opacity(0.8)
+          .constraintSize({ maxWidth: 500, minHeight: 43 })
+          .backgroundColor($r('sys.color.comp_background_tertiary'))
+          .borderRadius(12)
+          .padding(this.can_save_zone() && this.window_alias_legal_err == 0 ? { left: 15, right: 15 } : {
+            left: 15,
+            right: 15,
+            top: 5,
+            bottom: 15
+          })
+          .justifyContent(FlexAlign.Center)
+          .alignItems(HorizontalAlign.Start)
+
           // }
 
           Scroll() {
@@ -564,6 +634,12 @@ struct meowMoreOptions {
 
   visible_when_not_in_page_search() {
     return this.current_in_page_searching_stats_total <= 0 ? Visibility.Visible : Visibility.None;
+  }
+
+  // Enabled
+
+  can_save_zone() {
+    return this.is_zone || !this.zones.includes(this.my_window_alias);
   }
 }
 

@@ -4,9 +4,9 @@ import lazy { add_units_to_size, sandbox_read_text_sync, sandbox_save } from '..
 import lazy { webview } from '@kit.ArkWeb';
 import lazy { bunch_of_tabs, tab_info_packed } from '../hosts/bunch_of_tabs';
 import lazy { determine_extra_background, sync_current_tabs_list_info } from './tabs_actions';
-import lazy { window_index_of_id } from '../utils/ui_tools';
 import lazy { is_web_page, match_domain, url_resource_to_meow, viewable_domains } from '../utils/url_tools';
 import lazy { bunch_of_downloads } from '../hosts/bunch_of_downloads';
+import { web_state_dir } from './zone_actions';
 
 // Ads Blocker
 
@@ -97,7 +97,10 @@ export function on_title_receive(pk: tab_info_packed) {
         pk.check_save_history('[onTitleReceive]');
       }
 
-      tabs.save_web_label_to_sandbox(pk.index);
+      let my_web_state_dir = web_state_dir(pk.storage);
+      if (my_web_state_dir) {
+        tabs.save_web_label_to_sandbox(pk.index, my_web_state_dir);
+      }
     }
   }
 }
@@ -179,10 +182,11 @@ export function on_page_end(pk: tab_info_packed) {
     tabs.update_web_state(pk.index, true);
     // if (window_index_of_id(tabs.my_id) == 0 && !pk.pre_restoration_stage) {
     let is_lord = (pk.storage.get('my_window_id') as string) == (AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string);
-    if (is_lord && !pk.pre_restoration_stage) {
+    let my_web_state_dir = web_state_dir(pk.storage);
+    if (my_web_state_dir && !pk.pre_restoration_stage) {
       console.log('[on_page_end] Save web state!');
-      tabs.save_web_state_to_sandbox(pk.index);
-      tabs.save_web_label_to_sandbox(pk.index);
+      tabs.save_web_state_to_sandbox(pk.index, my_web_state_dir);
+      tabs.save_web_label_to_sandbox(pk.index, my_web_state_dir);
     } else {
       console.warn(`[on_page_end] Didn't save web_state, is_lord=${is_lord}, !pre_restoration_stage=${!pk.pre_restoration_stage}, `
         + `my_window_id=${(pk.storage.get('my_window_id') as string)}, THE_LORD_OF_THE_WINDOWS=${(AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string)}`);
@@ -266,9 +270,10 @@ export function on_progress_change(pk: tab_info_packed, event: OnProgressChangeE
   // Get and save web_state
   if (!pk.pre_restoration_stage) {
     let update_result = tabs.update_web_state(pk.index, false);
-    if (update_result && window_index_of_id(tabs.my_id) == 0) {
-      tabs.save_web_state_to_sandbox(pk.index);
-      tabs.save_web_label_to_sandbox(pk.index);
+    let my_web_state_dir = web_state_dir(pk.storage);
+    if (my_web_state_dir && update_result) {
+      tabs.save_web_state_to_sandbox(pk.index, my_web_state_dir);
+      tabs.save_web_label_to_sandbox(pk.index, my_web_state_dir);
     }
   } else {
     console.warn('[on_progress_change][update_web_state] Intercepted for restoring!');

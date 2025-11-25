@@ -238,7 +238,7 @@
     },
     {
       "name": "Index_downloads_illegal_chars_in_filename",
-      "value": "A file name cannot contain any of the following: \\ / : * ? \" < > |, and the length must be less than 255 characters."
+      "value": "Name cannot contain any of the following: \\ / : * ? \" < > |, and the length must be less than 255 characters."
     },
     {
       "name": "Index_downloads_filename_length",
@@ -479,6 +479,14 @@
     {
       "name": "Tabs_unload_description",
       "value": "Unload tabs to save memory and power! But you can't unload the current tab being viewed."
+    },
+    {
+      "name": "Tabs_save_as_zone",
+      "value": "Save window as a Zone"
+    },
+    {
+      "name": "Tabs_save_as_zone_alias_crash",
+      "value": "Conflicting window alias! Change a name for this window before saving it as a zone!"
     },
     {
       "name": "Settings_appearance_tabs_style",

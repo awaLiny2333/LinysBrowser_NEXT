@@ -49,7 +49,7 @@ struct woofControlFrame {
     .useEffect(this.effects, EffectType.WINDOW_EFFECT)
     .padding(this.compact_mode ? 10 : 15)
     .animation(animation_default())
-    .backgroundColor(this.color_current_primary)
+    .backgroundColor(this.effects ? undefined : this.color_current_primary)
     .onAppear(() => {
       this.off_y_contents = 0;
     })

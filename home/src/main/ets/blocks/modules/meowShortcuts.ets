@@ -3,7 +3,8 @@ import { bookmark, bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';
 import { animation_default, capsule_bar_height, click_effect_default, fontSize_Large } from '../../hosts/bunch_of_defaults';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
-import { run_time, storage_of_id } from '../../utils/ui_tools';
+import { new_window, run_time, storage_of_id } from '../../utils/ui_tools';
+import { common } from '@kit.AbilityKit';
 
 @Component
 struct meowShortcuts {
@@ -14,6 +15,7 @@ struct meowShortcuts {
   @StorageLink('bunch_of_bookmarks') @Watch('refresh_homepage_shortcuts') bunch_of_bookmarks: bunch_of_bookmarks = new bunch_of_bookmarks('Bookmarks~Meow');
   @StorageLink('homepage_shortcuts_bookmarks_dir') @Watch('refresh_homepage_shortcuts') homepage_shortcuts_dir: string = '/';
   @StorageLink('homepage_shortcuts') homepage_shortcuts: bookmark[] = []; // Ideally this is loaded after init_process.
+  @StorageLink('zones') zones: string[] = [];
   // Environment
   @LocalStorageProp('screen_height') screen_height: number = 100;
   // Statuses
@@ -39,6 +41,13 @@ struct meowShortcuts {
   build() {
     Scroll(this.shortcut_scroller) {
       Column({ space: 10 }) {
+        ForEach(this.zones, (alias: string, key: number) => {
+          zoneButton({
+            zone_alias: alias,
+            my_index: key,
+          })
+        })
+
         ForEach(this.homepage_shortcuts, (shortcut: bookmark, key: number) => {
           shortcutButton({
             bookmark: shortcut,
@@ -228,6 +237,108 @@ struct shortcutButton {
     let label = this.bookmark.get_label();
     name += label;
     return name;
+  }
+
+  is_right_align() {
+    return (this.preferred_hand_left_or_right == 'right' && !this.preferred_hand_reverse_homepage_shortcuts) ||
+      (!(this.preferred_hand_left_or_right == 'right') && this.preferred_hand_reverse_homepage_shortcuts);
+  }
+
+  get_alignItems() {
+    if (this.is_right_align()) {
+      return HorizontalAlign.End;
+    } else {
+      return HorizontalAlign.Start
+    }
+  }
+
+  get_animation_timeout() {
+    let interval = 800 / (this.screen_height / (capsule_bar_height() + 10));
+    return (this.my_index + 0) * interval;
+  }
+
+  background_color(): ResourceColor {
+    if (this.effects) {
+      return $r('sys.color.background_tertiary');
+    }
+    return this.color_current_secondary;
+  }
+}
+
+// @Reusable // Lost of animation
+@Component
+struct zoneButton {
+  @Prop zone_alias: string;
+  @Prop my_index: number;
+  // Environment
+  @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
+  @LocalStorageLink('screen_height') screen_height: number = 100;
+  @LocalStorageLink('homepage_shortcuts_no_animation') homepage_shortcuts_no_animation: boolean = false;
+  // Settings - Accessibility
+  @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
+  @StorageLink('preferred_hand_reverse_homepage_shortcuts') preferred_hand_reverse_homepage_shortcuts: boolean = false;
+  @StorageLink('homepage_shortcuts_init_height') homepage_shortcuts_init_height: number = 50;
+  // Gateways
+  @LocalStorageLink('universal_new_tab_gateway') new_tab_gateway: (string | boolean)[] = ['', false];
+  // Colors
+  @StorageLink('effects') effects: boolean = false;
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
+  // SHow
+  @State vis_contents: Visibility = Visibility.None;
+  @State render_contents: boolean = false;
+  render_contents_timeout_id: number | undefined = undefined;
+  @State show: Visibility = this.homepage_shortcuts_no_animation ? Visibility.Visible : Visibility.None;
+  @State isHov: boolean = false;
+
+  build() {
+    Column({ space: this.render_contents ? 10 : 0 }) {
+      Button('󰙟 ' + this.zone_alias)
+        .brightness(this.isHov ? 1.1 : 1)
+        .type(ButtonType.Capsule)
+        .backgroundColor(this.background_color())
+        .useEffect(this.effects, EffectType.WINDOW_EFFECT)
+        .fontColor(this.color_current_font)
+        .fontSize(fontSize_Large())
+        .fontWeight(FontWeight.Medium)
+        .height(capsule_bar_height())
+        .border({
+          width: 2,
+          color: "transparent"
+        })
+        .clickEffect(click_effect_default())
+        .visibility(this.show)
+        .animation(animation_default())
+        .onAppear(() => {
+          if (!this.homepage_shortcuts_no_animation) {
+            setTimeout(() => {
+              this.show = Visibility.Visible;
+              // Animation of floating up
+            }, this.get_animation_timeout())
+          }
+        })
+        .onClick(() => {
+          // Prevent opening 2 same zones.
+          let windowStorages = AppStorage.get('windowStorages') as LocalStorage[];
+          for (let index = 0; index < windowStorages.length; index++) {
+            let is_zone = windowStorages[index].get('is_zone') as boolean;
+            let alias = windowStorages[index].get('my_window_alias') as string;
+            if (is_zone && alias == this.zone_alias) {
+              return;
+            }
+          }
+          // Open zone
+          console.log(`[zoneButton] Load zone! ${this.zone_alias}`);
+          new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), this.zone_alias, true);
+        })
+        .onHover((isHv) => {
+          this.isHov = isHv;
+        })
+    }
+    .alignItems(this.get_alignItems())
+    .padding(this.vis_contents == Visibility.Visible ? (this.is_right_align() ? { right: 30 } : { left: 30 }) : {})
+    .animation(animation_default())
   }
 
   is_right_align() {

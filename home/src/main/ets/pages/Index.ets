@@ -802,6 +802,7 @@ struct WindowTitle {
   @LocalStorageLink('my_window_id') my_window_id: string = '';
   @LocalStorageLink('my_window_alias') my_window_alias: string = '';
   @LocalStorageLink('screen_width') screen_width: number = 0;
+  @LocalStorageLink('is_zone') is_zone: boolean = false;
   // Statuses
   @StorageLink('my_window_alias_position') my_window_alias_position: string = "center";
   @LocalStorageLink('current_title') current_title: string = "=￣ω￣=";
@@ -809,7 +810,7 @@ struct WindowTitle {
   build() {
     Row({ space: 10 }) {
       linysText({
-        text: '#' + this.windowIds.indexOf(this.my_window_id) + '｜' + this.current_title + '｜' + this.my_window_alias
+        text: '#' + this.windowIds.indexOf(this.my_window_id) + '｜' + this.current_title + '｜' + (this.is_zone ? '󰙟 ' : '') + this.my_window_alias
       })
         .constraintSize(this.free_window_mode ? undefined : { maxWidth: this.screen_width * 0.7 })
     }
@@ -835,8 +836,9 @@ struct WindowTitle {
 
   on_windowIDs_change() {
     if (window_index_of_id(this.my_window_id) == 0) {
-      bunch_of_settings.set('my_window_alias_last', this.my_window_alias);
-      AppStorage.set('LAST_WINDOW_WINDOW_NAME', this.my_window_alias);
+      if (!this.is_zone) {
+        bunch_of_settings.set('my_window_alias_last', this.my_window_alias);
+      }
     }
   }
 }

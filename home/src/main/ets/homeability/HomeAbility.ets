@@ -22,6 +22,7 @@ import { meowPx2vp } from '../utils/environment_tools';
 export default class HomeAbility extends UIAbility {
   my_window_id = '';
   my_window_alias = '';
+  is_zone = false;
   storage: LocalStorage = new LocalStorage();
 
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam) {
@@ -258,9 +259,11 @@ export default class HomeAbility extends UIAbility {
     this.storage.setOrCreate('tablet_mode', tablet_mode);
     this.storage.setOrCreate('compact_mode', compact_mode);
 
-    // LAST_WINDOW_WINDOW_NAME is set by the window who opens this window.
-    this.my_window_alias = AppStorage.get('LAST_WINDOW_WINDOW_NAME') as string;
-    this.storage.setOrCreate('my_window_alias', this.my_window_alias);
+    // my_window_alias is set by the window who opens this window. See init_process - tabs()
+    // this.storage.setOrCreate('my_window_alias', this.my_window_alias);
+    // Save is_zone mark
+    this.is_zone = AppStorage.get('LAST_WINDOW_WINDOW_IS_ZONE') as boolean;
+    this.storage.setOrCreate('is_zone', this.is_zone);
 
     // Parallel array of ids
     let windowIds = AppStorage.get('windowIds') as string[];

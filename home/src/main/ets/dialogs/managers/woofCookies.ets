@@ -162,7 +162,7 @@ struct woofCookies {
           .layoutWeight(1)
         } // Cookies
         .clip(true)
-        // .backgroundColor(this.color_current_primary)
+        // .backgroundColor(this.effects ? undefined : this.color_current_primary)
         .width(this.tablet_mode ? (this.full_view ? "100%" : "60%") : "100%")
         .height(this.tablet_mode ? "100%" : undefined)
         .alignRules(this.tablet_mode ? this.alignRules_body_tablet : this.alignRules_body_non_tablet)

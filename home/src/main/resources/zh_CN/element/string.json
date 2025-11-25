@@ -484,6 +484,14 @@
       "value": "让标签页睡眠以节约内存和电量！但是你无法催眠当下正显示的标签页～"
     },
     {
+      "name": "Tabs_save_as_zone",
+      "value": "保存窗口为工作区"
+    },
+    {
+      "name": "Tabs_save_as_zone_alias_crash",
+      "value": "窗口名冲突！重命名此窗口以保存为工作区！"
+    },
+    {
       "name": "Settings_appearance_tabs_style",
       "value": "标签页栏样式 \uDB82\uDC3B / \uDB82\uDD42 "
     },
