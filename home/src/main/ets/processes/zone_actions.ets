@@ -82,11 +82,11 @@ export function set_zone(window_id: string) {
   let tabs = storage.get('bunch_of_tabs') as bunch_of_tabs;
   // After work
   let lord = AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string;
+  sandbox_mkdir_sync('zones/' + alias);
   if (window_id == lord) {
     // If is lord, Clean current continue file;
     let src = meowContext().filesDir + '/continue/';
     let des = meowContext().filesDir + '/zones/' + alias + '/';
-    sandbox_mkdir_sync('zones/' + alias);
     console.log(`[set_zone] About to copyDirSync! src=${src}, des=${des}`);
     fileIo.copyDirSync(src, des, 1);
     sandbox_rmdir_sync('continue');
