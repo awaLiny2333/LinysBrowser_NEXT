@@ -298,7 +298,7 @@ struct zoneButton {
       .brightness(this.isHov ? 1.1 : 1)
       .opacity(this.zones_opened[this.my_index] ? 0.5 : 1)
       .backgroundColor(this.background_color())
-      .useEffect(this.effects, EffectType.WINDOW_EFFECT)
+      .useEffect(this.effects && !this.zones_opened[this.my_index], EffectType.WINDOW_EFFECT)
       .fontColor(this.color_current_font)
       .visibility(this.show)
       .animation(animation_default())
@@ -333,7 +333,7 @@ struct zoneButton {
           console.warn(`[zoneButton] INTERCEPTED Load zone! Zone already opened. ${this.zone_alias}`);
           return;
         }
-        this.zones_opened[this.my_index] = true; // TODO: investigate appearance flash bug
+        this.zones_opened[this.my_index] = true;
         console.log(`[zoneButton] Load zone! ${this.zone_alias}`);
         new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), this.zone_alias, true);
       })

@@ -1,7 +1,7 @@
 import lazy { fileIo } from '@kit.CoreFileKit';
 import lazy { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import lazy { meowContext } from '../utils/environment_tools';
-import { sandbox_mkdir_sync, sandbox_rename_sync, sandbox_rmdir_sync } from '../utils/storage_tools';
+import { sandbox_mkdir_sync, sandbox_read_text_sync, sandbox_rename_sync, sandbox_rmdir_sync } from '../utils/storage_tools';
 import lazy { storage_of_id } from '../utils/ui_tools';
 
 /**
@@ -155,4 +155,22 @@ export function web_state_dir(storage: LocalStorage) {
   }
   // Neither zone, nor lord
   return undefined;
+}
+
+/**
+ * Gets the tab open state of zone.
+ * @param storage The LocalStorage.
+ * @returns [continue_tabs_main_on, continue_tabs_sub_on].
+ * */
+export function stat_of_zone(storage: LocalStorage) {
+  let dir = web_state_dir(storage);
+  let tabs_stat = sandbox_read_text_sync(dir + '/stat');
+  if (tabs_stat != 'undefined') {
+    // Set stat
+    let stat = tabs_stat.split(' ');
+    let continue_tabs_main_on = Number.parseInt(stat[0]);
+    let continue_tabs_sub_on = Number.parseInt(stat[1]);
+    return [continue_tabs_main_on, continue_tabs_sub_on];
+  }
+  return [0, -1];
 }
