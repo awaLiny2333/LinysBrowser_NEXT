@@ -185,8 +185,10 @@ export function on_page_end(pk: tab_info_packed) {
     let my_web_state_dir = web_state_dir(pk.storage);
     if (my_web_state_dir && !pk.pre_restoration_stage) {
       console.log('[on_page_end] Save web state!');
-      tabs.save_web_state_to_sandbox(pk.index, my_web_state_dir);
-      tabs.save_web_label_to_sandbox(pk.index, my_web_state_dir);
+      let r = tabs.save_web_state_to_sandbox(pk.index, my_web_state_dir);
+      if (r) {
+        tabs.save_web_label_to_sandbox(pk.index, my_web_state_dir);
+      }
     } else {
       console.warn(`[on_page_end] Didn't save web_state, is_lord=${is_lord}, !pre_restoration_stage=${!pk.pre_restoration_stage}, `
         + `my_window_id=${(pk.storage.get('my_window_id') as string)}, THE_LORD_OF_THE_WINDOWS=${(AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string)}`);
@@ -271,9 +273,11 @@ export function on_progress_change(pk: tab_info_packed, event: OnProgressChangeE
   if (!pk.pre_restoration_stage) {
     let update_result = tabs.update_web_state(pk.index, false);
     let my_web_state_dir = web_state_dir(pk.storage);
-    if (my_web_state_dir && update_result) {
-      tabs.save_web_state_to_sandbox(pk.index, my_web_state_dir);
-      tabs.save_web_label_to_sandbox(pk.index, my_web_state_dir);
+    if (my_web_state_dir && update_result && pk.web_state_array) {
+      let r = tabs.save_web_state_to_sandbox(pk.index, my_web_state_dir);
+      if (r) {
+        tabs.save_web_label_to_sandbox(pk.index, my_web_state_dir);
+      }
     }
   } else {
     console.warn('[on_progress_change][update_web_state] Intercepted for restoring!');

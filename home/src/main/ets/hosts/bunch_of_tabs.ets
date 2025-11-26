@@ -16,7 +16,6 @@ import lazy { bunch_of_settings } from './bunch_of_settings';
 import lazy { save_history } from '../processes/tabs_actions';
 import lazy { createNWeb, TabNodeController } from '../objects/WebNode';
 import { web_state_dir } from '../processes/zone_actions';
-import { meowContext } from '../utils/environment_tools';
 
 export class bunch_of_tabs {
   // Settings
@@ -618,8 +617,10 @@ export class bunch_of_tabs {
     // Save
     for (let index = start; index < this.Tabs.length; index++) {
       this.Tabs[index].update_web_state(false);
-      this.save_web_state_to_sandbox(index, dir);
-      this.save_web_label_to_sandbox(index, dir);
+      let r = this.save_web_state_to_sandbox(index, dir);
+      if (r) {
+        this.save_web_label_to_sandbox(index, dir);
+      }
     }
   }
 
@@ -669,10 +670,11 @@ export class bunch_of_tabs {
    * So update_web_state() should be called before this function to keep it up-to-date.
    *
    * @param index The index of tab.
+   * @returns True if saved to disk. False if failed.
    * */
-  save_web_state_to_sandbox(index: number, dir: string) {
+  save_web_state_to_sandbox(index: number, dir: string): boolean {
     // Save to sandbox
-    this.Tabs[index].save_web_state_to_sandbox(dir);
+    return this.Tabs[index].save_web_state_to_sandbox(dir);
   }
 
   /**
@@ -698,7 +700,6 @@ export class bunch_of_tabs {
 
     // Store where am I
     if (is_zone) {
-
       sandbox_save(web_state_dir(this.my_storage!) + '/stat', this.main_tab_idx + ' ' + this.sub_tab_idx);
       console.log('[Meow][is_zone]' + identifier + "[bunch_of_tabs] Stored index stats. Main: " + this.main_tab_idx + ' Sub: ' + this.sub_tab_idx);
     } else if (is_lord) {
@@ -1008,14 +1009,15 @@ export class tab_info_packed {
    * */
   save_web_state_to_sandbox(dir: string) {
     try {
-      let web_state = this.web_state_array;
-      if (web_state) {
+      if (this.web_state_array) {
         let file_name = dir + "/continue_tabs_web_state_array_" + this.index.toString();
-        sandbox_save(file_name, web_state.buffer);
+        sandbox_save(file_name, this.web_state_array.buffer);
+        return true;
       }
     } catch (e) {
       console.error('[tab_info_packed][save_web_state] Error: ' + e);
     }
+    return false;
   }
 
   /**

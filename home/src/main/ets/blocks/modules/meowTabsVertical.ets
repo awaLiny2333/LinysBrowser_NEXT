@@ -349,12 +349,12 @@ struct meowTabsVertical {
   restore_zone(storage: LocalStorage, go_want: boolean, t0: number) {
     // Restore zones
     console.log(`[Meow][init][meowTabsVertical][is_zone] about to restore tabs. (${(Date.now() - t0)}/${run_time(storage)} ms)`);
+    let dir = web_state_dir(this.storage);
 
     let continue_tabs_sub_on = AppStorage.get('continue_tabs_sub_on') as number;
     let continue_tabs_main_on = AppStorage.get('continue_tabs_main_on') as number;
 
     // Create new tabs
-    let dir = web_state_dir(this.storage);
     let tabs_stat = sandbox_read_text_sync(dir + '/stat');
     if (tabs_stat != 'undefined') {
       // Set stat
@@ -423,8 +423,10 @@ struct meowTabsVertical {
       if (dir) {
         console.log('[new_tab][is_from_receive] Save web state!');
         let idx = this.bunch_of_tabs.Tabs.length - 1;
-        this.bunch_of_tabs.save_web_state_to_sandbox(idx, dir);
-        this.bunch_of_tabs.save_web_label_to_sandbox(idx, dir);
+        let r = this.bunch_of_tabs.save_web_state_to_sandbox(idx, dir);
+        if (r) {
+          this.bunch_of_tabs.save_web_label_to_sandbox(idx, dir);
+        }
       }
     } else {
       this.bunch_of_tabs.newTab(this.getUIContext(), target_url, init_state, placeholder_label);
