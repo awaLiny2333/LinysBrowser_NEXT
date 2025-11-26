@@ -83,6 +83,7 @@ struct Index {
   @LocalStorageLink('shortcut_scroll_offset') shortcut_scroll_offset: number = 0;
   @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
   @LocalStorageLink('right_control_width') right_control_width: number = 222 + 15 + 7; // To align the vertical tabs panel with title bar elements
+  @State is_Hov: boolean = false;
   /**
    * Delay */
   @LocalStorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
@@ -352,12 +353,15 @@ struct Index {
         .fontWeight(FontWeight.Bold)
         .fontColor(this.color_current_font)
         .hitTestBehavior(HitTestMode.Transparent)
-        .opacity(this.on_focus ? 0 : 0.5)
-        .backgroundColor(this.color_current_secondary)
+        .opacity(this.on_focus || this.is_Hov ? 0 : 0.5)
+        // .backgroundColor(this.color_current_secondary)
         .animation(animation_default())
         .textAlign(TextAlign.Center)
         .height("100%")
         .width("100%")
+        .onHover((h) => {
+          this.is_Hov = h;
+        })
     }
     .alignContent(Alignment.Center)
     .backgroundColor(this.color_current_secondary)

@@ -23,6 +23,7 @@ import linysSwitchWithText from '../../components/toggles/linysSwitchWithText';
 import { modify_zone_name, off_zone, set_zone } from '../../processes/zone_actions';
 import { is_legal_filename } from '../../utils/storage_tools';
 import linysFileNameErrorDisplay from '../../components/linysFileNameErrorDisplay';
+import woofZones from '../../dialogs/contents/woofZones';
 
 @Component
 struct meowMoreOptions {
@@ -257,6 +258,12 @@ struct meowMoreOptions {
     cornerRadius: 26,
     width: "90%",
   });
+  Zones_control: CustomDialogController = new CustomDialogController({
+    builder: woofZones(),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 26,
+    width: "90%",
+  });
 
   aboutToAppear(): void {
     this.window_alias_legal_err = is_legal_filename(this.my_window_alias);
@@ -430,7 +437,16 @@ struct meowMoreOptions {
           .padding(5)
 
           Column({ space: 5 }) {
-            Row() {
+            Row({ space: 5 }) {
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.briefcase',
+                can_hover: true
+              })
+                .onClick(() => {
+                  // Open Zone view
+                  this.Zones_control.open();
+                })
+
               linysSwitchWithText({
                 text: $r('app.string.Tabs_save_as_zone'),
                 toggle_state: this.is_zone,
@@ -445,11 +461,13 @@ struct meowMoreOptions {
                 }
               })
                 .layoutWeight(1)
+                .enabled(this.can_save_zone() && this.window_alias_legal_err == 0)
             }
 
             linysText({
               text: $r('app.string.Tabs_save_as_zone_alias_crash'), max_lines: 999
             })
+              .padding({ left: 5, right: 5 })
               .visibility(this.can_save_zone() ? Visibility.None : Visibility.Visible)
               .animation(animation_default())
 
@@ -463,15 +481,14 @@ struct meowMoreOptions {
             .visibility(this.window_alias_legal_err == 0 ? Visibility.None : Visibility.Visible)
 
           } // Window man
-          .enabled(this.can_save_zone() && this.window_alias_legal_err == 0)
           .visibility(this.visible_when_not_in_page_search())
           .animation(animation_default())
           .opacity(0.8)
           .constraintSize({ maxWidth: 500, minHeight: 43 })
           .backgroundColor($r('sys.color.comp_background_tertiary'))
           .borderRadius(12)
-          .padding(this.can_save_zone() && this.window_alias_legal_err == 0 ? { left: 15, right: 15 } : {
-            left: 15,
+          .padding(this.can_save_zone() && this.window_alias_legal_err == 0 ? { left: 6, right: 15 } : {
+            left: 6,
             right: 15,
             top: 5,
             bottom: 15

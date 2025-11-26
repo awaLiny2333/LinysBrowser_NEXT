@@ -57,6 +57,7 @@ import lazy woofUpdateHistory from '../../dialogs/contents/woofUpdateHistory';
 import lazy woofPromptOK from '../../dialogs/prompts/woofPromptOK';
 import lazy woofHistory from '../../dialogs/managers/woofHistory';
 import lazy woofEasyList from '../../dialogs/managers/woofEasylist';
+import linysAniContainer from '../../components/layouts/linysAniContainer';
 
 // @Reusable
 @Component
@@ -1680,7 +1681,7 @@ struct settingsSubCard {
       }
       Column() {
         if (this.title == undefined || this.show) {
-          aniContainer() {
+          linysAniContainer() {
             this.contents();
           }
         }
@@ -1715,28 +1716,6 @@ struct settingsSubCard {
     } else {
       return this.color_current_primary;
     }
-  }
-}
-
-// @Reusable // Is this ok? Nope, animation would be lost
-@Component
-struct aniContainer {
-  // Contents
-  @BuilderParam contents: () => void;
-  // UI
-  @State vis: Visibility = Visibility.None;
-
-  build() {
-    Column({ space: 12 }) {
-      this.contents();
-    }
-    .visibility(this.vis)
-    .animation(animation_default())
-    .alignItems(HorizontalAlign.Start)
-    .justifyContent(FlexAlign.Start)
-    .onAppear(() => {
-      this.vis = Visibility.Visible;
-    })
   }
 }
 

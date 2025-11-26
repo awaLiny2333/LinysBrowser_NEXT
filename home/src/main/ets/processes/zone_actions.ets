@@ -2,7 +2,8 @@ import lazy { fileIo } from '@kit.CoreFileKit';
 import lazy { BusinessError } from '@kit.BasicServicesKit';
 import lazy { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import lazy { meowContext } from '../utils/environment_tools';
-import { sandbox_mkdir_sync, sandbox_read_text_sync, sandbox_rename_sync, sandbox_rmdir_sync } from '../utils/storage_tools';
+import { sandbox_mkdir_sync, sandbox_read_arrayBuffer_sync, sandbox_read_text_sync, sandbox_rename_sync, sandbox_rmdir_sync,
+  sandbox_save } from '../utils/storage_tools';
 import lazy { storage_of_id, window_of_id } from '../utils/ui_tools';
 
 /**
@@ -86,14 +87,15 @@ export function zone_opened(zone_alias: string) {
 export function set_zone(window_id: string) {
   let storage = storage_of_id(window_id);
   let alias = storage.get('my_window_alias') as string;
+
   // Do not allow duplicate aliases
   if ((scan_zones()[0] as string[]).includes(alias)) {
     console.log(`[zone_actions][set_zone] Failed, duplicated alias!`);
     return false;
   }
+
   // Save
   let tabs = storage.get('bunch_of_tabs') as bunch_of_tabs;
-  // After work
   let lord = AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string;
   sandbox_mkdir_sync('zones/' + alias);
   if (window_id == lord) {
@@ -108,9 +110,12 @@ export function set_zone(window_id: string) {
     // If is other window, then directly save web states to /zone/name
     tabs.re_save_web_state(0, 'zones/' + alias);
   }
+  sandbox_save(web_state_dir(storage) + '/stat', tabs.main_tab_idx + ' ' + tabs.sub_tab_idx);
+
   // Mark
   storage.setOrCreate('is_zone', true);
   refresh_AppStorage_zones();
+
   // Window Title
   let windowClass = window_of_id(window_id);
   if (windowClass) {
@@ -129,6 +134,27 @@ export function set_zone(window_id: string) {
 export function off_zone(window_id: string) {
   let storage = storage_of_id(window_id);
   let alias = storage.get('my_window_alias') as string;
+
+  // Read all web_states out
+  let zone_dir = meowContext().filesDir + '/' + 'zones/' + alias;
+  console.log('[off_zone] zone_dir: ' + zone_dir);
+  let tabs_list = fileIo.listFileSync(zone_dir);
+  let tabs = storage.get('bunch_of_tabs') as bunch_of_tabs;
+  for (let index = 0; index < Math.floor(tabs_list.length / 2); index++) {
+    try {
+      let state_file = 'zones/' + alias + "/continue_tabs_web_state_array_" + index.toString();
+      let array_buffer = sandbox_read_arrayBuffer_sync(state_file); // State of that tab
+      if (array_buffer) {
+        tabs.Tabs[index].web_state_array = new Uint8Array(array_buffer);
+      } else {
+        console.error("[off_zone] Read web state failed! Read NOTHING from disk???");
+        return false;
+      }
+    } catch (e) {
+      console.error('[off_zone][restore_zone] Failed: ' + e);
+    }
+  }
+
   // After work
   sandbox_rmdir_sync('zones/' + alias);
   let lord = AppStorage.get('THE_LORD_OF_THE_WINDOWS') as string;
@@ -149,6 +175,23 @@ export function off_zone(window_id: string) {
       console.error('[set_zone][change_window_alias] Set alias failed! ' + JSON.stringify(e));
     });
   }
+  return true;
+}
+
+/**
+ * Deletes an offline zone.
+ * @param alias The alias of the Zone / window.
+ * @returns True if success, false otherwise (Zone is online?)
+ * */
+export function del_offline_zone(alias: string) {
+  let zones = AppStorage.get('zones') as string[];
+  let idx = zones.indexOf(alias);
+  let zones_opened = AppStorage.get('zones_opened') as boolean[];
+  if (zones_opened[idx]) {
+    return false;
+  }
+  sandbox_rmdir_sync('zones/' + alias);
+  refresh_AppStorage_zones();
   return true;
 }
 

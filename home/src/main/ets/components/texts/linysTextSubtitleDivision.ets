@@ -8,10 +8,10 @@ struct linysTextSubtitleDivision {
   @Prop text: ResourceStr = $r('app.string.HomeAbility_label');
   @Prop color: ResourceColor = "";
   @Prop max_lines: number = 1;
+opa: number = 0.6;
 
   build() {
     Row({ space: 8 }) {
-
       if (this.icon) {
         Text(this.icon)
           .fontColor(this.color == "" ? this.color_current_font : this.color)
@@ -22,11 +22,8 @@ struct linysTextSubtitleDivision {
         .fontColor(this.color == "" ? this.color_current_font : this.color)
         .fontSize(fontSize_Large())
         .fontWeight(FontWeight.Bold)
-      // Row()
-      //   .layoutWeight(1)
-      //   .border({ width: { bottom: 2 }, color: this.color == "" ? this.color_current_font : this.color })
     }
-    .opacity(0.6)
+    .opacity(this.opa)
   }
 }
 

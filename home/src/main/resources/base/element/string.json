@@ -485,6 +485,22 @@
       "value": "Unload tabs to save memory and power! But you can't unload the current tab being viewed."
     },
     {
+      "name": "zones",
+      "value": "Zones"
+    },
+    {
+      "name": "zones_existing",
+      "value": "Your Zones"
+    },
+    {
+      "name": "zones_delete",
+      "value": "*Cautious! You cannot delete an OPENED zone here!*"
+    },
+    {
+      "name": "zones_desc",
+      "value": "Zones are specific tab groups, contained by windows, that you can create.\n\nEach Zone saves its browsing status as you browse, so that next time you can restore the entire Zone with all your opened tabs by one click.\n\nKeep in mind that names of Zones should be unique!"
+    },
+    {
       "name": "Tabs_save_as_zone",
       "value": "Save window as a Zone"
     },
