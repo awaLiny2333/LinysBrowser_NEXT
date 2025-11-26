@@ -507,14 +507,16 @@ export function change_window_alias(id: string, alias: string) {
   }
   storage.set('my_window_alias', alias);
 
+  let is_zone = storage.get('is_zone') as boolean;
+
   let windowClass = window_of_id(id);
   if (windowClass) {
-    windowClass.setWindowTitle(alias).catch((e: BusinessError) => {
+    windowClass.setWindowTitle((is_zone ? '󰙟 ' : '') + alias).catch((e: BusinessError) => {
       console.error('[change_window_alias] Set alias failed! ' + JSON.stringify(e));
     });
   }
 
-  if (window_index_of_id(id) == 0) {
+  if (!is_zone && window_index_of_id(id) == 0) {
     bunch_of_settings.set('my_window_alias_last', alias);
   }
 }

@@ -14,8 +14,8 @@ import { bunch_of_search_engines } from '../hosts/bunch_of_search_engines';
 import { run_time } from '../utils/ui_tools';
 import { MessageEvents, worker } from '@kit.ArkTS';
 import lazy { sendableImage } from '@kit.ImageKit';
-import { refresh_AppStorage_zones } from './zone_actions';
-import { default_new_window_name } from '../hosts/bunch_of_defaults';
+import lazy { refresh_AppStorage_zones } from './zone_actions';
+import lazy { default_new_window_name } from '../hosts/bunch_of_defaults';
 
 /**
  * Initializes all things.
@@ -444,6 +444,15 @@ function tabs(storage: LocalStorage) {
   let name = bunch_of_settings.get('my_window_alias_last') as string;
   if (name == '') {
     name = default_new_window_name();
+  } else {
+    let is_zone = storage.get('is_zone') as boolean;
+    // Avoid duplicated name
+    if (is_zone) {
+      let zones = AppStorage.get('zones') as string[];
+      if (zones.includes(name)) {
+        name = default_new_window_name();
+      }
+    }
   }
   console.log(`[init][tabs] my_window_alias=${name}`);
   storage.setOrCreate('my_window_alias', name);

@@ -1,7 +1,7 @@
 import { common, ConfigurationConstant } from '@kit.AbilityKit';
 import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
 import { window } from '@kit.ArkUI';
-import { animation_default } from '../hosts/bunch_of_defaults';
+import { animation_default, default_new_window_name } from '../hosts/bunch_of_defaults';
 import { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import { bunch_of_key_shortcuts } from '../hosts/bunch_of_key_shortcuts';
 import lazy { print_web } from '../utils/print_tools';
@@ -707,10 +707,10 @@ struct Index {
    * @param alias The alias.
    * */
   create_new_window(alias: string = this.my_window_alias) {
-    // let zones = AppStorage.get('zones') as string[];
-    // if (zones.includes(alias)) {
-    //   alias = default_new_window_name();
-    // }
+    let zones = AppStorage.get('zones') as string[];
+    if (zones.includes(alias)) {
+      alias = default_new_window_name();
+    }
     new_window(this.getUIContext().getHostContext() as common.UIAbilityContext, Date.now().toString(), alias);
   }
 

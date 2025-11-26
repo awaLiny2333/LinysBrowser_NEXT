@@ -1,8 +1,9 @@
 import lazy { fileIo } from '@kit.CoreFileKit';
+import lazy { BusinessError } from '@kit.BasicServicesKit';
 import lazy { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import lazy { meowContext } from '../utils/environment_tools';
 import { sandbox_mkdir_sync, sandbox_read_text_sync, sandbox_rename_sync, sandbox_rmdir_sync } from '../utils/storage_tools';
-import lazy { storage_of_id } from '../utils/ui_tools';
+import lazy { storage_of_id, window_of_id } from '../utils/ui_tools';
 
 /**
  * Checks and discover saved zones on disk.
@@ -110,6 +111,13 @@ export function set_zone(window_id: string) {
   // Mark
   storage.setOrCreate('is_zone', true);
   refresh_AppStorage_zones();
+  // Window Title
+  let windowClass = window_of_id(window_id);
+  if (windowClass) {
+    windowClass.setWindowTitle('󰙟 ' + alias).catch((e: BusinessError) => {
+      console.error('[set_zone][change_window_alias] Set alias failed! ' + JSON.stringify(e));
+    });
+  }
   return true;
 }
 
@@ -134,6 +142,13 @@ export function off_zone(window_id: string) {
   }
   storage.setOrCreate('is_zone', false);
   refresh_AppStorage_zones();
+  // Window Title
+  let windowClass = window_of_id(window_id);
+  if (windowClass) {
+    windowClass.setWindowTitle(alias).catch((e: BusinessError) => {
+      console.error('[set_zone][change_window_alias] Set alias failed! ' + JSON.stringify(e));
+    });
+  }
   return true;
 }
 
