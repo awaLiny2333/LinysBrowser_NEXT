@@ -62,6 +62,7 @@ import lazy woofEasyList from '../../dialogs/managers/woofEasylist';
 @Component
 struct meowAppSettings {
   @StorageLink('showing_my_window_alias') showing_my_window_alias: boolean = false;
+  @StorageLink('showing_large_my_window_alias') showing_large_my_window_alias: boolean = false;
   @StorageLink('windowIds') windowIds: string[] = [];
   @StorageLink('free_window_mode') free_window_mode: boolean = false;
   @LocalStorageLink('my_window_id') my_window_id: string = '';
@@ -800,6 +801,13 @@ struct meowAppSettings {
                       bunch_of_settings.set('status_showing_my_windows_alias', this.showing_my_window_alias);
                     }
                   }) // Enable show my_window_alias
+                  linysSwitchWithText({
+                    text: $r('app.string.Settings_appearance_status_showing_large_my_window_alias'),
+                    toggle_state: this.showing_large_my_window_alias,
+                    onExecution: () => {
+                      bunch_of_settings.set('status_showing_large_my_window_alias', this.showing_large_my_window_alias);
+                    }
+                  }) // Enable show large my_window_alias
                   linysText({ text: $r('app.string.Settings_appearance_windows_alias_position') })
                     .opacity(this.showing_my_window_alias ? 1 : 0.5)
                     .animation(animation_default())

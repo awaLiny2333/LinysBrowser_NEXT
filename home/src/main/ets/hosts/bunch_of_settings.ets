@@ -18,6 +18,7 @@ export class bunch_of_settings {
 
     // Customization
     bunch_of_settings.register_setting('title_bar_position', 'string', 'bottom');
+    bunch_of_settings.register_setting('status_showing_large_my_window_alias', 'boolean', 'false');
     bunch_of_settings.register_setting('tabs_style', 'string', 'vertical');
     bunch_of_settings.register_setting('tabs_style_non_tablet_mode', 'string', 'vertical');
     bunch_of_settings.register_setting('bottom_avoid', 'boolean', 'true');

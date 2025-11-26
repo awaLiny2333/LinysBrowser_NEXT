@@ -34,6 +34,7 @@ import linysText from '../components/texts/linysText';
 @Entry(last_storage())
 @Component
 struct Index {
+  @StorageLink('showing_large_my_window_alias') showing_large_my_window_alias: boolean = false;
   @LocalStorageLink('my_window_id') my_window_id: string = '';
   @LocalStorageLink('my_windowClass') my_windowClass: window.Window | undefined = undefined;
   @LocalStorageLink('my_window_alias') my_window_alias: string = '';
@@ -44,6 +45,7 @@ struct Index {
   /**
    * UI Environment */
   @StorageLink('free_window_mode') @Watch('on_free_window_mode_change') free_window_mode: boolean = false;
+  @LocalStorageLink('on_focus') on_focus: boolean = true;
   @LocalStorageLink('windowDecorWidth') windowDecorWidth: number = 0;
   @LocalStorageLink('bottomAvoidHeight') bottomAvoidHeight: number = 1;
   @LocalStorageLink('topAvoidHeight') topAvoidHeight: number = 1;
@@ -162,189 +164,202 @@ struct Index {
   }
 
   build() {
-    Column() {
-      // I know this is stupid
-      // Forgive me
-      // O.o
-      if (this.delay_p0) {
-        // Keyboard shortcuts
-        Row() {
-          Row().keyboardShortcut(this.bunch_of_key_shortcuts.fullscreen.main_key, this.bunch_of_key_shortcuts.fullscreen.modifier, () => {
-            this.fullscreen_mode = !this.fullscreen_mode;
-            this.showing_more_options = false;
-          })
-          Row().keyboardShortcut(this.bunch_of_key_shortcuts.print.main_key, this.bunch_of_key_shortcuts.print.modifier, () => {
-            if (is_some_dialogs_opened(this.storage)) {
-              return;
-            }
-            if (this.bunch_of_tabs.workingMainTab().controller) {
-              print_web(this.bunch_of_tabs.workingMainTab().controller!, this.getUIContext().getHostContext()!);
-            }
-          })
-          Row().keyboardShortcut(this.bunch_of_key_shortcuts.new_window.main_key, this.bunch_of_key_shortcuts.new_window.modifier, () => {
-            this.create_new_window();
-          })
-          Row().keyboardShortcut(this.bunch_of_key_shortcuts.pin_to_top.main_key, this.bunch_of_key_shortcuts.pin_to_top.modifier, () => {
-            pin_to_top(this.my_window_id);
-          })
-          Row().keyboardShortcut(this.bunch_of_key_shortcuts.history.main_key, this.bunch_of_key_shortcuts.history.modifier, () => {
-            if (is_some_dialogs_opened(this.storage)) {
-              return;
-            }
-            this.woofHistory_control.open();
-          })
-          Row().keyboardShortcut(this.bunch_of_key_shortcuts.save_page.main_key, this.bunch_of_key_shortcuts.save_page.modifier, () => {
-            this.bunch_of_tabs.archive_onWorkingTab(this.getUIContext().getHostContext()?.tempDir);
-          })
-          Row().keyboardShortcut(this.bunch_of_key_shortcuts.in_page_search.main_key, this.bunch_of_key_shortcuts.in_page_search.modifier, () => {
-            this.universal_find();
-          })
-          Row().keyboardShortcut(this.bunch_of_key_shortcuts.focus_address.main_key, this.bunch_of_key_shortcuts.focus_address.modifier, () => {
-            this.universal_focus_address();
-          })
-          Row().keyboardShortcut(FunctionKey.ESC, [], () => {
-            try {
-              this.universal_esc();
-            } catch (e) {
-              console.error('[ESC] Failed! ' + e);
-            }
-          })
-          Row().keyboardShortcut(FunctionKey.DPAD_UP, [], () => {
-            this.in_page_search_last();
-          })
-          Row().keyboardShortcut(FunctionKey.DPAD_DOWN, [], () => {
-            this.in_page_search_next();
-          })
-        }.height(0)
-      }
-
-      RelativeContainer() {
-        WindowTitle()
-          .padding(this.tablet_mode ? { right: 20, bottom: 5 } : undefined)
-          .alignRules({
-            bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
-            left: { anchor: '__container__', align: HorizontalAlign.Start },
-            right: !this.tablet_mode ? { anchor: '__container__', align: HorizontalAlign.End } : { anchor: 'window_controls', align: HorizontalAlign.Start }
-          })
-          .visibility(this.showing_my_window_alias ? Visibility.Visible : Visibility.Hidden)
-          .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-
-        if (this.free_window_mode) {
-          Row({ space: 10 }) {
-            linysWindowButton({
-              symbol: this.pin_to_top ? $r('sys.symbol.pin_vertical_fill') : $r('sys.symbol.pin'),
-              execution: () => {
-                pin_to_top(this.my_window_id);
-              }
-            })
-
-            linysWindowButton({
-              symbol: $r('sys.symbol.plus'),
-              execution: () => {
-                this.create_new_window();
-              }
-            })
-
-          } // Window control buttons
-          .id('window_controls')
-          .padding({ top: this.showing_my_window_alias ? 9 : 5, right: Math.max(15, this.windowDecorWidth) - 15 })
-          .alignRules({ top: { anchor: '__container__', align: VerticalAlign.Top }, right: { anchor: '__container__', align: HorizontalAlign.End } })
-        }
-      } // Top Bar Avoid (Title)
-      .backgroundColor(this.title_background_color())
-      .height(this.height_of_top_avoid())
-      .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-      .padding({
-        left: 15,
-        right: 15
-      })
-      .clip(true)
-      .width('100%')
-
-      // Scroll() {
-      //   Column() {
-      RelativeContainer() {
-        Row() {
+    Stack() {
+      Column() {
+        // I know this is stupid
+        // Forgive me
+        // O.o
+        if (this.delay_p0) {
+          // Keyboard shortcuts
           Row() {
-            if (this.delayed_load_p0) {
-              meowTabsVertical()
-            }
-            if (this.delayed_load_p3) {
-              meowBookmarks()
-            }
-          } // Tabs and bookmarks
-          .width(this.width_of_Bookmarks_and_Tabs())
-          .margin(this.margin_of_Bookmarks_and_Tabs())
-          .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-          .height("100%")
+            Row().keyboardShortcut(this.bunch_of_key_shortcuts.fullscreen.main_key, this.bunch_of_key_shortcuts.fullscreen.modifier, () => {
+              this.fullscreen_mode = !this.fullscreen_mode;
+              this.showing_more_options = false;
+            })
+            Row().keyboardShortcut(this.bunch_of_key_shortcuts.print.main_key, this.bunch_of_key_shortcuts.print.modifier, () => {
+              if (is_some_dialogs_opened(this.storage)) {
+                return;
+              }
+              if (this.bunch_of_tabs.workingMainTab().controller) {
+                print_web(this.bunch_of_tabs.workingMainTab().controller!, this.getUIContext().getHostContext()!);
+              }
+            })
+            Row().keyboardShortcut(this.bunch_of_key_shortcuts.new_window.main_key, this.bunch_of_key_shortcuts.new_window.modifier, () => {
+              this.create_new_window();
+            })
+            Row().keyboardShortcut(this.bunch_of_key_shortcuts.pin_to_top.main_key, this.bunch_of_key_shortcuts.pin_to_top.modifier, () => {
+              pin_to_top(this.my_window_id);
+            })
+            Row().keyboardShortcut(this.bunch_of_key_shortcuts.history.main_key, this.bunch_of_key_shortcuts.history.modifier, () => {
+              if (is_some_dialogs_opened(this.storage)) {
+                return;
+              }
+              this.woofHistory_control.open();
+            })
+            Row().keyboardShortcut(this.bunch_of_key_shortcuts.save_page.main_key, this.bunch_of_key_shortcuts.save_page.modifier, () => {
+              this.bunch_of_tabs.archive_onWorkingTab(this.getUIContext().getHostContext()?.tempDir);
+            })
+            Row().keyboardShortcut(this.bunch_of_key_shortcuts.in_page_search.main_key, this.bunch_of_key_shortcuts.in_page_search.modifier, () => {
+              this.universal_find();
+            })
+            Row().keyboardShortcut(this.bunch_of_key_shortcuts.focus_address.main_key, this.bunch_of_key_shortcuts.focus_address.modifier, () => {
+              this.universal_focus_address();
+            })
+            Row().keyboardShortcut(FunctionKey.ESC, [], () => {
+              try {
+                this.universal_esc();
+              } catch (e) {
+                console.error('[ESC] Failed! ' + e);
+              }
+            })
+            Row().keyboardShortcut(FunctionKey.DPAD_UP, [], () => {
+              this.in_page_search_last();
+            })
+            Row().keyboardShortcut(FunctionKey.DPAD_DOWN, [], () => {
+              this.in_page_search_next();
+            })
+          }.height(0)
+        }
 
-          Stack() {
-            if (this.homepage_background) {
-              Image(this.homepage_background)
-                .opacity(Math.max(1 - this.shortcut_scroll_offset / this.screen_height, 0.5))
-                .visibility(this.visibility_of_background_image())
-            } // Background
-
-            if (this.delayed_load_p1) {
-              meowWebView()
-            } // WebViews
-
-            // if (this.delayed_load_p0) {
-            meowShortcuts()
-            // }
-          }
-          .clip(true)
-          .margin(this.effects && !this.fullscreen_mode ? {
-            bottom: this.title_bar_position == 'bottom' ? 0 : 10,
-            right: this.need_right_margin() ? 10 : 0,
-            left: this.need_left_margin() ? 10 : 0
-          } : 0)
-          .borderRadius(this.effects && !this.fullscreen_mode ? 10 : 0)
-          .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-          .backgroundColor(this.color_current_primary)
-          .layoutWeight(this.tablet_mode ? 1 : 0)
-
-        } // Main Web
-        .backgroundColor(this.effects ? undefined : this.color_current_primary)
-        .useEffect(this.effects, EffectType.WINDOW_EFFECT)
-        .direction(this.direction_of_web_and_side_panels())
-        .margin(this.title_bar_position == "bottom"
-          ? { bottom: this.fullscreen_mode ? 0 : this.title_bar_height }
-          : { top: this.fullscreen_mode ? 0 : this.title_bar_height })
-        .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-        .width("100%")
-
-        if (this.index_init_ok) {
-          linysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
-            .alignRules(this.title_bar_alignRules)
-            .margin(this.title_bar_position == "bottom"
-              ? { bottom: this.fullscreen_mode ? 0 : this.title_bar_height }
-              : { top: this.fullscreen_mode ? 0 : this.title_bar_height })
+        RelativeContainer() {
+          WindowTitle()
+            .padding(this.tablet_mode ? { right: 20, bottom: 5 } : undefined)
+            .alignRules({
+              bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+              left: { anchor: '__container__', align: HorizontalAlign.Start },
+              right: !this.tablet_mode ? { anchor: '__container__', align: HorizontalAlign.End } : { anchor: 'window_controls', align: HorizontalAlign.Start }
+            })
+            .visibility(this.showing_my_window_alias ? Visibility.Visible : Visibility.Hidden)
             .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
 
-          meowTitleBar({
-            bar_height: this.title_bar_height,
-            title_bar_alignRules: this.title_bar_alignRules,
-          })
-        } // Title Bar
-      } // Web, progress, and Title bar
-      .onAreaChange((o, n) => {
-        this.on_main_area_change(o, n);
-      })
-      .layoutWeight(1)
-      .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+          if (this.free_window_mode) {
+            Row({ space: 10 }) {
+              linysWindowButton({
+                symbol: this.pin_to_top ? $r('sys.symbol.pin_vertical_fill') : $r('sys.symbol.pin'),
+                execution: () => {
+                  pin_to_top(this.my_window_id);
+                }
+              })
 
-      Row()// Bottom Bar Avoid
-        .height((this.title_bar_position == "bottom" || this.bottom_avoid) ? this.height_of_bottom_avoid() : 0)
-        // .backgroundColor(this.background_color())
-        // .useEffect(this.effects, EffectType.WINDOW_EFFECT)
+              linysWindowButton({
+                symbol: $r('sys.symbol.plus'),
+                execution: () => {
+                  this.create_new_window();
+                }
+              })
+
+            } // Window control buttons
+            .id('window_controls')
+            .padding({ top: this.showing_my_window_alias ? 9 : 5, right: Math.max(15, this.windowDecorWidth) - 15 })
+            .alignRules({ top: { anchor: '__container__', align: VerticalAlign.Top }, right: { anchor: '__container__', align: HorizontalAlign.End } })
+          }
+        } // Top Bar Avoid (Title)
+        .backgroundColor(this.title_background_color())
+        .height(this.height_of_top_avoid())
         .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-        .width("100%")
+        .padding({
+          left: 15,
+          right: 15
+        })
+        .clip(true)
+        .width('100%')
 
+        // Scroll() {
+        //   Column() {
+        RelativeContainer() {
+          Row() {
+            Row() {
+              if (this.delayed_load_p0) {
+                meowTabsVertical()
+              }
+              if (this.delayed_load_p3) {
+                meowBookmarks()
+              }
+            } // Tabs and bookmarks
+            .width(this.width_of_Bookmarks_and_Tabs())
+            .margin(this.margin_of_Bookmarks_and_Tabs())
+            .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+            .height("100%")
+
+            Stack() {
+              if (this.homepage_background) {
+                Image(this.homepage_background)
+                  .opacity(Math.max(1 - this.shortcut_scroll_offset / this.screen_height, 0.5))
+                  .visibility(this.visibility_of_background_image())
+              } // Background
+
+              if (this.delayed_load_p1) {
+                meowWebView()
+              } // WebViews
+
+              // if (this.delayed_load_p0) {
+              meowShortcuts()
+              // }
+            }
+            .clip(true)
+            .margin(this.effects && !this.fullscreen_mode ? {
+              bottom: this.title_bar_position == 'bottom' ? 0 : 10,
+              right: this.need_right_margin() ? 10 : 0,
+              left: this.need_left_margin() ? 10 : 0
+            } : 0)
+            .borderRadius(this.effects && !this.fullscreen_mode ? 10 : 0)
+            .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+            .backgroundColor(this.color_current_primary)
+            .layoutWeight(this.tablet_mode ? 1 : 0)
+
+          } // Main Web
+          .backgroundColor(this.effects ? undefined : this.color_current_primary)
+          .useEffect(this.effects, EffectType.WINDOW_EFFECT)
+          .direction(this.direction_of_web_and_side_panels())
+          .margin(this.title_bar_position == "bottom"
+            ? { bottom: this.fullscreen_mode ? 0 : this.title_bar_height }
+            : { top: this.fullscreen_mode ? 0 : this.title_bar_height })
+          .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+          .width("100%")
+
+          if (this.index_init_ok) {
+            linysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
+              .alignRules(this.title_bar_alignRules)
+              .margin(this.title_bar_position == "bottom"
+                ? { bottom: this.fullscreen_mode ? 0 : this.title_bar_height }
+                : { top: this.fullscreen_mode ? 0 : this.title_bar_height })
+              .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+
+            meowTitleBar({
+              bar_height: this.title_bar_height,
+              title_bar_alignRules: this.title_bar_alignRules,
+            })
+          } // Title Bar
+        } // Web, progress, and Title bar
+        .onAreaChange((o, n) => {
+          this.on_main_area_change(o, n);
+        })
+        .layoutWeight(1)
+        .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+
+        Row()// Bottom Bar Avoid
+          .height((this.title_bar_position == "bottom" || this.bottom_avoid) ? this.height_of_bottom_avoid() : 0)
+          .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+          .width("100%")
+
+      }
+      .height("100%")
+      .width("100%")
+      .alignItems(HorizontalAlign.Start)
+
+      Text(this.my_window_alias)
+        .fontSize(0.12 * this.screen_width)
+        .fontWeight(FontWeight.Bold)
+        .fontColor(this.color_current_font)
+        .hitTestBehavior(HitTestMode.Transparent)
+        .opacity(this.on_focus ? 0 : 0.5)
+        .backgroundColor(this.color_current_secondary)
+        .animation(animation_default())
+        .textAlign(TextAlign.Center)
+        .height("100%")
+        .width("100%")
     }
-    .height("100%")
-    .width("100%")
-    .alignItems(HorizontalAlign.Start)
+    .alignContent(Alignment.Center)
     .backgroundColor(this.color_current_secondary)
     .useEffect(this.effects, EffectType.WINDOW_EFFECT)
     .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })

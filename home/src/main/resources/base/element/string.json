@@ -157,6 +157,10 @@
       "value": "Show window title"
     },
     {
+      "name": "Settings_appearance_status_showing_large_my_window_alias",
+      "value": "Show gigantic window title"
+    },
+    {
       "name": "Settings_appearance_effects",
       "value": "Advanced Effects \uDB82\uDD42"
     },
