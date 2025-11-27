@@ -11,10 +11,13 @@ struct woofUpdateHistory {
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @State texts: string[] = [
-    'v1.7.10-beta 2025 10',
-      '一个面向未来的更新！正式面向 HarmonyOS 6.0 (API20) 发布！将 Passkey 支持带入冲浪喵～\n' +
+    'v1.7.10-beta 2025 11',
+    '一个面向未来的更新！正式面向 HarmonyOS 6.0 (API20) 发布！' +
+      '将 Passkey 支持、工作区、Http Auth、高级视觉效果、EasyList 支持、鼠标悬浮效果、手动睡眠标签页、第三方 Cookies 访问、更多性能优化等带入冲浪喵～\n' +
       '注意：我们在此版本中更换了包名，因为有神秘开发者率先将冲浪喵在应用市场抢注了……不过也因祸得福彻底丢弃了大量历史遗留问题？',
-      'A future-oriented update! Now releasing towards HarmonyOS 6.0 (API20)! Bringing Passkey support into BrowserCat~\n' +
+    'A future-oriented update! Now releasing towards HarmonyOS 6.0 (API20)! ' +
+      'Bringing Passkey support, Zones, Http Auth, Hover & Advanced Effects, EasyList support, manual tabs unloading, ' +
+      '3rd party cookies access and more performance improvements into BrowserCat~\n' +
       'CAUTION: We changed our bundle name in this update, as a mysterious dev has already registered the bundle name of BrowserCat in the App Gallery...\n' +
       'But this comes out as an unexpected gift as bunch of historical left over problems are then discarded?',
 
@@ -134,7 +137,8 @@ struct woofUpdateHistory {
   build() {
     woofControlFrame({
       title: $r('app.string.Update_record'),
-      controller: this.controller
+      controller: this.controller,
+      space_column: 10
     }) {
       Scroll() {
         Column({ space: 10 }) {

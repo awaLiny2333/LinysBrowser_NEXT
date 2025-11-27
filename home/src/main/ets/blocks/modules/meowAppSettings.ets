@@ -1674,10 +1674,6 @@ struct settingsSubCard {
         linysTextSubtitleDivision({ icon: this.icon, text: this.title }) // Title
           .padding({ top: 12, left: 12, right: 12 })
           .width('100%')
-          .clickEffect(click_effect_default())
-          .onClick(() => {
-            this.show = !this.show;
-          })
       }
       Column() {
         if (this.title == undefined || this.show) {
@@ -1704,6 +1700,12 @@ struct settingsSubCard {
     .borderWidth(2)
     .onHover((isHv) => {
       this.isHov = isHv;
+    })
+    .clickEffect(click_effect_default())
+    .onClick(() => {
+      if (this.title) {
+        this.show = !this.show;
+      }
     })
   }
 

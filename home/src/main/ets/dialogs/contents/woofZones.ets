@@ -87,7 +87,6 @@ struct woofZones {
 
 export default woofZones;
 
-
 @Component
 struct subCard {
   // Colors
