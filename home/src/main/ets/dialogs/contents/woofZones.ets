@@ -11,11 +11,13 @@ import linysTextTitle from '../../components/texts/linysTextTitle';
 import { sandbox_read_text_sync } from '../../utils/storage_tools';
 import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
 import linysSwitchWithText from '../../components/toggles/linysSwitchWithText';
+import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 
 @CustomDialog
 struct woofZones {
   controller: CustomDialogController;
   @StorageLink('zones') zones: string[] = [];
+  @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -43,9 +45,9 @@ struct woofZones {
     woofControlFrame({
       title: $r('app.string.zones'),
       controller: this.controller,
-      space_column: 10
+      space_column: this.compact_mode ? 0 : 10
     }) {
-      Column({ space: 15 }) {
+      Column({ space: this.compact_mode ? 8 : 15 }) {
         Column({ space: 10 }) {
           linysText({ text: $r('app.string.zones_desc'), is_description: true, is_expanded: true }).width('100%')
             .visibility(this.compact_mode ? Visibility.None : Visibility.Visible)
@@ -56,13 +58,6 @@ struct woofZones {
           this.notice_height = n.height as number;
         })
         .width('100%')
-
-        // Row() {
-        //   linysSymbol({ symbol_glyph_target: 'sys.symbol.plus', can_hover: true })
-        //     .onClick(()=>{
-        //       // new zone
-        //     })
-        // }.justifyContent(FlexAlign.End).width('100%')
 
         linysTextTitle({
           text: $r('app.string.zones_existing')
@@ -84,6 +79,7 @@ struct woofZones {
         .edgeEffect(EdgeEffect.Spring)
         .constraintSize({ maxHeight: Math.max(0, this.full_screen_height * 0.9 - 35 - 45 - 50 - this.notice_height) })
       }
+      .animation(animation_default())
       .alignItems(HorizontalAlign.Start)
     }
   }

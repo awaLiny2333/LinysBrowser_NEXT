@@ -11,7 +11,7 @@ struct woofControlFrame {
   @BuilderParam content_section: () => void;
   // Information
   title: ResourceStr = 'Meow';
-  space_column: number = 2;
+  @Prop space_column: number = 2;
   @Prop show_title: boolean = true;
   // Control
   controller?: CustomDialogController;
