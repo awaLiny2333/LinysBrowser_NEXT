@@ -20,7 +20,7 @@ import lazy woofPrompt from '../../dialogs/web/woofPrompt';
 import lazy linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 import lazy woofEasyList from '../../dialogs/managers/woofEasylist';
 import linysSwitchWithText from '../../components/toggles/linysSwitchWithText';
-import { modify_zone_name, off_zone, set_zone } from '../../processes/zone_actions';
+import { modify_zone_name } from '../../processes/zone_actions';
 import { is_legal_filename } from '../../utils/storage_tools';
 import linysFileNameErrorDisplay from '../../components/linysFileNameErrorDisplay';
 import woofZones from '../../dialogs/contents/woofZones';
@@ -49,6 +49,7 @@ struct meowMoreOptions {
   @StorageLink('history_index_loading_progress') history_index_loading_progress: string = "";
   @StorageLink('history_index_saving_progress') history_index_saving_progress: string = "";
   // Environments
+  @StorageLink('free_window_mode') free_window_mode: boolean = false;
   @LocalStorageLink('fullscreen_mode') fullscreen_mode: boolean = false;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @LocalStorageLink('compact_mode') compact_mode: boolean = false; // Like PuraX
@@ -451,17 +452,28 @@ struct meowMoreOptions {
                 text: $r('app.string.Tabs_save_as_zone'),
                 toggle_state: this.is_zone,
                 onExecution: () => {
-                  if (this.is_zone) {
-                    console.log(`[zone_actions] SET ZONE!`);
-                    set_zone(this.my_window_id);
-                  } else {
-                    console.log(`[zone_actions] OFF ZONE!`);
-                    off_zone(this.my_window_id);
-                  }
+                  // Will automatically trigger actions in Index.ets
+
+                  // if (this.is_zone) {
+                  //   console.log(`[zone_actions] SET ZONE!`);
+                  //   set_zone(this.my_window_id);
+                  // } else {
+                  //   console.log(`[zone_actions] OFF ZONE!`);
+                  //   off_zone(this.my_window_id);
+                  // }
                 }
               })
                 .layoutWeight(1)
                 .enabled(this.can_save_zone() && this.window_alias_legal_err == 0)
+
+              linysSymbol({
+                symbol_glyph_target: 'sys.symbol.magnifyingglass',
+                can_hover: true
+              })
+                .onClick(() => {
+                  // Open Zone view
+                  this.Zones_control.open();
+                })
             }
 
             linysText({
@@ -487,9 +499,9 @@ struct meowMoreOptions {
           .constraintSize({ maxWidth: 500, minHeight: 43 })
           .backgroundColor($r('sys.color.comp_background_tertiary'))
           .borderRadius(12)
-          .padding(this.can_save_zone() && this.window_alias_legal_err == 0 ? { left: 6, right: 15 } : {
-            left: 6,
-            right: 15,
+          .padding(this.can_save_zone() && this.window_alias_legal_err == 0 ? { left: 5, right: 5 } : {
+            left: 5,
+            right: 5,
             top: 5,
             bottom: 15
           })
@@ -635,7 +647,7 @@ struct meowMoreOptions {
     .layoutWeight(this.showing_more_options ? 1 : undefined)
     .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)
     .animation(animation_default())
-    .margin({ left: 15, right: 15 })
+    .margin(this.free_window_mode ? { left: 10, right: 10 } : { left: 15, right: 15 })
     .align(Alignment.Bottom)
     .borderRadius(10)
     .scrollable(ScrollDirection.Vertical)

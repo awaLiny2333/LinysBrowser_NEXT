@@ -15,6 +15,7 @@ import linysText from '../../components/texts/linysText';
 struct meowDownloads {
   @StorageLink('bunch_of_downloads') @Watch('on_download_state_change') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads();
   @LocalStorageLink('showing_downloads') showing_downloads: boolean = false;
+  @StorageLink('free_window_mode') free_window_mode: boolean = false;
   // Downloads
   @LocalStorageProp('screen_width') screen_width: number = 0;
   @LocalStorageProp('screen_height') screen_height: number = 0;
@@ -71,7 +72,7 @@ struct meowDownloads {
     }
     .height('100%')
     .layoutWeight(1)
-    .padding({ left: 15, right: 15 })
+    .padding(this.free_window_mode ? { left: 10, right: 10 } : { left: 15, right: 15 })
     .animation(animation_default())
 
   }

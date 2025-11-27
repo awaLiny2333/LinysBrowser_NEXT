@@ -17,6 +17,7 @@ import { storage_of_id } from '../../utils/ui_tools';
 struct meowScratchingBoard {
   // Links
   @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
+  @StorageLink('free_window_mode') free_window_mode: boolean = false;
   @LocalStorageLink('drop_result_strings') @Watch('on_data_change') data_list: string[] = [];
   // UI
   @State show_feed_prompt: boolean = true;
@@ -101,7 +102,7 @@ struct meowScratchingBoard {
 
     }
     .justifyContent(FlexAlign.Center)
-    .padding({ left: 15, right: 15 })
+    .padding(this.free_window_mode ? { left: 10, right: 10 } : { left: 15, right: 15 })
     .width('100%')
     .height('100%')
     .animation(animation_default())

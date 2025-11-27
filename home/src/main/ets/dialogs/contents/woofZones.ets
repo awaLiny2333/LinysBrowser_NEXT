@@ -1,7 +1,7 @@
-import { del_offline_zone, zone_opened } from '../../processes/zone_actions';
+import { del_offline_zone, storage_of_zone, window_id_of_zone, zone_opened } from '../../processes/zone_actions';
 import { common } from '@kit.AbilityKit';
 import { new_window } from '../../utils/ui_tools';
-import { animation_default, minimum_card_width } from '../../hosts/bunch_of_defaults';
+import { animation_default, click_effect_default, minimum_card_width } from '../../hosts/bunch_of_defaults';
 import lazy { fileIo } from '@kit.CoreFileKit';
 import lazy { meowContext } from '../../utils/environment_tools';
 import lazy woofControlFrame from '../woofControlFrame';
@@ -10,6 +10,7 @@ import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
 import { sandbox_read_text_sync } from '../../utils/storage_tools';
 import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
+import linysSwitchWithText from '../../components/toggles/linysSwitchWithText';
 
 @CustomDialog
 struct woofZones {
@@ -109,9 +110,12 @@ struct subCard {
   // Data
   @Prop my_index: number;
   @Prop zone_alias: string = 'zzz';
-  controller: CustomDialogController | undefined = undefined;
+  @State zone_window_id: string | undefined = window_id_of_zone(this.zone_alias);
   @StorageLink('zones_opened') zones_opened: boolean[] = [];
+  @State to_fool_toggle: boolean = this.zones_opened[this.my_index];
   @State tabs_count: number = 0;
+  // Popup
+  controller: CustomDialogController | undefined = undefined;
 
   aboutToAppear(): void {
     try {
@@ -142,15 +146,31 @@ struct subCard {
           linysText({ text: '...' })
         }
       }
-      linysTimeoutButtonWithText({
-        desc_text: '',
-        button_text: "  󰀁  ",
-        onExecution: () => {
-          del_offline_zone(this.zone_alias);
-        }
-      }).width('100%')
+      if (this.zones_opened[this.my_index]) {
+        linysSwitchWithText({
+          text: $r('app.string.Tabs_save_as_zone'),
+          toggle_state: this.to_fool_toggle,
+          onExecution: () => {
+            let s = storage_of_zone(this.zone_alias);
+            if (s) {
+              // Will automatically trigger actions in Index.ets
+              s.set('is_zone', false);
+            }
+          }
+        })
+
+      } else {
+        linysTimeoutButtonWithText({
+          desc_text: '',
+          button_text: "  󰀁  ",
+          onExecution: () => {
+            del_offline_zone(this.zone_alias);
+          }
+        }).width('100%')
+      }
     }
     .opacity(this.zones_opened[this.my_index] ? 0.5 : 1)
+    // .enabled(!this.zones_opened[this.my_index])
     .borderColor(this.border_color())
     .backgroundColor(this.color_current_primary)
     .brightness(this.isHov ? 1.04 : 1)
@@ -161,6 +181,7 @@ struct subCard {
     .width("100%")
     .borderRadius(10)
     .borderWidth(2)
+    .clickEffect(click_effect_default())
     .onHover((isHv) => {
       this.isHov = isHv;
     })

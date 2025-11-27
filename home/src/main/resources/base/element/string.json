@@ -1109,6 +1109,10 @@
       "value": "Save / archive web"
     },
     {
+      "name": "Key_shortcuts_view_zones",
+      "value": "View zones"
+    },
+    {
       "name": "Homepage_background",
       "value": "Background"
     },

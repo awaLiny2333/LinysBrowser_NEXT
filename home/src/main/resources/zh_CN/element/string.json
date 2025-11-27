@@ -1108,6 +1108,10 @@
       "value": "保存／归档页面"
     },
     {
+      "name": "Key_shortcuts_view_zones",
+      "value": "工作区概览"
+    },
+    {
       "name": "Homepage_background",
       "value": "背景"
     },

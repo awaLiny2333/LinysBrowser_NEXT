@@ -405,7 +405,7 @@ struct meowAppSettings {
         scroll_to_gateway: this.settings_scroll_to,
         menu_text: this.menu_text,
       })// Quick access on the left
-        .margin({ left: 15 })
+        .margin(this.free_window_mode ? { left: 10 } : { left: 15 })
         .visibility(this.visibility_of_menu_side('left'))
         .animation(animation_default())
 
@@ -1311,7 +1311,7 @@ struct meowAppSettings {
           })
         }
       } // Main
-      .padding({ left: 15, right: 15 })
+      .padding(this.free_window_mode ? { left: 10, right: 10 } : { left: 15, right: 15 })
       .layoutWeight(1)
       .height("100%")
       .animation(animation_default())
@@ -1322,7 +1322,7 @@ struct meowAppSettings {
         scroll_to_gateway: this.settings_scroll_to,
         menu_text: this.menu_text,
       })// Quick access on the right
-        .margin({ right: 15 })
+        .margin(this.free_window_mode ? { right: 10 } : { right: 15 })
         .visibility(this.visibility_of_menu_side('right'))
         .animation(animation_default())
     }

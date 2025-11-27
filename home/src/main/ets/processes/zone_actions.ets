@@ -2,8 +2,14 @@ import lazy { fileIo } from '@kit.CoreFileKit';
 import lazy { BusinessError } from '@kit.BasicServicesKit';
 import lazy { bunch_of_tabs } from '../hosts/bunch_of_tabs';
 import lazy { meowContext } from '../utils/environment_tools';
-import { sandbox_mkdir_sync, sandbox_read_arrayBuffer_sync, sandbox_read_text_sync, sandbox_rename_sync, sandbox_rmdir_sync,
-  sandbox_save } from '../utils/storage_tools';
+import {
+  sandbox_mkdir_sync,
+  sandbox_read_arrayBuffer_sync,
+  sandbox_read_text_sync,
+  sandbox_rename_sync,
+  sandbox_rmdir_sync,
+  sandbox_save
+} from '../utils/storage_tools';
 import lazy { storage_of_id, window_of_id } from '../utils/ui_tools';
 
 /**
@@ -141,17 +147,20 @@ export function off_zone(window_id: string) {
   let tabs_list = fileIo.listFileSync(zone_dir);
   let tabs = storage.get('bunch_of_tabs') as bunch_of_tabs;
   for (let index = 0; index < Math.floor(tabs_list.length / 2); index++) {
-    try {
-      let state_file = 'zones/' + alias + "/continue_tabs_web_state_array_" + index.toString();
-      let array_buffer = sandbox_read_arrayBuffer_sync(state_file); // State of that tab
-      if (array_buffer) {
-        tabs.Tabs[index].web_state_array = new Uint8Array(array_buffer);
-      } else {
-        console.error("[off_zone] Read web state failed! Read NOTHING from disk???");
-        return false;
+    if (tabs.Tabs[index].web_state_array) {
+      // Already loaded, do nothing
+    } else {
+      try {
+        let state_file = 'zones/' + alias + "/continue_tabs_web_state_array_" + index.toString();
+        let array_buffer = sandbox_read_arrayBuffer_sync(state_file); // State of that tab
+        if (array_buffer) {
+          tabs.Tabs[index].web_state_array = new Uint8Array(array_buffer);
+        } else {
+          console.error("[off_zone] Read web state failed! Read NOTHING from disk???");
+        }
+      } catch (e) {
+        console.error('[off_zone][restore_zone] Failed: ' + e);
       }
-    } catch (e) {
-      console.error('[off_zone][restore_zone] Failed: ' + e);
     }
   }
 
@@ -168,6 +177,7 @@ export function off_zone(window_id: string) {
   }
   storage.setOrCreate('is_zone', false);
   refresh_AppStorage_zones();
+
   // Window Title
   let windowClass = window_of_id(window_id);
   if (windowClass) {
@@ -215,6 +225,8 @@ export function web_state_dir(storage: LocalStorage) {
   return undefined;
 }
 
+// Data
+
 /**
  * Gets the tab open state of zone.
  * @param storage The LocalStorage.
@@ -231,4 +243,36 @@ export function stat_of_zone(storage: LocalStorage) {
     return [continue_tabs_main_on, continue_tabs_sub_on];
   }
   return [0, -1];
+}
+
+/**
+ * Gets the my_window_id of a zone with alias.
+ * @param alias The alias.
+ * @returns The my_window_id or undefined.
+ * */
+export function window_id_of_zone(alias: string) {
+  let windowStorages = AppStorage.get('windowStorages') as LocalStorage[];
+  for (let index = 0; index < windowStorages.length; index++) {
+    let s = windowStorages[index];
+    if (s.get('is_zone') as boolean && s.get('my_window_alias') as string == alias) {
+      return s.get('my_window_id') as string;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Gets the storage of a zone with alias.
+ * @param alias The alias.
+ * @returns The LocalStorage or undefined.
+ * */
+export function storage_of_zone(alias: string) {
+  let windowStorages = AppStorage.get('windowStorages') as LocalStorage[];
+  for (let index = 0; index < windowStorages.length; index++) {
+    let s = windowStorages[index];
+    if (s.get('is_zone') as boolean && s.get('my_window_alias') as string == alias) {
+      return s;
+    }
+  }
+  return undefined;
 }

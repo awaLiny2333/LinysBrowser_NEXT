@@ -10,9 +10,8 @@ import {
 } from '../../hosts/bunch_of_defaults';
 import { webview } from '@kit.ArkWeb';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
-import { current_tabs_style_is_horizontal, new_window, run_time, storage_of_id } from '../../utils/ui_tools';
+import { current_tabs_style_is_horizontal, run_time, storage_of_id } from '../../utils/ui_tools';
 import { search_engine } from '../../hosts/bunch_of_search_engines';
-import lazy { common } from '@kit.AbilityKit';
 import lazy { drop_to_scratching_board } from '../../utils/drag_drop_tools';
 import lazy { copy } from '../../utils/clipboard_tools';
 import lazy { share_link } from '../../utils/link_tools';
@@ -51,6 +50,7 @@ struct meowTitleBar {
   // Current environment
   @Link title_bar_alignRules: AlignRuleOption;
   @State search_input_unified: string = "";
+  @LocalStorageLink('on_focus') on_focus: boolean = true;
   @StorageLink('free_window_mode') free_window_mode: boolean = false;
   @StorageLink('showing_my_window_alias') showing_my_window_alias: boolean = false;
   @LocalStorageLink('windowDecorWidth') windowDecorWidth: number = 0;
@@ -150,7 +150,7 @@ struct meowTitleBar {
           search_input_unified: this.search_input_unified,
         })
           .visibility(this.is_search_input_typing && this.title_bar_position == 'bottom' ? Visibility.Visible : Visibility.None)
-          .padding({ left: 15, right: 15 })
+          .padding(this.free_window_mode ? { left: 10, right: 10 } : { left: 15, right: 15 })
           .width("100%")
           .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
           .constraintSize({ minHeight: 20 })
@@ -473,7 +473,7 @@ struct meowTitleBar {
         .id('right_controls')
 
       } // Button controls and search
-      .padding({ left: 15, right: 15 })
+      .padding(this.free_window_mode ? { left: 10, right: 10 } : { left: 15, right: 15 })
       .width("100%")
       .height(this.tablet_mode || this.showing_scratching_board ? capsule_bar_height() : 2 * capsule_bar_height() + 10)
       .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
@@ -487,7 +487,7 @@ struct meowTitleBar {
           search_input_unified: this.search_input_unified
         })
           .visibility(this.is_search_input_typing && this.title_bar_position == 'top' ? Visibility.Visible : Visibility.None)
-          .padding({ left: 15, right: 15 })
+          .padding(this.free_window_mode ? { left: 10, right: 10 } : { left: 15, right: 15 })
           .width("100%")
           .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
           .constraintSize({ minHeight: 20 })
@@ -544,7 +544,6 @@ struct meowTitleBar {
     })
     .width("100%")
     .alignItems(HorizontalAlign.Start)
-    .backgroundColor(this.background_color())
     .useEffect(this.effects, EffectType.WINDOW_EFFECT)
     .alignRules(this.title_bar_alignRules)
     .padding({
@@ -564,6 +563,7 @@ struct meowTitleBar {
       y: this.y_offset_title_bar()
     })
     .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+    .backgroundColor(this.background_color())
     .onAppear(() => {
       console.log(`[Meow][meowTitleBar] onAppear! (${run_time(this.storage)} ms)`);
     })

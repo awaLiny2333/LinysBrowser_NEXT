@@ -17,6 +17,7 @@ import lazy {
   window_index_of_id,
 } from '../utils/ui_tools';
 import { change_window_alias, last_storage, run_time, storage_of_id } from '../utils/ui_tools';
+import lazy { off_zone, set_zone } from '../processes/zone_actions';
 import lazy { cancel_in_page_search, is_current_in_page_searching } from '../processes/tabs_actions';
 import lazy { webview } from '@kit.ArkWeb';
 import lazy meowTabsVertical from '../blocks/modules/meowTabsVertical';
@@ -25,6 +26,7 @@ import lazy meowBookmarks from '../blocks/modules/meowBookmarks';
 import lazy meowWebView from '../blocks/modules/meowWebView';
 import lazy woofPromptFail from '../dialogs/prompts/woofPromptFail';
 import lazy woofHistory from '../dialogs/managers/woofHistory';
+import lazy woofZones from '../dialogs/contents/woofZones';
 import meowShortcuts from '../blocks/modules/meowShortcuts';
 import linysProgress from '../components/linysProgress';
 import linysWindowButton from '../components/buttons/linysWindowButton';
@@ -35,6 +37,7 @@ import linysText from '../components/texts/linysText';
 @Component
 struct Index {
   @StorageLink('showing_large_my_window_alias') showing_large_my_window_alias: boolean = false;
+  @LocalStorageLink('is_zone') @Watch('on_is_zone_changed') is_zone: boolean = false;
   @LocalStorageLink('my_window_id') my_window_id: string = '';
   @LocalStorageLink('my_windowClass') my_windowClass: window.Window | undefined = undefined;
   @LocalStorageLink('my_window_alias') my_window_alias: string = '';
@@ -82,7 +85,7 @@ struct Index {
   @StorageLink('bottom_avoid') bottom_avoid: boolean = true;
   @LocalStorageLink('shortcut_scroll_offset') shortcut_scroll_offset: number = 0;
   @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
-  @LocalStorageLink('right_control_width') right_control_width: number = 222 + 15 + 7; // To align the vertical tabs panel with title bar elements
+  @LocalStorageLink('right_control_width') right_control_width: number = 216 + 15 + 7; // To align the vertical tabs panel with title bar elements
   @State is_Hov: boolean = false;
   /**
    * Delay */
@@ -131,6 +134,12 @@ struct Index {
     builder: woofHistory({
       full_view: this.compact_mode
     }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 26,
+    width: "90%",
+  });
+  Zones_control: CustomDialogController = new CustomDialogController({
+    builder: woofZones(),
     alignment: DialogAlignment.Center,
     cornerRadius: 26,
     width: "90%",
@@ -206,6 +215,12 @@ struct Index {
             Row().keyboardShortcut(this.bunch_of_key_shortcuts.focus_address.main_key, this.bunch_of_key_shortcuts.focus_address.modifier, () => {
               this.universal_focus_address();
             })
+            Row().keyboardShortcut(this.bunch_of_key_shortcuts.view_zones.main_key, this.bunch_of_key_shortcuts.view_zones.modifier, () => {
+              if (is_some_dialogs_opened(this.storage)) {
+                return;
+              }
+              this.Zones_control.open();
+            })
             Row().keyboardShortcut(FunctionKey.ESC, [], () => {
               try {
                 this.universal_esc();
@@ -223,12 +238,26 @@ struct Index {
         }
 
         RelativeContainer() {
+          if (this.free_window_mode) {
+            Row({ space: 10 }) {
+              linysWindowButton({
+                symbol: $r('sys.symbol.square_stack_3d'),
+                execution: () => {
+                  this.Zones_control.open();
+                }
+              })
+            } // Window control buttons
+            .id('window_controls_left')
+            .padding({ top: this.showing_my_window_alias ? 9 : 5, left: 5 })
+            .alignRules({ top: { anchor: '__container__', align: VerticalAlign.Top }, left: { anchor: '__container__', align: HorizontalAlign.Start } })
+          }
+
           WindowTitle()
-            .padding(this.tablet_mode ? { right: 20, bottom: 5 } : undefined)
+            .padding(this.tablet_mode ? { right: 20, left: 20, bottom: 5 } : undefined)
             .alignRules({
               bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
-              left: { anchor: '__container__', align: HorizontalAlign.Start },
-              right: !this.tablet_mode ? { anchor: '__container__', align: HorizontalAlign.End } : { anchor: 'window_controls', align: HorizontalAlign.Start }
+              left: !this.tablet_mode ? { anchor: '__container__', align: HorizontalAlign.Start } : { anchor: 'window_controls_left', align: HorizontalAlign.End },
+              right: !this.tablet_mode ? { anchor: '__container__', align: HorizontalAlign.End } : { anchor: 'window_controls_right', align: HorizontalAlign.Start }
             })
             .visibility(this.showing_my_window_alias ? Visibility.Visible : Visibility.Hidden)
             .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
@@ -250,12 +279,12 @@ struct Index {
               })
 
             } // Window control buttons
-            .id('window_controls')
+            .id('window_controls_right')
             .padding({ top: this.showing_my_window_alias ? 9 : 5, right: Math.max(15, this.windowDecorWidth) - 15 })
             .alignRules({ top: { anchor: '__container__', align: VerticalAlign.Top }, right: { anchor: '__container__', align: HorizontalAlign.End } })
           }
         } // Top Bar Avoid (Title)
-        .backgroundColor(this.title_background_color())
+        // .backgroundColor(this.background_color())
         .height(this.height_of_top_avoid())
         .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
         .padding({
@@ -364,7 +393,8 @@ struct Index {
         })
     }
     .alignContent(Alignment.Center)
-    .backgroundColor(this.color_current_secondary)
+    // .backgroundColor(this.color_current_secondary)
+    .backgroundColor(this.background_color())
     .useEffect(this.effects, EffectType.WINDOW_EFFECT)
     .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
     .onAreaChange((_o, n) => {
@@ -536,6 +566,16 @@ struct Index {
     } else {
       console.log('\t[free][@Watch] Trying to enter Traditional mode. [' + this.my_window_id + ']');
       enter_traditional_window_mode(this.my_windowClass!, this.storage, this.my_window_id);
+    }
+  }
+
+  on_is_zone_changed() {
+    if (this.is_zone) {
+      console.log(`[zone_actions] SET ZONE!`);
+      set_zone(this.my_window_id);
+    } else {
+      console.log(`[zone_actions] OFF ZONE!`);
+      off_zone(this.my_window_id);
     }
   }
 
