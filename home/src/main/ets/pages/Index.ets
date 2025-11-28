@@ -31,6 +31,7 @@ import meowShortcuts from '../blocks/modules/meowShortcuts';
 import linysProgress from '../components/linysProgress';
 import linysWindowButton from '../components/buttons/linysWindowButton';
 import linysText from '../components/texts/linysText';
+import meowTabsHost from '../blocks/modules/meowTabsHost';
 
 // @Entry({ useSharedStorage: true })
 @Entry(last_storage())
@@ -85,7 +86,6 @@ struct Index {
   @StorageLink('bottom_avoid') bottom_avoid: boolean = true;
   @LocalStorageLink('shortcut_scroll_offset') shortcut_scroll_offset: number = 0;
   @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
-  @LocalStorageLink('right_control_width') right_control_width: number = 216 + 15 + 7; // To align the vertical tabs panel with title bar elements
   @State is_Hov: boolean = false;
   /**
    * Delay */
@@ -221,6 +221,9 @@ struct Index {
               }
               this.Zones_control.open();
             })
+            Row().keyboardShortcut(this.bunch_of_key_shortcuts.close_tab.main_key, this.bunch_of_key_shortcuts.close_tab.modifier, () => {
+              this.storage.set('universal_close_tab_gateway', this.bunch_of_tabs.main_tab_idx);
+            })
             Row().keyboardShortcut(FunctionKey.ESC, [], () => {
               try {
                 this.universal_esc();
@@ -298,20 +301,25 @@ struct Index {
         //   Column() {
         RelativeContainer() {
           Row() {
-            Row() {
-              if (this.delayed_load_p0) {
-                meowTabsVertical()
-              }
-              if (this.delayed_load_p3) {
-                meowBookmarks()
-              }
-            } // Tabs and bookmarks
-            .width(this.width_of_Bookmarks_and_Tabs())
-            .margin(this.margin_of_Bookmarks_and_Tabs())
-            .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-            .height("100%")
+            if (this.delayed_load_p3) {
+              meowBookmarks()
+                .width(this.showing_bookmarks ? undefined : 0)
+                .animation(animation_default())
+                .clip(true)
+            }
+
+            if (this.delayed_load_p0) {
+              meowTabsVertical()
+                .width(this.showing_vertical_tabs() ? undefined : 0)
+                .animation(animation_default())
+                .clip(true)
+            }
 
             Stack() {
+              if (this.delayed_load_p0) {
+                meowTabsHost()
+              }
+
               if (this.homepage_background) {
                 Image(this.homepage_background)
                   .opacity(Math.max(1 - this.shortcut_scroll_offset / this.screen_height, 0.5))
@@ -327,17 +335,14 @@ struct Index {
               // }
             }
             .clip(true)
-            .margin(this.effects && !this.fullscreen_mode ? {
-              bottom: this.title_bar_position == 'bottom' ? 0 : 10,
-              right: this.need_right_margin() ? 10 : 0,
-              left: this.need_left_margin() ? 10 : 0
-            } : 0)
+            .margin(this.effects && !this.fullscreen_mode ? { bottom: this.title_bar_position == 'bottom' ? 0 : 10, left: 5, right: 5 } : this.main_web_padding())
             .borderRadius(this.effects && !this.fullscreen_mode ? 10 : 0)
             .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
             .backgroundColor(this.color_current_primary)
             .layoutWeight(this.tablet_mode ? 1 : 0)
 
           } // Main Web
+          .padding(this.main_web_padding())
           .backgroundColor(this.effects ? undefined : this.color_current_primary)
           .useEffect(this.effects, EffectType.WINDOW_EFFECT)
           .direction(this.direction_of_web_and_side_panels())
@@ -345,7 +350,10 @@ struct Index {
             ? { bottom: this.fullscreen_mode ? 0 : this.title_bar_height }
             : { top: this.fullscreen_mode ? 0 : this.title_bar_height })
           .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+          // .resizeable(this.tablet_mode)
           .width("100%")
+
+          // .alignRules({ left: { anchor: '__container__', align: HorizontalAlign.Start }, right: { anchor: '__container__', align: HorizontalAlign.End } })
 
           if (this.index_init_ok) {
             linysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
@@ -581,36 +589,17 @@ struct Index {
 
   // kinda params
 
-  width_of_Bookmarks_and_Tabs() {
-    let result = 0;
-    if (this.tablet_mode) {
-      if (this.showing_tabs && this.tabs_style != 'horizontal') {
-        result += this.storage.get('right_control_width') as number;
-      }
-      if (this.showing_bookmarks) {
-        result += 350;
-      }
-    } else {
-      // non_tablet_mode
-      if (this.showing_bookmarks) {
-        result += 0.9 * this.screen_width;
-      }
-      if (this.showing_tabs && this.tabs_style_non_tablet_mode == 'vertical') {
-        result += 0.9 * this.screen_width;
-      }
+  showing_vertical_tabs() {
+    if (!this.showing_tabs) {
+      return false;
     }
-    return result;
-  }
 
-  margin_of_Bookmarks_and_Tabs(): Padding | number {
-    if (this.width_of_Bookmarks_and_Tabs() == 0) {
-      return 0;
+    if (this.tablet_mode && this.tabs_style == 'vertical') {
+      return true;
+    } else if (!this.tablet_mode && this.tabs_style_non_tablet_mode == 'vertical') {
+      return true;
     }
-    let status = this.preferred_hand_left_or_right == 'right';
-    if (this.preferred_hand_reverse_tabs_panel) {
-      status = !status;
-    }
-    return status ? { right: this.rightAvoidWidth } : { left: this.leftAvoidWidth };
+    return false;
   }
 
   height_of_bottom_avoid() {
@@ -656,24 +645,24 @@ struct Index {
     return vis ? Visibility.Visible : Visibility.Hidden;
   }
 
-  need_right_margin() {
-    let has_side_bars = (this.showing_tabs && !current_tabs_style_is_horizontal(this.storage)) || this.showing_bookmarks;
-    if (has_side_bars) {
-      if (this.is_right_align()) {
-        return false;
-      }
+  main_web_padding() {
+    if (this.effects) {
+      return { left: 5, right: 5 } as Padding;
     }
-    return true;
-  }
 
-  need_left_margin() {
+    // Non effects
     let has_side_bars = (this.showing_tabs && !current_tabs_style_is_horizontal(this.storage)) || this.showing_bookmarks;
-    if (has_side_bars) {
-      if (!this.is_right_align()) {
-        return false;
-      }
+    console.log(`[main_web_padding] has_side_bars=${has_side_bars}`);
+
+    if (!has_side_bars) {
+      return 0 as Padding;
     }
-    return true;
+
+    if (this.is_right_align()) {
+      return { right: 5 } as Padding;
+    } else {
+      return { left: 5 } as Padding;
+    }
   }
 
   is_right_align() {
@@ -855,7 +844,6 @@ struct Index {
     }
   }
 }
-
 
 @Component
 struct WindowTitle {

@@ -61,275 +61,275 @@ struct meowBookmarks {
 
   build() {
     Column() {
-      if (this.showing_bookmarks) {
-        Scroll(this.bookmarks_scroller) {
+      // if (this.showing_bookmarks) {
+      Scroll(this.bookmarks_scroller) {
+        Column() {
           Column() {
-            Column() {
+            Column()
+              .height(this.swapping_offset_upper)
+            if (this.swapping_bookmarks) {
               Column()
-                .height(this.swapping_offset_upper)
-              if (this.swapping_bookmarks) {
-                Column()
-                  .height(Math.max(0, this.scroll_area_height - 5 - this.viewing_contents.length * (42 + 5)))
-              }
+                .height(Math.max(0, this.scroll_area_height - 5 - this.viewing_contents.length * (42 + 5)))
             }
+          }
 
-            Column({ space: 5 }) {
-              ForEach(this.viewing_contents, (item: bookmark, key: number) => {
-                bookmarkItem({
-                  // Generals
-                  my_index: key,
-                  viewing_contents: this.viewing_contents, // For editing
-                  looking_at_path: this.looking_at_path, // the path of now showing list (directory) on the panel
-                  // To ask webViews to show
-                  height_of_panel: this.scroll_area_height, // for animation params
-                  parent_path: this.looking_at_path, // for get_my_path()
-                })
+          Column({ space: 5 }) {
+            ForEach(this.viewing_contents, (item: bookmark, key: number) => {
+              bookmarkItem({
+                // Generals
+                my_index: key,
+                viewing_contents: this.viewing_contents, // For editing
+                looking_at_path: this.looking_at_path, // the path of now showing list (directory) on the panel
+                // To ask webViews to show
+                height_of_panel: this.scroll_area_height, // for animation params
+                parent_path: this.looking_at_path, // for get_my_path()
+              })
+            })
+          }
+
+          Column()
+            .height(this.swapping_offset_downer)
+        }
+        .width("100%")
+      } // List of this directory
+      .direction(Direction.Rtl)
+      .align(Alignment.Bottom)
+      .borderRadius(7)
+      .edgeEffect(EdgeEffect.Spring)
+      .width("100%")
+      .layoutWeight(1)
+      .margin({ bottom: 10 })
+      .onAreaChange((_o, n) => {
+        this.scroll_area_height = n.height as number;
+        // Update height of scroll area
+        // So that bookmark buttons will know if they are out of visible area
+        // and reduce their appearance animation time.
+      })
+
+      // .nestedScroll({ scrollForward: NestedScrollMode.SELF_ONLY, scrollBackward: NestedScrollMode.SELF_ONLY })
+
+      Row({ space: this.tablet_mode ? 2 : 0 }) {
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left', can_hover: true })// Go back button
+          .onClick(() => {
+            this.go_back();
+          })
+          .visibility(this.looking_at_path == "" || this.swapping_bookmarks ? Visibility.None : this.visible_when_no_operating())
+          .animation(animation_default())
+
+        linysShowButton({
+          symbol_glyph_target: 'sys.symbol.swap',
+          show: this.swapping_bookmarks,
+          show_margin: { left: 0, right: 5 },
+          text: $r('app.string.Bookmarks_move_order')
+        })// Swap Button
+          .onClick(() => {
+            this.importing_bookmarks = false;
+            this.exporting_bookmarks = false;
+            this.adding_folder = false;
+            this.adding_bookmark = false;
+            this.swapping_bookmarks = !this.swapping_bookmarks;
+            clearInterval(this.swap_setInterval_id);
+            if (this.swapping_bookmarks) {
+              this.swap_setInterval_id = setInterval(() => {
+                if (this.swapping_offset_timeout == 100) {
+                  this.getUIContext().animateTo(animation_default(), () => {
+                    this.swapping_offset_upper = 0;
+                    this.swapping_offset_downer = 0;
+                  })
+                }
+                this.swapping_offset_timeout -= 100;
+                if (this.swapping_offset_timeout <= 0) {
+                  this.swapping_offset_timeout = 0;
+                }
+              }, 100)
+            } else {
+              this.getUIContext().animateTo(animation_default(), () => {
+                this.swapping_offset_upper = 0;
+                this.swapping_offset_downer = 0;
+                this.swapping_offset_timeout = 0;
               })
             }
+          })
 
-            Column()
-              .height(this.swapping_offset_downer)
-          }
-          .width("100%")
-        } // List of this directory
-        .direction(Direction.Rtl)
-        .align(Alignment.Bottom)
-        .borderRadius(7)
-        .edgeEffect(EdgeEffect.Spring)
-        .width("100%")
-        .layoutWeight(1)
-        .margin({ bottom: 10 })
-        .onAreaChange((_o, n) => {
-          this.scroll_area_height = n.height as number;
-          // Update height of scroll area
-          // So that bookmark buttons will know if they are out of visible area
-          // and reduce their appearance animation time.
-        })
+        Blank()
+          .visibility(this.preferred_hand_left_or_right == 'right' ? Visibility.Visible : Visibility.None)
+          .animation(animation_default())
 
-        // .nestedScroll({ scrollForward: NestedScrollMode.SELF_ONLY, scrollBackward: NestedScrollMode.SELF_ONLY })
-
-        Row({ space: this.tablet_mode ? 2 : 0 }) {
-          linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left', can_hover: true })// Go back button
-            .onClick(() => {
-              this.go_back();
-            })
-            .visibility(this.looking_at_path == "" || this.swapping_bookmarks ? Visibility.None : this.visible_when_no_operating())
-            .animation(animation_default())
-
+        Column() {
           linysShowButton({
-            symbol_glyph_target: 'sys.symbol.swap',
-            show: this.swapping_bookmarks,
-            show_margin: { left: 0, right: 5 },
-            text: $r('app.string.Bookmarks_move_order')
-          })// Swap Button
+            show: this.importing_bookmarks,
+            symbol_glyph_target: 'sys.symbol.arrow_down_and_rectangle_on_rectangle',
+            text: $r('app.string.Index_import_bookmarks_title')
+          })
             .onClick(() => {
-              this.importing_bookmarks = false;
-              this.exporting_bookmarks = false;
               this.adding_folder = false;
               this.adding_bookmark = false;
-              this.swapping_bookmarks = !this.swapping_bookmarks;
-              clearInterval(this.swap_setInterval_id);
-              if (this.swapping_bookmarks) {
-                this.swap_setInterval_id = setInterval(() => {
-                  if (this.swapping_offset_timeout == 100) {
-                    this.getUIContext().animateTo(animation_default(), () => {
-                      this.swapping_offset_upper = 0;
-                      this.swapping_offset_downer = 0;
-                    })
-                  }
-                  this.swapping_offset_timeout -= 100;
-                  if (this.swapping_offset_timeout <= 0) {
-                    this.swapping_offset_timeout = 0;
-                  }
-                }, 100)
-              } else {
-                this.getUIContext().animateTo(animation_default(), () => {
-                  this.swapping_offset_upper = 0;
-                  this.swapping_offset_downer = 0;
-                  this.swapping_offset_timeout = 0;
-                })
-              }
+              this.exporting_bookmarks = false;
+              this.importing_bookmarks = !this.importing_bookmarks;
+              // this.import_bookmarks_html();
             })
+        } // Import bookmarks button
+        .alignItems(HorizontalAlign.End)
+        .visibility(this.swapping_bookmarks ? Visibility.None : Visibility.Visible)
+        .animation(animation_default())
 
-          Blank()
-            .visibility(this.preferred_hand_left_or_right == 'right' ? Visibility.Visible : Visibility.None)
-            .animation(animation_default())
-
-          Column() {
-            linysShowButton({
-              show: this.importing_bookmarks,
-              symbol_glyph_target: 'sys.symbol.arrow_down_and_rectangle_on_rectangle',
-              text: $r('app.string.Index_import_bookmarks_title')
-            })
-              .onClick(() => {
-                this.adding_folder = false;
-                this.adding_bookmark = false;
-                this.exporting_bookmarks = false;
-                this.importing_bookmarks = !this.importing_bookmarks;
-                // this.import_bookmarks_html();
-              })
-          } // Import bookmarks button
-          .alignItems(HorizontalAlign.End)
+        linysShowButton({
+          show: this.exporting_bookmarks,
+          symbol_glyph_target: 'sys.symbol.arrow_right_up_and_square',
+          text: $r('app.string.Index_export_bookmarks_title')
+        })
+          .onClick(() => {
+            this.adding_folder = false;
+            this.adding_bookmark = false;
+            this.importing_bookmarks = false;
+            this.exporting_bookmarks = !this.exporting_bookmarks;
+            // this.export_bookmarks_html();
+          })// Export bookmarks button
           .visibility(this.swapping_bookmarks ? Visibility.None : Visibility.Visible)
           .animation(animation_default())
-
-          linysShowButton({
-            show: this.exporting_bookmarks,
-            symbol_glyph_target: 'sys.symbol.arrow_right_up_and_square',
-            text: $r('app.string.Index_export_bookmarks_title')
-          })
-            .onClick(() => {
-              this.adding_folder = false;
-              this.adding_bookmark = false;
-              this.importing_bookmarks = false;
-              this.exporting_bookmarks = !this.exporting_bookmarks;
-              // this.export_bookmarks_html();
-            })// Export bookmarks button
-            .visibility(this.swapping_bookmarks ? Visibility.None : Visibility.Visible)
-            .animation(animation_default())
-          linysShowButton({
-            show: this.adding_folder,
-            symbol_glyph_target: 'sys.symbol.folder_badge_plus',
-            text: $r('app.string.Index_add_folder_title')
-          })
-            .onClick(() => {
-              this.adding_bookmark = false;
-              this.exporting_bookmarks = false;
-              this.importing_bookmarks = false;
-              this.add_label = "";
-              this.adding_folder = !this.adding_folder;
-            })// Add folder button
-            .visibility(this.swapping_bookmarks ? Visibility.None : Visibility.Visible)
-            .animation(animation_default())
-          linysShowButton({
-            show: this.adding_bookmark,
-            symbol_glyph_target: 'sys.symbol.plus_square',
-            show_margin: { left: 5, right: 0 },
-            text: $r('app.string.Index_add_bookmark_title')
-          })
-            .onClick(() => {
-              this.adding_folder = false;
-              this.exporting_bookmarks = false;
-              this.importing_bookmarks = false;
-              this.add_label = this.bunch_of_tabs.workingMainTab().title;
-              this.add_link = url_resource_to_meow(this.bunch_of_tabs.workingMainTab().url);
-              this.adding_bookmark = !this.adding_bookmark;
-            })// Add bookmark button
-            .visibility(this.swapping_bookmarks ? Visibility.None : Visibility.Visible)
-            .animation(animation_default())
-        } // Operation buttons
-        .constraintSize({ minHeight: 36 })
-        .width("100%")
-        .margin({ bottom: 5 })
-
-        Scroll() {
-          Column({ space: 10 }) {
-            Row({ space: 10 }) {
-              linysSymbol({ symbol_glyph_target: "sys.symbol.rename" })
-              TextInput({ text: this.add_label })
-                .onChange((value) => {
-                  this.add_label = value;
-                })
-                .fontWeight(FontWeight.Regular)
-                .fontColor(this.color_current_font)
-                .caretColor(this.color_current_font)
-                .selectedBackgroundColor(this.color_current_font)
-                .height(capsule_bar_height())
-                .selectAll(true)
-                .layoutWeight(1)
-                .onSubmit(() => {
-                  if (this.adding_folder) {
-                    this.new_folder();
-                  }
-                })
-
-            } // Edit Label TextInput
-            .visibility(this.adding_folder || this.adding_bookmark ? Visibility.Visible : Visibility.None)
-            .animation(animation_default())
-
-            Row({ space: 10 }) {
-              linysSymbol({ symbol_glyph_target: "sys.symbol.paperclip" })
-              TextInput({ text: this.add_link })
-                .onChange((value) => {
-                  this.add_link = value;
-                })
-                .fontWeight(FontWeight.Regular)
-                .fontColor(this.color_current_font)
-                .caretColor(this.color_current_font)
-                .selectedBackgroundColor(this.color_current_font)
-                .selectAll(true)
-                .layoutWeight(1)
-                .onSubmit(() => {
-                  this.new_bookmark();
-                })
-                .height(capsule_bar_height())
-
-            } // Edit link TextInput
-            .visibility(this.adding_bookmark ? Visibility.Visible : Visibility.None)
-            .animation(animation_default())
-
-            linysCapsuleButtonWithText({
-              desc_text: this.exporting_bookmarks || this.importing_bookmarks ? $r('app.string.Index_select_file') : '',
-              button_text: this.adding_folder || this.adding_bookmark ? "  󰀓  " : "  󰃟  ",
-              onExecution: () => {
-                if (this.adding_folder) {
-                  this.new_folder()
-                }
-                if (this.adding_bookmark) {
-                  this.new_bookmark()
-                }
-                if (this.importing_bookmarks) {
-                  this.import_bookmarks_html()
-                }
-                if (this.exporting_bookmarks) {
-                  this.export_bookmarks_html()
-                }
-              }
-            })// Submit add button
-              .visibility(this.adding_folder || this.adding_bookmark || this.exporting_bookmarks ||
-              this.importing_bookmarks ? Visibility.Visible :
-                Visibility.None)
-              .animation(animation_default())
-
-          }
-          .width("100%")
-        } // Edit panel
-        .height(this.get_edit_area_height())
-        .animation(animation_default())
-        .scrollBar(BarState.Off)
-
-        Text(this.text_path())// Display of list menu quick jump
-          .fontColor(this.color_current_font)
-          .fontWeight(FontWeight.Bold)
-          .fontSize(fontSize_Normal())
-          .textAlign(this.preferred_hand_left_or_right == 'right' ? TextAlign.End : TextAlign.Start)
-          .width("100%")
-          .padding(5)
-          .brightness(this.isHov_path_tree_dir ? 1.1 : 1)
-          .animation(animation_default())
-          .borderRadius(5)
-          .opacity(0.7)
-          .clickEffect(click_effect_default())
+        linysShowButton({
+          show: this.adding_folder,
+          symbol_glyph_target: 'sys.symbol.folder_badge_plus',
+          text: $r('app.string.Index_add_folder_title')
+        })
           .onClick(() => {
-            this.showing_navigator = !this.showing_navigator;
-          })
-          .onHover((isHv) => {
-            this.isHov_path_tree_dir = isHv;
-          })
-      }
+            this.adding_bookmark = false;
+            this.exporting_bookmarks = false;
+            this.importing_bookmarks = false;
+            this.add_label = "";
+            this.adding_folder = !this.adding_folder;
+          })// Add folder button
+          .visibility(this.swapping_bookmarks ? Visibility.None : Visibility.Visible)
+          .animation(animation_default())
+        linysShowButton({
+          show: this.adding_bookmark,
+          symbol_glyph_target: 'sys.symbol.plus_square',
+          show_margin: { left: 5, right: 0 },
+          text: $r('app.string.Index_add_bookmark_title')
+        })
+          .onClick(() => {
+            this.adding_folder = false;
+            this.exporting_bookmarks = false;
+            this.importing_bookmarks = false;
+            this.add_label = this.bunch_of_tabs.workingMainTab().title;
+            this.add_link = url_resource_to_meow(this.bunch_of_tabs.workingMainTab().url);
+            this.adding_bookmark = !this.adding_bookmark;
+          })// Add bookmark button
+          .visibility(this.swapping_bookmarks ? Visibility.None : Visibility.Visible)
+          .animation(animation_default())
+      } // Operation buttons
+      .constraintSize({ minHeight: 36 })
+      .width("100%")
+      .margin({ bottom: 5 })
+
+      Scroll() {
+        Column({ space: 10 }) {
+          Row({ space: 10 }) {
+            linysSymbol({ symbol_glyph_target: "sys.symbol.rename" })
+            TextInput({ text: this.add_label })
+              .onChange((value) => {
+                this.add_label = value;
+              })
+              .fontWeight(FontWeight.Regular)
+              .fontColor(this.color_current_font)
+              .caretColor(this.color_current_font)
+              .selectedBackgroundColor(this.color_current_font)
+              .height(capsule_bar_height())
+              .selectAll(true)
+              .layoutWeight(1)
+              .onSubmit(() => {
+                if (this.adding_folder) {
+                  this.new_folder();
+                }
+              })
+
+          } // Edit Label TextInput
+          .visibility(this.adding_folder || this.adding_bookmark ? Visibility.Visible : Visibility.None)
+          .animation(animation_default())
+
+          Row({ space: 10 }) {
+            linysSymbol({ symbol_glyph_target: "sys.symbol.paperclip" })
+            TextInput({ text: this.add_link })
+              .onChange((value) => {
+                this.add_link = value;
+              })
+              .fontWeight(FontWeight.Regular)
+              .fontColor(this.color_current_font)
+              .caretColor(this.color_current_font)
+              .selectedBackgroundColor(this.color_current_font)
+              .selectAll(true)
+              .layoutWeight(1)
+              .onSubmit(() => {
+                this.new_bookmark();
+              })
+              .height(capsule_bar_height())
+
+          } // Edit link TextInput
+          .visibility(this.adding_bookmark ? Visibility.Visible : Visibility.None)
+          .animation(animation_default())
+
+          linysCapsuleButtonWithText({
+            desc_text: this.exporting_bookmarks || this.importing_bookmarks ? $r('app.string.Index_select_file') : '',
+            button_text: this.adding_folder || this.adding_bookmark ? "  󰀓  " : "  󰃟  ",
+            onExecution: () => {
+              if (this.adding_folder) {
+                this.new_folder()
+              }
+              if (this.adding_bookmark) {
+                this.new_bookmark()
+              }
+              if (this.importing_bookmarks) {
+                this.import_bookmarks_html()
+              }
+              if (this.exporting_bookmarks) {
+                this.export_bookmarks_html()
+              }
+            }
+          })// Submit add button
+            .visibility(this.adding_folder || this.adding_bookmark || this.exporting_bookmarks ||
+            this.importing_bookmarks ? Visibility.Visible :
+              Visibility.None)
+            .animation(animation_default())
+
+        }
+        .width("100%")
+      } // Edit panel
+      .height(this.get_edit_area_height())
+      .animation(animation_default())
+      .scrollBar(BarState.Off)
+
+      Text(this.text_path())// Display of list menu quick jump
+        .fontColor(this.color_current_font)
+        .fontWeight(FontWeight.Bold)
+        .fontSize(fontSize_Normal())
+        .textAlign(this.preferred_hand_left_or_right == 'right' ? TextAlign.End : TextAlign.Start)
+        .width("100%")
+        .padding(5)
+        .brightness(this.isHov_path_tree_dir ? 1.1 : 1)
+        .animation(animation_default())
+        .borderRadius(5)
+        .opacity(0.7)
+        .clickEffect(click_effect_default())
+        .onClick(() => {
+          this.showing_navigator = !this.showing_navigator;
+        })
+        .onHover((isHv) => {
+          this.isHov_path_tree_dir = isHv;
+        })
+      // }
       linysPathTree({
         current_viewing_path: this.looking_at_path,
       })// Path indicator
         .height(this.showing_navigator ? undefined : 0)
         .animation(animation_default())
     } // List of directory, Operation buttons and edit TextInputs
-    .padding(this.showing_bookmarks ? {
-      top: !this.effects ? 10 : 0,
-      left: 10,
-      right: 10,
+    .width(this.tablet_mode ? 330 : '90%')
+    .padding({
+      left: 5,
+      right: 5,
+      top: this.effects ? 0 : 10,
       bottom: 10,
-    } : 0)
-    .width(this.width_of_Bookmarks())
+    })
     .animation(animation_default())
     .height("100%")
     .justifyContent(FlexAlign.End)
@@ -557,13 +557,6 @@ struct meowBookmarks {
   is_right_align() {
     return (this.preferred_hand_left_or_right == 'right' && !this.preferred_hand_reverse_tabs_panel) ||
       (!(this.preferred_hand_left_or_right == 'right') && this.preferred_hand_reverse_tabs_panel);
-  }
-
-  width_of_Bookmarks() {
-    if (this.tablet_mode) {
-      return 350;
-    }
-    return 0.9 * this.screen_width;
   }
 }
 

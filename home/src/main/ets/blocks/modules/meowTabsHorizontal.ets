@@ -108,7 +108,7 @@ struct meowTabsHorizontal {
           })// Paralleow entrance
             .onClick(() => {
               this.unloading_tabs = false;
-              this.choose_paralleow();
+              this.storage.set('choose_paralleow_timestamp', Date.now());
             })
             .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.None)
             .animation(animation_default())
@@ -157,7 +157,7 @@ struct meowTabsHorizontal {
         })// Paralleow entrance
           .onClick(() => {
             this.unloading_tabs = false;
-            this.choose_paralleow();
+            this.storage.set('choose_paralleow_timestamp', Date.now());
           })
           .visibility(this.tab_titles.length > 1 ? Visibility.Visible : Visibility.None)
           .animation(animation_default())
@@ -206,23 +206,6 @@ struct meowTabsHorizontal {
     // }
   }
 
-  choose_paralleow() {
-    if (this.choosing_paralleow) {
-      // if is choosing, cancel choosing, back to no paralleow
-      this.choosing_paralleow = false;
-    } else {
-      if (this.bunch_of_tabs.sub_tab_idx < 0) {
-        // if haven't chosen one, then start to choose
-        this.choosing_paralleow = true;
-      } else {
-        // Quit Paralleow
-        this.choosing_paralleow = false;
-        this.bunch_of_tabs.sub_tab_idx = -1;
-        this.bunch_of_tabs.save_tab_index_stats('[meowTabsHorizontal][choose_paralleow]');
-      }
-    }
-  }
-
   tab_width() {
     let result = (this.full_area_width) / (this.tab_titles.length) - (this.tablet_mode ? 7 : 5);
     if (result > 200) {
@@ -265,7 +248,7 @@ struct HorizontalTabButton {
   @State isHov: boolean = false;
 
   build() {
-    Row({ space: 8 }) {
+    Row({ space: 5 }) {
       if (this.preferred_hand_left_or_right == 'left') {
         linysSymbol({
           symbol_glyph_target: 'sys.symbol.xmark',
@@ -278,7 +261,7 @@ struct HorizontalTabButton {
             this.close_tab_gateway = this.index;
             // Close tab
           })
-          .margin({ right: 4 })
+          .margin({ left: 4 })
       }
 
       Text(this.tablet_mode ? "󰃊" : "󰃎") // Paralleow icon left
@@ -320,7 +303,7 @@ struct HorizontalTabButton {
           .margin({ right: 4 })
       }
     }
-    .padding({ left: 10 })
+    .padding(this.preferred_hand_left_or_right == 'right' ? { left: 10 } : { right: 10 })
     .offset({ y: this.offset_y })
     .width(this.tab_width())
     .height("100%")
