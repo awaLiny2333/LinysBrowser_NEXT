@@ -224,6 +224,8 @@ async function settings(storage: LocalStorage) {
   AppStorage.setOrCreate('tabs_style', bunch_of_settings.get('tabs_style') as string);
   AppStorage.setOrCreate('tabs_style_non_tablet_mode', bunch_of_settings.get('tabs_style_non_tablet_mode') as string);
   AppStorage.setOrCreate('showing_my_window_alias', bunch_of_settings.get('status_showing_my_windows_alias') as boolean);
+  AppStorage.setOrCreate('tabs_vertical_auto_hide', bunch_of_settings.get('tabs_vertical_auto_hide') as boolean);
+  AppStorage.setOrCreate('tabs_vertical_auto_hide_button', bunch_of_settings.get('tabs_vertical_auto_hide_button') as boolean);
   AppStorage.setOrCreate('showing_large_my_window_alias', bunch_of_settings.get('status_showing_large_my_window_alias') as boolean);
   AppStorage.setOrCreate('my_window_alias_position', bunch_of_settings.get('my_window_alias_position') as string);
   AppStorage.setOrCreate('effects', bunch_of_settings.get('effects') as boolean);

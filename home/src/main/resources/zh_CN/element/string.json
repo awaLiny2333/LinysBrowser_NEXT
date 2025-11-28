@@ -528,6 +528,14 @@
       "value": "水平的"
     },
     {
+      "name": "Settings_appearance_tabs_vertical_auto_hide",
+      "value": "收缩垂直标签页 \uDB82\uDC3B / \uDB82\uDD42 "
+    },
+    {
+      "name": "Settings_appearance_tabs_vertical_auto_hide_button",
+      "value": "收缩按钮"
+    },
+    {
       "name": "Bookmarks_move_title",
       "value": "移动到"
     },

@@ -525,6 +525,14 @@
       "value": "Horizontal"
     },
     {
+      "name": "Settings_appearance_tabs_vertical_auto_hide",
+      "value": "Shrink Vertical Tabs \uDB82\uDC3B / \uDB82\uDD42 "
+    },
+    {
+      "name": "Settings_appearance_tabs_vertical_auto_hide_button",
+      "value": "Shrink Button"
+    },
+    {
       "name": "Bookmarks_move_title",
       "value": "Move to"
     },

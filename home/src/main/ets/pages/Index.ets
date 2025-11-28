@@ -86,7 +86,8 @@ struct Index {
   @StorageLink('bottom_avoid') bottom_avoid: boolean = true;
   @LocalStorageLink('shortcut_scroll_offset') shortcut_scroll_offset: number = 0;
   @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
-  @State is_Hov: boolean = false;
+  @State is_Hov_watermark: boolean = false;
+  @LocalStorageLink('is_Hov_vertical_tabs') is_Hov_vertical_tabs: boolean = false;
   /**
    * Delay */
   @LocalStorageLink('delayed_load_p0') delayed_load_p0: boolean = false;
@@ -109,6 +110,7 @@ struct Index {
   @StorageLink('sys_back_to_access_backward') sys_back_to_access_backward: boolean = false;
   @StorageLink('tabs_style') tabs_style: string = "";
   @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
+  @StorageLink('tabs_vertical_auto_hide') tabs_vertical_auto_hide: boolean = false;
   /**
    * Settings - Accessibility */
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
@@ -309,10 +311,22 @@ struct Index {
             }
 
             if (this.delayed_load_p0) {
-              meowTabsVertical()
-                .width(this.showing_vertical_tabs() ? undefined : 0)
-                .animation(animation_default())
-                .clip(true)
+              Row() {
+                meowTabsVertical()
+              }
+              .margin({
+                bottom: 10,
+                right: this.is_shrunk() && (this.preferred_hand_left_or_right == 'right') ? 5 : 0,
+                left: this.is_shrunk() && !(this.preferred_hand_left_or_right == 'right') ? 5 : 0
+              })
+              .width(this.showing_vertical_tabs() ? (!this.is_shrunk() ? undefined : 40) : 0)
+              .animation(animation_default())
+              .borderRadius(10)
+              .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
+              .clip(true)
+              .onHover((h) => {
+                this.is_Hov_vertical_tabs = h;
+              })
             }
 
             Stack() {
@@ -390,14 +404,13 @@ struct Index {
         .fontWeight(FontWeight.Bold)
         .fontColor(this.color_current_font)
         .hitTestBehavior(HitTestMode.Transparent)
-        .opacity(this.on_focus || this.is_Hov ? 0 : 0.5)
-        // .backgroundColor(this.color_current_secondary)
+        .opacity(this.on_focus || this.is_Hov_watermark ? 0 : 0.5)
         .animation(animation_default())
         .textAlign(TextAlign.Center)
         .height("100%")
         .width("100%")
         .onHover((h) => {
-          this.is_Hov = h;
+          this.is_Hov_watermark = h;
         })
     }
     .alignContent(Alignment.Center)
@@ -682,6 +695,10 @@ struct Index {
       return $r('sys.color.background_tertiary');
     }
     return this.color_current_secondary;
+  }
+
+  is_shrunk() {
+    return !this.is_Hov_vertical_tabs && this.tablet_mode && this.tabs_vertical_auto_hide;
   }
 
   // Operations

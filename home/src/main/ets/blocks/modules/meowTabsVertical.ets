@@ -23,6 +23,8 @@ struct meowTabsVertical {
   @LocalStorageLink('screen_width') screen_width: number = 0;
   @StorageLink('tabs_style') tabs_style: string = "";
   @StorageLink('tabs_style_non_tablet_mode') tabs_style_non_tablet_mode: string = "";
+  @StorageLink('tabs_vertical_auto_hide') tabs_vertical_auto_hide: boolean = false;
+  @StorageLink('tabs_vertical_auto_hide_button') tabs_vertical_auto_hide_button: boolean = true;
   // Controls
   @LocalStorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
   @LocalStorageLink('showing_tabs') showing_tabs: boolean = false;
@@ -31,6 +33,7 @@ struct meowTabsVertical {
   @LocalStorageLink('choosing_paralleow') choosing_paralleow: boolean = false;
   @LocalStorageLink('unloading_tabs') unloading_tabs: boolean = false;
   // Animation info
+  @LocalStorageLink('is_Hov_vertical_tabs') is_Hov_vertical_tabs: boolean = false;
   @State my_visibility: Visibility = Visibility.Hidden;
   scroll_controller: Scroller = new Scroller();
   @LocalStorageLink('meow_tabs_vertical_scroll_to_idx') @Watch('on_scroll_to_idx') scroll_to_idx: number = -1;
@@ -47,6 +50,20 @@ struct meowTabsVertical {
 
   build() {
     Column({ space: 10 }) {
+      Row() {
+        linysSymbol({
+          can_hover: true,
+          symbol_glyph_target: this.is_Hov_vertical_tabs ? 'sys.symbol.arrow_down_right_and_arrow_up_left' : 'sys.symbol.arrow_up_left_and_arrow_down_right'
+        })
+          .onClick(() => {
+            this.is_Hov_vertical_tabs = !this.is_Hov_vertical_tabs;
+          })
+      }
+      .visibility(this.tabs_vertical_auto_hide && this.tabs_vertical_auto_hide_button ? Visibility.Visible : Visibility.None)
+      .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.Start : FlexAlign.End)
+      .animation(animation_default())
+      .width('100%')
+
       Scroll(this.scroll_controller) {
         Column({ space: 5 }) {
           ForEach(this.bunch_of_tabs.Labels, (Label: tab_label) => {
@@ -128,13 +145,16 @@ struct meowTabsVertical {
           .animation(animation_default())
           .width('100%')
       }
+
+      // .visibility(this.is_Hov_vertical_tabs || !this.tablet_mode || !this.tabs_vertical_auto_hide ? Visibility.Visible : Visibility.Hidden)
+      // .animation(animation_default())
+
     } // Tabs Panel
     .width(this.tablet_mode ? 230 : '90%')
     .padding({
       left: 5,
       right: 5,
       top: this.effects ? 0 : 10,
-      bottom: 10,
     })
     .animation(animation_default())
     .height("100%")

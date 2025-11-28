@@ -29,6 +29,8 @@ export class bunch_of_settings {
     bunch_of_settings.register_setting('esc_to_access_backward', 'boolean', 'false');
     bunch_of_settings.register_setting('max_bookmark_suggest', 'number', '5');
     bunch_of_settings.register_setting('max_history_suggest', 'number', '5');
+    bunch_of_settings.register_setting('tabs_vertical_auto_hide', 'boolean', 'false');
+    bunch_of_settings.register_setting('tabs_vertical_auto_hide_button', 'boolean', 'true');
 
     // Statuses
     bunch_of_settings.register_setting('status_tabs_open', 'boolean', 'false');

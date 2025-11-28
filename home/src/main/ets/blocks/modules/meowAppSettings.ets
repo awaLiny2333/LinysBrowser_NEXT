@@ -143,6 +143,8 @@ struct meowAppSettings {
   @State @Watch('on_prefer_hand_left_or_right_changed') left_or_right_selected: number[] = [0];
   @StorageLink('max_bookmark_advice') max_bookmark_advice: number = 5;
   @StorageLink('max_history_advice') max_history_advice: number = 5;
+  @StorageLink('tabs_vertical_auto_hide') tabs_vertical_auto_hide: boolean = false;
+  @StorageLink('tabs_vertical_auto_hide_button') tabs_vertical_auto_hide_button: boolean = true;
   @StorageLink('history_index_load_quantity') history_index_load_quantity: number = 6;
   @StorageLink('sys_back_to_access_backward') sys_back_to_access_backward: boolean = false;
   @StorageLink('esc_to_access_backward') esc_to_access_backward: boolean = false;
@@ -788,6 +790,23 @@ struct meowAppSettings {
                     options: this.tabs_style_tabOptions,
                     selectedIndexes: this.tabs_style_selected_non_tablet_mode
                   })
+
+                  linysSwitchWithText({
+                    toggle_state: this.tabs_vertical_auto_hide,
+                    text: $r('app.string.Settings_appearance_tabs_vertical_auto_hide'),
+                    onExecution: () => {
+                      bunch_of_settings.set('tabs_vertical_auto_hide', this.tabs_vertical_auto_hide);
+                    }
+                  }) // Hide
+                  linysSwitchWithText({
+                    toggle_state: this.tabs_vertical_auto_hide_button,
+                    text: $r('app.string.Settings_appearance_tabs_vertical_auto_hide_button'),
+                    onExecution: () => {
+                      bunch_of_settings.set('tabs_vertical_auto_hide_button', this.tabs_vertical_auto_hide_button);
+                    }
+                  }) // Hide Button
+                    .opacity(this.tabs_vertical_auto_hide ? 1 : 0.5)
+                    .animation(animation_default())
                 } // Layout
 
                 settingsSubCard({
