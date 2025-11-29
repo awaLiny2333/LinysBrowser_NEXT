@@ -165,6 +165,7 @@ struct shortcutButton {
         .fontColor(this.color_current_font)
         .visibility(this.show)
         .animation(animation_default())
+        .clip(true)
         .padding({
           left: 0.5 * capsule_bar_height(),
           right: 0.5 * capsule_bar_height(),
@@ -302,6 +303,7 @@ struct zoneButton {
       .fontColor(this.color_current_font)
       .visibility(this.show)
       .animation(animation_default())
+      .clip(true)
       .padding({
         left: 0.5 * capsule_bar_height(),
         right: 0.5 * capsule_bar_height(),

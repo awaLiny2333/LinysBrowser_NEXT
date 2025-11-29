@@ -59,7 +59,7 @@ struct meowTabsVertical {
             this.is_Hov_vertical_tabs = !this.is_Hov_vertical_tabs;
           })
       }
-      .visibility(this.tabs_vertical_auto_hide && this.tabs_vertical_auto_hide_button ? Visibility.Visible : Visibility.None)
+      .visibility(this.tabs_vertical_auto_hide && this.tabs_vertical_auto_hide_button && this.tablet_mode ? Visibility.Visible : Visibility.None)
       .justifyContent(this.preferred_hand_left_or_right == 'right' ? FlexAlign.Start : FlexAlign.End)
       .animation(animation_default())
       .width('100%')
@@ -146,9 +146,6 @@ struct meowTabsVertical {
           .width('100%')
       }
 
-      // .visibility(this.is_Hov_vertical_tabs || !this.tablet_mode || !this.tabs_vertical_auto_hide ? Visibility.Visible : Visibility.Hidden)
-      // .animation(animation_default())
-
     } // Tabs Panel
     .width(this.tablet_mode ? 235 : '90%')
     .padding({
@@ -190,20 +187,42 @@ struct meowTabsVertical {
         .onActionEnd(() => {
           if (this.is_right_align()) {
             if (this.pan_x < 0) {
-              // ← Switch to Bookmarks
-              this.storage.set('showing_bookmarks', true);
-              // this.showing_tabs = false;
+              // ←
+              if (this.is_shrunk()) {
+                // Expand
+                this.is_Hov_vertical_tabs = true;
+              } else {
+                // Switch to Bookmarks
+                this.storage.set('showing_bookmarks', true);
+              }
             } else {
-              // → Right Align Close panel
-              this.storage.set('showing_tabs', false);
+              // →
+              if (this.is_expanded()) {
+                this.is_Hov_vertical_tabs = false;
+              } else {
+                // Right Align Close panel
+                this.storage.set('showing_tabs', false);
+              }
             }
           } else {
+            // Left align
             if (this.pan_x < 0) {
               // ← Close panel
-              this.storage.set('showing_tabs', false);
+              if (this.is_expanded()) {
+                this.is_Hov_vertical_tabs = false;
+              } else {
+                // Right Align Close panel
+                this.storage.set('showing_tabs', false);
+              }
             } else {
               // → Open bookmarks
-              this.storage.set('showing_bookmarks', true);
+              if (this.is_shrunk()) {
+                // Expand
+                this.is_Hov_vertical_tabs = true;
+              } else {
+                // Switch to Bookmarks
+                this.storage.set('showing_bookmarks', true);
+              }
             }
           }
         })
@@ -248,6 +267,14 @@ struct meowTabsVertical {
   is_right_align() {
     return (this.preferred_hand_left_or_right == 'right' && !this.preferred_hand_reverse_tabs_panel) ||
       (!(this.preferred_hand_left_or_right == 'right') && this.preferred_hand_reverse_tabs_panel);
+  }
+
+  is_shrunk() {
+    return !this.is_Hov_vertical_tabs && this.tablet_mode && this.tabs_vertical_auto_hide;
+  }
+
+  is_expanded() {
+    return (this.is_Hov_vertical_tabs) && this.tablet_mode && this.tabs_vertical_auto_hide;
   }
 
   // Events
