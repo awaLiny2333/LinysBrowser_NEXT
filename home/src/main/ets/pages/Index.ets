@@ -396,19 +396,21 @@ struct Index {
       .width("100%")
       .alignItems(HorizontalAlign.Start)
 
-      Text(this.my_window_alias)
-        .fontSize(0.12 * this.screen_width)
-        .fontWeight(FontWeight.Bold)
-        .fontColor(this.color_current_font)
-        .hitTestBehavior(HitTestMode.Transparent)
-        .opacity(this.on_focus || this.is_Hov_watermark ? 0 : 0.5)
-        .animation(animation_default())
-        .textAlign(TextAlign.Center)
-        .height("100%")
-        .width("100%")
-        .onHover((h) => {
-          this.is_Hov_watermark = h;
-        })
+      if (this.showing_large_my_window_alias) {
+        Text(this.my_window_alias)
+          .fontSize(0.12 * this.screen_width)
+          .fontWeight(FontWeight.Bold)
+          .fontColor(this.color_current_font)
+          .hitTestBehavior(HitTestMode.Transparent)
+          .opacity(this.on_focus || this.is_Hov_watermark ? 0 : 0.5)
+          .animation(animation_default())
+          .textAlign(TextAlign.Center)
+          .height("100%")
+          .width("100%")
+          .onHover((h) => {
+            this.is_Hov_watermark = h;
+          })
+      }
     }
     .alignContent(Alignment.Center)
     // .backgroundColor(this.color_current_secondary)
