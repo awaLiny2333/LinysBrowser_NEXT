@@ -28,8 +28,10 @@ struct meowBookmarks {
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @LocalStorageLink('screen_width') screen_width: number = 0;
   // UI control actions
+  @LocalStorageLink('showing_tabs') showing_tabs: boolean = false;
   @LocalStorageLink('showing_bookmarks') showing_bookmarks: boolean = false;
   @LocalStorageLink('swapping_bookmarks') swapping_bookmarks: boolean = false;
+  @LocalStorageLink('is_Hov_vertical_tabs') is_Hov_vertical_tabs: boolean = false;
   bookmarks_scroller: Scroller = new Scroller();
   @LocalStorageLink('bookmarks_scroll_by') @Watch('scroll_bookmarks') bookmarks_scroll_by: number = 0;
   @LocalStorageLink('swapping_offset_timeout') swapping_offset_timeout: number = 0;
@@ -37,6 +39,7 @@ struct meowBookmarks {
   @State swapping_offset_downer: number = 0;
   @State isHov_path_tree_dir: boolean = false;
   // Settings / Accessibility
+  @StorageLink('tabs_vertical_auto_hide') tabs_vertical_auto_hide: boolean = false;
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('preferred_hand_reverse_tabs_panel') preferred_hand_reverse_tabs_panel: boolean = false;
   // Input and Interactions
@@ -330,6 +333,10 @@ struct meowBookmarks {
       top: this.effects ? 0 : 10,
       bottom: 10,
     })
+    // .margin({
+    //   left: this.showing_bookmarks && this.showing_tabs && this.is_shrunk() && this.is_right_align() ? 5 : 0,
+    //   right: this.showing_bookmarks && this.showing_tabs && this.is_shrunk() && !this.is_right_align() ? 5 : 0,
+    // })
     .animation(animation_default())
     .height("100%")
     .justifyContent(FlexAlign.End)
@@ -557,6 +564,10 @@ struct meowBookmarks {
   is_right_align() {
     return (this.preferred_hand_left_or_right == 'right' && !this.preferred_hand_reverse_tabs_panel) ||
       (!(this.preferred_hand_left_or_right == 'right') && this.preferred_hand_reverse_tabs_panel);
+  }
+
+  is_shrunk() {
+    return !this.is_Hov_vertical_tabs && this.tablet_mode && this.tabs_vertical_auto_hide;
   }
 }
 

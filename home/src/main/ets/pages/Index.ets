@@ -316,12 +316,12 @@ struct Index {
               }
               .margin({
                 bottom: 10,
-                right: this.is_shrunk() && (this.preferred_hand_left_or_right == 'right') ? 5 : 0,
-                left: this.is_shrunk() && !(this.preferred_hand_left_or_right == 'right') ? 5 : 0
+                // right: !this.is_right_align() && this.is_shrunk() ? 5 : 0,
+                // left: this.is_right_align() && this.is_shrunk() ? 5 : 0,
               })
-              .width(this.showing_vertical_tabs() ? (!this.is_shrunk() ? undefined : 40) : 0)
-              .animation(animation_default())
               .borderRadius(10)
+              .width(this.showing_vertical_tabs() ? (!this.is_shrunk() ? undefined : 45) : 0)
+              .animation(animation_default())
               .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
               .clip(true)
               .onHover((h) => {
@@ -349,7 +349,7 @@ struct Index {
               // }
             }
             .clip(true)
-            .margin(this.effects && !this.fullscreen_mode ? { bottom: this.title_bar_position == 'bottom' ? 0 : 10, left: 5, right: 5 } : this.main_web_padding())
+            .margin(this.web_margin())
             .borderRadius(this.effects && !this.fullscreen_mode ? 10 : 0)
             .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
             .backgroundColor(this.color_current_primary)
@@ -364,10 +364,7 @@ struct Index {
             ? { bottom: this.fullscreen_mode ? 0 : this.title_bar_height }
             : { top: this.fullscreen_mode ? 0 : this.title_bar_height })
           .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
-          // .resizeable(this.tablet_mode)
           .width("100%")
-
-          // .alignRules({ left: { anchor: '__container__', align: HorizontalAlign.Start }, right: { anchor: '__container__', align: HorizontalAlign.End } })
 
           if (this.index_init_ok) {
             linysProgress({ percentage: this.current_loading_progress, is_loading: this.current_is_loading })
@@ -658,23 +655,64 @@ struct Index {
     return vis ? Visibility.Visible : Visibility.Hidden;
   }
 
+  web_margin() {
+    if (this.fullscreen_mode) {
+      return 0;
+    }
+
+    const is_vertical = !current_tabs_style_is_horizontal(this.storage);
+    const reverse_multiplier = this.preferred_hand_reverse_tabs_panel && this.is_shrunk() && is_vertical ? 2 : 1;
+    const showing_vertical_tabs = this.showing_tabs && is_vertical;
+
+    let bottom = this.effects ? 10 : 0;
+
+    // Showing vertical tab in traditional view
+    if (!this.effects && showing_vertical_tabs) {
+      if (this.is_right_align()) {
+        return { right: 5 * reverse_multiplier, bottom: bottom } as Padding;
+      } else {
+        return { left: 5 * reverse_multiplier, bottom: bottom } as Padding;
+      }
+    }
+
+    let lr = (this.effects ? 5 : 0) * reverse_multiplier;
+    return { left: lr, right: lr, bottom: bottom } as Padding;
+  }
+
   main_web_padding() {
-    if (this.effects) {
-      return { left: 5, right: 5 } as Padding;
-    }
-
-    // Non effects
-    let has_side_bars = (this.showing_tabs && !current_tabs_style_is_horizontal(this.storage)) || this.showing_bookmarks;
+    let showing_vertical_tabs = this.showing_tabs && !current_tabs_style_is_horizontal(this.storage);
+    let has_side_bars = showing_vertical_tabs || this.showing_bookmarks;
     console.log(`[main_web_padding] has_side_bars=${has_side_bars}`);
-
     if (!has_side_bars) {
-      return 0 as Padding;
+      if (this.effects) {
+        return { left: 5, right: 5 } as Padding;
+      } else {
+        return 0;
+      }
     }
 
-    if (this.is_right_align()) {
-      return { right: 5 } as Padding;
+    if (this.showing_bookmarks) {
+      if (this.effects) {
+        return { left: 5, right: 5 } as Padding;
+      } else {
+        // To compensate the padding of the bookmark panel.
+        if (this.is_right_align()) {
+          return { right: 5 } as Padding;
+        } else {
+          return { left: 5 } as Padding;
+        }
+      }
+    }
+
+    // showing tabs
+    if (this.effects) {
+      if (this.is_right_align()) {
+        return { left: 5 } as Padding;
+      } else {
+        return { right: 5 } as Padding;
+      }
     } else {
-      return { left: 5 } as Padding;
+      return 0;
     }
   }
 

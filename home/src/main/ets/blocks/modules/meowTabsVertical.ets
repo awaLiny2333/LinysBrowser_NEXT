@@ -150,10 +150,12 @@ struct meowTabsVertical {
       // .animation(animation_default())
 
     } // Tabs Panel
-    .width(this.tablet_mode ? 230 : '90%')
+    .width(this.tablet_mode ? 235 : '90%')
     .padding({
-      left: 5,
-      right: 5,
+      left: !this.showing_bookmarks && this.showing_tabs && !this.is_right_align() ? 10 : 5,
+      right: !this.showing_bookmarks && this.showing_tabs && this.is_right_align() ? 10 : 5,
+      // left: 5,
+      // right: 5,
       top: this.effects ? 0 : 10,
     })
     .animation(animation_default())
