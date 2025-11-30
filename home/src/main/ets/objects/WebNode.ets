@@ -16,6 +16,7 @@ function WebBuilder(pk: tab_info_packed) {
     src: src_of_tab_index(pk),
     controller: pk?.controller
   })
+    .mediaPlayGestureAccess(false)
     .layoutWeight(1)
     .backgroundColor('transparent') // Or the web would flash on load
     .databaseAccess(true)

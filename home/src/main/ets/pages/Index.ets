@@ -305,7 +305,7 @@ struct Index {
           Row() {
             if (this.delayed_load_p3) {
               meowBookmarks()
-                .width(this.showing_bookmarks ? undefined : 0)
+                .width(this.showing_bookmarks && !this.fullscreen_mode ? undefined : 0)
                 .animation(animation_default())
                 .clip(true)
             }
@@ -320,7 +320,7 @@ struct Index {
                 // left: this.is_right_align() && this.is_shrunk() ? 5 : 0,
               })
               .borderRadius(10)
-              .width(this.showing_vertical_tabs() ? (!this.is_shrunk() ? undefined : 45) : 0)
+              .width(this.showing_vertical_tabs() && !this.fullscreen_mode ? (!this.is_shrunk() ? undefined : 45) : 0)
               .animation(animation_default())
               .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
               .clip(true)
@@ -545,31 +545,40 @@ struct Index {
    * Hides and shows system UI components.
    * */
   on_fullscreen_switch() {
-    // TODO: Implement error handling.
     window.getLastWindow(this.getUIContext().getHostContext()).then((win) => {
       if (this.fullscreen_mode) {
-        // win.maximize().catch(() => {
-        // });
+        console.info(`[on_fullscreen_switch] FULLSCREEN ON!`);
+        if (this.free_window_mode) {
+          win.maximize().catch((e: BusinessError) => {
+            console.error(`[on_fullscreen_switch][maximize] Failed: ${e}`);
+          });
+        }
         win.enableLandscapeMultiWindow().catch((e: BusinessError) => {
           console.error(`[on_fullscreen_switch][enableLandscapeMultiWindow] Failed: ${e}`);
         });
-        win.setWindowSystemBarEnable([]).catch(() => {
+        win.setWindowSystemBarEnable([]).catch((e: BusinessError) => {
+          console.error(`[on_fullscreen_switch][setWindowSystemBarEnable] Failed: ${e}`);
         });
         try {
           win.setWindowTitleButtonVisible(false, false, false);
         } catch (e) {
+          console.error(`[on_fullscreen_switch][setWindowTitleButtonVisible] Failed: ${e}`);
         }
       } else {
-        // win.recover().catch(() => {
-        // });
+        console.info(`[on_fullscreen_switch] FULLSCREEN OFF! `);
+        win.recover().catch((e: BusinessError) => {
+          console.error(`[on_fullscreen_switch][recover] Failed: ${e}`);
+        });
         win.disableLandscapeMultiWindow().catch((e: BusinessError) => {
           console.error(`[on_fullscreen_switch][enableLandscapeMultiWindow] Failed: ${e}`);
         });
-        win.setWindowSystemBarEnable(["status", "navigation"]).catch(() => {
+        win.setWindowSystemBarEnable(["status", "navigation"]).catch((e: BusinessError) => {
+          console.error(`[on_fullscreen_switch][setWindowSystemBarEnable] Failed: ${e}`);
         });
         try {
           win.setWindowTitleButtonVisible(true, true, true);
         } catch (e) {
+          console.error(`[on_fullscreen_switch][setWindowTitleButtonVisible] Failed: ${e}`);
         }
       }
     })
@@ -682,6 +691,10 @@ struct Index {
   }
 
   main_web_padding() {
+    if (this.fullscreen_mode) {
+      return 0;
+    }
+
     let showing_vertical_tabs = this.showing_tabs && !current_tabs_style_is_horizontal(this.storage);
     let has_side_bars = showing_vertical_tabs || this.showing_bookmarks;
     console.log(`[main_web_padding] has_side_bars=${has_side_bars}`);
