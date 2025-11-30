@@ -8,7 +8,7 @@ struct linysTextSubtitleDivision {
   @Prop text: ResourceStr = $r('app.string.HomeAbility_label');
   @Prop color: ResourceColor = "";
   @Prop max_lines: number = 1;
-opa: number = 0.6;
+  opa: number = 0.6;
 
   build() {
     Row({ space: 8 }) {

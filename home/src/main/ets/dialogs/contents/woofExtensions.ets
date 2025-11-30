@@ -1,19 +1,20 @@
-import { animation_default, click_effect_default, minimum_card_width } from '../../hosts/bunch_of_defaults';
+import { animation_default, click_effect_default, fontSize_Large, minimum_card_width } from '../../hosts/bunch_of_defaults';
 import lazy woofControlFrame from '../woofControlFrame';
-import linysTextSubtitleDivision from '../../components/texts/linysTextSubtitleDivision';
 import linysTextTitle from '../../components/texts/linysTextTitle';
 import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import linysText from '../../components/texts/linysText';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
-import { manifest_of_extension } from '../../processes/extension_actions';
 import linysSwitchWithText from '../../components/toggles/linysSwitchWithText';
+import { bunch_of_extensions, extension } from '../../hosts/bunch_of_extensions';
+import linysImageButton from '../../components/buttons/linysImageButton';
 
 @CustomDialog
 struct woofExtensions {
   controller: CustomDialogController;
   @StorageLink('extensions') extensions: string[] = [];
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
+  @StorageLink('bunch_of_extensions') bunch_of_extensions: bunch_of_extensions = new bunch_of_extensions();
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -64,8 +65,8 @@ struct woofExtensions {
         })
 
         WaterFlow() {
-          ForEach(this.extensions, (item: string, idx: number) => {
-            subCard({ my_id: item, my_index: idx, controller: this.controller })
+          ForEach(this.bunch_of_extensions.extensions, (item: extension, idx: number) => {
+            subCard({ my_extension: item, my_index: idx, controller: this.controller })
           })
         }
         .columnsTemplate("1fr ".repeat(Math.ceil(this.screen_width * 0.9 / minimum_card_width())))
@@ -101,21 +102,37 @@ struct subCard {
   // Stats
   @State isHov: boolean = false;
   // Data
+  my_extension: extension | undefined;
   @Prop my_index: number;
-  @Prop my_id: string = 'Ext>!';
-  @State my_enabled: boolean = true;
-  my_manifest: object | undefined = undefined;
+  @State my_enabled: boolean = false;
   // Popup
   controller: CustomDialogController | undefined = undefined;
 
   aboutToAppear(): void {
-    this.my_manifest = manifest_of_extension(this.my_id);
+    if (this.my_extension?.manifest_version == 3) {
+      this.my_enabled = true;
+    }
   }
 
   build() {
     Column({ space: 10 }) {
-      linysTextSubtitleDivision({ icon: this.icon, text: this.my_manifest?.['name'], opa: 0.8 }) // Title
-        .width('100%')
+      Row({ space: 8 }) {
+        if (this.my_extension?.icon_path) {
+          linysImageButton({
+            path: this.my_extension?.path_full + '/' + (this.my_extension?.icon_path)
+          })
+        } else {
+          Text('󰠶')
+            .fontColor(this.color_current_font)
+            .fontSize(fontSize_Large() + 4)
+            .fontWeight(FontWeight.Medium)
+        }
+        Text(this.my_extension?.name)
+          .fontColor(this.color_current_font)
+          .fontSize(fontSize_Large())
+          .fontWeight(FontWeight.Bold)
+      } // title
+      .opacity(0.8)
 
       linysText({ text: this.basic_info().join(' '), max_lines: 999 })
         .opacity(0.8)
@@ -169,17 +186,20 @@ struct subCard {
 
   basic_info() {
     let info: string[] = [];
-    info.push(this.my_manifest?.['version']);
-    info.push(this.my_manifest?.['description']);
+    info.push(this.my_extension?.version || 'version');
+    info.push(this.my_extension?.description || 'description');
     return info;
   }
 
   more_info() {
     let info: string[] = [];
-    info.push('id: ' + this.my_id);
-    info.push('manifest_version: ' + this.my_manifest?.['manifest_version']);
-    info.push('minimum_chrome_version: ' + this.my_manifest?.['minimum_chrome_version']);
-    // info.push('permissions: ' + this.my_manifest?.['permissions']);
+    info.push('id: ' + this.my_extension?.id);
+    info.push('default_locale: ' + this.my_extension?.default_locale);
+    info.push('manifest_version: ' + this.my_extension?.manifest_version);
+    info.push('icon_path: ' + this.my_extension?.icon_path);
+    info.push('best_action_default_icon: ' + this.my_extension?.action_default_icon_path);
+    info.push('action_default_title: ' + this.my_extension?.action_default_title);
+    info.push('action_default_popup: ' + this.my_extension?.action_default_popup);
     return info;
   }
 }

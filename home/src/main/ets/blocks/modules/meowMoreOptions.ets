@@ -25,7 +25,8 @@ import { is_legal_filename } from '../../utils/storage_tools';
 import linysFileNameErrorDisplay from '../../components/linysFileNameErrorDisplay';
 import woofZones from '../../dialogs/contents/woofZones';
 import woofExtensions from '../../dialogs/contents/woofExtensions';
-import { DEBUG } from 'BuildProfile';
+import { bunch_of_extensions, extension } from '../../hosts/bunch_of_extensions';
+import linysImageButton from '../../components/buttons/linysImageButton';
 
 @Component
 struct meowMoreOptions {
@@ -38,6 +39,7 @@ struct meowMoreOptions {
   // Hosts
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
+  @StorageLink('bunch_of_extensions') bunch_of_extensions: bunch_of_extensions = new bunch_of_extensions();
   // UI Statuses
   @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
   @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
@@ -527,6 +529,25 @@ struct meowMoreOptions {
 
           Scroll() {
             Row() {
+              if (this.DEV_MODE) {
+                ForEach(this.bunch_of_extensions.extensions, (ext: extension, idx: number) => {
+                  linysImageButton({
+                    path: ext.path_full + '/' + (ext.action_default_icon_path || ext.icon_path),
+                    can_hover: true,
+                    execution: () => {
+                      // Open popup
+                    },
+                  })
+                })
+
+                linysSymbol({
+                  symbol_glyph_target: 'sys.symbol.root',
+                  can_hover: true,
+                })// Extensions
+                  .onClick(() => {
+                    this.Extensions_control.open();
+                  })
+              }
               linysSymbol({
                 symbol_glyph_target: 'sys.symbol.save',
                 can_hover: true,
@@ -543,15 +564,6 @@ struct meowMoreOptions {
                     print_web(this.bunch_of_tabs.workingMainTab().controller!, this.getUIContext().getHostContext()!);
                   }
                 })
-              if (this.DEV_MODE) {
-                linysSymbol({
-                  symbol_glyph_target: 'sys.symbol.root',
-                  can_hover: true,
-                })// Extensions
-                  .onClick(() => {
-                    this.Extensions_control.open();
-                  })
-              }
               linysSymbol({
                 symbol_glyph_target: 'sys.symbol.star_2_moon',
                 can_hover: true,

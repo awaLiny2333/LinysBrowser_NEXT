@@ -130,7 +130,7 @@ function ensure_extensions_folder(context: common.UIAbilityContext) {
       fileIo.mkdirSync(filesDir + '/extensions', true);
     } else {
       // extensions exist
-      refresh_AppStorage_extensions();
+      refresh_AppStorage_extensions(context);
       console.log('[init][ensure_extensions_folder] Found extensions: ' + (AppStorage.get('extensions') as string[]));
     }
   } catch (e) {
