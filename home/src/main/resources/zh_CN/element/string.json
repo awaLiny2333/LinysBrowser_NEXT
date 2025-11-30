@@ -31,7 +31,8 @@
     {
       "name": "permission_reason_GEOLOCATION",
       "value": "有些网站可能会为了某些任务而请求这个权限。比如，使用网页地图的时候。冲浪喵本身不会使用这个权限去做任何其他事情。"
-    },{
+    },
+    {
       "name": "permission_reason_WINDOW_TOPMOST",
       "value": "你可以用这个权限把冲浪喵挂在所有窗口的图层之上！（你说了算！）"
     },
@@ -486,6 +487,26 @@
     {
       "name": "Tabs_unload_description",
       "value": "让标签页睡眠以节约内存和电量！但是你无法催眠当下正显示的标签页～"
+    },
+    {
+      "name": "extensions",
+      "value": "扩展程序"
+    },
+    {
+      "name": "extensions_desc",
+      "value": "扩展程序为实验性功能。\n\n可能存在若干严重问题！请在安装扩展前三思！"
+    },
+    {
+      "name": "extensions_installed",
+      "value": "已安装的扩展"
+    },
+    {
+      "name": "extensions_enable",
+      "value": "启用扩展"
+    },
+    {
+      "name": "extensions_install",
+      "value": "安装扩展"
     },
     {
       "name": "zones",

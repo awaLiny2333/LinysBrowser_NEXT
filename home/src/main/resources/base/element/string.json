@@ -485,6 +485,25 @@
       "value": "Unload tabs to save memory and power! But you can't unload the current tab being viewed."
     },
     {
+      "name": "extensions",
+      "value": "Extensions"
+    },{
+      "name": "extensions_desc",
+      "value": "Extensions is presented as an experimental feature. \n\nThis may contain severe errors! Think twice before you install anything!"
+    },
+    {
+      "name": "extensions_installed",
+      "value": "Installed Extensions"
+    },
+    {
+      "name": "extensions_enable",
+      "value": "Enable This"
+    },
+    {
+      "name": "extensions_install",
+      "value": "Install Extensions"
+    },
+    {
       "name": "zones",
       "value": "Zones"
     },

@@ -16,6 +16,7 @@ import { MessageEvents, worker } from '@kit.ArkTS';
 import lazy { sendableImage } from '@kit.ImageKit';
 import lazy { refresh_AppStorage_zones } from './zone_actions';
 import lazy { default_new_window_name } from '../hosts/bunch_of_defaults';
+import { refresh_AppStorage_extensions } from './extension_actions';
 
 /**
  * Initializes all things.
@@ -36,6 +37,7 @@ export async function meow_init_main(context: common.UIAbilityContext, storage: 
   ensure_continue_folder(context);
   ensure_easylist_folder(context);
   ensure_zones_folder(context);
+  ensure_extensions_folder(context);
   create_download(context);
   create_web_drag_image_cache(context);
   create_harmony_share_temp(context);
@@ -106,6 +108,33 @@ function ensure_zones_folder(context: common.UIAbilityContext) {
     }
   } catch (e) {
     console.error('[init][ensure_zones_folder] Error: ' + e);
+  }
+}
+
+/**
+ * Checks and ensures there is a /extensions directory in sandbox.
+ * */
+function ensure_extensions_folder(context: common.UIAbilityContext) {
+  let filesDir = context.filesDir;
+  try {
+    if (!fileIo.accessSync(filesDir + '/extensions-disabled')) {
+      fileIo.mkdirSync(filesDir + '/extensions-disabled', true);
+    } else {
+      console.log('[init][ensure_extensions_disabled_folder] Found disabled extensions: ' + (AppStorage.get('extensions') as string[]));
+    }
+  } catch (e) {
+    console.error('[init][ensure_extensions_disabled_folder] Error: ' + e);
+  }
+  try {
+    if (!fileIo.accessSync(filesDir + '/extensions')) {
+      fileIo.mkdirSync(filesDir + '/extensions', true);
+    } else {
+      // extensions exist
+      refresh_AppStorage_extensions();
+      console.log('[init][ensure_extensions_folder] Found extensions: ' + (AppStorage.get('extensions') as string[]));
+    }
+  } catch (e) {
+    console.error('[init][ensure_extensions_folder] Error: ' + e);
   }
 }
 

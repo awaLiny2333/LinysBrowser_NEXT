@@ -24,6 +24,8 @@ import { modify_zone_name } from '../../processes/zone_actions';
 import { is_legal_filename } from '../../utils/storage_tools';
 import linysFileNameErrorDisplay from '../../components/linysFileNameErrorDisplay';
 import woofZones from '../../dialogs/contents/woofZones';
+import woofExtensions from '../../dialogs/contents/woofExtensions';
+import { DEBUG } from 'BuildProfile';
 
 @Component
 struct meowMoreOptions {
@@ -49,6 +51,7 @@ struct meowMoreOptions {
   @StorageLink('history_index_loading_progress') history_index_loading_progress: string = "";
   @StorageLink('history_index_saving_progress') history_index_saving_progress: string = "";
   // Environments
+  @StorageLink('DEV_MODE') DEV_MODE: boolean = false;
   @StorageLink('free_window_mode') free_window_mode: boolean = false;
   @LocalStorageLink('fullscreen_mode') fullscreen_mode: boolean = false;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
@@ -261,6 +264,12 @@ struct meowMoreOptions {
   });
   Zones_control: CustomDialogController = new CustomDialogController({
     builder: woofZones(),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 26,
+    width: "90%",
+  });
+  Extensions_control: CustomDialogController = new CustomDialogController({
+    builder: woofExtensions(),
     alignment: DialogAlignment.Center,
     cornerRadius: 26,
     width: "90%",
@@ -500,7 +509,7 @@ struct meowMoreOptions {
             }
             .visibility(this.window_alias_legal_err == 0 ? Visibility.None : Visibility.Visible)
 
-          } // Window man
+          } // Zone man
           .visibility(this.visible_when_not_in_page_search())
           .animation(animation_default())
           .opacity(0.8)
@@ -515,8 +524,6 @@ struct meowMoreOptions {
           })
           .justifyContent(FlexAlign.Center)
           .alignItems(HorizontalAlign.Start)
-
-          // }
 
           Scroll() {
             Row() {
@@ -536,6 +543,15 @@ struct meowMoreOptions {
                     print_web(this.bunch_of_tabs.workingMainTab().controller!, this.getUIContext().getHostContext()!);
                   }
                 })
+              if (this.DEV_MODE) {
+                linysSymbol({
+                  symbol_glyph_target: 'sys.symbol.root',
+                  can_hover: true,
+                })// Extensions
+                  .onClick(() => {
+                    this.Extensions_control.open();
+                  })
+              }
               linysSymbol({
                 symbol_glyph_target: 'sys.symbol.star_2_moon',
                 can_hover: true,
@@ -611,10 +627,7 @@ struct meowMoreOptions {
           .visibility(this.visible_when_not_in_page_search())
           .animation(animation_default())
 
-          // if (this.showing_more_options) {
-          // Row() {
-          meowDebug()
-          // } // Debug
+          meowDebug() // Debug
             .opacity(0.8)
             .visibility(this.resource_monitor
               ? (this.visible_when_not_in_page_search())
