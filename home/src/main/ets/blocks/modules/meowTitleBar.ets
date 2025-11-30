@@ -809,7 +809,7 @@ struct meowTitleBar {
       // in-page Searching
       let base_height = this.tablet_mode ? 100 : 180;
       let tabs_offset = this.showing_tabs && current_tabs_style_is_horizontal(this.storage) ? this.horizontal_tabs_height : 0;
-      let position_offset = this.title_bar_position == 'top' ? 10 : 20;
+      let position_offset = this.title_bar_position == 'top' ? 10 : 25;
       return base_height + tabs_offset + position_offset;
     } else {
       // Normal height

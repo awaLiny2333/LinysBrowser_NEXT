@@ -165,7 +165,7 @@ struct shortcutButton {
         .fontColor(this.color_current_font)
         .visibility(this.show)
         .animation(animation_default())
-        .clip(true)
+        // .clip(true)
         .padding({
           left: 0.5 * capsule_bar_height(),
           right: 0.5 * capsule_bar_height(),
@@ -231,6 +231,7 @@ struct shortcutButton {
         .animation(animation_default())
       }
     }
+    .clip(true)
     .alignItems(this.get_alignItems())
     .padding(this.vis_contents == Visibility.Visible ? (this.is_right_align() ? { right: 30 } : { left: 30 }) : {})
     .animation(animation_default())
@@ -303,7 +304,7 @@ struct zoneButton {
       .fontColor(this.color_current_font)
       .visibility(this.show)
       .animation(animation_default())
-      .clip(true)
+      // .clip(true)
       .padding({
         left: 0.5 * capsule_bar_height(),
         right: 0.5 * capsule_bar_height(),

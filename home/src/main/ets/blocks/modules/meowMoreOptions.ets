@@ -283,7 +283,6 @@ struct meowMoreOptions {
 
   build() {
     Scroll() {
-      // if (true) {
       Column({ space: 10 }) {
         Row() // To get more space
           .visibility(this.current_in_page_searching_stats_total > 0 ? Visibility.None : Visibility.Visible)
@@ -323,9 +322,18 @@ struct meowMoreOptions {
                 } catch (e) {
                   console.error(e);
                 }
-                focusControl.requestFocus("in_page_search_blank");
+                if (this.free_window_mode) {
+                  focusControl.requestFocus("in_page_search_blank");
+                }
               })
               .id('in_page_search_blank')
+              .onFocus(() => {
+                this.storage.setOrCreate('is_search_in_page_focused', true);
+              })
+              .onBlur(() => {
+                this.storage.setOrCreate('is_search_in_page_focused', false);
+              })
+
 
             linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass', can_hover: true }) // Submit
               .onClick(() => {
@@ -396,7 +404,7 @@ struct meowMoreOptions {
         } // Search in page
         .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
         .width("100%")
-        .height(20 + (this.tablet_mode ? capsule_bar_height() : 2 * capsule_bar_height() + 5))
+        .height(20 + (this.tablet_mode ? capsule_bar_height() : 2 * capsule_bar_height()))
         .backgroundColor(this.color_current_primary)
         .borderRadius(12)
         .padding(10)
@@ -641,8 +649,6 @@ struct meowMoreOptions {
       .alignItems(this.preferred_hand_left_or_right == 'right' ? HorizontalAlign.End : HorizontalAlign.Start)
       .animation(animation_default())
       .width("100%")
-
-      // }
     } // More Options
     .layoutWeight(this.showing_more_options ? 1 : undefined)
     .visibility(this.showing_more_options ? Visibility.Visible : Visibility.None)

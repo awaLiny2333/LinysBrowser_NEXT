@@ -843,6 +843,10 @@ struct Index {
       console.log('[universal_esc] Cleared In-page search key!');
       return;
     }
+    if (this.storage.get('is_search_in_page_focused')) {
+      this.getUIContext().getFocusController().clearFocus();
+      console.log('[universal_esc] Exit focus from In-page search input!');
+    }
 
     // Exit typing
     if (this.storage.get('is_search_input_typing') as boolean) {
