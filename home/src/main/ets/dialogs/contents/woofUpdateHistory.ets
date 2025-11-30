@@ -11,6 +11,10 @@ struct woofUpdateHistory {
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @State texts: string[] = [
+    'v1.8.0-beta 2025 12',
+    '一个？的更新！',
+    'A ? update! ',
+
     'v1.7.10-beta 2025 11',
     '一个面向未来的更新！正式面向 HarmonyOS 6.0 (API20) 发布！' +
       '将 Passkey 支持、工作区、Http Auth、高级视觉效果、EasyList 支持、鼠标悬浮效果、手动睡眠标签页、自动缩小标签页、第三方 Cookies 访问、更多性能优化等带入冲浪喵～\n' +

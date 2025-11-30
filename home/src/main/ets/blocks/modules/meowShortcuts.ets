@@ -166,6 +166,8 @@ struct shortcutButton {
         .visibility(this.show)
         .animation(animation_default())
         // .clip(true)
+        .maxLines(1)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
         .padding({
           left: 0.5 * capsule_bar_height(),
           right: 0.5 * capsule_bar_height(),
@@ -231,7 +233,7 @@ struct shortcutButton {
         .animation(animation_default())
       }
     }
-    .clip(true)
+    // .clip(true)
     .alignItems(this.get_alignItems())
     .padding(this.vis_contents == Visibility.Visible ? (this.is_right_align() ? { right: 30 } : { left: 30 }) : {})
     .animation(animation_default())
@@ -305,6 +307,8 @@ struct zoneButton {
       .visibility(this.show)
       .animation(animation_default())
       // .clip(true)
+      .maxLines(1)
+      .textOverflow({ overflow: TextOverflow.Ellipsis })
       .padding({
         left: 0.5 * capsule_bar_height(),
         right: 0.5 * capsule_bar_height(),
