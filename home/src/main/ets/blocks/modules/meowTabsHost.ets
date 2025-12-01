@@ -183,7 +183,11 @@ struct meowTabsHost {
 
     setTimeout(() => {
       // Retrieve all data, avoid blocks on the main thread
-      sync_all_tabs_list_info(this.storage);
+      try {
+        sync_current_tabs_list_info(this.storage);
+      } catch (e) {
+        console.error('[TabsVertical][switch_tab][b] ' + e);
+      }
       // Recover Paralleow
       if (continue_tabs_sub_on < this.tab_titles.length) {
         this.bunch_of_tabs.sub_tab_idx = continue_tabs_sub_on;
