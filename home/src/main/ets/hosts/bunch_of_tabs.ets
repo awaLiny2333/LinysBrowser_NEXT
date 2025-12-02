@@ -341,7 +341,7 @@ export class bunch_of_tabs {
       console.warn(`[bunch_of_tabs] INTERCEPTED for undefined my_storage! newTab: url=${target_url}`);
       return;
     }
-    console.log(`[bunch_of_tabs] newTab: url=${target_url}`);
+    console.log(`[bunch_of_tabs] newTab: url=${target_url}, label=${placeholder_label}`);
     if (target_url == "") {
       // If newing an empty tab
       if (bunch_of_tabs.new_tab_url == "" || bunch_of_tabs.new_tab_url == undefined) {
@@ -978,18 +978,27 @@ export class tab_info_packed {
     }
 
     console.log(`[tab_info_packed][restore] pre_restoration_stage: ${this.pre_restoration_stage}, web_state_array.length: ${this.web_state_array?.length}`);
-    if (!this.web_state_array) {
-      let array_buffer = sandbox_read_arrayBuffer_sync(web_state_dir(this.storage) + "/continue_tabs_web_state_array_" + this.index.toString());
-      if (array_buffer) {
-        this.web_state_array = new Uint8Array(array_buffer);
+    try {
+      if (!this.web_state_array) {
+        let array_buffer = sandbox_read_arrayBuffer_sync(web_state_dir(this.storage) + "/continue_tabs_web_state_array_" + this.index.toString());
+        if (array_buffer) {
+          this.web_state_array = new Uint8Array(array_buffer);
+        } else {
+          console.error("[Meow][bunch_of_tabs] Restore web state failed! Read NOTHING from disk???");
+          return false;
+        }
       } else {
-        console.error("[Meow][bunch_of_tabs] Restore web state failed! Read NOTHING from disk???");
-        return false;
+        // Already read into web state, just use it.
+        // Usually in the case of receiving a tab from another window.
       }
-    } else {
-      // Already read into web state, just use it.
-      // Usually in the case of receiving a tab from another window.
+    } catch (e) {
+      console.error('[try_restore] Failed for [' + this.title + ']: ' + e);
     }
+
+    if (!this.web_state_array) {
+      return false;
+    }
+
     // Restore
     try {
       this.url = 'uwu';

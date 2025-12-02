@@ -166,7 +166,7 @@ struct meowTabsHost {
       try {
         let label_file = dir + "/continue_tabs_web_state_array_" + index.toString() + '_label';
         let label = sandbox_read_text_sync(label_file); // Name of that tab
-        // console.log(`[Meow][init][meowTabsVertical] Tab #${index}! label=${label}`);
+        console.log(`[Meow][init][meowTabsVertical] Tab #${index}! label=${label}`);
         this.new_tab("", false, false, true, label);
       } catch (e) {
         console.error('[TabsVertical][restore_zone][new_tab] ' + e);
@@ -183,10 +183,11 @@ struct meowTabsHost {
 
     setTimeout(() => {
       // Retrieve all data, avoid blocks on the main thread
+      console.info('[TabsVertical][restore_zone] Trying to sync UI information!');
       try {
-        sync_current_tabs_list_info(this.storage);
+        sync_all_tabs_list_info(this.storage);
       } catch (e) {
-        console.error('[TabsVertical][switch_tab][b] ' + e);
+        console.error('[TabsVertical][restore_zone][c] ' + e);
       }
       // Recover Paralleow
       if (continue_tabs_sub_on < this.tab_titles.length) {
@@ -196,7 +197,7 @@ struct meowTabsHost {
           this.bunch_of_tabs.callRestore(this.getUIContext(), continue_tabs_sub_on);
         }
       }
-    }, 10);
+    }, 100);
   }
 
   /**

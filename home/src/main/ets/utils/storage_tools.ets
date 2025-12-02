@@ -1,5 +1,5 @@
-import { BusinessError } from '@kit.BasicServicesKit';
 import lazy { zlib } from '@kit.BasicServicesKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 import lazy { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
 import { buffer } from '@kit.ArkTS';
 import lazy { image, sendableImage } from '@kit.ImageKit';
@@ -594,8 +594,7 @@ export function copy_from_rawfile_to_sandbox(from: string, to: string) {
   }
 
   // 打开文件
-  const fsOpen =
-    fs.openSync(fullPath, fs.OpenMode.READ_WRITE | fs.OpenMode.READ_ONLY | fs.OpenMode.CREATE | fs.OpenMode.TRUNC)
+  const fsOpen = fs.openSync(fullPath, fs.OpenMode.READ_WRITE | fs.OpenMode.READ_ONLY | fs.OpenMode.CREATE | fs.OpenMode.TRUNC)
 
   // 写入文件
   let destFile = fs.writeSync(fsOpen.fd, bf);

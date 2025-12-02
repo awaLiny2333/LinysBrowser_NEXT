@@ -147,18 +147,19 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 1. As a result of Liny's unsystematic programming thoughts and rubbish codes,
    this application may contain performance problems.
    Liny would appreciate that so much if you wish to report a problem, big or small!
-2. Couldn't get pass Cloudflare CAPTCHA. (Using an Android UA can fix)
-3. Due to a mysterious problem and a temporary but necessary compromise,
+2. Cppcrash may happen for some tabs in Zones or to be restored. (Under investigation)
+3. Couldn't get pass Cloudflare CAPTCHA. (Using an Android UA can fix)
+4. Due to a mysterious problem and a temporary but necessary compromise,
    sometimes the AD blocking whitelist may not take effect in time after launching,
    resulting in ads on the web page being blocked.
    (Trying to solve)
-4. Due to a mysterious problem and a temporary but necessary compromise,
+5. Due to a mysterious problem and a temporary but necessary compromise,
    sometimes the AD blocking function itself may not take effect in time after launching,
    resulting in ads on the web page not being blocked.
    (Trying to solve)
-5. HarmonyOS UA is not understood by plenty of websites (But UA is customizable now).
-6. This project requires HarmonyOS NEXT API20 to run.
-7. OHOS Comes with no Share Kit, what can I do??? Help needed.
+6. HarmonyOS UA is not understood by plenty of websites (But UA is customizable now).
+7. This project requires HarmonyOS NEXT API20 to run.
+8. OHOS Comes with no Share Kit, what can I do??? Help needed.
 
 ### Seems to be Solved?
 
