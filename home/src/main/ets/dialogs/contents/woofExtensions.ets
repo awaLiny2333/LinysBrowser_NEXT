@@ -8,17 +8,18 @@ import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleBut
 import linysSwitchWithText from '../../components/toggles/linysSwitchWithText';
 import { bunch_of_extensions, extension } from '../../hosts/bunch_of_extensions';
 import linysImageButton from '../../components/buttons/linysImageButton';
+import { select_install_extension, uninstall_extension } from '../../processes/extension_actions';
+import { storage_of_id } from '../../utils/ui_tools';
 
 @CustomDialog
 struct woofExtensions {
   controller: CustomDialogController;
-  @StorageLink('extensions') extensions: string[] = [];
+  // Env
+  @LocalStorageLink('my_window_id') my_window_id: string = '';
+  storage: LocalStorage = storage_of_id(this.my_window_id);
+  // Hosts
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   @StorageLink('bunch_of_extensions') bunch_of_extensions: bunch_of_extensions = new bunch_of_extensions();
-  // Colors
-  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Status
   @LocalStorageLink('full_screen_height') full_screen_height: number = 0;
   @LocalStorageProp('screen_width') screen_width: number = 0;
@@ -50,10 +51,13 @@ struct woofExtensions {
             .animation(animation_default())
           linysCapsuleButtonWithText({
             desc_text: $r('app.string.extensions_install'),
-            button_text: ' 󰀵 '
+            button_text: ' 󰀵 ',
+            onExecution: () => {
+              select_install_extension(this.storage);
+            }
           })
-            .opacity(0.5)
-            .enabled(false) // TODO: Finish add extensions feature
+          // .opacity(0.5)
+          // .enabled(false) // TODO: Finish add extensions feature
         }
         .onAreaChange((o, n) => {
           this.notice_height = n.height as number;
@@ -66,7 +70,12 @@ struct woofExtensions {
 
         WaterFlow() {
           ForEach(this.bunch_of_extensions.extensions, (item: extension, idx: number) => {
-            subCard({ my_extension: item, my_index: idx, controller: this.controller })
+            subCard({
+              my_extension: item,
+              my_index: idx,
+              controller: this.controller,
+              storage: this.storage
+            })
           })
         }
         .columnsTemplate("1fr ".repeat(Math.ceil(this.screen_width * 0.9 / minimum_card_width())))
@@ -90,8 +99,10 @@ export default woofExtensions;
 
 @Component
 struct subCard {
+  storage: LocalStorage | undefined;
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Contents
   @BuilderParam contents: () => void;
@@ -131,16 +142,12 @@ struct subCard {
           .fontColor(this.color_current_font)
           .fontSize(fontSize_Large())
           .fontWeight(FontWeight.Bold)
+          .layoutWeight(1)
       } // title
       .opacity(0.8)
 
-      linysText({ text: this.basic_info().join(' '), max_lines: 999 })
-        .opacity(0.8)
-
-      linysText({ text: this.more_info().join('\n'), max_lines: 999, is_description: true })
-
       linysSwitchWithText({
-        text: $r('app.string.extensions_enable'),
+        text: this.basic_info().join(' '),
         toggle_state: this.my_enabled,
         onExecution: () => {
           if (this.my_enabled) {
@@ -148,20 +155,36 @@ struct subCard {
           }
         }
       })
-        .opacity(0.5)
+        .opacity(0.8)
         .enabled(false) // TODO: Finish disabling extensions
+
+      // linysText({ text: this.basic_info().join(' '), max_lines: 999 })
+      //   .opacity(0.8)
+
+      linysText({ text: this.more_info().join('\n'), max_lines: 999, is_description: true })
+
+      if (this.my_extension?.homepage_url) {
+        linysText({ text: this.my_extension.homepage_url, can_hover: true })
+          .opacity(0.8)
+          .onClick(() => {
+            this.storage?.set('showing_more_options', false);
+            this.storage?.set('universal_new_tab_gateway', [this.my_extension!.homepage_url, false]);
+            this.controller?.close();
+          })
+      }
 
       linysTimeoutButtonWithText({
         desc_text: '',
         button_text: "  󰀁  ",
         onExecution: () => {
-          // Delete
+          if (this.my_extension?.id) {
+            uninstall_extension(this.my_extension.id);
+          }
         }
       })
-        .opacity(0.5)
-        .enabled(false) // TODO: Finish deleting extensions
+
     }
-    .backgroundColor(this.color_current_primary)
+    .backgroundColor(this.color_current_secondary)
     .brightness(this.isHov ? 1.04 : 1)
     .animation(animation_default())
     .padding(12)

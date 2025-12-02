@@ -58,6 +58,7 @@ import lazy woofPromptOK from '../../dialogs/prompts/woofPromptOK';
 import lazy woofHistory from '../../dialogs/managers/woofHistory';
 import lazy woofEasyList from '../../dialogs/managers/woofEasylist';
 import linysAniContainer from '../../components/layouts/linysAniContainer';
+import { extension_id_for_path } from '../../processes/extension_actions';
 
 // @Reusable
 @Component
@@ -66,8 +67,8 @@ struct meowAppSettings {
   @StorageLink('showing_large_my_window_alias') showing_large_my_window_alias: boolean = false;
   @StorageLink('windowIds') windowIds: string[] = [];
   @StorageLink('free_window_mode') free_window_mode: boolean = false;
-  @LocalStorageLink('my_window_id') my_window_id: string = '';
   @LocalStorageLink('my_window_alias') my_window_alias: string = '';
+  @LocalStorageLink('my_window_id') my_window_id: string = '';
   storage: LocalStorage = storage_of_id(this.my_window_id);
   @Link @Watch('on_open_or_close_panel') showing_app_settings: boolean;
   // Hosts and environment
@@ -366,6 +367,9 @@ struct meowAppSettings {
   @StorageLink('reindexing_history') reindexing_history: boolean | undefined = undefined;
   @StorageLink('reindexing_history_progress') reindexing_history_progress: number = 100;
   @StorageLink('compressing_output_profile') compressing_output_profile: boolean = false;
+  // Deveowlopers
+  @State path_of_ext: string = '';
+  @State id_of_ext: string = '';
 
   @Builder
   EasyList_entry_button() {
@@ -1303,6 +1307,24 @@ struct meowAppSettings {
                           }
                         });
                       })
+
+                    TextInput({ text: this.path_of_ext })
+                      .onChange((e) => {
+                        this.path_of_ext = e;
+                      })
+                    linysCapsuleButtonWithText({
+                      desc_text: 'Calc ID',
+                      button_text: ' :O ',
+                      onExecution: () => {
+                        try {
+                          this.id_of_ext = extension_id_for_path(this.path_of_ext);
+                          console.log('[Deveowlopers][extension_id_for_path] Result: ' + this.id_of_ext);
+                        } catch (e) {
+                          console.error('[Deveowlopers][extension_id_for_path] Failed: ' + e);
+                        }
+                      }
+                    })
+                    linysText({ text: this.id_of_ext })
                   }
                 }
               } // Update

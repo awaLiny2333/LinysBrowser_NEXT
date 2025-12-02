@@ -2,6 +2,11 @@ import { locale_messages_of_extension, manifest_of_extension, message_of_manifes
 
 export class bunch_of_extensions {
   extensions: extension[] = [];
+  last_update: number = 0;
+
+  update_timestamp() {
+    this.last_update = Date.now();
+  }
 }
 
 export class extension {
@@ -14,6 +19,7 @@ export class extension {
   version: string;
   description: string | undefined;
   default_locale: string | undefined;
+  homepage_url: string | undefined;
   // icon
   icon_path: string | undefined;
   // action
@@ -51,6 +57,9 @@ export class extension {
       this.action_default_title = action_json_obj?.['default_title'];
       this.action_default_popup = action_json_obj?.['default_popup'];
     }
+
+    // homepage_url
+    this.homepage_url = this.manifest?.['homepage_url'];
 
     // i18n
     this.default_locale = this.manifest?.['default_locale'];

@@ -117,10 +117,15 @@ function ensure_zones_folder(context: common.UIAbilityContext) {
 function ensure_extensions_folder(context: common.UIAbilityContext) {
   let filesDir = context.filesDir;
   try {
+    fileIo.mkdirSync(context.tempDir + '/extensions', true);
+  } catch (e) {
+    console.error('[Index] mkdirSync temp/extensions failed! ' + e);
+  }
+  try {
     if (!fileIo.accessSync(filesDir + '/extensions-disabled')) {
       fileIo.mkdirSync(filesDir + '/extensions-disabled', true);
     } else {
-      console.log('[init][ensure_extensions_disabled_folder] Found disabled extensions: ' + (AppStorage.get('extensions') as string[]));
+      console.log('[init][ensure_extensions_disabled_folder] Found disabled extensions folder! ');
     }
   } catch (e) {
     console.error('[init][ensure_extensions_disabled_folder] Error: ' + e);
@@ -131,7 +136,7 @@ function ensure_extensions_folder(context: common.UIAbilityContext) {
     } else {
       // extensions exist
       refresh_AppStorage_extensions(context);
-      console.log('[init][ensure_extensions_folder] Found extensions: ' + (AppStorage.get('extensions') as string[]));
+      console.log('[init][ensure_extensions_folder] Found extensions: ' + (AppStorage.get('extensions_ids') as string[]));
     }
   } catch (e) {
     console.error('[init][ensure_extensions_folder] Error: ' + e);

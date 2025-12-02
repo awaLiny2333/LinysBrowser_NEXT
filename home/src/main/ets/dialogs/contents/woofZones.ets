@@ -90,7 +90,7 @@ export default woofZones;
 @Component
 struct subCard {
   // Colors
-  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Contents
   @BuilderParam contents: () => void;
@@ -167,7 +167,7 @@ struct subCard {
     .opacity(this.zones_opened[this.my_index] ? 0.5 : 1)
     // .enabled(!this.zones_opened[this.my_index])
     .borderColor(this.border_color())
-    .backgroundColor(this.color_current_primary)
+    .backgroundColor(this.color_current_secondary)
     .brightness(this.isHov ? 1.04 : 1)
     .animation(animation_default())
     .padding(12)
@@ -192,7 +192,7 @@ struct subCard {
     } else if (this.effects) {
       return 'transparent';
     } else {
-      return this.color_current_primary;
+      return this.color_current_secondary;
     }
   }
 

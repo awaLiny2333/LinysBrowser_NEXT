@@ -412,7 +412,7 @@ export function sandbox_mkdir_sync(dir_name: string, context_filesDir?: string) 
   let filesDir: string = context_filesDir || meowContext().filesDir;
   let full_dir_directory = filesDir + '/' + dir_name;
   try {
-    fs.mkdirSync(full_dir_directory);
+    fs.mkdirSync(full_dir_directory, true);
   } catch (e) {
     console.error('[storage_tools][sandbox_mkdir_sync] [' + dir_name + ']' + e);
     return false;
@@ -524,7 +524,7 @@ export function sandbox_read_arrayBuffer(file_path_name: string, context_filesDi
  * THIS IS A SYNC FUNCTION
  * @param from from a uri (file://).
  * @param to a sandbox directory, the new parent folder of this file (in sandbox).
- * @returns a sandbox uri, root is meowContext().filesDir.
+ * @returns a sandbox uri.
  * */
 export function copy_from_uri_to_sandbox_temp_with_timestamp(from: string, to: string, max_name_length?: number): string {
   let filesDir: string = meowContext().tempDir;
@@ -541,6 +541,9 @@ export function copy_from_uri_to_sandbox_temp_with_timestamp(from: string, to: s
   file_name = Date.now().toString() + '-' + file_name;
   // Combine target path
   let target_path = filesDir + '/' + to + '/' + file_name;
+  if (to == '') {
+    target_path = filesDir + '/' + file_name;
+  }
   console.log('[uri_copy_sandbox_temp] Copy from [' + from_path + '] to [' + target_path + '] return [' + to + '/' + file_name + ']');
   fs.copyFileSync(from_path, target_path);
   return path_2_uri(target_path);
@@ -552,7 +555,7 @@ export function copy_from_uri_to_sandbox_temp_with_timestamp(from: string, to: s
  * THIS IS A SYNC FUNCTION
  * @param from from a uri (file://).
  * @param to a sandbox directory, the new parent folder of this file (in sandbox).
- * @returns a sandbox uri, root is meowContext().filesDir.
+ * @returns a sandbox uri.
  * */
 export function copy_from_uri_to_sandbox(from: string, to: string, max_name_length?: number): string {
   let filesDir: string = meowContext().filesDir;
