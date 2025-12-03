@@ -43,6 +43,7 @@ struct meowMoreOptions {
   // UI Statuses
   @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
   @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
+  @LocalStorageLink('showing_ext_id') showing_ext_id: string = '';
   // Logics Statuses
   @LocalStorageLink('search_input') search_input: string = "ଘ*(੭*ˊᵕˋ)੭*";
   @LocalStorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
@@ -535,8 +536,20 @@ struct meowMoreOptions {
                     path: ext.path_full + '/' + (ext.action_default_icon_path || ext.icon_path),
                     can_hover: true,
                     execution: () => {
-                      // Open popup
+                      if (ext.action_default_popup) {
+                        this.showing_ext_id = ext.id;
+                        // ext.controller.loadUrl(ext.action_default_popup);
+                        this.showing_more_options = false;
+                        console.log(`[Extension] Button clicked~ this.showing_ext_id=${this.showing_ext_id}`);
+                      } else {
+                        this.showing_ext_id = '';
+                        console.log(`[Extension] Button clicked~ But no popup. this.showing_ext_id=${this.showing_ext_id}`);
+                      }
                     },
+                  }).bindTips(ext.action_default_title || ext.name, {
+                    appearingTime: 1,
+                    disappearingTime: 1,
+                    enableArrow: true,
                   })
                 })
 

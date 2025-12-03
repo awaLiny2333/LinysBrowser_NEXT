@@ -25,10 +25,11 @@ export function scan_extensions(context: common.UIAbilityContext) {
   }
   // Put into bunch
   let exts: bunch_of_extensions = new bunch_of_extensions();
+  AppStorage.setOrCreate('bunch_of_extensions', exts);
+
   for (let index = 0; index < extensions_ids.length; index++) {
     try_add_extension_to_bunch(extensions_ids[index], exts, context);
   }
-  AppStorage.setOrCreate('bunch_of_extensions', exts);
   console.log('[zone_actions][scan_extensions] Result: ' + extensions_ids);
   return extensions_ids;
 }
@@ -40,61 +41,6 @@ export function refresh_AppStorage_extensions(context: common.UIAbilityContext) 
   } catch (e) {
     console.error('[refresh_AppStorage_extensions] Failed: ' + e);
   }
-}
-
-/**
- * Reads the manifest of extension.
- * @param id The id of extension.
- * @returns The manifest object.
- * */
-export function manifest_of_extension(path: string | undefined) {
-  if (!path) {
-    return undefined;
-  }
-  let manifest = sandbox_read_text_sync(`${path}/manifest.json`);
-  let m: object = JSON.parse(manifest);
-  console.log(`[extension_actions][manifest_of_extension] Read manifest.json! "name"=${m?.['name']}` + '\n' + m);
-  return m;
-}
-
-/**
- * Reads the locale JSON object of extension.
- * @param path The path of the extension root directory.
- * @param locale The locale code, like 'en'.
- * @returns The JSON object or undefined, if not found.
- * */
-export function locale_messages_of_extension(path: string | undefined, locale: string) {
-  let messages: object | undefined;
-  if (!path) {
-    return undefined;
-  }
-  let locale_text = sandbox_read_text_sync(`${path}/_locales/${locale}/messages.json`);
-  if (locale_text == 'undefined') {
-    // Locale not found
-    return undefined;
-  }
-  messages = JSON.parse(locale_text);
-  return messages;
-}
-
-/**
- * Gets the path of extension.
- * @param id The ID of extension.
- * @returns /extensions/${id}/${versions[0]}.
- * */
-export function path_of_extension(id: string) {
-  let versions: string[] = [];
-  try {
-    versions = fileIo.listFileSync(meowContext().filesDir + '/extensions/' + id, { recursion: false });
-  } catch (e) {
-    return undefined;
-  }
-  if (versions.length == 0) {
-    return undefined;
-  }
-  let path = `/extensions/${id}/${versions[0]}`
-  console.log('[path_of_extension]' + path);
-  return path;
 }
 
 // Load and Uninstall
@@ -218,9 +164,9 @@ function terminate_extension(id: string) {
  * @param context The common.UIAbilityContext. If left blank, then meowContext() would be used.
  * @returns True if success, false otherwise.
  * */
-function try_add_extension_to_bunch(id: string, exts?: bunch_of_extensions, context?: common.UIAbilityContext) {
+function try_add_extension_to_bunch(id: string, boe_provided?: bunch_of_extensions, context?: common.UIAbilityContext) {
   console.log(`[try_add_extension_to_bunch] Try to add extension id=${id}`);
-  exts = exts || AppStorage.get('bunch_of_extensions') as bunch_of_extensions;
+  let exts = boe_provided || AppStorage.get('bunch_of_extensions') as bunch_of_extensions;
   // Update extensions
   let path = path_of_extension(id);
   if (path) {
@@ -230,13 +176,26 @@ function try_add_extension_to_bunch(id: string, exts?: bunch_of_extensions, cont
       // This is an extension
       let extension_obj = new extension(id, path, path_full);
       exts.extensions.push(extension_obj);
-      exts.update_timestamp();
+      if (boe_provided) {
+        // No update timestamp, because of a boe provided => This is in initialization stage.
+      } else {
+        exts.update_timestamp();
+        welcome_extension(id);
+      }
       return true;
     } catch (e) {
       console.error('[try_add_extension_to_bunch][' + id + '][' + path + '] Failed: ' + e);
     }
   }
   return false;
+}
+
+/**
+ * All jobs executed on extension installed.
+ * @param id The id of extension.
+ * */
+function welcome_extension(id: string) {
+  console.log(`[terminate_extension][${id}] Just installed!`);
 }
 
 // i18n
@@ -248,4 +207,61 @@ export function get_message_of_extension(messages: object, message_name: string)
 export function message_of_manifest_key(messages: object, key: string): string {
   let message_name = key.substring(6, key.length - 2);
   return get_message_of_extension(messages, message_name);
+}
+
+// Data
+
+/**
+ * Reads the manifest of extension.
+ * @param id The id of extension.
+ * @returns The manifest object.
+ * */
+export function manifest_of_extension(path: string | undefined) {
+  if (!path) {
+    return undefined;
+  }
+  let manifest = sandbox_read_text_sync(`${path}/manifest.json`);
+  let m: object = JSON.parse(manifest);
+  console.log(`[extension_actions][manifest_of_extension] Read manifest.json! "name"=${m?.['name']}` + '\n' + m);
+  return m;
+}
+
+/**
+ * Reads the locale JSON object of extension.
+ * @param path The path of the extension root directory.
+ * @param locale The locale code, like 'en'.
+ * @returns The JSON object or undefined, if not found.
+ * */
+export function locale_messages_of_extension(path: string | undefined, locale: string) {
+  let messages: object | undefined;
+  if (!path) {
+    return undefined;
+  }
+  let locale_text = sandbox_read_text_sync(`${path}/_locales/${locale}/messages.json`);
+  if (locale_text == 'undefined') {
+    // Locale not found
+    return undefined;
+  }
+  messages = JSON.parse(locale_text);
+  return messages;
+}
+
+/**
+ * Gets the path of extension.
+ * @param id The ID of extension.
+ * @returns /extensions/${id}/${versions[0]}.
+ * */
+export function path_of_extension(id: string) {
+  let versions: string[] = [];
+  try {
+    versions = fileIo.listFileSync(meowContext().filesDir + '/extensions/' + id, { recursion: false });
+  } catch (e) {
+    return undefined;
+  }
+  if (versions.length == 0) {
+    return undefined;
+  }
+  let path = `/extensions/${id}/${versions[0]}`
+  console.log('[path_of_extension]' + path);
+  return path;
 }

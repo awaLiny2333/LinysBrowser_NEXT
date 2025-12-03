@@ -1,4 +1,6 @@
 import { locale_messages_of_extension, manifest_of_extension, message_of_manifest_key } from '../processes/extension_actions';
+import { webview } from '@kit.ArkWeb';
+import { CatsBridge } from '../objects/CatstensionBridgeObj';
 
 export class bunch_of_extensions {
   extensions: extension[] = [];
@@ -7,12 +9,29 @@ export class bunch_of_extensions {
   update_timestamp() {
     this.last_update = Date.now();
   }
+
+  /**
+   * Returns the extension object of a specific ID.
+   * @param id The id.
+   * @returns The extension object if found, undefined otherwise.
+   * */
+  get_extension(id: string) {
+    for (let index = 0; index < this.extensions.length; index++) {
+      if (this.extensions[index].id == id) {
+        return this.extensions[index];
+      }
+    }
+    return undefined;
+  }
 }
 
 export class extension {
   id: string;
   path: string;
   path_full: string;
+  // Web
+  controller: WebviewController = new webview.WebviewController();
+  bridge: CatsBridge;
   // Properties
   name: string;
   manifest_version: number;
@@ -77,6 +96,8 @@ export class extension {
         }
       }
     }
+
+    this.bridge = new CatsBridge(id);
 
     console.log(`[extension] Created! path=${path}, path_full=${path_full}`);
   }

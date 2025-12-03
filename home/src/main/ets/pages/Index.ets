@@ -32,6 +32,7 @@ import linysProgress from '../components/linysProgress';
 import linysWindowButton from '../components/buttons/linysWindowButton';
 import linysText from '../components/texts/linysText';
 import meowTabsHost from '../blocks/modules/meowTabsHost';
+import meowExtensionView from '../blocks/modules/meowExtensionView';
 
 // @Entry({ useSharedStorage: true })
 @Entry(last_storage())
@@ -347,6 +348,11 @@ struct Index {
               // if (this.delayed_load_p0) {
               meowShortcuts()
               // }
+
+              // Extensions Web
+              if (this.delayed_load_p1) {
+                meowExtensionView()
+              }
             }
             .clip(true)
             .margin(this.web_margin())
@@ -413,7 +419,6 @@ struct Index {
       }
     }
     .alignContent(Alignment.Center)
-    // .backgroundColor(this.color_current_secondary)
     .backgroundColor(this.background_color())
     .useEffect(this.effects, EffectType.WINDOW_EFFECT)
     .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })

@@ -576,33 +576,21 @@ export function copy_from_uri_to_sandbox(from: string, to: string, max_name_leng
 }
 
 /**
- * Copies a file from rawfile to sandbox
- * @param from
- * @param to
+ * Gets raw text content from rawfile.
+ * @param from Path of rawfile, for example, 'home.html'.
+ * @returns The text content if success. Undefined otherwise.
  * */
-export function copy_from_rawfile_to_sandbox(from: string, to: string) {
-  let boxPath = meowContext().filesDir
-  let to_split = to.split("/");
-  let folderPath = boxPath + "/" + to_split.slice(0, to_split.length - 2).join("/");
-  let fullPath = boxPath + "/" + to
-
-  // 获取rawfile资源文件，转换数据
-  let uint8Array: Uint8Array = meowContext().resourceManager.getRawFileContentSync(from);
-  let bf = buffer.from(uint8Array).buffer;
-
-  // 创建沙箱目录
+export function text_from_rawfile(from: string) {
   try {
-    fs.mkdirSync(folderPath, true);
+    let uint8Array: Uint8Array = meowContext().resourceManager.getRawFileContentSync(from);
+    let bf = buffer.from(uint8Array).buffer;
+    let r = buffer.from(bf).toString();
+    // console.log('[text_from_rawfile] ' + r);
+    return r;
   } catch (e) {
+    console.error(`[text_from_rawfile][${from}] Failed: ` + e);
+    return undefined;
   }
-
-  // 打开文件
-  const fsOpen = fs.openSync(fullPath, fs.OpenMode.READ_WRITE | fs.OpenMode.READ_ONLY | fs.OpenMode.CREATE | fs.OpenMode.TRUNC)
-
-  // 写入文件
-  let destFile = fs.writeSync(fsOpen.fd, bf);
-  // 关闭文件
-  fs.close(destFile)
 }
 
 // Info
