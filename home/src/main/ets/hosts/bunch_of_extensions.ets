@@ -97,7 +97,7 @@ export class extension {
       }
     }
 
-    this.bridge = new CatsBridge(id);
+    this.bridge = new CatsBridge(this);
 
     console.log(`[extension] Created! path=${path}, path_full=${path_full}`);
   }

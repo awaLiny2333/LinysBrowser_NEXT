@@ -93,11 +93,13 @@ export function select_install_extension(storage: LocalStorage) {
 
     // Copy
     let uri_zip_crx = copy_from_uri_to_sandbox_temp_with_timestamp(result, 'extensions');
-    sandbox_mkdir_sync('extensions/' + id);
+    // sandbox_mkdir_sync('extensions/' + id);
+    sandbox_mkdir_sync('extensions/' + id + '/meow');
 
     // Decompress
     let inFile = uri_2_path(uri_zip_crx);
-    let outFileDir = meowContext().filesDir + '/extensions/' + id;
+    let outFileDirBase = meowContext().filesDir + '/extensions/' + id;
+    let outFileDir = outFileDirBase + '/meow';
     console.log(`[select_install_extension] Decompress from ${inFile}, to ${outFileDir}`);
     let options: zlib.Options = {
       level: zlib.CompressLevel.COMPRESS_LEVEL_DEFAULT_COMPRESSION,
@@ -105,6 +107,20 @@ export function select_install_extension(storage: LocalStorage) {
     };
     try {
       return await zlib.decompressFile(inFile, outFileDir, options).then(() => {
+
+        let files = fileIo.listFileSync(outFileDir);
+        console.log(`[Extension] listFileSync: ${files}`);
+        if (files.length > 1) {
+          // It's OK
+        } else {
+          // The zip file includes another layer of folder!
+          try {
+            fileIo.moveDirSync(outFileDir + '/' + files[0], outFileDirBase);
+            sandbox_rmdir_sync('extensions/' + id + '/meow');
+          } catch (e) {
+            console.error(`[Extension] Reduce layer failed! from ${outFileDir + '/' + files[0]} to ${outFileDirBase}: ` + e);
+          }
+        }
 
         // Update extensions
         try_add_extension_to_bunch(id);
@@ -200,13 +216,13 @@ function welcome_extension(id: string) {
 
 // i18n
 
-export function get_message_of_extension(messages: object, message_name: string) {
+export function get_message_from_messages(messages: object, message_name: string) {
   return (messages?.[message_name])?.['message'] as string;
 }
 
 export function message_of_manifest_key(messages: object, key: string): string {
   let message_name = key.substring(6, key.length - 2);
-  return get_message_of_extension(messages, message_name);
+  return get_message_from_messages(messages, message_name);
 }
 
 // Data

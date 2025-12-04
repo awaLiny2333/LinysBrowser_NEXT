@@ -1,7 +1,8 @@
 class cathrome {
-    alarms = new alarms();
-    action = new action();
-    liny = new liny();
+    alarms = new cathrome_alarms();
+    action = new cathrome_action();
+    i18n = new cathrome_i18n();
+    liny = new cathrome_liny();
 
     constructor() {
         this.liny.test('New cathrome constructed! uwu_!!!');

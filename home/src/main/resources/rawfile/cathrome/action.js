@@ -4,39 +4,17 @@
  * chrome.action API using standard JavaScript objects for state management.
  *
  * NOTE: This mock implements methods for managing the action's visual properties and state,
- * but it cannot render or interact with a real browser toolbar.
+ * and it cannot render or interact with a real browser toolbar yet.
  */
 
-// Helper to manage event listeners (similar to chrome.events.Event)
-class EventListener {
-    constructor() {
-        /** @private */
-        this.listeners = [];
-    }
 
-    /** @param {function} callback */
-    addListener(callback) {
-        this.listeners.push(callback);
-    }
-
-    /** @param {function} callback */
-    removeListener(callback) {
-        this.listeners = this.listeners.filter(l => l !== callback);
-    }
-
-    /** @param {...any} args */
-    fire(...args) {
-        this.listeners.forEach(listener => listener(...args));
-    }
-}
-
-class action {
+class cathrome_action {
     constructor() {
         // Initialize events
         /** @public */
-        this.onClicked = new EventListener();
+        this.onClicked = new cathrome_eventListener();
         /** @public */
-        this.onUserSettingsChanged = new EventListener();
+        this.onUserSettingsChanged = new cathrome_eventListener();
     }
 
     // --- chrome.action Methods ---
@@ -46,9 +24,8 @@ class action {
      * @param {{title: string, tabId?: number}} details - The title and optional tab ID.
      * @returns {Promise<void>}
      */
-    async setTitle(details) {
+    async setTitle(details = {}) {
         let title = details.title;
-        // TODO: In a real extension, the browser UI would update the tooltip here.
         CatsBridge.chrome_action_setTitle(title);
     }
 
@@ -59,8 +36,7 @@ class action {
      */
     async getTitle(details = {}) {
         let id = details.tabId;
-        // TODO: Get title.
-        return;
+        return CatsBridge.chrome_action_getTitle();
     }
 
     /**
@@ -82,7 +58,7 @@ class action {
     async getBadgeText(details = {}) {
         let id = details.tabId;
         // TODO: Get badge text.
-        return;
+        return 'getBadgeText';
     }
 
     /**
@@ -103,7 +79,7 @@ class action {
      */
     async getBadgeBackgroundColor(details = {}) {
         let id = details.tabId;
-        return;
+        return '#FFFFFF';
     }
 
     /**
@@ -124,7 +100,7 @@ class action {
      */
     async getBadgeTextColor(details = {}) {
         let id = details.tabId;
-        return;
+        return '#FFFFFF';
     }
 
     /**
@@ -136,6 +112,7 @@ class action {
         let id = details.tabId;
         let popup = details.popup;
         // TODO: In a real extension, this would associate the popup file with the action button.
+        CatsBridge.chrome_action_setPopup(popup, id);
     }
 
     /**
@@ -145,7 +122,7 @@ class action {
      */
     async getPopup(details = {}) {
         let id = details.tabId;
-        return;
+        return CatsBridge.chrome_action_getPopup();
     }
 
     /**

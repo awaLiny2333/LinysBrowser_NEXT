@@ -1,4 +1,4 @@
-class liny {
+class cathrome_liny {
     constructor() {
     }
 

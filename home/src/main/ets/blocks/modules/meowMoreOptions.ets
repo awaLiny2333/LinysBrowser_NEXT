@@ -551,6 +551,8 @@ struct meowMoreOptions {
                     disappearingTime: 1,
                     enableArrow: true,
                   })
+                }, (ext: extension) => {
+                  return ext.id;
                 })
 
                 linysSymbol({

@@ -76,6 +76,8 @@ struct woofExtensions {
               controller: this.controller,
               storage: this.storage
             })
+          }, (ext: extension) => {
+            return ext.id;
           })
         }
         .columnsTemplate("1fr ".repeat(Math.ceil(this.screen_width * 0.9 / minimum_card_width())))

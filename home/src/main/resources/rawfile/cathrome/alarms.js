@@ -29,7 +29,7 @@
  */
 
 
-class alarms { // Class renamed to 'alarm'
+class cathrome_alarms { // Class renamed to 'alarm'
     /**
      * @constructor
      */
@@ -58,21 +58,6 @@ class alarms { // Class renamed to 'alarm'
                 if (typeof callback === 'function' && !this._onAlarmListeners.includes(callback)) {
                     this._onAlarmListeners.push(callback);
                 }
-            },
-            /**
-             * Removes a listener.
-             * @param {function(Alarm): void} callback The listener function to remove.
-             */
-            removeListener: (callback) => {
-                this._onAlarmListeners = this._onAlarmListeners.filter(listener => listener !== callback);
-            },
-            /**
-             * Checks if a listener is already registered.
-             * @param {function(Alarm): void} callback The listener function.
-             * @returns {boolean}
-             */
-            hasListener: (callback) => {
-                return this._onAlarmListeners.includes(callback);
             }
         };
 

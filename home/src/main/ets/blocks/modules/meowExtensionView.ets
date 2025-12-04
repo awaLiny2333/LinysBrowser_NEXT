@@ -51,9 +51,11 @@ struct meowExtensionView {
               controller: ext.controller
             })
             .runJavaScriptOnDocumentStart([
+              { script: text_from_rawfile('cathrome/eventListener.js'), scriptRules: ["*"] },
               { script: text_from_rawfile('cathrome/liny.js'), scriptRules: ["*"] },
               { script: text_from_rawfile('cathrome/alarms.js'), scriptRules: ["*"] },
               { script: text_from_rawfile('cathrome/action.js'), scriptRules: ["*"] },
+              { script: text_from_rawfile('cathrome/i18n.js'), scriptRules: ["*"] },
               { script: text_from_rawfile('cathrome/cathrome.js'), scriptRules: ["*"] },
             ])
             .onConsole((e) => {
@@ -62,6 +64,8 @@ struct meowExtensionView {
             })
             .visibility(this.showing_ext_id == ext.id ? Visibility.Visible : Visibility.Hidden)
             .hitTestBehavior(this.showing_ext_id == ext.id ? HitTestMode.Default : HitTestMode.Transparent)
+        }, (ext: extension) => {
+          return ext.id;
         })
       }
       .width(this.tablet_mode ? '60%' : undefined)
