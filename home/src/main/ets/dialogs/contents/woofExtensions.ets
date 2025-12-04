@@ -53,7 +53,19 @@ struct woofExtensions {
             desc_text: $r('app.string.extensions_install'),
             button_text: ' 󰀵 ',
             onExecution: () => {
-              select_install_extension(this.storage);
+              select_install_extension().then((r) => {
+                if (r == undefined) {
+                  // Duplicated ID
+                  console.warn('[Extension] Install Failed! r == undefined.')
+                  this.storage.set('universal_fail_prompt_desc_gateway', $r('app.string.Fail_extension_duplicated_id'));
+                } else if (r == false) {
+                  // Install failed
+                  console.warn('[Extension] Install Failed! r == false.')
+                  this.storage.set('universal_fail_prompt_desc_gateway', $r('app.string.Fail_select_bad_file'));
+                } else {
+                  // Success
+                }
+              })
             }
           })
           // .opacity(0.5)

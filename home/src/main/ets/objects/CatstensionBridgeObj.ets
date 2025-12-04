@@ -9,7 +9,16 @@ export class CatsBridge {
     this.id = ext.id;
     this.ext = ext;
     // this.ext = (AppStorage.get('bunch_of_extensions') as bunch_of_extensions).get_extension(this.id)!;
-    console.log(`[Extension][CatsBridge] Constructed! id=${this.id}`);
+    console.warn(this.log_head('Constructed!'));
+  }
+
+  log_head(text: string) {
+    const head = `[Extension][${this.ext.name}][${this.ext.id}][CatsBridge]`;
+    if (text.substring(0, 1) == '[') {
+      return head + text;
+    } else {
+      return `${head} ` + text;
+    }
   }
 
   chrome_action_setTitle(title: string) {
@@ -31,7 +40,7 @@ export class CatsBridge {
       try {
         this.ext.controller.loadUrl(this.ext.path_full + '/' + this.ext.action_default_popup);
       } catch (e) {
-        console.error('[Extension][CatsBridge][chrome_action_setPopup] loadUrl Failed: ' + e);
+        console.error(this.log_head('[chrome_action_setPopup] loadUrl Failed: ' + e));
       }
     } else {
       this.ext.action_default_popup = popup;

@@ -28,42 +28,51 @@ struct meowExtensionView {
 
       Stack() {
         ForEach(this.bunch_of_extensions.extensions, (ext: extension, idx: number) => {
-          Web({ controller: ext.controller, src: ext.path_full + '/' + ext.action_default_popup || $rawfile('home.html') })
-            .mediaPlayGestureAccess(false)
-            .databaseAccess(true)
-            .fileAccess(true)
-            .domStorageAccess(true)
-            .multiWindowAccess(true)
-            .mixedMode(MixedMode.All)
-            .allowWindowOpenMethod(true)
-            .mediaOptions({ audioExclusive: false })
-            .darkMode(WebDarkMode.Auto) // Dark mode!
-            .javaScriptAccess(true)
-            .imageAccess(true)
-            .onlineImageAccess(true)
-            .onPageEnd((e) => {
-              console.log(`[Extension] Web Loaded! url=${e.url}`);
-            })
-            .javaScriptProxy({
-              object: ext.bridge,
-              name: 'CatsBridge',
-              methodList: CatsBridgeMethods(),
-              controller: ext.controller
-            })
-            .runJavaScriptOnDocumentStart([
-              { script: text_from_rawfile('cathrome/eventListener.js'), scriptRules: ["*"] },
-              { script: text_from_rawfile('cathrome/liny.js'), scriptRules: ["*"] },
-              { script: text_from_rawfile('cathrome/alarms.js'), scriptRules: ["*"] },
-              { script: text_from_rawfile('cathrome/action.js'), scriptRules: ["*"] },
-              { script: text_from_rawfile('cathrome/i18n.js'), scriptRules: ["*"] },
-              { script: text_from_rawfile('cathrome/cathrome.js'), scriptRules: ["*"] },
-            ])
-            .onConsole((e) => {
-              console.log('[Extension][onConsole] ' + e.message.getMessage());
-              return true;
-            })
-            .visibility(this.showing_ext_id == ext.id ? Visibility.Visible : Visibility.Hidden)
-            .hitTestBehavior(this.showing_ext_id == ext.id ? HitTestMode.Default : HitTestMode.Transparent)
+          if (ext.manifest_version == 3) {
+            Web({ controller: ext.controller, src: ext.path_full + '/' + ext.action_default_popup || $rawfile('home.html') })
+              .mediaPlayGestureAccess(false)
+              .databaseAccess(true)
+              .fileAccess(true)
+              .domStorageAccess(true)
+              .multiWindowAccess(true)
+              .mixedMode(MixedMode.All)
+              .allowWindowOpenMethod(true)
+              .mediaOptions({ audioExclusive: false })
+              .darkMode(WebDarkMode.Auto) // Dark mode!
+              .javaScriptAccess(true)
+              .imageAccess(true)
+              .onlineImageAccess(true)
+              .onPageEnd((e) => {
+                console.log(`[Extension][${ext.name}][${ext.id}] Web Loaded! url=${e.url}`);
+              })
+              .javaScriptProxy({
+                object: ext.bridge,
+                name: 'CatsBridge',
+                methodList: CatsBridgeMethods(),
+                controller: ext.controller
+              })
+              .runJavaScriptOnDocumentStart([
+                { script: text_from_rawfile('cathrome/eventListener.js'), scriptRules: ["*"] },
+                { script: text_from_rawfile('cathrome/liny.js'), scriptRules: ["*"] },
+                { script: text_from_rawfile('cathrome/alarms.js'), scriptRules: ["*"] },
+                { script: text_from_rawfile('cathrome/action.js'), scriptRules: ["*"] },
+                { script: text_from_rawfile('cathrome/i18n.js'), scriptRules: ["*"] },
+                { script: text_from_rawfile('cathrome/cathrome.js'), scriptRules: ["*"] },
+              ])
+              .onConsole((e) => {
+                let info = `[Extension][${ext.name}][${ext.id}]: ` + e.message.getMessage();
+                if (e.message.getMessageLevel()==MessageLevel.Error) {
+                  console.error(info);
+                } else if (e.message.getMessageLevel() == MessageLevel.Warn) {
+                  console.warn(info);
+                } else {
+                  console.log(info);
+                }
+                return true;
+              })
+              .visibility(this.showing_ext_id == ext.id ? Visibility.Visible : Visibility.Hidden)
+              .hitTestBehavior(this.showing_ext_id == ext.id ? HitTestMode.Default : HitTestMode.Transparent)
+          }
         }, (ext: extension) => {
           return ext.id;
         })

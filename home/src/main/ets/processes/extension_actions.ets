@@ -74,11 +74,12 @@ export function extension_id_for_path(path: string) {
 
 /**
  * Selects and installs a zip or crx.
+ * @returns True if success, false if failed, undefined for a duplicated id.
  * */
-export function select_install_extension(storage: LocalStorage) {
+export function select_install_extension() {
   return document_pick_to_uri(['zip', 'crx']).then(async (result) => {
     if (!result) {
-      storage.set('universal_fail_prompt_desc_gateway', $r('app.string.Fail_select_bad_file'));
+      // storage.set('universal_fail_prompt_desc_gateway', $r('app.string.Fail_select_bad_file'));
       return false;
     }
     console.log(`[select_install_extension] ${result}`);
@@ -106,7 +107,7 @@ export function select_install_extension(storage: LocalStorage) {
       // parallel: zlib.ParallelStrategy.PARALLEL_STRATEGY_PARALLEL_DECOMPRESSION
     };
     try {
-      return await zlib.decompressFile(inFile, outFileDir, options).then(() => {
+      return zlib.decompressFile(inFile, outFileDir, options).then(() => {
 
         let files = fileIo.listFileSync(outFileDir);
         console.log(`[Extension] listFileSync: ${files}`);
@@ -123,14 +124,19 @@ export function select_install_extension(storage: LocalStorage) {
         }
 
         // Update extensions
-        try_add_extension_to_bunch(id);
+        let result = try_add_extension_to_bunch(id);
+        if (!result) {
+          sandbox_rmdir_sync('extensions/' + id);
+          console.error(`[Extension] Try add extension failed! Deleting directory [${'extensions/' + id}]!`);
+          return false;
+        }
+
         let extensions_ids = AppStorage.get('extensions_ids') as string[];
         extensions_ids.push(id);
-
         return true;
       })
     } catch (e) {
-      console.error('[select_install_extension] zip error: ' + e);
+      console.error('[Extension][select_install_extension][decompressFile] zip error: ' + e);
       return false;
     }
   })

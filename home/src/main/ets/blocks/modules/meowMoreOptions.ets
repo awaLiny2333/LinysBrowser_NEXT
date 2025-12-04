@@ -540,10 +540,13 @@ struct meowMoreOptions {
                         this.showing_ext_id = ext.id;
                         // ext.controller.loadUrl(ext.action_default_popup);
                         this.showing_more_options = false;
-                        console.log(`[Extension] Button clicked~ this.showing_ext_id=${this.showing_ext_id}`);
+                        console.log(`[Extension][${ext.name}][${ext.id}] Button clicked~`);
                       } else {
                         this.showing_ext_id = '';
-                        console.log(`[Extension] Button clicked~ But no popup. this.showing_ext_id=${this.showing_ext_id}`);
+                        console.log(`[Extension][${ext.name}][${ext.id}] Button clicked~ But no popup. Fire chrome.action.onClicked!`);
+                        ext.controller.runJavaScriptExt('chrome.action.onClicked.fire();').catch(() => {
+                          console.error(`[Extension][${ext.name}][${ext.id}] Fire chrome.action.onClicked failed.`);
+                        })
                       }
                     },
                   }).bindTips(ext.action_default_title || ext.name, {

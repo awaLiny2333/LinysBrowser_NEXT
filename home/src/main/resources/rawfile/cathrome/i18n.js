@@ -81,27 +81,13 @@ class cathrome_i18n {
     detectLanguage(text, callback) {
         // Simple, mock language detection logic based on keywords
         const normalizedText = text.toLowerCase();
-        let detectedLanguage = 'und'; // Undetermined (default)
-        let isReliable = false;
-        let languages = [];
-
-        if (normalizedText.includes('hola') || normalizedText.includes('adiós') || normalizedText.includes('gracias')) {
-            detectedLanguage = 'es';
-            isReliable = true;
-        } else if (normalizedText.includes('bonjour') || normalizedText.includes('merci') || normalizedText.includes('au revoir')) {
-            detectedLanguage = 'fr';
-            isReliable = true;
-        } else if (normalizedText.includes('hello') || normalizedText.includes('thank you') || normalizedText.includes('goodbye')) {
-            detectedLanguage = 'en';
-            isReliable = true;
-        }
 
         // Construct the result object as per Chrome API specification
         const result = {
             isReliable: isReliable,
             languages: [{
-                language: detectedLanguage,
-                percentage: isReliable ? 99 : 100 // Mock percentage
+                language: 'und',
+                percentage: 49 // Mock percentage
             }]
         };
 

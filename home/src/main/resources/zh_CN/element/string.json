@@ -829,6 +829,14 @@
       "value": "选择的文件有问题？或者你什么也没有选！"
     },
     {
+      "name": "Fail_extension_duplicated_id",
+      "value": "重复的 ID！这个扩展是不是已经安装上了？或者……你的运气爆棚得不行？？？！！"
+    },
+    {
+      "name": "Fail_extension_manifest_version_compatibility",
+      "value": "扩展版本不支持！可能存在兼容性问题喔…… 推荐使用更新的 Manifest 版本 3 扩展！"
+    },
+    {
       "name": "Update_record",
       "value": "更新历史"
     },

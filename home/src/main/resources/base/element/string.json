@@ -828,6 +828,14 @@
       "value": "Selected a broken file? Or you selected nothing at all!"
     },
     {
+      "name": "Fail_extension_duplicated_id",
+      "value": "Duplicated ID! Is this extension already installed? Or you are getting really, really fortunate today...??!!~!"
+    },
+    {
+      "name": "Fail_extension_manifest_version_compatibility",
+      "value": "Incompatible extension API version! Compatibility issues may arise~ A newer plugin of Manifest Version 3 is recommended!"
+    },
+    {
       "name": "Update_record",
       "value": "Update history"
     },

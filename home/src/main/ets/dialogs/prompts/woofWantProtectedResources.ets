@@ -51,6 +51,7 @@ struct woofWantResources {
             .backgroundColor(this.color_current_secondary)
         }))
       }
+      .alignItems(HorizontalAlign.Start)
 
       linysText({ text: $r('app.string.Permission_Manager_grant_permission') })// allow?
         .width("100%")
