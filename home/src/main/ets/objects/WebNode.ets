@@ -4,8 +4,6 @@ import { url_meow_to_resource } from '../utils/url_tools';
 import { on_controller_attached, on_load_intercept, on_new_window, on_page_begin, on_page_end, on_progress_change, on_title_receive } from '../processes/web_actions';
 import lazy { hilog } from '@kit.PerformanceAnalysisKit';
 
-export const defaultUrl: string = 'https://www.example.com';
-
 @Builder
 function WebBuilder(pk: tab_info_packed) {
   // Column() {
@@ -45,7 +43,7 @@ function WebBuilder(pk: tab_info_packed) {
       tabs.workingMainTab().searching_keyword_stats_total = result.numberOfMatches;
     })
     .onWindowNew((event) => {
-      on_new_window(pk, event);
+      on_new_window(pk.storage, event);
     })
     .onTitleReceive(() => {
       on_title_receive(pk);

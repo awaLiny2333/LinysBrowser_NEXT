@@ -14,6 +14,8 @@ import lazy { common } from '@kit.AbilityKit';
 import lazy { cryptoFramework } from '@kit.CryptoArchitectureKit';
 import lazy { buffer } from '@kit.ArkTS';
 import lazy { zlib } from '@kit.BasicServicesKit';
+import { createEWeb, ExtNodeController } from '../objects/ExtWebNode';
+import { detach_show_extension } from './web_actions';
 
 export function scan_extensions(context: common.UIAbilityContext) {
   // Scan
@@ -76,7 +78,7 @@ export function extension_id_for_path(path: string) {
  * Selects and installs a zip or crx.
  * @returns True if success, false if failed, undefined for a duplicated id.
  * */
-export function select_install_extension() {
+export function select_install_extension(uiContext: UIContext) {
   return document_pick_to_uri(['zip', 'crx']).then(async (result) => {
     if (!result) {
       // storage.set('universal_fail_prompt_desc_gateway', $r('app.string.Fail_select_bad_file'));
@@ -124,7 +126,7 @@ export function select_install_extension() {
         }
 
         // Update extensions
-        let result = try_add_extension_to_bunch(id);
+        let result = try_add_extension_to_bunch(id, undefined, undefined, uiContext);
         if (!result) {
           sandbox_rmdir_sync('extensions/' + id);
           console.error(`[Extension] Try add extension failed! Deleting directory [${'extensions/' + id}]!`);
@@ -157,9 +159,13 @@ export function uninstall_extension(id: string) {
       if (exts.extensions[index].id == id) {
         // The last bit of your life! Take it!
         terminate_extension(id);
+        detach_show_extension(exts.extensions[index]);
         exts.extensions.splice(index, 1);
         let extensions_ids = AppStorage.get('extensions_ids') as string[];
         extensions_ids.splice(index, 1);
+        let node = exts.NodeControllers.splice(index, 1);
+        node[0]?.detachWeb();
+        node[0]?.dispose();
         exts.update_timestamp();
         break;
       }
@@ -184,9 +190,10 @@ function terminate_extension(id: string) {
  * @param id The id of extension.
  * @param exts The bunch_of_extensions. If left blank, then the one from AppStorage would be used.
  * @param context The common.UIAbilityContext. If left blank, then meowContext() would be used.
+ * @param uiContext The UIContext. Is mandatory for a user installation.
  * @returns True if success, false otherwise.
  * */
-function try_add_extension_to_bunch(id: string, boe_provided?: bunch_of_extensions, context?: common.UIAbilityContext) {
+function try_add_extension_to_bunch(id: string, boe_provided?: bunch_of_extensions, context?: common.UIAbilityContext, uiContext?: UIContext) {
   console.log(`[try_add_extension_to_bunch] Try to add extension id=${id}`);
   let exts = boe_provided || AppStorage.get('bunch_of_extensions') as bunch_of_extensions;
   // Update extensions
@@ -201,6 +208,8 @@ function try_add_extension_to_bunch(id: string, boe_provided?: bunch_of_extensio
       if (boe_provided) {
         // No update timestamp, because of a boe provided => This is in initialization stage.
       } else {
+        // User install
+        exts.NodeControllers.push(new ExtNodeController(createEWeb(uiContext!, extension_obj)));
         exts.update_timestamp();
         welcome_extension(id);
       }

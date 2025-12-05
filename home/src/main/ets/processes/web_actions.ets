@@ -7,6 +7,8 @@ import lazy { determine_extra_background, sync_current_tabs_list_info } from './
 import lazy { is_web_page, match_domain, url_resource_to_meow, viewable_domains } from '../utils/url_tools';
 import lazy { bunch_of_downloads } from '../hosts/bunch_of_downloads';
 import { web_state_dir } from './zone_actions';
+import { extension } from '../hosts/bunch_of_extensions';
+import { ExtNodeController } from '../objects/ExtWebNode';
 
 // Ads Blocker
 
@@ -391,10 +393,10 @@ export function on_load_intercept(pk: tab_info_packed | undefined, storage: Loca
 /**
  * Should be called when a new window is called.
  *
- * @param pk The tab_info_packed.
+ * @param con The tab_info_packed.
  * @param event The OnWindowNewEvent.
  */
-export function on_new_window(pk: tab_info_packed, event: OnWindowNewEvent) {
+export function on_new_window(storage: LocalStorage, event: OnWindowNewEvent) {
   // TODO: Find out why this triggers twice when click once
   let new_target_url = event.targetUrl;
   console.info(`[Meow][onWindowNew] isAlert=${event.isAlert}, targetUrl=${event.targetUrl}`);
@@ -404,21 +406,46 @@ export function on_new_window(pk: tab_info_packed, event: OnWindowNewEvent) {
     // Is a download, intercept!
     console.log('[meowWebView] Intercepted new window request for a potential download!');
     try {
-      pk.controller!.startDownload(new_target_url);
+      (storage.get('bunch_of_tabs') as bunch_of_tabs).Tabs[0]?.controller?.startDownload(new_target_url);
       need_new_tab = false;
     } catch (e) {
       console.error('[meowWebView] webview.WebviewController.startDownload failed! Giving back control to new tab...');
     }
   } else {
-    // Open new tab
+    // Is alert
     if (event.isAlert) {
       console.log('[meowWebView] Is an Alert!');
     }
     // Open new tab
     if (need_new_tab) {
       console.log('[meowWebView] New tab in new window!');
-      pk.storage.set('universal_new_tab_gateway', [new_target_url, event.isAlert]);
+      storage.set('universal_new_tab_gateway', [new_target_url, event.isAlert]);
     }
   }
   event.handler.setWebController(null);
+}
+
+// Actions
+
+export function detach_show_extension(ext: extension) {
+  // Detach
+  let that_window_id = ext.storage?.get('my_window_id') as string;
+  let nodeCon = ext.storage?.get('showing_ext_node_controller') as ExtNodeController;
+
+  try {
+    ext.controller.loadUrl($rawfile('home.html'));
+  } catch (e) {
+    console.error(`[Extension][${ext.name}][${ext.id}] Detach_show_extension loadUrl failed! ` + e);
+  }
+  nodeCon?.detachWeb();
+  nodeCon?.rebuild();
+  ext.storage?.set('showing_ext_id', '');
+  ext.storage?.set('showing_ext_node_controller', undefined);
+
+  ext.is_being_viewed = false;
+  ext.storage = undefined;
+  nodeCon?.update(ext);
+
+  console.log(`[Extension][${ext.name}][${ext.id}] Detach_show_extension ~ Detached Extension Web from [${that_window_id}]!`);
+  // return;
 }

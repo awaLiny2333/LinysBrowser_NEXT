@@ -53,7 +53,7 @@ struct woofExtensions {
             desc_text: $r('app.string.extensions_install'),
             button_text: ' 󰀵 ',
             onExecution: () => {
-              select_install_extension().then((r) => {
+              select_install_extension(this.getUIContext()).then((r) => {
                 if (r == undefined) {
                   // Duplicated ID
                   console.warn('[Extension] Install Failed! r == undefined.')

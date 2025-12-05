@@ -8,7 +8,6 @@ export class CatsBridge {
   constructor(ext: extension) {
     this.id = ext.id;
     this.ext = ext;
-    // this.ext = (AppStorage.get('bunch_of_extensions') as bunch_of_extensions).get_extension(this.id)!;
     console.warn(this.log_head('Constructed!'));
   }
 

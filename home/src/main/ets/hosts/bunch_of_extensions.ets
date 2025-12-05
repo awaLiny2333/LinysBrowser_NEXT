@@ -1,10 +1,12 @@
 import { locale_messages_of_extension, manifest_of_extension, message_of_manifest_key } from '../processes/extension_actions';
 import { webview } from '@kit.ArkWeb';
 import { CatsBridge } from '../objects/CatstensionBridgeObj';
+import { ExtNodeController } from '../objects/ExtWebNode';
 
 export class bunch_of_extensions {
   extensions: extension[] = [];
   last_update: number = 0;
+  NodeControllers: Array<ExtNodeController | undefined> = [];
 
   update_timestamp() {
     this.last_update = Date.now();
@@ -23,6 +25,15 @@ export class bunch_of_extensions {
     }
     return undefined;
   }
+
+  index_of_id(id: string) {
+    for (let index = 0; index < this.extensions.length; index++) {
+      if (this.extensions[index].id == id) {
+        return index;
+      }
+    }
+    return undefined;
+  }
 }
 
 export class extension {
@@ -32,6 +43,8 @@ export class extension {
   // Web
   controller: WebviewController = new webview.WebviewController();
   bridge: CatsBridge;
+  storage: LocalStorage | undefined;
+  is_being_viewed: boolean = false;
   // Properties
   name: string;
   manifest_version: number;

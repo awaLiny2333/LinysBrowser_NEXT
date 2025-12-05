@@ -27,6 +27,8 @@ import woofZones from '../../dialogs/contents/woofZones';
 import woofExtensions from '../../dialogs/contents/woofExtensions';
 import { bunch_of_extensions, extension } from '../../hosts/bunch_of_extensions';
 import linysImageButton from '../../components/buttons/linysImageButton';
+import { ExtNodeController } from '../../objects/ExtWebNode';
+import { detach_show_extension } from '../../processes/web_actions';
 
 @Component
 struct meowMoreOptions {
@@ -44,6 +46,7 @@ struct meowMoreOptions {
   @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
   @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   @LocalStorageLink('showing_ext_id') showing_ext_id: string = '';
+  @LocalStorageLink('showing_ext_node_controller') showing_ext_node_controller: ExtNodeController | undefined = undefined;
   // Logics Statuses
   @LocalStorageLink('search_input') search_input: string = "ଘ*(੭*ˊᵕˋ)੭*";
   @LocalStorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
@@ -536,18 +539,7 @@ struct meowMoreOptions {
                     path: ext.path_full + '/' + (ext.action_default_icon_path || ext.icon_path),
                     can_hover: true,
                     execution: () => {
-                      if (ext.action_default_popup) {
-                        this.showing_ext_id = ext.id;
-                        // ext.controller.loadUrl(ext.action_default_popup);
-                        this.showing_more_options = false;
-                        console.log(`[Extension][${ext.name}][${ext.id}] Button clicked~`);
-                      } else {
-                        this.showing_ext_id = '';
-                        console.log(`[Extension][${ext.name}][${ext.id}] Button clicked~ But no popup. Fire chrome.action.onClicked!`);
-                        ext.controller.runJavaScriptExt('chrome.action.onClicked.fire();').catch(() => {
-                          console.error(`[Extension][${ext.name}][${ext.id}] Fire chrome.action.onClicked failed.`);
-                        })
-                      }
+                      this.get_me_extension_web(ext);
                     },
                   }).bindTips(ext.action_default_title || ext.name, {
                     appearingTime: 1,
@@ -718,6 +710,69 @@ struct meowMoreOptions {
 
   can_save_zone() {
     return this.is_zone || !this.zones.includes(this.my_window_alias);
+  }
+
+  // Actions
+
+  /**
+   * What happens after clicking on an Extension icon.
+   * @param ext The extension clicked on.
+   * */
+  get_me_extension_web(ext: extension) {
+    let idx = this.bunch_of_extensions.index_of_id(ext.id);
+    let that_window_id = ext.storage?.get('my_window_id') as string;
+
+    if (ext.is_being_viewed) {
+      // Is attached
+
+      // // Detach
+      // let nodeCon = ext.storage?.get('showing_ext_node_controller') as ExtNodeController;
+      // nodeCon?.detachWeb();
+      // nodeCon?.rebuild();
+      // ext.storage?.set('showing_ext_id', '');
+      // ext.storage?.set('showing_ext_node_controller', undefined);
+      // ext.is_being_viewed = false;
+      // ext.controller.loadUrl($rawfile('home.html'));
+      // ext.storage = undefined;
+      // nodeCon?.update(ext);
+      // console.log(`[Extension][${ext.name}][${ext.id}] Button clicked ~ Detached Extension Web from [${that_window_id}]!`);
+      // // return;
+
+      detach_show_extension(ext);
+
+      if (that_window_id == this.my_window_id) {
+        return;
+      }
+    }
+
+    setTimeout(() => {
+      // Not attached
+      if (ext.action_default_popup && (idx != undefined)) {
+        // Attach
+        this.showing_ext_id = ext.id;
+        this.showing_ext_node_controller = this.bunch_of_extensions.NodeControllers[idx];
+        this.showing_ext_node_controller?.attachWeb();
+        this.showing_ext_node_controller?.rebuild();
+        ext.storage = this.storage;
+        ext.is_being_viewed = true;
+        this.showing_ext_node_controller?.update(ext);
+        console.log(`[Extension][${ext.name}][${ext.id}] LoadUrl: [${ext.path_full + '/' + ext.action_default_popup}]`);
+        ext.controller.loadUrl(ext.path_full + '/' + ext.action_default_popup);
+        // Show
+        this.showing_more_options = false;
+        console.log(`[Extension][${ext.name}][${ext.id}] Button clicked ~ Attached Extension Web to [${this.my_window_id}]`);
+      } else {
+        this.showing_ext_id = '';
+        this.showing_ext_node_controller = undefined;
+        console.log(`[Extension][${ext.name}][${ext.id}] Button clicked ~ But no popup. Fire chrome.action.onClicked!`);
+        ext.controller.runJavaScriptExt('chrome.action.onClicked.fire();').catch(() => {
+          console.error(`[Extension][${ext.name}][${ext.id}] Fire chrome.action.onClicked failed.`);
+        })
+      }
+
+      // console.log(`[Extension][${ext.name}][${ext.id}][${this.my_window_id}] After click: this.showing_ext_node_controller is ${this.showing_ext_node_controller ?
+      //   'valid' : 'undefined'}, and this.showing_ext_id = ${this.showing_ext_id}!`);
+    }, 10);
   }
 }
 
