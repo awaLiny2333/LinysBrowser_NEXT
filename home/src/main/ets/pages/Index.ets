@@ -49,6 +49,7 @@ struct Index {
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   /**
    * UI Environment */
+  @StorageLink('DEV_MODE') DEV_MODE: boolean = false;
   @StorageLink('free_window_mode') @Watch('on_free_window_mode_change') free_window_mode: boolean = false;
   @LocalStorageLink('on_focus') on_focus: boolean = true;
   @LocalStorageLink('windowDecorWidth') windowDecorWidth: number = 0;
@@ -350,7 +351,7 @@ struct Index {
               // }
 
               // Extensions Web
-              if (this.delayed_load_p1) {
+              if (this.delayed_load_p1 && this.DEV_MODE) {
                 meowExtensionView()
               }
             }

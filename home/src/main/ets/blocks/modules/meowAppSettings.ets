@@ -186,7 +186,8 @@ struct meowAppSettings {
   @State scroll_last: number = 0;
   @State menu_text: string[] =
     ['Settings_start_up', 'Settings_general', 'Settings_Experience', 'Settings_Accessibility', 'Settings_appearance',
-      'Settings_experience_history', 'Settings_storage', 'Settings_security', 'Settings_toolbox', 'Settings_about', 'Settings_update', 'Settings_dev'];
+      'Settings_experience_history', 'Settings_storage', 'Settings_security', 'Settings_toolbox', 'Settings_about', 'Settings_update'].concat(this.DEV_MODE
+      ? ['Settings_dev'] : []);
   // Dialogs
   @LocalStorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
   woofHistory_control: CustomDialogController = new CustomDialogController({
@@ -1312,6 +1313,8 @@ struct meowAppSettings {
                       .onChange((e) => {
                         this.path_of_ext = e;
                       })
+                      .caretColor(this.color_current_font)
+                      .selectedBackgroundColor(this.color_current_font)
                     linysCapsuleButtonWithText({
                       desc_text: 'Calc ID',
                       button_text: ' :O ',

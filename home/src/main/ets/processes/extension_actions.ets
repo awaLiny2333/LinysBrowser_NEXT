@@ -29,10 +29,15 @@ export function scan_extensions(context: common.UIAbilityContext) {
   let exts: bunch_of_extensions = new bunch_of_extensions();
   AppStorage.setOrCreate('bunch_of_extensions', exts);
 
-  for (let index = 0; index < extensions_ids.length; index++) {
-    try_add_extension_to_bunch(extensions_ids[index], exts, context);
+  if (AppStorage.get('DEV_MODE') as boolean == false) {
+    console.warn('[Extension][scan_extensions] DEV_MODE off, returning [].');
+    return [];
   }
-  console.log('[zone_actions][scan_extensions] Result: ' + extensions_ids);
+
+  for (let index = 0; index < extensions_ids.length; index++) {
+    try_add_extension_to_bunch(extensions_ids[index], exts, context, undefined);
+  }
+  console.log('[Extension][scan_extensions] Result: ' + extensions_ids);
   return extensions_ids;
 }
 
@@ -188,9 +193,9 @@ function terminate_extension(id: string) {
 /**
  * Try to add an extension of id to bunch_of_tabs of the app.
  * @param id The id of extension.
- * @param exts The bunch_of_extensions. If left blank, then the one from AppStorage would be used.
+ * @param exts The bunch_of_extensions. If left blank, then the one from AppStorage would be used. Provided => This is in initialization stage.
  * @param context The common.UIAbilityContext. If left blank, then meowContext() would be used.
- * @param uiContext The UIContext. Is mandatory for a user installation.
+ * @param uiContext The UIContext. Is mandatory for a user installation, effect-less for initialization.
  * @returns True if success, false otherwise.
  * */
 function try_add_extension_to_bunch(id: string, boe_provided?: bunch_of_extensions, context?: common.UIAbilityContext, uiContext?: UIContext) {

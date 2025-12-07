@@ -38,38 +38,40 @@ struct meowSuggestions {
 
   build() {
     Scroll() {
-      if (this.tablet_mode) {
-        Row({ space: this.bookmark_suggestions.length > 0 && this.history_suggestions.length > 0 ? 10 : 0 }) {
-          suggestionList({ suggestions: this.bookmark_suggestions })
-            .layoutWeight(1)
-            .visibility(this.bookmark_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
-            .animation(animation_default())
-          suggestionList({ suggestions: this.history_suggestions })
-            .layoutWeight(1)
-            .visibility(this.history_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
-            .animation(animation_default())
+      if (this.show_suggestions()) {
+        if (this.tablet_mode) {
+          Row({ space: this.bookmark_suggestions.length > 0 && this.history_suggestions.length > 0 ? 10 : 0 }) {
+            suggestionList({ suggestions: this.bookmark_suggestions })
+              .layoutWeight(1)
+              .visibility(this.bookmark_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
+              .animation(animation_default())
+            suggestionList({ suggestions: this.history_suggestions })
+              .layoutWeight(1)
+              .visibility(this.history_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
+              .animation(animation_default())
+          }
+          .alignItems(VerticalAlign.Top)
+          .onAreaChange((_o, n) => {
+            this.content_height = n.height as number;
+          })
+          .animation(animation_default())
+        } else {
+          Column({ space: 10 }) {
+            suggestionList({ suggestions: this.bookmark_suggestions })
+              .width("100%")
+              .visibility(this.bookmark_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
+              .animation(animation_default())
+            suggestionList({ suggestions: this.history_suggestions })
+              .width("100%")
+              .visibility(this.history_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
+              .animation(animation_default())
+          }
+          .alignItems(HorizontalAlign.Start)
+          .onAreaChange((_o, n) => {
+            this.content_height = n.height as number;
+          })
+          .animation(animation_default())
         }
-        .alignItems(VerticalAlign.Top)
-        .onAreaChange((_o, n) => {
-          this.content_height = n.height as number;
-        })
-        .animation(animation_default())
-      } else {
-        Column({ space: 10 }) {
-          suggestionList({ suggestions: this.bookmark_suggestions })
-            .width("100%")
-            .visibility(this.bookmark_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
-            .animation(animation_default())
-          suggestionList({ suggestions: this.history_suggestions })
-            .width("100%")
-            .visibility(this.history_suggestions.length > 0 ? Visibility.Visible : Visibility.None)
-            .animation(animation_default())
-        }
-        .alignItems(HorizontalAlign.Start)
-        .onAreaChange((_o, n) => {
-          this.content_height = n.height as number;
-        })
-        .animation(animation_default())
       }
     }
     .borderRadius(12)
@@ -81,25 +83,25 @@ struct meowSuggestions {
       bottom: this.bottom_margin
     })
     .height(Math.min(this.content_height, 0.4 * this.screen_height))
-    .visibility(this.visibility_suggestions())
+    .visibility(this.show_suggestions() ? Visibility.Visible : Visibility.None)
     .animation(animation_default())
     .edgeEffect(EdgeEffect.Spring)
   }
 
-  visibility_suggestions() {
+  show_suggestions() {
     if (this.bookmark_suggestions.length + this.history_suggestions.length == 0) {
-      return Visibility.None;
+      return false;
     }
     if (this.showing_more_options) {
-      return Visibility.None;
+      return false;
     }
     if (this.search_input == "") {
-      return Visibility.None;
+      return false;
     }
     if (!this.is_search_input_typing) {
-      return Visibility.None;
+      return false;
     }
-    return Visibility.Visible
+    return true;
   }
 
   refresh_suggestions() {

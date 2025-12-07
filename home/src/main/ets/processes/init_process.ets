@@ -37,7 +37,6 @@ export async function meow_init_main(context: common.UIAbilityContext, storage: 
   ensure_continue_folder(context);
   ensure_easylist_folder(context);
   ensure_zones_folder(context);
-  ensure_extensions_folder(context);
   create_download(context);
   create_web_drag_image_cache(context);
   create_harmony_share_temp(context);
@@ -46,6 +45,8 @@ export async function meow_init_main(context: common.UIAbilityContext, storage: 
   // Hosts
   await settings(storage);
   await bookmarks(storage);
+
+  ensure_extensions_folder(context);
 
   // Placeholder
   AppStorage.setOrCreate('bunch_of_bookmarks', new bunch_of_bookmarks("Bookmarks~Meow"));

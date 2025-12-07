@@ -25,6 +25,7 @@ struct woofExtensions {
   @LocalStorageProp('screen_width') screen_width: number = 0;
   @LocalStorageLink('compact_mode') compact_mode: boolean = false;
   @State notice_height: number = 35;
+  @StorageLink('installing_extension') installing_extension: boolean = false;
   // Dialog
   @LocalStorageLink('opened_dialog_controllers') opened_dialog_controllers: CustomDialogController[] = [];
 
@@ -49,10 +50,16 @@ struct woofExtensions {
           linysText({ text: $r('app.string.extensions_desc'), is_description: true, is_expanded: true }).width('100%')
             .visibility(this.compact_mode ? Visibility.None : Visibility.Visible)
             .animation(animation_default())
+
           linysCapsuleButtonWithText({
             desc_text: $r('app.string.extensions_install'),
             button_text: ' 󰀵 ',
             onExecution: () => {
+              if (this.installing_extension) {
+                return;
+              } else {
+                this.installing_extension = true;
+              }
               select_install_extension(this.getUIContext()).then((r) => {
                 if (r == undefined) {
                   // Duplicated ID
@@ -65,11 +72,13 @@ struct woofExtensions {
                 } else {
                   // Success
                 }
+                this.installing_extension = false;
               })
             }
           })
-          // .opacity(0.5)
-          // .enabled(false) // TODO: Finish add extensions feature
+            .opacity(this.installing_extension ? 0.5 : 1)
+            .enabled(!this.installing_extension)
+            .animation(animation_default())
         }
         .onAreaChange((o, n) => {
           this.notice_height = n.height as number;
@@ -81,6 +90,16 @@ struct woofExtensions {
         })
 
         WaterFlow() {
+          if (this.bunch_of_extensions.extensions.length == 0) {
+            FlowItem() {
+              linysTextTitle({
+                text: "¯\\_(ツ)_/¯"
+              })
+                .margin(30)
+                .opacity(0.7)
+                .animation(animation_default())
+            }
+          }
           ForEach(this.bunch_of_extensions.extensions, (item: extension, idx: number) => {
             subCard({
               my_extension: item,

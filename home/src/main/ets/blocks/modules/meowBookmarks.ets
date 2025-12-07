@@ -87,6 +87,8 @@ struct meowBookmarks {
                 height_of_panel: this.scroll_area_height, // for animation params
                 parent_path: this.looking_at_path, // for get_my_path()
               })
+            }, (item: bookmark, key: number) => {
+              return item.get_label() + key.toString();
             })
           }
 
