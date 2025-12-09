@@ -19,6 +19,7 @@ struct meowShortcuts {
   @StorageLink('zones') zones: string[] = [];
   // Environment
   @LocalStorageProp('screen_height') screen_height: number = 100;
+  @LocalStorageLink('delayed_load_p3') delayed_load_p3: boolean = false;
   // Statuses
   @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
   @LocalStorageLink('shortcut_scroll_offset') shortcut_scroll_offset: number = 0;
@@ -58,6 +59,7 @@ struct meowShortcuts {
       }
       .alignItems(this.shortcut_alignItems())
       .padding({ top: Math.max(18, this.screen_height * (1 - this.homepage_shortcuts_init_height * 0.01)) })
+      .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
       .width('100%')
     } // Shortcuts
     .padding({ right: 14, left: 14, bottom: 18 })
