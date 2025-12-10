@@ -377,29 +377,31 @@ export function enter_traditional_window_mode(windowClass: window.Window, storag
  * Listens to the holding hand and auto update settings if applicable.
  * */
 export function listen_holding_hand() {
-  try {
-    if (canIUse("SystemCapability.MultimodalAwareness.Motion")) {
+  if (canIUse("SystemCapability.MultimodalAwareness.Motion")) {
+    try {
       motion.on('holdingHandChanged', (m: motion.HoldingHandStatus) => {
         try {
-          let data: motion.OperatingHandStatus = motion.getRecentOperatingHandStatus();
-          if (AppStorage.get('preferred_hand_auto') as boolean) {
+          if (AppStorage.get('preferred_hand_auto') as boolean == true) {
             // Set preferred hand if recognized
-            if (data != motion.OperatingHandStatus.UNKNOWN_STATUS) {
-              let hand = data == motion.OperatingHandStatus.LEFT_HAND_OPERATED ? 'left' : 'right';
-              bunch_of_settings.set('preferred_hand_left_or_right', hand);
+            if (m == motion.HoldingHandStatus.UNKNOWN_STATUS || m == motion.HoldingHandStatus.NOT_HELD || m == motion.HoldingHandStatus.BOTH_HANDS_HELD) {
+              AppStorage.set('preferred_hand_left_or_right', bunch_of_settings.get('preferred_hand_left_or_right') as boolean)
+            } else {
+              let hand = (m == motion.HoldingHandStatus.LEFT_HAND_HELD) ? 'left' : 'right';
+              AppStorage.set('preferred_hand_left_or_right', hand);
             }
           }
-          console.info('[listen_holding_hand][holdingHandChanged] get succeeded: ' + data);
+          console.info('[listen_holding_hand][holdingHandChanged] get succeeded: ' + m);
         } catch (err) {
           console.error("[listen_holding_hand][holdingHandChanged] Failed to get: " + err);
         }
       });
-      console.info('[listen_holding_hand][on] succeeded!');
-    } else {
-      console.error('[listen_holding_hand][on] Failed. unsupported SystemCapability!');
+      console.info('[listen_holding_hand][motion.on] succeeded!');
+
+    } catch (err) {
+      console.error('[listen_holding_hand][motion.on] Failed: ' + err);
     }
-  } catch (err) {
-    console.error('[listen_holding_hand] Failed: ' + err);
+  } else {
+    console.error('[listen_holding_hand][canIUse] Rejected. unsupported SystemCapability!');
   }
 }
 
