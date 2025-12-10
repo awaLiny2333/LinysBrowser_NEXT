@@ -37,6 +37,10 @@
       "value": "You could use this to pin BrowserCat on top of your stack of windows! (On your decision!)"
     },
     {
+      "name": "permission_reason_DETECT_GESTURES",
+      "value": "Let the BrowserCat know what hand you are using and help BrowserCat optimize layout!"
+    },
+    {
       "name": "permission_reason_ACCESS_FIDO2_ONLINEAUTH",
       "value": "For web authentications!"
     },
@@ -319,6 +323,10 @@
     {
       "name": "Settings_Accessibility_preferred_hand_reverse_homepage_shortcuts",
       "value": "Reverse homepage shortcuts"
+    },
+    {
+      "name": "Settings_Accessibility_preferred_hand_auto",
+      "value": "Auto adjust \uDB80\uDFB3"
     },
     {
       "name": "Settings_Experience",

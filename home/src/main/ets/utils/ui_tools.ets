@@ -5,6 +5,7 @@ import { AbilityConstant, common, Want } from '@kit.AbilityKit';
 import { bunch_of_settings } from '../hosts/bunch_of_settings';
 import { meowPx2vp } from './environment_tools';
 import { default_window_decor_height } from '../hosts/bunch_of_defaults';
+import { motion } from '@kit.MultimodalAwarenessKit';
 
 // Statuses
 
@@ -369,6 +370,36 @@ export function enter_traditional_window_mode(windowClass: window.Window, storag
     get_avoid(windowClass, storage);
   } catch (e) {
     console.error('[free][enter_traditional_window_mode] 4 Failed: ' + e);
+  }
+}
+
+/**
+ * Listens to the holding hand and auto update settings if applicable.
+ * */
+export function listen_holding_hand() {
+  try {
+    if (canIUse("SystemCapability.MultimodalAwareness.Motion")) {
+      motion.on('holdingHandChanged', (m: motion.HoldingHandStatus) => {
+        try {
+          let data: motion.OperatingHandStatus = motion.getRecentOperatingHandStatus();
+          if (AppStorage.get('preferred_hand_auto') as boolean) {
+            // Set preferred hand if recognized
+            if (data != motion.OperatingHandStatus.UNKNOWN_STATUS) {
+              let hand = data == motion.OperatingHandStatus.LEFT_HAND_OPERATED ? 'left' : 'right';
+              bunch_of_settings.set('preferred_hand_left_or_right', hand);
+            }
+          }
+          console.info('[listen_holding_hand][holdingHandChanged] get succeeded: ' + data);
+        } catch (err) {
+          console.error("[listen_holding_hand][holdingHandChanged] Failed to get: " + err);
+        }
+      });
+      console.info('[listen_holding_hand][on] succeeded!');
+    } else {
+      console.error('[listen_holding_hand][on] Failed. unsupported SystemCapability!');
+    }
+  } catch (err) {
+    console.error('[listen_holding_hand] Failed: ' + err);
   }
 }
 

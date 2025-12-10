@@ -285,6 +285,7 @@ async function settings(storage: LocalStorage) {
   AppStorage.setOrCreate('preferred_hand_reverse_tabs_panel', bunch_of_settings.get('preferred_hand_reverse_tabs_panel') as boolean);
   AppStorage.setOrCreate('preferred_hand_reverse_settings_menu', bunch_of_settings.get('preferred_hand_reverse_settings_menu') as boolean);
   AppStorage.setOrCreate('preferred_hand_reverse_homepage_shortcuts', bunch_of_settings.get('preferred_hand_reverse_homepage_shortcuts') as boolean);
+  AppStorage.setOrCreate('preferred_hand_auto', bunch_of_settings.get('preferred_hand_auto') as boolean);
 
   // Appearance - Animation
   let animation_response = bunch_of_settings.get('animation_response') as number;

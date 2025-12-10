@@ -73,6 +73,7 @@ export class bunch_of_settings {
     bunch_of_settings.register_setting('preferred_hand_reverse_settings_menu', 'boolean', 'true');
     bunch_of_settings.register_setting('preferred_hand_reverse_tabs_panel', 'boolean', 'true');
     bunch_of_settings.register_setting('preferred_hand_reverse_homepage_shortcuts', 'boolean', 'false');
+    bunch_of_settings.register_setting('preferred_hand_auto', 'boolean', 'false');
 
     // Ad blocker
     bunch_of_settings.register_setting('use_adblock', 'boolean', 'true');

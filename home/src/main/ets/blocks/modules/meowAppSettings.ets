@@ -174,6 +174,7 @@ struct meowAppSettings {
   @StorageLink('preferred_hand_reverse_settings_menu') preferred_hand_reverse_settings_menu: boolean = false;
   @StorageLink('preferred_hand_reverse_tabs_panel') preferred_hand_reverse_tabs_panel: boolean = false;
   @StorageLink('preferred_hand_reverse_homepage_shortcuts') preferred_hand_reverse_homepage_shortcuts: boolean = false;
+  @StorageLink('preferred_hand_auto') preferred_hand_auto: boolean = false;
   // Edits
   @State new_tab_url_edit: string = "";
   @State home_url_edit: string = "";
@@ -731,6 +732,13 @@ struct meowAppSettings {
                       bunch_of_settings.set('preferred_hand_reverse_homepage_shortcuts', this.preferred_hand_reverse_homepage_shortcuts);
                     }
                   }) // Reverse homepage shortcuts
+                  linysSwitchWithText({
+                    text: $r('app.string.Settings_Accessibility_preferred_hand_auto'),
+                    toggle_state: this.preferred_hand_auto,
+                    onExecution: () => {
+                      bunch_of_settings.set('preferred_hand_auto', this.preferred_hand_auto);
+                    }
+                  }) // Auto
                 } // Single hand
 
                 settingsSubCard({

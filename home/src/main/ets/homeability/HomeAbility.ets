@@ -10,6 +10,7 @@ import {
   listen_avoid,
   listen_focus,
   listen_free_window_mode,
+  listen_holding_hand,
   run_time,
   window_index_of_id
 } from '../utils/ui_tools';
@@ -314,6 +315,7 @@ export default class HomeAbility extends UIAbility {
       if (is_app_start) {
         // Listen free window mode
         listen_free_window_mode(this.context, windowClass, storage, this.my_window_id);
+        listen_holding_hand();
       }
       AppStorage.setOrCreate('THE_WANT_HANDLER_OF_THE_WINDOWS', this.my_window_id);
 

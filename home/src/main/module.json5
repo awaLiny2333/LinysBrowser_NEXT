@@ -154,7 +154,17 @@
       },
       {
         "name": "ohos.permission.WINDOW_TOPMOST",
-        "reason": "$string:permission_reason_CAMERA",
+        "reason": "$string:permission_reason_WINDOW_TOPMOST",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "HomeAbility"
+          ]
+        }
+      },
+      {
+        "name": "ohos.permission.DETECT_GESTURE",
+        "reason": "$string:permission_reason_DETECT_GESTURES",
         "usedScene": {
           "when": "inuse",
           "abilities": [

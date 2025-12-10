@@ -37,6 +37,10 @@
       "value": "你可以用这个权限把冲浪喵挂在所有窗口的图层之上！（你说了算！）"
     },
     {
+      "name": "permission_reason_DETECT_GESTURES",
+      "value": "让冲浪喵知道你在使用哪只手，并作出针对性布局优化！"
+    },
+    {
       "name": "permission_reason_ACCESS_FIDO2_ONLINEAUTH",
       "value": "给网页登录验证！"
     },
@@ -323,6 +327,10 @@
     {
       "name": "Settings_Accessibility_preferred_hand_reverse_homepage_shortcuts",
       "value": "反转首页快捷链接位置"
+    },
+    {
+      "name": "Settings_Accessibility_preferred_hand_auto",
+      "value": "适人握持 \uDB80\uDFB3"
     },
     {
       "name": "Settings_Experience",
