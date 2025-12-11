@@ -12,7 +12,7 @@ struct woofWantJump {
   @StorageLink('effects') effects: boolean = false;
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   // UI display
-  @LocalStorageLink('full_screen_height') full_screen_height: number = 0;
+  @LocalStorageLink('screen_height') screen_height: number = 0;
   @State fixed_height_title: number = 0;
   @State fixed_height_quest: number = 0;
   // Count
@@ -37,7 +37,9 @@ struct woofWantJump {
         })
 
       linysTextArea({ init_text: this.link, text: this.link }) // Edit
-        .constraintSize({ maxHeight: Math.max(0, this.full_screen_height * 0.9 - this.fixed_height_quest - this.fixed_height_title - 35 - 45 - 40) })
+        .constraintSize({
+          maxHeight: Math.max(0, this.screen_height * 0.9 - this.fixed_height_quest - this.fixed_height_title - 35 - 45 - 40)
+        })
 
       linysText({ text: $r('app.string.LinkJumper_allow_jump') })// allow?
         .width("100%")

@@ -21,7 +21,7 @@ struct woofExtensions {
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   @StorageLink('bunch_of_extensions') bunch_of_extensions: bunch_of_extensions = new bunch_of_extensions();
   // Status
-  @LocalStorageLink('full_screen_height') full_screen_height: number = 0;
+  @LocalStorageLink('screen_height') screen_height: number = 0;
   @LocalStorageProp('screen_width') screen_width: number = 0;
   @LocalStorageLink('compact_mode') compact_mode: boolean = false;
   @State notice_height: number = 35;
@@ -120,7 +120,7 @@ struct woofExtensions {
         .scrollBar(BarState.Auto)
         .layoutWeight(1)
         .edgeEffect(EdgeEffect.Spring)
-        .constraintSize({ maxHeight: Math.max(0, this.full_screen_height * 0.9 - 35 - 45 - 40 - this.notice_height) })
+        .constraintSize({ maxHeight: Math.max(0, this.screen_height * 0.9 - 35 - 45 - 40 - this.notice_height) })
       }
       .animation(animation_default())
       .alignItems(HorizontalAlign.Start)

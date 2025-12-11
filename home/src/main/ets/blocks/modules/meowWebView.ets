@@ -277,15 +277,16 @@ struct meowWebView {
     if (this.ssl_error_event == undefined) {
       return;
     }
+    let e = this.ssl_error_event;
     this.woof_SSL_error_control = new CustomDialogController({
       builder: woofConfirm({
         title: $r('app.string.SSL_error_title'),
-        desc: this.human_desc_of_ssl_error(this.ssl_error_event),
+        desc: this.human_desc_of_ssl_error(e),
         onConfirm: () => {
-          this.ssl_error_event?.handler.handleConfirm();
+          e?.handler.handleConfirm();
         },
         onDeny: () => {
-          this.ssl_error_event?.handler.handleCancel(true);
+          e?.handler.handleCancel(true);
         }
       }),
       alignment: DialogAlignment.Center,

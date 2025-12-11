@@ -24,6 +24,7 @@ struct woofZones {
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Status
   @LocalStorageLink('full_screen_height') full_screen_height: number = 0;
+  @LocalStorageLink('screen_height') screen_height: number = 0;
   @LocalStorageProp('screen_width') screen_width: number = 0;
   @LocalStorageLink('compact_mode') compact_mode: boolean = false;
   // UI
@@ -77,7 +78,7 @@ struct woofZones {
         .scrollBar(BarState.Auto)
         .layoutWeight(1)
         .edgeEffect(EdgeEffect.Spring)
-        .constraintSize({ maxHeight: Math.max(0, this.full_screen_height * 0.9 - 35 - 45 - 50 - this.notice_height) })
+        .constraintSize({ maxHeight: Math.max(0, this.screen_height * 0.9 - 35 - 45 - 50 - this.notice_height) })
       }
       .animation(animation_default())
       .alignItems(HorizontalAlign.Start)
