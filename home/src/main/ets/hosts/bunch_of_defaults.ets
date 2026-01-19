@@ -143,6 +143,11 @@ export function default_new_window_name(): string {
  * Obtains the default window_decor_height.
  * @returns A number, in vp.
  * */
-export function default_window_decor_height(): number {
-  return (AppStorage.get('showing_my_window_alias') as boolean) ? 45 : 37;
+export function default_window_decor_height(windowStorage: LocalStorage): number {
+  let tablet_mode = windowStorage.get('tablet_mode') as boolean;
+  if (tablet_mode) {
+    return (AppStorage.get('showing_my_window_alias') as boolean) ? 45 : 37;
+  } else {
+    return (AppStorage.get('showing_my_window_alias_non_tablet') as boolean) ? 45 : 37;
+  }
 }

@@ -35,6 +35,7 @@ export class bunch_of_settings {
     // Statuses
     bunch_of_settings.register_setting('status_tabs_open', 'boolean', 'false');
     bunch_of_settings.register_setting('status_showing_my_windows_alias', 'boolean', 'false');
+    bunch_of_settings.register_setting('status_showing_my_windows_alias_non_tablet', 'boolean', 'false');
     bunch_of_settings.register_setting('my_window_alias_position', 'string', 'center');
     bunch_of_settings.register_setting('my_window_alias_last', 'string', default_new_window_name());
 

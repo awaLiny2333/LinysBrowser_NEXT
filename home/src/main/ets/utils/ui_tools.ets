@@ -78,7 +78,7 @@ export function update_window_decor_height(window_id: string) {
     return;
   }
   // Process
-  let h = default_window_decor_height();
+  let h = default_window_decor_height(storage_of_id(window_id));
   let windowClass = window_of_id(window_id);
   let storage = storage_of_id(window_id);
   storage.setOrCreate('topAvoidHeight', h);

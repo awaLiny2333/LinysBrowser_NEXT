@@ -64,6 +64,7 @@ import { extension_id_for_path } from '../../processes/extension_actions';
 @Component
 struct meowAppSettings {
   @StorageLink('showing_my_window_alias') showing_my_window_alias: boolean = false;
+  @StorageLink('showing_my_window_alias_non_tablet') showing_my_window_alias_non_tablet: boolean = false;
   @StorageLink('showing_large_my_window_alias') showing_large_my_window_alias: boolean = false;
   @StorageLink('windowIds') windowIds: string[] = [];
   @StorageLink('free_window_mode') free_window_mode: boolean = false;
@@ -86,21 +87,6 @@ struct meowAppSettings {
   @StorageLink('color_current_secondary') @Watch('on_color_change') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') @Watch('on_color_change') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @StorageLink('color_current_back') @Watch('on_color_change') color_current_back: ResourceColor = $r('app.color.font_color_title');
-  // Generals
-  @LocalStorageProp('screen_width') screen_width: number = 0;
-  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
-  // Information
-  @State versionName: string = "Version Name";
-  @State versionNo: number = 0;
-  @State buildTime: string = BuildProfile.linysBuildTime;
-  @State history_length: number = this.bunch_of_history.get_history_this_month().length;
-  // Segment Button Options
-  @State title_bar_position_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
-    buttons: [{ text: '  󰀐  ' }, { text: '  󰃐  ' }],
-    selectedBackgroundColor: this.color_current_back,
-    selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
-    selectedFontWeight: FontWeight.Medium
-  })
   @State tabs_style_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [{ text: $r('app.string.Settings_appearance_tabs_style_vertical') },
       { text: $r('app.string.Settings_appearance_tabs_style_horizontal') }],
@@ -130,6 +116,21 @@ struct meowAppSettings {
   })
   @State left_or_right_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [{ text: '󰃊' }, { text: '󰈱' }],
+    selectedBackgroundColor: this.color_current_back,
+    selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
+    selectedFontWeight: FontWeight.Medium
+  })
+  // Generals
+  @LocalStorageProp('screen_width') screen_width: number = 0;
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
+  // Information
+  @State versionName: string = "Version Name";
+  @State versionNo: number = 0;
+  @State buildTime: string = BuildProfile.linysBuildTime;
+  @State history_length: number = this.bunch_of_history.get_history_this_month().length;
+  // Segment Button Options
+  @State title_bar_position_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
+    buttons: [{ text: '  󰀐  ' }, { text: '  󰃐  ' }],
     selectedBackgroundColor: this.color_current_back,
     selectedFontColor: this.effects ? this.color_current_font : this.color_current_primary,
     selectedFontWeight: FontWeight.Medium
@@ -164,6 +165,29 @@ struct meowAppSettings {
   @StorageLink('disable_image') disable_image: boolean = true;
   @StorageLink('disable_image_these_sites') disable_image_these_sites: string[] = [];
   @StorageLink('disable_image_all_sites') disable_image_all_sites: boolean = false;
+  image_manage_control: CustomDialogController = new CustomDialogController({
+    builder: woofGeneralManage({
+      general_switch: this.disable_image,
+      sites_list: this.disable_image_these_sites,
+      all_sites_switch: this.disable_image_all_sites,
+      descriptions: [
+        $r('app.string.Settings_image_desc_1'),
+        $r('app.string.Settings_image_desc_2'),
+        $r('app.string.Settings_image_desc_3')],
+      tips: $r('app.string.Settings_image_already_disabled'),
+      title: $r('app.string.Settings_image_manage'),
+      switch_desc: $r('app.string.Settings_image_disable_image'),
+      subtitle_sites_list: $r('app.string.Settings_image_some_sites'),
+      subtitle_all_sites: $r('app.string.Settings_image_all_sites'),
+      switch_id: 'disable_image',
+      sites_list_id: 'disable_image_these_sites',
+      switch_all_sites_id: 'disable_image_all_sites',
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 26,
+    // showInSubWindow: true,
+    width: "90%",
+  });
   @StorageLink('continuation_auto_exit') continuation_auto_exit: boolean = false;
   @StorageLink('continuation_auto_close_tab') continuation_auto_close_tab: boolean = true;
   // Downloads
@@ -237,29 +261,6 @@ struct meowAppSettings {
       switch_id: 'disable_js',
       sites_list_id: 'disable_js_these_sites',
       switch_all_sites_id: 'disable_js_all_sites',
-    }),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 26,
-    // showInSubWindow: true,
-    width: "90%",
-  });
-  image_manage_control: CustomDialogController = new CustomDialogController({
-    builder: woofGeneralManage({
-      general_switch: this.disable_image,
-      sites_list: this.disable_image_these_sites,
-      all_sites_switch: this.disable_image_all_sites,
-      descriptions: [
-        $r('app.string.Settings_image_desc_1'),
-        $r('app.string.Settings_image_desc_2'),
-        $r('app.string.Settings_image_desc_3')],
-      tips: $r('app.string.Settings_image_already_disabled'),
-      title: $r('app.string.Settings_image_manage'),
-      switch_desc: $r('app.string.Settings_image_disable_image'),
-      subtitle_sites_list: $r('app.string.Settings_image_some_sites'),
-      subtitle_all_sites: $r('app.string.Settings_image_all_sites'),
-      switch_id: 'disable_image',
-      sites_list_id: 'disable_image_these_sites',
-      switch_all_sites_id: 'disable_image_all_sites',
     }),
     alignment: DialogAlignment.Center,
     cornerRadius: 26,
@@ -834,6 +835,25 @@ struct meowAppSettings {
                       bunch_of_settings.set('status_showing_my_windows_alias', this.showing_my_window_alias);
                     }
                   }) // Enable show my_window_alias
+
+                  linysSwitchWithText({
+                    text: $r('app.string.Settings_appearance_status_showing_my_windows_alias_non_tablet'),
+                    toggle_state: this.showing_my_window_alias_non_tablet,
+                    onExecution: () => {
+                      bunch_of_settings.set('status_showing_my_windows_alias_non_tablet', this.showing_my_window_alias_non_tablet);
+                    }
+                  }) // Enable show my_window_alias for non tablets
+
+                  linysText({ text: $r('app.string.Settings_appearance_windows_alias_position') })
+                    .opacity(this.showing_my_window_alias || this.showing_my_window_alias_non_tablet ? 1 : 0.5)
+                    .animation(animation_default())
+                  SegmentButton({
+                    options: this.my_window_alias_position_tabOptions,
+                    selectedIndexes: this.my_window_alias_position_selected
+                  }) // Position of my_window_alias
+                    .opacity(this.showing_my_window_alias || this.showing_my_window_alias_non_tablet ? 1 : 0.5)
+                    .animation(animation_default())
+
                   linysSwitchWithText({
                     text: $r('app.string.Settings_appearance_status_showing_large_my_window_alias'),
                     toggle_state: this.showing_large_my_window_alias,
@@ -841,15 +861,6 @@ struct meowAppSettings {
                       bunch_of_settings.set('status_showing_large_my_window_alias', this.showing_large_my_window_alias);
                     }
                   }) // Enable show large my_window_alias
-                  linysText({ text: $r('app.string.Settings_appearance_windows_alias_position') })
-                    .opacity(this.showing_my_window_alias ? 1 : 0.5)
-                    .animation(animation_default())
-                  SegmentButton({
-                    options: this.my_window_alias_position_tabOptions,
-                    selectedIndexes: this.my_window_alias_position_selected
-                  }) // Position of my_window_alias
-                    .opacity(this.showing_my_window_alias ? 1 : 0.5)
-                    .animation(animation_default())
                 } // Windows
 
                 settingsSubCard({

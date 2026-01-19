@@ -7,11 +7,11 @@
         "material": {
           "certpath": "C:\\Users\\meowDUO\\.ohos\\config\\default_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001B86CE942EEAFA1D6B178C53B9EF9AC682C336BA4575D6B911D5150BE22A5AD897C7E5B1CD2812B4",
+          "keyPassword": "0000001ACD2D907B3145A424219B0E898DB9ACBF2ED6AD04B06AD2818BEC3255D190455A74BE66F8B15D",
           "profile": "C:\\Users\\meowDUO\\.ohos\\config\\default_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "C:\\Users\\meowDUO\\.ohos\\config\\default_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.p12",
-          "storePassword": "0000001BFF61A92F46162C2E5220A3DCB08A6328D9CE4FB5D6F68B94A67CE7284237F019841192779A7F22"
+          "storePassword": "0000001AC7340C581722AA92584CBCA917A75F8A191229000430FA0F9143F834C31E47DD6A2DB76C5CE1"
         }
       }
     ],

@@ -158,7 +158,11 @@
     },
     {
       "name": "Settings_appearance_status_showing_my_windows_alias",
-      "value": "Show window title"
+      "value": "Show window title \uDB82\uDC3B / \uDB82\uDD42"
+    },
+    {
+      "name": "Settings_appearance_status_showing_my_windows_alias_non_tablet",
+      "value": "Show window title \uDB80\uDFB3"
     },
     {
       "name": "Settings_appearance_status_showing_large_my_window_alias",
@@ -861,7 +865,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "ZONES!"
+      "value": "Happy Neow Year! Thank you for your love and support!!"
     },
     {
       "name": "Whats_new_content_extra",

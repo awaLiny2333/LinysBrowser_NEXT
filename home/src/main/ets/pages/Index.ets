@@ -41,10 +41,11 @@ struct Index {
   @StorageLink('showing_large_my_window_alias') showing_large_my_window_alias: boolean = false;
   @LocalStorageLink('is_zone') @Watch('on_is_zone_changed') is_zone: boolean = false;
   @LocalStorageLink('my_window_id') my_window_id: string = '';
+  storage: LocalStorage = storage_of_id(this.my_window_id);
   @LocalStorageLink('my_windowClass') my_windowClass: window.Window | undefined = undefined;
   @LocalStorageLink('my_window_alias') my_window_alias: string = '';
   @StorageLink('showing_my_window_alias') @Watch('on_showing_my_window_alias_change') showing_my_window_alias: boolean = false;
-  storage: LocalStorage = storage_of_id(this.my_window_id);
+  @StorageLink('showing_my_window_alias_non_tablet') @Watch('on_showing_my_window_alias_change') showing_my_window_alias_non_tablet: boolean = false;
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   /**
@@ -58,8 +59,16 @@ struct Index {
   @LocalStorageLink('topAvoidHeight') topAvoidHeight: number = 1;
   @LocalStorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
   @LocalStorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
-  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageLink('tablet_mode') @Watch('on_showing_my_window_alias_change') tablet_mode: boolean = false;
   @LocalStorageLink('compact_mode') compact_mode: boolean = false; // Like PuraX
+  woofHistory_control: CustomDialogController = new CustomDialogController({
+    builder: woofHistory({
+      full_view: this.compact_mode
+    }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: 26,
+    width: "90%",
+  });
   @LocalStorageLink('screen_width') screen_width: number = 0;
   @LocalStorageLink('screen_height') screen_height: number = 0;
   @LocalStorageProp('pin_to_top') pin_to_top: boolean = false;
@@ -133,14 +142,6 @@ struct Index {
     alignment: DialogAlignment.Center,
     cornerRadius: 26,
     // showInSubWindow: true,
-    width: "90%",
-  });
-  woofHistory_control: CustomDialogController = new CustomDialogController({
-    builder: woofHistory({
-      full_view: this.compact_mode
-    }),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 26,
     width: "90%",
   });
   Zones_control: CustomDialogController = new CustomDialogController({
@@ -256,7 +257,7 @@ struct Index {
               })
             } // Window control buttons
             .id('window_controls_left')
-            .padding({ top: this.showing_my_window_alias ? 9 : 5, left: 5 })
+            .padding({ top: this.showing_my_window_alias_summarized() ? 9 : 5, left: 5 })
             .alignRules({ top: { anchor: '__container__', align: VerticalAlign.Top }, left: { anchor: '__container__', align: HorizontalAlign.Start } })
           }
 
@@ -267,7 +268,7 @@ struct Index {
               left: !this.tablet_mode ? { anchor: '__container__', align: HorizontalAlign.Start } : { anchor: 'window_controls_left', align: HorizontalAlign.End },
               right: !this.tablet_mode ? { anchor: '__container__', align: HorizontalAlign.End } : { anchor: 'window_controls_right', align: HorizontalAlign.Start }
             })
-            .visibility(this.showing_my_window_alias ? Visibility.Visible : Visibility.Hidden)
+            .visibility(this.showing_my_window_alias_summarized() ? Visibility.Visible : Visibility.Hidden)
             .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
 
           if (this.free_window_mode) {
@@ -288,7 +289,7 @@ struct Index {
 
             } // Window control buttons
             .id('window_controls_right')
-            .padding({ top: this.showing_my_window_alias ? 9 : 5, right: Math.max(15, this.windowDecorWidth) - 15 })
+            .padding({ top: this.showing_my_window_alias_summarized() ? 9 : 5, right: Math.max(15, this.windowDecorWidth) - 15 })
             .alignRules({ top: { anchor: '__container__', align: VerticalAlign.Top }, right: { anchor: '__container__', align: HorizontalAlign.End } })
           }
         } // Top Bar Avoid (Title)
@@ -591,6 +592,17 @@ struct Index {
     })
   }
 
+  showing_my_window_alias_summarized() {
+    if (this.tablet_mode) {
+      return this.showing_my_window_alias;
+    } else {
+      return this.showing_my_window_alias_non_tablet;
+    }
+  }
+
+  /**
+   * Updates the window decor height.
+   * */
   on_showing_my_window_alias_change() {
     update_window_decor_height(this.my_window_id);
   }
@@ -649,7 +661,7 @@ struct Index {
       return 0;
     }
     let tablet_mode_compensation = 0;
-    if (!this.tablet_mode && this.showing_my_window_alias) {
+    if (!this.tablet_mode && this.showing_my_window_alias_summarized()) {
       tablet_mode_compensation = 28;
     }
     return this.topAvoidHeight + tablet_mode_compensation;

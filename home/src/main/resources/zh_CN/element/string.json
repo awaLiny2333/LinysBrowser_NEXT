@@ -162,7 +162,11 @@
     },
     {
       "name": "Settings_appearance_status_showing_my_windows_alias",
-      "value": "显示窗口标题"
+      "value": "显示窗口标题 \uDB82\uDC3B / \uDB82\uDD42"
+    },
+    {
+      "name": "Settings_appearance_status_showing_my_windows_alias_non_tablet",
+      "value": "显示窗口标题 \uDB80\uDFB3"
     },
     {
       "name": "Settings_appearance_status_showing_large_my_window_alias",
@@ -862,7 +866,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "工作区！"
+      "value": "新年快乐喵！感谢大家的爱与支持！！"
     },
     {
       "name": "Whats_new_content_extra",
