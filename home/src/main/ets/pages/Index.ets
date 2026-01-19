@@ -14,7 +14,7 @@ import lazy {
   new_window,
   pin_to_top,
   update_window_decor_height,
-  window_index_of_id,
+  window_index_of_id
 } from '../utils/ui_tools';
 import { change_window_alias, last_storage, run_time, storage_of_id } from '../utils/ui_tools';
 import lazy { off_zone, set_zone } from '../processes/zone_actions';
@@ -73,6 +73,8 @@ struct Index {
   @LocalStorageLink('screen_height') screen_height: number = 0;
   @LocalStorageProp('pin_to_top') pin_to_top: boolean = false;
   @LocalStorageLink('full_screen_height') full_screen_height: number = 0;
+  @LocalStorageLink('fullscreen_mode_immersive') fullscreen_mode_immersive: boolean = true;
+  @State hover_on_minicons: boolean = false;
   @LocalStorageLink('fullscreen_mode') @Watch('on_fullscreen_switch') fullscreen_mode: boolean = false;
   @StorageLink('currentColorMode') @Watch('on_color_mode_change') current_color_mode: number = 0;
   /**
@@ -189,6 +191,7 @@ struct Index {
           // Keyboard shortcuts
           Row() {
             Row().keyboardShortcut(this.bunch_of_key_shortcuts.fullscreen.main_key, this.bunch_of_key_shortcuts.fullscreen.modifier, () => {
+              this.fullscreen_mode_immersive = true;
               this.fullscreen_mode = !this.fullscreen_mode;
               this.showing_more_options = false;
             })
@@ -388,6 +391,56 @@ struct Index {
               title_bar_alignRules: this.title_bar_alignRules,
             })
           } // Title Bar
+
+          if (!this.fullscreen_mode_immersive && this.fullscreen_mode) {
+            Row({ space: 7 }) {
+              Row() {
+                linysText({
+                  text: '  󰖴  '
+                })
+              }
+              .backdropBlur(this.hover_on_minicons ? 40 : 0)
+              .animation(animation_default())
+              .height('100%')
+              .borderWidth(1)
+              .borderColor(this.color_current_back)
+              .borderRadius(13)
+              .hoverEffect(HoverEffect.Highlight)
+
+              Row()
+                .backdropBlur(this.hover_on_minicons ? 40 : 0)
+                .animation(animation_default())
+                .height('100%')
+                .width(111)
+                .borderWidth(1)
+                .borderColor(this.color_current_back)
+                .borderRadius(13)
+            }
+            .height(26)
+            .alignRules({
+              top: { anchor: '__container__', align: VerticalAlign.Top },
+              right: { anchor: '__container__', align: HorizontalAlign.End }
+            })
+            .translate({ y: this.showing_my_window_alias_summarized() ? 9 : 5, x: -19 })
+            .onHover((e) => {
+              this.hover_on_minicons = e;
+            })
+            .onTouch((event: TouchEvent) => {
+              if (event.type === TouchType.Down) {
+                try {
+                  if (canIUse('SystemCapability.Window.SessionManager') && this.my_windowClass) {
+                    this.my_windowClass.startMoving().then(() => {
+                      console.info('wnd Succeeded in starting moving window');
+                    }).catch((err: BusinessError) => {
+                      console.error(`Failed to start moving. Cause code: ${err.code}, message: ${err.message}`);
+                    });
+                  }
+                } catch (exception) {
+                  console.error(`Failed to start moving. Cause code: ${exception.code}, message: ${exception.message}`);
+                }
+              }
+            })
+          }
         } // Web, progress, and Title bar
         .onAreaChange((o, n) => {
           this.on_main_area_change(o, n);
@@ -555,12 +608,23 @@ struct Index {
   on_fullscreen_switch() {
     window.getLastWindow(this.getUIContext().getHostContext()).then((win) => {
       if (this.fullscreen_mode) {
+        /**
+         * ENTER FULLSCREEN
+         * */
         console.info(`[on_fullscreen_switch] FULLSCREEN ON!`);
         if (this.free_window_mode) {
-          win.maximize().catch((e: BusinessError) => {
-            console.error(`[on_fullscreen_switch][maximize] Failed: ${e}`);
-          });
+          console.log(`[on_fullscreen_switch][free] this.fullscreen_mode_immersive = ${this.fullscreen_mode_immersive}`);
+          if (this.fullscreen_mode_immersive) {
+            win.maximize().catch((e: BusinessError) => {
+              console.error(`[on_fullscreen_switch][maximize] Failed: ${e}`);
+            })
+          } else {
+            win.recover().catch((e: BusinessError) => {
+              console.error(`[on_fullscreen_switch][recover] Failed: ${e}`);
+            });
+          }
         }
+
         win.enableLandscapeMultiWindow().catch((e: BusinessError) => {
           console.error(`[on_fullscreen_switch][enableLandscapeMultiWindow] Failed: ${e}`);
         });
@@ -572,7 +636,11 @@ struct Index {
         } catch (e) {
           console.error(`[on_fullscreen_switch][setWindowTitleButtonVisible] Failed: ${e}`);
         }
+
       } else {
+        /**
+         * EXIT FULLSCREEN
+         * */
         console.info(`[on_fullscreen_switch] FULLSCREEN OFF! `);
         win.recover().catch((e: BusinessError) => {
           console.error(`[on_fullscreen_switch][recover] Failed: ${e}`);

@@ -553,7 +553,7 @@ struct toast {
       })
     }
     .useEffect(this.effects, EffectType.WINDOW_EFFECT)
-    .backgroundColor(this.color_current_font)
+    .backgroundColor(this.effects ? undefined : this.color_current_font)
     .height(this.show ? undefined : 0)
     .width(this.show ? undefined : 0)
     .padding(this.show ? 15 : 0)

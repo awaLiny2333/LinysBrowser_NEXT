@@ -1129,6 +1129,14 @@
       "value": "返回以退出全屏模式"
     },
     {
+      "name": "fullscreen_select_window",
+      "value": "窗口全屏"
+    },
+    {
+      "name": "fullscreen_select_full",
+      "value": "沉浸全屏"
+    },
+    {
       "name": "Key_shortcuts_fullscreen",
       "value": "切换全屏模式"
     },

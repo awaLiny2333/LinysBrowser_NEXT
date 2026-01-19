@@ -1127,6 +1127,15 @@
       "name": "fullscreen_notice",
       "value": "Press Back to Exit Fullscreen"
     },
+
+    {
+      "name": "fullscreen_select_window",
+      "value": "Windowed"
+    },
+    {
+      "name": "fullscreen_select_full",
+      "value": "Immersive"
+    },
     {
       "name": "Key_shortcuts_fullscreen",
       "value": "Toggle fullscreen"

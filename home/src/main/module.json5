@@ -83,8 +83,9 @@
             ]
           }
         ],
-        "minWindowHeight": 260,
-        "minWindowWidth": 360
+        "minWindowHeight": 198,
+        "minWindowWidth": 352
+        // 16:9
       }
     ],
     "extensionAbilities": [

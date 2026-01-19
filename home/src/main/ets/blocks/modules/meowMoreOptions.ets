@@ -60,6 +60,7 @@ struct meowMoreOptions {
   @StorageLink('DEV_MODE') DEV_MODE: boolean = false;
   @StorageLink('free_window_mode') free_window_mode: boolean = false;
   @LocalStorageLink('fullscreen_mode') fullscreen_mode: boolean = false;
+  @LocalStorageLink('fullscreen_mode_immersive') fullscreen_mode_immersive: boolean = true;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @LocalStorageLink('compact_mode') compact_mode: boolean = false; // Like PuraX
   // Settings
@@ -294,6 +295,38 @@ struct meowMoreOptions {
         this.EasyList_control.open();
       }
     })
+  }
+
+  // Save menu
+  @Builder
+  FullscreenMenu() {
+    Menu() {
+      MenuItem({
+        content: $r('app.string.fullscreen_select_window'),
+      })
+        .onClick(() => {
+          if (this.free_window_mode) {
+            this.fullscreen_mode_immersive = false;
+            this.fullscreen_mode = !this.fullscreen_mode;
+            this.showing_more_options = false;
+          } else {
+            // do nothing
+          }
+        })
+        .opacity(this.free_window_mode ? 1 : 0.5)
+      MenuItem({
+        content: $r('app.string.fullscreen_select_full'),
+      })
+        .onClick(() => {
+          setTimeout(() => {
+            this.fullscreen_mode_immersive = true;
+            this.fullscreen_mode = !this.fullscreen_mode;
+            this.showing_more_options = false;
+          }, 200)
+        })
+    }
+    .fontColor(this.color_current_font)
+    .backgroundColor(this.color_current_primary)
   }
 
   build() {
@@ -636,10 +669,11 @@ struct meowMoreOptions {
                   'sys.symbol.arrow_up_left_and_arrow_down_right',
                 can_hover: true,
               })// FullScreen
-                .onClick(() => {
-                  this.fullscreen_mode = !this.fullscreen_mode;
-                  this.showing_more_options = false;
-                })
+                .bindMenu(this.FullscreenMenu)
+              // .onClick(() => {
+              //   this.fullscreen_mode = !this.fullscreen_mode;
+              //   this.showing_more_options = false;
+              // })
             } // Small buttons
             .justifyContent(FlexAlign.End)
           } // Buttons
@@ -757,7 +791,11 @@ struct meowMoreOptions {
         ext.is_being_viewed = true;
         this.showing_ext_node_controller?.update(ext);
         console.log(`[Extension][${ext.name}][${ext.id}] LoadUrl: [${ext.path_full + '/' + ext.action_default_popup}]`);
-        ext.controller.loadUrl(ext.path_full + '/' + ext.action_default_popup);
+        try {
+          ext.controller.loadUrl(ext.path_full + '/' + ext.action_default_popup);
+        } catch (error) {
+          console.error(`[Extension][${ext.name}][${ext.id}] LoadUrl: [${ext.path_full + '/' + ext.action_default_popup}] Failed: [${error}]`);
+        }
         // Show
         this.showing_more_options = false;
         console.log(`[Extension][${ext.name}][${ext.id}] Button clicked ~ Attached Extension Web to [${this.my_window_id}]`);
