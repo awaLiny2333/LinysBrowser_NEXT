@@ -331,7 +331,7 @@ export function enter_free_window_mode(windowClass: window.Window, storage: Loca
   }
   try {
     windowClass.on('windowTitleButtonRectChange', (titleButtonRect) => {
-      console.log(`[enter_free_window_mode][windowTitleButtonRectChange] ${titleButtonRect}`);
+      // console.log(`[enter_free_window_mode][windowTitleButtonRectChange] ${titleButtonRect}`);
       if (storage.get('windowDecorHeight') as number != titleButtonRect.height) {
         storage.setOrCreate('windowDecorHeight', titleButtonRect.height);
       }
