@@ -400,9 +400,10 @@ struct Index {
                   text: '  󰖴  '
                 })
               }
-              .backdropBlur(this.is_Hov_window ? 40 : 0)
-              .borderColor(this.is_Hov_window ? this.color_current_back : 'transparent')
-              .shadow(this.is_Hov_window ? { radius: 10, color: $r('sys.color.comp_background_secondary') } : { radius: 0 })
+              .backdropBlur(this.is_Hov_window && this.effects ? 40 : 0)
+              .backgroundColor(this.effects || !this.is_Hov_window ? 'transparent' : this.color_current_secondary)
+              .borderColor(this.is_Hov_window && this.effects ? this.color_current_back : 'transparent')
+              .shadow(this.is_Hov_window && this.effects ? { radius: 10, color: $r('sys.color.comp_background_secondary') } : { radius: 0 })
               .animation(animation_default())
               .borderWidth(1)
               .height('100%')
@@ -410,9 +411,10 @@ struct Index {
               .hoverEffect(HoverEffect.Highlight)
 
               Row()
-                .backdropBlur(this.is_Hov_window ? 40 : 0)
-                .borderColor(this.is_Hov_window ? this.color_current_back : 'transparent')
-                .shadow(this.is_Hov_window ? { radius: 10, color: $r('sys.color.comp_background_secondary') } : { radius: 0 })
+                .backdropBlur(this.is_Hov_window && this.effects ? 40 : 0)
+                .backgroundColor(this.effects || !this.is_Hov_window ? 'transparent' : this.color_current_secondary)
+                .borderColor(this.is_Hov_window && this.effects ? this.color_current_back : 'transparent')
+                .shadow(this.is_Hov_window && this.effects ? { radius: 10, color: $r('sys.color.comp_background_secondary') } : { radius: 0 })
                 .animation(animation_default())
                 .borderWidth(1)
                 .height('100%')
