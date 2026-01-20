@@ -194,6 +194,11 @@ struct Index {
               this.fullscreen_mode = !this.fullscreen_mode;
               this.showing_more_options = false;
             })
+            Row().keyboardShortcut(this.bunch_of_key_shortcuts.windowed_fullscreen.main_key, this.bunch_of_key_shortcuts.windowed_fullscreen.modifier, () => {
+              this.fullscreen_mode_immersive = false;
+              this.fullscreen_mode = !this.fullscreen_mode;
+              this.showing_more_options = false;
+            })
             Row().keyboardShortcut(this.bunch_of_key_shortcuts.print.main_key, this.bunch_of_key_shortcuts.print.modifier, () => {
               if (is_some_dialogs_opened(this.storage)) {
                 return;
@@ -389,7 +394,7 @@ struct Index {
           } // Title Bar
 
           if (!this.fullscreen_mode_immersive && this.fullscreen_mode) {
-            Row({ space: 5 }) {
+            Row({ space: 7 }) {
               Row() {
                 linysText({
                   text: '  󰖴  '
@@ -604,6 +609,8 @@ struct Index {
    * */
   on_fullscreen_switch() {
     window.getLastWindow(this.getUIContext().getHostContext()).then((win) => {
+      let update_window_decor_height_timeout = 0;
+
       if (this.fullscreen_mode) {
         /**
          * ENTER FULLSCREEN
@@ -615,10 +622,21 @@ struct Index {
             win.maximize().catch((e: BusinessError) => {
               console.error(`[on_fullscreen_switch][maximize] Failed: ${e}`);
             })
+            try {
+              win.setWindowTitleButtonVisible(false, false, false);
+            } catch (e) {
+              console.error(`[on_fullscreen_switch][setWindowTitleButtonVisible] Failed: ${e}`);
+            }
           } else {
-            win.recover().catch((e: BusinessError) => {
-              console.error(`[on_fullscreen_switch][recover] Failed: ${e}`);
-            });
+            try {
+              if (win.getWindowStatus() == window.WindowStatusType.MAXIMIZE) {
+                win.recover().catch((e: BusinessError) => {
+                  console.error(`[on_fullscreen_switch][recover] Failed: ${e}`);
+                });
+              }
+            } catch (error) {
+              console.error(`[on_fullscreen_switch][recover] Failed: ${error}`);
+            }
           }
         }
 
@@ -628,20 +646,18 @@ struct Index {
         win.setWindowSystemBarEnable([]).catch((e: BusinessError) => {
           console.error(`[on_fullscreen_switch][setWindowSystemBarEnable] Failed: ${e}`);
         });
-        try {
-          win.setWindowTitleButtonVisible(false, false, false);
-        } catch (e) {
-          console.error(`[on_fullscreen_switch][setWindowTitleButtonVisible] Failed: ${e}`);
-        }
 
       } else {
         /**
          * EXIT FULLSCREEN
          * */
         console.info(`[on_fullscreen_switch] FULLSCREEN OFF! `);
-        win.recover().catch((e: BusinessError) => {
-          console.error(`[on_fullscreen_switch][recover] Failed: ${e}`);
-        });
+        if (this.fullscreen_mode_immersive) {
+          win.recover().catch((e: BusinessError) => {
+            console.error(`[on_fullscreen_switch][recover] Failed: ${e}`);
+          });
+          update_window_decor_height_timeout = 200;
+        }
         win.disableLandscapeMultiWindow().catch((e: BusinessError) => {
           console.error(`[on_fullscreen_switch][enableLandscapeMultiWindow] Failed: ${e}`);
         });
@@ -654,7 +670,10 @@ struct Index {
           console.error(`[on_fullscreen_switch][setWindowTitleButtonVisible] Failed: ${e}`);
         }
       }
-      update_window_decor_height(this.my_window_id);
+
+      setTimeout(() => {
+        update_window_decor_height(this.my_window_id);
+      }, update_window_decor_height_timeout) // THIS IS SB
     })
   }
 

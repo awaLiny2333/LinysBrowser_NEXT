@@ -1169,6 +1169,10 @@
       "value": "View zones"
     },
     {
+      "name": "Key_shortcuts_windowed_fullscreen",
+      "value": "Windowed fullscreen"
+    },
+    {
       "name": "Homepage_background",
       "value": "Background"
     },

@@ -1169,6 +1169,10 @@
       "value": "工作区概览"
     },
     {
+      "name": "Key_shortcuts_windowed_fullscreen",
+      "value": "窗口化全屏"
+    },
+    {
       "name": "Homepage_background",
       "value": "背景"
     },

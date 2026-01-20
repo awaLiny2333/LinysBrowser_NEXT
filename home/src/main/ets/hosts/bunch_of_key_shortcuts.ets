@@ -24,15 +24,16 @@ export class bunch_of_key_shortcuts {
   pin_to_top: key_combination = new key_combination('p', [ModifierKey.ALT]);
   save_page: key_combination = new key_combination('s', [ModifierKey.CTRL]);
   view_zones: key_combination = new key_combination('z', [ModifierKey.ALT]);
+  windowed_fullscreen: key_combination = new key_combination(FunctionKey.F11, [ModifierKey.SHIFT]);
   // Lists
   key_shortcut_labels =
     ['new_tab', 'close_tab', 'show_tabs', 'focus_address', 'in_page_search',
       'fullscreen', 'history', 'refresh', 'print', 'new_window',
-      'pin_to_top', 'save_page', 'view_zones'];
+      'pin_to_top', 'save_page', 'view_zones', 'windowed_fullscreen'];
   key_shortcut_combinations =
     [this.new_tab, this.close_tab, this.show_tabs, this.focus_address, this.in_page_search,
       this.fullscreen, this.history, this.refresh, this.print, this.new_window,
-      this.pin_to_top, this.save_page, this.view_zones];
+      this.pin_to_top, this.save_page, this.view_zones, this.windowed_fullscreen];
   last_edit: number = 0;
 
   /**

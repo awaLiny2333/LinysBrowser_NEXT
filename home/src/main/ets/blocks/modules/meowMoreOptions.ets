@@ -591,6 +591,7 @@ struct meowMoreOptions {
                     this.Extensions_control.open();
                   })
               }
+
               linysSymbol({
                 symbol_glyph_target: 'sys.symbol.save',
                 can_hover: true,
@@ -670,10 +671,7 @@ struct meowMoreOptions {
                 can_hover: true,
               })// FullScreen
                 .bindMenu(this.FullscreenMenu)
-              // .onClick(() => {
-              //   this.fullscreen_mode = !this.fullscreen_mode;
-              //   this.showing_more_options = false;
-              // })
+
             } // Small buttons
             .justifyContent(FlexAlign.End)
           } // Buttons
