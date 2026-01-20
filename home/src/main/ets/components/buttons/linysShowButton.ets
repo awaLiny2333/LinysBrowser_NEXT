@@ -9,6 +9,7 @@ struct linysShowButton {
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @StorageLink('color_current_back') color_current_back: ResourceColor = $r('app.color.font_color_title');
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   // Statuses
   @Prop show: boolean = false;
   @Prop symbol_glyph_target: string = "sys.symbol.square_grid_2x2";
@@ -36,7 +37,7 @@ struct linysShowButton {
         .animation(animation_default())
     }
     .brightness(this.isHov ? 1.1 : 1)
-    .padding(this.show ? 5 : 4)
+    .padding(this.show ? 5 : (this.tablet_mode ? 4 : 3.5))
     .margin(this.show ? this.show_margin : 0)
     .backgroundColor(this.show ? (this.color_false == "" ? this.color_current_back : this.color_false) : "transparent")
     .animation(animation_default())

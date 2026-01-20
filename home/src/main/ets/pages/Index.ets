@@ -295,7 +295,6 @@ struct Index {
             .alignRules({ top: { anchor: '__container__', align: VerticalAlign.Top }, right: { anchor: '__container__', align: HorizontalAlign.End } })
           }
         } // Top Bar Avoid (Title)
-        // .backgroundColor(this.background_color())
         .height(this.height_of_top_avoid())
         .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
         .padding({
@@ -305,8 +304,6 @@ struct Index {
         .clip(true)
         .width('100%')
 
-        // Scroll() {
-        //   Column() {
         RelativeContainer() {
           Row() {
             if (this.delayed_load_p3) {

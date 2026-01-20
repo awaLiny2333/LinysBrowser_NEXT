@@ -4,6 +4,7 @@ import { animation_default, click_effect_default, fontSize_Icon_Button } from '.
 @Component
 struct linysSymbol {
   @Prop symbol_glyph_target: string = 'sys.symbol.arrow_left';
+  @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   // Colors
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Status
@@ -23,7 +24,7 @@ struct linysSymbol {
       .fontColor([this.color == "" ? this.color_current_font : this.color])
       .brightness(this.isHov ? 1.1 : 1)
       .animation(animation_default())
-      .padding(this.can_hover ? 5 : 0)
+      .padding(this.can_hover ? (this.tablet_mode ? 5 : 3.5) : 0)
       .borderRadius(this.can_hover ? this.radius : 0)
       .clickEffect(click_effect_default())
       .onHover((isHv) => {

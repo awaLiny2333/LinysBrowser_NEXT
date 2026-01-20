@@ -681,7 +681,7 @@
     },
     {
       "name": "Settings_experience_manage_adblock_rules_desc_3",
-      "value": "Long press a rule file to select. After entering selecting mode, tap on other rule files to multi-select."
+      "value": "Long press / right click a rule file to select. After entering selecting mode, tap on other rule files to multi-select."
     },
     {
       "name": "Settings_experience_manage_adblock_rules_active",
@@ -713,7 +713,7 @@
     },
     {
       "name": "General_select_guide",
-      "value": "Long press a domain to select. After entering selecting mode, tap on other domains to multi-select."
+      "value": "Long press / right click a domain to select. After entering selecting mode, tap on other domains to multi-select."
     },
     {
       "name": "Have_a_Nice_Surf",
@@ -725,7 +725,7 @@
     },
     {
       "name": "History_desc_2",
-      "value": "Long press a record to select. After entering selecting mode, tap on other records to multi-select."
+      "value": "Long press / right click a record to select. After entering selecting mode, tap on other records to multi-select."
     },
     {
       "name": "History_search",

@@ -682,7 +682,7 @@
     },
     {
       "name": "Settings_experience_manage_adblock_rules_desc_3",
-      "value": "长按一条规则文件以开始选择，进入选择模式后点击其他规则文件就可以多选。"
+      "value": "长按／右键一条规则文件以开始选择，进入选择模式后点击其他规则文件就可以多选。"
     },
     {
       "name": "Settings_experience_manage_adblock_rules_active",
@@ -714,7 +714,7 @@
     },
     {
       "name": "General_select_guide",
-      "value": "长按一条域名以开始选择，进入选择模式后点击其他域名就可以多选。"
+      "value": "长按／右键一条域名以开始选择，进入选择模式后点击其他域名就可以多选。"
     },
     {
       "name": "Have_a_Nice_Surf",
@@ -726,7 +726,7 @@
     },
     {
       "name": "History_desc_2",
-      "value": "长按一条记录以开始选择，进入选择模式后点击其他记录就可以多选。"
+      "value": "长按／右键一条记录以开始选择，进入选择模式后点击其他记录就可以多选。"
     },
     {
       "name": "History_search",

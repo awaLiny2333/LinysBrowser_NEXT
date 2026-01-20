@@ -10,7 +10,7 @@ import {
   minimum_card_width,
   url_default_blank
 } from '../../hosts/bunch_of_defaults';
-import { ItemRestriction, SegmentButton, SegmentButtonOptions, SegmentButtonTextItem } from '@ohos.arkui.advanced.SegmentButton';
+import { ItemRestriction, SegmentButton, SegmentButtonOptions, SegmentButtonTextItem } from '@kit.ArkUI';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { bunch_of_history } from '../../hosts/bunch_of_history';
 import {
