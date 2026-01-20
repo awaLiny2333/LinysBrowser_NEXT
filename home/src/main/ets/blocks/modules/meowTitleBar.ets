@@ -553,10 +553,13 @@ struct meowTitleBar {
       right: this.rightAvoidWidth
     })
     .onAreaChange((_o, n) => {
-      if (!(this.showing_more_options && (this.current_in_page_searching_stats_total <= 0)) && !this.is_search_input_typing && !this.showing_app_settings &&
-        !this.showing_downloads && !this.showing_scratching_board) {
-        this.bar_height = n.height as number;
-        console.log(`[meowTitleBar][onAreaChange] bar_height: ${this.bar_height}`);
+      if (!(this.showing_more_options && (this.current_in_page_searching_stats_total <= 0))) {
+        if (!this.is_search_input_typing && !this.showing_app_settings && !this.showing_downloads && !this.showing_scratching_board) {
+          if (this.bar_height != n.height as number) {
+            this.bar_height = n.height as number;
+            console.log(`[meowTitleBar][onAreaChange] bar_height: ${this.bar_height}`);
+          }
+        }
       }
     })
     .offset({

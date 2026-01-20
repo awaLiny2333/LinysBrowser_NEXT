@@ -82,7 +82,9 @@ struct meowTabsVertical {
       .layoutWeight(1)
       .animation(animation_default())
       .onAreaChange((_o, n) => {
-        this.scroll_area_height = n.height as number;
+        if (this.scroll_area_height != n.height as number) {
+          this.scroll_area_height = n.height as number;
+        }
       })
 
       Column({ space: 10 }) {

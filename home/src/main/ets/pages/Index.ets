@@ -476,7 +476,9 @@ struct Index {
     .useEffect(this.effects, EffectType.WINDOW_EFFECT)
     .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
     .onAreaChange((_o, n) => {
-      this.full_screen_height = n.height as number;
+      if (this.full_screen_height != n.height as number) {
+        this.full_screen_height = n.height as number;
+      }
     })
     .onAppear(() => {
       // Set window title

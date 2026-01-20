@@ -105,10 +105,12 @@ struct meowBookmarks {
       .layoutWeight(1)
       .margin({ bottom: 10 })
       .onAreaChange((_o, n) => {
-        this.scroll_area_height = n.height as number;
-        // Update height of scroll area
-        // So that bookmark buttons will know if they are out of visible area
-        // and reduce their appearance animation time.
+        if (this.showing_bookmarks) {
+          this.scroll_area_height = n.height as number;
+          // Update height of scroll area
+          // So that bookmark buttons will know if they are out of visible area
+          // and reduce their appearance animation time.
+        }
       })
 
       // .nestedScroll({ scrollForward: NestedScrollMode.SELF_ONLY, scrollBackward: NestedScrollMode.SELF_ONLY })

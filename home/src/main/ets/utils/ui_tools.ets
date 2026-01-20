@@ -331,8 +331,14 @@ export function enter_free_window_mode(windowClass: window.Window, storage: Loca
   }
   try {
     windowClass.on('windowTitleButtonRectChange', (titleButtonRect) => {
-      storage.setOrCreate('windowDecorHeight', titleButtonRect.height);
-      storage.setOrCreate('windowDecorWidth', titleButtonRect.width);
+      console.log(`[enter_free_window_mode][windowTitleButtonRectChange] ${titleButtonRect}`);
+      if (storage.get('windowDecorHeight') as number != titleButtonRect.height) {
+        storage.setOrCreate('windowDecorHeight', titleButtonRect.height);
+      }
+      if (storage.get('windowDecorWidth') as number != titleButtonRect.width) {
+        storage.setOrCreate('windowDecorWidth', titleButtonRect.width);
+      }
+      // storage.setOrCreate('windowDecorWidth', titleButtonRect.width);
     })
   } catch (e) {
     console.error('[free][enter_free_window_mode] 3 Failed: ' + e);
