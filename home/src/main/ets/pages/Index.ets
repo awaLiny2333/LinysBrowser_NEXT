@@ -400,20 +400,22 @@ struct Index {
                 })
               }
               .backdropBlur(this.hover_on_minicons ? 40 : 0)
+              .borderColor(this.hover_on_minicons ? this.color_current_back : 'transparent')
+              .shadow(this.hover_on_minicons ? { radius: 10, color: $r('sys.color.comp_background_secondary') } : { radius: 0 })
               .animation(animation_default())
-              .height('100%')
               .borderWidth(1)
-              .borderColor(this.color_current_back)
+              .height('100%')
               .borderRadius(13)
               .hoverEffect(HoverEffect.Highlight)
 
               Row()
                 .backdropBlur(this.hover_on_minicons ? 40 : 0)
+                .borderColor(this.hover_on_minicons ? this.color_current_back : 'transparent')
+                .shadow(this.hover_on_minicons ? { radius: 10, color: $r('sys.color.comp_background_secondary') } : { radius: 0 })
                 .animation(animation_default())
-                .height('100%')
-                .width(111)
                 .borderWidth(1)
-                .borderColor(this.color_current_back)
+                .height('100%')
+                .width(120)
                 .borderRadius(13)
             }
             .height(26)
@@ -421,7 +423,7 @@ struct Index {
               top: { anchor: '__container__', align: VerticalAlign.Top },
               right: { anchor: '__container__', align: HorizontalAlign.End }
             })
-            .translate({ y: this.showing_my_window_alias_summarized() ? 9 : 5, x: -19 })
+            .translate({ y: this.showing_my_window_alias_summarized() ? 9 : 5, x: -14 })
             .onHover((e) => {
               this.hover_on_minicons = e;
             })
