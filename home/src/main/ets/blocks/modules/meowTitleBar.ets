@@ -1008,18 +1008,19 @@ struct ThisPageInfo {
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // UI
+  @LocalStorageLink('compact_mode') compact_mode: boolean = false;
   @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
   @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
   @LocalStorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
 
   build() {
-    Row({ space: 5 }) {
+    Row({ space: this.compact_mode ? 0 : 5 }) {
       Column() {
         Text(this.current_title)
+          .fontColor(this.color_current_font)
           .animation(animation_default())
           .borderRadius(5)
           .padding(2.5)
-          .fontColor(this.color_current_font)
           .fontWeight(FontWeight.Bold)
           .fontSize(fontSize_Large())
           .maxLines(2)
@@ -1031,10 +1032,11 @@ struct ThisPageInfo {
           .hoverEffect(HoverEffect.Highlight)
 
         Text(this.current_url)
+          .fontColor(this.color_current_font)
+          .visibility(this.compact_mode ? Visibility.None : Visibility.Visible)
           .animation(animation_default())
           .borderRadius(5)
           .padding(2.5)
-          .fontColor(this.color_current_font)
           .fontWeight(FontWeight.Bold)
           .fontSize(fontSize_Normal())
           .opacity(0.7)
@@ -1053,9 +1055,10 @@ struct ThisPageInfo {
         .onClick(() => {
           share_link(this.current_url, this.current_title, this.getUIContext().getHostContext()!);
         })
+
     } // Title Bar for This Page Info display
     .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
-    .visibility(this.current_in_page_searching_stats_total <= 0 && this.showing_more_options && !this.showing_scratching_board
+    .visibility(this.current_in_page_searching_stats_total <= 0 && this.showing_more_options && !this.showing_scratching_board && !this.compact_mode
       ? Visibility.Visible : Visibility.None)
     .animation(animation_default())
     .padding({ left: 15, right: 15, top: 6 })

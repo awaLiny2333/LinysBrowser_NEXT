@@ -10,6 +10,7 @@ import { storage_of_id } from '../../utils/ui_tools';
 import lazy { fileIo } from '@kit.CoreFileKit';
 import lazy { webview } from '@kit.ArkWeb';
 import linysFileNameErrorDisplay from '../../components/linysFileNameErrorDisplay';
+import { copy } from '../../utils/clipboard_tools';
 
 @CustomDialog
 struct woofWantDownload {
@@ -58,15 +59,20 @@ struct woofWantDownload {
   }
 
   build() {
-    Column({ space: 15 }) {
+    Column({ space: 12 }) {
       linysTextTitle({ text: $r('app.string.Index_downloads_prompt') })// prompt
         .width("100%")
 
-      linysText({ text: this.from, max_lines: 10 }) // from website // TODO: This is technically with flaw
+      linysText({ text: this.from, max_lines: 10, can_hover: true }) // from website // TODO: This is technically with flaw
         .width("100%")
         .opacity(0.9)
         .visibility(!this.showing_additional_info ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
+        .clickEffect(click_effect_default())
+        .onClick(() => {
+          copy(this.from);
+        })
+        .translate({ x: -5 })
 
       additionalInfoDisplay({
         my_additional_info: this.try_additional_info

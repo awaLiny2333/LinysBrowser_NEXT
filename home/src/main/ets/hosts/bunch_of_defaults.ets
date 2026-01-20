@@ -144,6 +144,9 @@ export function default_new_window_name(): string {
  * @returns A number, in vp.
  * */
 export function default_window_decor_height(windowStorage: LocalStorage): number {
+  if (windowStorage.get('fullscreen_mode') as boolean) {
+    return 58;
+  }
   let tablet_mode = windowStorage.get('tablet_mode') as boolean;
   if (tablet_mode) {
     return (AppStorage.get('showing_my_window_alias') as boolean) ? 45 : 37;

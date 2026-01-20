@@ -74,7 +74,6 @@ struct Index {
   @LocalStorageProp('pin_to_top') pin_to_top: boolean = false;
   @LocalStorageLink('full_screen_height') full_screen_height: number = 0;
   @LocalStorageLink('fullscreen_mode_immersive') fullscreen_mode_immersive: boolean = true;
-  @State hover_on_minicons: boolean = false;
   @LocalStorageLink('fullscreen_mode') @Watch('on_fullscreen_switch') fullscreen_mode: boolean = false;
   @StorageLink('currentColorMode') @Watch('on_color_mode_change') current_color_mode: number = 0;
   /**
@@ -100,7 +99,7 @@ struct Index {
   @StorageLink('bottom_avoid') bottom_avoid: boolean = true;
   @LocalStorageLink('shortcut_scroll_offset') shortcut_scroll_offset: number = 0;
   @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
-  @State is_Hov_watermark: boolean = false;
+  @State is_Hov_window: boolean = false;
   @LocalStorageLink('is_Hov_vertical_tabs') is_Hov_vertical_tabs: boolean = false;
   /**
    * Delay */
@@ -393,40 +392,37 @@ struct Index {
           } // Title Bar
 
           if (!this.fullscreen_mode_immersive && this.fullscreen_mode) {
-            Row({ space: 7 }) {
+            Row({ space: 5 }) {
               Row() {
                 linysText({
                   text: '  󰖴  '
                 })
               }
-              .backdropBlur(this.hover_on_minicons ? 40 : 0)
-              .borderColor(this.hover_on_minicons ? this.color_current_back : 'transparent')
-              .shadow(this.hover_on_minicons ? { radius: 10, color: $r('sys.color.comp_background_secondary') } : { radius: 0 })
+              .backdropBlur(this.is_Hov_window ? 40 : 0)
+              .borderColor(this.is_Hov_window ? this.color_current_back : 'transparent')
+              .shadow(this.is_Hov_window ? { radius: 10, color: $r('sys.color.comp_background_secondary') } : { radius: 0 })
               .animation(animation_default())
               .borderWidth(1)
               .height('100%')
-              .borderRadius(13)
+              .borderRadius(15)
               .hoverEffect(HoverEffect.Highlight)
 
               Row()
-                .backdropBlur(this.hover_on_minicons ? 40 : 0)
-                .borderColor(this.hover_on_minicons ? this.color_current_back : 'transparent')
-                .shadow(this.hover_on_minicons ? { radius: 10, color: $r('sys.color.comp_background_secondary') } : { radius: 0 })
+                .backdropBlur(this.is_Hov_window ? 40 : 0)
+                .borderColor(this.is_Hov_window ? this.color_current_back : 'transparent')
+                .shadow(this.is_Hov_window ? { radius: 10, color: $r('sys.color.comp_background_secondary') } : { radius: 0 })
                 .animation(animation_default())
                 .borderWidth(1)
                 .height('100%')
                 .width(120)
-                .borderRadius(13)
-            }
-            .height(26)
+                .borderRadius(15)
+            } // Windowed fullscreen control
+            .height(30)
             .alignRules({
               top: { anchor: '__container__', align: VerticalAlign.Top },
               right: { anchor: '__container__', align: HorizontalAlign.End }
             })
-            .translate({ y: this.showing_my_window_alias_summarized() ? 9 : 5, x: -14 })
-            .onHover((e) => {
-              this.hover_on_minicons = e;
-            })
+            .translate({ y: 14, x: -14 })
             .onTouch((event: TouchEvent) => {
               if (event.type === TouchType.Down) {
                 try {
@@ -466,14 +462,11 @@ struct Index {
           .fontWeight(FontWeight.Bold)
           .fontColor(this.color_current_font)
           .hitTestBehavior(HitTestMode.Transparent)
-          .opacity(this.on_focus || this.is_Hov_watermark ? 0 : 0.5)
+          .opacity(this.on_focus || this.is_Hov_window || this.fullscreen_mode ? 0 : 0.5)
           .animation(animation_default())
           .textAlign(TextAlign.Center)
           .height("100%")
           .width("100%")
-          .onHover((h) => {
-            this.is_Hov_watermark = h;
-          })
       }
     }
     .alignContent(Alignment.Center)
@@ -491,6 +484,9 @@ struct Index {
       update_window_decor_height(this.my_window_id);
 
       this.delayed_loading();
+    })
+    .onHover((h) => {
+      this.is_Hov_window = h;
     })
   }
 
@@ -606,6 +602,8 @@ struct Index {
 
   /**
    * Hides and shows system UI components.
+   *
+   * Also sets the title bar height.
    * */
   on_fullscreen_switch() {
     window.getLastWindow(this.getUIContext().getHostContext()).then((win) => {
@@ -659,6 +657,7 @@ struct Index {
           console.error(`[on_fullscreen_switch][setWindowTitleButtonVisible] Failed: ${e}`);
         }
       }
+      update_window_decor_height(this.my_window_id);
     })
   }
 
