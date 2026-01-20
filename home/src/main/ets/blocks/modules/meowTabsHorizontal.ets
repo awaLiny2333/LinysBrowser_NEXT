@@ -245,7 +245,6 @@ struct HorizontalTabButton {
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
-  @State isHov: boolean = false;
 
   build() {
     Row({ space: 5 }) {
@@ -315,8 +314,8 @@ struct HorizontalTabButton {
     })
     .backgroundColor(this.color_current_primary)
     .opacity(this.tab_restore_on_creations[this.index] ? 0.5 : 1)
-    .brightness(this.isHov ? 1.1 : 1)
     .animation(animation_default())
+    .hoverEffect(HoverEffect.Highlight)
     .onAppear(() => {
       setTimeout(() => {
         this.offset_y = 0;
@@ -336,9 +335,6 @@ struct HorizontalTabButton {
     .alignItems(VerticalAlign.Center)
     .onClick(() => {
       this.uni_tab_button_clicked = this.index;
-    })
-    .onHover((isHv) => {
-      this.isHov = isHv;
     })
   }
 

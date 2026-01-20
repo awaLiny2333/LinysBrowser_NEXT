@@ -205,10 +205,10 @@ struct bookmarkItem {
   // Basic this properties
   @Prop my_index: number = 0;
   @Prop my_parent_path: string;
-  @State my_item: bookmark = this.viewing_contents[this.my_index];
-  @State my_type: string = this.my_item.get_type();
-  @State my_label: string = this.my_item.get_label();
-  @State my_link: string = this.my_type == "bookmark" ? this.my_item.get_link() : "";
+  my_item: bookmark = this.viewing_contents[this.my_index];
+  my_type: string = this.my_item.get_type();
+  my_label: string = this.my_item.get_label();
+  my_link: string = this.my_type == "bookmark" ? this.my_item.get_link() : "";
   bookmark_height_default: number = 42;
   // Animations statuses
   @State pressing: boolean = false;

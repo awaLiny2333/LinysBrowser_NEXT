@@ -7,7 +7,7 @@ import lazy { getCPU_sync, getNativeHeapSize_sync } from '../../utils/performanc
 
 @Component
 struct meowDebug {
-  @State data: string[] = ['pss', 'vss', 'shared dirty', 'private dirty', 'cpu', 'native heap', 'vram'];
+  data: string[] = ['pss', 'vss', 'shared dirty', 'private dirty', 'cpu', 'native heap', 'vram'];
   @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
@@ -130,7 +130,6 @@ struct dataBoard {
   loop_execution?: () => void;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @Prop loop_time: number = 1000;
-  @State is_hov: boolean = false;
 
   build() {
     Row({ space: 10 }) {
@@ -150,7 +149,6 @@ struct dataBoard {
       }
       .alignItems(HorizontalAlign.Start)
     }
-    .brightness(this.is_hov ? 1.1 : 1)
     .animation(animation_default())
     .clickEffect(click_effect_default())
     .padding(10)
@@ -164,8 +162,6 @@ struct dataBoard {
         }
       }, this.loop_time)
     })
-    .onHover((ish) => {
-      this.is_hov = ish;
-    })
+    .hoverEffect(HoverEffect.Highlight)
   }
 }

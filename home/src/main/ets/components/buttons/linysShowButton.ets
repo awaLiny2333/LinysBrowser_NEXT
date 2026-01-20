@@ -18,7 +18,6 @@ struct linysShowButton {
   @Prop text: ResourceStr = $r('app.string.Index_tabs_title');
   // UI
   show_margin: Padding | number = { left: 5, right: 5 }
-  @State isHov: boolean = false;
 
   build() {
     Row() {
@@ -36,14 +35,11 @@ struct linysShowButton {
         .visibility(this.show ? Visibility.Visible : Visibility.None)
         .animation(animation_default())
     }
-    .brightness(this.isHov ? 1.1 : 1)
+    .hoverEffect(HoverEffect.Highlight)
     .padding(this.show ? 5 : (this.tablet_mode ? 4 : 3.5))
     .margin(this.show ? this.show_margin : 0)
     .backgroundColor(this.show ? (this.color_false == "" ? this.color_current_back : this.color_false) : "transparent")
     .animation(animation_default())
-    .onHover((isHv) => {
-      this.isHov = isHv;
-    })
     .clip(true)
     .borderRadius(10)
     .clickEffect(click_effect_default())

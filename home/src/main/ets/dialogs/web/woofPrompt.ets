@@ -6,9 +6,9 @@ import { capsule_bar_height } from '../../hosts/bunch_of_defaults';
 
 @CustomDialog
 struct woofPrompt {
-  @State title: ResourceStr = 'Title Meow';
-  @State message: ResourceStr = 'Message Meow';
-  @State value: string = 'Value Meow';
+  @State title: ResourceStr = 'Title Meow'; // @Param
+  @State message: ResourceStr = 'Message Meow'; // @Param
+  @State value: string = 'Value Meow'; // @Param
   @Link promptResult: string;
   single_line: boolean = false;
   controller: CustomDialogController;

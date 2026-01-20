@@ -40,10 +40,8 @@ struct meowTitleBar {
   @LocalStorageLink('fullscreen_mode') fullscreen_mode: boolean = false;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @LocalStorageLink('compact_mode') compact_mode: boolean = false; // Like PuraX
-  @LocalStorageProp('screen_width') screen_width: number = 0;
-  @LocalStorageProp('screen_height') screen_height: number = 0;
   @LocalStorageLink('full_screen_height') full_screen_height: number = 0;
-  @Link bar_height: number;
+  @LocalStorageLink('title_bar_height') title_bar_height: number = 0;
   @LocalStorageLink('topAvoidHeight') topAvoidHeight: number = 1;
   @LocalStorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
   @LocalStorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
@@ -555,9 +553,9 @@ struct meowTitleBar {
     .onAreaChange((_o, n) => {
       if (!(this.showing_more_options && (this.current_in_page_searching_stats_total <= 0))) {
         if (!this.is_search_input_typing && !this.showing_app_settings && !this.showing_downloads && !this.showing_scratching_board) {
-          if (this.bar_height != n.height as number) {
-            this.bar_height = n.height as number;
-            console.log(`[meowTitleBar][onAreaChange] bar_height: ${this.bar_height}`);
+          if (this.title_bar_height != n.height as number) {
+            this.title_bar_height = n.height as number;
+            console.log(`[meowTitleBar][onAreaChange] bar_height: ${this.title_bar_height}`);
           }
         }
       }
@@ -836,7 +834,7 @@ struct meowTitleBar {
     if (this.need_full_screen_extent_area()) {
       return 0;
     }
-    return direction * 1.1 * this.bar_height;
+    return direction * 1.1 * this.title_bar_height;
   }
 
   top_title_bar_spacing() {

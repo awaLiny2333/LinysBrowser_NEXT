@@ -20,7 +20,6 @@ struct meowSEManager {
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // UI
   @StorageLink('bunch_of_search_engines_update') bunch_of_search_engines_update: number = 0;
-  @State isHov: boolean = false;
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // execution
@@ -48,7 +47,6 @@ struct meowSEManager {
         }
         .backgroundColor(this.is_pressing_default_card ? this.color_current_font : this.color_current_primary)
         .useEffect(this.effects, EffectType.WINDOW_EFFECT)
-        .brightness(this.isHov ? 1.1 : 1)
         .animation(animation_default())
         .width("100%")
         .height("100%")
@@ -84,9 +82,7 @@ struct meowSEManager {
       })
       .height(46)
       .animation(animation_default())
-      .onHover((isHv) => {
-        this.isHov = isHv;
-      })
+      .hoverEffect(HoverEffect.Highlight)
 
       ForEach(this.bunch_of_search_engines_update ? bunch_of_search_engines.list_of_search_engines : [], (_se: search_engine, key: number) => {
         meowSECardItem({
@@ -125,7 +121,7 @@ struct meowSECardItem {
   @StorageLink('search_engine_selected') selected_index: number = -1;
   // Data
   @Prop my_index: number;
-  @State my_se: search_engine = bunch_of_search_engines.list_of_search_engines[this.my_index];
+  my_se: search_engine = bunch_of_search_engines.list_of_search_engines[this.my_index];
   @State my_label: string = this.my_se.label;
   @State my_content: string = this.my_se.url;
   // UI

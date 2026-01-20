@@ -12,8 +12,8 @@ struct woofCookies {
   controller: CustomDialogController;
   // Environment
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
-  @LocalStorageProp('current_url') current_url: string = "=￣ω￣=";
-  @State domain_url: string = this.get_domain_url(this.current_url);
+  @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
+  domain_url: string = this.get_domain_url(this.current_url);
   @StorageLink('effects') effects: boolean = false;
   @LocalStorageLink('compact_mode') compact_mode: boolean = false;
   // UI
@@ -228,7 +228,7 @@ export default woofCookies;
 
 @Component
 struct Cookie {
-  @State text: string = "qwq";
+  text: string = "qwq";
   @Prop index: number;
   // Color
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');

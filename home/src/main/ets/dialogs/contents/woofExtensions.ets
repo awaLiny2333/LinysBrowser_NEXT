@@ -22,7 +22,7 @@ struct woofExtensions {
   @StorageLink('bunch_of_extensions') bunch_of_extensions: bunch_of_extensions = new bunch_of_extensions();
   // Status
   @LocalStorageLink('screen_height') screen_height: number = 0;
-  @LocalStorageProp('screen_width') screen_width: number = 0;
+  @LocalStorageLink('screen_width') screen_width: number = 0;
   @LocalStorageLink('compact_mode') compact_mode: boolean = false;
   @State notice_height: number = 35;
   @StorageLink('installing_extension') installing_extension: boolean = false;

@@ -16,8 +16,6 @@ struct meowColorsManager {
   @StorageLink('color_dark_primary') color_dark_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_dark_secondary') color_dark_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_dark_font') color_dark_font: ResourceColor = $r('app.color.font_color_title');
-  // Color editing
-  @State delete_confirm: number = 0;
 
   build() {
     Column({ space: 10 }) {
@@ -102,8 +100,8 @@ export default meowColorsManager;
 @Component
 struct colorBlock {
   @Link @Watch('on_color_set') color: ResourceColor;
-  @State color_theme_id: string = 'color_light_font';
-  @State my_color_mode: number = 0;
+  @State color_theme_id: string = 'color_light_font'; // @Param
+  @State my_color_mode: number = 0; // @Param
   @StorageLink('currentColorMode') current_color_mode: number = 0;
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   woofColorSelect_control: CustomDialogController = new CustomDialogController({

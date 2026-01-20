@@ -587,8 +587,8 @@ struct bookmarkItem {
   @Prop parent_path: string;
   @Prop height_of_panel: number;
   // Me
-  @State item: bookmark = this.viewing_contents[this.my_index];
-  @State my_type: string = this.item.get_type();
+  item: bookmark = this.viewing_contents[this.my_index];
+  my_type: string = this.item.get_type();
   @State my_label: string = this.item.get_label();
   @State my_link: string = this.item.get_link();
   // Settings / Accessibility

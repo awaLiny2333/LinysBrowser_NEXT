@@ -121,13 +121,12 @@ struct meowAppSettings {
     selectedFontWeight: FontWeight.Medium
   })
   // Generals
-  @LocalStorageProp('screen_width') screen_width: number = 0;
+  @LocalStorageLink('screen_width') screen_width: number = 0;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   // Information
   @State versionName: string = "Version Name";
   @State versionNo: number = 0;
-  @State buildTime: string = BuildProfile.linysBuildTime;
-  @State history_length: number = this.bunch_of_history.get_history_this_month().length;
+  buildTime: string = BuildProfile.linysBuildTime;
   // Segment Button Options
   @State title_bar_position_tabOptions: SegmentButtonOptions = SegmentButtonOptions.tab({
     buttons: [{ text: '  󰀐  ' }, { text: '  󰃐  ' }],
@@ -1421,8 +1420,6 @@ struct meowAppSettings {
       // Close panel
       this.on_panel_close();
     }
-    // Get length properties
-    this.history_length = this.bunch_of_history.get_history_this_month().length;
   }
 
   on_panel_open() {
@@ -1791,7 +1788,7 @@ struct menuScrollHorizontal {
   @Link on_index_first: number;
   @Link on_index_last: number;
   @Link scroll_to_gateway: number;
-  @State menu_text: string[] = [];
+  @State menu_text: string[] = []; // @Param
   // Colors
   @StorageLink('color_current_back') color_current_back: ResourceColor = $r('app.color.font_color_title');
 
@@ -1846,7 +1843,7 @@ struct menuScrollVertical {
   @Link on_index_first: number;
   @Link on_index_last: number;
   @Link scroll_to_gateway: number;
-  @State menu_text: string[] = [];
+  @State menu_text: string[] = []; // @Param
   @State button_Lengths: number[] = new Array(this.menu_text.length).fill(0);
   // Colors
   @StorageLink('color_current_back') color_current_back: ResourceColor = $r('app.color.font_color_title');
@@ -1935,7 +1932,7 @@ struct menuScrollVertical {
 // @Reusable
 @Component
 struct menuItem {
-  @State my_index: number = 0;
+  @State my_index: number = 0; // @Param
   @State my_text: ResourceStr = "";
   @Link on_index_first: number;
   @Link on_index_last: number;
@@ -1944,8 +1941,6 @@ struct menuItem {
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   @StorageLink('effects') effects: boolean = false;
-  // UI
-  @State isHov: boolean = false;
 
   build() {
     Row() {
@@ -1954,16 +1949,13 @@ struct menuItem {
           ? this.color_current_secondary : this.color_current_font)
         .fontSize(fontSize_Large() - 2)
     }
-    .brightness(this.isHov ? 1.1 : 1)
+    .animation(animation_default())
     .clickEffect(click_effect_default())
     .padding(7)
-    .animation(animation_default())
+    .hoverEffect(HoverEffect.Highlight)
     .onClick(() => {
       this.scroll_to_gateway = -1;
       this.scroll_to_gateway = this.my_index;
-    })
-    .onHover((isHv) => {
-      this.isHov = isHv;
     })
   }
 }

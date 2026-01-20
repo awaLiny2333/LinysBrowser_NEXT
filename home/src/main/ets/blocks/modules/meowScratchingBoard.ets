@@ -22,7 +22,6 @@ struct meowScratchingBoard {
   // UI
   @State show_feed_prompt: boolean = true;
   @State area_height: number = 200;
-  @LocalStorageProp('screen_height') screen_height: number = 0;
   @State only_links: boolean = false;
   // Processed data
   @State extracted_data: string[] = [];
@@ -141,12 +140,12 @@ export default meowScratchingBoard;
 @Component
 struct data_display {
   @Link showing_scratching_board: boolean;
-  @State text: string = "meow";
-  @State type: string = "text";
-  @State downloadable: boolean = false;
-  @State download_filename: string = '';
+  text: string = "meow";
+  type: string = "text";
+  downloadable: boolean = this.type == 'url' ? is_downloadable(this.text)[0] as boolean : false;
+  download_filename: string = this.type == 'url' ? is_downloadable(this.text)[1] as string : '';
   @State image_size: string = "233x233";
-  @State index: number = 0;
+  index: number = 0;
   @State offset_y: number = 50;
   @State this_visibility: Visibility = Visibility.Hidden;
   // Settings - Accessibility
@@ -156,7 +155,7 @@ struct data_display {
   storage: LocalStorage = storage_of_id(this.my_window_id);
   @LocalStorageLink('universal_new_tab_gateway') new_tab_gateway: (string | boolean)[] = ['', false];
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
-  @LocalStorageProp('screen_width') screen_width: number = 0;
+  @LocalStorageLink('screen_width') screen_width: number = 0;
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
@@ -166,14 +165,6 @@ struct data_display {
   copied_timeout_id: number | undefined = undefined;
   @State image_height: number = 0;
   @State image_width: number = 0;
-  @State isHov: boolean = false;
-
-  aboutToAppear(): void {
-    if (this.type == 'url') {
-      this.downloadable = is_downloadable(this.text)[0] as boolean;
-      this.download_filename = is_downloadable(this.text)[1] as string;
-    }
-  }
 
   // Save menu
   @Builder
@@ -210,8 +201,12 @@ struct data_display {
             })
             .id('image')
             .onAreaChange((_o, n) => {
-              this.image_height = n.height as number;
-              this.image_width = n.width as number;
+              if (this.image_height != n.height as number) {
+                this.image_height = n.height as number;
+              }
+              if (this.image_width != n.width as number) {
+                this.image_width = n.width as number;
+              }
             })
 
           Scroll() {
@@ -331,8 +326,8 @@ struct data_display {
     .width(this.type == 'image' ? undefined : "100%")
     .visibility(this.this_visibility)
     .offset({ y: this.offset_y })
-    .brightness(this.isHov ? 1.04 : 1)
     .animation(animation_default())
+    .hoverEffect(HoverEffect.Highlight)
     .onAppear(() => {
       setTimeout(() => {
         this.offset_y = 0;
@@ -342,9 +337,6 @@ struct data_display {
     .clickEffect(click_effect_default())
     .onClick(() => {
       this.default_action();
-    })
-    .onHover((isHv) => {
-      this.isHov = isHv;
     })
   }
 

@@ -130,7 +130,7 @@ struct goodByeLink {
   @Prop color: ResourceColor;
   @Prop max_lines: number = 1;
   @Prop font_weight: FontWeight = FontWeight.Regular;
-  @State link: string = "huawei.com";
+  @State link: string = "huawei.com"; // @Param
   @LocalStorageLink('universal_new_tab_gateway') universal_new_tab_gateway: (string | boolean)[] = ['', false];
   // This is for status noticing
   @Link meow: boolean;

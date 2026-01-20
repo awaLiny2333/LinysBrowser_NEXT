@@ -14,12 +14,11 @@ import lazy woofQR from '../contents/woofQR';
 struct woofHistory {
   @StorageLink('bunch_of_history') bunch_of_history: bunch_of_history = new bunch_of_history(true);
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
-  @State scroll_area_height: number = 0;
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Interactions
   @State viewing_year: number = this.bunch_of_history.get_current_year();
   @State viewing_month: number = this.bunch_of_history.get_current_month();
-  @State full_view: boolean = false;
+  @State full_view: boolean = false; // @Param
   @LocalStorageLink('compact_mode') compact_mode: boolean = false;
   // Dates
   @State available_months: number[][] = bunch_of_history.get_history_months();
@@ -226,9 +225,6 @@ struct woofHistory {
             } // Main history list
             .scrollable(ScrollDirection.Vertical)
             .edgeEffect(EdgeEffect.Spring)
-            .onAreaChange((_o, n) => {
-              this.scroll_area_height = n.height as number;
-            })
             .align(Alignment.Top)
             .layoutWeight(1)
             .width("100%")
@@ -258,9 +254,6 @@ struct woofHistory {
             } // Available months
             .scrollable(ScrollDirection.Horizontal)
             .edgeEffect(EdgeEffect.Spring)
-            .onAreaChange((_o, n) => {
-              this.scroll_area_height = n.height as number;
-            })
             .padding(5)
             .align(Alignment.Start)
             .width("100%")
@@ -671,14 +664,14 @@ struct SearchInput {
 
 @Component
 struct LinysSelection {
-  @State descs: ResourceStr[] = [$r('app.string.History_search_label'), $r('app.string.History_search_link'), $r('app.string.History_search_both_link_and_label')];
-  @State icons: Resource[] = [$r('sys.symbol.label'), $r('sys.symbol.paperclip'), $r('sys.symbol.pawprint')];
-  @State app_storage_link_id: string = 'woofHistory_filter';
+  @State descs: ResourceStr[] = [$r('app.string.History_search_label'), $r('app.string.History_search_link'), $r('app.string.History_search_both_link_and_label')]; // @Param
+  @State icons: Resource[] = [$r('sys.symbol.label'), $r('sys.symbol.paperclip'), $r('sys.symbol.pawprint')]; // @Param
+  @State app_storage_link_id: string = 'woofHistory_filter'; // @Param
   @State index: number = 2;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   // Options
-  @State space: number = 8;
-  @State arrowPosition: ArrowPosition = ArrowPosition.END;
+  space: number = 8;
+  arrowPosition: ArrowPosition = ArrowPosition.END;
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');

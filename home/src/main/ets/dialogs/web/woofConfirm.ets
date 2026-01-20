@@ -16,7 +16,7 @@ struct woofConfirm {
   // Actions
   title: ResourceStr = '';
   desc: string = '';
-  @State desc_edit: string = ''; // To fool the TextArea
+  @State desc_edit: string = ''; // To fool the TextArea // wtf
   onConfirm?: () => void;
   onDeny?: () => void;
 

@@ -3,7 +3,7 @@ import { animation_default, click_effect_default } from '../../hosts/bunch_of_de
 
 @Component
 struct ManageListElement {
-  @State text: string = "huawei.com";
+  @State text: string = "huawei.com"; // @Param
   @Prop index: number;
   @Link selected: boolean[];
   @Link selected_number: number;

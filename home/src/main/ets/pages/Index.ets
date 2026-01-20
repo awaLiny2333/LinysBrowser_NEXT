@@ -71,7 +71,7 @@ struct Index {
   });
   @LocalStorageLink('screen_width') screen_width: number = 0;
   @LocalStorageLink('screen_height') screen_height: number = 0;
-  @LocalStorageProp('pin_to_top') pin_to_top: boolean = false;
+  @LocalStorageLink('pin_to_top') pin_to_top: boolean = false;
   @LocalStorageLink('full_screen_height') full_screen_height: number = 0;
   @LocalStorageLink('fullscreen_mode_immersive') fullscreen_mode_immersive: boolean = true;
   @LocalStorageLink('fullscreen_mode') @Watch('on_fullscreen_switch') fullscreen_mode: boolean = false;
@@ -91,7 +91,7 @@ struct Index {
   /**
    * UI params */
   @StorageLink('effects') @Watch('on_effects_change') effects: boolean = false;
-  @State title_bar_height: number = 0;
+  @LocalStorageLink('title_bar_height') title_bar_height: number = 0;
   @State title_bar_alignRules: AlignRuleOption = {
     middle: { anchor: "__container__", align: HorizontalAlign.Center },
     bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
@@ -388,7 +388,6 @@ struct Index {
               .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
 
             meowTitleBar({
-              bar_height: this.title_bar_height,
               title_bar_alignRules: this.title_bar_alignRules,
             })
           } // Title Bar
@@ -399,6 +398,7 @@ struct Index {
                 linysText({
                   text: '  󰖴  '
                 })
+                  .opacity(this.on_focus ? 1 : 0.4)
               }
               .backdropBlur(this.is_Hov_window && this.effects ? 40 : 0)
               .backgroundColor(this.effects || !this.is_Hov_window ? 'transparent' : this.color_current_secondary)

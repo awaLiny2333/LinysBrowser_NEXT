@@ -4,7 +4,7 @@ import linysText from './texts/linysText';
 @Component
 struct linysPathTree {
   @Link @Watch('on_current_viewing_path_change') current_viewing_path: string;
-  @LocalStorageProp('screen_height') screen_height: number = 100;
+  @LocalStorageLink('screen_height') screen_height: number = 100;
   @Prop max_height_screen_percentage: number = 0.4;
   @State path_stack: string[] = [];
   @State label_stack: string[] = [];
@@ -13,7 +13,6 @@ struct linysPathTree {
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Colors
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @State isHov: boolean = false;
 
   build() {
     Scroll(this.scroller) {
@@ -21,7 +20,6 @@ struct linysPathTree {
         Row() {
           linysText({ text: " 󰀧 ", font_weight: FontWeight.Bold });
         }
-        .brightness(this.isHov ? 1.1 : 1)
         .backgroundColor(this.color_current_secondary)
         .animation(animation_default())
         .borderRadius(10)
@@ -30,9 +28,7 @@ struct linysPathTree {
         .onClick(() => {
           this.current_viewing_path = "";
         })
-        .onHover((isHv) => {
-          this.isHov = isHv;
-        })
+        .hoverEffect(HoverEffect.Highlight)
 
         ForEach(this.label_stack, (item: string, index: number) => {
           linysPathButton({
@@ -88,23 +84,19 @@ struct linysPathButton {
   @Link current_viewing_path: string;
   // Colors
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
-  @State isHov: boolean = false;
 
   build() {
     Row() {
       linysText({ text: this.label });
     }
-    .brightness(this.isHov ? 1.1 : 1)
     .backgroundColor(this.color_current_secondary)
     .animation(animation_default())
+    .hoverEffect(HoverEffect.Highlight)
     .borderRadius(10)
     .padding(10)
     .clickEffect(click_effect_default())
     .onClick(() => {
       this.current_viewing_path = this.my_directory;
-    })
-    .onHover((isHv) => {
-      this.isHov = isHv;
     })
   }
 }

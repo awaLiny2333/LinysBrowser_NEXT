@@ -17,18 +17,17 @@ struct woofWantDownload {
   controller: CustomDialogController;
   @LocalStorageLink('my_window_id') my_window_id: string = '';
   storage: LocalStorage = storage_of_id(this.my_window_id);
-  @State from: string = '';
-  @State @Watch('refresh') file_name: string = '';
-  @State url: string = '';
-  @State try_additional_info: string[] = [];
-  @State item: webview.WebDownloadItem | undefined = undefined;
+  @State from: string = ''; // @Param
+  @State @Watch('refresh') file_name: string = ''; // @Param
+  @State url: string = ''; // @Param
+  @State try_additional_info: string[] = []; // @Param
+  @State item: webview.WebDownloadItem | undefined = undefined; // @Param
   @State error_code: number = 0;
   // Params
   @State file_dir: string = '';
   @State download_target_path: string = '';
   // UI
   @State showing_additional_info: boolean = false;
-  @State showing_illegal_chars: boolean = false;
   // Hosts
   @StorageLink('bunch_of_downloads') bunch_of_downloads: bunch_of_downloads = new bunch_of_downloads();
   // Colors

@@ -19,24 +19,24 @@ struct woofGeneralManage {
   @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @State add_site_edit: string = "";
-  @State showing_add_panel: boolean = false;
+  @State showing_add_panel: boolean = false; // @Param
   @StorageLink('effects') effects: boolean = false;
   @LocalStorageLink('compact_mode') compact_mode: boolean = false;
   // Generals
   @Link general_switch: boolean;
   @Link all_sites_switch: boolean;
   @Link sites_list: string[];
-  @State descriptions: ResourceStr[] = [];
-  @State tips: ResourceStr = '';
-  @State title: ResourceStr = '';
-  @State switch_desc: ResourceStr = '';
-  @State subtitle_sites_list: ResourceStr = '';
-  @State subtitle_all_sites: ResourceStr = ''; // If this is left blank, then this toggle is not displayed
-  @State switch_id: string = '';
-  @State sites_list_id: string = '';
-  @State switch_all_sites_id: string = '';
+  @State descriptions: ResourceStr[] = []; // @Param
+  @State tips: ResourceStr = ''; // @Param
+  @State title: ResourceStr = ''; // @Param
+  @State switch_desc: ResourceStr = ''; // @Param
+  @State subtitle_sites_list: ResourceStr = ''; // @Param
+  @State subtitle_all_sites: ResourceStr = ''; // If this is left blank, then this toggle is not displayed // @Param
+  @State switch_id: string = ''; // @Param
+  @State sites_list_id: string = ''; // @Param
+  @State switch_all_sites_id: string = ''; // @Param
   // UI
-  @State full_view: boolean = false;
+  @State full_view: boolean = false; // @Param
   // Pass in content components
   @BuilderParam extra_manage: () => void;
   // Settings / Accessibility

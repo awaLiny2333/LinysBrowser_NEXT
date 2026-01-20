@@ -4,9 +4,9 @@ import { resource_to_string } from '../../utils/resource_tools';
 
 @Component
 struct meowWhatsNew {
-  @State new_things_resource: Resource = $r("app.string.Whats_new_content");
-  @State new_things: string = resource_to_string(this.new_things_resource);
-  @State new_things_list: string[] = this.new_things.split('\n');
+  new_things_resource: Resource = $r("app.string.Whats_new_content");
+  new_things: string = resource_to_string(this.new_things_resource);
+  new_things_list: string[] = this.new_things.split('\n');
 
   build() {
     Column({ space: 8 }) {
@@ -30,19 +30,6 @@ struct meowWhatsNew {
     .backgroundColor($r('sys.color.comp_background_tertiary'))
     .width("100%")
     .animation(animation_default())
-    .onAreaChange(() => {
-      this.update_resource_string();
-    })
-  }
-
-  /**
-   * Convert the Resource to string again.
-   *
-   * Usually called to deal with the change of language.
-   * */
-  update_resource_string() {
-    this.new_things = resource_to_string(this.new_things_resource);
-    this.new_things_list = this.new_things.split('\n');
   }
 }
 

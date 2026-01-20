@@ -12,10 +12,10 @@ struct meowSuggestions {
   @Prop top_margin: number = 0;
   @Prop bottom_margin: number = 0;
   @State content_height: number = 0;
-  @LocalStorageProp('is_search_input_typing') is_search_input_typing: boolean = false;
-  @LocalStorageProp('search_input') @Watch('refresh_suggestions') search_input: string = "";
+  @LocalStorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
+  @LocalStorageLink('search_input') @Watch('refresh_suggestions') search_input: string = "";
   @LocalStorageLink('search_extracted_keyword') search_extracted_keyword: string = '';
-  @LocalStorageProp('screen_height') screen_height: number = 0;
+  @LocalStorageLink('screen_height') screen_height: number = 0;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @LocalStorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
   @LocalStorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;

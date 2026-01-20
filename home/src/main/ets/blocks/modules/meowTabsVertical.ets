@@ -318,7 +318,6 @@ struct TabButton {
   tab_height_default: number = 42;
   @State tab_height: number = (this.bunch_of_tabs.Tabs.length * (this.tab_height_default + 5) - 5 < this.scroll_area_height) ? 0 : this.tab_height_default;
   @State my_vis: Visibility = Visibility.Hidden;
-  @State isHov: boolean = false;
 
   build() {
     Row({ space: 5 }) {
@@ -388,11 +387,11 @@ struct TabButton {
     .opacity(this.tab_restore_on_creations[this.Label.index_key] ? 0.5 : 1)
     .height(this.tab_height)
     .padding(this.preferred_hand_left_or_right == 'right' ? { left: 10 } : { right: 10 })
-    .brightness(this.isHov ? 1.1 : 1)
     .animation(animation_default())
     .alignItems(VerticalAlign.Center)
     .clickEffect(click_effect_default())
     .width("100%")
+    .hoverEffect(HoverEffect.Highlight)
     .onClick(() => {
       this.uni_tab_button_clicked = this.Label.index_key;
     })
@@ -410,9 +409,6 @@ struct TabButton {
       this.my_vis = Visibility.Visible;
       this.tab_height = this.tab_height_default;
       this.tab_restore_on_creations[this.Label.index_key] = this.bunch_of_tabs.Tabs[this.Label.index_key].pre_restoration_stage;
-    })
-    .onHover((isHv) => {
-      this.isHov = isHv;
     })
 
     // .onMouse((e) => {

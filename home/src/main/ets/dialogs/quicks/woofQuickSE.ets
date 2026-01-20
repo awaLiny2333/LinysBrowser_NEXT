@@ -16,8 +16,6 @@ struct woofQuickSE {
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   // Animation UI Statuses
-  @State adding_SE: boolean = false;
-  @State height_of_add_panel: number = 0;
   button_height_default: number = 42;
   // Gateways
   @LocalStorageLink('universal_load_url_gateway') load_url_gateway: string = "";
@@ -66,7 +64,7 @@ struct woofQuickSE {
       .scrollBar(BarState.Off)
       .edgeEffect(EdgeEffect.Spring)
       .constraintSize({
-        maxHeight: 45 + 48.5 * bunch_of_search_engines.list_of_search_engines.length + 100 + (this.adding_SE ? 20 + this.height_of_add_panel : 0)
+        maxHeight: 45 + 48.5 * bunch_of_search_engines.list_of_search_engines.length + 100
       })
       .animation(animation_default())
       .onAppear(() => {

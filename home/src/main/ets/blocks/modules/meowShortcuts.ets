@@ -18,7 +18,7 @@ struct meowShortcuts {
   @StorageLink('homepage_shortcuts') homepage_shortcuts: bookmark[] = []; // Ideally this is loaded after init_process.
   @StorageLink('zones') zones: string[] = [];
   // Environment
-  @LocalStorageProp('screen_height') screen_height: number = 100;
+  @LocalStorageLink('screen_height') screen_height: number = 100;
   @LocalStorageLink('delayed_load_p3') delayed_load_p3: boolean = false;
   // Statuses
   @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
@@ -70,7 +70,7 @@ struct meowShortcuts {
     .edgeEffect(EdgeEffect.Spring)
     .animation(animation_default())
     .scrollBar(BarState.Off)
-    .visibility(this.visibility_of_shortcuts())
+    .visibility(this.are_shortcuts_visible() ? Visibility.Visible : Visibility.Hidden)
     .onDidScroll(() => {
       this.shortcut_scroll_offset = this.shortcut_scroller.currentOffset().yOffset;
     })
@@ -95,14 +95,14 @@ struct meowShortcuts {
     return status ? HorizontalAlign.End : HorizontalAlign.Start;
   }
 
-  visibility_of_shortcuts() {
+  are_shortcuts_visible() {
     let vis = true;
     const pre_init = this.current_url == '=￣ω￣=' || this.current_url == undefined;
     const on_home = this.current_url == 'meow://home' && this.bunch_of_tabs.sub_tab_idx == -1;
     if (!(pre_init || on_home)) {
       vis = false;
     }
-    return vis ? Visibility.Visible : Visibility.Hidden;
+    return vis;
   }
 
   // Actions

@@ -4,7 +4,6 @@ import { fontSize_Large } from '../../hosts/bunch_of_defaults';
 struct linysLockToggle {
   @Link locked: boolean;
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
-  @State color: ResourceColor | undefined = undefined;
   // animation
   @State triggerValueReplace: number = 0;
 
@@ -16,7 +15,7 @@ struct linysLockToggle {
       })// .clickEffect(click_effect_default())
       .fontSize(fontSize_Large())
       .symbolEffect(new ReplaceSymbolEffect(EffectScope.WHOLE), this.triggerValueReplace)
-      .fontColor([this.color ? this.color : this.color_current_font])
+      .fontColor([this.color_current_font])
   }
 }
 

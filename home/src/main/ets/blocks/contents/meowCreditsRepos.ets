@@ -5,9 +5,9 @@ import { common } from '@kit.AbilityKit';
 
 @Component
 struct meowCreditsRepos {
-  @State credits_repos_and_projs_resource: Resource = $r("app.string.Credits_repos_and_projs");
-  @State credits_repos_and_projs: string = resource_to_string(this.credits_repos_and_projs_resource);
-  @State credits_repos_and_projs_list: string[] = this.credits_repos_and_projs.split('\n');
+  credits_repos_and_projs_resource: Resource = $r("app.string.Credits_repos_and_projs");
+  credits_repos_and_projs: string = resource_to_string(this.credits_repos_and_projs_resource);
+  credits_repos_and_projs_list: string[] = this.credits_repos_and_projs.split('\n');
 
   build() {
     Column({ space: 8 }) {
@@ -30,19 +30,6 @@ struct meowCreditsRepos {
     .backgroundColor($r('sys.color.comp_background_tertiary'))
     .width("100%")
     .animation(animation_default())
-    .onAreaChange(() => {
-      this.update_resource_string();
-    })
-  }
-
-  /**
-   * Convert the Resource to string again.
-   *
-   * Usually called to deal with the change of language.
-   * */
-  update_resource_string() {
-    this.credits_repos_and_projs = resource_to_string(this.credits_repos_and_projs_resource);
-    this.credits_repos_and_projs_list = this.credits_repos_and_projs.split('\n');
   }
 }
 

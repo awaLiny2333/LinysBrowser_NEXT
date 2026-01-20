@@ -9,15 +9,13 @@ struct linysLink {
   @Prop color: ResourceColor = "";
   @Prop max_lines: number = 1;
   @Prop font_weight: FontWeight = FontWeight.Regular;
-  @State link: string = "huawei.com";
+  @State link: string = "huawei.com"; // @Param
   @LocalStorageLink('universal_new_tab_gateway') universal_new_tab_gateway: (string | boolean)[] = ['', false];
   // In fact this param is designed for closing some opened panel
   @Link will_be_reversed_boolean: boolean;
-  @State isHov: boolean = false;
 
   build() {
     Text(this.text)
-      .brightness(this.isHov ? 1.1 : 1)
       .animation(animation_default())
       .padding({
         left: 7,
@@ -25,6 +23,7 @@ struct linysLink {
         top: 5,
         bottom: 5
       })
+      .hoverEffect(HoverEffect.Highlight)
       .borderRadius(7.5)
       .fontColor(this.color == "" ? this.color_current_font : this.color)
       .fontSize(fontSize_Normal())
@@ -36,9 +35,6 @@ struct linysLink {
       .onClick(() => {
         this.universal_new_tab_gateway = [this.link, false];
         this.will_be_reversed_boolean = !this.will_be_reversed_boolean;
-      })
-      .onHover((isHv) => {
-        this.isHov = isHv;
       })
       .accessibilityText(this.text + ',' + this.link)
       .accessibilityDescription($r('app.string.Accessibility_desc_linysLink'))

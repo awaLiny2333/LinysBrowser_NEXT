@@ -18,7 +18,6 @@ struct meowUAManager {
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // UI
   @StorageLink('bunch_of_user_agents_update') bunch_of_user_agents_update: number = 0;
-  @State isHov: boolean = false;
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
 
@@ -44,7 +43,6 @@ struct meowUAManager {
         }
         .useEffect(this.effects, EffectType.WINDOW_EFFECT)
         .backgroundColor(this.is_pressing_default_card ? this.color_current_font : this.color_current_primary)
-        .brightness(this.isHov ? 1.1 : 1)
         .animation(animation_default())
         .width("100%")
         .height("100%")
@@ -77,9 +75,7 @@ struct meowUAManager {
       })
       .height(46)
       .animation(animation_default())
-      .onHover((isHv) => {
-        this.isHov = isHv;
-      })
+      .hoverEffect(HoverEffect.Highlight)
 
       ForEach(this.bunch_of_user_agents_update ? bunch_of_user_agents.list_of_user_agents : [], (_user_agent: user_agent, key: number) => {
         meowUACardItem({
@@ -117,12 +113,11 @@ export default meowUAManager;
 struct meowUACardItem {
   @StorageLink('user_agent_selected') selected_index: number = 0;
   @Prop my_index: number;
-  @State my_ua: user_agent = bunch_of_user_agents.list_of_user_agents[this.my_index];
+  my_ua: user_agent = bunch_of_user_agents.list_of_user_agents[this.my_index];
   @State my_label: string = this.my_ua.label;
   @State my_content: string = this.my_ua.user_agent_content;
   // UI effects
   @State is_editing: boolean = false;
-  @State is_selected: boolean = false;
   // Edit inputs
   @State edit_label: string = this.my_label;
   @State edit_content: string = this.my_content;

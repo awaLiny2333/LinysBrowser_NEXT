@@ -5,8 +5,8 @@ import linysTimeoutButton from './linysTimeoutButton';
 @Component
 struct linysTimeoutButtonWithText {
   // Info
-  @State desc_text: ResourceStr = 'desc';
-  @State button_text: ResourceStr = ' OwO ';
+  @State desc_text: ResourceStr = 'desc'; // @Param
+  @State button_text: ResourceStr = ' OwO '; // @Param
   // Settings / Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand: string = 'right';
   onExecution?: () => void;

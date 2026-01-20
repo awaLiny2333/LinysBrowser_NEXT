@@ -4,9 +4,9 @@ import { resource_to_string } from '../../utils/resource_tools';
 
 @Component
 struct meowCreditsUsers {
-  @State credits_devs_and_users_resource: Resource = $r("app.string.Credits_devs_and_users");
-  @State credits_devs_and_users: string = resource_to_string(this.credits_devs_and_users_resource);
-  @State credits_devs_and_users_list: string[] = this.credits_devs_and_users.split('\n');
+  credits_devs_and_users_resource: Resource = $r("app.string.Credits_devs_and_users");
+  credits_devs_and_users: string = resource_to_string(this.credits_devs_and_users_resource);
+  credits_devs_and_users_list: string[] = this.credits_devs_and_users.split('\n');
 
   build() {
     Scroll() {
@@ -30,9 +30,6 @@ struct meowCreditsUsers {
       .backgroundColor($r('sys.color.comp_background_tertiary'))
       .width("100%")
       .animation(animation_default())
-      .onAreaChange(() => {
-        this.update_resource_string();
-      })
     }
     // .nestedScroll({ scrollForward: NestedScrollMode.SELF_FIRST, scrollBackward: NestedScrollMode.SELF_FIRST })
     .width("100%")
@@ -42,16 +39,6 @@ struct meowCreditsUsers {
     .borderRadius(13.5)
     .animation(animation_default())
 
-  }
-
-  /**
-   * Convert the Resource to string again.
-   *
-   * Usually called to deal with the change of language.
-   * */
-  update_resource_string() {
-    this.credits_devs_and_users = resource_to_string(this.credits_devs_and_users_resource);
-    this.credits_devs_and_users_list = this.credits_devs_and_users.split('\n');
   }
 }
 

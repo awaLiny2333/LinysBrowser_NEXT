@@ -17,8 +17,8 @@ struct meowDownloads {
   @LocalStorageLink('showing_downloads') showing_downloads: boolean = false;
   @StorageLink('free_window_mode') free_window_mode: boolean = false;
   // Downloads
-  @LocalStorageProp('screen_width') screen_width: number = 0;
-  @LocalStorageProp('screen_height') screen_height: number = 0;
+  @LocalStorageLink('screen_width') screen_width: number = 0;
+  @LocalStorageLink('screen_height') screen_height: number = 0;
   // UI
   @State notice_height: number = 100;
   @State waterflow_height: number = 300;

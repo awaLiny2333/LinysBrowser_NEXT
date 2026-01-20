@@ -15,7 +15,6 @@ struct woofEasyList {
   controller: CustomDialogController;
   // Environment
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
-  @LocalStorageProp('current_url') current_url: string = "=￣ω￣=";
   @LocalStorageLink('universal_fail_prompt_desc_gateway') uni_fail_prompt_gateway: ResourceStr = "";
   @StorageLink('effects') effects: boolean = false;
   @LocalStorageLink('compact_mode') compact_mode: boolean = false;

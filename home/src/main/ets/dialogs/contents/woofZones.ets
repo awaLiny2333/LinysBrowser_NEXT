@@ -25,7 +25,7 @@ struct woofZones {
   // Status
   @LocalStorageLink('full_screen_height') full_screen_height: number = 0;
   @LocalStorageLink('screen_height') screen_height: number = 0;
-  @LocalStorageProp('screen_width') screen_width: number = 0;
+  @LocalStorageLink('screen_width') screen_width: number = 0;
   @LocalStorageLink('compact_mode') compact_mode: boolean = false;
   // UI
   @State notice_height: number = 35;
@@ -106,7 +106,6 @@ struct subCard {
   // Data
   @Prop my_index: number;
   @Prop zone_alias: string = 'zzz';
-  @State zone_window_id: string | undefined = window_id_of_zone(this.zone_alias);
   @StorageLink('zones_opened') zones_opened: boolean[] = [];
   @State to_fool_toggle: boolean = this.zones_opened[this.my_index];
   @State tabs_count: number = 0;

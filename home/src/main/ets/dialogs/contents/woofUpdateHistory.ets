@@ -10,7 +10,7 @@ struct woofUpdateHistory {
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
-  @State texts: string[] = [
+  texts: string[] = [
     'v1.8.0-beta 2026 01',
     '一个总结性的更新！正式面向 HarmonyOS 6.0.1 (API21) 发布！' +
       '经过长达两个月的日常使用与检验，尽可能确保此 Release 没有功能性错误！' +
@@ -176,9 +176,9 @@ export default woofUpdateHistory;
 
 @Component
 struct release_card {
-  @State title: string = '';
-  @State text_eng: string = '';
-  @State text_chi: string = '';
+  title: string = '';
+  text_eng: string = '';
+  text_chi: string = '';
 
   build() {
     Column({ space: 8 }) {
