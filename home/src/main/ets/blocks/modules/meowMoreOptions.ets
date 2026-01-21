@@ -1,34 +1,21 @@
 import { animation_default, capsule_bar_height, click_effect_default, default_new_window_name } from '../../hosts/bunch_of_defaults';
-import lazy { print_web } from '../../utils/print_tools';
 import { bunch_of_key_shortcuts } from '../../hosts/bunch_of_key_shortcuts';
 import { change_window_alias, new_window, storage_of_id } from '../../utils/ui_tools';
 import { cancel_in_page_search } from '../../processes/tabs_actions';
-import { match_domain } from '../../utils/url_tools';
-import { webview } from '@kit.ArkWeb';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import lazy { common } from '@kit.AbilityKit';
 import linysText from '../../components/texts/linysText';
 import linysSymbol from '../../components/texts/linysSymbol';
 import lazy linysProgressInfo from '../../components/linysProgressInfo';
 import lazy meowDebug from '../panels/meowDebug';
-import lazy woofQR from '../../dialogs/contents/woofQR';
-import lazy woofHistory from '../../dialogs/managers/woofHistory';
-import lazy woofCookies from '../../dialogs/managers/woofCookies';
-import lazy woofQuickUA from '../../dialogs/quicks/woofQuickUA';
-import lazy woofGeneralManage from '../../dialogs/managers/woofGeneralManage';
 import lazy woofPrompt from '../../dialogs/web/woofPrompt';
-import lazy linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
-import lazy woofEasyList from '../../dialogs/managers/woofEasylist';
 import linysSwitchWithText from '../../components/toggles/linysSwitchWithText';
 import { modify_zone_name } from '../../processes/zone_actions';
 import { is_legal_filename } from '../../utils/storage_tools';
 import linysFileNameErrorDisplay from '../../components/linysFileNameErrorDisplay';
-import woofZones from '../../dialogs/contents/woofZones';
-import woofExtensions from '../../dialogs/contents/woofExtensions';
-import { bunch_of_extensions, extension } from '../../hosts/bunch_of_extensions';
-import linysImageButton from '../../components/buttons/linysImageButton';
-import { ExtNodeController } from '../../objects/ExtWebNode';
-import { detach_show_extension } from '../../processes/web_actions';
+import { bunch_of_extensions } from '../../hosts/bunch_of_extensions';
+import lazy woofZones from '../../dialogs/contents/woofZones';
+import meowTitleFunctionButton from './meowTitleFunctionButtons';
 
 @Component
 struct meowMoreOptions {
@@ -41,17 +28,12 @@ struct meowMoreOptions {
   // Hosts
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
   @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
-  @StorageLink('bunch_of_extensions') bunch_of_extensions: bunch_of_extensions = new bunch_of_extensions();
   // UI Statuses
   @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
   @LocalStorageLink('showing_scratching_board') showing_scratching_board: boolean = false;
-  @LocalStorageLink('showing_ext_id') showing_ext_id: string = '';
-  @LocalStorageLink('showing_ext_node_controller') showing_ext_node_controller: ExtNodeController | undefined = undefined;
   // Logics Statuses
   @LocalStorageLink('search_input') search_input: string = "ଘ*(੭*ˊᵕˋ)੭*";
   @LocalStorageLink('is_search_input_typing') is_search_input_typing: boolean = false;
-  @LocalStorageLink('current_title') current_title: string = "=￣ω￣=";
-  @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
   // History
   @StorageLink('reindexing_history_progress') reindexing_history_progress: string = "";
   @StorageLink('history_index_loading_progress') history_index_loading_progress: string = "";
@@ -62,21 +44,9 @@ struct meowMoreOptions {
   @LocalStorageLink('fullscreen_mode') fullscreen_mode: boolean = false;
   @LocalStorageLink('fullscreen_mode_immersive') fullscreen_mode_immersive: boolean = true;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
-  @LocalStorageLink('compact_mode') compact_mode: boolean = false; // Like PuraX
   // Settings
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';
   @StorageLink('resource_monitor') resource_monitor: boolean = true;
-  // Settings - Web
-  @StorageLink('disable_js') disable_js: boolean = true;
-  @StorageLink('disable_js_these_sites') disable_js_these_sites: string[] = [];
-  @StorageLink('disable_js_all_sites') disable_js_all_sites: boolean = false;
-  @StorageLink('disable_image') disable_image: boolean = true;
-  @StorageLink('disable_image_these_sites') disable_image_these_sites: string[] = [];
-  @StorageLink('disable_image_all_sites') disable_image_all_sites: boolean = false;
-  @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = true;
-  @StorageLink('web_force_dark_mode_exemptions') web_force_dark_mode_exemptions: string[] = [];
-  @StorageLink('use_adblock') use_adblock: boolean = true;
-  @StorageLink('adblock_exceptions') adblock_exceptions: string[] = [];
   // In-page search
   @LocalStorageLink('current_in_page_searching_keyword') current_in_page_searching_keyword: string = "";
   @LocalStorageLink('current_in_page_searching_stats_current') current_in_page_searching_stats_current: number = 0;
@@ -86,134 +56,6 @@ struct meowMoreOptions {
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // dialogs
-  @State to_fool_woofGeneralManage: boolean = false;
-  woofAdsBlocker_control: CustomDialogController = new CustomDialogController({
-    builder: woofGeneralManage({
-      general_switch: this.use_adblock,
-      sites_list: this.adblock_exceptions,
-      add_site_edit: match_domain(this.search_input)[1],
-      showing_add_panel: !this.compact_mode,
-      descriptions: [
-        $r('app.string.Ads_block_desc_1'),
-        $r('app.string.Ads_block_desc_2')],
-      tips: '',
-      title: $r('app.string.Settings_experience_manage_adblock'),
-      switch_desc: $r('app.string.Settings_experience_use_adblock'),
-      subtitle_sites_list: $r('app.string.Ads_block_dont_block_sites'),
-      switch_id: 'use_adblock',
-      sites_list_id: 'adblock_exceptions',
-      subtitle_all_sites: '',
-      all_sites_switch: this.to_fool_woofGeneralManage,
-      switch_all_sites_id: '',
-      onAdd: (added) => {
-        try {
-          webview.AdsBlockManager.addAdsBlockDisallowedList([added]);
-        } catch (e) {
-          console.error('[woofAdsBlocker][add_exception] ' + e);
-        }
-      },
-      onDelete: (deleted) => {
-        try {
-          webview.AdsBlockManager.removeAdsBlockDisallowedList(deleted);
-        } catch (e) {
-          console.error('[woofAdsBlocker][delete_selected] ' + e);
-        }
-      },
-      full_view: this.compact_mode,
-      extra_manage: () => {
-        this.EasyList_entry_button();
-      }
-    }),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 26,
-    // showInSubWindow: true,
-    width: "90%",
-  });
-  woofDarkExempts_control: CustomDialogController = new CustomDialogController({
-    builder: woofGeneralManage({
-      general_switch: this.web_force_dark_mode,
-      sites_list: this.web_force_dark_mode_exemptions,
-      add_site_edit: match_domain(this.search_input)[1],
-      showing_add_panel: !this.compact_mode,
-      descriptions: [
-        $r('app.string.Web_force_dark_mode_desc_1'),
-        $r('app.string.Web_force_dark_mode_desc_2')],
-      tips: $r('app.string.Web_force_dark_mode_already_disabled'),
-      title: $r('app.string.Settings_experience_manage_web_force_dark_mode'),
-      switch_desc: $r('app.string.Settings_experience_web_force_dark_mode'),
-      subtitle_sites_list: $r('app.string.Web_force_dark_mode_exemptions'),
-      switch_id: 'web_force_dark_mode',
-      sites_list_id: 'web_force_dark_mode_exemptions',
-      subtitle_all_sites: '',
-      all_sites_switch: this.to_fool_woofGeneralManage,
-      switch_all_sites_id: '',
-      full_view: this.compact_mode
-    }),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 26,
-    // showInSubWindow: true,
-    width: "90%",
-  });
-  cookies_control: CustomDialogController = new CustomDialogController({
-    builder: woofCookies({
-      full_view: this.compact_mode
-    }),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 26,
-    width: "90%",
-  });
-  js_manage_control: CustomDialogController = new CustomDialogController({
-    builder: woofGeneralManage({
-      general_switch: this.disable_js,
-      sites_list: this.disable_js_these_sites,
-      all_sites_switch: this.disable_js_all_sites,
-      add_site_edit: match_domain(this.search_input)[1],
-      showing_add_panel: !this.compact_mode,
-      descriptions: [
-        $r('app.string.Settings_js_desc_1'),
-        $r('app.string.Settings_js_desc_2'),
-        $r('app.string.Settings_js_desc_3')],
-      tips: $r('app.string.Settings_js_already_disabled'),
-      title: $r('app.string.Settings_js_manage'),
-      switch_desc: $r('app.string.Settings_js_disable_js'),
-      subtitle_sites_list: $r('app.string.Settings_js_some_sites'),
-      subtitle_all_sites: $r('app.string.Settings_js_all_sites'),
-      switch_id: 'disable_js',
-      sites_list_id: 'disable_js_these_sites',
-      switch_all_sites_id: 'disable_js_all_sites',
-      full_view: this.compact_mode
-    }),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 26,
-    // showInSubWindow: true,
-    width: "90%",
-  });
-  image_manage_control: CustomDialogController = new CustomDialogController({
-    builder: woofGeneralManage({
-      general_switch: this.disable_image,
-      sites_list: this.disable_image_these_sites,
-      all_sites_switch: this.disable_image_all_sites,
-      add_site_edit: match_domain(this.search_input)[1],
-      showing_add_panel: !this.compact_mode,
-      descriptions: [
-        $r('app.string.Settings_image_desc_1'),
-        $r('app.string.Settings_image_desc_2'),
-        $r('app.string.Settings_image_desc_3')],
-      tips: $r('app.string.Settings_image_already_disabled'),
-      title: $r('app.string.Settings_image_manage'),
-      switch_desc: $r('app.string.Settings_image_disable_image'),
-      subtitle_sites_list: $r('app.string.Settings_image_some_sites'),
-      subtitle_all_sites: $r('app.string.Settings_image_all_sites'),
-      switch_id: 'disable_image',
-      sites_list_id: 'disable_image_these_sites',
-      switch_all_sites_id: 'disable_image_all_sites',
-      full_view: this.compact_mode
-    }),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 26,
-    // showInSubWindow: true,
-    width: "90%",
-  });
   @State rename_window_prompt_result: string = '';
   @State window_alias_legal_err: number = 1;
   rename_window_woofPrompt_control: CustomDialogController = new CustomDialogController({
@@ -242,41 +84,8 @@ struct meowMoreOptions {
     alignment: DialogAlignment.Center,
     cornerRadius: 26
   })
-  woofQR_control: CustomDialogController = new CustomDialogController({
-    builder: woofQR({
-      title: this.current_title,
-      link: this.current_url
-    }),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 26,
-  });
-  woofQuickUA_control: CustomDialogController = new CustomDialogController({
-    builder: woofQuickUA(),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 26
-  });
-  woofHistory_control: CustomDialogController = new CustomDialogController({
-    builder: woofHistory({
-      full_view: this.compact_mode
-    }),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 26,
-    width: "90%",
-  });
-  EasyList_control: CustomDialogController = new CustomDialogController({
-    builder: woofEasyList(),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 26,
-    width: "90%",
-  });
   Zones_control: CustomDialogController = new CustomDialogController({
     builder: woofZones(),
-    alignment: DialogAlignment.Center,
-    cornerRadius: 26,
-    width: "90%",
-  });
-  Extensions_control: CustomDialogController = new CustomDialogController({
-    builder: woofExtensions(),
     alignment: DialogAlignment.Center,
     cornerRadius: 26,
     width: "90%",
@@ -284,49 +93,6 @@ struct meowMoreOptions {
 
   aboutToAppear(): void {
     this.window_alias_legal_err = is_legal_filename(this.my_window_alias);
-  }
-
-  @Builder
-  EasyList_entry_button() {
-    linysCapsuleButtonWithText({
-      desc_text: $r('app.string.Settings_experience_manage_adblock_rules'),
-      button_text: "  󰖿  ",
-      onExecution: () => {
-        this.EasyList_control.open();
-      }
-    })
-  }
-
-  // Save menu
-  @Builder
-  FullscreenMenu() {
-    Menu() {
-      MenuItem({
-        content: $r('app.string.fullscreen_select_window'),
-      })
-        .onClick(() => {
-          if (this.free_window_mode) {
-            this.fullscreen_mode_immersive = false;
-            this.fullscreen_mode = !this.fullscreen_mode;
-            this.showing_more_options = false;
-          } else {
-            // do nothing
-          }
-        })
-        .opacity(this.free_window_mode ? 1 : 0.5)
-      MenuItem({
-        content: $r('app.string.fullscreen_select_full'),
-      })
-        .onClick(() => {
-          setTimeout(() => {
-            this.fullscreen_mode_immersive = true;
-            this.fullscreen_mode = !this.fullscreen_mode;
-            this.showing_more_options = false;
-          }, 200)
-        })
-    }
-    .fontColor(this.color_current_font)
-    .backgroundColor(this.color_current_primary)
   }
 
   build() {
@@ -564,122 +330,124 @@ struct meowMoreOptions {
           .justifyContent(FlexAlign.Center)
           .alignItems(HorizontalAlign.Start)
 
-          Scroll() {
-            Row() {
-              if (this.DEV_MODE) {
-                ForEach(this.bunch_of_extensions.extensions, (ext: extension, idx: number) => {
-                  linysImageButton({
-                    path: ext.path_full + '/' + (ext.action_default_icon_path || ext.icon_path),
-                    can_hover: true,
-                    execution: () => {
-                      this.get_me_extension_web(ext);
-                    },
-                  }).bindTips(ext.action_default_title || ext.name, {
-                    appearingTime: 1,
-                    disappearingTime: 1,
-                    enableArrow: true,
-                  })
-                }, (ext: extension) => {
-                  return ext.id;
-                })
+          // Scroll() {
+          //   Row() {
+          //     if (this.DEV_MODE) {
+          //       ForEach(this.bunch_of_extensions.extensions, (ext: extension, idx: number) => {
+          //         linysImageButton({
+          //           path: ext.path_full + '/' + (ext.action_default_icon_path || ext.icon_path),
+          //           can_hover: true,
+          //           execution: () => {
+          //             this.get_me_extension_web(ext);
+          //           },
+          //         }).bindTips(ext.action_default_title || ext.name, {
+          //           appearingTime: 1,
+          //           disappearingTime: 1,
+          //           enableArrow: true,
+          //         })
+          //       }, (ext: extension) => {
+          //         return ext.id;
+          //       })
+          //
+          //       linysSymbol({
+          //         symbol_glyph_target: 'sys.symbol.root',
+          //         can_hover: true,
+          //       })// Extensions
+          //         .onClick(() => {
+          //           this.Extensions_control.open();
+          //         })
+          //     }
+          //
+          //     linysSymbol({
+          //       symbol_glyph_target: 'sys.symbol.save',
+          //       can_hover: true,
+          //     })// Save Page
+          //       .onClick(() => {
+          //         this.bunch_of_tabs.archive_onWorkingTab(this.getUIContext().getHostContext()?.tempDir);
+          //       })
+          //     linysSymbol({
+          //       symbol_glyph_target: 'sys.symbol.printer',
+          //       can_hover: true,
+          //     })// Print
+          //       .onClick(() => {
+          //         if (this.bunch_of_tabs.workingMainTab().controller) {
+          //           print_web(this.bunch_of_tabs.workingMainTab().controller!, this.getUIContext().getHostContext()!);
+          //         }
+          //       })
+          //     linysSymbol({
+          //       symbol_glyph_target: 'sys.symbol.star_2_moon',
+          //       can_hover: true,
+          //     })// Dark
+          //       .onClick(() => {
+          //         this.woofDarkExempts_control.open();
+          //       })
+          //     linysSymbol({
+          //       symbol_glyph_target: 'sys.symbol.tracking_cookie_interception',
+          //       can_hover: true,
+          //     })// Cookies
+          //       .onClick(() => {
+          //         this.cookies_control.open();
+          //       })
+          //     linysSymbol({
+          //       symbol_glyph_target: 'sys.symbol.picture_2',
+          //       can_hover: true,
+          //     })// Image
+          //       .onClick(() => {
+          //         this.image_manage_control.open();
+          //       })
+          //     linysSymbol({
+          //       symbol_glyph_target: 'sys.symbol.electric_install',
+          //       can_hover: true,
+          //     })// JS
+          //       .onClick(() => {
+          //         this.js_manage_control.open();
+          //       })
+          //     linysSymbol({
+          //       symbol_glyph_target: 'sys.symbol.ad_circle_slash',
+          //       can_hover: true,
+          //     })// Enable ads blocker
+          //       .onClick(() => {
+          //         this.woofAdsBlocker_control.open();
+          //       })
+          //     linysSymbol({
+          //       symbol_glyph_target: 'sys.symbol.arrow_counterclockwise_clock',
+          //       can_hover: true,
+          //     })// History
+          //       .onClick(() => {
+          //         this.woofHistory_control.open();
+          //       })
+          //     linysSymbol({
+          //       symbol_glyph_target: 'sys.symbol.label',
+          //       can_hover: true,
+          //     })// UA
+          //       .onClick(() => {
+          //         this.woofQuickUA_control.open();
+          //       })
+          //     linysSymbol({
+          //       symbol_glyph_target: 'sys.symbol.qrcode',
+          //       can_hover: true,
+          //     })// QRcode
+          //       .onClick(() => {
+          //         this.woofQR_control.open();
+          //       })
+          //     linysSymbol({
+          //       symbol_glyph_target: this.fullscreen_mode ?
+          //         'sys.symbol.arrow_down_right_and_arrow_up_left' :
+          //         'sys.symbol.arrow_up_left_and_arrow_down_right',
+          //       can_hover: true,
+          //     })// FullScreen
+          //       .bindMenu(this.FullscreenMenu)
+          //
+          //   } // Small buttons
+          //   .justifyContent(FlexAlign.End)
+          // } // Buttons
+          // .scrollable(ScrollDirection.Horizontal)
+          // .scrollBar(BarState.Off)
+          // .edgeEffect(EdgeEffect.Spring)
+          // .visibility(this.visible_when_not_in_page_search())
+          // .animation(animation_default())
 
-                linysSymbol({
-                  symbol_glyph_target: 'sys.symbol.root',
-                  can_hover: true,
-                })// Extensions
-                  .onClick(() => {
-                    this.Extensions_control.open();
-                  })
-              }
-
-              linysSymbol({
-                symbol_glyph_target: 'sys.symbol.save',
-                can_hover: true,
-              })// Save Page
-                .onClick(() => {
-                  this.bunch_of_tabs.archive_onWorkingTab(this.getUIContext().getHostContext()?.tempDir);
-                })
-              linysSymbol({
-                symbol_glyph_target: 'sys.symbol.printer',
-                can_hover: true,
-              })// Print
-                .onClick(() => {
-                  if (this.bunch_of_tabs.workingMainTab().controller) {
-                    print_web(this.bunch_of_tabs.workingMainTab().controller!, this.getUIContext().getHostContext()!);
-                  }
-                })
-              linysSymbol({
-                symbol_glyph_target: 'sys.symbol.star_2_moon',
-                can_hover: true,
-              })// Dark
-                .onClick(() => {
-                  this.woofDarkExempts_control.open();
-                })
-              linysSymbol({
-                symbol_glyph_target: 'sys.symbol.tracking_cookie_interception',
-                can_hover: true,
-              })// Cookies
-                .onClick(() => {
-                  this.cookies_control.open();
-                })
-              linysSymbol({
-                symbol_glyph_target: 'sys.symbol.picture_2',
-                can_hover: true,
-              })// Image
-                .onClick(() => {
-                  this.image_manage_control.open();
-                })
-              linysSymbol({
-                symbol_glyph_target: 'sys.symbol.electric_install',
-                can_hover: true,
-              })// JS
-                .onClick(() => {
-                  this.js_manage_control.open();
-                })
-              linysSymbol({
-                symbol_glyph_target: 'sys.symbol.ad_circle_slash',
-                can_hover: true,
-              })// Enable ads blocker
-                .onClick(() => {
-                  this.woofAdsBlocker_control.open();
-                })
-              linysSymbol({
-                symbol_glyph_target: 'sys.symbol.arrow_counterclockwise_clock',
-                can_hover: true,
-              })// History
-                .onClick(() => {
-                  this.woofHistory_control.open();
-                })
-              linysSymbol({
-                symbol_glyph_target: 'sys.symbol.label',
-                can_hover: true,
-              })// UA
-                .onClick(() => {
-                  this.woofQuickUA_control.open();
-                })
-              linysSymbol({
-                symbol_glyph_target: 'sys.symbol.qrcode',
-                can_hover: true,
-              })// QRcode
-                .onClick(() => {
-                  this.woofQR_control.open();
-                })
-              linysSymbol({
-                symbol_glyph_target: this.fullscreen_mode ?
-                  'sys.symbol.arrow_down_right_and_arrow_up_left' :
-                  'sys.symbol.arrow_up_left_and_arrow_down_right',
-                can_hover: true,
-              })// FullScreen
-                .bindMenu(this.FullscreenMenu)
-
-            } // Small buttons
-            .justifyContent(FlexAlign.End)
-          } // Buttons
-          .scrollable(ScrollDirection.Horizontal)
-          .scrollBar(BarState.Off)
-          .edgeEffect(EdgeEffect.Spring)
-          .visibility(this.visible_when_not_in_page_search())
-          .animation(animation_default())
+          meowTitleFunctionButton()
 
           meowDebug() // Debug
             .opacity(0.8)
@@ -742,73 +510,6 @@ struct meowMoreOptions {
 
   can_save_zone() {
     return this.is_zone || !this.zones.includes(this.my_window_alias);
-  }
-
-  // Actions
-
-  /**
-   * What happens after clicking on an Extension icon.
-   * @param ext The extension clicked on.
-   * */
-  get_me_extension_web(ext: extension) {
-    let idx = this.bunch_of_extensions.index_of_id(ext.id);
-    let that_window_id = ext.storage?.get('my_window_id') as string;
-
-    if (ext.is_being_viewed) {
-      // Is attached
-
-      // // Detach
-      // let nodeCon = ext.storage?.get('showing_ext_node_controller') as ExtNodeController;
-      // nodeCon?.detachWeb();
-      // nodeCon?.rebuild();
-      // ext.storage?.set('showing_ext_id', '');
-      // ext.storage?.set('showing_ext_node_controller', undefined);
-      // ext.is_being_viewed = false;
-      // ext.controller.loadUrl($rawfile('home.html'));
-      // ext.storage = undefined;
-      // nodeCon?.update(ext);
-      // console.log(`[Extension][${ext.name}][${ext.id}] Button clicked ~ Detached Extension Web from [${that_window_id}]!`);
-      // // return;
-
-      detach_show_extension(ext);
-
-      if (that_window_id == this.my_window_id) {
-        return;
-      }
-    }
-
-    setTimeout(() => {
-      // Not attached
-      if (ext.action_default_popup && (idx != undefined)) {
-        // Attach
-        this.showing_ext_id = ext.id;
-        this.showing_ext_node_controller = this.bunch_of_extensions.NodeControllers[idx];
-        this.showing_ext_node_controller?.attachWeb();
-        this.showing_ext_node_controller?.rebuild();
-        ext.storage = this.storage;
-        ext.is_being_viewed = true;
-        this.showing_ext_node_controller?.update(ext);
-        console.log(`[Extension][${ext.name}][${ext.id}] LoadUrl: [${ext.path_full + '/' + ext.action_default_popup}]`);
-        try {
-          ext.controller.loadUrl(ext.path_full + '/' + ext.action_default_popup);
-        } catch (error) {
-          console.error(`[Extension][${ext.name}][${ext.id}] LoadUrl: [${ext.path_full + '/' + ext.action_default_popup}] Failed: [${error}]`);
-        }
-        // Show
-        this.showing_more_options = false;
-        console.log(`[Extension][${ext.name}][${ext.id}] Button clicked ~ Attached Extension Web to [${this.my_window_id}]`);
-      } else {
-        this.showing_ext_id = '';
-        this.showing_ext_node_controller = undefined;
-        console.log(`[Extension][${ext.name}][${ext.id}] Button clicked ~ But no popup. Fire chrome.action.onClicked!`);
-        ext.controller.runJavaScriptExt('chrome.action.onClicked.fire();').catch(() => {
-          console.error(`[Extension][${ext.name}][${ext.id}] Fire chrome.action.onClicked failed.`);
-        })
-      }
-
-      // console.log(`[Extension][${ext.name}][${ext.id}][${this.my_window_id}] After click: this.showing_ext_node_controller is ${this.showing_ext_node_controller ?
-      //   'valid' : 'undefined'}, and this.showing_ext_id = ${this.showing_ext_id}!`);
-    }, 10);
   }
 }
 

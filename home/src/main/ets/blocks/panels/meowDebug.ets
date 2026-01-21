@@ -7,7 +7,7 @@ import lazy { getCPU_sync, getNativeHeapSize_sync } from '../../utils/performanc
 
 @Component
 struct meowDebug {
-  data: string[] = ['pss', 'vss', 'shared dirty', 'private dirty', 'cpu', 'native heap', 'vram'];
+  @State data: string[] = ['pss', 'vss', 'shared dirty', 'private dirty', 'cpu', 'native heap', 'vram'];
   @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
   // Settings - Accessibility
   @StorageLink('preferred_hand_left_or_right') preferred_hand_left_or_right: string = 'right';

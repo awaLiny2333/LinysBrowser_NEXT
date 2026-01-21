@@ -400,13 +400,13 @@ struct Index {
 
           if (!this.fullscreen_mode_immersive && this.fullscreen_mode) {
             Row({ space: 7 }) {
-              Row({ space: 5 }) {
+              Row() {
                 linysText({
                   text: '  󰖴  '
                 })
                   .opacity(this.on_focus ? 1 : 0.4)
               }
-              .backdropBlur(this.is_Hov_window && this.effects ? 60 : 0)
+              .backdropBlur(this.is_Hov_window && this.effects ? 40 : 0)
               .backgroundColor(this.effects || !this.is_Hov_window ? 'transparent' : this.color_current_secondary)
               .borderColor(this.is_Hov_window && this.effects ? this.color_current_back : 'transparent')
               .shadow(this.is_Hov_window && this.effects ? { radius: 10, color: $r('sys.color.comp_background_secondary') } : { radius: 0 })
@@ -415,6 +415,17 @@ struct Index {
               .height('100%')
               .borderRadius(15)
               .hoverEffect(HoverEffect.Highlight)
+
+              Row()
+                .backdropBlur(this.is_Hov_window && this.effects ? 40 : 0)
+                .backgroundColor(this.effects || !this.is_Hov_window ? 'transparent' : this.color_current_secondary)
+                .borderColor(this.is_Hov_window && this.effects ? this.color_current_back : 'transparent')
+                .shadow(this.is_Hov_window && this.effects ? { radius: 10, color: $r('sys.color.comp_background_secondary') } : { radius: 0 })
+                .animation(animation_default())
+                .borderWidth(1)
+                .height('100%')
+                .width(120)
+                .borderRadius(15)
             }
             .height(30)
             .alignRules({
