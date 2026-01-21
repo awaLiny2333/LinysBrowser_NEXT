@@ -330,6 +330,8 @@ struct meowMoreOptions {
           .alignItems(HorizontalAlign.Start)
 
           meowTitleFunctionButton({ MODE_FULL: true })
+            .visibility(this.visible_when_not_in_page_search())
+            .animation(animation_default())
 
           meowDebug() // Debug
             .opacity(0.8)

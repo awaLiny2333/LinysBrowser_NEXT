@@ -182,7 +182,7 @@
     },
     {
       "name": "Settings_appearance_pin_function_buttons",
-      "value": "标题栏固定"
+      "value": "标题栏固定 \uDB82\uDD42"
     },
     {
       "name": "Settings_general_custom_ua",
@@ -890,7 +890,7 @@
     },
     {
       "name": "Credits_devs_and_users",
-      "value": "sseaan（#2 横向标签页和自定义 UA）\nSolidFaker（#3 错误的背景颜色）\nlsxuan12138（#6 移动书签功能）\nxymeng16（#8 劫持返回；#11 更多搜索引擎）\nLuxcis（#12 自动收起标签页）\n000wbh000（#22 网页深色模式；#28 键盘快捷键；#29 文件导出失败）\nLiuyexin（#29 文件导出失败）\nvincenthsing（#33 带端口的 IPv4 网址判定问题）\nXiaoBaiXBS（#38 #39 #40 #41 #42 #50 #63 #67 #68 #73 诡异的崩溃 Bug、主页自定背景、安全访问历史&书签、更好的单手优化布局选项和超级多小建议！）\nWJ-T（#46 关闭所有标签页）\nyushuo1532（#65 启动速度优化）\nmsgdw（#69 带端口的 URL 判定问题）\nYukiNo420（#55 快捷打开历史、关闭小白条避让）\nwangfh5（#52 多窗口系统）～"
+      "value": "sseaan（#2 横向标签页和自定义 UA）\nSolidFaker（#3 错误的背景颜色）\nlsxuan12138（#6 移动书签功能）\nxymeng16（#8 劫持返回；#11 更多搜索引擎）\nLuxcis（#12 自动收起标签页）\n000wbh000（#22 网页深色模式；#28 键盘快捷键；#29 文件导出失败）\nLiuyexin（#29 文件导出失败）\nvincenthsing（#33 带端口的 IPv4 网址判定问题）\nXiaoBaiXBS（#38 #39 #40 #41 #42 #50 #63 #67 #68 #73 诡异的崩溃 Bug、主页自定背景、安全访问历史&书签、更好的单手优化布局选项和超级多小建议！）\nWJ-T（#46 关闭所有标签页）\nyushuo1532（#65 启动速度优化）\nmsgdw（#69 带端口的 URL 判定问题）\nYukiNo420（#55 快捷打开历史、关闭小白条避让）\nwangfh5（#52 多窗口系统）\ngfhdhytghd（#86 标题栏固定按钮）～"
     },
     {
       "name": "Credits_extra",

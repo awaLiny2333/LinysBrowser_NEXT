@@ -8,7 +8,7 @@ import lazy woofQuickUA from '../../dialogs/quicks/woofQuickUA';
 import lazy woofCookies from '../../dialogs/managers/woofCookies';
 import lazy woofExtensions from '../../dialogs/contents/woofExtensions';
 import lazy woofGeneralManage from '../../dialogs/managers/woofGeneralManage';
-import { animation_default } from '../../hosts/bunch_of_defaults';
+import { animation_default, default_title_function_buttons_amount } from '../../hosts/bunch_of_defaults';
 import lazy { bunch_of_extensions, extension } from '../../hosts/bunch_of_extensions';
 import lazy { ExtNodeController } from '../../objects/ExtWebNode';
 import lazy { detach_show_extension } from '../../processes/web_actions';
@@ -18,14 +18,14 @@ import lazy { webview } from '@kit.ArkWeb';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import lazy { print_web } from '../../utils/print_tools';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
-import { boolean_to_string } from '../../utils/data_operation_tools';
+import { all_false, boolean_to_string } from '../../utils/data_operation_tools';
 
 
 @Component
 struct meowTitleFunctionButton {
   // CONFIG
   @StorageLink('title_CONFIG_EXTENSIONS') @Watch('CONFIG_BUTTONS_change') CONFIG_EXTENSIONS: boolean = true;
-  @StorageLink('title_CONFIG_BUTTONS') @Watch('CONFIG_BUTTONS_change') CONFIG_BUTTONS: boolean[] = [true, true, true, true, true, true, true, true, true, true, true];
+  @StorageLink('title_CONFIG_BUTTONS') @Watch('CONFIG_BUTTONS_change') CONFIG_BUTTONS: boolean[] = all_false(default_title_function_buttons_amount());
   MODE_EDIT: boolean = false; // If set to true, then clicking these buttons would modify the CONFIG_BUTTONS variables instead of executing the real functions.
   MODE_FULL: boolean = false; // If set to true, then all buttons are shown no matter what their settings are.
   // Env
@@ -470,10 +470,10 @@ struct meowTitleFunctionButton {
       } // Small buttons
       .justifyContent(FlexAlign.End)
     } // Buttons
+    .borderRadius(8)
     .scrollable(ScrollDirection.Horizontal)
     .scrollBar(BarState.Off)
     .edgeEffect(EdgeEffect.Spring)
-    .visibility(this.visible_when_not_in_page_search())
     .animation(animation_default())
   }
 

@@ -91,6 +91,9 @@ struct meowTitleBar {
   @LocalStorageLink('delayed_load_p1') delayed_load_p1: boolean = false;
   @LocalStorageLink('delayed_load_p2') delayed_load_p2: boolean = false;
   @LocalStorageLink('delayed_load_p3') delayed_load_p3: boolean = false;
+  @State title_bar_entire_width: Length = 0;
+  @State title_bar_left_buttons_width: Length = 0;
+  search_bar_min_width: number = 250;
   // Settings
   @StorageLink('title_bar_position') title_bar_position: string = "";
   @StorageLink('tabs_style') tabs_style: string = "";
@@ -219,6 +222,11 @@ struct meowTitleBar {
         })
         .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
         .id('left_controls')
+        .onAreaChange((o, n) => {
+          if (n.width != this.title_bar_left_buttons_width) {
+            this.title_bar_left_buttons_width = n.width;
+          }
+        })
 
         Row(this.search_input_has_buttons() && !this.tablet_mode ? { space: 7 } : { space: 0 }) {
           Column() {
@@ -394,6 +402,11 @@ struct meowTitleBar {
             .enabled(this.delayed_load_p3)
 
           meowTitleFunctionButton()
+            .visibility(this.visible_in_tablet_mode())
+            .constraintSize(this.tablet_mode
+              ? { maxWidth: (this.title_bar_entire_width as number) - (this.title_bar_left_buttons_width as number) - this.search_bar_min_width - 5 * 35 - 30 }
+              : {})
+            .animation(animation_default())
 
           linysShowButton({
             symbol_glyph_target: 'sys.symbol.rectangle_stack',
@@ -478,6 +491,11 @@ struct meowTitleBar {
       .width("100%")
       .height(this.tablet_mode || this.showing_scratching_board ? capsule_bar_height() : 2 * capsule_bar_height() + 10)
       .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
+      .onAreaChange((o, n) => {
+        if (n.width != this.title_bar_entire_width) {
+          this.title_bar_entire_width = n.width;
+        }
+      })
 
       if (this.delayed_load_p2) {
         EstimatedDestination({

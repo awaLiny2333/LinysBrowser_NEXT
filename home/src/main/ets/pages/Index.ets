@@ -634,12 +634,12 @@ struct Index {
             win.maximize().catch((e: BusinessError) => {
               console.error(`[on_fullscreen_switch][maximize] Failed: ${e}`);
             })
-          }
 
-          try {
-            win.setWindowTitleButtonVisible(false, false, false);
-          } catch (e) {
-            console.error(`[on_fullscreen_switch][setWindowTitleButtonVisible] Failed: ${e}`);
+            try {
+              win.setWindowTitleButtonVisible(false, false, false);
+            } catch (e) {
+              console.error(`[on_fullscreen_switch][setWindowTitleButtonVisible] Failed: ${e}`);
+            }
           }
         }
 
