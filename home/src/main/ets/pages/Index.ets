@@ -177,7 +177,7 @@ struct Index {
   }
 
   onBackPress(): boolean {
-    return this.back();
+    return this.back(false);
   }
 
   build() {
@@ -190,12 +190,18 @@ struct Index {
           // Keyboard shortcuts
           Row() {
             Row().keyboardShortcut(this.bunch_of_key_shortcuts.fullscreen.main_key, this.bunch_of_key_shortcuts.fullscreen.modifier, () => {
-              this.fullscreen_mode_immersive = true;
+              if (!this.fullscreen_mode) {
+                // Only set this flag if is ENTERING fullscreen from non-fullscreen state.
+                this.fullscreen_mode_immersive = true;
+              }
               this.fullscreen_mode = !this.fullscreen_mode;
               this.showing_more_options = false;
             })
             Row().keyboardShortcut(this.bunch_of_key_shortcuts.windowed_fullscreen.main_key, this.bunch_of_key_shortcuts.windowed_fullscreen.modifier, () => {
-              this.fullscreen_mode_immersive = false;
+              if (!this.fullscreen_mode) {
+                // Only set this flag if is ENTERING fullscreen from non-fullscreen state.
+                this.fullscreen_mode_immersive = false;
+              }
               this.fullscreen_mode = !this.fullscreen_mode;
               this.showing_more_options = false;
             })
@@ -394,13 +400,13 @@ struct Index {
 
           if (!this.fullscreen_mode_immersive && this.fullscreen_mode) {
             Row({ space: 7 }) {
-              Row() {
+              Row({ space: 5 }) {
                 linysText({
                   text: '  󰖴  '
                 })
                   .opacity(this.on_focus ? 1 : 0.4)
               }
-              .backdropBlur(this.is_Hov_window && this.effects ? 40 : 0)
+              .backdropBlur(this.is_Hov_window && this.effects ? 60 : 0)
               .backgroundColor(this.effects || !this.is_Hov_window ? 'transparent' : this.color_current_secondary)
               .borderColor(this.is_Hov_window && this.effects ? this.color_current_back : 'transparent')
               .shadow(this.is_Hov_window && this.effects ? { radius: 10, color: $r('sys.color.comp_background_secondary') } : { radius: 0 })
@@ -409,18 +415,7 @@ struct Index {
               .height('100%')
               .borderRadius(15)
               .hoverEffect(HoverEffect.Highlight)
-
-              Row()
-                .backdropBlur(this.is_Hov_window && this.effects ? 40 : 0)
-                .backgroundColor(this.effects || !this.is_Hov_window ? 'transparent' : this.color_current_secondary)
-                .borderColor(this.is_Hov_window && this.effects ? this.color_current_back : 'transparent')
-                .shadow(this.is_Hov_window && this.effects ? { radius: 10, color: $r('sys.color.comp_background_secondary') } : { radius: 0 })
-                .animation(animation_default())
-                .borderWidth(1)
-                .height('100%')
-                .width(120)
-                .borderRadius(15)
-            } // Windowed fullscreen control
+            }
             .height(30)
             .alignRules({
               top: { anchor: '__container__', align: VerticalAlign.Top },
@@ -442,7 +437,7 @@ struct Index {
                 }
               }
             })
-          }
+          } // Windowed fullscreen control
         } // Web, progress, and Title bar
         .onAreaChange((o, n) => {
           this.on_main_area_change(o, n);
@@ -622,25 +617,18 @@ struct Index {
         console.info(`[on_fullscreen_switch] FULLSCREEN ON!`);
         if (this.free_window_mode) {
           console.log(`[on_fullscreen_switch][free] this.fullscreen_mode_immersive = ${this.fullscreen_mode_immersive}`);
+
           if (this.fullscreen_mode_immersive) {
+            // ENTER IMMERSIVE
             win.maximize().catch((e: BusinessError) => {
               console.error(`[on_fullscreen_switch][maximize] Failed: ${e}`);
             })
-            try {
-              win.setWindowTitleButtonVisible(false, false, false);
-            } catch (e) {
-              console.error(`[on_fullscreen_switch][setWindowTitleButtonVisible] Failed: ${e}`);
-            }
-          } else {
-            try {
-              if (win.getWindowStatus() == window.WindowStatusType.MAXIMIZE) {
-                win.recover().catch((e: BusinessError) => {
-                  console.error(`[on_fullscreen_switch][recover] Failed: ${e}`);
-                });
-              }
-            } catch (error) {
-              console.error(`[on_fullscreen_switch][recover] Failed: ${error}`);
-            }
+          }
+
+          try {
+            win.setWindowTitleButtonVisible(false, false, false);
+          } catch (e) {
+            console.error(`[on_fullscreen_switch][setWindowTitleButtonVisible] Failed: ${e}`);
           }
         }
 
@@ -656,12 +644,14 @@ struct Index {
          * EXIT FULLSCREEN
          * */
         console.info(`[on_fullscreen_switch] FULLSCREEN OFF! `);
+
         if (this.fullscreen_mode_immersive) {
           win.recover().catch((e: BusinessError) => {
             console.error(`[on_fullscreen_switch][recover] Failed: ${e}`);
           });
           update_window_decor_height_timeout = 200;
         }
+
         win.disableLandscapeMultiWindow().catch((e: BusinessError) => {
           console.error(`[on_fullscreen_switch][enableLandscapeMultiWindow] Failed: ${e}`);
         });
@@ -866,12 +856,14 @@ struct Index {
 
   /**
    * Universal Go back function
+   * @param isESC is this executed by pressing ESC?
    * @returns true if successfully executed <Back> for some effects.
    * */
   back(isESC: boolean = false) {
     let stop_system_back = false;
 
-    if (this.fullscreen_mode) {
+    if (this.fullscreen_mode && !isESC) {
+      // ESC not ok. I need ESC in gaming.
       if (this.handler != null) {
         this.handler.exitFullScreen();
       }

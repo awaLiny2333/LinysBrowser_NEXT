@@ -62,6 +62,7 @@ function WebBuilder(pk: tab_info_packed) {
     })
     .onFullScreenEnter((event) => {
       pk.storage.set('fullscreen_mode', true);
+      pk.storage.set('fullscreen_mode_immersive', true);
       pk.storage.set('fullscreen_handler', event.handler);
     })
     .onFullScreenExit(() => {
