@@ -17,10 +17,17 @@ import { match_domain } from '../../utils/url_tools';
 import lazy { webview } from '@kit.ArkWeb';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import lazy { print_web } from '../../utils/print_tools';
+import { bunch_of_settings } from '../../hosts/bunch_of_settings';
+import { boolean_to_string } from '../../utils/data_operation_tools';
 
 
 @Component
 struct meowTitleFunctionButton {
+  // CONFIG
+  @StorageLink('title_CONFIG_EXTENSIONS') @Watch('CONFIG_BUTTONS_change') CONFIG_EXTENSIONS: boolean = true;
+  @StorageLink('title_CONFIG_BUTTONS') @Watch('CONFIG_BUTTONS_change') CONFIG_BUTTONS: boolean[] = [true, true, true, true, true, true, true, true, true, true, true];
+  MODE_EDIT: boolean = false; // If set to true, then clicking these buttons would modify the CONFIG_BUTTONS variables instead of executing the real functions.
+  MODE_FULL: boolean = false; // If set to true, then all buttons are shown no matter what their settings are.
   // Env
   @StorageLink('DEV_MODE') DEV_MODE: boolean = false;
   @LocalStorageLink('my_window_id') my_window_id: string = '';
@@ -56,7 +63,7 @@ struct meowTitleFunctionButton {
   @LocalStorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  // @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // dialogs
   @State to_fool_woofGeneralManage: boolean = false;
@@ -267,43 +274,66 @@ struct meowTitleFunctionButton {
     Scroll() {
       Row() {
         if (this.DEV_MODE) {
-          ForEach(this.bunch_of_extensions.extensions, (ext: extension, idx: number) => {
-            linysImageButton({
-              path: ext.path_full + '/' + (ext.action_default_icon_path || ext.icon_path),
-              can_hover: true,
-              execution: () => {
-                this.get_me_extension_web(ext);
-              },
-            }).bindTips(ext.action_default_title || ext.name, {
-              appearingTime: 1,
-              disappearingTime: 1,
-              enableArrow: true,
+          if (!this.MODE_EDIT && this.CONFIG_EXTENSIONS) {
+            ForEach(this.bunch_of_extensions.extensions, (ext: extension, idx: number) => {
+              linysImageButton({
+                path: ext.path_full + '/' + (ext.action_default_icon_path || ext.icon_path),
+                can_hover: true,
+                execution: () => {
+                  this.get_me_extension_web(ext);
+                },
+              }).bindTips(ext.action_default_title || ext.name, {
+                appearingTime: 1,
+                disappearingTime: 1,
+                enableArrow: true,
+              })
+            }, (ext: extension) => {
+              return ext.id;
             })
-          }, (ext: extension) => {
-            return ext.id;
-          })
+          }
 
           linysSymbol({
             symbol_glyph_target: 'sys.symbol.root',
             can_hover: true,
           })// Extensions
+            .visibility(this.CONFIG_EXTENSIONS || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
+            .opacity(this.CONFIG_EXTENSIONS || this.MODE_FULL ? 1 : 0.5)
+            .animation(animation_default())
             .onClick(() => {
+              if (this.MODE_EDIT) {
+                this.CONFIG_EXTENSIONS = !this.CONFIG_EXTENSIONS;
+                return;
+              }
               this.Extensions_control.open();
             })
-        }
+        } // Extensions
 
         linysSymbol({
           symbol_glyph_target: 'sys.symbol.save',
           can_hover: true,
         })// Save Page
+          .visibility(this.CONFIG_BUTTONS[0] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
+          .opacity(this.CONFIG_BUTTONS[0] || this.MODE_FULL ? 1 : 0.5)
+          .animation(animation_default())
           .onClick(() => {
+            if (this.MODE_EDIT) {
+              this.CONFIG_BUTTONS[0] = !this.CONFIG_BUTTONS[0];
+              return;
+            }
             this.bunch_of_tabs.archive_onWorkingTab(this.getUIContext().getHostContext()?.tempDir);
           })
         linysSymbol({
           symbol_glyph_target: 'sys.symbol.printer',
           can_hover: true,
         })// Print
+          .visibility(this.CONFIG_BUTTONS[1] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
+          .opacity(this.CONFIG_BUTTONS[1] || this.MODE_FULL ? 1 : 0.5)
+          .animation(animation_default())
           .onClick(() => {
+            if (this.MODE_EDIT) {
+              this.CONFIG_BUTTONS[1] = !this.CONFIG_BUTTONS[1];
+              return;
+            }
             if (this.bunch_of_tabs.workingMainTab().controller) {
               print_web(this.bunch_of_tabs.workingMainTab().controller!, this.getUIContext().getHostContext()!);
             }
@@ -312,56 +342,112 @@ struct meowTitleFunctionButton {
           symbol_glyph_target: 'sys.symbol.star_2_moon',
           can_hover: true,
         })// Dark
+          .visibility(this.CONFIG_BUTTONS[2] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
+          .opacity(this.CONFIG_BUTTONS[2] || this.MODE_FULL ? 1 : 0.5)
+          .animation(animation_default())
           .onClick(() => {
+            if (this.MODE_EDIT) {
+              this.CONFIG_BUTTONS[2] = !this.CONFIG_BUTTONS[2];
+              return;
+            }
             this.woofDarkExempts_control.open();
           })
         linysSymbol({
           symbol_glyph_target: 'sys.symbol.tracking_cookie_interception',
           can_hover: true,
         })// Cookies
+          .visibility(this.CONFIG_BUTTONS[3] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
+          .opacity(this.CONFIG_BUTTONS[3] || this.MODE_FULL ? 1 : 0.5)
+          .animation(animation_default())
           .onClick(() => {
+            if (this.MODE_EDIT) {
+              this.CONFIG_BUTTONS[3] = !this.CONFIG_BUTTONS[3];
+              return;
+            }
             this.cookies_control.open();
           })
         linysSymbol({
           symbol_glyph_target: 'sys.symbol.picture_2',
           can_hover: true,
         })// Image
+          .visibility(this.CONFIG_BUTTONS[4] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
+          .opacity(this.CONFIG_BUTTONS[4] || this.MODE_FULL ? 1 : 0.5)
+          .animation(animation_default())
           .onClick(() => {
+            if (this.MODE_EDIT) {
+              this.CONFIG_BUTTONS[4] = !this.CONFIG_BUTTONS[4];
+              return;
+            }
             this.image_manage_control.open();
           })
         linysSymbol({
           symbol_glyph_target: 'sys.symbol.electric_install',
           can_hover: true,
         })// JS
+          .visibility(this.CONFIG_BUTTONS[5] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
+          .opacity(this.CONFIG_BUTTONS[5] || this.MODE_FULL ? 1 : 0.5)
+          .animation(animation_default())
           .onClick(() => {
+            if (this.MODE_EDIT) {
+              this.CONFIG_BUTTONS[5] = !this.CONFIG_BUTTONS[5];
+              return;
+            }
             this.js_manage_control.open();
           })
         linysSymbol({
           symbol_glyph_target: 'sys.symbol.ad_circle_slash',
           can_hover: true,
         })// Enable ads blocker
+          .visibility(this.CONFIG_BUTTONS[6] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
+          .opacity(this.CONFIG_BUTTONS[6] || this.MODE_FULL ? 1 : 0.5)
+          .animation(animation_default())
           .onClick(() => {
+            if (this.MODE_EDIT) {
+              this.CONFIG_BUTTONS[6] = !this.CONFIG_BUTTONS[6];
+              return;
+            }
             this.woofAdsBlocker_control.open();
           })
         linysSymbol({
           symbol_glyph_target: 'sys.symbol.arrow_counterclockwise_clock',
           can_hover: true,
         })// History
+          .visibility(this.CONFIG_BUTTONS[7] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
+          .opacity(this.CONFIG_BUTTONS[7] || this.MODE_FULL ? 1 : 0.5)
+          .animation(animation_default())
           .onClick(() => {
+            if (this.MODE_EDIT) {
+              this.CONFIG_BUTTONS[7] = !this.CONFIG_BUTTONS[7];
+              return;
+            }
             this.woofHistory_control.open();
           })
         linysSymbol({
           symbol_glyph_target: 'sys.symbol.label',
           can_hover: true,
         })// UA
+          .visibility(this.CONFIG_BUTTONS[8] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
+          .opacity(this.CONFIG_BUTTONS[8] || this.MODE_FULL ? 1 : 0.5)
+          .animation(animation_default())
           .onClick(() => {
+            if (this.MODE_EDIT) {
+              this.CONFIG_BUTTONS[8] = !this.CONFIG_BUTTONS[8];
+              return;
+            }
             this.woofQuickUA_control.open();
           })
         linysSymbol({
           symbol_glyph_target: 'sys.symbol.qrcode',
           can_hover: true,
         })// QRcode
+          .visibility(this.CONFIG_BUTTONS[9] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
+          .opacity(this.CONFIG_BUTTONS[9] || this.MODE_FULL ? 1 : 0.5)
+          .animation(animation_default())
           .onClick(() => {
+            if (this.MODE_EDIT) {
+              this.CONFIG_BUTTONS[9] = !this.CONFIG_BUTTONS[9];
+              return;
+            }
             this.woofQR_control.open();
           })
         linysSymbol({
@@ -370,7 +456,16 @@ struct meowTitleFunctionButton {
             'sys.symbol.arrow_up_left_and_arrow_down_right',
           can_hover: true,
         })// FullScreen
-          .bindMenu(this.FullscreenMenu)
+          .visibility(this.CONFIG_BUTTONS[10] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
+          .opacity(this.CONFIG_BUTTONS[10] || this.MODE_FULL ? 1 : 0.5)
+          .animation(animation_default())
+          .bindMenu(this.MODE_EDIT ? undefined : this.FullscreenMenu)
+          .onClick(() => {
+            if (this.MODE_EDIT) {
+              this.CONFIG_BUTTONS[10] = !this.CONFIG_BUTTONS[10];
+              return;
+            }
+          })
 
       } // Small buttons
       .justifyContent(FlexAlign.End)
@@ -451,6 +546,21 @@ struct meowTitleFunctionButton {
       // console.log(`[Extension][${ext.name}][${ext.id}][${this.my_window_id}] After click: this.showing_ext_node_controller is ${this.showing_ext_node_controller ?
       //   'valid' : 'undefined'}, and this.showing_ext_id = ${this.showing_ext_id}!`);
     }, 10);
+  }
+
+  CONFIG_BUTTONS_change() {
+    console.log(`[meowTitleFunctionButton] Ext = ${this.CONFIG_EXTENSIONS}, Buttons = ${this.CONFIG_BUTTONS}`);
+    bunch_of_settings.set('title_function_extensions', boolean_to_string(this.CONFIG_EXTENSIONS));
+    let config_buttons_str: string = '';
+    for (let index = 0; index < this.CONFIG_BUTTONS.length; index++) {
+      if (this.CONFIG_BUTTONS[index]) {
+        config_buttons_str += '1';
+      } else {
+        config_buttons_str += '0';
+      }
+    }
+    bunch_of_settings.set('title_function_buttons', config_buttons_str);
+    console.log(`[meowTitleFunctionButton] config_buttons_str = ${config_buttons_str}`);
   }
 }
 

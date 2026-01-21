@@ -15,7 +15,7 @@ import { run_time } from '../utils/ui_tools';
 import { MessageEvents, worker } from '@kit.ArkTS';
 import lazy { sendableImage } from '@kit.ImageKit';
 import lazy { refresh_AppStorage_zones } from './zone_actions';
-import lazy { default_new_window_name } from '../hosts/bunch_of_defaults';
+import lazy { default_new_window_name, default_title_function_buttons_amount } from '../hosts/bunch_of_defaults';
 import { refresh_AppStorage_extensions } from './extension_actions';
 
 /**
@@ -371,6 +371,25 @@ async function settings(storage: LocalStorage) {
 
   // Cardboard Box
   AppStorage.setOrCreate('resource_monitor', bunch_of_settings.get('resource_monitor') as boolean);
+
+  // Title function buttons
+  AppStorage.setOrCreate('title_CONFIG_EXTENSIONS', bunch_of_settings.get('title_function_extensions') as boolean);
+  let config_buttons_str = bunch_of_settings.get('title_function_buttons') as string;
+  let bool_config: boolean[] = []
+  for (let index = 0; index < config_buttons_str.length; index++) {
+    const element = config_buttons_str[index];
+    if (element == '1') {
+      bool_config.push(true);
+    } else {
+      bool_config.push(false);
+    }
+  }
+  while (bool_config.length < default_title_function_buttons_amount()) {
+    // Add defaults to the bool_config.
+    bool_config.splice(0, 0, false);
+  }
+  AppStorage.setOrCreate('title_CONFIG_BUTTONS', bool_config);
+  console.log(`[init] title_CONFIG_BUTTONS = ${bool_config}`);
 
   // Timer
   console.log('[init] Settings OK. (' + run_time(storage) + ' ms)');

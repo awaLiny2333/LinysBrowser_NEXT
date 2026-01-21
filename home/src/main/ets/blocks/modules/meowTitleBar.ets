@@ -26,6 +26,7 @@ import lazy meowAppSettings from './meowAppSettings';
 import lazy meowDownloads from './meowDownloads';
 import lazy woofQuickSE from '../../dialogs/quicks/woofQuickSE';
 import lazy woofEasyList from '../../dialogs/managers/woofEasylist';
+import meowTitleFunctionButton from './meowTitleFunctionButtons';
 
 @Component
 struct meowTitleBar {
@@ -391,6 +392,8 @@ struct meowTitleBar {
             .opacity(this.delayed_load_p3 ? 1 : 0.5)
             .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
             .enabled(this.delayed_load_p3)
+
+          meowTitleFunctionButton()
 
           linysShowButton({
             symbol_glyph_target: 'sys.symbol.rectangle_stack',

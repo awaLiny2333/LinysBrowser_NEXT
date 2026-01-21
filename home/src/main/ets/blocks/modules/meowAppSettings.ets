@@ -59,6 +59,7 @@ import lazy woofHistory from '../../dialogs/managers/woofHistory';
 import lazy woofEasyList from '../../dialogs/managers/woofEasylist';
 import linysAniContainer from '../../components/layouts/linysAniContainer';
 import { extension_id_for_path } from '../../processes/extension_actions';
+import meowTitleFunctionButton from './meowTitleFunctionButtons';
 
 // @Reusable
 @Component
@@ -780,6 +781,9 @@ struct meowAppSettings {
                   title: $r('app.string.Index_layout_title'),
                   my_index: 4,
                 }) {
+                  linysText({ text: $r('app.string.Settings_appearance_pin_function_buttons') }) // Pin
+                  meowTitleFunctionButton({ MODE_EDIT: true })
+
                   linysText({ text: $r('app.string.Settings_appearance_title_bar_position') }) // Title bar position
                   SegmentButton({
                     options: this.title_bar_position_tabOptions,

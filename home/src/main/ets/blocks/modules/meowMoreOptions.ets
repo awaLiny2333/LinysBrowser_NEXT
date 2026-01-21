@@ -13,7 +13,6 @@ import linysSwitchWithText from '../../components/toggles/linysSwitchWithText';
 import { modify_zone_name } from '../../processes/zone_actions';
 import { is_legal_filename } from '../../utils/storage_tools';
 import linysFileNameErrorDisplay from '../../components/linysFileNameErrorDisplay';
-import { bunch_of_extensions } from '../../hosts/bunch_of_extensions';
 import lazy woofZones from '../../dialogs/contents/woofZones';
 import meowTitleFunctionButton from './meowTitleFunctionButtons';
 
@@ -330,124 +329,7 @@ struct meowMoreOptions {
           .justifyContent(FlexAlign.Center)
           .alignItems(HorizontalAlign.Start)
 
-          // Scroll() {
-          //   Row() {
-          //     if (this.DEV_MODE) {
-          //       ForEach(this.bunch_of_extensions.extensions, (ext: extension, idx: number) => {
-          //         linysImageButton({
-          //           path: ext.path_full + '/' + (ext.action_default_icon_path || ext.icon_path),
-          //           can_hover: true,
-          //           execution: () => {
-          //             this.get_me_extension_web(ext);
-          //           },
-          //         }).bindTips(ext.action_default_title || ext.name, {
-          //           appearingTime: 1,
-          //           disappearingTime: 1,
-          //           enableArrow: true,
-          //         })
-          //       }, (ext: extension) => {
-          //         return ext.id;
-          //       })
-          //
-          //       linysSymbol({
-          //         symbol_glyph_target: 'sys.symbol.root',
-          //         can_hover: true,
-          //       })// Extensions
-          //         .onClick(() => {
-          //           this.Extensions_control.open();
-          //         })
-          //     }
-          //
-          //     linysSymbol({
-          //       symbol_glyph_target: 'sys.symbol.save',
-          //       can_hover: true,
-          //     })// Save Page
-          //       .onClick(() => {
-          //         this.bunch_of_tabs.archive_onWorkingTab(this.getUIContext().getHostContext()?.tempDir);
-          //       })
-          //     linysSymbol({
-          //       symbol_glyph_target: 'sys.symbol.printer',
-          //       can_hover: true,
-          //     })// Print
-          //       .onClick(() => {
-          //         if (this.bunch_of_tabs.workingMainTab().controller) {
-          //           print_web(this.bunch_of_tabs.workingMainTab().controller!, this.getUIContext().getHostContext()!);
-          //         }
-          //       })
-          //     linysSymbol({
-          //       symbol_glyph_target: 'sys.symbol.star_2_moon',
-          //       can_hover: true,
-          //     })// Dark
-          //       .onClick(() => {
-          //         this.woofDarkExempts_control.open();
-          //       })
-          //     linysSymbol({
-          //       symbol_glyph_target: 'sys.symbol.tracking_cookie_interception',
-          //       can_hover: true,
-          //     })// Cookies
-          //       .onClick(() => {
-          //         this.cookies_control.open();
-          //       })
-          //     linysSymbol({
-          //       symbol_glyph_target: 'sys.symbol.picture_2',
-          //       can_hover: true,
-          //     })// Image
-          //       .onClick(() => {
-          //         this.image_manage_control.open();
-          //       })
-          //     linysSymbol({
-          //       symbol_glyph_target: 'sys.symbol.electric_install',
-          //       can_hover: true,
-          //     })// JS
-          //       .onClick(() => {
-          //         this.js_manage_control.open();
-          //       })
-          //     linysSymbol({
-          //       symbol_glyph_target: 'sys.symbol.ad_circle_slash',
-          //       can_hover: true,
-          //     })// Enable ads blocker
-          //       .onClick(() => {
-          //         this.woofAdsBlocker_control.open();
-          //       })
-          //     linysSymbol({
-          //       symbol_glyph_target: 'sys.symbol.arrow_counterclockwise_clock',
-          //       can_hover: true,
-          //     })// History
-          //       .onClick(() => {
-          //         this.woofHistory_control.open();
-          //       })
-          //     linysSymbol({
-          //       symbol_glyph_target: 'sys.symbol.label',
-          //       can_hover: true,
-          //     })// UA
-          //       .onClick(() => {
-          //         this.woofQuickUA_control.open();
-          //       })
-          //     linysSymbol({
-          //       symbol_glyph_target: 'sys.symbol.qrcode',
-          //       can_hover: true,
-          //     })// QRcode
-          //       .onClick(() => {
-          //         this.woofQR_control.open();
-          //       })
-          //     linysSymbol({
-          //       symbol_glyph_target: this.fullscreen_mode ?
-          //         'sys.symbol.arrow_down_right_and_arrow_up_left' :
-          //         'sys.symbol.arrow_up_left_and_arrow_down_right',
-          //       can_hover: true,
-          //     })// FullScreen
-          //       .bindMenu(this.FullscreenMenu)
-          //
-          //   } // Small buttons
-          //   .justifyContent(FlexAlign.End)
-          // } // Buttons
-          // .scrollable(ScrollDirection.Horizontal)
-          // .scrollBar(BarState.Off)
-          // .edgeEffect(EdgeEffect.Spring)
-          // .visibility(this.visible_when_not_in_page_search())
-          // .animation(animation_default())
-
-          meowTitleFunctionButton()
+          meowTitleFunctionButton({ MODE_FULL: true })
 
           meowDebug() // Debug
             .opacity(0.8)

@@ -177,6 +177,10 @@
       "value": "Title position"
     },
     {
+      "name": "Settings_appearance_pin_function_buttons",
+      "value": "Title bar pins"
+    },
+    {
       "name": "Settings_general_custom_ua",
       "value": "User-agent"
     },
@@ -1127,7 +1131,6 @@
       "name": "fullscreen_notice",
       "value": "Press Back to Exit Fullscreen"
     },
-
     {
       "name": "fullscreen_select_window",
       "value": "Windowed"

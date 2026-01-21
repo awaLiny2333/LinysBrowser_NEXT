@@ -154,3 +154,11 @@ export function default_window_decor_height(windowStorage: LocalStorage): number
     return (AppStorage.get('showing_my_window_alias_non_tablet') as boolean) ? 45 : 37;
   }
 }
+
+/**
+ * Returns the number of total buttons available in the title bar. (Excluding Extensions block)
+ * @returns 11.
+ * */
+export function default_title_function_buttons_amount(): number {
+  return 11;
+}
