@@ -227,6 +227,7 @@ struct woofEasyList {
                   this.uni_fail_prompt_gateway = e.toString();
                 }
                 this.lists = get_EasyLists();
+                this.selected.push(false);
                 apply_EasyList();
               });
             }

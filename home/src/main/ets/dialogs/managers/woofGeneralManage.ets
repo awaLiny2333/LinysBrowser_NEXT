@@ -380,6 +380,7 @@ struct woofGeneralManage {
       this.onAdd(domain);
     }
     this.sites_list.push(domain);
+    this.selected.push(false)
     bunch_of_settings.set(this.sites_list_id, this.sites_list.join("\n"))
   }
 
