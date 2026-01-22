@@ -249,6 +249,7 @@ struct meowBookmarks {
                   this.new_folder();
                 }
               })
+              .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
 
           } // Edit Label TextInput
           .visibility(this.adding_folder || this.adding_bookmark ? Visibility.Visible : Visibility.None)
@@ -270,6 +271,7 @@ struct meowBookmarks {
                 this.new_bookmark();
               })
               .height(capsule_bar_height())
+              .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
 
           } // Edit link TextInput
           .visibility(this.adding_bookmark ? Visibility.Visible : Visibility.None)
@@ -646,6 +648,7 @@ struct bookmarkItem {
           }
           this.is_editing = false;
         })
+        .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
 
     } // Edit label
     .width("100%")
@@ -666,6 +669,7 @@ struct bookmarkItem {
           this.is_editing = false;
         })
         .height(capsule_bar_height())
+        .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
 
     } // Edit link
     .width("100%")

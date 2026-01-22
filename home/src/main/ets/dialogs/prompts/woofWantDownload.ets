@@ -103,6 +103,7 @@ struct woofWantDownload {
             focusControl.requestFocus('woofWantDownload_TextInput_filename');
           }
         })
+        .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
 
       Row({ space: 10 }) {
         linysShowButton({

@@ -146,6 +146,7 @@ struct meowMoreOptions {
               .onBlur(() => {
                 this.storage.setOrCreate('is_search_in_page_focused', false);
               })
+              .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
 
 
             linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass', can_hover: true }) // Submit

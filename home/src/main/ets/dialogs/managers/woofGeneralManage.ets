@@ -266,6 +266,7 @@ struct woofGeneralManage {
                 })
                 .height(capsule_bar_height())
                 .animation(animation_default())
+                .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
 
               linysCapsuleButton({ text: "  󰀓  " })
                 .animation(animation_default())

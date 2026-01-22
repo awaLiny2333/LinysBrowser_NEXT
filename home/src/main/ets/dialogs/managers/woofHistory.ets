@@ -652,6 +652,7 @@ struct SearchInput {
           this.focus_search();
         }
       })
+      .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
   }
 
   /**

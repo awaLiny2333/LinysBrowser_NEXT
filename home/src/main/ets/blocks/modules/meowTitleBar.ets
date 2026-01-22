@@ -259,6 +259,7 @@ struct meowTitleBar {
                 this.submit_searching()
               })
               .selectAll(true)
+              .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
               .id('address_bar')
 
             TextInput({ text: this.search_extracted_keyword })
@@ -299,6 +300,7 @@ struct meowTitleBar {
               })
               .selectAll(true)
               .selectedBackgroundColor(this.color_current_font)
+              .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
               .id('key_bar')
 
           } // Two inputs
@@ -368,7 +370,7 @@ struct meowTitleBar {
                 .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
             }
           }
-        } // Searching bar
+        } // Search bar
         .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
         .height(capsule_bar_height())
         .alignRules(this.tablet_mode ? {

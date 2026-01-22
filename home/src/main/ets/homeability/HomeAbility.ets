@@ -142,6 +142,7 @@ export default class HomeAbility extends UIAbility {
   }
 
   onConfigurationUpdate(newConfig: Configuration): void {
+    console.log(`[onConfigurationUpdate] onConfigurationUpdate! New colorMode: ${newConfig.colorMode}`);
     AppStorage.setOrCreate('currentColorMode', newConfig.colorMode);
   }
 

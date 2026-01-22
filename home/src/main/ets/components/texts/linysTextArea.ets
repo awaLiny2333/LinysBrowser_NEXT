@@ -27,6 +27,7 @@ struct linysTextArea {
       .onChange((v) => {
         this.text = v;
       })
+      .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
   }
 }
 

@@ -54,6 +54,7 @@ struct woofHttpAuthPrompt {
         .onAppear(() => {
           focusControl.requestFocus('woofHttpAuthPrompt_username');
         })
+        .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
 
       TextInput({ text: '', placeholder: $r('app.string.password') }) // Password
         .onChange((value) => {
@@ -72,6 +73,7 @@ struct woofHttpAuthPrompt {
           }
         })
         .height(capsule_bar_height())
+        .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
 
       linysConfirmDenyButtons({
         onConfirm: () => {

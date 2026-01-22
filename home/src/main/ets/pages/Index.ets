@@ -588,15 +588,36 @@ struct Index {
       this.color_current_secondary = $r('sys.color.comp_background_tertiary');
       this.color_current_back = $r('sys.color.comp_background_tertiary');
     }
+
+    this.refresh_window_background_color();
+  }
+
+  refresh_window_background_color() {
+    try {
+      let color = this.background_color() as ResourceColor as string;
+      if (this.effects) {
+        if (this.current_color_mode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK) {
+          color = '#ff000000'; // Set all black
+        } else {
+          color = '#ffffffff'; // Set all white
+        }
+      }
+      console.log(`[refresh_window_background_color] setWindowBackgroundColor: [${color}]!`);
+      this.my_windowClass?.setWindowBackgroundColor(color);
+    } catch (error) {
+      console.error(`[refresh_window_background_color] setWindowBackgroundColor failed: ${error}`);
+    }
   }
 
   on_color_mode_change() {
+    console.log('[on_color_mode_change]!')
     if (this.effects) {
       if (this.current_color_mode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK) {
         this.color_current_font = this.color_dark_font;
       } else {
         this.color_current_font = this.color_light_font;
       }
+      this.refresh_window_background_color();
       return;
     }
     this.refresh_colors();

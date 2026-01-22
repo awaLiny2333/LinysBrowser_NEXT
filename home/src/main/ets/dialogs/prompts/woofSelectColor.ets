@@ -231,6 +231,7 @@ struct woofSelectColor {
               .onSubmit(() => {
               })
               .height(capsule_bar_height())
+              .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
             Blank()
             linysConfirmDenyButtons({
               onConfirm: () => {

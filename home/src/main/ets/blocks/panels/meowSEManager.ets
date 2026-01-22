@@ -151,6 +151,7 @@ struct meowSECardItem {
           this.save_changes();
         })
         .height(capsule_bar_height())
+        .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
 
     } // Edit label
     .width("100%")

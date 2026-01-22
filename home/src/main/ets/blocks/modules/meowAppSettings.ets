@@ -480,6 +480,7 @@ struct meowAppSettings {
                       this.set_save_new_tab_url();
                     })
                     .height(capsule_bar_height())
+                    .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
 
                   linysCapsuleButton({ text: "  󰀻  " })
                   // (this.new_tab_url_edit != bunch_of_tabs.new_tab_url) doesn't change the UI when bunch_of_tabs.new_tab_url is updated.
@@ -507,6 +508,7 @@ struct meowAppSettings {
                       this.set_save_home_url();
                     })
                     .height(capsule_bar_height())
+                    .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
 
                   linysCapsuleButton({ text: "  󰀻  " })
                   // (this.home_url_edit != bunch_of_tabs.home_url) doesn't change the UI when bunch_of_tabs.home_url is updated.
@@ -1337,6 +1339,8 @@ struct meowAppSettings {
                       })
                       .caretColor(this.color_current_font)
                       .selectedBackgroundColor(this.color_current_font)
+                      .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
+
                     linysCapsuleButtonWithText({
                       desc_text: 'Calc ID',
                       button_text: ' :O ',

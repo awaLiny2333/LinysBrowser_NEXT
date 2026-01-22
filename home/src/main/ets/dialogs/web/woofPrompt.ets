@@ -72,6 +72,7 @@ struct woofPrompt {
               this.focus_input();
             }
           })
+          .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
       } else {
         linysTextArea({ init_text: this.value, text: this.promptResult }) // Edit
           .constraintSize({ maxHeight: Math.max(0, this.screen_height - 160) })
