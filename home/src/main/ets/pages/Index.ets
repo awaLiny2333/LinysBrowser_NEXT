@@ -784,7 +784,7 @@ struct Index {
     const reverse_multiplier = this.preferred_hand_reverse_tabs_panel && this.is_shrunk() && is_vertical ? 2 : 1;
     const showing_vertical_tabs = this.showing_tabs && is_vertical;
 
-    let bottom = this.effects ? 10 : 0;
+    let bottom = this.title_bar_position == 'top' && this.effects ? 10 : 0;
 
     // Showing vertical tab in traditional view
     if (!this.effects && showing_vertical_tabs) {
