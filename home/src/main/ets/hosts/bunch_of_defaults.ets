@@ -1,5 +1,6 @@
 import lazy Curves from '@ohos.curves';
 import lazy { resource_to_string } from '../utils/resource_tools';
+import lazy { window } from '@kit.ArkUI';
 
 /**
  * Default fontSize_Extra for texts.
@@ -156,9 +157,40 @@ export function default_window_decor_height(windowStorage: LocalStorage): number
 }
 
 /**
+ * Constants
+ * */
+
+/**
  * Returns the number of total buttons available in the title bar. (Excluding Extensions block)
- * @returns 11.
+ * @returns 12.
  * */
 export function default_title_function_buttons_amount(): number {
-  return 11;
+  return 12;
+}
+
+/**
+ * All window orientation enums.
+ * @returns The GRAND list orz.
+ * */
+export function default_window_orientations(): window.Orientation[] {
+  return [
+    window.Orientation.UNSPECIFIED,
+    window.Orientation.PORTRAIT,
+    window.Orientation.LANDSCAPE,
+    window.Orientation.PORTRAIT_INVERTED,
+    window.Orientation.LANDSCAPE_INVERTED,
+    window.Orientation.AUTO_ROTATION,
+    window.Orientation.AUTO_ROTATION_PORTRAIT,
+    window.Orientation.AUTO_ROTATION_LANDSCAPE,
+    window.Orientation.AUTO_ROTATION_RESTRICTED,
+    window.Orientation.AUTO_ROTATION_PORTRAIT_RESTRICTED,
+    window.Orientation.AUTO_ROTATION_LANDSCAPE_RESTRICTED,
+    window.Orientation.LOCKED,
+    window.Orientation.AUTO_ROTATION_UNSPECIFIED,
+    window.Orientation.USER_ROTATION_PORTRAIT,
+    window.Orientation.USER_ROTATION_LANDSCAPE,
+    window.Orientation.USER_ROTATION_PORTRAIT_INVERTED,
+    window.Orientation.USER_ROTATION_LANDSCAPE_INVERTED,
+    window.Orientation.FOLLOW_DESKTOP
+  ];
 }

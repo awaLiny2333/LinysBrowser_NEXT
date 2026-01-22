@@ -9,7 +9,7 @@
       "default",
       "tablet",
       "2in1",
-//      "wearable"
+      //      "wearable"
     ],
     "deliveryWithInstall": true,
     "installationFree": false,
@@ -29,17 +29,22 @@
         "orientation": "auto_rotation_restricted",
         "continuable": true,
         "preferMultiWindowOrientation": "landscape_auto",
+        "supportWindowMode": [
+          "fullscreen",
+          "split",
+          "floating"
+        ], // Does this help?
         "skills": [
           {
             "entities": [
-              "entity.system.home",
+              "entity.system.home"
             ],
             "actions": [
-              "action.system.home",
+              "action.system.home"
             ],
             "uris": [
               {
-                "type": "general.hyperlink",
+                "type": "general.hyperlink"
               }
             ]
           },

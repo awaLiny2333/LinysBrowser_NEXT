@@ -559,3 +559,18 @@ export function change_window_alias(id: string, alias: string) {
     bunch_of_settings.set('my_window_alias_last', alias);
   }
 }
+
+/**
+ * Sets the display orientation of the window.
+ * @param orientation window.Orientation
+ */
+export function set_orientation(window: window.Window | undefined, orientation: window.Orientation) {
+  return window?.setPreferredOrientation(orientation)
+    .then((data) => {
+      console.log('[setOrientation] Set ' + orientation + ', Returned: ' + JSON.stringify(data));
+      return true;
+    })
+    .catch((err: string) => {
+      console.error('[setOrientation] Failed: ' + JSON.stringify(err));
+    });
+}

@@ -8,17 +8,18 @@ import lazy woofQuickUA from '../../dialogs/quicks/woofQuickUA';
 import lazy woofCookies from '../../dialogs/managers/woofCookies';
 import lazy woofExtensions from '../../dialogs/contents/woofExtensions';
 import lazy woofGeneralManage from '../../dialogs/managers/woofGeneralManage';
-import { animation_default, default_title_function_buttons_amount } from '../../hosts/bunch_of_defaults';
+import { animation_default, default_title_function_buttons_amount, default_window_orientations } from '../../hosts/bunch_of_defaults';
 import lazy { bunch_of_extensions, extension } from '../../hosts/bunch_of_extensions';
 import lazy { ExtNodeController } from '../../objects/ExtWebNode';
 import lazy { detach_show_extension } from '../../processes/web_actions';
-import { storage_of_id } from '../../utils/ui_tools';
+import { set_orientation, storage_of_id } from '../../utils/ui_tools';
 import { match_domain } from '../../utils/url_tools';
 import lazy { webview } from '@kit.ArkWeb';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import lazy { print_web } from '../../utils/print_tools';
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
 import { all_false, boolean_to_string } from '../../utils/data_operation_tools';
+import { window } from '@kit.ArkUI';
 
 
 @Component
@@ -31,11 +32,13 @@ struct meowTitleFunctionButton {
   // Env
   @StorageLink('DEV_MODE') DEV_MODE: boolean = false;
   @LocalStorageLink('my_window_id') my_window_id: string = '';
+  @LocalStorageLink('my_windowClass') my_windowClass: window.Window | undefined = undefined;
   storage: LocalStorage = storage_of_id(this.my_window_id);
   @StorageLink('free_window_mode') free_window_mode: boolean = false;
   @LocalStorageLink('fullscreen_mode') fullscreen_mode: boolean = false;
   @LocalStorageLink('fullscreen_mode_immersive') fullscreen_mode_immersive: boolean = true;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
+  @LocalStorageLink('orientation') orientation: window.Orientation = window.Orientation.AUTO_ROTATION_RESTRICTED;
   // UI
   @LocalStorageLink('compact_mode') compact_mode: boolean = false; // Like PuraX
   @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
@@ -63,7 +66,7 @@ struct meowTitleFunctionButton {
   @LocalStorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
-  // @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
+  @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // dialogs
   @State to_fool_woofGeneralManage: boolean = false;
@@ -229,6 +232,27 @@ struct meowTitleFunctionButton {
   });
 
   @Builder
+  OrientationMenu() {
+    Menu() {
+      ForEach(default_window_orientations(), (ori: window.Orientation, idx: number) => {
+        MenuItem({
+          content: $r('app.string.orientation_select_'.concat(idx.toString())),
+        })
+          .onClick(() => {
+            set_orientation(this.my_windowClass, ori)?.then((r) => {
+              if (r == true) {
+                this.orientation = ori;
+              }
+            })
+          })
+          .backgroundColor(ori == this.orientation ? this.color_current_secondary : undefined)
+      })
+    }
+    .fontColor(this.color_current_font)
+    .backgroundColor(this.color_current_primary)
+  }
+
+  @Builder
   FullscreenMenu() {
     Menu() {
       MenuItem({
@@ -309,15 +333,29 @@ struct meowTitleFunctionButton {
         } // Extensions
 
         linysSymbol({
-          symbol_glyph_target: 'sys.symbol.save',
+          symbol_glyph_target: 'sys.symbol.rectangle_portrait_rotate',
           can_hover: true,
-        })// Save Page
+        })// Orientation
           .visibility(this.CONFIG_BUTTONS[0] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
           .opacity(this.CONFIG_BUTTONS[0] || this.MODE_FULL ? 1 : 0.5)
           .animation(animation_default())
+          .bindMenu(this.MODE_EDIT ? undefined : this.OrientationMenu)
           .onClick(() => {
             if (this.MODE_EDIT) {
               this.CONFIG_BUTTONS[0] = !this.CONFIG_BUTTONS[0];
+              return;
+            }
+          })
+        linysSymbol({
+          symbol_glyph_target: 'sys.symbol.save',
+          can_hover: true,
+        })// Save Page
+          .visibility(this.CONFIG_BUTTONS[1] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
+          .opacity(this.CONFIG_BUTTONS[1] || this.MODE_FULL ? 1 : 0.5)
+          .animation(animation_default())
+          .onClick(() => {
+            if (this.MODE_EDIT) {
+              this.CONFIG_BUTTONS[1] = !this.CONFIG_BUTTONS[1];
               return;
             }
             this.bunch_of_tabs.archive_onWorkingTab(this.getUIContext().getHostContext()?.tempDir);
@@ -326,12 +364,12 @@ struct meowTitleFunctionButton {
           symbol_glyph_target: 'sys.symbol.printer',
           can_hover: true,
         })// Print
-          .visibility(this.CONFIG_BUTTONS[1] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
-          .opacity(this.CONFIG_BUTTONS[1] || this.MODE_FULL ? 1 : 0.5)
+          .visibility(this.CONFIG_BUTTONS[2] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
+          .opacity(this.CONFIG_BUTTONS[2] || this.MODE_FULL ? 1 : 0.5)
           .animation(animation_default())
           .onClick(() => {
             if (this.MODE_EDIT) {
-              this.CONFIG_BUTTONS[1] = !this.CONFIG_BUTTONS[1];
+              this.CONFIG_BUTTONS[2] = !this.CONFIG_BUTTONS[2];
               return;
             }
             if (this.bunch_of_tabs.workingMainTab().controller) {
@@ -342,20 +380,6 @@ struct meowTitleFunctionButton {
           symbol_glyph_target: 'sys.symbol.star_2_moon',
           can_hover: true,
         })// Dark
-          .visibility(this.CONFIG_BUTTONS[2] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
-          .opacity(this.CONFIG_BUTTONS[2] || this.MODE_FULL ? 1 : 0.5)
-          .animation(animation_default())
-          .onClick(() => {
-            if (this.MODE_EDIT) {
-              this.CONFIG_BUTTONS[2] = !this.CONFIG_BUTTONS[2];
-              return;
-            }
-            this.woofDarkExempts_control.open();
-          })
-        linysSymbol({
-          symbol_glyph_target: 'sys.symbol.tracking_cookie_interception',
-          can_hover: true,
-        })// Cookies
           .visibility(this.CONFIG_BUTTONS[3] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
           .opacity(this.CONFIG_BUTTONS[3] || this.MODE_FULL ? 1 : 0.5)
           .animation(animation_default())
@@ -364,12 +388,12 @@ struct meowTitleFunctionButton {
               this.CONFIG_BUTTONS[3] = !this.CONFIG_BUTTONS[3];
               return;
             }
-            this.cookies_control.open();
+            this.woofDarkExempts_control.open();
           })
         linysSymbol({
-          symbol_glyph_target: 'sys.symbol.picture_2',
+          symbol_glyph_target: 'sys.symbol.tracking_cookie_interception',
           can_hover: true,
-        })// Image
+        })// Cookies
           .visibility(this.CONFIG_BUTTONS[4] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
           .opacity(this.CONFIG_BUTTONS[4] || this.MODE_FULL ? 1 : 0.5)
           .animation(animation_default())
@@ -378,12 +402,12 @@ struct meowTitleFunctionButton {
               this.CONFIG_BUTTONS[4] = !this.CONFIG_BUTTONS[4];
               return;
             }
-            this.image_manage_control.open();
+            this.cookies_control.open();
           })
         linysSymbol({
-          symbol_glyph_target: 'sys.symbol.electric_install',
+          symbol_glyph_target: 'sys.symbol.picture_2',
           can_hover: true,
-        })// JS
+        })// Image
           .visibility(this.CONFIG_BUTTONS[5] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
           .opacity(this.CONFIG_BUTTONS[5] || this.MODE_FULL ? 1 : 0.5)
           .animation(animation_default())
@@ -392,12 +416,12 @@ struct meowTitleFunctionButton {
               this.CONFIG_BUTTONS[5] = !this.CONFIG_BUTTONS[5];
               return;
             }
-            this.js_manage_control.open();
+            this.image_manage_control.open();
           })
         linysSymbol({
-          symbol_glyph_target: 'sys.symbol.ad_circle_slash',
+          symbol_glyph_target: 'sys.symbol.electric_install',
           can_hover: true,
-        })// Enable ads blocker
+        })// JS
           .visibility(this.CONFIG_BUTTONS[6] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
           .opacity(this.CONFIG_BUTTONS[6] || this.MODE_FULL ? 1 : 0.5)
           .animation(animation_default())
@@ -406,12 +430,12 @@ struct meowTitleFunctionButton {
               this.CONFIG_BUTTONS[6] = !this.CONFIG_BUTTONS[6];
               return;
             }
-            this.woofAdsBlocker_control.open();
+            this.js_manage_control.open();
           })
         linysSymbol({
-          symbol_glyph_target: 'sys.symbol.arrow_counterclockwise_clock',
+          symbol_glyph_target: 'sys.symbol.ad_circle_slash',
           can_hover: true,
-        })// History
+        })// Enable ads blocker
           .visibility(this.CONFIG_BUTTONS[7] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
           .opacity(this.CONFIG_BUTTONS[7] || this.MODE_FULL ? 1 : 0.5)
           .animation(animation_default())
@@ -420,12 +444,12 @@ struct meowTitleFunctionButton {
               this.CONFIG_BUTTONS[7] = !this.CONFIG_BUTTONS[7];
               return;
             }
-            this.woofHistory_control.open();
+            this.woofAdsBlocker_control.open();
           })
         linysSymbol({
-          symbol_glyph_target: 'sys.symbol.label',
+          symbol_glyph_target: 'sys.symbol.arrow_counterclockwise_clock',
           can_hover: true,
-        })// UA
+        })// History
           .visibility(this.CONFIG_BUTTONS[8] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
           .opacity(this.CONFIG_BUTTONS[8] || this.MODE_FULL ? 1 : 0.5)
           .animation(animation_default())
@@ -434,18 +458,32 @@ struct meowTitleFunctionButton {
               this.CONFIG_BUTTONS[8] = !this.CONFIG_BUTTONS[8];
               return;
             }
-            this.woofQuickUA_control.open();
+            this.woofHistory_control.open();
           })
         linysSymbol({
-          symbol_glyph_target: 'sys.symbol.qrcode',
+          symbol_glyph_target: 'sys.symbol.label',
           can_hover: true,
-        })// QRcode
+        })// UA
           .visibility(this.CONFIG_BUTTONS[9] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
           .opacity(this.CONFIG_BUTTONS[9] || this.MODE_FULL ? 1 : 0.5)
           .animation(animation_default())
           .onClick(() => {
             if (this.MODE_EDIT) {
               this.CONFIG_BUTTONS[9] = !this.CONFIG_BUTTONS[9];
+              return;
+            }
+            this.woofQuickUA_control.open();
+          })
+        linysSymbol({
+          symbol_glyph_target: 'sys.symbol.qrcode',
+          can_hover: true,
+        })// QRcode
+          .visibility(this.CONFIG_BUTTONS[10] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
+          .opacity(this.CONFIG_BUTTONS[10] || this.MODE_FULL ? 1 : 0.5)
+          .animation(animation_default())
+          .onClick(() => {
+            if (this.MODE_EDIT) {
+              this.CONFIG_BUTTONS[10] = !this.CONFIG_BUTTONS[10];
               return;
             }
             this.woofQR_control.open();
@@ -456,13 +494,13 @@ struct meowTitleFunctionButton {
             'sys.symbol.arrow_up_left_and_arrow_down_right',
           can_hover: true,
         })// FullScreen
-          .visibility(this.CONFIG_BUTTONS[10] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
-          .opacity(this.CONFIG_BUTTONS[10] || this.MODE_FULL ? 1 : 0.5)
+          .visibility(this.CONFIG_BUTTONS[11] || this.MODE_EDIT || this.MODE_FULL ? Visibility.Visible : Visibility.None)
+          .opacity(this.CONFIG_BUTTONS[11] || this.MODE_FULL ? 1 : 0.5)
           .animation(animation_default())
           .bindMenu(this.MODE_EDIT ? undefined : this.FullscreenMenu)
           .onClick(() => {
             if (this.MODE_EDIT) {
-              this.CONFIG_BUTTONS[10] = !this.CONFIG_BUTTONS[10];
+              this.CONFIG_BUTTONS[11] = !this.CONFIG_BUTTONS[11];
               return;
             }
           })

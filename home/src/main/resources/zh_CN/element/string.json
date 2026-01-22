@@ -1141,6 +1141,78 @@
       "value": "沉浸全屏"
     },
     {
+      "name": "orientation_select_0",
+      "value": "UNSPECIFIED"
+    },
+    {
+      "name": "orientation_select_1",
+      "value": "PORTRAIT"
+    },
+    {
+      "name": "orientation_select_2",
+      "value": "LANDSCAPE"
+    },
+    {
+      "name": "orientation_select_3",
+      "value": "PORTRAIT_INVERTED"
+    },
+    {
+      "name": "orientation_select_4",
+      "value": "LANDSCAPE_INVERTED"
+    },
+    {
+      "name": "orientation_select_5",
+      "value": "AUTO_ROTATION"
+    },
+    {
+      "name": "orientation_select_6",
+      "value": "AUTO_ROTATION_PORTRAIT"
+    },
+    {
+      "name": "orientation_select_7",
+      "value": "AUTO_ROTATION_LANDSCAPE"
+    },
+    {
+      "name": "orientation_select_8",
+      "value": "AUTO_ROTATION_RESTRICTED"
+    },
+    {
+      "name": "orientation_select_9",
+      "value": "AUTO_ROTATION_PORTRAIT_RESTRICTED"
+    },
+    {
+      "name": "orientation_select_10",
+      "value": "AUTO_ROTATION_LANDSCAPE_RESTRICTED"
+    },
+    {
+      "name": "orientation_select_11",
+      "value": "LOCKED"
+    },
+    {
+      "name": "orientation_select_12",
+      "value": "AUTO_ROTATION_UNSPECIFIED"
+    },
+    {
+      "name": "orientation_select_13",
+      "value": "USER_ROTATION_PORTRAIT"
+    },
+    {
+      "name": "orientation_select_14",
+      "value": "USER_ROTATION_LANDSCAPE"
+    },
+    {
+      "name": "orientation_select_15",
+      "value": "USER_ROTATION_PORTRAIT_INVERTED"
+    },
+    {
+      "name": "orientation_select_16",
+      "value": "USER_ROTATION_LANDSCAPE_INVERTED"
+    },
+    {
+      "name": "orientation_select_17",
+      "value": "FOLLOW_DESKTOP"
+    },
+    {
       "name": "Key_shortcuts_fullscreen",
       "value": "切换全屏模式"
     },
