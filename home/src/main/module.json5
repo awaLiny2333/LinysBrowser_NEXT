@@ -7,6 +7,7 @@
     "mainElement": "HomeAbility",
     "deviceTypes": [
       "default",
+      "phone", // Not adding this would disable the floating window on tablets. wtf?
       "tablet",
       "2in1",
       //      "wearable"
