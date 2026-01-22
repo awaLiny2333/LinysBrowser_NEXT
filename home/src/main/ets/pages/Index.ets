@@ -46,13 +46,15 @@ struct Index {
   @LocalStorageLink('my_window_alias') my_window_alias: string = '';
   @StorageLink('showing_my_window_alias') @Watch('on_showing_my_window_alias_change') showing_my_window_alias: boolean = false;
   @StorageLink('showing_my_window_alias_non_tablet') @Watch('on_showing_my_window_alias_change') showing_my_window_alias_non_tablet: boolean = false;
-  @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   @StorageLink('bunch_of_key_shortcuts') bunch_of_key_shortcuts: bunch_of_key_shortcuts = new bunch_of_key_shortcuts(true);
+  @LocalStorageLink('bunch_of_tabs') bunch_of_tabs: bunch_of_tabs = new bunch_of_tabs(true);
   /**
    * UI Environment */
   @StorageLink('DEV_MODE') DEV_MODE: boolean = false;
   @StorageLink('free_window_mode') @Watch('on_free_window_mode_change') free_window_mode: boolean = false;
-  @StorageLink('preferred_hand_auto') preferred_hand_auto: boolean = false;
+  @StorageLink('currentColorMode') @Watch('on_color_mode_change') current_color_mode: number = 0;
+  @StorageLink('effects') @Watch('on_effects_change') effects: boolean = false;
+  @StorageLink('preferred_hand_auto') preferred_hand_auto: boolean = false; // 适人握持
   @LocalStorageLink('on_focus') on_focus: boolean = true;
   @LocalStorageLink('windowDecorWidth') windowDecorWidth: number = 0;
   @LocalStorageLink('bottomAvoidHeight') bottomAvoidHeight: number = 1;
@@ -75,7 +77,6 @@ struct Index {
   @LocalStorageLink('full_screen_height') full_screen_height: number = 0;
   @LocalStorageLink('fullscreen_mode_immersive') fullscreen_mode_immersive: boolean = true;
   @LocalStorageLink('fullscreen_mode') @Watch('on_fullscreen_switch') fullscreen_mode: boolean = false;
-  @StorageLink('currentColorMode') @Watch('on_color_mode_change') current_color_mode: number = 0;
   /**
    * UI Statuses */
   @LocalStorageLink('fullscreen_handler') handler: FullScreenExitHandler | null = null;
@@ -90,7 +91,6 @@ struct Index {
   @LocalStorageLink('current_url') current_url: string = "=￣ω￣=";
   /**
    * UI params */
-  @StorageLink('effects') @Watch('on_effects_change') effects: boolean = false;
   @LocalStorageLink('title_bar_height') title_bar_height: number = 0;
   @State title_bar_alignRules: AlignRuleOption = {
     middle: { anchor: "__container__", align: HorizontalAlign.Center },
@@ -145,7 +145,7 @@ struct Index {
     // showInSubWindow: true,
     width: "90%",
   });
-  Zones_control: CustomDialogController = new CustomDialogController({
+  zones_control: CustomDialogController = new CustomDialogController({
     builder: woofZones(),
     alignment: DialogAlignment.Center,
     cornerRadius: 26,
@@ -238,7 +238,7 @@ struct Index {
               if (is_some_dialogs_opened(this.storage)) {
                 return;
               }
-              this.Zones_control.open();
+              this.zones_control.open();
             })
             Row().keyboardShortcut(this.bunch_of_key_shortcuts.close_tab.main_key, this.bunch_of_key_shortcuts.close_tab.modifier, () => {
               this.storage.set('universal_close_tab_gateway', this.bunch_of_tabs.main_tab_idx);
@@ -265,7 +265,7 @@ struct Index {
               linysWindowButton({
                 symbol: $r('sys.symbol.square_stack_3d'),
                 execution: () => {
-                  this.Zones_control.open();
+                  this.zones_control.open();
                 }
               })
             } // Window control buttons

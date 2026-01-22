@@ -218,13 +218,13 @@ struct meowTitleFunctionButton {
     cornerRadius: 26,
     width: "90%",
   });
-  EasyList_control: CustomDialogController = new CustomDialogController({
+  easyList_control: CustomDialogController = new CustomDialogController({
     builder: woofEasyList(),
     alignment: DialogAlignment.Center,
     cornerRadius: 26,
     width: "90%",
   });
-  Extensions_control: CustomDialogController = new CustomDialogController({
+  extensions_control: CustomDialogController = new CustomDialogController({
     builder: woofExtensions(),
     alignment: DialogAlignment.Center,
     cornerRadius: 26,
@@ -289,7 +289,7 @@ struct meowTitleFunctionButton {
       desc_text: $r('app.string.Settings_experience_manage_adblock_rules'),
       button_text: "  󰖿  ",
       onExecution: () => {
-        this.EasyList_control.open();
+        this.easyList_control.open();
       }
     })
   }
@@ -328,7 +328,7 @@ struct meowTitleFunctionButton {
                 this.CONFIG_EXTENSIONS = !this.CONFIG_EXTENSIONS;
                 return;
               }
-              this.Extensions_control.open();
+              this.extensions_control.open();
             })
         } // Extensions
 

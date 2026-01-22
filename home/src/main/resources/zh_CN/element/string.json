@@ -1142,75 +1142,75 @@
     },
     {
       "name": "orientation_select_0",
-      "value": "UNSPECIFIED"
+      "value": "未定义／系统判定"
     },
     {
       "name": "orientation_select_1",
-      "value": "PORTRAIT"
+      "value": "竖屏"
     },
     {
       "name": "orientation_select_2",
-      "value": "LANDSCAPE"
+      "value": "横屏"
     },
     {
       "name": "orientation_select_3",
-      "value": "PORTRAIT_INVERTED"
+      "value": "反向竖屏"
     },
     {
       "name": "orientation_select_4",
-      "value": "LANDSCAPE_INVERTED"
+      "value": "反向横屏"
     },
     {
       "name": "orientation_select_5",
-      "value": "AUTO_ROTATION"
+      "value": "自动旋转／不受控制中心控制"
     },
     {
       "name": "orientation_select_6",
-      "value": "AUTO_ROTATION_PORTRAIT"
+      "value": "自动竖向旋转／不受控制中心控制"
     },
     {
       "name": "orientation_select_7",
-      "value": "AUTO_ROTATION_LANDSCAPE"
+      "value": "自动横向旋转／不受控制中心控制"
     },
     {
       "name": "orientation_select_8",
-      "value": "AUTO_ROTATION_RESTRICTED"
+      "value": "自动旋转／控制中心控制／不受系统限制"
     },
     {
       "name": "orientation_select_9",
-      "value": "AUTO_ROTATION_PORTRAIT_RESTRICTED"
+      "value": "自动竖向旋转／控制中心控制"
     },
     {
       "name": "orientation_select_10",
-      "value": "AUTO_ROTATION_LANDSCAPE_RESTRICTED"
+      "value": "自动横向旋转／控制中心控制"
     },
     {
       "name": "orientation_select_11",
-      "value": "LOCKED"
+      "value": "锁定"
     },
     {
       "name": "orientation_select_12",
-      "value": "AUTO_ROTATION_UNSPECIFIED"
+      "value": "自动旋转／控制中心控制／受系统限制"
     },
     {
       "name": "orientation_select_13",
-      "value": "USER_ROTATION_PORTRAIT"
+      "value": "临时竖屏"
     },
     {
       "name": "orientation_select_14",
-      "value": "USER_ROTATION_LANDSCAPE"
+      "value": "临时横屏"
     },
     {
       "name": "orientation_select_15",
-      "value": "USER_ROTATION_PORTRAIT_INVERTED"
+      "value": "临时反向竖屏"
     },
     {
       "name": "orientation_select_16",
-      "value": "USER_ROTATION_LANDSCAPE_INVERTED"
+      "value": "临时反向横屏"
     },
     {
       "name": "orientation_select_17",
-      "value": "FOLLOW_DESKTOP"
+      "value": "跟随桌面"
     },
     {
       "name": "Key_shortcuts_fullscreen",
