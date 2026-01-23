@@ -19,6 +19,7 @@ struct meowSuggestions {
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
   @LocalStorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
   @LocalStorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
+  @LocalStorageLink('topAvoidHeight') topAvoidHeight: number = 1;
   @LocalStorageLink('showing_more_options') showing_more_options: boolean = false;
   @LocalStorageLink('showing_app_settings') showing_app_settings: boolean = false;
   @LocalStorageLink('showing_downloads') showing_downloads: boolean = false;
@@ -82,7 +83,7 @@ struct meowSuggestions {
       top: this.top_margin,
       bottom: this.bottom_margin
     })
-    .height(Math.min(this.content_height, 0.4 * this.screen_height))
+    .height(Math.min(this.content_height, 0.4 * this.screen_height - this.topAvoidHeight))
     .visibility(this.show_suggestions() ? Visibility.Visible : Visibility.None)
     .animation(animation_default())
     .edgeEffect(EdgeEffect.Spring)

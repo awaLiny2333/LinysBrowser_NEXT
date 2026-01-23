@@ -178,7 +178,7 @@
     },
     {
       "name": "Settings_appearance_pin_function_buttons",
-      "value": "Title bar pins \uDB82\uDD42"
+      "value": "Title bar pins \uDB82\uDC3B / \uDB82\uDD42"
     },
     {
       "name": "Settings_general_custom_ua",
@@ -1141,7 +1141,7 @@
     },
     {
       "name": "orientation_select_0",
-      "value": "UNSPECIFIED"
+      "value": "UNSPECIFIED / x Control Center"
     },
     {
       "name": "orientation_select_1",
@@ -1153,35 +1153,35 @@
     },
     {
       "name": "orientation_select_3",
-      "value": "PORTRAIT_INVERTED"
+      "value": "PORTRAIT INVERTED"
     },
     {
       "name": "orientation_select_4",
-      "value": "LANDSCAPE_INVERTED"
+      "value": "LANDSCAPE INVERTED"
     },
     {
       "name": "orientation_select_5",
-      "value": "AUTO_ROTATION"
+      "value": "AUTO / x Control Center"
     },
     {
       "name": "orientation_select_6",
-      "value": "AUTO_ROTATION_PORTRAIT"
+      "value": "AUTO PORTRAIT / x Control Center"
     },
     {
       "name": "orientation_select_7",
-      "value": "AUTO_ROTATION_LANDSCAPE"
+      "value": "AUTO LANDSCAPE / x Control Center"
     },
     {
       "name": "orientation_select_8",
-      "value": "AUTO_ROTATION_RESTRICTED"
+      "value": "AUTO / √ Control Center / x System Limits"
     },
     {
       "name": "orientation_select_9",
-      "value": "AUTO_ROTATION_PORTRAIT_RESTRICTED"
+      "value": "AUTO PORTRAIT / √ Control Center"
     },
     {
       "name": "orientation_select_10",
-      "value": "AUTO_ROTATION_LANDSCAPE_RESTRICTED"
+      "value": "AUTO LANDSCAPE / √ Control Center"
     },
     {
       "name": "orientation_select_11",
@@ -1189,27 +1189,27 @@
     },
     {
       "name": "orientation_select_12",
-      "value": "AUTO_ROTATION_UNSPECIFIED"
+      "value": "AUTO / √ Control Center / √ System Limits"
     },
     {
       "name": "orientation_select_13",
-      "value": "USER_ROTATION_PORTRAIT"
+      "value": "TEMP PORTRAIT"
     },
     {
       "name": "orientation_select_14",
-      "value": "USER_ROTATION_LANDSCAPE"
+      "value": "TEMP LANDSCAPE"
     },
     {
       "name": "orientation_select_15",
-      "value": "USER_ROTATION_PORTRAIT_INVERTED"
+      "value": "TEMP PORTRAIT INVERTED"
     },
     {
       "name": "orientation_select_16",
-      "value": "USER_ROTATION_LANDSCAPE_INVERTED"
+      "value": "TEMP LANDSCAPE INVERTED"
     },
     {
       "name": "orientation_select_17",
-      "value": "FOLLOW_DESKTOP"
+      "value": "FOLLOW DESKTOP"
     },
     {
       "name": "Key_shortcuts_fullscreen",
