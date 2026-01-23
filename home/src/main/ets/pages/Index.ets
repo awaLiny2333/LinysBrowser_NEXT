@@ -97,6 +97,7 @@ struct Index {
     bottom: { anchor: "__container__", align: VerticalAlign.Bottom }
   };
   @StorageLink('bottom_avoid') bottom_avoid: boolean = true;
+  @StorageLink('navigation_indicator') navigation_indicator: boolean = true;
   @LocalStorageLink('shortcut_scroll_offset') shortcut_scroll_offset: number = 0;
   @StorageLink('homepage_background') homepage_background: PixelMap | undefined = undefined;
   @State is_Hov_window: boolean = false;
@@ -172,6 +173,10 @@ struct Index {
 
     // Init color
     this.on_color_change();
+
+    this.my_windowClass?.setSpecificSystemBarEnabled('navigationIndicator', this.navigation_indicator).catch((e: BusinessError) => {
+      console.error(`[setSpecificSystemBarEnabled] Failed: ${e}`);
+    });
 
     console.log(`[Meow][Index] Finished Loading Index! (${run_time(this.storage)} ms)`);
   }
@@ -457,7 +462,7 @@ struct Index {
         .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
 
         Row()// Bottom Bar Avoid
-          .height((this.title_bar_position == "bottom" || this.bottom_avoid) ? this.height_of_bottom_avoid() : 0)
+          .height(this.bottom_avoid ? this.height_of_bottom_avoid() : 0)
           .animation(this.delayed_load_p3 ? animation_default() : { duration: 0 })
           .width("100%")
 

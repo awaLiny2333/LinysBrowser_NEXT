@@ -10,7 +10,7 @@ import {
   minimum_card_width,
   url_default_blank
 } from '../../hosts/bunch_of_defaults';
-import { ItemRestriction, SegmentButton, SegmentButtonOptions, SegmentButtonTextItem } from '@kit.ArkUI';
+import { ItemRestriction, SegmentButton, SegmentButtonOptions, SegmentButtonTextItem, window } from '@kit.ArkUI';
 import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import { bunch_of_history } from '../../hosts/bunch_of_history';
 import {
@@ -71,6 +71,7 @@ struct meowAppSettings {
   @StorageLink('free_window_mode') free_window_mode: boolean = false;
   @LocalStorageLink('my_window_alias') my_window_alias: string = '';
   @LocalStorageLink('my_window_id') my_window_id: string = '';
+  @LocalStorageLink('my_windowClass') my_windowClass: window.Window | undefined = undefined;
   storage: LocalStorage = storage_of_id(this.my_window_id);
   @Link @Watch('on_open_or_close_panel') showing_app_settings: boolean;
   // Hosts and environment
@@ -151,6 +152,7 @@ struct meowAppSettings {
   @StorageLink('sys_back_to_access_backward') sys_back_to_access_backward: boolean = false;
   @StorageLink('esc_to_access_backward') esc_to_access_backward: boolean = false;
   @StorageLink('bottom_avoid') bottom_avoid: boolean = true;
+  @StorageLink('navigation_indicator') navigation_indicator: boolean = true;
   @StorageLink('resource_monitor') resource_monitor: boolean = true;
   @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
   @StorageLink('web_force_dark_mode_exemptions') web_force_dark_mode_exemptions: string[] = [];
@@ -776,6 +778,17 @@ struct meowAppSettings {
                       bunch_of_settings.set('bottom_avoid', this.bottom_avoid);
                     }
                   }) // Enable bottom_avoid
+
+                  linysSwitchWithText({
+                    text: $r('app.string.Settings_appearance_navigation_indicator'),
+                    toggle_state: this.navigation_indicator,
+                    onExecution: () => {
+                      bunch_of_settings.set('navigation_indicator', this.navigation_indicator);
+                      this.my_windowClass?.setSpecificSystemBarEnabled('navigationIndicator', this.navigation_indicator).catch((e: BusinessError) => {
+                        console.error(`[meowAppSettings][setSpecificSystemBarEnabled] Failed: ${e}`);
+                      });
+                    }
+                  }) // Enable navigation_indicator
                 } // Individuals
 
                 settingsSubCard({

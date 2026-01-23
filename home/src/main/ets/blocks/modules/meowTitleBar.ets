@@ -46,6 +46,7 @@ struct meowTitleBar {
   @LocalStorageLink('topAvoidHeight') topAvoidHeight: number = 1;
   @LocalStorageLink('leftAvoidWidth') leftAvoidWidth: number = 1;
   @LocalStorageLink('rightAvoidWidth') rightAvoidWidth: number = 1;
+  @StorageLink('bottom_avoid') bottom_avoid: boolean = true;
   // Current environment
   @Link title_bar_alignRules: AlignRuleOption;
   @State search_input_unified: string = "";
@@ -538,7 +539,9 @@ struct meowTitleBar {
       } // Suggestions
 
       if (this.title_bar_position == "bottom") {
-        Row().height(this.free_window_mode ? 0 : 5)
+        Row()
+          .height(this.free_window_mode || (!this.bottom_avoid && this.tablet_mode) ? 0 : 5)
+          .animation(animation_default())
       } // Space
     } // Title Bars
     .constraintSize({

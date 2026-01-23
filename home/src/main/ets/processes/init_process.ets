@@ -316,6 +316,7 @@ async function settings(storage: LocalStorage) {
 
   // Bottom avoid
   AppStorage.setOrCreate('bottom_avoid', bunch_of_settings.get('bottom_avoid') as boolean);
+  AppStorage.setOrCreate('navigation_indicator', bunch_of_settings.get('navigation_indicator') as boolean);
 
   // General - Surf
   // NO NEED, as these data would be put to bunch_of_tabs

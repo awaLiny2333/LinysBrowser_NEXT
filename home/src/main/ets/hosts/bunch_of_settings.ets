@@ -22,6 +22,7 @@ export class bunch_of_settings {
     bunch_of_settings.register_setting('tabs_style', 'string', 'vertical');
     bunch_of_settings.register_setting('tabs_style_non_tablet_mode', 'string', 'vertical');
     bunch_of_settings.register_setting('bottom_avoid', 'boolean', 'true');
+    bunch_of_settings.register_setting('navigation_indicator', 'boolean', 'true');
     bunch_of_settings.register_setting('effects', 'boolean', 'false');
     bunch_of_settings.register_setting('title_function_buttons', 'string', '01'); // ltr
     bunch_of_settings.register_setting('title_function_extensions', 'boolean', 'false');

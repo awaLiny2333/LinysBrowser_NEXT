@@ -149,6 +149,10 @@
       "value": "底部避让 \uDB80\uDFB3 / \uDB82\uDC3B"
     },
     {
+      "name": "Settings_appearance_navigation_indicator",
+      "value": "导航条 \uDB80\uDFB3 / \uDB82\uDC3B"
+    },
+    {
       "name": "Settings_appearance_windows",
       "value": "窗口"
     },
