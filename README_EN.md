@@ -110,6 +110,8 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 - [ ] Distributed data sync for History & Bookmarks, etc.
 - [ ] Require biometric access control for History
 - [ ] Require biometric access control for Bookmarks
+- [x] Print
+- [x] Save page as MHTML
 - [x] Open HTML files
 - [x] Search History
 - [x] Customizable homepage background
@@ -130,6 +132,9 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 - [x] UA switching and customizations. (UA related settings)
 - [x] Reopen tabs when launching.
 - [x] Multi-view parallel browsing.
+- [x] Hide navigation indicator / bottom avoid
+- [x] IME immersive appearance
+- [x] Force screen orientation
 
 ### Experience
 
