@@ -42,7 +42,7 @@ struct woofConfirm {
         init_text:this.desc,
         text: this.desc_edit
       })
-        .constraintSize({ maxHeight: Math.max(0, this.screen_height - 160) })
+        .constraintSize({ maxHeight: Math.max(0, this.screen_height * 0.9 - 140) })
 
       linysConfirmDenyButtons({
         onConfirm: () => {

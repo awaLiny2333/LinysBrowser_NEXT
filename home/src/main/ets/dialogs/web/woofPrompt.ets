@@ -18,6 +18,7 @@ struct woofPrompt {
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // UI display
   @LocalStorageLink('screen_height') screen_height: number = 0;
+  @State fixed_height_title: number = 0;
   // Actions
   onConfirm?: () => void;
   onDeny?: () => void;
@@ -46,6 +47,9 @@ struct woofPrompt {
 
       linysText({ text: this.message, max_lines: 999 }) // Prompt message
         .width("100%")
+        .onAreaChange((o, n) => {
+          this.fixed_height_title = n.height as number;
+        })
 
       if (this.single_line) {
         TextInput({ text: this.value })
@@ -75,7 +79,7 @@ struct woofPrompt {
           .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
       } else {
         linysTextArea({ init_text: this.value, text: this.promptResult }) // Edit
-          .constraintSize({ maxHeight: Math.max(0, this.screen_height - 160) })
+          .constraintSize({ maxHeight: Math.max(0, this.screen_height * 0.9 - this.fixed_height_title - 160) })
           .id(this.my_id)
           .onAppear(() => {
             // Auto focus on history
