@@ -10,6 +10,7 @@ function WebBuilder(pk: tab_info_packed) {
   //   Text(pk.tab_force_dark ? 'tab_force_dark!' : 'tab_force_dark NO')
   //   Text(pk.tab_disable_js ? 'tab_disable_js!' : 'tab_disable_js NO')
   //   Text(pk.tab_disable_image ? 'tab_disable_image!' : 'tab_disable_image NO')
+
   Web({
     src: src_of_tab_index(pk),
     controller: pk?.controller

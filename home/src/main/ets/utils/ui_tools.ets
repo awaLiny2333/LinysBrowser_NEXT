@@ -390,7 +390,8 @@ export function listen_holding_hand() {
           if (AppStorage.get('preferred_hand_auto') as boolean == true) {
             // Set preferred hand if recognized
             if (m == motion.HoldingHandStatus.UNKNOWN_STATUS || m == motion.HoldingHandStatus.NOT_HELD || m == motion.HoldingHandStatus.BOTH_HANDS_HELD) {
-              AppStorage.set('preferred_hand_left_or_right', bunch_of_settings.get('preferred_hand_left_or_right') as boolean)
+              // AppStorage.set('preferred_hand_left_or_right', bunch_of_settings.get('preferred_hand_left_or_right') as boolean)
+              // Do nothing
             } else {
               let hand = (m == motion.HoldingHandStatus.LEFT_HAND_HELD) ? 'left' : 'right';
               AppStorage.set('preferred_hand_left_or_right', hand);
