@@ -270,7 +270,11 @@
     },
     {
       "name": "permission_reason_READ_PASTEPOARD",
-      "value": "For suggesting shortcuts to urls in clipboard"
+      "value": "For pasting contents in web."
+    },
+    {
+      "name": "permission_reason_VIBRATE",
+      "value": "A strong feeling"
     },
     {
       "name": "Downloads_copied",
@@ -873,7 +877,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "Happy Neow Year! Thank you for your love and support!!"
+      "value": "Happy Neow Year! Thank you for your love and support!!\nContext Menu!"
     },
     {
       "name": "Whats_new_content_extra",
@@ -1404,32 +1408,56 @@
       "value": "CPU"
     },
     {
+      "name": "Menu",
+      "value": "Context Menu"
+    },
+    {
+      "name": "Menu_right_click",
+      "value": "Enable context menu"
+    },
+    {
+      "name": "Menu_image_preview",
+      "value": "Image preview"
+    },
+    {
+      "name": "Menu_web_preview",
+      "value": "Web preview"
+    },
+    {
+      "name": "Menu_image_preview_placeholder",
+      "value": "Image ↓"
+    },
+    {
       "name": "Menu_select_all",
-      "value": "Select All"
+      "value": "Select All ↓"
     },
     {
       "name": "Menu_copy",
-      "value": "Copy"
+      "value": "Copy ↓"
     },
     {
       "name": "Menu_cut",
-      "value": "Cut"
+      "value": "Cut ↓"
     },
     {
       "name": "Menu_paste",
-      "value": "Paste"
+      "value": "Paste ↓"
+    },
+    {
+      "name": "Menu_visit",
+      "value": "Visit ↓"
     },
     {
       "name": "Menu_copy_link",
-      "value": "Copy Link"
+      "value": "Copy Link ↓"
     },
     {
       "name": "Menu_copy_image",
-      "value": "Copy Image"
+      "value": "Copy Image ↓"
     },
     {
       "name": "Menu_download_image",
-      "value": "Download Image"
+      "value": "Download Image ↓"
     },
     {
       "name": "Save_to_files",

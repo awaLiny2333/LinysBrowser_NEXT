@@ -192,6 +192,9 @@ struct meowAppSettings {
   });
   @StorageLink('continuation_auto_exit') continuation_auto_exit: boolean = false;
   @StorageLink('continuation_auto_close_tab') continuation_auto_close_tab: boolean = true;
+  @StorageLink('web_context_menu_enabled') web_context_menu_enabled: boolean = true;
+  @StorageLink('web_context_menu_image_preview') web_context_menu_image_preview: boolean = true;
+  @StorageLink('web_context_menu_web_preview') web_context_menu_web_preview: boolean = true;
   // Downloads
   @StorageLink('direct_download') direct_download: boolean = false;
   @StorageLink('direct_download_auto_open') direct_download_auto_open: boolean = false;
@@ -544,6 +547,37 @@ struct meowAppSettings {
                 title: $r('app.string.Settings_Experience'),
                 my_index: 2,
               }) {
+
+
+                settingsSubCard({
+                  icon: '󰅅',
+                  title: $r('app.string.Menu'),
+                  my_index: 2,
+                }) {
+                  linysSwitchWithText({
+                    text: $r('app.string.Menu_right_click'),
+                    toggle_state: this.web_context_menu_enabled,
+                    onExecution: () => {
+                      bunch_of_settings.set('web_context_menu_enabled', this.web_context_menu_enabled);
+                    }
+                  }) // web_context_menu_enabled
+                  linysSwitchWithText({
+                    text: $r('app.string.Menu_image_preview'),
+                    toggle_state: this.web_context_menu_image_preview,
+                    onExecution: () => {
+                      bunch_of_settings.set('web_context_menu_image_preview', this.web_context_menu_image_preview);
+                    }
+                  }) // web_context_menu_image_preview
+                  linysSwitchWithText({
+                    text: $r('app.string.Menu_web_preview'),
+                    toggle_state: this.web_context_menu_web_preview,
+                    onExecution: () => {
+                      bunch_of_settings.set('web_context_menu_web_preview', this.web_context_menu_web_preview);
+                    }
+                  }) // web_context_menu_web_preview
+
+                } // Context Menu
+
                 settingsSubCard({
                   icon: '󰏯',
                   title: $r('app.string.Index_downloads_title'),

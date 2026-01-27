@@ -17,6 +17,12 @@ import lazy woofWantJump from '../../dialogs/prompts/woofWantJump';
 import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
 import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
 import linysText from '../../components/texts/linysText';
+import { copy } from '../../utils/clipboard_tools';
+import linysSymbol from '../../components/texts/linysSymbol';
+import { meowPx2vp } from '../../utils/environment_tools';
+import { is_legal_ipv4, is_legal_url } from '../../utils/url_tools';
+import linysTextTitle from '../../components/texts/linysTextTitle';
+import { share_link, share_text } from '../../utils/link_tools';
 
 @Component
 struct meowWebView {
@@ -28,14 +34,19 @@ struct meowWebView {
   // Environments
   @StorageLink('currentColorMode') current_color_mode: number = 0;
   @LocalStorageLink('tablet_mode') tablet_mode: boolean = false;
+  @StorageLink('free_window_mode') free_window_mode: boolean = false;
   @LocalStorageLink('fullscreen_mode') @Watch('on_fullscreen_change') fullscreen_mode: boolean = false;
   @LocalStorageLink('fullscreen_handler') handler: FullScreenExitHandler | null = null;
   @LocalStorageLink('on_focus') @Watch('on_focus_change') on_focus: boolean = true;
   @LocalStorageLink('sharable_continuable') sharable_continuable: boolean = false;
+  @LocalStorageLink('screen_width') screen_width: number = 0;
+  @LocalStorageLink('screen_height') screen_height: number = 0;
   /**
    * Controls */
   @LocalStorageLink('current_title') current_title: string = "=￣ω￣=";
   @LocalStorageLink('current_url') @Watch('on_current_url_change') current_url: string = "=￣ω￣=";
+  @LocalStorageLink('current_is_loading') current_is_loading: boolean = true;
+  @LocalStorageLink('search_extracted_field_available') search_extracted_field_available: boolean = false;
   // Settings
   @StorageLink('use_adblock') @Watch('on_use_adblock_state_change') use_adblock: boolean = true;
   @StorageLink('web_force_dark_mode') web_force_dark_mode: boolean = false;
@@ -44,6 +55,8 @@ struct meowWebView {
   @LocalStorageLink('potential_jump_link') @Watch('on_potential_jump_link_change') potential_jump_link: string = '';
   @LocalStorageLink('extra_background') extra_background: boolean = false;
   @State my_opacity: number = 0;
+  // Colors
+  @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
   // Download
   @LocalStorageLink('uni_webDownloadItem_gateway') @Watch('on_download_request') uni_webDownloadItem_gateway: webview.WebDownloadItem | undefined = undefined;
   @StorageLink('print_adapter') print_adapter: print.PrintDocumentAdapter | undefined = undefined;
@@ -129,12 +142,227 @@ struct meowWebView {
   });
   // Else
   @LocalStorageLink('meowWebView_init_OK') init_OK: boolean = false;
+  // Context menu settings
+  @StorageLink('web_context_menu_enabled') web_context_menu_enable: boolean = false;
+  @StorageLink('web_context_menu_image_preview') web_context_menu_image_preview: boolean = false;
+  @StorageLink('web_context_menu_web_preview') web_context_menu_web_preview: boolean = false;
+  // Context menu contents
+  @LocalStorageLink('web_context_menu_event') @Watch('on_web_context_menu_event') web_context_menu_event: OnContextMenuShowEvent | undefined = undefined;
+  @State web_context_menu_show: boolean = false;
+  @State web_context_menu_event_result: WebContextMenuResult | undefined = undefined;
+  @State web_context_selected_text: string = 'text'
+  @State web_context_selected_url: string = 'url'
+  @State web_context_selected_url_unfiltered: string = 'url_unfiltered'
+  @State web_context_source_url: string = 'url_unfiltered'
+  @State web_context_is_editable: boolean = false;
+  @State web_context_has_image: boolean = false;
+  @State web_context_menu_x: number = 0;
+  @State web_context_menu_y: number = 0;
   // Toasts
   @State show_toast_fullscreen: boolean = false;
 
   aboutToAppear(): void {
     console.log(' \n[meowWebView][aboutToAppear] this.bunch_of_tabs.my_id: ' + this.bunch_of_tabs.my_id + ' (' + run_time(this.storage) + 'ms)\n ');
     set_continuable(this.getUIContext().getHostContext() as common.UIAbilityContext, false);
+  }
+
+  @Builder
+  contentCardBuilder(content: string) {
+    Flex({
+      direction: !(this.tablet_mode || this.free_window_mode) ? FlexDirection.Column : FlexDirection.Row
+    }) {
+      Column() {
+        linysText({ text: content, max_lines: (this.tablet_mode || this.free_window_mode) ? 10 : 3 })
+          .onClick(() => {
+            if (is_legal_url(content)) {
+              this.storage.set('universal_new_tab_gateway', [content, false]);
+            }
+            copy(content)
+          })
+          .padding(5)
+          .hoverEffect(HoverEffect.Highlight)
+          .borderRadius(5)
+        Row() {
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.text_clipboard', can_hover: true }) // Copy
+            .onClick(() => {
+              copy(content)
+            })
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right', can_hover: true }) // Visit
+            .onClick(() => {
+              this.storage.set('universal_new_tab_gateway', [content, false]);
+            })
+            .opacity(is_legal_url(content) || is_legal_ipv4(content) ? 1 : 0.5)
+            .enabled(is_legal_url(content) || is_legal_ipv4(content))
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass_house', can_hover: true }) // Search Here
+            .onClick(() => {
+              let se = this.storage.get('search_extracted_engine') as string;
+              let target = se.replaceAll('%s', encodeURIComponent(content));
+              this.storage.set('universal_new_tab_gateway', [target, false]);
+            })
+            .opacity(this.search_extracted_field_available ? 1 : 0.5)
+            .enabled(this.search_extracted_field_available)
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass', can_hover: true }) // Search Default
+            .onClick(() => {
+              let se = AppStorage.get('search_engine') as string;
+              let target = se.replaceAll('%s', encodeURIComponent(content));
+              this.storage.set('universal_new_tab_gateway', [target, false]);
+            })
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.share', can_hover: true }) // Share
+            .onClick(() => {
+              if (this.getUIContext().getHostContext()) {
+                if (is_legal_url(content) || is_legal_ipv4(content)) {
+                  share_link(content, content, this.getUIContext().getHostContext()!);
+                } else {
+                  share_text(content, this.getUIContext().getHostContext()!);
+                }
+              }
+            })
+        } // Buttons
+      }
+      .alignItems(HorizontalAlign.Start)
+      .layoutWeight(this.tablet_mode || this.free_window_mode ? 1 : undefined)
+
+      if ((is_legal_url(content) || is_legal_ipv4(content)) && this.web_context_menu_web_preview) {
+        Row() {
+          Web({ src: content, controller: new webview.WebviewController() })
+            .databaseAccess(true)
+            .fileAccess(true)
+            .domStorageAccess(true)
+            .multiWindowAccess(true)
+            .mixedMode(MixedMode.All)
+            .allowWindowOpenMethod(true)
+            .mediaOptions({ audioExclusive: false })
+            .darkMode(WebDarkMode.Auto) // Dark mode!
+            .forceDarkAccess(this.bunch_of_tabs.workingMainTab().tab_force_dark) // Force dark mode
+            .javaScriptAccess(!this.bunch_of_tabs.workingMainTab().tab_disable_js)
+            .imageAccess(!this.bunch_of_tabs.workingMainTab().tab_disable_image)
+            .onlineImageAccess(!this.bunch_of_tabs.workingMainTab().tab_disable_image)
+            .borderRadius(6)
+        }
+        .hoverEffect(HoverEffect.Highlight)
+        .height(this.tablet_mode || this.free_window_mode ? 400 : 0.4 * this.screen_height)
+        .padding(5)
+        .borderRadius(10)
+        .layoutWeight(this.tablet_mode || this.free_window_mode ? 3 : undefined)
+      }
+    }
+  }
+
+  @Builder
+  imageCardBuilder(url: string) {
+    Column() {
+      Row() {
+        if (this.web_context_menu_image_preview) {
+          Image(url)
+            .width(Math.min(200, this.screen_width - 100))
+            .borderRadius(6)
+        } else {
+          linysTextTitle({ text: $r('app.string.Menu_image_preview_placeholder') })
+            .opacity(0.6)
+        }
+      }
+      .padding(5)
+      .borderRadius(10)
+      .hoverEffect(this.web_context_menu_image_preview ? HoverEffect.Highlight : HoverEffect.None)
+      .onClick(() => {
+        this.storage.set('universal_new_tab_gateway', [url, false]);
+      })
+
+      Row() {
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.text_clipboard', can_hover: true }) // Copy
+          .onClick(() => {
+            this.web_context_menu_event_result?.copyImage();
+          })
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right', can_hover: true }) // Visit
+          .onClick(() => {
+            this.storage.set('universal_new_tab_gateway', [url, false]);
+          })
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.download', can_hover: true }) // Download
+          .onClick(() => {
+            try {
+              this.bunch_of_tabs.workingMainTab().controller?.startDownload(url);
+            } catch (error) {
+              this.storage.setOrCreate('universal_fail_prompt_desc_gateway', error.toString());
+              console.error(`[ContextMenu] Download image failed: ${error}`);
+            }
+          })
+      }
+    }
+    .alignItems(HorizontalAlign.Start)
+  }
+
+  @Builder
+  MenuBuilder() {
+    Column() {
+      Row() {
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left', can_hover: true, })// Backward
+          .enabled(this.bunch_of_tabs.current_accessBackward)
+          .opacity(this.bunch_of_tabs.current_accessBackward ? 1 : 0.5)
+          .onClick(() => {
+            this.bunch_of_tabs.goBackward_onWorkingTab();
+          })
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right', can_hover: true, })// Forward
+          .enabled(this.bunch_of_tabs.current_accessForward)
+          .opacity(this.bunch_of_tabs.current_accessForward ? 1 : 0.5)
+          .onClick(() => {
+            this.bunch_of_tabs.goForward_onWorkingTab();
+          })
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_clockwise', can_hover: true }) // Refresh
+          .onClick(() => {
+            if (!this.current_is_loading) {
+              this.refresh_page();
+            }
+          })
+          .opacity(!this.current_is_loading ? 1 : 0.5)
+          .enabled(!this.current_is_loading)
+
+        // Row().width(10) // Divide?
+
+        Row() {
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.selector', can_hover: true }) // Select all
+            .onClick(() => {
+              this.web_context_menu_event_result?.selectAll();
+            })
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square_dashed_on_square', can_hover: true }) // Paste
+            .onClick(() => {
+              this.web_context_menu_event_result?.paste();
+            })
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.cut', can_hover: true }) // Cut
+            .onClick(() => {
+              this.web_context_menu_event_result?.cut();
+            })
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.undo', can_hover: true }) // Undo
+            .onClick(() => {
+              this.web_context_menu_event_result?.undo();
+            })
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.redo', can_hover: true }) // Redo
+            .onClick(() => {
+              this.web_context_menu_event_result?.redo();
+            })
+        }
+        .enabled(this.web_context_is_editable)
+        .opacity(this.web_context_is_editable ? 1 : 0.5)
+      } // Buttons
+      if (this.web_context_selected_text) {
+        this.contentCardBuilder(this.web_context_selected_text);
+      }
+      if (this.web_context_selected_url) {
+        this.contentCardBuilder(this.web_context_selected_url);
+      }
+      if (this.web_context_source_url) {
+        this.contentCardBuilder(this.web_context_source_url);
+      }
+      if (this.web_context_selected_url_unfiltered && this.web_context_selected_url != this.web_context_selected_url_unfiltered) {
+        this.contentCardBuilder(this.web_context_selected_url_unfiltered);
+      }
+      if (this.web_context_has_image) {
+        this.imageCardBuilder(this.web_context_source_url);
+      }
+    }
+    .alignItems(HorizontalAlign.Start)
+    .padding(1)
+
+    // .constraintSize(this.free_window_mode ? { maxWidth: this.screen_width * 0.75 } : {})
   }
 
   build() {
@@ -202,6 +430,26 @@ struct meowWebView {
       init_web(this.storage);
       this.my_opacity = 1;
       console.log(`[Meow][meowWebView] onAppear! (${run_time(this.storage)} ms)`);
+    })
+    .bindContextMenu(this.web_context_menu_show, this.MenuBuilder, {
+      enableArrow: false,
+      placement: Placement.LeftTop,
+      anchorPosition: {
+        x: this.web_context_menu_x,
+        y: this.web_context_menu_y
+      },
+      onWillDisappear: () => {
+        this.web_context_menu_show = false;
+      },
+      // backgroundColor: '#00000000',
+      backgroundColor: this.color_current_primary,
+      hapticFeedbackMode: HapticFeedbackMode.AUTO,
+      // borderRadius: 14
+      // onStateChange: (e) => {x
+      //   if (!e.isVisible) {
+      //     this.web_context_menu_show = false;
+      //   }
+      // },
     })
   }
 
@@ -307,15 +555,13 @@ struct meowWebView {
 
   on_permission_request_event() {
     if (this.permission_request_event) {
-      this.process_permission_request(this.permission_request_event);
+      this.request_permission(this.permission_request_event);
     }
   }
 
   on_potential_jump_link_change() {
     this.woofLinkJumper_control.open();
   }
-
-  // Operations
 
   /**
    * Enable ads block for all tabs.
@@ -352,6 +598,70 @@ struct meowWebView {
     this.woofWantDownload_control.open();
     console.log('[Meow][meowWebView] on_download_request!');
   }
+
+  on_web_context_menu_event() {
+    if (!this.web_context_menu_event) {
+      console.error(`[on_web_context_menu_event] is undefined?`);
+      return;
+    }
+    if (!this.web_context_menu_enable) {
+      return;
+    }
+
+    // Data extraction
+    this.web_context_menu_x = meowPx2vp(this.web_context_menu_event.param.x());
+    this.web_context_menu_y = meowPx2vp(this.web_context_menu_event.param.y());
+    this.web_context_menu_event_result = this.web_context_menu_event.result;
+    this.web_context_selected_text = this.web_context_menu_event.param.getSelectionText();
+    this.web_context_selected_url = this.web_context_menu_event.param.getLinkUrl();
+    this.web_context_source_url = this.web_context_menu_event.param.getSourceUrl();
+    this.web_context_selected_url_unfiltered = this.web_context_menu_event.param.getUnfilteredLinkUrl();
+    this.web_context_is_editable = this.web_context_menu_event.param.isEditable();
+    this.web_context_has_image = this.web_context_menu_event.param.existsImageContents();
+
+    // Show
+    this.web_context_menu_show = true;
+    console.log(`[on_web_context_menu_event] text = ${this.web_context_menu_event.param.getSelectionText()}, type = ${this.web_context_menu_event.param.getMediaType()}, `
+      + `x = ${this.web_context_menu_x}, y = ${this.web_context_menu_y}`);
+  }
+
+  // Operations
+
+  request_permission(event: OnPermissionRequestEvent) {
+    this.onPermit = () => {
+      event.request.grant(event.request.getAccessibleResource());
+    }
+    this.onDeny = () => {
+      event.request.deny();
+    }
+    this.ask_resources = event.request.getAccessibleResource();
+    this.source = event.request.getOrigin();
+    console.log('[Meow][meowWebView] Requesting Protected Resources: ' + event.request.getAccessibleResource());
+
+    // TODO: work out a workable permission manager!
+
+    if (this.ask_resources.length == 0) {
+      this.onPermit();
+      console.log('[Meow][meowWebView] Permitted empty request list automatically!');
+      return;
+    }
+
+    if (this.ask_resources.length == 1 && this.ask_resources[0] == 'TYPE_SENSOR') {
+      this.onPermit();
+      console.log('[Meow][meowWebView] Permitted TYPE_SENSOR automatically!');
+      return;
+    }
+
+    this.woofWantProtectedResources_control.open();
+  }
+
+  refresh_page() {
+    this.bunch_of_tabs.refresh_onWorkingTab();
+    this.bunch_of_tabs.workingMainTab().update_is_loading(true);
+    (this.storage.get('tab_is_loading') as boolean[])[this.bunch_of_tabs.main_tab_idx] = true;
+  }
+
+  // Sharing
 
   async general_harmonyShare_current_tab(sharableTarget: harmonyShare.SharableTarget) {
     let t0 = Date.now();
@@ -436,34 +746,6 @@ struct meowWebView {
     } catch (e) {
       console.error('[off_harmonyShare_gesture_sender] Failed: ' + e);
     }
-  }
-
-  process_permission_request(event: OnPermissionRequestEvent) {
-    this.onPermit = () => {
-      event.request.grant(event.request.getAccessibleResource());
-    }
-    this.onDeny = () => {
-      event.request.deny();
-    }
-    this.ask_resources = event.request.getAccessibleResource();
-    this.source = event.request.getOrigin();
-    console.log('[Meow][meowWebView] Requesting Protected Resources: ' + event.request.getAccessibleResource());
-
-    // TODO: work out a workable permission manager!
-
-    if (this.ask_resources.length == 0) {
-      this.onPermit();
-      console.log('[Meow][meowWebView] Permitted empty request list automatically!');
-      return;
-    }
-
-    if (this.ask_resources.length == 1 && this.ask_resources[0] == 'TYPE_SENSOR') {
-      this.onPermit();
-      console.log('[Meow][meowWebView] Permitted TYPE_SENSOR automatically!');
-      return;
-    }
-
-    this.woofWantProtectedResources_control.open();
   }
 
   // Kind of constants

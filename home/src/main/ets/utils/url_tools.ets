@@ -86,7 +86,7 @@ function is_legal_port(port: string) {
   return true;
 }
 
-function is_legal_ipv4(input: string) {
+export function is_legal_ipv4(input: string) {
   if (input == "") {
     // if is empty
     return false;
@@ -134,7 +134,7 @@ function is_legal_ipv4(input: string) {
   return true;
 }
 
-function is_legal_url(input: string) {
+export function is_legal_url(input: string) {
   if (input == "") {
     // if is empty
     return false;

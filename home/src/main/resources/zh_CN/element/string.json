@@ -274,7 +274,11 @@
     },
     {
       "name": "permission_reason_READ_PASTEPOARD",
-      "value": "以供快速跳转剪贴板链接"
+      "value": "以供网页内粘贴"
+    },
+    {
+      "name": "permission_reason_VIBRATE",
+      "value": "强劲手感"
     },
     {
       "name": "Downloads_copied",
@@ -874,7 +878,7 @@
     },
     {
       "name": "Whats_new_content",
-      "value": "新年快乐喵！感谢大家的爱与支持！！"
+      "value": "新年快乐喵！感谢大家的爱与支持！！\n上下文菜单！"
     },
     {
       "name": "Whats_new_content_extra",
@@ -1405,32 +1409,56 @@
       "value": "CPU"
     },
     {
+      "name": "Menu",
+      "value": "上下文菜单"
+    },
+    {
+      "name": "Menu_right_click",
+      "value": "启用上下文菜单"
+    },
+    {
+      "name": "Menu_image_preview",
+      "value": "预览图片"
+    },
+    {
+      "name": "Menu_web_preview",
+      "value": "预览网页"
+    },
+    {
+      "name": "Menu_image_preview_placeholder",
+      "value": "图片 ↓"
+    },
+    {
       "name": "Menu_select_all",
-      "value": "全选"
+      "value": "全选 ↓"
     },
     {
       "name": "Menu_copy",
-      "value": "复制"
+      "value": "复制 ↓"
     },
     {
       "name": "Menu_cut",
-      "value": "剪切"
+      "value": "剪切 ↓"
     },
     {
       "name": "Menu_paste",
-      "value": "粘贴"
+      "value": "粘贴 ↓"
+    },
+    {
+      "name": "Menu_visit",
+      "value": "访问 ↓"
     },
     {
       "name": "Menu_copy_link",
-      "value": "复制链接"
+      "value": "复制链接 ↓"
     },
     {
       "name": "Menu_copy_image",
-      "value": "复制图片"
+      "value": "复制图片 ↓"
     },
     {
       "name": "Menu_download_image",
-      "value": "下载图片"
+      "value": "下载图片 ↓"
     },
     {
       "name": "Save_to_files",

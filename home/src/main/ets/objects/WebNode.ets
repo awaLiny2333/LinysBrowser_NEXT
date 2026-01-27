@@ -112,6 +112,10 @@ function WebBuilder(pk: tab_info_packed) {
       pk.storage.set('http_auth_event', e);
       return true;
     })
+    .onContextMenuShow((event) => {
+      pk.storage.setOrCreate('web_context_menu_event', event);
+      return true;
+    })
 }
 
 export class TabNodeController extends NodeController {

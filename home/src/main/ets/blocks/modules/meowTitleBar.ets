@@ -62,9 +62,9 @@ struct meowTitleBar {
   @LocalStorageLink('current_in_page_searching_stats_total') current_in_page_searching_stats_total: number = 0;
   // Search analyze
   @LocalStorageLink('search_extracted_keyword') search_extracted_keyword: string = '';
-  @State search_extracted_engine: string = '';
+  @LocalStorageLink('search_extracted_engine') search_extracted_engine: string = '';
   @LocalStorageLink('showing_search_extracted_field') showing_search_extracted_field: boolean = false;
-  @State search_extracted_field_available: boolean = false;
+  @LocalStorageLink('search_extracted_field_available') search_extracted_field_available: boolean = false;
   @State is_search_input_address: boolean = false;
   @State search_input_unify_scheme_http: boolean = true;
   // Web statuses

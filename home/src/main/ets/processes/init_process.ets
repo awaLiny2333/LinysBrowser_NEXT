@@ -275,6 +275,11 @@ async function settings(storage: LocalStorage) {
   AppStorage.setOrCreate('max_bookmark_advice', bunch_of_settings.get('max_bookmark_suggest') as number);
   AppStorage.setOrCreate('max_history_advice', bunch_of_settings.get('max_history_suggest') as number);
 
+  // Context Menu
+  AppStorage.setOrCreate('web_context_menu_enabled', bunch_of_settings.get('web_context_menu_enabled') as boolean);
+  AppStorage.setOrCreate('web_context_menu_image_preview', bunch_of_settings.get('web_context_menu_image_preview') as boolean);
+  AppStorage.setOrCreate('web_context_menu_web_preview', bunch_of_settings.get('web_context_menu_web_preview') as boolean);
+
   // History
   AppStorage.setOrCreate('collect_new_history', bunch_of_settings.get('collect_new_history') as boolean);
   AppStorage.setOrCreate('history_index_load_quantity', bunch_of_settings.get('history_index_load_quantity') as boolean);

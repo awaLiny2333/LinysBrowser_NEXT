@@ -42,3 +42,23 @@ export function share_link(link: string, title: string, context: Context) {
     console.error('[share_link] Error: ' + JSON.stringify(e));
   });
 }
+
+/**
+ * Shares a text through system share.
+ * @param text The content.
+ * */
+export function share_text(text: string, context: Context) {
+  let data: systemShare.SharedData = new systemShare.SharedData({
+    utd: utd.UniformDataType.TEXT,
+    description: '(〃￣︶￣)人(￣︶￣〃)',
+    title: text,
+    content: text
+  });
+  let controller: systemShare.ShareController = new systemShare.ShareController(data);
+  controller.show((context as common.UIAbilityContext), {
+    previewMode: systemShare.SharePreviewMode.DEFAULT,
+    selectionMode: systemShare.SelectionMode.BATCH
+  }).catch((e: BusinessError) => {
+    console.error('[share_link] Error: ' + JSON.stringify(e));
+  });
+}

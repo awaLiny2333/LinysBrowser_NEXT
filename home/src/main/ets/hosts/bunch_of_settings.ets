@@ -34,6 +34,9 @@ export class bunch_of_settings {
     bunch_of_settings.register_setting('max_history_suggest', 'number', '5');
     bunch_of_settings.register_setting('tabs_vertical_auto_hide', 'boolean', 'false');
     bunch_of_settings.register_setting('tabs_vertical_auto_hide_button', 'boolean', 'true');
+    bunch_of_settings.register_setting('web_context_menu_enabled', 'boolean', 'true');
+    bunch_of_settings.register_setting('web_context_menu_image_preview', 'boolean', 'true');
+    bunch_of_settings.register_setting('web_context_menu_web_preview', 'boolean', 'true');
 
     // Statuses
     bunch_of_settings.register_setting('status_tabs_open', 'boolean', 'false');
