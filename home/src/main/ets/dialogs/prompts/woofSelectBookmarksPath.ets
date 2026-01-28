@@ -1,5 +1,5 @@
 import linysConfirmDenyButtons from '../../components/buttons/linysConfirmDenyButtons';
-import linysPathTree from '../../components/linysPathTree';
+import linysPathTree from '../../components/misc/linysPathTree';
 import linysSymbol from '../../components/texts/linysSymbol';
 import linysTextTitle from '../../components/texts/linysTextTitle';
 import { bookmark, bunch_of_bookmarks } from '../../hosts/bunch_of_bookmarks';

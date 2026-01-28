@@ -1,5 +1,5 @@
-import { animation_default } from "../hosts/bunch_of_defaults";
-import linysText from "./texts/linysText";
+import { animation_default } from "../../hosts/bunch_of_defaults";
+import linysText from "../texts/linysText";
 
 @Component
 struct linysFileNameErrorDisplay {

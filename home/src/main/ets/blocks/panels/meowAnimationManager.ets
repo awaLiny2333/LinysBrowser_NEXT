@@ -1,5 +1,5 @@
 import { bunch_of_settings } from '../../hosts/bunch_of_settings';
-import linysLockSlider from '../../components/linysLockSlider';
+import linysLockSlider from '../../components/misc/linysLockSlider';
 import linysText from '../../components/texts/linysText';
 import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
 

@@ -9,7 +9,7 @@ import { meowContext } from '../../utils/environment_tools';
 import { storage_of_id } from '../../utils/ui_tools';
 import lazy { fileIo } from '@kit.CoreFileKit';
 import lazy { webview } from '@kit.ArkWeb';
-import linysFileNameErrorDisplay from '../../components/linysFileNameErrorDisplay';
+import linysFileNameErrorDisplay from '../../components/misc/linysFileNameErrorDisplay';
 import { copy } from '../../utils/clipboard_tools';
 
 @CustomDialog

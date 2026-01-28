@@ -6,13 +6,13 @@ import { bunch_of_tabs } from '../../hosts/bunch_of_tabs';
 import lazy { common } from '@kit.AbilityKit';
 import linysText from '../../components/texts/linysText';
 import linysSymbol from '../../components/texts/linysSymbol';
-import lazy linysProgressInfo from '../../components/linysProgressInfo';
+import lazy linysProgressInfo from '../../components/misc/linysProgressInfo';
 import lazy meowDebug from '../panels/meowDebug';
 import lazy woofPrompt from '../../dialogs/web/woofPrompt';
 import linysSwitchWithText from '../../components/toggles/linysSwitchWithText';
 import { modify_zone_name } from '../../processes/zone_actions';
 import { is_legal_filename } from '../../utils/storage_tools';
-import linysFileNameErrorDisplay from '../../components/linysFileNameErrorDisplay';
+import linysFileNameErrorDisplay from '../../components/misc/linysFileNameErrorDisplay';
 import lazy woofZones from '../../dialogs/contents/woofZones';
 import meowTitleFunctionButton from './meowTitleFunctionButtons';
 

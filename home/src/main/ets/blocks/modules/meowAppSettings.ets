@@ -39,7 +39,7 @@ import lazy meowCreditsRepos from '../contents/meowCreditsRepos';
 import lazy meowCreditsUsers from '../contents/meowCreditsUsers';
 import lazy meowAnimationManager from '../panels/meowAnimationManager';
 import lazy linysLink from '../../components/texts/linysLink';
-import lazy linysLockSlider from '../../components/linysLockSlider';
+import lazy linysLockSlider from '../../components/misc/linysLockSlider';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import lazy linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 import lazy linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';

@@ -1,7 +1,7 @@
 import meowHomepageManager from '../../blocks/panels/meowHomepageManager';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 import linysTimeoutButtonWithText from '../../components/buttons/linysTimeoutButtonWithText';
-import linysLockSlider from '../../components/linysLockSlider';
+import linysLockSlider from '../../components/misc/linysLockSlider';
 import linysText from '../../components/texts/linysText';
 import linysTextTitle from '../../components/texts/linysTextTitle';
 import { animation_default } from '../../hosts/bunch_of_defaults';

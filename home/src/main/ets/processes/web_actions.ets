@@ -304,7 +304,7 @@ export function on_controller_attached(pk: tab_info_packed) {
   try {
     pk.controller!.setErrorPageEnabled(true);
   } catch (e) {
-    console.error(`[Web][setErrorPageEnabled] Failed: ${e}`)
+    console.error(`[meowWebView][setErrorPageEnabled] Failed: ${e}`)
   }
 
   // Set UA
@@ -330,11 +330,11 @@ export function on_controller_attached(pk: tab_info_packed) {
   // Set Ads Blocker exception list
   try {
     let adblock_exceptions = AppStorage.get('adblock_exceptions') as string[];
-    console.log('[init][meowWebView] Trying to add ads blocker exceptions: [' + adblock_exceptions + '] Operated by meowWebView ~');
+    console.log('[meowWebView] Trying to add ads blocker exceptions: [' + adblock_exceptions + '] Operated by meowWebView ~');
     // webview.AdsBlockManager.addAdsBlockDisallowedList(adblock_exceptions);
     webview.AdsBlockManager.addAdsBlockDisallowedList(Array.from(adblock_exceptions)); // wtf??? why???
   } catch (e) {
-    console.error('[ERROR][Meow][meowWebView] add Ads Blocker Exceptions error: ' + e);
+    console.error('[meowWebView] add Ads Blocker Exceptions error: ' + e);
   }
   // TODO: Find out why this doesn't work sometimes for a recovered webpage :O getting crazy
 

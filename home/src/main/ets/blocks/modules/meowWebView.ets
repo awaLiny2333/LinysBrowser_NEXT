@@ -23,6 +23,7 @@ import { meowPx2vp } from '../../utils/environment_tools';
 import { is_legal_ipv4, is_legal_url } from '../../utils/url_tools';
 import linysTextTitle from '../../components/texts/linysTextTitle';
 import { share_link, share_text } from '../../utils/link_tools';
+import linysPreviewWebView from '../../components/misc/linysPreviewWebView';
 
 @Component
 struct meowWebView {
@@ -223,27 +224,12 @@ struct meowWebView {
       .layoutWeight(this.tablet_mode || this.free_window_mode ? 1 : undefined)
 
       if ((is_legal_url(content) || is_legal_ipv4(content)) && this.web_context_menu_web_preview) {
-        Row() {
-          Web({ src: content, controller: new webview.WebviewController() })
-            .databaseAccess(true)
-            .fileAccess(true)
-            .domStorageAccess(true)
-            .multiWindowAccess(true)
-            .mixedMode(MixedMode.All)
-            .allowWindowOpenMethod(true)
-            .mediaOptions({ audioExclusive: false })
-            .darkMode(WebDarkMode.Auto) // Dark mode!
-            .forceDarkAccess(this.bunch_of_tabs.workingMainTab().tab_force_dark) // Force dark mode
-            .javaScriptAccess(!this.bunch_of_tabs.workingMainTab().tab_disable_js)
-            .imageAccess(!this.bunch_of_tabs.workingMainTab().tab_disable_image)
-            .onlineImageAccess(!this.bunch_of_tabs.workingMainTab().tab_disable_image)
-            .borderRadius(6)
-        }
-        .hoverEffect(HoverEffect.Highlight)
-        .height(this.tablet_mode || this.free_window_mode ? 400 : 0.4 * this.screen_height)
-        .padding(5)
-        .borderRadius(10)
-        .layoutWeight(this.tablet_mode || this.free_window_mode ? 3 : undefined)
+        linysPreviewWebView({ storage: this.storage, url: content })
+          .hoverEffect(HoverEffect.Highlight)
+          .height(this.tablet_mode || this.free_window_mode ? 400 : 0.4 * this.screen_height)
+          .padding(5)
+          .borderRadius(10)
+          .layoutWeight(this.tablet_mode || this.free_window_mode ? 3 : undefined)
       }
     }
   }
@@ -293,7 +279,7 @@ struct meowWebView {
   }
 
   @Builder
-  MenuBuilder() {
+  contextMenuBuilder() {
     Column() {
       Row() {
         linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left', can_hover: true, })// Backward
@@ -432,7 +418,7 @@ struct meowWebView {
       this.my_opacity = 1;
       console.log(`[Meow][meowWebView] onAppear! (${run_time(this.storage)} ms)`);
     })
-    .bindContextMenu(this.web_context_menu_show, this.MenuBuilder, {
+    .bindContextMenu(this.web_context_menu_show, this.contextMenuBuilder, {
       enableArrow: false,
       placement: Placement.LeftTop,
       anchorPosition: {
@@ -442,15 +428,8 @@ struct meowWebView {
       onWillDisappear: () => {
         this.web_context_menu_show = false;
       },
-      // backgroundColor: '#00000000',
       backgroundColor: this.color_current_primary,
       hapticFeedbackMode: HapticFeedbackMode.AUTO,
-      // borderRadius: 14
-      // onStateChange: (e) => {x
-      //   if (!e.isVisible) {
-      //     this.web_context_menu_show = false;
-      //   }
-      // },
     })
   }
 

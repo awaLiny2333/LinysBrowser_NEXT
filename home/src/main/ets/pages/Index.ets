@@ -28,7 +28,7 @@ import lazy woofPromptFail from '../dialogs/prompts/woofPromptFail';
 import lazy woofHistory from '../dialogs/managers/woofHistory';
 import lazy woofZones from '../dialogs/contents/woofZones';
 import meowShortcuts from '../blocks/modules/meowShortcuts';
-import linysProgress from '../components/linysProgress';
+import linysProgress from '../components/misc/linysProgress';
 import linysWindowButton from '../components/buttons/linysWindowButton';
 import linysText from '../components/texts/linysText';
 import meowTabsHost from '../blocks/modules/meowTabsHost';

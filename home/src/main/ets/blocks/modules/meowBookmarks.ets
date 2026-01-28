@@ -8,7 +8,7 @@ import lazy { unifiedDataChannel } from '@kit.ArkData';
 import linysSymbol from '../../components/texts/linysSymbol';
 import linysShowButton from '../../components/buttons/linysShowButton';
 import linysCapsuleButton from '../../components/buttons/linysCapsuleButton';
-import linysPathTree from '../../components/linysPathTree';
+import linysPathTree from '../../components/misc/linysPathTree';
 import linysTimeoutButton from '../../components/buttons/linysTimeoutButton';
 import linysCapsuleButtonWithText from '../../components/buttons/linysCapsuleButtonWithText';
 import lazy linysExpandableCardItem from '../../components/layouts/linysExpandableCardItem';
