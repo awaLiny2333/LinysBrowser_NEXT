@@ -57,6 +57,8 @@ struct meowScratchingBoard {
               text: item,
               type: this.extracted_type[index],
               index: index,
+              downloadable: this.extracted_type[index] ? is_downloadable(item)[0] as boolean : false,
+              download_filename: this.extracted_type[index] == 'url' ? is_downloadable(item)[1] as string : '',
               showing_scratching_board: this.showing_scratching_board,
             })// Filter only links
               .visibility(this.only_links && this.extracted_type[index] != 'url' ? Visibility.None : Visibility.Visible)
@@ -142,8 +144,8 @@ struct data_display {
   @Link showing_scratching_board: boolean;
   text: string = "meow";
   type: string = "text";
-  downloadable: boolean = this.type == 'url' ? is_downloadable(this.text)[0] as boolean : false;
-  download_filename: string = this.type == 'url' ? is_downloadable(this.text)[1] as string : '';
+  downloadable: boolean = false;
+  download_filename: string = 'file';
   @State image_size: string = "233x233";
   index: number = 0;
   @State offset_y: number = 50;
@@ -320,7 +322,7 @@ struct data_display {
     }
     .direction(this.preferred_hand_left_or_right == 'right' ? Direction.Ltr : Direction.Rtl)
     .padding(10)
-    .borderRadius(20)
+    .borderRadius(10)
     .backgroundColor(this.color_current_primary)
     .justifyContent(FlexAlign.Start)
     .width(this.type == 'image' ? undefined : "100%")
