@@ -1,4 +1,4 @@
-import { animation_default, click_effect_default } from '../../hosts/bunch_of_defaults';
+import { animation_default, click_effect_default, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { is_address_continuable, run_time, set_continuable, storage_of_id } from '../../utils/ui_tools';
 import lazy { compress_image_arrayBuffer, sandbox_read_arrayBuffer_sync } from '../../utils/storage_tools';
@@ -148,7 +148,7 @@ struct meowWebView {
   @StorageLink('web_context_menu_web_preview') web_context_menu_web_preview: boolean = false;
   // Context menu contents
   @LocalStorageLink('web_context_menu_event') @Watch('on_web_context_menu_event') web_context_menu_event: OnContextMenuShowEvent | undefined = undefined;
-  @StorageLink('web_context_image_width') web_context_image_width: number = 300;
+  @StorageLink('web_context_image_height') web_context_image_height: number = 300;
   @StorageLink('web_context_web_height') web_context_web_height: number = 500;
   @State web_context_menu_show: boolean = false;
   @State web_context_menu_event_result: WebContextMenuResult | undefined = undefined;
@@ -172,7 +172,7 @@ struct meowWebView {
   @Builder
   contentCardBuilder(content: string) {
     Flex({
-      direction: !(this.tablet_mode || this.free_window_mode) ? FlexDirection.Column : FlexDirection.Row
+      direction: !(this.tablet_mode || this.free_window_mode) ? FlexDirection.Column : FlexDirection.Row,
     }) {
       Column() {
         linysText({ text: content, max_lines: (this.tablet_mode || this.free_window_mode) ? 10 : 3, can_hover: true })
@@ -233,8 +233,10 @@ struct meowWebView {
         .edgeEffect(EdgeEffect.Spring)
       }
       .alignItems(HorizontalAlign.Start)
-      .layoutWeight(this.tablet_mode || this.free_window_mode ? 1 : undefined)
+      .layoutWeight((this.tablet_mode || this.free_window_mode) && (is_legal_url(content, true) || is_legal_ipv4(content)) && this.web_context_menu_web_preview ? 1 :
+        undefined)
 
+      // TODO: Avoid duplicated computation
       if ((is_legal_url(content, true) || is_legal_ipv4(content)) && this.web_context_menu_web_preview) {
         linysPreviewWebView({ storage: this.storage, url: content })
           .hoverEffect(HoverEffect.Highlight)
@@ -243,7 +245,7 @@ struct meowWebView {
           .borderRadius(10)
           .layoutWeight(this.free_window_mode ? 3 : this.tablet_mode ? 2 : undefined)
       }
-    }
+    }.width('auto')
   }
 
   @Builder
@@ -294,11 +296,17 @@ struct meowWebView {
       }
       .alignItems(HorizontalAlign.Start)
       .layoutWeight(this.tablet_mode || this.free_window_mode ? 1 : undefined)
+      .constraintSize(this.web_context_selected_url && (this.web_context_selected_url != this.web_context_source_url) ? {} : {
+        maxWidth: meowPx2vp(this.getUIContext()
+          .getMeasureUtils()
+          .measureTextSize({ textContent: url, fontSize: fontSize_Normal(), fontWeight: FontWeight.Regular })
+          .width as number) / 3 + 20
+      })
 
       if (this.web_context_menu_image_preview) {
         Row() {
           Image(url)
-            .width(this.free_window_mode ? this.web_context_image_width : 0.75 * this.screen_width)
+            .height(this.free_window_mode ? this.web_context_image_height : 0.6 * this.screen_height)
             .borderRadius(6)
             .onComplete((event) => {
               let imageWidth = event?.width;
@@ -316,9 +324,10 @@ struct meowWebView {
           this.web_context_menu_show = false;
         })
         .clickEffect(click_effect_default())
-        .layoutWeight(this.free_window_mode ? 3 : this.tablet_mode ? 2 : undefined)
+
+        // .layoutWeight(this.free_window_mode ? 3 : this.tablet_mode ? 2 : undefined)
       }
-    }
+    }.width('auto')
   }
 
   @Builder

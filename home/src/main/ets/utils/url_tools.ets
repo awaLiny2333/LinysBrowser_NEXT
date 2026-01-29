@@ -159,9 +159,16 @@ export function is_legal_url(input: string, require_viewable: boolean) {
     return false;
   }
 
-  // Other schemes, directly jump
-  if (!require_viewable && scheme.length >= 1 && !viewable_domains().includes(scheme)) {
-    return true;
+  // Early break
+  if (require_viewable) {
+    if (!viewable_domains().includes(scheme)) {
+      return false;
+    }
+  } else {
+    // Other schemes, directly jump
+    if (scheme.length >= 1 && !viewable_domains().includes(scheme)) {
+      return true;
+    }
   }
   // if doesn't contain dots and has no scheme
   if (url_first_part.length < 2 && scheme == "") {
