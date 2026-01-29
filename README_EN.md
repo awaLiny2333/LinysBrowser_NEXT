@@ -17,9 +17,6 @@ If you see that the last commit was made quite a lot of weeks, or even months ag
 please don't consider this project dead so easily, since
 Liny may be so _lucky_ to be busy writing essays that
 stuffs this side would not be taken good care of for a period of time.
-And now as HarmonyOS version of DevEco Studio hasn't come out,
-updates of this project would be inevitably even slower
-due to the super slow Windows virtual machine x86 translation.
 
 Therefore, the best solution to this problem is to **open an issue** so that
 Liny would feel so anxious that the update of this project would be selected to be prioritized.
@@ -135,6 +132,7 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 - [x] Hide navigation indicator / bottom avoid
 - [x] IME immersive appearance
 - [x] Force screen orientation
+- [x] Context menu
 
 ### Experience
 
@@ -143,7 +141,7 @@ or some of them will even lie on the table for ever... (ง •_•)ง
 - [x] Customizable position for Tabs bar. (Side or Top)
 - [x] Adapt to system Back operations.
 - [x] Customizable global animation curve.
-- [ ] More advanced HarmonyOS-style visual effects.
+- [x] More advanced HarmonyOS-style visual effects.
 
 ## Constraints and limits
 

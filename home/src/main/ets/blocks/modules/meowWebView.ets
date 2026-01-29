@@ -1,4 +1,4 @@
-import { animation_default } from '../../hosts/bunch_of_defaults';
+import { animation_default, click_effect_default } from '../../hosts/bunch_of_defaults';
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { is_address_continuable, run_time, set_continuable, storage_of_id } from '../../utils/ui_tools';
 import lazy { compress_image_arrayBuffer, sandbox_read_arrayBuffer_sync } from '../../utils/storage_tools';
@@ -16,14 +16,14 @@ import lazy woofHttpAuthPrompt from '../../dialogs/web/woofHttpAuthPrompt';
 import lazy woofWantJump from '../../dialogs/prompts/woofWantJump';
 import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
 import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
-import linysText from '../../components/texts/linysText';
-import { copy } from '../../utils/clipboard_tools';
-import linysSymbol from '../../components/texts/linysSymbol';
-import { meowPx2vp } from '../../utils/environment_tools';
-import { is_legal_ipv4, is_legal_url } from '../../utils/url_tools';
-import linysTextTitle from '../../components/texts/linysTextTitle';
-import { share_link, share_text } from '../../utils/link_tools';
-import linysPreviewWebView from '../../components/misc/linysPreviewWebView';
+import lazy linysText from '../../components/texts/linysText';
+import lazy { copy } from '../../utils/clipboard_tools';
+import lazy linysSymbol from '../../components/texts/linysSymbol';
+import lazy { meowPx2vp } from '../../utils/environment_tools';
+import lazy { is_legal_ipv4, is_legal_url } from '../../utils/url_tools';
+import lazy { share_link, share_text } from '../../utils/link_tools';
+import lazy linysPreviewWebView from '../../components/misc/linysPreviewWebView';
+import { preview_image } from '../../utils/preview_tools';
 
 @Component
 struct meowWebView {
@@ -149,6 +149,8 @@ struct meowWebView {
   @StorageLink('web_context_menu_web_preview') web_context_menu_web_preview: boolean = false;
   // Context menu contents
   @LocalStorageLink('web_context_menu_event') @Watch('on_web_context_menu_event') web_context_menu_event: OnContextMenuShowEvent | undefined = undefined;
+  @StorageLink('web_context_image_width') web_context_image_width: number = 300;
+  @StorageLink('web_context_web_height') web_context_web_height: number = 500;
   @State web_context_menu_show: boolean = false;
   @State web_context_menu_event_result: WebContextMenuResult | undefined = undefined;
   @State web_context_selected_text: string = 'text'
@@ -159,6 +161,7 @@ struct meowWebView {
   @State web_context_has_image: boolean = false;
   @State web_context_menu_x: number = 0;
   @State web_context_menu_y: number = 0;
+  @State web_context_image_size: string = 'OvO';
   // Toasts
   @State show_toast_fullscreen: boolean = false;
 
@@ -173,32 +176,35 @@ struct meowWebView {
       direction: !(this.tablet_mode || this.free_window_mode) ? FlexDirection.Column : FlexDirection.Row
     }) {
       Column() {
-        linysText({ text: content, max_lines: (this.tablet_mode || this.free_window_mode) ? 10 : 3 })
+        linysText({ text: content, max_lines: (this.tablet_mode || this.free_window_mode) ? 10 : 3, can_hover: true })
           .onClick(() => {
-            if (is_legal_url(content)) {
+            if (is_legal_url(content, true)) {
               this.storage.set('universal_new_tab_gateway', [content, false]);
+              this.web_context_menu_show = false;
             }
-            copy(content)
+            // copy(content)
           })
-          .padding(5)
-          .hoverEffect(HoverEffect.Highlight)
           .borderRadius(5)
+          .clickEffect(click_effect_default())
         Row() {
           linysSymbol({ symbol_glyph_target: 'sys.symbol.text_clipboard', can_hover: true }) // Copy
             .onClick(() => {
-              copy(content)
+              copy(content);
+              this.web_context_menu_show = false;
             })
           linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right', can_hover: true }) // Visit
             .onClick(() => {
               this.storage.set('universal_new_tab_gateway', [content, false]);
+              this.web_context_menu_show = false;
             })
-            .opacity(is_legal_url(content) || is_legal_ipv4(content) ? 1 : 0.5)
-            .enabled(is_legal_url(content) || is_legal_ipv4(content))
+            .opacity(is_legal_url(content, true) || is_legal_ipv4(content) ? 1 : 0.5)
+            .enabled(is_legal_url(content, true) || is_legal_ipv4(content))
           linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass_house', can_hover: true }) // Search Here
             .onClick(() => {
               let se = this.storage.get('search_extracted_engine') as string;
               let target = se.replaceAll('%s', encodeURIComponent(content));
               this.storage.set('universal_new_tab_gateway', [target, false]);
+              this.web_context_menu_show = false;
             })
             .opacity(this.search_extracted_field_available ? 1 : 0.5)
             .enabled(this.search_extracted_field_available)
@@ -207,15 +213,17 @@ struct meowWebView {
               let se = AppStorage.get('search_engine') as string;
               let target = se.replaceAll('%s', encodeURIComponent(content));
               this.storage.set('universal_new_tab_gateway', [target, false]);
+              this.web_context_menu_show = false;
             })
           linysSymbol({ symbol_glyph_target: 'sys.symbol.share', can_hover: true }) // Share
             .onClick(() => {
               if (this.getUIContext().getHostContext()) {
-                if (is_legal_url(content) || is_legal_ipv4(content)) {
+                if (is_legal_url(content, true) || is_legal_ipv4(content)) {
                   share_link(content, content, this.getUIContext().getHostContext()!);
                 } else {
                   share_text(content, this.getUIContext().getHostContext()!);
                 }
+                this.web_context_menu_show = false;
               }
             })
         } // Buttons
@@ -223,10 +231,10 @@ struct meowWebView {
       .alignItems(HorizontalAlign.Start)
       .layoutWeight(this.tablet_mode || this.free_window_mode ? 1 : undefined)
 
-      if ((is_legal_url(content) || is_legal_ipv4(content)) && this.web_context_menu_web_preview) {
+      if ((is_legal_url(content, true) || is_legal_ipv4(content)) && this.web_context_menu_web_preview) {
         linysPreviewWebView({ storage: this.storage, url: content })
           .hoverEffect(HoverEffect.Highlight)
-          .height(this.tablet_mode || this.free_window_mode ? 400 : 0.4 * this.screen_height)
+          .height(this.free_window_mode ? this.web_context_web_height : 0.4 * this.screen_height)
           .padding(5)
           .borderRadius(10)
           .layoutWeight(this.tablet_mode || this.free_window_mode ? 3 : undefined)
@@ -236,46 +244,72 @@ struct meowWebView {
 
   @Builder
   imageCardBuilder(url: string) {
-    Column() {
-      Row() {
-        if (this.web_context_menu_image_preview) {
-          Image(url)
-            .width(Math.min(200, this.screen_width - 100))
-            .borderRadius(6)
-        } else {
-          linysTextTitle({ text: $r('app.string.Menu_image_preview_placeholder') })
-            .opacity(0.6)
-        }
-      }
-      .padding(5)
-      .borderRadius(10)
-      .hoverEffect(this.web_context_menu_image_preview ? HoverEffect.Highlight : HoverEffect.None)
-      .onClick(() => {
-        this.storage.set('universal_new_tab_gateway', [url, false]);
-      })
-
-      Row() {
-        linysSymbol({ symbol_glyph_target: 'sys.symbol.text_clipboard', can_hover: true }) // Copy
+    Flex({
+      direction: !(this.tablet_mode || this.free_window_mode) ? FlexDirection.Column : FlexDirection.Row
+    }) {
+      Column() {
+        linysText({ text: url, max_lines: (this.tablet_mode || this.free_window_mode) ? 10 : 3, can_hover: true })
           .onClick(() => {
-            this.web_context_menu_event_result?.copyImage();
-          })
-        linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right', can_hover: true }) // Visit
-          .onClick(() => {
-            this.storage.set('universal_new_tab_gateway', [url, false]);
-          })
-        linysSymbol({ symbol_glyph_target: 'sys.symbol.download', can_hover: true }) // Download
-          .onClick(() => {
-            try {
-              this.bunch_of_tabs.workingMainTab().controller?.startDownload(url);
-            } catch (error) {
-              this.storage.setOrCreate('universal_fail_prompt_desc_gateway', error.toString());
-              console.error(`[ContextMenu] Download image failed: ${error}`);
+            if (is_legal_url(url, true)) {
+              this.storage.set('universal_new_tab_gateway', [url, false]);
+              this.web_context_menu_show = false;
             }
+            // copy(url)
           })
-        // TODO: SHow image size
+          .clickEffect(click_effect_default())
+          .borderRadius(5)
+        Row() {
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.text_clipboard', can_hover: true }) // Copy
+            .onClick(() => {
+              this.web_context_menu_event_result?.copyImage();
+              this.web_context_menu_show = false;
+            })
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right', can_hover: true }) // Visit
+            .onClick(() => {
+              this.storage.set('universal_new_tab_gateway', [url, false]);
+              this.web_context_menu_show = false;
+            })
+          linysSymbol({ symbol_glyph_target: 'sys.symbol.download', can_hover: true }) // Download
+            .onClick(() => {
+              try {
+                this.bunch_of_tabs.workingMainTab().controller?.startDownload(url);
+              } catch (error) {
+                this.storage.setOrCreate('universal_fail_prompt_desc_gateway', error.toString());
+                console.error(`[ContextMenu] Download image failed: ${error}`);
+              }
+              this.web_context_menu_show = false;
+            })
+          linysText({ text: this.web_context_image_size, can_hover: true })
+            .clickEffect(click_effect_default())
+        } // Control buttons
+      }
+      .alignItems(HorizontalAlign.Start)
+      .layoutWeight(this.tablet_mode || this.free_window_mode ? 1 : undefined)
+
+      if (this.web_context_menu_image_preview) {
+        Row() {
+          Image(url)
+            .width(this.free_window_mode ? this.web_context_image_width : 0.75 * this.screen_width)
+            .borderRadius(6)
+            .onComplete((event) => {
+              let imageWidth = event?.width;
+              let imageHeight = event?.height;
+              this.web_context_image_size = imageWidth + 'x' + imageHeight
+              // console.info('imageWidth:'+imageWidth,'imageHeight:'+imageHeight);
+            })
+        }
+        .padding(5)
+        .borderRadius(10)
+        .hoverEffect(this.web_context_menu_image_preview ? HoverEffect.Highlight : HoverEffect.None)
+        .onClick(() => {
+          // preview_image(url, this.storage);
+          this.storage.set('universal_new_tab_gateway', [url, false]);
+          this.web_context_menu_show = false;
+        })
+        .clickEffect(click_effect_default())
+        .layoutWeight(this.tablet_mode || this.free_window_mode ? 3 : undefined)
       }
     }
-    .alignItems(HorizontalAlign.Start)
   }
 
   @Builder
@@ -287,17 +321,20 @@ struct meowWebView {
           .opacity(this.bunch_of_tabs.current_accessBackward ? 1 : 0.5)
           .onClick(() => {
             this.bunch_of_tabs.goBackward_onWorkingTab();
+            this.web_context_menu_show = false;
           })
         linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right', can_hover: true, })// Forward
           .enabled(this.bunch_of_tabs.current_accessForward)
           .opacity(this.bunch_of_tabs.current_accessForward ? 1 : 0.5)
           .onClick(() => {
             this.bunch_of_tabs.goForward_onWorkingTab();
+            this.web_context_menu_show = false;
           })
         linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_clockwise', can_hover: true }) // Refresh
           .onClick(() => {
             if (!this.current_is_loading) {
               this.refresh_page();
+              this.web_context_menu_show = false;
             }
           })
           .opacity(!this.current_is_loading ? 1 : 0.5)
@@ -309,22 +346,27 @@ struct meowWebView {
           linysSymbol({ symbol_glyph_target: 'sys.symbol.selector', can_hover: true }) // Select all
             .onClick(() => {
               this.web_context_menu_event_result?.selectAll();
+              this.web_context_menu_show = false;
             })
           linysSymbol({ symbol_glyph_target: 'sys.symbol.plus_square_dashed_on_square', can_hover: true }) // Paste
             .onClick(() => {
               this.web_context_menu_event_result?.paste();
+              this.web_context_menu_show = false;
             })
           linysSymbol({ symbol_glyph_target: 'sys.symbol.cut', can_hover: true }) // Cut
             .onClick(() => {
               this.web_context_menu_event_result?.cut();
+              this.web_context_menu_show = false;
             })
           linysSymbol({ symbol_glyph_target: 'sys.symbol.undo', can_hover: true }) // Undo
             .onClick(() => {
               this.web_context_menu_event_result?.undo();
+              this.web_context_menu_show = false;
             })
           linysSymbol({ symbol_glyph_target: 'sys.symbol.redo', can_hover: true }) // Redo
             .onClick(() => {
               this.web_context_menu_event_result?.redo();
+              this.web_context_menu_show = false;
             })
         }
         .enabled(this.web_context_is_editable)
@@ -336,7 +378,8 @@ struct meowWebView {
       if (this.web_context_selected_url) {
         this.contentCardBuilder(this.web_context_selected_url);
       }
-      if (this.web_context_source_url) {
+      if (this.web_context_source_url && !this.web_context_has_image) {
+        // If has image, then don't show this duplicated url address.
         this.contentCardBuilder(this.web_context_source_url);
       }
       if (this.web_context_selected_url_unfiltered && this.web_context_selected_url != this.web_context_selected_url_unfiltered) {
@@ -348,6 +391,10 @@ struct meowWebView {
     }
     .alignItems(HorizontalAlign.Start)
     .padding(1)
+    .onTouch((event) => {
+      // Stop the menu from being closed.
+      event.stopPropagation();
+    })
 
     // .constraintSize(this.free_window_mode ? { maxWidth: this.screen_width * 0.75 } : {})
   }

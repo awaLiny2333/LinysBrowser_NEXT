@@ -279,6 +279,8 @@ async function settings(storage: LocalStorage) {
   AppStorage.setOrCreate('web_context_menu_enabled', bunch_of_settings.get('web_context_menu_enabled') as boolean);
   AppStorage.setOrCreate('web_context_menu_image_preview', bunch_of_settings.get('web_context_menu_image_preview') as boolean);
   AppStorage.setOrCreate('web_context_menu_web_preview', bunch_of_settings.get('web_context_menu_web_preview') as boolean);
+  AppStorage.setOrCreate('web_context_image_width', bunch_of_settings.get('web_context_image_width') as number);
+  AppStorage.setOrCreate('web_context_web_height', bunch_of_settings.get('web_context_web_height') as number);
 
   // History
   AppStorage.setOrCreate('collect_new_history', bunch_of_settings.get('collect_new_history') as boolean);

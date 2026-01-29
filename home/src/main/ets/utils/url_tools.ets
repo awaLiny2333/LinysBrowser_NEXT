@@ -17,7 +17,7 @@ export function unify_search_input_into_url(search_input: string, auto_scheme_ov
     return [ensure_scheme(search_input, auto_scheme_overwrite ? auto_scheme_overwrite : "http") as string, true];
   }
 
-  if (is_legal_url(search_input)) {
+  if (is_legal_url(search_input, false)) {
     return [ensure_scheme(search_input, auto_scheme_overwrite ? auto_scheme_overwrite : "https") as string, true];
   }
 
@@ -139,7 +139,7 @@ export function is_legal_ipv4(input: string) {
   return true;
 }
 
-export function is_legal_url(input: string) {
+export function is_legal_url(input: string, require_viewable: boolean) {
   if (input == "") {
     // if is empty
     return false;
@@ -160,7 +160,7 @@ export function is_legal_url(input: string) {
   }
 
   // Other schemes, directly jump
-  if (scheme.length >= 1 && !viewable_domains().includes(scheme)) {
+  if (!require_viewable && scheme.length >= 1 && !viewable_domains().includes(scheme)) {
     return true;
   }
   // if doesn't contain dots and has no scheme

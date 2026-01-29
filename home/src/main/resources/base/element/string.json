@@ -511,7 +511,8 @@
     {
       "name": "extensions",
       "value": "Extensions"
-    },{
+    },
+    {
       "name": "extensions_desc",
       "value": "Extensions is presented as an experimental feature. \n\nThis may contain severe errors! Think twice before you install anything!"
     },
@@ -1420,8 +1421,16 @@
       "value": "Image preview"
     },
     {
+      "name": "Menu_image_preview_width",
+      "value": "Image width \uDB82\uDD42"
+    },
+    {
       "name": "Menu_web_preview",
       "value": "Web preview"
+    },
+    {
+      "name": "Menu_web_preview_height",
+      "value": "Web height \uDB82\uDD42"
     },
     {
       "name": "Menu_image_preview_placeholder",

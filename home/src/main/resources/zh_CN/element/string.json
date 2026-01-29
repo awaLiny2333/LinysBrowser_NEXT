@@ -1421,8 +1421,16 @@
       "value": "预览图片"
     },
     {
+      "name": "Menu_image_preview_width",
+      "value": "Image width \uDB82\uDD42"
+    },
+    {
       "name": "Menu_web_preview",
       "value": "预览网页"
+    },
+    {
+      "name": "Menu_web_preview_height",
+      "value": "Web height \uDB82\uDD42"
     },
     {
       "name": "Menu_image_preview_placeholder",

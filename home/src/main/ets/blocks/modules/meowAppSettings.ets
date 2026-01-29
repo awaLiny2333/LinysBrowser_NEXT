@@ -58,8 +58,8 @@ import lazy woofPromptOK from '../../dialogs/prompts/woofPromptOK';
 import lazy woofHistory from '../../dialogs/managers/woofHistory';
 import lazy woofEasyList from '../../dialogs/managers/woofEasylist';
 import linysAniContainer from '../../components/layouts/linysAniContainer';
-import { extension_id_for_path } from '../../processes/extension_actions';
-import meowTitleFunctionButton from './meowTitleFunctionButtons';
+import lazy { extension_id_for_path } from '../../processes/extension_actions';
+import lazy meowTitleFunctionButton from './meowTitleFunctionButtons';
 
 // @Reusable
 @Component
@@ -192,9 +192,12 @@ struct meowAppSettings {
   });
   @StorageLink('continuation_auto_exit') continuation_auto_exit: boolean = false;
   @StorageLink('continuation_auto_close_tab') continuation_auto_close_tab: boolean = true;
+  // Settings / Web context menu
   @StorageLink('web_context_menu_enabled') web_context_menu_enabled: boolean = true;
   @StorageLink('web_context_menu_image_preview') web_context_menu_image_preview: boolean = true;
   @StorageLink('web_context_menu_web_preview') web_context_menu_web_preview: boolean = true;
+  @StorageLink('web_context_image_width') web_context_image_width: number = 200;
+  @StorageLink('web_context_web_height') web_context_web_height: number = 500;
   // Downloads
   @StorageLink('direct_download') direct_download: boolean = false;
   @StorageLink('direct_download_auto_open') direct_download_auto_open: boolean = false;
@@ -548,7 +551,6 @@ struct meowAppSettings {
                 my_index: 2,
               }) {
 
-
                 settingsSubCard({
                   icon: '󰅅',
                   title: $r('app.string.Menu'),
@@ -568,6 +570,21 @@ struct meowAppSettings {
                       bunch_of_settings.set('web_context_menu_image_preview', this.web_context_menu_image_preview);
                     }
                   }) // web_context_menu_image_preview
+                    .opacity(this.web_context_menu_enabled ? 1 : 0.5)
+                    .animation(animation_default())
+                  linysText({ text: $r('app.string.Menu_image_preview_width'), max_lines: 2 })
+                    .opacity(this.web_context_menu_image_preview && this.web_context_menu_enabled ? 1 : 0.5)
+                    .animation(animation_default())
+                  linysLockSlider({
+                    slider_min: 100,
+                    slider_max: 600,
+                    slider_value: this.web_context_image_width,
+                    onTouchUp: () => {
+                      bunch_of_settings.set('web_context_image_width', this.web_context_image_width);
+                    }
+                  }) // Slider and display of web_context_image_width
+                    .opacity(this.web_context_menu_image_preview && this.web_context_menu_enabled ? 1 : 0.5)
+                    .animation(animation_default())
                   linysSwitchWithText({
                     text: $r('app.string.Menu_web_preview'),
                     toggle_state: this.web_context_menu_web_preview,
@@ -575,7 +592,21 @@ struct meowAppSettings {
                       bunch_of_settings.set('web_context_menu_web_preview', this.web_context_menu_web_preview);
                     }
                   }) // web_context_menu_web_preview
-
+                    .opacity(this.web_context_menu_enabled ? 1 : 0.5)
+                    .animation(animation_default())
+                  linysText({ text: $r('app.string.Menu_web_preview_height'), max_lines: 2 })
+                    .opacity(this.web_context_menu_web_preview && this.web_context_menu_enabled ? 1 : 0.5)
+                    .animation(animation_default())
+                  linysLockSlider({
+                    slider_min: 100,
+                    slider_max: 600,
+                    slider_value: this.web_context_web_height,
+                    onTouchUp: () => {
+                      bunch_of_settings.set('web_context_web_height', this.web_context_web_height);
+                    }
+                  }) // Slider and display of web_context_web_height
+                    .opacity(this.web_context_menu_web_preview && this.web_context_menu_enabled ? 1 : 0.5)
+                    .animation(animation_default())
                 } // Context Menu
 
                 settingsSubCard({
