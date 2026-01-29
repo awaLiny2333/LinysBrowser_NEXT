@@ -200,6 +200,16 @@
         }
       },
       {
+        "name": "ohos.permission.SHORT_TERM_WRITE_IMAGEVIDEO",
+        "reason": "$string:permission_reason_SHORT_TERM_WRITE_IMAGEVIDEO",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "HomeAbility"
+          ]
+        }
+      },
+      {
         "name": "ohos.permission.VIBRATE",
         "reason": "$string:permission_reason_VIBRATE",
         "usedScene": {

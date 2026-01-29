@@ -277,6 +277,10 @@
       "value": "以供网页内粘贴"
     },
     {
+      "name": "permission_reason_SHORT_TERM_WRITE_IMAGEVIDEO",
+      "value": "以供保存网络媒体文件"
+    },
+    {
       "name": "permission_reason_VIBRATE",
       "value": "强劲手感"
     },
@@ -1421,8 +1425,8 @@
       "value": "预览图片"
     },
     {
-      "name": "Menu_image_preview_width",
-      "value": "图片高度 \uDB82\uDD42"
+      "name": "Menu_image_preview_height",
+      "value": "图片宽度"
     },
     {
       "name": "Menu_web_preview",
@@ -1430,7 +1434,7 @@
     },
     {
       "name": "Menu_web_preview_height",
-      "value": "网页宽度 \uDB82\uDD42"
+      "value": "网页高度"
     },
     {
       "name": "Menu_image_preview_placeholder",

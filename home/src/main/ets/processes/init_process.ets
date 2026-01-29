@@ -39,7 +39,8 @@ export async function meow_init_main(context: common.UIAbilityContext, storage: 
   ensure_zones_folder(context);
   create_download(context);
   create_web_drag_image_cache(context);
-  create_harmony_share_temp(context);
+  // create_harmony_share_temp(context);
+  create_context_menu_temp(context);
   delete_old_temp_files(context);
 
   // Hosts
@@ -171,6 +172,18 @@ function create_harmony_share_temp(context: common.UIAbilityContext) {
 }
 
 /**
+ * Set Context menu image temp folder.
+ * @param context The UIAbilityContext.
+ * */
+function create_context_menu_temp(context: common.UIAbilityContext) {
+  try {
+    fileIo.mkdirSync(context.tempDir + '/context-menu-temp', true);
+  } catch (e) {
+    console.error('[Index] mkdirSync temp/context-menu-temp failed! ' + e);
+  }
+}
+
+/**
  * Set cache dir of web-dragged image into Scratching Board.
  * */
 function create_web_drag_image_cache(context: common.UIAbilityContext) {
@@ -279,7 +292,7 @@ async function settings(storage: LocalStorage) {
   AppStorage.setOrCreate('web_context_menu_enabled', bunch_of_settings.get('web_context_menu_enabled') as boolean);
   AppStorage.setOrCreate('web_context_menu_image_preview', bunch_of_settings.get('web_context_menu_image_preview') as boolean);
   AppStorage.setOrCreate('web_context_menu_web_preview', bunch_of_settings.get('web_context_menu_web_preview') as boolean);
-  AppStorage.setOrCreate('web_context_image_height', bunch_of_settings.get('web_context_image_height') as number);
+  AppStorage.setOrCreate('web_context_image_width', bunch_of_settings.get('web_context_image_width') as number);
   AppStorage.setOrCreate('web_context_web_height', bunch_of_settings.get('web_context_web_height') as number);
 
   // History

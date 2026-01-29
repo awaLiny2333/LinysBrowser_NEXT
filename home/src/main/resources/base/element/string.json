@@ -273,6 +273,10 @@
       "value": "For pasting contents in web."
     },
     {
+      "name": "permission_reason_SHORT_TERM_WRITE_IMAGEVIDEO",
+      "value": "For saving media files from the web."
+    },
+    {
       "name": "permission_reason_VIBRATE",
       "value": "A strong feeling"
     },
@@ -1421,8 +1425,8 @@
       "value": "Image preview"
     },
     {
-      "name": "Menu_image_preview_width",
-      "value": "Image height \uDB82\uDD42"
+      "name": "Menu_image_preview_height",
+      "value": "Image width"
     },
     {
       "name": "Menu_web_preview",
@@ -1430,7 +1434,7 @@
     },
     {
       "name": "Menu_web_preview_height",
-      "value": "Web height \uDB82\uDD42"
+      "value": "Web height"
     },
     {
       "name": "Menu_image_preview_placeholder",

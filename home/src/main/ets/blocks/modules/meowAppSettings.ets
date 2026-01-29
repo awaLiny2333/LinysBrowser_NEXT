@@ -196,7 +196,7 @@ struct meowAppSettings {
   @StorageLink('web_context_menu_enabled') web_context_menu_enabled: boolean = true;
   @StorageLink('web_context_menu_image_preview') web_context_menu_image_preview: boolean = true;
   @StorageLink('web_context_menu_web_preview') web_context_menu_web_preview: boolean = true;
-  @StorageLink('web_context_image_height') web_context_image_height: number = 200;
+  @StorageLink('web_context_image_width') web_context_image_width: number = 200;
   @StorageLink('web_context_web_height') web_context_web_height: number = 500;
   // Downloads
   @StorageLink('direct_download') direct_download: boolean = false;
@@ -572,17 +572,17 @@ struct meowAppSettings {
                   }) // web_context_menu_image_preview
                     .opacity(this.web_context_menu_enabled ? 1 : 0.5)
                     .animation(animation_default())
-                  linysText({ text: $r('app.string.Menu_image_preview_width'), max_lines: 2 })
+                  linysText({ text: $r('app.string.Menu_image_preview_height'), max_lines: 2 })
                     .opacity(this.web_context_menu_image_preview && this.web_context_menu_enabled ? 1 : 0.5)
                     .animation(animation_default())
                   linysLockSlider({
                     slider_min: 100,
                     slider_max: 600,
-                    slider_value: this.web_context_image_height,
+                    slider_value: this.web_context_image_width,
                     onTouchUp: () => {
-                      bunch_of_settings.set('web_context_image_height', this.web_context_image_height);
+                      bunch_of_settings.set('web_context_image_width', this.web_context_image_width);
                     }
-                  }) // Slider and display of web_context_image_height
+                  }) // Slider and display of web_context_image_width
                     .opacity(this.web_context_menu_image_preview && this.web_context_menu_enabled ? 1 : 0.5)
                     .animation(animation_default())
                   linysSwitchWithText({

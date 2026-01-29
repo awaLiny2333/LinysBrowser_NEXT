@@ -1,7 +1,9 @@
 import { animation_default, click_effect_default, fontSize_Normal } from '../../hosts/bunch_of_defaults';
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { is_address_continuable, run_time, set_continuable, storage_of_id } from '../../utils/ui_tools';
-import lazy { compress_image_arrayBuffer, sandbox_read_arrayBuffer_sync } from '../../utils/storage_tools';
+import lazy {
+  compress_image_arrayBuffer, document_save_from_path, image_save_from_uri, sandbox_read_arrayBuffer_sync
+} from '../../utils/storage_tools';
 import lazy { harmonyShare, systemShare } from '@kit.ShareKit';
 import lazy { webview } from '@kit.ArkWeb';
 import lazy { print } from '@kit.BasicServicesKit';
@@ -17,12 +19,13 @@ import lazy woofWantJump from '../../dialogs/prompts/woofWantJump';
 import lazy woofWantResources from '../../dialogs/prompts/woofWantProtectedResources';
 import lazy woofWantDownload from '../../dialogs/prompts/woofWantDownload';
 import lazy linysText from '../../components/texts/linysText';
-import lazy { copy } from '../../utils/clipboard_tools';
 import lazy linysSymbol from '../../components/texts/linysSymbol';
 import lazy { meowPx2vp } from '../../utils/environment_tools';
 import lazy { is_legal_ipv4, is_legal_url } from '../../utils/url_tools';
-import lazy { share_link, share_text } from '../../utils/link_tools';
 import lazy linysPreviewWebView from '../../components/misc/linysPreviewWebView';
+import lazy linysPreviewImage from '../../components/misc/linysPreviewImage';
+import linysPreviewQrResults from '../../components/misc/linysPreviewQrResults';
+import linysPreviewTextActions from '../../components/misc/linysPreviewTextActions';
 
 @Component
 struct meowWebView {
@@ -57,6 +60,7 @@ struct meowWebView {
   @State my_opacity: number = 0;
   // Colors
   @StorageLink('color_current_primary') color_current_primary: ResourceColor = $r('app.color.start_window_background');
+  @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   // Download
   @LocalStorageLink('uni_webDownloadItem_gateway') @Watch('on_download_request') uni_webDownloadItem_gateway: webview.WebDownloadItem | undefined = undefined;
   @StorageLink('print_adapter') print_adapter: print.PrintDocumentAdapter | undefined = undefined;
@@ -148,9 +152,8 @@ struct meowWebView {
   @StorageLink('web_context_menu_web_preview') web_context_menu_web_preview: boolean = false;
   // Context menu contents
   @LocalStorageLink('web_context_menu_event') @Watch('on_web_context_menu_event') web_context_menu_event: OnContextMenuShowEvent | undefined = undefined;
-  @StorageLink('web_context_image_height') web_context_image_height: number = 300;
   @StorageLink('web_context_web_height') web_context_web_height: number = 500;
-  @State web_context_menu_show: boolean = false;
+  @LocalStorageLink('web_context_menu_show') web_context_menu_show: boolean = false;
   @State web_context_menu_event_result: WebContextMenuResult | undefined = undefined;
   @State web_context_selected_text: string = 'text'
   @State web_context_selected_url: string = 'url'
@@ -160,7 +163,8 @@ struct meowWebView {
   @State web_context_has_image: boolean = false;
   @State web_context_menu_x: number = 0;
   @State web_context_menu_y: number = 0;
-  @State web_context_image_size: string = 'OvO';
+  @LocalStorageLink('web_context_image_size') web_context_image_size: string = 'OvO';
+  @LocalStorageLink('web_context_image_path') web_context_image_path: string | undefined = undefined;
   // Toasts
   @State show_toast_fullscreen: boolean = false;
 
@@ -185,62 +189,18 @@ struct meowWebView {
           })
           .borderRadius(5)
           .clickEffect(click_effect_default())
-        Scroll() {
-          Row() {
-            linysSymbol({ symbol_glyph_target: 'sys.symbol.text_clipboard', can_hover: true }) // Copy
-              .onClick(() => {
-                copy(content);
-                this.web_context_menu_show = false;
-              })
-            linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right', can_hover: true }) // Visit
-              .onClick(() => {
-                this.storage.set('universal_new_tab_gateway', [content, false]);
-                this.web_context_menu_show = false;
-              })
-              .opacity(is_legal_url(content, true) || is_legal_ipv4(content) ? 1 : 0.5)
-              .enabled(is_legal_url(content, true) || is_legal_ipv4(content))
-            linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass_house', can_hover: true }) // Search Here
-              .onClick(() => {
-                let se = this.storage.get('search_extracted_engine') as string;
-                let target = se.replaceAll('%s', encodeURIComponent(content));
-                this.storage.set('universal_new_tab_gateway', [target, false]);
-                this.web_context_menu_show = false;
-              })
-              .opacity(this.search_extracted_field_available ? 1 : 0.5)
-              .enabled(this.search_extracted_field_available)
-            linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass', can_hover: true }) // Search Default
-              .onClick(() => {
-                let se = AppStorage.get('search_engine') as string;
-                let target = se.replaceAll('%s', encodeURIComponent(content));
-                this.storage.set('universal_new_tab_gateway', [target, false]);
-                this.web_context_menu_show = false;
-              })
-            linysSymbol({ symbol_glyph_target: 'sys.symbol.share', can_hover: true }) // Share
-              .onClick(() => {
-                if (this.getUIContext().getHostContext()) {
-                  if (is_legal_url(content, true) || is_legal_ipv4(content)) {
-                    share_link(content, content, this.getUIContext().getHostContext()!);
-                  } else {
-                    share_text(content, this.getUIContext().getHostContext()!);
-                  }
-                  this.web_context_menu_show = false;
-                }
-              })
-          } // Buttons
-        }
-        .scrollBar(BarState.Off)
-        .scrollable(ScrollDirection.Horizontal)
-        .edgeEffect(EdgeEffect.Spring)
+
+        linysPreviewTextActions({ storage: this.storage, content: content })
       }
       .alignItems(HorizontalAlign.Start)
-      .layoutWeight((this.tablet_mode || this.free_window_mode) && (is_legal_url(content, true) || is_legal_ipv4(content)) && this.web_context_menu_web_preview ? 1 :
-        undefined)
+      .layoutWeight((this.tablet_mode || this.free_window_mode) && (is_legal_url(content, true) || is_legal_ipv4(content)) && this.web_context_menu_web_preview
+        ? 1 : undefined)
 
       // TODO: Avoid duplicated computation
       if ((is_legal_url(content, true) || is_legal_ipv4(content)) && this.web_context_menu_web_preview) {
         linysPreviewWebView({ storage: this.storage, url: content })
           .hoverEffect(HoverEffect.Highlight)
-          .height(this.free_window_mode ? this.web_context_web_height : 0.4 * this.screen_height)
+          .height(this.web_context_web_height)
           .padding(5)
           .borderRadius(10)
           .layoutWeight(this.free_window_mode ? 3 : this.tablet_mode ? 2 : undefined)
@@ -264,6 +224,7 @@ struct meowWebView {
           })
           .clickEffect(click_effect_default())
           .borderRadius(5)
+
         Scroll() {
           Row() {
             linysSymbol({ symbol_glyph_target: 'sys.symbol.text_clipboard', can_hover: true }) // Copy
@@ -276,16 +237,25 @@ struct meowWebView {
                 this.storage.set('universal_new_tab_gateway', [url, false]);
                 this.web_context_menu_show = false;
               })
-            linysSymbol({ symbol_glyph_target: 'sys.symbol.download', can_hover: true }) // Download
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.download', can_hover: true }) // Save to Files
               .onClick(() => {
-                try {
-                  this.bunch_of_tabs.workingMainTab().controller?.startDownload(url);
-                } catch (error) {
-                  this.storage.setOrCreate('universal_fail_prompt_desc_gateway', error.toString());
-                  console.error(`[ContextMenu] Download image failed: ${error}`);
+                if (this.web_context_image_path) {
+                  document_save_from_path(this.web_context_image_path);
+                  this.web_context_menu_show = false;
                 }
-                this.web_context_menu_show = false;
               })
+              .enabled(this.web_context_image_path ? true : false)
+              .opacity(this.web_context_image_path ? 1 : 0.5)
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.picture_badge_arrow_down', can_hover: true }) // Save to Gallery
+              .onClick(() => {
+                if (this.web_context_image_path) {
+                  image_save_from_uri(this.web_context_image_path, this.getUIContext().getHostContext()!);
+                  this.web_context_menu_show = false;
+                }
+              })
+              .enabled(this.web_context_image_path ? true : false)
+              .opacity(this.web_context_image_path ? 1 : 0.5)
+
             linysText({ text: this.web_context_image_size, can_hover: true })
               .clickEffect(click_effect_default())
           } // Control buttons
@@ -293,39 +263,21 @@ struct meowWebView {
         .scrollBar(BarState.Off)
         .scrollable(ScrollDirection.Horizontal)
         .edgeEffect(EdgeEffect.Spring)
+
+        linysPreviewQrResults()
       }
       .alignItems(HorizontalAlign.Start)
       .layoutWeight(this.tablet_mode || this.free_window_mode ? 1 : undefined)
-      .constraintSize(this.web_context_selected_url && (this.web_context_selected_url != this.web_context_source_url) ? {} : {
-        maxWidth: meowPx2vp(this.getUIContext()
-          .getMeasureUtils()
-          .measureTextSize({ textContent: url, fontSize: fontSize_Normal(), fontWeight: FontWeight.Regular })
-          .width as number) / 3 + 20
-      })
+      .constraintSize(!(this.tablet_mode || this.free_window_mode) || (this.web_context_selected_url && (this.web_context_selected_url != this.web_context_source_url))
+        ? {} : {
+          maxWidth: meowPx2vp(this.getUIContext()
+            .getMeasureUtils()
+            .measureTextSize({ textContent: url, fontSize: fontSize_Normal(), fontWeight: FontWeight.Regular })
+            .width as number) / 2 + 20
+        })
 
       if (this.web_context_menu_image_preview) {
-        Row() {
-          Image(url)
-            .height(this.free_window_mode ? this.web_context_image_height : 0.6 * this.screen_height)
-            .borderRadius(6)
-            .onComplete((event) => {
-              let imageWidth = event?.width;
-              let imageHeight = event?.height;
-              this.web_context_image_size = imageWidth + 'x' + imageHeight
-              // console.info('imageWidth:'+imageWidth,'imageHeight:'+imageHeight);
-            })
-        }
-        .padding(5)
-        .borderRadius(10)
-        .hoverEffect(this.web_context_menu_image_preview ? HoverEffect.Highlight : HoverEffect.None)
-        .onClick(() => {
-          // preview_image(url, this.storage);
-          this.storage.set('universal_new_tab_gateway', [url, false]);
-          this.web_context_menu_show = false;
-        })
-        .clickEffect(click_effect_default())
-
-        // .layoutWeight(this.free_window_mode ? 3 : this.tablet_mode ? 2 : undefined)
+        linysPreviewImage({ storage: this.storage, url: url })
       }
     }.width('auto')
   }

@@ -1,12 +1,13 @@
 import lazy { zlib } from '@kit.BasicServicesKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import lazy { fileUri, fileIo as fs, picker } from '@kit.CoreFileKit';
-import { buffer } from '@kit.ArkTS';
+import lazy { buffer, util } from '@kit.ArkTS';
 import lazy { image, sendableImage } from '@kit.ImageKit';
 import lazy { bunch_of_settings } from '../hosts/bunch_of_settings';
 import lazy { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { meowContext } from './environment_tools';
-import { apply_EasyList } from '../processes/web_actions';
+import lazy { apply_EasyList } from '../processes/web_actions';
+import { detectBarcode, scanBarcode } from '@kit.ScanKit';
 
 // Pick & Save
 
@@ -107,8 +108,7 @@ export async function document_save_from_uri(from: string, file_name_overwrite?:
 
     })
       .catch((err: BusinessError) => {
-        console.error('[document_save_from_uri][ERROR] DocumentViewPicker.save failed with err: ' +
-        JSON.stringify(err));
+        console.error('[document_save_from_uri][ERROR] DocumentViewPicker.save failed with err: ' + JSON.stringify(err));
       });
 
   } catch (error) {
@@ -445,31 +445,6 @@ export function sandbox_read_text_sync(file_name: string, context_filesDir?: str
 }
 
 /**
- * Read a text file from file uri.
- *
- * If you have a context filesDir already, you can pass it to me.
- * @returns A string, of the requested file's content.
- * */
-export function uri_read_text_sync(file_uri: string) {
-  console.log('[storage_tools][uri_read_text_sync] ' + file_uri);
-  let path = uri_2_path(file_uri);
-  if (!(fs.accessSync(path))) {
-    // file doesn't exist
-    console.log('[storage_tools][uri_read_text_sync][' + path + '] Doesn\'t exist!');
-    return "undefined";
-  }
-  let file = fs.openSync(path, fs.OpenMode.READ_WRITE);
-  let stat = fs.statSync(path);
-  let size = stat.size;
-  let buf = new ArrayBuffer(size);
-  let readLen = fs.readSync(file.fd, buf);
-  fs.closeSync(file);
-  let result = buf.slice(0, readLen);
-  console.info("[sandbox_open] read file \"" + file_uri + "\" data succeed, Length: " + readLen.toString());
-  return buffer.from(result).toString();
-}
-
-/**
  * Read an ArrayBuffer file from sandbox storage in a synchronous way.
  * @returns An ArrayBuffer, of the requested file's content or undefined if the file doesn't exist.
  * */
@@ -514,6 +489,72 @@ export function sandbox_read_arrayBuffer(file_path_name: string, context_filesDi
       })
     });
   })
+}
+
+/**
+ * Save an image PixelMap to storage.
+ * @param context The context.
+ * @param pixelMap The PixelMap of image.
+ * TODO: THIS LOOKS LIKE A PILE OF WEDDING CAKE O.o
+ * */
+export function sandbox_save_from_pixel_map(pixelMap: image.PixelMap, context: Context, path: string = context.tempDir + '/context-menu-temp/temp') {
+  let type = pixelMap.getImageInfoSync().mimeType.split('/');
+  console.log(`[sandbox_save_from_pixel_map] mimeType = ${type}`);
+  path = path + '.' + type[type.length-1];
+  const imagePackerApi = image.createImagePacker();
+  let packOpts: image.PackingOption = { format: pixelMap.getImageInfoSync().mimeType, quality: 0 };
+
+  return fs.access(path)
+    .catch((e: BusinessError) => {
+      console.error(`[document_save_from_pixel_map][access] Failed : ${e}`);
+      return undefined;
+    })
+    .then((r) => {
+      if (r) {
+        console.log(`[document_save_from_pixel_map] File exists! Unlinking it... ${path}`);
+        return fs.unlink(path)
+          .catch((e: BusinessError) => {
+            console.error(`[document_save_from_pixel_map][unlink] Failed : ${e}`);
+            return undefined;
+          })
+          .then(() => {
+            let file: fs.File;
+            try {
+              file = fs.openSync(path, fs.OpenMode.CREATE | fs.OpenMode.READ_WRITE);
+            } catch (error) {
+              console.log(`[document_save_from_pixel_map] Failed: ${error}`);
+              return undefined;
+            }
+            return imagePackerApi.packToFile(pixelMap, file.fd, packOpts)
+              .catch((e: BusinessError) => {
+                console.error(`[document_save_from_pixel_map][packToFile] Failed : ${e}`);
+                return undefined;
+              })
+              .then(() => {
+                return path;
+              });
+          });
+
+      } else {
+        console.log(`[document_save_from_pixel_map] Clear! About to pack... ${path}`);
+        let file: fs.File;
+        try {
+          file = fs.openSync(path, fs.OpenMode.CREATE | fs.OpenMode.READ_WRITE);
+        } catch (error) {
+          console.log(`[document_save_from_pixel_map] Failed: ${error}`);
+          return undefined;
+        }
+        return imagePackerApi.packToFile(pixelMap, file.fd, packOpts)
+          .catch((e: BusinessError) => {
+            console.error(`[document_save_from_pixel_map][packToFile] Failed : ${e}`);
+            return undefined;
+          })
+          .then(() => {
+            return path;
+          });
+      }
+    })
+
 }
 
 /**
@@ -573,24 +614,6 @@ export function copy_from_uri_to_sandbox(from: string, to: string, max_name_leng
   console.log('[uri_copy_sandbox] Copy from [' + from_path + '] to [' + target_path + '] return [' + to + '/' + file_name + ']');
   fs.copyFileSync(from_path, target_path);
   return path_2_uri(target_path);
-}
-
-/**
- * Gets raw text content from rawfile.
- * @param from Path of rawfile, for example, 'home.html'.
- * @returns The text content if success. Undefined otherwise.
- * */
-export function text_from_rawfile(from: string) {
-  try {
-    let uint8Array: Uint8Array = meowContext().resourceManager.getRawFileContentSync(from);
-    let bf = buffer.from(uint8Array).buffer;
-    let r = buffer.from(bf).toString();
-    // console.log('[text_from_rawfile] ' + r);
-    return r;
-  } catch (e) {
-    console.error(`[text_from_rawfile][${from}] Failed: ` + e);
-    return undefined;
-  }
 }
 
 // Info
@@ -717,7 +740,61 @@ export function is_legal_filename(filename: string) {
   return 0;
 }
 
+/**
+ * Determines if a string is base64 image.
+ * @param str The string.
+ * @returns Boolean.
+ * @author Generated by DeepSeek on 29th Jan, 2026, modified by awa_Liny
+ * */
+export function is_base64_image(str: string): boolean {
+  // base verification on format
+  const base64ImageRegex = /^data:image\/([a-zA-Z]*);base64,([^\s]+)$/;
+
+  if (!base64ImageRegex.test(str)) {
+    return false;
+  }
+
+  // check if base64 part is valid
+  const matches = str.match(base64ImageRegex);
+  if (!matches || matches.length !== 3) {
+    return false;
+  }
+
+  const base64Data = matches[2];
+
+  // check string format
+  const base64Regex = /^[A-Za-z0-9+/]+=*$/;
+  if (!base64Regex.test(base64Data)) {
+    return false;
+  }
+
+  // check length
+  if (base64Data.length % 4 !== 0) {
+    return false;
+  }
+
+  return true;
+}
+
 // Conversions
+
+/**
+ * Gets raw text content from rawfile.
+ * @param from Path of rawfile, for example, 'home.html'.
+ * @returns The text content if success. Undefined otherwise.
+ * */
+export function text_from_rawfile(from: string) {
+  try {
+    let uint8Array: Uint8Array = meowContext().resourceManager.getRawFileContentSync(from);
+    let bf = buffer.from(uint8Array).buffer;
+    let r = buffer.from(bf).toString();
+    // console.log('[text_from_rawfile] ' + r);
+    return r;
+  } catch (e) {
+    console.error(`[text_from_rawfile][${from}] Failed: ` + e);
+    return undefined;
+  }
+}
 
 /**
  * Converts a uri to path.
@@ -760,14 +837,17 @@ export function arrayBuffer_2_pixelMap_sync(buf: ArrayBuffer) {
 export function arrayBuffer_2_pixelMap(buf: ArrayBuffer) {
   // ArrayBuffer => PixelMap
   const imageSource = image.createImageSource(buf);
-  console.log('imageSource: ' + JSON.stringify(imageSource));
-  return imageSource.createPixelMap({}).then((pm) => {
-    let pixelMap = pm;
-    return pixelMap;
-  }).finally(() => {
-    imageSource.release();
-    console.log('[arrayBuffer_2_pixelMap] Released imageSource!');
-  })
+  console.log('[arrayBuffer_2_pixelMap] imageSource: ' + JSON.stringify(imageSource));
+  return imageSource.createPixelMap({})
+    .then((pm) => {
+      let pixelMap = pm;
+      imageSource.release();
+      console.log('[arrayBuffer_2_pixelMap][A] Released imageSource!');
+      return pixelMap;
+    })
+    .catch((e: BusinessError) => {
+      console.error(`[arrayBuffer_2_pixelMap][A] createPixelMap failed: ${e}`);
+    })
 }
 
 /**
@@ -786,6 +866,18 @@ export function arrayBuffer_2_sendable_pixelMap(buf: ArrayBuffer) {
     imageSource.release();
     console.log('[arrayBuffer_2_sendable_pixelMap] Released imageSource!');
   })
+}
+
+/**
+ * Decodes a base64 string to array buffer.
+ * @param base64Str The base64 string.
+ * @returns The array buffer.
+ * */
+export function base64_2_arrayBuffer(base64Str: string): Promise<ArrayBuffer> {
+  let base64 = new util.Base64Helper();
+  return base64.decode(base64Str).then((uint8Array) => {
+    return uint8Array.buffer.slice(0, uint8Array.byteLength);
+  });
 }
 
 /**
@@ -812,6 +904,27 @@ export async function compress_image_arrayBuffer(img_buffer: ArrayBuffer, qua: n
   t = Date.now() - t;
   console.log('[compress_image_arrayBuffer] Finished! (' + t + ' ms)');
   return compressed_buffer;
+}
+
+/**
+ * Scans QR code from an image file.
+ * @param path The path of the file.
+ * @returns Array<scanBarcode.ScanResult>.
+ * */
+export function scan_QR_from_path(path: string) {
+  if (canIUse("SystemCapability.Multimedia.Scan.ScanBarcode")) {
+    return detectBarcode.decode({ uri: path_2_uri(path) })
+      .then((result: Array<scanBarcode.ScanResult>) => {
+        console.error(`[scan_QR_from_image_arrayBuffer] Scan Result: ${result}`);
+        return result;
+      })
+      .catch((e: BusinessError) => {
+        console.error(`[scan_QR_from_image_arrayBuffer] Failed: ${e}`);
+      })
+  } else {
+    console.error(`[scan_QR_from_image_arrayBuffer] Not supported.`);
+    return undefined;
+  }
 }
 
 // Global Data

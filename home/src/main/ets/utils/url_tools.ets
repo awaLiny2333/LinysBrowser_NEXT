@@ -1,5 +1,8 @@
 import { default_search_engine, legal_top_domains } from '../hosts/bunch_of_defaults';
 import { common, Want } from '@kit.AbilityKit';
+import lazy { detectBarcode, scanBarcode, scanCore } from '@kit.ScanKit';
+import lazy { image } from '@kit.ImageKit';
+import lazy { http } from '@kit.NetworkKit';
 
 /**
  * Process the search_input into a visitable address.
@@ -484,3 +487,89 @@ export function jump_external_link(link: string, context: Context) {
     console.error('[ERROR][Meow][url_tools] Pull up application for link ' + link + ' Failed!');
   });
 }
+
+// Image
+
+/**
+ * Download an image from url.
+ * @param url The url.
+ * @returns Promise of the image ArrayBuffer.
+ * */
+export async function download_image_as_array_buffer(url: string): Promise<ArrayBuffer> {
+  return new Promise((resolve, reject) => {
+    const httpRequest = http.createHttp();
+    httpRequest.request(
+      url,
+      {
+        method: http.RequestMethod.GET,
+        expectDataType: http.HttpDataType.ARRAY_BUFFER
+      },
+      (err, data) => {
+        if (err) {
+          const e = new Error(`Image request failed: ${err.message}`);
+          reject(e);
+          console.error(`[download_image_as_array_buffer] Failed: ${e}`);
+          return;
+        }
+        if (data && data.result) {
+          resolve(data.result as ArrayBuffer);
+          console.error(`[download_image_as_array_buffer] RESOLVED!`);
+        } else {
+          const e = new Error('No image data received!');
+          console.error(`[download_image_as_array_buffer] Failed: ${e}`);
+          reject(e);
+        }
+      }
+    );
+  });
+}
+
+/**
+ * 识别图中二维码。
+ */
+export function scanQRFromWebImage(url: string) {
+  return download_image_as_array_buffer(url).then((imageData) => {
+    const imageSource = image.createImageSource(imageData);
+    return imageSource.createPixelMap().then((pixelMap) => {
+      return decodeImageBuffer(pixelMap).then((result) => {
+        if (result) {
+          console.log(`[scanQRFromWebImage] result: ${result}`);
+          return result;
+        } else {
+          console.log(`[scanQRFromWebImage] failed.`);
+          return undefined;
+        }
+      }).finally(() => {
+        // 释放资源
+        pixelMap.release();
+        imageSource.release();
+      });
+    });
+  })
+}
+
+async function decodeImageBuffer(pixelMap: image.PixelMap) {
+  pixelMap.convertPixelFormat(image.PixelMapFormat.NV12);
+  let info = await pixelMap.getImageInfo();
+  let pixelBytesNumber: number = pixelMap.getPixelBytesNumber();
+  let buffer = new ArrayBuffer(pixelBytesNumber);
+  await pixelMap.readPixelsToBuffer(buffer);
+  let byteImg: detectBarcode.ByteImage = {
+    byteBuffer: buffer,
+    width: info.size.width,
+    height: info.size.height,
+    format: detectBarcode.ImageFormat.NV21
+  };
+  let options: scanBarcode.ScanOptions =
+    { scanTypes: [scanCore.ScanType.ALL], enableMultiMode: true, enableAlbum: false };
+  try {
+    return detectBarcode.decodeImage(byteImg, options).then((result: detectBarcode.DetectResult) => {
+      return JSON.stringify(result);
+    }).catch((error: BusinessError) => {
+      console.error(`[ScanCode] Failed to get DetectResult by promise with options. Code: ${error.code}, message: ${error.message}`);
+    });
+  } catch (error) {
+    console.error(`[ScanCode] Failed to get DetectResult by promise with options. Code: ${error.code}, message: ${error.message}`);
+  }
+}
+
