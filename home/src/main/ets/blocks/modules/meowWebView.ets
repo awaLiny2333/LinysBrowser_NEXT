@@ -23,7 +23,6 @@ import lazy { meowPx2vp } from '../../utils/environment_tools';
 import lazy { is_legal_ipv4, is_legal_url } from '../../utils/url_tools';
 import lazy { share_link, share_text } from '../../utils/link_tools';
 import lazy linysPreviewWebView from '../../components/misc/linysPreviewWebView';
-import { preview_image } from '../../utils/preview_tools';
 
 @Component
 struct meowWebView {
@@ -186,47 +185,52 @@ struct meowWebView {
           })
           .borderRadius(5)
           .clickEffect(click_effect_default())
-        Row() {
-          linysSymbol({ symbol_glyph_target: 'sys.symbol.text_clipboard', can_hover: true }) // Copy
-            .onClick(() => {
-              copy(content);
-              this.web_context_menu_show = false;
-            })
-          linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right', can_hover: true }) // Visit
-            .onClick(() => {
-              this.storage.set('universal_new_tab_gateway', [content, false]);
-              this.web_context_menu_show = false;
-            })
-            .opacity(is_legal_url(content, true) || is_legal_ipv4(content) ? 1 : 0.5)
-            .enabled(is_legal_url(content, true) || is_legal_ipv4(content))
-          linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass_house', can_hover: true }) // Search Here
-            .onClick(() => {
-              let se = this.storage.get('search_extracted_engine') as string;
-              let target = se.replaceAll('%s', encodeURIComponent(content));
-              this.storage.set('universal_new_tab_gateway', [target, false]);
-              this.web_context_menu_show = false;
-            })
-            .opacity(this.search_extracted_field_available ? 1 : 0.5)
-            .enabled(this.search_extracted_field_available)
-          linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass', can_hover: true }) // Search Default
-            .onClick(() => {
-              let se = AppStorage.get('search_engine') as string;
-              let target = se.replaceAll('%s', encodeURIComponent(content));
-              this.storage.set('universal_new_tab_gateway', [target, false]);
-              this.web_context_menu_show = false;
-            })
-          linysSymbol({ symbol_glyph_target: 'sys.symbol.share', can_hover: true }) // Share
-            .onClick(() => {
-              if (this.getUIContext().getHostContext()) {
-                if (is_legal_url(content, true) || is_legal_ipv4(content)) {
-                  share_link(content, content, this.getUIContext().getHostContext()!);
-                } else {
-                  share_text(content, this.getUIContext().getHostContext()!);
-                }
+        Scroll() {
+          Row() {
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.text_clipboard', can_hover: true }) // Copy
+              .onClick(() => {
+                copy(content);
                 this.web_context_menu_show = false;
-              }
-            })
-        } // Buttons
+              })
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right', can_hover: true }) // Visit
+              .onClick(() => {
+                this.storage.set('universal_new_tab_gateway', [content, false]);
+                this.web_context_menu_show = false;
+              })
+              .opacity(is_legal_url(content, true) || is_legal_ipv4(content) ? 1 : 0.5)
+              .enabled(is_legal_url(content, true) || is_legal_ipv4(content))
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass_house', can_hover: true }) // Search Here
+              .onClick(() => {
+                let se = this.storage.get('search_extracted_engine') as string;
+                let target = se.replaceAll('%s', encodeURIComponent(content));
+                this.storage.set('universal_new_tab_gateway', [target, false]);
+                this.web_context_menu_show = false;
+              })
+              .opacity(this.search_extracted_field_available ? 1 : 0.5)
+              .enabled(this.search_extracted_field_available)
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.magnifyingglass', can_hover: true }) // Search Default
+              .onClick(() => {
+                let se = AppStorage.get('search_engine') as string;
+                let target = se.replaceAll('%s', encodeURIComponent(content));
+                this.storage.set('universal_new_tab_gateway', [target, false]);
+                this.web_context_menu_show = false;
+              })
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.share', can_hover: true }) // Share
+              .onClick(() => {
+                if (this.getUIContext().getHostContext()) {
+                  if (is_legal_url(content, true) || is_legal_ipv4(content)) {
+                    share_link(content, content, this.getUIContext().getHostContext()!);
+                  } else {
+                    share_text(content, this.getUIContext().getHostContext()!);
+                  }
+                  this.web_context_menu_show = false;
+                }
+              })
+          } // Buttons
+        }
+        .scrollBar(BarState.Off)
+        .scrollable(ScrollDirection.Horizontal)
+        .edgeEffect(EdgeEffect.Spring)
       }
       .alignItems(HorizontalAlign.Start)
       .layoutWeight(this.tablet_mode || this.free_window_mode ? 1 : undefined)
@@ -237,7 +241,7 @@ struct meowWebView {
           .height(this.free_window_mode ? this.web_context_web_height : 0.4 * this.screen_height)
           .padding(5)
           .borderRadius(10)
-          .layoutWeight(this.tablet_mode || this.free_window_mode ? 3 : undefined)
+          .layoutWeight(this.free_window_mode ? 3 : this.tablet_mode ? 2 : undefined)
       }
     }
   }
@@ -258,30 +262,35 @@ struct meowWebView {
           })
           .clickEffect(click_effect_default())
           .borderRadius(5)
-        Row() {
-          linysSymbol({ symbol_glyph_target: 'sys.symbol.text_clipboard', can_hover: true }) // Copy
-            .onClick(() => {
-              this.web_context_menu_event_result?.copyImage();
-              this.web_context_menu_show = false;
-            })
-          linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right', can_hover: true }) // Visit
-            .onClick(() => {
-              this.storage.set('universal_new_tab_gateway', [url, false]);
-              this.web_context_menu_show = false;
-            })
-          linysSymbol({ symbol_glyph_target: 'sys.symbol.download', can_hover: true }) // Download
-            .onClick(() => {
-              try {
-                this.bunch_of_tabs.workingMainTab().controller?.startDownload(url);
-              } catch (error) {
-                this.storage.setOrCreate('universal_fail_prompt_desc_gateway', error.toString());
-                console.error(`[ContextMenu] Download image failed: ${error}`);
-              }
-              this.web_context_menu_show = false;
-            })
-          linysText({ text: this.web_context_image_size, can_hover: true })
-            .clickEffect(click_effect_default())
-        } // Control buttons
+        Scroll() {
+          Row() {
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.text_clipboard', can_hover: true }) // Copy
+              .onClick(() => {
+                this.web_context_menu_event_result?.copyImage();
+                this.web_context_menu_show = false;
+              })
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right', can_hover: true }) // Visit
+              .onClick(() => {
+                this.storage.set('universal_new_tab_gateway', [url, false]);
+                this.web_context_menu_show = false;
+              })
+            linysSymbol({ symbol_glyph_target: 'sys.symbol.download', can_hover: true }) // Download
+              .onClick(() => {
+                try {
+                  this.bunch_of_tabs.workingMainTab().controller?.startDownload(url);
+                } catch (error) {
+                  this.storage.setOrCreate('universal_fail_prompt_desc_gateway', error.toString());
+                  console.error(`[ContextMenu] Download image failed: ${error}`);
+                }
+                this.web_context_menu_show = false;
+              })
+            linysText({ text: this.web_context_image_size, can_hover: true })
+              .clickEffect(click_effect_default())
+          } // Control buttons
+        }
+        .scrollBar(BarState.Off)
+        .scrollable(ScrollDirection.Horizontal)
+        .edgeEffect(EdgeEffect.Spring)
       }
       .alignItems(HorizontalAlign.Start)
       .layoutWeight(this.tablet_mode || this.free_window_mode ? 1 : undefined)
@@ -307,7 +316,7 @@ struct meowWebView {
           this.web_context_menu_show = false;
         })
         .clickEffect(click_effect_default())
-        .layoutWeight(this.tablet_mode || this.free_window_mode ? 3 : undefined)
+        .layoutWeight(this.free_window_mode ? 3 : this.tablet_mode ? 2 : undefined)
       }
     }
   }
