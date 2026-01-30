@@ -502,7 +502,7 @@ export function sandbox_save_from_pixel_map(pixelMap: image.PixelMap, context: C
   console.log(`[sandbox_save_from_pixel_map] mimeType = ${type}`);
   path = path + '.' + type[type.length-1];
   const imagePackerApi = image.createImagePacker();
-  let packOpts: image.PackingOption = { format: pixelMap.getImageInfoSync().mimeType, quality: 0 };
+  let packOpts: image.PackingOption = { format: pixelMap.getImageInfoSync().mimeType, quality: 100 };
 
   return fs.access(path)
     .catch((e: BusinessError) => {

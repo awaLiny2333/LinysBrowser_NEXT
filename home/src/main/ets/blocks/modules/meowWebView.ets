@@ -2,7 +2,7 @@ import { animation_default, click_effect_default, fontSize_Normal } from '../../
 import { bunch_of_tabs, tab_label } from '../../hosts/bunch_of_tabs';
 import { is_address_continuable, run_time, set_continuable, storage_of_id } from '../../utils/ui_tools';
 import lazy {
-  compress_image_arrayBuffer, document_save_from_path, image_save_from_uri, sandbox_read_arrayBuffer_sync
+  compress_image_arrayBuffer, image_save_from_uri, sandbox_read_arrayBuffer_sync
 } from '../../utils/storage_tools';
 import lazy { harmonyShare, systemShare } from '@kit.ShareKit';
 import lazy { webview } from '@kit.ArkWeb';
@@ -154,6 +154,7 @@ struct meowWebView {
   @LocalStorageLink('web_context_menu_event') @Watch('on_web_context_menu_event') web_context_menu_event: OnContextMenuShowEvent | undefined = undefined;
   @StorageLink('web_context_web_height') web_context_web_height: number = 500;
   @LocalStorageLink('web_context_menu_show') web_context_menu_show: boolean = false;
+  @StorageLink('web_context_text_strip') web_context_text_strip: boolean = false;
   @State web_context_menu_event_result: WebContextMenuResult | undefined = undefined;
   @State web_context_selected_text: string = 'text'
   @State web_context_selected_url: string = 'url'
@@ -181,7 +182,7 @@ struct meowWebView {
       Column() {
         linysText({ text: content, max_lines: (this.tablet_mode || this.free_window_mode) ? 10 : 3, can_hover: true })
           .onClick(() => {
-            if (is_legal_url(content, true)) {
+            if (is_legal_url(content, true) || is_legal_ipv4(content)) {
               this.storage.set('universal_new_tab_gateway', [content, false]);
               this.web_context_menu_show = false;
             }
@@ -216,11 +217,8 @@ struct meowWebView {
       Column() {
         linysText({ text: url, max_lines: (this.tablet_mode || this.free_window_mode) ? 10 : 3, can_hover: true })
           .onClick(() => {
-            if (is_legal_url(url, true)) {
-              this.storage.set('universal_new_tab_gateway', [url, false]);
-              this.web_context_menu_show = false;
-            }
-            // copy(url)
+            this.storage.set('universal_new_tab_gateway', [url, false]);
+            this.web_context_menu_show = false;
           })
           .clickEffect(click_effect_default())
           .borderRadius(5)
@@ -239,13 +237,13 @@ struct meowWebView {
               })
             linysSymbol({ symbol_glyph_target: 'sys.symbol.download', can_hover: true }) // Save to Files
               .onClick(() => {
-                if (this.web_context_image_path) {
-                  document_save_from_path(this.web_context_image_path);
+                try {
+                  this.bunch_of_tabs.workingMainTab().controller?.startDownload(url);
                   this.web_context_menu_show = false;
+                } catch (error) {
+                  console.error(`[Context Menu] Download image from ${url} failed! ${error}`);
                 }
               })
-              .enabled(this.web_context_image_path ? true : false)
-              .opacity(this.web_context_image_path ? 1 : 0.5)
             linysSymbol({ symbol_glyph_target: 'sys.symbol.picture_badge_arrow_down', can_hover: true }) // Save to Gallery
               .onClick(() => {
                 if (this.web_context_image_path) {
@@ -609,7 +607,12 @@ struct meowWebView {
     this.web_context_menu_x = meowPx2vp(this.web_context_menu_event.param.x());
     this.web_context_menu_y = meowPx2vp(this.web_context_menu_event.param.y());
     this.web_context_menu_event_result = this.web_context_menu_event.result;
-    this.web_context_selected_text = this.web_context_menu_event.param.getSelectionText();
+    let t = this.web_context_menu_event.param.getSelectionText();
+    if (this.web_context_text_strip) {
+      this.web_context_selected_text = t.trim();
+    } else {
+      this.web_context_selected_text = t;
+    }
     this.web_context_selected_url = this.web_context_menu_event.param.getLinkUrl();
     this.web_context_source_url = this.web_context_menu_event.param.getSourceUrl();
     this.web_context_selected_url_unfiltered = this.web_context_menu_event.param.getUnfilteredLinkUrl();

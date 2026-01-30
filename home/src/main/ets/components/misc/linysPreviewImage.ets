@@ -31,6 +31,7 @@ struct linysPreviewImage {
     this.web_context_image_pixel_map?.release();
     this.web_context_image_pixel_map = undefined;
     this.web_context_image_size = 'OvO';
+    this.web_context_image_path = undefined;
     console.log(`[linysPreviewImage] Released PixelMap object!`);
     this.web_context_image_qr_scanned_results = [];
 

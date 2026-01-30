@@ -194,6 +194,7 @@ struct meowAppSettings {
   @StorageLink('continuation_auto_close_tab') continuation_auto_close_tab: boolean = true;
   // Settings / Web context menu
   @StorageLink('web_context_menu_enabled') web_context_menu_enabled: boolean = true;
+  @StorageLink('web_context_text_strip') web_context_text_strip: boolean = false;
   @StorageLink('web_context_menu_image_preview') web_context_menu_image_preview: boolean = true;
   @StorageLink('web_context_menu_web_preview') web_context_menu_web_preview: boolean = true;
   @StorageLink('web_context_image_width') web_context_image_width: number = 200;
@@ -563,6 +564,15 @@ struct meowAppSettings {
                       bunch_of_settings.set('web_context_menu_enabled', this.web_context_menu_enabled);
                     }
                   }) // web_context_menu_enabled
+                  linysSwitchWithText({
+                    text: $r('app.string.Menu_text_strip'),
+                    toggle_state: this.web_context_text_strip,
+                    onExecution: () => {
+                      bunch_of_settings.set('web_context_text_strip', this.web_context_text_strip);
+                    }
+                  }) // web_context_text_strip
+                    .opacity(this.web_context_menu_enabled ? 1 : 0.5)
+                    .animation(animation_default())
                   linysSwitchWithText({
                     text: $r('app.string.Menu_image_preview'),
                     toggle_state: this.web_context_menu_image_preview,
