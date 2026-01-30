@@ -44,6 +44,7 @@ struct meowWebView {
   @LocalStorageLink('sharable_continuable') sharable_continuable: boolean = false;
   @LocalStorageLink('screen_width') screen_width: number = 0;
   @LocalStorageLink('screen_height') screen_height: number = 0;
+  @StorageLink('effects') effects: boolean = false;
   /**
    * Controls */
   @LocalStorageLink('current_title') current_title: string = "=￣ω￣=";
@@ -443,7 +444,8 @@ struct meowWebView {
       onWillDisappear: () => {
         this.web_context_menu_show = false;
       },
-      backgroundColor: this.color_current_primary,
+      backgroundColor: this.effects ? Color.Transparent : this.color_current_primary,
+      backgroundBlurStyle: this.effects ? BlurStyle.COMPONENT_ULTRA_THICK : BlurStyle.NONE,
       hapticFeedbackMode: HapticFeedbackMode.AUTO,
     })
   }
