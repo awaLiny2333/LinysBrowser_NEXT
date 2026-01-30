@@ -11,12 +11,20 @@ struct woofUpdateHistory {
   @StorageLink('color_current_secondary') color_current_secondary: ResourceColor = $r('app.color.block_color');
   @StorageLink('color_current_font') color_current_font: ResourceColor = $r('app.color.font_color_title');
   texts: string[] = [
+    'v1.8.1-beta 2026 01',
+    '一个开创性的更新！' +
+      '将强大的右键菜单带入冲浪喵！\n' +
+      '新年快乐！！！',
+    'An innovative update! ' +
+      'Bringing powerful Context Menu into BrowserCat!\n' +
+      'Happy New Year!!!',
+
     'v1.8.0-beta 2026 01',
     '一个总结性的更新！正式面向 HarmonyOS 6.0.1 (API21) 发布！' +
-      '经过长达两个月的日常使用与检验，尽可能确保此 Release 没有功能性错误！' +
+      '经过长达两个月的日常使用与检验，尽可能确保此 Release 没有功能性错误！\n' +
       '我们 2026 年见！',
     'A summarizing update! Now releasing towards HarmonyOS 6.0.1 (API21)! ' +
-      'This release is made as much sure as possible to contain no functional errors, after a two-month-long daily test!' +
+      'This release is made as much sure as possible to contain no functional errors, after a two-month-long daily test!\n' +
       'See you in 2026!',
 
     'v1.7.10-beta 2025 11',
