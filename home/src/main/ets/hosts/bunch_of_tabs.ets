@@ -980,9 +980,16 @@ export class tab_info_packed {
     console.log(`[tab_info_packed][restore] pre_restoration_stage: ${this.pre_restoration_stage}, web_state_array.length: ${this.web_state_array?.length}`);
     try {
       if (!this.web_state_array) {
-        let array_buffer = sandbox_read_arrayBuffer_sync(web_state_dir(this.storage) + "/continue_tabs_web_state_array_" + this.index.toString());
+        const path = web_state_dir(this.storage) + "/continue_tabs_web_state_array_" + this.index.toString();
+        let array_buffer = sandbox_read_arrayBuffer_sync(path);
         if (array_buffer) {
-          this.web_state_array = new Uint8Array(array_buffer);
+          if (array_buffer.byteLength < 512 * 1000) {
+            // max 512 KB
+            this.web_state_array = new Uint8Array(array_buffer);
+          } else {
+            console.error("[Meow][bunch_of_tabs] Restore web state Rejected! File too big! (" + (array_buffer.byteLength / 1000).toString() + " KB)");
+            return false;
+          }
         } else {
           console.error("[Meow][bunch_of_tabs] Restore web state failed! Read NOTHING from disk???");
           return false;
