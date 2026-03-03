@@ -1,0 +1,100 @@
+{
+  "name": "Linys_Browser_NEXT",
+  "description": "",
+  "projectType": "hvigor",
+  "uri": {
+    "$type": 1,
+    "data": "file:///storage/Users/currentUser/Documents/Meow/Codes/HMOS/HarmonyOS_Projects/HarmonyOS_Projects/Linys_Browser_NEXT"
+  },
+  "buildTask": "",
+  "extendConfigs": {
+    "sourceSet": [],
+    "build": []
+  },
+  "subProjects": [
+    {
+      "name": "home",
+      "description": "",
+      "projectType": "hvigor",
+      "uri": {
+        "$type": 1,
+        "data": "file:///storage/Users/currentUser/Documents/Meow/Codes/HMOS/HarmonyOS_Projects/HarmonyOS_Projects/Linys_Browser_NEXT/home"
+      },
+      "buildTask": "",
+      "extendConfigs": {
+        "sourceSet": [],
+        "build": []
+      },
+      "subProjects": [],
+      "sourceSet": {
+        "include": {
+          "sourceFiles": [],
+          "resourceFiles": []
+        },
+        "exclude": {
+          "contentFiles": []
+        }
+      },
+      "dependencyProjects": []
+    }
+  ],
+  "sourceSet": {
+    "include": {
+      "sourceFiles": [
+        {
+          "url": {
+            "$type": 1,
+            "data": "file:///storage/Users/currentUser/Documents/Meow/Codes/HMOS/HarmonyOS_Projects/HarmonyOS_Projects/Linys_Browser_NEXT/home/src/main/ets"
+          }
+        },
+        {
+          "url": {
+            "$type": 1,
+            "data": "file:///storage/Users/currentUser/Documents/Meow/Codes/HMOS/HarmonyOS_Projects/HarmonyOS_Projects/Linys_Browser_NEXT/home/src/ohosTest/ets"
+          }
+        }
+      ],
+      "resourceFiles": []
+    },
+    "exclude": {
+      "contentFiles": [
+        {
+          "url": {
+            "$type": 1,
+            "data": "file:///storage/Users/currentUser/Documents/Meow/Codes/HMOS/HarmonyOS_Projects/HarmonyOS_Projects/Linys_Browser_NEXT/oh_modules"
+          }
+        },
+        {
+          "url": {
+            "$type": 1,
+            "data": "file:///storage/Users/currentUser/Documents/Meow/Codes/HMOS/HarmonyOS_Projects/HarmonyOS_Projects/Linys_Browser_NEXT/.hvigor"
+          }
+        },
+        {
+          "url": {
+            "$type": 1,
+            "data": "file:///storage/Users/currentUser/Documents/Meow/Codes/HMOS/HarmonyOS_Projects/HarmonyOS_Projects/Linys_Browser_NEXT/build"
+          }
+        },
+        {
+          "url": {
+            "$type": 1,
+            "data": "file:///storage/Users/currentUser/Documents/Meow/Codes/HMOS/HarmonyOS_Projects/HarmonyOS_Projects/Linys_Browser_NEXT/home/.test"
+          }
+        },
+        {
+          "url": {
+            "$type": 1,
+            "data": "file:///storage/Users/currentUser/Documents/Meow/Codes/HMOS/HarmonyOS_Projects/HarmonyOS_Projects/Linys_Browser_NEXT/home/oh_modules"
+          }
+        },
+        {
+          "url": {
+            "$type": 1,
+            "data": "file:///storage/Users/currentUser/Documents/Meow/Codes/HMOS/HarmonyOS_Projects/HarmonyOS_Projects/Linys_Browser_NEXT/home/build"
+          }
+        }
+      ]
+    }
+  }
+}

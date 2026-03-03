@@ -3,16 +3,16 @@
     "signingConfigs": [
       {
         "name": "default",
-        "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\meowDUO\\.ohos\\config\\default_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.cer",
+          "storePassword": "000000201E5AA509250F77BEA02A33A1B381580A1DD6F592230FCA2152340D348D197A0A3FE9E0548F7D498980FCBDD2",
+          "certpath": "/storage/Users/currentUser/appdata/el2/base/com.huawei.devecostudio/files/ohos/config/default_Linys_Browser_NEXTbB9HHa2l9a7uwUisdhFeuUgTANPNztPQYwPb1E4mzHg.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001B9AAD862DB41A72A882D7BE4A60D6D8A59333C41EB0325DF1FEFD6E5982555A3471AE30F4162681",
-          "profile": "C:\\Users\\meowDUO\\.ohos\\config\\default_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.p7b",
+          "keyPassword": "000000201E5AA509250F77BEA02A33A1B381580A1DD6F592230FCA2152340D348D197A0A3FE9E0548F7D498980FCBDD2",
+          "profile": "/storage/Users/currentUser/appdata/el2/base/com.huawei.devecostudio/files/ohos/config/default_Linys_Browser_NEXTbB9HHa2l9a7uwUisdhFeuUgTANPNztPQYwPb1E4mzHg.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\meowDUO\\.ohos\\config\\default_Linys_Browser_NEXT_U8e-oblABLFU73EOK3qrlcjLDcoctG2LWep5b2enlV8=.p12",
-          "storePassword": "0000001BE8BB753B9E16F4B8236F8A590F828DB4D3688AE7745F0CDD9CF148F599D1712488FE9550297782"
-        }
+          "storeFile": "/storage/Users/currentUser/appdata/el2/base/com.huawei.devecostudio/files/ohos/config/default_Linys_Browser_NEXTbB9HHa2l9a7uwUisdhFeuUgTANPNztPQYwPb1E4mzHg.p12"
+        },
+        "type": "HarmonyOS"
       }
     ],
     "products": [
@@ -31,7 +31,7 @@
     ],
     "buildModeSet": [
       {
-        "name": "debug",
+        "name": "debug"
       },
       {
         "name": "release"
@@ -46,7 +46,7 @@
         {
           "name": "default",
           "applyToProducts": [
-            "default",
+            "default"
           ]
         }
       ]
