@@ -2,6 +2,7 @@ import { copy } from '../../utils/clipboard_tools';
 import { share_link, share_text } from '../../utils/link_tools';
 import { is_legal_ipv4, is_legal_url } from '../../utils/url_tools';
 import linysSymbol from '../texts/linysSymbol';
+import { common, OpenLinkOptions } from '@kit.AbilityKit';
 
 @Component
 struct linysPreviewTextActions {
@@ -42,6 +43,23 @@ struct linysPreviewTextActions {
             let se = AppStorage.get('search_engine') as string;
             let target = se.replaceAll('%s', encodeURIComponent(this.content));
             this.storage.set('universal_new_tab_gateway', [target, false]);
+            this.web_context_menu_show = false;
+          })
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.bookmark_book_closed', can_hover: true }) // Search Dictionary
+          .onClick(() => {
+            let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+            let link: string = 'dictionary://' + this.content;
+            let openLinkOptions: OpenLinkOptions = {
+              appLinkingOnly: false
+            };
+            try {
+              context.openLink(link, openLinkOptions)
+                .catch((err: BusinessError) => {
+                  console.error(`[linysPreviewTextActions] Search ${link} in dictionary openlink failed: ${err}`);
+                });
+            } catch (e) {
+              console.error(`[linysPreviewTextActions] Search ${link} in dictionary openlink failed: ${e}`);
+            }
             this.web_context_menu_show = false;
           })
         linysSymbol({ symbol_glyph_target: 'sys.symbol.share', can_hover: true }) // Share
