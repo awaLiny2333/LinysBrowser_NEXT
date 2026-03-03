@@ -26,6 +26,7 @@ import lazy linysPreviewWebView from '../../components/misc/linysPreviewWebView'
 import lazy linysPreviewImage from '../../components/misc/linysPreviewImage';
 import linysPreviewQrResults from '../../components/misc/linysPreviewQrResults';
 import linysPreviewTextActions from '../../components/misc/linysPreviewTextActions';
+import lazy { copy } from '../../utils/clipboard_tools';
 
 @Component
 struct meowWebView {
@@ -185,9 +186,10 @@ struct meowWebView {
           .onClick(() => {
             if (is_legal_url(content, true) || is_legal_ipv4(content)) {
               this.storage.set('universal_new_tab_gateway', [content, false]);
-              this.web_context_menu_show = false;
+            } else {
+              copy(content)
             }
-            // copy(content)
+            this.web_context_menu_show = false;
           })
           .borderRadius(5)
           .clickEffect(click_effect_default())
@@ -285,14 +287,14 @@ struct meowWebView {
   contextMenuBuilder() {
     Column() {
       Row() {
-        linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left', can_hover: true, })// Backward
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_left', can_hover: true, }) // Backward
           .enabled(this.bunch_of_tabs.current_accessBackward)
           .opacity(this.bunch_of_tabs.current_accessBackward ? 1 : 0.5)
           .onClick(() => {
             this.bunch_of_tabs.goBackward_onWorkingTab();
             this.web_context_menu_show = false;
           })
-        linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right', can_hover: true, })// Forward
+        linysSymbol({ symbol_glyph_target: 'sys.symbol.arrow_right', can_hover: true, }) // Forward
           .enabled(this.bunch_of_tabs.current_accessForward)
           .opacity(this.bunch_of_tabs.current_accessForward ? 1 : 0.5)
           .onClick(() => {
