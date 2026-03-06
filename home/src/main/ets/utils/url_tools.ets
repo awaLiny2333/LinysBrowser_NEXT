@@ -173,6 +173,12 @@ export function is_legal_url(input: string, require_viewable: boolean) {
       return true;
     }
   }
+  
+  if (scheme == 'meow'){
+    // Let it go.
+    return true;
+  }
+  
   // if doesn't contain dots and has no scheme
   if (url_first_part.length < 2 && scheme == "") {
     return false;

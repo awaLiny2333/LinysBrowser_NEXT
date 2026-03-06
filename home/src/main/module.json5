@@ -7,10 +7,11 @@
     "mainElement": "HomeAbility",
     "deviceTypes": [
       "default",
-      "phone", // Not adding this would disable the floating window on tablets. wtf?
+      "phone",
+       // Not adding this would disable the floating window on tablets. wtf?
       "tablet",
       "2in1",
-      //      "wearable"
+       //      "wearable"
     ],
     "deliveryWithInstall": true,
     "installationFree": false,
@@ -34,7 +35,8 @@
           "fullscreen",
           "split",
           "floating"
-        ], // Does this help?
+        ],
+         // Does this help?
         "skills": [
           {
             "entities": [
@@ -59,25 +61,25 @@
             "uris": [
               {
                 "scheme": "file",
-                // Accept All Files
+                 // Accept All Files
                 "linkFeature": "FileOpen"
               },
               {
                 "scheme": "file",
                 "type": "text/html",
-                // Accept html
+                 // Accept html
                 "linkFeature": "FileOpen"
               },
               {
                 "scheme": "file",
                 "type": "application/xhtml+xml",
-                // Accept xhtml
+                 // Accept xhtml
                 "linkFeature": "FileOpen"
               },
               {
                 "scheme": "file",
                 "type": "message/rfc822",
-                // Accept mht
+                 // Accept mht
                 "linkFeature": "FileOpen"
               },
               {
@@ -90,8 +92,8 @@
           }
         ],
         "minWindowHeight": 198,
-        "minWindowWidth": 352
-        // 16:9
+        "minWindowWidth": 352,
+         // 16:9
       }
     ],
     "extensionAbilities": [
@@ -218,7 +220,7 @@
             "HomeAbility"
           ]
         }
-      },
+      }
     ]
   }
 }
