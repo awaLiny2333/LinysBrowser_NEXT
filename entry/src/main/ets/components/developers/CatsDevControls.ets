@@ -2,30 +2,38 @@ import { defaultInnerRadius, defaultRoundedRadius, meowAvoid, meowFreeWindowMode
 import { AppStorageV2, LengthMetrics } from '@kit.ArkUI';
 import { meowMisc } from '../../catstypicalframework/hosts/meowMisc';
 import { meow, meowLevel } from '../../catstypicalframework/utils/catsLogger';
-import { SimpleHistoryShowcase } from './SimpleHistoryShowcase';
+import { SimpleHistoryShowcase } from './history/SimpleHistoryShowcase';
 import { meowHistorian } from '../../hosts/history/classes/meowHistorian';
 import { meowHistoryEntry } from '../../hosts/history/classes/meowHistoryEntry';
+import { meowManagedSettings } from '../../hosts/settings/classes/meowManagedSettings';
+import { fileExist } from '../../catstypicalframework/utils/storage';
+import { meowSettingsEntry } from '../../hosts/settings/classes/meowSettingsEntry';
 
 @ComponentV2
 struct CatsDevControls {
+  // Environment
+  context: Context = this.getUIContext().getHostContext()!;
   // catsTypicalFramework
   @Local myMeowLayout: meowLayoutModeStatus = AppStorageV2.connect<meowLayoutModeStatus>(meowLayoutModeStatus)!;
   @Local myMeowFreeWindowModeStatus: meowFreeWindowModeStatus = AppStorageV2.connect<meowFreeWindowModeStatus>(meowFreeWindowModeStatus)!;
   @Local myMeowAvoid: meowAvoid = AppStorageV2.connect<meowAvoid>(meowAvoid)!;
   @Local myMeowMisc: meowMisc = AppStorageV2.connect<meowMisc>(meowMisc)!;
-  @Local myMeowHistorian: meowHistorian = AppStorageV2.connect<meowHistorian>(meowHistorian)!; // Should be initialized by flow.
+  @Local myMeowHistorian: meowHistorian = AppStorageV2.connect<meowHistorian>(meowHistorian)!; // Should be initialized by flows.
+  @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect<meowManagedSettings>(meowManagedSettings)!; // Should be initialized by flows.
   // Page stuffs
   @Local myTitle: string = 'Title of History entry!';
   @Local myUrl: string = 'https://meow.meow.org';
   @Local myTime: number = Date.now();
   @Local myDelete: number[] = [];
   @Local myHistoryChunk: meowHistoryEntry[] = [];
+  // Settings
+  @Local settingsDevMode: meowSettingsEntry = this.myMeowManagedSettings.settingsData.find((setting) => setting.key === 'DEV_MODE')!;
 
   build() {
     Column({ space: 5 }) {
       uniContentCard({ title: 'Underlying Stuffs' }) {
         Text(`[launchTimeUsage] ${this.myMeowMisc.launchEndTime - this.myMeowMisc.launchStartTime} ms`);
-      }; // History
+      }; // Underlying stuffs
 
       uniContentCard({ title: 'Layout (CatsTypicalFramework)' }) {
         Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) } }) {
@@ -49,6 +57,45 @@ struct CatsDevControls {
         };
       }; // Typical Cats Framework layouts
 
+      uniContentCard({ title: 'meowManagedSettings' }) {
+        Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(5), cross: LengthMetrics.vp(8) } }) {
+          Text(`[Ready] ${this.myMeowManagedSettings.ready ? ' 󰀓 ' : ' 󰁖 '}`);
+          Text(`[${this.myMeowManagedSettings.settingsFileSavePath}]`);
+          Text(`[timeoutIdSaveToDisk] ${this.myMeowManagedSettings.timeoutIdSaveToDisk}`);
+        };
+
+        Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) } }) {
+          Button('(Re) Load from Disk')
+            .onClick(async () => {
+              if (await fileExist(`${this.context.filesDir}/settings.json.browsercatsettings.v2.txt`)) {
+                this.myMeowManagedSettings?.initFrom(`${this.context.filesDir}/settings.json.browsercatsettings.v2.txt`, false); // load from new file
+              } else {
+                this.myMeowManagedSettings?.initFrom(`${this.context.filesDir}/settings.json.browsercatsettings.txt`, true); // load from old file
+              }
+            });
+          Button('Save Directly')
+            .onClick(() => {
+              this.myMeowManagedSettings.saveToDisk();
+            });
+          Button('Save Through Request')
+            .onClick(() => {
+              this.myMeowManagedSettings.requestSaveToDisk();
+            });
+          Row({ space: 8 }) {
+            Text('DEV_MODE')
+              .padding({ left: 5 });
+            Toggle({ isOn: this.settingsDevMode.value as boolean, type: ToggleType.Switch })
+              .onChange((c) => {
+                this.settingsDevMode.value = c;
+                this.myMeowManagedSettings.requestSaveToDisk();
+              });
+          };
+        };
+
+        TextArea({ text: `${this.myMeowManagedSettings.toString()}` })
+          .height(200);
+      }; // Settings
+
       uniContentCard({ title: 'meowHistorian' }) {
         Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(5), cross: LengthMetrics.vp(8) } }) {
           Text(`[Ready] ${this.myMeowHistorian.busy ? ' 󰁖 ' : ' 󰀓 '}`);
@@ -66,17 +113,11 @@ struct CatsDevControls {
           });
 
         Row({ space: 8 }) {
-          Button('Push')
-            .onClick(() => {
-              this.myMeowHistorian.pushHistory(new meowHistoryEntry(this.myTitle, this.myUrl, this.myTime));
-            });
           TextInput({ placeholder: 'Time', text: this.myTime.toString() })
             .onChange((c) => {
               this.myTime = Number(c);
             })
             .layoutWeight(1);
-          Text('  ' + new Date(this.myTime)
-            .toLocaleString());
           SymbolGlyph($r('sys.symbol.arrow_clockwise'))
             .onClick(() => {
               this.myTime = Date.now();
@@ -88,15 +129,35 @@ struct CatsDevControls {
             .borderRadius(defaultInnerRadius)
             .hoverEffect(HoverEffect.Highlight)
             .fontColor([$r('sys.color.font')]);
+        };
+
+
+        Row({ space: 8 }) {
+          Button('(Re)Build all')
+            .onClick(() => {
+              const startTime = Date.now();
+              this.myMeowHistorian.rebuildIndex()
+                .then(() => {
+                  meow(`Successfully built index for all chunks. (${Date.now() - startTime} ms)`, 'meowHistorian][buildAllChunkIndexConcurrent', meowLevel.INFO);
+                })
+                .catch((e: BusinessError) => {
+                  meow(`Error building index for all chunks: ${e}`, 'meowHistorian][buildAllChunkIndexConcurrent', meowLevel.ERROR);
+                });
+            });
+          Button('Push (and rebuild month)')
+            .onClick(() => {
+              this.myMeowHistorian.pushHistory(new meowHistoryEntry(this.myTitle, this.myUrl, this.myTime));
+            });
+          Text('  ' + new Date(this.myTime).toLocaleString());
         }; // timestamp input and push button
 
         Row({ space: 5 }) {
-          Button('Delete')
+          Button('Delete →')
             .onClick(() => {
               this.myMeowHistorian.deleteHistory(this.myDelete);
               this.myDelete = [];
             });
-          SymbolGlyph($r('sys.symbol.trash'))
+          SymbolGlyph($r('sys.symbol.clean'))
             .onClick(() => {
               this.myDelete = [];
             })
@@ -109,26 +170,17 @@ struct CatsDevControls {
             .fontColor([$r('sys.color.font')]);
           Text(`Selected: ${this.myDelete.toString()}`)
             .layoutWeight(1);
-        };
+        }; // Delete
 
         SimpleHistoryShowcase({
           onDeleteClickActions: (hist: meowHistoryEntry) => {
             // Delete candidate
             this.myDelete.push(hist.time);
           },
-        });
-
-        Button('Build all months')
-          .onClick(() => {
-            const startTime = Date.now();
-            this.myMeowHistorian.rebuildIndex()
-              .then(() => {
-                meow(`Successfully built index for all chunks. (${Date.now() - startTime} ms)`, 'meowHistorian][buildAllChunkIndexConcurrent', meowLevel.INFO);
-              })
-              .catch((e: BusinessError) => {
-                meow(`Error building index for all chunks: ${e}`, 'meowHistorian][buildAllChunkIndexConcurrent', meowLevel.ERROR);
-              });
-          });
+        })
+          .padding(12)
+          .border({ radius: defaultInnerRadius, width: 1, color: $r('sys.color.icon_fourth') })
+          .backgroundColor($r('app.color.blur_background'));
       }; // History
 
     }
@@ -148,7 +200,7 @@ struct uniContentCard {
     Column({ space: 8 }) {
       if (this.title) {
         Text(this.title)
-          .fontSize(24)
+          .fontSize(22)
           .fontWeight(FontWeight.Bold)
           .padding({ bottom: 3 });
       }
@@ -158,7 +210,7 @@ struct uniContentCard {
     .width('100%')
     .backgroundEffect({ color: $r('app.color.blur_background'), radius: 20 })
     .border({ radius: defaultRoundedRadius, width: 1, color: $r('sys.color.icon_fourth') })
-    .padding(16)
+    .padding(12)
     .alignItems(HorizontalAlign.Start);
   }
 }

@@ -1,7 +1,7 @@
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
-import { aboutToLoadContent, onLoadContent, onWant, wantSource } from '../catstypicalframework/flows/flows';
+import { aboutToLoadContent, earlyOnWindowStageCreate, onLoadContent, onWant, wantSource } from '../catstypicalframework/flows/flows';
 import { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
 
 const DOMAIN = 0x0000;
@@ -29,6 +29,8 @@ export default class EntryAbility extends UIAbility {
   async onWindowStageCreate(windowStage: window.WindowStage): Promise<void> {
     // Main window is created, set main page for this ability
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
+
+    await earlyOnWindowStageCreate(this.context); // Start this loading in an early stage. Does this make a difference?
 
     try {
       let mainWindow = windowStage.getMainWindowSync();

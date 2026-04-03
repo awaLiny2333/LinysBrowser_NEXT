@@ -6,9 +6,38 @@ import Want from '@ohos.app.ability.Want';
 import { meowHistorian } from '../../hosts/history/classes/meowHistorian';
 import { Context } from '@ohos.abilityAccessCtrl';
 import { meowMisc } from '../hosts/meowMisc';
-import { ensureDirectoryExist } from '../utils/storage';
+import { ensureDirectoryExist, fileExist, unlinkFile } from '../utils/storage';
+import { meowManagedSettings } from '../../hosts/settings/classes/meowManagedSettings';
 
 // Flows
+/**
+ * Called on windowStageCreate, before everything.
+ * @param window window.Window.
+ * */
+export async function earlyOnWindowStageCreate(context: Context) {
+  const filesDir = context.filesDir;
+
+  // Ensure directory
+  await ensureDirectoryExist(`${filesDir}/history`);
+  await ensureDirectoryExist(`${filesDir}/history-index`);
+
+  // Settings
+  let myMeowManagedSettings = AppStorageV2.connect(meowManagedSettings, () => new meowManagedSettings(`${filesDir}/settings.json.browsercatsettings.v2.txt`));
+  if (await fileExist(`${filesDir}/settings.json.browsercatsettings.v2.txt`)) {
+    const resultInit = await myMeowManagedSettings?.initFrom(`${filesDir}/settings.json.browsercatsettings.v2.txt`, false); // load from new file
+    if (resultInit) {
+      meow(`Loaded settings from [${filesDir}/settings.json.browsercatsettings.v2.txt], unlinking old file [${filesDir}/settings.json.browsercatsettings.txt].`);
+      unlinkFile(`${filesDir}/settings.json.browsercatsettings.txt`); // Unlink old file
+    }
+  } else {
+    await myMeowManagedSettings?.initFrom(`${filesDir}/settings.json.browsercatsettings.txt`, true); // load from old file
+  }
+
+  // History
+  let myMeowHistorian = AppStorageV2.connect(meowHistorian, () => new meowHistorian(`${filesDir}`));
+  myMeowHistorian?.init();
+}
+
 /**
  * Called in onWindowStageCreate, before windowStage.LoadContent
  * @param window window.Window
@@ -30,8 +59,6 @@ export async function aboutToLoadContent(windowStage: window.WindowStage, window
   } catch (e) {
     meow(`window.setImmersiveModeEnabledState(true) Failed: ${e}`, 'init', meowLevel.ERROR);
   } // Immersive
-
-  browserNecessities(context);
 }
 
 /**
@@ -77,16 +104,4 @@ export enum wantSource {
  */
 export function onWant(want: Want, source: wantSource) {
   meow(`onWant! want info: ${JSON.stringify(want)}, source: ${source}`, 'init][onWant', meowLevel.INFO);
-}
-
-// Actions
-
-async function browserNecessities(context: Context) {
-  const filesDir = context.filesDir;
-  // Ensure directory
-  await ensureDirectoryExist(`${filesDir}/history`);
-  await ensureDirectoryExist(`${filesDir}/history-index`);
-  // History
-  let myMeowHistorian = AppStorageV2.connect(meowHistorian, () => new meowHistorian(`${filesDir}`));
-  myMeowHistorian?.init();
 }

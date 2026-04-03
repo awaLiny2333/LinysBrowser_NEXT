@@ -13,29 +13,32 @@ struct Index {
   @Local myMeowAvoid: meowAvoid = AppStorageV2.connect<meowAvoid>(meowAvoid)!;
   @Local myMeowMisc: meowMisc = AppStorageV2.connect<meowMisc>(meowMisc)!;
   // Runtime
-  context: Context = this.getUIContext()
-    .getHostContext()!;
+  context: Context = this.getUIContext().getHostContext()!;
+  // Render control
+  @Local render: boolean = false;
 
   build() {
     Stack() {
-      Row() {
-        Scroll() {
-          CatsDevControls()
-        }
-        .border({ radius: defaultRoundedRadius })
-        .clip(true)
-        .scrollable(ScrollDirection.Vertical)
-        .edgeEffect(EdgeEffect.Spring)
-      } // Contents
-      .alignItems(VerticalAlign.Top)
-      .height('100%')
-      .width('100%')
-      .padding(this.myMeowAvoid)
+      if (this.render) {
+        Row() {
+          Scroll() {
+            CatsDevControls();
+          }
+          .border({ radius: defaultRoundedRadius })
+          .clip(true)
+          .scrollable(ScrollDirection.Vertical)
+          .edgeEffect(EdgeEffect.Spring);
+        } // Contents
+        .alignItems(VerticalAlign.Top)
+        .height('100%')
+        .width('100%')
+        .padding(this.myMeowAvoid);
 
-      if (this.myMeowFreeWindowModeStatus.on || this.myMeowLayout.wideMode) {
-        Text($r('app.string.EntryAbility_label'))
-          .padding(10)
-      } // Title
+        if (this.myMeowFreeWindowModeStatus.on || this.myMeowLayout.wideMode) {
+          Text($r('app.string.EntryAbility_label'))
+            .padding(10);
+        } // Title
+      }
 
     } // Base
     .alignContent(Alignment.Top)
@@ -47,6 +50,9 @@ struct Index {
       meow(`---`, 'meowHistorian][launch', meowLevel.INFO);
       meow(`Successfully launched the app. (${Date.now() - this.myMeowMisc.launchStartTime} ms)`, 'meowHistorian][launch', meowLevel.INFO);
       meow(`---`, 'meowHistorian][launch', meowLevel.INFO);
+      setTimeout(() => {
+        this.render = true;
+      }, 1);
     })
     .onAreaChange((o, n) => {
       if (o.width != n.width) {
@@ -56,6 +62,6 @@ struct Index {
       if (o.height != n.height) {
         this.myMeowLayout.height = n.height as number;
       }
-    })
+    });
   }
 }

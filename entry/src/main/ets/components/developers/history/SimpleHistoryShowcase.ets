@@ -1,8 +1,8 @@
-import { defaultInnerRadius, defaultMenuItemRadius } from '../../catstypicalframework/utils/ui';
-import { meowHistorian } from '../../hosts/history/classes/meowHistorian';
+import { defaultInnerRadius, defaultMenuItemRadius } from '../../../catstypicalframework/utils/ui';
+import { meowHistorian } from '../../../hosts/history/classes/meowHistorian';
 import { AppStorageV2, LengthMetrics } from '@kit.ArkUI';
-import { meowHistoryChunk } from '../../hosts/history/classes/meowHistoryChunk';
-import { meowHistoryEntry } from '../../hosts/history/classes/meowHistoryEntry';
+import { meowHistoryChunk } from '../../../hosts/history/classes/meowHistoryChunk';
+import { meowHistoryEntry } from '../../../hosts/history/classes/meowHistoryEntry';
 
 @ComponentV2
 struct SimpleHistoryShowcase {
@@ -25,7 +25,7 @@ struct SimpleHistoryShowcase {
       List() {
         Repeat(this.myHistoryChunkEntries)
           .each((obj: RepeatItem<meowHistoryEntry>) => {
-            Flex({ space: { main: LengthMetrics.vp(5), cross: LengthMetrics.vp(5) }, wrap: FlexWrap.Wrap }) {
+            Flex({ space: { main: LengthMetrics.vp(5), cross: LengthMetrics.vp(5) }, wrap: FlexWrap.Wrap, alignItems: ItemAlign.Center }) {
               SymbolGlyph($r('sys.symbol.xmark'))
                 .fontSize(20)
                 .opacity(0.7)

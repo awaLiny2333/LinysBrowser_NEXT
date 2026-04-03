@@ -12,7 +12,7 @@
  * and call this.loadIndexFromDisk() before using this.indexBundle.
  * So they are considered cache instead of real data of a chunk.
  *
- * In NO case they should be cleared (reset to undefined) manually in any codes other than the aforementioned two this.load...FromDisk() functions.
+ * In NO case they should be cleared (reset to undefined) manually in any codes other than the aforementioned two this.load...FromDisk() functions and the .
  * Use this.loadEntriesFromDisk(true) and this.loadIndexFromDisk(true) instead.
  *
  * Relationships:

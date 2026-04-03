@@ -10,6 +10,10 @@ export interface meowReadPickResult {
 
 // Picker
 
+/**
+ * Retrieve the download directory.
+ * @returns The download directory path.
+ */
 export async function retrieveDownloadDirectory(context: Context) {
   const documentSaveOptions = new picker.DocumentSaveOptions();
   documentSaveOptions.pickerMode = picker.DocumentPickerMode.DOWNLOAD;
@@ -22,7 +26,7 @@ export async function retrieveDownloadDirectory(context: Context) {
     .catch((e: BusinessError) => {
       console.error(`[retrieveDownloadDirectory] DocumentViewPicker.save failed with err: ${e}`);
       return undefined;
-    })
+    });
 }
 
 /**
@@ -129,7 +133,7 @@ export async function saveHybrid(fullFilePath: string, content: string | ArrayBu
           .catch((e: BusinessError) => {
             console.error(`[saveHybrid] fileIo.close(file) file ${fullFilePath} failed: ${e}`);
           });
-      })
+      });
   } catch (e) {
     console.error(`[saveHybrid] write to file ${fullFilePath} failed: ${e}`);
     return false;
@@ -160,7 +164,7 @@ export async function fileCopy(fullSourcePath: string, fullDestPath: string, ove
     })
     .then(() => {
       return true;
-    })
+    });
 }
 
 /**
@@ -224,7 +228,42 @@ export async function clearDirectory(dirPath: string) {
   }
 }
 
+/**
+ * Unlink a file.
+ * @param filePath The file path.
+ * @returns true if succeed (the file just, doesn't exist there :D), false if failed.
+ */
+export async function unlinkFile(filePath: string) {
+  if (!(await fileExist(filePath))) {
+    console.log(`[unlinkFile] file ${filePath} doesn't exist at all.`);
+    return true;
+  }
+  try {
+    await fileIo.unlink(filePath);
+    console.log(`[unlinkFile] file ${filePath} unlinked`);
+    return true;
+  } catch (e) {
+    console.error(`[unlinkFile] fileIo.unlink(${filePath}) failed: ${e}`);
+    return false;
+  }
+}
+
 // Read
+
+/**
+ * Check if a file exists.
+ * @param path The file path.
+ * @returns true if the file exists, false if not.
+ */
+export async function fileExist(path: string) {
+  try {
+    const result = await fileIo.access(path);
+    return result;
+  } catch (e) {
+    console.error(`[fileExist] fileIo.access(${path}) failed: ${e}`);
+    return false;
+  }
+}
 
 /**
  * List all files under a directory.
@@ -253,75 +292,72 @@ export async function listFilesUnderDir(dirPath: string) {
 }
 
 /**
- * Read an ArrayBuffer file from sandbox storage in a sync way.
+ * Read an ArrayBuffer file from storage in a sync way.
  * @param fullFilePath the file path
  * @param context the context
  * @returns An ArrayBuffer, of the requested file's content or undefined if the file doesn't exist.
  * */
 @Concurrent
-export function readArrayBufferSync(fullFilePath: string, offset?: number, length?: number) {
+export async function readArrayBuffer(fullFilePath: string, offset?: number, length?: number) {
   const startTime: number = Date.now();
 
   try {
-    if (!(fileIo.accessSync(fullFilePath))) {
+    if (!(await fileIo.access(fullFilePath))) {
       // file doesn't exist
       console.warn(`[readArrayBuffer][${fullFilePath}] doesn't exist`);
       return undefined;
     }
   } catch (e) {
-    console.error(`[readArrayBuffer] fileIo.accessSync(filePath) check failed: ${e}`);
+    console.error(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] fileIo.accessSync(filePath) check failed: ${e}`);
     return undefined;
   }
 
   try {
-    let file = fileIo.openSync(fullFilePath, fileIo.OpenMode.READ_WRITE);
-    let stat = fileIo.statSync(fullFilePath);
-    let buf: ArrayBuffer;
-    if (length != undefined) {
-      buf = new ArrayBuffer(length);
-    } else {
-      buf = new ArrayBuffer(stat.size);
-    }
+    let file = await fileIo.open(fullFilePath, fileIo.OpenMode.READ_WRITE);
+    let stat = await fileIo.stat(fullFilePath);
+
+    // Read to ArrayBuffer
+    let buf: ArrayBuffer = new ArrayBuffer(length || stat.size);
+    let readLen = await fileIo.read(file.fd, buf, { offset: offset, length: length });
+    console.log(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] ArrayBuffer size = ${length || stat.size}, readLen = ${readLen} (length || stat.size) == readLen: ${readLen == (length || stat.size)} (${Date.now() - startTime} ms)`);
+
     // TODO: Is this optimizable?
-    let l = fileIo.readSync(file.fd, buf, { offset: offset, length: length });
-    let readLen = l;
-    let result = buf.slice(0, readLen); // Copy?
+    let result = (length || stat.size) == readLen ? buf : buf.slice(0, readLen); // Copy?
     fileIo.close(file)
       .catch((e: BusinessError) => {
         console.error(`[readArrayBuffer] fileIo.close(file) failed: ${e}`);
-      })
-    console.info(`[readArrayBuffer] read [${fullFilePath}][${offset}, ${length}] succeed, length: ${readLen} (${Date.now() - startTime} ms)`);
-    return result;
+      });
 
+    console.info(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] succeed, length: ${readLen} (${Date.now() - startTime} ms)`);
+    return result;
   } catch (e) {
-    console.error(`[readArrayBuffer] file operation failed: ${e}. Return undefined.`);
+    console.error(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] file operation failed: ${e}. Return undefined.`);
     return undefined;
   }
 }
 
 /**
- * Read an ArrayBuffer file from sandbox storage in a task pool way.
+ * Read an ArrayBuffer file from storage in a task pool way.
  * @param fullFilePath the file path
  * @param context the context
  * @returns An ArrayBuffer, of the requested file's content or undefined if the file doesn't exist.
  * */
 export async function readArrayBufferConcurrent(fullFilePath: string, offset?: number, length?: number) {
-  // taskpool.execute(task)
+  const startTime: number = Date.now();
   let task: taskpool.Task;
   if (offset) {
-    task = new taskpool.Task(readArrayBufferSync, fullFilePath, offset!, length!);
+    task = new taskpool.Task(readArrayBuffer, fullFilePath, offset!, length!);
   } else {
-    task = new taskpool.Task(readArrayBufferSync, fullFilePath);
+    task = new taskpool.Task(readArrayBuffer, fullFilePath);
   }
   try {
     const result = await taskpool.execute(task);
-    console.info(`[readArrayBufferConcurrent] taskpool.execute(task)!`);
+    console.info(`[readArrayBufferConcurrent][${fullFilePath}][${offset}, ${length}] succeed! (${Date.now() - startTime} ms)`);
     return result as ArrayBuffer;
   } catch (e) {
-    console.error(`[readArrayBufferConcurrent] Failed: ${e}`);
+    console.error(`[readArrayBufferConcurrent][${fullFilePath}][${offset}, ${length}] Failed: ${e}`);
     return undefined;
   }
-  // return undefined;
 }
 
 // Operations
@@ -353,11 +389,11 @@ export function sandboxCreateDir(dirPath: string, context: Context, overwrite = 
                 })
                 .catch((e: BusinessError) => {
                   console.error(`[sandboxCreateDir][r] mkdirSync ${dirPath} return fileIo.mkdir(fullFilePath) failed: ${e}`);
-                })
+                });
             })
             .catch((e: BusinessError) => {
               console.error(`[sandboxCreateDir][r] mkdirSync ${dirPath} return fileIo.rmdir(fullFilePath) failed: ${e}`);
-            })
+            });
         } else {
           console.warn(`[sandboxCreateDir][r] directory ${dirPath} exist! Returned.`);
           return;
@@ -369,12 +405,12 @@ export function sandboxCreateDir(dirPath: string, context: Context, overwrite = 
           })
           .catch((e: BusinessError) => {
             console.error(`[sandboxCreateDir][new] mkdirSync ${dirPath} return fileIo.mkdir(fullFilePath) failed: ${e}`);
-          })
+          });
       }
     })
     .catch((e: BusinessError) => {
       console.error(`[sandboxCreateDir] mkdirSync ${dirPath} fileIo.access(fullFilePath, fileIo.AccessModeType.EXIST) failed: ${e}`);
-    })
+    });
 }
 
 // Utils
@@ -406,7 +442,7 @@ export function addUnitsToSize(size_in_bytes: number | bigint) {
   if (size_in_bytes == undefined || size_in_bytes == null) {
     return 'No Bytes!';
   }
-  let units = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+  let units = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
   let result = BigInt(size_in_bytes);
   let unit = 0;
   while (result > 1000 * 1000 && unit < units.length - 2) {

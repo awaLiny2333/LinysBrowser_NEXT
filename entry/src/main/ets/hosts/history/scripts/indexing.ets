@@ -13,17 +13,22 @@ import { meowHistoryIndexFileBundle } from "../classes/meowHistoryIndexFileBundl
  * @param chunkPath The path of the chunk.
  */
 @Concurrent
-async function buildIndexToDiskSync(indexBasePath: string, chunk: meowHistoryChunk, cleanRebuild: boolean = false) {
+async function buildIndexToDiskSync(indexBasePath: string, chunk: meowHistoryChunk, cleanRebuild: boolean) {
   const startTime = Date.now();
   const indexChunkPath = `${indexBasePath}/history_${chunk.year}_${chunk.month.toString().padStart(2, '0')}.txt`;
 
   // i. Prerequisites
-
+  
   // Read entries from the disk.
   await chunk.loadEntriesFromDisk(cleanRebuild);
   if (!chunk.entries) {
     meow(`chunk.loadEntriesFromDisk() failed to do its mission! indexChunkPath: ${indexChunkPath}. Quitting.`, 'indexing][buildIndexToDiskSync', meowLevel.ERROR);
     return;
+  }
+  
+  // Discard indexBundle. So that in later queries, the chunks would notice the indexBundle is missing, and try to load out newly built index files from the disk!
+  if (cleanRebuild) {
+    chunk.indexBundle = undefined;
   }
 
   // ii. Build

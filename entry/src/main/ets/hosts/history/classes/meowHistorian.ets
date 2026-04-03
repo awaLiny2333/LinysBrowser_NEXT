@@ -24,7 +24,7 @@ export class meowHistorian {
   chunkBasePath: string;
   indexBasePath: string;
   @Trace lastUpdate: number = Date.now(); // Would be overwritten if init() succeeded.
-  @Trace busy: boolean = true; // Would be set to false after init().
+  @Trace busy: boolean = true; // Initially true, Would be set to false after init().
   @Trace private chunks: meowHistoryChunk[] = [];
 
   /**
