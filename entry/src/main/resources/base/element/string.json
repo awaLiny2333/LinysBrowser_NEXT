@@ -1,0 +1,16 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "Built on Cats Typical Framework!"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "The gateway to everything about cats!"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "BrowserCat Nya"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "基于猫咪的基本框架打造！"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "通往一切的猫咪！"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "冲浪喵"
+    }
+  ]
+}

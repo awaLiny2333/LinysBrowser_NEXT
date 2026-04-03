@@ -1,0 +1,20 @@
+{
+  "color": [
+    {
+      "name": "start_window_background",
+      "value": "#000000"
+    },
+    {
+      "name": "blur_background",
+      "value": "#55000000"
+    },
+    {
+      "name": "button_border",
+      "value": "#E5FFFFFF"
+    },
+    {
+      "name": "meow_brand",
+      "value": "#D0AB3C3C"
+    }
+  ]
+}
