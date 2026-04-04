@@ -3,6 +3,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import lazy { taskpool } from '@kit.ArkTS';
 import { common, OpenLinkOptions } from '@kit.AbilityKit';
 import { meow, meowLevel } from './catsLogger';
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
 export interface meowReadPickResult {
   succeed: boolean;
   sourcePaths?: string[];
@@ -34,40 +35,80 @@ export async function retrieveDownloadDirectory(context: Context) {
  * @returns Majorly the path.
  * */
 export async function fileDocumentPick2Path(fileSuffixFilters: string[] = [".meow"], maxSelectNumber: number = 1): Promise<meowReadPickResult> {
-  if (canIUse("SystemCapability.FileManagement.UserFileService")) {
-    return (new picker.DocumentViewPicker())
-      .select({
-        maxSelectNumber: maxSelectNumber,
-        fileSuffixFilters: fileSuffixFilters
-      })
-      .then((documentSelectResult) => {
-        let sourcePaths: string[] = [];
-
-        if (documentSelectResult.length == 0) {
-          console.info(`[fileDocumentPick2Path] DocumentViewPicker.select Selected nothing. documentSelectResult = ${documentSelectResult}`);
-          return { succeed: false } as meowReadPickResult;
-        }
-
-        for (let index = 0; index < documentSelectResult.length; index++) {
-          const sourcePath = uri_2_path(documentSelectResult[index]);
-          console.info(`[fileDocumentPick2Path] DocumentViewPicker.select successfully, documentSelectResult sourcePath[${index}]: ${sourcePath}`);
-          sourcePaths.push(sourcePath);
-        }
-
-        return {
-          succeed: true,
-          sourcePaths: sourcePaths,
-        } as meowReadPickResult;
-      })
-      .catch((e: BusinessError) => {
-        console.error(`[fileDocumentPick2Path] DocumentViewPicker.select failed with err: ${e}`);
-        return { succeed: false } as meowReadPickResult;
-      });
-
-  } else {
+  if (!canIUse("SystemCapability.FileManagement.UserFileService")) {
     console.error('[fileDocumentPick2Path] DocumentViewPicker.select failed. canIUse("SystemCapability.FileManagement.UserFileService") is false!');
     return { succeed: false } as meowReadPickResult;
   }
+
+  return (new picker.DocumentViewPicker())
+    .select({
+      maxSelectNumber: maxSelectNumber,
+      fileSuffixFilters: fileSuffixFilters
+    })
+    .then((documentSelectResult) => {
+      let sourcePaths: string[] = [];
+
+      if (documentSelectResult.length == 0) {
+        console.info(`[fileDocumentPick2Path] DocumentViewPicker.select Selected nothing. documentSelectResult = ${documentSelectResult}`);
+        return { succeed: false } as meowReadPickResult;
+      }
+
+      for (let index = 0; index < documentSelectResult.length; index++) {
+        const sourcePath = uri_2_path(documentSelectResult[index]);
+        console.info(`[fileDocumentPick2Path] DocumentViewPicker.select successfully, documentSelectResult sourcePath[${index}]: ${sourcePath}`);
+        sourcePaths.push(sourcePath);
+      }
+
+      return {
+        succeed: true,
+        sourcePaths: sourcePaths,
+      } as meowReadPickResult;
+    })
+    .catch((e: BusinessError) => {
+      console.error(`[fileDocumentPick2Path] DocumentViewPicker.select failed with err: ${e}`);
+      return { succeed: false } as meowReadPickResult;
+    });
+}
+
+/**
+ * Pick a file from device gallery, pulling up a PhotoViewPicker.
+ * @returns Majorly the path.
+ * */
+export async function galleryPick2Path(type: photoAccessHelper.PhotoViewMIMETypes = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE, maxSelectionNumber: number = 1) {
+  if (!canIUse("SystemCapability.FileManagement.UserFileService")) {
+    console.error('[galleryPick2Path] DocumentViewPicker.select failed. canIUse("SystemCapability.FileManagement.UserFileService") is false!');
+    return { succeed: false } as meowReadPickResult;
+  }
+
+  return (new photoAccessHelper.PhotoViewPicker())
+    .select({
+      MIMEType: type,
+      maxSelectNumber: maxSelectionNumber
+    })
+    .then((PhotoSelectResult: photoAccessHelper.PhotoSelectResult) => {
+      console.info('[galleryPick2Path] PhotoViewPicker.select successfully, PhotoSelectResult uri: ' + JSON.stringify(PhotoSelectResult));
+      let sourcePaths: string[] = [];
+
+      if (PhotoSelectResult.photoUris.length == 0) {
+        console.info(`[galleryPick2Path] PhotoViewPicker.select Selected nothing.`);
+        return { succeed: false } as meowReadPickResult;
+      }
+
+      for (let index = 0; index < PhotoSelectResult.photoUris.length; index++) {
+        const sourcePath = uri_2_path(PhotoSelectResult.photoUris[index]);
+        console.info(`[galleryPick2Path] PhotoViewPicker.select successfully, documentSelectResult sourcePath[${index}]: ${sourcePath}`);
+        sourcePaths.push(sourcePath);
+      }
+
+      return {
+        succeed: true,
+        sourcePaths: sourcePaths,
+      } as meowReadPickResult;
+    })
+    .catch((err: BusinessError) => {
+      console.error('[galleryPick2Path] PhotoViewPicker.select failed with err: ' + JSON.stringify(err));
+      return { succeed: false } as meowReadPickResult;
+    });
 }
 
 /**

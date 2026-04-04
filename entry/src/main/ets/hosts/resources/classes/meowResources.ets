@@ -1,4 +1,4 @@
-import { fileCopy, fileDocumentPick2Path, readArrayBuffer, readArrayBufferConcurrent } from "../../../catstypicalframework/utils/storage";
+import { fileCopy, fileDocumentPick2Path, galleryPick2Path, readArrayBufferConcurrent } from "../../../catstypicalframework/utils/storage";
 import { image } from "@kit.ImageKit";
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 
@@ -42,5 +42,20 @@ export class meowResources {
     await fileCopy(path, this.backgroundImagePath, true);
     await this.loadBackgroundImage();
     meow(`Background image loaded from ${path}.`, 'meowResources][pickBackgroundImageFromDocuments', meowLevel.INFO);
+  }
+
+  /**
+   * Pick background image from gallery.
+   */
+  async pickBackgroundImageFromGallery() {
+    const result = await galleryPick2Path();
+    if (!result.succeed) {
+      meow(`Failed to pick background image from gallery.`, 'meowResources][pickBackgroundImageFromGallery', meowLevel.WARN);
+      return;
+    }
+    const path = result.sourcePaths![0];
+    await fileCopy(path, this.backgroundImagePath, true);
+    await this.loadBackgroundImage();
+    meow(`Background image loaded from ${path}.`, 'meowResources][pickBackgroundImageFromGallery', meowLevel.INFO);
   }
 }
