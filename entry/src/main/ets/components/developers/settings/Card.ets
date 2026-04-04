@@ -1,8 +1,9 @@
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
 import { UniContentCard } from '../common/UniContentCard';
 import { SimpleSettingsExamples } from './SimpleSettingsExamples';
-import { AppStorageV2, LengthMetrics } from '@kit.ArkUI';
+import { AppStorageV2 } from '@kit.ArkUI';
 import { meowManagedSettings } from '../../../hosts/settings/classes/meowManagedSettings';
+import { meowFlexOptions } from '../../common/constants';
 
 /**
  * Settings status and control examples.
@@ -16,13 +17,13 @@ struct SettingsDevCard {
 
   build() {
     UniContentCard({ title: 'meowManagedSettings' }) {
-      Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(5), cross: LengthMetrics.vp(8) } }) {
+      Flex(meowFlexOptions) {
         Text(`[Ready] ${this.myMeowManagedSettings.ready ? ' 󰀓 ' : ' 󰁖 '}`);
         Text(`[${this.myMeowManagedSettings.settingsFileSavePath}]`);
         Text(`[timeoutIdSaveToDisk] ${this.myMeowManagedSettings.timeoutIdSaveToDisk}`);
       }; // Statuses
 
-      Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) } }) {
+      Flex(meowFlexOptions) {
         Button('(Re) Load from Disk')
           .onClick(() => {
             this.myMeowManagedSettings?.initFrom(`${this.context.filesDir}/settings.json.browsercatsettings.txt`);

@@ -1,6 +1,7 @@
 import { UniContentCard } from '../common/UniContentCard';
-import { AppStorageV2, LengthMetrics } from '@kit.ArkUI';
+import { AppStorageV2 } from '@kit.ArkUI';
 import { meowResources } from '../../../hosts/resources/classes/meowResources';
+import { meowFlexOptions } from '../../common/constants';
 
 /**
  * meowResources stuffs.
@@ -11,9 +12,9 @@ struct ResourcesDevCard {
   @Local myMeowResources: meowResources = AppStorageV2.connect(meowResources)!;
 
   build() {
-    UniContentCard({ title: 'CatsTypicalFramework' }) {
+    UniContentCard({ title: 'meowResources' }) {
       Text(`[backgroundImagePath] ${this.myMeowResources.backgroundImagePath}`);
-      Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) } }) {
+      Flex(meowFlexOptions) {
         Button('Pick Backdrop from Files')
           .onClick(() => {
             this.myMeowResources.pickBackgroundImageFromDocuments();

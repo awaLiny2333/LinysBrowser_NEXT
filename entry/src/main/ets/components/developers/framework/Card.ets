@@ -1,7 +1,8 @@
 import { meowAvoid, meowFreeWindowModeStatus, meowLayoutModeStatus } from '../../../catstypicalframework/utils/ui';
 import { UniContentCard } from '../common/UniContentCard';
-import { AppStorageV2, LengthMetrics } from '@kit.ArkUI';
+import { AppStorageV2 } from '@kit.ArkUI';
 import { meowMisc } from '../../../catstypicalframework/hosts/meowMisc';
+import { meowFlexOptions } from '../../common/constants';
 
 /**
  * CatsTypicalFramework stuffs.
@@ -17,7 +18,7 @@ struct CatsTypicalFrameworkDevCard {
   build() {
     UniContentCard({ title: 'CatsTypicalFramework' }) {
       Text(`[launchTimeUsage] ${this.myMeowMisc.launchEndTime - this.myMeowMisc.launchStartTime} ms`);
-      Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) } }) {
+      Flex(meowFlexOptions) {
         Button('Toggle Free')
           .onClick(() => {
             this.myMeowFreeWindowModeStatus.on = !this.myMeowFreeWindowModeStatus.on;
@@ -31,7 +32,7 @@ struct CatsTypicalFrameworkDevCard {
           .margin({ bottom: 5 });
       };
 
-      Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(5), cross: LengthMetrics.vp(8) } }) {
+      Flex(meowFlexOptions) {
         Text(`[Free Window Mode] ${this.myMeowFreeWindowModeStatus.on ? ' 󰀓 ' : ' 󰁖 '}`);
         Text(`[Wide / Tablet Mode] ${this.myMeowLayout.wideMode ? ' 󰀓 ' : ' 󰁖 '}`);
         Text(`[Avoids]  ↑${this.myMeowAvoid.top}  ↓${this.myMeowAvoid.bottom}  ←${this.myMeowAvoid.left}  →${this.myMeowAvoid.right}`);

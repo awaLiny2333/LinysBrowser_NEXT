@@ -1,7 +1,8 @@
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
-import { AppStorageV2, LengthMetrics } from '@kit.ArkUI';
+import { AppStorageV2 } from '@kit.ArkUI';
 import { meowManagedSettings } from '../../../hosts/settings/classes/meowManagedSettings';
 import { UniContentCard } from '../common/UniContentCard';
+import { meowFlexOptions } from '../../common/constants';
 
 /**
  * Example on how to use the meowSettings system.
@@ -13,7 +14,7 @@ struct SimpleSettingsExamples {
 
   build() {
     UniContentCard({ roundedRadius: defaultInnerRadius }) {
-      Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) }, alignItems: ItemAlign.Center }) {
+      Flex(meowFlexOptions) {
         // DEV_MODE as an example of meowSettingsEntryType.BOOLEAN
         Row({ space: 8 }) {
           Text('DEV_MODE');
@@ -24,7 +25,7 @@ struct SimpleSettingsExamples {
         };
 
         // my_window_alias_last as an example of meowSettingsEntryType.STRING
-        Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) }, alignItems: ItemAlign.Center }) {
+        Flex(meowFlexOptions) {
           Text('my_window_alias_last');
           TextInput({ text: this.myMeowManagedSettings.settingsData[26].value as string })
             .width(200)
@@ -34,7 +35,7 @@ struct SimpleSettingsExamples {
         };
 
         // animation_response as an example of meowSettingsEntryType.number
-        Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) }, alignItems: ItemAlign.Center }) {
+        Flex(meowFlexOptions) {
           Text('animation_response');
           TextInput({ text: this.myMeowManagedSettings.settingsData[39].value?.toString() })
             .width(200)
@@ -46,7 +47,7 @@ struct SimpleSettingsExamples {
       }; // Settings in flex to save layout space
 
       // adblock_exceptions sites as an example of meowSettingsEntryType.STRING_ARRAY
-      Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) }, alignItems: ItemAlign.Center }) {
+      Flex(meowFlexOptions) {
         Button('Add Site  󰅖')
           .onClick(() => {
             this.settingsAdblockExceptions.push('new.site');

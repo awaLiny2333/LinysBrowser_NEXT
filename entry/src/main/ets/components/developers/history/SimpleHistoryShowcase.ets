@@ -1,9 +1,10 @@
 import { defaultInnerRadius, defaultMenuItemRadius } from '../../../catstypicalframework/utils/ui';
 import { meowHistorian } from '../../../hosts/history/classes/meowHistorian';
-import { AppStorageV2, LengthMetrics } from '@kit.ArkUI';
+import { AppStorageV2 } from '@kit.ArkUI';
 import { meowHistoryChunk } from '../../../hosts/history/classes/meowHistoryChunk';
 import { meowHistoryEntry } from '../../../hosts/history/classes/meowHistoryEntry';
 import { UniContentCard } from '../common/UniContentCard';
+import { meowFlexOptions } from '../../common/constants';
 
 /**
  * A simple history showcase component. Includes history entries of all different months and a request field to search for history.
@@ -29,7 +30,7 @@ struct SimpleHistoryShowcase {
       List() {
         Repeat(this.myHistoryChunkEntries)
           .each((obj: RepeatItem<meowHistoryEntry>) => {
-            Flex({ space: { main: LengthMetrics.vp(5), cross: LengthMetrics.vp(5) }, wrap: FlexWrap.Wrap, alignItems: ItemAlign.Center }) {
+            Flex(meowFlexOptions) {
               SymbolGlyph($r('sys.symbol.xmark'))
                 .fontSize(20)
                 .opacity(0.7)

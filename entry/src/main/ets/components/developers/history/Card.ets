@@ -4,7 +4,8 @@ import { meowHistorian } from '../../../hosts/history/classes/meowHistorian';
 import { meowHistoryEntry } from '../../../hosts/history/classes/meowHistoryEntry';
 import { UniContentCard } from '../common/UniContentCard';
 import { SimpleHistoryShowcase } from './SimpleHistoryShowcase';
-import { AppStorageV2, LengthMetrics } from '@kit.ArkUI';
+import { AppStorageV2 } from '@kit.ArkUI';
+import { meowFlexOptions } from '../../common/constants';
 
 /**
  * History data and operations.
@@ -23,7 +24,7 @@ struct HistoryDevCard {
   build() {
 
     UniContentCard({ title: 'meowHistorian' }) {
-      Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(5), cross: LengthMetrics.vp(8) } }) {
+      Flex(meowFlexOptions) {
         Text(`[Ready] ${this.myMeowHistorian.busy ? ' 󰁖 ' : ' 󰀓 '}`);
         Text(`[${this.myMeowHistorian.basePath}] (/history, /history-index)`);
         Text(`[Last Update] ${this.myMeowHistorian.lastUpdate} (${new Date(this.myMeowHistorian.lastUpdate).toLocaleString()})`);
@@ -58,7 +59,7 @@ struct HistoryDevCard {
       };
 
 
-      Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) }, alignItems: ItemAlign.Center }) {
+      Flex(meowFlexOptions) {
         Button('(Re)Build all')
           .onClick(() => {
             const startTime = Date.now();
@@ -77,7 +78,7 @@ struct HistoryDevCard {
         Text('  ' + new Date(this.myTime).toLocaleString());
       }; // timestamp input and push button
 
-      Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(5), cross: LengthMetrics.vp(8) }, alignItems: ItemAlign.Center }) {
+      Flex(meowFlexOptions) {
         Button('Delete →')
           .onClick(() => {
             this.myMeowHistorian.deleteHistory(this.myDelete);
