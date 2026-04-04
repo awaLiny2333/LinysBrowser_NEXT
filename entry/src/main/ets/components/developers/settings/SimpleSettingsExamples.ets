@@ -1,20 +1,19 @@
+import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
+import { AppStorageV2, LengthMetrics } from '@kit.ArkUI';
+import { meowManagedSettings } from '../../../hosts/settings/classes/meowManagedSettings';
+import { UniContentCard } from '../common/UniContentCard';
+
 /**
  * Example on how to use the meowSettings system.
  */
-
-import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
-import { uniContentCard } from '../CatsDevControls';
-import { AppStorageV2, LengthMetrics } from '@kit.ArkUI';
-import { meowManagedSettings } from '../../../hosts/settings/classes/meowManagedSettings';
-
 @ComponentV2
 struct SimpleSettingsExamples {
   @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect<meowManagedSettings>(meowManagedSettings)!; // Should be initialized by flows.
   @Local settingsAdblockExceptions: string[] = this.myMeowManagedSettings.settingsData[53].value as string[]; // adblock_exceptions
 
   build() {
-    uniContentCard({ roundedRadius: defaultInnerRadius }) {
-      Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) } }) {
+    UniContentCard({ roundedRadius: defaultInnerRadius }) {
+      Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) }, alignItems: ItemAlign.Center }) {
         // DEV_MODE as an example of meowSettingsEntryType.BOOLEAN
         Row({ space: 8 }) {
           Text('DEV_MODE');
@@ -25,7 +24,7 @@ struct SimpleSettingsExamples {
         };
 
         // my_window_alias_last as an example of meowSettingsEntryType.STRING
-        Row({ space: 8 }) {
+        Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) }, alignItems: ItemAlign.Center }) {
           Text('my_window_alias_last');
           TextInput({ text: this.myMeowManagedSettings.settingsData[26].value as string })
             .width(200)
@@ -35,7 +34,7 @@ struct SimpleSettingsExamples {
         };
 
         // animation_response as an example of meowSettingsEntryType.number
-        Row({ space: 8 }) {
+        Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) }, alignItems: ItemAlign.Center }) {
           Text('animation_response');
           TextInput({ text: this.myMeowManagedSettings.settingsData[39].value?.toString() })
             .width(200)

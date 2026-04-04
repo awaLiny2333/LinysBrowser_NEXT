@@ -3,8 +3,11 @@ import { meowHistorian } from '../../../hosts/history/classes/meowHistorian';
 import { AppStorageV2, LengthMetrics } from '@kit.ArkUI';
 import { meowHistoryChunk } from '../../../hosts/history/classes/meowHistoryChunk';
 import { meowHistoryEntry } from '../../../hosts/history/classes/meowHistoryEntry';
-import { uniContentCard } from '../CatsDevControls';
+import { UniContentCard } from '../common/UniContentCard';
 
+/**
+ * A simple history showcase component. Includes history entries of all different months and a request field to search for history.
+ */
 @ComponentV2
 struct SimpleHistoryShowcase {
   @Local myHistoryChunk: meowHistoryChunk | undefined;
@@ -20,7 +23,7 @@ struct SimpleHistoryShowcase {
   };
 
   build() {
-    uniContentCard({ roundedRadius: defaultInnerRadius }) {
+    UniContentCard({ roundedRadius: defaultInnerRadius }) {
       Text(`[Entries] of ${this.myHistoryChunk?.year}-${this.myHistoryChunk?.month} (${this.myHistoryChunkEntries.length})`);
 
       List() {

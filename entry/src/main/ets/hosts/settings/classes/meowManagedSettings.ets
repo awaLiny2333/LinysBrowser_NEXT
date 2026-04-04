@@ -9,7 +9,7 @@
  * For type STRING_ARRAY, extracting the `meowSettingsEntry.value` out as one variable
  * is a good practice, as they are expected to be used frequently, and in many cases,
  * we need to access a certain element in the array.
- * 
+ *
  * @see ets/components/developers/settings/SimpleSettingsExample.ets for recommended practices.
  */
 
@@ -51,7 +51,7 @@ export class meowManagedSettings {
     try {
       settingsText = fastbuffer.from(await readArrayBufferConcurrent(settingsFilePath)).toString();
       meow(`Read settingsText from ${settingsFilePath} (${Date.now() - startTime} ms)`, 'meowSettings][initFrom', meowLevel.INFO);
-      this.prebuiltReadOnly = settingsText;
+      this.prebuiltReadOnly = settingsText; // Sets prebuiltReadOnly with the directly read settingsText for showcase.
     } catch (e) {
       meow(`Load settings file from ${settingsFilePath} failed: ${e}`, 'meowSettings][initFrom', meowLevel.ERROR);
       this.ready = true;
@@ -91,6 +91,9 @@ export class meowManagedSettings {
   /**
    * Set a setting by index in an easier way (get lazy!).
    * Including: Check if the index is out of range, if the value is the same as the current value & if the type is mismatched.
+   *
+   * Timeout for requestSaveToDisk is by default 250 ms for BOOLEAN and 500 ms for the rest.
+   *
    * @tutorial Not recommended for arrays of strings. You should directly get the .value as string[] and directly modify its contents.
    * @param index The index of the setting to set.
    * @param value The value to set.
@@ -103,6 +106,7 @@ export class meowManagedSettings {
     if (this.settingsData[index].value == value) {
       return;
     } // Reject for a not changing value. Note that this may be not correct for arrays!
+    let timeout: number = 500;
     const type = this.settingsData[index].type;
     switch (type) {
       case meowSettingsEntryType.STRING:
@@ -122,6 +126,7 @@ export class meowManagedSettings {
           meow(`Rejected. Type mismatch`, 'meowSettings][set', meowLevel.WARN);
           return;
         }
+        timeout = 250; // Timeout is designed for continuous changes, like continuously typing STRING and sliding NUMBER. But for boolean, the toggle happens in one instance.
         break;
       case meowSettingsEntryType.STRING_ARRAY:
         if (!Array.isArray(value)) {
@@ -134,21 +139,24 @@ export class meowManagedSettings {
         return;
     }
     this.settingsData[index].value = (value);
-    this.requestSaveToDisk();
+    this.requestSaveToDisk(timeout);
   }
 
   // Saving
 
   /**
    * Converts the settings data to a JSON string.
+   * @param sort Whether to sort the entries by key before converting to JSON.
    * @returns The JSON string representation of the settings data.
    */
-  toString() {
+  toString(sort: boolean = true) {
     const lines: string[] = [];
     for (const settingsEntry of this.settingsData) {
       lines.push(`${settingsEntry.toString()}`);
     }
-    lines.sort();
+    if (sort) {
+      lines.sort();
+    }
     const jsonResult = '{\n' + lines.join(',\n') + '\n}';
     this.prebuiltReadOnly = jsonResult;
     return jsonResult;
@@ -179,7 +187,7 @@ export class meowManagedSettings {
    */
   async saveToDisk() {
     const startTime = Date.now();
-    const jsonResult = this.toString();
+    const jsonResult = this.toString(true);
     meow(`Generated JSON lines. (${Date.now() - startTime} ms)`, 'meowSettings][saveToDisk', meowLevel.INFO);
     // Save to disk...
     await saveHybrid(this.settingsFileSavePath, jsonResult, true);

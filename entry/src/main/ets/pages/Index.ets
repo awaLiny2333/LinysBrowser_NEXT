@@ -1,7 +1,7 @@
 import { defaultRoundedRadius, meowAvoid, meowFreeWindowModeStatus, meowLayoutModeStatus } from '../catstypicalframework/utils/ui';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
-import { CatsDevControls } from '../components/developers/CatsDevControls';
+import { CatsDevCards } from '../components/developers/CatsDevCards';
 import { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
 
 @Entry
@@ -22,7 +22,7 @@ struct Index {
       if (this.render) {
         Row() {
           Scroll() {
-            CatsDevControls();
+            CatsDevCards();
           }
           .border({ radius: defaultRoundedRadius })
           .clip(true)

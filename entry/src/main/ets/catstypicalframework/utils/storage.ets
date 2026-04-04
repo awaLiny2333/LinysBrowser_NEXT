@@ -561,6 +561,11 @@ export function fileNameOfPath(path: string) {
 
 // Others
 
+/**
+ * Opens a file in the default file manager.
+ * @param path The path.
+ * @param context The UIAbilityContext.
+ */
 export function showInFiles(path: string, context: common.UIAbilityContext) {
   // Open folder
   let link: string = 'filemanager://openDirectory';
