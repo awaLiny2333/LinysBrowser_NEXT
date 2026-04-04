@@ -58,7 +58,7 @@ struct HistoryDevCard {
       };
 
 
-      Row({ space: 8 }) {
+      Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) }, alignItems: ItemAlign.Center }) {
         Button('(Re)Build all')
           .onClick(() => {
             const startTime = Date.now();
@@ -77,7 +77,7 @@ struct HistoryDevCard {
         Text('  ' + new Date(this.myTime).toLocaleString());
       }; // timestamp input and push button
 
-      Row({ space: 5 }) {
+      Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(5), cross: LengthMetrics.vp(8) }, alignItems: ItemAlign.Center }) {
         Button('Delete →')
           .onClick(() => {
             this.myMeowHistorian.deleteHistory(this.myDelete);

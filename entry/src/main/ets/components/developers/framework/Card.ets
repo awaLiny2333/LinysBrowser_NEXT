@@ -18,13 +18,13 @@ struct CatsTypicalFrameworkDevCard {
     UniContentCard({ title: 'CatsTypicalFramework' }) {
       Text(`[launchTimeUsage] ${this.myMeowMisc.launchEndTime - this.myMeowMisc.launchStartTime} ms`);
       Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) } }) {
-        Button('Toggle myMeowFreeWindowModeStatus.on')
+        Button('Toggle Free')
           .onClick(() => {
             this.myMeowFreeWindowModeStatus.on = !this.myMeowFreeWindowModeStatus.on;
           })
           .margin({ bottom: 5 });
 
-        Button('Toggle myMeowLayout.wideMode')
+        Button('Toggle Wide')
           .onClick(() => {
             this.myMeowLayout.wideMode = !this.myMeowLayout.wideMode;
           })

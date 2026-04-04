@@ -46,7 +46,7 @@ struct SimpleSettingsExamples {
       }; // Settings in flex to save layout space
 
       // adblock_exceptions sites as an example of meowSettingsEntryType.STRING_ARRAY
-      Row({ space: 8 }) {
+      Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) }, alignItems: ItemAlign.Center }) {
         Button('Add Site  󰅖')
           .onClick(() => {
             this.settingsAdblockExceptions.push('new.site');
