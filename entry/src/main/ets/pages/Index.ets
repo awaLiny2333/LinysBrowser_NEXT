@@ -47,9 +47,9 @@ struct Index {
     .width('100%')
     .onAppear(() => {
       this.myMeowMisc.launchEndTime = Date.now();
-      meow(`---`, 'meowHistorian][launch', meowLevel.INFO);
-      meow(`Successfully launched the app. (${Date.now() - this.myMeowMisc.launchStartTime} ms)`, 'meowHistorian][launch', meowLevel.INFO);
-      meow(`---`, 'meowHistorian][launch', meowLevel.INFO);
+      meow(`---`, 'Index][launch', meowLevel.INFO);
+      meow(`Successfully launched the app. (${Date.now() - this.myMeowMisc.launchStartTime} ms)`, 'Index][launch', meowLevel.INFO);
+      meow(`---`, 'Index][launch', meowLevel.INFO);
       setTimeout(() => {
         this.render = true;
       }, 1);

@@ -27,7 +27,8 @@ struct CatsDevControls {
   @Local myDelete: number[] = [];
   @Local myHistoryChunk: meowHistoryEntry[] = [];
   // Settings
-  @Local settingsDevMode: meowSettingsEntry = this.myMeowManagedSettings.settingsData.find((setting) => setting.key === 'DEV_MODE')!;
+  @Local settingsDevMode: meowSettingsEntry = this.myMeowManagedSettings.settingsData[74]; // DEV_MODE
+  @Local settingsAdblockExceptions: meowSettingsEntry = this.myMeowManagedSettings.settingsData[53]; // adblock_exceptions
 
   build() {
     Column({ space: 5 }) {
@@ -62,16 +63,12 @@ struct CatsDevControls {
           Text(`[Ready] ${this.myMeowManagedSettings.ready ? ' 󰀓 ' : ' 󰁖 '}`);
           Text(`[${this.myMeowManagedSettings.settingsFileSavePath}]`);
           Text(`[timeoutIdSaveToDisk] ${this.myMeowManagedSettings.timeoutIdSaveToDisk}`);
-        };
+        }; // Statuses
 
         Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) } }) {
           Button('(Re) Load from Disk')
-            .onClick(async () => {
-              if (await fileExist(`${this.context.filesDir}/settings.json.browsercatsettings.v2.txt`)) {
-                this.myMeowManagedSettings?.initFrom(`${this.context.filesDir}/settings.json.browsercatsettings.v2.txt`, false); // load from new file
-              } else {
-                this.myMeowManagedSettings?.initFrom(`${this.context.filesDir}/settings.json.browsercatsettings.txt`, true); // load from old file
-              }
+            .onClick(() => {
+              this.myMeowManagedSettings?.initFrom(`${this.context.filesDir}/settings.json.browsercatsettings.txt`);
             });
           Button('Save Directly')
             .onClick(() => {
@@ -90,10 +87,53 @@ struct CatsDevControls {
                 this.myMeowManagedSettings.requestSaveToDisk();
               });
           };
+        }; // Load and save buttons
+
+        TextArea({ text: `${this.myMeowManagedSettings.prebuiltReadOnly}` }).height(200); // Settings file
+
+        Row({ space: 8 }) {
+          Text('[adblock_exceptions]');
+          Button('Add Site  󰅖')
+            .onClick(() => {
+              (this.settingsAdblockExceptions.value as string[]).push('new.site');
+              this.myMeowManagedSettings.requestSaveToDisk();
+            });
         };
 
-        TextArea({ text: `${this.myMeowManagedSettings.toString()}` })
-          .height(200);
+        List({ space: 5 }) {
+          Repeat(this.settingsAdblockExceptions.value as string[])
+            .each((item) => {
+              ListItem() {
+                Row({ space: 8 }) {
+                  TextInput({ text: item.item })
+                    .layoutWeight(1)
+                    .onChange((c) => {
+                      if ((this.settingsAdblockExceptions.value as string[])[item.index] == c) {
+                        return;
+                      }
+                      (this.settingsAdblockExceptions.value as string[])[item.index] = c;
+                      this.myMeowManagedSettings.requestSaveToDisk();
+                    });
+                  SymbolGlyph($r('sys.symbol.trash'))
+                    .onClick(() => {
+                      (this.settingsAdblockExceptions.value as string[]).splice(item.index, 1);
+                      this.myMeowManagedSettings.requestSaveToDisk();
+                    })
+                    .padding(10)
+                    .fontSize(20)
+                    .aspectRatio(1)
+                    .height(40)
+                    .borderRadius(defaultInnerRadius)
+                    .hoverEffect(HoverEffect.Highlight)
+                    .fontColor([$r('sys.color.font')]);
+                };
+              };
+            })
+            .key((item) => JSON.stringify(item))
+            .virtualScroll();
+        }
+        .height(200)
+        .width('auto');
       }; // Settings
 
       uniContentCard({ title: 'meowHistorian' }) {

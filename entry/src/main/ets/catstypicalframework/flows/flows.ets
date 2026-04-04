@@ -11,10 +11,32 @@ import { meowManagedSettings } from '../../hosts/settings/classes/meowManagedSet
 
 // Flows
 /**
+ * Called on early on create, before everything.
+ * @param context The context.
+ *
+ * Jobs in this function are executed in the very first place of launch.
+ * They should be either sync tasks,
+ * or promises that takes long time to run that are NOT NECESSARY to the app's key functions.
+ * For example starting to load the homepage wallpaper.
+ */
+export function earlyOnCreate(context: Context) {
+  // const startTime = Date.now();
+  const filesDir = context.filesDir;
+
+  // Init hosts
+  AppStorageV2.connect<meowMisc>(meowMisc, 'meowMisc', () => new meowMisc());
+  AppStorageV2.connect(meowHistorian, () => new meowHistorian(`${filesDir}`));
+  AppStorageV2.connect(meowManagedSettings, () => new meowManagedSettings(`${filesDir}/settings.json.browsercatsettings.txt`));
+
+  // meow(`Finished in ${Date.now() - startTime} ms.`, 'earlyOnCreate', meowLevel.WARN);
+}
+
+/**
  * Called on windowStageCreate, before everything.
- * @param window window.Window.
+ * @param context The context.
  * */
 export async function earlyOnWindowStageCreate(context: Context) {
+  const startTime = Date.now();
   const filesDir = context.filesDir;
 
   // Ensure directory
@@ -22,20 +44,10 @@ export async function earlyOnWindowStageCreate(context: Context) {
   await ensureDirectoryExist(`${filesDir}/history-index`);
 
   // Settings
-  let myMeowManagedSettings = AppStorageV2.connect(meowManagedSettings, () => new meowManagedSettings(`${filesDir}/settings.json.browsercatsettings.v2.txt`));
-  if (await fileExist(`${filesDir}/settings.json.browsercatsettings.v2.txt`)) {
-    const resultInit = await myMeowManagedSettings?.initFrom(`${filesDir}/settings.json.browsercatsettings.v2.txt`, false); // load from new file
-    if (resultInit) {
-      meow(`Loaded settings from [${filesDir}/settings.json.browsercatsettings.v2.txt], unlinking old file [${filesDir}/settings.json.browsercatsettings.txt].`);
-      unlinkFile(`${filesDir}/settings.json.browsercatsettings.txt`); // Unlink old file
-    }
-  } else {
-    await myMeowManagedSettings?.initFrom(`${filesDir}/settings.json.browsercatsettings.txt`, true); // load from old file
-  }
+  let myMeowManagedSettings = AppStorageV2.connect(meowManagedSettings);
+  await myMeowManagedSettings?.initFrom(`${filesDir}/settings.json.browsercatsettings.txt`);
 
-  // History
-  let myMeowHistorian = AppStorageV2.connect(meowHistorian, () => new meowHistorian(`${filesDir}`));
-  myMeowHistorian?.init();
+  meow(`Finished in ${Date.now() - startTime} ms.`, 'earlyOnWindowStageCreate', meowLevel.WARN);
 }
 
 /**
@@ -43,7 +55,7 @@ export async function earlyOnWindowStageCreate(context: Context) {
  * @param window window.Window
  * */
 export async function aboutToLoadContent(windowStage: window.WindowStage, window: window.Window, context: Context) {
-  AppStorageV2.connect<meowMisc>(meowMisc, 'meowMisc', () => new meowMisc(Date.now()))!;
+  // const startTime = Date.now();
 
   // Enable window status auto save.
   windowStage.setWindowRectAutoSave(true)
@@ -54,11 +66,15 @@ export async function aboutToLoadContent(windowStage: window.WindowStage, window
       meow(`windowStage.setWindowRectAutoSave(true) Failed: ${err}`, 'init', meowLevel.ERROR);
     });
 
+  // Immersive
   try {
     window.setImmersiveModeEnabledState(true);
+    meow('window.setImmersiveModeEnabledState(true) Success!', 'init', meowLevel.INFO);
   } catch (e) {
     meow(`window.setImmersiveModeEnabledState(true) Failed: ${e}`, 'init', meowLevel.ERROR);
-  } // Immersive
+  }
+
+  // meow(`Finished in ${Date.now() - startTime} ms.`, 'aboutToLoadContent', meowLevel.WARN);
 }
 
 /**
@@ -66,6 +82,8 @@ export async function aboutToLoadContent(windowStage: window.WindowStage, window
  * @param window window.Window
  * */
 export function onLoadContent(window: window.Window, context: Context) {
+  const startTime = Date.now();
+
   // Disable title bar (status bar on phones & tablets)
   try {
     window.setWindowDecorVisible(false);
@@ -91,6 +109,12 @@ export function onLoadContent(window: window.Window, context: Context) {
   listenAvoid(window);
 
   listenFocus(window);
+
+  // Init History here to avoid resource competition
+  let myMeowHistorian = AppStorageV2.connect(meowHistorian);
+  myMeowHistorian?.init();
+
+  meow(`Finished in ${Date.now() - startTime} ms.`, 'onLoadContent', meowLevel.WARN);
 }
 
 export enum wantSource {

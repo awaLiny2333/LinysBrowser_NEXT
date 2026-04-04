@@ -2,11 +2,10 @@ import { meow } from "../utils/catsLogger";
 
 @ObservedV2
 export class meowMisc {
-  @Trace launchStartTime: number;
+  @Trace launchStartTime: number = Date.now();
   @Trace launchEndTime: number = -1;
 
-  constructor(launchStartTime: number) {
-    this.launchStartTime = launchStartTime;
+  constructor() {
     meow('Initialized. launchStartTime: ' + this.launchStartTime, 'meowMisc');
   }
 }

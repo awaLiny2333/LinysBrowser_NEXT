@@ -102,12 +102,14 @@ export async function pickDirectory(): Promise<string | undefined> {
  * @param overwrite overwrite or not. Default is false.
  * */
 export async function saveHybrid(fullFilePath: string, content: string | ArrayBuffer, overwrite = false) {
+  const startTime = Date.now();
+
   try {
-    if (fileIo.accessSync(fullFilePath)) {
+    if (await fileIo.access(fullFilePath)) {
       if (overwrite) {
-        fileIo.unlinkSync(fullFilePath);
+        await fileIo.unlink(fullFilePath);
       } else {
-        console.warn(`[saveHybrid] file ${fullFilePath} exist! Returned.`);
+        console.warn(`[saveHybrid] file ${fullFilePath} exist! Returned. (${Date.now() - startTime} ms)`);
         return undefined;
       }
     }
@@ -121,21 +123,21 @@ export async function saveHybrid(fullFilePath: string, content: string | ArrayBu
     let file = fileIo.openSync(fullFilePath, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
     return fileIo.write(file.fd, content)
       .then((writeLen) => {
-        console.info(`[saveHybrid] write to file ${fullFilePath} succeed, size = ${writeLen}`);
+        console.info(`[saveHybrid] write to file ${fullFilePath} succeed, size = ${writeLen} (${Date.now() - startTime} ms)`);
         return true;
       })
       .catch((e: BusinessError) => {
-        console.error(`[saveHybrid] fileIo.write(file.fd, content) to file ${fullFilePath} failed: ${e}`);
+        console.error(`[saveHybrid] fileIo.write(file.fd, content) to file ${fullFilePath} failed: ${e} (${Date.now() - startTime} ms)`);
         return false;
       })
       .finally(() => {
         fileIo.close(file)
           .catch((e: BusinessError) => {
-            console.error(`[saveHybrid] fileIo.close(file) file ${fullFilePath} failed: ${e}`);
+            console.error(`[saveHybrid] fileIo.close(file) file ${fullFilePath} failed: ${e} (${Date.now() - startTime} ms)`);
           });
       });
   } catch (e) {
-    console.error(`[saveHybrid] write to file ${fullFilePath} failed: ${e}`);
+    console.error(`[saveHybrid] write to file ${fullFilePath} failed: ${e} (${Date.now() - startTime} ms)`);
     return false;
   }
 }
@@ -235,12 +237,12 @@ export async function clearDirectory(dirPath: string) {
  */
 export async function unlinkFile(filePath: string) {
   if (!(await fileExist(filePath))) {
-    console.log(`[unlinkFile] file ${filePath} doesn't exist at all.`);
+    console.log(`[unlinkFile] file [${filePath}] doesn't exist at all! Nevertheless your goal is achieved, isn't it?`);
     return true;
   }
   try {
     await fileIo.unlink(filePath);
-    console.log(`[unlinkFile] file ${filePath} unlinked`);
+    console.log(`[unlinkFile] unlinked [${filePath}]`);
     return true;
   } catch (e) {
     console.error(`[unlinkFile] fileIo.unlink(${filePath}) failed: ${e}`);
@@ -319,7 +321,6 @@ export async function readArrayBuffer(fullFilePath: string, offset?: number, len
     // Read to ArrayBuffer
     let buf: ArrayBuffer = new ArrayBuffer(length || stat.size);
     let readLen = await fileIo.read(file.fd, buf, { offset: offset, length: length });
-    console.log(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] ArrayBuffer size = ${length || stat.size}, readLen = ${readLen} (length || stat.size) == readLen: ${readLen == (length || stat.size)} (${Date.now() - startTime} ms)`);
 
     // TODO: Is this optimizable?
     let result = (length || stat.size) == readLen ? buf : buf.slice(0, readLen); // Copy?
@@ -328,7 +329,7 @@ export async function readArrayBuffer(fullFilePath: string, offset?: number, len
         console.error(`[readArrayBuffer] fileIo.close(file) failed: ${e}`);
       });
 
-    console.info(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] succeed, length: ${readLen} (${Date.now() - startTime} ms)`);
+    console.info(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] OK. ArrayBuffer size = ${length || stat.size}, readLen = ${readLen}, (length || stat.size) == readLen: ${readLen == (length || stat.size)} (${Date.now() - startTime} ms)`);
     return result;
   } catch (e) {
     console.error(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] file operation failed: ${e}. Return undefined.`);
@@ -343,7 +344,7 @@ export async function readArrayBuffer(fullFilePath: string, offset?: number, len
  * @returns An ArrayBuffer, of the requested file's content or undefined if the file doesn't exist.
  * */
 export async function readArrayBufferConcurrent(fullFilePath: string, offset?: number, length?: number) {
-  const startTime: number = Date.now();
+  // const startTime: number = Date.now();
   let task: taskpool.Task;
   if (offset) {
     task = new taskpool.Task(readArrayBuffer, fullFilePath, offset!, length!);
@@ -352,10 +353,10 @@ export async function readArrayBufferConcurrent(fullFilePath: string, offset?: n
   }
   try {
     const result = await taskpool.execute(task);
-    console.info(`[readArrayBufferConcurrent][${fullFilePath}][${offset}, ${length}] succeed! (${Date.now() - startTime} ms)`);
+    // console.info(`[readArrayBufferConcurrent][${fullFilePath}][${offset}, ${length}] succeed! (${Date.now() - startTime} ms)`);
     return result as ArrayBuffer;
   } catch (e) {
-    console.error(`[readArrayBufferConcurrent][${fullFilePath}][${offset}, ${length}] Failed: ${e}`);
+    console.error(`[readArrayBufferConcurrent][${fullFilePath}][${offset}, ${length}] const result = await taskpool.execute(task); Failed: ${e}`);
     return undefined;
   }
 }

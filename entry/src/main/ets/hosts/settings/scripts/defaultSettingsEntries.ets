@@ -7,16 +7,15 @@ import { meowSettingsEntry, meowSettingsEntryType } from "../classes/meowSetting
 export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('webview_cache_size', meowSettingsEntryType.NUMBER, '-1'),
 
-  // Register the default Settings
   // Customization
-  new meowSettingsEntry('title_bar_position', meowSettingsEntryType.STRING, 'bottom'),
+  new meowSettingsEntry('title_bar_position', meowSettingsEntryType.STRING, 'bottom'), // 'top' | 'bottom'
   new meowSettingsEntry('status_showing_large_my_window_alias', meowSettingsEntryType.BOOLEAN, 'false'),
-  new meowSettingsEntry('tabs_style', meowSettingsEntryType.STRING, 'vertical'),
-  new meowSettingsEntry('tabs_style_non_tablet_mode', meowSettingsEntryType.STRING, 'vertical'),
+  new meowSettingsEntry('tabs_style', meowSettingsEntryType.STRING, 'vertical'), // 'vertical' | 'horizontal'
+  new meowSettingsEntry('tabs_style_non_tablet_mode', meowSettingsEntryType.STRING, 'vertical'), // 'vertical' | 'horizontal'
   new meowSettingsEntry('bottom_avoid', meowSettingsEntryType.BOOLEAN, 'true'),
   new meowSettingsEntry('navigation_indicator', meowSettingsEntryType.BOOLEAN, 'true'),
   new meowSettingsEntry('effects', meowSettingsEntryType.BOOLEAN, 'false'),
-  new meowSettingsEntry('title_function_buttons', meowSettingsEntryType.STRING, '01'), // ltr
+  new meowSettingsEntry('title_function_buttons', meowSettingsEntryType.STRING, '01'),
   new meowSettingsEntry('title_function_extensions', meowSettingsEntryType.BOOLEAN, 'false'),
 
   // Experience
@@ -37,7 +36,7 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('status_tabs_open', meowSettingsEntryType.BOOLEAN, 'false'),
   new meowSettingsEntry('status_showing_my_windows_alias', meowSettingsEntryType.BOOLEAN, 'false'),
   new meowSettingsEntry('status_showing_my_windows_alias_non_tablet', meowSettingsEntryType.BOOLEAN, 'false'),
-  new meowSettingsEntry('my_window_alias_position', meowSettingsEntryType.STRING, 'center'),
+  new meowSettingsEntry('my_window_alias_position', meowSettingsEntryType.STRING, 'center'), // 'left' | 'center' | 'right'
   new meowSettingsEntry('my_window_alias_last', meowSettingsEntryType.STRING, defaultNewWindowName()),
 
   // Continuation
@@ -50,13 +49,13 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   // Surf
   new meowSettingsEntry('home_url', meowSettingsEntryType.STRING, ''),
   new meowSettingsEntry('new_tab_url', meowSettingsEntryType.STRING, ''),
-  new meowSettingsEntry('start_up_option', meowSettingsEntryType.STRING, 'new tab'),
+  new meowSettingsEntry('start_up_option', meowSettingsEntryType.STRING, 'new tab'), // 'new tab' | 'home' | 'continue'
   new meowSettingsEntry('intelligent_tracking_prevention', meowSettingsEntryType.BOOLEAN, 'false'),
   new meowSettingsEntry('enable_third_party_cookies', meowSettingsEntryType.BOOLEAN, 'false'),
-  new meowSettingsEntry('continue_tabs_count', meowSettingsEntryType.NUMBER, '0'), // Deprecated
+  new meowSettingsEntry('continue_tabs_count', meowSettingsEntryType.NUMBER, '0'),
   new meowSettingsEntry('continue_tabs_main_on', meowSettingsEntryType.NUMBER, '0'),
   new meowSettingsEntry('continue_tabs_sub_on', meowSettingsEntryType.NUMBER, '-1'),
-  new meowSettingsEntry('last_zone', meowSettingsEntryType.STRING, ''), // Empty for a temp windows
+  new meowSettingsEntry('last_zone', meowSettingsEntryType.STRING, ''),
   // Animation defaults
   new meowSettingsEntry('animation_response', meowSettingsEntryType.NUMBER, '36'),
   new meowSettingsEntry('animation_damping_coefficient', meowSettingsEntryType.NUMBER, '20'),
@@ -78,7 +77,7 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
 
   // Ad blocker
   new meowSettingsEntry('use_adblock', meowSettingsEntryType.BOOLEAN, 'true'),
-  new meowSettingsEntry('adblock_exceptions', meowSettingsEntryType.STRING_ARRAY, ''),
+  new meowSettingsEntry('adblock_exceptions', meowSettingsEntryType.STRING_ARRAY, ''), // #53
 
   // JS blocker
   new meowSettingsEntry('disable_js', meowSettingsEntryType.BOOLEAN, 'true'),
@@ -115,6 +114,8 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('direct_download_auto_open', meowSettingsEntryType.BOOLEAN, 'true'),
 
   // Debug
-  new meowSettingsEntry('DEV_MODE', meowSettingsEntryType.BOOLEAN, 'false'),
+  new meowSettingsEntry('DEV_MODE', meowSettingsEntryType.BOOLEAN, 'false'), // #74
+  new meowSettingsEntry('CONFIG_BUTTONS', meowSettingsEntryType.BOOLEAN, 'false'), // Forgot what this is :3
+  new meowSettingsEntry('CONFIG_EXTENSIONS', meowSettingsEntryType.BOOLEAN, 'false'),
   new meowSettingsEntry('resource_monitor', meowSettingsEntryType.BOOLEAN, 'true'),
 ];

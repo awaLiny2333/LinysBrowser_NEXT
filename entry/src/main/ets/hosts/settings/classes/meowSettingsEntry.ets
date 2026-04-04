@@ -1,3 +1,5 @@
+import { escapeForJson } from "../scripts/helpers";
+
 export enum meowSettingsEntryType {
   UNDEFINED = -1,
   NUMBER = 0,
@@ -37,7 +39,11 @@ export class meowSettingsEntry {
         this.value = value === 'true';
         break;
       case meowSettingsEntryType.STRING_ARRAY:
-        this.value = value.split('\n').map(item => item.trim());
+        if (value) {
+          this.value = value.split('\n').map(item => item.trim());
+        } else {
+          this.value = [];
+        }
         break;
       default:
         this.value = undefined;
@@ -49,23 +55,24 @@ export class meowSettingsEntry {
    * @returns The line element.
    */
   toString(): string {
-    return `${this.key}:${this.valueToString()}`;
+    return `    "${this.key}": "${this.valueToString()}"`;
   }
 
   /**
    * Converts the value to a string.
-   * @returns The string representation of the value.
+   * @returns The string representation in JSON compatible style of the value.
    */
   private valueToString() {
     switch (this.type) {
       case meowSettingsEntryType.NUMBER:
-        return this.value?.toString() || '';
+        return this.value?.toString() || '0';
       case meowSettingsEntryType.STRING:
         return this.value?.toString() || '';
       case meowSettingsEntryType.BOOLEAN:
-        return this.value?.toString() || '';
+        return this.value?.toString() || 'false';
       case meowSettingsEntryType.STRING_ARRAY:
-        return (this.value as Array<string>)?.join('\\n') || '';
+        const escapedLines = (this.value as string[]).map(line => escapeForJson(line));
+        return escapedLines.join('\\n');
       default:
         return '';
     }
