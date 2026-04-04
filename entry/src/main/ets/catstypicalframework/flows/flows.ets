@@ -8,6 +8,7 @@ import { Context } from '@ohos.abilityAccessCtrl';
 import { meowMisc } from '../hosts/meowMisc';
 import { ensureDirectoryExist, fileExist, unlinkFile } from '../utils/storage';
 import { meowManagedSettings } from '../../hosts/settings/classes/meowManagedSettings';
+import { watchLaunch } from '../utils/performance';
 
 // Flows
 /**
@@ -109,6 +110,8 @@ export function onLoadContent(window: window.Window, context: Context) {
   listenAvoid(window);
 
   listenFocus(window);
+  
+  // watchLaunch(); // This is chicken rib. >O
 
   // Init History here to avoid resource competition
   let myMeowHistorian = AppStorageV2.connect(meowHistorian);

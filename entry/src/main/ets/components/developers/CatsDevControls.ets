@@ -6,7 +6,6 @@ import { SimpleHistoryShowcase } from './history/SimpleHistoryShowcase';
 import { meowHistorian } from '../../hosts/history/classes/meowHistorian';
 import { meowHistoryEntry } from '../../hosts/history/classes/meowHistoryEntry';
 import { meowManagedSettings } from '../../hosts/settings/classes/meowManagedSettings';
-import { fileExist } from '../../catstypicalframework/utils/storage';
 import { meowSettingsEntry } from '../../hosts/settings/classes/meowSettingsEntry';
 
 @ComponentV2
