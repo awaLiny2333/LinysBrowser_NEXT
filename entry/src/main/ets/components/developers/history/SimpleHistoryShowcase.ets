@@ -3,6 +3,7 @@ import { meowHistorian } from '../../../hosts/history/classes/meowHistorian';
 import { AppStorageV2, LengthMetrics } from '@kit.ArkUI';
 import { meowHistoryChunk } from '../../../hosts/history/classes/meowHistoryChunk';
 import { meowHistoryEntry } from '../../../hosts/history/classes/meowHistoryEntry';
+import { uniContentCard } from '../CatsDevControls';
 
 @ComponentV2
 struct SimpleHistoryShowcase {
@@ -19,7 +20,7 @@ struct SimpleHistoryShowcase {
   };
 
   build() {
-    Column({ space: 8 }) {
+    uniContentCard({ roundedRadius: defaultInnerRadius }) {
       Text(`[Entries] of ${this.myHistoryChunk?.year}-${this.myHistoryChunk?.month} (${this.myHistoryChunkEntries.length})`);
 
       List() {
@@ -104,8 +105,7 @@ struct SimpleHistoryShowcase {
           await this.request();
         });
       Text(`[Result] of ${this.requestKey} (${this.requestResult.length}) (${this.requestTime} ms):${'\n\n'}${this.requestResult.join(',\n\n')}`);
-    }
-    .alignItems(HorizontalAlign.Start);
+    };
   }
 
   async request() {

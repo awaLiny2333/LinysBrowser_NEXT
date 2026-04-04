@@ -1,8 +1,12 @@
-import { defaultNewWindowName, defaultUserAgents, presetSearchEngines } from "../../defaultValues/settings";
 import { meowSettingsEntry, meowSettingsEntryType } from "../classes/meowSettingsEntry";
+import { defaultNewWindowName, defaultUserAgents, presetSearchEngines } from "./defaultSettingsValues";
 
 /**
- * The default settings entries.
+ * The default settings entries. ORDER MATTERS! ORDER MATTERS! ORDER MATTERS!
+ * 
+ * Because in the codes these entries are used with hard-coded indices to boost efficiency. e.g.:
+ * @example 
+ * `const settingsAdblockExceptions: meowSettingsEntry = this.myMeowManagedSettings.settingsData[53]; // adblock_exceptions`
  */
 export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('webview_cache_size', meowSettingsEntryType.NUMBER, '-1'),
@@ -37,7 +41,7 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('status_showing_my_windows_alias', meowSettingsEntryType.BOOLEAN, 'false'),
   new meowSettingsEntry('status_showing_my_windows_alias_non_tablet', meowSettingsEntryType.BOOLEAN, 'false'),
   new meowSettingsEntry('my_window_alias_position', meowSettingsEntryType.STRING, 'center'), // 'left' | 'center' | 'right'
-  new meowSettingsEntry('my_window_alias_last', meowSettingsEntryType.STRING, defaultNewWindowName()),
+  new meowSettingsEntry('my_window_alias_last', meowSettingsEntryType.STRING, defaultNewWindowName()), // #26
 
   // Continuation
   new meowSettingsEntry('continuation_auto_exit', meowSettingsEntryType.BOOLEAN, 'false'),
@@ -58,7 +62,7 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('last_zone', meowSettingsEntryType.STRING, ''),
   // Animation defaults
   new meowSettingsEntry('animation_response', meowSettingsEntryType.NUMBER, '36'),
-  new meowSettingsEntry('animation_damping_coefficient', meowSettingsEntryType.NUMBER, '20'),
+  new meowSettingsEntry('animation_damping_coefficient', meowSettingsEntryType.NUMBER, '20'), // #40
 
   // UA & Search Engines & Homepage
   new meowSettingsEntry('custom_user_agents', meowSettingsEntryType.STRING_ARRAY, defaultUserAgents()),

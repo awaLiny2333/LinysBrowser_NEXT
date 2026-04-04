@@ -460,18 +460,19 @@ export function addUnitsToSize(size_in_bytes: number | bigint) {
 /**
  * 根据文件名或路径获取对应的 MIME 类型。
  * @description
-* 1. 自动处理大小写（如 .JPG -> image/jpeg）。
+ * 1. 自动处理大小写（如 .JPG -> image/jpeg）。
  * 2. 能够正确处理包含路径的字符串（如 /path/to/file.txt）。
  * 3. 排除无后缀或隐藏文件（如 .gitignore）。
  * 4. 匹配失败时默认返回 'application/octet-stream'。
  * @param {string} fileName - 文件名或完整路径 (例如: "image.png" 或 "/home/user/data.json")
  * @returns {string} 对应的 MIME 类型字符串
- * @author Gemini web @ Feb 8 2026
  * @example
-* mimeOfFileName('vacation.jpg');     // 'image/jpeg'
+ * mimeOfFileName('vacation.jpg');     // 'image/jpeg'
  * mimeOfFileName('INDEX.HTML');      // 'text/html'
  * mimeOfFileName('config');          // 'application/octet-stream'
  * mimeOfFileName('.hidden-file');    // 'application/octet-stream'
+ *
+ * @author Gemini web @ Feb 8 2026
  */
 export function mimeOfFileName(fileName: string): string {
   if (!fileName) {

@@ -6,7 +6,7 @@ import { SimpleHistoryShowcase } from './history/SimpleHistoryShowcase';
 import { meowHistorian } from '../../hosts/history/classes/meowHistorian';
 import { meowHistoryEntry } from '../../hosts/history/classes/meowHistoryEntry';
 import { meowManagedSettings } from '../../hosts/settings/classes/meowManagedSettings';
-import { meowSettingsEntry } from '../../hosts/settings/classes/meowSettingsEntry';
+import { SimpleSettingsExamples } from './settings/SimpleSettingsExamples';
 
 @ComponentV2
 struct CatsDevControls {
@@ -25,9 +25,6 @@ struct CatsDevControls {
   @Local myTime: number = Date.now();
   @Local myDelete: number[] = [];
   @Local myHistoryChunk: meowHistoryEntry[] = [];
-  // Settings
-  @Local settingsDevMode: meowSettingsEntry = this.myMeowManagedSettings.settingsData[74]; // DEV_MODE
-  @Local settingsAdblockExceptions: meowSettingsEntry = this.myMeowManagedSettings.settingsData[53]; // adblock_exceptions
 
   build() {
     Column({ space: 5 }) {
@@ -69,70 +66,19 @@ struct CatsDevControls {
             .onClick(() => {
               this.myMeowManagedSettings?.initFrom(`${this.context.filesDir}/settings.json.browsercatsettings.txt`);
             });
-          Button('Save Directly')
+          Button('Save Instantly')
             .onClick(() => {
-              this.myMeowManagedSettings.saveToDisk();
+              this.myMeowManagedSettings.requestSaveToDisk(0);
             });
-          Button('Save Through Request')
+          Button('Save Through Request in 500 ms')
             .onClick(() => {
               this.myMeowManagedSettings.requestSaveToDisk();
             });
-          Row({ space: 8 }) {
-            Text('DEV_MODE')
-              .padding({ left: 5 });
-            Toggle({ isOn: this.settingsDevMode.value as boolean, type: ToggleType.Switch })
-              .onChange((c) => {
-                this.settingsDevMode.value = c;
-                this.myMeowManagedSettings.requestSaveToDisk();
-              });
-          };
         }; // Load and save buttons
 
         TextArea({ text: `${this.myMeowManagedSettings.prebuiltReadOnly}` }).height(200); // Settings file
 
-        Row({ space: 8 }) {
-          Text('[adblock_exceptions]');
-          Button('Add Site  󰅖')
-            .onClick(() => {
-              (this.settingsAdblockExceptions.value as string[]).push('new.site');
-              this.myMeowManagedSettings.requestSaveToDisk();
-            });
-        };
-
-        List({ space: 5 }) {
-          Repeat(this.settingsAdblockExceptions.value as string[])
-            .each((item) => {
-              ListItem() {
-                Row({ space: 8 }) {
-                  TextInput({ text: item.item })
-                    .layoutWeight(1)
-                    .onChange((c) => {
-                      if ((this.settingsAdblockExceptions.value as string[])[item.index] == c) {
-                        return;
-                      }
-                      (this.settingsAdblockExceptions.value as string[])[item.index] = c;
-                      this.myMeowManagedSettings.requestSaveToDisk();
-                    });
-                  SymbolGlyph($r('sys.symbol.trash'))
-                    .onClick(() => {
-                      (this.settingsAdblockExceptions.value as string[]).splice(item.index, 1);
-                      this.myMeowManagedSettings.requestSaveToDisk();
-                    })
-                    .padding(10)
-                    .fontSize(20)
-                    .aspectRatio(1)
-                    .height(40)
-                    .borderRadius(defaultInnerRadius)
-                    .hoverEffect(HoverEffect.Highlight)
-                    .fontColor([$r('sys.color.font')]);
-                };
-              };
-            })
-            .key((item) => JSON.stringify(item))
-            .virtualScroll();
-        }
-        .height(200)
-        .width('auto');
+        SimpleSettingsExamples();
       }; // Settings
 
       uniContentCard({ title: 'meowHistorian' }) {
@@ -216,10 +162,7 @@ struct CatsDevControls {
             // Delete candidate
             this.myDelete.push(hist.time);
           },
-        })
-          .padding(12)
-          .border({ radius: defaultInnerRadius, width: 1, color: $r('sys.color.icon_fourth') })
-          .backgroundColor($r('app.color.blur_background'));
+        });
       }; // History
 
     }
@@ -228,12 +171,11 @@ struct CatsDevControls {
   }
 }
 
-export { CatsDevControls };
-
 @ComponentV2
 struct uniContentCard {
   @BuilderParam contentsBuilder: () => void;
   @Param title: ResourceStr = '';
+  @Param roundedRadius: number = defaultRoundedRadius;
 
   build() {
     Column({ space: 8 }) {
@@ -248,8 +190,10 @@ struct uniContentCard {
     }
     .width('100%')
     .backgroundEffect({ color: $r('app.color.blur_background'), radius: 20 })
-    .border({ radius: defaultRoundedRadius, width: 1, color: $r('sys.color.icon_fourth') })
+    .border({ radius: this.roundedRadius, width: 1, color: $r('sys.color.icon_fourth') })
     .padding(12)
     .alignItems(HorizontalAlign.Start);
   }
 }
+
+export { CatsDevControls, uniContentCard };

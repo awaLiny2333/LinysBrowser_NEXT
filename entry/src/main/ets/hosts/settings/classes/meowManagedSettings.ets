@@ -1,7 +1,22 @@
+/**
+ * Settings.
+ * Use hard-coded indices to access entries in settingsData to boost efficiency.
+ *
+ * For entries of type STRING, BOOLEAN and NUMBER, they can be directly modified by
+ * `this.myMeowManagedSettings.setByIndex(idx, newValue)`.
+ * This would do all things needed from verifying to saving to disk.
+ *
+ * For type STRING_ARRAY, extracting the `meowSettingsEntry.value` out as one variable
+ * is a good practice, as they are expected to be used frequently, and in many cases,
+ * we need to access a certain element in the array.
+ * 
+ * @see ets/components/developers/settings/SimpleSettingsExample.ets for recommended practices.
+ */
+
 import { readArrayBufferConcurrent, saveHybrid } from "../../../catstypicalframework/utils/storage";
 import { fastbuffer } from "@kit.ArkTS";
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
-import { meowSettingsEntry } from "./meowSettingsEntry";
+import { meowSettingsEntry, meowSettingsEntryType } from "./meowSettingsEntry";
 import { defaultSettingsEntries } from "../scripts/defaultSettingsEntries";
 import { settingsParserJSON } from "../scripts/helpers";
 
@@ -17,7 +32,6 @@ export class meowManagedSettings {
    * Constructor of this managed settings.
    * @param settingsFileSavePath The path to SAVE the settings file in each this.saveToDisk() call.
    * It is totally not related to the one passed to this.initFrom() function.
-   *
    */
   constructor(settingsFileSavePath: string) {
     this.settingsFileSavePath = settingsFileSavePath;
@@ -52,21 +66,19 @@ export class meowManagedSettings {
 
     // Parse and load
 
-    // 1. 解析字符串为对象
+    // 1. Parse the JSON string into a Record<string, string>
     const kvObj = settingsParserJSON(settingsText);
 
-    // 2. 遍历默认配置数组
-    // 使用标准 for 循环，避免 forEach 闭包开销，性能最高
+    // 2. Traverse the default configuration array
     for (let i = 0; i < this.settingsData.length; i++) {
       const entry: meowSettingsEntry = this.settingsData[i];
 
-      // 3. 直接在 jsonObj 中查找 key
-      // 在 Record<string, string> 中通过 string key 索引查找是 O(1) 操作，非常快
-      // 使用 !== undefined 来判断 key 是否存在
+      // 3. Directly search for the key in jsonObj
+      // Looking up by string key in Record<string, string> is an O(1) operation, very fast
       let jsonValue: string | undefined = kvObj[entry.key];
-
+      // Use !== undefined to check if the key exists
       if (jsonValue !== undefined) {
-        // 只有当 JSON 中确实有这个配置时，才更新
+        // Only update if this configuration is present in the JSON
         entry.setValueFromString(jsonValue);
       }
     }
@@ -75,6 +87,57 @@ export class meowManagedSettings {
     this.ready = true;
     return settingsText;
   }
+
+  /**
+   * Set a setting by index in an easier way (get lazy!).
+   * Including: Check if the index is out of range, if the value is the same as the current value & if the type is mismatched.
+   * @tutorial Not recommended for arrays of strings. You should directly get the .value as string[] and directly modify its contents.
+   * @param index The index of the setting to set.
+   * @param value The value to set.
+   */
+  setByIndex(index: number, value: string | number | boolean | Array<string>) {
+    if (index < 0 || index >= this.settingsData.length) {
+      meow(`Rejected. Index out of range`, 'meowSettings][set', meowLevel.WARN);
+      return;
+    }
+    if (this.settingsData[index].value == value) {
+      return;
+    } // Reject for a not changing value. Note that this may be not correct for arrays!
+    const type = this.settingsData[index].type;
+    switch (type) {
+      case meowSettingsEntryType.STRING:
+        if (typeof value !== 'string') {
+          meow(`Rejected. Type mismatch`, 'meowSettings][set', meowLevel.WARN);
+          return;
+        }
+        break;
+      case meowSettingsEntryType.NUMBER:
+        if (typeof value !== 'number') {
+          meow(`Rejected. Type mismatch`, 'meowSettings][set', meowLevel.WARN);
+          return;
+        }
+        break;
+      case meowSettingsEntryType.BOOLEAN:
+        if (typeof value !== 'boolean') {
+          meow(`Rejected. Type mismatch`, 'meowSettings][set', meowLevel.WARN);
+          return;
+        }
+        break;
+      case meowSettingsEntryType.STRING_ARRAY:
+        if (!Array.isArray(value)) {
+          meow(`Rejected. Type mismatch`, 'meowSettings][set', meowLevel.WARN);
+          return;
+        }
+        break;
+      default:
+        meow(`Rejected. Unknown type`, 'meowSettings][set', meowLevel.WARN);
+        return;
+    }
+    this.settingsData[index].value = (value);
+    this.requestSaveToDisk();
+  }
+
+  // Saving
 
   /**
    * Converts the settings data to a JSON string.
@@ -95,7 +158,7 @@ export class meowManagedSettings {
    * Save settings to disk. Has a 500 ms timeout.
    * @returns true if success, false if failed.
    */
-  requestSaveToDisk() {
+  requestSaveToDisk(timeout: number = 500) {
     if (!this.ready) {
       meow(`Rejected. Settings not ready`, 'meowSettings][saveToDiskWrapped', meowLevel.WARN);
       return false;
@@ -105,9 +168,9 @@ export class meowManagedSettings {
     this.timeoutIdSaveToDisk = setTimeout(async () => {
       this.timeoutIdSaveToDisk = undefined;
       await this.saveToDisk();
-    }, 500);
+    }, timeout);
 
-    meow(`Called saveToDiskWrapped. It is expected to save settings to disk in 500 ms`, 'meowSettings][saveToDiskWrapped', meowLevel.INFO);
+    meow(`Called saveToDiskWrapped. It is expected to save settings to disk in ${timeout} ms`, 'meowSettings][saveToDiskWrapped', meowLevel.INFO);
     return true;
   }
 

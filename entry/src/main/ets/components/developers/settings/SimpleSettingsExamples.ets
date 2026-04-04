@@ -1,0 +1,96 @@
+/**
+ * Example on how to use the meowSettings system.
+ */
+
+import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
+import { uniContentCard } from '../CatsDevControls';
+import { AppStorageV2, LengthMetrics } from '@kit.ArkUI';
+import { meowManagedSettings } from '../../../hosts/settings/classes/meowManagedSettings';
+
+@ComponentV2
+struct SimpleSettingsExamples {
+  @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect<meowManagedSettings>(meowManagedSettings)!; // Should be initialized by flows.
+  @Local settingsAdblockExceptions: string[] = this.myMeowManagedSettings.settingsData[53].value as string[]; // adblock_exceptions
+
+  build() {
+    uniContentCard({ roundedRadius: defaultInnerRadius }) {
+      Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) } }) {
+        // DEV_MODE as an example of meowSettingsEntryType.BOOLEAN
+        Row({ space: 8 }) {
+          Text('DEV_MODE');
+          Toggle({ isOn: this.myMeowManagedSettings.settingsData[74].value as boolean, type: ToggleType.Switch })
+            .onChange((c) => {
+              this.myMeowManagedSettings.setByIndex(74, c);
+            });
+        };
+
+        // my_window_alias_last as an example of meowSettingsEntryType.STRING
+        Row({ space: 8 }) {
+          Text('my_window_alias_last');
+          TextInput({ text: this.myMeowManagedSettings.settingsData[26].value as string })
+            .width(200)
+            .onChange((c) => {
+              this.myMeowManagedSettings.setByIndex(26, c);
+            });
+        };
+
+        // animation_response as an example of meowSettingsEntryType.number
+        Row({ space: 8 }) {
+          Text('animation_response');
+          TextInput({ text: this.myMeowManagedSettings.settingsData[39].value?.toString() })
+            .width(200)
+            .type(InputType.Number)
+            .onChange((c) => {
+              this.myMeowManagedSettings.setByIndex(39, Number(c));
+            });
+        };
+      }; // Settings in flex to save layout space
+
+      // adblock_exceptions sites as an example of meowSettingsEntryType.STRING_ARRAY
+      Row({ space: 8 }) {
+        Button('Add Site  󰅖')
+          .onClick(() => {
+            this.settingsAdblockExceptions.push('new.site');
+            this.myMeowManagedSettings.requestSaveToDisk();
+          });
+        Text('adblock_exceptions');
+      };
+      List({ space: 5 }) {
+        Repeat(this.settingsAdblockExceptions)
+          .each((item) => {
+            ListItem() {
+              Row({ space: 8 }) {
+                TextInput({ text: item.item })
+                  .layoutWeight(1)
+                  .onChange((c) => {
+                    if (this.settingsAdblockExceptions[item.index] == c) {
+                      return;
+                    }
+                    this.settingsAdblockExceptions[item.index] = c;
+                    this.myMeowManagedSettings.requestSaveToDisk();
+                  });
+                SymbolGlyph($r('sys.symbol.trash'))
+                  .onClick(() => {
+                    this.settingsAdblockExceptions.splice(item.index, 1);
+                    this.myMeowManagedSettings.requestSaveToDisk();
+                  })
+                  .padding(10)
+                  .fontSize(20)
+                  .aspectRatio(1)
+                  .height(40)
+                  .borderRadius(defaultInnerRadius)
+                  .hoverEffect(HoverEffect.Highlight)
+                  .fontColor([$r('sys.color.font')]);
+              };
+            };
+          })
+          .key((item) => JSON.stringify(item))
+          .virtualScroll();
+      }
+      .height(200)
+      .width('auto');
+    };
+  }
+}
+
+export { SimpleSettingsExamples };
