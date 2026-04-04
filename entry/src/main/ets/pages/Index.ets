@@ -1,4 +1,4 @@
-import { defaultRoundedRadius, meowAvoid, meowFreeWindowModeStatus, meowLayoutModeStatus } from '../catstypicalframework/utils/ui';
+import { meowAvoid, meowFreeWindowModeStatus, meowLayoutModeStatus } from '../catstypicalframework/utils/ui';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
 import { CatsDevCards } from '../components/developers/CatsDevCards';
@@ -21,13 +21,7 @@ struct Index {
     Stack() {
       if (this.render) {
         Row() {
-          Scroll() {
-            CatsDevCards();
-          }
-          .border({ radius: defaultRoundedRadius })
-          .clip(true)
-          .scrollable(ScrollDirection.Vertical)
-          .edgeEffect(EdgeEffect.Spring);
+          CatsDevCards();
         } // Contents
         .alignItems(VerticalAlign.Top)
         .height('100%')

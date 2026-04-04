@@ -6,9 +6,9 @@ import Want from '@ohos.app.ability.Want';
 import { meowHistorian } from '../../hosts/history/classes/meowHistorian';
 import { Context } from '@ohos.abilityAccessCtrl';
 import { meowMisc } from '../hosts/meowMisc';
-import { ensureDirectoryExist, fileExist, unlinkFile } from '../utils/storage';
+import { ensureDirectoryExist } from '../utils/storage';
 import { meowManagedSettings } from '../../hosts/settings/classes/meowManagedSettings';
-import { watchLaunch } from '../utils/performance';
+import { meowResources } from '../../hosts/resources/classes/meowResources';
 
 // Flows
 /**
@@ -25,9 +25,12 @@ export function earlyOnCreate(context: Context) {
   const filesDir = context.filesDir;
 
   // Init hosts
-  AppStorageV2.connect<meowMisc>(meowMisc, 'meowMisc', () => new meowMisc());
+  AppStorageV2.connect(meowMisc, () => new meowMisc());
+  let myMeowResources = AppStorageV2.connect(meowResources, () => new meowResources(`${filesDir}/homepage_background_arrayBuffer`));
   AppStorageV2.connect(meowHistorian, () => new meowHistorian(`${filesDir}`));
   AppStorageV2.connect(meowManagedSettings, () => new meowManagedSettings(`${filesDir}/settings.json.browsercatsettings.txt`));
+
+  myMeowResources?.loadBackgroundImage();
 
   // meow(`Finished in ${Date.now() - startTime} ms.`, 'earlyOnCreate', meowLevel.WARN);
 }
@@ -110,7 +113,7 @@ export function onLoadContent(window: window.Window, context: Context) {
   listenAvoid(window);
 
   listenFocus(window);
-  
+
   // watchLaunch(); // This is chicken rib. >O
 
   // Init History here to avoid resource competition
