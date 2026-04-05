@@ -31,6 +31,29 @@ export async function retrieveDownloadDirectory(context: Context) {
 }
 
 /**
+ * Save a text file to device storage, pulling up a DocumentViewPicker.
+ * @param fileName A string, setting the file's name.
+ * @param content A string or an ArrayBuffer, fills the file's content.
+ * @returns If succeeded.
+ */
+export async function fileDocumentPickSave(fileName: string, content: string | ArrayBuffer): Promise<boolean | void | undefined> {
+  try {
+    return (new picker.DocumentViewPicker())
+      .save({
+        newFileNames: [fileName]
+      })
+      .then(async (pickedUris) => {
+        const result = await saveHybrid(pickedUris[0], content, true);
+        console.info(`[fileDocumentPickSave] DocumentViewPicker.save successfully, uris[0]: ${pickedUris[0]}`);
+        return result;
+      });
+  } catch (e) {
+    console.error(`[fileDocumentPickSave] DocumentViewPicker failed: ${e}`);
+    return undefined;
+  }
+}
+
+/**
  * Pick a file from device storage, pulling up a DocumentViewPicker.
  * @returns Majorly the path.
  * */
@@ -137,8 +160,7 @@ export async function pickDirectory(): Promise<string | undefined> {
 
 /**
  * Save a text file or ArrayBuffer to sandbox storage, overwrites whatever that was at that place.
- * @param fullFilePath A string, setting the file's name.
- * @param context The content.
+ * @param fullFilePath The destination path or uri.
  * @param content A string or an ArrayBuffer, fills the file's content.
  * @param overwrite overwrite or not. Default is false.
  * */
@@ -154,12 +176,6 @@ export async function saveHybrid(fullFilePath: string, content: string | ArrayBu
         return undefined;
       }
     }
-
-    // if (typeof content == 'string') {
-    //   console.info(`[saveHybrid] about to write to file ${fullFilePath}, content length = ${content.length}`);
-    // } else {
-    //   console.info(`[saveHybrid] about to write to file ${fullFilePath}, content length = ${content.byteLength}`);
-    // }
 
     let file = fileIo.openSync(fullFilePath, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
     return fileIo.write(file.fd, content)
@@ -337,7 +353,6 @@ export async function listFilesUnderDir(dirPath: string) {
 /**
  * Read an ArrayBuffer file from storage in a sync way.
  * @param fullFilePath the file path
- * @param context the context
  * @returns An ArrayBuffer, of the requested file's content or undefined if the file doesn't exist.
  * */
 @Concurrent

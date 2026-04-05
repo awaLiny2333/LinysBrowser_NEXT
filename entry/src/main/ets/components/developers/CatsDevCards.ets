@@ -5,6 +5,7 @@ import { meowResources } from '../../hosts/resources/classes/meowResources';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { defaultRoundedRadius } from '../../catstypicalframework/utils/ui';
 import { ResourcesDevCard } from './resources/Card';
+import { BookmarksDevCard } from './bookmarks/Card';
 
 @ComponentV2
 struct CatsDevCards {
@@ -18,6 +19,7 @@ struct CatsDevCards {
       Scroll() {
         Column({ space: 5 }) {
           CatsTypicalFrameworkDevCard();
+          BookmarksDevCard();
           ResourcesDevCard();
           SettingsDevCard();
           HistoryDevCard();

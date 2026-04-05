@@ -8,6 +8,7 @@ struct UniContentCard {
   @BuilderParam contentsBuilder: () => void;
   @Param title: ResourceStr = '';
   @Param roundedRadius: number = defaultRoundedRadius;
+  @Param blurRadius: number = 0;
 
   build() {
     Column({ space: 8 }) {
@@ -21,7 +22,8 @@ struct UniContentCard {
       this.contentsBuilder();
     }
     .width('100%')
-    .backgroundEffect({ color: $r('app.color.blur_background'), radius: 20 })
+    .backgroundEffect({ color: $r('app.color.blur_background'), radius: this.blurRadius })
+    .backgroundColor($r('app.color.blur_background'))
     .border({ radius: this.roundedRadius, width: 1, color: $r('sys.color.icon_fourth') })
     .padding(12)
     .alignItems(HorizontalAlign.Start);

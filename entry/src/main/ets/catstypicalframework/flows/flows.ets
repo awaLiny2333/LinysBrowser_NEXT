@@ -9,6 +9,7 @@ import { meowMisc } from '../hosts/meowMisc';
 import { ensureDirectoryExist } from '../utils/storage';
 import { meowManagedSettings } from '../../hosts/settings/classes/meowManagedSettings';
 import { meowResources } from '../../hosts/resources/classes/meowResources';
+import { meowBookmarkStash } from '../../hosts/bookmarks/classes/meowBookmarkStash';
 
 // Flows
 /**
@@ -26,11 +27,14 @@ export function earlyOnCreate(context: Context) {
 
   // Init hosts
   AppStorageV2.connect(meowMisc, () => new meowMisc());
-  let myMeowResources = AppStorageV2.connect(meowResources, () => new meowResources(`${filesDir}/homepage_background_arrayBuffer`));
-  AppStorageV2.connect(meowHistorian, () => new meowHistorian(`${filesDir}`));
-  AppStorageV2.connect(meowManagedSettings, () => new meowManagedSettings(`${filesDir}/settings.json.browsercatsettings.txt`));
+  let myMeowBookmarkStash = AppStorageV2.connect(meowBookmarkStash, () => new meowBookmarkStash(`${filesDir}/html_bookmarks.html`))!;
+  let myMeowResources = AppStorageV2.connect(meowResources, () => new meowResources(`${filesDir}/homepage_background_arrayBuffer`))!;
+  AppStorageV2.connect(meowHistorian, () => new meowHistorian(`${filesDir}`))!;
+  AppStorageV2.connect(meowManagedSettings, () => new meowManagedSettings(`${filesDir}/settings.json.browsercatsettings.txt`))!;
 
-  myMeowResources?.loadBackgroundImage();
+  // Actions that doesn't use any performance (Concurrent functions!)
+  myMeowResources.loadBackgroundImage();
+  myMeowBookmarkStash.loadFromDisk();
 
   // meow(`Finished in ${Date.now() - startTime} ms.`, 'earlyOnCreate', meowLevel.WARN);
 }

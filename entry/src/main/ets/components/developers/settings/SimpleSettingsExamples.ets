@@ -3,6 +3,7 @@ import { AppStorageV2 } from '@kit.ArkUI';
 import { meowManagedSettings } from '../../../hosts/settings/classes/meowManagedSettings';
 import { UniContentCard } from '../common/UniContentCard';
 import { meowFlexOptions } from '../../common/constants';
+import { SymbolButton } from '../common/SymbolButton';
 
 /**
  * Example on how to use the meowSettings system.
@@ -69,18 +70,14 @@ struct SimpleSettingsExamples {
                     this.settingsAdblockExceptions[item.index] = c;
                     this.myMeowManagedSettings.requestSaveToDisk();
                   });
-                SymbolGlyph($r('sys.symbol.trash'))
-                  .onClick(() => {
+
+                SymbolButton({
+                  icon: $r('sys.symbol.trash'),
+                  clickAction: () => {
                     this.settingsAdblockExceptions.splice(item.index, 1);
                     this.myMeowManagedSettings.requestSaveToDisk();
-                  })
-                  .padding(10)
-                  .fontSize(20)
-                  .aspectRatio(1)
-                  .height(40)
-                  .borderRadius(defaultInnerRadius)
-                  .hoverEffect(HoverEffect.Highlight)
-                  .fontColor([$r('sys.color.font')]);
+                  }
+                });
               };
             };
           })

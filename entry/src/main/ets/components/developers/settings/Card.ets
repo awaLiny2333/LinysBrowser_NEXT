@@ -19,7 +19,7 @@ struct SettingsDevCard {
     UniContentCard({ title: 'meowManagedSettings' }) {
       Flex(meowFlexOptions) {
         Text(`[Ready] ${this.myMeowManagedSettings.ready ? ' 󰀓 ' : ' 󰁖 '}`);
-        Text(`[${this.myMeowManagedSettings.settingsFileSavePath}]`);
+        Text(`[settingsFileSavePath] ${this.myMeowManagedSettings.settingsFileSavePath}`);
         Text(`[timeoutIdSaveToDisk] ${this.myMeowManagedSettings.timeoutIdSaveToDisk}`);
       }; // Statuses
 

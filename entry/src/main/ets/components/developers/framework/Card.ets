@@ -17,7 +17,6 @@ struct CatsTypicalFrameworkDevCard {
 
   build() {
     UniContentCard({ title: 'CatsTypicalFramework' }) {
-      Text(`[launchTimeUsage] ${this.myMeowMisc.launchEndTime - this.myMeowMisc.launchStartTime} ms`);
       Flex(meowFlexOptions) {
         Button('Toggle Free')
           .onClick(() => {
@@ -33,6 +32,7 @@ struct CatsTypicalFrameworkDevCard {
       };
 
       Flex(meowFlexOptions) {
+        Text(`[launchTimeUsage] ${this.myMeowMisc.launchEndTime - this.myMeowMisc.launchStartTime} ms`);
         Text(`[Free Window Mode] ${this.myMeowFreeWindowModeStatus.on ? ' 󰀓 ' : ' 󰁖 '}`);
         Text(`[Wide / Tablet Mode] ${this.myMeowLayout.wideMode ? ' 󰀓 ' : ' 󰁖 '}`);
         Text(`[Avoids]  ↑${this.myMeowAvoid.top}  ↓${this.myMeowAvoid.bottom}  ←${this.myMeowAvoid.left}  →${this.myMeowAvoid.right}`);

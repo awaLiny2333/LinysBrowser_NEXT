@@ -163,12 +163,12 @@ export class meowManagedSettings {
   }
 
   /**
-   * Save settings to disk. Has a 500 ms timeout.
+   * Save settings to disk. Has a 500 ms timeout by default.
    * @returns true if success, false if failed.
    */
   requestSaveToDisk(timeout: number = 500) {
     if (!this.ready) {
-      meow(`Rejected. Settings not ready`, 'meowSettings][saveToDiskWrapped', meowLevel.WARN);
+      meow(`Rejected. Settings not ready`, 'meowSettings][requestSaveToDisk', meowLevel.WARN);
       return false;
     }
 
@@ -178,7 +178,7 @@ export class meowManagedSettings {
       await this.saveToDisk();
     }, timeout);
 
-    meow(`Called saveToDiskWrapped. It is expected to save settings to disk in ${timeout} ms`, 'meowSettings][saveToDiskWrapped', meowLevel.INFO);
+    meow(`Called requestSaveToDisk. It is expected to save settings to disk in ${timeout} ms`, 'meowSettings][requestSaveToDisk', meowLevel.INFO);
     return true;
   }
 
