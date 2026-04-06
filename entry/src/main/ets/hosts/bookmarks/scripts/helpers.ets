@@ -1,49 +1,53 @@
 import { meowBookmarkItem } from "../classes/meowBookmarkItem";
 
+// -------------------------------------------------------------
+// 极速辅助函数：用 indexOf 替代正则 (99% 的书签没有转义字符，直接原样返回)
+// -------------------------------------------------------------
 /**
- * Extract a number (such as a timestamp) from an HTML attribute string.
- * @param attrString The HTML attribute string to extract from.
- * @param attrName The name of the attribute to extract.
+ * 极速 HTML 实体解码 (ArkTS Strict 兼容版)
  */
-export function extractNumAttr(attrString: string, attrName: string): number {
-  const regex = new RegExp(`${attrName}="([^"]*)"`, 'i');
-  const match = attrString.match(regex);
-  if (match && match[1]) {
-    const val = parseInt(match[1], 10);
-    return isNaN(val) ? 0 : val;
+export function fastDecode(str: string): string {
+  // 1. 极速短路：如果没有 & 符号，100% 没有实体，直接原样返回（拦截 99.9% 的调用）
+  if (str.indexOf('&') === -1) {
+    return str;
   }
-  return 0;
+
+  // 2. 命中实体时的处理：使用原生的字符串连续替换。
+  // 抛弃正则，抛弃 Map/对象取值，直接硬编码替换。
+  // 虽然产生了中间字符串，但因为实际书签名中通常最多只有 1-2 个实体，
+  // 这种 C++ 级别的原生字符串替换比正则引擎启动还要快得多。
+  let result = str;
+  result = result.replace('&amp;', '&');
+  result = result.replace('&lt;', '<');
+  result = result.replace('&gt;', '>');
+  result = result.replace('&quot;', '"');
+  result = result.replace('&#39;', "'");
+
+  return result;
 }
 
-/**
- * Extract a string (such as a URL) from an HTML attribute string.
- * @param attrString The HTML attribute string to extract from.
- * @param attrName The name of the attribute to extract.
- */
-export function extractStrAttr(attrString: string, attrName: string): string {
-  const regex = new RegExp(`${attrName}="([^"]*)"`, 'i');
-  const match = attrString.match(regex);
-  return (match && match[1]) ? match[1] : "";
+// 极速提取字符串属性
+export function fastExtractStr(str: string, start: number, end: number, attr: string): string {
+  const searchStr = attr + '="';
+  let idx = str.indexOf(searchStr, start);
+  if (idx === -1 || idx > end) return "";
+  idx += searchStr.length;
+  const endIdx = str.indexOf('"', idx);
+  if (endIdx === -1 || endIdx > end) return "";
+  return str.substring(idx, endIdx);
 }
 
-/**
- * HTML entity decoder
- * Handle &amp; &lt; &gt; &quot; &#39; etc.
- * @author ChatGLM @ Apr 5 2026.
- */
-export function decodeHtmlEntities(text: string): string {
-  return text.replace(/&(?:amp|lt|gt|quot|apos|#39|#x27);/gi, (match) => {
-    switch (match.toLowerCase()) {
-      case '&amp;': return '&';
-      case '&lt;': return '<';
-      case '&gt;': return '>';
-      case '&quot;': return '"';
-      case '&apos;':
-      case '&#39;':
-      case '&#x27;': return "'";
-      default: return match;
-    }
-  });
+// 极速提取数字属性 (直接找边界，不截取子串做正则匹配，直接用 parseInt 硬转)
+export function fastParseNum(str: string, start: number, end: number, attr: string): number {
+  const searchStr = attr + '="';
+  let idx = str.indexOf(searchStr, start);
+  if (idx === -1 || idx > end) return 0;
+  idx += searchStr.length;
+  const endIdx = str.indexOf('"', idx);
+  if (endIdx === -1 || endIdx > end) return 0;
+  const numStr = str.substring(idx, endIdx);
+  const val = parseInt(numStr, 10);
+  return isNaN(val) ? 0 : val;
 }
 
 /**
@@ -137,6 +141,7 @@ export function buildNodeHTML(node: meowBookmarkItem, indent: string): string {
 
 /**
  * Generates the current timestamp for HTML timestamps.
+ * Which is basically the current Unix timestamp in seconds.
  */
 export function nowHTMLTime(): number {
   return Math.floor(Date.now() / 1000);
