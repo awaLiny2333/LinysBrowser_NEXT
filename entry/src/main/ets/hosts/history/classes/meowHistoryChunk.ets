@@ -24,7 +24,7 @@ import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger"
 import { readArrayBufferConcurrent, saveHybrid } from "../../../catstypicalframework/utils/storage";
 import { collections, fastbuffer } from "@kit.ArkTS";
 import { buildIndexToDisk, loadIndexFromDisk } from "../scripts/indexing";
-import { loadChunkFromDisk, tokenize } from "../scripts/helpers";
+import { binarySearch, loadChunkFromDisk, tokenize } from "../scripts/helpers";
 import { meowHistoryEntry } from "./meowHistoryEntry";
 import { meowHistoryIndexFileBundle } from "./meowHistoryIndexFileBundle";
 
@@ -76,7 +76,11 @@ export class meowHistoryChunk {
     if (this.entries && !force) {
       return;
     }
-    this.entries = await loadChunkFromDisk(this.chunkPath); // Note that histories in this.entries are ascending in the time.
+    try {
+      this.entries = await loadChunkFromDisk(this.chunkPath); // Entries are monotonically in increasing order of timestamp.
+    } catch (e) {
+      meow(`Failed to load entries from disk for chunk ${this.chunkPath}: ${e}`, 'meowHistoryChunk][loadEntriesFromDisk', meowLevel.ERROR);
+    } // Note that histories in this.entries are ascending in the time.
   }
 
   /**
@@ -96,7 +100,7 @@ export class meowHistoryChunk {
    * @returns A promise that resolves to an array of meowHistory objects.
    */
   async lookUpHistoryEntries(query: string, maxResults: number = 20): Promise<meowHistoryEntry[]> {
-    const startTime = Date.now();
+    // const startTime = Date.now();
 
     // Get index bundles.
     await this.loadIndexFromDisk();
@@ -134,7 +138,8 @@ export class meowHistoryChunk {
         }
       } // Calculate intersection.
       if (intersectionOfEntries.size == 0) {
-        meow(`No intersection found for query "${query}", token = ${token} in chunk ${this.indexPath}. Early broken.`, 'meowHistoryChunk][lookUpHistoryEntries', meowLevel.WARN);
+        // This is printing too many stuffs into the console.
+        // meow(`No intersection found for query "${query}", token = ${token} in chunk ${this.indexPath}. Early broken.`, 'meowHistoryChunk][lookUpHistoryEntries', meowLevel.WARN);
         return [];
       } // No intersection. Early break. Return empty array.
     }
@@ -143,9 +148,14 @@ export class meowHistoryChunk {
     const fetchedHistories: meowHistoryEntry[] = [];
     for (const timestamp of intersectionOfEntries) {
       try {
-        // TODO: Use binary search in this.entries to get the history and boost efficiency.
-        // findIndex should work for now. OwO.
-        const index = this.entries.findIndex(entry => entry.time === timestamp);
+        // 明确告诉编译器：
+        // T 是 meowHistoryEntry（数组里的东西）
+        // K 是 number（你要找的东西）
+        const index = binarySearch<meowHistoryEntry, number>(
+          this.entries, 
+          timestamp,  // ✅ 现在类型完美匹配
+          (entry, ts) => entry.time - ts 
+        );
         if (index !== -1) fetchedHistories.push(this.entries[index]);
       } catch (e) {
         meow(`Failed to fetch history entry for timestamp ${timestamp} in chunk ${this.indexPath}: ${e}`, 'meowHistoryChunk][lookUpHistoryEntries', meowLevel.ERROR);
@@ -153,7 +163,7 @@ export class meowHistoryChunk {
       if (fetchedHistories.length >= maxResults) break; // Reach limit. Break earlier.
     }
 
-    meow(`Looked up history entries for query "${query}" in chunk ${this.indexPath} (${Date.now() - startTime} ms)`, 'meowHistoryChunk][lookUpHistoryEntries', meowLevel.INFO);
+    // meow(`Looked up history entries for query "${query}" in chunk ${this.indexPath} (${Date.now() - startTime} ms)`, 'meowHistoryChunk][lookUpHistoryEntries', meowLevel.INFO);
     return fetchedHistories;
   }
 

@@ -385,10 +385,10 @@ export async function readArrayBuffer(fullFilePath: string, offset?: number, len
         console.error(`[readArrayBuffer] fileIo.close(file) failed: ${e}`);
       });
 
-    console.info(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] OK. ArrayBuffer size = ${length || stat.size}, readLen = ${readLen}, (length || stat.size) == readLen: ${readLen == (length || stat.size)} (${Date.now() - startTime} ms)`);
+    // console.info(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] OK. ArrayBuffer size = ${length || stat.size}, readLen = ${readLen}, (length || stat.size) == readLen: ${readLen == (length || stat.size)} (${Date.now() - startTime} ms)`);
     return result;
   } catch (e) {
-    console.error(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] file operation failed: ${e}. Return undefined.`);
+    console.error(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] file operation failed: ${e} (${Date.now() - startTime} ms). Return undefined.`);
     return undefined;
   }
 }

@@ -114,7 +114,7 @@ struct SimpleHistoryShowcase {
 
   async request() {
     const startTime = Date.now();
-    this.requestResult = await this.myMeowHistorian.lookUpHistoryEntries(this.requestKey) ?? [];
+    this.requestResult = await this.myMeowHistorian.lookUpHistoryEntries(this.requestKey, 20) ?? [];
     this.requestTime = Date.now() - startTime;
   }
 }

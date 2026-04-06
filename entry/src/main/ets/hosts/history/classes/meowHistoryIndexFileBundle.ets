@@ -31,29 +31,67 @@ export class meowHistoryIndexFileBundle {
    * Reads the index file and generate the map of keys to index data positins.
    */
   async init() {
-    const startTime = Date.now();
-
+    // Read the index file.
     const indexFileBundle = await readArrayBufferConcurrent(this.indexFilePath);
     if (!indexFileBundle) {
       meow(`Failed to read index file ${this.indexFilePath}`, 'meowHistoryIndexFileBundle', meowLevel.ERROR);
       return;
     }
 
+    // Read and parse
     try {
-      const indexText = fastbuffer.from(indexFileBundle).toString();
-      const lines = indexText.split('\n');
-      for (let i = 0; i < lines.length; i += 3) {
-        if (lines[i] === '') continue;
-        const key = lines[i];
-        const positionStart = Number(lines[i + 1]);
-        const length = Number(lines[i + 2]);
+      const text = fastbuffer.from(indexFileBundle).toString();
+
+      // const lines = indexText.split('\n');
+      // for (let i = 0; i < lines.length; i += 3) {
+      //   if (lines[i] === '') continue;
+      //   const key = lines[i];
+      //   const positionStart = Number(lines[i + 1]);
+      //   const length = Number(lines[i + 2]);
+      //   this.indexKeyHeaders.set(key, new meowHistoryIndexHeader(positionStart, length));
+      // }
+
+      // Optimized by ChatGLM @ Apr 6 2026
+      // 假设这是在某个类的方法内部
+      const len = text.length;
+      let pos = 0;
+
+      while (pos < len) {
+        // --- 读取第 1 行：Key ---
+        let nextNl = text.indexOf('\n', pos);
+        if (nextNl === -1) break; // 文件读完了或者格式损坏，直接终止
+
+        // 🚀 极速跳过空行：如果 pos 等于 nextNl，说明这两个符号之间没有字符，直接跳过，连 substring 都不调用！
+        if (pos === nextNl) {
+          pos = nextNl + 1;
+          continue;
+        }
+
+        // 只有确认不是空行，才去截取字符串（避免无意义的内存分配）
+        const key = text.substring(pos, nextNl);
+        pos = nextNl + 1;
+
+        // --- 读取第 2 行：Position Start ---
+        nextNl = text.indexOf('\n', pos);
+        if (nextNl === -1) break;
+        // 使用 parseInt 替代 Number()，对于纯整数字符串，parseInt 更快且不会有浮点数转换的开销
+        const positionStart = parseInt(text.substring(pos, nextNl), 10);
+        pos = nextNl + 1;
+
+        // --- 读取第 3 行：Length ---
+        nextNl = text.indexOf('\n', pos);
+        if (nextNl === -1) break;
+        const length = parseInt(text.substring(pos, nextNl), 10);
+        pos = nextNl + 1;
+
+        // --- 存入 Map ---
         this.indexKeyHeaders.set(key, new meowHistoryIndexHeader(positionStart, length));
       }
+
     } catch (e) {
       meow(`Failed to parse index file ${this.indexFilePath}: ${e}`, 'meowHistoryIndexFileBundle', meowLevel.ERROR);
     }
-
-    meow(`Read index file ${this.indexFilePath}, index size (${this.indexKeyHeaders.size}) (${Date.now() - startTime} ms)`, 'meowHistoryIndexFileBundle', meowLevel.INFO);
+    
     this.ready = true;
   }
 
@@ -75,7 +113,7 @@ export class meowHistoryIndexFileBundle {
       // The header remembers the positionStart and length of the indexed ids under this key.
       const header = this.indexKeyHeaders.get(key);
       if (!header) {
-        meow(`Header for key ${key} not found in index file ${this.indexFilePath}.`, 'meowHistoryIndexFileBundle', meowLevel.WARN);
+        // meow(`Header for key ${key} not found in index file ${this.indexFilePath}.`, 'meowHistoryIndexFileBundle', meowLevel.WARN);
         return [];
       }
 

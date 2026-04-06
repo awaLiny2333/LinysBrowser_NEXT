@@ -242,29 +242,58 @@ export class meowHistorian {
    * @param maxResults The maximum number of results to return.
    * @returns The query results.
    */
-  async lookUpHistoryEntries(query: string, maxResults: number = 20) {
+  async lookUpHistoryEntries(query: string, maxResults: number) {
     if (this.busy) {
       meow(`Busy. Rejected history: ["${query}", ${maxResults}]`, 'meowHistorian][lookUpHistoryEntries', meowLevel.WARN);
       return [];
     }
 
+    console.log(' ');
+    meow(`Looking up history: ["${query}", ${maxResults}]`, 'meowHistorian][lookUpHistoryEntries', meowLevel.WARN);
+
     const startTime = Date.now();
     this.busy = true;
-
     const result: meowHistoryEntry[] = [];
-    for (let i = 0; i < this.chunks.length; i++) {
-      const chunk = this.chunks[i];
-      const chunkResult = await chunk.lookUpHistoryEntries(query, maxResults - result.length);
-      if (chunkResult.length > 0) {
-        result.push(...chunkResult);
+
+
+    // Optimized by ChatGLM @ Apr 6 2026
+    // Prefer the latest 12 months.
+    // If not enough, then go deeper to earlier history.
+
+    const maxConcurrency = 12; // 定义最大并发数量（比如只查前 5 个 chunk）
+    const targetChunks = this.chunks.slice(0, maxConcurrency); // 1. 直接截断，后面的 chunk 连 Promise 都不会产生
+    const promises = targetChunks.map(chunk => chunk.lookUpHistoryEntries(query, maxResults)); // 2. 同时发起前 N 个查询
+    const allResults = await Promise.all(promises); // 3. 等待并发结果
+
+    for (let i = 0; i < allResults.length; i++) {
+      const chunkResult = allResults[i];
+      for (let j = 0; j < chunkResult.length; j++) {
+        result.push(chunkResult[j]);
+        if (result.length >= maxResults) {
+          break;
+        }
       }
       if (result.length >= maxResults) {
         break;
       }
-    }
+    } // 4. 极速合并（避开 ArkTS 禁用的 ... 展开运算符，双层循环最安全最快）
+
+    if (result.length < maxResults) {
+      // Written manually by awa_Liny :O
+      for (let i = 0; i < this.chunks.length; i++) {
+        const chunk = this.chunks[i];
+        const chunkResult = await chunk.lookUpHistoryEntries(query, maxResults - result.length);
+        if (chunkResult.length > 0) {
+          result.push(...chunkResult);
+        }
+        if (result.length >= maxResults) {
+          break;
+        }
+      }
+    } // 5. If is not enough
 
     // result.sort((a, b) => b.time - a.time);
-    meow(`Looked up history: ["${query}", ${maxResults}], result is ${result.join(', ')} (${Date.now() - startTime} ms)`, 'meowHistorian][lookUpHistoryEntries', meowLevel.INFO);
+    meow(`Looked up history: ["${query}", ${maxResults}], result is ${result.join(', ')} (${Date.now() - startTime} ms)`, 'meowHistorian][lookUpHistoryEntries', meowLevel.WARN);
     this.busy = false;
     return result;
   }

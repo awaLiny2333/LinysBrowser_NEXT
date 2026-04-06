@@ -18,14 +18,14 @@ async function buildIndexToDiskSync(indexBasePath: string, chunk: meowHistoryChu
   const indexChunkPath = `${indexBasePath}/history_${chunk.year}_${chunk.month.toString().padStart(2, '0')}.txt`;
 
   // i. Prerequisites
-  
+
   // Read entries from the disk.
   await chunk.loadEntriesFromDisk(cleanRebuild);
   if (!chunk.entries) {
     meow(`chunk.loadEntriesFromDisk() failed to do its mission! indexChunkPath: ${indexChunkPath}. Quitting.`, 'indexing][buildIndexToDiskSync', meowLevel.ERROR);
     return;
   }
-  
+
   // Discard indexBundle. So that in later queries, the chunks would notice the indexBundle is missing, and try to load out newly built index files from the disk!
   if (cleanRebuild) {
     chunk.indexBundle = undefined;
@@ -140,8 +140,11 @@ async function loadIndexFromDiskSync(indexFilePath: string, dataFilePath: string
  * @returns A meowHistoryIndexFileBundle.
  */
 export async function loadIndexFromDisk(indexFilePath: string, dataFilePath: string) {
+  const startTime = Date.now();
   try {
-    return await taskpool.execute(new taskpool.Task(loadIndexFromDiskSync, indexFilePath, dataFilePath)) as meowHistoryIndexFileBundle;
+    const indexFileBundle = await taskpool.execute(new taskpool.Task(loadIndexFromDiskSync, indexFilePath, dataFilePath)) as meowHistoryIndexFileBundle;
+    meow(`Read index file ${indexFilePath}, index size (${indexFileBundle.indexKeyHeaders.size}) (${Date.now() - startTime} ms)`, 'indexing][loadIndexFromDisk', meowLevel.INFO);
+    return indexFileBundle;
   } catch (error) {
     meow(`Failed to read index file ${indexFilePath}: ${error}`, 'indexing][loadIndexFromDisk', meowLevel.ERROR);
     return undefined;
