@@ -1,6 +1,6 @@
 import { meowBookmarkItem } from "./meowBookmarkItem";
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
-import { fileCopy, fileDocumentPick2Path, fileDocumentPickSave, saveHybrid } from "../../../catstypicalframework/utils/storage";
+import { fileDocumentPick2Path, fileDocumentPickSave, saveHybrid } from "../../../catstypicalframework/utils/storage";
 import { parseBookmarksConcurrent, parseToHTMLConcurrent } from "../scripts/parser";
 
 @ObservedV2
@@ -14,37 +14,55 @@ export class meowBookmarkStash {
   constructor(defaultBookmarksPath: string) {
     this.defaultBookmarksPath = defaultBookmarksPath;
   }
+  
+  // Files
 
   /**
    * Import bookmarks from HTML file in documents.
+   * This would push the imported bookmarks to the root.
    */
   async importHTMLfromDocuments() {
     const result = await fileDocumentPick2Path(['.html'], 1);
     if (!result.succeed) {
       meow(`Failed to pick HTML from documents.`, 'meowBookmarkStash][importHTMLfromDocuments', meowLevel.WARN);
-      return;
+      return false;
     }
-    const path = result.sourcePaths![0];
-    await fileCopy(path, this.defaultBookmarksPath, true);
-    const parseBookmarksResult = await parseBookmarksConcurrent(this.defaultBookmarksPath);
 
+    // Parse the HTML file.
+    const parseBookmarksResult = await parseBookmarksConcurrent(result.sourcePaths![0]);
     if (!parseBookmarksResult.success) {
       meow(`Failed to parse bookmarks from HTML.`, 'meowBookmarkStash][importHTMLfromDocuments', meowLevel.ERROR);
-      return;
+      return false;
     }
 
+    // Push to root
     this.lastImportTimeCost = parseBookmarksResult.time;
-    this.root = parseBookmarksResult.root;
+    try {
+      this.root.children.push(parseBookmarksResult.root);
+    } catch (e) {
+      meow(`Failed to push root to stash.`, 'meowBookmarkStash][importHTMLfromDocuments', meowLevel.ERROR);
+      return false;
+    }
+
+    // Save to disk
+    this.requestSaveToDisk();
+    return true;
   }
 
+  /**
+   * Export bookmarks to HTML file in documents.
+   */
   async exportHTMLtoDocuments() {
     const htmlText = await parseToHTMLConcurrent(this.root);
     if (!htmlText) {
       meow(`Failed to export HTML to documents. htmlText is empty!`, 'meowBookmarkStash][exportHTMLtoDocuments', meowLevel.WARN);
-      return;
+      return false;
     }
     await fileDocumentPickSave('Bookmarks.html', htmlText);
+    return true;
   }
+  
+  // Internal
 
   /**
    * Load bookmarks from disk.
@@ -55,31 +73,13 @@ export class meowBookmarkStash {
 
     if (!parseBookmarksResult.success) {
       meow(`Failed to parse bookmarks from HTML. (${Date.now() - startTime} ms)`, 'meowBookmarkStash][loadFromDisk', meowLevel.ERROR);
-      return;
+      return false;
     }
 
     this.lastImportTimeCost = parseBookmarksResult.time;
-    if (parseBookmarksResult.root.children.length == 1) {
-      this.root = parseBookmarksResult.root.children[0];
-    } else {
-      this.root = parseBookmarksResult.root;
-    }
+    this.root = parseBookmarksResult.root;
     meow(`Successfully loaded bookmarks from disk. (${Date.now() - startTime} ms)`, 'meowBookmarkStash][loadFromDisk', meowLevel.INFO);
-  }
-
-  /**
-   * Save bookmarks to disk.
-   */
-  async saveToDisk() {
-    const startTime = Date.now();
-    const htmlText = await parseToHTMLConcurrent(this.root);
-    if (!htmlText) {
-      meow(`Failed to export HTML to documents. htmlText is empty!`, 'meowBookmarkStash][exportHTMLtoDocuments', meowLevel.WARN);
-      return;
-    }
-    await saveHybrid(this.defaultBookmarksPath, htmlText, true);
-    this.lastSaveTimeCost = Date.now() - startTime;
-    meow(`Successfully saved bookmarks to disk. (${Date.now() - startTime} ms)`, 'meowBookmarkStash][saveToDisk', meowLevel.INFO);
+    return true;
   }
 
   /**
@@ -95,5 +95,20 @@ export class meowBookmarkStash {
 
     meow(`Called requestSaveToDisk. It is expected to save HTML to disk in ${timeout} ms`, 'meowBookmarkStash][requestSaveToDisk', meowLevel.INFO);
     return true;
+  }
+
+  /**
+   * Save bookmarks to disk.
+   */
+  private async saveToDisk() {
+    const startTime = Date.now();
+    const htmlText = await parseToHTMLConcurrent(this.root);
+    if (!htmlText) {
+      meow(`Failed to export HTML to documents. htmlText is empty!`, 'meowBookmarkStash][exportHTMLtoDocuments', meowLevel.WARN);
+      return;
+    }
+    await saveHybrid(this.defaultBookmarksPath, htmlText, true);
+    this.lastSaveTimeCost = Date.now() - startTime;
+    meow(`Successfully saved bookmarks to disk. (${Date.now() - startTime} ms)`, 'meowBookmarkStash][saveToDisk', meowLevel.INFO);
   }
 }

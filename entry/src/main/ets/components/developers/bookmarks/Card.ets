@@ -10,6 +10,7 @@ import { SimpleBookmarksShowcase } from './SimpleBookmarksShowcase';
 @ComponentV2
 struct BookmarksDevCard {
   @Local myMeowBookmarkStash: meowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
+  @Local updateFlag: boolean = false;
 
   build() {
     UniContentCard({ title: 'meowBookmarkStash' }) {
@@ -26,15 +27,20 @@ struct BookmarksDevCard {
             this.myMeowBookmarkStash.requestSaveToDisk();
           });
         Button('Import From HTML')
-          .onClick(() => {
-            this.myMeowBookmarkStash.importHTMLfromDocuments();
+          .onClick(async () => {
+            const result = await this.myMeowBookmarkStash.importHTMLfromDocuments();
+            if (result) {
+              this.updateFlag = !this.updateFlag;
+            }
           });
         Button('Export To HTML')
           .onClick(() => {
             this.myMeowBookmarkStash.exportHTMLtoDocuments();
           });
       };
+      
       SimpleBookmarksShowcase({
+        updateFlag: this.updateFlag,
         folder: this.myMeowBookmarkStash.root,
         saveAction: () => {
           this.myMeowBookmarkStash.requestSaveToDisk();

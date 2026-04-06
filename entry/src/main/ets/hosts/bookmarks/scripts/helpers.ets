@@ -1,4 +1,5 @@
 import { meowBookmarkItem } from "../classes/meowBookmarkItem";
+
 /**
  * Extract a number (such as a timestamp) from an HTML attribute string.
  * @param attrString The HTML attribute string to extract from.
@@ -134,3 +135,9 @@ export function buildNodeHTML(node: meowBookmarkItem, indent: string): string {
   return result;
 }
 
+/**
+ * Generates the current timestamp for HTML timestamps.
+ */
+export function nowHTMLTime(): number {
+  return Math.floor(Date.now() / 1000);
+}

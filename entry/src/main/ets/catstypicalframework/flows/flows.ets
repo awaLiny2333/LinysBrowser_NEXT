@@ -25,16 +25,15 @@ export function earlyOnCreate(context: Context) {
   // const startTime = Date.now();
   const filesDir = context.filesDir;
 
-  // Init hosts
+  // Declare hosts
   AppStorageV2.connect(meowMisc, () => new meowMisc());
-  let myMeowBookmarkStash = AppStorageV2.connect(meowBookmarkStash, () => new meowBookmarkStash(`${filesDir}/html_bookmarks.html`))!;
-  let myMeowResources = AppStorageV2.connect(meowResources, () => new meowResources(`${filesDir}/homepage_background_arrayBuffer`))!;
+  AppStorageV2.connect(meowBookmarkStash, () => new meowBookmarkStash(`${filesDir}/html_bookmarks.html`))!;
   AppStorageV2.connect(meowHistorian, () => new meowHistorian(`${filesDir}`))!;
   AppStorageV2.connect(meowManagedSettings, () => new meowManagedSettings(`${filesDir}/settings.json.browsercatsettings.txt`))!;
+  const myMeowResources = AppStorageV2.connect(meowResources, () => new meowResources(`${filesDir}/homepage_background_arrayBuffer`))!;
 
   // Actions that doesn't use any performance (Concurrent functions!)
   myMeowResources.loadBackgroundImage();
-  myMeowBookmarkStash.loadFromDisk();
 
   // meow(`Finished in ${Date.now() - startTime} ms.`, 'earlyOnCreate', meowLevel.WARN);
 }
@@ -64,6 +63,7 @@ export async function earlyOnWindowStageCreate(context: Context) {
  * */
 export async function aboutToLoadContent(windowStage: window.WindowStage, window: window.Window, context: Context) {
   // const startTime = Date.now();
+  console.log(`aboutToLoadContent: context = ${context}`); // Just to USE it so that it won't be an unused param.
 
   // Enable window status auto save.
   windowStage.setWindowRectAutoSave(true)
@@ -123,6 +123,10 @@ export function onLoadContent(window: window.Window, context: Context) {
   // Init History here to avoid resource competition
   let myMeowHistorian = AppStorageV2.connect(meowHistorian);
   myMeowHistorian?.init();
+
+  // Load bookmarks
+  let myMeowBookmarkStash = AppStorageV2.connect(meowBookmarkStash);
+  myMeowBookmarkStash?.loadFromDisk();
 
   meow(`Finished in ${Date.now() - startTime} ms.`, 'onLoadContent', meowLevel.WARN);
 }
