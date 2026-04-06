@@ -257,40 +257,37 @@ export class meowHistorian {
 
 
     // Optimized by ChatGLM @ Apr 6 2026
-    // Prefer the latest 12 months.
+    // Prefer the latest 3 months.
     // If not enough, then go deeper to earlier history.
+    
+    let currentStartIndex = 0;
+    const maxConcurrency = 6; // Max concurrent promises.
+    
+    while (result.length < maxResults) {
+      const end = Math.min(currentStartIndex + maxConcurrency, this.chunks.length);
+      const targetChunks = this.chunks.slice(currentStartIndex, end); // 1. Directly slice the array to get the target chunks.
 
-    const maxConcurrency = 12; // 定义最大并发数量（比如只查前 5 个 chunk）
-    const targetChunks = this.chunks.slice(0, maxConcurrency); // 1. 直接截断，后面的 chunk 连 Promise 都不会产生
-    const promises = targetChunks.map(chunk => chunk.lookUpHistoryEntries(query, maxResults)); // 2. 同时发起前 N 个查询
-    const allResults = await Promise.all(promises); // 3. 等待并发结果
+      const remaining = maxResults - result.length;
+      const promises = targetChunks.map(chunk => chunk.lookUpHistoryEntries(query, remaining)); // 2. Request concurrently for the remaining amount.
+      
+      const allResults = await Promise.all(promises); // 3. Wait for the results.
 
-    for (let i = 0; i < allResults.length; i++) {
-      const chunkResult = allResults[i];
-      for (let j = 0; j < chunkResult.length; j++) {
-        result.push(chunkResult[j]);
-        if (result.length >= maxResults) {
-          break;
-        }
-      }
-      if (result.length >= maxResults) {
-        break;
-      }
-    } // 4. 极速合并（避开 ArkTS 禁用的 ... 展开运算符，双层循环最安全最快）
-
-    if (result.length < maxResults) {
-      // Written manually by awa_Liny :O
-      for (let i = 0; i < this.chunks.length; i++) {
-        const chunk = this.chunks[i];
-        const chunkResult = await chunk.lookUpHistoryEntries(query, maxResults - result.length);
-        if (chunkResult.length > 0) {
-          result.push(...chunkResult);
+      for (let i = 0; i < allResults.length; i++) {
+        const chunkResult = allResults[i];
+        for (let j = 0; j < chunkResult.length; j++) {
+          result.push(chunkResult[j]);
+          if (result.length >= maxResults) {
+            break;
+          }
         }
         if (result.length >= maxResults) {
           break;
         }
-      }
-    } // 5. If is not enough
+      } // 4. Use double loop to merge results.
+      
+      currentStartIndex += maxConcurrency;
+      if (currentStartIndex >= this.chunks.length) break; // 5. If is enough
+    } // 6. If is not enough then loop
 
     // result.sort((a, b) => b.time - a.time);
     meow(`Looked up history: ["${query}", ${maxResults}], result is ${result.join(', ')} (${Date.now() - startTime} ms)`, 'meowHistorian][lookUpHistoryEntries', meowLevel.WARN);

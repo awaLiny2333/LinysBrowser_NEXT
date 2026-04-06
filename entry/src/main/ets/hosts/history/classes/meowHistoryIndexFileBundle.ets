@@ -128,7 +128,7 @@ export class meowHistoryIndexFileBundle {
 
       // Process arrayBuffer into readable number[].
       const timestampsArray = Array.from(new Float64Array(timestampsSegment));
-      meow(`Read data file ${this.dataFilePath} and got numberArray, length is ${timestampsArray.length} (${Date.now() - startTime} ms)`, 'meowHistoryIndexFileBundle', meowLevel.INFO);
+      meow(`Read data file ${this.dataFilePath} and got numberArray for key [${key}], length is ${timestampsArray.length} (${Date.now() - startTime} ms)`, 'meowHistoryIndexFileBundle', meowLevel.INFO);
       return timestampsArray;
 
     } catch (e) {

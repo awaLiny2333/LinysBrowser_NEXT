@@ -125,7 +125,7 @@ export class meowHistoryChunk {
     let intersectionOfEntries = new collections.Set<number>();
     for (const token of queryTokens) {
       const numberArray = await this.indexBundle.getEntriesForKey(token);
-      if (!numberArray) continue; // numberArray is believed to be in ascending order.
+      if (!numberArray) continue;
       if (!firstFilled) {
         // Be the 火锅底料 of the set.
         intersectionOfEntries = new collections.Set<number>(numberArray);
