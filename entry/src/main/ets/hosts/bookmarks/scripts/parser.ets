@@ -27,120 +27,104 @@ async function parseBookmarks(path: string): Promise<meowBookmarkItem> {
 
   const html = fastbuffer.from(buffer).toString();
   const len = html.length;
-  let cursor = 0;
-
   const stack: meowBookmarkItem[] = [rootFolder];
 
-  // --- Predefined ASCII code constants to avoid repeated calculations in loops ---
-  const CHAR_LESS = 60; // '<'
-  const CHAR_GT = 62; // '>'
+  // Keep hard-coded ASCII for ultimate speed
+  // const CHAR_LESS = 60; // '<'
   const CHAR_SLASH = 47; // '/'
   const CHAR_D = 68; // 'D'
-  const CHAR_T = 84; // 'T'
-  const CHAR_H = 72; // 'H'
   const CHAR_L = 76; // 'L'
+  const CHAR_H = 72; // 'H'
   const CHAR_3 = 51; // '3'
   const CHAR_A = 65; // 'A'
-  const CHAR_SPACE = 32;
-  const CHAR_TAB = 9;
-  const CHAR_CR = 13; // '\r'
+  const CHAR_GT = 62; // '>'
+
+  let cursor = 0;
 
   while (cursor < len) {
-    // 1. Find the next newline character
-    let nextNL = html.indexOf('\n', cursor);
-    if (nextNL === -1) nextNL = len;
+    // 1. Brainlessly search for the next '<', regardless of what the preceding line break, space, or garbage is
+    let nextTag = html.indexOf('<', cursor);
+    if (nextTag === -1) break; // End of file
 
-    // 2. Handle \r\n (native handling, no new string allocation)
-    let lineEnd = nextNL;
-    if (lineEnd > cursor && html.charCodeAt(lineEnd - 1) === CHAR_CR) {
-      lineEnd--;
+    // Boundary maintenance
+    if (nextTag + 4 >= len) {
+      cursor = nextTag + 1;
+      continue;
     }
 
-    // 3. Manually skip leading spaces (never call trim())
-    let start = cursor;
-    while (start < lineEnd) {
-      const c = html.charCodeAt(start);
-      if (c !== CHAR_SPACE && c !== CHAR_TAB) break;
-      start++;
-    }
+    const c1 = html.charCodeAt(nextTag + 1);
+    const c2 = html.charCodeAt(nextTag + 2);
 
-    cursor = nextNL + 1; // Move the cursor
-    if (start >= lineEnd) continue; // Skip empty line
-
-    // 4. It must start with '<', otherwise it is skipped (blocks 90% of useless lines, zero function calls)
-    if (html.charCodeAt(start) !== CHAR_LESS) continue;
-
-    // Branch 1: Match </DL> (hard-coded character comparison)
-    // Exit current level folder (pop)
-    if (html.charCodeAt(start + 1) === CHAR_SLASH &&
-      html.charCodeAt(start + 2) === CHAR_D &&
-      html.charCodeAt(start + 3) === CHAR_L) {
+    // Anchor 1: Match </DL> (Exit current level)
+    if (c1 === CHAR_SLASH &&
+      c2 === CHAR_D &&
+      html.charCodeAt(nextTag + 3) === CHAR_L &&
+      html.charCodeAt(nextTag + 4) === CHAR_GT) {
       if (stack.length > 1) stack.pop();
+      cursor = nextTag + 5;
       continue;
     }
 
-    // Branch 2: Match <DL> (ignore)
-    if (html.charCodeAt(start + 1) === CHAR_D &&
-      html.charCodeAt(start + 2) === CHAR_L) {
-      continue;
-    }
+    // Anchor 2: Match </H3> (Extract folder name and attributes)
+    if (c1 === CHAR_SLASH &&
+      c2 === CHAR_H &&
+      html.charCodeAt(nextTag + 3) === CHAR_3 &&
+      html.charCodeAt(nextTag + 4) === CHAR_GT) {
 
-    // Branch 3: Match <DT><H3 (folder)
-    // Push the folder and enter the level
-    if (html.charCodeAt(start + 1) === CHAR_D &&
-      html.charCodeAt(start + 2) === CHAR_T &&
-      html.charCodeAt(start + 3) === CHAR_GT &&
-      html.charCodeAt(start + 4) === CHAR_LESS &&
-      html.charCodeAt(start + 5) === CHAR_H &&
-      html.charCodeAt(start + 6) === CHAR_3) {
+      const closePos = nextTag;
 
-      const endH3 = html.indexOf('</H3>', start);
-      if (endH3 !== -1) {
-        // Extract Name: Slice directly based on location
-        const nameStart = html.lastIndexOf('>', endH3) + 1;
-        const name = fastDecode(html.substring(nameStart, endH3));
+      // A stroke of genius: use lastIndexOf to find the starting '>' of the name.
+      // Ignore any line breaks or <DT> tags, and precisely locate
+      const nameStart = html.lastIndexOf('>', closePos - 1) + 1;
+      const name = fastDecode(html.substring(nameStart, closePos));
 
-        // Extract attribute area: after <DT><H3, before the folder name
-        const attrStart = start + 7;
+      // Continue searching backward to find the start position of the <H3 tag and extract the attribute area.
+      const h3OpenPos = html.lastIndexOf('<H3', nameStart - 1);
+      if (h3OpenPos !== -1) {
+        const attrStart = h3OpenPos + 3; // Skip '<H3'
         const attrEnd = nameStart - 1;
 
-        // Directly extract numbers
         const dateAdded = fastParseNum(html, attrStart, attrEnd, 'ADD_DATE');
         const dateModified = fastParseNum(html, attrStart, attrEnd, 'LAST_MODIFIED');
 
-        // Instantiate and push
         const folder = new meowBookmarkItem(true, name, "", dateAdded, dateModified);
         stack[stack.length - 1].children.push(folder);
-        stack.push(folder); // Enter new level
+        stack.push(folder); // Enter next folder level
       }
+
+      cursor = closePos + 5;
       continue;
     }
 
-    // Branch 4: Match <DT><A (bookmark)
-    if (html.charCodeAt(start + 1) === CHAR_D &&
-      html.charCodeAt(start + 2) === CHAR_T &&
-      html.charCodeAt(start + 3) === CHAR_GT &&
-      html.charCodeAt(start + 4) === CHAR_LESS &&
-      html.charCodeAt(start + 5) === CHAR_A) {
+    // Anchor 3: Match </A> (Extract bookmark name and attributes)
+    if (c1 === CHAR_SLASH &&
+      c2 === CHAR_A &&
+      html.charCodeAt(nextTag + 3) === CHAR_GT) {
 
-      const endA = html.indexOf('</A>', start);
-      if (endA !== -1) {
-        const nameStart = html.lastIndexOf('>', endA) + 1;
-        const name = fastDecode(html.substring(nameStart, endA));
+      const closePos = nextTag;
 
-        const attrStart = start + 6;
+      const nameStart = html.lastIndexOf('>', closePos - 1) + 1;
+      // Handle names containing '<' (e.g., Price < $5)
+      const name = fastDecode(html.substring(nameStart, closePos));
+
+      const aOpenPos = html.lastIndexOf('<A', nameStart - 1);
+      if (aOpenPos !== -1) {
+        const attrStart = aOpenPos + 2; // Skip '<A'
         const attrEnd = nameStart - 1;
 
-        // Extract URL
         const url = fastDecode(fastExtractStr(html, attrStart, attrEnd, 'HREF'));
         const dateAdded = fastParseNum(html, attrStart, attrEnd, 'ADD_DATE');
 
-        // Instantiate and push
         const bookmark = new meowBookmarkItem(false, name, url, dateAdded, 0);
         stack[stack.length - 1].children.push(bookmark);
       }
+
+      cursor = closePos + 4;
       continue;
     }
+
+    // It is not the ending tag we want, indicating it is a junk tag like <DL>, <DT>, or <p>, so skip this '<'.
+    cursor = nextTag + 1;
   }
 
   return rootFolder;

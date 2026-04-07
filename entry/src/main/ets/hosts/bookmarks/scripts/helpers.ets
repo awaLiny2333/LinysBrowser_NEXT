@@ -1,21 +1,19 @@
 import { meowBookmarkItem } from "../classes/meowBookmarkItem";
 
-// -------------------------------------------------------------
-// 极速辅助函数：用 indexOf 替代正则 (99% 的书签没有转义字符，直接原样返回)
-// -------------------------------------------------------------
 /**
- * 极速 HTML 实体解码 (ArkTS Strict 兼容版)
+ * Ultra-fast HTML entity decoding (ArkTS Strict compatible version)
  */
 export function fastDecode(str: string): string {
-  // 1. 极速短路：如果没有 & 符号，100% 没有实体，直接原样返回（拦截 99.9% 的调用）
+  // 1. Instant short circuit: If there is no '&' symbol, then no need to replace.
+  // Return directly as is (intercept 99.9% of calls)
   if (str.indexOf('&') === -1) {
     return str;
   }
 
-  // 2. 命中实体时的处理：使用原生的字符串连续替换。
-  // 抛弃正则，抛弃 Map/对象取值，直接硬编码替换。
-  // 虽然产生了中间字符串，但因为实际书签名中通常最多只有 1-2 个实体，
-  // 这种 C++ 级别的原生字符串替换比正则引擎启动还要快得多。
+  // 2. Handling when an entity is hit: Use native string replacement.
+  // Directly replace with hard-code.
+  // Although intermediate strings are generated, the actual bookmark label usually contains at most 1-2 entities.
+  // This kind of native string replacement at the C++ level is much faster than starting a regular expression engine.
   let result = str;
   result = result.replace('&amp;', '&');
   result = result.replace('&lt;', '<');
@@ -26,7 +24,15 @@ export function fastDecode(str: string): string {
   return result;
 }
 
-// 极速提取字符串属性
+/**
+ * Ultra-fast string extraction from HTML attributes.
+ *
+ * @param str The raw HTML string.
+ * @param start The starting index to search from.
+ * @param end The ending index to search within.
+ * @param attr The attribute name to extract.
+ * @returns The extracted string value of the attribute, or an empty string if not found.
+ */
 export function fastExtractStr(str: string, start: number, end: number, attr: string): string {
   const searchStr = attr + '="';
   let idx = str.indexOf(searchStr, start);
@@ -37,7 +43,15 @@ export function fastExtractStr(str: string, start: number, end: number, attr: st
   return str.substring(idx, endIdx);
 }
 
-// 极速提取数字属性 (直接找边界，不截取子串做正则匹配，直接用 parseInt 硬转)
+/**
+ * Ultra-fast number extraction from HTML attributes.
+ *
+ * @param str The raw HTML string.
+ * @param start The starting index to search from.
+ * @param end The ending index to search within.
+ * @param attr The attribute name to extract.
+ * @returns The extracted number value of the attribute, or 0 if not found or invalid.
+ */
 export function fastParseNum(str: string, start: number, end: number, attr: string): number {
   const searchStr = attr + '="';
   let idx = str.indexOf(searchStr, start);
@@ -96,7 +110,6 @@ function toHtmlTimestamp(microTimestamp: number): number {
   // Fallback in case the timestamp was already parsed to seconds previously.
   return microTimestamp;
 }
-
 
 /**
  * Recursively traverses the bookmark tree and constructs the HTML string representation.
