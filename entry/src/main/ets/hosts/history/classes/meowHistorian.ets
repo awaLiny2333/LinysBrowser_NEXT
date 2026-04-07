@@ -259,7 +259,8 @@ export class meowHistorian {
     // Optimized by ChatGLM @ Apr 6 2026
     // Prefer the latest 3 months.
     // If not enough, then go deeper to earlier history.
-    
+    // Loop till all history entries are checked or maxResults is reached.
+
     let currentStartIndex = 0;
     const maxConcurrency = 6; // Max concurrent promises.
     
@@ -287,7 +288,7 @@ export class meowHistorian {
       
       currentStartIndex += maxConcurrency;
       if (currentStartIndex >= this.chunks.length) break; // 5. If is enough
-    } // 6. If is not enough then loop
+    } // The loop
 
     // result.sort((a, b) => b.time - a.time);
     meow(`Looked up history: ["${query}", ${maxResults}], result is ${result.join(', ')} (${Date.now() - startTime} ms)`, 'meowHistorian][lookUpHistoryEntries', meowLevel.WARN);

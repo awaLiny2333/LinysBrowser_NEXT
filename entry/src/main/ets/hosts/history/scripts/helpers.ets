@@ -11,7 +11,6 @@ import collections from "@arkts.collections";
 */
 export async function loadChunkFromDisk(chunkPath: string) {
   const startTime = Date.now();
-  // try {
 
   //     const entries = fastbuffer.from(await readArrayBufferConcurrent(chunkPath)).toString().split('\n');
   //     // Parse the text entries into meowHistoryEntry objects
@@ -33,36 +32,31 @@ export async function loadChunkFromDisk(chunkPath: string) {
   let pos = 0;
 
   while (pos < len) {
-    // --- 读取第 1 行：entries[i] ---
+    // --- Read 1st line: entries[i] ---
     let nextNl = text.indexOf('\n', pos);
-    if (nextNl === -1) break; // 文件结束或格式异常，直接退出，不会产生脏数据
+    if (nextNl === -1) break; // If the file ends or the format is abnormal, exit directly without generating dirty data.
     const arg1 = text.substring(pos, nextNl);
     pos = nextNl + 1;
 
-    // --- 读取第 2 行：entries[i + 1] ---
+    // --- Read 2nd line: entries[i + 1] ---
     nextNl = text.indexOf('\n', pos);
     if (nextNl === -1) break;
     const arg2 = text.substring(pos, nextNl);
     pos = nextNl + 1;
 
-    // --- 读取第 3 行：entries[i + 2] ---
+    // --- Read 3rd line: entries[i + 2] ---
     nextNl = text.indexOf('\n', pos);
     if (nextNl === -1) break;
-    // 明确传入基数 10，比 Number() 少走一层类型推断逻辑
+    // Explicitly specify radix 10 for parseInt to avoid type inference issues
     const arg3 = parseInt(text.substring(pos, nextNl), 10);
     pos = nextNl + 1;
 
-    // --- 构建对象并 push ---
+    // --- Construct obj and push ---
     history.push(new meowHistoryEntry(arg1, arg2, arg3));
   }
 
   meow(`Fetched history chunk at [${chunkPath}] (${Date.now() - startTime} ms)`, 'helpers][loadChunkFromDisk', meowLevel.INFO);
   return history;
-
-  // } catch (e) {
-  //   meow(`Error reading file [${chunkPath}]: ${e}, returning an empty list. This happens to an empty history file. Relax if this is the case :)`, 'helpers][loadChunkFromDisk', meowLevel.ERROR);
-  //   return new collections.Array<meowHistoryEntry>();
-  // }
 }
 
 // Promote regular expressions to constants and avoid repeated construction.
@@ -86,11 +80,11 @@ export function tokenize(text: string): collections.Set<string> {
 }
 
 /**
- * 极速通用升序二分查找
- * @param arr 有序数组 (支持原生 Array 和 collections.Array)
- * @param target 目标值
- * @param compare 比较函数: 返回 < 0 表示 mid 值偏小, > 0 表示偏大, === 0 表示命中
- * @returns 命中的索引，未命中返回 -1
+ * Ultra-fast general ascending binary search
+ * @param arr ordered array (supports native Array and collections.Array)
+ * @param target target value
+ * @param compare comparison function: returns < 0 if mid is too small, > 0 if too large, === 0 if a match is found
+ * @returns The index of the hit, returns -1 if not hit
  * @author ChatGLM @ Apr 6 2026.
  */
 export function binarySearch<T, K>(

@@ -80,7 +80,7 @@ export class meowHistoryChunk {
       this.entries = await loadChunkFromDisk(this.chunkPath); // Entries are monotonically in increasing order of timestamp.
     } catch (e) {
       meow(`Failed to load entries from disk for chunk ${this.chunkPath}: ${e}`, 'meowHistoryChunk][loadEntriesFromDisk', meowLevel.ERROR);
-    } // Note that histories in this.entries are ascending in the time.
+    }
   }
 
   /**
@@ -148,13 +148,13 @@ export class meowHistoryChunk {
     const fetchedHistories: meowHistoryEntry[] = [];
     for (const timestamp of intersectionOfEntries) {
       try {
-        // 明确告诉编译器：
-        // T 是 meowHistoryEntry（数组里的东西）
-        // K 是 number（你要找的东西）
+        // Clearly tell the compiler:
+        // T is meowHistoryEntry (the thing in the array)
+        // K is number (what you are looking for)
         const index = binarySearch<meowHistoryEntry, number>(
-          this.entries, 
-          timestamp,  // ✅ 现在类型完美匹配
-          (entry, ts) => entry.time - ts 
+          this.entries,
+          timestamp, // ✅ Now the types match perfectly
+          (entry, ts) => entry.time - ts
         );
         if (index !== -1) fetchedHistories.push(this.entries[index]);
       } catch (e) {

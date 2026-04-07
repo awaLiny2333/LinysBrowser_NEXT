@@ -31,7 +31,7 @@ async function parseBookmarks(path: string): Promise<meowBookmarkItem> {
 
   const stack: meowBookmarkItem[] = [rootFolder];
 
-  // --- 预定义 ASCII 码常量，避免循环内重复计算 ---
+  // --- Predefined ASCII code constants to avoid repeated calculations in loops ---
   const CHAR_LESS = 60; // '<'
   const CHAR_GT = 62; // '>'
   const CHAR_SLASH = 47; // '/'
@@ -46,17 +46,17 @@ async function parseBookmarks(path: string): Promise<meowBookmarkItem> {
   const CHAR_CR = 13; // '\r'
 
   while (cursor < len) {
-    // 1. 寻找换行符 (C++ 底层实现，比正则和 split 快几个数量级)
+    // 1. Find the next newline character
     let nextNL = html.indexOf('\n', cursor);
     if (nextNL === -1) nextNL = len;
 
-    // 2. 处理 \r\n (原生处理，不分配新字符串)
+    // 2. Handle \r\n (native handling, no new string allocation)
     let lineEnd = nextNL;
     if (lineEnd > cursor && html.charCodeAt(lineEnd - 1) === CHAR_CR) {
       lineEnd--;
     }
 
-    // 3. 手动跳过行首空格 (绝对不调用 trim())
+    // 3. Manually skip leading spaces (never call trim())
     let start = cursor;
     while (start < lineEnd) {
       const c = html.charCodeAt(start);
@@ -64,15 +64,14 @@ async function parseBookmarks(path: string): Promise<meowBookmarkItem> {
       start++;
     }
 
-    cursor = nextNL + 1; // 移动游标
-    if (start >= lineEnd) continue; // 跳过空行
+    cursor = nextNL + 1; // Move the cursor
+    if (start >= lineEnd) continue; // Skip empty line
 
-    // 4. 必须以 '<' 开头，否则直接跳过 (拦截 90% 的无用行，零函数调用)
+    // 4. It must start with '<', otherwise it is skipped (blocks 90% of useless lines, zero function calls)
     if (html.charCodeAt(start) !== CHAR_LESS) continue;
 
-    // ----------------------------------------------------
-    // 分支 1：匹配 </DL> (硬编码字符比对)
-    // ----------------------------------------------------
+    // Branch 1: Match </DL> (hard-coded character comparison)
+    // Exit current level folder (pop)
     if (html.charCodeAt(start + 1) === CHAR_SLASH &&
       html.charCodeAt(start + 2) === CHAR_D &&
       html.charCodeAt(start + 3) === CHAR_L) {
@@ -80,17 +79,14 @@ async function parseBookmarks(path: string): Promise<meowBookmarkItem> {
       continue;
     }
 
-    // ----------------------------------------------------
-    // 分支 2：匹配 <DL> (忽略)
-    // ----------------------------------------------------
+    // Branch 2: Match <DL> (ignore)
     if (html.charCodeAt(start + 1) === CHAR_D &&
       html.charCodeAt(start + 2) === CHAR_L) {
       continue;
     }
 
-    // ----------------------------------------------------
-    // 分支 3：匹配 <DT><H3 (文件夹)
-    // ----------------------------------------------------
+    // Branch 3: Match <DT><H3 (folder)
+    // Push the folder and enter the level
     if (html.charCodeAt(start + 1) === CHAR_D &&
       html.charCodeAt(start + 2) === CHAR_T &&
       html.charCodeAt(start + 3) === CHAR_GT &&
@@ -100,28 +96,27 @@ async function parseBookmarks(path: string): Promise<meowBookmarkItem> {
 
       const endH3 = html.indexOf('</H3>', start);
       if (endH3 !== -1) {
-        // 提取 Name：直接根据位置切片
+        // Extract Name: Slice directly based on location
         const nameStart = html.lastIndexOf('>', endH3) + 1;
         const name = fastDecode(html.substring(nameStart, endH3));
 
-        // 提取属性区：<DT><H3 之后，name 之前
+        // Extract attribute area: after <DT><H3, before the folder name
         const attrStart = start + 7;
         const attrEnd = nameStart - 1;
 
-        // 直接内联提取数字，不调用 extractNumAttr 函数
+        // Directly extract numbers
         const dateAdded = fastParseNum(html, attrStart, attrEnd, 'ADD_DATE');
         const dateModified = fastParseNum(html, attrStart, attrEnd, 'LAST_MODIFIED');
 
+        // Instantiate and push
         const folder = new meowBookmarkItem(true, name, "", dateAdded, dateModified);
         stack[stack.length - 1].children.push(folder);
-        stack.push(folder);
+        stack.push(folder); // Enter new level
       }
       continue;
     }
 
-    // ----------------------------------------------------
-    // 分支 4：匹配 <DT><A (书签)
-    // ----------------------------------------------------
+    // Branch 4: Match <DT><A (bookmark)
     if (html.charCodeAt(start + 1) === CHAR_D &&
       html.charCodeAt(start + 2) === CHAR_T &&
       html.charCodeAt(start + 3) === CHAR_GT &&
@@ -136,10 +131,11 @@ async function parseBookmarks(path: string): Promise<meowBookmarkItem> {
         const attrStart = start + 6;
         const attrEnd = nameStart - 1;
 
-        // 内联提取 URL
+        // Extract URL
         const url = fastDecode(fastExtractStr(html, attrStart, attrEnd, 'HREF'));
         const dateAdded = fastParseNum(html, attrStart, attrEnd, 'ADD_DATE');
 
+        // Instantiate and push
         const bookmark = new meowBookmarkItem(false, name, url, dateAdded, 0);
         stack[stack.length - 1].children.push(bookmark);
       }
