@@ -2,7 +2,7 @@ import { fastbuffer, taskpool } from '@kit.ArkTS';
 import { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
 import { readArrayBuffer } from '../../../catstypicalframework/utils/storage';
 import { meowBookmarkItem } from '../classes/meowBookmarkItem';
-import { buildNodeHTML, fastParseNum, fastExtractStr, fastDecode } from './helpers';
+import { buildNodeHTML, fastParseNum, fastExtractStr, decodeHtmlString } from './helpers';
 
 /**
  * Parse bookmarks from an HTML file (High-Performance Concurrent Version).
@@ -76,7 +76,7 @@ async function parseBookmarks(path: string): Promise<meowBookmarkItem> {
       // A stroke of genius: use lastIndexOf to find the starting '>' of the name.
       // Ignore any line breaks or <DT> tags, and precisely locate
       const nameStart = html.lastIndexOf('>', closePos - 1) + 1;
-      const name = fastDecode(html.substring(nameStart, closePos));
+      const name = decodeHtmlString(html.substring(nameStart, closePos));
 
       // Continue searching backward to find the start position of the <H3 tag and extract the attribute area.
       const h3OpenPos = html.lastIndexOf('<H3', nameStart - 1);
@@ -105,14 +105,14 @@ async function parseBookmarks(path: string): Promise<meowBookmarkItem> {
 
       const nameStart = html.lastIndexOf('>', closePos - 1) + 1;
       // Handle names containing '<' (e.g., Price < $5)
-      const name = fastDecode(html.substring(nameStart, closePos));
+      const name = decodeHtmlString(html.substring(nameStart, closePos));
 
       const aOpenPos = html.lastIndexOf('<A', nameStart - 1);
       if (aOpenPos !== -1) {
         const attrStart = aOpenPos + 2; // Skip '<A'
         const attrEnd = nameStart - 1;
 
-        const url = fastDecode(fastExtractStr(html, attrStart, attrEnd, 'HREF'));
+        const url = decodeHtmlString(fastExtractStr(html, attrStart, attrEnd, 'HREF'));
         const dateAdded = fastParseNum(html, attrStart, attrEnd, 'ADD_DATE');
 
         const bookmark = new meowBookmarkItem(false, name, url, dateAdded, 0);

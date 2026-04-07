@@ -1,6 +1,6 @@
 import collections from "@arkts.collections";
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
-import { nowHTMLTime } from "../scripts/helpers";
+import { nowHtmlTimestamp } from "../scripts/helpers";
 
 /**
  * meowBookmarkItem is a class that represents a bookmark item.
@@ -33,7 +33,7 @@ export class meowBookmarkItem {
    */
   addFolder(label: string) {
     try {
-      this.children.push(new meowBookmarkItem(true, label, '', nowHTMLTime(), nowHTMLTime()));
+      this.children.push(new meowBookmarkItem(true, label, '', nowHtmlTimestamp(), nowHtmlTimestamp()));
     } catch (e) {
       meow(`Failed to add folder: ${label}`, 'meowBookmarkItem', meowLevel.ERROR);
     }
@@ -46,7 +46,7 @@ export class meowBookmarkItem {
    */
   addBookmark(label: string, url?: string) {
     try {
-      this.children.push(new meowBookmarkItem(false, label, url || '', nowHTMLTime(), nowHTMLTime()));
+      this.children.push(new meowBookmarkItem(false, label, url || '', nowHtmlTimestamp(), nowHtmlTimestamp()));
     } catch (e) {
       meow(`Failed to add folder: ${label}`, 'meowBookmarkItem', meowLevel.ERROR);
     }

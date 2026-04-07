@@ -1,4 +1,5 @@
 import { hiAppEvent, hilog } from '@kit.PerformanceAnalysisKit';
+import { meow, meowLevel } from './catsLogger';
 
 /**
  * Use hiAppEvent to monitor launch time.
@@ -32,4 +33,21 @@ export function watchLaunch() {
   } catch (e) {
     hilog.error(0x0000, 'testTag', `HiAppEvent addWatcher error: ${JSON.stringify(e)}`);
   }
+}
+
+/**
+ * ArkTools.
+ *
+ * @see https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gc-introduction#arktoolshintgc
+ */
+declare class ArkTools {
+  static hintGC(): void;
+}
+
+/**
+ * Hint GC.
+ */
+export function hintGC() {
+  ArkTools.hintGC();
+  meow('hintGC!', 'ArkTS', meowLevel.WARN);
 }

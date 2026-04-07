@@ -34,7 +34,7 @@ export async function loadChunkFromDisk(chunkPath: string) {
   while (pos < len) {
     // --- Read 1st line: entries[i] ---
     let nextNl = text.indexOf('\n', pos);
-    if (nextNl === -1) break; // If the file ends or the format is abnormal, exit directly without generating dirty data.
+    if (nextNl === -1) break; // If the file ends or the format is abnormal, exit directly without producing dirty data.
     const arg1 = text.substring(pos, nextNl);
     pos = nextNl + 1;
 
@@ -47,8 +47,7 @@ export async function loadChunkFromDisk(chunkPath: string) {
     // --- Read 3rd line: entries[i + 2] ---
     nextNl = text.indexOf('\n', pos);
     if (nextNl === -1) break;
-    // Explicitly specify radix 10 for parseInt to avoid type inference issues
-    const arg3 = parseInt(text.substring(pos, nextNl), 10);
+    const arg3 = parseInt(text.substring(pos, nextNl), 10); // Explicitly specify radix 10 for parseInt to avoid type inference issues
     pos = nextNl + 1;
 
     // --- Construct obj and push ---

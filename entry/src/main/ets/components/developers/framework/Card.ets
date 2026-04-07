@@ -3,6 +3,7 @@ import { UniContentCard } from '../common/UniContentCard';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowMisc } from '../../../catstypicalframework/hosts/meowMisc';
 import { meowFlexOptions } from '../../common/constants';
+import { hintGC } from '../../../catstypicalframework/utils/performance';
 
 /**
  * CatsTypicalFramework stuffs.
@@ -21,14 +22,17 @@ struct CatsTypicalFrameworkDevCard {
         Button('Toggle Free')
           .onClick(() => {
             this.myMeowFreeWindowModeStatus.on = !this.myMeowFreeWindowModeStatus.on;
-          })
-          .margin({ bottom: 5 });
+          });
 
         Button('Toggle Wide')
           .onClick(() => {
             this.myMeowLayout.wideMode = !this.myMeowLayout.wideMode;
-          })
-          .margin({ bottom: 5 });
+          });
+
+        Button('Hint GC')
+          .onClick(() => {
+            hintGC();
+          });
       };
 
       Flex(meowFlexOptions) {
