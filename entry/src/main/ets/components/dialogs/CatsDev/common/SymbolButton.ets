@@ -1,4 +1,4 @@
-import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
+import { defaultInnerRadius } from '../../../../catstypicalframework/utils/ui';
 
 @ComponentV2
 struct SymbolButton {

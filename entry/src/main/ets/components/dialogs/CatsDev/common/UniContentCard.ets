@@ -1,4 +1,4 @@
-import { defaultRoundedRadius } from "../../../catstypicalframework/utils/ui";
+import { defaultRoundedRadius } from "../../../../catstypicalframework/utils/ui";
 
 /**
  * Container for displaying content with a title (optional) and rounded corners (defaultRoundedRadius).

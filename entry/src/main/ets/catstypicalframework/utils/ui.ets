@@ -129,15 +129,15 @@ export function listenAvoid(windowClass: window.Window) {
       }
       if (data.type == window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
         let bottom = meowPx2vp(data.area.bottomRect.height);
-        avoid.bottom = Math.max(bottom, 10);
+        avoid.bottom = Math.max(bottom, 8);
       }
       if (data.type == window.AvoidAreaType.TYPE_CUTOUT) {
         let left = meowPx2vp(data.area.leftRect.width);
-        avoid.left = Math.max(10, left);
+        avoid.left = Math.max(8, left);
       }
       if (data.type == window.AvoidAreaType.TYPE_CUTOUT) {
         let right = meowPx2vp(data.area.rightRect.width);
-        avoid.right = Math.max(10, right);
+        avoid.right = Math.max(8, right);
       }
     })
   } catch (e) {
@@ -167,10 +167,10 @@ export function getUpdateAvoid(windowClass: window.Window) {
     }
 
     avoidArea = windowClass.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR);
-    avoid.bottom = Math.max(meowPx2vp(avoidArea.bottomRect.height), 10);
+    avoid.bottom = Math.max(meowPx2vp(avoidArea.bottomRect.height), 8);
 
-    avoid.left = Math.max(meowPx2vp(avoidArea.leftRect.width), 10);
-    avoid.right = Math.max(10, meowPx2vp(avoidArea.rightRect.width));
+    avoid.left = Math.max(meowPx2vp(avoidArea.leftRect.width), 8);
+    avoid.right = Math.max(8, meowPx2vp(avoidArea.rightRect.width));
 
   } catch (e) {
     // TODO: Implement error handling.
@@ -241,13 +241,18 @@ export class meowLayoutModeStatus {
   @Trace wideMode: boolean;
   @Trace width: number;
   @Trace height: number;
+  @Trace dark: boolean;
 
-  constructor(wideMode: boolean, width: number, height: number) {
+  constructor(wideMode: boolean, width: number, height: number, dark: boolean) {
     this.wideMode = wideMode;
     this.width = width;
     this.height = height;
+    this.dark = dark;
   }
 }
+
+export const windowTopAvoidRight: number = 140;
+export const windowTopAvoidLeft: number = 20;
 
 // Focus
 

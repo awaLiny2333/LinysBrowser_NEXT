@@ -1,10 +1,10 @@
-import { defaultInnerRadius, defaultMenuItemRadius } from '../../../catstypicalframework/utils/ui';
-import { meowHistorian } from '../../../hosts/history/classes/meowHistorian';
+import { defaultInnerRadius, defaultMenuItemRadius } from '../../../../catstypicalframework/utils/ui';
+import { meowHistorian } from '../../../../hosts/history/classes/meowHistorian';
 import { AppStorageV2 } from '@kit.ArkUI';
-import { meowHistoryChunk } from '../../../hosts/history/classes/meowHistoryChunk';
-import { meowHistoryEntry } from '../../../hosts/history/classes/meowHistoryEntry';
+import { meowHistoryChunk } from '../../../../hosts/history/classes/meowHistoryChunk';
+import { meowHistoryEntry } from '../../../../hosts/history/classes/meowHistoryEntry';
 import { UniContentCard } from '../common/UniContentCard';
-import { meowFlexOptions } from '../../common/constants';
+import { meowFlexOptions } from '../../../common/constants';
 
 /**
  * A simple history showcase component. Includes history entries of all different months and a request field to search for history.

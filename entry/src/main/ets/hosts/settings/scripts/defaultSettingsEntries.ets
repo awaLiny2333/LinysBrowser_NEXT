@@ -3,9 +3,9 @@ import { defaultNewWindowName, defaultUserAgents, presetSearchEngines } from "./
 
 /**
  * The default settings entries. ORDER MATTERS! ORDER MATTERS! ORDER MATTERS!
- * 
+ *
  * Because in the codes these entries are used with hard-coded indices to boost efficiency. e.g.:
- * @example 
+ * @example
  * `const settingsAdblockExceptions: meowSettingsEntry = this.myMeowManagedSettings.settingsData[53]; // adblock_exceptions`
  */
 export let defaultSettingsEntries: meowSettingsEntry[] = [
@@ -42,7 +42,6 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('status_showing_my_windows_alias_non_tablet', meowSettingsEntryType.BOOLEAN, 'false'),
   new meowSettingsEntry('my_window_alias_position', meowSettingsEntryType.STRING, 'center'), // 'left' | 'center' | 'right'
   new meowSettingsEntry('my_window_alias_last', meowSettingsEntryType.STRING, defaultNewWindowName()), // #26
-
   // Continuation
   new meowSettingsEntry('continuation_auto_exit', meowSettingsEntryType.BOOLEAN, 'false'),
   new meowSettingsEntry('continuation_auto_close_tab', meowSettingsEntryType.BOOLEAN, 'true'),
@@ -63,7 +62,6 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   // Animation defaults
   new meowSettingsEntry('animation_response', meowSettingsEntryType.NUMBER, '36'),
   new meowSettingsEntry('animation_damping_coefficient', meowSettingsEntryType.NUMBER, '20'), // #40
-
   // UA & Search Engines & Homepage
   new meowSettingsEntry('custom_user_agents', meowSettingsEntryType.STRING_ARRAY, defaultUserAgents()),
   new meowSettingsEntry('custom_user_agents_selected_index', meowSettingsEntryType.NUMBER, '-1'),
@@ -82,7 +80,6 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   // Ad blocker
   new meowSettingsEntry('use_adblock', meowSettingsEntryType.BOOLEAN, 'true'),
   new meowSettingsEntry('adblock_exceptions', meowSettingsEntryType.STRING_ARRAY, ''), // #53
-
   // JS blocker
   new meowSettingsEntry('disable_js', meowSettingsEntryType.BOOLEAN, 'true'),
   new meowSettingsEntry('disable_js_all_sites', meowSettingsEntryType.BOOLEAN, 'false'),
@@ -97,11 +94,12 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('web_force_dark_mode', meowSettingsEntryType.BOOLEAN, 'false'),
   new meowSettingsEntry('web_force_dark_mode_exemptions', meowSettingsEntryType.STRING_ARRAY, ''),
 
-  // Colors
-  new meowSettingsEntry('color_light_primary', meowSettingsEntryType.STRING, '#E1E9E3'),
+  // Colors (light)
+  new meowSettingsEntry('color_light_primary', meowSettingsEntryType.STRING, '#E1E9E3'), // #62
   new meowSettingsEntry('color_light_secondary', meowSettingsEntryType.STRING, '#CDD7CD'),
   new meowSettingsEntry('color_light_font', meowSettingsEntryType.STRING, '#243B24'),
-  new meowSettingsEntry('color_dark_primary', meowSettingsEntryType.STRING, '#0F1A0F'),
+  // Colors (dark)
+  new meowSettingsEntry('color_dark_primary', meowSettingsEntryType.STRING, '#0F1A0F'), // #65
   new meowSettingsEntry('color_dark_secondary', meowSettingsEntryType.STRING, '#2A392A'),
   new meowSettingsEntry('color_dark_font', meowSettingsEntryType.STRING, '#E1E9E3'),
 

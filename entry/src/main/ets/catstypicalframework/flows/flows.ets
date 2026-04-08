@@ -1,8 +1,8 @@
+import Want from '@ohos.app.ability.Want';
 import { AppStorageV2, window } from '@kit.ArkUI';
 import { meow, meowLevel } from '../utils/catsLogger';
 import { getUpdateAvoid, getUpdateFreeWindowMode, listenAvoid, listenFocus, listenFreeWindowMode, meowLayoutModeStatus, meowPx2vp } from '../utils/ui';
 import { BusinessError } from '@kit.BasicServicesKit';
-import Want from '@ohos.app.ability.Want';
 import { meowHistorian } from '../../hosts/history/classes/meowHistorian';
 import { Context } from '@ohos.abilityAccessCtrl';
 import { meowMisc } from '../hosts/meowMisc';
@@ -10,6 +10,9 @@ import { ensureDirectoryExist } from '../utils/storage';
 import { meowManagedSettings } from '../../hosts/settings/classes/meowManagedSettings';
 import { meowResources } from '../../hosts/resources/classes/meowResources';
 import { meowBookmarkStash } from '../../hosts/bookmarks/classes/meowBookmarkStash';
+import { common, ConfigurationConstant, Configuration } from '@kit.AbilityKit';
+import { meowDialogManager } from '../../hosts/ui/meowDialogManager';
+import { meowUiStatuses } from '../../hosts/ui/meowUiStatuses';
 
 // Flows
 /**
@@ -26,6 +29,8 @@ export function earlyOnCreate(context: Context) {
   const filesDir = context.filesDir;
 
   // Declare hosts
+  AppStorageV2.connect(meowDialogManager, () => new meowDialogManager()); // TODO: multi-window compatibility!
+  AppStorageV2.connect(meowUiStatuses, () => new meowUiStatuses()); // TODO: multi-window compatibility!
   AppStorageV2.connect(meowMisc, () => new meowMisc());
   AppStorageV2.connect(meowBookmarkStash, () => new meowBookmarkStash(`${filesDir}/html_bookmarks.html`))!;
   AppStorageV2.connect(meowHistorian, () => new meowHistorian(`${filesDir}`))!;
@@ -89,7 +94,7 @@ export async function aboutToLoadContent(windowStage: window.WindowStage, window
  * Called immediately after windowStage.LoadContent
  * @param window window.Window
  * */
-export function onLoadContent(window: window.Window, context: Context) {
+export function onLoadContent(window: window.Window, context: common.UIAbilityContext) {
   const startTime = Date.now();
 
   // Disable title bar (status bar on phones & tablets)
@@ -105,7 +110,8 @@ export function onLoadContent(window: window.Window, context: Context) {
     const width = meowPx2vp(rect.width);
     const height = meowPx2vp(rect.height);
     const wideMode = width > 900;
-    AppStorageV2.connect(meowLayoutModeStatus, () => new meowLayoutModeStatus(wideMode, width, height));
+    const dark = context.config.colorMode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
+    AppStorageV2.connect(meowLayoutModeStatus, () => new meowLayoutModeStatus(wideMode, width, height, dark));
   } catch (e) {
     meow(`AppStorageV2.connect(meowLayoutModeStatus, () => new meowLayoutModeStatus(wideMode)); Failed: ${e}`, 'init', meowLevel.ERROR);
   }
@@ -142,4 +148,20 @@ export enum wantSource {
  */
 export function onWant(want: Want, source: wantSource) {
   meow(`onWant! want info: ${JSON.stringify(want)}, source: ${source}`, 'init][onWant', meowLevel.INFO);
+}
+
+/**
+ * Called on configuration update.
+ * @param config The new configuration.
+ */
+export function onConfigUpdate(config: Configuration) {
+  // Update colorMode.
+  try {
+    const myMeowLayoutModeStatus = AppStorageV2.connect(meowLayoutModeStatus);
+    if (myMeowLayoutModeStatus) {
+      myMeowLayoutModeStatus.dark = config.colorMode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
+    }
+  } catch (e) {
+    meow(`const myMeowLayoutModeStatus = AppStorageV2.connect(meowLayoutModeStatus); failed: ${e}`, 'onConfigUpdate', meowLevel.WARN);
+  }
 }

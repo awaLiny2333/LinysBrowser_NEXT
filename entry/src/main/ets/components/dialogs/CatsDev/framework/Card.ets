@@ -1,9 +1,9 @@
-import { meowAvoid, meowFreeWindowModeStatus, meowLayoutModeStatus } from '../../../catstypicalframework/utils/ui';
+import { meowAvoid, meowFreeWindowModeStatus, meowLayoutModeStatus } from '../../../../catstypicalframework/utils/ui';
 import { UniContentCard } from '../common/UniContentCard';
 import { AppStorageV2 } from '@kit.ArkUI';
-import { meowMisc } from '../../../catstypicalframework/hosts/meowMisc';
-import { meowFlexOptions } from '../../common/constants';
-import { hintGC } from '../../../catstypicalframework/utils/performance';
+import { meowMisc } from '../../../../catstypicalframework/hosts/meowMisc';
+import { meowFlexOptions } from '../../../common/constants';
+import { hintGC } from '../../../../catstypicalframework/utils/performance';
 
 /**
  * CatsTypicalFramework stuffs.

@@ -1,8 +1,8 @@
-import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
+import { defaultInnerRadius } from '../../../../catstypicalframework/utils/ui';
 import { AppStorageV2 } from '@kit.ArkUI';
-import { meowManagedSettings } from '../../../hosts/settings/classes/meowManagedSettings';
+import { meowManagedSettings } from '../../../../hosts/settings/classes/meowManagedSettings';
 import { UniContentCard } from '../common/UniContentCard';
-import { meowFlexOptions } from '../../common/constants';
+import { meowFlexOptions, titleBarPositionBottom } from '../../../common/constants';
 import { SymbolButton } from '../common/SymbolButton';
 
 /**
@@ -23,6 +23,14 @@ struct SimpleSettingsExamples {
             .onChange((c) => {
               this.myMeowManagedSettings.setByIndex(74, c);
             });
+        };       
+        
+        Row({ space: 8 }) {
+          Text('use_effects');
+          Toggle({ isOn: this.myMeowManagedSettings.settingsData[7].value as boolean, type: ToggleType.Switch })
+            .onChange((c) => {
+              this.myMeowManagedSettings.setByIndex(7, c);
+            });
         };
 
         // my_window_alias_last as an example of meowSettingsEntryType.STRING
@@ -34,13 +42,23 @@ struct SimpleSettingsExamples {
               this.myMeowManagedSettings.setByIndex(26, c);
             });
         };
+        Flex(meowFlexOptions) {
+          Text('title_bar_position = "bottom"');
+          Toggle({ isOn: titleBarPositionBottom(), type: ToggleType.Switch })
+            .onChange((c) => {
+              if (c) {
+                this.myMeowManagedSettings.setByIndex(1, 'bottom');
+              } else {
+                this.myMeowManagedSettings.setByIndex(1, 'top');
+              }
+            });
+        };
 
         // animation_response as an example of meowSettingsEntryType.number
         Flex(meowFlexOptions) {
           Text('animation_response');
           TextInput({ text: this.myMeowManagedSettings.settingsData[39].value?.toString() })
             .width(200)
-            .type(InputType.Number)
             .onChange((c) => {
               this.myMeowManagedSettings.setByIndex(39, Number(c));
             });
