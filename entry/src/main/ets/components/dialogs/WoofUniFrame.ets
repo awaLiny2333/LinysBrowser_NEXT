@@ -46,7 +46,7 @@ struct WoofUniFrame {
         });
       }
       .padding({ left: 12, right: 10, top: 10, bottom: 7 })
-      .backgroundColor(getColor(meowThemeColorType.BACKGROUND))
+      .backgroundColor(getColor(meowThemeColorType.SECONDARY))
       .useEffect(useEffects(), EffectType.WINDOW_EFFECT);
     }
     .onAreaChange((oldValue, newValue) => {
@@ -57,7 +57,7 @@ struct WoofUniFrame {
     })
     .alignContent(Alignment.Top)
     .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
-    .backgroundColor(getColor(meowThemeColorType.BACKGROUND));
+    .backgroundColor(getColor(meowThemeColorType.SECONDARY));
   }
 }
 

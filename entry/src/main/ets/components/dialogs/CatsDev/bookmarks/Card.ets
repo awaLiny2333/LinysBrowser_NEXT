@@ -1,4 +1,4 @@
-import { UniContentCard } from '../common/UniContentCard';
+import { UniContentCard } from '../../../common/UniContentCard';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowFlexOptions } from '../../../common/constants';
 import { meowBookmarkStash } from '../../../../hosts/bookmarks/classes/meowBookmarkStash';

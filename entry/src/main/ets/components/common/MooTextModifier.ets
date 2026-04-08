@@ -14,6 +14,7 @@ export class MooTextModifier implements AttributeModifier<TextModifier> {
   applyNormalAttribute(instance: TextModifier): void {
     instance
       .fontColor(getColor(this.colorType))
-      .fontSize(this.textType == mooTextType.NORMAL ? fontSizeSmall : fontSizeMedium);
+      .fontSize(this.textType == mooTextType.NORMAL ? fontSizeSmall : fontSizeMedium)
+      .fontWeight(this.textType == mooTextType.NORMAL ? FontWeight.Normal : FontWeight.Medium);
   }
 }

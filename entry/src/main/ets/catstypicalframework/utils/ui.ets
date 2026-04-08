@@ -1,6 +1,6 @@
-import lazy { AppStorageV2, display, window } from '@kit.ArkUI';
+import lazy { AppStorageV2, ColorMetrics, display, window } from '@kit.ArkUI';
 import lazy { meow, meowLevel } from './catsLogger';
-import { deviceInfo, settings } from '@kit.BasicServicesKit';
+import lazy { deviceInfo, power, settings } from '@kit.BasicServicesKit';
 
 /**
  * Converts px to vp.
@@ -33,19 +33,16 @@ export function meowVp2px(vp: number) {
 }
 
 /**
- * Converts vp to inch.
- * @param vp The true vp.
- * @returns The equivalent inch.
- * */
-export function meowVp2In(vp: number) {
+ * Converts color to color metrics style.
+ * @param c The color.
+ * @returns The color metrics.
+ */
+export function resourceColor2Metrics(c: ResourceColor) {
   try {
-    let dpi = display.getDefaultDisplaySync().densityDPI;
-    let px = meowVp2px(vp);
-    let inch = px / dpi;
-    return inch;
+    return ColorMetrics.resourceColor(c);
   } catch (e) {
-    meow(`Error: ${e}, returned in vp.`, 'meowVp2In', meowLevel.ERROR);
-    return vp;
+    meow(`colorMetrics2Color: ${e}`, 'colorMetrics2Color', meowLevel.ERROR);
+    return undefined;
   }
 }
 
@@ -61,7 +58,7 @@ export function measureTextHeight(text: string, uiContext: UIContext, fontSize: 
   return meowPx2vp(uiContext
     .getMeasureUtils()
     .measureTextSize({ textContent: text, fontSize: fontSize, fontWeight: fontWeight })
-    .width as number)
+    .width as number);
 }
 
 export let defaultAnima: AnimateParam = { curve: Curve.FastOutSlowIn, duration: 350 };
@@ -139,7 +136,7 @@ export function listenAvoid(windowClass: window.Window) {
         let right = meowPx2vp(data.area.rightRect.width);
         avoid.right = Math.max(8, right);
       }
-    })
+    });
   } catch (e) {
     meow(`windowClass.on('avoidAreaChange') Failed: ${e}`, 'avoidAreaChange', meowLevel.ERROR);
   }
@@ -209,7 +206,7 @@ export function listenFreeWindowMode(context: Context, windowClass: window.Windo
           AppStorageV2.connect<meowFreeWindowModeStatus>(meowFreeWindowModeStatus, 'meowFreeWindowModeStatus', () => new meowFreeWindowModeStatus(free))!.on = free;
           meow(`${free}`, 'listenFreeWindowMode', meowLevel.INFO);
         });
-    })
+    });
 }
 
 /**
@@ -242,17 +239,40 @@ export class meowLayoutModeStatus {
   @Trace width: number;
   @Trace height: number;
   @Trace dark: boolean;
+  @Trace powerSave: boolean;
 
-  constructor(wideMode: boolean, width: number, height: number, dark: boolean) {
+  constructor(wideMode: boolean, width: number, height: number, dark: boolean, powerSave: boolean) {
     this.wideMode = wideMode;
     this.width = width;
     this.height = height;
     this.dark = dark;
+    this.powerSave = powerSave;
   }
 }
 
 export const windowTopAvoidRight: number = 140;
 export const windowTopAvoidLeft: number = 20;
+
+/**
+ * Listens to the power save mode change and sync status to meowLayoutModeStatus.
+ *
+ * System common events won't trigger once the app is in background.
+ * So we have to use this instead as a 下策.
+ */
+export function listenPowerSave() {
+  meow(`Try to force listenPowerSave();`, 'listenPowerSave');
+  setInterval(() => {
+    const newMode = power.getPowerMode();
+    const isPowerSave = (newMode == power.DevicePowerMode.MODE_POWER_SAVE || newMode == power.DevicePowerMode.MODE_EXTREME_POWER_SAVE || newMode == power.DevicePowerMode.MODE_CUSTOM_POWER_SAVE);
+    const layout = AppStorageV2.connect(meowLayoutModeStatus);
+    if (layout) {
+      if (layout.powerSave != isPowerSave) {
+        layout.powerSave = isPowerSave;
+        meow(`Powermode changed! powerSave = ${isPowerSave}`, 'listenPowerSave');
+      }
+    }
+  }, 1200);
+}
 
 // Focus
 

@@ -3,7 +3,7 @@ import { meowHistorian } from '../../../../hosts/history/classes/meowHistorian';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowHistoryChunk } from '../../../../hosts/history/classes/meowHistoryChunk';
 import { meowHistoryEntry } from '../../../../hosts/history/classes/meowHistoryEntry';
-import { UniContentCard } from '../common/UniContentCard';
+import { UniContentCard } from '../../../common/UniContentCard';
 import { meowFlexOptions } from '../../../common/constants';
 
 /**

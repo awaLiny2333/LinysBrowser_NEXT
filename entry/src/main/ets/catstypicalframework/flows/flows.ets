@@ -1,8 +1,8 @@
 import Want from '@ohos.app.ability.Want';
 import { AppStorageV2, window } from '@kit.ArkUI';
 import { meow, meowLevel } from '../utils/catsLogger';
-import { getUpdateAvoid, getUpdateFreeWindowMode, listenAvoid, listenFocus, listenFreeWindowMode, meowLayoutModeStatus, meowPx2vp } from '../utils/ui';
-import { BusinessError } from '@kit.BasicServicesKit';
+import { getUpdateAvoid, getUpdateFreeWindowMode, listenAvoid, listenFocus, listenFreeWindowMode, listenPowerSave, meowLayoutModeStatus, meowPx2vp } from '../utils/ui';
+import { BusinessError, power } from '@kit.BasicServicesKit';
 import { meowHistorian } from '../../hosts/history/classes/meowHistorian';
 import { Context } from '@ohos.abilityAccessCtrl';
 import { meowMisc } from '../hosts/meowMisc';
@@ -111,10 +111,13 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
     const height = meowPx2vp(rect.height);
     const wideMode = width > 900;
     const dark = context.config.colorMode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
-    AppStorageV2.connect(meowLayoutModeStatus, () => new meowLayoutModeStatus(wideMode, width, height, dark));
+    const powerSave = power.getPowerMode() == power.DevicePowerMode.MODE_POWER_SAVE;
+    AppStorageV2.connect(meowLayoutModeStatus, () => new meowLayoutModeStatus(wideMode, width, height, dark, powerSave));
   } catch (e) {
-    meow(`AppStorageV2.connect(meowLayoutModeStatus, () => new meowLayoutModeStatus(wideMode)); Failed: ${e}`, 'init', meowLevel.ERROR);
+    meow(`AppStorageV2.connect(meowLayoutModeStatus, () => new meowLayoutModeStatus(wideMode, width, height, dark, powerSave)); Failed: ${e}`, 'init', meowLevel.ERROR);
   }
+
+  // TODO: multi-window compatibility!
 
   getUpdateFreeWindowMode(context, window);
   listenFreeWindowMode(context, window);
@@ -123,6 +126,7 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
   listenAvoid(window);
 
   listenFocus(window);
+  listenPowerSave();
 
   // watchLaunch(); // This is chicken rib. >O
 

@@ -1,20 +1,21 @@
 import { AppStorageV2, LengthMetrics } from "@kit.ArkUI";
+import Curves from '@ohos.curves';
 import { meowLayoutModeStatus } from "../../catstypicalframework/utils/ui";
 import { meowManagedSettings } from "../../hosts/settings/classes/meowManagedSettings";
-import Curves from '@ohos.curves';
 
 // Hosts
-
 const settings = AppStorageV2.connect(meowManagedSettings)!;
 const layout = AppStorageV2.connect(meowLayoutModeStatus)!;
 
 // Constants
 
-export const fontSizeLarge = 36;
-export const fontSizeMedium = 26;
+export const fontSizeSymbol = 26;
+
+export const fontSizeMedium = 22;
 export const fontSizeSmall = 16;
 
 export const standardSpacing = 8;
+export const minimumCardWidth = 480; // Minimum width required for cards (e.g. in a multi-column waterFlow)
 
 export const meowFlexOptions: FlexOptions = {
   wrap: FlexWrap.Wrap,
@@ -28,7 +29,6 @@ export enum meowThemeColorType {
   PRIMARY = 0,
   SECONDARY = 1,
   FONT = 2,
-  BACKGROUND = 3,
 }
 
 export enum mooTextType {
@@ -37,6 +37,17 @@ export enum mooTextType {
 }
 
 // Getters
+
+/**
+ * Gets if the app UI is using advanced effects.
+ * @returns true if the app UI is using advanced effects, false otherwise.
+ */
+export function useEffects() {
+  if (layout.powerSave) {
+    return false;
+  }
+  return settings.settingsData[7].value as boolean;
+}
 
 /**
  * Gets the color from the current theme.
@@ -48,30 +59,17 @@ export function getColor(type: meowThemeColorType): ResourceColor {
   if (useEffects()) {
     switch (type) {
       case meowThemeColorType.PRIMARY:
-        return $r('sys.color.comp_background_tertiary');
+        return $r('app.color.blur_background');
       case meowThemeColorType.SECONDARY:
         return Color.Transparent;
       case meowThemeColorType.FONT:
-        return settings.settingsData[layout.dark ? 65 + type : 62 + type].value as string;
-      case meowThemeColorType.BACKGROUND:
-        return $r('sys.color.background_tertiary');
+        break; // Use the Normal color.
       default:
         return Color.Transparent;
     }
   }
   // No effects
-  if (type == meowThemeColorType.BACKGROUND) {
-    return getColor(meowThemeColorType.SECONDARY);
-  }
   return settings.settingsData[layout.dark ? 65 + type : 62 + type].value as string;
-}
-
-/**
- * Gets if the app UI is using advanced effects.
- * @returns true if the app UI is using advanced effects, false otherwise.
- */
-export function useEffects() {
-  return settings.settingsData[7].value as boolean;
 }
 
 /**
@@ -91,4 +89,12 @@ export function defaultAnimation() {
   const animation_response = settings.settingsData[39].value as number;
   const ap: AnimateParam = { curve: Curves.springMotion(animation_response / 100, (100 - animation_damping_coefficient) / 100) };
   return ap;
+}
+
+/**
+ * Gets the columns template for the water flow layout.
+ * @returns The columns template for the water flow layout.
+ */
+export function waterFlowColumnsTemplate() {
+  return "1fr ".repeat(Math.ceil(layout.width / minimumCardWidth));
 }

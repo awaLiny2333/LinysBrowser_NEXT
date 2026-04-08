@@ -11,6 +11,82 @@
     {
       "name": "EntryAbility_label",
       "value": "冲浪喵"
+    },
+    {
+      "name": "Settings",
+      "value": "设置"
+    },
+    {
+      "name": "Settings_category_onStartUp",
+      "value": "启动"
+    },
+    {
+      "name": "Settings_category_onStartUp_page",
+      "value": "启动至页面"
+    },
+    {
+      "name": "Settings_category_onStartUp_page_newTab",
+      "value": "新标签页"
+    },
+    {
+      "name": "Settings_category_onStartUp_page_home",
+      "value": "主页"
+    },
+    {
+      "name": "Settings_category_onStartUp_page_continue",
+      "value": "恢复上次进度"
+    },
+    {
+      "name": "Settings_category_general",
+      "value": "通用"
+    },
+    {
+      "name": "Settings_category_general_surf",
+      "value": "冲浪"
+    },
+    {
+      "name": "Settings_category_general_homepage",
+      "value": "猫咪的主页"
+    },
+    {
+      "name": "Settings_category_experience",
+      "value": "体验"
+    },
+    {
+      "name": "Settings_category_accessibility",
+      "value": "辅助"
+    },
+    {
+      "name": "Settings_category_appeearence",
+      "value": "外观"
+    },
+    {
+      "name": "Settings_category_history",
+      "value": "历史"
+    },
+    {
+      "name": "Settings_category_storage",
+      "value": "存储"
+    },
+    {
+      "name": "Settings_category_security",
+      "value": "安全"
+    },
+    {
+      "name": "Settings_category_cardboardBox",
+      "value": "纸箱"
+    },
+    {
+      "name": "Settings_category_about",
+      "value": "关于"
+    },
+    {
+      "name": "Settings_category_update",
+      "value": "更新"
+    },
+    {
+      "name": "Settings_category_deveowlopers",
+      "value": "开发"
     }
   ]
 }

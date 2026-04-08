@@ -5,24 +5,22 @@ import { defaultAnimation, standardSpacing, titleBarPositionBottom, useEffects }
 import { MooSymbolButton } from '../common/MooSymbolButton';
 
 @ComponentV2
-export struct MeowTitleMore {
+export struct MeowButtonRow {
   @Local myMeowAvoid: meowAvoid = AppStorageV2.connect<meowAvoid>(meowAvoid)!;
   @Local meowUiStatuses: meowUiStatuses = AppStorageV2.connect(meowUiStatuses)!;
 
   build() {
-    Column() {
-      Row({ space: 1 }) {
-        /**
-         * TODO: More buttons.
-         */
-        MooSymbolButton({ icon: $r('sys.symbol.rectangle_stack') });
-        MooSymbolButton({ icon: $r('sys.symbol.bookmark') });
-        MooSymbolButton({ icon: $r('sys.symbol.download') });
-        MooSymbolButton({ icon: $r('sys.symbol.gearshape') });
-      }
-      .width('100%')
-      .justifyContent(FlexAlign.End);
+    Row({ space: 1 }) {
+      /**
+       * TODO: More buttons.
+       */
+      MooSymbolButton({ icon: $r('sys.symbol.rectangle_stack') });
+      MooSymbolButton({ icon: $r('sys.symbol.bookmark') });
+      MooSymbolButton({ icon: $r('sys.symbol.download') });
+      MooSymbolButton({ icon: $r('sys.symbol.gearshape') });
     }
+    .width('100%')
+    .justifyContent(FlexAlign.End)
     .padding({ left: this.myMeowAvoid.left, right: this.myMeowAvoid.right })
     .visibility(this.meowUiStatuses.showMore ? Visibility.Visible : Visibility.None)
     .animation(defaultAnimation());

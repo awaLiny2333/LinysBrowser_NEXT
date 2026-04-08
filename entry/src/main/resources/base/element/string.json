@@ -11,6 +11,82 @@
     {
       "name": "EntryAbility_label",
       "value": "BrowserCat Nya"
+    },
+    {
+      "name": "Settings",
+      "value": "Settings"
+    },
+    {
+      "name": "Settings_category_onStartUp",
+      "value": "Start Up"
+    },
+    {
+      "name": "Settings_category_onStartUp_page",
+      "value": "Start up page"
+    },
+    {
+      "name": "Settings_category_onStartUp_page_newTab",
+      "value": "New tab"
+    },
+    {
+      "name": "Settings_category_onStartUp_page_home",
+      "value": "Home"
+    },
+    {
+      "name": "Settings_category_onStartUp_page_continue",
+      "value": "Reopen"
+    },
+    {
+      "name": "Settings_category_general",
+      "value": "General"
+    },
+    {
+      "name": "Settings_category_general_surf",
+      "value": "Surf"
+    },
+    {
+      "name": "Settings_category_general_homepage",
+      "value": "Cat's Homepage"
+    },
+    {
+      "name": "Settings_category_experience",
+      "value": "Experience"
+    },
+    {
+      "name": "Settings_category_accessibility",
+      "value": "Accessibility"
+    },
+    {
+      "name": "Settings_category_appeearence",
+      "value": "Appearence"
+    },
+    {
+      "name": "Settings_category_history",
+      "value": "History"
+    },
+    {
+      "name": "Settings_category_storage",
+      "value": "Storage"
+    },
+    {
+      "name": "Settings_category_security",
+      "value": "Security"
+    },
+    {
+      "name": "Settings_category_cardboardBox",
+      "value": "Cardboard Box"
+    },
+    {
+      "name": "Settings_category_about",
+      "value": "About"
+    },
+    {
+      "name": "Settings_category_update",
+      "value": "Update"
+    },
+    {
+      "name": "Settings_category_deveowlopers",
+      "value": "Deveowlopers"
     }
   ]
 }

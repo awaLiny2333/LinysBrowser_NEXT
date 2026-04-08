@@ -4,7 +4,6 @@ import { CatsDevDialog } from '../dialogs/CatsDev/CatsDevCards';
 import { MooSymbolButtonSmall } from '../common/MooSymbolButtonSmall';
 import { MooTextModifier } from '../common/MooTextModifier';
 import { meowDialogManager } from '../../hosts/ui/meowDialogManager';
-import { defaultAnimation, standardSpacing, titleBarPositionBottom, useEffects } from '../common/constants';
 
 /**
  * The window top bar. Holds the buttons on window top, as well as the name of window / zone.
@@ -22,7 +21,7 @@ struct MeowTitleTop {
     builder: CatsDevDialog(),
     alignment: DialogAlignment.Center,
     width: '90%',
-    height: '90%',
+    // height: '90%',
     cornerRadius: defaultRoundedRadius + 4,
   });
 

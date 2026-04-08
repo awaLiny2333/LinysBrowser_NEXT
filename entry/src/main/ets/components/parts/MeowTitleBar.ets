@@ -1,13 +1,22 @@
-import { meowAvoid } from "../../catstypicalframework/utils/ui";
+import { defaultRoundedRadius, meowAvoid } from "../../catstypicalframework/utils/ui";
 import { AppStorageV2 } from "@kit.ArkUI";
 import { MooSymbolButton } from "../common/MooSymbolButton";
 import { defaultAnimation } from "../common/constants";
 import { meowUiStatuses } from "../../hosts/ui/meowUiStatuses";
+import { WoofSettingsDialog } from "../dialogs/WoofSettings/WoofSettings";
 
 @ComponentV2
 struct MeowTitleBar {
   @Local myMeowAvoid: meowAvoid = AppStorageV2.connect<meowAvoid>(meowAvoid)!;
   @Local meowUiStatuses: meowUiStatuses = AppStorageV2.connect(meowUiStatuses)!;
+
+  catsDevDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofSettingsDialog(),
+    alignment: DialogAlignment.Center,
+    width: '90%',
+    height: '90%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
 
   build() {
     Row({ space: 1 }) {
@@ -33,7 +42,11 @@ struct MeowTitleBar {
       MooSymbolButton({ icon: $r('sys.symbol.rectangle_stack') });
       MooSymbolButton({ icon: $r('sys.symbol.bookmark') });
       MooSymbolButton({ icon: $r('sys.symbol.download') });
-      MooSymbolButton({ icon: $r('sys.symbol.gearshape') });
+      MooSymbolButton({
+        icon: $r('sys.symbol.gearshape'), clickAction: () => {
+          this.catsDevDialogController.open();
+        }
+      });
     }
     .height(heightMeowTitleBar)
     .animation(defaultAnimation())

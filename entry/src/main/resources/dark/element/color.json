@@ -6,15 +6,7 @@
     },
     {
       "name": "blur_background",
-      "value": "#55000000"
-    },
-    {
-      "name": "button_border",
-      "value": "#E5FFFFFF"
-    },
-    {
-      "name": "meow_brand",
-      "value": "#D0AB3C3C"
+      "value": "#15FFFFFF"
     }
   ]
 }

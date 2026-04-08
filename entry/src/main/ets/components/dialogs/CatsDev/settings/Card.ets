@@ -1,5 +1,5 @@
 import { defaultInnerRadius } from '../../../../catstypicalframework/utils/ui';
-import { UniContentCard } from '../common/UniContentCard';
+import { UniContentCard } from '../../../common/UniContentCard';
 import { SimpleSettingsExamples } from './SimpleSettingsExamples';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowManagedSettings } from '../../../../hosts/settings/classes/meowManagedSettings';
@@ -13,7 +13,7 @@ struct SettingsDevCard {
   // Environment
   context: Context = this.getUIContext().getHostContext()!;
   // App
-  @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect<meowManagedSettings>(meowManagedSettings)!; // Should be initialized by flows.
+  @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!; // Should be initialized by flows.
 
   build() {
     UniContentCard({ title: 'meowManagedSettings' }) {

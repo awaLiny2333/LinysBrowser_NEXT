@@ -3,7 +3,7 @@ import { defaultInnerRadius, defaultRoundedRadius } from '../../../../catstypica
 import { meowBookmarkItem } from '../../../../hosts/bookmarks/classes/meowBookmarkItem';
 import { meowFlexOptions } from '../../../common/constants';
 import { SymbolButton } from '../common/SymbolButton';
-import { UniContentCard } from '../common/UniContentCard';
+import { UniContentCard } from '../../../common/UniContentCard';
 
 @ComponentV2
 export struct SimpleBookmarksShowcase {

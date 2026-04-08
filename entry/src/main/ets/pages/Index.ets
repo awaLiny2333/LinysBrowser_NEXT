@@ -4,7 +4,7 @@ import { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
 import { defaultDecorHeight, defaultInnerRadius, meowAvoid, meowFreeWindowModeStatus, meowLayoutModeStatus } from '../catstypicalframework/utils/ui';
 import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, titleBarPositionBottom, useEffects } from '../components/common/constants';
 import { heightMeowTitleBar, MeowTitleBar } from '../components/parts/MeowTitleBar';
-import { MeowTitleMore } from '../components/parts/MeowTitleMore';
+import { MeowButtonRow } from '../components/parts/MeowButtonRow';
 import { MeowTitleTop } from '../components/parts/MeowTitleTop';
 import { meowResources } from '../hosts/resources/classes/meowResources';
 import { meowManagedSettings } from '../hosts/settings/classes/meowManagedSettings';
@@ -39,14 +39,13 @@ struct Index {
               .opacity(useEffects() ? 0.5 : 1)
               .animation(defaultAnimation());
           }
+          .border(useEffects() ? { radius: defaultInnerRadius, width: 1, color: $r('sys.color.icon_fourth') } : { width: 0 })
           .backgroundColor(getColor(meowThemeColorType.PRIMARY))
           .clip(true)
-          .borderRadius(useEffects() ? defaultInnerRadius : 0)
           .width('100%')
           .height('100%');
         }
         .padding(this.mainFrameMargin())
-        .layoutWeight(1)
         .animation(defaultAnimation());
 
         MeowTitleTop();
@@ -55,7 +54,7 @@ struct Index {
         if (!titleBarPositionBottom()) {
           Column({ space: standardSpacing }) {
             MeowTitleBar();
-            MeowTitleMore();
+            MeowButtonRow();
           }
           .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
           .backgroundColor(getColor(meowThemeColorType.SECONDARY))
@@ -71,7 +70,7 @@ struct Index {
         // Bottom
         if (titleBarPositionBottom()) {
           Column({ space: standardSpacing }) {
-            MeowTitleMore();
+            MeowButtonRow();
             MeowTitleBar();
           }
           .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
@@ -87,7 +86,7 @@ struct Index {
       }
     } // Base
     .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
-    .backgroundColor(getColor(meowThemeColorType.BACKGROUND))
+    .backgroundColor(getColor(meowThemeColorType.SECONDARY))
     .height('100%')
     .width('100%')
     .onAppear(() => {

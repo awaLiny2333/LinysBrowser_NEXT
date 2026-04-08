@@ -1,5 +1,5 @@
 import { defaultInnerRadius } from "../../catstypicalframework/utils/ui";
-import { defaultAnimation, fontSizeMedium, getColor, meowThemeColorType, standardSpacing, useEffects } from "./constants";
+import { defaultAnimation, fontSizeSymbol, getColor, meowThemeColorType, standardSpacing, useEffects } from "./constants";
 
 /**
  * Normal symbol buttons.
@@ -19,7 +19,7 @@ struct MooSymbolButton {
       .animation(defaultAnimation())
       .padding(3.5)
       .borderRadius(defaultInnerRadius)
-      .fontSize(fontSizeMedium)
+      .fontSize(fontSizeSymbol)
       .hoverEffect(HoverEffect.Highlight)
       .onClick(() => {
         this.clickAction();
