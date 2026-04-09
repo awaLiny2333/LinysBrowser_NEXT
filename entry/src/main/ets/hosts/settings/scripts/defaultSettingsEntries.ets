@@ -50,7 +50,7 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('key_shortcuts', meowSettingsEntryType.STRING_ARRAY, ''),
 
   // Surf
-  new meowSettingsEntry('home_url', meowSettingsEntryType.STRING, ''),
+  new meowSettingsEntry('home_url', meowSettingsEntryType.STRING, ''), // #30
   new meowSettingsEntry('new_tab_url', meowSettingsEntryType.STRING, ''),
   new meowSettingsEntry('start_up_option', meowSettingsEntryType.STRING, 'new tab'), // 'new tab' | 'home' | 'continue' #32
   new meowSettingsEntry('intelligent_tracking_prevention', meowSettingsEntryType.BOOLEAN, 'false'),

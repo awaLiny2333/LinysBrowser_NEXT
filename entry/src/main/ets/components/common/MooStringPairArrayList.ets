@@ -18,9 +18,9 @@ struct MooStringPairArrayList {
   @Event onSelect: (newSelected: number) => void;
 
   build() {
-    // List({ space: 5 }) {
     Scroll() {
       Flex(meowFlexOptions) {
+        // The fixed default item
         StringPairArrayItem({
           selectedIndex: this.selectedIndex,
           allowSelect: this.allowSelect,
@@ -32,6 +32,7 @@ struct MooStringPairArrayList {
           }
         });
 
+        // Main list
         Repeat(this.array)
           .each((item) => {
             StringPairArrayItem({
@@ -39,6 +40,7 @@ struct MooStringPairArrayList {
               item: item.item,
               index: item.index,
               allowSelect: this.allowSelect,
+              allowEdit: true,
               onEdit: (index, newValue) => {
                 this.onEdit(index, newValue);
               },
@@ -53,6 +55,7 @@ struct MooStringPairArrayList {
           })
           .key((item) => item[0] + '\\' + item[1]);
 
+        // New item button
         Row() {
           Text($r('app.string.General_new')).attributeModifier(new MooTextModifier())
             .padding(standardSpacing * 0.75)
@@ -83,20 +86,22 @@ export { MooStringPairArrayList };
 @ComponentV2
 struct StringPairArrayItem {
   // Config
+  @Param @Require @Once allowSelect: boolean;
+  @Param @Require @Once allowEdit: boolean;
+  // Data
   @Param @Require selectedIndex: number;
-  @Param @Require item: string[];
   @Param @Require index: number;
-  @Param @Once allowEdit: boolean = true;
-  @Param @Require allowSelect: boolean;
+  @Param @Require item: string[];
   // Events
   @Event onEdit: (index: number, newValue: string[]) => void;
-  @Event onDelete: (index: number) => void;
   @Event onSelect: (selectedIndex: number) => void;
+  @Event onDelete: (index: number) => void;
   // UI
   @Local isEditing: boolean = false;
 
   build() {
     Column({ space: standardSpacing }) {
+      // Label
       Row({ space: standardSpacing }) {
         Text(this.item[0]).attributeModifier(new MooTextModifier()).maxLines(1).constraintSize({ maxWidth: '80%' });
         MooSymbolButtonSmall({
@@ -146,7 +151,6 @@ struct StringPairArrayItem {
           },
           doubleConfirm: true
         });
-        // .alignSelf(ItemAlign.End);
       }
     }
     .border(this.imSelected()
@@ -166,6 +170,10 @@ struct StringPairArrayItem {
     });
   }
 
+  /**
+   * Check if the item is selected.
+   * @returns True if the item is selected, false otherwise.
+   */
   imSelected() {
     return this.selectedIndex == this.index;
   }
