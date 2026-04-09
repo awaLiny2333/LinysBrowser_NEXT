@@ -8,7 +8,7 @@ import lazy { MeowButtonRow } from '../components/parts/MeowButtonRow';
 import lazy { MeowTitleTop } from '../components/parts/MeowTitleTop';
 import { meowResources } from '../hosts/resources/classes/meowResources';
 import { meowManagedSettings } from '../hosts/settings/classes/meowManagedSettings';
-import { meowUiStatuses } from '../hosts/ui/meowUiStatuses';
+import { meowUiStatuses } from '../hosts/env/meowUiStatuses';
 
 @Entry
 @ComponentV2

@@ -4,8 +4,7 @@ import { defaultInnerRadius } from '../../../../catstypicalframework/utils/ui';
 struct SymbolButton {
   @Param icon: Resource = $r('sys.symbol.pencil_and_card');
   @Param radius: number = defaultInnerRadius;
-  @Param clickAction: () => void = () => {
-  };
+  @Event clickAction: () => void;
 
   build() {
     SymbolGlyph(this.icon)

@@ -6,8 +6,7 @@ struct MooCapsuleButton {
   @Param @Once doubleConfirm: boolean = false;
   @Local lastChance: boolean = false;
   @Param text: ResourceStr = 'Meow ~';
-  @Param clickAction: () => void = () => {
-  };
+  @Event clickAction: () => void;
 
   build() {
     Button(this.text)

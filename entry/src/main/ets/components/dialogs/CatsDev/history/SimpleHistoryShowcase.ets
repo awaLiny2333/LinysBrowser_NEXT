@@ -18,10 +18,8 @@ struct SimpleHistoryShowcase {
   @Local requestResult: meowHistoryEntry[] = [];
   @Local requestTime: number = -1;
   // Actions
-  @Param onClickActions: (history: meowHistoryEntry) => void = () => {
-  };
-  @Param onDeleteClickActions: (history: meowHistoryEntry) => void = () => {
-  };
+  @Event onClickActions: (history: meowHistoryEntry) => void;
+  @Event onDeleteClickActions: (history: meowHistoryEntry) => void;
 
   build() {
     UniContentCard({ roundedRadius: defaultInnerRadius }) {

@@ -11,8 +11,7 @@ import { AppStorageV2 } from "@kit.ArkUI";
 struct MooSymbolButtonSmall {
   @Local myMeowFreeWindowModeStatus: meowFreeWindowModeStatus = AppStorageV2.connect<meowFreeWindowModeStatus>(meowFreeWindowModeStatus)!;
   @Param icon: Resource = $r('sys.symbol.square_stack_3d');
-  @Param clickAction: () => void = () => {
-  };
+  @Event clickAction: () => void;
 
   build() {
     SymbolGlyph(this.icon)

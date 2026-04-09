@@ -11,8 +11,7 @@ import { TabSegmentButtonV2, SegmentButtonV2Items } from '@kit.ArkUI';
 struct MooTabSegmentV2 {
   @Param @Once initSelected: number = 0;
   @Param @Require items: SegmentButtonV2Items;
-  @Param onSelected: (index: number) => void = () => {
-  };
+  @Event onSelected: (index: number) => void;
 
   build() {
     TabSegmentButtonV2({

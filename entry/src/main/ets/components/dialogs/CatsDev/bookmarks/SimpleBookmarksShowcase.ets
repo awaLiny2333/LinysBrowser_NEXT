@@ -131,12 +131,9 @@ export struct SimpleBookmarksShowcase {
 @ComponentV2
 struct BookmarksItem {
   @Param @Require item: meowBookmarkItem;
-  @Param clickAction: () => void = () => {
-  };
-  @Param saveAction: () => void = () => {
-  };
-  @Param deleteAction: () => void = () => {
-  };
+  @Event clickAction: () => void;
+  @Event saveAction: () => void
+  @Event deleteAction: () => void
   // Info
   @Local label: string = this.item.name;
   // Editing
@@ -220,8 +217,7 @@ struct BookmarksItem {
 @ComponentV2
 struct PathDisplay {
   @Param @Require folderStack: meowBookmarkItem[];
-  @Param onClickAction: (item: meowBookmarkItem) => void = () => {
-  };
+  @Event onClickAction: (item: meowBookmarkItem) => void
 
   build() {
     Flex({ wrap: FlexWrap.Wrap, alignItems: ItemAlign.Center }) {

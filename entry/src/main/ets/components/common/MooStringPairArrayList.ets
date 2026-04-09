@@ -7,15 +7,15 @@ import { MooTextModifier } from './MooTextModifier';
 
 @ComponentV2
 struct MooStringPairArrayList {
-  // Select
+  // Configs
   @Param @Once allowSelect: boolean = false;
   @Param @Once defaultItem: string[] = ['label', 'link'];
-  @Param selectedIndex: number = -1;
-  @Event onSelect: (newSelected: number) => void;
   // Data
+  @Param selectedIndex: number = -1;
   @Param array: string[][] = []; // The list.
-  @Param onEdit: (index: number, newValue: string[]) => void = () => {
-  };
+  // Events
+  @Event onEdit: (index: number, newValue: string[]) => void;
+  @Event onSelect: (newSelected: number) => void;
 
   build() {
     // List({ space: 5 }) {
@@ -34,7 +34,6 @@ struct MooStringPairArrayList {
 
         Repeat(this.array)
           .each((item) => {
-            // ListItem() {
             StringPairArrayItem({
               selectedIndex: this.selectedIndex,
               item: item.item,
@@ -43,18 +42,17 @@ struct MooStringPairArrayList {
               onEdit: (index, newValue) => {
                 this.onEdit(index, newValue);
               },
-              onDelete: () => {
-                this.array.splice(item.index, 1);
-                this.onEdit(item.index, []);
+              onDelete: (index) => {
+                this.array.splice(index, 1);
+                this.onEdit(index, []);
               },
               onSelect: (n) => {
                 this.onSelect(n);
               }
             });
-            // };
           })
-          .key((item) => JSON.stringify(item));
-        // ListItem() {
+          .key((item) => item[0] + '\\' + item[1]);
+
         Row() {
           Text($r('app.string.General_new')).attributeModifier(new MooTextModifier())
             .padding(standardSpacing * 0.75)
@@ -62,12 +60,11 @@ struct MooStringPairArrayList {
             .hoverEffect(HoverEffect.Highlight)
             .onClick(() => {
               animateToImmediately(defaultAnimation(), () => {
-                this.array.push(['label', 'link']);
+                this.array.push(Array.from(this.defaultItem));
                 this.onEdit(this.array.length - 1, this.array[this.array.length - 1]);
               });
             });
         }.justifyContent(FlexAlign.End).width('100%');
-        // };
       };
     }
     .padding(standardSpacing * 0.75)
@@ -91,12 +88,10 @@ struct StringPairArrayItem {
   @Param @Require index: number;
   @Param @Once allowEdit: boolean = true;
   @Param @Require allowSelect: boolean;
-  @Param onEdit: (index: number, newValue: string[]) => void = () => {
-  };
-  @Param onDelete: () => void = () => {
-  };
-  @Param onSelect: (selectedIndex: number) => void = () => {
-  };
+  // Events
+  @Event onEdit: (index: number, newValue: string[]) => void;
+  @Event onDelete: (index: number) => void;
+  @Event onSelect: (selectedIndex: number) => void;
   // UI
   @Local isEditing: boolean = false;
 
@@ -146,7 +141,7 @@ struct StringPairArrayItem {
           clickAction: () => {
             animateToImmediately(defaultAnimation(), () => {
               this.isEditing = false;
-              this.onDelete();
+              this.onDelete(this.index);
             });
           },
           doubleConfirm: true

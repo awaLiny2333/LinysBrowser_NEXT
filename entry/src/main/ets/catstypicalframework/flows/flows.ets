@@ -11,8 +11,9 @@ import { meowManagedSettings } from '../../hosts/settings/classes/meowManagedSet
 import { meowResources } from '../../hosts/resources/classes/meowResources';
 import { meowBookmarkStash } from '../../hosts/bookmarks/classes/meowBookmarkStash';
 import { common, ConfigurationConstant, Configuration } from '@kit.AbilityKit';
-import { meowDialogManager } from '../../hosts/ui/meowDialogManager';
-import { meowUiStatuses } from '../../hosts/ui/meowUiStatuses';
+import { meowDialogManager } from '../../hosts/env/meowDialogManager';
+import { meowUiStatuses } from '../../hosts/env/meowUiStatuses';
+import { applyUserAgentFromSettings } from '../../hosts/tabs/scripts/userAgents';
 
 // Flows
 /**
@@ -56,8 +57,11 @@ export async function earlyOnWindowStageCreate(context: Context) {
   await ensureDirectoryExist(`${filesDir}/history-index`);
 
   // Settings
-  let myMeowManagedSettings = AppStorageV2.connect(meowManagedSettings);
-  await myMeowManagedSettings?.initFrom(`${filesDir}/settings.json.browsercatsettings.txt`);
+  let myMeowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+  await myMeowManagedSettings.initFrom(`${filesDir}/settings.json.browsercatsettings.txt`);
+
+  // UA
+  applyUserAgentFromSettings(myMeowManagedSettings);
 
   meow(`Finished in ${Date.now() - startTime} ms.`, 'earlyOnWindowStageCreate', meowLevel.WARN);
 }

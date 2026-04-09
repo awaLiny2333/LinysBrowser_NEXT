@@ -2,7 +2,7 @@ import { AppStorageV2 } from '@kit.ArkUI';
 import { resource2String } from '../../../catstypicalframework/utils/resource';
 import { meowManagedSettings } from '../../../hosts/settings/classes/meowManagedSettings';
 import { defaultSearchEngine, urlDefaultBlank } from '../../../hosts/settings/scripts/defaultSettingsValues';
-import { defaultUserAgent } from '../../../hosts/tabs/scripts/constants';
+import { applyUserAgentFromSettings } from '../../../hosts/tabs/scripts/userAgents';
 import { mooTextType, standardSpacing } from '../../common/constants';
 import { MooCapsuleButton } from '../../common/MooCapsuleButton';
 import { MooStringPairArrayList } from '../../common/MooStringPairArrayList';
@@ -27,7 +27,7 @@ struct SettingsGeneral {
       UniContentCard({ title: $r('app.string.Settings_category_general_surf'), icon: $r('sys.symbol.figure_paddle_surfing') }) {
         Text($r('app.string.Settings_category_general_surf_userAgent')).attributeModifier(new MooTextModifier());
         MooStringPairArrayList({
-          defaultItem: ['HarmonyOS', defaultUserAgent()],
+          defaultItem: ['HarmonyOS', ''],
           selectedIndex: this.selectedIndexUA,
           array: this.myMeowManagedSettings.settingsData[41].value as string[][],
           allowSelect: true,
@@ -37,6 +37,7 @@ struct SettingsGeneral {
           onSelect: (n) => {
             this.selectedIndexUA = n;
             this.myMeowManagedSettings.setByIndex(42, n);
+            applyUserAgentFromSettings(this.myMeowManagedSettings);
           }
         });
 

@@ -7,8 +7,7 @@ import { defaultAnimation, fontSizeSymbol, getColor, meowThemeColorType, standar
 @ComponentV2
 struct MooSymbolButton {
   @Param icon: Resource = $r('sys.symbol.square_stack_3d');
-  @Param clickAction: () => void = () => {
-  };
+  @Event clickAction: () => void;
   @Param onHold: boolean = false;
 
   build() {
