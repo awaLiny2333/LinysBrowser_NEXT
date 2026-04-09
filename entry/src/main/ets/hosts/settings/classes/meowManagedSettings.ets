@@ -94,11 +94,11 @@ export class meowManagedSettings {
    *
    * Timeout for requestSaveToDisk is by default 250 ms for BOOLEAN and 500 ms for the rest.
    *
-   * @tutorial Not recommended for arrays of strings. You should directly get the .value as string[] and directly modify its contents.
+   * @tutorial Does NOT accept arrays of strings. You should directly get the .value as string[] and directly modify its contents.
    * @param index The index of the setting to set.
    * @param value The value to set.
    */
-  setByIndex(index: number, value: string | number | boolean | Array<string>) {
+  setByIndex(index: number, value: string | number | boolean) {
     if (index < 0 || index >= this.settingsData.length) {
       meow(`Rejected. Index out of range`, 'meowSettings][set', meowLevel.WARN);
       return;
@@ -128,14 +128,8 @@ export class meowManagedSettings {
         }
         timeout = 250; // Timeout is designed for continuous changes, like continuously typing STRING and sliding NUMBER. But for boolean, the toggle happens in one instance.
         break;
-      case meowSettingsEntryType.STRING_ARRAY:
-        if (!Array.isArray(value)) {
-          meow(`Rejected. Type mismatch`, 'meowSettings][set', meowLevel.WARN);
-          return;
-        }
-        break;
       default:
-        meow(`Rejected. Unknown type`, 'meowSettings][set', meowLevel.WARN);
+        meow(`Rejected. Unknown / wrong type`, 'meowSettings][set', meowLevel.WARN);
         return;
     }
     this.settingsData[index].value = (value);

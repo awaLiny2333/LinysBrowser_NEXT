@@ -6,7 +6,11 @@
     },
     {
       "name": "blur_background",
-      "value": "#15FFFFFF"
+      "value": "#10FFFFFF"
+    },
+    {
+      "name": "blur_background_contrast",
+      "value": "#40000000"
     }
   ]
 }

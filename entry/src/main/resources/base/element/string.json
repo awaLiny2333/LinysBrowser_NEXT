@@ -13,6 +13,14 @@
       "value": "BrowserCat Nya"
     },
     {
+      "name": "General_new",
+      "value": "New  󰀵"
+    },
+    {
+      "name": "General_delete",
+      "value": "Remove  󰀁"
+    },
+    {
       "name": "Settings",
       "value": "Settings"
     },
@@ -45,8 +53,28 @@
       "value": "Surf"
     },
     {
+      "name": "Settings_category_general_surf_userAgent",
+      "value": "User-agents"
+    },
+    {
+      "name": "Settings_category_general_surf_searchEngine",
+      "value": "Search engines"
+    },
+    {
+      "name": "Settings_category_general_surf_newTabUrl",
+      "value": "New tabs URL"
+    },
+    {
+      "name": "Settings_category_general_surf_homeUrl",
+      "value": "Home URL"
+    },
+    {
       "name": "Settings_category_general_homepage",
       "value": "Cat's Homepage"
+    },
+    {
+      "name": "Settings_category_general_homepage_customize",
+      "value": "Customize"
     },
     {
       "name": "Settings_category_experience",

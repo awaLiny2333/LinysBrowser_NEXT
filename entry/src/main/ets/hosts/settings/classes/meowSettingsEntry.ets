@@ -6,6 +6,7 @@ export enum meowSettingsEntryType {
   STRING = 1,
   BOOLEAN = 2,
   STRING_ARRAY = 3,
+  STRING_ARRAY_PAIR = 4,
 }
 
 @ObservedV2
@@ -14,7 +15,7 @@ export class meowSettingsEntry {
   key: string = '';
   type: meowSettingsEntryType = meowSettingsEntryType.UNDEFINED;
   // Volatile ↓
-  @Trace value: number | string | boolean | Array<string> | undefined = undefined;
+  @Trace value: number | string | boolean | string[] | string[][] | undefined = undefined;
 
   constructor(key: string, type: meowSettingsEntryType, value: string) {
     this.key = key;
@@ -41,6 +42,18 @@ export class meowSettingsEntry {
       case meowSettingsEntryType.STRING_ARRAY:
         if (value) {
           this.value = value.split('\n').map(item => item.trim());
+        } else {
+          this.value = [];
+        }
+        break;
+      case meowSettingsEntryType.STRING_ARRAY_PAIR:
+        if (value) {
+          const seq = value.split('\n').map(item => item.trim());
+          const result: string[][] = [];
+          for (let i = 0; i < seq.length; i += 2) {
+            result.push([seq[i], seq[i + 1]]);
+          }
+          this.value = result;
         } else {
           this.value = [];
         }
@@ -73,6 +86,9 @@ export class meowSettingsEntry {
       case meowSettingsEntryType.STRING_ARRAY:
         const escapedLines = (this.value as string[]).map(line => escapeForJson(line));
         return escapedLines.join('\\n');
+      case meowSettingsEntryType.STRING_ARRAY_PAIR:
+        const escapedLinesOfPairs = (this.value as string[][]).map(pair => escapeForJson(pair[0]) + '\\n' + escapeForJson(pair[1]));
+        return escapedLinesOfPairs.join('\\n');
       default:
         return '';
     }

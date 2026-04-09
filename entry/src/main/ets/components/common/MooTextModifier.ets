@@ -15,6 +15,8 @@ export class MooTextModifier implements AttributeModifier<TextModifier> {
     instance
       .fontColor(getColor(this.colorType))
       .fontSize(this.textType == mooTextType.NORMAL ? fontSizeSmall : fontSizeMedium)
-      .fontWeight(this.textType == mooTextType.NORMAL ? FontWeight.Normal : FontWeight.Medium);
+      .fontWeight(this.textType == mooTextType.NORMAL ? FontWeight.Normal : FontWeight.Medium)
+      .wordBreak(WordBreak.BREAK_ALL)
+      .textOverflow({ overflow: TextOverflow.Ellipsis });
   }
 }

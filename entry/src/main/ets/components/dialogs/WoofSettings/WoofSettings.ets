@@ -14,8 +14,9 @@ struct WoofSettings {
         SettingsGeneral();
       };
     }
+    .edgeEffect(EdgeEffect.Spring)
     .columnsGap(standardSpacing)
-    .padding({ top: 50, left: standardSpacing, right: standardSpacing })
+    .padding({ top: 50, left: standardSpacing, right: standardSpacing, bottom: standardSpacing })
     .columnsTemplate(waterFlowColumnsTemplate());
   }
 }

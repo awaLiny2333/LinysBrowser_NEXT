@@ -13,6 +13,14 @@
       "value": "冲浪喵"
     },
     {
+      "name": "General_new",
+      "value": "新建  󰀵"
+    },
+    {
+      "name": "General_delete",
+      "value": "移除  󰀁"
+    },
+    {
       "name": "Settings",
       "value": "设置"
     },
@@ -45,8 +53,28 @@
       "value": "冲浪"
     },
     {
+      "name": "Settings_category_general_surf_userAgent",
+      "value": "用户标识（UA）"
+    },
+    {
+      "name": "Settings_category_general_surf_searchEngine",
+      "value": "搜索引擎"
+    },
+    {
+      "name": "Settings_category_general_surf_newTabUrl",
+      "value": "新标签页地址"
+    },
+    {
+      "name": "Settings_category_general_surf_homeUrl",
+      "value": "主页地址"
+    },
+    {
       "name": "Settings_category_general_homepage",
       "value": "猫咪的主页"
+    },
+    {
+      "name": "Settings_category_general_homepage_customize",
+      "value": "个性化设置"
     },
     {
       "name": "Settings_category_experience",

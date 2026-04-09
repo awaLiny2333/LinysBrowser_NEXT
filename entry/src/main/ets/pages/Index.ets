@@ -3,9 +3,9 @@ import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
 import { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
 import { defaultDecorHeight, defaultInnerRadius, meowAvoid, meowFreeWindowModeStatus, meowLayoutModeStatus } from '../catstypicalframework/utils/ui';
 import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, titleBarPositionBottom, useEffects } from '../components/common/constants';
-import { heightMeowTitleBar, MeowTitleBar } from '../components/parts/MeowTitleBar';
-import { MeowButtonRow } from '../components/parts/MeowButtonRow';
-import { MeowTitleTop } from '../components/parts/MeowTitleTop';
+import lazy { heightMeowTitleBar, MeowTitleBar } from '../components/parts/MeowTitleBar';
+import lazy { MeowButtonRow } from '../components/parts/MeowButtonRow';
+import lazy { MeowTitleTop } from '../components/parts/MeowTitleTop';
 import { meowResources } from '../hosts/resources/classes/meowResources';
 import { meowManagedSettings } from '../hosts/settings/classes/meowManagedSettings';
 import { meowUiStatuses } from '../hosts/ui/meowUiStatuses';
@@ -39,7 +39,7 @@ struct Index {
               .opacity(useEffects() ? 0.5 : 1)
               .animation(defaultAnimation());
           }
-          .border(useEffects() ? { radius: defaultInnerRadius, width: 1, color: $r('sys.color.icon_fourth') } : { width: 0 })
+          .border(useEffects() ? { radius: defaultInnerRadius, width: 1, color: $r('sys.color.icon_fourth') } : { width: 0, radius: 0 })
           .backgroundColor(getColor(meowThemeColorType.PRIMARY))
           .clip(true)
           .width('100%')

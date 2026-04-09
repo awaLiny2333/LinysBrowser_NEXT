@@ -13,8 +13,8 @@ struct MeowTitleBar {
   catsDevDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofSettingsDialog(),
     alignment: DialogAlignment.Center,
-    width: '90%',
-    height: '90%',
+    width: '95%',
+    height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
 

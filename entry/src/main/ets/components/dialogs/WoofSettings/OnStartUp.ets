@@ -1,14 +1,13 @@
-import { getColor, meowThemeColorType, mooTextType, standardSpacing, useEffects } from '../../common/constants';
+import { AppStorageV2, SegmentButtonV2Items } from '@kit.ArkUI';
+import { meowManagedSettings } from '../../../hosts/settings/classes/meowManagedSettings';
+import { mooTextType, standardSpacing } from '../../common/constants';
+import { MooTabSegmentV2 } from '../../common/MooTabSegmentV2';
 import { MooTextModifier } from '../../common/MooTextModifier';
 import { UniContentCard } from '../../common/UniContentCard';
-import { AppStorageV2, SegmentButtonV2Items, TabSegmentButtonV2 } from '@kit.ArkUI';
-import { meowManagedSettings } from '../../../hosts/settings/classes/meowManagedSettings';
-import { resourceColor2Metrics } from '../../../catstypicalframework/utils/ui';
 
 @ComponentV2
 struct SettingsOnStartUp {
   @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
-  @Local selectedForStartUp: number = this.selectedOptionFromSettings();
 
   build() {
     Column({ space: standardSpacing }) {
@@ -18,17 +17,14 @@ struct SettingsOnStartUp {
         .padding({ left: standardSpacing / 2 });
       UniContentCard() {
         Text($r('app.string.Settings_category_onStartUp_page')).attributeModifier(new MooTextModifier());
-        TabSegmentButtonV2({
+        MooTabSegmentV2({
+          initSelected: this.selectedOptionFromSettings(),
           items: new SegmentButtonV2Items([
             { text: $r('app.string.Settings_category_onStartUp_page_newTab') },
             { text: $r('app.string.Settings_category_onStartUp_page_home') },
             { text: $r('app.string.Settings_category_onStartUp_page_continue') }
           ]),
-          selectedIndex: this.selectedForStartUp!!,
-          itemFontColor: resourceColor2Metrics(getColor(meowThemeColorType.FONT)),
-          itemSelectedBackgroundColor: resourceColor2Metrics(getColor(useEffects() ? meowThemeColorType.PRIMARY : meowThemeColorType.FONT)),
-          itemSelectedFontColor: useEffects() ? undefined : resourceColor2Metrics(getColor(meowThemeColorType.PRIMARY)),
-          onItemClicked: (index) => {
+          onSelected: (index) => {
             // 'new tab' | 'home' | 'continue'
             switch (index) {
               case 0:
