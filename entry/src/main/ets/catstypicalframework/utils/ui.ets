@@ -110,7 +110,7 @@ export class meowAvoid {
 export function listenAvoid(windowClass: window.Window) {
   try {
     windowClass.on('avoidAreaChange', (data) => {
-      meow('Changes on avoid areas!', 'avoidAreaChange', meowLevel.INFO);
+      // meow('Changes on avoid areas!', 'avoidAreaChange', meowLevel.INFO);
       let free = AppStorageV2.connect(meowFreeWindowModeStatus);
       let avoid = AppStorageV2.connect<meowAvoid>(meowAvoid, 'meowAvoid', () => new meowAvoid(0, 0, 0, 0))!;
 

@@ -60,6 +60,10 @@ export async function earlyOnWindowStageCreate(context: Context) {
   let myMeowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
   await myMeowManagedSettings.initFrom(`${filesDir}/settings.json.browsercatsettings.txt`);
 
+  // setTimeout(() => {
+  //   webview.WebviewController.initializeWebEngine();
+  // }, 100);
+
   // UA
   applyUserAgentFromSettings();
 
