@@ -37,7 +37,7 @@ struct SettingsGeneral {
           onSelect: (n) => {
             this.selectedIndexUA = n;
             this.myMeowManagedSettings.setByIndex(42, n);
-            applyUserAgentFromSettings(this.myMeowManagedSettings);
+            applyUserAgentFromSettings();
           }
         });
 

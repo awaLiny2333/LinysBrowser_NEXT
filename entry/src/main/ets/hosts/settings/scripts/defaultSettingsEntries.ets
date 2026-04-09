@@ -65,7 +65,7 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   // UA & Search Engines & Homepage
   new meowSettingsEntry('custom_user_agents', meowSettingsEntryType.STRING_ARRAY_PAIR, defaultUserAgents()), // #41
   new meowSettingsEntry('custom_user_agents_selected_index', meowSettingsEntryType.NUMBER, '-1'),
-  new meowSettingsEntry('custom_search_engines', meowSettingsEntryType.STRING_ARRAY_PAIR, presetSearchEngines()),
+  new meowSettingsEntry('custom_search_engines', meowSettingsEntryType.STRING_ARRAY_PAIR, presetSearchEngines()), // #43
   new meowSettingsEntry('custom_search_engines_selected_index', meowSettingsEntryType.NUMBER, '-1'),
   new meowSettingsEntry('homepage_shortcuts_bookmarks_dir', meowSettingsEntryType.STRING, ''),
   new meowSettingsEntry('homepage_shortcuts_init_height', meowSettingsEntryType.NUMBER, '50'),

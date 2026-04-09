@@ -1,13 +1,14 @@
 import { webview } from "@kit.ArkWeb";
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 import { meowManagedSettings } from "../../settings/classes/meowManagedSettings";
+import { AppStorageV2 } from "@kit.ArkUI";
 
 /**
  * Apply user agent from settings.
- * @param settings The meowManagedSettings instance.
  * @returns True if applied successfully, false otherwise.
  */
-export function applyUserAgentFromSettings(settings: meowManagedSettings) {
+export function applyUserAgentFromSettings() {
+  const settings = AppStorageV2.connect(meowManagedSettings)!;
   const uaList = settings.settingsData[41].value as string[][];
   const uaSelected = settings.settingsData[42].value as number;
   const ua = uaSelected == -1 ? '' : uaList[uaSelected][1];
@@ -19,7 +20,7 @@ export function applyUserAgentFromSettings(settings: meowManagedSettings) {
  * @param userAgent The user agent to be applied.
  * @returns True if applied successfully, false otherwise.
  */
-export function applyUserAgent(userAgent: string): boolean {
+function applyUserAgent(userAgent: string): boolean {
   if (userAgent) {
     // User Agent not empty, set.
     webview.WebviewController.setAppCustomUserAgent(userAgent);

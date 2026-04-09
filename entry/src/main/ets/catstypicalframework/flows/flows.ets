@@ -61,7 +61,7 @@ export async function earlyOnWindowStageCreate(context: Context) {
   await myMeowManagedSettings.initFrom(`${filesDir}/settings.json.browsercatsettings.txt`);
 
   // UA
-  applyUserAgentFromSettings(myMeowManagedSettings);
+  applyUserAgentFromSettings();
 
   meow(`Finished in ${Date.now() - startTime} ms.`, 'earlyOnWindowStageCreate', meowLevel.WARN);
 }
