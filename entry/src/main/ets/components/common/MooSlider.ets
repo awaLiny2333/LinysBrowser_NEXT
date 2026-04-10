@@ -31,7 +31,7 @@ struct MooSlider {
         .opacity(this.locked ? 0.5 : 1)
         .animation(defaultAnimation())
         .trackColor(useEffects() ? $r('app.color.blur_background_contrast') : getColor(meowThemeColorType.SECONDARY))
-        .selectedColor(useEffects() ? $r('sys.color.comp_background_secondary') : getColor(meowThemeColorType.FONT))
+        .selectedColor(useEffects() ? $r('app.color.effects_emphasize') : getColor(meowThemeColorType.FONT))
         .blockColor(useEffects() ? getColor(meowThemeColorType.FONT) : getColor(meowThemeColorType.PRIMARY))
         .layoutWeight(1)
         .enabled(!this.locked)

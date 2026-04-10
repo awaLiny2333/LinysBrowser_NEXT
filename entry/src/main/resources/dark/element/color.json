@@ -11,6 +11,10 @@
     {
       "name": "blur_background_contrast",
       "value": "#40000000"
+    },
+    {
+      "name": "effects_emphasize",
+      "value": "#20FFFFFF"
     }
   ]
 }

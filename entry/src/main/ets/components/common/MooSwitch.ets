@@ -21,9 +21,9 @@ struct MooSwitch {
           this.onChange(c);
         })
         .switchStyle({
-          unselectedColor: $r('app.color.blur_background_contrast')
+          unselectedColor: useEffects() ? $r('app.color.blur_background_contrast') : getColor(meowThemeColorType.SECONDARY)
         })
-        .selectedColor(useEffects() ? $r('sys.color.comp_background_secondary') : getColor(meowThemeColorType.FONT))
+        .selectedColor(useEffects() ? $r('app.color.effects_emphasize') : getColor(meowThemeColorType.FONT))
         .switchPointColor(useEffects() ? getColor(meowThemeColorType.FONT) : getColor(meowThemeColorType.PRIMARY));
     };
   }

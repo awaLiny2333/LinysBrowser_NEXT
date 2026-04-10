@@ -19,6 +19,7 @@ struct SettingsExperience {
         .padding({ left: standardSpacing / 2 });
 
       UniContentCard({ title: $r('app.string.Settings_category_experience_contextMenu'), icon: $r('sys.symbol.list_square') }) {
+        // Text
         MooSwitch({
           text: $r('app.string.Settings_category_experience_contextMenu_enable'),
           isOn: this.myMeowManagedSettings.settingsData[16].value as boolean,
@@ -33,6 +34,8 @@ struct SettingsExperience {
             this.myMeowManagedSettings.setByIndex(21, r);
           }
         });
+        
+        // Image preview
         MooSwitch({
           text: $r('app.string.Settings_category_experience_contextMenu_imagePreview'),
           isOn: this.myMeowManagedSettings.settingsData[17].value as boolean,
@@ -50,6 +53,8 @@ struct SettingsExperience {
             this.myMeowManagedSettings.setByIndex(19, r);
           }
         });
+        
+        // Web preview
         MooSwitch({
           text: $r('app.string.Settings_category_experience_contextMenu_webPreview'),
           isOn: this.myMeowManagedSettings.settingsData[18].value as boolean,
