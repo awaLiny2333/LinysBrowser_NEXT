@@ -1,8 +1,8 @@
-import { meowDialogManager } from '../../hosts/env/meowDialogManager';
-import { MooSymbolButton } from '../common/MooSymbolButton';
+import { meowDialogManager } from '../../../../hosts/env/meowDialogManager';
+import { MooSymbolButton } from '../../../common/MooSymbolButton';
 import { AppStorageV2 } from '@kit.ArkUI';
-import { MooTextModifier } from '../common/MooTextModifier';
-import { getColor, meowThemeColorType, mooTextType, useEffects } from '../common/constants';
+import { MooTextModifier } from '../../../common/MooTextModifier';
+import { getColor, meowThemeColorType, mooTextType, useEffects } from '../../../common/constants';
 
 @ComponentV2
 struct WoofUniFrame {

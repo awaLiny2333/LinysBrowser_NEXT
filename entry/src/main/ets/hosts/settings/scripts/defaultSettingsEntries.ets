@@ -23,17 +23,17 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('title_function_extensions', meowSettingsEntryType.BOOLEAN, 'false'),
 
   // Experience
-  new meowSettingsEntry('sys_back_access_backward', meowSettingsEntryType.BOOLEAN, 'true'),
+  new meowSettingsEntry('sys_back_access_backward', meowSettingsEntryType.BOOLEAN, 'true'), // #10
   new meowSettingsEntry('esc_to_access_backward', meowSettingsEntryType.BOOLEAN, 'false'),
   new meowSettingsEntry('max_bookmark_suggest', meowSettingsEntryType.NUMBER, '5'),
   new meowSettingsEntry('max_history_suggest', meowSettingsEntryType.NUMBER, '5'),
   new meowSettingsEntry('tabs_vertical_auto_hide', meowSettingsEntryType.BOOLEAN, 'false'),
   new meowSettingsEntry('tabs_vertical_auto_hide_button', meowSettingsEntryType.BOOLEAN, 'true'),
-  new meowSettingsEntry('web_context_menu_enabled', meowSettingsEntryType.BOOLEAN, 'true'),
+  new meowSettingsEntry('web_context_menu_enabled', meowSettingsEntryType.BOOLEAN, 'true'), // #16
   new meowSettingsEntry('web_context_menu_image_preview', meowSettingsEntryType.BOOLEAN, 'true'),
   new meowSettingsEntry('web_context_menu_web_preview', meowSettingsEntryType.BOOLEAN, 'true'),
   new meowSettingsEntry('web_context_image_width', meowSettingsEntryType.NUMBER, '300'),
-  new meowSettingsEntry('web_context_web_height', meowSettingsEntryType.NUMBER, '500'),
+  new meowSettingsEntry('web_context_web_height', meowSettingsEntryType.NUMBER, '500'), // #20
   new meowSettingsEntry('web_context_text_strip', meowSettingsEntryType.BOOLEAN, 'false'),
 
   // Statuses

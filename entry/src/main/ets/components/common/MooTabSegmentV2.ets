@@ -21,7 +21,7 @@ struct MooTabSegmentV2 {
       itemFontWeight: FontWeight.Normal,
       buttonBackgroundColor: resourceColor2Metrics(useEffects() ? $r('app.color.blur_background_contrast') : getColor(meowThemeColorType.SECONDARY)),
       itemFontColor: resourceColor2Metrics(getColor(meowThemeColorType.FONT)),
-      itemSelectedBackgroundColor: resourceColor2Metrics(getColor(useEffects() ? meowThemeColorType.PRIMARY : meowThemeColorType.FONT)),
+      itemSelectedBackgroundColor: resourceColor2Metrics(useEffects() ? getColor(meowThemeColorType.PRIMARY) : getColor(meowThemeColorType.FONT)),
       itemSelectedFontColor: useEffects() ? undefined : resourceColor2Metrics(getColor(meowThemeColorType.PRIMARY)),
       onItemClicked: (index) => {
         this.onSelected(index);

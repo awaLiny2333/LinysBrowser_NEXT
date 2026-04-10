@@ -81,6 +81,50 @@
       "value": "体验"
     },
     {
+      "name": "Settings_category_experience_contextMenu",
+      "value": "上下文菜单"
+    },
+    {
+      "name": "Settings_category_experience_contextMenu_enable",
+      "value": "启用上下文菜单"
+    },
+    {
+      "name": "Settings_category_experience_contextMenu_trimTexts",
+      "value": "去除文本前后空格"
+    },
+    {
+      "name": "Settings_category_experience_contextMenu_imagePreview",
+      "value": "图片预览"
+    },
+    {
+      "name": "Settings_category_experience_contextMenu_imageWidth",
+      "value": "图片宽度"
+    },
+    {
+      "name": "Settings_category_experience_contextMenu_webPreview",
+      "value": "网页预览"
+    },
+    {
+      "name": "Settings_category_experience_contextMenu_webPreviewHeight",
+      "value": "网页高度"
+    },
+    {
+      "name": "Settings_category_experience_downloads",
+      "value": "下载"
+    },
+    {
+      "name": "Settings_category_experience_continuation",
+      "value": "流转"
+    },
+    {
+      "name": "Settings_category_experience_suggestions",
+      "value": "建议"
+    },
+    {
+      "name": "Settings_category_experience_advanced",
+      "value": "高级"
+    },
+    {
       "name": "Settings_category_accessibility",
       "value": "辅助"
     },

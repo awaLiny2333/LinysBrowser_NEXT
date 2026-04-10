@@ -81,6 +81,50 @@
       "value": "Experience"
     },
     {
+      "name": "Settings_category_experience_contextMenu",
+      "value": "Context Menu"
+    },
+    {
+      "name": "Settings_category_experience_contextMenu_enable",
+      "value": "Enable context menu"
+    },
+    {
+      "name": "Settings_category_experience_contextMenu_trimTexts",
+      "value": "Trim / strip texts"
+    },
+    {
+      "name": "Settings_category_experience_contextMenu_imagePreview",
+      "value": "Image preview"
+    },
+    {
+      "name": "Settings_category_experience_contextMenu_imageWidth",
+      "value": "Image width"
+    },
+    {
+      "name": "Settings_category_experience_contextMenu_webPreview",
+      "value": "Web preview"
+    },
+    {
+      "name": "Settings_category_experience_contextMenu_webPreviewHeight",
+      "value": "Web height"
+    },
+    {
+      "name": "Settings_category_experience_downloads",
+      "value": "Downloads"
+    },
+    {
+      "name": "Settings_category_experience_continuation",
+      "value": "Continuation"
+    },
+    {
+      "name": "Settings_category_experience_suggestions",
+      "value": "Suggestions"
+    },
+    {
+      "name": "Settings_category_experience_advanced",
+      "value": "Advanced"
+    },
+    {
       "name": "Settings_category_accessibility",
       "value": "Accessibility"
     },

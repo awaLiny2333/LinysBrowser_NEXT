@@ -1,14 +1,14 @@
 import { AppStorageV2 } from '@kit.ArkUI';
-import { resource2String } from '../../../catstypicalframework/utils/resource';
-import { meowManagedSettings } from '../../../hosts/settings/classes/meowManagedSettings';
-import { defaultSearchEngine, urlDefaultBlank } from '../../../hosts/settings/scripts/defaultSettingsValues';
-import { applyUserAgentFromSettings } from '../../../hosts/tabs/scripts/userAgents';
-import { mooTextType, standardSpacing } from '../../common/constants';
-import { MooCapsuleButton } from '../../common/MooCapsuleButton';
-import { MooStringPairArrayList } from '../../common/MooStringPairArrayList';
-import { MooTextInputV2 } from '../../common/MooTextInputV2';
-import { MooTextModifier } from '../../common/MooTextModifier';
-import { UniContentCard } from '../../common/UniContentCard';
+import { resource2String } from '../../../../catstypicalframework/utils/resource';
+import { meowManagedSettings } from '../../../../hosts/settings/classes/meowManagedSettings';
+import { defaultSearchEngine, urlDefaultBlank } from '../../../../hosts/settings/scripts/defaultSettingsValues';
+import { applyUserAgentFromSettings } from '../../../../hosts/tabs/scripts/userAgents';
+import { mooTextType, standardSpacing } from '../../../common/constants';
+import { MooCapsuleButton } from '../../../common/MooCapsuleButton';
+import { MooStringPairArrayList } from '../../../common/MooStringPairArrayList';
+import { MooTextInputV2 } from '../../../common/MooTextInputV2';
+import { MooTextModifier } from '../../../common/MooTextModifier';
+import { UniContentCard } from '../../../common/UniContentCard';
 
 @ComponentV2
 struct SettingsGeneral {

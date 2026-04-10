@@ -15,7 +15,7 @@ export function applyUserAgentFromSettings() {
 
 /**
  * Get user agent from settings.
- * @returns User agent string.
+ * @returns The UA string, or an empty string if selected the default UA but webview.WebviewController.getDefaultUserAgent() returned nothing.
  */
 export function getCurrentUserAgent(): string {
   const settings = AppStorageV2.connect(meowManagedSettings)!;

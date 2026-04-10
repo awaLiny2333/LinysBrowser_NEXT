@@ -1,6 +1,6 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowResources } from '../../../hosts/resources/classes/meowResources';
-import { WoofUniFrame } from '../WoofUniFrame';
+import { WoofUniFrame } from '../WoofSettings/common/WoofUniFrame';
 import { BookmarksDevCard } from './bookmarks/Card';
 import { CatsTypicalFrameworkDevCard } from './framework/Card';
 import { HistoryDevCard } from './history/Card';
