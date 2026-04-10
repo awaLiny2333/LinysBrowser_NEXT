@@ -2,7 +2,7 @@ import { defaultRoundedRadius, meowAvoid } from "../../catstypicalframework/util
 import { AppStorageV2 } from "@kit.ArkUI";
 import { MooSymbolButton } from "../common/MooSymbolButton";
 import { defaultAnimation } from "../common/constants";
-import { meowUiStatuses } from "../../hosts/env/meowUiStatuses";
+import { meowUiStatuses } from "../../hosts/env/scripts/meowUiStatuses";
 import { WoofSettingsDialog } from "../dialogs/WoofSettings/WoofSettings";
 
 @ComponentV2

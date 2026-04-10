@@ -113,16 +113,68 @@
       "value": "下载"
     },
     {
+      "name": "Settings_category_experience_downloads_directSave",
+      "value": "直接存到 󰃅 下载"
+    },
+    {
+      "name": "Settings_category_experience_downloads_openOnFinish",
+      "value": "完成时在文件中查看"
+    },
+    {
       "name": "Settings_category_experience_continuation",
       "value": "流转"
+    },
+    {
+      "name": "Settings_category_experience_continuation_closeApp",
+      "value": "流转后关闭应用"
+    },
+    {
+      "name": "Settings_category_experience_continuation_closeTab",
+      "value": "流转后关闭标签页"
     },
     {
       "name": "Settings_category_experience_suggestions",
       "value": "建议"
     },
     {
+      "name": "Settings_category_experience_suggestions_maxBookmark",
+      "value": "书签建议数量上限"
+    },
+    {
+      "name": "Settings_category_experience_suggestions_maxHistory",
+      "value": "历史建议数量上限"
+    },
+    {
       "name": "Settings_category_experience_advanced",
       "value": "高级"
+    },
+    {
+      "name": "Settings_category_experience_advanced_adsblocker",
+      "value": "广告过滤"
+    },
+    {
+      "name": "Settings_category_experience_advanced_adsblocker_manage",
+      "value": "管理广告过滤"
+    },
+    {
+      "name": "Settings_category_experience_advanced_adsblocker_rules",
+      "value": "管理过滤规则"
+    },
+    {
+      "name": "Settings_category_experience_advanced_webImages",
+      "value": "网页图片管理器"
+    },
+    {
+      "name": "Settings_category_experience_advanced_webImages_manage",
+      "value": "管理网页图片"
+    },
+    {
+      "name": "Settings_category_experience_advanced_Js",
+      "value": "JavaScript 管理器"
+    },
+    {
+      "name": "Settings_category_experience_advanced_Js_manage",
+      "value": "管理 JavaScript"
     },
     {
       "name": "Settings_category_accessibility",

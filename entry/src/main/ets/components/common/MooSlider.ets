@@ -28,7 +28,7 @@ struct MooSlider {
         step: this.step,
         style: SliderStyle.InSet
       })
-        .opacity(this.locked ? 0.5 : 1)
+        .opacity(this.locked ? 0.5 : 0.9)
         .animation(defaultAnimation())
         .trackColor(useEffects() ? $r('app.color.blur_background_contrast') : getColor(meowThemeColorType.SECONDARY))
         .selectedColor(useEffects() ? $r('app.color.effects_emphasize') : getColor(meowThemeColorType.FONT))
@@ -38,7 +38,7 @@ struct MooSlider {
         .onChange((value: number) => {
           this.onChange(value);
         });
-      Text(`${this.value}`).attributeModifier(new MooTextModifier());
+      Text(` ${this.value}`).attributeModifier(new MooTextModifier()).opacity(this.locked ? 0.5 : 1).animation(defaultAnimation());
     };
   }
 }

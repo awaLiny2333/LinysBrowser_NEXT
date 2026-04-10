@@ -25,8 +25,8 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   // Experience
   new meowSettingsEntry('sys_back_access_backward', meowSettingsEntryType.BOOLEAN, 'true'), // #10
   new meowSettingsEntry('esc_to_access_backward', meowSettingsEntryType.BOOLEAN, 'false'),
-  new meowSettingsEntry('max_bookmark_suggest', meowSettingsEntryType.NUMBER, '5'),
-  new meowSettingsEntry('max_history_suggest', meowSettingsEntryType.NUMBER, '5'),
+  new meowSettingsEntry('max_bookmark_suggest', meowSettingsEntryType.NUMBER, '5'), // #12
+  new meowSettingsEntry('max_history_suggest', meowSettingsEntryType.NUMBER, '5'), // #13
   new meowSettingsEntry('tabs_vertical_auto_hide', meowSettingsEntryType.BOOLEAN, 'false'),
   new meowSettingsEntry('tabs_vertical_auto_hide_button', meowSettingsEntryType.BOOLEAN, 'true'),
   new meowSettingsEntry('web_context_menu_enabled', meowSettingsEntryType.BOOLEAN, 'true'), // #16
@@ -43,8 +43,8 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('my_window_alias_position', meowSettingsEntryType.STRING, 'center'), // 'left' | 'center' | 'right'
   new meowSettingsEntry('my_window_alias_last', meowSettingsEntryType.STRING, defaultNewWindowName()), // #26
   // Continuation
-  new meowSettingsEntry('continuation_auto_exit', meowSettingsEntryType.BOOLEAN, 'false'),
-  new meowSettingsEntry('continuation_auto_close_tab', meowSettingsEntryType.BOOLEAN, 'true'),
+  new meowSettingsEntry('continuation_auto_exit', meowSettingsEntryType.BOOLEAN, 'false'), // #27
+  new meowSettingsEntry('continuation_auto_close_tab', meowSettingsEntryType.BOOLEAN, 'true'), // #28
 
   // Keyboard shortcuts
   new meowSettingsEntry('key_shortcuts', meowSettingsEntryType.STRING_ARRAY, ''),
@@ -86,7 +86,7 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('disable_js_these_sites', meowSettingsEntryType.STRING_ARRAY, ''),
 
   // Image blocker
-  new meowSettingsEntry('disable_image', meowSettingsEntryType.BOOLEAN, 'true'),
+  new meowSettingsEntry('disable_image', meowSettingsEntryType.BOOLEAN, 'true'), // Only turning this on won't affect anything. Need the following options on to block something.
   new meowSettingsEntry('disable_image_all_sites', meowSettingsEntryType.BOOLEAN, 'false'),
   new meowSettingsEntry('disable_image_these_sites', meowSettingsEntryType.STRING_ARRAY, ''),
 
@@ -112,8 +112,8 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('history_index_load_quantity', meowSettingsEntryType.NUMBER, '6'),
 
   // Download
-  new meowSettingsEntry('direct_download', meowSettingsEntryType.BOOLEAN, 'false'),
-  new meowSettingsEntry('direct_download_auto_open', meowSettingsEntryType.BOOLEAN, 'true'),
+  new meowSettingsEntry('direct_download', meowSettingsEntryType.BOOLEAN, 'false'), // #72
+  new meowSettingsEntry('direct_download_auto_open', meowSettingsEntryType.BOOLEAN, 'true'), // #73
 
   // Debug
   new meowSettingsEntry('DEV_MODE', meowSettingsEntryType.BOOLEAN, 'false'), // #74

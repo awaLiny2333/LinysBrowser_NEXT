@@ -24,7 +24,8 @@ struct MooSwitch {
           unselectedColor: useEffects() ? $r('app.color.blur_background_contrast') : getColor(meowThemeColorType.SECONDARY)
         })
         .selectedColor(useEffects() ? $r('app.color.effects_emphasize') : getColor(meowThemeColorType.FONT))
-        .switchPointColor(useEffects() ? getColor(meowThemeColorType.FONT) : getColor(meowThemeColorType.PRIMARY));
+        .switchPointColor(useEffects() ? getColor(meowThemeColorType.FONT) : getColor(meowThemeColorType.PRIMARY))
+        .opacity(0.9);
     };
   }
 }

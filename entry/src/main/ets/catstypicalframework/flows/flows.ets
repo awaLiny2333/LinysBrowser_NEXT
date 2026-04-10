@@ -8,11 +8,11 @@ import { Context } from '@ohos.abilityAccessCtrl';
 import { meowMisc } from '../hosts/meowMisc';
 import { ensureDirectoryExist } from '../utils/storage';
 import { meowManagedSettings } from '../../hosts/settings/classes/meowManagedSettings';
-import { meowResources } from '../../hosts/resources/classes/meowResources';
+import { meowResources } from '../../hosts/env/classes/meowResources';
 import { meowBookmarkStash } from '../../hosts/bookmarks/classes/meowBookmarkStash';
 import { common, ConfigurationConstant, Configuration } from '@kit.AbilityKit';
-import { meowDialogManager } from '../../hosts/env/meowDialogManager';
-import { meowUiStatuses } from '../../hosts/env/meowUiStatuses';
+import { meowDialogManager } from '../../hosts/env/scripts/meowDialogManager';
+import { meowUiStatuses } from '../../hosts/env/scripts/meowUiStatuses';
 
 // Flows
 /**

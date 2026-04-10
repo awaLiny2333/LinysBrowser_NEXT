@@ -6,9 +6,9 @@ import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, titleB
 import lazy { heightMeowTitleBar, MeowTitleBar } from '../components/parts/MeowTitleBar';
 import lazy { MeowButtonRow } from '../components/parts/MeowButtonRow';
 import lazy { MeowTitleTop } from '../components/parts/MeowTitleTop';
-import { meowResources } from '../hosts/resources/classes/meowResources';
+import { meowResources } from '../hosts/env/classes/meowResources';
 import { meowManagedSettings } from '../hosts/settings/classes/meowManagedSettings';
-import { meowUiStatuses } from '../hosts/env/meowUiStatuses';
+import { meowUiStatuses } from '../hosts/env/scripts/meowUiStatuses';
 
 @Entry
 @ComponentV2

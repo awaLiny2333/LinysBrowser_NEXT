@@ -113,16 +113,68 @@
       "value": "Downloads"
     },
     {
+      "name": "Settings_category_experience_downloads_directSave",
+      "value": "Save to 󰃅 Downloads"
+    },
+    {
+      "name": "Settings_category_experience_downloads_openOnFinish",
+      "value": "View on finish"
+    },
+    {
       "name": "Settings_category_experience_continuation",
       "value": "Continuation"
+    },
+    {
+      "name": "Settings_category_experience_continuation_closeApp",
+      "value": "Close app after continuation"
+    },
+    {
+      "name": "Settings_category_experience_continuation_closeTab",
+      "value": "Close tab after continuation"
     },
     {
       "name": "Settings_category_experience_suggestions",
       "value": "Suggestions"
     },
     {
+      "name": "Settings_category_experience_suggestions_maxBookmark",
+      "value": "Max bookmarks suggestions"
+    },
+    {
+      "name": "Settings_category_experience_suggestions_maxHistory",
+      "value": "Max history suggestions"
+    },
+    {
       "name": "Settings_category_experience_advanced",
       "value": "Advanced"
+    },
+    {
+      "name": "Settings_category_experience_advanced_adsblocker",
+      "value": "Ads blocker"
+    },
+    {
+      "name": "Settings_category_experience_advanced_adsblocker_manage",
+      "value": "Manage ads blocker"
+    },
+    {
+      "name": "Settings_category_experience_advanced_adsblocker_rules",
+      "value": "Manage block rules"
+    },
+    {
+      "name": "Settings_category_experience_advanced_webImages",
+      "value": "Web images manager"
+    },
+    {
+      "name": "Settings_category_experience_advanced_webImages_manage",
+      "value": "Manage web images"
+    },
+    {
+      "name": "Settings_category_experience_advanced_Js",
+      "value": "JavaScript manager"
+    },
+    {
+      "name": "Settings_category_experience_advanced_Js_manage",
+      "value": "Manage JavaScript"
     },
     {
       "name": "Settings_category_accessibility",

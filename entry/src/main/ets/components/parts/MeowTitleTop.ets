@@ -3,7 +3,7 @@ import { AppStorageV2 } from '@kit.ArkUI';
 import { CatsDevDialog } from '../dialogs/CatsDev/CatsDevCards';
 import { MooSymbolButtonSmall } from '../common/MooSymbolButtonSmall';
 import { MooTextModifier } from '../common/MooTextModifier';
-import { meowDialogManager } from '../../hosts/env/meowDialogManager';
+import { meowDialogManager } from '../../hosts/env/scripts/meowDialogManager';
 
 /**
  * The window top bar. Holds the buttons on window top, as well as the name of window / zone.

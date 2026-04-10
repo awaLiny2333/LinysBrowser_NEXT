@@ -26,7 +26,7 @@ struct MooTabSegmentV2 {
       onItemClicked: (index) => {
         this.onSelected(index);
       }
-    }).border(useEffects() ? { width: 1, color: $r('sys.color.icon_fourth'), radius: 22 } : { width: 0 });
+    }).border(useEffects() ? { width: 1, color: $r('sys.color.icon_fourth'), radius: 22 } : { width: 0 }).opacity(0.9);
   }
 }
 

@@ -5,6 +5,8 @@ import { UniContentCard } from "../../../common/UniContentCard";
 import { MooSwitch } from "../../../common/MooSwitch";
 import { AppStorageV2 } from "@kit.ArkUI";
 import { MooSlider } from "../../../common/MooSlider";
+import { resource2String } from "../../../../catstypicalframework/utils/resource";
+import { MooCapsuleButton } from "../../../common/MooCapsuleButton";
 
 @ComponentV2
 struct SettingsExperience {
@@ -34,7 +36,7 @@ struct SettingsExperience {
             this.myMeowManagedSettings.setByIndex(21, r);
           }
         });
-        
+
         // Image preview
         MooSwitch({
           text: $r('app.string.Settings_category_experience_contextMenu_imagePreview'),
@@ -53,7 +55,7 @@ struct SettingsExperience {
             this.myMeowManagedSettings.setByIndex(19, r);
           }
         });
-        
+
         // Web preview
         MooSwitch({
           text: $r('app.string.Settings_category_experience_contextMenu_webPreview'),
@@ -73,13 +75,110 @@ struct SettingsExperience {
           }
         });
       };
+
       UniContentCard({ title: $r('app.string.Settings_category_experience_downloads'), icon: $r('sys.symbol.download') }) {
+        MooSwitch({
+          text: $r('app.string.Settings_category_experience_downloads_directSave'),
+          isOn: this.myMeowManagedSettings.settingsData[72].value as boolean,
+          onChange: (r) => {
+            this.myMeowManagedSettings.setByIndex(72, r);
+          }
+        });
+        MooSwitch({
+          text: $r('app.string.Settings_category_experience_downloads_openOnFinish'),
+          isOn: this.myMeowManagedSettings.settingsData[73].value as boolean,
+          onChange: (r) => {
+            this.myMeowManagedSettings.setByIndex(73, r);
+          }
+        });
       };
+
       UniContentCard({ title: $r('app.string.Settings_category_experience_continuation'), icon: $r('sys.symbol.screen_witching') }) {
+        MooSwitch({
+          text: $r('app.string.Settings_category_experience_continuation_closeApp'),
+          isOn: this.myMeowManagedSettings.settingsData[27].value as boolean,
+          onChange: (r) => {
+            this.myMeowManagedSettings.setByIndex(27, r);
+          }
+        });
+        MooSwitch({
+          text: $r('app.string.Settings_category_experience_continuation_closeTab'),
+          isOn: this.myMeowManagedSettings.settingsData[28].value as boolean,
+          onChange: (r) => {
+            this.myMeowManagedSettings.setByIndex(28, r);
+          }
+        });
       };
+
       UniContentCard({ title: $r('app.string.Settings_category_experience_suggestions'), icon: $r('sys.symbol.star_message') }) {
+        Text($r('app.string.Settings_category_experience_suggestions_maxBookmark')).attributeModifier(new MooTextModifier());
+        MooSlider({
+          value: this.myMeowManagedSettings.settingsData[12].value as number,
+          min: 0,
+          max: 20,
+          step: 1,
+          onChange: (r) => {
+            this.myMeowManagedSettings.setByIndex(12, r);
+          }
+        });
+        Text($r('app.string.Settings_category_experience_suggestions_maxHistory')).attributeModifier(new MooTextModifier());
+        MooSlider({
+          value: this.myMeowManagedSettings.settingsData[13].value as number,
+          min: 0,
+          max: 20,
+          step: 1,
+          onChange: (r) => {
+            this.myMeowManagedSettings.setByIndex(13, r);
+          }
+        });
       };
+
       UniContentCard({ title: $r('app.string.Settings_category_experience_advanced'), icon: $r('sys.symbol.fast') }) {
+        MooSwitch({
+          text: $r('app.string.Settings_category_experience_advanced_adsblocker'),
+          isOn: this.myMeowManagedSettings.settingsData[52].value as boolean,
+          onChange: (r) => {
+            this.myMeowManagedSettings.setByIndex(52, r);
+          }
+        });
+        MooCapsuleButton({
+          text: `${resource2String($r('app.string.Settings_category_experience_advanced_adsblocker_manage'), this.getUIContext().getHostContext()!)}  󰯊`,
+          clickAction: () => {
+            // TODO: Ads blocker manager entrance.
+          }
+        });
+        MooCapsuleButton({
+          text: `${resource2String($r('app.string.Settings_category_experience_advanced_adsblocker_rules'), this.getUIContext().getHostContext()!)}  󰖿`,
+          clickAction: () => {
+            // TODO: Ads blocker rules manager entrance.
+          }
+        });
+        MooSwitch({
+          text: $r('app.string.Settings_category_experience_advanced_webImages'),
+          isOn: this.myMeowManagedSettings.settingsData[57].value as boolean,
+          onChange: (r) => {
+            this.myMeowManagedSettings.setByIndex(57, r);
+          }
+        });
+        MooCapsuleButton({
+          text: `${resource2String($r('app.string.Settings_category_experience_advanced_webImages_manage'), this.getUIContext().getHostContext()!)}  󰢪`,
+          clickAction: () => {
+            // TODO: Web image manager entrance.
+          }
+        });
+        MooSwitch({
+          text: $r('app.string.Settings_category_experience_advanced_Js'),
+          isOn: this.myMeowManagedSettings.settingsData[54].value as boolean,
+          onChange: (r) => {
+            this.myMeowManagedSettings.setByIndex(54, r);
+          }
+        });
+        MooCapsuleButton({
+          text: `${resource2String($r('app.string.Settings_category_experience_advanced_Js_manage'), this.getUIContext().getHostContext()!)}  󰄪`,
+          clickAction: () => {
+            // TODO: Js manager entrance.
+          }
+        });
       };
     };
   }
