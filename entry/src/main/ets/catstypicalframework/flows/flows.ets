@@ -13,7 +13,6 @@ import { meowBookmarkStash } from '../../hosts/bookmarks/classes/meowBookmarkSta
 import { common, ConfigurationConstant, Configuration } from '@kit.AbilityKit';
 import { meowDialogManager } from '../../hosts/env/meowDialogManager';
 import { meowUiStatuses } from '../../hosts/env/meowUiStatuses';
-import { applyUserAgentFromSettings } from '../../hosts/tabs/scripts/userAgents';
 
 // Flows
 /**
@@ -63,10 +62,7 @@ export async function earlyOnWindowStageCreate(context: Context) {
   // setTimeout(() => {
   //   webview.WebviewController.initializeWebEngine();
   // }, 100);
-
-  // UA
-  applyUserAgentFromSettings();
-
+  
   meow(`Finished in ${Date.now() - startTime} ms.`, 'earlyOnWindowStageCreate', meowLevel.WARN);
 }
 
