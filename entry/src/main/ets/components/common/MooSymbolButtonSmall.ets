@@ -1,6 +1,7 @@
-import { defaultMenuItemRadius, meowFreeWindowModeStatus } from "../../catstypicalframework/utils/ui";
+import { defaultMenuItemRadius } from "../../catstypicalframework/utils/ui";
 import { getColor, meowThemeColorType } from "./constants";
 import { AppStorageV2 } from "@kit.ArkUI";
+import { meowFreeWindowModeStatus } from "../../catstypicalframework/hosts/meowFreeWindowModeStatus";
 
 /**
  * Small symbol buttons, usually for window control buttons.

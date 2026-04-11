@@ -1,12 +1,12 @@
 import { AppStorageV2 } from '@kit.ArkUI';
-import { meowAvoid } from '../../catstypicalframework/utils/ui';
-import { meowUiStatuses } from '../../hosts/env/scripts/meowUiStatuses';
+import { meowAvoid } from '../../catstypicalframework/hosts/meowAvoid';
+import { meowUiStatuses } from '../../hosts/env/classes/meowUiStatuses';
 import { defaultAnimation, standardSpacing, titleBarPositionBottom, useEffects } from '../common/constants';
 import { MooSymbolButton } from '../common/MooSymbolButton';
 
 @ComponentV2
 export struct MeowButtonRow {
-  @Local myMeowAvoid: meowAvoid = AppStorageV2.connect<meowAvoid>(meowAvoid)!;
+  @Local myMeowAvoid: meowAvoid = AppStorageV2.connect(meowAvoid)!;
   @Local meowUiStatuses: meowUiStatuses = AppStorageV2.connect(meowUiStatuses)!;
 
   build() {

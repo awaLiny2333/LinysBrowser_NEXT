@@ -1,6 +1,11 @@
 import lazy { AppStorageV2, ColorMetrics, display, window } from '@kit.ArkUI';
 import lazy { meow, meowLevel } from './catsLogger';
 import lazy { deviceInfo, power, settings } from '@kit.BasicServicesKit';
+import { motion } from '@kit.MultimodalAwarenessKit';
+import { defaultAnimation, smartReachability } from '../../components/common/constants';
+import { meowAvoid } from '../hosts/meowAvoid';
+import { meowFreeWindowModeStatus } from '../hosts/meowFreeWindowModeStatus';
+import { meowLayoutModeStatus } from '../hosts/meowLayoutModeStatus';
 
 /**
  * Converts px to vp.
@@ -63,11 +68,11 @@ export function measureTextHeight(text: string, uiContext: UIContext, fontSize: 
 
 export let defaultAnima: AnimateParam = { curve: Curve.FastOutSlowIn, duration: 350 };
 
-export const defaultRoundedRadius: number = deviceInfo.deviceType == deviceInfo.DeviceTypes.TYPE_2IN1 ? 15 : 30;
+export const defaultRoundedRadius: number = deviceInfo.deviceType == deviceInfo.DeviceTypes.TYPE_2IN1 ? 15 : 15; // 30
 
-export const defaultInnerRadius: number = deviceInfo.deviceType == deviceInfo.DeviceTypes.TYPE_2IN1 ? 8 : 20;
+export const defaultInnerRadius: number = deviceInfo.deviceType == deviceInfo.DeviceTypes.TYPE_2IN1 ? 8 : 8; // 20
 
-export const defaultMenuItemRadius: number = deviceInfo.deviceType == deviceInfo.DeviceTypes.TYPE_2IN1 ? 5 : 18;
+export const defaultMenuItemRadius: number = deviceInfo.deviceType == deviceInfo.DeviceTypes.TYPE_2IN1 ? 5 : 5; // 18
 
 // Decor (Free window mode)
 
@@ -87,21 +92,6 @@ export function setDecorHeight(windowClass: window.Window) {
 }
 
 // Avoid
-
-@ObservedV2
-export class meowAvoid {
-  @Trace top: number = 0;
-  @Trace left: number = 0;
-  @Trace right: number = 0;
-  @Trace bottom: number = 0;
-
-  constructor(t: number, b: number, l: number, r: number) {
-    this.top = t;
-    this.bottom = b;
-    this.left = l;
-    this.right = r;
-  }
-}
 
 /**
  * Enables the listeners for avoid area change.
@@ -176,16 +166,6 @@ export function getUpdateAvoid(windowClass: window.Window) {
 
 // Free window mode
 
-@ObservedV2
-export class meowFreeWindowModeStatus {
-  @Trace on: boolean;
-  @Trace onFocus: boolean = true;
-
-  constructor(on: boolean) {
-    this.on = on;
-  }
-}
-
 /**
  * Listens to the Free-window Mode change and automatically switch modes.
  * @param context
@@ -233,23 +213,6 @@ export function getUpdateFreeWindowMode(context: Context, windowClass: window.Wi
 
 // Layout mode
 
-@ObservedV2
-export class meowLayoutModeStatus {
-  @Trace wideMode: boolean;
-  @Trace width: number;
-  @Trace height: number;
-  @Trace dark: boolean;
-  @Trace powerSave: boolean;
-
-  constructor(wideMode: boolean, width: number, height: number, dark: boolean, powerSave: boolean) {
-    this.wideMode = wideMode;
-    this.width = width;
-    this.height = height;
-    this.dark = dark;
-    this.powerSave = powerSave;
-  }
-}
-
 export const windowTopAvoidRight: number = 140;
 export const windowTopAvoidLeft: number = 20;
 
@@ -267,11 +230,40 @@ export function listenPowerSave() {
     const layout = AppStorageV2.connect(meowLayoutModeStatus);
     if (layout) {
       if (layout.powerSave != isPowerSave) {
-        layout.powerSave = isPowerSave;
+        animateToImmediately(defaultAnimation(), () => {
+          layout.powerSave = isPowerSave;
+        });
         meow(`Powermode changed! powerSave = ${isPowerSave}`, 'listenPowerSave');
       }
     }
   }, 1200);
+}
+
+/**
+ * Listens to the smart reachability change and sync status to meowLayoutModeStatus.
+ */
+export function listenSmartReachability() {
+  if (canIUse("SystemCapability.MultimodalAwareness.Motion")) {
+    try {
+      motion.on('holdingHandChanged', (m: motion.HoldingHandStatus) => {
+        // Received a change!
+        if (m == motion.HoldingHandStatus.UNKNOWN_STATUS || m == motion.HoldingHandStatus.NOT_HELD || m == motion.HoldingHandStatus.BOTH_HANDS_HELD) {
+          // Do nothing
+        } else {
+          const useRightHand = m == motion.HoldingHandStatus.RIGHT_HAND_HELD;
+          if (smartReachability()) {
+            const layout = AppStorageV2.connect(meowLayoutModeStatus)!;
+            layout.smartReachabilitySaysWeShouldPreferRightHand = useRightHand;
+          }
+        }
+      });
+      meow('listen succeeded!', 'listenSmartReachability][motion.on');
+    } catch (e) {
+      meow(`listen Failed: ${e}`, 'listenSmartReachability][motion.on', meowLevel.ERROR);
+    }
+  } else {
+    meow('Rejected. Cannot use [SystemCapability.MultimodalAwareness.Motion]!', 'listenSmartReachability][canIUse', meowLevel.WARN);
+  }
 }
 
 // Focus
@@ -292,7 +284,7 @@ export function listenFocus(windowClass: window.Window) {
         // Focused
         on_focus = true;
       }
-      let stat = AppStorageV2.connect<meowFreeWindowModeStatus>(meowFreeWindowModeStatus);
+      let stat = AppStorageV2.connect(meowFreeWindowModeStatus);
       if (stat) {
         stat.onFocus = on_focus;
       }

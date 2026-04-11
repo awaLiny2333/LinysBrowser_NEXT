@@ -1,4 +1,4 @@
-import { defaultAnimation, getColor, meowThemeColorType, useEffects } from "./constants";
+import { defaultAnimation, getColor, meowThemeColorType, preferRightHand, useEffects } from "./constants";
 import { MooSymbolButtonSmall } from "./MooSymbolButtonSmall";
 import { MooTextModifier } from "./MooTextModifier";
 
@@ -38,8 +38,10 @@ struct MooSlider {
         .onChange((value: number) => {
           this.onChange(value);
         });
-      Text(` ${this.value}`).attributeModifier(new MooTextModifier()).opacity(this.locked ? 0.5 : 1).animation(defaultAnimation());
-    };
+      Text(` ${this.value} `).attributeModifier(new MooTextModifier()).opacity(this.locked ? 0.5 : 1).animation(defaultAnimation());
+    }
+    .direction(preferRightHand() ? Direction.Rtl : Direction.Ltr)
+    .animation(defaultAnimation());
   }
 }
 

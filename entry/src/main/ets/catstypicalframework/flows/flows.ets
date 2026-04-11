@@ -1,7 +1,7 @@
 import Want from '@ohos.app.ability.Want';
 import { AppStorageV2, window } from '@kit.ArkUI';
 import { meow, meowLevel } from '../utils/catsLogger';
-import { getUpdateAvoid, getUpdateFreeWindowMode, listenAvoid, listenFocus, listenFreeWindowMode, listenPowerSave, meowLayoutModeStatus, meowPx2vp } from '../utils/ui';
+import { getUpdateAvoid, getUpdateFreeWindowMode, listenAvoid, listenFocus, listenFreeWindowMode, listenPowerSave, listenSmartReachability, meowPx2vp } from '../utils/ui';
 import { BusinessError, power } from '@kit.BasicServicesKit';
 import { meowHistorian } from '../../hosts/history/classes/meowHistorian';
 import { Context } from '@ohos.abilityAccessCtrl';
@@ -11,8 +11,9 @@ import { meowManagedSettings } from '../../hosts/settings/classes/meowManagedSet
 import { meowResources } from '../../hosts/env/classes/meowResources';
 import { meowBookmarkStash } from '../../hosts/bookmarks/classes/meowBookmarkStash';
 import { common, ConfigurationConstant, Configuration } from '@kit.AbilityKit';
-import { meowDialogManager } from '../../hosts/env/scripts/meowDialogManager';
-import { meowUiStatuses } from '../../hosts/env/scripts/meowUiStatuses';
+import { meowDialogManager } from '../../hosts/env/classes/meowDialogManager';
+import { meowUiStatuses } from '../../hosts/env/classes/meowUiStatuses';
+import { meowLayoutModeStatus } from '../hosts/meowLayoutModeStatus';
 
 // Flows
 /**
@@ -37,7 +38,7 @@ export function earlyOnCreate(context: Context) {
   AppStorageV2.connect(meowManagedSettings, () => new meowManagedSettings(`${filesDir}/settings.json.browsercatsettings.txt`))!;
   const myMeowResources = AppStorageV2.connect(meowResources, () => new meowResources(`${filesDir}/homepage_background_arrayBuffer`))!;
 
-  // Actions that doesn't use any performance (Concurrent functions!)
+  // Actions that doesn't use any performance (Highly concurrent functions!)
   myMeowResources.loadBackgroundImage();
 
   // meow(`Finished in ${Date.now() - startTime} ms.`, 'earlyOnCreate', meowLevel.WARN);
@@ -62,7 +63,7 @@ export async function earlyOnWindowStageCreate(context: Context) {
   // setTimeout(() => {
   //   webview.WebviewController.initializeWebEngine();
   // }, 100);
-  
+
   meow(`Finished in ${Date.now() - startTime} ms.`, 'earlyOnWindowStageCreate', meowLevel.WARN);
 }
 
@@ -116,9 +117,12 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
     const wideMode = width > 900;
     const dark = context.config.colorMode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
     const powerSave = power.getPowerMode() == power.DevicePowerMode.MODE_POWER_SAVE;
-    AppStorageV2.connect(meowLayoutModeStatus, () => new meowLayoutModeStatus(wideMode, width, height, dark, powerSave));
+    // Set the value of myMeowUiStatuses.smartReachabilitySaysWeShouldPreferRightHand here as a starting position for smart reachability.
+    let myMeowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+    const smartReachabilitySaysWeShouldPreferRightHand = myMeowManagedSettings.settingsData[47].value == 'right';
+    AppStorageV2.connect(meowLayoutModeStatus, () => new meowLayoutModeStatus(wideMode, width, height, dark, powerSave, smartReachabilitySaysWeShouldPreferRightHand));
   } catch (e) {
-    meow(`AppStorageV2.connect(meowLayoutModeStatus, () => new meowLayoutModeStatus(wideMode, width, height, dark, powerSave)); Failed: ${e}`, 'init', meowLevel.ERROR);
+    meow(`AppStorageV2.connect(meowLayoutModeStatus, () => new meowLayoutModeStatus(wideMode, width, height, dark, powerSave, smartReachabilitySaysWeShouldPreferRightHand)); Failed: ${e}`, 'init', meowLevel.ERROR);
   }
 
   // TODO: multi-window compatibility!
@@ -131,6 +135,8 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
 
   listenFocus(window);
   listenPowerSave();
+
+  listenSmartReachability();
 
   // watchLaunch(); // This is chicken rib. >O
 

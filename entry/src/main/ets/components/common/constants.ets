@@ -1,15 +1,10 @@
 import { AppStorageV2, LengthMetrics } from "@kit.ArkUI";
 import Curves from '@ohos.curves';
-import { meowLayoutModeStatus } from "../../catstypicalframework/utils/ui";
+import { meowLayoutModeStatus } from "../../catstypicalframework/hosts/meowLayoutModeStatus";
 import { meowManagedSettings } from "../../hosts/settings/classes/meowManagedSettings";
 
-// Hosts
-const settings = AppStorageV2.connect(meowManagedSettings)!;
-const layout = AppStorageV2.connect(meowLayoutModeStatus)!;
-
 // Constants
-
-export const fontSizeSymbol = 26;
+export const fontSizeSymbol = 24;
 
 export const fontSizeMedium = 22;
 export const fontSizeSmall = 16;
@@ -43,6 +38,8 @@ export enum mooTextType {
  * @returns true if the app UI is using advanced effects, false otherwise.
  */
 export function useEffects() {
+  const settings = AppStorageV2.connect(meowManagedSettings)!;
+  const layout = AppStorageV2.connect(meowLayoutModeStatus)!;
   if (layout.powerSave) {
     return false;
   }
@@ -68,7 +65,10 @@ export function getColor(type: meowThemeColorType): ResourceColor {
         return Color.Transparent;
     }
   }
+
   // No effects
+  const settings = AppStorageV2.connect(meowManagedSettings)!;
+  const layout = AppStorageV2.connect(meowLayoutModeStatus)!;
   return settings.settingsData[layout.dark ? 65 + type : 62 + type].value as string;
 }
 
@@ -77,7 +77,30 @@ export function getColor(type: meowThemeColorType): ResourceColor {
  * @returns true if the title bar is at the bottom, false otherwise.
  */
 export function titleBarPositionBottom() {
+  const settings = AppStorageV2.connect(meowManagedSettings)!;
   return settings.settingsData[1].value == 'bottom';
+}
+
+/**
+ * Gets if the user prefers right hand.
+ * @returns true if the user prefers right hand, false otherwise.
+ */
+export function preferRightHand() {
+  if (smartReachability()) {
+    const layout = AppStorageV2.connect(meowLayoutModeStatus)!;
+    return layout.smartReachabilitySaysWeShouldPreferRightHand;
+  }
+  const settings = AppStorageV2.connect(meowManagedSettings)!;
+  return settings.settingsData[47].value == 'right';
+}
+
+/**
+ * Gets if the user enables smart reachability.
+ * @returns true if the user enables smart reachability, false otherwise.
+ */
+export function smartReachability() {
+  const settings = AppStorageV2.connect(meowManagedSettings)!;
+  return settings.settingsData[51].value as boolean;
 }
 
 /**
@@ -85,6 +108,7 @@ export function titleBarPositionBottom() {
  * @returns The default animation param.
  */
 export function defaultAnimation() {
+  const settings = AppStorageV2.connect(meowManagedSettings)!;
   const animation_damping_coefficient = settings.settingsData[40].value as number;
   const animation_response = settings.settingsData[39].value as number;
   const ap: AnimateParam = { curve: Curves.springMotion(animation_response / 100, (100 - animation_damping_coefficient) / 100) };
@@ -96,5 +120,6 @@ export function defaultAnimation() {
  * @returns The columns template for the water flow layout.
  */
 export function waterFlowColumnsTemplate() {
+  const layout = AppStorageV2.connect(meowLayoutModeStatus)!;
   return "1fr ".repeat(Math.ceil(layout.width / minimumCardWidth));
 }

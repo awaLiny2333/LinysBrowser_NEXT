@@ -1,4 +1,4 @@
-import { meowDialogManager } from '../../../../hosts/env/scripts/meowDialogManager';
+import { meowDialogManager } from '../../../../hosts/env/classes/meowDialogManager';
 import { MooSymbolButton } from '../../../common/MooSymbolButton';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { MooTextModifier } from '../../../common/MooTextModifier';

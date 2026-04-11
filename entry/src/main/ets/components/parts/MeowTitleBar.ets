@@ -1,9 +1,10 @@
-import { defaultRoundedRadius, meowAvoid } from "../../catstypicalframework/utils/ui";
+import { defaultRoundedRadius } from "../../catstypicalframework/utils/ui";
 import { AppStorageV2 } from "@kit.ArkUI";
 import { MooSymbolButton } from "../common/MooSymbolButton";
 import { defaultAnimation } from "../common/constants";
-import { meowUiStatuses } from "../../hosts/env/scripts/meowUiStatuses";
+import { meowUiStatuses } from "../../hosts/env/classes/meowUiStatuses";
 import { WoofSettingsDialog } from "../dialogs/WoofSettings/WoofSettings";
+import { meowAvoid } from "../../catstypicalframework/hosts/meowAvoid";
 
 @ComponentV2
 struct MeowTitleBar {
@@ -27,7 +28,10 @@ struct MeowTitleBar {
 
       Text('MeowTitleBar')
         .textAlign(TextAlign.Center)
-        .layoutWeight(1);
+        .layoutWeight(1)
+        .maxLines(1)
+        .wordBreak(WordBreak.BREAK_ALL)
+        .textOverflow({ overflow: TextOverflow.Ellipsis });
 
       MooSymbolButton({
         icon: $r('sys.symbol.dot_grid_2x2'),

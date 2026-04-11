@@ -16,6 +16,7 @@ struct MooTextInputV2 {
           .fontSize(fontSizeMedium);
       }
       TextInput({ text: this.text as string, placeholder: this.placeholder })
+        .borderRadius(defaultInnerRadius)
         .fontColor(getColor(meowThemeColorType.FONT))
         .caretColor(getColor(meowThemeColorType.FONT))
         .selectedBackgroundColor(getColor(meowThemeColorType.PRIMARY))

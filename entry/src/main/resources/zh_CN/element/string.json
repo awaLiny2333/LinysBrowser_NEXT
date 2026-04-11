@@ -181,6 +181,42 @@
       "value": "辅助"
     },
     {
+      "name": "Settings_category_accessibility_webBack",
+      "value": "网页系统返回"
+    },
+    {
+      "name": "Settings_category_accessibility_webEsc",
+      "value": "网页 Esc 返回"
+    },
+    {
+      "name": "Settings_category_accessibility_singleHand",
+      "value": "单手优化"
+    },
+    {
+      "name": "Settings_category_accessibility_singleHand_reverseSideMenus",
+      "value": "反转侧边菜单 󰠯 / 󰎩"
+    },
+    {
+      "name": "Settings_category_accessibility_singleHand_reverseSideBars",
+      "value": "反转侧边栏"
+    },
+    {
+      "name": "Settings_category_accessibility_singleHand_reverseHomeShortcuts",
+      "value": "反转主页快捷方式"
+    },
+    {
+      "name": "Settings_category_accessibility_singleHand_smartReachability",
+      "value": "适人握持 󰎵"
+    },
+    {
+      "name": "Settings_category_accessibility_keyShortcuts",
+      "value": "快捷键"
+    },
+    {
+      "name": "Settings_category_accessibility_keyShortcuts_manage",
+      "value": "快捷键管理"
+    },
+    {
       "name": "Settings_category_appeearence",
       "value": "外观"
     },
@@ -211,6 +247,10 @@
     {
       "name": "Settings_category_deveowlopers",
       "value": "开发"
+    },
+    {
+      "name": "Permission_reason_DETECT_GESTURES",
+      "value": "让冲浪喵知道你正在使用哪只手，并自动响应优化布局！"
     }
   ]
 }

@@ -34,6 +34,18 @@
           }
         ]
       }
+    ],
+    "requestPermissions": [
+            {
+        "name": "ohos.permission.DETECT_GESTURE",
+        "reason": "$string:Permission_reason_DETECT_GESTURES",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "EntryAbility"
+          ]
+        }
+      },
     ]
   }
 }

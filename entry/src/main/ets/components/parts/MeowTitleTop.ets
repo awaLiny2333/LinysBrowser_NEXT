@@ -1,9 +1,12 @@
-import { meowFreeWindowModeStatus, meowAvoid, windowTopAvoidRight, meowLayoutModeStatus, windowTopAvoidLeft, defaultRoundedRadius } from '../../catstypicalframework/utils/ui';
+import {  windowTopAvoidRight, windowTopAvoidLeft, defaultRoundedRadius } from '../../catstypicalframework/utils/ui';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { CatsDevDialog } from '../dialogs/CatsDev/CatsDevCards';
 import { MooSymbolButtonSmall } from '../common/MooSymbolButtonSmall';
 import { MooTextModifier } from '../common/MooTextModifier';
-import { meowDialogManager } from '../../hosts/env/scripts/meowDialogManager';
+import { meowDialogManager } from '../../hosts/env/classes/meowDialogManager';
+import { meowAvoid } from '../../catstypicalframework/hosts/meowAvoid';
+import { meowFreeWindowModeStatus } from '../../catstypicalframework/hosts/meowFreeWindowModeStatus';
+import { meowLayoutModeStatus } from '../../catstypicalframework/hosts/meowLayoutModeStatus';
 
 /**
  * The window top bar. Holds the buttons on window top, as well as the name of window / zone.

@@ -1,14 +1,17 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
 import { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
-import { defaultDecorHeight, defaultInnerRadius, meowAvoid, meowFreeWindowModeStatus, meowLayoutModeStatus } from '../catstypicalframework/utils/ui';
+import { defaultDecorHeight, defaultInnerRadius} from '../catstypicalframework/utils/ui';
 import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, titleBarPositionBottom, useEffects } from '../components/common/constants';
 import lazy { heightMeowTitleBar, MeowTitleBar } from '../components/parts/MeowTitleBar';
 import lazy { MeowButtonRow } from '../components/parts/MeowButtonRow';
 import lazy { MeowTitleTop } from '../components/parts/MeowTitleTop';
 import { meowResources } from '../hosts/env/classes/meowResources';
 import { meowManagedSettings } from '../hosts/settings/classes/meowManagedSettings';
-import { meowUiStatuses } from '../hosts/env/scripts/meowUiStatuses';
+import { meowUiStatuses } from '../hosts/env/classes/meowUiStatuses';
+import { meowAvoid } from '../catstypicalframework/hosts/meowAvoid';
+import { meowFreeWindowModeStatus } from '../catstypicalframework/hosts/meowFreeWindowModeStatus';
+import { meowLayoutModeStatus } from '../catstypicalframework/hosts/meowLayoutModeStatus';
 
 @Entry
 @ComponentV2

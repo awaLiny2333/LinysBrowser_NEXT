@@ -24,7 +24,7 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
 
   // Experience
   new meowSettingsEntry('sys_back_access_backward', meowSettingsEntryType.BOOLEAN, 'true'), // #10
-  new meowSettingsEntry('esc_to_access_backward', meowSettingsEntryType.BOOLEAN, 'false'),
+  new meowSettingsEntry('esc_to_access_backward', meowSettingsEntryType.BOOLEAN, 'false'), // #11
   new meowSettingsEntry('max_bookmark_suggest', meowSettingsEntryType.NUMBER, '5'), // #12
   new meowSettingsEntry('max_history_suggest', meowSettingsEntryType.NUMBER, '5'), // #13
   new meowSettingsEntry('tabs_vertical_auto_hide', meowSettingsEntryType.BOOLEAN, 'false'),
@@ -71,11 +71,11 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('homepage_shortcuts_init_height', meowSettingsEntryType.NUMBER, '50'),
 
   // Single hand accessibility
-  new meowSettingsEntry('preferred_hand_left_or_right', meowSettingsEntryType.STRING, 'right'),
+  new meowSettingsEntry('preferred_hand_left_or_right', meowSettingsEntryType.STRING, 'right'), // #47
   new meowSettingsEntry('preferred_hand_reverse_settings_menu', meowSettingsEntryType.BOOLEAN, 'true'),
   new meowSettingsEntry('preferred_hand_reverse_tabs_panel', meowSettingsEntryType.BOOLEAN, 'true'),
   new meowSettingsEntry('preferred_hand_reverse_homepage_shortcuts', meowSettingsEntryType.BOOLEAN, 'false'),
-  new meowSettingsEntry('preferred_hand_auto', meowSettingsEntryType.BOOLEAN, 'false'),
+  new meowSettingsEntry('preferred_hand_auto', meowSettingsEntryType.BOOLEAN, 'false'), // #51
 
   // Ad blocker
   new meowSettingsEntry('use_adblock', meowSettingsEntryType.BOOLEAN, 'true'),

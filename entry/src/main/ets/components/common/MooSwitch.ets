@@ -1,4 +1,4 @@
-import { getColor, meowThemeColorType, useEffects } from './constants';
+import { defaultAnimation, getColor, meowThemeColorType, preferRightHand, useEffects } from './constants';
 import { MooTextModifier } from './MooTextModifier';
 
 @ComponentV2
@@ -10,11 +10,9 @@ struct MooSwitch {
 
   build() {
     Row({ space: 8 }) {
+      Blank().layoutWeight(1)
       if (this.text) {
-        Text(this.text)
-          .attributeModifier(new MooTextModifier())
-          .textAlign(TextAlign.End)
-          .layoutWeight(1);
+        Text(this.text).attributeModifier(new MooTextModifier());
       }
       Toggle({ isOn: this.isOn, type: ToggleType.Switch })
         .onChange((c) => {
@@ -26,7 +24,9 @@ struct MooSwitch {
         .selectedColor(useEffects() ? $r('app.color.effects_emphasize') : getColor(meowThemeColorType.FONT))
         .switchPointColor(useEffects() ? getColor(meowThemeColorType.FONT) : getColor(meowThemeColorType.PRIMARY))
         .opacity(0.9);
-    };
+    }
+    .direction(preferRightHand() ? Direction.Ltr : Direction.Rtl)
+    .animation(defaultAnimation());
   }
 }
 
