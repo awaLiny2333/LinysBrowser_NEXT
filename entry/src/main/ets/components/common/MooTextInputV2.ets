@@ -19,12 +19,11 @@ struct MooTextInputV2 {
           .fontSize(fontSizeMedium);
       }
       TextInput({ text: this.text as string, placeholder: this.placeholder })
-        // .padding({ left: 12, right: 12, top: 3, bottom: 3 })
         .height(heightMeowTitleBar)
         .fontColor(getColor(meowThemeColorType.FONT))
         .caretColor(getColor(meowThemeColorType.FONT))
         .selectedBackgroundColor(getColor(meowThemeColorType.PRIMARY))
-        .border(useEffects() ? { width: 1, color: $r('sys.color.icon_fourth'), radius: defaultInnerRadius } : { width: 0 })
+        .border(useEffects() ? { width: 1, color: $r('sys.color.icon_fourth'), radius: defaultInnerRadius } : { width: 0, radius: defaultInnerRadius })
         .backgroundColor(useEffects() ? $r('app.color.blur_background_contrast') : getColor(meowThemeColorType.SECONDARY))
         .layoutWeight(1)
         .onChange((c) => {
