@@ -7,6 +7,7 @@ struct MooTextInputV2 {
   @Param @Once placeholder: string | undefined = undefined;
   @Param icon: Resource | undefined = undefined;
   @Event onChange: (c: string) => void;
+  @Event onSubmit: () => void;
 
   build() {
     Row({ space: standardSpacing }) {
@@ -25,6 +26,9 @@ struct MooTextInputV2 {
         .layoutWeight(1)
         .onChange((c) => {
           this.onChange(c);
+        })
+        .onSubmit(() => {
+          this.onSubmit();
         });
     };
   }

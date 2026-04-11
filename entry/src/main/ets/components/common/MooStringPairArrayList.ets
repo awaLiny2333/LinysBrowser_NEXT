@@ -97,18 +97,21 @@ struct StringPairArrayItem {
   @Param @Require selectedIndex: number;
   @Param @Require index: number;
   @Param @Require item: string[];
+  @Local editingLabel: string = this.item[0];
+  @Local editingLink: string = this.item[1];
   // Events
   @Event onEdit: (index: number, newValue: string[]) => void;
   @Event onSelect: (selectedIndex: number) => void;
   @Event onDelete: (index: number) => void;
   // UI
+  @Local displayLabel: string = this.item[0];
   @Local isEditing: boolean = false;
 
   build() {
     Column({ space: standardSpacing }) {
       // Label
       Row({ space: standardSpacing }) {
-        Text(this.item[0]).attributeModifier(new MooTextModifier()).maxLines(1).constraintSize({ maxWidth: '80%' });
+        Text(this.displayLabel).attributeModifier(new MooTextModifier()).maxLines(1).constraintSize({ maxWidth: '80%' });
         MooSymbolButtonSmall({
           icon: this.allowEdit
             ? (this.isEditing ? $r('sys.symbol.chevron_down') : $r('sys.symbol.pencil_line'))
@@ -126,36 +129,53 @@ struct StringPairArrayItem {
       if (this.isEditing) {
         MooTextInputV2({
           icon: $r('sys.symbol.label'),
-          text: this.item[0], onChange: (c) => {
-            if (this.item[0] == c) {
+          text: this.editingLabel,
+          onChange: (c) => {
+            if (this.editingLabel == c) {
               return;
             }
-            this.item[0] = c;
-            this.onEdit(this.index, this.item);
+            this.editingLabel = c;
+          },
+          onSubmit: () => {
+            this.save();
           }
         });
 
         MooTextInputV2({
           icon: $r('sys.symbol.link'),
-          text: this.item[1], onChange: (c) => {
-            if (this.item[1] == c) {
+          text: this.editingLink,
+          onChange: (c) => {
+            if (this.editingLink == c) {
               return;
             }
-            this.item[1] = c;
-            this.onEdit(this.index, this.item);
+            this.editingLink = c;
+          },
+          onSubmit: () => {
+            this.save();
           }
         });
 
-        MooCapsuleButton({
-          text: $r('app.string.General_delete'),
-          clickAction: () => {
-            animateToImmediately(defaultAnimation(), () => {
-              this.isEditing = false;
-              this.onDelete(this.index);
-            });
-          },
-          doubleConfirm: true
-        });
+        Row({ space: standardSpacing }) {
+          MooCapsuleButton({
+            text: $r('app.string.General_save'),
+            clickAction: () => {
+              this.save();
+            },
+            doubleConfirm: true
+          });
+          MooCapsuleButton({
+            text: $r('app.string.General_delete'),
+            clickAction: () => {
+              animateToImmediately(defaultAnimation(), () => {
+                this.isEditing = false;
+                this.onDelete(this.index);
+              });
+            },
+            doubleConfirm: true
+          });
+        }
+        .direction(preferRightHand() ? Direction.Rtl : Direction.Ltr)
+        .alignSelf(preferRightHand() ? ItemAlign.End : ItemAlign.Start);
       }
     }
     .border(this.imSelected()
@@ -181,5 +201,18 @@ struct StringPairArrayItem {
    */
   imSelected() {
     return this.selectedIndex == this.index;
+  }
+
+  /**
+   * Save the edited item.
+   */
+  save() {
+    this.displayLabel = this.editingLabel;
+    this.item[0] = this.editingLabel;
+    this.item[1] = this.editingLink;
+    animateToImmediately(defaultAnimation(), () => {
+      this.isEditing = false;
+    });
+    this.onEdit(this.index, this.item);
   }
 }

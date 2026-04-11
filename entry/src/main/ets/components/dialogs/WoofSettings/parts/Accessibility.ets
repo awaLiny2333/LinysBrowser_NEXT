@@ -1,6 +1,6 @@
 import { meowManagedSettings } from '../../../../hosts/settings/classes/meowManagedSettings';
 import { AppStorageV2, SegmentButtonV2Items } from '@kit.ArkUI';
-import { mooTextType, standardSpacing } from '../../../common/constants';
+import { defaultAnimation, mooTextType, standardSpacing } from '../../../common/constants';
 import { MooSwitch } from '../../../common/MooSwitch';
 import { MooTextModifier } from '../../../common/MooTextModifier';
 import { UniContentCard } from '../../../common/UniContentCard';
@@ -55,6 +55,13 @@ struct SettingsAccessibility {
                 break;
             }
           }
+        }).opacity(this.myMeowManagedSettings.settingsData[51].value as boolean ? 0.5 : 1).animation(defaultAnimation());
+        MooSwitch({
+          text: $r('app.string.Settings_category_accessibility_singleHand_smartReachability'),
+          isOn: this.myMeowManagedSettings.settingsData[51].value as boolean,
+          onChange: (r) => {
+            this.myMeowManagedSettings.setByIndex(51, r);
+          }
         });
         MooSwitch({
           text: $r('app.string.Settings_category_accessibility_singleHand_reverseSideMenus'),
@@ -77,23 +84,16 @@ struct SettingsAccessibility {
             this.myMeowManagedSettings.setByIndex(50, r);
           }
         });
-        MooSwitch({
-          text: $r('app.string.Settings_category_accessibility_singleHand_smartReachability'),
-          isOn: this.myMeowManagedSettings.settingsData[51].value as boolean,
-          onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(51, r);
+      };
+
+      UniContentCard({ title: $r('app.string.Settings_category_accessibility_keyShortcuts') }) {
+        MooCapsuleButton({
+          text: `${resource2String($r('app.string.Settings_category_accessibility_keyShortcuts_manage'), this.getUIContext().getHostContext()!)}  󰌐`,
+          clickAction: () => {
+            // TODO: key shortcuts manage entrance.
           }
         });
       };
-      
-      UniContentCard({title: $r('app.string.Settings_category_accessibility_keyShortcuts')}) {
-        MooCapsuleButton({
-          text: `${resource2String($r('app.string.Settings_category_accessibility_keyShortcuts_manage'), this.getUIContext().getHostContext()!)}  󰌐`,
-          clickAction: ()=>{
-            // TODO: key shortcuts manage entrance.
-          }
-        })
-      }
     };
   }
 
