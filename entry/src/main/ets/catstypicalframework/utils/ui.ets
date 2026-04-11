@@ -115,7 +115,7 @@ export function listenAvoid(windowClass: window.Window) {
         }
       }
       if (data.type == window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
-        let bottom = meowPx2vp(data.area.bottomRect.height) * 0.5;
+        let bottom = meowPx2vp(data.area.bottomRect.height) * 0.75;
         if (free && !free.on) {
           avoid.bottom = Math.max(bottom, 8);
         } else {
@@ -159,7 +159,7 @@ export function getUpdateAvoid(windowClass: window.Window) {
 
     avoidArea = windowClass.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR);
     if (free && !free.on) {
-      avoid.bottom = Math.max(meowPx2vp(avoidArea.bottomRect.height) * 0.5, 8);
+      avoid.bottom = Math.max(meowPx2vp(avoidArea.bottomRect.height) * 0.75, 8);
     } else {
       avoid.bottom = 0; // No bottom avoid for free windows.
     }

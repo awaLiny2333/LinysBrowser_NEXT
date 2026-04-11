@@ -4,11 +4,14 @@ import { MooSymbolButton } from "../common/MooSymbolButton";
 import { meowUiStatuses } from "../../hosts/env/classes/meowUiStatuses";
 import { WoofSettingsDialog } from "../dialogs/WoofSettings/WoofSettings";
 import { meowAvoid } from "../../catstypicalframework/hosts/meowAvoid";
+import { meowLayoutModeStatus } from "../../catstypicalframework/hosts/meowLayoutModeStatus";
+import { MeowSearchBar } from "./MeowSearchBar";
 
 @ComponentV2
 struct MeowTitleBar {
-  @Local myMeowAvoid: meowAvoid = AppStorageV2.connect<meowAvoid>(meowAvoid)!;
+  @Local myMeowAvoid: meowAvoid = AppStorageV2.connect(meowAvoid)!;
   @Local meowUiStatuses: meowUiStatuses = AppStorageV2.connect(meowUiStatuses)!;
+  @Local myMeowLayout: meowLayoutModeStatus = AppStorageV2.connect(meowLayoutModeStatus)!;
 
   catsDevDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofSettingsDialog(),
@@ -25,12 +28,11 @@ struct MeowTitleBar {
       MooSymbolButton({ icon: $r('sys.symbol.arrow_clockwise') });
       MooSymbolButton({ icon: $r('sys.symbol.house') });
 
-      Text('MeowTitleBar')
-        .textAlign(TextAlign.Center)
-        .layoutWeight(1)
-        .maxLines(1)
-        .wordBreak(WordBreak.BREAK_ALL)
-        .textOverflow({ overflow: TextOverflow.Ellipsis });
+      if (this.myMeowLayout.wideMode) {
+        MeowSearchBar().layoutWeight(1);
+      } else {
+        Blank();
+      }
 
       MooSymbolButton({
         icon: $r('sys.symbol.dot_grid_2x2'),
@@ -59,4 +61,4 @@ struct MeowTitleBar {
 
 export { MeowTitleBar };
 
-export const heightMeowTitleBar = 32;
+export const heightMeowTitleBar = 36;

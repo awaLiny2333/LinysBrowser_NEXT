@@ -1,11 +1,13 @@
 import { defaultInnerRadius } from '../../catstypicalframework/utils/ui';
+import { heightMeowTitleBar } from '../parts/MeowTitleBar';
 import { fontSizeMedium, getColor, meowThemeColorType, standardSpacing, useEffects } from './constants';
 
 @ComponentV2
 struct MooTextInputV2 {
-  @Param text: string = '';
   @Param @Once placeholder: string | undefined = undefined;
   @Param icon: Resource | undefined = undefined;
+  @Param text: string = '';
+  // Events
   @Event onChange: (c: string) => void;
   @Event onSubmit: () => void;
 
@@ -17,7 +19,8 @@ struct MooTextInputV2 {
           .fontSize(fontSizeMedium);
       }
       TextInput({ text: this.text as string, placeholder: this.placeholder })
-        .borderRadius(defaultInnerRadius)
+        // .padding({ left: 12, right: 12, top: 3, bottom: 3 })
+        .height(heightMeowTitleBar)
         .fontColor(getColor(meowThemeColorType.FONT))
         .caretColor(getColor(meowThemeColorType.FONT))
         .selectedBackgroundColor(getColor(meowThemeColorType.PRIMARY))
@@ -30,7 +33,7 @@ struct MooTextInputV2 {
         .onSubmit(() => {
           this.onSubmit();
         });
-    };
+    }.height(heightMeowTitleBar);
   }
 }
 

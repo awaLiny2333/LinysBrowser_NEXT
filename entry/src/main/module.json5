@@ -23,6 +23,7 @@
         "startWindowBackground": "$color:start_window_background",
         "launchType": "specified",
         "exported": true,
+        "orientation": "auto_rotation_unspecified",
         "skills": [
           {
             "entities": [

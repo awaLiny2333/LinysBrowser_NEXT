@@ -12,6 +12,7 @@ import { meowUiStatuses } from '../hosts/env/classes/meowUiStatuses';
 import { meowAvoid } from '../catstypicalframework/hosts/meowAvoid';
 import { meowFreeWindowModeStatus } from '../catstypicalframework/hosts/meowFreeWindowModeStatus';
 import { meowLayoutModeStatus } from '../catstypicalframework/hosts/meowLayoutModeStatus';
+import { MeowSearchBar } from '../components/parts/MeowSearchBar';
 
 @Entry
 @ComponentV2
@@ -59,6 +60,9 @@ struct Index {
         if (!titleBarPositionBottom()) {
           Column({ space: standardSpacing }) {
             MeowTitleBar();
+            if (!this.myMeowLayout.wideMode) {
+              MeowSearchBar();
+            }
             MeowButtonRow();
           }
           .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
@@ -77,6 +81,9 @@ struct Index {
           Column({ space: standardSpacing }) {
             MeowButtonRow();
             MeowTitleBar();
+            if (!this.myMeowLayout.wideMode) {
+              MeowSearchBar();
+            }
           }
           .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
           .backgroundColor(getColor(meowThemeColorType.SECONDARY))
@@ -100,7 +107,7 @@ struct Index {
     .onAreaChange((o, n) => {
       if (o.width != n.width) {
         this.myMeowLayout.width = n.width as number;
-        this.myMeowLayout.wideMode = this.myMeowLayout.width > 900;
+        this.myMeowLayout.wideMode = this.myMeowLayout.width > 700;
       }
       if (o.height != n.height) {
         this.myMeowLayout.height = n.height as number;
@@ -126,12 +133,15 @@ struct Index {
     // Vertical
     let top: number;
     let bottom: number;
+    const slimCompensation = this.myMeowLayout.wideMode ? 0 : heightMeowTitleBar + standardSpacing; // For double layer title bar on phones / slim windows.
     if (titleBarPositionBottom()) {
-      top = this.myMeowAvoid.top;
+      // Bottom
       const freeWindowCompensation = (this.myMeowFreeWindowModeStatus.on ? standardSpacing : 0);
-      bottom = this.myMeowAvoid.bottom + heightMeowTitleBar + standardSpacing + freeWindowCompensation;
+      top = this.myMeowAvoid.top;
+      bottom = this.myMeowAvoid.bottom + freeWindowCompensation + (heightMeowTitleBar + standardSpacing) + slimCompensation;
     } else {
-      top = this.myMeowAvoid.top + heightMeowTitleBar + standardSpacing;
+      // Top
+      top = this.myMeowAvoid.top + (heightMeowTitleBar + standardSpacing) + slimCompensation;
       bottom = this.myMeowAvoid.bottom + (useEffects() ? standardSpacing : 0);
     }
 
