@@ -42,7 +42,7 @@ struct UniContentCard {
     .backgroundEffect({ color: $r('app.color.blur_background'), radius: this.blurRadius })
     .backgroundColor(getColor(meowThemeColorType.PRIMARY))
     .border({ radius: this.roundedRadius, width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth') })
-    .padding(standardSpacing * 1.5)
+    .padding(standardSpacing * 1.25)
     .alignItems(HorizontalAlign.Start)
     .onHover((isHover) => {
       if (isHover != this.isHover) {

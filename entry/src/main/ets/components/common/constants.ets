@@ -39,10 +39,10 @@ export enum mooTextType {
  */
 export function useEffects() {
   const settings = AppStorageV2.connect(meowManagedSettings)!;
-  const layout = AppStorageV2.connect(meowLayoutModeStatus)!;
-  if (layout.powerSave) {
-    return false;
-  }
+  // const layout = AppStorageV2.connect(meowLayoutModeStatus)!;
+  // if (layout.powerSave) {
+  //   return false;
+  // }
   return settings.settingsData[7].value as boolean;
 }
 
@@ -58,7 +58,7 @@ export function getColor(type: meowThemeColorType): ResourceColor {
       case meowThemeColorType.PRIMARY:
         return $r('app.color.blur_background');
       case meowThemeColorType.SECONDARY:
-        return Color.Transparent;
+        return $r('sys.color.background_tertiary');
       case meowThemeColorType.FONT:
         break; // Use the Normal color.
       default:

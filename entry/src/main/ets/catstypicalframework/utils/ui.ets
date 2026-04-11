@@ -115,8 +115,12 @@ export function listenAvoid(windowClass: window.Window) {
         }
       }
       if (data.type == window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
-        let bottom = meowPx2vp(data.area.bottomRect.height);
-        avoid.bottom = Math.max(bottom, 8);
+        let bottom = meowPx2vp(data.area.bottomRect.height) * 0.5;
+        if (free && !free.on) {
+          avoid.bottom = Math.max(bottom, 8);
+        } else {
+          avoid.bottom = 0; // No bottom avoid for free windows.
+        }
       }
       if (data.type == window.AvoidAreaType.TYPE_CUTOUT) {
         let left = meowPx2vp(data.area.leftRect.width);
@@ -154,7 +158,11 @@ export function getUpdateAvoid(windowClass: window.Window) {
     }
 
     avoidArea = windowClass.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR);
-    avoid.bottom = Math.max(meowPx2vp(avoidArea.bottomRect.height), 8);
+    if (free && !free.on) {
+      avoid.bottom = Math.max(meowPx2vp(avoidArea.bottomRect.height) * 0.5, 8);
+    } else {
+      avoid.bottom = 0; // No bottom avoid for free windows.
+    }
 
     avoid.left = Math.max(meowPx2vp(avoidArea.leftRect.width), 8);
     avoid.right = Math.max(8, meowPx2vp(avoidArea.rightRect.width));
@@ -221,8 +229,10 @@ export const windowTopAvoidLeft: number = 20;
  *
  * System common events won't trigger once the app is in background.
  * So we have to use this instead as a 下策.
+ *
+ * @param interval The interval between each check.
  */
-export function listenPowerSave() {
+export function listenPowerSave(interval: number = 10000) {
   meow(`Try to force listenPowerSave();`, 'listenPowerSave');
   setInterval(() => {
     const newMode = power.getPowerMode();
@@ -236,7 +246,7 @@ export function listenPowerSave() {
         meow(`Powermode changed! powerSave = ${isPowerSave}`, 'listenPowerSave');
       }
     }
-  }, 1200);
+  }, interval);
 }
 
 /**

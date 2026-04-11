@@ -1,7 +1,6 @@
 import { defaultRoundedRadius } from "../../catstypicalframework/utils/ui";
 import { AppStorageV2 } from "@kit.ArkUI";
 import { MooSymbolButton } from "../common/MooSymbolButton";
-import { defaultAnimation } from "../common/constants";
 import { meowUiStatuses } from "../../hosts/env/classes/meowUiStatuses";
 import { WoofSettingsDialog } from "../dialogs/WoofSettings/WoofSettings";
 import { meowAvoid } from "../../catstypicalframework/hosts/meowAvoid";
@@ -53,7 +52,6 @@ struct MeowTitleBar {
       });
     }
     .height(heightMeowTitleBar)
-    .animation(defaultAnimation())
     .width('100%')
     .padding({ left: this.myMeowAvoid.left, right: this.myMeowAvoid.right });
   }

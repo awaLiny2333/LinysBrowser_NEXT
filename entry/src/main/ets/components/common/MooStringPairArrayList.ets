@@ -1,9 +1,10 @@
 import { defaultInnerRadius, defaultMenuItemRadius } from '../../catstypicalframework/utils/ui';
-import { defaultAnimation, getColor, meowFlexOptions, meowThemeColorType, standardSpacing, useEffects } from './constants';
+import { defaultAnimation, getColor, meowThemeColorType, preferRightHand, standardSpacing, useEffects } from './constants';
 import { MooCapsuleButton } from './MooCapsuleButton';
 import { MooSymbolButtonSmall } from './MooSymbolButtonSmall';
 import { MooTextInputV2 } from './MooTextInputV2';
 import { MooTextModifier } from './MooTextModifier';
+import { LengthMetrics } from '@kit.ArkUI';
 
 @ComponentV2
 struct MooStringPairArrayList {
@@ -19,7 +20,11 @@ struct MooStringPairArrayList {
 
   build() {
     Scroll() {
-      Flex(meowFlexOptions) {
+      Flex({
+        wrap: preferRightHand() ? FlexWrap.WrapReverse : FlexWrap.Wrap,
+        space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) },
+        alignItems: ItemAlign.Center
+      }) {
         // The fixed default item
         StringPairArrayItem({
           selectedIndex: this.selectedIndex,

@@ -1,7 +1,7 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
 import { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
-import { defaultDecorHeight, defaultInnerRadius} from '../catstypicalframework/utils/ui';
+import { defaultDecorHeight, defaultInnerRadius } from '../catstypicalframework/utils/ui';
 import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, titleBarPositionBottom, useEffects } from '../components/common/constants';
 import lazy { heightMeowTitleBar, MeowTitleBar } from '../components/parts/MeowTitleBar';
 import lazy { MeowButtonRow } from '../components/parts/MeowButtonRow';
@@ -40,7 +40,9 @@ struct Index {
           Column() {
             Image(this.myMeowResources.backgroundImage)
               .opacity(useEffects() ? 0.5 : 1)
+              .grayscale(useEffects() ? 1 : 0)
               .animation(defaultAnimation());
+
           }
           .border(useEffects() ? { radius: defaultInnerRadius, width: 1, color: $r('sys.color.icon_fourth') } : { width: 0, radius: 0 })
           .backgroundColor(getColor(meowThemeColorType.PRIMARY))
@@ -82,7 +84,7 @@ struct Index {
             bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
             middle: { anchor: '__container__', align: HorizontalAlign.Center }
           })
-          .translate({ y: -(titleBarPositionBottom() || useEffects() ? this.myMeowAvoid.bottom : 0) }) // Bottom avoid.
+          .translate({ y: (titleBarPositionBottom() || useEffects() ? - this.myMeowAvoid.bottom - (this.myMeowFreeWindowModeStatus.on ? standardSpacing : 0) : 0) }) // Bottom avoid.
           .padding(titleBarPositionBottom() ? { top: standardSpacing } : 0)
           .width('100%');
         }
@@ -125,11 +127,12 @@ struct Index {
     let top: number;
     let bottom: number;
     if (titleBarPositionBottom()) {
-      top = defaultDecorHeight;
-      bottom = heightMeowTitleBar + 2 * standardSpacing;
+      top = this.myMeowAvoid.top;
+      const freeWindowCompensation = (this.myMeowFreeWindowModeStatus.on ? standardSpacing : 0);
+      bottom = this.myMeowAvoid.bottom + heightMeowTitleBar + standardSpacing + freeWindowCompensation;
     } else {
-      top = defaultDecorHeight + heightMeowTitleBar + standardSpacing;
-      bottom = useEffects() ? standardSpacing : 0;
+      top = this.myMeowAvoid.top + heightMeowTitleBar + standardSpacing;
+      bottom = this.myMeowAvoid.bottom + (useEffects() ? standardSpacing : 0);
     }
 
     // Horizontal
