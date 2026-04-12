@@ -1,3 +1,10 @@
+/**
+ * ALL UI RELATED SETTINGS OPTIONS SHOULD BE CALLED HERE.
+ * IN CASE OF A SITUATION IN WHICH I NEED TO CHANGE SOME ORDERS IN defaultSettingsEntries.
+ * GATEHREING THEM ALL HERE MAKES IT EASIER.
+ * 
+ * For other settings (like whether to download directly to Downloads folder), the getters are put in the scripts/xxx.ets files in each host folder under entry/src/main/ets/hosts.
+ */
 import { AppStorageV2, LengthMetrics } from "@kit.ArkUI";
 import Curves from '@ohos.curves';
 import { meowLayoutModeStatus } from "../../catstypicalframework/hosts/meowLayoutModeStatus";
@@ -83,14 +90,22 @@ export function titleBarPositionBottom() {
 }
 
 /**
- * Gets if the user prefers right hand.
+ * Gets if the user prefers right hand. This inclused considering the smartReachability's suggestion.
  * @returns true if the user prefers right hand, false otherwise.
  */
-export function preferRightHand() {
+export function summarizedPreferRightHand(): boolean {
   if (smartReachability()) {
     const layout = AppStorageV2.connect(meowLayoutModeStatus)!;
     return layout.smartReachabilitySaysWeShouldPreferRightHand;
   }
+  return preferRightHandFromSettings();
+}
+
+/**
+ * Gets if the user prefers right hand. This reads only from the settings.
+ * @returns true if the user prefers right hand, false otherwise.
+ */
+export function preferRightHandFromSettings() {
   const settings = AppStorageV2.connect(meowManagedSettings)!;
   return settings.settingsData[47].value == 'right';
 }

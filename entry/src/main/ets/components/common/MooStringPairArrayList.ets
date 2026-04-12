@@ -1,5 +1,5 @@
 import { defaultInnerRadius, defaultMenuItemRadius } from '../../catstypicalframework/utils/ui';
-import { defaultAnimation, getColor, meowThemeColorType, preferRightHand, standardSpacing, useEffects } from './constants';
+import { defaultAnimation, getColor, meowThemeColorType, summarizedPreferRightHand, standardSpacing, useEffects } from './constants';
 import { MooCapsuleButton } from './MooCapsuleButton';
 import { MooSymbolButtonSmall } from './MooSymbolButtonSmall';
 import { MooTextInputV2 } from './MooTextInputV2';
@@ -21,7 +21,7 @@ struct MooStringPairArrayList {
   build() {
     Scroll() {
       Flex({
-        wrap: preferRightHand() ? FlexWrap.WrapReverse : FlexWrap.Wrap,
+        wrap: summarizedPreferRightHand() ? FlexWrap.WrapReverse : FlexWrap.Wrap,
         space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) },
         alignItems: ItemAlign.Center
       }) {
@@ -174,8 +174,8 @@ struct StringPairArrayItem {
             doubleConfirm: true
           });
         }
-        .direction(preferRightHand() ? Direction.Rtl : Direction.Ltr)
-        .alignSelf(preferRightHand() ? ItemAlign.End : ItemAlign.Start);
+        .direction(summarizedPreferRightHand() ? Direction.Rtl : Direction.Ltr)
+        .alignSelf(summarizedPreferRightHand() ? ItemAlign.End : ItemAlign.Start);
       }
     }
     .border(this.imSelected()

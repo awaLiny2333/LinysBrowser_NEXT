@@ -8,7 +8,7 @@ const DOMAIN = 0x0000;
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
-    hilog.warn(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
+    hilog.warn(DOMAIN, 'testTag', '%{public}s', `Ability onCreate, launchParam: ${launchParam}`);
     earlyOnCreate(this.context);
 
     try {
@@ -21,6 +21,7 @@ export default class EntryAbility extends UIAbility {
   }
 
   onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    hilog.warn(DOMAIN, 'testTag', '%{public}s', `Ability onNewWant, launchParam: ${launchParam}`);
     onWant(want, wantSource.RUNTIME);
   }
 
@@ -54,7 +55,7 @@ export default class EntryAbility extends UIAbility {
   onDestroy(): void {
     hilog.warn(DOMAIN, 'testTag', '%{public}s', ' \nAbility onDestroy');
   }
-  
+
   onWindowStageDestroy(): void {
     hilog.warn(DOMAIN, 'testTag', '%{public}s', ' \nAbility onWindowStageDestroy');
   }

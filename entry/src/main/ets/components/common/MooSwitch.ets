@@ -1,4 +1,4 @@
-import { defaultAnimation, getColor, meowThemeColorType, preferRightHand, useEffects } from './constants';
+import { defaultAnimation, getColor, meowThemeColorType, summarizedPreferRightHand, useEffects } from './constants';
 import { MooTextModifier } from './MooTextModifier';
 
 @ComponentV2
@@ -25,7 +25,7 @@ struct MooSwitch {
         .switchPointColor(useEffects() ? getColor(meowThemeColorType.FONT) : getColor(meowThemeColorType.PRIMARY))
         .opacity(0.9);
     }
-    .direction(preferRightHand() ? Direction.Ltr : Direction.Rtl)
+    .direction(summarizedPreferRightHand() ? Direction.Ltr : Direction.Rtl)
     .animation(defaultAnimation());
   }
 }

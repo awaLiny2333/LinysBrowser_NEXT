@@ -31,6 +31,7 @@ import { meowBookmarkStash } from '../../hosts/bookmarks/classes/meowBookmarkSta
 import { meowDialogManager } from '../../hosts/env/classes/meowDialogManager';
 import { meowUiStatuses } from '../../hosts/env/classes/meowUiStatuses';
 import { meowLayoutModeStatus } from '../hosts/meowLayoutModeStatus';
+import { preferRightHandFromSettings } from '../../components/common/constants';
 
 // Flows
 /**
@@ -140,8 +141,7 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
     const dark = context.config.colorMode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
     const powerSave = power.getPowerMode() == power.DevicePowerMode.MODE_POWER_SAVE;
     // Set the value of myMeowUiStatuses.smartReachabilitySaysWeShouldPreferRightHand here as a starting position for smart reachability.
-    let myMeowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
-    const smartReachabilitySaysWeShouldPreferRightHand = myMeowManagedSettings.settingsData[47].value == 'right';
+    const smartReachabilitySaysWeShouldPreferRightHand = preferRightHandFromSettings();
     AppStorageV2.connect(meowLayoutModeStatus, () => new meowLayoutModeStatus(wideMode, width, height, dark, powerSave, smartReachabilitySaysWeShouldPreferRightHand));
   } catch (e) {
     meow(`AppStorageV2.connect(meowLayoutModeStatus, () => new meowLayoutModeStatus(wideMode, width, height, dark, powerSave, smartReachabilitySaysWeShouldPreferRightHand)); Failed: ${e}`, 'init', meowLevel.ERROR);
