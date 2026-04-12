@@ -1,12 +1,17 @@
+import { AppStorageV2 } from '@kit.ArkUI';
+import { meowManagedSettings } from '../../../hosts/settings/classes/meowManagedSettings';
 import { standardSpacing, waterFlowColumnsTemplate } from '../../common/constants';
 import { WoofUniFrame } from './common/WoofUniFrame';
 import { SettingsAccessibility } from './parts/Accessibility';
+import { SettingsAppearance } from './parts/Appearance';
 import { SettingsExperience } from './parts/Experience';
 import { SettingsGeneral } from './parts/General';
 import { SettingsOnStartUp } from './parts/OnStartUp';
 
 @ComponentV2
 struct WoofSettings {
+  @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+
   build() {
     WaterFlow() {
       FlowItem() {
@@ -20,6 +25,9 @@ struct WoofSettings {
       }.padding({ bottom: standardSpacing });
       FlowItem() {
         SettingsAccessibility();
+      }.padding({ bottom: standardSpacing });
+      FlowItem() {
+        SettingsAppearance();
       }.padding({ bottom: standardSpacing });
     }
     .edgeEffect(EdgeEffect.Spring)

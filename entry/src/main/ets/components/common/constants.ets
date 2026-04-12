@@ -77,6 +77,7 @@ export function getColor(type: meowThemeColorType): ResourceColor {
  * @returns true if the title bar is at the bottom, false otherwise.
  */
 export function titleBarPositionBottom() {
+  // return true;
   const settings = AppStorageV2.connect(meowManagedSettings)!;
   return settings.settingsData[1].value == 'bottom';
 }

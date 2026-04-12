@@ -1,9 +1,9 @@
-import {  windowTopAvoidRight, windowTopAvoidLeft, defaultRoundedRadius } from '../../catstypicalframework/utils/ui';
+import { windowTopAvoidRight, windowTopAvoidLeft, defaultRoundedRadius } from '../../catstypicalframework/utils/ui';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { CatsDevDialog } from '../dialogs/CatsDev/CatsDevCards';
 import { MooSymbolButtonSmall } from '../common/MooSymbolButtonSmall';
 import { MooTextModifier } from '../common/MooTextModifier';
-import { meowDialogManager } from '../../hosts/env/classes/meowDialogManager';
+import { meowDialogManager, openDialogRequest, openDialogRequestType, requestDialog } from '../../hosts/env/classes/meowDialogManager';
 import { meowAvoid } from '../../catstypicalframework/hosts/meowAvoid';
 import { meowFreeWindowModeStatus } from '../../catstypicalframework/hosts/meowFreeWindowModeStatus';
 import { meowLayoutModeStatus } from '../../catstypicalframework/hosts/meowLayoutModeStatus';
@@ -19,14 +19,6 @@ struct MeowTitleTop {
   @Local myMeowAvoid: meowAvoid = AppStorageV2.connect(meowAvoid)!;
   @Local myMeowLayout: meowLayoutModeStatus = AppStorageV2.connect(meowLayoutModeStatus)!;
   @Local myMeowDialogManager: meowDialogManager = AppStorageV2.connect(meowDialogManager)!;
-
-  catsDevDialogController: CustomDialogController = new CustomDialogController({
-    builder: CatsDevDialog(),
-    alignment: DialogAlignment.Center,
-    width: '90%',
-    // height: '90%',
-    cornerRadius: defaultRoundedRadius + 4,
-  });
 
   build() {
     Row({ space: 10 }) {
@@ -51,9 +43,7 @@ struct MeowTitleTop {
         .textOverflow({ overflow: TextOverflow.Ellipsis })
         .onClick(() => {
           // Open
-          if (this.myMeowDialogManager.isEmpty()) {
-            this.catsDevDialogController.open();
-          }
+          requestDialog(openDialogRequestType.DEV);
         });
       // right button(s)
       if (this.myMeowFreeWindowModeStatus.on) {
@@ -75,14 +65,6 @@ struct MeowTitleTop {
     .height(this.myMeowAvoid.top)
     .width('100%')
     .padding(this.myMeowFreeWindowModeStatus.on ? { right: windowTopAvoidRight, left: windowTopAvoidLeft, top: 6 } : { top: 6 });
-  }
-
-  /**
-   * Builder of CatsDevDialog.
-   */
-  @Builder
-  CatsDevDialogBuilder(): void {
-    CatsDevDialog();
   }
 }
 

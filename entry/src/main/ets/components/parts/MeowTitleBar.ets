@@ -1,10 +1,9 @@
-import { defaultRoundedRadius } from "../../catstypicalframework/utils/ui";
 import { AppStorageV2 } from "@kit.ArkUI";
-import { MooSymbolButton } from "../common/MooSymbolButton";
-import { meowUiStatuses } from "../../hosts/env/classes/meowUiStatuses";
-import { WoofSettingsDialog } from "../dialogs/WoofSettings/WoofSettings";
 import { meowAvoid } from "../../catstypicalframework/hosts/meowAvoid";
 import { meowLayoutModeStatus } from "../../catstypicalframework/hosts/meowLayoutModeStatus";
+import { openDialogRequestType, requestDialog } from "../../hosts/env/classes/meowDialogManager";
+import { meowUiStatuses } from "../../hosts/env/classes/meowUiStatuses";
+import { MooSymbolButton } from "../common/MooSymbolButton";
 import { MeowSearchBar } from "./MeowSearchBar";
 
 @ComponentV2
@@ -12,14 +11,6 @@ struct MeowTitleBar {
   @Local myMeowAvoid: meowAvoid = AppStorageV2.connect(meowAvoid)!;
   @Local meowUiStatuses: meowUiStatuses = AppStorageV2.connect(meowUiStatuses)!;
   @Local myMeowLayout: meowLayoutModeStatus = AppStorageV2.connect(meowLayoutModeStatus)!;
-
-  catsDevDialogController: CustomDialogController = new CustomDialogController({
-    builder: WoofSettingsDialog(),
-    alignment: DialogAlignment.Center,
-    width: '95%',
-    height: '95%',
-    cornerRadius: defaultRoundedRadius + 4,
-  });
 
   build() {
     Row({ space: 1 }) {
@@ -48,11 +39,13 @@ struct MeowTitleBar {
       MooSymbolButton({ icon: $r('sys.symbol.bookmark') });
       MooSymbolButton({ icon: $r('sys.symbol.download') });
       MooSymbolButton({
-        icon: $r('sys.symbol.gearshape'), clickAction: () => {
-          this.catsDevDialogController.open();
+        icon: $r('sys.symbol.gearshape'),
+        clickAction: () => {
+          requestDialog(openDialogRequestType.SETTINGS);
         }
       });
     }
+    // .direction(preferRightHand() ? Direction.Ltr : Direction.Rtl)
     .height(heightMeowTitleBar)
     .width('100%')
     .padding({ left: this.myMeowAvoid.left, right: this.myMeowAvoid.right });

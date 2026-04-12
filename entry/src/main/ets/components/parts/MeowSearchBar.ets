@@ -5,11 +5,12 @@ import { heightMeowTitleBar } from './MeowTitleBar';
 
 /**
  * The search bar.
- * 
+ *
  * @todo FLUENT Switch between wide and non-wide mode. (Perhaps with custom node?)
  */
 @ComponentV2
 struct MeowSearchBar {
+  @Param @Once needPadding: boolean = true;
   @Local myMeowAvoid: meowAvoid = AppStorageV2.connect(meowAvoid)!;
 
   build() {
@@ -18,7 +19,7 @@ struct MeowSearchBar {
         placeholder: ' 󰀩 ...'
       });
     }
-    .padding({ left: this.myMeowAvoid.left, right: this.myMeowAvoid.right });
+    .padding(this.needPadding ? { left: this.myMeowAvoid.left, right: this.myMeowAvoid.right } : {});
   }
 }
 
@@ -26,7 +27,7 @@ export { MeowSearchBar };
 
 /**
  * Basically the same as MooTextInputV2 but with some modifications on color and style.
- * 
+ *
  * @see entry/src/main/ets/components/common/MooTextInputV2.ets
  */
 @ComponentV2

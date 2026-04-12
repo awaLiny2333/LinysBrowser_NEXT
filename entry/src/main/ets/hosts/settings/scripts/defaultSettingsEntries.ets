@@ -14,9 +14,9 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   // Customization
   new meowSettingsEntry('title_bar_position', meowSettingsEntryType.STRING, 'bottom'), // 'top' | 'bottom'
   new meowSettingsEntry('status_showing_large_my_window_alias', meowSettingsEntryType.BOOLEAN, 'false'),
-  new meowSettingsEntry('tabs_style', meowSettingsEntryType.STRING, 'vertical'), // 'vertical' | 'horizontal'
-  new meowSettingsEntry('tabs_style_non_tablet_mode', meowSettingsEntryType.STRING, 'vertical'), // 'vertical' | 'horizontal'
-  new meowSettingsEntry('bottom_avoid', meowSettingsEntryType.BOOLEAN, 'true'),
+  new meowSettingsEntry('tabs_style', meowSettingsEntryType.STRING, 'vertical'), // 'vertical' | 'horizontal' #3
+  new meowSettingsEntry('tabs_style_non_tablet_mode', meowSettingsEntryType.STRING, 'vertical'), // 'vertical' | 'horizontal' #4
+  new meowSettingsEntry('bottom_avoid', meowSettingsEntryType.BOOLEAN, 'true'), // #5
   new meowSettingsEntry('navigation_indicator', meowSettingsEntryType.BOOLEAN, 'true'),
   new meowSettingsEntry('effects', meowSettingsEntryType.BOOLEAN, 'false'),
   new meowSettingsEntry('title_function_buttons', meowSettingsEntryType.STRING, '01'),

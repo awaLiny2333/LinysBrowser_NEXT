@@ -13,6 +13,7 @@ import { meowAvoid } from '../catstypicalframework/hosts/meowAvoid';
 import { meowFreeWindowModeStatus } from '../catstypicalframework/hosts/meowFreeWindowModeStatus';
 import { meowLayoutModeStatus } from '../catstypicalframework/hosts/meowLayoutModeStatus';
 import { MeowSearchBar } from '../components/parts/MeowSearchBar';
+import { MeowPlaceForDialogs } from '../components/parts/MeowPlaceForDialogs';
 
 @Entry
 @ComponentV2
@@ -35,10 +36,13 @@ struct Index {
   build() {
     RelativeContainer() {
       if (this.render) {
+        // Dialog handler
+        MeowPlaceForDialogs();
+
         // Main
         // This is ugly.
         Column() {
-          Column() {
+          Stack() {
             Image(this.myMeowResources.backgroundImage)
               .opacity(useEffects() ? 0.5 : 1)
               .grayscale(useEffects() ? 1 : 0)

@@ -17,13 +17,13 @@ struct WoofUniFrame {
 
   aboutToAppear(): void {
     if (this.controller) {
-      this.myMeowDialogManager.openDialog(this.controller, this.title);
+      this.myMeowDialogManager.registerOpenDialog(this.controller, this.title);
     }
   }
 
   aboutToDisappear(): void {
     if (this.controller) {
-      this.myMeowDialogManager.closeDialog(this.controller, this.title);
+      this.myMeowDialogManager.registerCloseDialog(this.controller, this.title);
     }
   }
 

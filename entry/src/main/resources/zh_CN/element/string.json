@@ -198,7 +198,7 @@
     },
     {
       "name": "Settings_category_accessibility_singleHand_reverseSideMenus",
-      "value": "反转侧边菜单 󰠯 / 󰎩"
+      "value": "反转侧边菜单 󰎥 / 󰎩"
     },
     {
       "name": "Settings_category_accessibility_singleHand_reverseSideBars",
@@ -221,8 +221,108 @@
       "value": "快捷键管理"
     },
     {
-      "name": "Settings_category_appeearence",
+      "name": "Settings_category_appearance",
       "value": "外观"
+    },
+    {
+      "name": "Settings_category_appearance_bottomAvoid",
+      "value": "底部避让 󰎵 / 󰎩"
+    },
+    {
+      "name": "Settings_category_appearance_navigationIndicator",
+      "value": "导航条 󰎵 / 󰎩"
+    },
+    {
+      "name": "Settings_category_appearance_layout",
+      "value": "布局"
+    },
+    {
+      "name": "Settings_category_appearance_layout_titleBarPins",
+      "value": "标题栏固定项"
+    },
+    {
+      "name": "Settings_category_appearance_layout_titleBarPosition",
+      "value": "标题栏位置"
+    },
+    {
+      "name": "Settings_category_appearance_layout_tabsStyle_wide",
+      "value": "标签栏位置 󰎥 / 󰎩"
+    },
+    {
+      "name": "Settings_category_appearance_layout_tabsStyle_slim",
+      "value": "标签栏位置 󰎵"
+    },
+    {
+      "name": "Settings_category_appearance_layout_shrinkSideBar",
+      "value": "收起侧边栏"
+    },
+    {
+      "name": "Settings_category_appearance_layout_shrinkSideBarButton",
+      "value": "收起按钮"
+    },
+    {
+      "name": "Settings_category_appearance_windows",
+      "value": "窗口"
+    },
+    {
+      "name": "Settings_category_appearance_windows_windowTitle_wide",
+      "value": "显示窗口标题 󰎥 / 󰎩"
+    },
+    {
+      "name": "Settings_category_appearance_windows_windowTitle_slim",
+      "value": "显示窗口标题 󰎵"
+    },
+    {
+      "name": "Settings_category_appearance_windows_windowTitlePosition",
+      "value": "标题位置"
+    },
+    {
+      "name": "Settings_category_appearance_windows_windowTitle_gigantic",
+      "value": "失焦时显示超大标题"
+    },
+    {
+      "name": "Settings_category_appearance_animation",
+      "value": "动画"
+    },
+    {
+      "name": "Settings_category_appearance_animation_response",
+      "value": "动画响应"
+    },
+    {
+      "name": "Settings_category_appearance_animation_elasticity",
+      "value": "动画弹性"
+    },
+    {
+      "name": "Settings_category_appearance_animation_reset",
+      "value": "重置动画"
+    },
+    {
+      "name": "Settings_category_appearance_colors",
+      "value": "颜色"
+    },
+    {
+      "name": "Settings_category_appearance_colors_effects",
+      "value": "高级效果"
+    },
+    {
+      "name": "Settings_category_appearance_colors_light",
+      "value": "浅色主题"
+    },
+    {
+      "name": "Settings_category_appearance_colors_dark",
+      "value": "深色主题"
+    },
+    {
+      "name": "Settings_category_appearance_colors_reset",
+      "value": "重置主题"
+    },
+    {
+      "name": "Settings_category_appearance_colors_forceDarkMode",
+      "value": "强制网页深色模式"
+    },
+    {
+      "name": "Settings_category_appearance_colors_forceDarkMode_manage",
+      "value": "管理网页深色模式"
     },
     {
       "name": "Settings_category_history",

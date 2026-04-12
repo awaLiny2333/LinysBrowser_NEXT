@@ -1,16 +1,33 @@
+/**
+ * About hosts in multi window environment:
+ *
+ * ALL WINDOWS SHARE:
+ * - meowManagedSettings
+ * - meowResources
+ * - meowBookmarkStash
+ * - meowHistorian
+ *
+ * Every window is expected to have one of each of the other classes:
+ * - meowMisc
+ * - meowUiStatuses
+ * - meowLayoutModeStatus
+ * - meowAvoid
+ * - meowFreeWindowModeStatus
+ * - meowDialogManager
+ */
+
 import Want from '@ohos.app.ability.Want';
 import { AppStorageV2, window } from '@kit.ArkUI';
 import { meow, meowLevel } from '../utils/catsLogger';
 import { getUpdateAvoid, getUpdateFreeWindowMode, listenAvoid, listenFocus, listenFreeWindowMode, listenPowerSave, listenSmartReachability, meowPx2vp } from '../utils/ui';
 import { BusinessError, power } from '@kit.BasicServicesKit';
-import { meowHistorian } from '../../hosts/history/classes/meowHistorian';
-import { Context } from '@ohos.abilityAccessCtrl';
-import { meowMisc } from '../hosts/meowMisc';
+import { common, ConfigurationConstant, Configuration } from '@kit.AbilityKit';
 import { ensureDirectoryExist } from '../utils/storage';
+import { meowHistorian } from '../../hosts/history/classes/meowHistorian';
+import { meowMisc } from '../hosts/meowMisc';
 import { meowManagedSettings } from '../../hosts/settings/classes/meowManagedSettings';
 import { meowResources } from '../../hosts/env/classes/meowResources';
 import { meowBookmarkStash } from '../../hosts/bookmarks/classes/meowBookmarkStash';
-import { common, ConfigurationConstant, Configuration } from '@kit.AbilityKit';
 import { meowDialogManager } from '../../hosts/env/classes/meowDialogManager';
 import { meowUiStatuses } from '../../hosts/env/classes/meowUiStatuses';
 import { meowLayoutModeStatus } from '../hosts/meowLayoutModeStatus';
@@ -18,6 +35,7 @@ import { meowLayoutModeStatus } from '../hosts/meowLayoutModeStatus';
 // Flows
 /**
  * Called on early on create, before everything.
+ * Only put actions that doesn't use any performance here (Highly concurrent functions!)
  * @param context The context.
  *
  * Jobs in this function are executed in the very first place of launch.
@@ -30,16 +48,19 @@ export function earlyOnCreate(context: Context) {
   const filesDir = context.filesDir;
 
   // Declare hosts
-  AppStorageV2.connect(meowDialogManager, () => new meowDialogManager()); // TODO: multi-window compatibility!
-  AppStorageV2.connect(meowUiStatuses, () => new meowUiStatuses()); // TODO: multi-window compatibility!
-  AppStorageV2.connect(meowMisc, () => new meowMisc());
-  AppStorageV2.connect(meowBookmarkStash, () => new meowBookmarkStash(`${filesDir}/html_bookmarks.html`))!;
-  AppStorageV2.connect(meowHistorian, () => new meowHistorian(`${filesDir}`))!;
-  AppStorageV2.connect(meowManagedSettings, () => new meowManagedSettings(`${filesDir}/settings.json.browsercatsettings.txt`))!;
-  const myMeowResources = AppStorageV2.connect(meowResources, () => new meowResources(`${filesDir}/homepage_background_arrayBuffer`))!;
 
-  // Actions that doesn't use any performance (Highly concurrent functions!)
-  myMeowResources.loadBackgroundImage();
+  // Window private
+  AppStorageV2.connect(meowDialogManager, () => new meowDialogManager()); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
+  AppStorageV2.connect(meowUiStatuses, () => new meowUiStatuses()); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
+  AppStorageV2.connect(meowMisc, () => new meowMisc()); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
+
+  // Shared
+  AppStorageV2.connect(meowBookmarkStash, () => new meowBookmarkStash(`${filesDir}/html_bookmarks.html`))!; // TODO: multi-window compatibility! Execute ONCE!
+  AppStorageV2.connect(meowHistorian, () => new meowHistorian(`${filesDir}`))!; // TODO: multi-window compatibility! Execute ONCE!
+  AppStorageV2.connect(meowManagedSettings, () => new meowManagedSettings(`${filesDir}/settings.json.browsercatsettings.txt`))!; // TODO: multi-window compatibility! Execute ONCE!
+  const myMeowResources = AppStorageV2.connect(meowResources, () => new meowResources(`${filesDir}/homepage_background_arrayBuffer`))!; // TODO: multi-window compatibility! Execute ONCE!
+
+  myMeowResources.loadBackgroundImage(); // TODO: multi-window compatibility! Execute ONCE!
 
   // meow(`Finished in ${Date.now() - startTime} ms.`, 'earlyOnCreate', meowLevel.WARN);
 }
@@ -110,6 +131,7 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
   }
 
   // Initialize window status
+  // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
   try {
     const rect: window.Rect = window.getWindowProperties().windowRect;
     const width = meowPx2vp(rect.width);
@@ -124,29 +146,26 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
   } catch (e) {
     meow(`AppStorageV2.connect(meowLayoutModeStatus, () => new meowLayoutModeStatus(wideMode, width, height, dark, powerSave, smartReachabilitySaysWeShouldPreferRightHand)); Failed: ${e}`, 'init', meowLevel.ERROR);
   }
+  listenFocus(window); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
+  listenPowerSave(); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
 
-  // TODO: multi-window compatibility!
+  getUpdateFreeWindowMode(context, window); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
+  listenFreeWindowMode(context, window); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
 
-  getUpdateFreeWindowMode(context, window);
-  listenFreeWindowMode(context, window);
+  getUpdateAvoid(window); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
+  listenAvoid(window); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
 
-  getUpdateAvoid(window);
-  listenAvoid(window);
-
-  listenFocus(window);
-  listenPowerSave();
-
-  listenSmartReachability();
+  listenSmartReachability(); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
 
   // watchLaunch(); // This is chicken rib. >O
 
   // Init History here to avoid resource competition
-  let myMeowHistorian = AppStorageV2.connect(meowHistorian);
-  myMeowHistorian?.init();
+  let myMeowHistorian = AppStorageV2.connect(meowHistorian); // TODO: multi-window compatibility! Execute ONCE!
+  myMeowHistorian?.init(); // TODO: multi-window compatibility! Execute ONCE!
 
   // Load bookmarks
-  let myMeowBookmarkStash = AppStorageV2.connect(meowBookmarkStash);
-  myMeowBookmarkStash?.loadFromDisk();
+  let myMeowBookmarkStash = AppStorageV2.connect(meowBookmarkStash); // TODO: multi-window compatibility! Execute ONCE!
+  myMeowBookmarkStash?.loadFromDisk(); // TODO: multi-window compatibility! Execute ONCE!
 
   meow(`Finished in ${Date.now() - startTime} ms.`, 'onLoadContent', meowLevel.WARN);
 }

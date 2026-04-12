@@ -198,7 +198,7 @@
     },
     {
       "name": "Settings_category_accessibility_singleHand_reverseSideMenus",
-      "value": "Reverse side menus 󰠯 / 󰎩"
+      "value": "Reverse side menus 󰎥 / 󰎩"
     },
     {
       "name": "Settings_category_accessibility_singleHand_reverseSideBars",
@@ -221,8 +221,108 @@
       "value": "Manage shortcuts"
     },
     {
-      "name": "Settings_category_appeearence",
+      "name": "Settings_category_appearance",
       "value": "Appearence"
+    },
+    {
+      "name": "Settings_category_appearance_bottomAvoid",
+      "value": "Bottom avoid 󰎵 / 󰎩"
+    },
+    {
+      "name": "Settings_category_appearance_navigationIndicator",
+      "value": "Show navigation indicator 󰎵 / 󰎩"
+    },
+    {
+      "name": "Settings_category_appearance_layout",
+      "value": "Layout"
+    },
+    {
+      "name": "Settings_category_appearance_layout_titleBarPins",
+      "value": "Title bar pins"
+    },
+    {
+      "name": "Settings_category_appearance_layout_titleBarPosition",
+      "value": "Title bar position"
+    },
+    {
+      "name": "Settings_category_appearance_layout_tabsStyle_wide",
+      "value": "Tabs style 󰎥 / 󰎩"
+    },
+    {
+      "name": "Settings_category_appearance_layout_tabsStyle_slim",
+      "value": "Tabs style 󰎵"
+    },
+    {
+      "name": "Settings_category_appearance_layout_shrinkSideBar",
+      "value": "Shrink side bar"
+    },
+    {
+      "name": "Settings_category_appearance_layout_shrinkSideBarButton",
+      "value": "Shrink button"
+    },
+    {
+      "name": "Settings_category_appearance_windows",
+      "value": "Windows"
+    },
+    {
+      "name": "Settings_category_appearance_windows_windowTitle_wide",
+      "value": "Show window title 󰎥 / 󰎩"
+    },
+    {
+      "name": "Settings_category_appearance_windows_windowTitle_slim",
+      "value": "Show window title 󰎵"
+    },
+    {
+      "name": "Settings_category_appearance_windows_windowTitlePosition",
+      "value": "Title position"
+    },
+    {
+      "name": "Settings_category_appearance_windows_windowTitle_gigantic",
+      "value": "Gigantic title when no focus"
+    },
+    {
+      "name": "Settings_category_appearance_animation",
+      "value": "Animation"
+    },
+    {
+      "name": "Settings_category_appearance_animation_response",
+      "value": "Animation response"
+    },
+    {
+      "name": "Settings_category_appearance_animation_elasticity",
+      "value": "Animation elasticity"
+    },
+    {
+      "name": "Settings_category_appearance_animation_reset",
+      "value": "Reset animation"
+    },
+    {
+      "name": "Settings_category_appearance_colors",
+      "value": "Colors"
+    },
+    {
+      "name": "Settings_category_appearance_colors_effects",
+      "value": "Advanced effects"
+    },
+    {
+      "name": "Settings_category_appearance_colors_light",
+      "value": "Light theme"
+    },
+    {
+      "name": "Settings_category_appearance_colors_dark",
+      "value": "Dark theme"
+    },
+    {
+      "name": "Settings_category_appearance_colors_reset",
+      "value": "Reset colors"
+    },
+    {
+      "name": "Settings_category_appearance_colors_forceDarkMode",
+      "value": "Force web dark mode"
+    },
+    {
+      "name": "Settings_category_appearance_colors_forceDarkMode_manage",
+      "value": "Manage web dark mode"
     },
     {
       "name": "Settings_category_history",
