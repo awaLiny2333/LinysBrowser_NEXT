@@ -9,7 +9,7 @@ import { defaultNewWindowName, defaultUserAgents, presetSearchEngines } from "./
  * `const settingsAdblockExceptions: meowSettingsEntry = this.myMeowManagedSettings.settingsData[53]; // adblock_exceptions`
  */
 export let defaultSettingsEntries: meowSettingsEntry[] = [
-  new meowSettingsEntry('webview_cache_size', meowSettingsEntryType.NUMBER, '-1'),
+  new meowSettingsEntry('..meow', meowSettingsEntryType.STRING, 'Do not edit manually unless you know what you are doing!'),
 
   // Customization
   new meowSettingsEntry('title_bar_position', meowSettingsEntryType.STRING, 'bottom'), // 'top' | 'bottom'
@@ -42,10 +42,11 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('status_showing_my_windows_alias_non_tablet', meowSettingsEntryType.BOOLEAN, 'false'),
   new meowSettingsEntry('my_window_alias_position', meowSettingsEntryType.STRING, 'center'), // 'left' | 'center' | 'right' #25
   new meowSettingsEntry('my_window_alias_last', meowSettingsEntryType.STRING, defaultNewWindowName()), // #26
+  
   // Continuation
   new meowSettingsEntry('continuation_auto_exit', meowSettingsEntryType.BOOLEAN, 'false'), // #27
   new meowSettingsEntry('continuation_auto_close_tab', meowSettingsEntryType.BOOLEAN, 'true'), // #28
-
+  
   // Keyboard shortcuts
   new meowSettingsEntry('key_shortcuts', meowSettingsEntryType.STRING_ARRAY, ''),
 
@@ -59,9 +60,11 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('continue_tabs_main_on', meowSettingsEntryType.NUMBER, '0'),
   new meowSettingsEntry('continue_tabs_sub_on', meowSettingsEntryType.NUMBER, '-1'),
   new meowSettingsEntry('last_zone', meowSettingsEntryType.STRING, ''),
+  
   // Animation defaults
   new meowSettingsEntry('animation_response', meowSettingsEntryType.NUMBER, '36'),
   new meowSettingsEntry('animation_damping_coefficient', meowSettingsEntryType.NUMBER, '20'), // #40
+  
   // UA & Search Engines & Homepage
   new meowSettingsEntry('custom_user_agents', meowSettingsEntryType.STRING_ARRAY_PAIR, defaultUserAgents()), // #41
   new meowSettingsEntry('custom_user_agents_selected_index', meowSettingsEntryType.NUMBER, '-1'),
@@ -76,10 +79,11 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('preferred_hand_reverse_tabs_panel', meowSettingsEntryType.BOOLEAN, 'true'),
   new meowSettingsEntry('preferred_hand_reverse_homepage_shortcuts', meowSettingsEntryType.BOOLEAN, 'false'),
   new meowSettingsEntry('preferred_hand_auto', meowSettingsEntryType.BOOLEAN, 'false'), // #51
-
+  
   // Ad blocker
   new meowSettingsEntry('use_adblock', meowSettingsEntryType.BOOLEAN, 'true'),
   new meowSettingsEntry('adblock_exceptions', meowSettingsEntryType.STRING_ARRAY, ''), // #53
+  
   // JS blocker
   new meowSettingsEntry('disable_js', meowSettingsEntryType.BOOLEAN, 'true'),
   new meowSettingsEntry('disable_js_all_sites', meowSettingsEntryType.BOOLEAN, 'false'),
@@ -98,26 +102,25 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('color_light_primary', meowSettingsEntryType.STRING, '#E1E9E3'), // #62
   new meowSettingsEntry('color_light_secondary', meowSettingsEntryType.STRING, '#CDD7CD'),
   new meowSettingsEntry('color_light_font', meowSettingsEntryType.STRING, '#243B24'),
+  
   // Colors (dark)
   new meowSettingsEntry('color_dark_primary', meowSettingsEntryType.STRING, '#0F1A0F'), // #65
   new meowSettingsEntry('color_dark_secondary', meowSettingsEntryType.STRING, '#2A392A'),
   new meowSettingsEntry('color_dark_font', meowSettingsEntryType.STRING, '#E1E9E3'),
 
   // Cached size of webview cache
-  new meowSettingsEntry('webview_cache_size', meowSettingsEntryType.NUMBER, '-1'),
+  new meowSettingsEntry('webview_cache_size', meowSettingsEntryType.NUMBER, '-1'), // #68
 
   // History
   new meowSettingsEntry('collect_new_history', meowSettingsEntryType.BOOLEAN, 'true'), // #69
-  new meowSettingsEntry('history_index_size', meowSettingsEntryType.NUMBER, '-1'),
+  new meowSettingsEntry('history_index_size', meowSettingsEntryType.NUMBER, '-1'), // #70
   new meowSettingsEntry('history_index_load_quantity', meowSettingsEntryType.NUMBER, '6'), // #71 * This may be no longer needed for our brand new history system!
-
   // Download
   new meowSettingsEntry('direct_download', meowSettingsEntryType.BOOLEAN, 'false'), // #72
   new meowSettingsEntry('direct_download_auto_open', meowSettingsEntryType.BOOLEAN, 'true'), // #73
-
   // Debug
   new meowSettingsEntry('DEV_MODE', meowSettingsEntryType.BOOLEAN, 'false'), // #74
+  new meowSettingsEntry('resource_monitor', meowSettingsEntryType.BOOLEAN, 'true'),
   new meowSettingsEntry('CONFIG_BUTTONS', meowSettingsEntryType.BOOLEAN, 'false'), // Forgot what this is :3
   new meowSettingsEntry('CONFIG_EXTENSIONS', meowSettingsEntryType.BOOLEAN, 'false'),
-  new meowSettingsEntry('resource_monitor', meowSettingsEntryType.BOOLEAN, 'true'),
 ];

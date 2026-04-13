@@ -8,6 +8,7 @@ import { SettingsExperience } from './parts/Experience';
 import { SettingsGeneral } from './parts/General';
 import { SettingsHistory } from './parts/History';
 import { SettingsOnStartUp } from './parts/OnStartUp';
+import { SettingsStorage } from './parts/Storage';
 
 @ComponentV2
 struct WoofSettings {
@@ -33,6 +34,9 @@ struct WoofSettings {
         };
         FlowItem() {
           SettingsHistory();
+        };
+        FlowItem() {
+          SettingsStorage();
         };
       }
       .columnsTemplate(waterFlowColumnsTemplate())

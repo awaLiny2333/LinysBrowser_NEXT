@@ -21,6 +21,10 @@
       "value": "Remove  󰀁"
     },
     {
+      "name": "General_clear",
+      "value": "Clean  󰀖"
+    },
+    {
       "name": "General_save",
       "value": "Save  󰀻"
     },
@@ -31,6 +35,10 @@
     {
       "name": "General_cancel",
       "value": "Cancel  󰁖"
+    },
+    {
+      "name": "General_refresh",
+      "value": "Refresh  󰃈"
     },
     {
       "name": "Settings",
@@ -375,6 +383,14 @@
     {
       "name": "Settings_category_storage",
       "value": "Storage"
+    },
+    {
+      "name": "Settings_category_storage_webCache",
+      "value": "Web cache"
+    },
+    {
+      "name": "Settings_category_storage_historyIndex",
+      "value": "History index files"
     },
     {
       "name": "Settings_category_security",

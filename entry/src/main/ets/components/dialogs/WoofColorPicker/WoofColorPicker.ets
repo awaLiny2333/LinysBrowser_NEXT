@@ -4,11 +4,12 @@ import { hex2hsv, hsv2hex, isLegalHexColor } from "../../../catstypicalframework
 import { defaultInnerRadius, defaultMenuItemRadius, defaultRoundedRadius } from "../../../catstypicalframework/utils/ui";
 import { meowDialogManager } from "../../../hosts/env/classes/meowDialogManager";
 import { meowManagedSettings } from "../../../hosts/settings/classes/meowManagedSettings";
-import { getColor, meowThemeColorType, standardSpacing, summarizedPreferRightHand } from "../../common/constants";
+import { getColor, meowThemeColorType, standardSpacing } from "../../common/constants";
 import { MooCapsuleButton } from "../../common/MooCapsuleButton";
 import { MooSlider } from "../../common/MooSlider";
 import { MooTextInputV2 } from "../../common/MooTextInputV2";
 import { MooTextModifier } from "../../common/MooTextModifier";
+import { UniRowOfCapsuleButtons } from "../../common/UniRowOfCapsuleButtons";
 import { WoofUniFrame } from "../common/WoofUniFrame";
 
 @ComponentV2
@@ -169,7 +170,7 @@ struct EditPanel {
         });
 
         // Buttons
-        Row({ space: standardSpacing }) {
+        UniRowOfCapsuleButtons() {
           MooCapsuleButton({
             text: $r('app.string.General_confirm'),
             clickAction: () => {
@@ -182,9 +183,7 @@ struct EditPanel {
               this.onCancel();
             }
           });
-        }
-        .direction(summarizedPreferRightHand() ? Direction.Rtl : Direction.Ltr)
-        .alignSelf(summarizedPreferRightHand() ? ItemAlign.End : ItemAlign.Start);
+        };
       }
       .justifyContent(FlexAlign.End)
       .alignItems(HorizontalAlign.Start);

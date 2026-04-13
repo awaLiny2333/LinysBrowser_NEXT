@@ -351,6 +351,32 @@ export async function listFilesUnderDir(dirPath: string) {
 }
 
 /**
+ * Calculate the size of a folder and its containing items recursively in a sync way.
+ * @param path A string, the path of the folder.
+ * @returns A number, the size of that folder.
+ * @throws Whatever the file apis would throw. Please handle this at usage side / in wrappers.
+ * */
+export function getFolderSizeSync(path: string) {
+  let sum = 0;
+  // try {
+    let dir_list = fileIo.listFileSync(path);
+    for (let index = 0; index < dir_list.length; index++) {
+      const fileStat = fileIo.statSync(path + '/' + dir_list[index]);
+      if (fileStat.isFile()) {
+        sum += fileStat.size;
+      } else if (fileStat.isDirectory()) {
+        sum += getFolderSizeSync(path + '/' + dir_list[index]);
+      }
+    }
+    return sum;
+  // } catch (e) {
+  //   // Do nothing and skip that.
+  //   meow(`fileIo.listFileSync(${path}) failed: ${e}`, 'storage][getFolderSizeSync', meowLevel.ERROR);
+  //   return 0;
+  // }
+}
+
+/**
  * Read an ArrayBuffer file from storage in a sync way.
  * @param fullFilePath the file path
  * @returns An ArrayBuffer, of the requested file's content or undefined if the file doesn't exist.

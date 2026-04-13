@@ -21,6 +21,10 @@
       "value": "移除  󰀁"
     },
     {
+      "name": "General_clear",
+      "value": "清除  󰀖"
+    },
+    {
       "name": "General_save",
       "value": "保存  󰀻"
     },
@@ -31,6 +35,10 @@
     {
       "name": "General_cancel",
       "value": "取消  󰁖"
+    },
+    {
+      "name": "General_refresh",
+      "value": "刷新  󰃈"
     },
     {
       "name": "Settings",
@@ -375,6 +383,14 @@
     {
       "name": "Settings_category_storage",
       "value": "存储"
+    },
+    {
+      "name": "Settings_category_storage_webCache",
+      "value": "Web 缓存"
+    },
+    {
+      "name": "Settings_category_storage_historyIndex",
+      "value": "历史索引文件"
     },
     {
       "name": "Settings_category_security",

@@ -1,5 +1,5 @@
-import { meowManagedSettings } from "../../settings/classes/meowManagedSettings";
 import { AppStorageV2 } from "@kit.ArkUI";
+import { meowManagedSettings } from "../../settings/classes/meowManagedSettings";
 
 /**
  * Gets if the current settings allows recording new history entries.
@@ -13,7 +13,7 @@ export function recordNewHistoryFromSettings() {
 /**
  * Gets the maximum quantity of history chunks to be loaded on app startup.
  * @returns The number!
- * 
+ *
  * @deprecated As we no longer need to care about this for our brand new history managing system!
  */
 export function historyIndexLoadQuantityFromSettings() {

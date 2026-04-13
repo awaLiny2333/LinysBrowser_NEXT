@@ -5,6 +5,7 @@ import { MooSymbolButtonSmall } from './MooSymbolButtonSmall';
 import { MooTextInputV2 } from './MooTextInputV2';
 import { MooTextModifier } from './MooTextModifier';
 import { LengthMetrics } from '@kit.ArkUI';
+import { UniRowOfCapsuleButtons } from './UniRowOfCapsuleButtons';
 
 @ComponentV2
 struct MooStringPairArrayList {
@@ -155,7 +156,7 @@ struct StringPairArrayItem {
           }
         });
 
-        Row({ space: standardSpacing }) {
+        UniRowOfCapsuleButtons() {
           MooCapsuleButton({
             text: $r('app.string.General_save'),
             clickAction: () => {
@@ -173,9 +174,7 @@ struct StringPairArrayItem {
             },
             needDoubleConfirm: true
           });
-        }
-        .direction(summarizedPreferRightHand() ? Direction.Rtl : Direction.Ltr)
-        .alignSelf(summarizedPreferRightHand() ? ItemAlign.End : ItemAlign.Start);
+        };
       }
     }
     .border(this.imSelected()
