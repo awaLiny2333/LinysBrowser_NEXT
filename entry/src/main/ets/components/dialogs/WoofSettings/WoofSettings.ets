@@ -1,6 +1,6 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowManagedSettings } from '../../../hosts/settings/classes/meowManagedSettings';
-import { defaultAnimation, standardSpacing, waterFlowColumnsTemplate } from '../../common/constants';
+import { standardSpacing, waterFlowColumnsTemplate } from '../../common/constants';
 import { WoofUniFrame } from '../common/WoofUniFrame';
 import { SettingsAccessibility } from './parts/Accessibility';
 import { SettingsAppearance } from './parts/Appearance';
@@ -32,7 +32,7 @@ struct WoofSettings {
         };
       }
       .columnsTemplate(waterFlowColumnsTemplate())
-      .animation(defaultAnimation())
+      // .animation(defaultAnimation())
       .columnsGap(standardSpacing)
       .rowsGap(standardSpacing);
     }
