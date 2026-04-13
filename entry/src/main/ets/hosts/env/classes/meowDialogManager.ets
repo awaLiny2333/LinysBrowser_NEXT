@@ -1,5 +1,4 @@
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
-import { AppStorageV2 } from "@kit.ArkUI";
 
 /**
  * The dialog manager that records dialogs.
@@ -7,9 +6,10 @@ import { AppStorageV2 } from "@kit.ArkUI";
  * Works together with MeowPlaceForDialogs, the one and only component that holds dialogs at one place.
  * MeowPlaceForDialogs monitors property lastRequest of this class and reacts when there is a new request of a dialog.
  *
- * ALL DIALOGS (outside of this file and MeowPlaceForDialogs) SHOULD BE SUMMONED THROUGH requestDialog()!!
+ * ALL DIALOGS SHOULD BE SUMMONED THROUGH requestDialog()!!
  *
  * @see entry/src/main/ets/components/parts/MeowPlaceForDialogs.ets
+ * @see entry/src/main/ets/hosts/env/scripts/dialog.ets
  */
 @ObservedV2
 export class meowDialogManager {
@@ -85,14 +85,4 @@ export class openDialogRequest {
     this.param = param;
     this.ignoreOpened = ignoreOpened;
   }
-}
-
-/**
- * Request an opening of a dialog.
- * @param type The type of the dialog.
- * @param ignoreOpened Whether to ignore the opened dialogs.
- */
-export function requestDialog(type: openDialogRequestType, param: string | number = '', ignoreOpened: boolean = false) {
-  const myMeowDialogManager: meowDialogManager = AppStorageV2.connect(meowDialogManager)!;
-  myMeowDialogManager.requestOpen(new openDialogRequest(type, param, ignoreOpened));
 }

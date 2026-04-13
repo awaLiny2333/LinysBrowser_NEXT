@@ -1,8 +1,9 @@
 import { AppStorageV2 } from "@kit.ArkUI";
 import { meowAvoid } from "../../catstypicalframework/hosts/meowAvoid";
 import { meowLayoutModeStatus } from "../../catstypicalframework/hosts/meowLayoutModeStatus";
-import { openDialogRequestType, requestDialog } from "../../hosts/env/classes/meowDialogManager";
+import { openDialogRequestType } from "../../hosts/env/classes/meowDialogManager";
 import { meowUiStatuses } from "../../hosts/env/classes/meowUiStatuses";
+import { requestDialog } from "../../hosts/env/scripts/dialog";
 import { MooSymbolButton } from "../common/MooSymbolButton";
 import { MeowSearchBar } from "./MeowSearchBar";
 
