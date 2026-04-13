@@ -25,6 +25,7 @@ export class meowHistorian {
   indexBasePath: string;
   @Trace lastUpdate: number = Date.now(); // Would be overwritten if init() succeeded.
   @Trace busy: boolean = true; // Initially true, Would be set to false after init().
+  @Trace isRebuilding: boolean = false;
   @Trace private chunks: meowHistoryChunk[] = [];
 
   /**
@@ -223,16 +224,18 @@ export class meowHistorian {
    * Rebuilds the index of all chunks.
    */
   async rebuildIndex() {
-    if (this.busy) {
+    if (this.busy || this.isRebuilding) {
       meow(`Busy. Rejected rebuild`, 'meowHistorian][rebuildIndex', meowLevel.WARN);
       return false;
     }
     this.busy = true;
+    this.isRebuilding = true;
 
     await clearDirectory(`${this.indexBasePath}`); // Clear all built index files.
     await buildAllIndexToDisk(`${this.indexBasePath}`, this.chunks, true); // BUILD!
 
     this.busy = false;
+    this.isRebuilding = false;
     return true;
   }
 
@@ -263,14 +266,14 @@ export class meowHistorian {
 
     let currentStartIndex = 0;
     const maxConcurrency = 6; // Max concurrent promises.
-    
+
     while (result.length < maxResults) {
       const end = Math.min(currentStartIndex + maxConcurrency, this.chunks.length);
       const targetChunks = this.chunks.slice(currentStartIndex, end); // 1. Directly slice the array to get the target chunks.
 
       const remaining = maxResults - result.length;
       const promises = targetChunks.map(chunk => chunk.lookUpHistoryEntries(query, remaining)); // 2. Request concurrently for the remaining amount.
-      
+
       const allResults = await Promise.all(promises); // 3. Wait for the results.
 
       for (let i = 0; i < allResults.length; i++) {
@@ -285,7 +288,7 @@ export class meowHistorian {
           break;
         }
       } // 4. Use double loop to merge results.
-      
+
       currentStartIndex += maxConcurrency;
       if (currentStartIndex >= this.chunks.length) break; // 5. If is enough
     } // The loop

@@ -5,7 +5,6 @@ import { UniContentCard } from "../../../common/UniContentCard";
 import { MooSwitch } from "../../../common/MooSwitch";
 import { AppStorageV2 } from "@kit.ArkUI";
 import { MooSlider } from "../../../common/MooSlider";
-import { resource2String } from "../../../../catstypicalframework/utils/resource";
 import { MooCapsuleButton } from "../../../common/MooCapsuleButton";
 
 @ComponentV2
@@ -142,13 +141,13 @@ struct SettingsExperience {
           }
         });
         MooCapsuleButton({
-          text: `${resource2String($r('app.string.Settings_category_experience_advanced_adsblocker_manage'), this.getUIContext().getHostContext()!)}  󰯊`,
+          text: $r('app.string.Settings_category_experience_advanced_adsblocker_manage'),
           clickAction: () => {
             // TODO: Ads blocker manager entrance.
           }
         });
         MooCapsuleButton({
-          text: `${resource2String($r('app.string.Settings_category_experience_advanced_adsblocker_rules'), this.getUIContext().getHostContext()!)}  󰖿`,
+          text: $r('app.string.Settings_category_experience_advanced_adsblocker_rules'),
           clickAction: () => {
             // TODO: Ads blocker rules manager entrance.
           }
@@ -161,7 +160,7 @@ struct SettingsExperience {
           }
         });
         MooCapsuleButton({
-          text: `${resource2String($r('app.string.Settings_category_experience_advanced_webImages_manage'), this.getUIContext().getHostContext()!)}  󰢪`,
+          text: $r('app.string.Settings_category_experience_advanced_webImages_manage'),
           clickAction: () => {
             // TODO: Web image manager entrance.
           }
@@ -174,7 +173,7 @@ struct SettingsExperience {
           }
         });
         MooCapsuleButton({
-          text: `${resource2String($r('app.string.Settings_category_experience_advanced_Js_manage'), this.getUIContext().getHostContext()!)}  󰄪`,
+          text: $r('app.string.Settings_category_experience_advanced_Js_manage'),
           clickAction: () => {
             // TODO: Js manager entrance.
           }

@@ -3,7 +3,8 @@
  * IN CASE OF A SITUATION IN WHICH I NEED TO CHANGE SOME ORDERS IN defaultSettingsEntries.
  * GATEHREING THEM ALL HERE MAKES IT EASIER.
  *
- * For other settings (like whether to download directly to Downloads folder), the getters are put in the scripts/xxx.ets files in each host folder under entry/src/main/ets/hosts.
+ * For other settings (like whether to download directly to Downloads folder), 
+ * the getters are put in the scripts/xxx.ets files in each host folder under entry/src/main/ets/hosts.
  */
 import { AppStorageV2, LengthMetrics } from "@kit.ArkUI";
 import Curves from '@ohos.curves';

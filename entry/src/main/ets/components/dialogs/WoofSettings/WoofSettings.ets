@@ -6,6 +6,7 @@ import { SettingsAccessibility } from './parts/Accessibility';
 import { SettingsAppearance } from './parts/Appearance';
 import { SettingsExperience } from './parts/Experience';
 import { SettingsGeneral } from './parts/General';
+import { SettingsHistory } from './parts/History';
 import { SettingsOnStartUp } from './parts/OnStartUp';
 
 @ComponentV2
@@ -29,6 +30,9 @@ struct WoofSettings {
         };
         FlowItem() {
           SettingsAppearance();
+        };
+        FlowItem() {
+          SettingsHistory();
         };
       }
       .columnsTemplate(waterFlowColumnsTemplate())

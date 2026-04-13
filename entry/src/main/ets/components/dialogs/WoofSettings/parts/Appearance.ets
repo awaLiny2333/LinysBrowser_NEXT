@@ -1,6 +1,5 @@
 import { AppStorageV2, SegmentButtonV2Items } from "@kit.ArkUI";
 import { meowLayoutModeStatus } from "../../../../catstypicalframework/hosts/meowLayoutModeStatus";
-import { resource2String } from "../../../../catstypicalframework/utils/resource";
 import { defaultInnerRadius } from "../../../../catstypicalframework/utils/ui";
 import { openDialogRequestType } from "../../../../hosts/env/classes/meowDialogManager";
 import { requestDialog } from "../../../../hosts/env/scripts/dialog";
@@ -187,8 +186,8 @@ struct SettingsAppearance {
           }
         });
         MooCapsuleButton({
-          text: `${resource2String($r('app.string.Settings_category_appearance_animation_reset'), this.getUIContext().getHostContext()!)}  󰃈`,
-          doubleConfirm: true,
+          text: $r('app.string.Settings_category_appearance_animation_reset'),
+          needDoubleConfirm: true,
           clickAction: () => {
             resetAnimations();
           }
@@ -222,8 +221,8 @@ struct SettingsAppearance {
         .opacity(useEffects() ? 0.5 : 1);
 
         MooCapsuleButton({
-          text: `${resource2String($r('app.string.Settings_category_appearance_colors_reset'), this.getUIContext().getHostContext()!)}  󰃈`,
-          doubleConfirm: true,
+          text: $r('app.string.Settings_category_appearance_colors_reset'),
+          needDoubleConfirm: true,
           clickAction: () => {
             resetColors();
           }
@@ -237,7 +236,7 @@ struct SettingsAppearance {
           }
         });
         MooCapsuleButton({
-          text: `${resource2String($r('app.string.Settings_category_appearance_colors_forceDarkMode_manage'), this.getUIContext().getHostContext()!)}  󰓶`,
+          text: $r('app.string.Settings_category_appearance_colors_forceDarkMode_manage'),
           clickAction: () => {
             // TODO: manage web darkmode entrance.s
           }

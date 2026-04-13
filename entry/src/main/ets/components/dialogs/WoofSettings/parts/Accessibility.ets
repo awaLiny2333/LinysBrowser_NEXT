@@ -6,12 +6,11 @@ import { MooTextModifier } from '../../../common/MooTextModifier';
 import { UniContentCard } from '../../../common/UniContentCard';
 import { MooTabSegmentV2 } from '../../../common/MooTabSegmentV2';
 import { MooCapsuleButton } from '../../../common/MooCapsuleButton';
-import { resource2String } from '../../../../catstypicalframework/utils/resource';
 
 @ComponentV2
 struct SettingsAccessibility {
   @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
-  
+
   build() {
     Column({ space: standardSpacing }) {
       Text($r('app.string.Settings_category_accessibility'))
@@ -89,7 +88,7 @@ struct SettingsAccessibility {
 
       UniContentCard({ title: $r('app.string.Settings_category_accessibility_keyShortcuts'), icon: $r('sys.symbol.keyboard') }) {
         MooCapsuleButton({
-          text: `${resource2String($r('app.string.Settings_category_accessibility_keyShortcuts_manage'), this.getUIContext().getHostContext()!)}  󰌐`,
+          text: $r('app.string.Settings_category_accessibility_keyShortcuts_manage'),
           clickAction: () => {
             // TODO: key shortcuts manage entrance.
           }

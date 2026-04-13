@@ -1,5 +1,4 @@
 import { AppStorageV2 } from '@kit.ArkUI';
-import { resource2String } from '../../../../catstypicalframework/utils/resource';
 import { meowManagedSettings } from '../../../../hosts/settings/classes/meowManagedSettings';
 import { defaultSearchEngine, urlDefaultBlank } from '../../../../hosts/settings/scripts/defaultSettingsValues';
 import { applyUserAgentFromSettings } from '../../../../hosts/tabs/scripts/userAgents';
@@ -76,7 +75,7 @@ struct SettingsGeneral {
       };
       UniContentCard({ title: $r('app.string.Settings_category_general_homepage'), icon: $r('sys.symbol.house') }) {
         MooCapsuleButton({
-          text: `${resource2String($r('app.string.Settings_category_general_homepage_customize'), this.getUIContext().getHostContext()!)}  󰦜`,
+          text: $r('app.string.Settings_category_general_homepage_customize'),
           clickAction: () => {
             // TODO: Homepage customization entrance.
           }

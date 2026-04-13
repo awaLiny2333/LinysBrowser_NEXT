@@ -1,6 +1,6 @@
-import { resourceColor2Metrics } from '../../catstypicalframework/utils/ui';
 import { useEffects, getColor, meowThemeColorType } from './constants';
 import { TabSegmentButtonV2, SegmentButtonV2Items } from '@kit.ArkUI';
+import { resourceColor2Metrics } from '../../catstypicalframework/utils/resource';
 
 /**
  * The encapsulated TabSegmentButtonV2 component.

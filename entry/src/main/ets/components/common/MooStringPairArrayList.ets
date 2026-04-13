@@ -161,7 +161,7 @@ struct StringPairArrayItem {
             clickAction: () => {
               this.save();
             },
-            doubleConfirm: true
+            needDoubleConfirm: true
           });
           MooCapsuleButton({
             text: $r('app.string.General_delete'),
@@ -171,7 +171,7 @@ struct StringPairArrayItem {
                 this.onDelete(this.index);
               });
             },
-            doubleConfirm: true
+            needDoubleConfirm: true
           });
         }
         .direction(summarizedPreferRightHand() ? Direction.Rtl : Direction.Ltr)

@@ -3,11 +3,15 @@ import { defaultAnimation, getColor, meowThemeColorType, summarizedPreferRightHa
 
 @ComponentV2
 struct MooCapsuleButton {
-  @Param @Once doubleConfirm: boolean = false;
-  @Local lastChance: boolean = false;
+  // Config
+  @Param @Once needDoubleConfirm: boolean = false;
   @Param text: ResourceStr = 'Meow ~';
-  @Event clickAction: () => void;
+  @Param isEnabled: boolean = true;
+  // Local
+  @Local lastChance: boolean = false;
   lastChanceTimeout: number | undefined;
+  // Event
+  @Event clickAction: () => void;
 
   build() {
     Button(this.text)
@@ -17,13 +21,14 @@ struct MooCapsuleButton {
         color: this.lastChance ? this.adjustedColorFont() : $r('sys.color.icon_fourth'),
         radius: defaultInnerRadius
       })
+      .enabled(this.isEnabled)
       .brightness(this.lastChance ? 1.1 : 1)
       .animation(defaultAnimation())
       .backgroundColor(this.adjustedColorBackground())
       .fontColor(this.adjustedColorFont())
       .onClick(() => {
         // No double confirm
-        if (!this.doubleConfirm) {
+        if (!this.needDoubleConfirm) {
           this.clickAction();
           return;
         }

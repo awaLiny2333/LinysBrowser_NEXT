@@ -86,7 +86,7 @@
     },
     {
       "name": "Settings_category_general_homepage_customize",
-      "value": "Customize"
+      "value": "Customize  󰦜"
     },
     {
       "name": "Settings_category_experience",
@@ -166,11 +166,11 @@
     },
     {
       "name": "Settings_category_experience_advanced_adsblocker_manage",
-      "value": "Manage ads blocker"
+      "value": "Manage ads blocker  󰯊"
     },
     {
       "name": "Settings_category_experience_advanced_adsblocker_rules",
-      "value": "Manage block rules"
+      "value": "Manage block rules  󰖿"
     },
     {
       "name": "Settings_category_experience_advanced_webImages",
@@ -178,7 +178,7 @@
     },
     {
       "name": "Settings_category_experience_advanced_webImages_manage",
-      "value": "Manage web images"
+      "value": "Manage web images  󰢪"
     },
     {
       "name": "Settings_category_experience_advanced_Js",
@@ -186,7 +186,7 @@
     },
     {
       "name": "Settings_category_experience_advanced_Js_manage",
-      "value": "Manage JavaScript"
+      "value": "Manage JavaScript  󰄪"
     },
     {
       "name": "Settings_category_accessibility",
@@ -226,7 +226,7 @@
     },
     {
       "name": "Settings_category_accessibility_keyShortcuts_manage",
-      "value": "Manage shortcuts"
+      "value": "Manage shortcuts  󰌐"
     },
     {
       "name": "Settings_category_appearance",
@@ -302,7 +302,7 @@
     },
     {
       "name": "Settings_category_appearance_animation_reset",
-      "value": "Reset animation"
+      "value": "Reset animation  󰃈"
     },
     {
       "name": "Settings_category_appearance_colors",
@@ -322,7 +322,7 @@
     },
     {
       "name": "Settings_category_appearance_colors_reset",
-      "value": "Reset colors"
+      "value": "Reset colors  󰃈"
     },
     {
       "name": "Settings_category_appearance_colors_forceDarkMode",
@@ -330,7 +330,7 @@
     },
     {
       "name": "Settings_category_appearance_colors_forceDarkMode_manage",
-      "value": "Manage web dark mode"
+      "value": "Manage web dark mode  󰓶"
     },
     {
       "name": "Settings_category_appearance_colors_picker_hue",
@@ -351,6 +351,26 @@
     {
       "name": "Settings_category_history",
       "value": "History"
+    },
+    {
+      "name": "Settings_category_history_recordNew",
+      "value": "Record new history"
+    },
+    {
+      "name": "Settings_category_history_view",
+      "value": "View history  󰆄"
+    },
+    {
+      "name": "Settings_category_history_indexNow",
+      "value": "(Re)build index  󰄁"
+    },
+    {
+      "name": "Settings_category_history_indexing",
+      "value": "(Re)building...  󰄁"
+    },
+    {
+      "name": "Settings_category_history_indexLoadQuantity",
+      "value": "Index load quantity"
     },
     {
       "name": "Settings_category_storage",

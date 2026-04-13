@@ -107,9 +107,9 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('webview_cache_size', meowSettingsEntryType.NUMBER, '-1'),
 
   // History
-  new meowSettingsEntry('collect_new_history', meowSettingsEntryType.BOOLEAN, 'true'),
+  new meowSettingsEntry('collect_new_history', meowSettingsEntryType.BOOLEAN, 'true'), // #69
   new meowSettingsEntry('history_index_size', meowSettingsEntryType.NUMBER, '-1'),
-  new meowSettingsEntry('history_index_load_quantity', meowSettingsEntryType.NUMBER, '6'),
+  new meowSettingsEntry('history_index_load_quantity', meowSettingsEntryType.NUMBER, '6'), // #71 * This may be no longer needed for our brand new history system!
 
   // Download
   new meowSettingsEntry('direct_download', meowSettingsEntryType.BOOLEAN, 'false'), // #72

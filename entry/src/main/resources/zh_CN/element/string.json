@@ -86,7 +86,7 @@
     },
     {
       "name": "Settings_category_general_homepage_customize",
-      "value": "个性化设置"
+      "value": "个性化设置  󰦜"
     },
     {
       "name": "Settings_category_experience",
@@ -166,11 +166,11 @@
     },
     {
       "name": "Settings_category_experience_advanced_adsblocker_manage",
-      "value": "管理广告过滤"
+      "value": "管理广告过滤  󰯊"
     },
     {
       "name": "Settings_category_experience_advanced_adsblocker_rules",
-      "value": "管理过滤规则"
+      "value": "管理过滤规则  󰖿"
     },
     {
       "name": "Settings_category_experience_advanced_webImages",
@@ -178,7 +178,7 @@
     },
     {
       "name": "Settings_category_experience_advanced_webImages_manage",
-      "value": "管理网页图片"
+      "value": "管理网页图片  󰢪"
     },
     {
       "name": "Settings_category_experience_advanced_Js",
@@ -186,7 +186,7 @@
     },
     {
       "name": "Settings_category_experience_advanced_Js_manage",
-      "value": "管理 JavaScript"
+      "value": "管理 JavaScript  󰄪"
     },
     {
       "name": "Settings_category_accessibility",
@@ -226,7 +226,7 @@
     },
     {
       "name": "Settings_category_accessibility_keyShortcuts_manage",
-      "value": "快捷键管理"
+      "value": "快捷键管理  󰌐"
     },
     {
       "name": "Settings_category_appearance",
@@ -302,7 +302,7 @@
     },
     {
       "name": "Settings_category_appearance_animation_reset",
-      "value": "重置动画"
+      "value": "重置动画  󰃈"
     },
     {
       "name": "Settings_category_appearance_colors",
@@ -322,7 +322,7 @@
     },
     {
       "name": "Settings_category_appearance_colors_reset",
-      "value": "重置主题"
+      "value": "重置主题  󰃈"
     },
     {
       "name": "Settings_category_appearance_colors_forceDarkMode",
@@ -330,7 +330,7 @@
     },
     {
       "name": "Settings_category_appearance_colors_forceDarkMode_manage",
-      "value": "管理网页深色模式"
+      "value": "管理网页深色模式  󰓶"
     },
     {
       "name": "Settings_category_appearance_colors_picker_hue",
@@ -351,6 +351,26 @@
     {
       "name": "Settings_category_history",
       "value": "历史"
+    },
+    {
+      "name": "Settings_category_history_recordNew",
+      "value": "记录新的历史"
+    },
+    {
+      "name": "Settings_category_history_view",
+      "value": "查看历史  󰆄"
+    },
+    {
+      "name": "Settings_category_history_indexNow",
+      "value": "现在（重建）索引  󰄁"
+    },
+    {
+      "name": "Settings_category_history_indexing",
+      "value": "重构中……  󰄁"
+    },
+    {
+      "name": "Settings_category_history_indexLoadQuantity",
+      "value": "索引加载数量"
     },
     {
       "name": "Settings_category_storage",

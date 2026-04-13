@@ -1,4 +1,4 @@
-import lazy { AppStorageV2, ColorMetrics, display, window } from '@kit.ArkUI';
+import lazy { AppStorageV2, display, window } from '@kit.ArkUI';
 import lazy { meow, meowLevel } from './catsLogger';
 import lazy { deviceInfo, power, settings } from '@kit.BasicServicesKit';
 import { motion } from '@kit.MultimodalAwarenessKit';
@@ -37,20 +37,6 @@ export function meowVp2px(vp: number) {
     // This is not good.
     meow(`Error: ${e}, returned in vp.`, 'meowVp2px', meowLevel.ERROR);
     return vp;
-  }
-}
-
-/**
- * Converts color to color metrics style.
- * @param c The color.
- * @returns The color metrics.
- */
-export function resourceColor2Metrics(c: ResourceColor) {
-  try {
-    return ColorMetrics.resourceColor(c);
-  } catch (e) {
-    meow(`colorMetrics2Color: ${e}`, 'colorMetrics2Color', meowLevel.ERROR);
-    return undefined;
   }
 }
 
