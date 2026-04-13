@@ -25,6 +25,14 @@
       "value": "保存  󰀻"
     },
     {
+      "name": "General_confirm",
+      "value": "确认  󰀓"
+    },
+    {
+      "name": "General_cancel",
+      "value": "取消  󰁖"
+    },
+    {
       "name": "Settings",
       "value": "设置"
     },
@@ -323,6 +331,22 @@
     {
       "name": "Settings_category_appearance_colors_forceDarkMode_manage",
       "value": "管理网页深色模式"
+    },
+    {
+      "name": "Settings_category_appearance_colors_picker_hue",
+      "value": "色相"
+    },
+    {
+      "name": "Settings_category_appearance_colors_picker_saturation",
+      "value": "饱和度"
+    },
+    {
+      "name": "Settings_category_appearance_colors_picker_value",
+      "value": "值（亮度）"
+    },
+    {
+      "name": "Settings_category_appearance_colors_picker_code",
+      "value": "颜色代码"
     },
     {
       "name": "Settings_category_history",

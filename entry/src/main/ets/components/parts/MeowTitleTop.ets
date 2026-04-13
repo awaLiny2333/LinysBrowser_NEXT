@@ -3,7 +3,8 @@ import { meowAvoid } from '../../catstypicalframework/hosts/meowAvoid';
 import { meowFreeWindowModeStatus } from '../../catstypicalframework/hosts/meowFreeWindowModeStatus';
 import { meowLayoutModeStatus } from '../../catstypicalframework/hosts/meowLayoutModeStatus';
 import { windowTopAvoidLeft, windowTopAvoidRight } from '../../catstypicalframework/utils/ui';
-import { meowDialogManager, openDialogRequestType, requestDialog } from '../../hosts/env/classes/meowDialogManager';
+import { openDialogRequestType, requestDialog } from '../../hosts/env/classes/meowDialogManager';
+import { showWindowTitle, windowTitlePosition } from '../common/constants';
 import { MooSymbolButtonSmall } from '../common/MooSymbolButtonSmall';
 import { MooTextModifier } from '../common/MooTextModifier';
 
@@ -17,7 +18,6 @@ struct MeowTitleTop {
   @Local myMeowFreeWindowModeStatus: meowFreeWindowModeStatus = AppStorageV2.connect(meowFreeWindowModeStatus)!;
   @Local myMeowAvoid: meowAvoid = AppStorageV2.connect(meowAvoid)!;
   @Local myMeowLayout: meowLayoutModeStatus = AppStorageV2.connect(meowLayoutModeStatus)!;
-  @Local myMeowDialogManager: meowDialogManager = AppStorageV2.connect(meowDialogManager)!;
 
   build() {
     Row({ space: 10 }) {
@@ -30,13 +30,14 @@ struct MeowTitleTop {
           }
         });
       }
+
       // Window Title Text
-      Text(this.myMeowFreeWindowModeStatus.on || this.myMeowLayout.wideMode ? $r('app.string.EntryAbility_label') : '')
+      Text(showWindowTitle() ? $r('app.string.EntryAbility_label') : '')
         .attributeModifier(new MooTextModifier())
-        .textAlign(TextAlign.Center)
+        .textAlign(windowTitlePosition())
         .layoutWeight(1)
         .opacity(0.75)
-        .margin({ top: 4 })
+        .margin({ top: 4, left: 10, right: 10 })
         .maxLines(1)
         .wordBreak(WordBreak.BREAK_ALL)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -44,6 +45,7 @@ struct MeowTitleTop {
           // Open
           requestDialog(openDialogRequestType.DEV);
         });
+      
       // right button(s)
       if (this.myMeowFreeWindowModeStatus.on) {
         MooSymbolButtonSmall({

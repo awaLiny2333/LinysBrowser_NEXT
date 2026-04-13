@@ -4,23 +4,27 @@ import { MooTextModifier } from "./MooTextModifier";
 
 @ComponentV2
 struct MooSlider {
+  @Param @Once lock: boolean = true;
+  // Data
   @Param @Require value: number;
   @Param @Require min: number;
   @Param @Require max: number;
   @Param @Require step: number;
   @Event onChange: (value: number) => void;
   // UI
-  @Local locked: boolean = true; // Prevent the slider from being accidentally slided.
+  @Local locked: boolean = this.lock; // Prevent the slider from being accidentally slided.
 
   build() {
     Row() {
-      MooSymbolButtonSmall({
-        icon: this.locked ? $r('sys.symbol.lock') : $r('sys.symbol.lock_open'),
-        clickAction: () => {
-          // Unlock the slider.
-          this.locked = !this.locked;
-        }
-      });
+      if (this.lock) {
+        MooSymbolButtonSmall({
+          icon: this.locked ? $r('sys.symbol.lock') : $r('sys.symbol.lock_open'),
+          clickAction: () => {
+            // Unlock the slider.
+            this.locked = !this.locked;
+          }
+        });
+      }
       Slider({
         value: this.value,
         min: this.min,

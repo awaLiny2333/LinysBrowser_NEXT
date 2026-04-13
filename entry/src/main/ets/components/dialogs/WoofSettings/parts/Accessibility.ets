@@ -11,6 +11,7 @@ import { resource2String } from '../../../../catstypicalframework/utils/resource
 @ComponentV2
 struct SettingsAccessibility {
   @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+  
   build() {
     Column({ space: standardSpacing }) {
       Text($r('app.string.Settings_category_accessibility'))
@@ -38,7 +39,7 @@ struct SettingsAccessibility {
       };
 
       // Single hand
-      UniContentCard({ title: $r('app.string.Settings_category_accessibility_singleHand') }) {
+      UniContentCard({ title: $r('app.string.Settings_category_accessibility_singleHand'), icon: $r('sys.symbol.phone_and_hand') }) {
         MooTabSegmentV2({
           initSelected: this.selectedOptionFromSettings(),
           items: new SegmentButtonV2Items([{ text: '←' }, { text: '→' },]),
@@ -86,7 +87,7 @@ struct SettingsAccessibility {
         });
       };
 
-      UniContentCard({ title: $r('app.string.Settings_category_accessibility_keyShortcuts') }) {
+      UniContentCard({ title: $r('app.string.Settings_category_accessibility_keyShortcuts'), icon: $r('sys.symbol.keyboard') }) {
         MooCapsuleButton({
           text: `${resource2String($r('app.string.Settings_category_accessibility_keyShortcuts_manage'), this.getUIContext().getHostContext()!)}  󰌐`,
           clickAction: () => {

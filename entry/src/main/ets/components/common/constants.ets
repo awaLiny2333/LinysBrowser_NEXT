@@ -2,11 +2,12 @@
  * ALL UI RELATED SETTINGS OPTIONS SHOULD BE CALLED HERE.
  * IN CASE OF A SITUATION IN WHICH I NEED TO CHANGE SOME ORDERS IN defaultSettingsEntries.
  * GATEHREING THEM ALL HERE MAKES IT EASIER.
- * 
+ *
  * For other settings (like whether to download directly to Downloads folder), the getters are put in the scripts/xxx.ets files in each host folder under entry/src/main/ets/hosts.
  */
 import { AppStorageV2, LengthMetrics } from "@kit.ArkUI";
 import Curves from '@ohos.curves';
+import { meowFreeWindowModeStatus } from "../../catstypicalframework/hosts/meowFreeWindowModeStatus";
 import { meowLayoutModeStatus } from "../../catstypicalframework/hosts/meowLayoutModeStatus";
 import { meowManagedSettings } from "../../hosts/settings/classes/meowManagedSettings";
 
@@ -87,6 +88,52 @@ export function titleBarPositionBottom() {
   // return true;
   const settings = AppStorageV2.connect(meowManagedSettings)!;
   return settings.settingsData[1].value == 'bottom';
+}
+
+/**
+ * Gets if the user wants to show the window title.
+ * @returns true if the user wants to show the window title, false otherwise.
+ */
+export function showWindowTitle() {
+  const layout = AppStorageV2.connect(meowLayoutModeStatus)!;
+  const settings = AppStorageV2.connect(meowManagedSettings)!;
+  if (layout.wideMode) {
+    return settings.settingsData[23].value as boolean;
+  }
+  return settings.settingsData[24].value as boolean;
+}
+
+/**
+ * Gets the position of the window title.
+ * @returns The position of the window title.
+ */
+export function windowTitlePosition() {
+  const settings = AppStorageV2.connect(meowManagedSettings)!;
+  const value = settings.settingsData[25].value as string;
+  switch (value) {
+    case 'left':
+      return TextAlign.Start;
+    case 'center':
+      return TextAlign.Center;
+    case 'right':
+      return TextAlign.End;
+    default:
+      return TextAlign.Center;
+  }
+}
+
+/**
+ * Gets if the user wants to show the gigantic window title.
+ * This function always returns false if the window is on focus.
+ * @returns true if the user wants to show the gigantic window title, false otherwise.
+ */
+export function showGiganticWindowTitle() {
+  const window = AppStorageV2.connect(meowFreeWindowModeStatus)!;
+  if (window.onFocus) {
+    return false;
+  }
+  const settings = AppStorageV2.connect(meowManagedSettings)!;
+  return settings.settingsData[2].value as boolean;
 }
 
 /**

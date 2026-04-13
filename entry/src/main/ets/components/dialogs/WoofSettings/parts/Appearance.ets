@@ -1,14 +1,22 @@
-import { meowManagedSettings } from "../../../../hosts/settings/classes/meowManagedSettings";
 import { AppStorageV2, SegmentButtonV2Items } from "@kit.ArkUI";
-import { mooTextType, standardSpacing } from "../../../common/constants";
-import { MooTextModifier } from "../../../common/MooTextModifier";
-import { UniContentCard } from "../../../common/UniContentCard";
+import { meowLayoutModeStatus } from "../../../../catstypicalframework/hosts/meowLayoutModeStatus";
+import { resource2String } from "../../../../catstypicalframework/utils/resource";
+import { defaultInnerRadius } from "../../../../catstypicalframework/utils/ui";
+import { openDialogRequestType, requestDialog } from "../../../../hosts/env/classes/meowDialogManager";
+import { meowManagedSettings } from "../../../../hosts/settings/classes/meowManagedSettings";
+import { resetAnimations, resetColors } from "../../../../hosts/settings/scripts/reset";
+import { getColor, meowThemeColorType, mooTextType, standardSpacing, useEffects } from "../../../common/constants";
+import { MooCapsuleButton } from "../../../common/MooCapsuleButton";
+import { MooSlider } from "../../../common/MooSlider";
 import { MooSwitch } from "../../../common/MooSwitch";
 import { MooTabSegmentV2 } from "../../../common/MooTabSegmentV2";
+import { MooTextModifier } from "../../../common/MooTextModifier";
+import { UniContentCard } from "../../../common/UniContentCard";
 
 @ComponentV2
 struct SettingsAppearance {
   @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+  @Local layout: meowLayoutModeStatus = AppStorageV2.connect(meowLayoutModeStatus)!;
 
   build() {
     Column({ space: standardSpacing }) {
@@ -36,6 +44,7 @@ struct SettingsAppearance {
         });
       };
 
+      // Layout
       UniContentCard({ title: $r('app.string.Settings_category_appearance_layout'), icon: $r('sys.symbol.rectangle_4_group_1') }) {
         Text($r('app.string.Settings_category_appearance_layout_titleBarPins')).attributeModifier(new MooTextModifier());
         Text($r('app.string.Settings_category_appearance_layout_titleBarPosition')).attributeModifier(new MooTextModifier());
@@ -107,6 +116,132 @@ struct SettingsAppearance {
           }
         });
       };
+
+      // Windows
+      UniContentCard({ title: $r('app.string.Settings_category_appearance_windows'), icon: $r('sys.symbol.single_page_flipping') }) {
+        MooSwitch({
+          text: $r('app.string.Settings_category_appearance_windows_windowTitle_wide'),
+          isOn: this.myMeowManagedSettings.settingsData[23].value as boolean,
+          onChange: (r) => {
+            this.myMeowManagedSettings.setByIndex(23, r);
+          }
+        });
+        MooSwitch({
+          text: $r('app.string.Settings_category_appearance_windows_windowTitle_slim'),
+          isOn: this.myMeowManagedSettings.settingsData[24].value as boolean,
+          onChange: (r) => {
+            this.myMeowManagedSettings.setByIndex(24, r);
+          }
+        });
+        Text($r('app.string.Settings_category_appearance_windows_windowTitlePosition')).attributeModifier(new MooTextModifier());
+        MooTabSegmentV2({
+          initSelected: this.selectedWindowTitlePositionFromSettings(),
+          items: new SegmentButtonV2Items([{ text: '←' }, { text: '󰁨' }, { text: '→' }]),
+          onSelected: (index) => {
+            // 'left' | 'center' | 'right'
+            switch (index) {
+              case 0:
+                this.myMeowManagedSettings.setByIndex(25, 'left');
+                break;
+              case 1:
+                this.myMeowManagedSettings.setByIndex(25, 'center');
+                break;
+              case 2:
+                this.myMeowManagedSettings.setByIndex(25, 'right');
+                break;
+              default:
+                break;
+            }
+          }
+        });
+        MooSwitch({
+          text: $r('app.string.Settings_category_appearance_windows_windowTitle_gigantic'),
+          isOn: this.myMeowManagedSettings.settingsData[2].value as boolean,
+          onChange: (r) => {
+            this.myMeowManagedSettings.setByIndex(2, r);
+          }
+        });
+      };
+
+      // Animation
+      UniContentCard({ title: $r('app.string.Settings_category_appearance_animation'), icon: $r('sys.symbol.play_round_triangle') }) {
+        Text($r('app.string.Settings_category_appearance_animation_response')).attributeModifier(new MooTextModifier());
+        MooSlider({
+          value: this.myMeowManagedSettings.settingsData[39].value as number,
+          min: 1,
+          max: 100,
+          step: 1,
+          onChange: (r) => {
+            this.myMeowManagedSettings.setByIndex(39, r);
+          }
+        });
+        Text($r('app.string.Settings_category_appearance_animation_elasticity')).attributeModifier(new MooTextModifier());
+        MooSlider({
+          value: this.myMeowManagedSettings.settingsData[40].value as number,
+          min: 0,
+          max: 75,
+          step: 1,
+          onChange: (r) => {
+            this.myMeowManagedSettings.setByIndex(40, r);
+          }
+        });
+        MooCapsuleButton({
+          text: `${resource2String($r('app.string.Settings_category_appearance_animation_reset'), this.getUIContext().getHostContext()!)}  󰃈`,
+          doubleConfirm: true,
+          clickAction: () => {
+            resetAnimations();
+          }
+        });
+      };
+
+      // Colors
+      UniContentCard({ title: $r('app.string.Settings_category_appearance_colors'), icon: $r('sys.symbol.paintpalette') }) {
+        MooSwitch({
+          text: $r('app.string.Settings_category_appearance_colors_effects'),
+          isOn: this.myMeowManagedSettings.settingsData[7].value as boolean,
+          onChange: (r) => {
+            this.myMeowManagedSettings.setByIndex(7, r);
+          }
+        });
+
+        Text($r('app.string.Settings_category_appearance_colors_light')).attributeModifier(new MooTextModifier());
+        Row({ space: standardSpacing * 0.75 }) {
+          ColorDemoBlock({ color: this.myMeowManagedSettings.settingsData[62].value as string, settingsId: 62, showBorder: !this.layout.dark });
+          ColorDemoBlock({ color: this.myMeowManagedSettings.settingsData[63].value as string, settingsId: 63, showBorder: !this.layout.dark });
+          ColorDemoBlock({ color: this.myMeowManagedSettings.settingsData[64].value as string, settingsId: 64, showBorder: !this.layout.dark });
+        }
+        .opacity(useEffects() ? 0.5 : 1);
+
+        Text($r('app.string.Settings_category_appearance_colors_dark')).attributeModifier(new MooTextModifier());
+        Row({ space: standardSpacing * 0.75 }) {
+          ColorDemoBlock({ color: this.myMeowManagedSettings.settingsData[65].value as string, settingsId: 65, showBorder: this.layout.dark });
+          ColorDemoBlock({ color: this.myMeowManagedSettings.settingsData[66].value as string, settingsId: 66, showBorder: this.layout.dark });
+          ColorDemoBlock({ color: this.myMeowManagedSettings.settingsData[67].value as string, settingsId: 67, showBorder: this.layout.dark });
+        }
+        .opacity(useEffects() ? 0.5 : 1);
+
+        MooCapsuleButton({
+          text: `${resource2String($r('app.string.Settings_category_appearance_colors_reset'), this.getUIContext().getHostContext()!)}  󰃈`,
+          doubleConfirm: true,
+          clickAction: () => {
+            resetColors();
+          }
+        });
+
+        MooSwitch({
+          text: $r('app.string.Settings_category_appearance_colors_forceDarkMode'),
+          isOn: this.myMeowManagedSettings.settingsData[60].value as boolean,
+          onChange: (r) => {
+            this.myMeowManagedSettings.setByIndex(60, r);
+          }
+        });
+        MooCapsuleButton({
+          text: `${resource2String($r('app.string.Settings_category_appearance_colors_forceDarkMode_manage'), this.getUIContext().getHostContext()!)}  󰓶`,
+          clickAction: () => {
+            // TODO: manage web darkmode entrance.s
+          }
+        });
+      };
     };
   }
 
@@ -125,6 +260,38 @@ struct SettingsAppearance {
     const seq = ['vertical', 'horizontal'];
     return seq.indexOf(value);
   }
+  selectedWindowTitlePositionFromSettings() {
+    const value = this.myMeowManagedSettings.settingsData[25].value as string;
+    const seq = ['left', 'center', 'right'];
+    return seq.indexOf(value);
+  }
 }
 
 export { SettingsAppearance };
+
+@ComponentV2
+struct ColorDemoBlock {
+  @Param @Require color: ResourceColor;
+  @Param @Require settingsId: number;
+  @Param @Require showBorder: boolean;
+
+  build() {
+    Column({ space: standardSpacing }) {
+      Column() {
+      }
+      .width('100%')
+      .hoverEffect(HoverEffect.Highlight)
+      .height(90)
+      .backgroundColor(this.color)
+      .border({
+        width: 2,
+        color: this.showBorder ? getColor(meowThemeColorType.FONT) : getColor(meowThemeColorType.SECONDARY),
+        radius: defaultInnerRadius
+      })
+      .onClick(() => {
+        requestDialog(openDialogRequestType.COLOR_PICKER, this.settingsId, true);
+      });
+      Text(this.color as string).attributeModifier(new MooTextModifier());
+    }.layoutWeight(1);
+  }
+}

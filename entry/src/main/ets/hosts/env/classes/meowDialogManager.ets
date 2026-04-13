@@ -6,9 +6,9 @@ import { AppStorageV2 } from "@kit.ArkUI";
  *
  * Works together with MeowPlaceForDialogs, the one and only component that holds dialogs at one place.
  * MeowPlaceForDialogs monitors property lastRequest of this class and reacts when there is a new request of a dialog.
- * 
+ *
  * ALL DIALOGS (outside of this file and MeowPlaceForDialogs) SHOULD BE SUMMONED THROUGH requestDialog()!!
- * 
+ *
  * @see entry/src/main/ets/components/parts/MeowPlaceForDialogs.ets
  */
 @ObservedV2
@@ -25,7 +25,7 @@ export class meowDialogManager {
       this.lastRequest = req;
     }
   }
-  
+
   /**
    * Checks if the dialog manager is empty.
    * @returns True if the dialog manager is empty.
@@ -64,22 +64,25 @@ export class meowDialogManager {
 export enum openDialogRequestType {
   DEV = 0,
   SETTINGS = 1,
+  COLOR_PICKER = 2,
 }
 
 /**
  * Request of opening a dialog.
- * 
+ *
  * Would using an interface be of the same effect as using a class? *Thinking*
  */
 @ObservedV2
 export class openDialogRequest {
   @Trace target: openDialogRequestType;
   @Trace time: number;
+  @Trace param: string | number;
   @Trace ignoreOpened: boolean;
 
-  constructor(target: openDialogRequestType, ignoreOpened: boolean = false) {
+  constructor(target: openDialogRequestType, param: string | number = '', ignoreOpened: boolean = false) {
     this.target = target;
     this.time = Date.now();
+    this.param = param;
     this.ignoreOpened = ignoreOpened;
   }
 }
@@ -89,7 +92,7 @@ export class openDialogRequest {
  * @param type The type of the dialog.
  * @param ignoreOpened Whether to ignore the opened dialogs.
  */
-export function requestDialog(type: openDialogRequestType, ignoreOpened: boolean = false) {
+export function requestDialog(type: openDialogRequestType, param: string | number = '', ignoreOpened: boolean = false) {
   const myMeowDialogManager: meowDialogManager = AppStorageV2.connect(meowDialogManager)!;
-  myMeowDialogManager.requestOpen(new openDialogRequest(type, ignoreOpened));
+  myMeowDialogManager.requestOpen(new openDialogRequest(type, param, ignoreOpened));
 }

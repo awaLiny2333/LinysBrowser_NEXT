@@ -25,6 +25,14 @@
       "value": "Save  󰀻"
     },
     {
+      "name": "General_confirm",
+      "value": "Confirm  󰀓"
+    },
+    {
+      "name": "General_cancel",
+      "value": "Cancel  󰁖"
+    },
+    {
       "name": "Settings",
       "value": "Settings"
     },
@@ -323,6 +331,22 @@
     {
       "name": "Settings_category_appearance_colors_forceDarkMode_manage",
       "value": "Manage web dark mode"
+    },
+    {
+      "name": "Settings_category_appearance_colors_picker_hue",
+      "value": "Hue"
+    },
+    {
+      "name": "Settings_category_appearance_colors_picker_saturation",
+      "value": "Saturation"
+    },
+    {
+      "name": "Settings_category_appearance_colors_picker_value",
+      "value": "Value (Brightness)"
+    },
+    {
+      "name": "Settings_category_appearance_colors_picker_code",
+      "value": "Color code"
     },
     {
       "name": "Settings_category_history",

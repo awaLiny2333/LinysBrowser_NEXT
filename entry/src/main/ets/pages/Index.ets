@@ -2,7 +2,7 @@ import { AppStorageV2 } from '@kit.ArkUI';
 import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
 import { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
 import { defaultDecorHeight, defaultInnerRadius } from '../catstypicalframework/utils/ui';
-import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, titleBarPositionBottom, useEffects } from '../components/common/constants';
+import { defaultAnimation, getColor, meowThemeColorType, mooTextType, showGiganticWindowTitle, standardSpacing, titleBarPositionBottom, useEffects } from '../components/common/constants';
 import lazy { heightMeowTitleBar, MeowTitleBar } from '../components/parts/MeowTitleBar';
 import lazy { MeowButtonRow } from '../components/parts/MeowButtonRow';
 import lazy { MeowTitleTop } from '../components/parts/MeowTitleTop';
@@ -14,6 +14,7 @@ import { meowFreeWindowModeStatus } from '../catstypicalframework/hosts/meowFree
 import { meowLayoutModeStatus } from '../catstypicalframework/hosts/meowLayoutModeStatus';
 import { MeowSearchBar } from '../components/parts/MeowSearchBar';
 import { MeowPlaceForDialogs } from '../components/parts/MeowPlaceForDialogs';
+import { MooTextModifier } from '../components/common/MooTextModifier';
 
 @Entry
 @ComponentV2
@@ -98,6 +99,18 @@ struct Index {
           .translate({ y: (titleBarPositionBottom() || useEffects() ? - this.myMeowAvoid.bottom - (this.myMeowFreeWindowModeStatus.on ? standardSpacing : 0) : 0) }) // Bottom avoid.
           .padding(titleBarPositionBottom() ? { top: standardSpacing } : 0)
           .width('100%');
+        }
+
+        // Gigantic window title
+        if (showGiganticWindowTitle()) {
+          Text('Gigantic Window Title')
+            .attributeModifier(new MooTextModifier(mooTextType.TITLE))
+            .fontSize(128)
+            .width('100%')
+            .height('100%')
+            .textAlign(TextAlign.Center)
+            .textVerticalAlign(TextVerticalAlign.CENTER)
+            .opacity(0.5);
         }
       }
     } // Base

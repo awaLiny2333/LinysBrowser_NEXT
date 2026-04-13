@@ -18,7 +18,7 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('tabs_style_non_tablet_mode', meowSettingsEntryType.STRING, 'vertical'), // 'vertical' | 'horizontal' #4
   new meowSettingsEntry('bottom_avoid', meowSettingsEntryType.BOOLEAN, 'true'), // #5
   new meowSettingsEntry('navigation_indicator', meowSettingsEntryType.BOOLEAN, 'true'),
-  new meowSettingsEntry('effects', meowSettingsEntryType.BOOLEAN, 'false'),
+  new meowSettingsEntry('effects', meowSettingsEntryType.BOOLEAN, 'false'), // #7
   new meowSettingsEntry('title_function_buttons', meowSettingsEntryType.STRING, '01'),
   new meowSettingsEntry('title_function_extensions', meowSettingsEntryType.BOOLEAN, 'false'),
 
@@ -38,9 +38,9 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
 
   // Statuses
   new meowSettingsEntry('status_tabs_open', meowSettingsEntryType.BOOLEAN, 'false'),
-  new meowSettingsEntry('status_showing_my_windows_alias', meowSettingsEntryType.BOOLEAN, 'false'),
+  new meowSettingsEntry('status_showing_my_windows_alias', meowSettingsEntryType.BOOLEAN, 'false'), // #23
   new meowSettingsEntry('status_showing_my_windows_alias_non_tablet', meowSettingsEntryType.BOOLEAN, 'false'),
-  new meowSettingsEntry('my_window_alias_position', meowSettingsEntryType.STRING, 'center'), // 'left' | 'center' | 'right'
+  new meowSettingsEntry('my_window_alias_position', meowSettingsEntryType.STRING, 'center'), // 'left' | 'center' | 'right' #25
   new meowSettingsEntry('my_window_alias_last', meowSettingsEntryType.STRING, defaultNewWindowName()), // #26
   // Continuation
   new meowSettingsEntry('continuation_auto_exit', meowSettingsEntryType.BOOLEAN, 'false'), // #27
@@ -91,7 +91,7 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('disable_image_these_sites', meowSettingsEntryType.STRING_ARRAY, ''),
 
   // Dark mode
-  new meowSettingsEntry('web_force_dark_mode', meowSettingsEntryType.BOOLEAN, 'false'),
+  new meowSettingsEntry('web_force_dark_mode', meowSettingsEntryType.BOOLEAN, 'false'), // #60
   new meowSettingsEntry('web_force_dark_mode_exemptions', meowSettingsEntryType.STRING_ARRAY, ''),
 
   // Colors (light)

@@ -7,6 +7,7 @@ struct MooCapsuleButton {
   @Local lastChance: boolean = false;
   @Param text: ResourceStr = 'Meow ~';
   @Event clickAction: () => void;
+  lastChanceTimeout: number | undefined;
 
   build() {
     Button(this.text)
@@ -21,17 +22,26 @@ struct MooCapsuleButton {
       .backgroundColor(this.adjustedColorBackground())
       .fontColor(this.adjustedColorFont())
       .onClick(() => {
-        if (this.doubleConfirm) {
-          if (this.lastChance) {
-            this.clickAction();
-          }
-          this.lastChance = true;
-          setTimeout(() => {
-            this.lastChance = false;
-          }, 2000);
-        } else {
+        // No double confirm
+        if (!this.doubleConfirm) {
           this.clickAction();
+          return;
         }
+
+        clearTimeout(this.lastChanceTimeout);
+
+        // Need double confirm.
+        if (this.lastChance) {
+          this.clickAction();
+          this.lastChance = false;
+          return;
+        }
+
+        // First confirm.
+        this.lastChance = true;
+        this.lastChanceTimeout = setTimeout(() => {
+          this.lastChance = false;
+        }, 2000);
       })
       .opacity(0.9);
   }
