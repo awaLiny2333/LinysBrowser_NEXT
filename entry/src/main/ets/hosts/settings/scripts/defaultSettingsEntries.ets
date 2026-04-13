@@ -115,12 +115,15 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('collect_new_history', meowSettingsEntryType.BOOLEAN, 'true'), // #69
   new meowSettingsEntry('history_index_size', meowSettingsEntryType.NUMBER, '-1'), // #70
   new meowSettingsEntry('history_index_load_quantity', meowSettingsEntryType.NUMBER, '6'), // #71 * This may be no longer needed for our brand new history system!
+  
   // Download
   new meowSettingsEntry('direct_download', meowSettingsEntryType.BOOLEAN, 'false'), // #72
   new meowSettingsEntry('direct_download_auto_open', meowSettingsEntryType.BOOLEAN, 'true'), // #73
+  
   // Debug
   new meowSettingsEntry('DEV_MODE', meowSettingsEntryType.BOOLEAN, 'false'), // #74
   new meowSettingsEntry('resource_monitor', meowSettingsEntryType.BOOLEAN, 'true'),
+  
   new meowSettingsEntry('CONFIG_BUTTONS', meowSettingsEntryType.BOOLEAN, 'false'), // Forgot what this is :3
   new meowSettingsEntry('CONFIG_EXTENSIONS', meowSettingsEntryType.BOOLEAN, 'false'),
 ];
