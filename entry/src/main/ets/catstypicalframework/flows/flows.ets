@@ -16,22 +16,22 @@
  * - meowDialogManager
  */
 
-import Want from '@ohos.app.ability.Want';
+import { common, Configuration, ConfigurationConstant } from '@kit.AbilityKit';
 import { AppStorageV2, window } from '@kit.ArkUI';
-import { meow, meowLevel } from '../utils/catsLogger';
-import { getUpdateAvoid, getUpdateFreeWindowMode, listenAvoid, listenFocus, listenFreeWindowMode, listenPowerSave, listenSmartReachability, meowPx2vp } from '../utils/ui';
 import { BusinessError, power } from '@kit.BasicServicesKit';
-import { common, ConfigurationConstant, Configuration } from '@kit.AbilityKit';
-import { ensureDirectoryExist } from '../utils/storage';
-import { meowHistorian } from '../../hosts/history/classes/meowHistorian';
-import { meowMisc } from '../hosts/meowMisc';
-import { meowManagedSettings } from '../../hosts/settings/classes/meowManagedSettings';
-import { meowResources } from '../../hosts/env/classes/meowResources';
+import Want from '@ohos.app.ability.Want';
+import { preferRightHandFromSettings } from '../../components/common/constants';
 import { meowBookmarkStash } from '../../hosts/bookmarks/classes/meowBookmarkStash';
 import { meowDialogManager } from '../../hosts/env/classes/meowDialogManager';
+import { meowResources } from '../../hosts/env/classes/meowResources';
 import { meowUiStatuses } from '../../hosts/env/classes/meowUiStatuses';
+import { meowHistorian } from '../../hosts/history/classes/meowHistorian';
+import { meowManagedSettings } from '../../hosts/settings/classes/meowManagedSettings';
 import { meowLayoutModeStatus } from '../hosts/meowLayoutModeStatus';
-import { preferRightHandFromSettings } from '../../components/common/constants';
+import { meowMisc } from '../hosts/meowMisc';
+import { meow, meowLevel } from '../utils/catsLogger';
+import { ensureDirectoryExist } from '../utils/storage';
+import { getUpdateAvoid, getUpdateFreeWindowMode, listenAvoid, listenFocus, listenFreeWindowMode, listenPowerSave, listenSmartReachability, meowPx2vp, shortModeThreshold, wideModeThreshold } from '../utils/ui';
 
 // Flows
 /**
@@ -137,14 +137,15 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
     const rect: window.Rect = window.getWindowProperties().windowRect;
     const width = meowPx2vp(rect.width);
     const height = meowPx2vp(rect.height);
-    const wideMode = width > 900;
+    const wideMode = width > wideModeThreshold;
+    const shortMode = height < shortModeThreshold;
     const dark = context.config.colorMode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
     const powerSave = power.getPowerMode() == power.DevicePowerMode.MODE_POWER_SAVE;
     // Set the value of myMeowUiStatuses.smartReachabilitySaysWeShouldPreferRightHand here as a starting position for smart reachability.
     const smartReachabilitySaysWeShouldPreferRightHand = preferRightHandFromSettings();
-    AppStorageV2.connect(meowLayoutModeStatus, () => new meowLayoutModeStatus(wideMode, width, height, dark, powerSave, smartReachabilitySaysWeShouldPreferRightHand));
+    AppStorageV2.connect(meowLayoutModeStatus, () => new meowLayoutModeStatus(wideMode, shortMode, width, height, dark, powerSave, smartReachabilitySaysWeShouldPreferRightHand));
   } catch (e) {
-    meow(`AppStorageV2.connect(meowLayoutModeStatus, () => new meowLayoutModeStatus(wideMode, width, height, dark, powerSave, smartReachabilitySaysWeShouldPreferRightHand)); Failed: ${e}`, 'init', meowLevel.ERROR);
+    meow(`AppStorageV2.connect(meowLayoutModeStatus, () => new meowLayoutModeStatus(wideMode, shortMode, width, height, dark, powerSave, smartReachabilitySaysWeShouldPreferRightHand)); Failed: ${e}`, 'init', meowLevel.ERROR);
   }
   listenFocus(window); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
   listenPowerSave(); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!

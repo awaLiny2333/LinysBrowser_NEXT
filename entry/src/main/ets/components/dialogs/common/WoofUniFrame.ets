@@ -1,13 +1,15 @@
-import { meowDialogManager } from '../../../../hosts/env/classes/meowDialogManager';
-import { MooSymbolButton } from '../../../common/MooSymbolButton';
+import { meowDialogManager } from '../../../hosts/env/classes/meowDialogManager';
+import { MooSymbolButton } from '../../common/MooSymbolButton';
 import { AppStorageV2 } from '@kit.ArkUI';
-import { MooTextModifier } from '../../../common/MooTextModifier';
-import { getColor, meowThemeColorType, mooTextType, useEffects } from '../../../common/constants';
+import { MooTextModifier } from '../../common/MooTextModifier';
+import { defaultAnimation, getColor, meowThemeColorType, mooTextType, useEffects } from '../../common/constants';
+import { meowLayoutModeStatus } from '../../../catstypicalframework/hosts/meowLayoutModeStatus';
 
 @ComponentV2
 struct WoofUniFrame {
   // Env
   @Local myMeowDialogManager: meowDialogManager = AppStorageV2.connect(meowDialogManager)!;
+  @Local myMeowLayoutModeStatus: meowLayoutModeStatus = AppStorageV2.connect(meowLayoutModeStatus)!;
   // This
   @Param @Require controller: CustomDialogController;
   @Param title: ResourceStr = 'Title';
@@ -29,7 +31,11 @@ struct WoofUniFrame {
 
   build() {
     Stack() {
-      this.contentsBuilder();
+      Column() {
+        this.contentsBuilder();
+      }
+      .padding({ top: this.myMeowLayoutModeStatus.shortMode ? 0 : 43 })
+      .animation(defaultAnimation());
 
       // Title bar
       Row() {
@@ -45,9 +51,12 @@ struct WoofUniFrame {
           }
         });
       }
+      .visibility(this.myMeowLayoutModeStatus.shortMode ? Visibility.None : Visibility.Visible) // Save space for short contents
+      .animation(defaultAnimation())
       .padding({ left: 12, right: 10, top: 10, bottom: 7 })
       .backgroundColor(getColor(meowThemeColorType.SECONDARY))
       .useEffect(useEffects(), EffectType.WINDOW_EFFECT);
+
     }
     .onAreaChange((oldValue, newValue) => {
       if (oldValue.height as number == newValue.height as number) {

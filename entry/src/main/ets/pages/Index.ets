@@ -1,20 +1,20 @@
 import { AppStorageV2 } from '@kit.ArkUI';
-import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
-import { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
-import { defaultDecorHeight, defaultInnerRadius } from '../catstypicalframework/utils/ui';
-import { defaultAnimation, getColor, meowThemeColorType, mooTextType, showGiganticWindowTitle, standardSpacing, titleBarPositionBottom, useEffects } from '../components/common/constants';
-import lazy { heightMeowTitleBar, MeowTitleBar } from '../components/parts/MeowTitleBar';
-import lazy { MeowButtonRow } from '../components/parts/MeowButtonRow';
-import lazy { MeowTitleTop } from '../components/parts/MeowTitleTop';
-import { meowResources } from '../hosts/env/classes/meowResources';
-import { meowManagedSettings } from '../hosts/settings/classes/meowManagedSettings';
-import { meowUiStatuses } from '../hosts/env/classes/meowUiStatuses';
 import { meowAvoid } from '../catstypicalframework/hosts/meowAvoid';
 import { meowFreeWindowModeStatus } from '../catstypicalframework/hosts/meowFreeWindowModeStatus';
 import { meowLayoutModeStatus } from '../catstypicalframework/hosts/meowLayoutModeStatus';
-import { MeowSearchBar } from '../components/parts/MeowSearchBar';
-import { MeowPlaceForDialogs } from '../components/parts/MeowPlaceForDialogs';
+import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
+import { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
+import { defaultDecorHeight, defaultInnerRadius, shortModeThreshold, wideModeThreshold } from '../catstypicalframework/utils/ui';
+import { defaultAnimation, getColor, meowThemeColorType, mooTextType, showGiganticWindowTitle, standardSpacing, titleBarPositionBottom, useEffects } from '../components/common/constants';
 import { MooTextModifier } from '../components/common/MooTextModifier';
+import lazy { MeowButtonRow } from '../components/parts/MeowButtonRow';
+import { MeowPlaceForDialogs } from '../components/parts/MeowPlaceForDialogs';
+import { MeowSearchBar } from '../components/parts/MeowSearchBar';
+import lazy { heightMeowTitleBar, MeowTitleBar } from '../components/parts/MeowTitleBar';
+import lazy { MeowTitleTop } from '../components/parts/MeowTitleTop';
+import { meowResources } from '../hosts/env/classes/meowResources';
+import { meowUiStatuses } from '../hosts/env/classes/meowUiStatuses';
+import { meowManagedSettings } from '../hosts/settings/classes/meowManagedSettings';
 
 @Entry
 @ComponentV2
@@ -124,10 +124,11 @@ struct Index {
     .onAreaChange((o, n) => {
       if (o.width != n.width) {
         this.myMeowLayout.width = n.width as number;
-        this.myMeowLayout.wideMode = this.myMeowLayout.width > 700;
+        this.myMeowLayout.wideMode = this.myMeowLayout.width > wideModeThreshold;
       }
       if (o.height != n.height) {
         this.myMeowLayout.height = n.height as number;
+        this.myMeowLayout.shortMode = this.myMeowLayout.height < shortModeThreshold;
       }
     });
   }

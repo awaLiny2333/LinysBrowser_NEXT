@@ -1,7 +1,7 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowManagedSettings } from '../../../hosts/settings/classes/meowManagedSettings';
-import { standardSpacing, waterFlowColumnsTemplate } from '../../common/constants';
-import { WoofUniFrame } from './common/WoofUniFrame';
+import { defaultAnimation, standardSpacing, waterFlowColumnsTemplate } from '../../common/constants';
+import { WoofUniFrame } from '../common/WoofUniFrame';
 import { SettingsAccessibility } from './parts/Accessibility';
 import { SettingsAppearance } from './parts/Appearance';
 import { SettingsExperience } from './parts/Experience';
@@ -13,28 +13,31 @@ struct WoofSettings {
   @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
   build() {
-    WaterFlow() {
-      FlowItem() {
-        SettingsOnStartUp();
-      }.padding({ bottom: standardSpacing });
-      FlowItem() {
-        SettingsGeneral();
-      }.padding({ bottom: standardSpacing });
-      FlowItem() {
-        SettingsExperience();
-      }.padding({ bottom: standardSpacing });
-      FlowItem() {
-        SettingsAccessibility();
-      }.padding({ bottom: standardSpacing });
-      FlowItem() {
-        SettingsAppearance();
-      }.padding({ bottom: standardSpacing });
+    Scroll() {
+      WaterFlow() {
+        FlowItem() {
+          SettingsOnStartUp();
+        };
+        FlowItem() {
+          SettingsGeneral();
+        };
+        FlowItem() {
+          SettingsExperience();
+        };
+        FlowItem() {
+          SettingsAccessibility();
+        };
+        FlowItem() {
+          SettingsAppearance();
+        };
+      }
+      .columnsTemplate(waterFlowColumnsTemplate())
+      .animation(defaultAnimation())
+      .columnsGap(standardSpacing)
+      .rowsGap(standardSpacing);
     }
-    .edgeEffect(EdgeEffect.Spring)
-    .columnsGap(standardSpacing)
-    // .rowsGap(standardSpacing)
-    .padding({ top: 50, left: standardSpacing, right: standardSpacing })
-    .columnsTemplate(waterFlowColumnsTemplate());
+    .padding(standardSpacing)
+    .edgeEffect(EdgeEffect.Spring);
   }
 }
 

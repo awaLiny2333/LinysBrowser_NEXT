@@ -7,6 +7,9 @@ import { meowAvoid } from '../hosts/meowAvoid';
 import { meowFreeWindowModeStatus } from '../hosts/meowFreeWindowModeStatus';
 import { meowLayoutModeStatus } from '../hosts/meowLayoutModeStatus';
 
+export const wideModeThreshold = 700;
+export const shortModeThreshold = 500;
+
 /**
  * Converts px to vp.
  * @param px The true px.

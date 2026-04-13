@@ -1,6 +1,7 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowResources } from '../../../hosts/env/classes/meowResources';
-import { WoofUniFrame } from '../WoofSettings/common/WoofUniFrame';
+import { standardSpacing } from '../../common/constants';
+import { WoofUniFrame } from '../common/WoofUniFrame';
 import { BookmarksDevCard } from './bookmarks/Card';
 import { CatsTypicalFrameworkDevCard } from './framework/Card';
 import { HistoryDevCard } from './history/Card';
@@ -20,11 +21,10 @@ struct CatsDevCards {
         ResourcesDevCard();
         HistoryDevCard();
       }
-      .padding({ top: 45 }) // To work with WoofUniFrame
+      .padding(standardSpacing)
       .alignItems(HorizontalAlign.Start)
       .width('100%');
     }
-    .padding(5)
     .scrollable(ScrollDirection.Vertical)
     .edgeEffect(EdgeEffect.Spring);
   }

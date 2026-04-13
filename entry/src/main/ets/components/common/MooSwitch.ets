@@ -10,9 +10,11 @@ struct MooSwitch {
 
   build() {
     Row({ space: 8 }) {
-      Blank().layoutWeight(1)
       if (this.text) {
-        Text(this.text).attributeModifier(new MooTextModifier());
+        Text(this.text).attributeModifier(new MooTextModifier())
+          .layoutWeight(1)
+          .textAlign(summarizedPreferRightHand() ? TextAlign.End : TextAlign.Start)
+          .animation(defaultAnimation());
       }
       Toggle({ isOn: this.isOn, type: ToggleType.Switch })
         .onChange((c) => {
@@ -25,6 +27,7 @@ struct MooSwitch {
         .switchPointColor(useEffects() ? getColor(meowThemeColorType.FONT) : getColor(meowThemeColorType.PRIMARY))
         .opacity(0.9);
     }
+    .width('100%')
     .direction(summarizedPreferRightHand() ? Direction.Ltr : Direction.Rtl)
     .animation(defaultAnimation());
   }

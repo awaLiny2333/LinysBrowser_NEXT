@@ -9,13 +9,13 @@ import { MooCapsuleButton } from "../../common/MooCapsuleButton";
 import { MooSlider } from "../../common/MooSlider";
 import { MooTextInputV2 } from "../../common/MooTextInputV2";
 import { MooTextModifier } from "../../common/MooTextModifier";
-import { WoofUniFrame } from "../WoofSettings/common/WoofUniFrame";
+import { WoofUniFrame } from "../common/WoofUniFrame";
 
 @ComponentV2
 struct WoofColorPicker {
   @Param @Require controller: CustomDialogController;
   // Host
-  @Local layout: meowLayoutModeStatus = AppStorageV2.connect(meowLayoutModeStatus)!;
+  @Local myMeowLayoutModeStatus: meowLayoutModeStatus = AppStorageV2.connect(meowLayoutModeStatus)!;
   // Data
   @Local settingsId: number = -1;
   @Local hex: string = '#000000';
@@ -38,7 +38,7 @@ struct WoofColorPicker {
 
   build() {
     Column() {
-      if (this.layout.wideMode) {
+      if (this.myMeowLayoutModeStatus.wideMode) {
         Row({ space: standardSpacing }) {
           DemoPanel({ hex: this.hex });
           EditPanel({
@@ -46,40 +46,51 @@ struct WoofColorPicker {
             s: this.s,
             v: this.v,
             hex: this.hex,
-            controller: this.controller,
             onHexChange: (hex: string) => {
               this.hex = hex;
             },
             onHexConfirm: () => {
               const myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
               myMeowManagedSettings.setByIndex(this.settingsId, this.hex);
+              this.controller.close();
+            },
+            onCancel: () => {
+              this.controller.close();
             }
           });
         }
         .width('100%')
         .alignItems(VerticalAlign.Top);
       } else {
+        // Vertical
         Column({ space: standardSpacing }) {
-          DemoPanel({ hex: this.hex });
+          if (!this.myMeowLayoutModeStatus.shortMode) {
+            DemoPanel({ hex: this.hex });
+          }
           EditPanel({
+            myLayoutWeight: undefined,
             h: this.h,
             s: this.s,
             v: this.v,
             hex: this.hex,
-            controller: this.controller,
             onHexChange: (hex: string) => {
               this.hex = hex;
             },
             onHexConfirm: () => {
               const myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
               myMeowManagedSettings.setByIndex(this.settingsId, this.hex);
+              this.controller.close();
+            },
+            onCancel: () => {
+              this.controller.close();
             }
           });
         }
         .width('100%')
         .justifyContent(FlexAlign.End);
       }
-    }.padding({ top: 50, left: standardSpacing, right: standardSpacing, bottom: standardSpacing });
+    }
+    .padding(standardSpacing);
   }
 }
 
@@ -88,7 +99,7 @@ struct WoofColorPickerDialog {
   controller: CustomDialogController;
 
   build() {
-    WoofUniFrame({ controller: this.controller, title: $r('app.string.Settings') }) {
+    WoofUniFrame({ controller: this.controller, title: $r('app.string.Settings_category_appearance_colors') }) {
       WoofColorPicker({ controller: this.controller });
     };
   }
@@ -98,87 +109,91 @@ export { WoofColorPickerDialog };
 
 @ComponentV2
 struct EditPanel {
-  @Param @Require controller: CustomDialogController;
+  // Config
+  @Param myLayoutWeight: number = 1;
   // Data
-  @Param hex: string = '';
-  @Param h: number = -1;
-  @Param s: number = -1;
-  @Param v: number = -1;
+  @Param @Require hex: string;
+  @Param @Require h: number;
+  @Param @Require s: number;
+  @Param @Require v: number;
   // Events
   @Event onHexChange: (hex: string) => void;
   @Event onHexConfirm: () => void;
+  @Event onCancel: () => void;
 
   build() {
-    Column({ space: standardSpacing }) {
-      Text($r('app.string.Settings_category_appearance_colors_picker_hue')).attributeModifier(new MooTextModifier());
-      MooSlider({
-        lock: false,
-        min: 0,
-        max: 360,
-        value: this.h,
-        step: 1,
-        onChange: (value: number) => {
-          this.onHexChange(hsv2hex([value, this.s, this.v]));
-        }
-      });
-      Text($r('app.string.Settings_category_appearance_colors_picker_saturation')).attributeModifier(new MooTextModifier());
-      MooSlider({
-        lock: false,
-        min: 0,
-        max: 100,
-        value: this.s,
-        step: 1,
-        onChange: (value: number) => {
-          this.onHexChange(hsv2hex([this.h, value, this.v]));
-        }
-      });
-      Text($r('app.string.Settings_category_appearance_colors_picker_value')).attributeModifier(new MooTextModifier());
-      MooSlider({
-        lock: false,
-        min: 0,
-        max: 100,
-        value: this.v,
-        step: 1,
-        onChange: (value: number) => {
-          this.onHexChange(hsv2hex([this.h, this.s, value]));
-        }
-      });
-
-      Text($r('app.string.Settings_category_appearance_colors_picker_code')).attributeModifier(new MooTextModifier());
-      MooTextInputV2({
-        text: this.hex,
-        onChange: (c) => {
-          if (isLegalHexColor(c)) {
-            this.onHexChange(c);
-          }
-        }
-      });
-
-      // Buttons
-      Row({ space: standardSpacing }) {
-        MooCapsuleButton({
-          text: $r('app.string.General_confirm'),
-          clickAction: () => {
-            this.onHexConfirm();
-            this.controller.close();
+    Scroll() {
+      Column({ space: standardSpacing }) {
+        Text($r('app.string.Settings_category_appearance_colors_picker_hue')).attributeModifier(new MooTextModifier());
+        MooSlider({
+          lock: false,
+          min: 0,
+          max: 360,
+          value: this.h,
+          step: 1,
+          onChange: (value: number) => {
+            this.onHexChange(hsv2hex([value, this.s, this.v]));
           }
         });
-        MooCapsuleButton({
-          text: $r('app.string.General_cancel'),
-          clickAction: () => {
-            this.controller.close();
+        Text($r('app.string.Settings_category_appearance_colors_picker_saturation')).attributeModifier(new MooTextModifier());
+        MooSlider({
+          lock: false,
+          min: 0,
+          max: 100,
+          value: this.s,
+          step: 1,
+          onChange: (value: number) => {
+            this.onHexChange(hsv2hex([this.h, value, this.v]));
           }
         });
+        Text($r('app.string.Settings_category_appearance_colors_picker_value')).attributeModifier(new MooTextModifier());
+        MooSlider({
+          lock: false,
+          min: 0,
+          max: 100,
+          value: this.v,
+          step: 1,
+          onChange: (value: number) => {
+            this.onHexChange(hsv2hex([this.h, this.s, value]));
+          }
+        });
+
+        Text($r('app.string.Settings_category_appearance_colors_picker_code')).attributeModifier(new MooTextModifier());
+        MooTextInputV2({
+          text: this.hex,
+          onChange: (c) => {
+            if (isLegalHexColor(c)) {
+              this.onHexChange(c);
+            }
+          }
+        });
+
+        // Buttons
+        Row({ space: standardSpacing }) {
+          MooCapsuleButton({
+            text: $r('app.string.General_confirm'),
+            clickAction: () => {
+              this.onHexConfirm();
+            }
+          });
+          MooCapsuleButton({
+            text: $r('app.string.General_cancel'),
+            clickAction: () => {
+              this.onCancel();
+            }
+          });
+        }
+        .direction(summarizedPreferRightHand() ? Direction.Rtl : Direction.Ltr)
+        .alignSelf(summarizedPreferRightHand() ? ItemAlign.End : ItemAlign.Start);
       }
-      .direction(summarizedPreferRightHand() ? Direction.Rtl : Direction.Ltr)
-      .alignSelf(summarizedPreferRightHand() ? ItemAlign.End : ItemAlign.Start);
+      .justifyContent(FlexAlign.End)
+      .alignItems(HorizontalAlign.Start);
     }
+    .edgeEffect(EdgeEffect.Spring)
     .backgroundColor(getColor(meowThemeColorType.PRIMARY))
     .borderRadius(defaultInnerRadius)
     .padding(standardSpacing)
-    .layoutWeight(1)
-    .justifyContent(FlexAlign.End)
-    .alignItems(HorizontalAlign.Start);
+    .layoutWeight(this.myLayoutWeight);
   }
 }
 
@@ -198,9 +213,6 @@ struct DemoPanel {
 
         // Color block
         Row() {
-          MooCapsuleButton({
-            text: '／(=∵=)＼'
-          });
         }
         .padding(standardSpacing)
         .alignItems(VerticalAlign.Bottom)
@@ -212,6 +224,10 @@ struct DemoPanel {
         })
         .width('60%')
         .backgroundColor(this.hex);
+
+        MooCapsuleButton({
+          text: '／(=∵=)＼'
+        });
       }
       .alignItems(HorizontalAlign.Start)
       .width('100%');
