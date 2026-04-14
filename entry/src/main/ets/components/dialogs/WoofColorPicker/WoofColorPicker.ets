@@ -4,7 +4,7 @@ import { hex2hsv, hsv2hex, isLegalHexColor } from "../../../catstypicalframework
 import { defaultInnerRadius, defaultMenuItemRadius, defaultRoundedRadius } from "../../../catstypicalframework/utils/ui";
 import { meowDialogManager } from "../../../hosts/env/classes/meowDialogManager";
 import { meowManagedSettings } from "../../../hosts/settings/classes/meowManagedSettings";
-import { getColor, meowThemeColorType, standardSpacing } from "../../common/constants";
+import { getColor, meowThemeColorType, standardSpacing } from "../../settings";
 import { MooCapsuleButton } from "../../common/MooCapsuleButton";
 import { MooSlider } from "../../common/MooSlider";
 import { MooTextInputV2 } from "../../common/MooTextInputV2";

@@ -1,9 +1,9 @@
-import { meow, meowLevel } from '../../../../catstypicalframework/utils/catsLogger';
-import { defaultInnerRadius, defaultRoundedRadius } from '../../../../catstypicalframework/utils/ui';
-import { meowBookmarkItem } from '../../../../hosts/bookmarks/classes/meowBookmarkItem';
-import { meowFlexOptions } from '../../../common/constants';
+import { meow, meowLevel } from '../../../../../catstypicalframework/utils/catsLogger';
+import { defaultInnerRadius, defaultRoundedRadius } from '../../../../../catstypicalframework/utils/ui';
+import { meowBookmarkItem } from '../../../../../hosts/bookmarks/classes/meowBookmarkItem';
+import { meowFlexOptions } from '../../../../settings';
 import { SymbolButton } from '../common/SymbolButton';
-import { UniContentCard } from '../../../common/UniContentCard';
+import { UniContentCard } from '../../../../common/UniContentCard';
 
 @ComponentV2
 export struct SimpleBookmarksShowcase {

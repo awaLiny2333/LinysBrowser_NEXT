@@ -1,5 +1,5 @@
 import { meowManagedSettings } from "../../../../hosts/settings/classes/meowManagedSettings";
-import { mooTextType, standardSpacing } from "../../../common/constants";
+import { mooTextType, standardSpacing } from "../../../settings";
 import { MooTextModifier } from "../../../common/MooTextModifier";
 import { UniContentCard } from "../../../common/UniContentCard";
 import { MooSwitch } from "../../../common/MooSwitch";

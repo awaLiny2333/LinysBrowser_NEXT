@@ -1,4 +1,4 @@
-import { defaultAnimation, getColor, meowThemeColorType, summarizedPreferRightHand, useEffects } from "./constants";
+import { defaultAnimation, getColor, meowThemeColorType, summarizedPreferRightHand, useEffects } from "../settings";
 import { MooSymbolButtonSmall } from "./MooSymbolButtonSmall";
 import { MooTextModifier } from "./MooTextModifier";
 

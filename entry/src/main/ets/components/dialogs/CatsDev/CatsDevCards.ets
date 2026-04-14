@@ -1,12 +1,12 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowResources } from '../../../hosts/env/classes/meowResources';
-import { standardSpacing } from '../../common/constants';
+import { standardSpacing } from '../../settings';
 import { WoofUniFrame } from '../common/WoofUniFrame';
-import { BookmarksDevCard } from './bookmarks/Card';
-import { CatsTypicalFrameworkDevCard } from './framework/Card';
-import { HistoryDevCard } from './history/Card';
-import { ResourcesDevCard } from './resources/Card';
-import { SettingsDevCard } from './settings/Card';
+import { BookmarksDevCard } from './parts/bookmarks/Card';
+import { CatsTypicalFrameworkDevCard } from './parts/framework/Card';
+import { HistoryDevCard } from './parts/history/Card';
+import { ResourcesDevCard } from './parts/resources/Card';
+import { SettingsDevCard } from './parts/settings/Card';
 
 @ComponentV2
 struct CatsDevCards {

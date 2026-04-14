@@ -1,6 +1,6 @@
 import { meowUiStatuses } from '../../../../hosts/env/classes/meowUiStatuses';
 import { meowManagedSettings } from '../../../../hosts/settings/classes/meowManagedSettings';
-import { mooTextType, standardSpacing } from '../../../common/constants';
+import { mooTextType, standardSpacing } from '../../../settings';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { MooTextModifier } from '../../../common/MooTextModifier';
 import { UniContentCard } from '../../../common/UniContentCard';

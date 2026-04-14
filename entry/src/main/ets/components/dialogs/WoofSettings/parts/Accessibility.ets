@@ -1,6 +1,6 @@
 import { meowManagedSettings } from '../../../../hosts/settings/classes/meowManagedSettings';
 import { AppStorageV2, SegmentButtonV2Items } from '@kit.ArkUI';
-import { defaultAnimation, mooTextType, standardSpacing } from '../../../common/constants';
+import { defaultAnimation, mooTextType, standardSpacing } from '../../../settings';
 import { MooSwitch } from '../../../common/MooSwitch';
 import { MooTextModifier } from '../../../common/MooTextModifier';
 import { UniContentCard } from '../../../common/UniContentCard';

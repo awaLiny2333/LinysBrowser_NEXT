@@ -1,5 +1,5 @@
 import { defaultInnerRadius, defaultMenuItemRadius } from '../../catstypicalframework/utils/ui';
-import { defaultAnimation, getColor, meowThemeColorType, summarizedPreferRightHand, standardSpacing, useEffects } from './constants';
+import { defaultAnimation, getColor, meowThemeColorType, summarizedPreferRightHand, standardSpacing, useEffects } from '../settings';
 import { MooCapsuleButton } from './MooCapsuleButton';
 import { MooSymbolButtonSmall } from './MooSymbolButtonSmall';
 import { MooTextInputV2 } from './MooTextInputV2';

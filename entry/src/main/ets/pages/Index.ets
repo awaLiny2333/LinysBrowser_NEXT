@@ -5,7 +5,7 @@ import { meowLayoutModeStatus } from '../catstypicalframework/hosts/meowLayoutMo
 import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
 import { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
 import { defaultDecorHeight, defaultInnerRadius, shortModeThreshold, wideModeThreshold } from '../catstypicalframework/utils/ui';
-import { defaultAnimation, getColor, meowThemeColorType, mooTextType, showGiganticWindowTitle, standardSpacing, titleBarPositionBottom, useEffects } from '../components/common/constants';
+import { defaultAnimation, getColor, meowThemeColorType, mooTextType, showGiganticWindowTitle, standardSpacing, titleBarPositionBottom, useEffects } from '../components/settings';
 import { MooTextModifier } from '../components/common/MooTextModifier';
 import lazy { MeowButtonRow } from '../components/parts/MeowButtonRow';
 import { MeowPlaceForDialogs } from '../components/parts/MeowPlaceForDialogs';

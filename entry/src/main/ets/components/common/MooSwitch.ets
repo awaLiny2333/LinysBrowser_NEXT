@@ -1,4 +1,4 @@
-import { defaultAnimation, getColor, meowThemeColorType, summarizedPreferRightHand, useEffects } from './constants';
+import { defaultAnimation, getColor, meowThemeColorType, summarizedPreferRightHand, useEffects } from '../settings';
 import { MooTextModifier } from './MooTextModifier';
 
 @ComponentV2

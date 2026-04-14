@@ -4,7 +4,7 @@ import { meowUiStatuses } from '../../../../hosts/env/classes/meowUiStatuses';
 import lazy { removeWebCache, scanWebCacheSize } from '../../../../hosts/env/scripts/storage';
 import lazy { scanHistoryIndexSize } from '../../../../hosts/history/scripts/storage';
 import { meowManagedSettings } from '../../../../hosts/settings/classes/meowManagedSettings';
-import lazy { mooTextType, standardSpacing } from '../../../common/constants';
+import lazy { mooTextType, standardSpacing } from '../../../settings';
 import { MooCapsuleButton } from '../../../common/MooCapsuleButton';
 import { MooTextModifier } from '../../../common/MooTextModifier';
 import { UniContentCard } from '../../../common/UniContentCard';

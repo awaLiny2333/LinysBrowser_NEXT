@@ -1,6 +1,6 @@
 import { AppStorageV2, SegmentButtonV2Items } from '@kit.ArkUI';
 import { meowManagedSettings } from '../../../../hosts/settings/classes/meowManagedSettings';
-import { mooTextType, standardSpacing } from '../../../common/constants';
+import { mooTextType, standardSpacing } from '../../../settings';
 import { MooTabSegmentV2 } from '../../../common/MooTabSegmentV2';
 import { MooTextModifier } from '../../../common/MooTextModifier';
 import { UniContentCard } from '../../../common/UniContentCard';

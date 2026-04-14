@@ -20,7 +20,7 @@ import { common, Configuration, ConfigurationConstant } from '@kit.AbilityKit';
 import { AppStorageV2, window } from '@kit.ArkUI';
 import { BusinessError, power } from '@kit.BasicServicesKit';
 import Want from '@ohos.app.ability.Want';
-import { preferRightHandFromSettings } from '../../components/common/constants';
+import { preferRightHandFromSettings } from '../../components/settings';
 import { meowBookmarkStash } from '../../hosts/bookmarks/classes/meowBookmarkStash';
 import { meowDialogManager } from '../../hosts/env/classes/meowDialogManager';
 import { meowResources } from '../../hosts/env/classes/meowResources';

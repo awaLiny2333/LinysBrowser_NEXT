@@ -1,5 +1,5 @@
 import { defaultMenuItemRadius } from "../../catstypicalframework/utils/ui";
-import { getColor, meowThemeColorType } from "./constants";
+import { getColor, meowThemeColorType } from "../settings";
 import { AppStorageV2 } from "@kit.ArkUI";
 import { meowFreeWindowModeStatus } from "../../catstypicalframework/hosts/meowFreeWindowModeStatus";
 

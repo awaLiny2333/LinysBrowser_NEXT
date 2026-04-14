@@ -5,7 +5,7 @@ import { openDialogRequestType } from "../../../../hosts/env/classes/meowDialogM
 import { requestDialog } from "../../../../hosts/env/scripts/dialog";
 import { meowManagedSettings } from "../../../../hosts/settings/classes/meowManagedSettings";
 import { resetAnimations, resetColors } from "../../../../hosts/settings/scripts/reset";
-import { getColor, meowThemeColorType, mooTextType, standardSpacing, useEffects } from "../../../common/constants";
+import { getColor, meowThemeColorType, mooTextType, standardSpacing, useEffects } from "../../../settings";
 import { MooCapsuleButton } from "../../../common/MooCapsuleButton";
 import { MooSlider } from "../../../common/MooSlider";
 import { MooSwitch } from "../../../common/MooSwitch";

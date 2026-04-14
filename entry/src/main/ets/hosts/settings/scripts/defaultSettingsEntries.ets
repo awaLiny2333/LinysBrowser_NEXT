@@ -9,7 +9,7 @@ import { defaultNewWindowName, defaultUserAgents, presetSearchEngines } from "./
  * `const settingsAdblockExceptions: meowSettingsEntry = this.myMeowManagedSettings.settingsData[53]; // adblock_exceptions`
  */
 export let defaultSettingsEntries: meowSettingsEntry[] = [
-  new meowSettingsEntry('..meow', meowSettingsEntryType.STRING, 'Do not edit manually unless you know what you are doing!'),
+  new meowSettingsEntry('...meow', meowSettingsEntryType.STRING, 'Do not edit manually unless you know what you are doing!'),
 
   // Customization
   new meowSettingsEntry('title_bar_position', meowSettingsEntryType.STRING, 'bottom'), // 'top' | 'bottom'

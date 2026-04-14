@@ -2,7 +2,7 @@ import lazy { AppStorageV2, display, window } from '@kit.ArkUI';
 import lazy { meow, meowLevel } from './catsLogger';
 import lazy { deviceInfo, power, settings } from '@kit.BasicServicesKit';
 import { motion } from '@kit.MultimodalAwarenessKit';
-import { defaultAnimation, smartReachability } from '../../components/common/constants';
+import { defaultAnimation, smartReachability } from '../../components/settings';
 import { meowAvoid } from '../hosts/meowAvoid';
 import { meowFreeWindowModeStatus } from '../hosts/meowFreeWindowModeStatus';
 import { meowLayoutModeStatus } from '../hosts/meowLayoutModeStatus';

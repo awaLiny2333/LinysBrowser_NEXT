@@ -1,4 +1,4 @@
-import { useEffects, getColor, meowThemeColorType } from './constants';
+import { useEffects, getColor, meowThemeColorType } from '../settings';
 import { TabSegmentButtonV2, SegmentButtonV2Items } from '@kit.ArkUI';
 import { resourceColor2Metrics } from '../../catstypicalframework/utils/resource';
 

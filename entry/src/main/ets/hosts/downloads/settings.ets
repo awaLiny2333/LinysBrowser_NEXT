@@ -1,4 +1,4 @@
-import { meowManagedSettings } from "../../settings/classes/meowManagedSettings";
+import { meowManagedSettings } from "../settings/classes/meowManagedSettings";
 import { AppStorageV2 } from "@kit.ArkUI";
 
 /**

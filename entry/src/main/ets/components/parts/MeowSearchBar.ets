@@ -1,6 +1,6 @@
 import { meowAvoid } from '../../catstypicalframework/hosts/meowAvoid';
 import { AppStorageV2 } from '@kit.ArkUI';
-import { standardSpacing, getColor, meowThemeColorType, fontSizeMedium, useEffects } from '../common/constants';
+import { standardSpacing, getColor, meowThemeColorType, fontSizeMedium, useEffects } from '../settings';
 import { heightMeowTitleBar } from './MeowTitleBar';
 
 /**

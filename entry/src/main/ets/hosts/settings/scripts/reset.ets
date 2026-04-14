@@ -15,10 +15,10 @@ export function resetAnimations() {
  */
 export function resetColors() {
   const settings = AppStorageV2.connect(meowManagedSettings)!;
-    settings.setByIndex(62, '#E1E9E3');
-    settings.setByIndex(63, '#CDD7CD');
-    settings.setByIndex(64, '#243B24');
-    settings.setByIndex(65, '#0F1A0F');
-    settings.setByIndex(66, '#2A392A');
-    settings.setByIndex(67, '#E1E9E3');
+  settings.setByIndex(62, '#E1E9E3');
+  settings.setByIndex(63, '#CDD7CD');
+  settings.setByIndex(64, '#243B24');
+  settings.setByIndex(65, '#0F1A0F');
+  settings.setByIndex(66, '#2A392A');
+  settings.setByIndex(67, '#E1E9E3');
 }

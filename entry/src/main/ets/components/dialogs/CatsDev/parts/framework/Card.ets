@@ -1,11 +1,11 @@
-import { UniContentCard } from '../../../common/UniContentCard';
+import { UniContentCard } from '../../../../common/UniContentCard';
 import { AppStorageV2 } from '@kit.ArkUI';
-import { meowMisc } from '../../../../catstypicalframework/hosts/meowMisc';
-import { meowFlexOptions } from '../../../common/constants';
-import { hintGC } from '../../../../catstypicalframework/utils/performance';
-import { meowAvoid } from '../../../../catstypicalframework/hosts/meowAvoid';
-import { meowFreeWindowModeStatus } from '../../../../catstypicalframework/hosts/meowFreeWindowModeStatus';
-import { meowLayoutModeStatus } from '../../../../catstypicalframework/hosts/meowLayoutModeStatus';
+import { meowMisc } from '../../../../../catstypicalframework/hosts/meowMisc';
+import { meowFlexOptions } from '../../../../settings';
+import { hintGC } from '../../../../../catstypicalframework/utils/performance';
+import { meowAvoid } from '../../../../../catstypicalframework/hosts/meowAvoid';
+import { meowFreeWindowModeStatus } from '../../../../../catstypicalframework/hosts/meowFreeWindowModeStatus';
+import { meowLayoutModeStatus } from '../../../../../catstypicalframework/hosts/meowLayoutModeStatus';
 
 /**
  * CatsTypicalFramework stuffs.

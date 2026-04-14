@@ -1,7 +1,7 @@
-import { UniContentCard } from '../../../common/UniContentCard';
+import { UniContentCard } from '../../../../common/UniContentCard';
 import { AppStorageV2 } from '@kit.ArkUI';
-import { meowResources } from '../../../../hosts/env/classes/meowResources';
-import { meowFlexOptions } from '../../../common/constants';
+import { meowResources } from '../../../../../hosts/env/classes/meowResources';
+import { meowFlexOptions } from '../../../../settings';
 
 /**
  * meowResources stuffs.

@@ -2,7 +2,7 @@ import { meowDialogManager } from '../../../hosts/env/classes/meowDialogManager'
 import { MooSymbolButton } from '../../common/MooSymbolButton';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { MooTextModifier } from '../../common/MooTextModifier';
-import { defaultAnimation, getColor, meowThemeColorType, mooTextType, useEffects } from '../../common/constants';
+import { defaultAnimation, getColor, meowThemeColorType, mooTextType, useEffects } from '../../settings';
 import { meowLayoutModeStatus } from '../../../catstypicalframework/hosts/meowLayoutModeStatus';
 
 @ComponentV2

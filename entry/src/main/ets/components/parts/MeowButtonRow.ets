@@ -1,7 +1,7 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowAvoid } from '../../catstypicalframework/hosts/meowAvoid';
 import { meowUiStatuses } from '../../hosts/env/classes/meowUiStatuses';
-import { defaultAnimation, standardSpacing, titleBarPositionBottom, useEffects } from '../common/constants';
+import { defaultAnimation, standardSpacing, titleBarPositionBottom, useEffects } from '../settings';
 import { MooSymbolButton } from '../common/MooSymbolButton';
 
 @ComponentV2

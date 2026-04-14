@@ -1,7 +1,7 @@
 import { AppStorageV2 } from '@kit.ArkUI';
-import { DEV_MODE } from '../../../hosts/env/scripts/deveowlopers';
+import { getDevMode } from '../../../hosts/env/settings';
 import { meowManagedSettings } from '../../../hosts/settings/classes/meowManagedSettings';
-import { standardSpacing, waterFlowColumnsTemplate } from '../../common/constants';
+import { standardSpacing, waterFlowColumnsTemplate } from '../../settings';
 import { WoofUniFrame } from '../common/WoofUniFrame';
 import { SettingsAbout } from './parts/About';
 import { SettingsAccessibility } from './parts/Accessibility';
@@ -52,7 +52,7 @@ struct WoofSettings {
         FlowItem() {
           SettingsAbout();
         };
-        if (DEV_MODE()) {
+        if (getDevMode()) {
           FlowItem() {
             SettingsDeveowlopers();
           };

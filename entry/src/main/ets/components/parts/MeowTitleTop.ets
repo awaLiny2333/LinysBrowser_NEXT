@@ -5,7 +5,7 @@ import { meowLayoutModeStatus } from '../../catstypicalframework/hosts/meowLayou
 import { windowTopAvoidLeft, windowTopAvoidRight } from '../../catstypicalframework/utils/ui';
 import { openDialogRequestType } from '../../hosts/env/classes/meowDialogManager';
 import { requestDialog } from '../../hosts/env/scripts/dialog';
-import { showWindowTitle, windowTitlePosition } from '../common/constants';
+import { showWindowTitle, windowTitlePosition } from '../settings';
 import { MooSymbolButtonSmall } from '../common/MooSymbolButtonSmall';
 import { MooTextModifier } from '../common/MooTextModifier';
 

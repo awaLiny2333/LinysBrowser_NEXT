@@ -1,7 +1,7 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowHistorian } from '../../../../hosts/history/classes/meowHistorian';
 import { meowManagedSettings } from '../../../../hosts/settings/classes/meowManagedSettings';
-import { mooTextType, standardSpacing } from '../../../common/constants';
+import { mooTextType, standardSpacing } from '../../../settings';
 import { MooCapsuleButton } from '../../../common/MooCapsuleButton';
 // import { MooSlider } from '../../../common/MooSlider';
 import { MooSwitch } from '../../../common/MooSwitch';

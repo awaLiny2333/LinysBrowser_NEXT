@@ -1,7 +1,5 @@
-import lazy { webview } from "@kit.ArkWeb";
-import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
-import { meowManagedSettings } from "../../settings/classes/meowManagedSettings";
-import { AppStorageV2 } from "@kit.ArkUI";
+import lazy { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
+import lazy { getCurrentUserAgent } from "../setings";
 
 /**
  * Apply user agent from settings.
@@ -11,18 +9,6 @@ export function applyUserAgentFromSettings() {
   const ua = getCurrentUserAgent();
   meow(`User agent: [${ua}]`, 'tabs][userAgents', meowLevel.INFO);
   // TODO: Traverse all webviewControllers and set their UAs.
-}
-
-/**
- * Get user agent from settings.
- * @returns The UA string, or an empty string if selected the default UA but webview.WebviewController.getDefaultUserAgent() returned nothing.
- */
-export function getCurrentUserAgent(): string {
-  const settings = AppStorageV2.connect(meowManagedSettings)!;
-  const uaList = settings.settingsData[41].value as string[][];
-  const uaSelected = settings.settingsData[42].value as number;
-  const uaDefault = webview.WebviewController.getDefaultUserAgent();
-  return uaSelected == -1 ? uaDefault : uaList[uaSelected][1];
 }
 
 /**

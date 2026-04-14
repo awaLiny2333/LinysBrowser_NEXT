@@ -2,7 +2,7 @@ import { AppStorageV2 } from '@kit.ArkUI';
 import { meowManagedSettings } from '../../../../hosts/settings/classes/meowManagedSettings';
 import { defaultSearchEngine, urlDefaultBlank } from '../../../../hosts/settings/scripts/defaultSettingsValues';
 import { applyUserAgentFromSettings } from '../../../../hosts/tabs/scripts/userAgents';
-import { mooTextType, standardSpacing } from '../../../common/constants';
+import { mooTextType, standardSpacing } from '../../../settings';
 import { MooCapsuleButton } from '../../../common/MooCapsuleButton';
 import { MooStringPairArrayList } from '../../../common/MooStringPairArrayList';
 import { MooTextInputV2 } from '../../../common/MooTextInputV2';

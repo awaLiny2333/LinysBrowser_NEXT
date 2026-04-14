@@ -1,5 +1,5 @@
 import { defaultInnerRadius } from "../../catstypicalframework/utils/ui";
-import { defaultAnimation, getColor, meowThemeColorType, summarizedPreferRightHand, useEffects } from "./constants";
+import { defaultAnimation, getColor, meowThemeColorType, summarizedPreferRightHand, useEffects } from "../settings";
 
 @ComponentV2
 struct MooCapsuleButton {
