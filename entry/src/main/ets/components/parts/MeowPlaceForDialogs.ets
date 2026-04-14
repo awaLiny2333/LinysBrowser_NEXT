@@ -7,6 +7,7 @@ import { meowUiStatuses } from '../../hosts/env/classes/meowUiStatuses';
 import { meowLayout } from '../../catstypicalframework/hosts/meowLayout';
 import { meowAvoid } from '../../catstypicalframework/hosts/meowAvoid';
 import { meowMisc } from '../../catstypicalframework/hosts/meowMisc';
+import { WoofBookmarksDialog } from '../dialogs/WoofBookmarks/WoofBookmarks';
 
 /**
  * A place for dialogs.
@@ -47,6 +48,13 @@ struct MeowPlaceForDialogs {
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
+  woofBookmarksDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofBookmarksDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
 
   build() {
     // Nothing
@@ -67,6 +75,9 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.COLOR_PICKER:
         this.woofColorPickerController.open();
+        break;
+      case openDialogRequestType.BOOKMARKS:
+        this.woofBookmarksDialogController.open();
         break;
       default:
         break;

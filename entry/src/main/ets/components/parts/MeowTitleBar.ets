@@ -46,7 +46,11 @@ struct MeowTitleBar {
           this.myUi.showTabs = !this.myUi.showTabs;
         }
       });
-      MooSymbolButton({ icon: $r('sys.symbol.bookmark') });
+      MooSymbolButton({
+        icon: $r('sys.symbol.bookmark'),
+        clickAction: () => {requestDialog(this.myDialog, openDialogRequestType.BOOKMARKS);
+        }
+      });
       MooSymbolButton({ icon: $r('sys.symbol.download') });
       MooSymbolButton({
         icon: $r('sys.symbol.gearshape'),

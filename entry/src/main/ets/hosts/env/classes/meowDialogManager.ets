@@ -65,6 +65,7 @@ export enum openDialogRequestType {
   DEV = 0,
   SETTINGS = 1,
   COLOR_PICKER = 2,
+  BOOKMARKS = 3
 }
 
 /**
