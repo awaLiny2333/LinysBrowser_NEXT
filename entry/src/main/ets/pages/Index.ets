@@ -10,7 +10,8 @@ import lazy { MeowPlaceForDialogs } from '../components/parts/MeowPlaceForDialog
 import lazy { MeowSearchBar } from '../components/parts/MeowSearchBar';
 import lazy { heightMeowTitleBar, MeowTitleBar } from '../components/parts/MeowTitleBar';
 import lazy { MeowTitleTop } from '../components/parts/MeowTitleTop';
-import { defaultAnimation, getColor, meowThemeColorType, mooTextType, showGiganticWindowTitle, standardSpacing, titleBarPositionBottom, useEffects } from '../components/settings';
+import lazy { defaultAnimation, defaultHorizontalTabsHeight, defaultSidebarWidth, getColor, meowThemeColorType, mooTextType, showGiganticWindowTitle, standardSpacing, titleBarPositionBottom, useEffects } from '../components/settings';
+import lazy { currentTabsStyleIsVertical, showingSidebar, sidebarShouldBeOnTheRight } from '../components/statuses';
 import { meowAppStatuses } from '../hosts/env/classes/meowAppStatuses';
 import { meowDialogManager } from '../hosts/env/classes/meowDialogManager';
 import { meowResources } from '../hosts/env/classes/meowResources';
@@ -71,6 +72,7 @@ struct Index {
           myAvoid: this.myAvoid,
           myLayout: this.myLayout,
           myDialog: this.myDialog,
+          myUi: this.myUi
         });
 
         // Top
@@ -135,7 +137,7 @@ struct Index {
 
         // Gigantic window title
         if (showGiganticWindowTitle(this.myLayout)) {
-          Text('Gigantic Window Title')
+          Text(this.myUi.windowAlias)
             .attributeModifier(new MooTextModifier(mooTextType.TITLE))
             .fontSize(128)
             .width('100%')
@@ -182,29 +184,36 @@ struct Index {
 
   mainFrameMargin(): Margin {
     // Vertical
+    const slimCompensation = this.myLayout.wideMode ? 0 : heightMeowTitleBar + standardSpacing; // For double layer title bar on phones / slim windows.
+    const tabsHorizontalCompensation = this.myUi.showTabs && !currentTabsStyleIsVertical(this.myLayout) ? defaultHorizontalTabsHeight : 0;
+
     let top: number;
     let bottom: number;
-    const slimCompensation = this.myLayout.wideMode ? 0 : heightMeowTitleBar + standardSpacing; // For double layer title bar on phones / slim windows.
     if (titleBarPositionBottom()) {
       // Bottom
       const freeWindowCompensation = (this.myLayout.freeWindow ? standardSpacing : 0);
       top = this.myAvoid.top;
-      bottom = this.myAvoid.bottom + freeWindowCompensation + (heightMeowTitleBar + standardSpacing) + slimCompensation;
+      bottom = this.myAvoid.bottom + freeWindowCompensation + (heightMeowTitleBar + standardSpacing) + slimCompensation + tabsHorizontalCompensation;
     } else {
       // Top
-      top = this.myAvoid.top + (heightMeowTitleBar + standardSpacing) + slimCompensation;
+      top = this.myAvoid.top + (heightMeowTitleBar + standardSpacing) + slimCompensation + tabsHorizontalCompensation;
       bottom = this.myAvoid.bottom + (useEffects() ? standardSpacing : 0);
     }
 
     // Horizontal
+    const sidebarOnR = sidebarShouldBeOnTheRight();
+    const sidebarCompensation = showingSidebar(this.myUi, this.myLayout) ? defaultSidebarWidth : 0;
+    const sidebarCompL = sidebarOnR ? 0 : sidebarCompensation;
+    const sidebarCompR = sidebarOnR ? sidebarCompensation : 0;
+
     let left: number;
     let right: number;
     if (useEffects()) {
-      left = this.myAvoid.left;
-      right = this.myAvoid.right;
+      left = this.myAvoid.left + sidebarCompL;
+      right = this.myAvoid.right + sidebarCompR;
     } else {
-      left = 0;
-      right = 0;
+      left = 0 + sidebarCompL;
+      right = 0 + sidebarCompR;
     }
     return { top, bottom, left, right };
   }

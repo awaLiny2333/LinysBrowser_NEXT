@@ -6,6 +6,9 @@ import { requestDialog } from '../../hosts/env/scripts/dialog';
 import { showWindowTitle, windowTitlePosition } from '../settings';
 import { MooSymbolButtonSmall } from '../common/MooSymbolButtonSmall';
 import { MooTextModifier } from '../common/MooTextModifier';
+import { newWindow } from '../../hosts/env/scripts/multiwindows';
+import { common } from '@kit.AbilityKit';
+import { meowUiStatuses } from '../../hosts/env/classes/meowUiStatuses';
 
 /**
  * The window top bar. Holds the buttons on window top, as well as the name of window / zone.
@@ -17,6 +20,7 @@ struct MeowTitleTop {
   @Param @Require myAvoid: meowAvoid;
   @Param @Require myLayout: meowLayout;
   @Param @Require myDialog: meowDialogManager;
+  @Param @Require myUi: meowUiStatuses;
 
   build() {
     Row({ space: 10 }) {
@@ -31,7 +35,7 @@ struct MeowTitleTop {
       }
 
       // Window Title Text
-      Text(showWindowTitle(this.myLayout) ? $r('app.string.EntryAbility_label') : '')
+      Text(showWindowTitle(this.myLayout) ? `${this.myUi.windowAlias} (${this.myUi.windowId})` : '')
         .attributeModifier(new MooTextModifier())
         .textAlign(windowTitlePosition())
         .layoutWeight(1)
@@ -56,7 +60,7 @@ struct MeowTitleTop {
         MooSymbolButtonSmall({
           icon: $r('sys.symbol.plus'),
           clickAction: () => {
-            // TODO: Open new window.
+            newWindow(this.getUIContext().getHostContext() as common.UIAbilityContext);
           }
         });
       }

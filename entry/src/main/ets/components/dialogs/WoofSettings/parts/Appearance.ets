@@ -4,7 +4,7 @@ import { meowDialogManager, openDialogRequestType } from "../../../../hosts/env/
 import { requestDialog } from "../../../../hosts/env/scripts/dialog";
 import { meowManagedSettings } from "../../../../hosts/settings/classes/meowManagedSettings";
 import { resetAnimations, resetColors } from "../../../../hosts/settings/scripts/reset";
-import { getColor, meowThemeColorType, mooTextType, standardSpacing, useEffects } from "../../../settings";
+import { defaultAnimation, getColor, meowThemeColorType, mooTextType, standardSpacing, useEffects } from "../../../settings";
 import { MooCapsuleButton } from "../../../common/MooCapsuleButton";
 import { MooSlider } from "../../../common/MooSlider";
 import { MooSwitch } from "../../../common/MooSwitch";
@@ -68,24 +68,6 @@ struct SettingsAppearance {
         });
         Text($r('app.string.Settings_category_appearance_layout_tabsStyle_wide')).attributeModifier(new MooTextModifier());
         MooTabSegmentV2({
-          initSelected: this.selectedTabsStyleWideFromSettings(),
-          items: new SegmentButtonV2Items([{ text: '󰕥' }, { text: '󰕦' }]),
-          onSelected: (index) => {
-            // 'vertical' | 'horizontal'
-            switch (index) {
-              case 0:
-                this.mySettings.setByIndex(4, 'vertical');
-                break;
-              case 1:
-                this.mySettings.setByIndex(4, 'horizontal');
-                break;
-              default:
-                break;
-            }
-          }
-        });
-        Text($r('app.string.Settings_category_appearance_layout_tabsStyle_slim')).attributeModifier(new MooTextModifier());
-        MooTabSegmentV2({
           initSelected: this.selectedTabsStyleSlimFromSettings(),
           items: new SegmentButtonV2Items([{ text: '󰕥' }, { text: '󰕦' }]),
           onSelected: (index) => {
@@ -96,6 +78,24 @@ struct SettingsAppearance {
                 break;
               case 1:
                 this.mySettings.setByIndex(3, 'horizontal');
+                break;
+              default:
+                break;
+            }
+          }
+        });
+        Text($r('app.string.Settings_category_appearance_layout_tabsStyle_slim')).attributeModifier(new MooTextModifier());
+        MooTabSegmentV2({
+          initSelected: this.selectedTabsStyleWideFromSettings(),
+          items: new SegmentButtonV2Items([{ text: '󰕥' }, { text: '󰕦' }]),
+          onSelected: (index) => {
+            // 'vertical' | 'horizontal'
+            switch (index) {
+              case 0:
+                this.mySettings.setByIndex(4, 'vertical');
+                break;
+              case 1:
+                this.mySettings.setByIndex(4, 'horizontal');
                 break;
               default:
                 break;
@@ -201,7 +201,9 @@ struct SettingsAppearance {
           text: $r('app.string.Settings_category_appearance_colors_effects'),
           isOn: this.mySettings.settingsData[7].value as boolean,
           onChange: (r) => {
-            this.mySettings.setByIndex(7, r);
+            animateToImmediately(defaultAnimation(), () => {
+              this.mySettings.setByIndex(7, r);
+            });
           }
         });
 

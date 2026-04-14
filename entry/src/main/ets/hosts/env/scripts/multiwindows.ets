@@ -55,6 +55,6 @@ export async function newWindow(context: common.UIAbilityContext, windowId: stri
     return false;
   }
 
-  meow(`context.startAbility(wantInfo) OK!`, 'newWindow', meowLevel.WARN);
+  meow(`context.startAbility(wantInfo) OK!${'\n '}`, 'newWindow', meowLevel.WARN);
   return true;
 }

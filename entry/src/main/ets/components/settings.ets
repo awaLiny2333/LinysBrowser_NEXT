@@ -20,6 +20,8 @@ export const fontSizeSmall = 16;
 
 export const standardSpacing = 8;
 export const minimumCardWidth = 580; // Minimum width required for cards (e.g. in a multi-column waterFlow)
+export const defaultSidebarWidth = 260;
+export const defaultHorizontalTabsHeight = 50;
 
 export const meowFlexOptions: FlexOptions = {
   wrap: FlexWrap.Wrap,

@@ -39,7 +39,13 @@ struct MeowTitleBar {
       /**
        * TODO: Custom buttons.
        */
-      MooSymbolButton({ icon: $r('sys.symbol.rectangle_stack') });
+      MooSymbolButton({
+        icon: $r('sys.symbol.rectangle_stack'),
+        onHold: this.myUi.showTabs,
+        clickAction: () => {
+          this.myUi.showTabs = !this.myUi.showTabs;
+        }
+      });
       MooSymbolButton({ icon: $r('sys.symbol.bookmark') });
       MooSymbolButton({ icon: $r('sys.symbol.download') });
       MooSymbolButton({

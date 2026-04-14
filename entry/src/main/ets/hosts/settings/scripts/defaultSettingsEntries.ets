@@ -76,7 +76,7 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   // Single hand accessibility
   new meowSettingsEntry('preferred_hand_left_or_right', meowSettingsEntryType.STRING, 'right'), // #47
   new meowSettingsEntry('preferred_hand_reverse_settings_menu', meowSettingsEntryType.BOOLEAN, 'true'),
-  new meowSettingsEntry('preferred_hand_reverse_tabs_panel', meowSettingsEntryType.BOOLEAN, 'true'),
+  new meowSettingsEntry('preferred_hand_reverse_tabs_panel', meowSettingsEntryType.BOOLEAN, 'true'), // #49 Now affects the entire sidebar, containing the tabs, bookmarks panel and any other potential panels.
   new meowSettingsEntry('preferred_hand_reverse_homepage_shortcuts', meowSettingsEntryType.BOOLEAN, 'false'),
   new meowSettingsEntry('preferred_hand_auto', meowSettingsEntryType.BOOLEAN, 'false'), // #51
   
