@@ -12,8 +12,8 @@ import { UniRowOfCapsuleButtons } from '../../../common/UniRowOfCapsuleButtons';
 
 @ComponentV2
 struct SettingsStorage {
-  @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
-  @Local myMeowAppStatuses: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
+  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+  @Local myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
 
   build() {
     Column({ space: standardSpacing }) {
@@ -25,14 +25,14 @@ struct SettingsStorage {
 
       // Web cache
       UniContentCard({ title: $r('app.string.Settings_category_storage_webCache'), icon: $r('sys.symbol.doc_plaintext_and_compass') }) {
-        Text(addUnitsToSize(this.myMeowManagedSettings.settingsData[68].value as number)).attributeModifier(new MooTextModifier(mooTextType.TITLE));
+        Text(addUnitsToSize(this.mySettings.settingsData[68].value as number)).attributeModifier(new MooTextModifier(mooTextType.TITLE));
         UniRowOfCapsuleButtons() {
           MooCapsuleButton({
             text: $r('app.string.General_refresh'),
             clickAction: () => {
               this.refreshWebCache();
             },
-            isEnabled: !this.myMeowAppStatuses.refreshingWebCacheSize
+            isEnabled: !this.myApp.refreshingWebCacheSize
           });
           MooCapsuleButton({
             text: $r('app.string.General_clear'),
@@ -47,7 +47,7 @@ struct SettingsStorage {
 
       // History index
       UniContentCard({ title: $r('app.string.Settings_category_storage_historyIndex'), icon: $r('sys.symbol.doc_text_badge_clock') }) {
-        Text(addUnitsToSize(this.myMeowManagedSettings.settingsData[70].value as number)).attributeModifier(new MooTextModifier(mooTextType.TITLE));
+        Text(addUnitsToSize(this.mySettings.settingsData[70].value as number)).attributeModifier(new MooTextModifier(mooTextType.TITLE));
         MooCapsuleButton({
           text: $r('app.string.General_refresh'),
           clickAction: () => {
@@ -60,28 +60,28 @@ struct SettingsStorage {
 
   async refreshWebCache() {
     // Reject if already refreshing. Although we set this button to be disabled if is refreshing, this adds more insurance. :P
-    if (this.myMeowAppStatuses.refreshingWebCacheSize) return;
+    if (this.myApp.refreshingWebCacheSize) return;
 
     // Refresh web cache size.
-    this.myMeowAppStatuses.refreshingWebCacheSize = true;
+    this.myApp.refreshingWebCacheSize = true;
     const size = await scanWebCacheSize(this.getUIContext().getHostContext()!);
-    this.myMeowManagedSettings.setByIndex(68, size);
+    this.mySettings.setByIndex(68, size);
 
     // Recover flag
-    this.myMeowAppStatuses.refreshingWebCacheSize = false;
+    this.myApp.refreshingWebCacheSize = false;
   }
 
   async refreshHistoryIndex() {
     // Reject if already refreshing. Although we set this button to be disabled if is refreshing, this adds more insurance. :P
-    if (this.myMeowAppStatuses.refreshingHistoryIndexSize) return;
+    if (this.myApp.refreshingHistoryIndexSize) return;
 
     // Refresh index files size.
-    this.myMeowAppStatuses.refreshingHistoryIndexSize = true;
+    this.myApp.refreshingHistoryIndexSize = true;
     const size = await scanHistoryIndexSize();
-    this.myMeowManagedSettings.setByIndex(70, size);
+    this.mySettings.setByIndex(70, size);
 
     // Recover flag
-    this.myMeowAppStatuses.refreshingHistoryIndexSize = false;
+    this.myApp.refreshingHistoryIndexSize = false;
   }
 }
 

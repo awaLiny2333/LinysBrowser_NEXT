@@ -1,4 +1,3 @@
-import { meowUiStatuses } from '../../../../hosts/env/classes/meowUiStatuses';
 import { meowManagedSettings } from '../../../../hosts/settings/classes/meowManagedSettings';
 import { mooTextType, standardSpacing } from '../../../settings';
 import { AppStorageV2 } from '@kit.ArkUI';
@@ -9,8 +8,7 @@ import { MooCapsuleButton } from '../../../common/MooCapsuleButton';
 
 @ComponentV2
 struct SettingsSecurity {
-  @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
-  @Param @Require myMeowUiStatuses: meowUiStatuses;
+  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
   build() {
     Column({ space: standardSpacing }) {
@@ -23,16 +21,16 @@ struct SettingsSecurity {
       UniContentCard({ title: $r('app.string.Settings_category_security_cookies'), icon: $r('sys.symbol.tracking_cookie_interception') }) {
         MooSwitch({
           text: $r('app.string.Settings_category_security_cookies_intelligentTrackingPrevention'),
-          isOn: this.myMeowManagedSettings.settingsData[33].value as boolean,
+          isOn: this.mySettings.settingsData[33].value as boolean,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(33, r);
+            this.mySettings.setByIndex(33, r);
           }
         });
         MooSwitch({
           text: $r('app.string.Settings_category_security_cookies_thirdPartyCookies'),
-          isOn: this.myMeowManagedSettings.settingsData[34].value as boolean,
+          isOn: this.mySettings.settingsData[34].value as boolean,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(34, r);
+            this.mySettings.setByIndex(34, r);
           }
         });
         MooCapsuleButton({

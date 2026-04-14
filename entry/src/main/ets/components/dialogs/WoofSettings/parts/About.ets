@@ -9,7 +9,7 @@ import BuildProfile from 'BuildProfile';
 @ComponentV2
 struct SettingsAbout {
   // Hosts
-  @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
   build() {
     Column({ space: standardSpacing }) {

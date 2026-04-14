@@ -1,4 +1,3 @@
-import { meowUiStatuses } from '../../../../hosts/env/classes/meowUiStatuses';
 import { meowManagedSettings } from '../../../../hosts/settings/classes/meowManagedSettings';
 import { mooTextType, standardSpacing } from '../../../settings';
 import { AppStorageV2 } from '@kit.ArkUI';
@@ -13,9 +12,8 @@ import { meowDialogManager, openDialogRequestType } from '../../../../hosts/env/
 @ComponentV2
 struct SettingsDeveowlopers {
   // Hosts
-  @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
-  @Param @Require myMeowUiStatuses: meowUiStatuses;
-  @Param @Require myMeowDialogManager: meowDialogManager;
+  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+  @Param @Require myDialog: meowDialogManager;
   // Information
   @Local versionName: string = "Version Name";
   @Local versionNo: number = 0;
@@ -41,7 +39,7 @@ struct SettingsDeveowlopers {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_deveowlopers_openPanel'),
           clickAction: () => {
-            requestDialog(this.myMeowDialogManager, openDialogRequestType.DEV, undefined, true);
+            requestDialog(this.myDialog, openDialogRequestType.DEV, undefined, true);
           }
         });
       };

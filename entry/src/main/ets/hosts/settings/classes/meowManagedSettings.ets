@@ -3,7 +3,7 @@
  * Use hard-coded indices to access entries in settingsData to boost efficiency.
  *
  * For entries of type STRING, BOOLEAN and NUMBER, they can be directly modified by
- * `this.myMeowManagedSettings.setByIndex(idx, newValue)`.
+ * `this.mySettings.setByIndex(idx, newValue)`.
  * This would do all things needed from verifying to saving to disk.
  *
  * For type STRING_ARRAY, extracting the `meowSettingsEntry.value` out as one variable

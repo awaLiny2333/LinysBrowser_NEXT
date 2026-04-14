@@ -9,7 +9,7 @@ import { MooCapsuleButton } from '../../../common/MooCapsuleButton';
 
 @ComponentV2
 struct SettingsAccessibility {
-  @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
   build() {
     Column({ space: standardSpacing }) {
@@ -23,16 +23,16 @@ struct SettingsAccessibility {
       UniContentCard() {
         MooSwitch({
           text: $r('app.string.Settings_category_accessibility_webBack'),
-          isOn: this.myMeowManagedSettings.settingsData[10].value as boolean,
+          isOn: this.mySettings.settingsData[10].value as boolean,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(10, r);
+            this.mySettings.setByIndex(10, r);
           }
         });
         MooSwitch({
           text: $r('app.string.Settings_category_accessibility_webEsc'),
-          isOn: this.myMeowManagedSettings.settingsData[11].value as boolean,
+          isOn: this.mySettings.settingsData[11].value as boolean,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(11, r);
+            this.mySettings.setByIndex(11, r);
           }
         });
       };
@@ -46,42 +46,42 @@ struct SettingsAccessibility {
             // 'left' | 'right'
             switch (index) {
               case 0:
-                this.myMeowManagedSettings.setByIndex(47, 'left');
+                this.mySettings.setByIndex(47, 'left');
                 break;
               case 1:
-                this.myMeowManagedSettings.setByIndex(47, 'right');
+                this.mySettings.setByIndex(47, 'right');
                 break;
               default:
                 break;
             }
           }
-        }).opacity(this.myMeowManagedSettings.settingsData[51].value as boolean ? 0.5 : 1).animation(defaultAnimation());
+        }).opacity(this.mySettings.settingsData[51].value as boolean ? 0.5 : 1).animation(defaultAnimation());
         MooSwitch({
           text: $r('app.string.Settings_category_accessibility_singleHand_smartReachability'),
-          isOn: this.myMeowManagedSettings.settingsData[51].value as boolean,
+          isOn: this.mySettings.settingsData[51].value as boolean,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(51, r);
+            this.mySettings.setByIndex(51, r);
           }
         });
         MooSwitch({
           text: $r('app.string.Settings_category_accessibility_singleHand_reverseSideMenus'),
-          isOn: this.myMeowManagedSettings.settingsData[48].value as boolean,
+          isOn: this.mySettings.settingsData[48].value as boolean,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(48, r);
+            this.mySettings.setByIndex(48, r);
           }
         });
         MooSwitch({
           text: $r('app.string.Settings_category_accessibility_singleHand_reverseSideBars'),
-          isOn: this.myMeowManagedSettings.settingsData[49].value as boolean,
+          isOn: this.mySettings.settingsData[49].value as boolean,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(49, r);
+            this.mySettings.setByIndex(49, r);
           }
         });
         MooSwitch({
           text: $r('app.string.Settings_category_accessibility_singleHand_reverseHomeShortcuts'),
-          isOn: this.myMeowManagedSettings.settingsData[50].value as boolean,
+          isOn: this.mySettings.settingsData[50].value as boolean,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(50, r);
+            this.mySettings.setByIndex(50, r);
           }
         });
       };
@@ -98,7 +98,7 @@ struct SettingsAccessibility {
   }
 
   selectedOptionFromSettings() {
-    const value = this.myMeowManagedSettings.settingsData[47].value as string;
+    const value = this.mySettings.settingsData[47].value as string;
     const seq = ['left', 'right'];
     return seq.indexOf(value);
   }

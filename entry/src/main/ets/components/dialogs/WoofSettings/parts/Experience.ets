@@ -9,7 +9,7 @@ import { MooCapsuleButton } from "../../../common/MooCapsuleButton";
 
 @ComponentV2
 struct SettingsExperience {
-  @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
   build() {
     Column({ space: standardSpacing }) {
@@ -23,54 +23,54 @@ struct SettingsExperience {
         // Text
         MooSwitch({
           text: $r('app.string.Settings_category_experience_contextMenu_enable'),
-          isOn: this.myMeowManagedSettings.settingsData[16].value as boolean,
+          isOn: this.mySettings.settingsData[16].value as boolean,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(16, r);
+            this.mySettings.setByIndex(16, r);
           }
         });
         MooSwitch({
           text: $r('app.string.Settings_category_experience_contextMenu_trimTexts'),
-          isOn: this.myMeowManagedSettings.settingsData[21].value as boolean,
+          isOn: this.mySettings.settingsData[21].value as boolean,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(21, r);
+            this.mySettings.setByIndex(21, r);
           }
         });
 
         // Image preview
         MooSwitch({
           text: $r('app.string.Settings_category_experience_contextMenu_imagePreview'),
-          isOn: this.myMeowManagedSettings.settingsData[17].value as boolean,
+          isOn: this.mySettings.settingsData[17].value as boolean,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(17, r);
+            this.mySettings.setByIndex(17, r);
           }
         });
         Text($r('app.string.Settings_category_experience_contextMenu_imageWidth')).attributeModifier(new MooTextModifier());
         MooSlider({
-          value: this.myMeowManagedSettings.settingsData[19].value as number,
+          value: this.mySettings.settingsData[19].value as number,
           min: 100,
           max: 600,
           step: 1,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(19, r);
+            this.mySettings.setByIndex(19, r);
           }
         });
 
         // Web preview
         MooSwitch({
           text: $r('app.string.Settings_category_experience_contextMenu_webPreview'),
-          isOn: this.myMeowManagedSettings.settingsData[18].value as boolean,
+          isOn: this.mySettings.settingsData[18].value as boolean,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(18, r);
+            this.mySettings.setByIndex(18, r);
           }
         });
         Text($r('app.string.Settings_category_experience_contextMenu_webPreviewHeight')).attributeModifier(new MooTextModifier());
         MooSlider({
-          value: this.myMeowManagedSettings.settingsData[20].value as number,
+          value: this.mySettings.settingsData[20].value as number,
           min: 100,
           max: 600,
           step: 1,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(20, r);
+            this.mySettings.setByIndex(20, r);
           }
         });
       };
@@ -78,16 +78,16 @@ struct SettingsExperience {
       UniContentCard({ title: $r('app.string.Settings_category_experience_downloads'), icon: $r('sys.symbol.download') }) {
         MooSwitch({
           text: $r('app.string.Settings_category_experience_downloads_directSave'),
-          isOn: this.myMeowManagedSettings.settingsData[72].value as boolean,
+          isOn: this.mySettings.settingsData[72].value as boolean,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(72, r);
+            this.mySettings.setByIndex(72, r);
           }
         });
         MooSwitch({
           text: $r('app.string.Settings_category_experience_downloads_openOnFinish'),
-          isOn: this.myMeowManagedSettings.settingsData[73].value as boolean,
+          isOn: this.mySettings.settingsData[73].value as boolean,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(73, r);
+            this.mySettings.setByIndex(73, r);
           }
         });
       };
@@ -95,16 +95,16 @@ struct SettingsExperience {
       UniContentCard({ title: $r('app.string.Settings_category_experience_continuation'), icon: $r('sys.symbol.screen_witching') }) {
         MooSwitch({
           text: $r('app.string.Settings_category_experience_continuation_closeApp'),
-          isOn: this.myMeowManagedSettings.settingsData[27].value as boolean,
+          isOn: this.mySettings.settingsData[27].value as boolean,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(27, r);
+            this.mySettings.setByIndex(27, r);
           }
         });
         MooSwitch({
           text: $r('app.string.Settings_category_experience_continuation_closeTab'),
-          isOn: this.myMeowManagedSettings.settingsData[28].value as boolean,
+          isOn: this.mySettings.settingsData[28].value as boolean,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(28, r);
+            this.mySettings.setByIndex(28, r);
           }
         });
       };
@@ -112,22 +112,22 @@ struct SettingsExperience {
       UniContentCard({ title: $r('app.string.Settings_category_experience_suggestions'), icon: $r('sys.symbol.star_message') }) {
         Text($r('app.string.Settings_category_experience_suggestions_maxBookmark')).attributeModifier(new MooTextModifier());
         MooSlider({
-          value: this.myMeowManagedSettings.settingsData[12].value as number,
+          value: this.mySettings.settingsData[12].value as number,
           min: 0,
           max: 20,
           step: 1,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(12, r);
+            this.mySettings.setByIndex(12, r);
           }
         });
         Text($r('app.string.Settings_category_experience_suggestions_maxHistory')).attributeModifier(new MooTextModifier());
         MooSlider({
-          value: this.myMeowManagedSettings.settingsData[13].value as number,
+          value: this.mySettings.settingsData[13].value as number,
           min: 0,
           max: 20,
           step: 1,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(13, r);
+            this.mySettings.setByIndex(13, r);
           }
         });
       };
@@ -135,9 +135,9 @@ struct SettingsExperience {
       UniContentCard({ title: $r('app.string.Settings_category_experience_advanced'), icon: $r('sys.symbol.fast') }) {
         MooSwitch({
           text: $r('app.string.Settings_category_experience_advanced_adsblocker'),
-          isOn: this.myMeowManagedSettings.settingsData[52].value as boolean,
+          isOn: this.mySettings.settingsData[52].value as boolean,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(52, r);
+            this.mySettings.setByIndex(52, r);
           }
         });
         MooCapsuleButton({
@@ -154,9 +154,9 @@ struct SettingsExperience {
         });
         MooSwitch({
           text: $r('app.string.Settings_category_experience_advanced_webImages'),
-          isOn: this.myMeowManagedSettings.settingsData[57].value as boolean,
+          isOn: this.mySettings.settingsData[57].value as boolean,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(57, r);
+            this.mySettings.setByIndex(57, r);
           }
         });
         MooCapsuleButton({
@@ -167,9 +167,9 @@ struct SettingsExperience {
         });
         MooSwitch({
           text: $r('app.string.Settings_category_experience_advanced_Js'),
-          isOn: this.myMeowManagedSettings.settingsData[54].value as boolean,
+          isOn: this.mySettings.settingsData[54].value as boolean,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(54, r);
+            this.mySettings.setByIndex(54, r);
           }
         });
         MooCapsuleButton({

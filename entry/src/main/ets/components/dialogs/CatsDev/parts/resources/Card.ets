@@ -9,19 +9,19 @@ import { meowFlexOptions } from '../../../../settings';
 @ComponentV2
 struct ResourcesDevCard {
 
-  @Local myMeowResources: meowResources = AppStorageV2.connect(meowResources)!;
+  @Local myResources: meowResources = AppStorageV2.connect(meowResources)!;
 
   build() {
     UniContentCard({ title: 'meowResources' }) {
-      Text(`[backgroundImagePath] ${this.myMeowResources.backgroundImagePath}`);
+      Text(`[backgroundImagePath] ${this.myResources.backgroundImagePath}`);
       Flex(meowFlexOptions) {
         Button('Pick Backdrop from Files')
           .onClick(() => {
-            this.myMeowResources.pickBackgroundImageFromDocuments();
+            this.myResources.pickBackgroundImageFromDocuments();
           });
         Button('Pick Backdrop from Gallery')
           .onClick(() => {
-            this.myMeowResources.pickBackgroundImageFromGallery();
+            this.myResources.pickBackgroundImageFromGallery();
           });
       };
     };

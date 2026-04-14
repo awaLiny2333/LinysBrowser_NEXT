@@ -10,9 +10,8 @@
  *
  * Every window is expected to have one of each of the other classes:
  * - meowMisc
- * - meowLayoutModeStatus
+ * - meowLayout
  * - meowAvoid
- * - meowFreeWindowModeStatus
  * - meowUiStatuses
  * - meowDialogManager
  */
@@ -20,7 +19,7 @@
 import { common, Configuration, ConfigurationConstant } from '@kit.AbilityKit';
 import { AppStorageV2, window } from '@kit.ArkUI';
 import { BusinessError, power } from '@kit.BasicServicesKit';
-import Want from '@ohos.app.ability.Want';
+import lazy Want from '@ohos.app.ability.Want';
 import { preferRightHandFromSettings } from '../../components/settings';
 import { meowBookmarkStash } from '../../hosts/bookmarks/classes/meowBookmarkStash';
 import { meowAppStatuses } from '../../hosts/env/classes/meowAppStatuses';
@@ -30,7 +29,7 @@ import { meowUiStatuses } from '../../hosts/env/classes/meowUiStatuses';
 import { generateTimeBasedWindowId } from '../../hosts/env/scripts/multiwindows';
 import { meowHistorian } from '../../hosts/history/classes/meowHistorian';
 import { meowManagedSettings } from '../../hosts/settings/classes/meowManagedSettings';
-import { meowLayoutModeStatus } from '../hosts/meowLayoutModeStatus';
+import { meowLayout } from '../hosts/meowLayout';
 import { meowMisc } from '../hosts/meowMisc';
 import { meow, meowLevel } from '../utils/catsLogger';
 import { ensureDirectoryExist } from '../utils/storage';
@@ -53,17 +52,17 @@ export function earlyOnCreate(context: Context) {
   let myWindowId = generateTimeBasedWindowId();
   let isNewWindow = true;
 
-  const myMeowAppStatuses = AppStorageV2.connect(meowAppStatuses, () => new meowAppStatuses())!;
-  if (myMeowAppStatuses.windowNames.length == 0) {
+  const myApp = AppStorageV2.connect(meowAppStatuses, () => new meowAppStatuses())!;
+  if (myApp.windowNames.length == 0) {
     // Is the first window of this app.
     // Just use the generated timestamp based window name.
     // And push it into the list.
-    myMeowAppStatuses.windowNames.push(myWindowId);
+    myApp.windowNames.push(myWindowId);
   } else {
     // Is a new window of this app.
     // Use the given window name already pushed into the list
     // by an existing window.
-    myWindowId = myMeowAppStatuses.windowNames[myMeowAppStatuses.windowNames.length - 1];
+    myWindowId = myApp.windowNames[myApp.windowNames.length - 1];
     isNewWindow = false;
   }
 
@@ -72,8 +71,8 @@ export function earlyOnCreate(context: Context) {
     AppStorageV2.connect(meowBookmarkStash, () => new meowBookmarkStash(`${filesDir}/html_bookmarks.html`))!; // TODO: multi-window compatibility! Execute ONCE!
     AppStorageV2.connect(meowHistorian, () => new meowHistorian(`${filesDir}`))!; // TODO: multi-window compatibility! Execute ONCE!
     AppStorageV2.connect(meowManagedSettings, () => new meowManagedSettings(`${filesDir}/settings.json.browsercatsettings.txt`))!; // TODO: multi-window compatibility! Execute ONCE!
-    const myMeowResources = AppStorageV2.connect(meowResources, () => new meowResources(`${filesDir}/homepage_background_arrayBuffer`))!; // TODO: multi-window compatibility! Execute ONCE!
-    myMeowResources.loadBackgroundImage(); // TODO: multi-window compatibility! Execute ONCE!
+    const myResources = AppStorageV2.connect(meowResources, () => new meowResources(`${filesDir}/homepage_background_arrayBuffer`))!; // TODO: multi-window compatibility! Execute ONCE!
+    myResources.loadBackgroundImage(); // TODO: multi-window compatibility! Execute ONCE!
   }
 
   // Window private hosts
@@ -89,10 +88,12 @@ export function earlyOnCreate(context: Context) {
  * @param context The context.
  * */
 export async function earlyOnWindowStageCreate(context: Context) {
-  const myMeowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
-  if (myMeowAppStatuses.windowNames.length > 1) {
+  const myApp = AppStorageV2.connect(meowAppStatuses)!;
+  const isNewWindow = myApp.windowNames.length == 1;
+
+  if (!isNewWindow) {
     // Some other windows had done this already.
-    const myWindowId = myMeowAppStatuses.windowNames[myMeowAppStatuses.windowNames.length - 1];
+    const myWindowId = myApp.windowNames[myApp.windowNames.length - 1];
     meow(`Skipped.`, `earlyOnWindowStageCreate][${myWindowId}`, meowLevel.WARN);
     return;
   }
@@ -105,8 +106,8 @@ export async function earlyOnWindowStageCreate(context: Context) {
   await ensureDirectoryExist(`${filesDir}/history-index`);
 
   // Settings
-  let myMeowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
-  await myMeowManagedSettings.initFrom(`${filesDir}/settings.json.browsercatsettings.txt`);
+  let mySettings = AppStorageV2.connect(meowManagedSettings)!;
+  await mySettings.initFrom(`${filesDir}/settings.json.browsercatsettings.txt`);
 
   // setTimeout(() => {
   //   webview.WebviewController.initializeWebEngine();
@@ -149,8 +150,9 @@ export async function aboutToLoadContent(windowStage: window.WindowStage, window
  * */
 export function onLoadContent(window: window.Window, context: common.UIAbilityContext) {
   const startTime = Date.now();
-  const myMeowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
-  const myWindowId = myMeowAppStatuses.windowNames[myMeowAppStatuses.windowNames.length - 1];
+  const myApp = AppStorageV2.connect(meowAppStatuses)!;
+  const isNewWindow = myApp.windowNames.length == 1;
+  const myWindowId = myApp.windowNames[myApp.windowNames.length - 1];
 
   // Disable title bar (status bar on phones & tablets)
   try {
@@ -162,10 +164,10 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
   // Initialize App status
   const dark = context.config.colorMode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
   const powerSave = power.getPowerMode() == power.DevicePowerMode.MODE_POWER_SAVE;
-  const smartReachabilitySaysWeShouldPreferRightHand = preferRightHandFromSettings(); // Set the value of myMeowUiStatuses.smartReachabilitySaysWeShouldPreferRightHand here as a starting position for smart reachability.
-  myMeowAppStatuses.dark = dark;
-  myMeowAppStatuses.powerSave = powerSave;
-  myMeowAppStatuses.smartReachabilitySaysWeShouldPreferRightHand = smartReachabilitySaysWeShouldPreferRightHand;
+  const smartReachabilitySaysWeShouldPreferRightHand = preferRightHandFromSettings(); // Set the value of myUi.smartReachabilitySaysWeShouldPreferRightHand here as a starting position for smart reachability.
+  myApp.dark = dark;
+  myApp.powerSave = powerSave;
+  myApp.smartReachabilitySaysWeShouldPreferRightHand = smartReachabilitySaysWeShouldPreferRightHand;
 
   // Initialize window status // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
   try {
@@ -174,9 +176,9 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
     const height = meowPx2vp(rect.height);
     const wideMode = width > wideModeThreshold;
     const shortMode = height < shortModeThreshold;
-    AppStorageV2.connect(meowLayoutModeStatus, `meowLayoutModeStatus_${myWindowId}`, () => new meowLayoutModeStatus(wideMode, shortMode, width, height));
+    AppStorageV2.connect(meowLayout, `meowLayout_${myWindowId}`, () => new meowLayout(wideMode, shortMode, width, height));
   } catch (e) {
-    meow(`AppStorageV2.connect(meowLayoutModeStatus, () => new meowLayoutModeStatus(wideMode, shortMode, width, height, dark, powerSave, smartReachabilitySaysWeShouldPreferRightHand)); Failed: ${e}`, 'init', meowLevel.ERROR);
+    meow(`AppStorageV2.connect(meowLayout, () => new meowLayout(wideMode, shortMode, width, height, dark, powerSave, smartReachabilitySaysWeShouldPreferRightHand)); Failed: ${e}`, 'init', meowLevel.ERROR);
   }
 
   listenFocus(window, myWindowId); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
@@ -192,9 +194,7 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
 
   // watchLaunch(); // This is chicken rib. >O
 
-  if (myMeowAppStatuses.windowNames.length == 1) {
-    // I am the first window!
-
+  if (isNewWindow) {
     // Init History here to avoid resource competition
     let myMeowHistorian = AppStorageV2.connect(meowHistorian); // TODO: multi-window compatibility! Execute ONCE!
     myMeowHistorian?.init(); // TODO: multi-window compatibility! Execute ONCE!
@@ -227,12 +227,12 @@ export function onWant(want: Want, source: wantSource) {
 export function onConfigUpdate(config: Configuration) {
   // Update colorMode.
   try {
-    const myMeowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
+    const myApp = AppStorageV2.connect(meowAppStatuses)!;
     const newDark = config.colorMode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
-    if (myMeowAppStatuses.dark != newDark) {
-      myMeowAppStatuses.dark = newDark;
+    if (myApp.dark != newDark) {
+      myApp.dark = newDark;
     }
   } catch (e) {
-    meow(`const myMeowAppStatuses = AppStorageV2.connect(meowAppStatuses); failed: ${e}`, 'onConfigUpdate', meowLevel.WARN);
+    meow(`const myApp = AppStorageV2.connect(meowAppStatuses); failed: ${e}`, 'onConfigUpdate', meowLevel.WARN);
   }
 }

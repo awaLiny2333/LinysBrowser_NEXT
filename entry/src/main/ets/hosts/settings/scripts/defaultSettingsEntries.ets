@@ -6,7 +6,7 @@ import { defaultNewWindowName, defaultUserAgents, presetSearchEngines } from "./
  *
  * Because in the codes these entries are used with hard-coded indices to boost efficiency. e.g.:
  * @example
- * `const settingsAdblockExceptions: meowSettingsEntry = this.myMeowManagedSettings.settingsData[53]; // adblock_exceptions`
+ * `const settingsAdblockExceptions: meowSettingsEntry = this.mySettings.settingsData[53]; // adblock_exceptions`
  */
 export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('...meow', meowSettingsEntryType.STRING, 'Do not edit manually unless you know what you are doing!'),

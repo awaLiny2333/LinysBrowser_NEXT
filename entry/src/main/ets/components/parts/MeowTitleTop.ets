@@ -1,6 +1,5 @@
 import { meowAvoid } from '../../catstypicalframework/hosts/meowAvoid';
-import { meowFreeWindowModeStatus } from '../../catstypicalframework/hosts/meowFreeWindowModeStatus';
-import { meowLayoutModeStatus } from '../../catstypicalframework/hosts/meowLayoutModeStatus';
+import { meowLayout } from '../../catstypicalframework/hosts/meowLayout';
 import { windowTopAvoidLeft, windowTopAvoidRight } from '../../catstypicalframework/utils/ui';
 import { meowDialogManager, openDialogRequestType } from '../../hosts/env/classes/meowDialogManager';
 import { requestDialog } from '../../hosts/env/scripts/dialog';
@@ -15,15 +14,14 @@ import { MooTextModifier } from '../common/MooTextModifier';
  */
 @ComponentV2
 struct MeowTitleTop {
-  @Param @Require myMeowFreeWindowModeStatus: meowFreeWindowModeStatus;
-  @Param @Require myMeowAvoid: meowAvoid;
-  @Param @Require myMeowLayout: meowLayoutModeStatus;
-  @Param @Require myMeowDialogManager: meowDialogManager;
+  @Param @Require myAvoid: meowAvoid;
+  @Param @Require myLayout: meowLayout;
+  @Param @Require myDialog: meowDialogManager;
 
   build() {
     Row({ space: 10 }) {
       // left button(s)
-      if (this.myMeowFreeWindowModeStatus.on) {
+      if (this.myLayout.freeWindow) {
         MooSymbolButtonSmall({
           icon: $r('sys.symbol.square_stack_3d'),
           clickAction: () => {
@@ -33,7 +31,7 @@ struct MeowTitleTop {
       }
 
       // Window Title Text
-      Text(showWindowTitle(this.myMeowLayout) ? $r('app.string.EntryAbility_label') : '')
+      Text(showWindowTitle(this.myLayout) ? $r('app.string.EntryAbility_label') : '')
         .attributeModifier(new MooTextModifier())
         .textAlign(windowTitlePosition())
         .layoutWeight(1)
@@ -44,11 +42,11 @@ struct MeowTitleTop {
         .textOverflow({ overflow: TextOverflow.Ellipsis })
         .onClick(() => {
           // Open
-          requestDialog(this.myMeowDialogManager, openDialogRequestType.DEV);
+          requestDialog(this.myDialog, openDialogRequestType.DEV);
         });
 
       // right button(s)
-      if (this.myMeowFreeWindowModeStatus.on) {
+      if (this.myLayout.freeWindow) {
         MooSymbolButtonSmall({
           icon: $r('sys.symbol.pin'),
           clickAction: () => {
@@ -64,9 +62,9 @@ struct MeowTitleTop {
       }
     } // Title bar
     .alignItems(VerticalAlign.Top)
-    .height(this.myMeowAvoid.top)
+    .height(this.myAvoid.top)
     .width('100%')
-    .padding(this.myMeowFreeWindowModeStatus.on ? { right: windowTopAvoidRight, left: windowTopAvoidLeft, top: 6 } : { top: 6 });
+    .padding(this.myLayout.freeWindow ? { right: windowTopAvoidRight, left: windowTopAvoidLeft, top: 6 } : { top: 6 });
   }
 }
 

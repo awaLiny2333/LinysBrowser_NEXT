@@ -1,16 +1,11 @@
 import lazy { fileIo, fileUri, picker } from '@kit.CoreFileKit';
-import { BusinessError } from '@kit.BasicServicesKit';
+import lazy { BusinessError } from '@kit.BasicServicesKit';
 import lazy { taskpool } from '@kit.ArkTS';
-import { common, OpenLinkOptions } from '@kit.AbilityKit';
-import { meow, meowLevel } from './catsLogger';
-import { photoAccessHelper } from '@kit.MediaLibraryKit';
-export interface meowReadPickResult {
-  succeed: boolean;
-  sourcePaths?: string[];
-}
+import lazy { common, OpenLinkOptions } from '@kit.AbilityKit';
+import lazy { meow, meowLevel } from './catsLogger';
+import lazy { photoAccessHelper } from '@kit.MediaLibraryKit';
 
 // Picker
-
 /**
  * Retrieve the download directory.
  * @returns The download directory path.
@@ -51,6 +46,11 @@ export async function fileDocumentPickSave(fileName: string, content: string | A
     console.error(`[fileDocumentPickSave] DocumentViewPicker failed: ${e}`);
     return undefined;
   }
+}
+
+export interface meowReadPickResult {
+  succeed: boolean;
+  sourcePaths?: string[];
 }
 
 /**
@@ -359,16 +359,16 @@ export async function listFilesUnderDir(dirPath: string) {
 export function getFolderSizeSync(path: string) {
   let sum = 0;
   // try {
-    let dir_list = fileIo.listFileSync(path);
-    for (let index = 0; index < dir_list.length; index++) {
-      const fileStat = fileIo.statSync(path + '/' + dir_list[index]);
-      if (fileStat.isFile()) {
-        sum += fileStat.size;
-      } else if (fileStat.isDirectory()) {
-        sum += getFolderSizeSync(path + '/' + dir_list[index]);
-      }
+  let dir_list = fileIo.listFileSync(path);
+  for (let index = 0; index < dir_list.length; index++) {
+    const fileStat = fileIo.statSync(path + '/' + dir_list[index]);
+    if (fileStat.isFile()) {
+      sum += fileStat.size;
+    } else if (fileStat.isDirectory()) {
+      sum += getFolderSizeSync(path + '/' + dir_list[index]);
     }
-    return sum;
+  }
+  return sum;
   // } catch (e) {
   //   // Do nothing and skip that.
   //   meow(`fileIo.listFileSync(${path}) failed: ${e}`, 'storage][getFolderSizeSync', meowLevel.ERROR);

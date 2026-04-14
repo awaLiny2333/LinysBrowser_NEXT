@@ -1,5 +1,5 @@
 import { meowAvoid } from "../../catstypicalframework/hosts/meowAvoid";
-import { meowLayoutModeStatus } from "../../catstypicalframework/hosts/meowLayoutModeStatus";
+import { meowLayout } from "../../catstypicalframework/hosts/meowLayout";
 import { meowDialogManager, openDialogRequestType } from "../../hosts/env/classes/meowDialogManager";
 import { meowUiStatuses } from "../../hosts/env/classes/meowUiStatuses";
 import { requestDialog } from "../../hosts/env/scripts/dialog";
@@ -8,10 +8,10 @@ import { MeowSearchBar } from "./MeowSearchBar";
 
 @ComponentV2
 struct MeowTitleBar {
-  @Param @Require myMeowUiStatuses: meowUiStatuses;
-  @Param @Require myMeowAvoid: meowAvoid;
-  @Param @Require myMeowLayout: meowLayoutModeStatus;
-  @Param @Require myMeowDialogManager: meowDialogManager;
+  @Param @Require myUi: meowUiStatuses;
+  @Param @Require myAvoid: meowAvoid;
+  @Param @Require myLayout: meowLayout;
+  @Param @Require myDialog: meowDialogManager;
 
   build() {
     Row({ space: 1 }) {
@@ -20,9 +20,9 @@ struct MeowTitleBar {
       MooSymbolButton({ icon: $r('sys.symbol.arrow_clockwise') });
       MooSymbolButton({ icon: $r('sys.symbol.house') });
 
-      if (this.myMeowLayout.wideMode) {
+      if (this.myLayout.wideMode) {
         MeowSearchBar({
-          myMeowAvoid: this.myMeowAvoid,
+          myAvoid: this.myAvoid,
         })
           .layoutWeight(1);
       } else {
@@ -31,9 +31,9 @@ struct MeowTitleBar {
 
       MooSymbolButton({
         icon: $r('sys.symbol.dot_grid_2x2'),
-        onHold: this.myMeowUiStatuses.showMore,
+        onHold: this.myUi.showMore,
         clickAction: () => {
-          this.myMeowUiStatuses.showMore = !this.myMeowUiStatuses.showMore;
+          this.myUi.showMore = !this.myUi.showMore;
         }
       });
       /**
@@ -45,14 +45,14 @@ struct MeowTitleBar {
       MooSymbolButton({
         icon: $r('sys.symbol.gearshape'),
         clickAction: () => {
-          requestDialog(this.myMeowDialogManager, openDialogRequestType.SETTINGS);
+          requestDialog(this.myDialog, openDialogRequestType.SETTINGS);
         }
       });
     }
     // .direction(preferRightHand() ? Direction.Ltr : Direction.Rtl)
     .height(heightMeowTitleBar)
     .width('100%')
-    .padding({ left: this.myMeowAvoid.left, right: this.myMeowAvoid.right });
+    .padding({ left: this.myAvoid.left, right: this.myAvoid.right });
   }
 }
 

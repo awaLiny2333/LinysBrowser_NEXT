@@ -4,9 +4,8 @@ import { WoofSettingsDialog } from '../dialogs/WoofSettings/WoofSettings';
 import { CatsDevDialog } from '../dialogs/CatsDev/CatsDevCards';
 import { WoofColorPickerDialog } from '../dialogs/WoofColorPicker/WoofColorPicker';
 import { meowUiStatuses } from '../../hosts/env/classes/meowUiStatuses';
-import { meowLayoutModeStatus } from '../../catstypicalframework/hosts/meowLayoutModeStatus';
+import { meowLayout } from '../../catstypicalframework/hosts/meowLayout';
 import { meowAvoid } from '../../catstypicalframework/hosts/meowAvoid';
-import { meowFreeWindowModeStatus } from '../../catstypicalframework/hosts/meowFreeWindowModeStatus';
 import { meowMisc } from '../../catstypicalframework/hosts/meowMisc';
 
 /**
@@ -15,21 +14,19 @@ import { meowMisc } from '../../catstypicalframework/hosts/meowMisc';
  */
 @ComponentV2
 struct MeowPlaceForDialogs {
-  @Param @Require myMeowDialogManager: meowDialogManager;
-  @Param @Require myMeowUiStatuses: meowUiStatuses;
+  @Param @Require myDialog: meowDialogManager;
+  @Param @Require myUi: meowUiStatuses;
   // catstypicalframework
-  @Param @Require myMeowLayoutModeStatus: meowLayoutModeStatus;
-  @Param @Require myMeowFreeWindowModeStatus: meowFreeWindowModeStatus;
-  @Param @Require myMeowAvoid: meowAvoid;
-  @Param @Require myMeowMisc: meowMisc;
+  @Param @Require myLayout: meowLayout;
+  @Param @Require myAvoid: meowAvoid;
+  @Param @Require myMisc: meowMisc;
 
   catsDevDialogController: CustomDialogController = new CustomDialogController({
     builder: CatsDevDialog({
-      myMeowDialogManager: this.myMeowDialogManager,
-      myMeowLayoutModeStatus: this.myMeowLayoutModeStatus,
-      myMeowFreeWindowModeStatus: this.myMeowFreeWindowModeStatus,
-      myMeowAvoid: this.myMeowAvoid,
-      myMeowMisc: this.myMeowMisc
+      myDialog: this.myDialog,
+      myLayout: this.myLayout,
+      myAvoid: this.myAvoid,
+      myMisc: this.myMisc
     }),
     alignment: DialogAlignment.Center,
     width: '90%',
@@ -37,14 +34,14 @@ struct MeowPlaceForDialogs {
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofSettingsDialogController: CustomDialogController = new CustomDialogController({
-    builder: WoofSettingsDialog({ myMeowDialogManager: this.myMeowDialogManager, myMeowUiStatuses: this.myMeowUiStatuses, myMeowLayoutModeStatus: this.myMeowLayoutModeStatus }),
+    builder: WoofSettingsDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
     width: '95%',
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofColorPickerController: CustomDialogController = new CustomDialogController({
-    builder: WoofColorPickerDialog({ myMeowDialogManager: this.myMeowDialogManager, myMeowLayoutModeStatus: this.myMeowLayoutModeStatus }),
+    builder: WoofColorPickerDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
     width: '95%',
     // height: '95%',
@@ -55,9 +52,9 @@ struct MeowPlaceForDialogs {
     // Nothing
   }
 
-  @Monitor('myMeowDialogManager.lastRequest')
+  @Monitor('myDialog.lastRequest')
   openRequestedDialog() {
-    const lastRequest = this.myMeowDialogManager.lastRequest;
+    const lastRequest = this.myDialog.lastRequest;
     if (!lastRequest) {
       return;
     }

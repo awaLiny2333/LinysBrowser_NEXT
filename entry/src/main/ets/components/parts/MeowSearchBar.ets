@@ -10,7 +10,7 @@ import { heightMeowTitleBar } from './MeowTitleBar';
 @ComponentV2
 struct MeowSearchBar {
   @Param @Once needPadding: boolean = true;
-  @Param @Require myMeowAvoid: meowAvoid;
+  @Param @Require myAvoid: meowAvoid;
 
   build() {
     Row() {
@@ -18,7 +18,7 @@ struct MeowSearchBar {
         placeholder: ' 󰀩 ...'
       });
     }
-    .padding(this.needPadding ? { left: this.myMeowAvoid.left, right: this.myMeowAvoid.right } : {});
+    .padding(this.needPadding ? { left: this.myAvoid.left, right: this.myAvoid.right } : {});
   }
 }
 

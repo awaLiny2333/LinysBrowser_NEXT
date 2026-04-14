@@ -7,7 +7,7 @@ import { UniContentCard } from '../../../common/UniContentCard';
 
 @ComponentV2
 struct SettingsOnStartUp {
-  @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
   build() {
     Column({ space: standardSpacing }) {
@@ -28,13 +28,13 @@ struct SettingsOnStartUp {
             // 'new tab' | 'home' | 'continue'
             switch (index) {
               case 0:
-                this.myMeowManagedSettings.setByIndex(32, 'new tab');
+                this.mySettings.setByIndex(32, 'new tab');
                 break;
               case 1:
-                this.myMeowManagedSettings.setByIndex(32, 'home');
+                this.mySettings.setByIndex(32, 'home');
                 break;
               case 2:
-                this.myMeowManagedSettings.setByIndex(32, 'continue');
+                this.mySettings.setByIndex(32, 'continue');
                 break;
               default:
                 break;
@@ -47,7 +47,7 @@ struct SettingsOnStartUp {
   }
 
   selectedOptionFromSettings() {
-    const value = this.myMeowManagedSettings.settingsData[32].value as string;
+    const value = this.mySettings.settingsData[32].value as string;
     const seq = ['new tab', 'home', 'continue'];
     return seq.indexOf(value);
   }

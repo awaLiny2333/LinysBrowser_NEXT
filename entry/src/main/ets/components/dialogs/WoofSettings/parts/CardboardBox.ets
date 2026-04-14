@@ -8,7 +8,7 @@ import { MooCapsuleButton } from '../../../common/MooCapsuleButton';
 
 @ComponentV2
 struct SettingsCardboardBox {
-  @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
   build() {
     Column({ space: standardSpacing }) {
@@ -22,9 +22,9 @@ struct SettingsCardboardBox {
       UniContentCard({ title: $r('app.string.Settings_category_cardboardBox_debug'), icon: $r('sys.symbol.pawprint') }) {
         MooSwitch({
           text: $r('app.string.Settings_category_cardboardBox_debug_resourceMonitor'),
-          isOn: this.myMeowManagedSettings.settingsData[75].value as boolean,
+          isOn: this.mySettings.settingsData[75].value as boolean,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(75, r);
+            this.mySettings.setByIndex(75, r);
           }
         });
         MooCapsuleButton({

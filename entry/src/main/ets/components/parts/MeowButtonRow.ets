@@ -5,8 +5,8 @@ import { MooSymbolButton } from '../common/MooSymbolButton';
 
 @ComponentV2
 export struct MeowButtonRow {
-  @Param @Require myMeowAvoid: meowAvoid;
-  @Param @Require myMeowUiStatuses: meowUiStatuses;
+  @Param @Require myAvoid: meowAvoid;
+  @Param @Require myUi: meowUiStatuses;
 
   build() {
     Row({ space: 1 }) {
@@ -20,14 +20,14 @@ export struct MeowButtonRow {
     }
     .width('100%')
     .justifyContent(FlexAlign.End)
-    .padding({ left: this.myMeowAvoid.left, right: this.myMeowAvoid.right })
-    .visibility(this.myMeowUiStatuses.showMore ? Visibility.Visible : Visibility.None)
+    .padding({ left: this.myAvoid.left, right: this.myAvoid.right })
+    .visibility(this.myUi.showMore ? Visibility.Visible : Visibility.None)
     .animation(defaultAnimation());
   }
 
   constructPadding(): Padding {
-    const l = this.myMeowAvoid.left;
-    const r = this.myMeowAvoid.right;
+    const l = this.myAvoid.left;
+    const r = this.myAvoid.right;
     if (useEffects()) {
       if (titleBarPositionBottom()) {
         return { bottom: standardSpacing, left: l, right: r };

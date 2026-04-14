@@ -1,5 +1,5 @@
-import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
-import { abilityManager, Want, common } from "@kit.AbilityKit";
+import lazy { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
+import lazy { abilityManager, Want, common } from "@kit.AbilityKit";
 import { AppStorageV2 } from "@kit.ArkUI";
 import { meowAppStatuses } from "../classes/meowAppStatuses";
 
@@ -8,8 +8,8 @@ import { meowAppStatuses } from "../classes/meowAppStatuses";
  * @returns The id.
  */
 export function getLastWindowId() {
-  const myMeowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
-  return myMeowAppStatuses.windowNames[myMeowAppStatuses.windowNames.length - 1];
+  const myApp = AppStorageV2.connect(meowAppStatuses)!;
+  return myApp.windowNames[myApp.windowNames.length - 1];
 }
 
 /**
@@ -44,8 +44,8 @@ export async function newWindow(context: common.UIAbilityContext, windowId: stri
     abilityName: info[0].ability.abilityName,
   };
 
-  let myMeowAppStatuses = AppStorageV2.connect<meowAppStatuses>(meowAppStatuses)!; // If we want to store something...
-  myMeowAppStatuses.windowNames.push(windowId); // Then the next window would pick this up onCreate.
+  let myApp = AppStorageV2.connect(meowAppStatuses)!; // If we want to store something...
+  myApp.windowNames.push(windowId); // Then the next window would pick this up onCreate.
 
   // Call
   try {

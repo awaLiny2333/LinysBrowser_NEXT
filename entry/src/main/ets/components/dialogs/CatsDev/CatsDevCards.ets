@@ -1,7 +1,6 @@
 import { AppStorageV2 } from '@kit.ArkUI';
-import { meowFreeWindowModeStatus } from '../../../catstypicalframework/hosts/meowFreeWindowModeStatus';
 import { meowAvoid } from '../../../catstypicalframework/hosts/meowAvoid';
-import { meowLayoutModeStatus } from '../../../catstypicalframework/hosts/meowLayoutModeStatus';
+import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import { meowMisc } from '../../../catstypicalframework/hosts/meowMisc';
 import { meowDialogManager } from '../../../hosts/env/classes/meowDialogManager';
 import { meowResources } from '../../../hosts/env/classes/meowResources';
@@ -15,21 +14,19 @@ import { SettingsDevCard } from './parts/settings/Card';
 
 @ComponentV2
 struct CatsDevCards {
-  @Local myMeowResources: meowResources = AppStorageV2.connect(meowResources)!;
-  @Param @Require myMeowLayout: meowLayoutModeStatus;
-  @Param @Require myMeowFreeWindowModeStatus: meowFreeWindowModeStatus;
-  @Param @Require myMeowAvoid: meowAvoid;
-  @Param @Require myMeowMisc: meowMisc;
+  @Local myResources: meowResources = AppStorageV2.connect(meowResources)!;
+  @Param @Require myLayout: meowLayout;
+  @Param @Require myAvoid: meowAvoid;
+  @Param @Require myMisc: meowMisc;
 
   build() {
     Scroll() {
       Column({ space: 5 }) {
         SettingsDevCard();
         CatsTypicalFrameworkDevCard({
-          myMeowLayout: this.myMeowLayout,
-          myMeowFreeWindowModeStatus: this.myMeowFreeWindowModeStatus,
-          myMeowAvoid: this.myMeowAvoid,
-          myMeowMisc: this.myMeowMisc
+          myLayout: this.myLayout,
+          myAvoid: this.myAvoid,
+          myMisc: this.myMisc
         });
         BookmarksDevCard();
         ResourcesDevCard();
@@ -47,19 +44,17 @@ struct CatsDevCards {
 @CustomDialog
 struct CatsDevDialog {
   controller: CustomDialogController;
-  @Require myMeowDialogManager: meowDialogManager;
-  @Require myMeowLayoutModeStatus: meowLayoutModeStatus;
-  @Require myMeowFreeWindowModeStatus: meowFreeWindowModeStatus;
-  @Require myMeowAvoid: meowAvoid;
-  @Require myMeowMisc: meowMisc;
+  @Require myDialog: meowDialogManager;
+  @Require myLayout: meowLayout;
+  @Require myAvoid: meowAvoid;
+  @Require myMisc: meowMisc;
 
   build() {
-    WoofUniFrame({ controller: this.controller, title: 'CatsDev', myMeowLayoutModeStatus: this.myMeowLayoutModeStatus, myMeowDialogManager: this.myMeowDialogManager }) {
+    WoofUniFrame({ controller: this.controller, title: 'CatsDev', myLayout: this.myLayout, myDialog: this.myDialog }) {
       CatsDevCards({
-        myMeowLayout: this.myMeowLayoutModeStatus,
-        myMeowFreeWindowModeStatus: this.myMeowFreeWindowModeStatus,
-        myMeowAvoid: this.myMeowAvoid,
-        myMeowMisc: this.myMeowMisc
+        myLayout: this.myLayout,
+        myAvoid: this.myAvoid,
+        myMisc: this.myMisc
       });
     };
   }

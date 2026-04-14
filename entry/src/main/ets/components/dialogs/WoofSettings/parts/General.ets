@@ -11,9 +11,9 @@ import { UniContentCard } from '../../../common/UniContentCard';
 
 @ComponentV2
 struct SettingsGeneral {
-  @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
-  @Local selectedIndexUA: number = this.myMeowManagedSettings.settingsData[42].value as number;
-  @Local selectedIndexSE: number = this.myMeowManagedSettings.settingsData[44].value as number;
+  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+  @Local selectedIndexUA: number = this.mySettings.settingsData[42].value as number;
+  @Local selectedIndexSE: number = this.mySettings.settingsData[44].value as number;
 
   build() {
     Column({ space: standardSpacing }) {
@@ -28,14 +28,14 @@ struct SettingsGeneral {
         MooStringPairArrayList({
           defaultItem: ['HarmonyOS', ''],
           selectedIndex: this.selectedIndexUA,
-          array: this.myMeowManagedSettings.settingsData[41].value as string[][],
+          array: this.mySettings.settingsData[41].value as string[][],
           allowSelect: true,
           onEdit: () => {
-            this.myMeowManagedSettings.requestSaveToDisk();
+            this.mySettings.requestSaveToDisk();
           },
           onSelect: (n) => {
             this.selectedIndexUA = n;
-            this.myMeowManagedSettings.setByIndex(42, n);
+            this.mySettings.setByIndex(42, n);
             applyUserAgentFromSettings();
           }
         });
@@ -44,32 +44,32 @@ struct SettingsGeneral {
         MooStringPairArrayList({
           defaultItem: ['Bing', defaultSearchEngine()],
           selectedIndex: this.selectedIndexSE,
-          array: this.myMeowManagedSettings.settingsData[43].value as string[][],
+          array: this.mySettings.settingsData[43].value as string[][],
           allowSelect: true,
           onEdit: () => {
-            this.myMeowManagedSettings.requestSaveToDisk();
+            this.mySettings.requestSaveToDisk();
           },
           onSelect: (n) => {
             this.selectedIndexSE = n;
-            this.myMeowManagedSettings.setByIndex(44, n);
+            this.mySettings.setByIndex(44, n);
           }
         });
 
         Text($r('app.string.Settings_category_general_surf_newTabUrl')).attributeModifier(new MooTextModifier());
         MooTextInputV2({
-          text: this.myMeowManagedSettings.settingsData[31].value as string,
+          text: this.mySettings.settingsData[31].value as string,
           placeholder: urlDefaultBlank(),
           onChange: (c) => {
-            this.myMeowManagedSettings.setByIndex(31, c);
+            this.mySettings.setByIndex(31, c);
           }
         });
 
         Text($r('app.string.Settings_category_general_surf_homeUrl')).attributeModifier(new MooTextModifier());
         MooTextInputV2({
-          text: this.myMeowManagedSettings.settingsData[30].value as string,
+          text: this.mySettings.settingsData[30].value as string,
           placeholder: urlDefaultBlank(),
           onChange: (c) => {
-            this.myMeowManagedSettings.setByIndex(30, c);
+            this.mySettings.setByIndex(30, c);
           }
         });
       };

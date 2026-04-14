@@ -13,32 +13,32 @@ struct SettingsDevCard {
   // Environment
   context: Context = this.getUIContext().getHostContext()!;
   // App
-  @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!; // Should be initialized by flows.
+  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!; // Should be initialized by flows.
 
   build() {
     UniContentCard({ title: 'meowManagedSettings' }) {
       Flex(meowFlexOptions) {
-        Text(`[Ready] ${this.myMeowManagedSettings.ready ? ' 󰀓 ' : ' 󰁖 '}`);
-        Text(`[settingsFileSavePath] ${this.myMeowManagedSettings.settingsFileSavePath}`);
-        Text(`[timeoutIdSaveToDisk] ${this.myMeowManagedSettings.timeoutIdSaveToDisk}`);
+        Text(`[Ready] ${this.mySettings.ready ? ' 󰀓 ' : ' 󰁖 '}`);
+        Text(`[settingsFileSavePath] ${this.mySettings.settingsFileSavePath}`);
+        Text(`[timeoutIdSaveToDisk] ${this.mySettings.timeoutIdSaveToDisk}`);
       }; // Statuses
 
       Flex(meowFlexOptions) {
         Button('(Re) Load from Disk')
           .onClick(() => {
-            this.myMeowManagedSettings?.initFrom(`${this.context.filesDir}/settings.json.browsercatsettings.txt`);
+            this.mySettings?.initFrom(`${this.context.filesDir}/settings.json.browsercatsettings.txt`);
           });
         Button('Save Instantly')
           .onClick(() => {
-            this.myMeowManagedSettings.requestSaveToDisk(0);
+            this.mySettings.requestSaveToDisk(0);
           });
         Button('Save Through Request in 500 ms')
           .onClick(() => {
-            this.myMeowManagedSettings.requestSaveToDisk();
+            this.mySettings.requestSaveToDisk();
           });
       }; // Load and save buttons
 
-      TextArea({ text: `${this.myMeowManagedSettings.prebuiltReadOnly}` }).height(200).border({ radius: defaultInnerRadius, width: 1, color: $r('sys.color.icon_fourth') }); // Settings file
+      TextArea({ text: `${this.mySettings.prebuiltReadOnly}` }).height(200).border({ radius: defaultInnerRadius, width: 1, color: $r('sys.color.icon_fourth') }); // Settings file
 
       SimpleSettingsExamples();
     }; // Settings

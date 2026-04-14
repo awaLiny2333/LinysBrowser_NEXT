@@ -10,8 +10,8 @@ import { SymbolButton } from '../common/SymbolButton';
  */
 @ComponentV2
 struct SimpleSettingsExamples {
-  @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect<meowManagedSettings>(meowManagedSettings)!; // Should be initialized by flows.
-  @Local settingsAdblockExceptions: string[] = this.myMeowManagedSettings.settingsData[53].value as string[]; // adblock_exceptions
+  @Local mySettings: meowManagedSettings = AppStorageV2.connect<meowManagedSettings>(meowManagedSettings)!; // Should be initialized by flows.
+  @Local settingsAdblockExceptions: string[] = this.mySettings.settingsData[53].value as string[]; // adblock_exceptions
 
   build() {
     UniContentCard({ roundedRadius: defaultInnerRadius }) {
@@ -19,27 +19,27 @@ struct SimpleSettingsExamples {
         // DEV_MODE as an example of meowSettingsEntryType.BOOLEAN
         Row({ space: 8 }) {
           Text('DEV_MODE');
-          Toggle({ isOn: this.myMeowManagedSettings.settingsData[74].value as boolean, type: ToggleType.Switch })
+          Toggle({ isOn: this.mySettings.settingsData[74].value as boolean, type: ToggleType.Switch })
             .onChange((c) => {
-              this.myMeowManagedSettings.setByIndex(74, c);
+              this.mySettings.setByIndex(74, c);
             });
         };       
         
         Row({ space: 8 }) {
           Text('use_effects');
-          Toggle({ isOn: this.myMeowManagedSettings.settingsData[7].value as boolean, type: ToggleType.Switch })
+          Toggle({ isOn: this.mySettings.settingsData[7].value as boolean, type: ToggleType.Switch })
             .onChange((c) => {
-              this.myMeowManagedSettings.setByIndex(7, c);
+              this.mySettings.setByIndex(7, c);
             });
         };
 
         // my_window_alias_last as an example of meowSettingsEntryType.STRING
         Flex(meowFlexOptions) {
           Text('my_window_alias_last');
-          TextInput({ text: this.myMeowManagedSettings.settingsData[26].value as string })
+          TextInput({ text: this.mySettings.settingsData[26].value as string })
             .width(200)
             .onChange((c) => {
-              this.myMeowManagedSettings.setByIndex(26, c);
+              this.mySettings.setByIndex(26, c);
             });
         };
         Flex(meowFlexOptions) {
@@ -47,9 +47,9 @@ struct SimpleSettingsExamples {
           Toggle({ isOn: titleBarPositionBottom(), type: ToggleType.Switch })
             .onChange((c) => {
               if (c) {
-                this.myMeowManagedSettings.setByIndex(1, 'bottom');
+                this.mySettings.setByIndex(1, 'bottom');
               } else {
-                this.myMeowManagedSettings.setByIndex(1, 'top');
+                this.mySettings.setByIndex(1, 'top');
               }
             });
         };
@@ -57,10 +57,10 @@ struct SimpleSettingsExamples {
         // animation_response as an example of meowSettingsEntryType.number
         Flex(meowFlexOptions) {
           Text('animation_response');
-          TextInput({ text: this.myMeowManagedSettings.settingsData[39].value?.toString() })
+          TextInput({ text: this.mySettings.settingsData[39].value?.toString() })
             .width(200)
             .onChange((c) => {
-              this.myMeowManagedSettings.setByIndex(39, Number(c));
+              this.mySettings.setByIndex(39, Number(c));
             });
         };
       }; // Settings in flex to save layout space
@@ -70,7 +70,7 @@ struct SimpleSettingsExamples {
         Button('Add Site  󰅖')
           .onClick(() => {
             this.settingsAdblockExceptions.push('new.site');
-            this.myMeowManagedSettings.requestSaveToDisk();
+            this.mySettings.requestSaveToDisk();
           });
         Text('adblock_exceptions');
       };
@@ -86,14 +86,14 @@ struct SimpleSettingsExamples {
                       return;
                     }
                     this.settingsAdblockExceptions[item.index] = c;
-                    this.myMeowManagedSettings.requestSaveToDisk();
+                    this.mySettings.requestSaveToDisk();
                   });
 
                 SymbolButton({
                   icon: $r('sys.symbol.trash'),
                   clickAction: () => {
                     this.settingsAdblockExceptions.splice(item.index, 1);
-                    this.myMeowManagedSettings.requestSaveToDisk();
+                    this.mySettings.requestSaveToDisk();
                   }
                 });
               };

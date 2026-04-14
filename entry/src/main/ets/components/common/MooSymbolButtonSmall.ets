@@ -10,7 +10,7 @@ import { getColor, meowThemeColorType } from "../settings";
  */
 @ComponentV2
 struct MooSymbolButtonSmall {
-  // @Local myMeowFreeWindowModeStatus: meowFreeWindowModeStatus = AppStorageV2.connect(meowFreeWindowModeStatus)!;
+  // @Local myFree: meowFreeWindowModeStatus = AppStorageV2.connect(meowFreeWindowModeStatus)!;
   @Param icon: Resource = $r('sys.symbol.square_stack_3d');
   @Event clickAction: () => void;
 
@@ -22,7 +22,7 @@ struct MooSymbolButtonSmall {
       .onClick(() => {
         this.clickAction();
       })
-      // .opacity(this.myMeowFreeWindowModeStatus.onFocus ? 1 : 0.3)
+      // .opacity(this.myFree.onFocus ? 1 : 0.3)
       .fontColor([getColor(meowThemeColorType.FONT)]);
   }
 }

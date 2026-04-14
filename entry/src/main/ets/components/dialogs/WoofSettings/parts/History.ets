@@ -10,7 +10,7 @@ import { UniContentCard } from '../../../common/UniContentCard';
 
 @ComponentV2
 struct SettingsHistory {
-  @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
   @Local myMeowHistorian: meowHistorian = AppStorageV2.connect(meowHistorian)!;
 
   build() {
@@ -24,9 +24,9 @@ struct SettingsHistory {
       UniContentCard() {
         MooSwitch({
           text: $r('app.string.Settings_category_history_recordNew'),
-          isOn: this.myMeowManagedSettings.settingsData[69].value as boolean,
+          isOn: this.mySettings.settingsData[69].value as boolean,
           onChange: (r) => {
-            this.myMeowManagedSettings.setByIndex(69, r);
+            this.mySettings.setByIndex(69, r);
           }
         });
       };
@@ -48,12 +48,12 @@ struct SettingsHistory {
         });
         // Text($r('app.string.Settings_category_history_indexLoadQuantity')).attributeModifier(new MooTextModifier());
         // MooSlider({
-        //   value: this.myMeowManagedSettings.settingsData[71].value as number,
+        //   value: this.mySettings.settingsData[71].value as number,
         //   min: 0,
         //   max: 24,
         //   step: 1,
         //   onChange: (r) => {
-        //     this.myMeowManagedSettings.setByIndex(71, r);
+        //     this.mySettings.setByIndex(71, r);
         //   }
         // });
       };

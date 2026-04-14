@@ -5,6 +5,6 @@ import { openDialogRequestType, meowDialogManager, openDialogRequest } from "../
  * @param type The type of the dialog.
  * @param ignoreOpened Whether to ignore the opened dialogs.
  */
-export function requestDialog(myMeowDialogManager: meowDialogManager, type: openDialogRequestType, param: string | number = '', ignoreOpened: boolean = false) {
-  myMeowDialogManager.requestOpen(new openDialogRequest(type, param, ignoreOpened));
+export function requestDialog(myDialog: meowDialogManager, type: openDialogRequestType, param: string | number = '', ignoreOpened: boolean = false) {
+  myDialog.requestOpen(new openDialogRequest(type, param, ignoreOpened));
 }
