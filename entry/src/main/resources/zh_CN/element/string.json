@@ -397,20 +397,100 @@
       "value": "安全"
     },
     {
+      "name": "Settings_category_security_cookies",
+      "value": "曲奇（Cookies）"
+    },
+    {
+      "name": "Settings_category_security_cookies_intelligentTrackingPrevention",
+      "value": "方舟智能防追踪"
+    },
+    {
+      "name": "Settings_category_security_cookies_thirdPartyCookies",
+      "value": "第三方曲奇（Cookies）"
+    },
+    {
+      "name": "Settings_category_security_cookies_viewManage",
+      "value": "查看和管理  󰀩"
+    },
+    {
       "name": "Settings_category_cardboardBox",
       "value": "纸箱"
+    },
+    {
+      "name": "Settings_category_cardboardBox_debug",
+      "value": "调试"
+    },
+    {
+      "name": "Settings_category_cardboardBox_debug_resourceMonitor",
+      "value": "资源监视器"
+    },
+    {
+      "name": "Settings_category_cardboardBox_debug_faultLogs",
+      "value": "错误日志  󰀩"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup",
+      "value": "备份"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_settings_desc",
+      "value": "导出设置用以备份，或作为其他用途："
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_settings_export",
+      "value": "导出设置  󰃕"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_settings_import",
+      "value": "导入设置  󰙧"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_everything_desc",
+      "value": "或者导出完整数据备份，包括书签、历史、设置……打包成一个文件带走！"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_everything_export",
+      "value": "导出完整数据  󰃕"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_everything_import",
+      "value": "导入完整数据  󰙧"
     },
     {
       "name": "Settings_category_about",
       "value": "关于"
     },
     {
-      "name": "Settings_category_update",
+      "name": "Settings_category_about_site_bilibili",
+      "value": "Liny 的哔哩哔哩主页  󰃭"
+    },
+    {
+      "name": "Settings_category_about_site_github",
+      "value": "Github 仓库  󰇶"
+    },
+    {
+      "name": "Settings_category_about_site_gitee",
+      "value": "Gitee 仓库  󰮰"
+    },
+    {
+      "name": "Settings_category_about_thank",
+      "value": "感谢你！我的朋友！在足够混乱的生活中选择体验这个更加混乱的浏览器！:3"
+    },
+    {
+      "name": "Settings_category_about_update",
       "value": "更新"
+    },
+    {
+      "name": "Settings_category_about_update_history",
+      "value": "更新历史  󰣚"
     },
     {
       "name": "Settings_category_deveowlopers",
       "value": "开发"
+    },
+    {
+      "name": "Settings_category_deveowlopers_openPanel",
+      "value": "猫咪管理面板  󰊀"
     },
     {
       "name": "Permission_reason_DETECT_GESTURES",

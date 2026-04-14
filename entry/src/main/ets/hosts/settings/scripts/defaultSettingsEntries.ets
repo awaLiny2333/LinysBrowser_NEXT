@@ -54,7 +54,7 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('home_url', meowSettingsEntryType.STRING, ''), // #30
   new meowSettingsEntry('new_tab_url', meowSettingsEntryType.STRING, ''),
   new meowSettingsEntry('start_up_option', meowSettingsEntryType.STRING, 'new tab'), // 'new tab' | 'home' | 'continue' #32
-  new meowSettingsEntry('intelligent_tracking_prevention', meowSettingsEntryType.BOOLEAN, 'false'),
+  new meowSettingsEntry('intelligent_tracking_prevention', meowSettingsEntryType.BOOLEAN, 'false'), // #33
   new meowSettingsEntry('enable_third_party_cookies', meowSettingsEntryType.BOOLEAN, 'false'),
   new meowSettingsEntry('continue_tabs_count', meowSettingsEntryType.NUMBER, '0'),
   new meowSettingsEntry('continue_tabs_main_on', meowSettingsEntryType.NUMBER, '0'),
@@ -122,7 +122,7 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   
   // Debug
   new meowSettingsEntry('DEV_MODE', meowSettingsEntryType.BOOLEAN, 'false'), // #74
-  new meowSettingsEntry('resource_monitor', meowSettingsEntryType.BOOLEAN, 'true'),
+  new meowSettingsEntry('resource_monitor', meowSettingsEntryType.BOOLEAN, 'true'), // #75
   
   new meowSettingsEntry('CONFIG_BUTTONS', meowSettingsEntryType.BOOLEAN, 'false'), // Forgot what this is :3
   new meowSettingsEntry('CONFIG_EXTENSIONS', meowSettingsEntryType.BOOLEAN, 'false'),

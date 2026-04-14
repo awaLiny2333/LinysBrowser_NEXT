@@ -5,6 +5,11 @@
       "copyCodeResource": {
         "enable": false
       }
+    },
+    "arkOptions": {
+      "buildProfileFields": {
+        "LINYS_BUILD_TIME": "0"
+      }
     }
   },
   "buildOptionSet": [
@@ -27,7 +32,7 @@
       "name": "default"
     },
     {
-      "name": "ohosTest",
+      "name": "ohosTest"
     }
   ]
 }

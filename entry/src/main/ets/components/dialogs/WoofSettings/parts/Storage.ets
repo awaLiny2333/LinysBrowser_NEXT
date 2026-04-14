@@ -1,10 +1,10 @@
 import { AppStorageV2 } from '@kit.ArkUI';
-import { addUnitsToSize } from '../../../../catstypicalframework/utils/storage';
+import lazy { addUnitsToSize } from '../../../../catstypicalframework/utils/storage';
 import { meowUiStatuses } from '../../../../hosts/env/classes/meowUiStatuses';
-import { removeWebCache, scanWebCacheSize } from '../../../../hosts/env/scripts/web';
-import { scanHistoryIndexSize } from '../../../../hosts/history/scripts/storage';
+import lazy { removeWebCache, scanWebCacheSize } from '../../../../hosts/env/scripts/storage';
+import lazy { scanHistoryIndexSize } from '../../../../hosts/history/scripts/storage';
 import { meowManagedSettings } from '../../../../hosts/settings/classes/meowManagedSettings';
-import { mooTextType, standardSpacing } from '../../../common/constants';
+import lazy { mooTextType, standardSpacing } from '../../../common/constants';
 import { MooCapsuleButton } from '../../../common/MooCapsuleButton';
 import { MooTextModifier } from '../../../common/MooTextModifier';
 import { UniContentCard } from '../../../common/UniContentCard';

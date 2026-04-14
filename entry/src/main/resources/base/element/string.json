@@ -397,20 +397,100 @@
       "value": "Security"
     },
     {
+      "name": "Settings_category_security_cookies",
+      "value": "Cookies"
+    },
+    {
+      "name": "Settings_category_security_cookies_intelligentTrackingPrevention",
+      "value": "ArkWeb intelligent tracking prevention"
+    },
+    {
+      "name": "Settings_category_security_cookies_thirdPartyCookies",
+      "value": "Third-party cookies"
+    },
+    {
+      "name": "Settings_category_security_cookies_viewManage",
+      "value": "View & manage  󰀩"
+    },
+    {
       "name": "Settings_category_cardboardBox",
       "value": "Cardboard Box"
+    },
+    {
+      "name": "Settings_category_cardboardBox_debug",
+      "value": "Debug"
+    },
+    {
+      "name": "Settings_category_cardboardBox_debug_resourceMonitor",
+      "value": "Resource monitor"
+    },
+    {
+      "name": "Settings_category_cardboardBox_debug_faultLogs",
+      "value": "Fault logs  󰀩"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup",
+      "value": "Backup"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_settings_desc",
+      "value": "Export settings for backup or other purposes:"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_settings_export",
+      "value": "Export settings  󰃕"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_settings_import",
+      "value": "Import settings  󰙧"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_everything_desc",
+      "value": "Or export a full data backup—including bookmarks, history, settings, etc.—packed into a single file!"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_everything_export",
+      "value": "Export all data  󰃕"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_everything_import",
+      "value": "Import all data  󰙧"
     },
     {
       "name": "Settings_category_about",
       "value": "About"
     },
     {
-      "name": "Settings_category_update",
-      "value": "Update"
+      "name": "Settings_category_about_site_bilibili",
+      "value": "Liny's bilibili page  󰃭"
+    },
+    {
+      "name": "Settings_category_about_site_github",
+      "value": "Github repo  󰇶"
+    },
+    {
+      "name": "Settings_category_about_site_gitee",
+      "value": "Gitee repo  󰮰"
+    },
+    {
+      "name": "Settings_category_about_thank",
+      "value": "Thank you! My friend! For having a try on this even more chaotic browser in a life that's already chaotic enough! :3"
+    },
+    {
+      "name": "Settings_category_about_update",
+      "value": "Updates"
+    },
+    {
+      "name": "Settings_category_about_update_history",
+      "value": "Update history  󰣚"
     },
     {
       "name": "Settings_category_deveowlopers",
       "value": "Deveowlopers"
+    },
+    {
+      "name": "Settings_category_deveowlopers_openPanel",
+      "value": "CatsDev panel  󰊀"
     },
     {
       "name": "Permission_reason_DETECT_GESTURES",

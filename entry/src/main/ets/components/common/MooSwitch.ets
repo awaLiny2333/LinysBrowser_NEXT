@@ -14,7 +14,7 @@ struct MooSwitch {
         Text(this.text).attributeModifier(new MooTextModifier())
           .layoutWeight(1)
           .textAlign(summarizedPreferRightHand() ? TextAlign.End : TextAlign.Start)
-          .animation(defaultAnimation());
+          // .animation(defaultAnimation());
       }
       Toggle({ isOn: this.isOn, type: ToggleType.Switch })
         .onChange((c) => {
