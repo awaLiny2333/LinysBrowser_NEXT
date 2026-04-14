@@ -16,7 +16,8 @@ import { WoofUniFrame } from "../common/WoofUniFrame";
 struct WoofColorPicker {
   @Param @Require controller: CustomDialogController;
   // Host
-  @Local myMeowLayoutModeStatus: meowLayoutModeStatus = AppStorageV2.connect(meowLayoutModeStatus)!;
+  @Param @Require myMeowLayoutModeStatus: meowLayoutModeStatus;
+  @Param @Require myMeowDialogManager: meowDialogManager;
   // Data
   @Local settingsId: number = -1;
   @Local hex: string = '#000000';
@@ -25,10 +26,9 @@ struct WoofColorPicker {
   @Local v: number = -1;
 
   aboutToAppear() {
-    const myMeowDialogManager: meowDialogManager = AppStorageV2.connect(meowDialogManager)!;
     const myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
-    this.settingsId = myMeowDialogManager.lastRequest?.param as number; // Read from dialog manager
+    this.settingsId = this.myMeowDialogManager.lastRequest?.param as number; // Read from dialog manager
     this.hex = myMeowManagedSettings.settingsData[this.settingsId].value as string;
 
     const hsvArr = hex2hsv(this.hex);
@@ -98,10 +98,12 @@ struct WoofColorPicker {
 @CustomDialog
 struct WoofColorPickerDialog {
   controller: CustomDialogController;
+  @Require myMeowDialogManager: meowDialogManager;
+  @Require myMeowLayoutModeStatus: meowLayoutModeStatus;
 
   build() {
-    WoofUniFrame({ controller: this.controller, title: $r('app.string.Settings_category_appearance_colors') }) {
-      WoofColorPicker({ controller: this.controller });
+    WoofUniFrame({ controller: this.controller, title: $r('app.string.Settings_category_appearance_colors'), myMeowLayoutModeStatus: this.myMeowLayoutModeStatus, myMeowDialogManager: this.myMeowDialogManager }) {
+      WoofColorPicker({ controller: this.controller, myMeowLayoutModeStatus: this.myMeowLayoutModeStatus, myMeowDialogManager: this.myMeowDialogManager });
     };
   }
 }

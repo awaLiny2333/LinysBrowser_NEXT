@@ -5,29 +5,36 @@ import { meowLayoutModeStatus } from '../catstypicalframework/hosts/meowLayoutMo
 import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
 import { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
 import { defaultDecorHeight, defaultInnerRadius, shortModeThreshold, wideModeThreshold } from '../catstypicalframework/utils/ui';
-import { defaultAnimation, getColor, meowThemeColorType, mooTextType, showGiganticWindowTitle, standardSpacing, titleBarPositionBottom, useEffects } from '../components/settings';
 import { MooTextModifier } from '../components/common/MooTextModifier';
 import lazy { MeowButtonRow } from '../components/parts/MeowButtonRow';
 import { MeowPlaceForDialogs } from '../components/parts/MeowPlaceForDialogs';
 import { MeowSearchBar } from '../components/parts/MeowSearchBar';
 import lazy { heightMeowTitleBar, MeowTitleBar } from '../components/parts/MeowTitleBar';
 import lazy { MeowTitleTop } from '../components/parts/MeowTitleTop';
+import { defaultAnimation, getColor, meowThemeColorType, mooTextType, showGiganticWindowTitle, standardSpacing, titleBarPositionBottom, useEffects } from '../components/settings';
+import { meowAppStatuses } from '../hosts/env/classes/meowAppStatuses';
+import { meowDialogManager } from '../hosts/env/classes/meowDialogManager';
 import { meowResources } from '../hosts/env/classes/meowResources';
 import { meowUiStatuses } from '../hosts/env/classes/meowUiStatuses';
+import { getLastWindowId } from '../hosts/env/scripts/multiwindows';
 import { meowManagedSettings } from '../hosts/settings/classes/meowManagedSettings';
 
 @Entry
 @ComponentV2
 struct Index {
-  // catsTypicalFramework
-  @Local myMeowLayout: meowLayoutModeStatus = AppStorageV2.connect<meowLayoutModeStatus>(meowLayoutModeStatus)!;
-  @Local myMeowFreeWindowModeStatus: meowFreeWindowModeStatus = AppStorageV2.connect<meowFreeWindowModeStatus>(meowFreeWindowModeStatus)!;
-  @Local myMeowAvoid: meowAvoid = AppStorageV2.connect<meowAvoid>(meowAvoid)!;
-  @Local myMeowMisc: meowMisc = AppStorageV2.connect<meowMisc>(meowMisc)!;
-  // Hosts
+  @Local myWindowId: string = getLastWindowId(); // To know who I am!
+  // Hosts (public)
   @Local myMeowResources: meowResources = AppStorageV2.connect(meowResources)!;
-  @Local meowUiStatuses: meowUiStatuses = AppStorageV2.connect(meowUiStatuses)!;
-  @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect<meowManagedSettings>(meowManagedSettings)!; // Should be initialized by flows.
+  @Local myMeowAppStatuses: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
+  @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!; // Should be initialized by flows.
+  // Hosts (private)
+  @Local myMeowUiStatuses: meowUiStatuses = AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${this.myWindowId}`)!;
+  @Local myMeowDialogManager: meowDialogManager = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myWindowId}`)!;
+  // catsTypicalFramework (private)
+  @Local myMeowLayout: meowLayoutModeStatus = AppStorageV2.connect(meowLayoutModeStatus, `meowLayoutModeStatus_${this.myWindowId}`)!;
+  @Local myMeowFreeWindowModeStatus: meowFreeWindowModeStatus = AppStorageV2.connect(meowFreeWindowModeStatus, `meowFreeWindowModeStatus_${this.myWindowId}`)!;
+  @Local myMeowAvoid: meowAvoid = AppStorageV2.connect(meowAvoid, `meowAvoid_${this.myWindowId}`)!;
+  @Local myMeowMisc: meowMisc = AppStorageV2.connect(meowMisc, `meowMisc_${this.myWindowId}`)!;
   // Runtime
   context: Context = this.getUIContext().getHostContext()!;
   uiContext: UIContext = this.getUIContext();
@@ -38,7 +45,14 @@ struct Index {
     RelativeContainer() {
       if (this.render) {
         // Dialog handler
-        MeowPlaceForDialogs();
+        MeowPlaceForDialogs({
+          myMeowDialogManager: this.myMeowDialogManager,
+          myMeowUiStatuses: this.myMeowUiStatuses, 
+          myMeowLayoutModeStatus: this.myMeowLayout,
+          myMeowFreeWindowModeStatus: this.myMeowFreeWindowModeStatus,
+          myMeowAvoid: this.myMeowAvoid,
+          myMeowMisc: this.myMeowMisc
+        });
 
         // Main
         // This is ugly.
@@ -59,16 +73,31 @@ struct Index {
         .padding(this.mainFrameMargin())
         .animation(defaultAnimation());
 
-        MeowTitleTop();
+        MeowTitleTop({
+          myMeowFreeWindowModeStatus: this.myMeowFreeWindowModeStatus,
+          myMeowAvoid: this.myMeowAvoid,
+          myMeowLayout: this.myMeowLayout,
+          myMeowDialogManager: this.myMeowDialogManager,
+        });
 
         // Top
         if (!titleBarPositionBottom()) {
           Column({ space: standardSpacing }) {
-            MeowTitleBar();
+            MeowTitleBar({
+              myMeowUiStatuses: this.myMeowUiStatuses,
+              myMeowAvoid: this.myMeowAvoid,
+              myMeowLayout: this.myMeowLayout,
+              myMeowDialogManager: this.myMeowDialogManager,
+            });
             if (!this.myMeowLayout.wideMode) {
-              MeowSearchBar();
+              MeowSearchBar({
+                myMeowAvoid: this.myMeowAvoid,
+              });
             }
-            MeowButtonRow();
+            MeowButtonRow({
+              myMeowUiStatuses: this.myMeowUiStatuses,
+              myMeowAvoid: this.myMeowAvoid,
+            });
           }
           .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
           .backgroundColor(getColor(meowThemeColorType.SECONDARY))
@@ -84,10 +113,20 @@ struct Index {
         // Bottom
         if (titleBarPositionBottom()) {
           Column({ space: standardSpacing }) {
-            MeowButtonRow();
-            MeowTitleBar();
+            MeowButtonRow({
+              myMeowUiStatuses: this.myMeowUiStatuses,
+              myMeowAvoid: this.myMeowAvoid,
+            });
+            MeowTitleBar({
+              myMeowUiStatuses: this.myMeowUiStatuses,
+              myMeowAvoid: this.myMeowAvoid,
+              myMeowLayout: this.myMeowLayout,
+              myMeowDialogManager: this.myMeowDialogManager,
+            });
             if (!this.myMeowLayout.wideMode) {
-              MeowSearchBar();
+              MeowSearchBar({
+                myMeowAvoid: this.myMeowAvoid,
+              });
             }
           }
           .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
@@ -102,7 +141,7 @@ struct Index {
         }
 
         // Gigantic window title
-        if (showGiganticWindowTitle()) {
+        if (showGiganticWindowTitle(this.myMeowFreeWindowModeStatus)) {
           Text('Gigantic Window Title')
             .attributeModifier(new MooTextModifier(mooTextType.TITLE))
             .fontSize(128)
@@ -139,6 +178,7 @@ struct Index {
     this.myMeowMisc.launchEndTime = Date.now();
     meow(`---`, 'Index][launch', meowLevel.INFO);
     meow(`Successfully launched the app. (${Date.now() - this.myMeowMisc.launchStartTime} ms)`, 'Index][launch', meowLevel.INFO);
+    meow(`Window ID: ${this.myMeowUiStatuses.windowId}`, 'Index][launch', meowLevel.INFO);
     meow(`---`, 'Index][launch', meowLevel.INFO);
     setTimeout(() => {
       this.render = true;

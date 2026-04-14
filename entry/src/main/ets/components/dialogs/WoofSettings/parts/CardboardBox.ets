@@ -1,4 +1,3 @@
-import { meowUiStatuses } from '../../../../hosts/env/classes/meowUiStatuses';
 import { meowManagedSettings } from '../../../../hosts/settings/classes/meowManagedSettings';
 import { mooTextType, standardSpacing } from '../../../settings';
 import { AppStorageV2 } from '@kit.ArkUI';
@@ -10,7 +9,6 @@ import { MooCapsuleButton } from '../../../common/MooCapsuleButton';
 @ComponentV2
 struct SettingsCardboardBox {
   @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
-  @Local myMeowUiStatuses: meowUiStatuses = AppStorageV2.connect(meowUiStatuses)!;
 
   build() {
     Column({ space: standardSpacing }) {

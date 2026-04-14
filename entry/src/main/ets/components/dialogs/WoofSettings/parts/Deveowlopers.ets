@@ -8,13 +8,14 @@ import { MooCapsuleButton } from '../../../common/MooCapsuleButton';
 import { bundleManager } from '@kit.AbilityKit';
 import BuildProfile from 'BuildProfile';
 import { requestDialog } from '../../../../hosts/env/scripts/dialog';
-import { openDialogRequestType } from '../../../../hosts/env/classes/meowDialogManager';
+import { meowDialogManager, openDialogRequestType } from '../../../../hosts/env/classes/meowDialogManager';
 
 @ComponentV2
 struct SettingsDeveowlopers {
   // Hosts
   @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
-  @Local myMeowUiStatuses: meowUiStatuses = AppStorageV2.connect(meowUiStatuses)!;
+  @Param @Require myMeowUiStatuses: meowUiStatuses;
+  @Param @Require myMeowDialogManager: meowDialogManager;
   // Information
   @Local versionName: string = "Version Name";
   @Local versionNo: number = 0;
@@ -40,7 +41,7 @@ struct SettingsDeveowlopers {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_deveowlopers_openPanel'),
           clickAction: () => {
-            requestDialog(openDialogRequestType.DEV, undefined, true);
+            requestDialog(this.myMeowDialogManager, openDialogRequestType.DEV, undefined, true);
           }
         });
       };

@@ -1,5 +1,4 @@
 import { UniContentCard } from '../../../../common/UniContentCard';
-import { AppStorageV2 } from '@kit.ArkUI';
 import { meowMisc } from '../../../../../catstypicalframework/hosts/meowMisc';
 import { meowFlexOptions } from '../../../../settings';
 import { hintGC } from '../../../../../catstypicalframework/utils/performance';
@@ -13,10 +12,10 @@ import { meowLayoutModeStatus } from '../../../../../catstypicalframework/hosts/
 @ComponentV2
 struct CatsTypicalFrameworkDevCard {
   // catsTypicalFramework
-  @Local myMeowLayout: meowLayoutModeStatus = AppStorageV2.connect<meowLayoutModeStatus>(meowLayoutModeStatus)!;
-  @Local myMeowFreeWindowModeStatus: meowFreeWindowModeStatus = AppStorageV2.connect<meowFreeWindowModeStatus>(meowFreeWindowModeStatus)!;
-  @Local myMeowAvoid: meowAvoid = AppStorageV2.connect<meowAvoid>(meowAvoid)!;
-  @Local myMeowMisc: meowMisc = AppStorageV2.connect<meowMisc>(meowMisc)!;
+  @Param @Require myMeowLayout: meowLayoutModeStatus;
+  @Param @Require myMeowFreeWindowModeStatus: meowFreeWindowModeStatus;
+  @Param @Require myMeowAvoid: meowAvoid;
+  @Param @Require myMeowMisc: meowMisc;
 
   build() {
     UniContentCard({ title: 'CatsTypicalFramework' }) {

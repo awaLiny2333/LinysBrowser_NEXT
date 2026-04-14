@@ -10,6 +10,7 @@ import { AppStorageV2, LengthMetrics } from "@kit.ArkUI";
 import Curves from '@ohos.curves';
 import { meowFreeWindowModeStatus } from "../catstypicalframework/hosts/meowFreeWindowModeStatus";
 import { meowLayoutModeStatus } from "../catstypicalframework/hosts/meowLayoutModeStatus";
+import { meowAppStatuses } from "../hosts/env/classes/meowAppStatuses";
 import { meowManagedSettings } from "../hosts/settings/classes/meowManagedSettings";
 
 // Constants
@@ -77,8 +78,8 @@ export function getColor(type: meowThemeColorType): ResourceColor {
 
   // No effects
   const settings = AppStorageV2.connect(meowManagedSettings)!;
-  const layout = AppStorageV2.connect(meowLayoutModeStatus)!;
-  return settings.settingsData[layout.dark ? 65 + type : 62 + type].value as string;
+  const myMeowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
+  return settings.settingsData[myMeowAppStatuses.dark ? 65 + type : 62 + type].value as string;
 }
 
 /**
@@ -95,8 +96,7 @@ export function titleBarPositionBottom() {
  * Gets if the user wants to show the window title.
  * @returns true if the user wants to show the window title, false otherwise.
  */
-export function showWindowTitle() {
-  const layout = AppStorageV2.connect(meowLayoutModeStatus)!;
+export function showWindowTitle(layout: meowLayoutModeStatus) {
   const settings = AppStorageV2.connect(meowManagedSettings)!;
   if (layout.wideMode) {
     return settings.settingsData[23].value as boolean;
@@ -128,9 +128,8 @@ export function windowTitlePosition() {
  * This function always returns false if the window is on focus.
  * @returns true if the user wants to show the gigantic window title, false otherwise.
  */
-export function showGiganticWindowTitle() {
-  const window = AppStorageV2.connect(meowFreeWindowModeStatus)!;
-  if (window.onFocus) {
+export function showGiganticWindowTitle(myMeowFreeWindowModeStatus: meowFreeWindowModeStatus) {
+  if (myMeowFreeWindowModeStatus.onFocus) {
     return false;
   }
   const settings = AppStorageV2.connect(meowManagedSettings)!;
@@ -143,8 +142,8 @@ export function showGiganticWindowTitle() {
  */
 export function summarizedPreferRightHand(): boolean {
   if (smartReachability()) {
-    const layout = AppStorageV2.connect(meowLayoutModeStatus)!;
-    return layout.smartReachabilitySaysWeShouldPreferRightHand;
+    const myMeowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
+    return myMeowAppStatuses.smartReachabilitySaysWeShouldPreferRightHand;
   }
   return preferRightHandFromSettings();
 }
@@ -183,7 +182,6 @@ export function defaultAnimation() {
  * Gets the columns template for the water flow layout.
  * @returns The columns template for the water flow layout.
  */
-export function waterFlowColumnsTemplate() {
-  const layout = AppStorageV2.connect(meowLayoutModeStatus)!;
+export function waterFlowColumnsTemplate(layout: meowLayoutModeStatus) {
   return "1fr ".repeat(Math.ceil(layout.width / minimumCardWidth));
 }

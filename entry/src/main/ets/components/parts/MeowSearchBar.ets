@@ -1,5 +1,4 @@
 import { meowAvoid } from '../../catstypicalframework/hosts/meowAvoid';
-import { AppStorageV2 } from '@kit.ArkUI';
 import { standardSpacing, getColor, meowThemeColorType, fontSizeMedium, useEffects } from '../settings';
 import { heightMeowTitleBar } from './MeowTitleBar';
 
@@ -11,7 +10,7 @@ import { heightMeowTitleBar } from './MeowTitleBar';
 @ComponentV2
 struct MeowSearchBar {
   @Param @Once needPadding: boolean = true;
-  @Local myMeowAvoid: meowAvoid = AppStorageV2.connect(meowAvoid)!;
+  @Param @Require myMeowAvoid: meowAvoid;
 
   build() {
     Row() {

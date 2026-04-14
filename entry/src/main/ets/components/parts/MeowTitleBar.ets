@@ -1,7 +1,6 @@
-import { AppStorageV2 } from "@kit.ArkUI";
 import { meowAvoid } from "../../catstypicalframework/hosts/meowAvoid";
 import { meowLayoutModeStatus } from "../../catstypicalframework/hosts/meowLayoutModeStatus";
-import { openDialogRequestType } from "../../hosts/env/classes/meowDialogManager";
+import { meowDialogManager, openDialogRequestType } from "../../hosts/env/classes/meowDialogManager";
 import { meowUiStatuses } from "../../hosts/env/classes/meowUiStatuses";
 import { requestDialog } from "../../hosts/env/scripts/dialog";
 import { MooSymbolButton } from "../common/MooSymbolButton";
@@ -9,9 +8,10 @@ import { MeowSearchBar } from "./MeowSearchBar";
 
 @ComponentV2
 struct MeowTitleBar {
-  @Local myMeowAvoid: meowAvoid = AppStorageV2.connect(meowAvoid)!;
-  @Local meowUiStatuses: meowUiStatuses = AppStorageV2.connect(meowUiStatuses)!;
-  @Local myMeowLayout: meowLayoutModeStatus = AppStorageV2.connect(meowLayoutModeStatus)!;
+  @Param @Require myMeowUiStatuses: meowUiStatuses;
+  @Param @Require myMeowAvoid: meowAvoid;
+  @Param @Require myMeowLayout: meowLayoutModeStatus;
+  @Param @Require myMeowDialogManager: meowDialogManager;
 
   build() {
     Row({ space: 1 }) {
@@ -21,16 +21,19 @@ struct MeowTitleBar {
       MooSymbolButton({ icon: $r('sys.symbol.house') });
 
       if (this.myMeowLayout.wideMode) {
-        MeowSearchBar().layoutWeight(1);
+        MeowSearchBar({
+          myMeowAvoid: this.myMeowAvoid,
+        })
+          .layoutWeight(1);
       } else {
         Blank();
       }
 
       MooSymbolButton({
         icon: $r('sys.symbol.dot_grid_2x2'),
-        onHold: this.meowUiStatuses.showMore,
+        onHold: this.myMeowUiStatuses.showMore,
         clickAction: () => {
-          this.meowUiStatuses.showMore = !this.meowUiStatuses.showMore;
+          this.myMeowUiStatuses.showMore = !this.myMeowUiStatuses.showMore;
         }
       });
       /**
@@ -42,7 +45,7 @@ struct MeowTitleBar {
       MooSymbolButton({
         icon: $r('sys.symbol.gearshape'),
         clickAction: () => {
-          requestDialog(openDialogRequestType.SETTINGS);
+          requestDialog(this.myMeowDialogManager, openDialogRequestType.SETTINGS);
         }
       });
     }

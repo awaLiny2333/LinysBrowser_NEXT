@@ -1,11 +1,11 @@
 import lazy { AppStorageV2, display, window } from '@kit.ArkUI';
-import lazy { meow, meowLevel } from './catsLogger';
 import lazy { deviceInfo, power, settings } from '@kit.BasicServicesKit';
 import { motion } from '@kit.MultimodalAwarenessKit';
 import { defaultAnimation, smartReachability } from '../../components/settings';
+import { meowAppStatuses } from '../../hosts/env/classes/meowAppStatuses';
 import { meowAvoid } from '../hosts/meowAvoid';
 import { meowFreeWindowModeStatus } from '../hosts/meowFreeWindowModeStatus';
-import { meowLayoutModeStatus } from '../hosts/meowLayoutModeStatus';
+import lazy { meow, meowLevel } from './catsLogger';
 
 export const wideModeThreshold = 700;
 export const shortModeThreshold = 400;
@@ -86,12 +86,12 @@ export function setDecorHeight(windowClass: window.Window) {
  * Enables the listeners for avoid area change.
  * @param windowClass The window.Window object.
  * */
-export function listenAvoid(windowClass: window.Window) {
+export function listenAvoid(windowClass: window.Window, windowId: string) {
   try {
     windowClass.on('avoidAreaChange', (data) => {
       // meow('Changes on avoid areas!', 'avoidAreaChange', meowLevel.INFO);
-      let free = AppStorageV2.connect(meowFreeWindowModeStatus);
-      let avoid = AppStorageV2.connect<meowAvoid>(meowAvoid, 'meowAvoid', () => new meowAvoid(0, 0, 0, 0))!;
+      let free = AppStorageV2.connect(meowFreeWindowModeStatus, `meowFreeWindowModeStatus_${windowId}`)!;
+      let avoid = AppStorageV2.connect(meowAvoid, `meowAvoid_${windowId}`, () => new meowAvoid(0, 0, 0, 0))!;
 
       if (data.type == window.AvoidAreaType.TYPE_SYSTEM) {
         let top = meowPx2vp(data.area.topRect.height);
@@ -129,11 +129,11 @@ export function listenAvoid(windowClass: window.Window) {
  * Gets the avoid information and sync to AppStorage.
  * @param windowClass The window.Window object.
  * */
-export function getUpdateAvoid(windowClass: window.Window) {
+export function getUpdateAvoid(windowClass: window.Window, windowId: string) {
   try {
     let avoidArea: window.AvoidArea;
-    let avoid = AppStorageV2.connect<meowAvoid>(meowAvoid, 'meowAvoid', () => new meowAvoid(0, 0, 0, 0))!;
-    let free = AppStorageV2.connect(meowFreeWindowModeStatus);
+    let avoid = AppStorageV2.connect(meowAvoid, `meowAvoid_${windowId}`, () => new meowAvoid(0, 0, 0, 0))!;
+    let free = AppStorageV2.connect(meowFreeWindowModeStatus, `meowFreeWindowModeStatus_${windowId}`)!;
 
     // Get
     avoidArea = windowClass.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
@@ -170,20 +170,20 @@ export function getUpdateAvoid(windowClass: window.Window) {
  * @param storage
  * @param id
  * */
-export function listenFreeWindowMode(context: Context, windowClass: window.Window) {
+export function listenFreeWindowMode(context: Context, windowClass: window.Window, windowId: string) {
   meow('ON!', 'listenFreeWindowMode');
-  settings.registerKeyObserver(context, 'window_pcmode_switch_status', settings.domainName.USER_PROPERTY,
-    () => {
-      settings.getValue(context, 'window_pcmode_switch_status', settings.domainName.USER_PROPERTY)
-        .then((val) => {
-          let free = (val == 'true');
-          if (free) {
-            setDecorHeight(windowClass);
-          }
-          AppStorageV2.connect<meowFreeWindowModeStatus>(meowFreeWindowModeStatus, 'meowFreeWindowModeStatus', () => new meowFreeWindowModeStatus(free))!.on = free;
-          meow(`${free}`, 'listenFreeWindowMode', meowLevel.INFO);
-        });
-    });
+  settings.registerKeyObserver(context, 'window_pcmode_switch_status', settings.domainName.USER_PROPERTY, () => {
+    settings.getValue(context, 'window_pcmode_switch_status', settings.domainName.USER_PROPERTY)
+      .then((val) => {
+        const free = (val == 'true');
+        const myMeowFreeWindowModeStatus = AppStorageV2.connect(meowFreeWindowModeStatus, `meowFreeWindowModeStatus_${windowId}`, () => new meowFreeWindowModeStatus(free))!;
+        myMeowFreeWindowModeStatus.on = free;
+        if (free) {
+          setDecorHeight(windowClass);
+        }
+        meow(`${free}`, 'listenFreeWindowMode', meowLevel.INFO);
+      });
+  });
 }
 
 /**
@@ -191,16 +191,16 @@ export function listenFreeWindowMode(context: Context, windowClass: window.Windo
  * @param context The UIAbility Context.
  * @returns A boolean value.
  * */
-export function getUpdateFreeWindowMode(context: Context, windowClass: window.Window) {
+export function getUpdateFreeWindowMode(context: Context, windowClass: window.Window, windowId: string) {
   if (deviceInfo.deviceType == '2in1') {
     meow('Return true for 2in1 type!', 'getUpdateFreeWindowMode', meowLevel.INFO);
-    AppStorageV2.connect<meowFreeWindowModeStatus>(meowFreeWindowModeStatus, 'meowFreeWindowModeStatus', () => new meowFreeWindowModeStatus(true));
+    AppStorageV2.connect(meowFreeWindowModeStatus, `meowFreeWindowModeStatus_${windowId}`, () => new meowFreeWindowModeStatus(true));
     setDecorHeight(windowClass);
     return true;
   }
   let val = settings.getValueSync(context, 'window_pcmode_switch_status', 'false', settings.domainName.USER_PROPERTY);
   let free = (val == 'true');
-  AppStorageV2.connect<meowFreeWindowModeStatus>(meowFreeWindowModeStatus, 'meowFreeWindowModeStatus', () => new meowFreeWindowModeStatus(free));
+  AppStorageV2.connect(meowFreeWindowModeStatus, `meowFreeWindowModeStatus_${windowId}`, () => new meowFreeWindowModeStatus(free));
   if (free) {
     setDecorHeight(windowClass);
   }
@@ -226,11 +226,11 @@ export function listenPowerSave(interval: number = 10000) {
   setInterval(() => {
     const newMode = power.getPowerMode();
     const isPowerSave = (newMode == power.DevicePowerMode.MODE_POWER_SAVE || newMode == power.DevicePowerMode.MODE_EXTREME_POWER_SAVE || newMode == power.DevicePowerMode.MODE_CUSTOM_POWER_SAVE);
-    const layout = AppStorageV2.connect(meowLayoutModeStatus);
-    if (layout) {
-      if (layout.powerSave != isPowerSave) {
+    const myMeowAppStatuses = AppStorageV2.connect(meowAppStatuses);
+    if (myMeowAppStatuses) {
+      if (myMeowAppStatuses.powerSave != isPowerSave) {
         animateToImmediately(defaultAnimation(), () => {
-          layout.powerSave = isPowerSave;
+          myMeowAppStatuses.powerSave = isPowerSave;
         });
         meow(`Powermode changed! powerSave = ${isPowerSave}`, 'listenPowerSave');
       }
@@ -251,8 +251,8 @@ export function listenSmartReachability() {
         } else {
           const useRightHand = m == motion.HoldingHandStatus.RIGHT_HAND_HELD;
           if (smartReachability()) {
-            const layout = AppStorageV2.connect(meowLayoutModeStatus)!;
-            layout.smartReachabilitySaysWeShouldPreferRightHand = useRightHand;
+            const myMeowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
+            if (myMeowAppStatuses.smartReachabilitySaysWeShouldPreferRightHand != useRightHand) myMeowAppStatuses.smartReachabilitySaysWeShouldPreferRightHand = useRightHand;
           }
         }
       });
@@ -274,7 +274,7 @@ export function listenSmartReachability() {
  *
  * @param windowClass The window.Window object.
  * */
-export function listenFocus(windowClass: window.Window) {
+export function listenFocus(windowClass: window.Window, windowId: string) {
   // Focus Listener
   try {
     windowClass.on("windowEvent", (windowEvent) => {
@@ -283,7 +283,7 @@ export function listenFocus(windowClass: window.Window) {
         // Focused
         on_focus = true;
       }
-      let stat = AppStorageV2.connect(meowFreeWindowModeStatus);
+      let stat = AppStorageV2.connect(meowFreeWindowModeStatus, `meowFreeWindowModeStatus_${windowId}`);
       if (stat) {
         stat.onFocus = on_focus;
       }

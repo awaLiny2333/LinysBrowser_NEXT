@@ -1,6 +1,6 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import lazy { addUnitsToSize } from '../../../../catstypicalframework/utils/storage';
-import { meowUiStatuses } from '../../../../hosts/env/classes/meowUiStatuses';
+import { meowAppStatuses } from '../../../../hosts/env/classes/meowAppStatuses';
 import lazy { removeWebCache, scanWebCacheSize } from '../../../../hosts/env/scripts/storage';
 import lazy { scanHistoryIndexSize } from '../../../../hosts/history/scripts/storage';
 import { meowManagedSettings } from '../../../../hosts/settings/classes/meowManagedSettings';
@@ -13,7 +13,7 @@ import { UniRowOfCapsuleButtons } from '../../../common/UniRowOfCapsuleButtons';
 @ComponentV2
 struct SettingsStorage {
   @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
-  @Local myMeowUiStatuses: meowUiStatuses = AppStorageV2.connect(meowUiStatuses)!;
+  @Local myMeowAppStatuses: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
 
   build() {
     Column({ space: standardSpacing }) {
@@ -32,7 +32,7 @@ struct SettingsStorage {
             clickAction: () => {
               this.refreshWebCache();
             },
-            isEnabled: !this.myMeowUiStatuses.refreshingWebCacheSize
+            isEnabled: !this.myMeowAppStatuses.refreshingWebCacheSize
           });
           MooCapsuleButton({
             text: $r('app.string.General_clear'),
@@ -60,28 +60,28 @@ struct SettingsStorage {
 
   async refreshWebCache() {
     // Reject if already refreshing. Although we set this button to be disabled if is refreshing, this adds more insurance. :P
-    if (this.myMeowUiStatuses.refreshingWebCacheSize) return;
+    if (this.myMeowAppStatuses.refreshingWebCacheSize) return;
 
     // Refresh web cache size.
-    this.myMeowUiStatuses.refreshingWebCacheSize = true;
+    this.myMeowAppStatuses.refreshingWebCacheSize = true;
     const size = await scanWebCacheSize(this.getUIContext().getHostContext()!);
     this.myMeowManagedSettings.setByIndex(68, size);
 
     // Recover flag
-    this.myMeowUiStatuses.refreshingWebCacheSize = false;
+    this.myMeowAppStatuses.refreshingWebCacheSize = false;
   }
 
   async refreshHistoryIndex() {
     // Reject if already refreshing. Although we set this button to be disabled if is refreshing, this adds more insurance. :P
-    if (this.myMeowUiStatuses.refreshingHistoryIndexSize) return;
+    if (this.myMeowAppStatuses.refreshingHistoryIndexSize) return;
 
     // Refresh index files size.
-    this.myMeowUiStatuses.refreshingHistoryIndexSize = true;
+    this.myMeowAppStatuses.refreshingHistoryIndexSize = true;
     const size = await scanHistoryIndexSize();
     this.myMeowManagedSettings.setByIndex(70, size);
 
     // Recover flag
-    this.myMeowUiStatuses.refreshingHistoryIndexSize = false;
+    this.myMeowAppStatuses.refreshingHistoryIndexSize = false;
   }
 }
 

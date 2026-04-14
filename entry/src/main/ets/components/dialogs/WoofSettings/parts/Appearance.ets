@@ -1,7 +1,6 @@
 import { AppStorageV2, SegmentButtonV2Items } from "@kit.ArkUI";
-import { meowLayoutModeStatus } from "../../../../catstypicalframework/hosts/meowLayoutModeStatus";
 import { defaultInnerRadius } from "../../../../catstypicalframework/utils/ui";
-import { openDialogRequestType } from "../../../../hosts/env/classes/meowDialogManager";
+import { meowDialogManager, openDialogRequestType } from "../../../../hosts/env/classes/meowDialogManager";
 import { requestDialog } from "../../../../hosts/env/scripts/dialog";
 import { meowManagedSettings } from "../../../../hosts/settings/classes/meowManagedSettings";
 import { resetAnimations, resetColors } from "../../../../hosts/settings/scripts/reset";
@@ -12,11 +11,13 @@ import { MooSwitch } from "../../../common/MooSwitch";
 import { MooTabSegmentV2 } from "../../../common/MooTabSegmentV2";
 import { MooTextModifier } from "../../../common/MooTextModifier";
 import { UniContentCard } from "../../../common/UniContentCard";
+import { meowAppStatuses } from "../../../../hosts/env/classes/meowAppStatuses";
 
 @ComponentV2
 struct SettingsAppearance {
   @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
-  @Local layout: meowLayoutModeStatus = AppStorageV2.connect(meowLayoutModeStatus)!;
+  @Param myMeowAppStatuses: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
+  @Param @Require myMeowDialogManager: meowDialogManager;
 
   build() {
     Column({ space: standardSpacing }) {
@@ -206,17 +207,17 @@ struct SettingsAppearance {
 
         Text($r('app.string.Settings_category_appearance_colors_light')).attributeModifier(new MooTextModifier());
         Row({ space: standardSpacing * 0.75 }) {
-          ColorDemoBlock({ color: this.myMeowManagedSettings.settingsData[62].value as string, settingsId: 62, showBorder: !this.layout.dark });
-          ColorDemoBlock({ color: this.myMeowManagedSettings.settingsData[63].value as string, settingsId: 63, showBorder: !this.layout.dark });
-          ColorDemoBlock({ color: this.myMeowManagedSettings.settingsData[64].value as string, settingsId: 64, showBorder: !this.layout.dark });
+          ColorDemoBlock({ myMeowDialogManager: this.myMeowDialogManager, color: this.myMeowManagedSettings.settingsData[62].value as string, settingsId: 62, showBorder: !this.myMeowAppStatuses.dark });
+          ColorDemoBlock({ myMeowDialogManager: this.myMeowDialogManager, color: this.myMeowManagedSettings.settingsData[63].value as string, settingsId: 63, showBorder: !this.myMeowAppStatuses.dark });
+          ColorDemoBlock({ myMeowDialogManager: this.myMeowDialogManager, color: this.myMeowManagedSettings.settingsData[64].value as string, settingsId: 64, showBorder: !this.myMeowAppStatuses.dark });
         }
         .opacity(useEffects() ? 0.5 : 1);
 
         Text($r('app.string.Settings_category_appearance_colors_dark')).attributeModifier(new MooTextModifier());
         Row({ space: standardSpacing * 0.75 }) {
-          ColorDemoBlock({ color: this.myMeowManagedSettings.settingsData[65].value as string, settingsId: 65, showBorder: this.layout.dark });
-          ColorDemoBlock({ color: this.myMeowManagedSettings.settingsData[66].value as string, settingsId: 66, showBorder: this.layout.dark });
-          ColorDemoBlock({ color: this.myMeowManagedSettings.settingsData[67].value as string, settingsId: 67, showBorder: this.layout.dark });
+          ColorDemoBlock({ myMeowDialogManager: this.myMeowDialogManager, color: this.myMeowManagedSettings.settingsData[65].value as string, settingsId: 65, showBorder: this.myMeowAppStatuses.dark });
+          ColorDemoBlock({ myMeowDialogManager: this.myMeowDialogManager, color: this.myMeowManagedSettings.settingsData[66].value as string, settingsId: 66, showBorder: this.myMeowAppStatuses.dark });
+          ColorDemoBlock({ myMeowDialogManager: this.myMeowDialogManager, color: this.myMeowManagedSettings.settingsData[67].value as string, settingsId: 67, showBorder: this.myMeowAppStatuses.dark });
         }
         .opacity(useEffects() ? 0.5 : 1);
 
@@ -271,6 +272,7 @@ export { SettingsAppearance };
 
 @ComponentV2
 struct ColorDemoBlock {
+  @Param @Require myMeowDialogManager: meowDialogManager;
   @Param @Require color: ResourceColor;
   @Param @Require settingsId: number;
   @Param @Require showBorder: boolean;
@@ -289,7 +291,7 @@ struct ColorDemoBlock {
         radius: defaultInnerRadius
       })
       .onClick(() => {
-        requestDialog(openDialogRequestType.COLOR_PICKER, this.settingsId, true);
+        requestDialog(this.myMeowDialogManager, openDialogRequestType.COLOR_PICKER, this.settingsId, true);
       });
       Text(this.color as string).attributeModifier(new MooTextModifier());
     }.layoutWeight(1);

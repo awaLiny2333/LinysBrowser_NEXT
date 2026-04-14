@@ -1,7 +1,7 @@
 import { defaultMenuItemRadius } from "../../catstypicalframework/utils/ui";
 import { getColor, meowThemeColorType } from "../settings";
-import { AppStorageV2 } from "@kit.ArkUI";
-import { meowFreeWindowModeStatus } from "../../catstypicalframework/hosts/meowFreeWindowModeStatus";
+// import { AppStorageV2 } from "@kit.ArkUI";
+// import { meowFreeWindowModeStatus } from "../../catstypicalframework/hosts/meowFreeWindowModeStatus";
 
 /**
  * Small symbol buttons, usually for window control buttons.
@@ -10,7 +10,7 @@ import { meowFreeWindowModeStatus } from "../../catstypicalframework/hosts/meowF
  */
 @ComponentV2
 struct MooSymbolButtonSmall {
-  @Local myMeowFreeWindowModeStatus: meowFreeWindowModeStatus = AppStorageV2.connect<meowFreeWindowModeStatus>(meowFreeWindowModeStatus)!;
+  // @Local myMeowFreeWindowModeStatus: meowFreeWindowModeStatus = AppStorageV2.connect(meowFreeWindowModeStatus)!;
   @Param icon: Resource = $r('sys.symbol.square_stack_3d');
   @Event clickAction: () => void;
 
@@ -22,7 +22,7 @@ struct MooSymbolButtonSmall {
       .onClick(() => {
         this.clickAction();
       })
-      .opacity(this.myMeowFreeWindowModeStatus.onFocus ? 1 : 0.3)
+      // .opacity(this.myMeowFreeWindowModeStatus.onFocus ? 1 : 0.3)
       .fontColor([getColor(meowThemeColorType.FONT)]);
   }
 }

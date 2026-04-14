@@ -10,7 +10,7 @@ import { MooCapsuleButton } from '../../../common/MooCapsuleButton';
 @ComponentV2
 struct SettingsSecurity {
   @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
-  @Local myMeowUiStatuses: meowUiStatuses = AppStorageV2.connect(meowUiStatuses)!;
+  @Param @Require myMeowUiStatuses: meowUiStatuses;
 
   build() {
     Column({ space: standardSpacing }) {

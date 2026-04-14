@@ -1,4 +1,3 @@
-import { meowUiStatuses } from '../../../../hosts/env/classes/meowUiStatuses';
 import { meowManagedSettings } from '../../../../hosts/settings/classes/meowManagedSettings';
 import { mooTextType, standardSpacing } from '../../../settings';
 import { AppStorageV2 } from '@kit.ArkUI';
@@ -11,7 +10,6 @@ import BuildProfile from 'BuildProfile';
 struct SettingsAbout {
   // Hosts
   @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
-  @Local myMeowUiStatuses: meowUiStatuses = AppStorageV2.connect(meowUiStatuses)!;
 
   build() {
     Column({ space: standardSpacing }) {

@@ -1,4 +1,7 @@
 import { AppStorageV2 } from '@kit.ArkUI';
+import { meowLayoutModeStatus } from '../../../catstypicalframework/hosts/meowLayoutModeStatus';
+import { meowDialogManager } from '../../../hosts/env/classes/meowDialogManager';
+import { meowUiStatuses } from '../../../hosts/env/classes/meowUiStatuses';
 import { getDevMode } from '../../../hosts/env/settings';
 import { meowManagedSettings } from '../../../hosts/settings/classes/meowManagedSettings';
 import { standardSpacing, waterFlowColumnsTemplate } from '../../settings';
@@ -18,6 +21,9 @@ import { SettingsStorage } from './parts/Storage';
 @ComponentV2
 struct WoofSettings {
   @Local myMeowManagedSettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+  @Param @Require myMeowDialogManager: meowDialogManager;
+  @Param @Require myMeowUiStatuses: meowUiStatuses;
+  @Param @Require myMeowLayoutModeStatus: meowLayoutModeStatus;
 
   build() {
     Scroll() {
@@ -35,7 +41,9 @@ struct WoofSettings {
           SettingsAccessibility();
         };
         FlowItem() {
-          SettingsAppearance();
+          SettingsAppearance({
+            myMeowDialogManager: this.myMeowDialogManager,
+          });
         };
         FlowItem() {
           SettingsHistory();
@@ -44,7 +52,9 @@ struct WoofSettings {
           SettingsStorage();
         };
         FlowItem() {
-          SettingsSecurity();
+          SettingsSecurity({
+            myMeowUiStatuses: this.myMeowUiStatuses,
+          });
         };
         FlowItem() {
           SettingsCardboardBox();
@@ -54,11 +64,14 @@ struct WoofSettings {
         };
         if (getDevMode()) {
           FlowItem() {
-            SettingsDeveowlopers();
+            SettingsDeveowlopers({
+              myMeowUiStatuses: this.myMeowUiStatuses,
+              myMeowDialogManager: this.myMeowDialogManager,
+            });
           };
         }
       }
-      .columnsTemplate(waterFlowColumnsTemplate())
+      .columnsTemplate(waterFlowColumnsTemplate(this.myMeowLayoutModeStatus))
       // .animation(defaultAnimation())
       .columnsGap(standardSpacing)
       .rowsGap(standardSpacing);
@@ -71,10 +84,13 @@ struct WoofSettings {
 @CustomDialog
 struct WoofSettingsDialog {
   controller: CustomDialogController;
+  @Require myMeowUiStatuses: meowUiStatuses;
+  @Require myMeowDialogManager: meowDialogManager;
+  @Require myMeowLayoutModeStatus: meowLayoutModeStatus;
 
   build() {
-    WoofUniFrame({ controller: this.controller, title: $r('app.string.Settings') }) {
-      WoofSettings();
+    WoofUniFrame({ controller: this.controller, title: $r('app.string.Settings'), myMeowDialogManager: this.myMeowDialogManager, myMeowLayoutModeStatus: this.myMeowLayoutModeStatus }) {
+      WoofSettings({ myMeowDialogManager: this.myMeowDialogManager, myMeowUiStatuses: this.myMeowUiStatuses, myMeowLayoutModeStatus: this.myMeowLayoutModeStatus });
     };
   }
 }

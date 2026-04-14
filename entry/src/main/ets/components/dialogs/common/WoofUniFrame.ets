@@ -1,6 +1,5 @@
 import { meowDialogManager } from '../../../hosts/env/classes/meowDialogManager';
 import { MooSymbolButton } from '../../common/MooSymbolButton';
-import { AppStorageV2 } from '@kit.ArkUI';
 import { MooTextModifier } from '../../common/MooTextModifier';
 import { defaultAnimation, getColor, meowThemeColorType, mooTextType, useEffects } from '../../settings';
 import { meowLayoutModeStatus } from '../../../catstypicalframework/hosts/meowLayoutModeStatus';
@@ -8,8 +7,8 @@ import { meowLayoutModeStatus } from '../../../catstypicalframework/hosts/meowLa
 @ComponentV2
 struct WoofUniFrame {
   // Env
-  @Local myMeowDialogManager: meowDialogManager = AppStorageV2.connect(meowDialogManager)!;
-  @Local myMeowLayoutModeStatus: meowLayoutModeStatus = AppStorageV2.connect(meowLayoutModeStatus)!;
+  @Param @Require myMeowDialogManager: meowDialogManager;
+  @Param @Require myMeowLayoutModeStatus: meowLayoutModeStatus;
   // This
   @Param @Require controller: CustomDialogController;
   @Param title: ResourceStr = 'Title';

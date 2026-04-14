@@ -1,4 +1,3 @@
-import { AppStorageV2 } from '@kit.ArkUI';
 import { meowAvoid } from '../../catstypicalframework/hosts/meowAvoid';
 import { meowUiStatuses } from '../../hosts/env/classes/meowUiStatuses';
 import { defaultAnimation, standardSpacing, titleBarPositionBottom, useEffects } from '../settings';
@@ -6,8 +5,8 @@ import { MooSymbolButton } from '../common/MooSymbolButton';
 
 @ComponentV2
 export struct MeowButtonRow {
-  @Local myMeowAvoid: meowAvoid = AppStorageV2.connect(meowAvoid)!;
-  @Local meowUiStatuses: meowUiStatuses = AppStorageV2.connect(meowUiStatuses)!;
+  @Param @Require myMeowAvoid: meowAvoid;
+  @Param @Require myMeowUiStatuses: meowUiStatuses;
 
   build() {
     Row({ space: 1 }) {
@@ -22,7 +21,7 @@ export struct MeowButtonRow {
     .width('100%')
     .justifyContent(FlexAlign.End)
     .padding({ left: this.myMeowAvoid.left, right: this.myMeowAvoid.right })
-    .visibility(this.meowUiStatuses.showMore ? Visibility.Visible : Visibility.None)
+    .visibility(this.myMeowUiStatuses.showMore ? Visibility.Visible : Visibility.None)
     .animation(defaultAnimation());
   }
 
