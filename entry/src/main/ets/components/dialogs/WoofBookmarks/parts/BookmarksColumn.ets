@@ -53,10 +53,11 @@ struct BookmarksColumn {
         return;
       }
 
-      // Process
+      // Process after getting the data.
       meow(`onDrop: [${records.length}]`, `BookmarksColumn][onDrop][${this.folder.name}`);
       const result = this.receiveDrop(records);
 
+      // Feedback to determine if the bookmark items are ok to be deleted.
       if (result) {
         event.setResult(DragResult.DRAG_SUCCESSFUL);
       } else {
@@ -119,11 +120,13 @@ struct BookmarksColumn {
           })
             .draggable(this.inDragMode ? true : undefined)
             .onDragStart((event: DragEvent) => {
-              // Put it in AppStatuses
+              // Put the item (to be sent) in AppStatuses.
               const myApp = AppStorageV2.connect(meowAppStatuses)!;
+
               // Only report level when the current folder is opened.
               // The entire layer verification design is to ensure that
               // the dragged item won't be dropped into itself (or its sub folders)
+              // So for a folder that is not opened, it can be dragged anywhere.
               const reportedLevel = (this.selectedItem == item.item) ? this.level : undefined;
               myApp.crossAppDataTunnel = [reportedLevel, [item.item]]; // [number | undefined, meowBookmarkItem[]]
 
@@ -187,7 +190,7 @@ struct BookmarksColumn {
         icon: $r('sys.symbol.folder_badge_plus'),
         clickAction: () => {
           // New folder
-          const newFolder = new meowBookmarkItem(true, 'New Folder', '');
+          const newFolder = new meowBookmarkItem(true, `New Folder on ${new Date().toLocaleString()}`, '');
           animateToImmediately(defaultAnimation(), () => {
             try {
               this.folder.children.push(newFolder);
@@ -222,7 +225,9 @@ struct BookmarksColumn {
       MooSymbolButton({
         icon: this.canCloseThis ? $r('sys.symbol.xmark') : $r('sys.symbol.archivebox'),
         clickAction: () => {
-          this.onCardClose();
+          if (this.canCloseThis) {
+            this.onCardClose();
+          }
         }
       });
     }

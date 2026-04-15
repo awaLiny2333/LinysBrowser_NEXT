@@ -37,11 +37,8 @@ struct WoofBookmarks {
               level: item.index,
               onSubLevelOpen: (folder) => {
                 animateToImmediately(defaultAnimation(), () => {
-                  // Set opened index in that level.
-                  this.openedIndexOfLevels[item.index] = folder;
-                  // Pop all levels on the right
-                  this.openedStack = this.openedStack.slice(0, item.index + 1);
-                  this.openedIndexOfLevels = this.openedIndexOfLevels.slice(0, item.index + 1);
+                  this.closeAllRightOf(item.index); // Pop all levels on the right
+                  this.openedIndexOfLevels[item.index] = folder; // Set opened index in that level.
                   // Push the new level on the right
                   this.openedStack.push(folder);
                   this.openedIndexOfLevels.push(undefined);
@@ -49,41 +46,25 @@ struct WoofBookmarks {
                 this.recalculateLayout();
               },
               onSubLevelClose: () => {
-                animateToImmediately(defaultAnimation(), () => {
-                  // Clear opened index in that level.
-                  this.openedIndexOfLevels[item.index] = undefined;
-                  // Pop all levels on the right
-                  this.openedStack = this.openedStack.slice(0, item.index + 1);
-                  this.openedIndexOfLevels = this.openedIndexOfLevels.slice(0, item.index + 1);
-                });
+                this.closeAllRightOfAnima(item.index); // Pop all levels on the right
                 this.recalculateLayout();
               },
               onCardClose: () => {
-                if (item.index > 0) {
-                  animateToImmediately(defaultAnimation(), () => {
-                    // Pop all levels on the right
-                    this.openedStack = this.openedStack.slice(0, item.index);
-                    this.openedIndexOfLevels = this.openedIndexOfLevels.slice(0, item.index);
-                    this.openedIndexOfLevels[item.index - 1] = undefined;
-                  });
-                  this.recalculateLayout();
-                }
-              },
-              requestSave: () => {
-                this.myBookmarks.requestSaveToDisk();
+                // The base layer folder won't call this. I trust it.
+                this.closeAllRightOfAnima(item.index - 1); // Pop all levels on the right
+                this.recalculateLayout();
               },
               onVisit: (url: string) => {
                 meow(`Visiting: ${url}`, 'BookmarksColumn][onClickAction', meowLevel.INFO);
                 this.controller?.close();
               },
               onDropReceivedAnOpenedFolder: (fromLayer: number) => {
-                // fromLevel > item.index
-                // Pop all levels on the right
-                this.openedStack = this.openedStack.slice(0, fromLayer + 1);
-                this.openedIndexOfLevels = this.openedIndexOfLevels.slice(0, fromLayer + 1);
-                this.openedIndexOfLevels[fromLayer] = undefined;
+                this.closeAllRightOfAnima(fromLayer); // Pop all levels on the right
                 this.recalculateLayout();
-              }
+              },
+              requestSave: () => {
+                this.myBookmarks.requestSaveToDisk();
+              },
             });
           });
       }
@@ -105,8 +86,10 @@ struct WoofBookmarks {
     .scrollable(ScrollDirection.Horizontal);
   }
 
+  /**
+   * Recalculate the layout of the dialog.
+   */
   recalculateLayout() {
-    // Calculate layout
     const maxColumn = Math.floor(this.dialogWidth / (minimumCardWidth * 0.5));
     const columnCount = Math.min(maxColumn, this.openedStack.length);
     const columnSpaceCount = columnCount - 1;
@@ -118,6 +101,29 @@ struct WoofBookmarks {
       this.columnWidth = columnWidth;
     });
   }
+
+  /**
+   * Close all levels on the right of the given index, with animation.
+   * The #idx card is safe from this.
+   * @param idx The index of the level to close.
+   */
+  closeAllRightOfAnima(idx: number) {
+    animateToImmediately(defaultAnimation(), () => {
+      this.closeAllRightOf(idx);
+    });
+  }
+
+  /**
+   * Close all levels on the right of the given index.
+   * The #idx card is safe from this.
+   * @param idx The index of the level to close.
+   */
+  closeAllRightOf(idx: number) {
+    this.openedStack = this.openedStack.slice(0, idx + 1);
+    this.openedIndexOfLevels = this.openedIndexOfLevels.slice(0, idx + 1);
+    this.openedIndexOfLevels[idx] = undefined; // Clear opened index in that level.
+  }
+
 }
 
 
