@@ -100,17 +100,12 @@ struct BookmarksColumn {
                 this.onVisit(item.item.url);
               }
             },
-            onEdit: (index, newVal) => {
-              if (index > -1) {
-                // This compare is totally meaningless. Just put here to *use* the index value so that it won't become a warning :P
-                item.item.name = newVal[0];
-                item.item.url = newVal[1];
-                item.item.date_modified = nowHtmlTimestamp();
-                // meow(`heard this.onEdit(${index}, [${newVal[0]}, ${newVal[1]}])`, 'BookmarksColumn][onEdit', meowLevel.WARN);
-                this.requestSave();
-              } else {
-                meow(`How could this happen??? index = ${index}`, 'BookmarksColumn][onEdit', meowLevel.ERROR);
-              }
+            onEdited: (newValues) => {
+              item.item.name = newValues[0];
+              item.item.url = newValues[1];
+              item.item.date_modified = nowHtmlTimestamp();
+              // meow(`heard this.onEdit(${index}, [${newValues[0]}, ${newValues[1]}])`, 'BookmarksColumn][onEdit', meowLevel.WARN);
+              this.requestSave();
             },
             onDelete: () => {
               try {

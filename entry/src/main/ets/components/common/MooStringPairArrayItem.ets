@@ -21,7 +21,13 @@ struct StringPairArrayItem {
   @Local editingLabel: string = this.item[0];
   @Local editingLink: string = this.item[1];
   // Events
-  @Event onEdit: (index: number, newValue: string[]) => void;
+  /**
+   * Called when the item is edited.
+   * Returns a NEW string[] object that contains the new [label, link] pair.
+   * The upper level of this StringPairArrayItem 
+   * should do the rest of the backward data syncing / assigning jobs!
+   */
+  @Event onEdited: (newValues: string[]) => void;
   @Event onSelect: (selectedIndex: number) => void;
   @Event onDelete: (index: number) => void;
   // UI
@@ -120,8 +126,8 @@ struct StringPairArrayItem {
     // Set display.
     this.displayLabel = this.editingLabel;
     
-    // meow(`call this.onEdit(${this.index}, [${this.editingLabel}, ${this.editingLink}])`, 'MooStringPairArrayItem][save', meowLevel.WARN);
-    this.onEdit(this.index, [this.editingLabel, this.editingLink]); // This works.
+    // meow(`call this.onEdit([${this.editingLabel}, ${this.editingLink}])`, 'MooStringPairArrayItem][save', meowLevel.WARN);
+    this.onEdited([this.editingLabel, this.editingLink]); // This works.
     
     // Close editing.
     animateToImmediately(defaultAnimation(), () => {

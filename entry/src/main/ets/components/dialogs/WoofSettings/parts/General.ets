@@ -30,7 +30,7 @@ struct SettingsGeneral {
           selectedIndex: this.selectedIndexUA,
           array: this.mySettings.settingsData[41].value as string[][],
           allowSelect: true,
-          onEdit: () => {
+          onEdited: () => {
             this.mySettings.requestSaveToDisk();
           },
           onSelect: (n) => {
@@ -51,7 +51,7 @@ struct SettingsGeneral {
           selectedIndex: this.selectedIndexSE,
           array: this.mySettings.settingsData[43].value as string[][],
           allowSelect: true,
-          onEdit: () => {
+          onEdited: () => {
             this.mySettings.requestSaveToDisk();
           },
           onSelect: (n) => {

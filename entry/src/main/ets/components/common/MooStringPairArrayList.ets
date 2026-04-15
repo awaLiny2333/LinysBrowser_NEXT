@@ -13,7 +13,7 @@ struct MooStringPairArrayList {
   @Param selectedIndex: number = -1;
   @Param array: string[][] = []; // The list.
   // Events
-  @Event onEdit: (index: number, newValue: string[]) => void;
+  @Event onEdited: (index: number, newValue: string[]) => void;
   @Event onSelect: (newSelected: number) => void;
   @Event requestResetSelected: () => void; // Called when the selected index needs to be reset. E.g. when the item selected is deleted.
 
@@ -45,7 +45,7 @@ struct MooStringPairArrayList {
               index: item.index,
               allowSelect: this.allowSelect,
               allowEdit: true,
-              onEdit: (index, newValue) => {
+              onEdited: (newValues) => {
                 // Assign item.item the values.
                 
                 // Doing so instead of item.item = newValue
@@ -55,18 +55,18 @@ struct MooStringPairArrayList {
                 // In the typical case of editing UAs and SEs, 
                 // these string[] pairs are exactly the ones in the meowAppSettings.
                 
-                item.item[0] = newValue[0];
-                item.item[1] = newValue[1];
+                item.item[0] = newValues[0];
+                item.item[1] = newValues[1];
                 
                 // Notice upper level.
-                this.onEdit(index, newValue);
+                this.onEdited(item.index, newValues);
               },
               onDelete: (index) => {
                 this.array.splice(index, 1);
                 if (this.selectedIndex == index) {
                   this.requestResetSelected();
                 }
-                this.onEdit(index, []);
+                this.onEdited(index, []);
               },
               onSelect: (n) => {
                 this.onSelect(n);
@@ -84,7 +84,7 @@ struct MooStringPairArrayList {
             .onClick(() => {
               animateToImmediately(defaultAnimation(), () => {
                 this.array.push(Array.from(this.defaultItem));
-                this.onEdit(this.array.length - 1, this.array[this.array.length - 1]);
+                this.onEdited(this.array.length - 1, this.array[this.array.length - 1]);
               });
             });
         }.justifyContent(FlexAlign.End).width('100%');
