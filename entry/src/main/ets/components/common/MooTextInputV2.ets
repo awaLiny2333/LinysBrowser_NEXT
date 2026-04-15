@@ -16,7 +16,8 @@ struct MooTextInputV2 {
       if (this.icon) {
         SymbolGlyph(this.icon)
           .fontColor([getColor(meowThemeColorType.FONT)])
-          .fontSize(fontSizeMedium);
+          .fontSize(fontSizeMedium)
+          .padding({ left: standardSpacing * 0.5 });
       }
       TextInput({ text: this.text as string, placeholder: this.placeholder })
         .height(heightMeowTitleBar)

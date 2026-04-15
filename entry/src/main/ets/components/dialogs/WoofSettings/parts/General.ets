@@ -37,6 +37,11 @@ struct SettingsGeneral {
             this.selectedIndexUA = n;
             this.mySettings.setByIndex(42, n);
             applyUserAgentFromSettings();
+          },
+          requestResetSelected: () => {
+            this.selectedIndexUA = -1;
+            this.mySettings.setByIndex(42, -1);
+            applyUserAgentFromSettings();
           }
         });
 
@@ -52,6 +57,10 @@ struct SettingsGeneral {
           onSelect: (n) => {
             this.selectedIndexSE = n;
             this.mySettings.setByIndex(44, n);
+          },
+          requestResetSelected: () => {
+            this.selectedIndexSE = -1;
+            this.mySettings.setByIndex(44, -1);
           }
         });
 

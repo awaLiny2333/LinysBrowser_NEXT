@@ -51,7 +51,7 @@ struct MeowPlaceForDialogs {
   woofBookmarksDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofBookmarksDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
+    width: '95%',
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });

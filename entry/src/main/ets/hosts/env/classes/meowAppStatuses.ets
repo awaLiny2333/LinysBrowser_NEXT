@@ -9,4 +9,5 @@ export class meowAppStatuses {
   @Trace dark: boolean = true;
   @Trace powerSave: boolean = false;
   @Trace smartReachabilitySaysWeShouldPreferRightHand: boolean = true; // What a long name
+  @Trace crossAppDataTunnel: (object | boolean | string | number | undefined)[] = []; // The great tunnel for the entire app! *TEMPORARY*
 }

@@ -36,6 +36,9 @@ struct Index {
   @Local myMisc: meowMisc = AppStorageV2.connect(meowMisc, `meowMisc_${this.myWindowId}`)!;
   // Render control
   @Local render: boolean = false;
+  
+  onBackPress(): boolean | void {
+  }
 
   build() {
     RelativeContainer() {

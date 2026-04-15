@@ -1,4 +1,5 @@
 import { meowBookmarkItem } from "../classes/meowBookmarkItem";
+import { ENTITY_MAP } from "./entityMap";
 
 /**
  * Escapes special characters to prevent HTML injection and structural breakage.
@@ -12,40 +13,91 @@ import { meowBookmarkItem } from "../classes/meowBookmarkItem";
  */
 function encodeHtmlString(text: string): string {
   if (!text) return "";
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;') // Double quotes must be escaped to avoid breaking HREF="..."
-    .replace(/'/g, '&#39;'); // Single quotes escaped for strict XHTML compatibility
+  let result = text;
+  result = result.replaceAll('&', '&amp;');
+  result = result.replaceAll('<', '&lt;');
+  result = result.replaceAll('>', '&gt;');
+  result = result.replaceAll('"', '&quot;'); // Double quotes must be escaped to avoid breaking HREF="..."
+  result = result.replaceAll("'", '&#39;'); // Single quotes escaped for strict XHTML compatibility
+  return result;
 }
 
 /**
- * Ultra-fast HTML entity decoding (ArkTS Strict compatible version)
- * 
- * @param str The raw HTML string.
- * @returns The decoded string.
- * @author ChatGLM @ Apr 6 2026
+ * 完整 HTML 实体解码（ArkTS Strict 完全兼容）
+ *
+ * 覆盖范围：
+ *   - 全部常见命名实体（&nbsp; &copy; &mdash; 等 60+ 个）
+ *   - 十进制数字实体（&#169;）
+ *   - 十六进制数字实体（&#xA9;）
+ *   - 正确处理补充平面字符/Emoji（&#128512;）
+ *
+ * @param str 原始 HTML 字符串
+ * @returns 解码后的字符串
  */
 export function decodeHtmlString(str: string): string {
-  // 1. Instant short circuit: If there is no '&' symbol, then no need to replace.
-  // Return directly as is (intercept 99.9% of calls)
+  // 短路：无 & 则必然无实体，直接返回
   if (str.indexOf('&') === -1) {
     return str;
   }
 
-  // 2. Handling when an entity is hit: Use native string replacement.
-  // Directly replace with hard-code.
-  // Although intermediate strings are generated, the actual bookmark label usually contains at most 1-2 entities.
-  // This kind of native string replacement at the C++ level is much faster than starting a regular expression engine.
-  let result = str;
-  result = result.replace('&amp;', '&');
-  result = result.replace('&lt;', '<');
-  result = result.replace('&gt;', '>');
-  result = result.replace('&quot;', '"');
-  result = result.replace('&#39;', "'");
+  let result = '';
+  let i = 0;
+  const len = str.length;
+
+  while (i < len) {
+    if (str.charAt(i) === '&') {
+      // 寻找结束符 ;
+      const semiIndex = str.indexOf(';', i + 1);
+      // 限制查找长度，避免把正常文本中的分号误认为实体结尾（最长命名实体约 8 字符）
+      if (semiIndex !== -1 && semiIndex - i <= 10) {
+        const decoded = resolveEntity(str.substring(i + 1, semiIndex));
+        if (decoded !== null) {
+          result += decoded;
+          i = semiIndex + 1;
+          continue;
+        }
+      }
+    }
+    // 非实体字符，直接追加
+    result += str.charAt(i);
+    i++;
+  }
 
   return result;
+}
+
+function resolveEntity(body: string): string | null {
+  if (body.length === 0) {
+    return null;
+  }
+
+  // 处理数字实体 &#1234; 或 &#x1F600;
+  if (body.charAt(0) === '#') {
+    if (body.length <= 1) {
+      return null;
+    }
+    const numStr = body.substring(1);
+    let code = 0;
+
+    if (body.charAt(1) === 'x' || body.charAt(1) === 'X') {
+      if (numStr.length <= 1) {
+        return null;
+      }
+      code = Number.parseInt(numStr.substring(1), 16);
+    } else {
+      code = Number.parseInt(numStr, 10);
+    }
+
+    if (Number.isNaN(code) || code <= 0) {
+      return null;
+    }
+    // fromCodePoint 能正确处理 > 0xFFFF 的 Emoji 等补充平面字符
+    return String.fromCodePoint(code);
+  }
+
+  // 处理命名实体 &nbsp;
+  const val = ENTITY_MAP.get(body);
+  return val !== undefined ? val : null;
 }
 
 /**

@@ -1,11 +1,8 @@
-import { defaultInnerRadius, defaultMenuItemRadius } from '../../catstypicalframework/utils/ui';
-import { defaultAnimation, getColor, meowThemeColorType, summarizedPreferRightHand, standardSpacing, useEffects } from '../settings';
-import { MooCapsuleButton } from './MooCapsuleButton';
-import { MooSymbolButtonSmall } from './MooSymbolButtonSmall';
-import { MooTextInputV2 } from './MooTextInputV2';
-import { MooTextModifier } from './MooTextModifier';
 import { LengthMetrics } from '@kit.ArkUI';
-import { UniRowOfCapsuleButtons } from './UniRowOfCapsuleButtons';
+import { defaultInnerRadius, defaultMenuItemRadius } from '../../catstypicalframework/utils/ui';
+import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, summarizedPreferRightHand, useEffects } from '../settings';
+import { StringPairArrayItem } from './MooStringPairArrayItem';
+import { MooTextModifier } from './MooTextModifier';
 
 @ComponentV2
 struct MooStringPairArrayList {
@@ -18,17 +15,18 @@ struct MooStringPairArrayList {
   // Events
   @Event onEdit: (index: number, newValue: string[]) => void;
   @Event onSelect: (newSelected: number) => void;
+  @Event requestResetSelected: () => void; // Called when the selected index needs to be reset. E.g. when the item selected is deleted.
 
   build() {
     Scroll() {
       Flex({
         wrap: summarizedPreferRightHand() ? FlexWrap.WrapReverse : FlexWrap.Wrap,
-        space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) },
+        space: { main: LengthMetrics.vp(standardSpacing * 0.75), cross: LengthMetrics.vp(standardSpacing * 0.75) },
         alignItems: ItemAlign.Center
       }) {
         // The fixed default item
         StringPairArrayItem({
-          selectedIndex: this.selectedIndex,
+          isSelected: this.selectedIndex == -1,
           allowSelect: this.allowSelect,
           item: this.defaultItem,
           index: -1,
@@ -42,16 +40,32 @@ struct MooStringPairArrayList {
         Repeat(this.array)
           .each((item) => {
             StringPairArrayItem({
-              selectedIndex: this.selectedIndex,
+              isSelected: this.selectedIndex == item.index,
               item: item.item,
               index: item.index,
               allowSelect: this.allowSelect,
               allowEdit: true,
               onEdit: (index, newValue) => {
+                // Assign item.item the values.
+                
+                // Doing so instead of item.item = newValue
+                // can keep the address of the item.item object constant
+                // while only modifying its elements.
+                
+                // In the typical case of editing UAs and SEs, 
+                // these string[] pairs are exactly the ones in the meowAppSettings.
+                
+                item.item[0] = newValue[0];
+                item.item[1] = newValue[1];
+                
+                // Notice upper level.
                 this.onEdit(index, newValue);
               },
               onDelete: (index) => {
                 this.array.splice(index, 1);
+                if (this.selectedIndex == index) {
+                  this.requestResetSelected();
+                }
                 this.onEdit(index, []);
               },
               onSelect: (n) => {
@@ -88,130 +102,3 @@ struct MooStringPairArrayList {
 }
 
 export { MooStringPairArrayList };
-
-@ComponentV2
-struct StringPairArrayItem {
-  // Config
-  @Param @Require @Once allowSelect: boolean;
-  @Param @Require @Once allowEdit: boolean;
-  // Data
-  @Param @Require selectedIndex: number;
-  @Param @Require index: number;
-  @Param @Require item: string[];
-  @Local editingLabel: string = this.item[0];
-  @Local editingLink: string = this.item[1];
-  // Events
-  @Event onEdit: (index: number, newValue: string[]) => void;
-  @Event onSelect: (selectedIndex: number) => void;
-  @Event onDelete: (index: number) => void;
-  // UI
-  @Local displayLabel: string = this.item[0];
-  @Local isEditing: boolean = false;
-
-  build() {
-    Column({ space: standardSpacing }) {
-      // Label
-      Row({ space: standardSpacing }) {
-        Text(this.displayLabel).attributeModifier(new MooTextModifier()).maxLines(1).constraintSize({ maxWidth: '80%' });
-        MooSymbolButtonSmall({
-          icon: this.allowEdit
-            ? (this.isEditing ? $r('sys.symbol.chevron_down') : $r('sys.symbol.pencil_line'))
-            : $r('sys.symbol.archivebox'),
-          clickAction: () => {
-            if (this.allowEdit) {
-              animateToImmediately(defaultAnimation(), () => {
-                this.isEditing = !this.isEditing;
-              });
-            }
-          }
-        });
-      };
-
-      if (this.isEditing) {
-        MooTextInputV2({
-          icon: $r('sys.symbol.label'),
-          text: this.editingLabel,
-          onChange: (c) => {
-            if (this.editingLabel == c) {
-              return;
-            }
-            this.editingLabel = c;
-          },
-          onSubmit: () => {
-            this.save();
-          }
-        });
-
-        MooTextInputV2({
-          icon: $r('sys.symbol.link'),
-          text: this.editingLink,
-          onChange: (c) => {
-            if (this.editingLink == c) {
-              return;
-            }
-            this.editingLink = c;
-          },
-          onSubmit: () => {
-            this.save();
-          }
-        });
-
-        UniRowOfCapsuleButtons() {
-          MooCapsuleButton({
-            text: $r('app.string.General_save'),
-            clickAction: () => {
-              this.save();
-            },
-            needDoubleConfirm: true
-          });
-          MooCapsuleButton({
-            text: $r('app.string.General_delete'),
-            clickAction: () => {
-              animateToImmediately(defaultAnimation(), () => {
-                this.isEditing = false;
-                this.onDelete(this.index);
-              });
-            },
-            needDoubleConfirm: true
-          });
-        };
-      }
-    }
-    .border(this.imSelected()
-      ? { width: 2, color: getColor(meowThemeColorType.FONT), radius: defaultMenuItemRadius }
-      : { width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth'), radius: defaultMenuItemRadius })
-    .animation(defaultAnimation())
-    .alignItems(HorizontalAlign.Start)
-    .hoverEffect(this.allowSelect ? HoverEffect.Highlight : undefined)
-    .backgroundColor(useEffects() ? $r('app.color.blur_background_contrast') : getColor(meowThemeColorType.PRIMARY))
-    .padding(!this.isEditing
-      ? { left: standardSpacing * 1.5, right: standardSpacing * 0.5, top: standardSpacing * 0.5, bottom: standardSpacing * 0.5 }
-      : { left: standardSpacing * 1.5, right: standardSpacing * 1.5, top: standardSpacing * 0.5, bottom: standardSpacing * 1.5 })
-    .onClick(() => {
-      if (this.allowSelect) {
-        this.onSelect(this.index);
-      }
-    });
-  }
-
-  /**
-   * Check if the item is selected.
-   * @returns True if the item is selected, false otherwise.
-   */
-  imSelected() {
-    return this.selectedIndex == this.index;
-  }
-
-  /**
-   * Save the edited item.
-   */
-  save() {
-    this.displayLabel = this.editingLabel;
-    this.item[0] = this.editingLabel;
-    this.item[1] = this.editingLink;
-    animateToImmediately(defaultAnimation(), () => {
-      this.isEditing = false;
-    });
-    this.onEdit(this.index, this.item);
-  }
-}

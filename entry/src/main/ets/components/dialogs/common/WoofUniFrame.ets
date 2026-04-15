@@ -48,7 +48,7 @@ struct WoofUniFrame {
               this.controller.close();
             }
           }
-        });
+        })
       }
       .visibility(this.myLayout.shortMode ? Visibility.None : Visibility.Visible) // Save space for short contents
       .animation(defaultAnimation())
@@ -57,6 +57,7 @@ struct WoofUniFrame {
       .useEffect(useEffects(), EffectType.WINDOW_EFFECT);
 
     }
+    .width('auto')
     .onAreaChange((oldValue, newValue) => {
       if (oldValue.height as number == newValue.height as number) {
         return;
