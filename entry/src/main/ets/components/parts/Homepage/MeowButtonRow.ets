@@ -1,12 +1,10 @@
-import { meowAvoid } from '../../catstypicalframework/hosts/meowAvoid';
-import { meowUiStatuses } from '../../hosts/env/classes/meowUiStatuses';
-import { defaultAnimation, standardSpacing, titleBarPositionBottom, useEffects } from '../settings';
-import { MooSymbolButton } from '../common/MooSymbolButton';
+import { meowAvoid } from '../../../catstypicalframework/hosts/meowAvoid';
+import { MooSymbolButton } from '../../common/MooSymbolButton';
+import { standardSpacing, titleBarPositionBottom, useEffects } from '../../settings';
 
 @ComponentV2
 export struct MeowButtonRow {
   @Param @Require myAvoid: meowAvoid;
-  @Param @Require myUi: meowUiStatuses;
 
   build() {
     Row({ space: 1 }) {
@@ -21,8 +19,6 @@ export struct MeowButtonRow {
     .width('100%')
     .justifyContent(FlexAlign.End)
     .padding({ left: this.myAvoid.left, right: this.myAvoid.right })
-    .visibility(this.myUi.showMore ? Visibility.Visible : Visibility.None)
-    .animation(defaultAnimation());
   }
 
   constructPadding(): Padding {

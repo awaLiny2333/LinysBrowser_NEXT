@@ -1,4 +1,4 @@
-import { defaultAnimation, getColor, meowThemeColorType, summarizedPreferRightHand, useEffects } from '../settings';
+import { defaultAnimation, getColor, meowThemeColorType, isPreferRightHand, useEffects } from '../settings';
 import { MooTextModifier } from './MooTextModifier';
 
 @ComponentV2
@@ -13,7 +13,7 @@ struct MooSwitch {
       if (this.text) {
         Text(this.text).attributeModifier(new MooTextModifier())
           .layoutWeight(1)
-          .textAlign(summarizedPreferRightHand() ? TextAlign.End : TextAlign.Start)
+          .textAlign(isPreferRightHand() ? TextAlign.End : TextAlign.Start)
           // .animation(defaultAnimation());
       }
       Toggle({ isOn: this.isOn, type: ToggleType.Switch })
@@ -28,7 +28,7 @@ struct MooSwitch {
         .opacity(0.9);
     }
     .width('100%')
-    .direction(summarizedPreferRightHand() ? Direction.Ltr : Direction.Rtl)
+    .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl)
     .animation(defaultAnimation());
   }
 }

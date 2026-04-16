@@ -42,7 +42,7 @@ struct CatsDevCards {
 }
 
 @CustomDialog
-struct CatsDevDialog {
+struct WoofCatsDevDialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
   @Require myLayout: meowLayout;
@@ -60,4 +60,4 @@ struct CatsDevDialog {
   }
 }
 
-export { CatsDevDialog };
+export { WoofCatsDevDialog };

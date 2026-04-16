@@ -1,5 +1,5 @@
 import { defaultInnerRadius } from "../../catstypicalframework/utils/ui";
-import { defaultAnimation, getColor, meowThemeColorType, summarizedPreferRightHand, useEffects } from "../settings";
+import { defaultAnimation, getColor, meowThemeColorType, isPreferRightHand, useEffects } from "../settings";
 
 @ComponentV2
 struct MooCapsuleButton {
@@ -15,7 +15,7 @@ struct MooCapsuleButton {
 
   build() {
     Button(this.text)
-      .alignSelf(summarizedPreferRightHand() ? ItemAlign.End : ItemAlign.Start)
+      .alignSelf(isPreferRightHand() ? ItemAlign.End : ItemAlign.Start)
       .border({
         width: this.lastChance ? 2 : (useEffects() ? 1 : 0),
         color: this.lastChance ? this.adjustedColorFont() : $r('sys.color.icon_fourth'),

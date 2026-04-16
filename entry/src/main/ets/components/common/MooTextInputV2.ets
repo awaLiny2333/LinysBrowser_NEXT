@@ -1,5 +1,5 @@
 import { defaultInnerRadius } from '../../catstypicalframework/utils/ui';
-import { heightMeowTitleBar } from '../parts/MeowTitleBar';
+import { heightMeowTitleBar } from '../parts/Homepage/MeowTitleBar';
 import { fontSizeMedium, getColor, meowThemeColorType, standardSpacing, useEffects } from '../settings';
 
 @ComponentV2

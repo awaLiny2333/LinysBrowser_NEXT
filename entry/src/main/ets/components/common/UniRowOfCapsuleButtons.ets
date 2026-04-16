@@ -1,4 +1,4 @@
-import { standardSpacing, summarizedPreferRightHand } from '../settings';
+import { standardSpacing, isPreferRightHand } from '../settings';
 
 /**
  * The special container to fit a row of capsule buttons, smart reachability compatible.
@@ -12,8 +12,8 @@ struct UniRowOfCapsuleButtons {
     Row({ space: standardSpacing }) {
       this.contentsBuilder();
     }
-    .direction(summarizedPreferRightHand() ? Direction.Rtl : Direction.Ltr)
-    .alignSelf(summarizedPreferRightHand() ? ItemAlign.End : ItemAlign.Start);
+    .direction(isPreferRightHand() ? Direction.Rtl : Direction.Ltr)
+    .alignSelf(isPreferRightHand() ? ItemAlign.End : ItemAlign.Start);
   }
 }
 

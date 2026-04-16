@@ -1,6 +1,6 @@
 import { LengthMetrics } from '@kit.ArkUI';
 import { defaultInnerRadius, defaultMenuItemRadius } from '../../catstypicalframework/utils/ui';
-import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, summarizedPreferRightHand, useEffects } from '../settings';
+import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, isPreferRightHand, useEffects } from '../settings';
 import { StringPairArrayItem } from './MooStringPairArrayItem';
 import { MooTextModifier } from './MooTextModifier';
 
@@ -20,7 +20,7 @@ struct MooStringPairArrayList {
   build() {
     Scroll() {
       Flex({
-        wrap: summarizedPreferRightHand() ? FlexWrap.WrapReverse : FlexWrap.Wrap,
+        wrap: isPreferRightHand() ? FlexWrap.WrapReverse : FlexWrap.Wrap,
         space: { main: LengthMetrics.vp(standardSpacing * 0.75), cross: LengthMetrics.vp(standardSpacing * 0.75) },
         alignItems: ItemAlign.Center
       }) {

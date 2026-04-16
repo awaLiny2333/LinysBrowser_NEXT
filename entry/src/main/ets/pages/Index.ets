@@ -5,13 +5,13 @@ import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
 import lazy { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
 import lazy { defaultDecorHeight, defaultInnerRadius, shortModeThreshold, wideModeThreshold } from '../catstypicalframework/utils/ui';
 import lazy { MooTextModifier } from '../components/common/MooTextModifier';
-import lazy { MeowButtonRow } from '../components/parts/MeowButtonRow';
+import lazy { MeowButtonRow } from '../components/parts/Homepage/MeowButtonRow';
 import lazy { MeowPlaceForDialogs } from '../components/parts/MeowPlaceForDialogs';
-import lazy { MeowSearchBar } from '../components/parts/MeowSearchBar';
-import lazy { heightMeowTitleBar, MeowTitleBar } from '../components/parts/MeowTitleBar';
-import lazy { MeowTitleTop } from '../components/parts/MeowTitleTop';
-import lazy { defaultAnimation, defaultHorizontalTabsHeight, defaultSidebarWidth, getColor, meowThemeColorType, mooTextType, showGiganticWindowTitle, standardSpacing, titleBarPositionBottom, useEffects } from '../components/settings';
-import lazy { currentTabsStyleIsVertical, showingSidebar, sidebarShouldBeOnTheRight } from '../components/statuses';
+import lazy { MeowSearchBar } from '../components/parts/Homepage/MeowSearchBar';
+import lazy { heightMeowTitleBar, MeowTitleBar } from '../components/parts/Homepage/MeowTitleBar';
+import lazy { MeowTitleTop } from '../components/parts/Homepage/MeowTitleTop';
+import lazy { isTabsStyleVertical, defaultAnimation, defaultHorizontalTabsHeight, defaultSidebarWidth, getColor, meowThemeColorType, mooTextType, showGiganticWindowTitle, sidebarShouldBeOnTheRight, standardSpacing, titleBarPositionBottom, useEffects } from '../components/settings';
+import lazy { showingSidebar } from '../components/statuses';
 import { meowAppStatuses } from '../hosts/env/classes/meowAppStatuses';
 import { meowDialogManager } from '../hosts/env/classes/meowDialogManager';
 import { meowResources } from '../hosts/env/classes/meowResources';
@@ -36,7 +36,7 @@ struct Index {
   @Local myMisc: meowMisc = AppStorageV2.connect(meowMisc, `meowMisc_${this.myWindowId}`)!;
   // Render control
   @Local render: boolean = false;
-  
+
   onBackPress(): boolean | void {
   }
 
@@ -46,7 +46,6 @@ struct Index {
         // Dialog handler
         MeowPlaceForDialogs({
           myDialog: this.myDialog,
-          myUi: this.myUi,
           myLayout: this.myLayout,
           myAvoid: this.myAvoid,
           myMisc: this.myMisc
@@ -92,10 +91,11 @@ struct Index {
                 myAvoid: this.myAvoid,
               });
             }
-            MeowButtonRow({
-              myUi: this.myUi,
-              myAvoid: this.myAvoid,
-            });
+            if (this.myUi.showMore) {
+              MeowButtonRow({
+                myAvoid: this.myAvoid,
+              });
+            }
           }
           .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
           .backgroundColor(getColor(meowThemeColorType.SECONDARY))
@@ -111,10 +111,11 @@ struct Index {
         // Bottom
         if (titleBarPositionBottom()) {
           Column({ space: standardSpacing }) {
-            MeowButtonRow({
-              myUi: this.myUi,
-              myAvoid: this.myAvoid,
-            });
+            if (this.myUi.showMore) {
+              MeowButtonRow({
+                myAvoid: this.myAvoid,
+              });
+            }
             MeowTitleBar({
               myUi: this.myUi,
               myAvoid: this.myAvoid,
@@ -188,7 +189,7 @@ struct Index {
   mainFrameMargin(): Margin {
     // Vertical
     const slimCompensation = this.myLayout.wideMode ? 0 : heightMeowTitleBar + standardSpacing; // For double layer title bar on phones / slim windows.
-    const tabsHorizontalCompensation = this.myUi.showTabs && !currentTabsStyleIsVertical(this.myLayout) ? defaultHorizontalTabsHeight : 0;
+    const tabsHorizontalCompensation = this.myUi.showTabs && !isTabsStyleVertical(this.myLayout) ? defaultHorizontalTabsHeight : 0;
 
     let top: number;
     let bottom: number;

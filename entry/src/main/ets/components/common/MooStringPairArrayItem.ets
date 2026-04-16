@@ -1,5 +1,5 @@
 import { defaultMenuItemRadius } from '../../catstypicalframework/utils/ui';
-import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, summarizedPreferRightHand, useEffects } from '../settings';
+import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, isPreferRightHand, useEffects } from '../settings';
 import { MooCapsuleButton } from './MooCapsuleButton';
 import { MooSymbolButtonSmall } from './MooSymbolButtonSmall';
 import { MooTextInputV2 } from './MooTextInputV2';
@@ -42,7 +42,7 @@ struct StringPairArrayItem {
           .constraintSize(this.isEditing ? {} : { maxWidth: '80%' })
           .layoutWeight(this.isEditing ? 1 : undefined)
           .margin({ top: standardSpacing * 0.5, bottom: standardSpacing * 0.5 })
-          .padding(summarizedPreferRightHand() ? { left: standardSpacing } : { right: standardSpacing });
+          .padding(isPreferRightHand() ? { left: standardSpacing } : { right: standardSpacing });
         MooSymbolButtonSmall({
           icon: this.allowEdit
             ? (this.isEditing ? $r('sys.symbol.chevron_down') : $r('sys.symbol.pencil_line'))
@@ -56,7 +56,7 @@ struct StringPairArrayItem {
           }
         });
       }
-      .direction(summarizedPreferRightHand() ? Direction.Ltr : Direction.Rtl);
+      .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl);
 
       if (this.isEditing) {
         MooTextInputV2({

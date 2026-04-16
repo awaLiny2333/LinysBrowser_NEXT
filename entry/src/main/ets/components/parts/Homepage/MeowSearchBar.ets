@@ -1,5 +1,5 @@
-import { meowAvoid } from '../../catstypicalframework/hosts/meowAvoid';
-import { standardSpacing, getColor, meowThemeColorType, fontSizeMedium, useEffects } from '../settings';
+import { meowAvoid } from '../../../catstypicalframework/hosts/meowAvoid';
+import { standardSpacing, getColor, meowThemeColorType, fontSizeMedium, useEffects } from '../../settings';
 import { heightMeowTitleBar } from './MeowTitleBar';
 
 /**

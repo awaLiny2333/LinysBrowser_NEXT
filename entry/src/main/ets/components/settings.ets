@@ -42,20 +42,7 @@ export enum mooTextType {
   TITLE = 1,
 }
 
-// Getters
-
-/**
- * Gets if the app UI is using advanced effects.
- * @returns true if the app UI is using advanced effects, false otherwise.
- */
-export function useEffects() {
-  const settings = AppStorageV2.connect(meowManagedSettings)!;
-  // const layout = AppStorageV2.connect(meowLayout)!;
-  // if (layout.powerSave) {
-  //   return false;
-  // }
-  return settings.settingsData[7].value as boolean;
-}
+// Getters of values
 
 /**
  * Gets the color from the current theme.
@@ -83,14 +70,36 @@ export function getColor(type: meowThemeColorType): ResourceColor {
   return settings.settingsData[myApp.dark ? 65 + type : 62 + type].value as string;
 }
 
+
 /**
- * Gets the position of the title bar.
- * @returns true if the title bar is at the bottom, false otherwise.
+ * Gets the default animation param.
+ * @returns The default animation param.
  */
-export function titleBarPositionBottom() {
-  // return true;
+export function defaultAnimation() {
   const settings = AppStorageV2.connect(meowManagedSettings)!;
-  return settings.settingsData[1].value == 'bottom';
+  const animation_damping_coefficient = settings.settingsData[40].value as number;
+  const animation_response = settings.settingsData[39].value as number;
+  const ap: AnimateParam = { curve: Curves.springMotion(animation_response / 100, (100 - animation_damping_coefficient) / 100) };
+  return ap;
+}
+
+/**
+ * Gets the columns template for the water flow layout.
+ * @returns The columns template for the water flow layout.
+ */
+export function waterFlowColumnsTemplate(layout: meowLayout) {
+  return "1fr ".repeat(Math.ceil(layout.width / minimumCardWidth));
+}
+
+// Statuses
+
+/**
+ * Gets if the app UI is using advanced effects.
+ * @returns true if the app UI is using advanced effects, false otherwise.
+ */
+export function useEffects() {
+  const settings = AppStorageV2.connect(meowManagedSettings)!;
+  return settings.settingsData[7].value as boolean;
 }
 
 /**
@@ -138,22 +147,32 @@ export function showGiganticWindowTitle(myLayout: meowLayout) {
 }
 
 /**
+ * Gets the position of the title bar.
+ * @returns true if the title bar is at the bottom, false otherwise.
+ */
+export function titleBarPositionBottom() {
+  // return true;
+  const settings = AppStorageV2.connect(meowManagedSettings)!;
+  return settings.settingsData[1].value == 'bottom';
+}
+
+/**
  * Gets if the user prefers right hand. This inclused considering the smartReachability's suggestion.
  * @returns true if the user prefers right hand, false otherwise.
  */
-export function summarizedPreferRightHand(): boolean {
-  if (smartReachability()) {
+export function isPreferRightHand(): boolean {
+  if (isSmartReachabilityOn()) {
     const myApp = AppStorageV2.connect(meowAppStatuses)!;
     return myApp.smartReachabilitySaysWeShouldPreferRightHand;
   }
-  return preferRightHandFromSettings();
+  return isPreferRightHandFromSettings();
 }
 
 /**
  * Gets if the user prefers right hand. This reads only from the settings.
  * @returns true if the user prefers right hand, false otherwise.
  */
-export function preferRightHandFromSettings() {
+export function isPreferRightHandFromSettings() {
   const settings = AppStorageV2.connect(meowManagedSettings)!;
   return settings.settingsData[47].value == 'right';
 }
@@ -162,27 +181,27 @@ export function preferRightHandFromSettings() {
  * Gets if the user enables smart reachability.
  * @returns true if the user enables smart reachability, false otherwise.
  */
-export function smartReachability() {
+export function isSmartReachabilityOn() {
   const settings = AppStorageV2.connect(meowManagedSettings)!;
   return settings.settingsData[51].value as boolean;
 }
 
 /**
- * Gets the default animation param.
- * @returns The default animation param.
+ * Check the settings and see if the current tabs style is vertical, taking into consideration the current layout wide mode status.
+ * @param myLayout The layout of the current window.
+ * @returns True if the current tabs style is vertical, false otherwise.
  */
-export function defaultAnimation() {
-  const settings = AppStorageV2.connect(meowManagedSettings)!;
-  const animation_damping_coefficient = settings.settingsData[40].value as number;
-  const animation_response = settings.settingsData[39].value as number;
-  const ap: AnimateParam = { curve: Curves.springMotion(animation_response / 100, (100 - animation_damping_coefficient) / 100) };
-  return ap;
+export function isTabsStyleVertical(myLayout: meowLayout) {
+  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
+  return mySettings.settingsData[myLayout.wideMode ? 3 : 4].value as string == 'vertical';
 }
 
 /**
- * Gets the columns template for the water flow layout.
- * @returns The columns template for the water flow layout.
+ * Check the settings and see if the sidebar should be on the right.
+ * @returns True if the sidebar should be on the right, false otherwise.
  */
-export function waterFlowColumnsTemplate(layout: meowLayout) {
-  return "1fr ".repeat(Math.ceil(layout.width / minimumCardWidth));
+export function sidebarShouldBeOnTheRight() {
+  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
+  const reverseSidebar = mySettings.settingsData[49].value as boolean;
+  return isPreferRightHand() && !reverseSidebar;
 }

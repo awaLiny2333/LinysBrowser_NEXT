@@ -1,15 +1,19 @@
 import { unifiedDataChannel } from '@kit.ArkData';
 import { AppStorageV2 } from '@kit.ArkUI';
-import { meow, meowLevel } from '../../../../catstypicalframework/utils/catsLogger';
-import { defaultInnerRadius } from '../../../../catstypicalframework/utils/ui';
-import { meowBookmarkItem } from '../../../../hosts/bookmarks/classes/meowBookmarkItem';
-import { nowHtmlTimestamp } from '../../../../hosts/bookmarks/scripts/helpers';
-import { meowAppStatuses } from '../../../../hosts/env/classes/meowAppStatuses';
-import { StringPairArrayItem } from '../../../common/MooStringPairArrayItem';
-import { MooSymbolButton } from '../../../common/MooSymbolButton';
-import { MooTextModifier } from '../../../common/MooTextModifier';
-import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, summarizedPreferRightHand, useEffects } from '../../../settings';
-import { meowBookmarkItemUnifiedType } from '../scripts/constants';
+import { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
+import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
+import { meowBookmarkItem } from '../../../hosts/bookmarks/classes/meowBookmarkItem';
+import { nowHtmlTimestamp } from '../../../hosts/bookmarks/scripts/helpers';
+import { meowAppStatuses } from '../../../hosts/env/classes/meowAppStatuses';
+import { StringPairArrayItem } from '../../common/MooStringPairArrayItem';
+import { MooSymbolButton } from '../../common/MooSymbolButton';
+import { MooTextModifier } from '../../common/MooTextModifier';
+import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, isPreferRightHand, useEffects } from '../../settings';
+
+/**
+ * 
+ */
+export const meowBookmarkItemUnifiedType = 'ApplicationDefined.meowBookmarkItem.flag';
 
 @ComponentV2
 struct BookmarksColumn {
@@ -165,7 +169,7 @@ struct BookmarksColumn {
           }
         });
     }
-    .alignListItem(summarizedPreferRightHand() ? ListItemAlign.End : ListItemAlign.Start)
+    .alignListItem(isPreferRightHand() ? ListItemAlign.End : ListItemAlign.Start)
     .width('100%')
     .height('auto')
     .padding(standardSpacing * 0.75);
@@ -232,7 +236,7 @@ struct BookmarksColumn {
       });
     }
     .padding({ bottom: this.avoidBar ? standardSpacing : 0 }) // Avoid scroller
-    .direction(summarizedPreferRightHand() ? Direction.Ltr : Direction.Rtl);
+    .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl);
   }
 
   receiveDrop(records: unifiedDataChannel.UnifiedRecord[]) {

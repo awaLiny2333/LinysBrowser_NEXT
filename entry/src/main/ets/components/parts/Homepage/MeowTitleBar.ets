@@ -1,9 +1,10 @@
-import { meowAvoid } from "../../catstypicalframework/hosts/meowAvoid";
-import { meowLayout } from "../../catstypicalframework/hosts/meowLayout";
-import { meowDialogManager, openDialogRequestType } from "../../hosts/env/classes/meowDialogManager";
-import { meowUiStatuses } from "../../hosts/env/classes/meowUiStatuses";
-import { requestDialog } from "../../hosts/env/scripts/dialog";
-import { MooSymbolButton } from "../common/MooSymbolButton";
+import { meowAvoid } from "../../../catstypicalframework/hosts/meowAvoid";
+import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
+import { meowDialogManager, openDialogRequestType } from "../../../hosts/env/classes/meowDialogManager";
+import { meowUiStatuses } from "../../../hosts/env/classes/meowUiStatuses";
+import { requestDialog } from "../../../hosts/env/scripts/dialog";
+import { MooSymbolButton } from "../../common/MooSymbolButton";
+import { defaultAnimation } from "../../settings";
 import { MeowSearchBar } from "./MeowSearchBar";
 
 @ComponentV2
@@ -33,7 +34,9 @@ struct MeowTitleBar {
         icon: $r('sys.symbol.dot_grid_2x2'),
         onHold: this.myUi.showMore,
         clickAction: () => {
-          this.myUi.showMore = !this.myUi.showMore;
+          animateToImmediately(defaultAnimation(), () => {
+            this.myUi.showMore = !this.myUi.showMore;
+          });
         }
       });
       /**
@@ -48,7 +51,8 @@ struct MeowTitleBar {
       });
       MooSymbolButton({
         icon: $r('sys.symbol.bookmark'),
-        clickAction: () => {requestDialog(this.myDialog, openDialogRequestType.BOOKMARKS);
+        clickAction: () => {
+          requestDialog(this.myDialog, openDialogRequestType.BOOKMARKS);
         }
       });
       MooSymbolButton({ icon: $r('sys.symbol.download') });

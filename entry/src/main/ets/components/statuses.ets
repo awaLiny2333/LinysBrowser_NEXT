@@ -1,28 +1,9 @@
-import { meowManagedSettings } from "../hosts/settings/classes/meowManagedSettings";
-import { meowUiStatuses } from "../hosts/env/classes/meowUiStatuses";
-import { AppStorageV2 } from "@kit.ArkUI";
-import { summarizedPreferRightHand } from "./settings";
+/**
+ * ALL UI STATUSES GETTERS SHOULD BE HERE!
+ */
 import { meowLayout } from "../catstypicalframework/hosts/meowLayout";
-
-/**
- * Check the settings and see if the current tabs style is vertical, taking into consideration the current layout wide mode status.
- * @param myLayout The layout of the current window.
- * @returns True if the current tabs style is vertical, false otherwise.
- */
-export function currentTabsStyleIsVertical(myLayout: meowLayout) {
-  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
-  return mySettings.settingsData[myLayout.wideMode ? 3 : 4].value as string == 'vertical';
-}
-
-/**
- * Check the settings and see if the sidebar should be on the right.
- * @returns True if the sidebar should be on the right, false otherwise.
- */
-export function sidebarShouldBeOnTheRight() {
-  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
-  const reverseSidebar = mySettings.settingsData[49].value as boolean;
-  return summarizedPreferRightHand() && !reverseSidebar;
-}
+import { meowUiStatuses } from "../hosts/env/classes/meowUiStatuses";
+import { isTabsStyleVertical } from "./settings";
 
 /**
  * Checks if the sidebar should be shown.
@@ -33,7 +14,7 @@ export function sidebarShouldBeOnTheRight() {
  */
 export function showingSidebar(myUi: meowUiStatuses, myLayout: meowLayout) {
   // Exclude || myUi.showBookmarks for now. Let's see what it is like to put the bookmarks in a dialog...
-  if (myUi.showTabs && currentTabsStyleIsVertical(myLayout)) {
+  if (myUi.showTabs && isTabsStyleVertical(myLayout)) {
     return true;
   }
   return false;

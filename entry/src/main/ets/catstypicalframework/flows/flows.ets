@@ -20,7 +20,7 @@ import { common, Configuration, ConfigurationConstant } from '@kit.AbilityKit';
 import { AppStorageV2, window } from '@kit.ArkUI';
 import { BusinessError, power } from '@kit.BasicServicesKit';
 import lazy Want from '@ohos.app.ability.Want';
-import { preferRightHandFromSettings } from '../../components/settings';
+import { isPreferRightHandFromSettings } from '../../components/settings';
 import { meowBookmarkStash } from '../../hosts/bookmarks/classes/meowBookmarkStash';
 import { meowAppStatuses } from '../../hosts/env/classes/meowAppStatuses';
 import { meowDialogManager } from '../../hosts/env/classes/meowDialogManager';
@@ -164,7 +164,7 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
   // Initialize App status
   const dark = context.config.colorMode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
   const powerSave = power.getPowerMode() == power.DevicePowerMode.MODE_POWER_SAVE;
-  const smartReachabilitySaysWeShouldPreferRightHand = preferRightHandFromSettings(); // Set the value of myUi.smartReachabilitySaysWeShouldPreferRightHand here as a starting position for smart reachability.
+  const smartReachabilitySaysWeShouldPreferRightHand = isPreferRightHandFromSettings(); // Set the value of myUi.smartReachabilitySaysWeShouldPreferRightHand here as a starting position for smart reachability.
   myApp.dark = dark;
   myApp.powerSave = powerSave;
   myApp.smartReachabilitySaysWeShouldPreferRightHand = smartReachabilitySaysWeShouldPreferRightHand;

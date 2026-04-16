@@ -1,4 +1,4 @@
-import { defaultAnimation, getColor, meowThemeColorType, summarizedPreferRightHand, useEffects } from "../settings";
+import { defaultAnimation, getColor, meowThemeColorType, isPreferRightHand, useEffects } from "../settings";
 import { MooSymbolButtonSmall } from "./MooSymbolButtonSmall";
 import { MooTextModifier } from "./MooTextModifier";
 
@@ -44,7 +44,7 @@ struct MooSlider {
         });
       Text(` ${this.value} `).attributeModifier(new MooTextModifier()).opacity(this.locked ? 0.5 : 1).animation(defaultAnimation());
     }
-    .direction(summarizedPreferRightHand() ? Direction.Rtl : Direction.Ltr)
+    .direction(isPreferRightHand() ? Direction.Rtl : Direction.Ltr)
     .animation(defaultAnimation());
   }
 }

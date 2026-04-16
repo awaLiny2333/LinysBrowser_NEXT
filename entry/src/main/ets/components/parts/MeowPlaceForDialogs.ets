@@ -1,9 +1,8 @@
 import { defaultRoundedRadius } from '../../catstypicalframework/utils/ui';
 import { meowDialogManager, openDialogRequestType } from '../../hosts/env/classes/meowDialogManager';
 import { WoofSettingsDialog } from '../dialogs/WoofSettings/WoofSettings';
-import { CatsDevDialog } from '../dialogs/CatsDev/CatsDevCards';
+import { WoofCatsDevDialog } from '../dialogs/WoofCatsDev/WoofCatsDevCards';
 import { WoofColorPickerDialog } from '../dialogs/WoofColorPicker/WoofColorPicker';
-import { meowUiStatuses } from '../../hosts/env/classes/meowUiStatuses';
 import { meowLayout } from '../../catstypicalframework/hosts/meowLayout';
 import { meowAvoid } from '../../catstypicalframework/hosts/meowAvoid';
 import { meowMisc } from '../../catstypicalframework/hosts/meowMisc';
@@ -16,14 +15,13 @@ import { WoofBookmarksDialog } from '../dialogs/WoofBookmarks/WoofBookmarks';
 @ComponentV2
 struct MeowPlaceForDialogs {
   @Param @Require myDialog: meowDialogManager;
-  @Param @Require myUi: meowUiStatuses;
   // catstypicalframework
   @Param @Require myLayout: meowLayout;
   @Param @Require myAvoid: meowAvoid;
   @Param @Require myMisc: meowMisc;
 
-  catsDevDialogController: CustomDialogController = new CustomDialogController({
-    builder: CatsDevDialog({
+  WoofCatsDevDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofCatsDevDialog({
       myDialog: this.myDialog,
       myLayout: this.myLayout,
       myAvoid: this.myAvoid,
@@ -68,7 +66,7 @@ struct MeowPlaceForDialogs {
     }
     switch (lastRequest.target) {
       case openDialogRequestType.DEV:
-        this.catsDevDialogController.open();
+        this.WoofCatsDevDialogController.open();
         break;
       case openDialogRequestType.SETTINGS:
         this.woofSettingsDialogController.open();
