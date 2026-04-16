@@ -33,7 +33,7 @@ import { meowLayout } from '../hosts/meowLayout';
 import { meowMisc } from '../hosts/meowMisc';
 import { meow, meowLevel } from '../utils/catsLogger';
 import { ensureDirectoryExist } from '../utils/storage';
-import { getUpdateAvoid, getUpdateFreeWindowMode, listenAvoid, listenFocus, listenFreeWindowMode, listenPowerSave, listenSmartReachability, meowPx2vp, shortModeThreshold, wideModeThreshold } from '../utils/ui';
+import { getUpdateAvoid, getUpdateFreeWindowMode, listenAvoid, listenFocus, listenFreeWindowMode, listenSmartReachability, meowPx2vp, shortModeThreshold, wideModeThreshold } from '../utils/ui';
 
 // Flows
 /**
@@ -182,7 +182,6 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
   }
 
   listenFocus(window, myWindowId); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
-  listenPowerSave(); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
 
   getUpdateFreeWindowMode(context, window, myWindowId); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
   listenFreeWindowMode(context, window, myWindowId); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
@@ -192,6 +191,7 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
 
   listenSmartReachability();
 
+  // listenPowerSave(); // This is useless for now. :P
   // watchLaunch(); // This is chicken rib. >O
 
   if (isNewWindow) {

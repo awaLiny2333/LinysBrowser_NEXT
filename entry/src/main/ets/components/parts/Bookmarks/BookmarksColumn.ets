@@ -183,7 +183,8 @@ struct BookmarksColumn {
           } catch (e) {
             meow(`Error moving item: ${e}`, 'BookmarksColumn][onMove', meowLevel.ERROR);
           }
-        });
+        })
+        .virtualScroll();
     }
     .alignListItem(isPreferRightHand() ? ListItemAlign.End : ListItemAlign.Start)
     .width('100%')
