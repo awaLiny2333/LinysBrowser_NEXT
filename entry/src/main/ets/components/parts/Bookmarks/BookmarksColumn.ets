@@ -287,11 +287,14 @@ struct BookmarksColumn {
         this.currentFolderChildren.push(...newItems);
       } catch (e) {
         meow(`Error adding item: ${e}`, `BookmarksColumn][onDrop][${this.folder.name}`, meowLevel.ERROR);
-        meow(`Error adding item: ${e}`, `BookmarksColumn][onDrop][${this.folder.name}`, meowLevel.ERROR);
         // return false;
       }
     });
+    
+    // Clear tunnel
+    myApp.crossAppDataTunnel = [];
 
+    // Save bookmarks
     this.requestSave();
     return true;
   }

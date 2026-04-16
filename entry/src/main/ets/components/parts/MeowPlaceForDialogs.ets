@@ -7,6 +7,7 @@ import { meowLayout } from '../../catstypicalframework/hosts/meowLayout';
 import { meowAvoid } from '../../catstypicalframework/hosts/meowAvoid';
 import { meowMisc } from '../../catstypicalframework/hosts/meowMisc';
 import { WoofBookmarksDialog } from '../dialogs/WoofBookmarks/WoofBookmarks';
+import { meowUiStatuses } from '../../hosts/env/classes/meowUiStatuses';
 
 /**
  * A place for dialogs.
@@ -15,6 +16,7 @@ import { WoofBookmarksDialog } from '../dialogs/WoofBookmarks/WoofBookmarks';
 @ComponentV2
 struct MeowPlaceForDialogs {
   @Param @Require myDialog: meowDialogManager;
+  @Param @Require myUi: meowUiStatuses;
   // catstypicalframework
   @Param @Require myLayout: meowLayout;
   @Param @Require myAvoid: meowAvoid;
@@ -47,7 +49,7 @@ struct MeowPlaceForDialogs {
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofBookmarksDialogController: CustomDialogController = new CustomDialogController({
-    builder: WoofBookmarksDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    builder: WoofBookmarksDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
     alignment: DialogAlignment.Center,
     width: '95%',
     // height: '95%',

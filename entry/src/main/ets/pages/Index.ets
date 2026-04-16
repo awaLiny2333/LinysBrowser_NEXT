@@ -48,6 +48,7 @@ struct Index {
           myDialog: this.myDialog,
           myLayout: this.myLayout,
           myAvoid: this.myAvoid,
+          myUi: this.myUi,
           myMisc: this.myMisc
         });
 

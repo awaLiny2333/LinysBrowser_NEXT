@@ -1,44 +1,52 @@
-import { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
 import { meowBookmarkItem } from '../../../hosts/bookmarks/classes/meowBookmarkItem';
 import { meowBookmarkStash } from '../../../hosts/bookmarks/classes/meowBookmarkStash';
 import { standardSpacing, defaultAnimation, isPreferRightHand, minimumCardWidth } from '../../settings';
 import { BookmarksColumn } from './BookmarksColumn';
 import { AppStorageV2 } from '@kit.ArkUI';
+import { meowUiStatuses } from '../../../hosts/env/classes/meowUiStatuses';
 
 /**
  * Be the most convenient bookmark manager in the industry!!! :O
  */
 @ComponentV2
 struct MeowBookmarksPanel {
-  @Param @Require controller: CustomDialogController;
-  // Data
+  // Hosts
+  @Param @Require myUi: meowUiStatuses;
   @Local myBookmarks: meowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
-  @Local openedStack: meowBookmarkItem[] = [this.myBookmarks.root];
-  @Local openedIndexOfLevels: (meowBookmarkItem | undefined)[] = [];
   // UI
   @Local maxColumn: number = 1;
   @Local dialogWidth: number = 0;
   @Local columnWidth: number = 0;
+  // Event
+  @Event requestVisit: (url: string) => void;
+
+  aboutToAppear(): void {
+    // Initialize
+    if (this.myUi.openedStack.length == 0) {
+      this.myUi.openedStack.push(this.myBookmarks.root);
+      this.myUi.openedIndexOfLevels.push(undefined);
+    }
+  }
 
   build() {
     Scroll() {
       Row({ space: standardSpacing * 0.75 }) {
-        Repeat(this.openedStack)
+        Repeat(this.myUi.openedStack)
           .each((item: RepeatItem<meowBookmarkItem>) => {
             BookmarksColumn({
               canCloseThis: item.index > 0,
               columnWidth: this.columnWidth,
-              avoidBar: this.maxColumn < this.openedStack.length,
-              selectedItem: this.openedIndexOfLevels[item.index],
+              avoidBar: this.maxColumn < this.myUi.openedStack.length,
+              selectedItem: this.myUi.openedIndexOfLevels[item.index],
               folder: item.item,
               level: item.index,
               onSubLevelOpen: (folder) => {
                 animateToImmediately(defaultAnimation(), () => {
                   this.closeAllRightOf(item.index); // Pop all levels on the right
-                  this.openedIndexOfLevels[item.index] = folder; // Set opened index in that level.
+                  this.myUi.openedIndexOfLevels[item.index] = folder; // Set opened index in that level.
                   // Push the new level on the right
-                  this.openedStack.push(folder);
-                  this.openedIndexOfLevels.push(undefined);
+                  this.myUi.openedStack.push(folder);
+                  this.myUi.openedIndexOfLevels.push(undefined);
                 });
                 this.recalculateLayout();
               },
@@ -52,8 +60,7 @@ struct MeowBookmarksPanel {
                 this.recalculateLayout();
               },
               onVisit: (url: string) => {
-                meow(`Visiting: ${url}`, 'BookmarksColumn][onClickAction', meowLevel.INFO);
-                this.controller?.close();
+                this.requestVisit(url);
               },
               onDropReceivedAnOpenedFolder: (fromLayer: number) => {
                 this.closeAllRightOfWithAnima(fromLayer); // Pop all levels on the right
@@ -70,7 +77,7 @@ struct MeowBookmarksPanel {
       .alignItems(VerticalAlign.Bottom)
       .padding(standardSpacing);
     }
-    .scrollBar(this.maxColumn < this.openedStack.length ? BarState.On : BarState.Off)
+    .scrollBar(this.maxColumn < this.myUi.openedStack.length ? BarState.On : BarState.Off)
     .onAreaChange((oldValue, newValue) => {
       if ((oldValue.width as number != newValue.width as number) && (newValue.width as number != this.dialogWidth)) {
         this.dialogWidth = newValue.width as number;
@@ -88,7 +95,7 @@ struct MeowBookmarksPanel {
    */
   recalculateLayout() {
     const maxColumn = Math.floor(this.dialogWidth / (minimumCardWidth * 0.5));
-    const columnCount = Math.min(maxColumn, this.openedStack.length);
+    const columnCount = Math.min(maxColumn, this.myUi.openedStack.length);
     const columnSpaceCount = columnCount - 1;
     const frameSpace = 2 * standardSpacing;
     const columnWidth = (this.dialogWidth - columnSpaceCount * standardSpacing * 0.75 - frameSpace) / columnCount;
@@ -116,9 +123,9 @@ struct MeowBookmarksPanel {
    * @param idx The index of the level to close.
    */
   closeAllRightOf(idx: number) {
-    this.openedStack = this.openedStack.slice(0, idx + 1);
-    this.openedIndexOfLevels = this.openedIndexOfLevels.slice(0, idx + 1);
-    this.openedIndexOfLevels[idx] = undefined; // Clear opened index in that level.
+    this.myUi.openedStack = this.myUi.openedStack.slice(0, idx + 1);
+    this.myUi.openedIndexOfLevels = this.myUi.openedIndexOfLevels.slice(0, idx + 1);
+    this.myUi.openedIndexOfLevels[idx] = undefined; // Clear opened index in that level.
   }
 }
 

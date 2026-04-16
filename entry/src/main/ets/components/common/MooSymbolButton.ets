@@ -7,8 +7,10 @@ import { defaultAnimation, fontSizeSymbol, getColor, meowThemeColorType, standar
 @ComponentV2
 struct MooSymbolButton {
   @Param icon: Resource = $r('sys.symbol.square_stack_3d');
-  @Event clickAction: () => void;
   @Param onHold: boolean = false;
+  @Param tips: TipsMessageType | undefined = undefined;
+  // Events
+  @Event clickAction: () => void;
 
   build() {
     SymbolGlyph(this.icon)
@@ -23,7 +25,8 @@ struct MooSymbolButton {
       .onClick(() => {
         this.clickAction();
       })
-      .fontColor([this.onHold && !useEffects() ? getColor(meowThemeColorType.PRIMARY) : getColor(meowThemeColorType.FONT)]);
+      .fontColor([this.onHold && !useEffects() ? getColor(meowThemeColorType.PRIMARY) : getColor(meowThemeColorType.FONT)])
+      .bindTips(this.tips);
   }
 }
 
