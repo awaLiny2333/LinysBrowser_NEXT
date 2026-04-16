@@ -4,19 +4,22 @@ import { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger'
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
 import { meowBookmarkItem } from '../../../hosts/bookmarks/classes/meowBookmarkItem';
 import { nowHtmlTimestamp } from '../../../hosts/bookmarks/scripts/helpers';
-import { meowAppStatuses } from '../../../hosts/env/classes/meowAppStatuses';
+import { meowAppMessageType, meowAppStatuses } from '../../../hosts/env/classes/meowAppStatuses';
 import { StringPairArrayItem } from '../../common/MooStringPairArrayItem';
 import { MooSymbolButton } from '../../common/MooSymbolButton';
 import { MooTextModifier } from '../../common/MooTextModifier';
-import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, isPreferRightHand, useEffects } from '../../settings';
+import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from '../../settings';
 
 /**
- * 
+ *
  */
 export const meowBookmarkItemUnifiedType = 'ApplicationDefined.meowBookmarkItem.flag';
 
 @ComponentV2
 struct BookmarksColumn {
+  // Host
+  @Local myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!; // For event receiving.
+  // Params
   @Param @Require folder: meowBookmarkItem;
   @Param @Require level: number;
   @Param @Require canCloseThis: boolean;
@@ -27,8 +30,11 @@ struct BookmarksColumn {
   @Local currentFolderChildren: meowBookmarkItem[] = Array.from(this.folder.children); // Maintained through this.refreshRoot().
   // UI
   @Local inDragMode: boolean = true; // By default true, to allow dragging instead of rearranging. TODO: find an elegant way to have them coexist.
+  @Local inMore: boolean = false; // By default false, to allow showing more options.
   // Events
   @Event requestSave: () => void;
+  @Event requestImport: () => void;
+  @Event requestExport: () => void;
   @Event onSubLevelOpen: (item: meowBookmarkItem) => void; // Open a sub folder
   @Event onSubLevelClose: () => void; // Close the opening sub folder
   @Event onCardClose: () => void; // This card is closed
@@ -74,6 +80,16 @@ struct BookmarksColumn {
   refreshRoot() {
     this.currentFolderChildren = Array.from(this.folder.children);
     meow(`Refreshing folder: ${this.folder.name}`, 'BookmarksColumn][refreshRoot', meowLevel.INFO);
+  }
+
+  @Monitor('myApp.crossAppMessageTunnel')
+  receiveMessage() {
+    if (this.myApp.crossAppMessageTunnel?.type == meowAppMessageType.BOOKMARKS_REFRESH) {
+      this.refreshRoot();
+      if (this.currentFolderChildren.indexOf(this.selectedItem) < 0) {
+        this.onSubLevelClose();
+      }
+    }
   }
 
   @Builder
@@ -178,64 +194,96 @@ struct BookmarksColumn {
   @Builder
   BottomControl() {
     Row({ space: standardSpacing * 0.5 }) {
-      Text(this.folder.name).attributeModifier(new MooTextModifier()).wordBreak(WordBreak.BREAK_ALL).maxLines(2).layoutWeight(1);
+      // More and text title
+      if (this.inMore) {
+        Blank().layoutWeight(1);
 
-      // Toggle drag mode
-      MooSymbolButton({
-        icon: this.inDragMode ? $r('sys.symbol.move') : $r('sys.symbol.swap'),
-        onHold: true,
-        clickAction: () => {
-          this.inDragMode = !this.inDragMode;
-        }
-      });
+        // Import bookmarks.
+        MooSymbolButton({
+          icon: $r('sys.symbol.cube_and_arrow_down'),
+          clickAction: () => {
+            this.requestImport();
+          }
+        });
 
-      // Add folder.
+        // Export folder.
+        MooSymbolButton({
+          icon: $r('sys.symbol.rectangle_and_arrowshape_turn_up_right'),
+          clickAction: () => {
+            this.requestExport();
+          }
+        });
+
+        // Add folder.
+        MooSymbolButton({
+          icon: $r('sys.symbol.folder_badge_plus'),
+          clickAction: () => {
+            // New folder
+            const newFolder = new meowBookmarkItem(true, `New Folder on ${new Date().toLocaleString()}`, '');
+            animateToImmediately(defaultAnimation(), () => {
+              try {
+                this.folder.children.push(newFolder);
+                this.currentFolderChildren.push(newFolder);
+                this.requestSave();
+              } catch (e) {
+                meow(`Error adding folder: ${e}`, 'BookmarksColumn][onAddFolder', meowLevel.ERROR);
+              }
+            });
+          }
+        });
+
+        // Add bookmark.
+        MooSymbolButton({
+          icon: $r('sys.symbol.book_closed_right_left_badge_plus'),
+          clickAction: () => {
+            // New bookmark
+            const newBookmark = new meowBookmarkItem(false, `New Bookmark on ${new Date().toLocaleString()}`, ''); // TODO: grab current page info!
+            animateToImmediately(defaultAnimation(), () => {
+              try {
+                this.folder.children.push(newBookmark);
+                this.currentFolderChildren.push(newBookmark);
+                this.requestSave();
+              } catch (e) {
+                meow(`Error adding bookmark: ${e}`, 'BookmarksColumn][onAddBookmark', meowLevel.ERROR);
+              }
+            });
+          }
+        });
+
+        // Toggle drag mode
+        MooSymbolButton({
+          icon: this.inDragMode ? $r('sys.symbol.move') : $r('sys.symbol.swap'),
+          onHold: true,
+          clickAction: () => {
+            this.inDragMode = !this.inDragMode;
+          }
+        });
+      } else {
+        Text(this.folder.name).attributeModifier(new MooTextModifier()).wordBreak(WordBreak.BREAK_ALL).maxLines(2).layoutWeight(1);
+      }
+
+      // Toggle More mode
       MooSymbolButton({
-        icon: $r('sys.symbol.folder_badge_plus'),
+        icon: $r('sys.symbol.dot_grid_2x2'),
+        onHold: this.inMore,
         clickAction: () => {
-          // New folder
-          const newFolder = new meowBookmarkItem(true, `New Folder on ${new Date().toLocaleString()}`, '');
           animateToImmediately(defaultAnimation(), () => {
-            try {
-              this.folder.children.push(newFolder);
-              this.currentFolderChildren.push(newFolder);
-              this.requestSave();
-            } catch (e) {
-              meow(`Error adding folder: ${e}`, 'BookmarksColumn][onAddFolder', meowLevel.ERROR);
-            }
-          });
-        }
-      });
-
-      // Add bookmark.
-      MooSymbolButton({
-        icon: $r('sys.symbol.book_closed_right_left_badge_plus'),
-        clickAction: () => {
-          // New bookmark
-          const newBookmark = new meowBookmarkItem(false, `New Bookmark on ${new Date().toLocaleString()}`, ''); // TODO: grab current page info!
-          animateToImmediately(defaultAnimation(), () => {
-            try {
-              this.folder.children.push(newBookmark);
-              this.currentFolderChildren.push(newBookmark);
-              this.requestSave();
-            } catch (e) {
-              meow(`Error adding bookmark: ${e}`, 'BookmarksColumn][onAddBookmark', meowLevel.ERROR);
-            }
+            this.inMore = !this.inMore;
           });
         }
       });
 
       // Close card.
-      MooSymbolButton({
-        icon: this.canCloseThis ? $r('sys.symbol.xmark') : $r('sys.symbol.archivebox'),
-        clickAction: () => {
-          if (this.canCloseThis) {
+      if (this.canCloseThis) {
+        MooSymbolButton({
+          icon: $r('sys.symbol.xmark'),
+          clickAction: () => {
             this.onCardClose();
           }
-        }
-      });
+        });
+      }
     }
-    .padding({ bottom: this.avoidBar ? standardSpacing : 0 }) // Avoid scroller
+    .padding({ bottom: this.avoidBar ? standardSpacing * 1.25 : 0 }) // Avoid scroller
     .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl);
   }
 
@@ -290,7 +338,7 @@ struct BookmarksColumn {
         // return false;
       }
     });
-    
+
     // Clear tunnel
     myApp.crossAppDataTunnel = [];
 

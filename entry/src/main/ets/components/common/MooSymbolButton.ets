@@ -14,7 +14,7 @@ struct MooSymbolButton {
 
   build() {
     SymbolGlyph(this.icon)
-      .margin(this.onHold ? { left: standardSpacing / 2, right: standardSpacing / 2 } : 0)
+      .margin(this.onHold ? { left: standardSpacing / 4, right: standardSpacing / 4 } : 0)
       .brightness(this.onHold && useEffects() ? 1.1 : 1)
       .backgroundColor(this.onHold && !useEffects() ? getColor(meowThemeColorType.FONT) : Color.Transparent)
       .animation(defaultAnimation())

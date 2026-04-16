@@ -1,9 +1,11 @@
+import { AppStorageV2 } from '@kit.ArkUI';
 import { meowBookmarkItem } from '../../../hosts/bookmarks/classes/meowBookmarkItem';
 import { meowBookmarkStash } from '../../../hosts/bookmarks/classes/meowBookmarkStash';
-import { standardSpacing, defaultAnimation, isPreferRightHand, minimumCardWidth } from '../../settings';
-import { BookmarksColumn } from './BookmarksColumn';
-import { AppStorageV2 } from '@kit.ArkUI';
+import { meowAppMessageType, meowAppStatuses } from '../../../hosts/env/classes/meowAppStatuses';
 import { meowUiStatuses } from '../../../hosts/env/classes/meowUiStatuses';
+import lazy { globalMessage } from '../../../hosts/env/scripts/messaging';
+import { defaultAnimation, isPreferRightHand, minimumCardWidth, standardSpacing } from '../../settings';
+import { BookmarksColumn } from './BookmarksColumn';
 
 /**
  * Be the most convenient bookmark manager in the industry!!! :O
@@ -13,6 +15,7 @@ struct MeowBookmarksPanel {
   // Hosts
   @Param @Require myUi: meowUiStatuses;
   @Local myBookmarks: meowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
+  @Local myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!; // For event receiving.
   // UI
   @Local maxColumn: number = 1;
   @Local dialogWidth: number = 0;
@@ -68,7 +71,17 @@ struct MeowBookmarksPanel {
               },
               requestSave: () => {
                 this.myBookmarks.requestSaveToDisk();
+                globalMessage(meowAppMessageType.BOOKMARKS_REFRESH);
               },
+              requestImport: () => {
+                this.myBookmarks.importHTMLfromDocuments(item.item)
+                  .then(() => {
+                    globalMessage(meowAppMessageType.BOOKMARKS_REFRESH);
+                  });
+              },
+              requestExport: () => {
+                this.myBookmarks.exportHTMLtoDocuments(item.item);
+              }
             });
           });
       }

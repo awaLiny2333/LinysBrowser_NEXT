@@ -2,6 +2,7 @@ import { meowBookmarkItem } from "./meowBookmarkItem";
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 import { fileDocumentPick2Path, fileDocumentPickSave, saveHybrid } from "../../../catstypicalframework/utils/storage";
 import { parseBookmarksConcurrent, parseToHTMLConcurrent } from "../scripts/parser";
+import { nowHtmlTimestamp } from "../scripts/helpers";
 
 @ObservedV2
 export class meowBookmarkStash {
@@ -21,7 +22,7 @@ export class meowBookmarkStash {
    * Import bookmarks from HTML file in documents.
    * This would push the imported bookmarks to the root.
    */
-  async importHTMLfromDocuments() {
+  async importHTMLfromDocuments(putIn: meowBookmarkItem = this.root) {
     const result = await fileDocumentPick2Path(['.html'], 1);
     if (!result.succeed) {
       meow(`Failed to pick HTML from documents.`, 'meowBookmarkStash][importHTMLfromDocuments', meowLevel.WARN);
@@ -38,7 +39,8 @@ export class meowBookmarkStash {
     // Push to root
     this.lastImportTimeCost = parseBookmarksResult.time;
     try {
-      this.root.children.push(parseBookmarksResult.root);
+      putIn.children.push(parseBookmarksResult.root);
+      putIn.date_modified = nowHtmlTimestamp();
     } catch (e) {
       meow(`Failed to push root to stash.`, 'meowBookmarkStash][importHTMLfromDocuments', meowLevel.ERROR);
       return false;
@@ -51,9 +53,11 @@ export class meowBookmarkStash {
 
   /**
    * Export bookmarks to HTML file in documents.
+   * 
+   * @param folder The folder to export.
    */
-  async exportHTMLtoDocuments() {
-    const htmlText = await parseToHTMLConcurrent(this.root);
+  async exportHTMLtoDocuments(folder: meowBookmarkItem = this.root) {
+    const htmlText = await parseToHTMLConcurrent(folder);
     if (!htmlText) {
       meow(`Failed to export HTML to documents. htmlText is empty!`, 'meowBookmarkStash][exportHTMLtoDocuments', meowLevel.WARN);
       return false;
