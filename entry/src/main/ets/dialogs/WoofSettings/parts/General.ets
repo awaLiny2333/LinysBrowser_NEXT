@@ -1,15 +1,15 @@
 import { AppStorageV2 } from '@kit.ArkUI';
-import { meowManagedSettings } from '../../../hosts/settings/classes/meowManagedSettings';
-import { defaultSearchEngine, urlDefaultBlank } from '../../../hosts/settings/scripts/defaultSettingsValues';
-import { applyUserAgentFromSettings } from '../../../hosts/tabs/scripts/userAgents';
+import { meowManagedSettings } from '../../../hosts/data/settings/classes/meowManagedSettings';
+import { defaultSearchEngine, urlDefaultBlank } from '../../../hosts/data/settings/scripts/defaultSettingsValues';
+import { applyUserAgentFromSettings } from '../../../hosts/app/tabs/scripts/userAgents';
 import { mooTextType, standardSpacing } from '../../../components/settings';
 import { MooCapsuleButton } from '../../../components/common/MooCapsuleButton';
 import { MooStringPairArrayList } from '../../../components/common/MooStringPairArrayList';
 import { MooTextInputV2 } from '../../../components/common/MooTextInputV2';
 import { MooTextModifier } from '../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../components/common/UniContentCard';
-import { requestDialog } from '../../../hosts/env/scripts/dialog';
-import { meowDialogManager, openDialogRequestType } from '../../../hosts/env/classes/meowDialogManager';
+import { requestDialog } from '../../../hosts/app/dialogs/scripts/dialog';
+import { meowDialogManager, openDialogRequestType } from '../../../hosts/app/dialogs/classes/meowDialogManager';
 
 @ComponentV2
 struct SettingsGeneral {

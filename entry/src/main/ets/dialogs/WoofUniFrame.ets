@@ -1,4 +1,4 @@
-import { meowDialogManager } from '../hosts/env/classes/meowDialogManager';
+import { meowDialogManager } from '../hosts/app/dialogs/classes/meowDialogManager';
 import { MooSymbolButton } from '../components/common/MooSymbolButton';
 import { MooTextModifier } from '../components/common/MooTextModifier';
 import { defaultAnimation, getColor, meowThemeColorType, mooTextType, useEffects } from '../components/settings';

@@ -1,10 +1,10 @@
 import { meowLayout } from '../../catstypicalframework/hosts/meowLayout';
 import lazy { meow, meowLevel } from '../../catstypicalframework/utils/catsLogger';
-import { meowDialogManager } from '../../hosts/env/classes/meowDialogManager';
-import { meowUiStatuses } from '../../hosts/env/classes/meowUiStatuses';
+import { meowDialogManager } from '../../hosts/app/dialogs/classes/meowDialogManager';
+import { meowUiStatuses } from '../../hosts/app/windows/classes/meowUiStatuses';
 import { MeowBookmarksPanel } from '../../components/parts/Bookmarks/MeowBookmarksPanel';
 import { WoofUniFrame } from '../WoofUniFrame';
-import lazy { meowBookmarkItem } from '../../hosts/bookmarks/classes/meowBookmarkItem';
+import lazy { meowBookmarkItem } from '../../hosts/data/bookmarks/classes/meowBookmarkItem';
 
 @CustomDialog
 struct WoofBookmarksDialog {

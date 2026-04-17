@@ -1,14 +1,14 @@
 import { meowAvoid } from '../../../catstypicalframework/hosts/meowAvoid';
 import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import { windowTopAvoidLeft, windowTopAvoidRight } from '../../../catstypicalframework/utils/ui';
-import { meowDialogManager, openDialogRequestType } from '../../../hosts/env/classes/meowDialogManager';
-import { requestDialog } from '../../../hosts/env/scripts/dialog';
+import { meowDialogManager, openDialogRequestType } from '../../../hosts/app/dialogs/classes/meowDialogManager';
+import { requestDialog } from '../../../hosts/app/dialogs/scripts/dialog';
 import { showWindowTitle, windowTitlePosition } from '../../settings';
 import { MooSymbolButtonSmall } from '../../common/MooSymbolButtonSmall';
 import { MooTextModifier } from '../../common/MooTextModifier';
-import { newWindow } from '../../../hosts/env/scripts/multiwindows';
+import { newWindow } from '../../../hosts/app/windows/scripts/multiwindows';
 import { common } from '@kit.AbilityKit';
-import { meowUiStatuses } from '../../../hosts/env/classes/meowUiStatuses';
+import { meowUiStatuses } from '../../../hosts/app/windows/classes/meowUiStatuses';
 
 /**
  * The window top bar. Holds the buttons on window top, as well as the name of window / zone.

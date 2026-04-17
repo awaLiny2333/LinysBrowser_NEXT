@@ -7,12 +7,12 @@ import { MooSlider } from "../../components/common/MooSlider";
 import { MooTextModifier } from "../../components/common/MooTextModifier";
 import { UniContentCard } from "../../components/common/UniContentCard";
 import { defaultAnimation, standardSpacing } from "../../components/settings";
-import { meowDialogManager, openDialogRequestType } from "../../hosts/env/classes/meowDialogManager";
-import { meowResources } from "../../hosts/env/classes/meowResources";
-import { meowUiStatuses } from "../../hosts/env/classes/meowUiStatuses";
-import { requestDialog } from "../../hosts/env/scripts/dialog";
-import { meowAppMessageType } from "../../hosts/env/scripts/messaging";
-import { meowManagedSettings } from "../../hosts/settings/classes/meowManagedSettings";
+import { meowDialogManager, openDialogRequestType } from "../../hosts/app/dialogs/classes/meowDialogManager";
+import { meowResources } from "../../hosts/app/env/classes/meowResources";
+import { requestDialog } from "../../hosts/app/dialogs/scripts/dialog";
+import { meowAppMessageType } from "../../hosts/app/windows/scripts/messaging";
+import { meowUiStatuses } from "../../hosts/app/windows/classes/meowUiStatuses";
+import { meowManagedSettings } from "../../hosts/data/settings/classes/meowManagedSettings";
 import { WoofUniFrame } from "../WoofUniFrame";
 
 @ComponentV2
@@ -90,10 +90,10 @@ struct WoofHomepage {
     .scrollable(ScrollDirection.Vertical);
   }
 
-  @Monitor('myUi.crossAppMessageTunnel')
+  @Monitor('myUi.localMessageTunnel')
   receiveMessage() {
-    if (this.myUi.crossAppMessageTunnel?.type == meowAppMessageType.BOOKMARKS_PICKED) {
-      const path = this.myUi.crossAppMessageTunnel.content as string;
+    if (this.myUi.localMessageTunnel?.type == meowAppMessageType.BOOKMARKS_PICKED) {
+      const path = this.myUi.localMessageTunnel.payload as string;
       meow(`Received folder! ${path}`, 'WoofHomepage][receiveMessage');
       this.mySettings.setByIndex(45, path);
     }

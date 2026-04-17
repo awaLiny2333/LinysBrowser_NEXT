@@ -1,4 +1,4 @@
-import { meowManagedSettings } from '../../../hosts/settings/classes/meowManagedSettings';
+import { meowManagedSettings } from '../../../hosts/data/settings/classes/meowManagedSettings';
 import { mooTextType, standardSpacing } from '../../../components/settings';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { MooTextModifier } from '../../../components/common/MooTextModifier';
@@ -6,8 +6,8 @@ import { UniContentCard } from '../../../components/common/UniContentCard';
 import { MooCapsuleButton } from '../../../components/common/MooCapsuleButton';
 import { bundleManager } from '@kit.AbilityKit';
 import BuildProfile from 'BuildProfile';
-import { requestDialog } from '../../../hosts/env/scripts/dialog';
-import { meowDialogManager, openDialogRequestType } from '../../../hosts/env/classes/meowDialogManager';
+import { requestDialog } from '../../../hosts/app/dialogs/scripts/dialog';
+import { meowDialogManager, openDialogRequestType } from '../../../hosts/app/dialogs/classes/meowDialogManager';
 
 @ComponentV2
 struct SettingsDeveowlopers {

@@ -2,7 +2,7 @@ import { defaultInnerRadius } from '../../../../catstypicalframework/utils/ui';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { SimpleSettingsExamples } from './SimpleSettingsExamples';
 import { AppStorageV2 } from '@kit.ArkUI';
-import { meowManagedSettings } from '../../../../hosts/settings/classes/meowManagedSettings';
+import { meowManagedSettings } from '../../../../hosts/data/settings/classes/meowManagedSettings';
 import { meowFlexOptions } from '../../../../components/settings';
 
 /**

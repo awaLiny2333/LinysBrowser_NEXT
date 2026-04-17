@@ -12,14 +12,14 @@ import lazy { heightMeowTitleBar, MeowTitleBar } from '../components/parts/Homep
 import lazy { MeowTitleTop } from '../components/parts/Homepage/MeowTitleTop';
 import lazy { isTabsStyleVertical, defaultAnimation, defaultHorizontalTabsHeight, defaultSidebarWidth, getColor, meowThemeColorType, mooTextType, showGiganticWindowTitle, sidebarShouldBeOnTheRight, standardSpacing, titleBarPositionBottom, useEffects } from '../components/settings';
 import lazy { showingSidebar } from '../components/statuses';
-import { meowAppStatuses } from '../hosts/env/classes/meowAppStatuses';
-import { meowDialogManager, openDialogRequestType } from '../hosts/env/classes/meowDialogManager';
-import { meowResources } from '../hosts/env/classes/meowResources';
-import { meowUiStatuses } from '../hosts/env/classes/meowUiStatuses';
-import { getLastWindowId } from '../hosts/env/scripts/multiwindows';
-import { meowManagedSettings } from '../hosts/settings/classes/meowManagedSettings';
-import { requestDialog } from '../hosts/env/scripts/dialog';
+import { meowDialogManager, openDialogRequestType } from '../hosts/app/dialogs/classes/meowDialogManager';
+import { meowResources } from '../hosts/app/env/classes/meowResources';
+import { getLastWindowId } from '../hosts/app/windows/scripts/multiwindows';
+import { meowManagedSettings } from '../hosts/data/settings/classes/meowManagedSettings';
+import { requestDialog } from '../hosts/app/dialogs/scripts/dialog';
 import { MeowShortcutsPanel } from '../components/parts/Homepage/MeowShortcuts';
+import { meowAppStatuses } from '../hosts/app/windows/classes/meowAppStatuses';
+import { meowUiStatuses } from '../hosts/app/windows/classes/meowUiStatuses';
 
 @Entry
 @ComponentV2
@@ -58,15 +58,14 @@ struct Index {
         // This is ugly.
         Column() {
           Stack() {
+            // Backdrop
             if (this.myResources.backgroundImage) {
               Image(this.myResources.backgroundImage)
                 .opacity(useEffects() ? 0.5 : 1)
                 .grayscale(useEffects() ? 1 : 0)
                 .animation(defaultAnimation())
-                .onClick(() => {
-                  requestDialog(this.myDialog, openDialogRequestType.HOMEPAGE);
-                });
             }
+            // Shortcuts
             MeowShortcutsPanel({
               myLayout: this.myLayout
             })

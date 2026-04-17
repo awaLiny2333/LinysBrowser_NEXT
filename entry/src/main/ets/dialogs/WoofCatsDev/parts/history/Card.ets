@@ -1,7 +1,7 @@
 import { meow, meowLevel } from '../../../../catstypicalframework/utils/catsLogger';
 import { defaultInnerRadius } from '../../../../catstypicalframework/utils/ui';
-import { meowHistorian } from '../../../../hosts/history/classes/meowHistorian';
-import { meowHistoryEntry } from '../../../../hosts/history/classes/meowHistoryEntry';
+import { meowHistorian } from '../../../../hosts/data/history/classes/meowHistorian';
+import { meowHistoryEntry } from '../../../../hosts/data/history/classes/meowHistoryEntry';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { SimpleHistoryShowcase } from './SimpleHistoryShowcase';
 import { AppStorageV2 } from '@kit.ArkUI';

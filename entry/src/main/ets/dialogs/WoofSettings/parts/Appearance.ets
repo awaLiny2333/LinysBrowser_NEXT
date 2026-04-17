@@ -7,16 +7,19 @@ import { MooTabSegmentV2 } from "../../../components/common/MooTabSegmentV2";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
 import { defaultAnimation, getColor, meowThemeColorType, mooTextType, standardSpacing, useEffects } from "../../../components/settings";
-import { meowAppStatuses } from "../../../hosts/env/classes/meowAppStatuses";
-import { meowDialogManager, openDialogRequestType } from "../../../hosts/env/classes/meowDialogManager";
-import { requestDialog } from "../../../hosts/env/scripts/dialog";
-import { meowManagedSettings } from "../../../hosts/settings/classes/meowManagedSettings";
-import { resetAnimations, resetColors } from "../../../hosts/settings/scripts/reset";
+import { meowDialogManager, openDialogRequestType } from "../../../hosts/app/dialogs/classes/meowDialogManager";
+import { requestDialog } from "../../../hosts/app/dialogs/scripts/dialog";
+import { meowAppMessageType } from "../../../hosts/app/windows/scripts/messaging";
+import { meowUiStatuses } from "../../../hosts/app/windows/classes/meowUiStatuses";
+import { meowAppStatuses } from "../../../hosts/app/windows/classes/meowAppStatuses";
+import { meowManagedSettings } from "../../../hosts/data/settings/classes/meowManagedSettings";
+import { resetAnimations, resetColors } from "../../../hosts/data/settings/scripts/reset";
 
 @ComponentV2
 struct SettingsAppearance {
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
   @Param myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
+  @Param @Require myUi: meowUiStatuses;
   @Param @Require myDialog: meowDialogManager;
 
   build() {
@@ -209,17 +212,17 @@ struct SettingsAppearance {
 
         Text($r('app.string.Settings_category_appearance_colors_light')).attributeModifier(new MooTextModifier());
         Row({ space: standardSpacing * 0.75 }) {
-          ColorDemoBlock({ myDialog: this.myDialog, color: this.mySettings.settingsData[62].value as string, settingsId: 62, showBorder: !this.myApp.dark });
-          ColorDemoBlock({ myDialog: this.myDialog, color: this.mySettings.settingsData[63].value as string, settingsId: 63, showBorder: !this.myApp.dark });
-          ColorDemoBlock({ myDialog: this.myDialog, color: this.mySettings.settingsData[64].value as string, settingsId: 64, showBorder: !this.myApp.dark });
+          ColorDemoBlock({ myDialog: this.myDialog, myUi: this.myUi, color: this.mySettings.settingsData[62].value as string, settingsId: 62, showBorder: !this.myApp.dark });
+          ColorDemoBlock({ myDialog: this.myDialog, myUi: this.myUi, color: this.mySettings.settingsData[63].value as string, settingsId: 63, showBorder: !this.myApp.dark });
+          ColorDemoBlock({ myDialog: this.myDialog, myUi: this.myUi, color: this.mySettings.settingsData[64].value as string, settingsId: 64, showBorder: !this.myApp.dark });
         }
         .opacity(useEffects() ? 0.5 : 1);
 
         Text($r('app.string.Settings_category_appearance_colors_dark')).attributeModifier(new MooTextModifier());
         Row({ space: standardSpacing * 0.75 }) {
-          ColorDemoBlock({ myDialog: this.myDialog, color: this.mySettings.settingsData[65].value as string, settingsId: 65, showBorder: this.myApp.dark });
-          ColorDemoBlock({ myDialog: this.myDialog, color: this.mySettings.settingsData[66].value as string, settingsId: 66, showBorder: this.myApp.dark });
-          ColorDemoBlock({ myDialog: this.myDialog, color: this.mySettings.settingsData[67].value as string, settingsId: 67, showBorder: this.myApp.dark });
+          ColorDemoBlock({ myDialog: this.myDialog, myUi: this.myUi, color: this.mySettings.settingsData[65].value as string, settingsId: 65, showBorder: this.myApp.dark });
+          ColorDemoBlock({ myDialog: this.myDialog, myUi: this.myUi, color: this.mySettings.settingsData[66].value as string, settingsId: 66, showBorder: this.myApp.dark });
+          ColorDemoBlock({ myDialog: this.myDialog, myUi: this.myUi, color: this.mySettings.settingsData[67].value as string, settingsId: 67, showBorder: this.myApp.dark });
         }
         .opacity(useEffects() ? 0.5 : 1);
 
@@ -274,10 +277,15 @@ export { SettingsAppearance };
 
 @ComponentV2
 struct ColorDemoBlock {
+  // Hosts
   @Param @Require myDialog: meowDialogManager;
+  @Param @Require myUi: meowUiStatuses;
+  // Data
   @Param @Require color: ResourceColor;
   @Param @Require settingsId: number;
   @Param @Require showBorder: boolean;
+  // Local
+  @Local pendingColorDialog: boolean = false;
 
   build() {
     Column({ space: standardSpacing }) {
@@ -293,9 +301,28 @@ struct ColorDemoBlock {
         radius: defaultInnerRadius
       })
       .onClick(() => {
-        requestDialog(this.myDialog, openDialogRequestType.COLOR_PICKER, this.settingsId, true);
+        this.pendingColorDialog = true;
+        requestDialog(this.myDialog, openDialogRequestType.COLOR_PICKER, this.color as string, true);
       });
       Text(this.color as string).attributeModifier(new MooTextModifier());
-    }.layoutWeight(1);
+    }
+    .layoutWeight(1);
+  }
+
+  @Monitor('myUi.localMessageTunnel')
+  receiveMessage() {
+    // Receive the result.
+    if (this.myUi.localMessageTunnel?.type == meowAppMessageType.COLOR_PICKED) {
+      if (this.pendingColorDialog) {
+        const mySettings = AppStorageV2.connect(meowManagedSettings)!;
+        mySettings.setByIndex(this.settingsId, this.myUi.localMessageTunnel.payload as string);
+      }
+    }
+    // Stop 'listening'.
+    if (this.myUi.localMessageTunnel?.type == meowAppMessageType.COLOR_PICKER_CLOSED) {
+      if (this.pendingColorDialog) {
+        this.pendingColorDialog = false;
+      }
+    }
   }
 }

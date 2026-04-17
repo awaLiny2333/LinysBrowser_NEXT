@@ -1,11 +1,11 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
-import { meowBookmarkItem } from '../../../hosts/bookmarks/classes/meowBookmarkItem';
-import { meowBookmarkStash } from '../../../hosts/bookmarks/classes/meowBookmarkStash';
-import { meowAppStatuses } from '../../../hosts/env/classes/meowAppStatuses';
-import { meowAppMessageType } from '../../../hosts/env/scripts/messaging';
-import { meowManagedSettings } from '../../../hosts/settings/classes/meowManagedSettings';
+import { meowBookmarkItem } from '../../../hosts/data/bookmarks/classes/meowBookmarkItem';
+import { meowBookmarkStash } from '../../../hosts/data/bookmarks/classes/meowBookmarkStash';
+import { meowAppMessageType } from '../../../hosts/app/windows/scripts/messaging';
+import { meowAppStatuses } from '../../../hosts/app/windows/classes/meowAppStatuses';
+import { meowManagedSettings } from '../../../hosts/data/settings/classes/meowManagedSettings';
 import { MooTextModifier } from '../../common/MooTextModifier';
 import { defaultAnimation, meowThemeColorType, getColor, shortcutsShouldBeOnTheRight, standardSpacing, useEffects } from '../../settings';
 
@@ -35,6 +35,10 @@ struct MeowShortcutsPanel {
         // left: shortcutsShouldBeOnTheRight() ? 0 : standardSpacing
       });
     }
+    .scrollBar(BarState.Off)
+    .align(Alignment.Bottom)
+    .width('100%')
+    .height('100%')
     .edgeEffect(EdgeEffect.Spring)
     .padding(standardSpacing);
   }

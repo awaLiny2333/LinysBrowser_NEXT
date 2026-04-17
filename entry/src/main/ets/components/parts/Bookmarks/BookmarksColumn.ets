@@ -2,10 +2,10 @@ import { unifiedDataChannel } from '@kit.ArkData';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
-import { meowBookmarkItem } from '../../../hosts/bookmarks/classes/meowBookmarkItem';
-import { nowHtmlTimestamp } from '../../../hosts/bookmarks/scripts/helpers';
-import { meowAppStatuses } from '../../../hosts/env/classes/meowAppStatuses';
-import { meowAppMessageType } from '../../../hosts/env/scripts/messaging';
+import { meowBookmarkItem } from '../../../hosts/data/bookmarks/classes/meowBookmarkItem';
+import { nowHtmlTimestamp } from '../../../hosts/data/bookmarks/scripts/helpers';
+import { meowAppMessageType } from '../../../hosts/app/windows/scripts/messaging';
+import { meowAppStatuses } from '../../../hosts/app/windows/classes/meowAppStatuses';
 import { StringPairArrayItem } from '../../common/MooStringPairArrayItem';
 import { MooSymbolButton } from '../../common/MooSymbolButton';
 import { MooTextModifier } from '../../common/MooTextModifier';
@@ -31,16 +31,16 @@ struct BookmarksColumn {
   @Param @Require selectedItem: meowBookmarkItem;
   @Param @Require columnWidth: number;
   @Param @Require avoidBar: boolean;
-  // Data
-  @Local currentFolderChildren: meowBookmarkItem[] = Array.from(this.folder.children); // Maintained through this.refreshRoot().
   // UI
   @Local inDragMode: boolean = true; // By default true, to allow dragging instead of rearranging. TODO: find an elegant way to have them coexist.
   @Local inMore: boolean = false; // By default false, to allow showing more options.
+  @Local refreshFlag: boolean = false;
   listScroller: Scroller = new Scroller();
-  // Events
-  @Event requestSave: () => void;
+  // Requests
+  @Event requestSaveAndBroadcastSync: () => void; // Request the MeowBookmarksPanel to save changes to disk, and request an app-wide broadcast of refresh to sync bookmarks statuses.
   @Event requestImport: () => void;
   @Event requestExport: () => void;
+  // Events
   @Event onSubLevelOpen: (item: meowBookmarkItem) => void; // Open a sub folder
   @Event onSubLevelClose: () => void; // Close the opening sub folder
   @Event onCardClose: () => void; // This card is closed
@@ -77,24 +77,33 @@ struct BookmarksColumn {
       // Feedback to determine if the bookmark items are ok to be deleted.
       if (result) {
         event.setResult(DragResult.DRAG_SUCCESSFUL);
+        this.listScroller.scrollEdge(Edge.Bottom);
       } else {
         event.setResult(DragResult.DRAG_FAILED);
       }
     });
   }
 
+  getFolder() {
+    this.refreshFlag; // To refresh!
+    return Array.from(this.folder.children);
+  }
+
   @Monitor('folder')
   refreshRoot() {
-    this.currentFolderChildren = Array.from(this.folder.children);
-    meow(`Refreshing folder: ${this.folder.name}`, 'BookmarksColumn][refreshRoot', meowLevel.INFO);
+    this.refreshFlag = !this.refreshFlag;
   }
 
   @Monitor('myApp.crossAppMessageTunnel')
   receiveMessage() {
     if (this.myApp.crossAppMessageTunnel?.type == meowAppMessageType.BOOKMARKS_REFRESH) {
-      this.refreshRoot();
-      if (this.currentFolderChildren.indexOf(this.selectedItem) < 0) {
-        this.onSubLevelClose();
+      this.refreshFlag = !this.refreshFlag;
+      try {
+        if (this.folder.children.indexOf(this.selectedItem) < 0) {
+          this.onSubLevelClose();
+        }
+      } catch (e) {
+        // This won't really happen actually.
       }
     }
   }
@@ -102,92 +111,89 @@ struct BookmarksColumn {
   @Builder
   BookmarksList() {
     List({ space: standardSpacing * 0.75, scroller: this.listScroller }) {
-      Repeat(this.currentFolderChildren).each((item: RepeatItem<meowBookmarkItem>) => {
-        ListItem() {
-          StringPairArrayItem({
-            allowEdit: !this.selectMode,
-            allowSelect: true,
-            maxLines: undefined, // Unlimited lines!
-            enableLinkField: !item.item.isFolder,
-            icon: item.item.isFolder ? '󰃅  ' : '',
-            item: [item.item.name, item.item.url],
-            index: item.index,
-            isSelected: this.selectedItem == item.item,
-            onSelect: () => {
-              if (this.selectedItem == item.item) {
-                // Close this folder
-                this.onSubLevelClose();
-                return;
-              }
+      Repeat(this.getFolder())
+        .each((item: RepeatItem<meowBookmarkItem>) => {
+          ListItem() {
+            StringPairArrayItem({
+              allowEdit: !this.selectMode,
+              allowSelect: true,
+              maxLines: undefined, // Unlimited lines!
+              enableLinkField: !item.item.isFolder,
+              icon: item.item.isFolder ? '󰃅  ' : '',
+              item: this.getLabelLinkItem(item.item),
+              index: item.index,
+              isSelected: this.selectedItem == item.item,
+              onSelect: () => {
+                if (this.selectedItem == item.item) {
+                  // Close this folder
+                  this.onSubLevelClose();
+                  return;
+                }
 
-              if (item.item.isFolder) {
-                // Should open this folder.
-                this.onSubLevelOpen(item.item);
-              } else if (!this.selectMode) {
-                // Should visit the web site
-                this.onVisit(item.item.url);
+                if (item.item.isFolder) {
+                  // Should open this folder.
+                  this.onSubLevelOpen(item.item);
+                } else if (!this.selectMode) {
+                  // Should visit the web site
+                  this.onVisit(item.item.url);
+                }
+              },
+              onEdited: (newValues) => {
+                item.item.name = newValues[0];
+                item.item.url = newValues[1];
+                item.item.date_modified = nowHtmlTimestamp();
+                // meow(`heard this.onEdit(${index}, [${newValues[0]}, ${newValues[1]}])`, 'BookmarksColumn][onEdit', meowLevel.WARN);
+                this.requestSaveAndBroadcastSync();
+              },
+              onDelete: () => {
+                try {
+                  this.folder.children.splice(item.index, 1);
+                  this.requestSaveAndBroadcastSync();
+                } catch (e) {
+                  meow(`Error deleting bookmark: ${e}`, 'BookmarksColumn][onDelete', meowLevel.ERROR);
+                }
               }
-            },
-            onEdited: (newValues) => {
-              item.item.name = newValues[0];
-              item.item.url = newValues[1];
-              item.item.date_modified = nowHtmlTimestamp();
-              // meow(`heard this.onEdit(${index}, [${newValues[0]}, ${newValues[1]}])`, 'BookmarksColumn][onEdit', meowLevel.WARN);
-              this.requestSave();
-            },
-            onDelete: () => {
-              try {
-                this.folder.children.splice(item.index, 1);
-                this.currentFolderChildren.splice(item.index, 1);
-                this.requestSave();
-              } catch (e) {
-                meow(`Error deleting bookmark: ${e}`, 'BookmarksColumn][onDelete', meowLevel.ERROR);
-              }
-            }
-          })
-            .opacity(this.selectMode && !item.item.isFolder ? 0.5 : 1)
-            .draggable(this.inDragMode ? true : undefined)
-            .onDragStart((event: DragEvent) => {
-              // Put the item (to be sent) in AppStatuses.
-              const myApp = AppStorageV2.connect(meowAppStatuses)!;
-
-              // Only report level when the current folder is opened.
-              // The entire layer verification design is to ensure that
-              // the dragged item won't be dropped into itself (or its sub folders)
-              // So for a folder that is not opened, it can be dragged anywhere.
-              const reportedLevel = (this.selectedItem == item.item) ? this.level : undefined;
-              myApp.dataTunnelForBookmarks = [reportedLevel, [item.item]]; // [number | undefined, meowBookmarkItem[]]
-
-              // Fill (actually zero) data :P
-              let data = new unifiedDataChannel.ApplicationDefinedRecord();
-              data.applicationDefinedType = meowBookmarkItemUnifiedType;
-              let unifiedData = new unifiedDataChannel.UnifiedData(data);
-              event.setData(unifiedData);
             })
-            .onDragEnd((event) => {
-              if (event.getResult() == DragResult.DRAG_SUCCESSFUL) {
-                // Old father's heart finally drop down.
-                animateToImmediately(defaultAnimation(), () => {
-                  // Splice!
-                  try {
-                    this.folder.children.splice(item.index, 1);
-                    this.currentFolderChildren.splice(item.index, 1);
-                    this.requestSave();
-                  } catch (e) {
-                    meow(`Error deleting bookmark: ${e}`, 'BookmarksColumn][onDelete', meowLevel.ERROR);
-                  }
-                });
-              }
-            });
-        };
-      })
+              .opacity(this.selectMode && !item.item.isFolder ? 0.5 : 1)
+              .draggable(this.inDragMode ? true : undefined)
+              .onDragStart((event: DragEvent) => {
+                // Put the item (to be sent) in AppStatuses.
+                const myApp = AppStorageV2.connect(meowAppStatuses)!;
+
+                // Only report level when the current folder is opened.
+                // The entire layer verification design is to ensure that
+                // the dragged item won't be dropped into itself (or its sub folders)
+                // So for a folder that is not opened, it can be dragged anywhere.
+                const reportedLevel = (this.selectedItem == item.item) ? this.level : undefined;
+                myApp.dataTunnelForBookmarks = [reportedLevel, [item.item]]; // [number | undefined, meowBookmarkItem[]]
+
+                // Fill (actually zero) data :P
+                let data = new unifiedDataChannel.ApplicationDefinedRecord();
+                data.applicationDefinedType = meowBookmarkItemUnifiedType;
+                let unifiedData = new unifiedDataChannel.UnifiedData(data);
+                event.setData(unifiedData);
+              })
+              .onDragEnd((event) => {
+                if (event.getResult() == DragResult.DRAG_SUCCESSFUL) {
+                  // Old father's heart finally drop down.
+                  animateToImmediately(defaultAnimation(), () => {
+                    // Splice!
+                    try {
+                      this.folder.children.splice(item.index, 1);
+                      this.requestSaveAndBroadcastSync();
+                    } catch (e) {
+                      meow(`Error deleting bookmark: ${e}`, 'BookmarksColumn][onDelete', meowLevel.ERROR);
+                    }
+                  });
+                }
+              });
+          };
+        })
         .onMove((from: number, to: number) => {
           try {
             const item = this.folder.children.splice(from, 1);
             this.folder.children.splice(to, 0, item[0]);
-            this.currentFolderChildren.splice(from, 1);
-            this.currentFolderChildren.splice(to, 0, item[0]);
-            this.requestSave();
+            this.requestSaveAndBroadcastSync();
           } catch (e) {
             meow(`Error moving item: ${e}`, 'BookmarksColumn][onMove', meowLevel.ERROR);
           }
@@ -198,6 +204,11 @@ struct BookmarksColumn {
     .width('100%')
     .height('auto')
     .padding(standardSpacing * 0.75);
+  }
+
+  getLabelLinkItem(item: meowBookmarkItem) {
+    this.refreshFlag;
+    return [item.name, item.url];
   }
 
   @Builder
@@ -233,8 +244,7 @@ struct BookmarksColumn {
             animateToImmediately(defaultAnimation(), () => {
               try {
                 this.folder.children.push(newFolder);
-                this.currentFolderChildren.push(newFolder);
-                this.requestSave();
+                this.requestSaveAndBroadcastSync();
               } catch (e) {
                 meow(`Error adding folder: ${e}`, 'BookmarksColumn][onAddFolder', meowLevel.ERROR);
               }
@@ -254,8 +264,7 @@ struct BookmarksColumn {
             animateToImmediately(defaultAnimation(), () => {
               try {
                 this.folder.children.push(newBookmark);
-                this.currentFolderChildren.push(newBookmark);
-                this.requestSave();
+                this.requestSaveAndBroadcastSync();
               } catch (e) {
                 meow(`Error adding bookmark: ${e}`, 'BookmarksColumn][onAddBookmark', meowLevel.ERROR);
               }
@@ -311,6 +320,11 @@ struct BookmarksColumn {
     .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl);
   }
 
+  /**
+   * Things to do after receiving a unified drop event on this column.
+   * @param records The unifiedRecords.
+   * @returns True if succeeded, false if failed.
+   */
   receiveDrop(records: unifiedDataChannel.UnifiedRecord[]) {
     // Grab it from AppStatuses
     const myApp = AppStorageV2.connect(meowAppStatuses)!;
@@ -353,21 +367,18 @@ struct BookmarksColumn {
     }
 
     // Push to the real folder
-    animateToImmediately(defaultAnimation(), () => {
-      try {
-        this.folder.children.push(...newItems);
-        this.currentFolderChildren.push(...newItems);
-      } catch (e) {
-        meow(`Error adding item: ${e}`, `BookmarksColumn][onDrop][${this.folder.name}`, meowLevel.ERROR);
-        // return false;
-      }
-    });
+    try {
+      this.folder.children.push(...newItems);
+    } catch (e) {
+      meow(`Error adding item: ${e}`, `BookmarksColumn][onDrop][${this.folder.name}`, meowLevel.ERROR);
+      return false;
+    }
 
     // Clear tunnel
     myApp.dataTunnelForBookmarks = [];
 
     // Save bookmarks
-    this.requestSave();
+    this.requestSaveAndBroadcastSync();
     return true;
   }
 }

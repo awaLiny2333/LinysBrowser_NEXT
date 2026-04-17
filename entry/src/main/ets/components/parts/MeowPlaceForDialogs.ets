@@ -7,11 +7,9 @@ import { WoofCatsDevDialog } from '../../dialogs/WoofCatsDev/WoofCatsDevCards';
 import { WoofColorPickerDialog } from '../../dialogs/WoofColorPicker/WoofColorPicker';
 import { WoofHomepageDialog } from '../../dialogs/WoofHomepage/WoofHomepage';
 import { WoofSettingsDialog } from '../../dialogs/WoofSettings/WoofSettings';
-import { meowDialogManager, openDialogRequestType } from '../../hosts/env/classes/meowDialogManager';
-import { meowUiStatuses } from '../../hosts/env/classes/meowUiStatuses';
-import { localMessage, meowAppMessageType } from '../../hosts/env/scripts/messaging';
-import { AppStorageV2 } from '@kit.ArkUI';
-import { meowManagedSettings } from '../../hosts/settings/classes/meowManagedSettings';
+import { meowDialogManager, openDialogRequestType } from '../../hosts/app/dialogs/classes/meowDialogManager';
+import { localMessage,meowAppMessageType } from '../../hosts/app/windows/scripts/messaging';
+import { meowUiStatuses } from '../../hosts/app/windows/classes/meowUiStatuses';
 
 /**
  * A place for dialogs.
@@ -39,7 +37,7 @@ struct MeowPlaceForDialogs {
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofSettingsDialogController: CustomDialogController = new CustomDialogController({
-    builder: WoofSettingsDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    builder: WoofSettingsDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
     alignment: DialogAlignment.Center,
     width: '95%',
     // height: '95%',
@@ -47,16 +45,19 @@ struct MeowPlaceForDialogs {
   });
   woofColorPickerController: CustomDialogController = new CustomDialogController({
     builder: WoofColorPickerDialog({
-      myDialog: this.myDialog, myLayout: this.myLayout,
-      onConfirm: (settingsId, hex) => {
-        const mySettings = AppStorageV2.connect(meowManagedSettings)!;
-        mySettings.setByIndex(settingsId, hex);
+      myDialog: this.myDialog,
+      myLayout: this.myLayout,
+      onConfirm: (hex) => {
+        localMessage(this.myUi, meowAppMessageType.COLOR_PICKED, hex);
       }
     }),
     alignment: DialogAlignment.Center,
     width: '95%',
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
+    onDidDisappear: () => {
+      localMessage(this.myUi, meowAppMessageType.COLOR_PICKER_CLOSED);
+    }
   });
   woofBookmarksDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofBookmarksDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi, selectMode: false }),

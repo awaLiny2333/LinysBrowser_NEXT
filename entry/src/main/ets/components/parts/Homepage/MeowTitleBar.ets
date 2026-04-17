@@ -1,8 +1,8 @@
 import { meowAvoid } from "../../../catstypicalframework/hosts/meowAvoid";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
-import { meowDialogManager, openDialogRequestType } from "../../../hosts/env/classes/meowDialogManager";
-import { meowUiStatuses } from "../../../hosts/env/classes/meowUiStatuses";
-import { requestDialog } from "../../../hosts/env/scripts/dialog";
+import { meowDialogManager, openDialogRequestType } from "../../../hosts/app/dialogs/classes/meowDialogManager";
+import { requestDialog } from "../../../hosts/app/dialogs/scripts/dialog";
+import { meowUiStatuses } from "../../../hosts/app/windows/classes/meowUiStatuses";
 import { MooSymbolButton } from "../../common/MooSymbolButton";
 import { defaultAnimation } from "../../settings";
 import { MeowSearchBar } from "./MeowSearchBar";

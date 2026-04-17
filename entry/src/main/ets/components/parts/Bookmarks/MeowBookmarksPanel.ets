@@ -1,9 +1,9 @@
 import { AppStorageV2 } from '@kit.ArkUI';
-import { meowBookmarkItem } from '../../../hosts/bookmarks/classes/meowBookmarkItem';
-import { meowBookmarkStash } from '../../../hosts/bookmarks/classes/meowBookmarkStash';
-import { meowAppStatuses } from '../../../hosts/env/classes/meowAppStatuses';
-import { meowUiStatuses } from '../../../hosts/env/classes/meowUiStatuses';
-import lazy { globalMessage, meowAppMessageType } from '../../../hosts/env/scripts/messaging';
+import { meowBookmarkItem } from '../../../hosts/data/bookmarks/classes/meowBookmarkItem';
+import { meowBookmarkStash } from '../../../hosts/data/bookmarks/classes/meowBookmarkStash';
+import { globalMessage,meowAppMessageType } from '../../../hosts/app/windows/scripts/messaging';
+import { meowUiStatuses } from '../../../hosts/app/windows/classes/meowUiStatuses';
+import { meowAppStatuses } from '../../../hosts/app/windows/classes/meowAppStatuses';
 import { defaultAnimation, isPreferRightHand, minimumCardWidth, standardSpacing } from '../../settings';
 import { BookmarksColumn } from './BookmarksColumn';
 
@@ -73,15 +73,14 @@ struct MeowBookmarksPanel {
                 this.closeAllRightOfWithAnima(fromLayer); // Pop all levels on the right
                 this.recalculateLayout();
               },
-              requestSave: () => {
+              requestSaveAndBroadcastSync: () => {
                 this.myBookmarks.requestSaveToDisk();
                 globalMessage(meowAppMessageType.BOOKMARKS_REFRESH);
               },
               requestImport: () => {
-                this.myBookmarks.importHTMLfromDocuments(item.item)
-                  .then(() => {
-                    globalMessage(meowAppMessageType.BOOKMARKS_REFRESH);
-                  });
+                this.myBookmarks.importHTMLfromDocuments(item.item).then(() => {
+                  globalMessage(meowAppMessageType.BOOKMARKS_REFRESH);
+                });
               },
               requestExport: () => {
                 this.myBookmarks.exportHTMLtoDocuments(item.item);

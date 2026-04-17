@@ -1,8 +1,8 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowLayout } from '../../catstypicalframework/hosts/meowLayout';
-import { meowDialogManager } from '../../hosts/env/classes/meowDialogManager';
-import { getDevMode } from '../../hosts/env/settings';
-import { meowManagedSettings } from '../../hosts/settings/classes/meowManagedSettings';
+import { meowDialogManager } from '../../hosts/app/dialogs/classes/meowDialogManager';
+import { getDevMode } from '../../hosts/app/env/settings';
+import { meowManagedSettings } from '../../hosts/data/settings/classes/meowManagedSettings';
 import { standardSpacing, waterFlowColumnsTemplate } from '../../components/settings';
 import { WoofUniFrame } from '../WoofUniFrame';
 import { SettingsAbout } from './parts/About';
@@ -16,12 +16,14 @@ import { SettingsHistory } from './parts/History';
 import { SettingsOnStartUp } from './parts/OnStartUp';
 import { SettingsSecurity } from './parts/Security';
 import { SettingsStorage } from './parts/Storage';
+import { meowUiStatuses } from '../../hosts/app/windows/classes/meowUiStatuses';
 
 @ComponentV2
 struct WoofSettings {
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
   @Param @Require myDialog: meowDialogManager;
   @Param @Require myLayout: meowLayout;
+  @Param @Require myUi: meowUiStatuses;
 
   build() {
     Scroll() {
@@ -39,7 +41,7 @@ struct WoofSettings {
           SettingsAccessibility();
         };
         FlowItem() {
-          SettingsAppearance({ myDialog: this.myDialog });
+          SettingsAppearance({ myDialog: this.myDialog, myUi: this.myUi });
         };
         FlowItem() {
           SettingsHistory();
@@ -77,10 +79,11 @@ struct WoofSettingsDialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
   @Require myLayout: meowLayout;
+  @Require myUi: meowUiStatuses;
 
   build() {
     WoofUniFrame({ controller: this.controller, title: $r('app.string.Settings'), myDialog: this.myDialog, myLayout: this.myLayout }) {
-      WoofSettings({ myDialog: this.myDialog, myLayout: this.myLayout });
+      WoofSettings({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi });
     };
   }
 }
