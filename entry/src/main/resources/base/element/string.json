@@ -41,6 +41,14 @@
       "value": "Refresh  󰃈"
     },
     {
+      "name": "General_select",
+      "value": "Select  󰂺"
+    },
+    {
+      "name": "General_unselect",
+      "value": "Unselect  󰃑"
+    },
+    {
       "name": "Settings",
       "value": "Settings"
     },
@@ -495,6 +503,30 @@
     {
       "name": "Bookmarks",
       "value": "Bookmarks"
+    },
+    {
+      "name": "Homepage",
+      "value": "Cat's Home Page"
+    },
+    {
+      "name": "Homepage_backdrop",
+      "value": "Backdrop"
+    },
+    {
+      "name": "Homepage_backdrop_selectFromFiles",
+      "value": "Select from Files  󰃅"
+    },
+    {
+      "name": "Homepage_backdrop_selectFromGallery",
+      "value": "Select from Gallery  󰓥"
+    },
+    {
+      "name": "Homepage_shortcuts",
+      "value": "Bookmark Shortcuts"
+    },
+    {
+      "name": "Homepage_shortcuts_initialHeight",
+      "value": "Initial height of shortcuts list"
     },
     {
       "name": "Permission_reason_DETECT_GESTURES",

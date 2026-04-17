@@ -71,7 +71,7 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('custom_search_engines', meowSettingsEntryType.STRING_ARRAY_PAIR, presetSearchEngines()), // #43
   new meowSettingsEntry('custom_search_engines_selected_index', meowSettingsEntryType.NUMBER, '-1'),
   new meowSettingsEntry('homepage_shortcuts_bookmarks_dir', meowSettingsEntryType.STRING, ''),
-  new meowSettingsEntry('homepage_shortcuts_init_height', meowSettingsEntryType.NUMBER, '50'),
+  new meowSettingsEntry('homepage_shortcuts_init_height', meowSettingsEntryType.NUMBER, '50'), // #46
 
   // Single hand accessibility
   new meowSettingsEntry('preferred_hand_left_or_right', meowSettingsEntryType.STRING, 'right'), // #47

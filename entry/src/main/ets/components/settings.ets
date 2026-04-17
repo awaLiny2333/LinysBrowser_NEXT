@@ -205,3 +205,13 @@ export function sidebarShouldBeOnTheRight() {
   const reverseSidebar = mySettings.settingsData[49].value as boolean;
   return isPreferRightHand() && !reverseSidebar;
 }
+
+/**
+ * Check the settings and see if the shortcuts should be on the right.
+ * @returns True if the shortcuts should be on the right, false otherwise.
+ */
+export function shortcutsShouldBeOnTheRight() {
+  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
+  const reverseShortcuts = mySettings.settingsData[50].value as boolean;
+  return isPreferRightHand() && !reverseShortcuts;
+}

@@ -4,19 +4,24 @@ import { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger'
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
 import { meowBookmarkItem } from '../../../hosts/bookmarks/classes/meowBookmarkItem';
 import { nowHtmlTimestamp } from '../../../hosts/bookmarks/scripts/helpers';
-import { meowAppMessageType, meowAppStatuses } from '../../../hosts/env/classes/meowAppStatuses';
+import { meowAppStatuses } from '../../../hosts/env/classes/meowAppStatuses';
+import { meowAppMessageType } from '../../../hosts/env/scripts/messaging';
 import { StringPairArrayItem } from '../../common/MooStringPairArrayItem';
 import { MooSymbolButton } from '../../common/MooSymbolButton';
 import { MooTextModifier } from '../../common/MooTextModifier';
 import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from '../../settings';
 
 /**
- *
+ * The Unified Type name of bookmark items.
+ * This is used to verify the dropped items to the column.
+ * See the onDrop() code below!
  */
 export const meowBookmarkItemUnifiedType = 'ApplicationDefined.meowBookmarkItem.flag';
 
 @ComponentV2
 struct BookmarksColumn {
+  // Config
+  @Param @Once selectMode: boolean = false; // False for normal (display and edit) mode, true for select mode.
   // Host
   @Local myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!; // For event receiving.
   // Params
@@ -41,6 +46,7 @@ struct BookmarksColumn {
   @Event onCardClose: () => void; // This card is closed
   @Event onVisit: (url: string) => void;
   @Event onDropReceivedAnOpenedFolder: (fromLayer: number) => void;
+  @Event onSelect: (item: meowBookmarkItem) => void; // For select mode only.
 
   build() {
     Column({ space: standardSpacing }) {
@@ -99,7 +105,7 @@ struct BookmarksColumn {
       Repeat(this.currentFolderChildren).each((item: RepeatItem<meowBookmarkItem>) => {
         ListItem() {
           StringPairArrayItem({
-            allowEdit: true,
+            allowEdit: !this.selectMode,
             allowSelect: true,
             maxLines: undefined, // Unlimited lines!
             enableLinkField: !item.item.isFolder,
@@ -117,7 +123,7 @@ struct BookmarksColumn {
               if (item.item.isFolder) {
                 // Should open this folder.
                 this.onSubLevelOpen(item.item);
-              } else {
+              } else if (!this.selectMode) {
                 // Should visit the web site
                 this.onVisit(item.item.url);
               }
@@ -139,6 +145,7 @@ struct BookmarksColumn {
               }
             }
           })
+            .opacity(this.selectMode && !item.item.isFolder ? 0.5 : 1)
             .draggable(this.inDragMode ? true : undefined)
             .onDragStart((event: DragEvent) => {
               // Put the item (to be sent) in AppStatuses.
@@ -149,7 +156,7 @@ struct BookmarksColumn {
               // the dragged item won't be dropped into itself (or its sub folders)
               // So for a folder that is not opened, it can be dragged anywhere.
               const reportedLevel = (this.selectedItem == item.item) ? this.level : undefined;
-              myApp.crossAppDataTunnel = [reportedLevel, [item.item]]; // [number | undefined, meowBookmarkItem[]]
+              myApp.dataTunnelForBookmarks = [reportedLevel, [item.item]]; // [number | undefined, meowBookmarkItem[]]
 
               // Fill (actually zero) data :P
               let data = new unifiedDataChannel.ApplicationDefinedRecord();
@@ -269,16 +276,26 @@ struct BookmarksColumn {
         Text(this.folder.name).attributeModifier(new MooTextModifier()).wordBreak(WordBreak.BREAK_ALL).maxLines(2).layoutWeight(1);
       }
 
-      // Toggle More mode
-      MooSymbolButton({
-        icon: $r('sys.symbol.dot_grid_2x2'),
-        onHold: this.inMore,
-        clickAction: () => {
-          animateToImmediately(defaultAnimation(), () => {
-            this.inMore = !this.inMore;
-          });
-        }
-      });
+      if (this.selectMode) {
+        // OK
+        MooSymbolButton({
+          icon: $r('sys.symbol.checkmark'),
+          clickAction: () => {
+            this.onSelect(this.folder);
+          }
+        });
+      } else {
+        // Toggle More mode
+        MooSymbolButton({
+          icon: $r('sys.symbol.dot_grid_2x2'),
+          onHold: this.inMore,
+          clickAction: () => {
+            animateToImmediately(defaultAnimation(), () => {
+              this.inMore = !this.inMore;
+            });
+          }
+        });
+      }
 
       // Close card.
       if (this.canCloseThis) {
@@ -297,7 +314,7 @@ struct BookmarksColumn {
   receiveDrop(records: unifiedDataChannel.UnifiedRecord[]) {
     // Grab it from AppStatuses
     const myApp = AppStorageV2.connect(meowAppStatuses)!;
-    const pack = myApp.crossAppDataTunnel as (meowBookmarkItem[] | number)[];
+    const pack = myApp.dataTunnelForBookmarks as (meowBookmarkItem[] | number)[];
     const fromLevel = pack[0] as number | undefined;
     const item = pack[1] as meowBookmarkItem[];
 
@@ -347,7 +364,7 @@ struct BookmarksColumn {
     });
 
     // Clear tunnel
-    myApp.crossAppDataTunnel = [];
+    myApp.dataTunnelForBookmarks = [];
 
     // Save bookmarks
     this.requestSave();

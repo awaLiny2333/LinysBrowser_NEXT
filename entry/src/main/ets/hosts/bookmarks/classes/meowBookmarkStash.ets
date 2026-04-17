@@ -15,7 +15,59 @@ export class meowBookmarkStash {
   constructor(defaultBookmarksPath: string) {
     this.defaultBookmarksPath = defaultBookmarksPath;
   }
-  
+
+  // Look up
+
+  /**
+     * Get folder by path.
+     * @param path The path. e.g. '/Bookmarks~Meow/New Folder can now be renamed/Bookmarks~Meow/UpSchool'
+     * @returns The target meowBookmarkItem, or undefined if not found.
+     */
+  getFolder(path: string): meowBookmarkItem | undefined {
+    if (!path || path.length === 0) return undefined;
+
+    let current: meowBookmarkItem = this.root;
+    let segStart = -1;
+    let isPathStart = true;
+
+    // 遍历路径字符串，手动切割段，避免 split 产生数组分配
+    for (let i = 0; i <= path.length; i++) {
+      const c = (i < path.length) ? path.charCodeAt(i) : 47; // 47 是 '/'，假装末尾有个 '/' 方便截断最后一段
+
+      if (c === 47) { // 遇到 '/'
+        if (segStart !== -1) {
+          const segment = path.substring(segStart, i);
+
+          if (isPathStart) {
+            // 第一段必须严格等于当前根节点的名字
+            if (current.name !== segment) return undefined;
+            isPathStart = false;
+          } else {
+            // 后续段必须在当前节点的 children 里找
+            if (!current.isFolder || current.children.length === 0) return undefined;
+
+            let found = false;
+            for (let j = 0; j < current.children.length; j++) {
+              const child = current.children[j];
+              if (child.name === segment) {
+                current = child;
+                found = true;
+                break; // 命中立刻跳出内层循环
+              }
+            }
+            if (!found) return undefined; // 某一级找不到，直接判定路径无效
+          }
+        }
+        segStart = -1;
+      } else if (segStart === -1) {
+        // 记录非 '/' 字符的起始位置
+        segStart = i;
+      }
+    }
+
+    return current;
+  }
+
   // Files
 
   /**
@@ -53,7 +105,7 @@ export class meowBookmarkStash {
 
   /**
    * Export bookmarks to HTML file in documents.
-   * 
+   *
    * @param folder The folder to export.
    */
   async exportHTMLtoDocuments(folder: meowBookmarkItem = this.root) {
@@ -65,7 +117,7 @@ export class meowBookmarkStash {
     await fileDocumentPickSave('Bookmarks.html', htmlText);
     return true;
   }
-  
+
   // Internal
 
   /**

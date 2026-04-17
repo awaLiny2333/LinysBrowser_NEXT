@@ -41,6 +41,14 @@
       "value": "刷新  󰃈"
     },
     {
+      "name": "General_select",
+      "value": "选择  󰂺"
+    },
+    {
+      "name": "General_unselect",
+      "value": "取消选择  󰃑"
+    },
+    {
       "name": "Settings",
       "value": "设置"
     },
@@ -495,6 +503,30 @@
     {
       "name": "Bookmarks",
       "value": "书签"
+    },
+    {
+      "name": "Homepage",
+      "value": "猫咪的主页"
+    },
+    {
+      "name": "Homepage_backdrop",
+      "value": "壁纸"
+    },
+    {
+      "name": "Homepage_backdrop_selectFromFiles",
+      "value": "从文件中选择  󰃅"
+    },
+    {
+      "name": "Homepage_backdrop_selectFromGallery",
+      "value": "从相册中选择  󰓥"
+    },
+    {
+      "name": "Homepage_shortcuts",
+      "value": "快捷书签"
+    },
+    {
+      "name": "Homepage_shortcuts_initialHeight",
+      "value": "快捷列表初始高度"
     },
     {
       "name": "Permission_reason_DETECT_GESTURES",

@@ -1,6 +1,6 @@
-import { fileCopy, fileDocumentPick2Path, galleryPick2Path, readArrayBufferConcurrent } from "../../../catstypicalframework/utils/storage";
 import { image } from "@kit.ImageKit";
-import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
+import lazy { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
+import lazy { fileCopy, fileDocumentPick2Path, galleryPick2Path, readArrayBufferConcurrent } from "../../../catstypicalframework/utils/storage";
 
 /**
  * The one who manages miscallaneous resources.
@@ -26,7 +26,8 @@ export class meowResources {
       meow(`Failed from ${this.backgroundImagePath}. Does it ever exist?`, 'meowResources][loadBackgroundImage', meowLevel.WARN);
       return;
     }
-    this.backgroundImage = await image.createImageSource(buf).createPixelMap();
+    const backgroundImage = await image.createImageSource(buf).createPixelMap();
+    this.backgroundImage = backgroundImage;
   }
 
   /**

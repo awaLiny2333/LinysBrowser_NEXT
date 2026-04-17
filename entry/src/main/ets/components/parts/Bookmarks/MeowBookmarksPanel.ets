@@ -1,9 +1,9 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowBookmarkItem } from '../../../hosts/bookmarks/classes/meowBookmarkItem';
 import { meowBookmarkStash } from '../../../hosts/bookmarks/classes/meowBookmarkStash';
-import { meowAppMessageType, meowAppStatuses } from '../../../hosts/env/classes/meowAppStatuses';
+import { meowAppStatuses } from '../../../hosts/env/classes/meowAppStatuses';
 import { meowUiStatuses } from '../../../hosts/env/classes/meowUiStatuses';
-import lazy { globalMessage } from '../../../hosts/env/scripts/messaging';
+import lazy { globalMessage, meowAppMessageType } from '../../../hosts/env/scripts/messaging';
 import { defaultAnimation, isPreferRightHand, minimumCardWidth, standardSpacing } from '../../settings';
 import { BookmarksColumn } from './BookmarksColumn';
 
@@ -12,6 +12,8 @@ import { BookmarksColumn } from './BookmarksColumn';
  */
 @ComponentV2
 struct MeowBookmarksPanel {
+  // Config
+  @Param @Once selectMode: boolean = false; // False for normal (display and edit) mode, true for select mode.
   // Hosts
   @Param @Require myUi: meowUiStatuses;
   @Local myBookmarks: meowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
@@ -22,6 +24,7 @@ struct MeowBookmarksPanel {
   @Local columnWidth: number = 0;
   // Event
   @Event requestVisit: (url: string) => void;
+  @Event onSelect: (folder: meowBookmarkItem, path: string) => void;
 
   aboutToAppear(): void {
     // Initialize
@@ -37,6 +40,7 @@ struct MeowBookmarksPanel {
         Repeat(this.myUi.openedStack)
           .each((item: RepeatItem<meowBookmarkItem>) => {
             BookmarksColumn({
+              selectMode: this.selectMode,
               canCloseThis: item.index > 0,
               columnWidth: this.columnWidth,
               avoidBar: this.maxColumn < this.myUi.openedStack.length,
@@ -81,6 +85,9 @@ struct MeowBookmarksPanel {
               },
               requestExport: () => {
                 this.myBookmarks.exportHTMLtoDocuments(item.item);
+              },
+              onSelect: (folder) => {
+                this.onSelect(folder, `/${this.myUi.openedStack.join('/')}`);
               }
             });
           });

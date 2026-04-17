@@ -13,11 +13,13 @@ import lazy { MeowTitleTop } from '../components/parts/Homepage/MeowTitleTop';
 import lazy { isTabsStyleVertical, defaultAnimation, defaultHorizontalTabsHeight, defaultSidebarWidth, getColor, meowThemeColorType, mooTextType, showGiganticWindowTitle, sidebarShouldBeOnTheRight, standardSpacing, titleBarPositionBottom, useEffects } from '../components/settings';
 import lazy { showingSidebar } from '../components/statuses';
 import { meowAppStatuses } from '../hosts/env/classes/meowAppStatuses';
-import { meowDialogManager } from '../hosts/env/classes/meowDialogManager';
+import { meowDialogManager, openDialogRequestType } from '../hosts/env/classes/meowDialogManager';
 import { meowResources } from '../hosts/env/classes/meowResources';
 import { meowUiStatuses } from '../hosts/env/classes/meowUiStatuses';
 import { getLastWindowId } from '../hosts/env/scripts/multiwindows';
 import { meowManagedSettings } from '../hosts/settings/classes/meowManagedSettings';
+import { requestDialog } from '../hosts/env/scripts/dialog';
+import { MeowShortcutsPanel } from '../components/parts/Homepage/MeowShortcuts';
 
 @Entry
 @ComponentV2
@@ -56,11 +58,21 @@ struct Index {
         // This is ugly.
         Column() {
           Stack() {
-            Image(this.myResources.backgroundImage)
-              .opacity(useEffects() ? 0.5 : 1)
-              .grayscale(useEffects() ? 1 : 0)
-              .animation(defaultAnimation());
-
+            if (this.myResources.backgroundImage) {
+              Image(this.myResources.backgroundImage)
+                .opacity(useEffects() ? 0.5 : 1)
+                .grayscale(useEffects() ? 1 : 0)
+                .animation(defaultAnimation())
+                .onClick(() => {
+                  requestDialog(this.myDialog, openDialogRequestType.HOMEPAGE);
+                });
+            }
+            MeowShortcutsPanel({
+              myLayout: this.myLayout
+            })
+              .onClick(() => {
+                requestDialog(this.myDialog, openDialogRequestType.HOMEPAGE);
+              });
           }
           .border(useEffects() ? { radius: defaultInnerRadius, width: 1, color: $r('sys.color.icon_fourth') } : { width: 0, radius: 0 })
           .backgroundColor(getColor(meowThemeColorType.PRIMARY))
@@ -135,7 +147,7 @@ struct Index {
             bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
             middle: { anchor: '__container__', align: HorizontalAlign.Center }
           })
-          .translate({ y: (titleBarPositionBottom() || useEffects() ? - this.myAvoid.bottom - (this.myLayout.freeWindow ? standardSpacing : 0) : 0) }) // Bottom avoid.
+          .translate({ y: (titleBarPositionBottom() || useEffects() ? -this.myAvoid.bottom - (this.myLayout.freeWindow ? standardSpacing : 0) : 0) }) // Bottom avoid.
           .padding(titleBarPositionBottom() ? { top: standardSpacing } : 0)
           .width('100%');
         }

@@ -62,10 +62,12 @@ export class meowDialogManager {
  * Types of dialogs
  */
 export enum openDialogRequestType {
-  DEV = 0,
-  SETTINGS = 1,
-  COLOR_PICKER = 2,
-  BOOKMARKS = 3
+  DEV,
+  SETTINGS,
+  COLOR_PICKER,
+  BOOKMARKS,
+  BOOKMARKS_PICKER,
+  HOMEPAGE
 }
 
 /**

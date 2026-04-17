@@ -95,7 +95,7 @@ export function listenAvoid(windowClass: window.Window, windowId: string) {
 
       if (data.type == window.AvoidAreaType.TYPE_SYSTEM) {
         let top = meowPx2vp(data.area.topRect.height);
-        if (myLayout && !myLayout.isOnFocus) {
+        if (myLayout && !myLayout.freeWindow) {
           // Traditional window
           avoid.top = top;
         } else {
@@ -105,7 +105,7 @@ export function listenAvoid(windowClass: window.Window, windowId: string) {
       }
       if (data.type == window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
         let bottom = meowPx2vp(data.area.bottomRect.height) * 0.75;
-        if (myLayout && !myLayout.isOnFocus) {
+        if (myLayout && !myLayout.freeWindow) {
           avoid.bottom = Math.max(bottom, 8);
         } else {
           avoid.bottom = 0; // No bottom avoid for free windows.
@@ -138,7 +138,7 @@ export function getUpdateAvoid(windowClass: window.Window, windowId: string) {
     // Get
     avoidArea = windowClass.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
     let top = meowPx2vp(avoidArea.topRect.height);
-    if (myLayout && !myLayout.isOnFocus) {
+    if (myLayout && !myLayout.freeWindow) {
       // Traditional window
       avoid.top = top;
     } else {
@@ -147,7 +147,7 @@ export function getUpdateAvoid(windowClass: window.Window, windowId: string) {
     }
 
     avoidArea = windowClass.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR);
-    if (myLayout && !myLayout.isOnFocus) {
+    if (myLayout && !myLayout.freeWindow) {
       avoid.bottom = Math.max(meowPx2vp(avoidArea.bottomRect.height) * 0.75, 8);
     } else {
       avoid.bottom = 0; // No bottom avoid for free windows.
