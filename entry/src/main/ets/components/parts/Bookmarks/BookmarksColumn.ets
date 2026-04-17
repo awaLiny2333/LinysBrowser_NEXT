@@ -31,6 +31,7 @@ struct BookmarksColumn {
   // UI
   @Local inDragMode: boolean = true; // By default true, to allow dragging instead of rearranging. TODO: find an elegant way to have them coexist.
   @Local inMore: boolean = false; // By default false, to allow showing more options.
+  listScroller: Scroller = new Scroller();
   // Events
   @Event requestSave: () => void;
   @Event requestImport: () => void;
@@ -94,7 +95,7 @@ struct BookmarksColumn {
 
   @Builder
   BookmarksList() {
-    List({ space: standardSpacing * 0.75 }) {
+    List({ space: standardSpacing * 0.75, scroller: this.listScroller }) {
       Repeat(this.currentFolderChildren).each((item: RepeatItem<meowBookmarkItem>) => {
         ListItem() {
           StringPairArrayItem({
@@ -220,7 +221,8 @@ struct BookmarksColumn {
           icon: $r('sys.symbol.folder_badge_plus'),
           clickAction: () => {
             // New folder
-            const newFolder = new meowBookmarkItem(true, `New Folder on ${new Date().toLocaleString()}`, '');
+            const label = `New Folder on ${new Date().toLocaleString()}`;
+            const newFolder = new meowBookmarkItem(true, label, '');
             animateToImmediately(defaultAnimation(), () => {
               try {
                 this.folder.children.push(newFolder);
@@ -230,6 +232,7 @@ struct BookmarksColumn {
                 meow(`Error adding folder: ${e}`, 'BookmarksColumn][onAddFolder', meowLevel.ERROR);
               }
             });
+            this.listScroller.scrollEdge(Edge.Bottom);
           }
         });
 
@@ -238,7 +241,9 @@ struct BookmarksColumn {
           icon: $r('sys.symbol.book_closed_right_left_badge_plus'),
           clickAction: () => {
             // New bookmark
-            const newBookmark = new meowBookmarkItem(false, `New Bookmark on ${new Date().toLocaleString()}`, ''); // TODO: grab current page info!
+            const label = `New Bookmark on ${new Date().toLocaleString()}`;
+            const link = '';
+            const newBookmark = new meowBookmarkItem(false, label, link); // TODO: grab current page info!
             animateToImmediately(defaultAnimation(), () => {
               try {
                 this.folder.children.push(newBookmark);
@@ -248,6 +253,7 @@ struct BookmarksColumn {
                 meow(`Error adding bookmark: ${e}`, 'BookmarksColumn][onAddBookmark', meowLevel.ERROR);
               }
             });
+            this.listScroller.scrollEdge(Edge.Bottom);
           }
         });
 
