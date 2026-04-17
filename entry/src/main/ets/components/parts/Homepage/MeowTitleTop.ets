@@ -1,14 +1,15 @@
 import { meowAvoid } from '../../../catstypicalframework/hosts/meowAvoid';
 import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import { windowTopAvoidLeft, windowTopAvoidRight } from '../../../catstypicalframework/utils/ui';
-import { meowDialogManager, openDialogRequestType } from '../../../hosts/app/dialogs/classes/meowDialogManager';
-import { requestDialog } from '../../../hosts/app/dialogs/scripts/dialog';
-import { showWindowTitle, windowTitlePosition } from '../../settings';
-import { MooSymbolButtonSmall } from '../../common/MooSymbolButtonSmall';
-import { MooTextModifier } from '../../common/MooTextModifier';
-import { newWindow } from '../../../hosts/app/windows/scripts/multiwindows';
 import { common } from '@kit.AbilityKit';
-import { meowUiStatuses } from '../../../hosts/app/windows/classes/meowUiStatuses';
+import { showWindowTitle,windowTitlePosition } from '../../settings';
+import { MooTextModifier } from '../../common/MooTextModifier';
+import { MooSymbolButtonSmall } from '../../common/MooSymbolButtonSmall';
+import { newWindow } from '../../../hosts/system/windows/scripts/multiwindows';
+import { meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
+import { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
+import { meowDialogManager,openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
+
 
 /**
  * The window top bar. Holds the buttons on window top, as well as the name of window / zone.

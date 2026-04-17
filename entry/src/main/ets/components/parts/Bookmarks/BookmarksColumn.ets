@@ -4,8 +4,8 @@ import { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger'
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
 import { meowBookmarkItem } from '../../../hosts/data/bookmarks/classes/meowBookmarkItem';
 import { nowHtmlTimestamp } from '../../../hosts/data/bookmarks/scripts/helpers';
-import { meowAppMessageType } from '../../../hosts/app/windows/scripts/messaging';
-import { meowAppStatuses } from '../../../hosts/app/windows/classes/meowAppStatuses';
+import { meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
+import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
 import { StringPairArrayItem } from '../../common/MooStringPairArrayItem';
 import { MooSymbolButton } from '../../common/MooSymbolButton';
 import { MooTextModifier } from '../../common/MooTextModifier';

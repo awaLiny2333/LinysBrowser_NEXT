@@ -1,9 +1,9 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowBookmarkItem } from '../../../hosts/data/bookmarks/classes/meowBookmarkItem';
 import { meowBookmarkStash } from '../../../hosts/data/bookmarks/classes/meowBookmarkStash';
-import { globalMessage,meowAppMessageType } from '../../../hosts/app/windows/scripts/messaging';
-import { meowUiStatuses } from '../../../hosts/app/windows/classes/meowUiStatuses';
-import { meowAppStatuses } from '../../../hosts/app/windows/classes/meowAppStatuses';
+import { globalMessage,meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
+import { meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
+import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
 import { defaultAnimation, isPreferRightHand, minimumCardWidth, standardSpacing } from '../../settings';
 import { BookmarksColumn } from './BookmarksColumn';
 

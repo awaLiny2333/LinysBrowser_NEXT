@@ -9,8 +9,8 @@
 import { AppStorageV2, LengthMetrics } from "@kit.ArkUI";
 import Curves from '@ohos.curves';
 import { meowLayout } from "../catstypicalframework/hosts/meowLayout";
-import { meowAppStatuses } from "../hosts/app/windows/classes/meowAppStatuses";
 import { meowManagedSettings } from "../hosts/data/settings/classes/meowManagedSettings";
+import { meowAppStatuses } from "../hosts/system/windows/classes/meowAppStatuses";
 
 // Constants
 export const fontSizeSymbol = 24;

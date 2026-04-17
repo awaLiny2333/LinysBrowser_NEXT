@@ -1,9 +1,10 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowLayout } from '../../catstypicalframework/hosts/meowLayout';
-import { meowDialogManager } from '../../hosts/app/dialogs/classes/meowDialogManager';
-import { getDevMode } from '../../hosts/app/env/settings';
-import { meowManagedSettings } from '../../hosts/data/settings/classes/meowManagedSettings';
 import { standardSpacing, waterFlowColumnsTemplate } from '../../components/settings';
+import { meowManagedSettings } from '../../hosts/data/settings/classes/meowManagedSettings';
+import { meowDialogManager } from '../../hosts/system/dialogs/classes/meowDialogManager';
+import { getDevMode } from '../../hosts/system/env/settings';
+import { meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
 import { WoofUniFrame } from '../WoofUniFrame';
 import { SettingsAbout } from './parts/About';
 import { SettingsAccessibility } from './parts/Accessibility';
@@ -16,7 +17,6 @@ import { SettingsHistory } from './parts/History';
 import { SettingsOnStartUp } from './parts/OnStartUp';
 import { SettingsSecurity } from './parts/Security';
 import { SettingsStorage } from './parts/Storage';
-import { meowUiStatuses } from '../../hosts/app/windows/classes/meowUiStatuses';
 
 @ComponentV2
 struct WoofSettings {

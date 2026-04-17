@@ -1,8 +1,8 @@
-import { meowDialogManager } from '../hosts/app/dialogs/classes/meowDialogManager';
 import { MooSymbolButton } from '../components/common/MooSymbolButton';
 import { MooTextModifier } from '../components/common/MooTextModifier';
 import { defaultAnimation, getColor, meowThemeColorType, mooTextType, useEffects } from '../components/settings';
 import { meowLayout } from '../catstypicalframework/hosts/meowLayout';
+import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
 
 @ComponentV2
 struct WoofUniFrame {

@@ -3,9 +3,9 @@ import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
 import { meowBookmarkItem } from '../../../hosts/data/bookmarks/classes/meowBookmarkItem';
 import { meowBookmarkStash } from '../../../hosts/data/bookmarks/classes/meowBookmarkStash';
-import { meowAppMessageType } from '../../../hosts/app/windows/scripts/messaging';
-import { meowAppStatuses } from '../../../hosts/app/windows/classes/meowAppStatuses';
 import { meowManagedSettings } from '../../../hosts/data/settings/classes/meowManagedSettings';
+import { meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
+import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
 import { MooTextModifier } from '../../common/MooTextModifier';
 import { defaultAnimation, meowThemeColorType, getColor, shortcutsShouldBeOnTheRight, standardSpacing, useEffects } from '../../settings';
 

@@ -2,7 +2,7 @@
  * ALL UI STATUSES GETTERS SHOULD BE HERE!
  */
 import { meowLayout } from "../catstypicalframework/hosts/meowLayout";
-import lazy { meowUiStatuses } from "../hosts/app/windows/classes/meowUiStatuses";
+import { meowUiStatuses } from "../hosts/system/windows/classes/meowUiStatuses";
 import { isTabsStyleVertical } from "./settings";
 
 /**

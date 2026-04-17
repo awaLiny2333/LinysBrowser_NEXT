@@ -1,14 +1,14 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import lazy { addUnitsToSize } from '../../../catstypicalframework/utils/storage';
-import lazy { removeWebCache, scanWebCacheSize } from '../../../hosts/app/env/scripts/storage';
-import lazy { scanHistoryIndexSize } from '../../../hosts/data/history/scripts/storage';
-import { meowManagedSettings } from '../../../hosts/data/settings/classes/meowManagedSettings';
-import lazy { mooTextType, standardSpacing } from '../../../components/settings';
 import { MooCapsuleButton } from '../../../components/common/MooCapsuleButton';
 import { MooTextModifier } from '../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../components/common/UniContentCard';
 import { UniRowOfCapsuleButtons } from '../../../components/common/UniRowOfCapsuleButtons';
-import { meowAppStatuses } from '../../../hosts/app/windows/classes/meowAppStatuses';
+import lazy { mooTextType, standardSpacing } from '../../../components/settings';
+import lazy { scanHistoryIndexSize } from '../../../hosts/data/history/scripts/storage';
+import { meowManagedSettings } from '../../../hosts/data/settings/classes/meowManagedSettings';
+import lazy { removeWebCache, scanWebCacheSize } from '../../../hosts/system/env/scripts/storage';
+import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
 
 @ComponentV2
 struct SettingsStorage {

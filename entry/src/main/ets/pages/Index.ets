@@ -12,14 +12,14 @@ import lazy { heightMeowTitleBar, MeowTitleBar } from '../components/parts/Homep
 import lazy { MeowTitleTop } from '../components/parts/Homepage/MeowTitleTop';
 import lazy { isTabsStyleVertical, defaultAnimation, defaultHorizontalTabsHeight, defaultSidebarWidth, getColor, meowThemeColorType, mooTextType, showGiganticWindowTitle, sidebarShouldBeOnTheRight, standardSpacing, titleBarPositionBottom, useEffects } from '../components/settings';
 import lazy { showingSidebar } from '../components/statuses';
-import { meowDialogManager, openDialogRequestType } from '../hosts/app/dialogs/classes/meowDialogManager';
-import { meowResources } from '../hosts/app/env/classes/meowResources';
-import { getLastWindowId } from '../hosts/app/windows/scripts/multiwindows';
-import { meowManagedSettings } from '../hosts/data/settings/classes/meowManagedSettings';
-import { requestDialog } from '../hosts/app/dialogs/scripts/dialog';
 import { MeowShortcutsPanel } from '../components/parts/Homepage/MeowShortcuts';
-import { meowAppStatuses } from '../hosts/app/windows/classes/meowAppStatuses';
-import { meowUiStatuses } from '../hosts/app/windows/classes/meowUiStatuses';
+import { meowManagedSettings } from '../hosts/data/settings/classes/meowManagedSettings';
+import { meowDialogManager, openDialogRequestType } from '../hosts/system/dialogs/classes/meowDialogManager';
+import { requestDialog } from '../hosts/system/dialogs/scripts/dialog';
+import { meowResources } from '../hosts/system/env/classes/meowResources';
+import { meowAppStatuses } from '../hosts/system/windows/classes/meowAppStatuses';
+import { meowUiStatuses } from '../hosts/system/windows/classes/meowUiStatuses';
+import { getLastWindowId } from '../hosts/system/windows/scripts/multiwindows';
 
 @Entry
 @ComponentV2
@@ -63,7 +63,7 @@ struct Index {
               Image(this.myResources.backgroundImage)
                 .opacity(useEffects() ? 0.5 : 1)
                 .grayscale(useEffects() ? 1 : 0)
-                .animation(defaultAnimation())
+                .animation(defaultAnimation());
             }
             // Shortcuts
             MeowShortcutsPanel({

@@ -7,13 +7,13 @@ import { MooTabSegmentV2 } from "../../../components/common/MooTabSegmentV2";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
 import { defaultAnimation, getColor, meowThemeColorType, mooTextType, standardSpacing, useEffects } from "../../../components/settings";
-import { meowDialogManager, openDialogRequestType } from "../../../hosts/app/dialogs/classes/meowDialogManager";
-import { requestDialog } from "../../../hosts/app/dialogs/scripts/dialog";
-import { meowAppMessageType } from "../../../hosts/app/windows/scripts/messaging";
-import { meowUiStatuses } from "../../../hosts/app/windows/classes/meowUiStatuses";
-import { meowAppStatuses } from "../../../hosts/app/windows/classes/meowAppStatuses";
 import { meowManagedSettings } from "../../../hosts/data/settings/classes/meowManagedSettings";
 import { resetAnimations, resetColors } from "../../../hosts/data/settings/scripts/reset";
+import { meowAppMessageType } from "../../../hosts/system/windows/scripts/messaging";
+import { meowUiStatuses } from "../../../hosts/system/windows/classes/meowUiStatuses";
+import { meowAppStatuses } from "../../../hosts/system/windows/classes/meowAppStatuses";
+import { requestDialog } from "../../../hosts/system/dialogs/scripts/dialog";
+import { meowDialogManager,openDialogRequestType } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 
 @ComponentV2
 struct SettingsAppearance {
