@@ -505,6 +505,10 @@
       "value": "书签"
     },
     {
+      "name": "Bookmarks_selectFolder",
+      "value": "选文件夹"
+    },
+    {
       "name": "Homepage",
       "value": "猫咪的主页"
     },

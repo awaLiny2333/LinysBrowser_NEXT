@@ -1,4 +1,4 @@
-import { escapeForJson } from "../scripts/helpers";
+import lazy { escapeForJson } from "../scripts/helpers";
 
 export enum meowSettingsEntryType {
   UNDEFINED = -1,

@@ -12,10 +12,10 @@ import lazy { heightMeowTitleBar, MeowTitleBar } from '../components/parts/Homep
 import lazy { MeowTitleTop } from '../components/parts/Homepage/MeowTitleTop';
 import lazy { isTabsStyleVertical, defaultAnimation, defaultHorizontalTabsHeight, defaultSidebarWidth, getColor, meowThemeColorType, mooTextType, showGiganticWindowTitle, sidebarShouldBeOnTheRight, standardSpacing, titleBarPositionBottom, useEffects } from '../components/settings';
 import lazy { showingSidebar } from '../components/statuses';
-import { MeowShortcutsPanel } from '../components/parts/Homepage/MeowShortcuts';
+import lazy { MeowShortcutsPanel } from '../components/parts/Homepage/MeowShortcuts';
 import { meowManagedSettings } from '../hosts/data/settings/classes/meowManagedSettings';
 import { meowDialogManager, openDialogRequestType } from '../hosts/system/dialogs/classes/meowDialogManager';
-import { requestDialog } from '../hosts/system/dialogs/scripts/dialog';
+import lazy { requestDialog } from '../hosts/system/dialogs/scripts/dialog';
 import { meowResources } from '../hosts/system/env/classes/meowResources';
 import { meowAppStatuses } from '../hosts/system/windows/classes/meowAppStatuses';
 import { meowUiStatuses } from '../hosts/system/windows/classes/meowUiStatuses';

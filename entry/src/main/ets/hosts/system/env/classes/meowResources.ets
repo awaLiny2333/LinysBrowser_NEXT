@@ -1,4 +1,4 @@
-import { image } from "@kit.ImageKit";
+import lazy { image } from "@kit.ImageKit";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import lazy { fileCopy, fileDocumentPick2Path, galleryPick2Path, readArrayBufferConcurrent } from "../../../../catstypicalframework/utils/storage";
 

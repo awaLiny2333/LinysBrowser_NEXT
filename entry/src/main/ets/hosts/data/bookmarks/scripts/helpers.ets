@@ -1,4 +1,4 @@
-import { meowBookmarkItem } from "../classes/meowBookmarkItem";
+import lazy { meowBookmarkItem } from "../classes/meowBookmarkItem";
 import { ENTITY_MAP } from "./entityMap";
 
 /**

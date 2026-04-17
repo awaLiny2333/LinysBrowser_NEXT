@@ -1,5 +1,5 @@
-import { meowManagedSettings } from "../../data/settings/classes/meowManagedSettings";
-import { AppStorageV2 } from "@kit.ArkUI";
+import lazy { meowManagedSettings } from "../../data/settings/classes/meowManagedSettings";
+import lazy { AppStorageV2 } from "@kit.ArkUI";
 
 /**
  * Checks if developer options (DEV_MODE) is on.

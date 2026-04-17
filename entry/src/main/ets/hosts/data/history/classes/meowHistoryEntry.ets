@@ -17,8 +17,8 @@
  */
 
 import { collections } from "@kit.ArkTS";
-import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import { tokenize } from "../scripts/helpers";
+import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import lazy { tokenize } from "../scripts/helpers";
 
 @Sendable
 export class meowHistoryEntry {

@@ -1,5 +1,5 @@
-import { AppStorageV2 } from "@kit.ArkUI";
-import { meowManagedSettings } from "../settings/classes/meowManagedSettings";
+import lazy { AppStorageV2 } from "@kit.ArkUI";
+import lazy { meowManagedSettings } from "../settings/classes/meowManagedSettings";
 
 /**
  * Gets if the current settings allows recording new history entries.

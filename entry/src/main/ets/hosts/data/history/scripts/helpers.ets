@@ -1,8 +1,8 @@
-import { readArrayBufferConcurrent } from "../../../../catstypicalframework/utils/storage";
-import { fastbuffer } from "@kit.ArkTS";
-import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import { meowHistoryEntry } from "../classes/meowHistoryEntry";
-import collections from "@arkts.collections";
+import lazy { readArrayBufferConcurrent } from "../../../../catstypicalframework/utils/storage";
+import lazy { fastbuffer } from "@kit.ArkTS";
+import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import lazy { meowHistoryEntry } from "../classes/meowHistoryEntry";
+import lazy collections from "@arkts.collections";
 
 /**
  * Fetches the history entries from one chunk file on the disk.

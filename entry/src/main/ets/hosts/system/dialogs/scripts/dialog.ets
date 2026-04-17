@@ -1,4 +1,4 @@
-import { openDialogRequestType, meowDialogManager, openDialogRequest } from "../classes/meowDialogManager";
+import lazy { openDialogRequestType, meowDialogManager, openDialogRequest } from "../classes/meowDialogManager";
 
 /**
  * Request an opening of a dialog.

@@ -11,8 +11,8 @@
  * This saves memory, i guess, if the data file is really large.
  */
 
-import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import { readArrayBufferConcurrent } from "../../../../catstypicalframework/utils/storage";
+import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import lazy { readArrayBufferConcurrent } from "../../../../catstypicalframework/utils/storage";
 import { collections, fastbuffer } from "@kit.ArkTS";
 
 @Sendable

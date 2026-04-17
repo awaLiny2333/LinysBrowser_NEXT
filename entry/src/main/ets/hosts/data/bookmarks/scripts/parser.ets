@@ -1,8 +1,8 @@
-import { fastbuffer, taskpool } from '@kit.ArkTS';
-import { meow, meowLevel } from '../../../../catstypicalframework/utils/catsLogger';
-import { readArrayBuffer } from '../../../../catstypicalframework/utils/storage';
-import { meowBookmarkItem } from '../classes/meowBookmarkItem';
-import { buildNodeHTML, fastParseNum, fastExtractStr, decodeHtmlString } from './helpers';
+import lazy { fastbuffer, taskpool } from '@kit.ArkTS';
+import lazy { meow, meowLevel } from '../../../../catstypicalframework/utils/catsLogger';
+import lazy { readArrayBuffer } from '../../../../catstypicalframework/utils/storage';
+import lazy { meowBookmarkItem } from '../classes/meowBookmarkItem';
+import lazy { buildNodeHTML, fastParseNum, fastExtractStr, decodeHtmlString } from './helpers';
 
 /**
  * Parse bookmarks from an HTML file (High-Performance Concurrent Version).

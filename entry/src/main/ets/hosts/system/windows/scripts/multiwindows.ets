@@ -1,7 +1,7 @@
 import lazy { abilityManager, common, Want } from "@kit.AbilityKit";
-import { AppStorageV2 } from "@kit.ArkUI";
+import lazy { AppStorageV2 } from "@kit.ArkUI";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import { meowAppStatuses } from "../classes/meowAppStatuses";
+import lazy { meowAppStatuses } from "../classes/meowAppStatuses";
 
 
 /**

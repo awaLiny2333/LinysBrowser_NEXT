@@ -13,12 +13,12 @@
  * @see ets/components/developers/settings/SimpleSettingsExample.ets for recommended practices.
  */
 
-import { readArrayBufferConcurrent, saveHybrid } from "../../../../catstypicalframework/utils/storage";
-import { fastbuffer } from "@kit.ArkTS";
-import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import lazy { fastbuffer } from "@kit.ArkTS";
+import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import lazy { readArrayBufferConcurrent, saveHybrid } from "../../../../catstypicalframework/utils/storage";
+import lazy { defaultSettingsEntries } from "../scripts/defaultSettingsEntries";
+import lazy { settingsParserJSON } from "../scripts/helpers";
 import { meowSettingsEntry, meowSettingsEntryType } from "./meowSettingsEntry";
-import { defaultSettingsEntries } from "../scripts/defaultSettingsEntries";
-import { settingsParserJSON } from "../scripts/helpers";
 
 @ObservedV2
 export class meowManagedSettings {

@@ -20,11 +20,11 @@
  * [HAS A] meowHistoryEntry (in collections.Array<meowHistoryEntry>)
  */
 
-import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import { readArrayBufferConcurrent, saveHybrid } from "../../../../catstypicalframework/utils/storage";
+import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import lazy { readArrayBufferConcurrent, saveHybrid } from "../../../../catstypicalframework/utils/storage";
 import { collections, fastbuffer } from "@kit.ArkTS";
-import { buildIndexToDisk, loadIndexFromDisk } from "../scripts/indexing";
-import { binarySearch, loadChunkFromDisk, tokenize } from "../scripts/helpers";
+import lazy { buildIndexToDisk, loadIndexFromDisk } from "../scripts/indexing";
+import lazy { binarySearch, loadChunkFromDisk, tokenize } from "../scripts/helpers";
 import { meowHistoryEntry } from "./meowHistoryEntry";
 import { meowHistoryIndexFileBundle } from "./meowHistoryIndexFileBundle";
 

@@ -40,6 +40,9 @@ struct WoofUniFrame {
       Row() {
         Text(this.title)
           .attributeModifier(new MooTextModifier(mooTextType.TITLE))
+          .maxLines(1)
+          .wordBreak(WordBreak.BREAK_ALL)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
           .layoutWeight(1);
         MooSymbolButton({
           icon: $r('sys.symbol.xmark'),
@@ -48,7 +51,7 @@ struct WoofUniFrame {
               this.controller.close();
             }
           }
-        })
+        });
       }
       .visibility(this.myLayout.shortMode ? Visibility.None : Visibility.Visible) // Save space for short contents
       .animation(defaultAnimation())

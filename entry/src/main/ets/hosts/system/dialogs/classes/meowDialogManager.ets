@@ -1,4 +1,4 @@
-import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 
 /**
  * The dialog manager that records dialogs.

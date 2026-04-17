@@ -1,8 +1,8 @@
 import { meowBookmarkItem } from "./meowBookmarkItem";
-import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import { fileDocumentPick2Path, fileDocumentPickSave, saveHybrid } from "../../../../catstypicalframework/utils/storage";
-import { parseBookmarksConcurrent, parseToHTMLConcurrent } from "../scripts/parser";
-import { nowHtmlTimestamp } from "../scripts/helpers";
+import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import lazy { fileDocumentPick2Path, fileDocumentPickSave, saveHybrid } from "../../../../catstypicalframework/utils/storage";
+import lazy { parseBookmarksConcurrent, parseToHTMLConcurrent } from "../scripts/parser";
+import lazy { nowHtmlTimestamp } from "../scripts/helpers";
 
 @ObservedV2
 export class meowBookmarkStash {

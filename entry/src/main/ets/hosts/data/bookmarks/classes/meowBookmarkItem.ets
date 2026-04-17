@@ -1,6 +1,6 @@
 import collections from "@arkts.collections";
-import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import { nowHtmlTimestamp } from "../scripts/helpers";
+import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import lazy { nowHtmlTimestamp } from "../scripts/helpers";
 
 /**
  * meowBookmarkItem is a class that represents a bookmark item.

@@ -10,12 +10,12 @@
  * [HAS A] meowHistoryChunk (in meowHistoryChunk[])
  */
 
-import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import { appendTextToEndOfFile, clearDirectory, listFilesUnderDir, readArrayBufferConcurrent, saveHybrid } from "../../../../catstypicalframework/utils/storage";
-import { fastbuffer } from "@kit.ArkTS";
-import { fileIo } from "@kit.CoreFileKit";
-import { buildAllIndexToDisk, buildIndexToDisk } from "../scripts/indexing";
-import { meowHistoryEntry } from "./meowHistoryEntry";
+import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import lazy { appendTextToEndOfFile, clearDirectory, listFilesUnderDir, readArrayBufferConcurrent, saveHybrid } from "../../../../catstypicalframework/utils/storage";
+import lazy { fastbuffer } from "@kit.ArkTS";
+import lazy { fileIo } from "@kit.CoreFileKit";
+import lazy { buildAllIndexToDisk, buildIndexToDisk } from "../scripts/indexing";
+import lazy { meowHistoryEntry } from "./meowHistoryEntry";
 import { meowHistoryChunk } from "./meowHistoryChunk";
 
 @ObservedV2

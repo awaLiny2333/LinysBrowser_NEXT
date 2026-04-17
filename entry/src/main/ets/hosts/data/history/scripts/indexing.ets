@@ -1,8 +1,8 @@
-import { taskpool } from "@kit.ArkTS";
-import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import { saveHybrid } from "../../../../catstypicalframework/utils/storage";
-import { meowHistoryChunk } from "../classes/meowHistoryChunk";
-import { meowHistoryIndexFileBundle } from "../classes/meowHistoryIndexFileBundle";
+import lazy { taskpool } from "@kit.ArkTS";
+import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import lazy { saveHybrid } from "../../../../catstypicalframework/utils/storage";
+import lazy { meowHistoryChunk } from "../classes/meowHistoryChunk";
+import lazy { meowHistoryIndexFileBundle } from "../classes/meowHistoryIndexFileBundle";
 
 // Build
 /**
