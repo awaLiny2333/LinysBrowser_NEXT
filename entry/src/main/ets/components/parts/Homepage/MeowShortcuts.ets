@@ -1,13 +1,17 @@
+/**
+ * This is the bookmark shortcuts to be displayed on the home page.
+ */
+
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
 import { meowBookmarkItem } from '../../../hosts/data/bookmarks/classes/meowBookmarkItem';
 import { meowBookmarkStash } from '../../../hosts/data/bookmarks/classes/meowBookmarkStash';
 import { meowManagedSettings } from '../../../hosts/data/settings/classes/meowManagedSettings';
-import { meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
 import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
+import { meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
 import { MooTextModifier } from '../../common/MooTextModifier';
-import { defaultAnimation, meowThemeColorType, getColor, shortcutsShouldBeOnTheRight, standardSpacing, useEffects } from '../../settings';
+import { defaultAnimation, getColor, meowThemeColorType, shortcutsShouldBeOnTheRight, standardSpacing, useEffects } from '../../settings';
 
 @ComponentV2
 struct MeowShortcutsPanel {
@@ -22,18 +26,12 @@ struct MeowShortcutsPanel {
   build() {
     Scroll() {
       Column({ space: standardSpacing * 0.5 }) {
-        Repeat(this.getFolder()) // This is sb.
+        Repeat(this.getFolder())
           .each((item) => {
             MeowShortcutItem({ item: item.item });
           });
       }
-      .width('100%')
-      .alignItems(shortcutsShouldBeOnTheRight() ? HorizontalAlign.End : HorizontalAlign.Start)
-      .padding({
-        top: (1 - (this.mySettings.settingsData[46].value as number / 100)) * this.myLayout.height,
-        // right: shortcutsShouldBeOnTheRight() ? standardSpacing : 0,
-        // left: shortcutsShouldBeOnTheRight() ? 0 : standardSpacing
-      });
+      .padding({ top: (1 - (this.mySettings.settingsData[46].value as number / 100)) * this.myLayout.height });
     }
     .scrollBar(BarState.Off)
     .align(Alignment.Bottom)
@@ -44,18 +42,18 @@ struct MeowShortcutsPanel {
   }
 
   getFolder() {
-    this.refreshFlag; // To refresh!
+    this.refreshFlag; // To trigger refresh!
     const folder = this.myBookmarks.getFolder(this.mySettings.settingsData[45].value as string);
     if (folder == undefined) {
-      return [];
+      return []; // Wrong path. Return empty array.
     }
-    const shortcuts = Array.from(folder.children);
-    return shortcuts;
+    return Array.from(folder.children);
   }
 
   @Monitor('myApp.crossAppMessageTunnel')
   receiveMessage() {
-    if (this.myApp.crossAppMessageTunnel?.type == meowAppMessageType.BOOKMARKS_REFRESH) {
+    const msgType = this.myApp.crossAppMessageTunnel?.type;
+    if (msgType == meowAppMessageType.BOOKMARKS_REFRESH || msgType == meowAppMessageType.BOOKMARKS_PICKED) {
       this.refreshFlag = !this.refreshFlag;
     }
   }
@@ -68,9 +66,9 @@ struct MeowShortcutItem {
   @Local myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!; // For event receiving.
   // Data
   @Local showingChildren: boolean = false;
-  @Local children: meowBookmarkItem[] = Array.from(this.item.children);
   @Local refreshFlag: boolean = true;
   // UI
+  @Param paddingValue: number = 0;
   @Local myBrightness: number = 1;
 
   build() {
@@ -90,8 +88,8 @@ struct MeowShortcutItem {
           }
         })
         .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
-        .backgroundColor(this.adjustedColorBackground())
-        .fontColor(this.adjustedColorFont())
+        .backgroundColor(getColor(meowThemeColorType.SECONDARY))
+        .fontColor(getColor(meowThemeColorType.FONT))
         .onClick(() => {
           if (this.item.isFolder) {
             animateToImmediately(defaultAnimation(), () => {
@@ -103,22 +101,21 @@ struct MeowShortcutItem {
         });
 
       // Children of folder
-      if (this.item.isFolder && this.showingChildren) {
-        Column({ space: standardSpacing * 0.5 }) {
-          Repeat(this.children)
-            .each((item) => {
-              MeowShortcutItem({ item: item.item });
-            });
-        }
-        .alignItems(shortcutsShouldBeOnTheRight() ? HorizontalAlign.End : HorizontalAlign.Start)
-        .padding(shortcutsShouldBeOnTheRight() ? { right: standardSpacing * 2.33 } : { left: standardSpacing * 2.33 });
+      if (this.item.isFolder && this.showingChildren && this.item.children.length > 0) {
+        Repeat(this.getChildren())
+          .each((item) => {
+            MeowShortcutItem({ item: item.item, paddingValue: standardSpacing * 2.33 });
+          });
       }
     }
-    .alignItems(shortcutsShouldBeOnTheRight() ? HorizontalAlign.End : HorizontalAlign.Start);
+    .padding(shortcutsShouldBeOnTheRight() ? { right: this.paddingValue } : { left: this.paddingValue })
+    .alignItems(shortcutsShouldBeOnTheRight() ? HorizontalAlign.End : HorizontalAlign.Start)
+    .animation(defaultAnimation())
+    .width('100%');
   }
 
   /**
-   * Get label.
+   * Get the item's label (name).
    * @returns The label of the item.
    */
   getLabel() {
@@ -126,26 +123,17 @@ struct MeowShortcutItem {
     return `${this.item.isFolder ? (this.showingChildren ? '󰃛  ' : '󰃅  ') : ''}${this.item.name}`;
   }
 
-  /**
-   * Listen and refresh.
-   */
+  getChildren() {
+    this.refreshFlag;
+    return Array.from(this.item.children);
+  }
+
   @Monitor('myApp.crossAppMessageTunnel')
   receiveMessage() {
-    if (this.myApp.crossAppMessageTunnel?.type != meowAppMessageType.BOOKMARKS_REFRESH) {
-      return;
+    const msgType = this.myApp.crossAppMessageTunnel?.type;
+    if (msgType == meowAppMessageType.BOOKMARKS_REFRESH || msgType == meowAppMessageType.BOOKMARKS_PICKED) {
+      this.refreshFlag = !this.refreshFlag;
     }
-    this.refreshFlag = !this.refreshFlag;
-    if (this.item.isFolder && this.showingChildren) {
-      this.children = Array.from(this.item.children);
-    }
-  }
-
-  adjustedColorFont() {
-    return getColor(meowThemeColorType.FONT);
-  }
-
-  adjustedColorBackground() {
-    return getColor(meowThemeColorType.SECONDARY);
   }
 }
 

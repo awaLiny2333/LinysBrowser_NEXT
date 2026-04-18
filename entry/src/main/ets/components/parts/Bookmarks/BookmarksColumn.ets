@@ -282,7 +282,7 @@ struct BookmarksColumn {
           }
         });
       } else {
-        Text(this.folder.name).attributeModifier(new MooTextModifier()).wordBreak(WordBreak.BREAK_ALL).maxLines(2).layoutWeight(1);
+        Text(this.folder.name).attributeModifier(new MooTextModifier()).wordBreak(WordBreak.BREAK_ALL).maxLines(2).padding({ left: standardSpacing * 0.5, right: standardSpacing * 0.5 }).layoutWeight(1);
       }
 
       if (this.selectMode) {

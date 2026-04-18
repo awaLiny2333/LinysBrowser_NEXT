@@ -7,9 +7,9 @@ import { WoofCatsDevDialog } from '../../dialogs/WoofCatsDev/WoofCatsDevCards';
 import { WoofColorPickerDialog } from '../../dialogs/WoofColorPicker/WoofColorPicker';
 import { WoofHomepageDialog } from '../../dialogs/WoofHomepage/WoofHomepage';
 import { WoofSettingsDialog } from '../../dialogs/WoofSettings/WoofSettings';
-import { localMessage,meowAppMessageType } from '../../hosts/system/windows/scripts/messaging';
+import lazy { localMessage, meowAppMessageType } from '../../hosts/system/windows/scripts/messaging';
 import { meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
-import { meowDialogManager,openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
+import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
 
 /**
  * A place for dialogs.

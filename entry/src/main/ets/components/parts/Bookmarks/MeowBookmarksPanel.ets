@@ -1,7 +1,7 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowBookmarkItem } from '../../../hosts/data/bookmarks/classes/meowBookmarkItem';
 import { meowBookmarkStash } from '../../../hosts/data/bookmarks/classes/meowBookmarkStash';
-import { globalMessage,meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
+import { globalMessage, meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
 import { meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
 import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
 import { defaultAnimation, isPreferRightHand, minimumCardWidth, standardSpacing } from '../../settings';
@@ -29,8 +29,8 @@ struct MeowBookmarksPanel {
   aboutToAppear(): void {
     // Initialize
     if (this.myUi.openedStack.length == 0) {
-      this.myUi.openedStack.push(this.myBookmarks.root);
-      this.myUi.openedIndexOfLevels.push(undefined);
+      this.myUi.openedStack = [this.myBookmarks.root];
+      this.myUi.openedIndexOfLevels = [undefined];
     }
   }
 
@@ -86,7 +86,9 @@ struct MeowBookmarksPanel {
                 this.myBookmarks.exportHTMLtoDocuments(item.item);
               },
               onSelect: (folder) => {
-                this.onSelect(folder, `/${this.myUi.openedStack.join('/')}`);
+                // This is only for select mode.
+                const position = this.myUi.openedStack.indexOf(folder);
+                this.onSelect(folder, `/${this.myUi.openedStack.slice(0, position + 1).join('/')}`);
               }
             });
           });
