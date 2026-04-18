@@ -5,6 +5,7 @@ import { MooTextModifier } from "./MooTextModifier";
 /**
  * Container for displaying content with a title (optional) and rounded corners (defaultRoundedRadius).
  */
+// @ReusableV2
 @ComponentV2
 struct UniContentCard {
   @BuilderParam contentsBuilder: () => void;

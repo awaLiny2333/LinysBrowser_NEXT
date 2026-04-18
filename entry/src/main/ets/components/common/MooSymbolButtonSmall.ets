@@ -8,6 +8,7 @@ import { getColor, meowThemeColorType } from "../settings";
  *
  * @see entry/src/main/ets/components/parts/MeowTitleTop.ets
  */
+// @ReusableV2
 @ComponentV2
 struct MooSymbolButtonSmall {
   // @Local myFree: meowFreeWindowModeStatus = AppStorageV2.connect(meowFreeWindowModeStatus)!;

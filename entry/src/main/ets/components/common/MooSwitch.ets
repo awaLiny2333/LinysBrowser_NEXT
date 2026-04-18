@@ -1,6 +1,7 @@
 import { defaultAnimation, getColor, meowThemeColorType, isPreferRightHand, useEffects } from '../settings';
 import { MooTextModifier } from './MooTextModifier';
 
+// @ReusableV2
 @ComponentV2
 struct MooSwitch {
   @Param text: ResourceStr = '';
