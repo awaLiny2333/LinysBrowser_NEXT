@@ -1,6 +1,6 @@
 import { defaultInnerRadius } from '../../../../catstypicalframework/utils/ui';
 import { AppStorageV2 } from '@kit.ArkUI';
-import { meowManagedSettings } from '../../../../hosts/data/settings/classes/meowManagedSettings';
+import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { meowFlexOptions, titleBarPositionBottom } from '../../../../components/settings';
 import { SymbolButton } from '../common/SymbolButton';

@@ -1,4 +1,4 @@
-import lazy { meowManagedSettings } from "../../data/settings/classes/meowManagedSettings";
+import lazy { meowManagedSettings } from "../../userdata/settings/classes/meowManagedSettings";
 import lazy { AppStorageV2 } from "@kit.ArkUI";
 
 /**

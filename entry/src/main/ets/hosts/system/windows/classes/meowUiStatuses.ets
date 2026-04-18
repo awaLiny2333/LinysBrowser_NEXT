@@ -1,4 +1,4 @@
-import { meowBookmarkItem } from "../../../data/bookmarks/classes/meowBookmarkItem";
+import { meowBookmarkItem } from "../../../userdata/bookmarks/classes/meowBookmarkItem";
 import { meowAppMessage } from "./meowAppMessage";
 
 /**

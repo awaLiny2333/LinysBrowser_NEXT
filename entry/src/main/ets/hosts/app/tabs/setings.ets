@@ -1,7 +1,7 @@
 import lazy { AppStorageV2 } from "@kit.ArkUI";
 import lazy { webview } from "@kit.ArkWeb";
-import lazy { meowManagedSettings } from "../../data/settings/classes/meowManagedSettings";
-import lazy { defaultSearchEngine, urlDefaultBlank } from "../../data/settings/scripts/defaultSettingsValues";
+import lazy { meowManagedSettings } from "../../userdata/settings/classes/meowManagedSettings";
+import lazy { defaultSearchEngine, urlDefaultBlank } from "../../userdata/settings/scripts/defaultSettingsValues";
 
 // Cookies
 

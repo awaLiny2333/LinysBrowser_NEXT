@@ -1,4 +1,4 @@
-import { meowManagedSettings } from '../../../hosts/data/settings/classes/meowManagedSettings';
+import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { AppStorageV2, SegmentButtonV2Items } from '@kit.ArkUI';
 import { defaultAnimation, mooTextType, standardSpacing } from '../../../components/settings';
 import { MooSwitch } from '../../../components/common/MooSwitch';

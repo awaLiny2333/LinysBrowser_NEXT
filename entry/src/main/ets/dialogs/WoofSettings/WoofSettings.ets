@@ -1,9 +1,9 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowLayout } from '../../catstypicalframework/hosts/meowLayout';
 import { standardSpacing, waterFlowColumnsTemplate } from '../../components/settings';
-import { meowManagedSettings } from '../../hosts/data/settings/classes/meowManagedSettings';
+import { meowManagedSettings } from '../../hosts/userdata/settings/classes/meowManagedSettings';
 import { meowDialogManager } from '../../hosts/system/dialogs/classes/meowDialogManager';
-import { getDevMode } from '../../hosts/system/env/settings';
+import { getDevMode } from '../../hosts/system/storage/settings';
 import { meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
 import { WoofUniFrame } from '../WoofUniFrame';
 import { SettingsAbout } from './parts/About';

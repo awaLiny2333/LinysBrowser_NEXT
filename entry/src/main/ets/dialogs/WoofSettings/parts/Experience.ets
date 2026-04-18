@@ -1,4 +1,4 @@
-import { meowManagedSettings } from "../../../hosts/data/settings/classes/meowManagedSettings";
+import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { mooTextType, standardSpacing } from "../../../components/settings";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";

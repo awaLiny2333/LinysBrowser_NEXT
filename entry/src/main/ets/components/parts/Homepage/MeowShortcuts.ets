@@ -5,9 +5,9 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
-import { meowBookmarkItem } from '../../../hosts/data/bookmarks/classes/meowBookmarkItem';
-import { meowBookmarkStash } from '../../../hosts/data/bookmarks/classes/meowBookmarkStash';
-import { meowManagedSettings } from '../../../hosts/data/settings/classes/meowManagedSettings';
+import { meowBookmarkItem } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkItem';
+import { meowBookmarkStash } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkStash';
+import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
 import { meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
 import { MooTextModifier } from '../../common/MooTextModifier';

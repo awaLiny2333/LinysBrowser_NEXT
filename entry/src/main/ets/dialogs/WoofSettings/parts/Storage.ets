@@ -5,9 +5,9 @@ import { MooTextModifier } from '../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../components/common/UniContentCard';
 import { UniRowOfCapsuleButtons } from '../../../components/common/UniRowOfCapsuleButtons';
 import lazy { mooTextType, standardSpacing } from '../../../components/settings';
-import lazy { scanHistoryIndexSize } from '../../../hosts/data/history/scripts/storage';
-import { meowManagedSettings } from '../../../hosts/data/settings/classes/meowManagedSettings';
-import lazy { removeWebCache, scanWebCacheSize } from '../../../hosts/system/env/scripts/storage';
+import lazy { scanHistoryIndexSize } from '../../../hosts/userdata/history/scripts/storage';
+import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
+import lazy { removeWebCache, scanWebCacheSize } from '../../../hosts/system/storage/scripts/storage';
 import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
 
 @ComponentV2

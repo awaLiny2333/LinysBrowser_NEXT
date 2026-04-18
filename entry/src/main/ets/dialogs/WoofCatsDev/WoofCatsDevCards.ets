@@ -3,7 +3,7 @@ import { meowAvoid } from '../../catstypicalframework/hosts/meowAvoid';
 import { meowLayout } from '../../catstypicalframework/hosts/meowLayout';
 import { meowMisc } from '../../catstypicalframework/hosts/meowMisc';
 import { standardSpacing } from '../../components/settings';
-import { meowResources } from '../../hosts/system/env/classes/meowResources';
+import { meowResources } from '../../hosts/system/storage/classes/meowResources';
 import { meowDialogManager } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import { WoofUniFrame } from '../WoofUniFrame';
 import { BookmarksDevCard } from './parts/bookmarks/Card';

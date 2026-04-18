@@ -9,7 +9,7 @@
 import { AppStorageV2, LengthMetrics } from "@kit.ArkUI";
 import Curves from '@ohos.curves';
 import { meowLayout } from "../catstypicalframework/hosts/meowLayout";
-import { meowManagedSettings } from "../hosts/data/settings/classes/meowManagedSettings";
+import { meowManagedSettings } from "../hosts/userdata/settings/classes/meowManagedSettings";
 import { meowAppStatuses } from "../hosts/system/windows/classes/meowAppStatuses";
 
 // Constants
