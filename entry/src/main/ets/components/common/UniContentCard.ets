@@ -9,14 +9,12 @@ import { MooTextModifier } from "./MooTextModifier";
 struct UniContentCard {
   @BuilderParam contentsBuilder: () => void;
   // Settings
-  @Param title: ResourceStr = '';
-  @Param icon: Resource = $r('sys.symbol.gearshape');
-  @Param roundedRadius: number = defaultRoundedRadius;
-  @Param blurRadius: number = 0;
+  @Param @Once title: ResourceStr = '';
+  @Param @Once icon: Resource = $r('sys.symbol.gearshape');
+  @Param @Once roundedRadius: number = defaultRoundedRadius;
   // UI
   @Param @Once expanded: boolean = this.title ? false : true;
   @Local isHover: boolean = false;
-  @Local contentHeight: number = 0;
 
   build() {
     Column({ space: standardSpacing }) {
@@ -39,7 +37,6 @@ struct UniContentCard {
     .brightness(this.isHover ? (this.expanded ? 1.02 : 1.05) : 1)
     .animation(defaultAnimation())
     .width('100%')
-    .backgroundEffect({ color: $r('app.color.blur_background'), radius: this.blurRadius })
     .backgroundColor(getColor(meowThemeColorType.PRIMARY))
     .border({ radius: this.roundedRadius, width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth') })
     .padding(standardSpacing * 1.25)

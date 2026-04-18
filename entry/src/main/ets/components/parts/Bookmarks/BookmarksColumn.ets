@@ -206,11 +206,6 @@ struct BookmarksColumn {
     .padding(standardSpacing * 0.75);
   }
 
-  getLabelLinkItem(item: meowBookmarkItem) {
-    this.refreshFlag;
-    return [item.name, item.url];
-  }
-
   @Builder
   BottomControl() {
     Row({ space: standardSpacing * 0.5 }) {
@@ -318,6 +313,16 @@ struct BookmarksColumn {
     }
     .padding({ bottom: this.avoidBar ? standardSpacing * 1.25 : 0 }) // Avoid scroller
     .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl);
+  }
+
+  /**
+   * Get label and link of an item.
+   * @param item The item.
+   * @returns [label, link]
+   */
+  getLabelLinkItem(item: meowBookmarkItem) {
+    this.refreshFlag;
+    return [item.name, item.url];
   }
 
   /**

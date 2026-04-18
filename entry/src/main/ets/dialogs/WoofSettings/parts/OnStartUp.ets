@@ -15,7 +15,7 @@ struct SettingsOnStartUp {
         .attributeModifier(new MooTextModifier(mooTextType.TITLE))
         .opacity(0.8)
         .padding({ left: standardSpacing / 2 });
-      UniContentCard() {
+      UniContentCard({ title: $r('app.string.Settings_category_onStartUp'), icon: $r('sys.symbol.flag_checkered') }) {
         Text($r('app.string.Settings_category_onStartUp_page')).attributeModifier(new MooTextModifier());
         MooTabSegmentV2({
           initSelected: this.selectedOptionFromSettings(),

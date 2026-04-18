@@ -18,17 +18,18 @@
 
 import { common, Configuration, ConfigurationConstant } from '@kit.AbilityKit';
 import { AppStorageV2, window } from '@kit.ArkUI';
-import { BusinessError, power } from '@kit.BasicServicesKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 import lazy Want from '@ohos.app.ability.Want';
 import { isPreferRightHandFromSettings } from '../../components/settings';
+import { meowDialogManager } from '../../hosts/system/dialogs/classes/meowDialogManager';
+import { meowResources } from '../../hosts/system/storage/classes/meowResources';
+import { meowAppStatuses } from '../../hosts/system/windows/classes/meowAppStatuses';
+import { meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
+import { generateTimeBasedWindowId } from '../../hosts/system/windows/scripts/multiwindows';
 import { meowBookmarkStash } from '../../hosts/userdata/bookmarks/classes/meowBookmarkStash';
 import { meowHistorian } from '../../hosts/userdata/history/classes/meowHistorian';
 import { meowManagedSettings } from '../../hosts/userdata/settings/classes/meowManagedSettings';
-import { generateTimeBasedWindowId } from '../../hosts/system/windows/scripts/multiwindows';
-import { meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
-import { meowAppStatuses } from '../../hosts/system/windows/classes/meowAppStatuses';
-import { meowResources } from '../../hosts/system/storage/classes/meowResources';
-import { meowDialogManager } from '../../hosts/system/dialogs/classes/meowDialogManager';
+import { meowAvoid } from '../hosts/meowAvoid';
 import { meowLayout } from '../hosts/meowLayout';
 import { meowMisc } from '../hosts/meowMisc';
 import { meow, meowLevel } from '../utils/catsLogger';
@@ -46,39 +47,45 @@ import { getUpdateAvoid, getUpdateFreeWindowMode, listenAvoid, listenFocus, list
  * or promises that takes long time to run that are NOT NECESSARY to the app's key functions.
  * For example starting to load the homepage wallpaper.
  */
-export function earlyOnCreate(context: Context) {
+export function earlyOnCreate(context: Context, launchWant: Want) {
   // const startTime = Date.now();
-  const filesDir = context.filesDir;
-  let myWindowId = generateTimeBasedWindowId();
-  let isNewWindow = true;
+  const paramWindowName = launchWant.parameters?.windowName as string | undefined;
 
+  // Determine window name
+  const isNewWindow = paramWindowName == undefined;
+  let myWindowId = paramWindowName || generateTimeBasedWindowId();
+
+  // Register window
   const myApp = AppStorageV2.connect(meowAppStatuses, () => new meowAppStatuses())!;
-  if (myApp.windowNames.length == 0) {
+  myApp.windowNames.push(myWindowId);
+
+  if (isNewWindow) {
     // Is the first window of this app.
     // Just use the generated timestamp based window name.
     // And push it into the list.
-    myApp.windowNames.push(myWindowId);
+
   } else {
     // Is a new window of this app.
     // Use the given window name already pushed into the list
     // by an existing window.
-    myWindowId = myApp.windowNames[myApp.windowNames.length - 1];
-    isNewWindow = false;
   }
+
+  const filesDir = context.filesDir;
+
 
   // Shared hosts
   if (isNewWindow) {
-    AppStorageV2.connect(meowBookmarkStash, () => new meowBookmarkStash(`${filesDir}/html_bookmarks.html`))!; // TODO: multi-window compatibility! Execute ONCE!
-    AppStorageV2.connect(meowHistorian, () => new meowHistorian(`${filesDir}`))!; // TODO: multi-window compatibility! Execute ONCE!
-    AppStorageV2.connect(meowManagedSettings, () => new meowManagedSettings(`${filesDir}/settings.json.browsercatsettings.txt`))!; // TODO: multi-window compatibility! Execute ONCE!
-    const myResources = AppStorageV2.connect(meowResources, () => new meowResources(`${filesDir}/homepage_background_arrayBuffer`))!; // TODO: multi-window compatibility! Execute ONCE!
-    myResources.loadBackgroundImage(); // TODO: multi-window compatibility! Execute ONCE!
+    AppStorageV2.connect(meowBookmarkStash, () => new meowBookmarkStash(`${filesDir}/html_bookmarks.html`))!;
+    AppStorageV2.connect(meowHistorian, () => new meowHistorian(`${filesDir}`))!;
+    AppStorageV2.connect(meowManagedSettings, () => new meowManagedSettings(`${filesDir}/settings.json.browsercatsettings.txt`))!;
+    const myResources = AppStorageV2.connect(meowResources, () => new meowResources(`${filesDir}/homepage_background_arrayBuffer`))!;
+    myResources.loadBackgroundImage();
   }
 
   // Window private hosts
-  AppStorageV2.connect(meowDialogManager, `meowDialogManager_${myWindowId}`, () => new meowDialogManager()); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
-  AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${myWindowId}`, () => new meowUiStatuses(myWindowId)); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
-  AppStorageV2.connect(meowMisc, `meowMisc_${myWindowId}`, () => new meowMisc()); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
+  AppStorageV2.connect(meowDialogManager, `meowDialogManager_${myWindowId}`, () => new meowDialogManager()); 
+  AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${myWindowId}`, () => new meowUiStatuses(myWindowId)); 
+  AppStorageV2.connect(meowMisc, `meowMisc_${myWindowId}`, () => new meowMisc()); 
 
   // meow(`Finished in ${Date.now() - startTime} ms.`, 'earlyOnCreate', meowLevel.WARN);
 }
@@ -163,13 +170,13 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
 
   // Initialize App status
   const dark = context.config.colorMode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
-  const powerSave = power.getPowerMode() == power.DevicePowerMode.MODE_POWER_SAVE;
   const smartReachabilitySaysWeShouldPreferRightHand = isPreferRightHandFromSettings(); // Set the value of myUi.smartReachabilitySaysWeShouldPreferRightHand here as a starting position for smart reachability.
   myApp.dark = dark;
-  myApp.powerSave = powerSave;
   myApp.smartReachabilitySaysWeShouldPreferRightHand = smartReachabilitySaysWeShouldPreferRightHand;
+  // const powerSave = power.getPowerMode() == power.DevicePowerMode.MODE_POWER_SAVE;
+  // myApp.powerSave = powerSave;
 
-  // Initialize window status // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
+  // Initialize window status 
   try {
     const rect: window.Rect = window.getWindowProperties().windowRect;
     const width = meowPx2vp(rect.width);
@@ -180,28 +187,29 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
   } catch (e) {
     meow(`AppStorageV2.connect(meowLayout, () => new meowLayout(wideMode, shortMode, width, height, dark, powerSave, smartReachabilitySaysWeShouldPreferRightHand)); Failed: ${e}`, 'init', meowLevel.ERROR);
   }
+  AppStorageV2.connect(meowAvoid, `meowAvoid_${myWindowId}`, () => new meowAvoid(0, 0, 0, 0)); 
+  
+  getUpdateFreeWindowMode(context, window, myWindowId); 
+  getUpdateAvoid(window, myWindowId); 
 
-  listenFocus(window, myWindowId); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
-
-  getUpdateFreeWindowMode(context, window, myWindowId); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
-  listenFreeWindowMode(context, window, myWindowId); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
-
-  getUpdateAvoid(window, myWindowId); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
-  listenAvoid(window, myWindowId); // TODO: multi-window compatibility! Execute FOR EVERY WINDOW!
-
-  listenSmartReachability();
+  setTimeout(() => {
+    listenFocus(window, myWindowId); 
+    listenAvoid(window, myWindowId); 
+    listenFreeWindowMode(context, window, myWindowId); 
+    listenSmartReachability();
+  }, 1); // Delayed execution, reduce launch time.
 
   // listenPowerSave(); // This is useless for now. :P
   // watchLaunch(); // This is chicken rib. >O
 
   if (isNewWindow) {
     // Init History here to avoid resource competition
-    let myMeowHistorian = AppStorageV2.connect(meowHistorian); // TODO: multi-window compatibility! Execute ONCE!
-    myMeowHistorian?.init(); // TODO: multi-window compatibility! Execute ONCE!
+    let myMeowHistorian = AppStorageV2.connect(meowHistorian)!;
+    myMeowHistorian.init();
 
     // Load bookmarks
-    let myMeowBookmarkStash = AppStorageV2.connect(meowBookmarkStash); // TODO: multi-window compatibility! Execute ONCE!
-    myMeowBookmarkStash?.loadFromDisk(); // TODO: multi-window compatibility! Execute ONCE!
+    let myMeowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
+    myMeowBookmarkStash.loadFromDisk();
   }
 
   meow(`Finished in ${Date.now() - startTime} ms.`, 'onLoadContent', meowLevel.WARN);

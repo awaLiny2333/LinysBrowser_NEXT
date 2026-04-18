@@ -4,6 +4,8 @@ import lazy { meowAppStatuses } from "../classes/meowAppStatuses";
 import lazy { meowUiStatuses } from "../classes/meowUiStatuses";
 
 export enum meowAppMessageType {
+  SETTINGS_UA_REFRESH,
+  SETTINGS_SE_REFRESH,
   BOOKMARKS_REFRESH, // See entry/src/main/ets/components/parts/Bookmarks/MeowBookmarksPanel.ets
   BOOKMARKS_PICKED,
   COLOR_PICKED,

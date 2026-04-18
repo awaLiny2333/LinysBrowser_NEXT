@@ -43,10 +43,13 @@ export async function newWindow(context: common.UIAbilityContext, windowId: stri
     bundleName: info[0].ability.bundleName,
     moduleName: info[0].ability.moduleName,
     abilityName: info[0].ability.abilityName,
+    parameters: {
+      windowId: windowId
+    }
   };
 
-  let myApp = AppStorageV2.connect(meowAppStatuses)!; // If we want to store something...
-  myApp.windowNames.push(windowId); // Then the next window would pick this up onCreate.
+  // let myApp = AppStorageV2.connect(meowAppStatuses)!; // If we want to store something...
+  // myApp.windowNames.push(windowId); // Then the next window would pick this up onCreate.
 
   // Call
   try {

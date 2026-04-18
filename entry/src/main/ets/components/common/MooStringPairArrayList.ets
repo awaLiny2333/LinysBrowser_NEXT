@@ -14,6 +14,8 @@ struct MooStringPairArrayList {
   @Param array: string[][] = []; // The list.
   // Events
   @Event onEdited: (index: number, newValue: string[]) => void;
+  @Event onNew: (newValue: string[]) => void;
+  @Event onDelete: (index: number) => void;
   @Event onSelect: (newSelected: number) => void;
   @Event requestResetSelected: () => void; // Called when the selected index needs to be reset. E.g. when the item selected is deleted.
 
@@ -46,27 +48,14 @@ struct MooStringPairArrayList {
               allowSelect: this.allowSelect,
               allowEdit: true,
               onEdited: (newValues) => {
-                // Assign item.item the values.
-                
-                // Doing so instead of item.item = newValue
-                // can keep the address of the item.item object constant
-                // while only modifying its elements.
-                
-                // In the typical case of editing UAs and SEs, 
-                // these string[] pairs are exactly the ones in the meowAppSettings.
-                
-                item.item[0] = newValues[0];
-                item.item[1] = newValues[1];
-                
                 // Notice upper level.
                 this.onEdited(item.index, newValues);
               },
               onDelete: (index) => {
-                this.array.splice(index, 1);
                 if (this.selectedIndex == index) {
                   this.requestResetSelected();
                 }
-                this.onEdited(index, []);
+                this.onDelete(index);
               },
               onSelect: (n) => {
                 this.onSelect(n);
@@ -83,8 +72,7 @@ struct MooStringPairArrayList {
             .hoverEffect(HoverEffect.Highlight)
             .onClick(() => {
               animateToImmediately(defaultAnimation(), () => {
-                this.array.push(Array.from(this.defaultItem));
-                this.onEdited(this.array.length - 1, this.array[this.array.length - 1]);
+                this.onNew(Array.from(this.defaultItem));
               });
             });
         }.justifyContent(FlexAlign.End).width('100%');

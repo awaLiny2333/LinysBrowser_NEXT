@@ -91,7 +91,7 @@ export function listenAvoid(windowClass: window.Window, windowId: string) {
     windowClass.on('avoidAreaChange', (data) => {
       // meow('Changes on avoid areas!', 'avoidAreaChange', meowLevel.INFO);
       let myLayout = AppStorageV2.connect(meowLayout, `meowLayout_${windowId}`)!;
-      let avoid = AppStorageV2.connect(meowAvoid, `meowAvoid_${windowId}`, () => new meowAvoid(0, 0, 0, 0))!;
+      let avoid = AppStorageV2.connect(meowAvoid, `meowAvoid_${windowId}`)!;
 
       if (data.type == window.AvoidAreaType.TYPE_SYSTEM) {
         let top = meowPx2vp(data.area.topRect.height);
@@ -132,7 +132,7 @@ export function listenAvoid(windowClass: window.Window, windowId: string) {
 export function getUpdateAvoid(windowClass: window.Window, windowId: string) {
   try {
     let avoidArea: window.AvoidArea;
-    let avoid = AppStorageV2.connect(meowAvoid, `meowAvoid_${windowId}`, () => new meowAvoid(0, 0, 0, 0))!;
+    let avoid = AppStorageV2.connect(meowAvoid, `meowAvoid_${windowId}`)!;
     let myLayout = AppStorageV2.connect(meowLayout, `meowLayout_${windowId}`)!;
 
     // Get
