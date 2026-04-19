@@ -42,7 +42,7 @@ struct WoofUniFrame {
       .animation(defaultAnimation());
 
       // Title bar
-      Row() {
+      Row({ space: 1 }) {
         Text(this.title)
           .attributeModifier(new MooTextModifier(mooTextType.TITLE))
           .maxLines(1)
