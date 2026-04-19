@@ -35,7 +35,7 @@ struct WoofSettings {
           SettingsGeneral({ myDialog: this.myDialog });
         };
         FlowItem() {
-          SettingsExperience();
+          SettingsExperience({ myDialog: this.myDialog });
         };
         FlowItem() {
           SettingsAccessibility();

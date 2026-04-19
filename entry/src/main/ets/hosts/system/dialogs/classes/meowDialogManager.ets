@@ -67,7 +67,8 @@ export enum openDialogRequestType {
   COLOR_PICKER,
   BOOKMARKS,
   BOOKMARKS_PICKER,
-  HOMEPAGE
+  HOMEPAGE,
+  ADSBLOCKER
 }
 
 /**

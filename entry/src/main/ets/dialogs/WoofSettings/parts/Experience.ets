@@ -6,9 +6,12 @@ import { MooSwitch } from "../../../components/common/MooSwitch";
 import { AppStorageV2 } from "@kit.ArkUI";
 import { MooSlider } from "../../../components/common/MooSlider";
 import { MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
+import { requestDialog } from "../../../hosts/system/dialogs/scripts/dialog";
+import { meowDialogManager, openDialogRequestType } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 
 @ComponentV2
 struct SettingsExperience {
+  @Param @Require myDialog: meowDialogManager;
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
   build() {
@@ -143,7 +146,7 @@ struct SettingsExperience {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_experience_advanced_adsblocker_manage'),
           clickAction: () => {
-            // TODO: Ads blocker manager entrance.
+            requestDialog(this.myDialog, openDialogRequestType.ADSBLOCKER, undefined, true);
           }
         });
         MooCapsuleButton({

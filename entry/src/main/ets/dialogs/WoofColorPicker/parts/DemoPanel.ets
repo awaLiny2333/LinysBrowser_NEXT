@@ -1,7 +1,7 @@
 import { defaultMenuItemRadius, defaultRoundedRadius, defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
 import { MooCapsuleButton } from '../../../components/common/MooCapsuleButton';
 import { MooTextModifier } from '../../../components/common/MooTextModifier';
-import { standardSpacing, getColor, meowThemeColorType } from '../../../components/settings';
+import { standardSpacing, getColor, meowThemeColorType, useEffects } from '../../../components/settings';
 
 @ComponentV2
 struct DemoPanel {
@@ -42,7 +42,7 @@ struct DemoPanel {
     .layoutWeight(1)
     .padding(standardSpacing)
     .backgroundColor(getColor(meowThemeColorType.PRIMARY))
-    .borderRadius(defaultInnerRadius);
+    .border({ radius: defaultInnerRadius, width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth') });
   }
 }
 

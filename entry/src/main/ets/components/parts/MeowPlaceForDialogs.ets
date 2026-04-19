@@ -10,6 +10,7 @@ import { WoofSettingsDialog } from '../../dialogs/WoofSettings/WoofSettings';
 import lazy { localMessage, meowAppMessageType } from '../../hosts/system/windows/scripts/messaging';
 import { meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
 import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
+import { WoofAdsBlockerDialog } from '../../dialogs/WoofAdsBlocker/WoofAdsBlocker';
 
 /**
  * A place for dialogs.
@@ -87,6 +88,13 @@ struct MeowPlaceForDialogs {
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
+  woofAdsBlockerDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofAdsBlockerDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
 
   build() {
     // Nothing
@@ -116,6 +124,9 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.HOMEPAGE:
         this.woofHomepageDialogController.open();
+        break;
+      case openDialogRequestType.ADSBLOCKER:
+        this.woofAdsBlockerDialogController.open();
         break;
       default:
         break;

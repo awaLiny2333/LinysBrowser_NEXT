@@ -45,8 +45,8 @@ struct SettingsGeneral {
             this.mySettings.requestSaveToDisk();
             globalMessage(meowAppMessageType.SETTINGS_UA_REFRESH, this.selectedIndexUA);
           },
-          onNew: (n) => {
-            (this.mySettings.settingsData[41].value as string[][]).push(n);
+          onNew: () => {
+            (this.mySettings.settingsData[41].value as string[][]).push(['HarmonyOS', '']);
             this.mySettings.requestSaveToDisk();
             globalMessage(meowAppMessageType.SETTINGS_UA_REFRESH, this.selectedIndexUA);
           },
@@ -79,8 +79,8 @@ struct SettingsGeneral {
             this.mySettings.requestSaveToDisk();
             globalMessage(meowAppMessageType.SETTINGS_SE_REFRESH, this.selectedIndexSE);
           },
-          onNew: (n) => {
-            (this.mySettings.settingsData[43].value as string[][]).push(n);
+          onNew: () => {
+            (this.mySettings.settingsData[43].value as string[][]).push(['Bing', defaultSearchEngine()]);
             this.mySettings.requestSaveToDisk();
             globalMessage(meowAppMessageType.SETTINGS_SE_REFRESH, this.selectedIndexSE);
           },

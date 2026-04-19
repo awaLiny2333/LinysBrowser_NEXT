@@ -14,7 +14,7 @@ struct MooStringPairArrayList {
   @Param array: string[][] = []; // The list.
   // Events
   @Event onEdited: (index: number, newValue: string[]) => void;
-  @Event onNew: (newValue: string[]) => void;
+  @Event onNew: () => void;
   @Event onDelete: (index: number) => void;
   @Event onSelect: (newSelected: number) => void;
   @Event requestResetSelected: () => void; // Called when the selected index needs to be reset. E.g. when the item selected is deleted.
@@ -72,7 +72,7 @@ struct MooStringPairArrayList {
             .hoverEffect(HoverEffect.Highlight)
             .onClick(() => {
               animateToImmediately(defaultAnimation(), () => {
-                this.onNew(Array.from(this.defaultItem));
+                this.onNew();
               });
             });
         }.justifyContent(FlexAlign.End).width('100%');
