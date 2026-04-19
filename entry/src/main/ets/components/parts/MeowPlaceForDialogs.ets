@@ -10,7 +10,7 @@ import { WoofSettingsDialog } from '../../dialogs/WoofSettings/WoofSettings';
 import lazy { localMessage, meowAppMessageType } from '../../hosts/system/windows/scripts/messaging';
 import { meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
 import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
-import { WoofAdsBlockerDialog } from '../../dialogs/WoofAdsBlocker/WoofAdsBlocker';
+import { WoofAdBlockerDialog } from '../../dialogs/WoofAdBlocker/WoofAdBlocker';
 import { WoofWebImagesDialog } from '../../dialogs/WoofWebImages/WoofWebImages';
 import { WoofJavaScriptsDialog } from '../../dialogs/WoofJavaScripts/WoofJavaScripts';
 
@@ -90,8 +90,8 @@ struct MeowPlaceForDialogs {
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
-  woofAdsBlockerDialogController: CustomDialogController = new CustomDialogController({
-    builder: WoofAdsBlockerDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
+  woofAdBlockerDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofAdBlockerDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
     alignment: DialogAlignment.Center,
     // width: '95%',
     // height: '95%',
@@ -141,8 +141,8 @@ struct MeowPlaceForDialogs {
       case openDialogRequestType.HOMEPAGE:
         this.woofHomepageDialogController.open();
         break;
-      case openDialogRequestType.ADSBLOCKER:
-        this.woofAdsBlockerDialogController.open();
+      case openDialogRequestType.ADBLOCKER:
+        this.woofAdBlockerDialogController.open();
         break;
       case openDialogRequestType.WEB_IMAGES:
         this.woofWebImagesDialogController.open();

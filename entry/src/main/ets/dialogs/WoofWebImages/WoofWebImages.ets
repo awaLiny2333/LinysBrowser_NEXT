@@ -1,12 +1,12 @@
+import { AppStorageV2, SegmentButtonV2Items } from '@kit.ArkUI';
 import { meowLayout } from '../../catstypicalframework/hosts/meowLayout';
+import { MooStringArrayList } from '../../components/common/MooStringArrayList';
+import { MooTabSegmentV2 } from '../../components/common/MooTabSegmentV2';
+import { defaultAnimation, standardSpacing } from '../../components/settings';
 import { meowDialogManager } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
 import { meowManagedSettings } from '../../hosts/userdata/settings/classes/meowManagedSettings';
 import { WoofUniFrame } from '../WoofUniFrame';
-import { AppStorageV2 } from '@kit.ArkUI';
-import { MooStringArrayList } from '../../components/common/MooStringArrayList';
-import { defaultAnimation, standardSpacing } from '../../components/settings';
-import { MooSwitch } from '../../components/common/MooSwitch';
 
 @ComponentV2
 struct WebImagesPanel {
@@ -48,24 +48,33 @@ struct WoofWebImagesDialog {
 
   build() {
     WoofUniFrame({
-      controller: this.controller, shiftBackgroundColor: true, title: $r('app.string.WebImages'), myDialog: this.myDialog, myLayout: this.myLayout,
-      hasTutorial: true,
-      requestTutorial: () => {
-        // Tutorial
-      }
+      controller: this.controller, myDialog: this.myDialog, myLayout: this.myLayout, shiftBackgroundColor: true,
+      title: $r('app.string.WebImages'),
+      tutorial: $r('app.string.WebImages_tutorial'),
     }) {
       WebImagesPanel();
 
-      MooSwitch({
-        text: $r('app.string.WebImages_blockAll'),
-        isOn: (AppStorageV2.connect(meowManagedSettings)!).settingsData[58].value as boolean,
-        onChange: (isOn: boolean) => {
-          (AppStorageV2.connect(meowManagedSettings)!).setByIndex(58, isOn);
-        }
-      })
-        .visibility(this.myLayout.shortMode ? Visibility.None : Visibility.Visible) // Save space for short contents
-        .animation(defaultAnimation())
-        .padding({ left: standardSpacing, right: standardSpacing, bottom: standardSpacing });
+      if (!this.myLayout.shortMode) {
+        MooTabSegmentV2({
+          initSelected: AppStorageV2.connect(meowManagedSettings)!.settingsData[58].value as boolean ? 0 : 1,
+          items: new SegmentButtonV2Items([{ text: $r('app.string.General_blockAll') }, { text: $r('app.string.General_blockListed') }]),
+          onSelected: (index) => {
+            // 'top' | 'bottom'
+            const mySettings = AppStorageV2.connect(meowManagedSettings)!;
+            switch (index) {
+              case 0:
+                mySettings.setByIndex(58, true);
+                break;
+              case 1:
+                mySettings.setByIndex(58, false);
+                break;
+              default:
+                break;
+            }
+          }
+        })
+          .padding({ left: standardSpacing, right: standardSpacing, bottom: standardSpacing });
+      }
     };
   }
 }

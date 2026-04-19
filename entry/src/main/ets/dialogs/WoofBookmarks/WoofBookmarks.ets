@@ -20,11 +20,10 @@ struct WoofBookmarksDialog {
 
   build() {
     WoofUniFrame({
-      controller: this.controller, shiftBackgroundColor: true, title: this.selectMode ? $r('app.string.Bookmarks_selectFolder') : $r('app.string.Bookmarks'), myDialog: this.myDialog, myLayout: this.myLayout,
-      hasTutorial: true,
-      requestTutorial: () => {
-        // Tutorial
-      }
+      controller: this.controller,
+      shiftBackgroundColor: true, 
+      title: this.selectMode ? $r('app.string.Bookmarks_selectFolder') : $r('app.string.Bookmarks'), 
+      myDialog: this.myDialog, myLayout: this.myLayout,
     }) {
       MeowBookmarksPanel({
         myUi: this.myUi,

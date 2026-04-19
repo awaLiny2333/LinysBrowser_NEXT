@@ -8,7 +8,7 @@ import { MooStringArrayList } from '../../components/common/MooStringArrayList';
 import { standardSpacing } from '../../components/settings';
 
 @ComponentV2
-struct AdsBlockerPanel {
+struct AdBlockerPanel {
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
   build() {
@@ -35,22 +35,21 @@ struct AdsBlockerPanel {
 }
 
 @CustomDialog
-struct WoofAdsBlockerDialog {
+struct WoofAdBlockerDialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
   @Require myLayout: meowLayout;
   @Require myUi: meowUiStatuses;
 
   build() {
-    WoofUniFrame({ controller: this.controller, shiftBackgroundColor: true, title: $r('app.string.AdsBlocker'), myDialog: this.myDialog, myLayout: this.myLayout,
-    hasTutorial: true,
-    requestTutorial: () => {
-      // Tutorial
-    }
-  }) {
-      AdsBlockerPanel();
+    WoofUniFrame({
+      controller: this.controller, myDialog: this.myDialog, myLayout: this.myLayout, shiftBackgroundColor: true,
+      title: $r('app.string.AdBlocker'),
+      tutorial: $r('app.string.AdBlocker_tutorial'),
+    }) {
+      AdBlockerPanel();
     };
   }
 }
 
-export { WoofAdsBlockerDialog };
+export { WoofAdBlockerDialog };

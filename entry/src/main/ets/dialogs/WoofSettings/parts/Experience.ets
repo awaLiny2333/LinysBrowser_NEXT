@@ -137,22 +137,22 @@ struct SettingsExperience {
 
       UniContentCard({ title: $r('app.string.Settings_category_experience_advanced'), icon: $r('sys.symbol.fast') }) {
         MooSwitch({
-          text: $r('app.string.Settings_category_experience_advanced_adsblocker'),
+          text: $r('app.string.Settings_category_experience_advanced_adblocker'),
           isOn: this.mySettings.settingsData[52].value as boolean,
           onChange: (r) => {
             this.mySettings.setByIndex(52, r);
           }
         });
         MooCapsuleButton({
-          text: $r('app.string.Settings_category_experience_advanced_adsblocker_manage'),
+          text: $r('app.string.Settings_category_experience_advanced_adblocker_manage'),
           clickAction: () => {
-            requestDialog(this.myDialog, openDialogRequestType.ADSBLOCKER, undefined, true);
+            requestDialog(this.myDialog, openDialogRequestType.ADBLOCKER, undefined, true);
           }
         });
         MooCapsuleButton({
-          text: $r('app.string.Settings_category_experience_advanced_adsblocker_rules'),
+          text: $r('app.string.Settings_category_experience_advanced_adblocker_rules'),
           clickAction: () => {
-            // TODO: Ads blocker rules manager entrance.
+            // TODO: Ad blocker rules manager entrance.
           }
         });
         MooSwitch({

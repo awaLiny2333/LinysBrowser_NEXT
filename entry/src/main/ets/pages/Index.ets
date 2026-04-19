@@ -174,11 +174,15 @@ struct Index {
     .onAreaChange((o, n) => {
       if (o.width != n.width) {
         this.myLayout.width = n.width as number;
-        this.myLayout.wideMode = this.myLayout.width > wideModeThreshold;
+        animateToImmediately(defaultAnimation(), () => {
+          this.myLayout.wideMode = this.myLayout.width > wideModeThreshold;
+        })
       }
       if (o.height != n.height) {
         this.myLayout.height = n.height as number;
-        this.myLayout.shortMode = this.myLayout.height < shortModeThreshold;
+        animateToImmediately(defaultAnimation(), () => {
+          this.myLayout.shortMode = this.myLayout.height < shortModeThreshold;
+        })
       }
     });
   }

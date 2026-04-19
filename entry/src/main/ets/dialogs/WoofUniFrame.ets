@@ -1,14 +1,15 @@
 import { MooSymbolButton } from '../components/common/MooSymbolButton';
 import { MooTextModifier } from '../components/common/MooTextModifier';
-import { defaultAnimation, getColor, meowThemeColorType, mooTextType, useEffects } from '../components/settings';
+import { defaultAnimation, getColor, meowThemeColorType, mooTextType, standardSpacing, useEffects } from '../components/settings';
 import { meowLayout } from '../catstypicalframework/hosts/meowLayout';
 import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
+import { UniContentCard } from '../components/common/UniContentCard';
 
 @ComponentV2
 struct WoofUniFrame {
   // Config
   @Param @Once shiftBackgroundColor: boolean = false;
-  @Param @Once hasTutorial: boolean = false;
+  @Param @Once tutorial: ResourceStr | undefined = undefined;
   // Env
   @Param @Require myDialog: meowDialogManager;
   @Param @Require myLayout: meowLayout;
@@ -16,10 +17,8 @@ struct WoofUniFrame {
   @Param @Require controller: CustomDialogController;
   @Param title: ResourceStr = 'Title';
   @BuilderParam contentsBuilder: () => void;
-  // Info
-  @Local dialogHeight: number = -1;
-  // Events
-  @Event requestTutorial: () => void;
+  // UI
+  @Local showTutorial: boolean = false;
 
   aboutToAppear(): void {
     if (this.controller) {
@@ -36,50 +35,55 @@ struct WoofUniFrame {
   build() {
     Stack() {
       Column() {
+        // Tutorial. TODO: This nesting is ugly.
+        if (this.showTutorial && !this.myLayout.shortMode) {
+          Column() {
+            UniContentCard() {
+              Text(this.tutorial).attributeModifier(new MooTextModifier()).width('100%');
+            };
+          }.padding({ left: standardSpacing, right: standardSpacing, top: standardSpacing });
+        }
+        
         this.contentsBuilder();
       }
       .padding({ top: this.myLayout.shortMode ? 0 : 43 })
       .animation(defaultAnimation());
 
       // Title bar
-      Row({ space: 1 }) {
-        Text(this.title)
-          .attributeModifier(new MooTextModifier(mooTextType.TITLE))
-          .maxLines(1)
-          .wordBreak(WordBreak.BREAK_ALL)
-          .textOverflow({ overflow: TextOverflow.Ellipsis })
-          .layoutWeight(1);
-        if (this.hasTutorial) {
+      if (!this.myLayout.shortMode) {
+        Row({ space: standardSpacing * 0.125 }) {
+          Text(this.title)
+            .attributeModifier(new MooTextModifier(mooTextType.TITLE))
+            .maxLines(1)
+            .wordBreak(WordBreak.BREAK_ALL)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
+            .layoutWeight(1);
+          if (this.tutorial) {
+            MooSymbolButton({
+              icon: $r('sys.symbol.questionmark_circle'),
+              onHold: this.showTutorial,
+              clickAction: () => {
+                animateToImmediately(defaultAnimation(), () => {
+                  this.showTutorial = !this.showTutorial;
+                });
+              }
+            });
+          }
           MooSymbolButton({
-            icon: $r('sys.symbol.questionmark_circle'),
+            icon: $r('sys.symbol.xmark'),
             clickAction: () => {
-              this.requestTutorial();
+              if (this.controller) {
+                this.controller.close();
+              }
             }
           });
         }
-        MooSymbolButton({
-          icon: $r('sys.symbol.xmark'),
-          clickAction: () => {
-            if (this.controller) {
-              this.controller.close();
-            }
-          }
-        });
+        .padding({ left: 12, right: 10, top: 10, bottom: 7 })
+        .backgroundColor(getColor(this.shiftBackgroundColor && !useEffects() ? meowThemeColorType.PRIMARY : meowThemeColorType.SECONDARY))
+        .useEffect(useEffects(), EffectType.WINDOW_EFFECT);
       }
-      .visibility(this.myLayout.shortMode ? Visibility.None : Visibility.Visible) // Save space for short contents
-      .animation(defaultAnimation())
-      .padding({ left: 12, right: 10, top: 10, bottom: 7 })
-      .backgroundColor(getColor(this.shiftBackgroundColor && !useEffects() ? meowThemeColorType.PRIMARY : meowThemeColorType.SECONDARY))
-      .useEffect(useEffects(), EffectType.WINDOW_EFFECT);
-
     }
     .width('auto')
-    .onAreaChange((oldValue, newValue) => {
-      if (oldValue.height as number == newValue.height as number) {
-        return;
-      }
-      this.dialogHeight = newValue.height as number;
-    })
     .alignContent(Alignment.Top)
     .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
     .backgroundColor(getColor(this.shiftBackgroundColor && !useEffects() ? meowThemeColorType.PRIMARY : meowThemeColorType.SECONDARY));

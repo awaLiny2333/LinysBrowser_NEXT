@@ -4,7 +4,7 @@ import { meowDialogManager, openDialogRequestType } from "../../../hosts/system/
 import { requestDialog } from "../../../hosts/system/dialogs/scripts/dialog";
 import { meowUiStatuses } from "../../../hosts/system/windows/classes/meowUiStatuses";
 import { MooSymbolButton } from "../../common/MooSymbolButton";
-import { defaultAnimation } from "../../settings";
+import { defaultAnimation, standardSpacing } from "../../settings";
 import { MeowSearchBar } from "./MeowSearchBar";
 
 @ComponentV2
@@ -15,7 +15,7 @@ struct MeowTitleBar {
   @Param @Require myDialog: meowDialogManager;
 
   build() {
-    Row({ space: 1 }) {
+    Row({ space: standardSpacing * 0.125 }) {
       MooSymbolButton({ icon: $r('sys.symbol.arrow_left') });
       MooSymbolButton({ icon: $r('sys.symbol.arrow_right') });
       MooSymbolButton({ icon: $r('sys.symbol.arrow_clockwise') });

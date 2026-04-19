@@ -49,6 +49,14 @@
       "value": "取消选择  󰃑"
     },
     {
+      "name": "General_blockAll",
+      "value": "全部屏蔽  󰆨"
+    },
+    {
+      "name": "General_blockListed",
+      "value": "屏蔽上表  󰖿"
+    },
+    {
       "name": "Settings",
       "value": "设置"
     },
@@ -177,15 +185,15 @@
       "value": "高级"
     },
     {
-      "name": "Settings_category_experience_advanced_adsblocker",
+      "name": "Settings_category_experience_advanced_adblocker",
       "value": "广告过滤"
     },
     {
-      "name": "Settings_category_experience_advanced_adsblocker_manage",
+      "name": "Settings_category_experience_advanced_adblocker_manage",
       "value": "管理广告过滤  󰯊"
     },
     {
-      "name": "Settings_category_experience_advanced_adsblocker_rules",
+      "name": "Settings_category_experience_advanced_adblocker_rules",
       "value": "管理过滤规则  󰖿"
     },
     {
@@ -533,24 +541,28 @@
       "value": "快捷列表初始高度"
     },
     {
-      "name": "AdsBlocker",
-      "value": "广告过滤白名单"
+      "name": "AdBlocker",
+      "value": "广告过滤赦免"
+    },
+    {
+      "name": "AdBlocker_tutorial",
+      "value": "启用广告过滤之后，此列表中的域名将会在大过滤器爪下得到赦免！"
     },
     {
       "name": "WebImages",
       "value": "网页图片黑名单"
     },
     {
-      "name": "WebImages_blockAll",
-      "value": "屏蔽全部网页图片"
+      "name": "WebImages_tutorial",
+      "value": "通过此处的设置，我们可以选择屏蔽所有 / 某些域名上的网络图片！"
     },
     {
       "name": "JavaScripts",
       "value": "网页 JavaScript 黑名单"
     },
     {
-      "name": "JavaScripts_blockAll",
-      "value": "屏蔽全部网页 JavaScript"
+      "name": "JavaScripts_tutorial",
+      "value": "通过此处的设置，我们可以选择屏蔽所有 / 某些域名上的网页 JavaScript！"
     },
     {
       "name": "Permission_reason_DETECT_GESTURES",

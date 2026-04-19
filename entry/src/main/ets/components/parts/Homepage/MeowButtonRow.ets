@@ -7,7 +7,7 @@ export struct MeowButtonRow {
   @Param @Require myAvoid: meowAvoid;
 
   build() {
-    Row({ space: 1 }) {
+    Row({ space: standardSpacing * 0.125 }) {
       /**
        * TODO: More buttons.
        */

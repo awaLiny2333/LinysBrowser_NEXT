@@ -49,6 +49,14 @@
       "value": "Unselect  󰃑"
     },
     {
+      "name": "General_blockAll",
+      "value": "Block all  󰆨"
+    },
+    {
+      "name": "General_blockListed",
+      "value": "Block listed  󰖿"
+    },
+    {
       "name": "Settings",
       "value": "Settings"
     },
@@ -177,15 +185,15 @@
       "value": "Advanced"
     },
     {
-      "name": "Settings_category_experience_advanced_adsblocker",
-      "value": "Ads blocker"
+      "name": "Settings_category_experience_advanced_adblocker",
+      "value": "Ad blocker"
     },
     {
-      "name": "Settings_category_experience_advanced_adsblocker_manage",
-      "value": "Manage ads blocker  󰯊"
+      "name": "Settings_category_experience_advanced_adblocker_manage",
+      "value": "Manage ad blocker  󰯊"
     },
     {
-      "name": "Settings_category_experience_advanced_adsblocker_rules",
+      "name": "Settings_category_experience_advanced_adblocker_rules",
       "value": "Manage block rules  󰖿"
     },
     {
@@ -533,24 +541,28 @@
       "value": "Initial height of shortcuts list"
     },
     {
-      "name": "AdsBlocker",
-      "value": "Ads blocker allowlist"
+      "name": "AdBlocker",
+      "value": "Ad blocker pardons"
+    },
+    {
+      "name": "AdBlocker_tutorial",
+      "value": "Once ad blocking is on, these domains get a paw-don from the Big Filter!"
     },
     {
       "name": "WebImages",
       "value": "Web images blocklist"
     },
     {
-      "name": "WebImages_blockAll",
-      "value": "Block all web images"
+      "name": "WebImages_tutorial",
+      "value": "Through settings here, we can choose to block all / some domains' web images!"
     },
     {
       "name": "JavaScripts",
       "value": "Web JS blocklist"
     },
     {
-      "name": "JavaScripts_blockAll",
-      "value": "Block all web JavaScripts"
+      "name": "JavaScripts_tutorial",
+      "value": "Through settings here, we can choose to block all / some domains' web JavaScripts!"
     },
     {
       "name": "Permission_reason_DETECT_GESTURES",
