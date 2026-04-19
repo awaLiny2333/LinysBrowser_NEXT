@@ -534,7 +534,23 @@
     },
     {
       "name": "AdsBlocker",
-      "value": "广告过滤"
+      "value": "广告过滤白名单"
+    },
+    {
+      "name": "WebImages",
+      "value": "网页图片黑名单"
+    },
+    {
+      "name": "WebImages_blockAll",
+      "value": "屏蔽全部网页图片"
+    },
+    {
+      "name": "JavaScripts",
+      "value": "网页 JavaScript 黑名单"
+    },
+    {
+      "name": "JavaScripts_blockAll",
+      "value": "屏蔽全部网页 JavaScript"
     },
     {
       "name": "Permission_reason_DETECT_GESTURES",

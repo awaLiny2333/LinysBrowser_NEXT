@@ -165,7 +165,7 @@ struct SettingsExperience {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_experience_advanced_webImages_manage'),
           clickAction: () => {
-            // TODO: Web image manager entrance.
+            requestDialog(this.myDialog, openDialogRequestType.WEB_IMAGES, undefined, true);
           }
         });
         MooSwitch({
@@ -178,7 +178,7 @@ struct SettingsExperience {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_experience_advanced_Js_manage'),
           clickAction: () => {
-            // TODO: Js manager entrance.
+            requestDialog(this.myDialog, openDialogRequestType.WEB_JAVASCRIPTS, undefined, true);
           }
         });
       };

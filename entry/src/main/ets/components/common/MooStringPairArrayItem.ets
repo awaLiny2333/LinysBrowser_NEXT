@@ -24,7 +24,7 @@ struct StringPairArrayItem {
   /**
    * Called when the item is edited.
    * Returns a NEW string[] object that contains the new [label, link] pair.
-   * The upper level of this StringPairArrayItem 
+   * The upper level of this StringPairArrayItem
    * should do the rest of the backward data syncing / assigning jobs!
    */
   @Event onEdited: (newValues: string[]) => void;
@@ -60,7 +60,7 @@ struct StringPairArrayItem {
 
       if (this.isEditing) {
         MooTextInputV2({
-          icon: $r('sys.symbol.label'),
+          icon: this.enableLinkField ? $r('sys.symbol.label') : undefined,
           text: this.editingLabel,
           onChange: (c) => {
             this.editingLabel = c;
@@ -125,10 +125,10 @@ struct StringPairArrayItem {
   save() {
     // Set display.
     this.displayLabel = this.editingLabel;
-    
+
     // meow(`call this.onEdit([${this.editingLabel}, ${this.editingLink}])`, 'MooStringPairArrayItem][save', meowLevel.WARN);
     this.onEdited([this.editingLabel, this.editingLink]); // This works.
-    
+
     // Close editing.
     animateToImmediately(defaultAnimation(), () => {
       this.isEditing = false;

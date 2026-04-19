@@ -26,7 +26,7 @@ struct AdsBlockerPanel {
       },
       onNew: () => {
         const list = this.mySettings.settingsData[53].value as string[];
-        list.push('meow');
+        list.push('meow.net');
         this.mySettings.requestSaveToDisk();
       }
     })

@@ -58,7 +58,7 @@ struct WoofUniFrame {
       .visibility(this.myLayout.shortMode ? Visibility.None : Visibility.Visible) // Save space for short contents
       .animation(defaultAnimation())
       .padding({ left: 12, right: 10, top: 10, bottom: 7 })
-      .backgroundColor(getColor(this.shiftBackgroundColor ? meowThemeColorType.PRIMARY : meowThemeColorType.SECONDARY))
+      .backgroundColor(getColor(this.shiftBackgroundColor && !useEffects() ? meowThemeColorType.PRIMARY : meowThemeColorType.SECONDARY))
       .useEffect(useEffects(), EffectType.WINDOW_EFFECT);
 
     }
@@ -71,7 +71,7 @@ struct WoofUniFrame {
     })
     .alignContent(Alignment.Top)
     .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
-    .backgroundColor(getColor(this.shiftBackgroundColor ? meowThemeColorType.PRIMARY : meowThemeColorType.SECONDARY));
+    .backgroundColor(getColor(this.shiftBackgroundColor && !useEffects() ? meowThemeColorType.PRIMARY : meowThemeColorType.SECONDARY));
   }
 }
 

@@ -6,6 +6,9 @@ import { MooTextModifier } from "./MooTextModifier";
 @ComponentV2
 struct MooStringArrayList {
   @Param @Require list: string[];
+  // Local
+  // @Local selected: Set<number> = new Set();
+  // Events
   @Event onEdited: (index: number, newValue: string) => void;
   @Event onDelete: (index: number) => void;
   @Event onNew: () => void;
@@ -16,9 +19,10 @@ struct MooStringArrayList {
         .each((item) => {
           ListItem() {
             StringPairArrayItem({
-              allowSelect: false,
+              allowSelect: true,
               allowEdit: true,
               isSelected: false,
+              // isSelected: this.selected.has(item.index),
               index: item.index,
               enableLinkField: false,
               item: [item.item, ''],
@@ -27,7 +31,14 @@ struct MooStringArrayList {
               },
               onDelete: (index) => {
                 this.onDelete(index);
-              }
+              },
+              // onSelect: (index) => {
+              //   if (this.selected.has(index)) {
+              //     this.selected.delete(index);
+              //   } else {
+              //     this.selected.add(index);
+              //   }
+              // }
             });
           };
         })

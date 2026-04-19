@@ -11,6 +11,8 @@ import lazy { localMessage, meowAppMessageType } from '../../hosts/system/window
 import { meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
 import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import { WoofAdsBlockerDialog } from '../../dialogs/WoofAdsBlocker/WoofAdsBlocker';
+import { WoofWebImagesDialog } from '../../dialogs/WoofWebImages/WoofWebImages';
+import { WoofJavaScriptsDialog } from '../../dialogs/WoofJavaScripts/WoofJavaScripts';
 
 /**
  * A place for dialogs.
@@ -95,6 +97,20 @@ struct MeowPlaceForDialogs {
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
+  woofWebImagesDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofWebImagesDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
+  woofJavaScriptsDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofJavaScriptsDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
 
   build() {
     // Nothing
@@ -127,6 +143,12 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.ADSBLOCKER:
         this.woofAdsBlockerDialogController.open();
+        break;
+      case openDialogRequestType.WEB_IMAGES:
+        this.woofWebImagesDialogController.open();
+        break;
+      case openDialogRequestType.WEB_JAVASCRIPTS:
+        this.woofJavaScriptsDialogController.open();
         break;
       default:
         break;
