@@ -8,6 +8,7 @@ import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogMan
 struct WoofUniFrame {
   // Config
   @Param @Once shiftBackgroundColor: boolean = false;
+  @Param @Once hasTutorial: boolean = false;
   // Env
   @Param @Require myDialog: meowDialogManager;
   @Param @Require myLayout: meowLayout;
@@ -17,6 +18,8 @@ struct WoofUniFrame {
   @BuilderParam contentsBuilder: () => void;
   // Info
   @Local dialogHeight: number = -1;
+  // Events
+  @Event requestTutorial: () => void;
 
   aboutToAppear(): void {
     if (this.controller) {
@@ -46,6 +49,14 @@ struct WoofUniFrame {
           .wordBreak(WordBreak.BREAK_ALL)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
           .layoutWeight(1);
+        if (this.hasTutorial) {
+          MooSymbolButton({
+            icon: $r('sys.symbol.questionmark_circle'),
+            clickAction: () => {
+              this.requestTutorial();
+            }
+          });
+        }
         MooSymbolButton({
           icon: $r('sys.symbol.xmark'),
           clickAction: () => {

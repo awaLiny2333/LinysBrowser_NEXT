@@ -42,7 +42,12 @@ struct WoofAdsBlockerDialog {
   @Require myUi: meowUiStatuses;
 
   build() {
-    WoofUniFrame({ controller: this.controller, shiftBackgroundColor: true, title: $r('app.string.AdsBlocker'), myDialog: this.myDialog, myLayout: this.myLayout }) {
+    WoofUniFrame({ controller: this.controller, shiftBackgroundColor: true, title: $r('app.string.AdsBlocker'), myDialog: this.myDialog, myLayout: this.myLayout,
+    hasTutorial: true,
+    requestTutorial: () => {
+      // Tutorial
+    }
+  }) {
       AdsBlockerPanel();
     };
   }

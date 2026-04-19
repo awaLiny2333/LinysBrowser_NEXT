@@ -47,7 +47,13 @@ struct WoofJavaScriptsDialog {
 
 
   build() {
-    WoofUniFrame({ controller: this.controller, shiftBackgroundColor: true, title: $r('app.string.JavaScripts'), myDialog: this.myDialog, myLayout: this.myLayout }) {
+    WoofUniFrame({
+      controller: this.controller, shiftBackgroundColor: true, title: $r('app.string.JavaScripts'), myDialog: this.myDialog, myLayout: this.myLayout,
+      hasTutorial: true,
+      requestTutorial: () => {
+        // Tutorial
+      }
+    }) {
       JavaScriptsPanel();
 
       MooSwitch({
