@@ -62,7 +62,7 @@ struct StringPairArrayItem {
       if (this.isEditing) {
         if (this.enableLabelField) {
           MooTextInputV2({
-            icon: this.enableLabelField ? $r('sys.symbol.label') : undefined,
+            icon: this.enableLinkField ? $r('sys.symbol.label') : $r('sys.symbol.pawprint'),
             text: this.editingLabel,
             onChange: (c) => {
               this.editingLabel = c;
