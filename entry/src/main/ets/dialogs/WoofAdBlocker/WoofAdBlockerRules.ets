@@ -67,7 +67,7 @@ struct AdBlockerRulesPanel {
    * Apply the changes.
    */
   applyFiles() {
-
+    // TODO: apply easylist rules.
   }
 }
 
