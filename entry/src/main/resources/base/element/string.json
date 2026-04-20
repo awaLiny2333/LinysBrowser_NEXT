@@ -549,6 +549,14 @@
       "value": "Once ad blocking is on, these domains get a paw-don from the Big Filter!"
     },
     {
+      "name": "AdBlocker_rules",
+      "value": "Ad blocker rules"
+    },
+    {
+      "name": "AdBlocker_rules_tutorial",
+      "value": "Only accepts EasyList rules ／(=∵=)＼"
+    },
+    {
       "name": "WebImages",
       "value": "Web images blocklist"
     },

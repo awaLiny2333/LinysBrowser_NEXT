@@ -11,6 +11,7 @@ struct StringPairArrayItem {
   // Config
   @Param @Require allowSelect: boolean;
   @Param @Require allowEdit: boolean;
+  @Param enableLabelField: boolean = true;
   @Param enableLinkField: boolean = true; // For use cases like folders, which don't have links.
   @Param maxLines: number | undefined = 1;
   // Data
@@ -59,17 +60,18 @@ struct StringPairArrayItem {
       .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl);
 
       if (this.isEditing) {
-        MooTextInputV2({
-          icon: this.enableLinkField ? $r('sys.symbol.label') : undefined,
-          text: this.editingLabel,
-          onChange: (c) => {
-            this.editingLabel = c;
-          },
-          onSubmit: () => {
-            this.save();
-          }
-        });
-
+        if (this.enableLabelField) {
+          MooTextInputV2({
+            icon: this.enableLabelField ? $r('sys.symbol.label') : undefined,
+            text: this.editingLabel,
+            onChange: (c) => {
+              this.editingLabel = c;
+            },
+            onSubmit: () => {
+              this.save();
+            }
+          });
+        }
         if (this.enableLinkField) {
           MooTextInputV2({
             icon: $r('sys.symbol.link'),
@@ -84,13 +86,15 @@ struct StringPairArrayItem {
         }
 
         UniRowOfCapsuleButtons() {
-          MooCapsuleButton({
-            text: $r('app.string.General_save'),
-            clickAction: () => {
-              this.save();
-            },
-            needDoubleConfirm: true
-          });
+          if (this.enableLabelField || this.enableLinkField) {
+            MooCapsuleButton({
+              text: $r('app.string.General_save'),
+              clickAction: () => {
+                this.save();
+              },
+              needDoubleConfirm: true
+            });
+          }
           MooCapsuleButton({
             text: $r('app.string.General_delete'),
             clickAction: () => {

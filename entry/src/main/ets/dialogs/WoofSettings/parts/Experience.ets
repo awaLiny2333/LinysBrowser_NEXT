@@ -152,7 +152,7 @@ struct SettingsExperience {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_experience_advanced_adblocker_rules'),
           clickAction: () => {
-            // TODO: Ad blocker rules manager entrance.
+            requestDialog(this.myDialog, openDialogRequestType.ADBLOCKER_RULES, undefined, true);
           }
         });
         MooSwitch({

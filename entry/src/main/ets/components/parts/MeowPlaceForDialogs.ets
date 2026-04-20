@@ -13,6 +13,7 @@ import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dia
 import { WoofAdBlockerDialog } from '../../dialogs/WoofAdBlocker/WoofAdBlocker';
 import { WoofWebImagesDialog } from '../../dialogs/WoofWebImages/WoofWebImages';
 import { WoofJavaScriptsDialog } from '../../dialogs/WoofJavaScripts/WoofJavaScripts';
+import { WoofAdBlockerRulesDialog } from '../../dialogs/WoofAdBlocker/WoofAdBlockerRules';
 
 /**
  * A place for dialogs.
@@ -97,6 +98,13 @@ struct MeowPlaceForDialogs {
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
+  woofAdBlockerRulesDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofAdBlockerRulesDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
   woofWebImagesDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofWebImagesDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
     alignment: DialogAlignment.Center,
@@ -143,6 +151,9 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.ADBLOCKER:
         this.woofAdBlockerDialogController.open();
+        break;
+      case openDialogRequestType.ADBLOCKER_RULES:
+        this.woofAdBlockerRulesDialogController.open();
         break;
       case openDialogRequestType.WEB_IMAGES:
         this.woofWebImagesDialogController.open();

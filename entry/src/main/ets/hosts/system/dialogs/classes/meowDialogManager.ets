@@ -69,6 +69,7 @@ export enum openDialogRequestType {
   BOOKMARKS_PICKER,
   HOMEPAGE,
   ADBLOCKER,
+  ADBLOCKER_RULES,
   WEB_IMAGES,
   WEB_JAVASCRIPTS
 }

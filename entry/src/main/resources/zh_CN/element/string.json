@@ -549,6 +549,14 @@
       "value": "启用广告过滤之后，此列表中的域名将会在大过滤器爪下得到赦免！"
     },
     {
+      "name": "AdBlocker_rules",
+      "value": "过滤规则"
+    },
+    {
+      "name": "AdBlocker_rules_tutorial",
+      "value": "仅接受 EasyList 格式规则 ／(=∵=)＼"
+    },
+    {
       "name": "WebImages",
       "value": "网页图片黑名单"
     },

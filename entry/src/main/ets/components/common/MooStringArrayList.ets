@@ -5,6 +5,9 @@ import { MooTextModifier } from "./MooTextModifier";
 
 @ComponentV2
 struct MooStringArrayList {
+  // Config
+  @Param @Once enableLabelField: boolean = true;
+  // Data
   @Param @Require list: string[];
   // Local
   // @Local selected: Set<number> = new Set();
@@ -24,6 +27,7 @@ struct MooStringArrayList {
               isSelected: false,
               // isSelected: this.selected.has(item.index),
               index: item.index,
+              enableLabelField: this.enableLabelField,
               enableLinkField: false,
               item: [item.item, ''],
               onEdited: (newValues) => {
