@@ -7,10 +7,13 @@ import { AppStorageV2 } from '@kit.ArkUI';
 import { MooStringArrayList } from '../../components/common/MooStringArrayList';
 import { standardSpacing } from '../../components/settings';
 import { fileDocumentPick2Path, fileCopy, listFilesUnderDir, unlinkFile, fileNameOfPath } from '../../catstypicalframework/utils/storage';
-import { meow,meowLevel } from '../../catstypicalframework/utils/catsLogger';
+import { meow, meowLevel } from '../../catstypicalframework/utils/catsLogger';
+import { globalMessage, meowAppMessageType } from '../../hosts/system/windows/scripts/messaging';
+import { meowAppStatuses } from '../../hosts/system/windows/classes/meowAppStatuses';
 
 @ComponentV2
 struct AdBlockerRulesPanel {
+  @Local myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
   // Data
   easylistDirPath: string = this.getUIContext().getHostContext()!.filesDir + '/easylist';
@@ -26,7 +29,7 @@ struct AdBlockerRulesPanel {
       enableLabelField: false,
       onDelete: async (index: number) => {
         // Delete that one from files.
-        await unlinkFile(this.easylistDirPath + '/' + this.myRules[index])
+        await unlinkFile(this.easylistDirPath + '/' + this.myRules[index]);
         this.refreshFiles().then(() => {
           this.applyFiles();
         });
@@ -60,7 +63,10 @@ struct AdBlockerRulesPanel {
    */
   async refreshFiles() {
     const results = await listFilesUnderDir(this.easylistDirPath);
-    if (results) this.myRules = results;
+    if (results) {
+      this.myRules = results;
+    }
+    globalMessage(meowAppMessageType.SETTINGS_EASYLIST_REFRESH, results);
   }
 
   /**
@@ -68,6 +74,20 @@ struct AdBlockerRulesPanel {
    */
   applyFiles() {
     // TODO: apply easylist rules.
+  }
+
+  /**
+   * Refresh message receiver!
+   */
+  @Monitor('myApp.crossAppMessageTunnel')
+  receiveMessage() {
+    const msg = this.myApp.crossAppMessageTunnel!;
+    const payload = msg.payload as string[];
+    if (msg.type == meowAppMessageType.SETTINGS_EASYLIST_REFRESH) {
+      if (this.myRules != payload) {
+        this.myRules = payload;
+      }
+    }
   }
 }
 

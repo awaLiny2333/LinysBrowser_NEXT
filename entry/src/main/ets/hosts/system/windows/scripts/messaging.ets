@@ -6,6 +6,7 @@ import lazy { meowUiStatuses } from "../classes/meowUiStatuses";
 export enum meowAppMessageType {
   SETTINGS_UA_REFRESH,
   SETTINGS_SE_REFRESH,
+  SETTINGS_EASYLIST_REFRESH,
   BOOKMARKS_REFRESH, // See entry/src/main/ets/components/parts/Bookmarks/MeowBookmarksPanel.ets
   BOOKMARKS_PICKED,
   COLOR_PICKED,
@@ -27,7 +28,8 @@ export function globalMessage(type: meowAppMessageType, content: object | string
 
 // @Monitor('myApp.crossAppMessageTunnel')
 // receiveMessage() {
-//   if (this.myApp.crossAppMessageTunnel?.type == meowAppMessageType.BOOKMARKS_REFRESH) {
+//   const msg = this.myApp.crossAppMessageTunnel!;
+//   if (msg.type == meowAppMessageType.BOOKMARKS_REFRESH) {
 //     this.refreshRoot();
 //   }
 // }
