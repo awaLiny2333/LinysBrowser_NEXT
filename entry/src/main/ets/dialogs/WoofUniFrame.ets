@@ -1,9 +1,10 @@
+import { meowLayout } from '../catstypicalframework/hosts/meowLayout';
+import { defaultInnerRadius } from '../catstypicalframework/utils/ui';
 import { MooSymbolButton } from '../components/common/MooSymbolButton';
 import { MooTextModifier } from '../components/common/MooTextModifier';
-import { defaultAnimation, getColor, meowThemeColorType, mooTextType, standardSpacing, useEffects } from '../components/settings';
-import { meowLayout } from '../catstypicalframework/hosts/meowLayout';
-import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
 import { UniContentCard } from '../components/common/UniContentCard';
+import { defaultAnimation, getColor, meowThemeColorType, mooTextType, standardSpacing, useEffects } from '../components/settings';
+import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
 
 @ComponentV2
 struct WoofUniFrame {
@@ -38,12 +39,12 @@ struct WoofUniFrame {
         // Tutorial. TODO: This nesting is ugly.
         if (this.showTutorial && !this.myLayout.shortMode) {
           Column() {
-            UniContentCard() {
+            UniContentCard({ roundedRadius: defaultInnerRadius }) {
               Text(this.tutorial).attributeModifier(new MooTextModifier()).width('100%');
             };
           }.padding({ left: standardSpacing, right: standardSpacing, top: standardSpacing });
         }
-        
+
         this.contentsBuilder();
       }
       .padding({ top: this.myLayout.shortMode ? 0 : 43 })
