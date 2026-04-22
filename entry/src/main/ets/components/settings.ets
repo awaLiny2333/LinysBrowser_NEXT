@@ -3,7 +3,7 @@
  * IN CASE OF A SITUATION IN WHICH I NEED TO CHANGE SOME ORDERS IN defaultSettingsEntries.
  * GATEHREING THEM ALL HERE MAKES IT EASIER.
  *
- * For other settings (like whether to download directly to Downloads folder), 
+ * For other settings (like whether to download directly to Downloads folder),
  * the getters are put in the settings.ets files in each host folder under entry/src/main/ets/hosts.
  */
 import { AppStorageV2, LengthMetrics } from "@kit.ArkUI";
@@ -100,6 +100,15 @@ export function waterFlowColumnsTemplate(layout: meowLayout) {
 export function useEffects() {
   const settings = AppStorageV2.connect(meowManagedSettings)!;
   return settings.settingsData[7].value as boolean;
+}
+
+/**
+ * Gets if the app is in dark mode.
+ * @returns true if the app is in dark mode, false otherwise.
+ */
+export function inDarkMode() {
+  const myApp = AppStorageV2.connect(meowAppStatuses)!;
+  return myApp.dark;
 }
 
 /**

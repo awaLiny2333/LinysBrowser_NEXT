@@ -7,7 +7,7 @@ import { MooTextModifier } from './MooTextModifier';
 import { UniRowOfCapsuleButtons } from './UniRowOfCapsuleButtons';
 
 @ComponentV2
-struct StringPairArrayItem {
+struct MooStringItem {
   // Config
   @Param @Require allowSelect: boolean;
   @Param @Require allowEdit: boolean;
@@ -25,7 +25,7 @@ struct StringPairArrayItem {
   /**
    * Called when the item is edited.
    * Returns a NEW string[] object that contains the new [label, link] pair.
-   * The upper level of this StringPairArrayItem
+   * The upper level of this MooStringItem
    * should do the rest of the backward data syncing / assigning jobs!
    */
   @Event onEdited: (newValues: string[]) => void;
@@ -130,7 +130,7 @@ struct StringPairArrayItem {
     // Set display.
     this.displayLabel = this.editingLabel;
 
-    // meow(`call this.onEdit([${this.editingLabel}, ${this.editingLink}])`, 'MooStringPairArrayItem][save', meowLevel.WARN);
+    // meow(`call this.onEdit([${this.editingLabel}, ${this.editingLink}])`, 'MooMooStringItem][save', meowLevel.WARN);
     this.onEdited([this.editingLabel, this.editingLink]); // This works.
 
     // Close editing.
@@ -147,4 +147,4 @@ struct StringPairArrayItem {
   }
 }
 
-export { StringPairArrayItem };
+export { MooStringItem };

@@ -1,7 +1,7 @@
 import { LengthMetrics } from '@kit.ArkUI';
 import { defaultInnerRadius, defaultMenuItemRadius } from '../../catstypicalframework/utils/ui';
 import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, isPreferRightHand, useEffects } from '../settings';
-import { StringPairArrayItem } from './MooStringPairArrayItem';
+import { MooStringItem } from './MooStringItem';
 import { MooTextModifier } from './MooTextModifier';
 
 @ComponentV2
@@ -27,7 +27,7 @@ struct MooStringPairArrayList {
         alignItems: ItemAlign.Center
       }) {
         // The fixed default item
-        StringPairArrayItem({
+        MooStringItem({
           isSelected: this.selectedIndex == -1,
           allowSelect: this.allowSelect,
           item: this.defaultItem,
@@ -41,7 +41,7 @@ struct MooStringPairArrayList {
         // Main list
         Repeat(this.array)
           .each((item) => {
-            StringPairArrayItem({
+            MooStringItem({
               isSelected: this.selectedIndex == item.index,
               item: item.item,
               index: item.index,

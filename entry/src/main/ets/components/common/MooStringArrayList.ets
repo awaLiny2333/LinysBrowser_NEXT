@@ -1,6 +1,6 @@
 import { defaultInnerRadius, defaultMenuItemRadius } from "../../catstypicalframework/utils/ui";
 import { meowThemeColorType, getColor, standardSpacing, useEffects, defaultAnimation, isPreferRightHand } from "../settings";
-import { StringPairArrayItem } from "./MooStringPairArrayItem";
+import { MooStringItem } from "./MooStringItem";
 import { MooTextModifier } from "./MooTextModifier";
 
 @ComponentV2
@@ -21,7 +21,7 @@ struct MooStringArrayList {
       Repeat(this.list)
         .each((item) => {
           ListItem() {
-            StringPairArrayItem({
+            MooStringItem({
               allowSelect: true,
               allowEdit: true,
               isSelected: false,

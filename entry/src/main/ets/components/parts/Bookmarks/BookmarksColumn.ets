@@ -6,7 +6,7 @@ import { meowBookmarkItem } from '../../../hosts/userdata/bookmarks/classes/meow
 import { nowHtmlTimestamp } from '../../../hosts/userdata/bookmarks/scripts/helpers';
 import { meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
 import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
-import { StringPairArrayItem } from '../../common/MooStringPairArrayItem';
+import { MooStringItem } from '../../common/MooStringItem';
 import { MooSymbolButton } from '../../common/MooSymbolButton';
 import { MooTextModifier } from '../../common/MooTextModifier';
 import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from '../../settings';
@@ -114,7 +114,7 @@ struct BookmarksColumn {
       Repeat(this.getFolder())
         .each((item: RepeatItem<meowBookmarkItem>) => {
           ListItem() {
-            StringPairArrayItem({
+            MooStringItem({
               allowEdit: !this.selectMode,
               allowSelect: true,
               maxLines: undefined, // Unlimited lines!

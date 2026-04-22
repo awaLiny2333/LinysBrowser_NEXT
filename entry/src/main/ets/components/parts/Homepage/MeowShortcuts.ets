@@ -11,7 +11,7 @@ import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/me
 import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
 import { meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
 import { MooTextModifier } from '../../common/MooTextModifier';
-import { defaultAnimation, getColor, meowThemeColorType, shortcutsShouldBeOnTheRight, standardSpacing, useEffects } from '../../settings';
+import { defaultAnimation, getColor, inDarkMode, meowThemeColorType, shortcutsShouldBeOnTheRight, standardSpacing, useEffects } from '../../settings';
 
 @ComponentV2
 struct MeowShortcutsPanel {
@@ -69,12 +69,12 @@ struct MeowShortcutItem {
   @Local refreshFlag: boolean = true;
   // UI
   @Param paddingValue: number = 0;
-  @Local myBrightness: number = 1;
+  @Local isHover: boolean = false;
 
   build() {
     Column({ space: standardSpacing * 0.75 }) {
       Text(this.getLabel()).attributeModifier(new MooTextModifier())
-        .brightness(this.myBrightness)
+        .brightness(this.isHover ? (inDarkMode() ? 1.1 : 0.9) : 1)
         .animation(defaultAnimation())
         .padding(standardSpacing * 1.25)
         .border({
@@ -83,11 +83,12 @@ struct MeowShortcutItem {
           radius: defaultInnerRadius
         })
         .onHover((isHover) => {
-          if (isHover && this.myBrightness == 1 || !isHover && this.myBrightness == 1.1) {
-            this.myBrightness = isHover ? 1.1 : 1;
+          if (isHover != this.isHover) {
+            this.isHover = isHover;
           }
         })
         .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
+        // .hoverEffect(HoverEffect.Highlight)
         .backgroundColor(getColor(meowThemeColorType.SECONDARY))
         .fontColor(getColor(meowThemeColorType.FONT))
         .onClick(() => {
