@@ -2,18 +2,18 @@ import { meowAvoid } from '../../catstypicalframework/hosts/meowAvoid';
 import { meowLayout } from '../../catstypicalframework/hosts/meowLayout';
 import { meowMisc } from '../../catstypicalframework/hosts/meowMisc';
 import { defaultRoundedRadius } from '../../catstypicalframework/utils/ui';
-import { WoofBookmarksDialog } from '../../dialogs/WoofBookmarks/WoofBookmarks';
-import { WoofCatsDevDialog } from '../../dialogs/WoofCatsDev/WoofCatsDevCards';
-import { WoofColorPickerDialog } from '../../dialogs/WoofColorPicker/WoofColorPicker';
-import { WoofHomepageDialog } from '../../dialogs/WoofHomepage/WoofHomepage';
-import { WoofSettingsDialog } from '../../dialogs/WoofSettings/WoofSettings';
+import { WoofBookmarksDialog } from '../../dialogs/parts/WoofBookmarks/WoofBookmarks';
+import { WoofCatsDevDialog } from '../../dialogs/parts/WoofCatsDev/WoofCatsDevCards';
+import { WoofColorPickerDialog } from '../../dialogs/public/WoofColorPicker/WoofColorPicker';
+import { WoofHomepageDialog } from '../../dialogs/parts/WoofHomepage/WoofHomepage';
+import { WoofSettingsDialog } from '../../dialogs/parts/WoofSettings/WoofSettings';
 import lazy { localMessage, meowAppMessageType } from '../../hosts/system/windows/scripts/messaging';
 import { meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
 import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
-import { WoofAdBlockerDialog } from '../../dialogs/WoofAdBlocker/WoofAdBlocker';
-import { WoofWebImagesDialog } from '../../dialogs/WoofWebImages/WoofWebImages';
-import { WoofJavaScriptsDialog } from '../../dialogs/WoofJavaScripts/WoofJavaScripts';
-import { WoofAdBlockerRulesDialog } from '../../dialogs/WoofAdBlocker/WoofAdBlockerRules';
+import { WoofWebImagesDialog } from '../../dialogs/settings/WoofWebImages/WoofWebImages';
+import { WoofAdBlockerDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlocker';
+import { WoofAdBlockerRulesDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlockerRules';
+import { WoofJavaScriptsDialog } from '../../dialogs/settings/WoofJavaScripts/WoofJavaScripts';
 
 /**
  * A place for dialogs.
