@@ -7,6 +7,7 @@
  * - meowBookmarkStash
  * - meowHistorian
  * - meowAppStatuses
+ * - meowKeyboardMan
  *
  * Every window is expected to have one of each of the other classes:
  * - meowMisc
@@ -28,6 +29,7 @@ import { meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuse
 import { generateTimeBasedWindowId } from '../../hosts/system/windows/scripts/multiwindows';
 import { meowBookmarkStash } from '../../hosts/userdata/bookmarks/classes/meowBookmarkStash';
 import { meowHistorian } from '../../hosts/userdata/history/classes/meowHistorian';
+import { meowKeyboardMan } from '../../hosts/userdata/keyshortcuts/classes/meowKeyboardMan';
 import { meowManagedSettings } from '../../hosts/userdata/settings/classes/meowManagedSettings';
 import { meowAvoid } from '../hosts/meowAvoid';
 import { meowLayout } from '../hosts/meowLayout';
@@ -77,15 +79,16 @@ export function earlyOnCreate(context: Context, launchWant: Want) {
   if (isNewWindow) {
     AppStorageV2.connect(meowBookmarkStash, () => new meowBookmarkStash(`${filesDir}/html_bookmarks.html`))!;
     AppStorageV2.connect(meowHistorian, () => new meowHistorian(`${filesDir}`))!;
+    AppStorageV2.connect(meowKeyboardMan, () => new meowKeyboardMan())!;
     AppStorageV2.connect(meowManagedSettings, () => new meowManagedSettings(`${filesDir}/settings.json.browsercatsettings.txt`))!;
     const myResources = AppStorageV2.connect(meowResources, () => new meowResources(`${filesDir}/homepage_background_arrayBuffer`))!;
     myResources.loadBackgroundImage();
   }
 
   // Window private hosts
-  AppStorageV2.connect(meowDialogManager, `meowDialogManager_${myWindowId}`, () => new meowDialogManager()); 
-  AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${myWindowId}`, () => new meowUiStatuses(myWindowId)); 
-  AppStorageV2.connect(meowMisc, `meowMisc_${myWindowId}`, () => new meowMisc()); 
+  AppStorageV2.connect(meowDialogManager, `meowDialogManager_${myWindowId}`, () => new meowDialogManager());
+  AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${myWindowId}`, () => new meowUiStatuses(myWindowId));
+  AppStorageV2.connect(meowMisc, `meowMisc_${myWindowId}`, () => new meowMisc());
 
   // meow(`Finished in ${Date.now() - startTime} ms.`, 'earlyOnCreate', meowLevel.WARN);
 }
@@ -113,8 +116,11 @@ export async function earlyOnWindowStageCreate(context: Context) {
   await ensureDirectoryExist(`${filesDir}/history-index`);
 
   // Settings
-  let mySettings = AppStorageV2.connect(meowManagedSettings)!;
+  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
   await mySettings.initFrom(`${filesDir}/settings.json.browsercatsettings.txt`);
+
+  const myKey = AppStorageV2.connect(meowKeyboardMan)!;
+  myKey.initFromSettings();
 
   // setTimeout(() => {
   //   webview.WebviewController.initializeWebEngine();
@@ -176,7 +182,7 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
   // const powerSave = power.getPowerMode() == power.DevicePowerMode.MODE_POWER_SAVE;
   // myApp.powerSave = powerSave;
 
-  // Initialize window status 
+  // Initialize window status
   try {
     const rect: window.Rect = window.getWindowProperties().windowRect;
     const width = meowPx2vp(rect.width);
@@ -187,15 +193,15 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
   } catch (e) {
     meow(`AppStorageV2.connect(meowLayout, () => new meowLayout(wideMode, shortMode, width, height, dark, powerSave, smartReachabilitySaysWeShouldPreferRightHand)); Failed: ${e}`, 'init', meowLevel.ERROR);
   }
-  AppStorageV2.connect(meowAvoid, `meowAvoid_${myWindowId}`, () => new meowAvoid(0, 0, 0, 0)); 
-  
-  getUpdateFreeWindowMode(context, window, myWindowId); 
-  getUpdateAvoid(window, myWindowId); 
+  AppStorageV2.connect(meowAvoid, `meowAvoid_${myWindowId}`, () => new meowAvoid(0, 0, 0, 0));
+
+  getUpdateFreeWindowMode(context, window, myWindowId);
+  getUpdateAvoid(window, myWindowId);
 
   setTimeout(() => {
-    listenFocus(window, myWindowId); 
-    listenAvoid(window, myWindowId); 
-    listenFreeWindowMode(context, window, myWindowId); 
+    listenFocus(window, myWindowId);
+    listenAvoid(window, myWindowId);
+    listenFreeWindowMode(context, window, myWindowId);
     listenSmartReachability();
   }, 1); // Delayed execution, reduce launch time.
 

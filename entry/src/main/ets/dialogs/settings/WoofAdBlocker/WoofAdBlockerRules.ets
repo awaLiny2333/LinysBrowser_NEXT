@@ -1,15 +1,14 @@
-import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
-import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
-import { meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
-import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
-import { WoofUniFrame } from '../../WoofUniFrame';
 import { AppStorageV2 } from '@kit.ArkUI';
+import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
+import { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
+import { fileCopy, fileDocumentPick2Path, fileNameOfPath, listFilesUnderDir, unlinkFile } from '../../../catstypicalframework/utils/storage';
 import { MooStringArrayList } from '../../../components/common/MooStringArrayList';
 import { standardSpacing } from '../../../components/settings';
-import { fileDocumentPick2Path, fileCopy, listFilesUnderDir, unlinkFile, fileNameOfPath } from '../../../catstypicalframework/utils/storage';
-import { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
-import { globalMessage, meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
+import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
+import { globalMessage, meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
+import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
+import { WoofUniFrame } from '../../WoofUniFrame';
 
 @ComponentV2
 struct AdBlockerRulesPanel {
@@ -96,8 +95,7 @@ struct WoofAdBlockerRulesDialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
   @Require myLayout: meowLayout;
-  @Require myUi: meowUiStatuses;
-
+  
   build() {
     WoofUniFrame({
       controller: this.controller, myDialog: this.myDialog, myLayout: this.myLayout, shiftBackgroundColor: true,

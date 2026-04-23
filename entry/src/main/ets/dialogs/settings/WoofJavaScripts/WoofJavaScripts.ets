@@ -1,12 +1,11 @@
+import { AppStorageV2, SegmentButtonV2Items } from '@kit.ArkUI';
 import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
+import { MooStringArrayList } from '../../../components/common/MooStringArrayList';
+import { MooTabSegmentV2 } from '../../../components/common/MooTabSegmentV2';
+import { defaultAnimation, standardSpacing } from '../../../components/settings';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
-import { meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
 import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { WoofUniFrame } from '../../WoofUniFrame';
-import { AppStorageV2, SegmentButtonV2Items } from '@kit.ArkUI';
-import { MooStringArrayList } from '../../../components/common/MooStringArrayList';
-import { defaultAnimation, standardSpacing } from '../../../components/settings';
-import { MooTabSegmentV2 } from '../../../components/common/MooTabSegmentV2';
 
 @ComponentV2
 struct JavaScriptsPanel {
@@ -43,8 +42,6 @@ struct WoofJavaScriptsDialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
   @Require myLayout: meowLayout;
-  @Require myUi: meowUiStatuses;
-
 
   build() {
     WoofUniFrame({

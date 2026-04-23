@@ -4,7 +4,6 @@ import { MooStringArrayList } from '../../../components/common/MooStringArrayLis
 import { MooTabSegmentV2 } from '../../../components/common/MooTabSegmentV2';
 import { defaultAnimation, standardSpacing } from '../../../components/settings';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
-import { meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
 import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { WoofUniFrame } from '../../WoofUniFrame';
 
@@ -43,9 +42,7 @@ struct WoofWebImagesDialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
   @Require myLayout: meowLayout;
-  @Require myUi: meowUiStatuses;
-
-
+  
   build() {
     WoofUniFrame({
       controller: this.controller, myDialog: this.myDialog, myLayout: this.myLayout, shiftBackgroundColor: true,

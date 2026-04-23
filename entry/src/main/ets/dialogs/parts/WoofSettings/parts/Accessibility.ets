@@ -6,10 +6,13 @@ import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { MooTabSegmentV2 } from '../../../../components/common/MooTabSegmentV2';
 import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton';
+import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
+import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 
 @ComponentV2
 struct SettingsAccessibility {
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+  @Param @Require myDialog: meowDialogManager;
 
   build() {
     Column({ space: standardSpacing }) {
@@ -91,6 +94,7 @@ struct SettingsAccessibility {
           text: $r('app.string.Settings_category_accessibility_keyShortcuts_manage'),
           clickAction: () => {
             // TODO: key shortcuts manage entrance.
+            requestDialog(this.myDialog, openDialogRequestType.KEY_SHORTCUTS, undefined, true);
           }
         });
       };

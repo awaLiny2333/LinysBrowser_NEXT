@@ -1,19 +1,22 @@
 import { meowAvoid } from '../../catstypicalframework/hosts/meowAvoid';
 import { meowLayout } from '../../catstypicalframework/hosts/meowLayout';
 import { meowMisc } from '../../catstypicalframework/hosts/meowMisc';
+import { meow } from '../../catstypicalframework/utils/catsLogger';
 import { defaultRoundedRadius } from '../../catstypicalframework/utils/ui';
 import { WoofBookmarksDialog } from '../../dialogs/parts/WoofBookmarks/WoofBookmarks';
 import { WoofCatsDevDialog } from '../../dialogs/parts/WoofCatsDev/WoofCatsDevCards';
-import { WoofColorPickerDialog } from '../../dialogs/public/WoofColorPicker/WoofColorPicker';
 import { WoofHomepageDialog } from '../../dialogs/parts/WoofHomepage/WoofHomepage';
 import { WoofSettingsDialog } from '../../dialogs/parts/WoofSettings/WoofSettings';
-import lazy { localMessage, meowAppMessageType } from '../../hosts/system/windows/scripts/messaging';
-import { meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
-import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
-import { WoofWebImagesDialog } from '../../dialogs/settings/WoofWebImages/WoofWebImages';
+import { WoofColorPickerDialog } from '../../dialogs/public/WoofColorPicker/WoofColorPicker';
+import { WoofKeyShortcutPickerDialog } from '../../dialogs/public/WoofKeyShortcutPicker/WoofKeyShortcutPicker';
 import { WoofAdBlockerDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlocker';
 import { WoofAdBlockerRulesDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlockerRules';
 import { WoofJavaScriptsDialog } from '../../dialogs/settings/WoofJavaScripts/WoofJavaScripts';
+import { WoofKeyShortcutsDialog } from '../../dialogs/settings/WoofKeyShortcuts/WoofKeyShortcuts';
+import { WoofWebImagesDialog } from '../../dialogs/settings/WoofWebImages/WoofWebImages';
+import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
+import { meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
+import lazy { localMessage, meowAppMessageType } from '../../hosts/system/windows/scripts/messaging';
 
 /**
  * A place for dialogs.
@@ -92,30 +95,49 @@ struct MeowPlaceForDialogs {
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofAdBlockerDialogController: CustomDialogController = new CustomDialogController({
-    builder: WoofAdBlockerDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
+    builder: WoofAdBlockerDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
     // width: '95%',
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofAdBlockerRulesDialogController: CustomDialogController = new CustomDialogController({
-    builder: WoofAdBlockerRulesDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
+    builder: WoofAdBlockerRulesDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
     // width: '95%',
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofWebImagesDialogController: CustomDialogController = new CustomDialogController({
-    builder: WoofWebImagesDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
+    builder: WoofWebImagesDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
     // width: '95%',
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofJavaScriptsDialogController: CustomDialogController = new CustomDialogController({
-    builder: WoofJavaScriptsDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
+    builder: WoofJavaScriptsDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
     // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
+  woofKeyShortcutsDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofKeyShortcutsDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
+  woofKeyShortcutsPickerDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofKeyShortcutPickerDialog({
+      myDialog: this.myDialog, myLayout: this.myLayout, onConfirm: (bind) => {
+        meow(`Messaged ${bind}`);
+        localMessage(this.myUi, meowAppMessageType.KEY_SHORTCUTS_PICKED, bind);
+      }
+    }),
+    alignment: DialogAlignment.Center,
+    width: '95%',
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
@@ -160,6 +182,12 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.WEB_JAVASCRIPTS:
         this.woofJavaScriptsDialogController.open();
+        break;
+      case openDialogRequestType.KEY_SHORTCUTS:
+        this.woofKeyShortcutsDialogController.open();
+        break;
+      case openDialogRequestType.KEY_SHORTCUTS_PICKER:
+        this.woofKeyShortcutsPickerDialogController.open();
         break;
       default:
         break;

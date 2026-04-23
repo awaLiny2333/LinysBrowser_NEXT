@@ -16,6 +16,8 @@ struct UniContentCard {
   // UI
   @Param @Once expanded: boolean = this.title ? false : true;
   @Local isHover: boolean = false;
+  // Events
+  @Event clickAction: () => void;
 
   build() {
     Column({ space: standardSpacing }) {
@@ -53,6 +55,7 @@ struct UniContentCard {
           this.expanded = !this.expanded;
         });
       }
+      this.clickAction();
     });
   }
 }

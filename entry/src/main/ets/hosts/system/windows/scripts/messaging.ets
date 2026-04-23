@@ -11,6 +11,7 @@ export enum meowAppMessageType {
   BOOKMARKS_PICKED,
   COLOR_PICKED,
   COLOR_PICKER_CLOSED,
+  KEY_SHORTCUTS_PICKED, 
 }
 
 /**

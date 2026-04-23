@@ -71,7 +71,9 @@ export enum openDialogRequestType {
   ADBLOCKER,
   ADBLOCKER_RULES,
   WEB_IMAGES,
-  WEB_JAVASCRIPTS
+  WEB_JAVASCRIPTS,
+  KEY_SHORTCUTS,
+  KEY_SHORTCUTS_PICKER
 }
 
 /**
@@ -83,10 +85,10 @@ export enum openDialogRequestType {
 export class openDialogRequest {
   @Trace target: openDialogRequestType;
   @Trace time: number;
-  @Trace param: string | number;
+  @Trace param: string | number | boolean | object;
   @Trace ignoreOpened: boolean;
 
-  constructor(target: openDialogRequestType, param: string | number = '', ignoreOpened: boolean = false) {
+  constructor(target: openDialogRequestType, param: string | number | boolean | object = '', ignoreOpened: boolean = false) {
     this.target = target;
     this.time = Date.now();
     this.param = param;

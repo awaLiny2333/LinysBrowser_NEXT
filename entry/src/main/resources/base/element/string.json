@@ -542,7 +542,7 @@
     },
     {
       "name": "AdBlocker",
-      "value": "Ad blocker pardons"
+      "value": "Ad Blocker Pardons"
     },
     {
       "name": "AdBlocker_tutorial",
@@ -550,7 +550,7 @@
     },
     {
       "name": "AdBlocker_rules",
-      "value": "Ad blocker rules"
+      "value": "Ad Blocker Rules"
     },
     {
       "name": "AdBlocker_rules_tutorial",
@@ -558,7 +558,7 @@
     },
     {
       "name": "WebImages",
-      "value": "Web images blocklist"
+      "value": "Web Images Blocklist"
     },
     {
       "name": "WebImages_tutorial",
@@ -566,11 +566,75 @@
     },
     {
       "name": "JavaScripts",
-      "value": "Web JS blocklist"
+      "value": "Web JS Blocklist"
     },
     {
       "name": "JavaScripts_tutorial",
       "value": "Through settings here, we can choose to block all / some domains' web JavaScripts!"
+    },
+    {
+      "name": "KeyShortcuts",
+      "value": "Keyboard Shortcuts"
+    },
+    {
+      "name": "KeyShortcuts_picker",
+      "value": "Pick Key Binds"
+    },
+    {
+      "name": "KeyShortcuts_newTab",
+      "value": "New tab"
+    },
+    {
+      "name": "KeyShortcuts_closeTab",
+      "value": "Close tab"
+    },
+    {
+      "name": "KeyShortcuts_showTabs",
+      "value": "Show tabs"
+    },
+    {
+      "name": "KeyShortcuts_focusAddress",
+      "value": "Focus address bar"
+    },
+    {
+      "name": "KeyShortcuts_searchInPage",
+      "value": "Find in page"
+    },
+    {
+      "name": "KeyShortcuts_fullscreen",
+      "value": "Fullscreen"
+    },
+    {
+      "name": "KeyShortcuts_history",
+      "value": "History"
+    },
+    {
+      "name": "KeyShortcuts_refresh",
+      "value": "Refresh"
+    },
+    {
+      "name": "KeyShortcuts_print",
+      "value": "Print page"
+    },
+    {
+      "name": "KeyShortcuts_newWindow",
+      "value": "New window"
+    },
+    {
+      "name": "KeyShortcuts_pin",
+      "value": "Pin window to top"
+    },
+    {
+      "name": "KeyShortcuts_save",
+      "value": "Save / archive page"
+    },
+    {
+      "name": "KeyShortcuts_zones",
+      "value": "Zones"
+    },
+    {
+      "name": "KeyShortcuts_fullscreenWindowed",
+      "value": "Windowed fullscreen"
     },
     {
       "name": "Permission_reason_DETECT_GESTURES",

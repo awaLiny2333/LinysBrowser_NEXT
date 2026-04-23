@@ -573,6 +573,70 @@
       "value": "通过此处的设置，我们可以选择屏蔽所有 / 某些域名上的网页 JavaScript！"
     },
     {
+      "name": "KeyShortcuts",
+      "value": "快捷键"
+    },
+    {
+      "name": "KeyShortcuts_picker",
+      "value": "选择按键绑定"
+    },
+    {
+      "name": "KeyShortcuts_newTab",
+      "value": "新建标签页"
+    },
+    {
+      "name": "KeyShortcuts_closeTab",
+      "value": "关闭标签页"
+    },
+    {
+      "name": "KeyShortcuts_showTabs",
+      "value": "显示标签页"
+    },
+    {
+      "name": "KeyShortcuts_focusAddress",
+      "value": "聚焦地址栏"
+    },
+    {
+      "name": "KeyShortcuts_searchInPage",
+      "value": "页面内查找"
+    },
+    {
+      "name": "KeyShortcuts_fullscreen",
+      "value": "全屏"
+    },
+    {
+      "name": "KeyShortcuts_history",
+      "value": "历史记录"
+    },
+    {
+      "name": "KeyShortcuts_refresh",
+      "value": "刷新"
+    },
+    {
+      "name": "KeyShortcuts_print",
+      "value": "打印页面"
+    },
+    {
+      "name": "KeyShortcuts_newWindow",
+      "value": "新建窗口"
+    },
+    {
+      "name": "KeyShortcuts_pin",
+      "value": "窗口置顶"
+    },
+    {
+      "name": "KeyShortcuts_save",
+      "value": "保存"
+    },
+    {
+      "name": "KeyShortcuts_zones",
+      "value": "查看工作区"
+    },
+    {
+      "name": "KeyShortcuts_fullscreenWindowed",
+      "value": "窗口化全屏"
+    },
+    {
       "name": "Permission_reason_DETECT_GESTURES",
       "value": "让冲浪喵知道你正在使用哪只手，并自动响应优化布局！"
     }

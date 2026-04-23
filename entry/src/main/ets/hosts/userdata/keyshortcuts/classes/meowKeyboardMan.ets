@@ -1,0 +1,66 @@
+import { AppStorageV2 } from "@kit.ArkUI";
+import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import { meowManagedSettings } from "../../settings/classes/meowManagedSettings";
+import { meowKeyBind } from "./meowKeyBind";
+
+@ObservedV2
+export class meowKeyboardMan {
+  @Trace newTab: meowKeyBind = new meowKeyBind('t', [ModifierKey.CTRL]);
+  @Trace closeTab: meowKeyBind = new meowKeyBind('w', [ModifierKey.CTRL]);
+  @Trace showTabs: meowKeyBind = new meowKeyBind('a', [ModifierKey.CTRL, ModifierKey.SHIFT]);
+  @Trace focusAddress: meowKeyBind = new meowKeyBind('d', [ModifierKey.ALT]);
+  @Trace searchInPage: meowKeyBind = new meowKeyBind('f', [ModifierKey.CTRL]);
+  @Trace fullscreen: meowKeyBind = new meowKeyBind(FunctionKey.F11, []);
+  @Trace history: meowKeyBind = new meowKeyBind('h', [ModifierKey.CTRL]);
+  @Trace refresh: meowKeyBind = new meowKeyBind(FunctionKey.F5, []);
+  @Trace print: meowKeyBind = new meowKeyBind('p', [ModifierKey.CTRL]);
+  @Trace newWindow: meowKeyBind = new meowKeyBind('n', [ModifierKey.CTRL]);
+  @Trace pin: meowKeyBind = new meowKeyBind('p', [ModifierKey.ALT]);
+  @Trace save: meowKeyBind = new meowKeyBind('s', [ModifierKey.CTRL]);
+  @Trace zones: meowKeyBind = new meowKeyBind('z', [ModifierKey.ALT]);
+  @Trace fullscreenWindowed: meowKeyBind = new meowKeyBind(FunctionKey.F11, [ModifierKey.SHIFT]);
+
+  // Put them all in one place
+  @Trace shortcuts: meowKeyBind[] = [this.newTab, this.closeTab, this.showTabs, this.focusAddress, this.searchInPage, this.fullscreen, this.history, this.refresh, this.print, this.newWindow, this.pin, this.save, this.zones, this.fullscreenWindowed];
+  @Trace shortcutsStrings: ResourceStr[] = [
+    $r('app.string.KeyShortcuts_newTab'),
+    $r('app.string.KeyShortcuts_closeTab'),
+    $r('app.string.KeyShortcuts_showTabs'),
+    $r('app.string.KeyShortcuts_focusAddress'),
+    $r('app.string.KeyShortcuts_searchInPage'),
+    $r('app.string.KeyShortcuts_fullscreen'),
+    $r('app.string.KeyShortcuts_history'),
+    $r('app.string.KeyShortcuts_refresh'),
+    $r('app.string.KeyShortcuts_print'),
+    $r('app.string.KeyShortcuts_newWindow'),
+    $r('app.string.KeyShortcuts_pin'),
+    $r('app.string.KeyShortcuts_save'),
+    $r('app.string.KeyShortcuts_zones'),
+    $r('app.string.KeyShortcuts_fullscreenWindowed')
+  ];
+  
+  /**
+   * Load from settings.
+   */
+  initFromSettings() {
+    const mySettings = AppStorageV2.connect(meowManagedSettings)!;
+    const settingsStrings = mySettings.settingsData[29].value as string[];
+
+    // Process each shortcut.
+    for (let i = 0; i < settingsStrings.length; i++) {
+      const settingsString = settingsStrings[i].split(' ');
+      this.shortcuts[i].fromArray(settingsString);
+      meow(`#${i}: ${settingsString} => ${this.shortcuts[i]}`, 'earlyOnWindowStageCreate', meowLevel.WARN);
+    }
+  }
+
+  /**
+   * Save to settings.
+   */
+  saveToSettings() {
+    const mySettings = AppStorageV2.connect(meowManagedSettings)!;
+    const settingsStrings = this.shortcuts.map(shortcut => shortcut.toArray().join(' '));
+    mySettings.settingsData[29].value = settingsStrings;
+    mySettings.requestSaveToDisk();
+  }
+}
