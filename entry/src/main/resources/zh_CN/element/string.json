@@ -582,59 +582,59 @@
     },
     {
       "name": "KeyShortcuts_newTab",
-      "value": "新建标签页"
+      "value": "󰀵  新建标签页"
     },
     {
       "name": "KeyShortcuts_closeTab",
-      "value": "关闭标签页"
+      "value": "󰁖  关闭标签页"
     },
     {
       "name": "KeyShortcuts_showTabs",
-      "value": "显示标签页"
+      "value": "󰨴  显示标签页"
     },
     {
       "name": "KeyShortcuts_focusAddress",
-      "value": "聚焦地址栏"
+      "value": "󰁱  聚焦地址栏"
     },
     {
       "name": "KeyShortcuts_searchInPage",
-      "value": "页面内查找"
+      "value": "󰖳  页面内查找"
     },
     {
       "name": "KeyShortcuts_fullscreen",
-      "value": "全屏"
+      "value": "󰖶  全屏"
     },
     {
       "name": "KeyShortcuts_history",
-      "value": "历史记录"
+      "value": "󰏕  历史记录"
     },
     {
       "name": "KeyShortcuts_refresh",
-      "value": "刷新"
+      "value": "󰃈  刷新"
     },
     {
       "name": "KeyShortcuts_print",
-      "value": "打印页面"
+      "value": "󰆙  打印页面"
     },
     {
       "name": "KeyShortcuts_newWindow",
-      "value": "新建窗口"
+      "value": "󰒢  新建窗口"
     },
     {
       "name": "KeyShortcuts_pin",
-      "value": "窗口置顶"
+      "value": "󰀲  窗口置顶"
     },
     {
       "name": "KeyShortcuts_save",
-      "value": "保存"
+      "value": "󰀻  保存"
     },
     {
       "name": "KeyShortcuts_zones",
-      "value": "查看工作区"
+      "value": "󰖐  查看工作区"
     },
     {
       "name": "KeyShortcuts_fullscreenWindowed",
-      "value": "窗口化全屏"
+      "value": "󰃍  窗口化全屏"
     },
     {
       "name": "Permission_reason_DETECT_GESTURES",

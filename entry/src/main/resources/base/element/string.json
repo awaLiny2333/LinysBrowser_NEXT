@@ -582,59 +582,59 @@
     },
     {
       "name": "KeyShortcuts_newTab",
-      "value": "New tab"
+      "value": "󰀵  New tab"
     },
     {
       "name": "KeyShortcuts_closeTab",
-      "value": "Close tab"
+      "value": "󰁖  Close tab"
     },
     {
       "name": "KeyShortcuts_showTabs",
-      "value": "Show tabs"
+      "value": "󰨴  Show tabs"
     },
     {
       "name": "KeyShortcuts_focusAddress",
-      "value": "Focus address bar"
+      "value": "󰁱  Focus address bar"
     },
     {
       "name": "KeyShortcuts_searchInPage",
-      "value": "Find in page"
+      "value": "󰖳  Find in page"
     },
     {
       "name": "KeyShortcuts_fullscreen",
-      "value": "Fullscreen"
+      "value": "󰖶  Fullscreen"
     },
     {
       "name": "KeyShortcuts_history",
-      "value": "History"
+      "value": "󰏕  History"
     },
     {
       "name": "KeyShortcuts_refresh",
-      "value": "Refresh"
+      "value": "󰃈  Refresh"
     },
     {
       "name": "KeyShortcuts_print",
-      "value": "Print page"
+      "value": "󰆙  Print page"
     },
     {
       "name": "KeyShortcuts_newWindow",
-      "value": "New window"
+      "value": "󰒢  New window"
     },
     {
       "name": "KeyShortcuts_pin",
-      "value": "Pin window to top"
+      "value": "󰀲  Pin window to top"
     },
     {
       "name": "KeyShortcuts_save",
-      "value": "Save / archive page"
+      "value": "󰀻  Save / archive page"
     },
     {
       "name": "KeyShortcuts_zones",
-      "value": "Zones"
+      "value": "󰖐  Zones"
     },
     {
       "name": "KeyShortcuts_fullscreenWindowed",
-      "value": "Windowed fullscreen"
+      "value": "󰃍  Windowed fullscreen"
     },
     {
       "name": "Permission_reason_DETECT_GESTURES",

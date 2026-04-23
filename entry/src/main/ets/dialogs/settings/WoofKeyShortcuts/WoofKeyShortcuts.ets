@@ -54,6 +54,8 @@ struct KeyShortcutsPanel {
       this.myKey.shortcuts[this.lastListenerIndex].fromArray(this.myUi.localMessageTunnel?.payload as string[]);
       // meow(`Key shortcut picked: ${this.myKey.shortcuts[this.lastListenerIndex].toString()} for #${this.lastListenerIndex}`);
       this.myKey.saveToSettings();
+      // Apply!
+      this.myKey.apply();
     }
   }
 }

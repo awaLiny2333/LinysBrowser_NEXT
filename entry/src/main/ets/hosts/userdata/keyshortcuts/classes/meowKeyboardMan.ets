@@ -63,4 +63,11 @@ export class meowKeyboardMan {
     mySettings.settingsData[29].value = settingsStrings;
     mySettings.requestSaveToDisk();
   }
+
+  /**
+   * Apply the key bindings.
+   */
+  apply() {
+    // TODO: Apply the key bindings here.
+  }
 }
