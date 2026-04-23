@@ -1,7 +1,6 @@
 import { meowAvoid } from '../../catstypicalframework/hosts/meowAvoid';
 import { meowLayout } from '../../catstypicalframework/hosts/meowLayout';
 import { meowMisc } from '../../catstypicalframework/hosts/meowMisc';
-import { meow } from '../../catstypicalframework/utils/catsLogger';
 import { defaultRoundedRadius } from '../../catstypicalframework/utils/ui';
 import { WoofBookmarksDialog } from '../../dialogs/parts/WoofBookmarks/WoofBookmarks';
 import { WoofCatsDevDialog } from '../../dialogs/parts/WoofCatsDev/WoofCatsDevCards';
@@ -132,7 +131,7 @@ struct MeowPlaceForDialogs {
   woofKeyShortcutsPickerDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofKeyShortcutPickerDialog({
       myDialog: this.myDialog, myLayout: this.myLayout, onConfirm: (bind) => {
-        meow(`Messaged ${bind}`);
+        // meow(`Messaged ${bind}`);
         localMessage(this.myUi, meowAppMessageType.KEY_SHORTCUTS_PICKED, bind);
       }
     }),

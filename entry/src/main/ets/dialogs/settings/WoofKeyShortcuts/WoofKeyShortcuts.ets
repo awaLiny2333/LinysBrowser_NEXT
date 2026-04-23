@@ -1,6 +1,5 @@
 import { AppStorageV2 } from "@kit.ArkUI";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
-import { meow } from "../../../catstypicalframework/utils/catsLogger";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
@@ -53,7 +52,7 @@ struct KeyShortcutsPanel {
   receiveMessage() {
     if (this.myUi.localMessageTunnel?.type == meowAppMessageType.KEY_SHORTCUTS_PICKED) {
       this.myKey.shortcuts[this.lastListenerIndex].fromArray(this.myUi.localMessageTunnel?.payload as string[]);
-      meow(`Key shortcut picked: ${this.myKey.shortcuts[this.lastListenerIndex].toString()} for #${this.lastListenerIndex}`);
+      // meow(`Key shortcut picked: ${this.myKey.shortcuts[this.lastListenerIndex].toString()} for #${this.lastListenerIndex}`);
       this.myKey.saveToSettings();
     }
   }

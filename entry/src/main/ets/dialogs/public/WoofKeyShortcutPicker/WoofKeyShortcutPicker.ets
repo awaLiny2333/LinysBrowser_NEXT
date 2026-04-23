@@ -1,5 +1,4 @@
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
-import { meow } from "../../../catstypicalframework/utils/catsLogger";
 import { MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
 import { UniRowOfCapsuleButtons } from "../../../components/common/UniRowOfCapsuleButtons";
 import { standardSpacing } from "../../../components/settings";
@@ -25,7 +24,7 @@ struct WoofKeyShortcutPickerDialog {
           Keyboard({
             initialSelected: this.myDialog.lastRequest!.param as string[],
             onKeyChange: (c) => {
-              meow(`Keyboard gave ${c}`);
+              // meow(`Keyboard gave ${c}`);
               this.selected = c;
             }
           });
