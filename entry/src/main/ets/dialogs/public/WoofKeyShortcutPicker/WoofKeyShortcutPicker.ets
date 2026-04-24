@@ -1,10 +1,12 @@
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
+import { resource2String } from "../../../catstypicalframework/utils/resource";
 import { MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
 import { UniRowOfCapsuleButtons } from "../../../components/common/UniRowOfCapsuleButtons";
 import { standardSpacing } from "../../../components/settings";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { WoofUniFrame } from "../../WoofUniFrame";
 import { Keyboard } from "./parts/Keyboard";
+import { Context } from "@ohos.abilityAccessCtrl";
 
 @CustomDialog
 struct WoofKeyShortcutPickerDialog {
@@ -16,13 +18,15 @@ struct WoofKeyShortcutPickerDialog {
   onConfirm: (bind: string[]) => void = () => {
     // Do nothing by default;
   };
+  // Local
+  context: Context = this.getUIContext().getHostContext()!;
 
   build() {
-    WoofUniFrame({ controller: this.controller, title: $r('app.string.KeyShortcuts_picker'), myLayout: this.myLayout, myDialog: this.myDialog, shiftBackgroundColor: true }) {
+    WoofUniFrame({ controller: this.controller, title: this.getTitle(), myLayout: this.myLayout, myDialog: this.myDialog, shiftBackgroundColor: true }) {
       Scroll() {
         Column({ space: standardSpacing }) {
           Keyboard({
-            initialSelected: this.myDialog.lastRequest!.param as string[],
+            initialSelected: (this.myDialog.lastRequest!.param as object[])[1] as string[], // How ugly
             onKeyChange: (c) => {
               // meow(`Keyboard gave ${c}`);
               this.selected = c;
@@ -53,6 +57,12 @@ struct WoofKeyShortcutPickerDialog {
       .scrollable(ScrollDirection.Vertical)
       .edgeEffect(EdgeEffect.Spring);
     };
+  }
+
+  getTitle() {
+    // const dialogTitle = resource2String($r('app.string.KeyShortcuts_picker'), this.context);
+    const shortcutName = resource2String((this.myDialog.lastRequest!.param as object[])[0] as ResourceStr as Resource, this.context);
+    return `${shortcutName}`;
   }
 }
 

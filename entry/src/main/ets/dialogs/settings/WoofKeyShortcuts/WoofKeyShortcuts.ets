@@ -27,7 +27,7 @@ struct KeyShortcutsPanel {
               UniContentCard({
                 roundedRadius: defaultInnerRadius, clickAction: () => {
                   this.lastListenerIndex = item.index;
-                  requestDialog(this.myDialog, openDialogRequestType.KEY_SHORTCUTS_PICKER, item.item.toArray(), true);
+                  requestDialog(this.myDialog, openDialogRequestType.KEY_SHORTCUTS_PICKER, [this.myKey.shortcutsStrings[item.index], item.item.toArray()], true);
                 }
               }) {
                 Row() {
