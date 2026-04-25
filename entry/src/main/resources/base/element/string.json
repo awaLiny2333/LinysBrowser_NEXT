@@ -41,6 +41,10 @@
       "value": "Refresh  󰃈"
     },
     {
+      "name": "General_loading",
+      "value": "Wait...  󰃯"
+    },
+    {
       "name": "General_select",
       "value": "Select  󰂺"
     },

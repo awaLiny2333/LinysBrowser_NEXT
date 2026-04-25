@@ -38,7 +38,7 @@ export class meowKeyboardMan {
     $r('app.string.KeyShortcuts_zones'),
     $r('app.string.KeyShortcuts_fullscreenWindowed')
   ];
-  
+
   /**
    * Load from settings.
    */
@@ -57,7 +57,7 @@ export class meowKeyboardMan {
   /**
    * Save to settings.
    */
-  saveToSettings() {
+  private saveToSettings() {
     const mySettings = AppStorageV2.connect(meowManagedSettings)!;
     const settingsStrings = this.shortcuts.map(shortcut => shortcut.toArray().join(' '));
     mySettings.settingsData[29].value = settingsStrings;
@@ -66,8 +66,19 @@ export class meowKeyboardMan {
 
   /**
    * Apply the key bindings.
+   * Note that this function really does its job 100 ms after calling it,
+   * as it needs some time to flush (unbind) the existing component key shortcuts.
    */
-  apply() {
-    // TODO: Apply the key bindings here.
+  apply(index: number, fromStrings: string[]) {
+    if (fromStrings.length == 0) {
+      meow(`fromStrings is empty. meowKeyboardMan.apply() REJECTED!`, 'meowKeyboardMan', meowLevel.WARN);
+      return;
+    }
+
+    this.shortcuts[index].fromArray([]); // Unbind existing key binds
+    setTimeout(() => {
+      this.shortcuts[index].fromArray(fromStrings);
+      this.saveToSettings();
+    }, 100);
   }
 }

@@ -41,6 +41,10 @@
       "value": "刷新  󰃈"
     },
     {
+      "name": "General_loading",
+      "value": "稍等……  󰃯"
+    },
+    {
       "name": "General_select",
       "value": "选择  󰂺"
     },

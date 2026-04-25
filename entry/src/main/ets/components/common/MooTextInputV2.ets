@@ -20,6 +20,7 @@ struct MooTextInputV2 {
           .padding({ left: standardSpacing * 0.5 });
       }
       TextInput({ text: this.text as string, placeholder: this.placeholder })
+        .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
         .height(heightMeowTitleBar)
         .fontColor(getColor(meowThemeColorType.FONT))
         .caretColor(getColor(meowThemeColorType.FONT))

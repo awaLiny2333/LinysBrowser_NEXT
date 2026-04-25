@@ -20,6 +20,7 @@ import { meowResources } from '../hosts/system/storage/classes/meowResources';
 import { meowAppStatuses } from '../hosts/system/windows/classes/meowAppStatuses';
 import { meowUiStatuses } from '../hosts/system/windows/classes/meowUiStatuses';
 import { getLastWindowId } from '../hosts/system/windows/scripts/multiwindows';
+import { MeowPlaceForKeyShortcuts } from '../components/parts/MeowPlaceForKeyShortcuts';
 
 @Entry
 @ComponentV2
@@ -53,6 +54,9 @@ struct Index {
           myUi: this.myUi,
           myMisc: this.myMisc
         });
+
+        // Shortcuts handler
+        MeowPlaceForKeyShortcuts();
 
         // Main
         // This is ugly.
@@ -176,13 +180,13 @@ struct Index {
         this.myLayout.width = n.width as number;
         animateToImmediately(defaultAnimation(), () => {
           this.myLayout.wideMode = this.myLayout.width > wideModeThreshold;
-        })
+        });
       }
       if (o.height != n.height) {
         this.myLayout.height = n.height as number;
         animateToImmediately(defaultAnimation(), () => {
           this.myLayout.shortMode = this.myLayout.height < shortModeThreshold;
-        })
+        });
       }
     });
   }

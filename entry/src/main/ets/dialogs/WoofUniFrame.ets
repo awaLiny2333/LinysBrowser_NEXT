@@ -1,4 +1,5 @@
 import { meowLayout } from '../catstypicalframework/hosts/meowLayout';
+import { resource2String } from '../catstypicalframework/utils/resource';
 import { defaultInnerRadius } from '../catstypicalframework/utils/ui';
 import { MooSymbolButton } from '../components/common/MooSymbolButton';
 import { MooTextModifier } from '../components/common/MooTextModifier';
@@ -23,13 +24,21 @@ struct WoofUniFrame {
 
   aboutToAppear(): void {
     if (this.controller) {
-      this.myDialog.registerOpenDialog(this.controller, this.title);
+      if (typeof this.title == 'string') {
+        this.myDialog.registerOpenDialog(this.controller, this.title);
+      } else {
+        this.myDialog.registerOpenDialog(this.controller, resource2String(this.title, this.getUIContext().getHostContext()!));
+      }
     }
   }
 
   aboutToDisappear(): void {
     if (this.controller) {
-      this.myDialog.registerCloseDialog(this.controller, this.title);
+      if (typeof this.title == 'string') {
+        this.myDialog.registerCloseDialog(this.controller, this.title);
+      } else {
+        this.myDialog.registerCloseDialog(this.controller, resource2String(this.title, this.getUIContext().getHostContext()!));
+      }
     }
   }
 

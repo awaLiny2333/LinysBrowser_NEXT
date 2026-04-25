@@ -39,7 +39,7 @@ export class meowDialogManager {
    * @param dialog The dialog controller.
    * @param label The label of the dialog.
    */
-  registerOpenDialog(dialog: CustomDialogController, label: ResourceStr = '') {
+  registerOpenDialog(dialog: CustomDialogController, label: string = '') {
     this.openedDialogs.push(dialog);
     meow(`Dialog opened: [${label}]`, 'meowDialogManager', meowLevel.INFO);
   }

@@ -1,5 +1,6 @@
 import { AppStorageV2 } from "@kit.ArkUI";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
+import { meow } from "../../../catstypicalframework/utils/catsLogger";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
@@ -32,7 +33,8 @@ struct KeyShortcutsPanel {
               }) {
                 Row() {
                   Text(this.myKey.shortcutsStrings[item.index]).attributeModifier(new MooTextModifier()).layoutWeight(1);
-                  Text(item.item.toString() + '  󰁫').attributeModifier(new MooTextModifier()).opacity(0.75);
+                  Text(item.item.toResourceStr()).attributeModifier(new MooTextModifier()).opacity(0.75);
+                  Text('  󰁫').attributeModifier(new MooTextModifier());
                 };
               };
             };
@@ -51,11 +53,14 @@ struct KeyShortcutsPanel {
   @Monitor('myUi.localMessageTunnel')
   receiveMessage() {
     if (this.myUi.localMessageTunnel?.type == meowAppMessageType.KEY_SHORTCUTS_PICKED) {
-      this.myKey.shortcuts[this.lastListenerIndex].fromArray(this.myUi.localMessageTunnel?.payload as string[]);
-      // meow(`Key shortcut picked: ${this.myKey.shortcuts[this.lastListenerIndex].toString()} for #${this.lastListenerIndex}`);
-      this.myKey.saveToSettings();
+      const newBind = this.myUi.localMessageTunnel?.payload as string[];
+      if (newBind.length == 0) {
+        meow(`No key shortcut picked or no changes made.`, 'WoofKeyShortcuts');
+        return;
+      }
+      meow(`Key shortcut picked: ${newBind} for #${this.lastListenerIndex}`, 'WoofKeyShortcuts');
       // Apply!
-      this.myKey.apply();
+      this.myKey.apply(this.lastListenerIndex, newBind);
     }
   }
 }
