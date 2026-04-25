@@ -3,7 +3,7 @@ import { meowAvoid } from '../catstypicalframework/hosts/meowAvoid';
 import { meowLayout } from '../catstypicalframework/hosts/meowLayout';
 import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
 import lazy { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
-import lazy { defaultDecorHeight, defaultInnerRadius, shortModeThreshold, wideModeThreshold } from '../catstypicalframework/utils/ui';
+import lazy { defaultDecorHeight, defaultInnerRadius, shortModeThreshold, updateNavigationIndicator, wideModeThreshold } from '../catstypicalframework/utils/ui';
 import lazy { MooTextModifier } from '../components/common/MooTextModifier';
 import lazy { MeowButtonRow } from '../components/parts/Homepage/MeowButtonRow';
 import lazy { MeowPlaceForDialogs } from '../components/parts/MeowPlaceForDialogs';
@@ -21,6 +21,7 @@ import { meowAppStatuses } from '../hosts/system/windows/classes/meowAppStatuses
 import { meowUiStatuses } from '../hosts/system/windows/classes/meowUiStatuses';
 import { getLastWindowId } from '../hosts/system/windows/scripts/multiwindows';
 import { MeowPlaceForKeyShortcuts } from '../components/parts/MeowPlaceForKeyShortcuts';
+import { meowAppMessageType } from '../hosts/system/windows/scripts/messaging';
 
 @Entry
 @ComponentV2
@@ -119,7 +120,7 @@ struct Index {
             top: { anchor: '__container__', align: VerticalAlign.Top },
             middle: { anchor: '__container__', align: HorizontalAlign.Center }
           })
-          .translate({ y: defaultDecorHeight })
+          .translate({ y: this.myLayout.freeWindow ? defaultDecorHeight : this.myAvoid.top })
           .padding(!titleBarPositionBottom() ? { bottom: standardSpacing } : 0)
           .width('100%');
         }
@@ -221,7 +222,8 @@ struct Index {
     } else {
       // Top
       top = this.myAvoid.top + (heightMeowTitleBar + standardSpacing) + slimCompensation + tabsHorizontalCompensation;
-      bottom = this.myAvoid.bottom + (useEffects() ? standardSpacing : 0);
+      const showBottomAvoid = this.mySettings.settingsData[5].value as boolean; // Allow user to disable bottom avoid.
+      bottom = (showBottomAvoid ? this.myAvoid.bottom : 0) + (useEffects() ? standardSpacing : 0);
     }
 
     // Horizontal
@@ -240,5 +242,16 @@ struct Index {
       right = 0 + sidebarCompR;
     }
     return { top, bottom, left, right };
+  }
+
+  /**
+   * Updates the display of navigation indicator on receiving the broadcast message.
+   */
+  @Monitor('myApp.crossAppMessageTunnel')
+  receiveMessage() {
+    const msg = this.myApp.crossAppMessageTunnel!;
+    if (msg.type == meowAppMessageType.SETTINGS_NAV_INDICATOR_UPDATE) {
+      updateNavigationIndicator(this.myUi.windowObj!);
+    }
   }
 }

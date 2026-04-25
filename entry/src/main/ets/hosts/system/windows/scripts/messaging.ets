@@ -7,6 +7,7 @@ export enum meowAppMessageType {
   SETTINGS_UA_REFRESH,
   SETTINGS_SE_REFRESH,
   SETTINGS_EASYLIST_REFRESH,
+  SETTINGS_NAV_INDICATOR_UPDATE,
   BOOKMARKS_REFRESH, // See entry/src/main/ets/components/parts/Bookmarks/MeowBookmarksPanel.ets
   BOOKMARKS_PICKED,
   COLOR_PICKED,

@@ -3,6 +3,7 @@ import lazy { deviceInfo, power, settings } from '@kit.BasicServicesKit';
 import lazy { motion } from '@kit.MultimodalAwarenessKit';
 import lazy { defaultAnimation, isSmartReachabilityOn } from '../../components/settings';
 import { meowAppStatuses } from '../../hosts/system/windows/classes/meowAppStatuses';
+import { meowManagedSettings } from '../../hosts/userdata/settings/classes/meowManagedSettings';
 import lazy { meowAvoid } from '../hosts/meowAvoid';
 import lazy { meowLayout } from '../hosts/meowLayout';
 import lazy { meow, meowLevel } from './catsLogger';
@@ -91,33 +92,33 @@ export function listenAvoid(windowClass: window.Window, windowId: string) {
     windowClass.on('avoidAreaChange', (data) => {
       // meow('Changes on avoid areas!', 'avoidAreaChange', meowLevel.INFO);
       let myLayout = AppStorageV2.connect(meowLayout, `meowLayout_${windowId}`)!;
-      let avoid = AppStorageV2.connect(meowAvoid, `meowAvoid_${windowId}`)!;
+      let myAvoid = AppStorageV2.connect(meowAvoid, `meowAvoid_${windowId}`)!;
 
       if (data.type == window.AvoidAreaType.TYPE_SYSTEM) {
         let top = meowPx2vp(data.area.topRect.height);
         if (myLayout && !myLayout.freeWindow) {
           // Traditional window
-          avoid.top = top;
+          myAvoid.top = top;
         } else {
           // Free window
-          avoid.top = Math.max(top, defaultDecorHeight);
+          myAvoid.top = Math.max(top, defaultDecorHeight);
         }
       }
       if (data.type == window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
         let bottom = meowPx2vp(data.area.bottomRect.height) * 0.75;
         if (myLayout && !myLayout.freeWindow) {
-          avoid.bottom = Math.max(bottom, 8);
+          myAvoid.bottom = Math.max(bottom, 8);
         } else {
-          avoid.bottom = 0; // No bottom avoid for free windows.
+          myAvoid.bottom = 0; // No bottom avoid for free windows.
         }
       }
       if (data.type == window.AvoidAreaType.TYPE_CUTOUT) {
         let left = meowPx2vp(data.area.leftRect.width);
-        avoid.left = Math.max(8, left);
+        myAvoid.left = Math.max(8, left);
       }
       if (data.type == window.AvoidAreaType.TYPE_CUTOUT) {
         let right = meowPx2vp(data.area.rightRect.width);
-        avoid.right = Math.max(8, right);
+        myAvoid.right = Math.max(8, right);
       }
     });
   } catch (e) {
@@ -301,6 +302,20 @@ export function listenFocus(windowClass: window.Window, windowId: string) {
   } catch (e) {
     meow('Failed: ' + e, 'listen_focus', meowLevel.ERROR);
   }
+}
+
+// Navigation indicator
+
+/**
+ * Updates the navigation indicator status.
+ * @param window The window.Window object.
+ */
+export function updateNavigationIndicator(window: window.Window) {
+  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
+  const showNavigationIndicator = mySettings.settingsData[6].value as boolean;
+  window.setSpecificSystemBarEnabled('navigationIndicator', showNavigationIndicator).catch((e: BusinessError) => {
+    meow(`Failed: ${e}`, 'setSpecificSystemBarEnabled', meowLevel.ERROR);
+  });
 }
 
 // Toast

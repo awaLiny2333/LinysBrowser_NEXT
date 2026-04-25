@@ -1,5 +1,6 @@
 import { meowBookmarkItem } from "../../../userdata/bookmarks/classes/meowBookmarkItem";
 import { meowAppMessage } from "./meowAppMessage";
+import { window } from "@kit.ArkUI";
 
 /**
  * The statuses that are limited to the current window only.
@@ -9,6 +10,7 @@ export class meowUiStatuses {
   // Window info
   @Trace windowId: string;
   @Trace windowAlias: string;
+  @Trace windowObj: window.Window | undefined;
   // UI
   @Trace showMore: boolean = false;
   @Trace showTabs: boolean = false;

@@ -36,7 +36,7 @@ import { meowLayout } from '../hosts/meowLayout';
 import { meowMisc } from '../hosts/meowMisc';
 import { meow, meowLevel } from '../utils/catsLogger';
 import { ensureDirectoryExist } from '../utils/storage';
-import { getUpdateAvoid, getUpdateFreeWindowMode, listenAvoid, listenFocus, listenFreeWindowMode, listenSmartReachability, meowPx2vp, shortModeThreshold, wideModeThreshold } from '../utils/ui';
+import { getUpdateAvoid, getUpdateFreeWindowMode, listenAvoid, listenFocus, listenFreeWindowMode, listenSmartReachability, meowPx2vp, shortModeThreshold, updateNavigationIndicator, wideModeThreshold } from '../utils/ui';
 
 // Flows
 /**
@@ -131,9 +131,9 @@ export async function earlyOnWindowStageCreate(context: Context) {
 
 /**
  * Called in onWindowStageCreate, before windowStage.LoadContent
- * @param window window.Window
+ * @param windowObj window.Window
  * */
-export async function aboutToLoadContent(windowStage: window.WindowStage, window: window.Window, context: Context) {
+export async function aboutToLoadContent(windowStage: window.WindowStage, windowObj: window.Window, context: Context) {
   // const startTime = Date.now();
   console.log(`aboutToLoadContent: context = ${context}`); // Just to USE it so that it won't be an unused param.
 
@@ -148,7 +148,7 @@ export async function aboutToLoadContent(windowStage: window.WindowStage, window
 
   // Immersive
   try {
-    window.setImmersiveModeEnabledState(true);
+    windowObj.setImmersiveModeEnabledState(true);
     meow('window.setImmersiveModeEnabledState(true) Success!', 'init', meowLevel.INFO);
   } catch (e) {
     meow(`window.setImmersiveModeEnabledState(true) Failed: ${e}`, 'init', meowLevel.ERROR);
@@ -173,6 +173,13 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
   } catch (e) {
     meow(`window.setWindowDecorVisible(false) Failed: ${e}`, 'init', meowLevel.ERROR);
   }
+
+  // Navigation indicator
+  updateNavigationIndicator(window);
+
+  // Save windows
+  const myUi: meowUiStatuses = AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${myWindowId}`)!;
+  myUi.windowObj = window;
 
   // Initialize App status
   const dark = context.config.colorMode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK;

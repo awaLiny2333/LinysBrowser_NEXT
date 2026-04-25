@@ -9,11 +9,11 @@ import { UniContentCard } from "../../../../components/common/UniContentCard";
 import { defaultAnimation, getColor, meowThemeColorType, mooTextType, standardSpacing, useEffects } from "../../../../components/settings";
 import { meowManagedSettings } from "../../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { resetAnimations, resetColors } from "../../../../hosts/userdata/settings/scripts/reset";
-import { meowAppMessageType } from "../../../../hosts/system/windows/scripts/messaging";
+import { globalMessage, meowAppMessageType } from "../../../../hosts/system/windows/scripts/messaging";
 import { meowUiStatuses } from "../../../../hosts/system/windows/classes/meowUiStatuses";
 import { meowAppStatuses } from "../../../../hosts/system/windows/classes/meowAppStatuses";
 import { requestDialog } from "../../../../hosts/system/dialogs/scripts/dialog";
-import { meowDialogManager,openDialogRequestType } from "../../../../hosts/system/dialogs/classes/meowDialogManager";
+import { meowDialogManager, openDialogRequestType } from "../../../../hosts/system/dialogs/classes/meowDialogManager";
 
 @ComponentV2
 struct SettingsAppearance {
@@ -43,6 +43,7 @@ struct SettingsAppearance {
           text: $r('app.string.Settings_category_appearance_navigationIndicator'),
           isOn: this.mySettings.settingsData[6].value as boolean,
           onChange: (r) => {
+            globalMessage(meowAppMessageType.SETTINGS_NAV_INDICATOR_UPDATE);
             this.mySettings.setByIndex(6, r);
           }
         });
