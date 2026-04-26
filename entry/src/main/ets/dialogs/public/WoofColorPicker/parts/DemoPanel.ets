@@ -1,4 +1,4 @@
-import { defaultMenuItemRadius, defaultRoundedRadius, defaultInnerRadius } from '../../../../catstypicalframework/utils/ui';
+import { defaultItemRadius, defaultRoundedRadius, defaultInnerRadius } from '../../../../catstypicalframework/utils/ui';
 import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { standardSpacing, getColor, meowThemeColorType, useEffects } from '../../../../components/settings';
@@ -15,7 +15,7 @@ struct DemoPanel {
         }
         .padding(2 * standardSpacing)
         .backgroundColor(getColor(meowThemeColorType.SECONDARY))
-        .borderRadius(defaultMenuItemRadius);
+        .borderRadius(defaultItemRadius);
 
         // Color block
         Row() {

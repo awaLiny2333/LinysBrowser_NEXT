@@ -73,7 +73,8 @@ export enum openDialogRequestType {
   WEB_IMAGES,
   WEB_JAVASCRIPTS,
   KEY_SHORTCUTS,
-  KEY_SHORTCUTS_PICKER
+  KEY_SHORTCUTS_PICKER,
+  BUTTONS
 }
 
 /**

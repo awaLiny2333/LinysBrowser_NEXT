@@ -179,7 +179,7 @@ export class meowManagedSettings {
   /**
    * Save settings to disk.
    */
-  async saveToDisk() {
+  private async saveToDisk() {
     const startTime = Date.now();
     const jsonResult = this.toString(true);
     meow(`Generated JSON lines. (${Date.now() - startTime} ms)`, 'meowSettings][saveToDisk', meowLevel.INFO);

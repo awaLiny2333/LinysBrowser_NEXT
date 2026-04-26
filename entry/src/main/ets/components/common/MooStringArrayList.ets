@@ -1,4 +1,4 @@
-import { defaultInnerRadius, defaultMenuItemRadius } from "../../catstypicalframework/utils/ui";
+import { defaultInnerRadius, defaultItemRadius } from "../../catstypicalframework/utils/ui";
 import { meowThemeColorType, getColor, standardSpacing, useEffects, defaultAnimation, isPreferRightHand } from "../settings";
 import { MooStringItem } from "./MooStringItem";
 import { MooTextModifier } from "./MooTextModifier";
@@ -52,7 +52,7 @@ struct MooStringArrayList {
       ListItem() {
         Text($r('app.string.General_new')).attributeModifier(new MooTextModifier())
           .padding(standardSpacing * 0.75)
-          .borderRadius(defaultMenuItemRadius)
+          .borderRadius(defaultItemRadius)
           .hoverEffect(HoverEffect.Highlight)
           .onClick(() => {
             animateToImmediately(defaultAnimation(), () => {

@@ -62,7 +62,9 @@ export const defaultRoundedRadius: number = deviceInfo.deviceType == deviceInfo.
 
 export const defaultInnerRadius: number = deviceInfo.deviceType == deviceInfo.DeviceTypes.TYPE_2IN1 ? 8 : 8; // 20
 
-export const defaultMenuItemRadius: number = deviceInfo.deviceType == deviceInfo.DeviceTypes.TYPE_2IN1 ? 5 : 5; // 18
+export const defaultItemRadius: number = deviceInfo.deviceType == deviceInfo.DeviceTypes.TYPE_2IN1 ? 5 : 5;
+
+export const defaultMenuItemRadius: number = deviceInfo.deviceType == deviceInfo.DeviceTypes.TYPE_2IN1 ? 5 : 18;
 
 // Decor (Free window mode)
 

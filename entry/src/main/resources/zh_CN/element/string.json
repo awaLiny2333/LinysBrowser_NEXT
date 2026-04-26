@@ -273,8 +273,8 @@
       "value": "布局"
     },
     {
-      "name": "Settings_category_appearance_layout_titleBarPins",
-      "value": "标题栏固定项"
+      "name": "Settings_category_appearance_layout_editButtons",
+      "value": "管理按钮们  󰗘"
     },
     {
       "name": "Settings_category_appearance_layout_titleBarPosition",
@@ -635,6 +635,34 @@
     {
       "name": "KeyShortcuts_fullscreenWindowed",
       "value": "󰃍  窗口化全屏"
+    },
+    {
+      "name": "Buttons",
+      "value": "管理按钮们"
+    },
+    {
+      "name": "Buttons_control",
+      "value": "控制区（左边）"
+    },
+    {
+      "name": "Buttons_addressBarOnFocus",
+      "value": "地址栏（选中时显示）"
+    },
+    {
+      "name": "Buttons_addressBar",
+      "value": "地址栏"
+    },
+    {
+      "name": "Buttons_title",
+      "value": "标题栏（右边）"
+    },
+    {
+      "name": "Buttons_more",
+      "value": "更多"
+    },
+    {
+      "name": "Buttons_notice",
+      "value": "你应该在任何一个插槽上至少保留一个设置 󰀠 按钮！"
     },
     {
       "name": "Permission_reason_DETECT_GESTURES",

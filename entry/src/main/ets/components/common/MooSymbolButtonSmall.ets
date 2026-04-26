@@ -1,4 +1,4 @@
-import { defaultMenuItemRadius } from "../../catstypicalframework/utils/ui";
+import { defaultItemRadius } from "../../catstypicalframework/utils/ui";
 import { getColor, meowThemeColorType } from "../settings";
 // import { AppStorageV2 } from "@kit.ArkUI";
 // import { meowFreeWindowModeStatus } from "../../catstypicalframework/hosts/meowFreeWindowModeStatus";
@@ -18,7 +18,7 @@ struct MooSymbolButtonSmall {
   build() {
     SymbolGlyph(this.icon)
       .padding(7)
-      .borderRadius(defaultMenuItemRadius)
+      .borderRadius(defaultItemRadius)
       .hoverEffect(HoverEffect.Highlight)
       .onClick(() => {
         this.clickAction();

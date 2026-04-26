@@ -1,3 +1,4 @@
+import { meowButtons } from "../../../../components/common/MeowButtons";
 /**
  * Default user agents in a specified string format.
  * @returns Firefox, Chrome and Edge.
@@ -49,4 +50,24 @@ export function presetSearchEngines() {
  * */
 export function defaultSearchEngine() {
   return 'https://bing.com/search?q=%s';
+}
+
+export function defaultButtonsControl() {
+  return [meowButtons.BACKWARD, meowButtons.FORWARD, meowButtons.REFRESH, meowButtons.HOME].join('\n');
+}
+
+export function defaultButtonsAddressBarOnFocus() {
+  return [meowButtons.GO].join('\n');
+}
+
+export function defaultButtonsAddressBar() {
+  return [meowButtons.ADDRESS_KEYWORD_SWITH, meowButtons.RE_SEARCH].join('\n');
+}
+
+export function defaultButtonsTitle() {
+  return [meowButtons.MORE, meowButtons.SCRATCHING_BOARD, meowButtons.TABS, meowButtons.BOOKMARKS, meowButtons.DOWNLOADS, meowButtons.SETTINGS].join('\n');
+}
+
+export function defaltButtonsMore() {
+  return [meowButtons.EXTENSIONS, meowButtons.ROTATE, meowButtons.SAVE, meowButtons.PRINT, meowButtons.DARK, meowButtons.COOKIES, meowButtons.IMAGES, meowButtons.JAVASCRIPTS, meowButtons.ADBLOCKER, meowButtons.HISTORY, meowButtons.USERAGENTS, meowButtons.QRCODE, meowButtons.FULLSCREEN].join('\n');
 }

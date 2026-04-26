@@ -1,4 +1,4 @@
-import { defaultInnerRadius, defaultMenuItemRadius } from '../../../../../catstypicalframework/utils/ui';
+import { defaultInnerRadius, defaultItemRadius } from '../../../../../catstypicalframework/utils/ui';
 import { meowHistorian } from '../../../../../hosts/userdata/history/classes/meowHistorian';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowHistoryChunk } from '../../../../../hosts/userdata/history/classes/meowHistoryChunk';
@@ -36,7 +36,7 @@ struct SimpleHistoryShowcase {
                   this.onDeleteClickActions(obj.item);
                 })
                 .padding(3)
-                .borderRadius(defaultMenuItemRadius)
+                .borderRadius(defaultItemRadius)
                 .hoverEffect(HoverEffect.Highlight)
                 .fontColor([$r('sys.color.font')]);
               Text(`${obj.item.title}`)

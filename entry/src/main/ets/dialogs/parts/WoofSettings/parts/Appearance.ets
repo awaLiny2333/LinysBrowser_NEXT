@@ -51,7 +51,12 @@ struct SettingsAppearance {
 
       // Layout
       UniContentCard({ title: $r('app.string.Settings_category_appearance_layout'), icon: $r('sys.symbol.rectangle_4_group_1') }) {
-        Text($r('app.string.Settings_category_appearance_layout_titleBarPins')).attributeModifier(new MooTextModifier());
+        MooCapsuleButton({
+          text: $r('app.string.Settings_category_appearance_layout_editButtons'),
+          clickAction: () => {
+            requestDialog(this.myDialog, openDialogRequestType.BUTTONS, undefined, true);
+          }
+        });
         Text($r('app.string.Settings_category_appearance_layout_titleBarPosition')).attributeModifier(new MooTextModifier());
         MooTabSegmentV2({
           initSelected: this.selectedTitleBarPositionFromSettings(),

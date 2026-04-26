@@ -1,4 +1,4 @@
-import { defaultMenuItemRadius } from '../../catstypicalframework/utils/ui';
+import { defaultItemRadius } from '../../catstypicalframework/utils/ui';
 import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, isPreferRightHand, useEffects } from '../settings';
 import { MooCapsuleButton } from './MooCapsuleButton';
 import { MooSymbolButtonSmall } from './MooSymbolButtonSmall';
@@ -109,8 +109,8 @@ struct MooStringItem {
       }
     }
     .border(this.isSelected
-      ? { width: 2, color: getColor(meowThemeColorType.FONT), radius: defaultMenuItemRadius }
-      : { width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth'), radius: defaultMenuItemRadius })
+      ? { width: 2, color: getColor(meowThemeColorType.FONT), radius: defaultItemRadius }
+      : { width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth'), radius: defaultItemRadius })
     .padding(this.isEditing ? standardSpacing : standardSpacing * 0.25)
     .animation(defaultAnimation())
     .alignItems(HorizontalAlign.Start)

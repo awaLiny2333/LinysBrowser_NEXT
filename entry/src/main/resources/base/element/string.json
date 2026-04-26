@@ -273,8 +273,8 @@
       "value": "Layout"
     },
     {
-      "name": "Settings_category_appearance_layout_titleBarPins",
-      "value": "Title bar pins"
+      "name": "Settings_category_appearance_layout_editButtons",
+      "value": "Manage buttons  󰗘"
     },
     {
       "name": "Settings_category_appearance_layout_titleBarPosition",
@@ -635,6 +635,34 @@
     {
       "name": "KeyShortcuts_fullscreenWindowed",
       "value": "󰃍  Windowed fullscreen"
+    },
+    {
+      "name": "Buttons",
+      "value": "Manage Buttons"
+    },
+    {
+      "name": "Buttons_control",
+      "value": "Control area (left)"
+    },
+    {
+      "name": "Buttons_addressBarOnFocus",
+      "value": "Address bar (show on focus)"
+    },
+    {
+      "name": "Buttons_addressBar",
+      "value": "Address bar"
+    },
+    {
+      "name": "Buttons_title",
+      "value": "Title area (right)"
+    },
+    {
+      "name": "Buttons_more",
+      "value": "More"
+    },
+    {
+      "name": "Buttons_notice",
+      "value": "You should keep at least one Settings 󰀠 button on any of the slots!"
     },
     {
       "name": "Permission_reason_DETECT_GESTURES",
