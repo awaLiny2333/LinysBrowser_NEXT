@@ -40,7 +40,7 @@ buttonIconMatches.set(meowButtons.BACKWARD, $r('sys.symbol.arrow_left'));
 buttonIconMatches.set(meowButtons.FORWARD, $r('sys.symbol.arrow_right'));
 buttonIconMatches.set(meowButtons.REFRESH, $r('sys.symbol.arrow_clockwise'));
 buttonIconMatches.set(meowButtons.HOME, $r('sys.symbol.house'));
-buttonIconMatches.set(meowButtons.GO, $r('sys.symbol.arrow_right'));
+buttonIconMatches.set(meowButtons.GO, $r('sys.symbol.arrow_up_right'));
 buttonIconMatches.set(meowButtons.ADDRESS_KEYWORD_SWITH, $r('sys.symbol.text_and_t'));
 buttonIconMatches.set(meowButtons.RE_SEARCH, $r('sys.symbol.magnifyingglass'));
 buttonIconMatches.set(meowButtons.MORE, $r('sys.symbol.dot_grid_2x2'));

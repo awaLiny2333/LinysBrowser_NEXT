@@ -1,16 +1,16 @@
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
-import { UniRowOfCapsuleButtons } from "../../../components/common/UniRowOfCapsuleButtons";
-import { MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
-import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
-import { WoofUniFrame } from "../../WoofUniFrame";
-import { defaultAnimation, isPreferRightHand, standardSpacing } from "../../../components/settings";
-import { ButtonSlot } from "./WoofButtonSlot";
-import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { AppStorageV2 } from "@kit.ArkUI";
-import { meowButtons } from "../../../components/common/MeowButtons";
-import { UniContentCard } from "../../../components/common/UniContentCard";
+import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
+import { meowButtons } from "../../../components/common/MeowButtons";
+import { MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
+import { UniContentCard } from "../../../components/common/UniContentCard";
+import { UniRowOfCapsuleButtons } from "../../../components/common/UniRowOfCapsuleButtons";
+import { defaultAnimation, isPreferRightHand, standardSpacing } from "../../../components/settings";
+import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
+import { WoofUniFrame } from "../../WoofUniFrame";
+import { ButtonSlot } from "./WoofButtonSlot";
 
 @ComponentV2
 struct ButtonsManager {
@@ -116,8 +116,6 @@ struct WoofButtonsDialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
   @Require myLayout: meowLayout;
-
-  // Params
 
   build() {
     WoofUniFrame({

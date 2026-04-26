@@ -52,6 +52,8 @@ export function defaultSearchEngine() {
   return 'https://bing.com/search?q=%s';
 }
 
+// Defaults for the button system.
+
 export function defaultButtonsControl() {
   return [meowButtons.BACKWARD, meowButtons.FORWARD, meowButtons.REFRESH, meowButtons.HOME].join('\n');
 }
