@@ -31,3 +31,5 @@ struct MooTabSegmentV2 {
 }
 
 export { MooTabSegmentV2 };
+
+export const MooTabSegmentV2Height: number = 40;

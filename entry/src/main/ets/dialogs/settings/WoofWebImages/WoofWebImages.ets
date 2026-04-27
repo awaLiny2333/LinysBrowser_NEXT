@@ -1,7 +1,7 @@
 import { AppStorageV2, SegmentButtonV2Items } from '@kit.ArkUI';
 import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import { MooStringArrayList } from '../../../components/common/MooStringArrayList';
-import { MooTabSegmentV2 } from '../../../components/common/MooTabSegmentV2';
+import { MooTabSegmentV2, MooTabSegmentV2Height } from '../../../components/common/MooTabSegmentV2';
 import { defaultAnimation, standardSpacing } from '../../../components/settings';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
@@ -32,8 +32,7 @@ struct WebImagesPanel {
     })
       .opacity(this.mySettings.settingsData[58].value as boolean ? 0.5 : 1)
       .animation(defaultAnimation())
-      .padding(standardSpacing);
-
+      .margin({ bottom: MooTabSegmentV2Height + standardSpacing });
   }
 }
 
@@ -42,16 +41,15 @@ struct WoofWebImagesDialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
   @Require myLayout: meowLayout;
-  
+
   build() {
     WoofUniFrame({
       controller: this.controller, myDialog: this.myDialog, myLayout: this.myLayout, shiftBackgroundColor: true,
       title: $r('app.string.WebImages'),
       tutorial: $r('app.string.WebImages_tutorial'),
     }) {
-      WebImagesPanel();
-
-      if (!this.myLayout.shortMode) {
+      Stack() {
+        WebImagesPanel();
         MooTabSegmentV2({
           initSelected: AppStorageV2.connect(meowManagedSettings)!.settingsData[58].value as boolean ? 0 : 1,
           items: new SegmentButtonV2Items([{ text: $r('app.string.General_blockAll') }, { text: $r('app.string.General_blockListed') }]),
@@ -69,9 +67,10 @@ struct WoofWebImagesDialog {
                 break;
             }
           }
-        })
-          .padding({ left: standardSpacing, right: standardSpacing, bottom: standardSpacing });
+        });
       }
+      .padding(standardSpacing)
+      .alignContent(Alignment.Bottom);
     };
   }
 }

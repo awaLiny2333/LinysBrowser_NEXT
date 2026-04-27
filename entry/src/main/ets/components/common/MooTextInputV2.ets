@@ -1,5 +1,5 @@
 import { defaultInnerRadius } from '../../catstypicalframework/utils/ui';
-import { heightMeowTitleBar } from '../parts/Homepage/MeowTitleBar';
+import { MeowTitleBarHeight } from '../parts/Homepage/MeowTitleBar';
 import { fontSizeMedium, getColor, meowThemeColorType, standardSpacing, useEffects } from '../settings';
 
 @ComponentV2
@@ -21,7 +21,7 @@ struct MooTextInputV2 {
       }
       TextInput({ text: this.text as string, placeholder: this.placeholder })
         .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
-        .height(heightMeowTitleBar)
+        .height(MeowTitleBarHeight)
         .fontColor(getColor(meowThemeColorType.FONT))
         .caretColor(getColor(meowThemeColorType.FONT))
         .selectedBackgroundColor(getColor(meowThemeColorType.PRIMARY))
@@ -34,7 +34,7 @@ struct MooTextInputV2 {
         .onSubmit(() => {
           this.onSubmit();
         });
-    }.height(heightMeowTitleBar);
+    }.height(MeowTitleBarHeight);
   }
 }
 

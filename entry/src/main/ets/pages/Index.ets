@@ -8,7 +8,7 @@ import lazy { MooTextModifier } from '../components/common/MooTextModifier';
 import lazy { MeowButtonsMore } from '../components/parts/Buttons/MeowButtonsMore';
 import lazy { MeowPlaceForDialogs } from '../components/parts/MeowPlaceForDialogs';
 import lazy { MeowSearchBar } from '../components/parts/Homepage/MeowSearchBar';
-import lazy { heightMeowTitleBar, MeowTitleBar } from '../components/parts/Homepage/MeowTitleBar';
+import lazy { MeowTitleBarHeight, MeowTitleBar } from '../components/parts/Homepage/MeowTitleBar';
 import lazy { MeowTitleTop } from '../components/parts/Homepage/MeowTitleTop';
 import lazy { isTabsStyleVertical, defaultAnimation, defaultHorizontalTabsHeight, defaultSidebarWidth, getColor, meowThemeColorType, mooTextType, showGiganticWindowTitle, sidebarShouldBeOnTheRight, standardSpacing, titleBarPositionBottom, useEffects } from '../components/settings';
 import lazy { showingSidebar } from '../components/statuses';
@@ -234,7 +234,7 @@ struct Index {
 
   mainFrameMargin(): Margin {
     // Vertical
-    const slimCompensation = this.myLayout.wideMode ? 0 : heightMeowTitleBar + standardSpacing; // For double layer title bar on phones / slim windows.
+    const slimCompensation = this.myLayout.wideMode ? 0 : MeowTitleBarHeight + standardSpacing; // For double layer title bar on phones / slim windows.
     const tabsHorizontalCompensation = this.myUi.showTabs && !isTabsStyleVertical(this.myLayout) ? defaultHorizontalTabsHeight : 0;
 
     let top: number;
@@ -243,10 +243,10 @@ struct Index {
       // Bottom
       const freeWindowCompensation = (this.myLayout.freeWindow ? standardSpacing : 0);
       top = this.myAvoid.top;
-      bottom = this.myAvoid.bottom + freeWindowCompensation + (heightMeowTitleBar + standardSpacing) + slimCompensation + tabsHorizontalCompensation;
+      bottom = this.myAvoid.bottom + freeWindowCompensation + (MeowTitleBarHeight + standardSpacing) + slimCompensation + tabsHorizontalCompensation;
     } else {
       // Top
-      top = this.myAvoid.top + (heightMeowTitleBar + standardSpacing) + slimCompensation + tabsHorizontalCompensation;
+      top = this.myAvoid.top + (MeowTitleBarHeight + standardSpacing) + slimCompensation + tabsHorizontalCompensation;
       const showBottomAvoid = this.mySettings.settingsData[5].value as boolean; // Allow user to disable bottom avoid.
       bottom = (showBottomAvoid ? this.myAvoid.bottom : 0) + (useEffects() ? standardSpacing : 0);
     }

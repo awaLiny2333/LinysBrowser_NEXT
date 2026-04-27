@@ -53,6 +53,10 @@
       "value": "Unselect  󰃑"
     },
     {
+      "name": "General_disabled",
+      "value": "Disabled  󰁕"
+    },
+    {
       "name": "General_blockAll",
       "value": "Block all  󰆨"
     },
@@ -550,7 +554,7 @@
     },
     {
       "name": "AdBlocker_tutorial",
-      "value": "Once ad blocking is on, these domains get a paw-don from the Big Filter!"
+      "value": "Once ad blocking is on, these domains get a paw-don from the Great Filter!"
     },
     {
       "name": "AdBlocker_rules",
@@ -575,6 +579,14 @@
     {
       "name": "JavaScripts_tutorial",
       "value": "Through settings here, we can choose to block all / some domains' web JavaScripts!"
+    },
+    {
+      "name": "Dark",
+      "value": "Force Dark Mode Exemptions"
+    },
+    {
+      "name": "Dark_tutorial",
+      "value": "Once dark mode is on, these domains get a paw-don from the Great Darkener!"
     },
     {
       "name": "KeyShortcuts",

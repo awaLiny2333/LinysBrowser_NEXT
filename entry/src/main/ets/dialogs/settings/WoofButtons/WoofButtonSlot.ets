@@ -3,7 +3,7 @@ import { buttonIconArray, generalButtonHeight, getButtonIcon, meowButtons } from
 import mooMenuButton from "../../../components/common/MooMenuButton";
 import { MooSymbolButton } from "../../../components/common/MooSymbolButton";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
-import { heightMeowTitleBar } from "../../../components/parts/Homepage/MeowTitleBar";
+import { MeowTitleBarHeight } from "../../../components/parts/Homepage/MeowTitleBar";
 import { useEffects, getColor, meowThemeColorType, standardSpacing, defaultAnimation, isPreferRightHand } from "../../../components/settings";
 
 @ComponentV2

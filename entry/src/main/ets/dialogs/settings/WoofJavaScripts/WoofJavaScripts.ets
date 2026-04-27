@@ -1,7 +1,7 @@
 import { AppStorageV2, SegmentButtonV2Items } from '@kit.ArkUI';
 import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import { MooStringArrayList } from '../../../components/common/MooStringArrayList';
-import { MooTabSegmentV2 } from '../../../components/common/MooTabSegmentV2';
+import { MooTabSegmentV2, MooTabSegmentV2Height } from '../../../components/common/MooTabSegmentV2';
 import { defaultAnimation, standardSpacing } from '../../../components/settings';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
@@ -32,8 +32,7 @@ struct JavaScriptsPanel {
     })
       .opacity(this.mySettings.settingsData[55].value as boolean ? 0.5 : 1)
       .animation(defaultAnimation())
-      .padding(standardSpacing);
-
+      .margin({ bottom: MooTabSegmentV2Height + standardSpacing });
   }
 }
 
@@ -49,9 +48,8 @@ struct WoofJavaScriptsDialog {
       title: $r('app.string.JavaScripts'),
       tutorial: $r('app.string.JavaScripts_tutorial')
     }) {
-      JavaScriptsPanel();
-
-      if (!this.myLayout.shortMode) {
+      Stack() {
+        JavaScriptsPanel();
         MooTabSegmentV2({
           initSelected: AppStorageV2.connect(meowManagedSettings)!.settingsData[55].value as boolean ? 0 : 1,
           items: new SegmentButtonV2Items([{ text: $r('app.string.General_blockAll') }, { text: $r('app.string.General_blockListed') }]),
@@ -69,9 +67,10 @@ struct WoofJavaScriptsDialog {
                 break;
             }
           }
-        })
-          .padding({ left: standardSpacing, right: standardSpacing, bottom: standardSpacing });
+        });
       }
+      .padding(standardSpacing)
+      .alignContent(Alignment.Bottom);
     };
   }
 }

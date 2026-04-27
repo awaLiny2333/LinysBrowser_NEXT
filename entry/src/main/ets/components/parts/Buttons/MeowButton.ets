@@ -54,6 +54,9 @@ struct MeowButton {
       case meowButtons.IMAGES:
         requestDialog(this.myDialog, openDialogRequestType.WEB_IMAGES);
         break;
+      case meowButtons.DARK:
+        requestDialog(this.myDialog, openDialogRequestType.DARK);
+        break;
       default:
         break;
     }

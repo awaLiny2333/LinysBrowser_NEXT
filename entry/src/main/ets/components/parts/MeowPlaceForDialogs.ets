@@ -11,6 +11,7 @@ import { WoofKeyShortcutPickerDialog } from '../../dialogs/public/WoofKeyShortcu
 import { WoofAdBlockerDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlocker';
 import { WoofAdBlockerRulesDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlockerRules';
 import { WoofButtonsDialog } from '../../dialogs/settings/WoofButtons/WoofButtons';
+import { WoofDarkDialog } from '../../dialogs/settings/WoofDark/WoofDark';
 import { WoofJavaScriptsDialog } from '../../dialogs/settings/WoofJavaScripts/WoofJavaScripts';
 import { WoofKeyShortcutsDialog } from '../../dialogs/settings/WoofKeyShortcuts/WoofKeyShortcuts';
 import { WoofWebImagesDialog } from '../../dialogs/settings/WoofWebImages/WoofWebImages';
@@ -122,6 +123,13 @@ struct MeowPlaceForDialogs {
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
+  woofDarkDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofDarkDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
   woofKeyShortcutsDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofKeyShortcutsDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
     alignment: DialogAlignment.Center,
@@ -189,6 +197,9 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.WEB_JAVASCRIPTS:
         this.woofJavaScriptsDialogController.open();
+        break;
+      case openDialogRequestType.DARK:
+        this.woofDarkDialogController.open();
         break;
       case openDialogRequestType.KEY_SHORTCUTS:
         this.woofKeyShortcutsDialogController.open();

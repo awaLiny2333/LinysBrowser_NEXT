@@ -41,7 +41,7 @@ struct MeowTitleBar {
         buttons: this.mySettings.settingsData[79].value as meowButtons[]
       });
     }
-    .height(heightMeowTitleBar)
+    .height(MeowTitleBarHeight)
     .width('100%')
     .padding({ left: this.myAvoid.left, right: this.myAvoid.right });
   }
@@ -49,4 +49,4 @@ struct MeowTitleBar {
 
 export { MeowTitleBar };
 
-export const heightMeowTitleBar = 36;
+export const MeowTitleBarHeight = 36;

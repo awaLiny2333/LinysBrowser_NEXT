@@ -53,6 +53,10 @@
       "value": "取消选择  󰃑"
     },
     {
+      "name": "General_disabled",
+      "value": "关掉  󰁕"
+    },
+    {
       "name": "General_blockAll",
       "value": "全部屏蔽  󰆨"
     },

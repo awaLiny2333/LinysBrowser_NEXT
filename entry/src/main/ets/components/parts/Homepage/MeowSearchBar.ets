@@ -2,7 +2,7 @@ import { meowAvoid } from '../../../catstypicalframework/hosts/meowAvoid';
 import { standardSpacing, getColor, meowThemeColorType, fontSizeMedium, useEffects, isPreferRightHand, defaultAnimation } from '../../settings';
 import { MeowButtonsSlot } from '../Buttons/MeowButtonsSlot';
 import { meowButtons } from '../Buttons/constants';
-import { heightMeowTitleBar } from './MeowTitleBar';
+import { MeowTitleBarHeight } from './MeowTitleBar';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
 import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
@@ -96,7 +96,7 @@ struct AddressInput {
           .fontSize(fontSizeMedium);
       }
       TextInput({ text: this.text as string, placeholder: this.placeholder })
-        .height(heightMeowTitleBar)
+        .height(MeowTitleBarHeight)
         .fontColor(getColor(meowThemeColorType.FONT))
         .caretColor(getColor(meowThemeColorType.FONT))
         .selectedBackgroundColor(getColor(meowThemeColorType.FONT))
@@ -117,7 +117,7 @@ struct AddressInput {
           this.onSubmit();
         });
     }
-    .height(heightMeowTitleBar)
+    .height(MeowTitleBarHeight)
     .layoutWeight(1);
   }
 }

@@ -8,36 +8,36 @@ import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/me
 import { WoofUniFrame } from '../../WoofUniFrame';
 
 @ComponentV2
-struct AdBlockerPanel {
+struct DarkPanel {
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
   build() {
     MooStringArrayList({
-      list: this.mySettings.settingsData[53].value as string[],
+      list: this.mySettings.settingsData[61].value as string[],
       onEdited: (index: number, newValue: string) => {
-        const list = this.mySettings.settingsData[53].value as string[];
+        const list = this.mySettings.settingsData[61].value as string[];
         list[index] = newValue;
         this.mySettings.requestSaveToDisk();
       },
       onDelete: (index: number) => {
-        const list = this.mySettings.settingsData[53].value as string[];
+        const list = this.mySettings.settingsData[61].value as string[];
         list.splice(index, 1);
         this.mySettings.requestSaveToDisk();
       },
       onNew: () => {
-        const list = this.mySettings.settingsData[53].value as string[];
+        const list = this.mySettings.settingsData[61].value as string[];
         list.push('meow.net');
         this.mySettings.requestSaveToDisk();
       }
     })
-      .opacity(this.mySettings.settingsData[52].value as boolean ? 1 : 0.5)
+      .opacity(this.mySettings.settingsData[60].value as boolean ? 1 : 0.5)
       .animation(defaultAnimation())
       .margin({ bottom: MooTabSegmentV2Height + standardSpacing });
   }
 }
 
 @CustomDialog
-struct WoofAdBlockerDialog {
+struct WoofDarkDialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
   @Require myLayout: meowLayout;
@@ -45,23 +45,23 @@ struct WoofAdBlockerDialog {
   build() {
     WoofUniFrame({
       controller: this.controller, myDialog: this.myDialog, myLayout: this.myLayout, shiftBackgroundColor: true,
-      title: $r('app.string.AdBlocker'),
-      tutorial: $r('app.string.AdBlocker_tutorial'),
+      title: $r('app.string.Dark'),
+      tutorial: $r('app.string.Dark_tutorial'),
     }) {
       Stack() {
-        AdBlockerPanel();
+        DarkPanel();
         MooTabSegmentV2({
-          initSelected: AppStorageV2.connect(meowManagedSettings)!.settingsData[52].value as boolean ? 1 : 0,
+          initSelected: AppStorageV2.connect(meowManagedSettings)!.settingsData[60].value as boolean ? 1 : 0,
           items: new SegmentButtonV2Items([{ text: $r('app.string.General_disabled') }, { text: $r('app.string.General_blockListed') }]),
           onSelected: (index) => {
             // 'top' | 'bottom'
             const mySettings = AppStorageV2.connect(meowManagedSettings)!;
             switch (index) {
               case 0:
-                mySettings.setByIndex(52, false);
+                mySettings.setByIndex(60, false);
                 break;
               case 1:
-                mySettings.setByIndex(52, true);
+                mySettings.setByIndex(60, true);
                 break;
               default:
                 break;
@@ -75,4 +75,4 @@ struct WoofAdBlockerDialog {
   }
 }
 
-export { WoofAdBlockerDialog };
+export { WoofDarkDialog };
