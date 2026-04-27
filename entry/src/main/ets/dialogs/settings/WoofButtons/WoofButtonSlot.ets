@@ -1,5 +1,5 @@
 import { defaultInnerRadius, defaultItemRadius } from "../../../catstypicalframework/utils/ui";
-import { buttonIconArray, getButtonIcon, meowButtons } from "../../../components/common/MeowButtons";
+import { buttonIconArray, generalButtonHeight, getButtonIcon, meowButtons } from "../../../components/parts/Buttons/constants";
 import mooMenuButton from "../../../components/common/MooMenuButton";
 import { MooSymbolButton } from "../../../components/common/MooSymbolButton";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
@@ -21,7 +21,7 @@ struct ButtonSlot {
       Text(this.desc).attributeModifier(new MooTextModifier()).padding({ left: standardSpacing * 0.5, right: standardSpacing * 0.5 });
 
       // List
-      List({ space: 1 }) {
+      List({ space: standardSpacing * 0.125 }) {
         Repeat(this.buttons)
           .each((obj: RepeatItem<meowButtons>) => {
             ListItem() {
@@ -68,7 +68,7 @@ struct ButtonSlot {
       .border({ width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth'), radius: defaultInnerRadius })
       .alignListItem(ListItemAlign.Center)
       .listDirection(Axis.Horizontal)
-      .height(heightMeowTitleBar + standardSpacing * 0.75)
+      .height(generalButtonHeight + 2 * standardSpacing * 0.75)
       .width('auto')
       .scrollBar(BarState.Off);
     }

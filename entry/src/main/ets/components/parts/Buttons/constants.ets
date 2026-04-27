@@ -73,3 +73,5 @@ export const buttonIconArray: [meowButtons, Resource][] = Array.from(buttonIconM
 export function getButtonIcon(button: meowButtons): Resource {
   return buttonIconMatches.get(button) ?? $r('sys.symbol.questionmark_circle');
 }
+
+export const generalButtonHeight: number = 31;

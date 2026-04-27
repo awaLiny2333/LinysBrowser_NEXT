@@ -1,6 +1,12 @@
 import { meowAvoid } from '../../../catstypicalframework/hosts/meowAvoid';
-import { standardSpacing, getColor, meowThemeColorType, fontSizeMedium, useEffects } from '../../settings';
+import { standardSpacing, getColor, meowThemeColorType, fontSizeMedium, useEffects, isPreferRightHand } from '../../settings';
+import { MeowButtonsSlot } from '../Buttons/MeowButtonsSlot';
+import { meowButtons } from '../Buttons/constants';
 import { heightMeowTitleBar } from './MeowTitleBar';
+import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
+import { meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
+import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
+import { AppStorageV2 } from '@kit.ArkUI';
 
 /**
  * The search bar.
@@ -9,16 +15,35 @@ import { heightMeowTitleBar } from './MeowTitleBar';
  */
 @ComponentV2
 struct MeowSearchBar {
-  @Param @Once needPadding: boolean = true;
+  @Param @Once needFullPadding: boolean = false; // .padding({ left: standardSpacing * 0.5, right: standardSpacing * 0.5 });
+  // Hosts
   @Param @Require myAvoid: meowAvoid;
+  @Param @Require myUi: meowUiStatuses;
+  @Param @Require myDialog: meowDialogManager;
+  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
   build() {
     Row() {
       AddressInput({
-        placeholder: ' 󰀩 ...'
+        placeholder: ' 󰀩 ...',
+        myAvoid: this.myAvoid
+      });
+      Row().width(standardSpacing * 0.5);
+      // On focus
+      MeowButtonsSlot({
+        myUi: this.myUi,
+        myDialog: this.myDialog,
+        buttons: this.mySettings.settingsData[77].value as meowButtons[]
+      });
+      // Always on
+      MeowButtonsSlot({
+        myUi: this.myUi,
+        myDialog: this.myDialog,
+        buttons: this.mySettings.settingsData[78].value as meowButtons[]
       });
     }
-    .padding(this.needPadding ? { left: this.myAvoid.left, right: this.myAvoid.right } : {});
+    .padding(this.needFullPadding ? { left: standardSpacing, right: standardSpacing } : 0)
+    .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl);
   }
 }
 
@@ -31,9 +56,12 @@ export { MeowSearchBar };
  */
 @ComponentV2
 struct AddressInput {
+  // Configs
   @Param @Once placeholder: string | undefined = undefined;
   @Param icon: Resource | undefined = undefined;
   @Param text: string = '';
+  // Hosts
+  @Param @Require myAvoid: meowAvoid;
   // Events
   @Event onChange: (c: string) => void;
   @Event onSubmit: () => void;
@@ -59,6 +87,8 @@ struct AddressInput {
         .onSubmit(() => {
           this.onSubmit();
         });
-    }.height(heightMeowTitleBar);
+    }
+    .height(heightMeowTitleBar)
+    .layoutWeight(1);
   }
 }

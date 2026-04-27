@@ -1,4 +1,4 @@
-import { meowButtons } from "../../../../components/common/MeowButtons";
+import { meowButtons } from "../../../../components/parts/Buttons/constants";
 /**
  * Default user agents in a specified string format.
  * @returns Firefox, Chrome and Edge.

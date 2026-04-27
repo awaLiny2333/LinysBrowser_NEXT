@@ -5,7 +5,7 @@ import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
 import lazy { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
 import lazy { defaultDecorHeight, defaultInnerRadius, shortModeThreshold, updateNavigationIndicator, wideModeThreshold } from '../catstypicalframework/utils/ui';
 import lazy { MooTextModifier } from '../components/common/MooTextModifier';
-import lazy { MeowButtonRow } from '../components/parts/Homepage/MeowButtonRow';
+import lazy { MeowButtonsMore } from '../components/parts/Buttons/MeowButtonsMore';
 import lazy { MeowPlaceForDialogs } from '../components/parts/MeowPlaceForDialogs';
 import lazy { MeowSearchBar } from '../components/parts/Homepage/MeowSearchBar';
 import lazy { heightMeowTitleBar, MeowTitleBar } from '../components/parts/Homepage/MeowTitleBar';
@@ -105,12 +105,17 @@ struct Index {
             });
             if (!this.myLayout.wideMode) {
               MeowSearchBar({
+                needFullPadding: true,
+                myUi: this.myUi,
+                myDialog: this.myDialog,
                 myAvoid: this.myAvoid,
               });
             }
             if (this.myUi.showMore) {
-              MeowButtonRow({
+              MeowButtonsMore({
+                myUi: this.myUi,
                 myAvoid: this.myAvoid,
+                myDialog: this.myDialog
               });
             }
           }
@@ -129,8 +134,10 @@ struct Index {
         if (titleBarPositionBottom()) {
           Column({ space: standardSpacing }) {
             if (this.myUi.showMore) {
-              MeowButtonRow({
+              MeowButtonsMore({
+                myUi: this.myUi,
                 myAvoid: this.myAvoid,
+                myDialog: this.myDialog
               });
             }
             MeowTitleBar({
@@ -141,6 +148,9 @@ struct Index {
             });
             if (!this.myLayout.wideMode) {
               MeowSearchBar({
+                needFullPadding: true,
+                myUi: this.myUi,
+                myDialog: this.myDialog,
                 myAvoid: this.myAvoid,
               });
             }

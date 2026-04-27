@@ -1,10 +1,12 @@
+import { AppStorageV2 } from "@kit.ArkUI";
 import { meowAvoid } from "../../../catstypicalframework/hosts/meowAvoid";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
-import { meowDialogManager, openDialogRequestType } from "../../../hosts/system/dialogs/classes/meowDialogManager";
-import { requestDialog } from "../../../hosts/system/dialogs/scripts/dialog";
+import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { meowUiStatuses } from "../../../hosts/system/windows/classes/meowUiStatuses";
-import { MooSymbolButton } from "../../common/MooSymbolButton";
-import { defaultAnimation, standardSpacing } from "../../settings";
+import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
+import { isPreferRightHand, standardSpacing } from "../../settings";
+import { meowButtons } from "../Buttons/constants";
+import { MeowButtonsSlot } from "../Buttons/MeowButtonsSlot";
 import { MeowSearchBar } from "./MeowSearchBar";
 
 @ComponentV2
@@ -13,57 +15,32 @@ struct MeowTitleBar {
   @Param @Require myAvoid: meowAvoid;
   @Param @Require myLayout: meowLayout;
   @Param @Require myDialog: meowDialogManager;
+  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
   build() {
     Row({ space: standardSpacing * 0.125 }) {
-      MooSymbolButton({ icon: $r('sys.symbol.arrow_left') });
-      MooSymbolButton({ icon: $r('sys.symbol.arrow_right') });
-      MooSymbolButton({ icon: $r('sys.symbol.arrow_clockwise') });
-      MooSymbolButton({ icon: $r('sys.symbol.house') });
+      MeowButtonsSlot({
+        myUi: this.myUi,
+        myDialog: this.myDialog,
+        buttons: this.mySettings.settingsData[76].value as meowButtons[]
+      });
 
       if (this.myLayout.wideMode) {
         MeowSearchBar({
+          myUi: this.myUi,
+          myDialog: this.myDialog,
           myAvoid: this.myAvoid,
-        })
-          .layoutWeight(1);
+        }).layoutWeight(1).padding(isPreferRightHand() ? { left: standardSpacing * 0.5 } : { right: standardSpacing * 0.5 });
       } else {
         Blank();
       }
 
-      MooSymbolButton({
-        icon: $r('sys.symbol.dot_grid_2x2'),
-        onHold: this.myUi.showMore,
-        clickAction: () => {
-          animateToImmediately(defaultAnimation(), () => {
-            this.myUi.showMore = !this.myUi.showMore;
-          });
-        }
-      });
-      /**
-       * TODO: Custom buttons.
-       */
-      MooSymbolButton({
-        icon: $r('sys.symbol.rectangle_stack'),
-        onHold: this.myUi.showTabs,
-        clickAction: () => {
-          this.myUi.showTabs = !this.myUi.showTabs;
-        }
-      });
-      MooSymbolButton({
-        icon: $r('sys.symbol.bookmark'),
-        clickAction: () => {
-          requestDialog(this.myDialog, openDialogRequestType.BOOKMARKS);
-        }
-      });
-      MooSymbolButton({ icon: $r('sys.symbol.download') });
-      MooSymbolButton({
-        icon: $r('sys.symbol.gearshape'),
-        clickAction: () => {
-          requestDialog(this.myDialog, openDialogRequestType.SETTINGS);
-        }
+      MeowButtonsSlot({
+        myUi: this.myUi,
+        myDialog: this.myDialog,
+        buttons: this.mySettings.settingsData[79].value as meowButtons[]
       });
     }
-    // .direction(preferRightHand() ? Direction.Ltr : Direction.Rtl)
     .height(heightMeowTitleBar)
     .width('100%')
     .padding({ left: this.myAvoid.left, right: this.myAvoid.right });
