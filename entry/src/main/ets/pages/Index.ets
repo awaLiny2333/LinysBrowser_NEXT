@@ -57,7 +57,9 @@ struct Index {
         });
 
         // Shortcuts handler
-        MeowPlaceForKeyShortcuts();
+        MeowPlaceForKeyShortcuts({
+          myUi: this.myUi
+        });
 
         // Main
         // This is ugly.
@@ -187,17 +189,30 @@ struct Index {
       this.actionsOnAppear();
     })
     .onAreaChange((o, n) => {
+      let somethingChanged = false;
       if (o.width != n.width) {
+        somethingChanged = true;
         this.myLayout.width = n.width as number;
         animateToImmediately(defaultAnimation(), () => {
           this.myLayout.wideMode = this.myLayout.width > wideModeThreshold;
         });
       }
       if (o.height != n.height) {
+        somethingChanged = true;
         this.myLayout.height = n.height as number;
         animateToImmediately(defaultAnimation(), () => {
           this.myLayout.shortMode = this.myLayout.height < shortModeThreshold;
         });
+      }
+
+      // If window resize then disable focus.
+      if (somethingChanged) {
+        if (this.myUi.searchBarFocused) {
+          this.getUIContext().getFocusController().clearFocus();
+          animateToImmediately(defaultAnimation(), () => {
+            this.myUi.searchBarFocused = false;
+          });
+        }
       }
     });
   }

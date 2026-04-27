@@ -30,7 +30,7 @@ struct MeowTitleBar {
           myUi: this.myUi,
           myDialog: this.myDialog,
           myAvoid: this.myAvoid,
-        }).layoutWeight(1).padding(isPreferRightHand() ? { left: standardSpacing * 0.5 } : { right: standardSpacing * 0.5 });
+        }).layoutWeight(1).padding(isPreferRightHand() ? { left: standardSpacing * 0.75 } : { right: standardSpacing * 0.75 });
       } else {
         Blank();
       }

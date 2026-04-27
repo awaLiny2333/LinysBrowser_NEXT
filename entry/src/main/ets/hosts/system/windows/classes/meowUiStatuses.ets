@@ -15,6 +15,7 @@ export class meowUiStatuses {
   @Trace showMore: boolean = false;
   @Trace showTabs: boolean = false;
   @Trace sidebarShrunk: boolean = true;
+  @Trace searchBarFocused: boolean = false;
   // MeowBookmarksPanel
   @Trace openedStack: meowBookmarkItem[] = [];
   @Trace openedIndexOfLevels: (meowBookmarkItem | undefined)[] = [];

@@ -45,6 +45,15 @@ struct MeowButton {
       case meowButtons.SETTINGS:
         requestDialog(this.myDialog, openDialogRequestType.SETTINGS);
         break;
+      case meowButtons.ADBLOCKER:
+        requestDialog(this.myDialog, openDialogRequestType.ADBLOCKER);
+        break;
+      case meowButtons.JAVASCRIPTS:
+        requestDialog(this.myDialog, openDialogRequestType.WEB_JAVASCRIPTS);
+        break;
+      case meowButtons.IMAGES:
+        requestDialog(this.myDialog, openDialogRequestType.WEB_IMAGES);
+        break;
       default:
         break;
     }

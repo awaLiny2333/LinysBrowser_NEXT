@@ -1,9 +1,12 @@
 import { meowKeyboardMan } from '../../hosts/userdata/keyshortcuts/classes/meowKeyboardMan';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meow, meowLevel } from '../../catstypicalframework/utils/catsLogger';
+import { meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
+import { searchBarId } from './Homepage/MeowSearchBar';
 
 @ComponentV2
 struct MeowPlaceForKeyShortcuts {
+  @Param @Require myUi: meowUiStatuses;
   @Local myKey: meowKeyboardMan = AppStorageV2.connect(meowKeyboardMan)!;
 
   build() {
@@ -15,10 +18,20 @@ struct MeowPlaceForKeyShortcuts {
         meow(`Close Tab!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
       });
       Blank().keyboardShortcut(this.myKey.showTabs.value, this.myKey.showTabs.keys, () => {
-        meow(`Show Tabs!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+        this.myUi.showTabs = !this.myUi.showTabs;
+        if (this.myUi.showTabs) {
+          meow(`Show Tabs!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+        } else {
+          meow(`Hide Tabs!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+        }
       });
       Blank().keyboardShortcut(this.myKey.focusAddress.value, this.myKey.focusAddress.keys, () => {
-        meow(`Focus Address!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+        try {
+          this.getUIContext().getFocusController().requestFocus(searchBarId);
+          meow(`Focus Address!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+        } catch (e) {
+          meow(`Focus Address Failed: ${e}`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+        }
       });
       Blank().keyboardShortcut(this.myKey.searchInPage.value, this.myKey.searchInPage.keys, () => {
         meow(`Search in Page!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
@@ -50,7 +63,7 @@ struct MeowPlaceForKeyShortcuts {
       Blank().keyboardShortcut(this.myKey.fullscreenWindowed.value, this.myKey.fullscreenWindowed.keys, () => {
         meow(`Windowed Fullscreen!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
       });
-    }
+    };
   }
 }
 
