@@ -32,7 +32,7 @@ struct SettingsAccessibility {
           }
         });
         MooSwitch({
-          text: $r('app.string.Settings_category_accessibility_webEsc'),
+          text: $r('app.string.Settings_category_accessibility_webKeys'),
           isOn: this.mySettings.settingsData[11].value as boolean,
           onChange: (r) => {
             this.mySettings.setByIndex(11, r);

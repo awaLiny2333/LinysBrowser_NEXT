@@ -229,8 +229,8 @@
       "value": "网页系统返回"
     },
     {
-      "name": "Settings_category_accessibility_webEsc",
-      "value": "网页 Esc 返回"
+      "name": "Settings_category_accessibility_webKeys",
+      "value": "网页快捷键返回"
     },
     {
       "name": "Settings_category_accessibility_singleHand",
@@ -639,6 +639,10 @@
     {
       "name": "KeyShortcuts_fullscreenWindowed",
       "value": "󰃍  窗口化全屏"
+    },
+    {
+      "name": "KeyShortcuts_esc",
+      "value": "󰃊  返回"
     },
     {
       "name": "Buttons",

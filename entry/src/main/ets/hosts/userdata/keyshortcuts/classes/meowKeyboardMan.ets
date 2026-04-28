@@ -19,9 +19,10 @@ export class meowKeyboardMan {
   @Trace save: meowKeyBind = new meowKeyBind('s', [ModifierKey.CTRL]);
   @Trace zones: meowKeyBind = new meowKeyBind('z', [ModifierKey.ALT]);
   @Trace fullscreenWindowed: meowKeyBind = new meowKeyBind(FunctionKey.F11, [ModifierKey.SHIFT]);
+  @Trace esc: meowKeyBind = new meowKeyBind(FunctionKey.ESC, []);
 
   // Put them all in one place
-  @Trace shortcuts: meowKeyBind[] = [this.newTab, this.closeTab, this.showTabs, this.focusAddress, this.searchInPage, this.fullscreen, this.history, this.refresh, this.print, this.newWindow, this.pin, this.save, this.zones, this.fullscreenWindowed];
+  @Trace shortcuts: meowKeyBind[] = [this.newTab, this.closeTab, this.showTabs, this.focusAddress, this.searchInPage, this.fullscreen, this.history, this.refresh, this.print, this.newWindow, this.pin, this.save, this.zones, this.fullscreenWindowed, this.esc];
   @Trace shortcutsStrings: ResourceStr[] = [
     $r('app.string.KeyShortcuts_newTab'),
     $r('app.string.KeyShortcuts_closeTab'),
@@ -36,7 +37,8 @@ export class meowKeyboardMan {
     $r('app.string.KeyShortcuts_pin'),
     $r('app.string.KeyShortcuts_save'),
     $r('app.string.KeyShortcuts_zones'),
-    $r('app.string.KeyShortcuts_fullscreenWindowed')
+    $r('app.string.KeyShortcuts_fullscreenWindowed'),
+    $r('app.string.KeyShortcuts_esc'),
   ];
 
   /**

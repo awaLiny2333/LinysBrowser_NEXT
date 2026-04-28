@@ -229,8 +229,8 @@
       "value": "System back in web"
     },
     {
-      "name": "Settings_category_accessibility_webEsc",
-      "value": "Esc backward in web"
+      "name": "Settings_category_accessibility_webKeys",
+      "value": "Key shortcuts backward in web"
     },
     {
       "name": "Settings_category_accessibility_singleHand",
@@ -647,6 +647,10 @@
     {
       "name": "KeyShortcuts_fullscreenWindowed",
       "value": "󰃍  Windowed fullscreen"
+    },
+    {
+      "name": "KeyShortcuts_esc",
+      "value": "󰃊  Escape / back"
     },
     {
       "name": "Buttons",

@@ -26,7 +26,7 @@ export class meowKeyBind {
    * @returns The ResourceStr of this keybind object contents.
    */
   toResourceStr(): ResourceStr {
-    if (!this.value) {
+    if (this.value === '') {
       return $r('app.string.General_loading');
     }
     return this.toString();
@@ -64,6 +64,9 @@ export class meowKeyBind {
     } else {
       this.value = ''; // To flush key binds. See https://developer.huawei.com/consumer/cn/doc/harmonyos-references/ts-universal-events-keyboardshortcut#示例2快捷键的绑定和解除绑定
     }
+    console.error(value);
+    console.error(modifiers.join('/'));
     this.keys = stringsToModifiers(modifiers);
+    console.error(this.toString());
   }
 }

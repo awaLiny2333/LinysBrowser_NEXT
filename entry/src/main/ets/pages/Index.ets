@@ -18,7 +18,7 @@ import { meowDialogManager, openDialogRequestType } from '../hosts/system/dialog
 import lazy { requestDialog } from '../hosts/system/dialogs/scripts/dialog';
 import { meowResources } from '../hosts/system/storage/classes/meowResources';
 import { meowAppStatuses } from '../hosts/system/windows/classes/meowAppStatuses';
-import { meowUiStatuses } from '../hosts/system/windows/classes/meowUiStatuses';
+import { meowUiGoBackSource, meowUiStatuses } from '../hosts/system/windows/classes/meowUiStatuses';
 import { getLastWindowId } from '../hosts/system/windows/scripts/multiwindows';
 import { MeowPlaceForKeyShortcuts } from '../components/parts/MeowPlaceForKeyShortcuts';
 import { meowAppMessageType } from '../hosts/system/windows/scripts/messaging';
@@ -41,7 +41,12 @@ struct Index {
   // Render control
   @Local render: boolean = false;
 
+  /**
+   * Things that would happen when the user presses the back button.
+   * @returns Whether the back button was handled.
+   */
   onBackPress(): boolean | void {
+    return this.myUi.goBackUni(meowUiGoBackSource.BACK);
   }
 
   build() {

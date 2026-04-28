@@ -68,11 +68,14 @@ export function isModifier(key: string) {
 }
 
 /**
- * Checks if a given key is a function key.
+ * Checks if a given key is a function key (including esc).
  * @param key The key to check.
  * @returns True if the key is a function key, false otherwise.
  */
 export function isFn(key: string) {
+  if (key.toUpperCase() == 'ESC') {
+    return true;
+  }
   return key.length > 1 && key.toUpperCase().startsWith('F');
 }
 

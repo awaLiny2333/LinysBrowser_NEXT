@@ -30,7 +30,7 @@ export class meowDialogManager {
    * Checks if the dialog manager is empty.
    * @returns True if the dialog manager is empty.
    */
-  private isEmpty() {
+  isEmpty() {
     return this.openedDialogs.length === 0;
   }
 
@@ -55,6 +55,16 @@ export class meowDialogManager {
       this.openedDialogs.splice(index, 1);
       meow(`Dialog closed: [${label}]`, 'meowDialogManager', meowLevel.INFO);
     }
+  }
+
+  /**
+   * Requests a closing of the top dialog.
+   */
+  requestCloseTop() {
+    if (this.isEmpty()) {
+      return;
+    }
+    this.openedDialogs[this.openedDialogs.length - 1].close();
   }
 }
 

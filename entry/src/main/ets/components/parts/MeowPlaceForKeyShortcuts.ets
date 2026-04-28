@@ -1,7 +1,7 @@
 import { meowKeyboardMan } from '../../hosts/userdata/keyshortcuts/classes/meowKeyboardMan';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meow, meowLevel } from '../../catstypicalframework/utils/catsLogger';
-import { meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
+import { meowUiGoBackSource, meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
 import { searchBarId } from './Homepage/MeowSearchBar';
 
 @ComponentV2
@@ -11,6 +11,15 @@ struct MeowPlaceForKeyShortcuts {
 
   build() {
     Row() {
+      if (!(this.myKey.esc.value == FunctionKey.ESC && this.myKey.esc.keys.length == 0)) {
+        Blank().keyboardShortcut(FunctionKey.ESC, [], () => {
+          // To block ESC.
+        });
+      }
+      Blank().keyboardShortcut(this.myKey.esc.value, this.myKey.esc.keys, () => {
+        this.myUi.goBackUni(meowUiGoBackSource.ESC);
+        meow(`ESC!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+      });
       Blank().keyboardShortcut(this.myKey.newTab.value, this.myKey.newTab.keys, () => {
         meow(`New Tab!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
       });
