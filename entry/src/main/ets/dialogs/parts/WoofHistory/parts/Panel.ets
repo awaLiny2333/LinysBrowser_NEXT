@@ -46,10 +46,9 @@ struct WoofHistoryPanel {
 
   build() {
     Column({ space: defaultInnerRadius }) {
-      if (!this.isSelecting) {
-        Text(`${this.myHistoryChunk?.year}-${this.myHistoryChunk?.month} (${this.myEntries.length})`).attributeModifier(new MooTextModifier());
-      }
-      
+      // Status
+      Text(`${this.myHistoryChunk?.year}-${this.myHistoryChunk?.month} (${this.myEntries.length}/${this.myHistoryChunk?.getSize()})`).attributeModifier(new MooTextModifier());
+
       // Entries
       List({ scroller: this.scroller }) {
         Repeat(this.myEntries)

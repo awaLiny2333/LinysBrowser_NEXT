@@ -232,4 +232,13 @@ export class meowHistoryChunk {
     meow(`Deleted ${timestampsToDelete.size} items in [${this.chunkPath}] (${Date.now() - startTime} ms)`, 'meowHistoryChunk][deleteHistory', meowLevel.INFO);
     return saveResult;
   }
+
+  /**
+   * Get the size of the chunk.
+   * @returns The size.
+   */
+  getSize() {
+    if (!this.entries) return 0;
+    return this.entries.length;
+  }
 }
