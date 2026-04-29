@@ -85,7 +85,8 @@ export enum openDialogRequestType {
   DARK,
   KEY_SHORTCUTS,
   KEY_SHORTCUTS_PICKER,
-  BUTTONS
+  BUTTONS,
+  HISTORY
 }
 
 /**

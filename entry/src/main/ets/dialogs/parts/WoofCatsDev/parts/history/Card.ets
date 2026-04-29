@@ -81,7 +81,7 @@ struct HistoryDevCard {
       Flex(meowFlexOptions) {
         Button('Delete →')
           .onClick(() => {
-            this.myMeowHistorian.deleteHistory(this.myDelete);
+            this.myMeowHistorian.deleteHistory(new Set(this.myDelete));
             this.myDelete = [];
           });
         SymbolGlyph($r('sys.symbol.clean'))

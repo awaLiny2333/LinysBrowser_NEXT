@@ -10,11 +10,14 @@ struct MooSymbolButton {
   @Param icon: Resource = $r('sys.symbol.square_stack_3d');
   @Param onHold: boolean = false;
   @Param tips: TipsMessageType | undefined = undefined;
+  @Param isEnabled: boolean = true;
   // Events
   @Event clickAction: () => void;
 
   build() {
     SymbolGlyph(this.icon)
+      .opacity(this.isEnabled ? 1 : 0.4)
+      .enabled(this.isEnabled)
       .margin(this.onHold ? { left: standardSpacing / 4, right: standardSpacing / 4 } : 0)
       .brightness(this.onHold && useEffects() ? 1.1 : 1)
       .backgroundColor(this.onHold && !useEffects() ? getColor(meowThemeColorType.FONT) : Color.Transparent)

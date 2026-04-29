@@ -19,7 +19,7 @@ export async function loadChunkFromDisk(chunkPath: string) {
   //       history.push(new meowHistoryEntry(entries[i], entries[i + 1], parseInt(entries[i + 2])));
   //     }
 
-  // Optimized by ChatGLM @ Apr 6 2026
+  // Optimized by ChatGLM @ Apr 6 2026, again fixed by DeepSeek @Apr 28 2026
   let history: collections.Array<meowHistoryEntry> = new collections.Array<meowHistoryEntry>();
   const buffer = await readArrayBufferConcurrent(chunkPath);
 
@@ -32,26 +32,34 @@ export async function loadChunkFromDisk(chunkPath: string) {
   let pos = 0;
 
   while (pos < len) {
-    // --- Read 1st line: entries[i] ---
-    let nextNl = text.indexOf('\n', pos);
-    if (nextNl === -1) break; // If the file ends or the format is abnormal, exit directly without producing dirty data.
-    const arg1 = text.substring(pos, nextNl);
-    pos = nextNl + 1;
+    let fields: string[] = [];
 
-    // --- Read 2nd line: entries[i + 1] ---
-    nextNl = text.indexOf('\n', pos);
-    if (nextNl === -1) break;
-    const arg2 = text.substring(pos, nextNl);
-    pos = nextNl + 1;
+    // Try to extract exactly three lines
+    for (let i = 0; i < 3; i++) {
+      let nextNl = text.indexOf('\n', pos);
+      if (nextNl === -1) {
+        // No more newlines; the rest of the text is the last line
+        if (pos < len && i === 2) {
+          // Only accept if we're on the third field and there is content
+          fields.push(text.substring(pos));
+          pos = len;
+        }
+        // In any other case, the entry is incomplete – stop.
+        break;
+      }
+      fields.push(text.substring(pos, nextNl));
+      // Skip the newline; if it's \r\n we might need to strip \r, but for now assume \n
+      pos = nextNl + 1;
+    }
 
-    // --- Read 3rd line: entries[i + 2] ---
-    nextNl = text.indexOf('\n', pos);
-    if (nextNl === -1) break;
-    const arg3 = parseInt(text.substring(pos, nextNl), 10); // Explicitly specify radix 10 for parseInt to avoid type inference issues
-    pos = nextNl + 1;
-
-    // --- Construct obj and push ---
-    history.push(new meowHistoryEntry(arg1, arg2, arg3));
+    if (fields.length === 3) {
+      const arg3 = parseInt(fields[2], 10);
+      // Optional: validate arg3 is a finite number if needed
+      history.push(new meowHistoryEntry(fields[0], fields[1], arg3));
+    } else {
+      // Incomplete last entry – break out of the main loop
+      break;
+    }
   }
 
   meow(`Fetched history chunk at [${chunkPath}] (${Date.now() - startTime} ms)`, 'helpers][loadChunkFromDisk', meowLevel.INFO);

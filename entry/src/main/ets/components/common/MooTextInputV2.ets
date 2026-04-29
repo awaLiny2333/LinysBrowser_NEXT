@@ -7,6 +7,8 @@ struct MooTextInputV2 {
   @Param @Once placeholder: string | undefined = undefined;
   @Param icon: Resource | undefined = undefined;
   @Param text: string = '';
+  @Param myId: string | undefined = undefined;
+
   // Events
   @Event onChange: (c: string) => void;
   @Event onSubmit: () => void;
@@ -20,6 +22,7 @@ struct MooTextInputV2 {
           .padding({ left: standardSpacing * 0.5 });
       }
       TextInput({ text: this.text as string, placeholder: this.placeholder })
+        .id(this.myId)
         .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
         .height(MeowTitleBarHeight)
         .fontColor(getColor(meowThemeColorType.FONT))
@@ -34,7 +37,8 @@ struct MooTextInputV2 {
         .onSubmit(() => {
           this.onSubmit();
         });
-    }.height(MeowTitleBarHeight);
+    }
+    .height(MeowTitleBarHeight);
   }
 }
 

@@ -41,12 +41,16 @@
       "value": "Refresh  󰃈"
     },
     {
-      "name": "General_loading",
+      "name": "General_wait",
       "value": "Wait...  󰃯"
     },
     {
       "name": "General_select",
       "value": "Select  󰂺"
+    },
+    {
+      "name": "General_selectall",
+      "value": "Select All  󰅂"
     },
     {
       "name": "General_unselect",
@@ -679,6 +683,10 @@
     {
       "name": "Buttons_notice",
       "value": "You should keep at least one Settings 󰀠 button on any of the slots!"
+    },
+    {
+      "name": "History",
+      "value": "History"
     },
     {
       "name": "Permission_reason_DETECT_GESTURES",

@@ -57,6 +57,9 @@ struct MeowButton {
       case meowButtons.DARK:
         requestDialog(this.myDialog, openDialogRequestType.DARK);
         break;
+      case meowButtons.HISTORY:
+        requestDialog(this.myDialog, openDialogRequestType.HISTORY);
+        break;
       default:
         break;
     }

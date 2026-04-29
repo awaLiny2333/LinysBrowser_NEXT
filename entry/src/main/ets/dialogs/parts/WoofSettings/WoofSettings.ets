@@ -44,7 +44,7 @@ struct WoofSettings {
           SettingsAppearance({ myDialog: this.myDialog, myUi: this.myUi });
         };
         FlowItem() {
-          SettingsHistory();
+          SettingsHistory({ myDialog: this.myDialog });
         };
         FlowItem() {
           SettingsStorage();

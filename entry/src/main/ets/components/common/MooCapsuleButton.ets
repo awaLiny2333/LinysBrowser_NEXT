@@ -67,3 +67,5 @@ struct MooCapsuleButton {
 }
 
 export { MooCapsuleButton };
+
+export const defaultMooCapsuleButtonHeight = 40;

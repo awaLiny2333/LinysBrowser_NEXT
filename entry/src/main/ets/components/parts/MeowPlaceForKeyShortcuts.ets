@@ -3,9 +3,12 @@ import { AppStorageV2 } from '@kit.ArkUI';
 import { meow, meowLevel } from '../../catstypicalframework/utils/catsLogger';
 import { meowUiGoBackSource, meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
 import { searchBarId } from './Homepage/MeowSearchBar';
+import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
+import { requestDialog } from '../../hosts/system/dialogs/scripts/dialog';
 
 @ComponentV2
 struct MeowPlaceForKeyShortcuts {
+  @Param @Require myDialog: meowDialogManager;
   @Param @Require myUi: meowUiStatuses;
   @Local myKey: meowKeyboardMan = AppStorageV2.connect(meowKeyboardMan)!;
 
@@ -49,6 +52,7 @@ struct MeowPlaceForKeyShortcuts {
         meow(`Fullscreen!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
       });
       Blank().keyboardShortcut(this.myKey.history.value, this.myKey.history.keys, () => {
+        requestDialog(this.myDialog, openDialogRequestType.HISTORY);
         meow(`History!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
       });
       Blank().keyboardShortcut(this.myKey.refresh.value, this.myKey.refresh.keys, () => {

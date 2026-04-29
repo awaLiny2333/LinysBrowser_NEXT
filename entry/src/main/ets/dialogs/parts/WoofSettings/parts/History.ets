@@ -7,9 +7,12 @@ import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton
 import { MooSwitch } from '../../../../components/common/MooSwitch';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
+import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
+import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
 
 @ComponentV2
 struct SettingsHistory {
+  @Param @Require myDialog: meowDialogManager;
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
   @Local myMeowHistorian: meowHistorian = AppStorageV2.connect(meowHistorian)!;
 
@@ -35,7 +38,7 @@ struct SettingsHistory {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_history_view'),
           clickAction: () => {
-            // TODO: view history entrance
+            requestDialog(this.myDialog, openDialogRequestType.HISTORY, undefined, true);
           }
         });
         MooCapsuleButton({

@@ -115,6 +115,10 @@ export class meowHistoryChunk {
       meow(`this.getEntries() failed to do its mission! Query of key ${query} @ ${this.indexPath}`, 'meowHistoryChunk][lookUpHistoryEntries', meowLevel.ERROR);
       return [];
     }
+    
+    if (query === '') {
+      return Array.from(this.entries);
+    }
 
     // Tokenize query
     const queryTokens = tokenize(query);
@@ -175,6 +179,7 @@ export class meowHistoryChunk {
    */
   async deleteHistory(timestampsToDelete: Set<string>) {
     const startTime = Date.now();
+    meow(`Starts now: chunk ${this.chunkPath} (${Date.now() - startTime} ms))`, 'meowHistoryChunk][deleteHistory', meowLevel.INFO);
 
     // Read full text.
     let text = '';
@@ -185,22 +190,36 @@ export class meowHistoryChunk {
       return false;
     }
 
-    // FILTER
+    meow(`About to filter chunk ${this.chunkPath} (${Date.now() - startTime} ms))`, 'meowHistoryChunk][deleteHistory', meowLevel.INFO);
+
+    // FILTER, fixed by DeepSeek @ Apr 28 2026
     const lines = text.split('\n');
     const kept: string[] = [];
-    // this.entries = new collections.Array<meowHistoryEntry>();
+    const indicesToDelete: number[] = []; // Collect indices to be deleted
+
     for (let i = 0; i + 2 < lines.length; i += 3) {
       const tsLine = lines[i + 2];
       if (timestampsToDelete.has(tsLine)) {
-        // Delete
-        try {
-          this.entries?.splice(i / 3, 1); // If this chunk has entries loaded, then use it. If not, nevermind as buildIndexToDisk would guarantee.
-        } catch (e) {
-          meow(`Failed to parse history entry for timestamp ${tsLine} in chunk ${this.chunkPath}: ${e}`, 'meowHistoryChunk][deleteHistory', meowLevel.ERROR);
-        }
+        // Record the original index (i/3) for later unified deletion.
+        indicesToDelete.push(i / 3);
+        // meow(`Deleted entry for timestamp ${tsLine} in chunk ${this.chunkPath}`, 'meowHistoryChunk][deleteHistory', meowLevel.WARN);
       } else {
         // Keep
         kept.push(lines[i], lines[i + 1], lines[i + 2]);
+      }
+    }
+
+    meow(`Filter OK in chunk ${this.chunkPath} (${Date.now() - startTime} ms))`, 'meowHistoryChunk][deleteHistory', meowLevel.INFO);
+
+    // Sort from largest to smallest and delete to avoid index offset.
+    if (this.entries && indicesToDelete.length > 0) {
+      indicesToDelete.sort((a, b) => b - a);
+      for (const idx of indicesToDelete) {
+        try {
+          this.entries.splice(idx, 1);
+        } catch (e) {
+          meow(`Failed to delete history entry at index ${idx} in chunk ${this.chunkPath}: ${e}`, 'meowHistoryChunk][deleteHistory', meowLevel.ERROR);
+        }
       }
     }
 

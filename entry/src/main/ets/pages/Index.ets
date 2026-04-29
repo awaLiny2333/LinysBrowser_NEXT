@@ -63,7 +63,8 @@ struct Index {
 
         // Shortcuts handler
         MeowPlaceForKeyShortcuts({
-          myUi: this.myUi
+          myUi: this.myUi,
+          myDialog: this.myDialog
         });
 
         // Main

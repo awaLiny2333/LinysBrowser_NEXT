@@ -147,16 +147,18 @@ export class meowHistorian {
 
   /**
    * Delete all entries with matching timestamps from the corresponding chunk file, then save the file. Orders doesn't matter.
-   * @param timestamps List of timestamps of historical records to be deleted.
+   * @param timestamps Set of timestamps of historical records to be deleted.
    * @author ChatGLM @ 2026 Mar 31
    */
-  async deleteHistory(timestamps: number[]): Promise<boolean> {
+  async deleteHistory(timestamps: Set<number>): Promise<boolean> {
     if (this.busy) {
-      meow(`Busy. Rejected history: ["${timestamps.join(', ')}"]`, 'meowHistorian][deleteHistory', meowLevel.WARN);
+      meow(`Busy. Rejected.`, 'meowHistorian][deleteHistory', meowLevel.WARN);
+      // meow(`Busy. Rejected history: ["${timestamps.join(', ')}"]`, 'meowHistorian][deleteHistory', meowLevel.WARN);
       return false;
     }
-    if (timestamps.length === 0) {
-      meow(`Empty. Rejected history: ["${timestamps.join(', ')}"]`, 'meowHistorian][deleteHistory', meowLevel.WARN);
+    if (timestamps.size === 0) {
+      meow(`Empty. Rejected.`, 'meowHistorian][deleteHistory', meowLevel.WARN);
+      // meow(`Empty. Rejected history: ["${timestamps.join(', ')}"]`, 'meowHistorian][deleteHistory', meowLevel.WARN);
       return false;
     }
 
@@ -185,7 +187,8 @@ export class meowHistorian {
     await Promise.all(tasks);
 
     // 3. Fin.
-    meow(`Deleted history: ["${timestamps.join(', ')}"] (${Date.now() - startTime} ms)`, 'meowHistorian][deleteHistory', meowLevel.INFO);
+    meow(`Deleted history. (${Date.now() - startTime} ms)`, 'meowHistorian][deleteHistory', meowLevel.INFO);
+    // meow(`Deleted history: ["${timestamps.join(', ')}"] (${Date.now() - startTime} ms)`, 'meowHistorian][deleteHistory', meowLevel.INFO);
     this.busy = false;
     return true;
   }

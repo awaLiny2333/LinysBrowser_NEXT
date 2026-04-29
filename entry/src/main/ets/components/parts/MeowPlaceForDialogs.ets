@@ -4,7 +4,7 @@ import { meowMisc } from '../../catstypicalframework/hosts/meowMisc';
 import { defaultRoundedRadius } from '../../catstypicalframework/utils/ui';
 import { WoofBookmarksDialog } from '../../dialogs/parts/WoofBookmarks/WoofBookmarks';
 import { WoofCatsDevDialog } from '../../dialogs/parts/WoofCatsDev/WoofCatsDevCards';
-import { WoofHomepageDialog } from '../../dialogs/parts/WoofHomepage/WoofHomepage';
+import { WoofHomepageDialog } from '../../dialogs/settings/WoofHomepage/WoofHomepage';
 import { WoofSettingsDialog } from '../../dialogs/parts/WoofSettings/WoofSettings';
 import { WoofColorPickerDialog } from '../../dialogs/public/WoofColorPicker/WoofColorPicker';
 import { WoofKeyShortcutPickerDialog } from '../../dialogs/public/WoofKeyShortcutPicker/WoofKeyShortcutPicker';
@@ -18,6 +18,7 @@ import { WoofWebImagesDialog } from '../../dialogs/settings/WoofWebImages/WoofWe
 import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
 import lazy { localMessage, meowAppMessageType } from '../../hosts/system/windows/scripts/messaging';
+import { WoofHistoryDialog } from '../../dialogs/parts/WoofHistory/WoofHistory';
 
 /**
  * A place for dialogs.
@@ -156,6 +157,13 @@ struct MeowPlaceForDialogs {
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
+  woofHistoryDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofHistoryDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    alignment: DialogAlignment.Center,
+    width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
 
   build() {
     // Nothing
@@ -209,6 +217,9 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.BUTTONS:
         this.woofButtonsDialogController.open();
+        break;
+      case openDialogRequestType.HISTORY:
+        this.woofHistoryDialogController.open();
         break;
       default:
         break;
