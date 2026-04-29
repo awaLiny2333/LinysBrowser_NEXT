@@ -1,29 +1,50 @@
 import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
-import lazy { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
+import { resource2String } from '../../../catstypicalframework/utils/resource';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
-import lazy { meowBookmarkItem } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkItem';
 import { WoofUniFrame } from '../../WoofUniFrame';
 import { WoofHistoryPanel } from './parts/Panel';
+
+/**
+ * We have to wrap another @ComponentV2 component in order to refresh the title... :P
+ * Theoratically this brings almost no performance loss!
+ */
+@ComponentV2
+struct WoofHistoryPanelWrapped {
+  @Param @Require controller: CustomDialogController;
+  @Param @Require myDialog: meowDialogManager;
+  @Param @Require myLayout: meowLayout;
+  // Local
+  @Local info: string = 'meow';
+
+  build() {
+    WoofUniFrame({
+      controller: this.controller,
+      shiftBackgroundColor: true,
+      title: `${resource2String($r('app.string.History'), this.getUIContext().getHostContext()!)} ${this.info}`,
+      myDialog: this.myDialog, myLayout: this.myLayout,
+    }) {
+      WoofHistoryPanel({
+        myLayout: this.myLayout,
+        requestRefreshTitle: (info: string) => {
+          this.info = info;
+        }
+      });
+    };
+  }
+}
 
 @CustomDialog
 struct WoofHistoryDialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
   @Require myLayout: meowLayout;
-  onSelect: (folder: meowBookmarkItem, path: string) => void = (folder, path) => {
-    // Do nothing by default.
-    meow(`Selected ${folder.name} at ${path}`, 'WoofHistoryDialog][onSelect', meowLevel.INFO);
-  };
 
   build() {
-    WoofUniFrame({
+    WoofHistoryPanelWrapped({
       controller: this.controller,
-      shiftBackgroundColor: true,
-      title: $r('app.string.History'),
-      myDialog: this.myDialog, myLayout: this.myLayout,
-    }) {
-      WoofHistoryPanel({ myLayout: this.myLayout });
-    };
+      myDialog: this.myDialog,
+      myLayout: this.myLayout,
+    });
   }
 }
 

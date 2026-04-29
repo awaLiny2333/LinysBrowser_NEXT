@@ -1,8 +1,8 @@
 import { LengthMetrics } from '@kit.ArkUI';
-import { defaultInnerRadius, defaultItemRadius } from '../../catstypicalframework/utils/ui';
-import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, isPreferRightHand, useEffects } from '../settings';
+import { defaultInnerRadius } from '../../catstypicalframework/utils/ui';
+import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from '../settings';
 import { MooStringItem } from './MooStringItem';
-import { MooTextModifier } from './MooTextModifier';
+import { MooTextButton } from './MooTextButton';
 
 @ComponentV2
 struct MooStringPairArrayList {
@@ -66,15 +66,14 @@ struct MooStringPairArrayList {
 
         // New item button
         Row() {
-          Text($r('app.string.General_new')).attributeModifier(new MooTextModifier())
-            .padding(standardSpacing * 0.75)
-            .borderRadius(defaultItemRadius)
-            .hoverEffect(HoverEffect.Highlight)
-            .onClick(() => {
+          MooTextButton({
+            text: $r('app.string.General_new'),
+            clickAction: () => {
               animateToImmediately(defaultAnimation(), () => {
                 this.onNew();
               });
-            });
+            }
+          })
         }.justifyContent(FlexAlign.End).width('100%');
       };
     }

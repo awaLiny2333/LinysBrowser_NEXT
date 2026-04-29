@@ -69,6 +69,14 @@
       "value": "Block listed  󰖿"
     },
     {
+      "name": "General_expand",
+      "value": "Expand  󰃛"
+    },
+    {
+      "name": "General_collapse",
+      "value": "Collapse  󰃘"
+    },
+    {
       "name": "Settings",
       "value": "Settings"
     },
@@ -686,7 +694,15 @@
     },
     {
       "name": "History",
-      "value": "History"
+      "value": "󰏕"
+    },
+    {
+      "name": "History_search_fast",
+      "value": "Quick  󰇝"
+    },
+    {
+      "name": "History_search_full",
+      "value": "Full  󰊮"
     },
     {
       "name": "Permission_reason_DETECT_GESTURES",

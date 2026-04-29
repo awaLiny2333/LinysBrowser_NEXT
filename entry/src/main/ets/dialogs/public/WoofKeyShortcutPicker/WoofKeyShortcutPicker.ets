@@ -14,12 +14,9 @@ struct WoofKeyShortcutPickerDialog {
   @Require myDialog: meowDialogManager;
   @Require myLayout: meowLayout;
   selected: string[] = [];
-
   onConfirm: (bind: string[]) => void = () => {
     // Do nothing by default;
   };
-  // Local
-  context: Context = this.getUIContext().getHostContext()!;
 
   build() {
     WoofUniFrame({ controller: this.controller, title: this.getTitle(), myLayout: this.myLayout, myDialog: this.myDialog, shiftBackgroundColor: true }) {
@@ -60,8 +57,9 @@ struct WoofKeyShortcutPickerDialog {
   }
 
   getTitle() {
+    const context: Context = this.getUIContext().getHostContext()!;
     // const dialogTitle = resource2String($r('app.string.KeyShortcuts_picker'), this.context);
-    const shortcutName = resource2String((this.myDialog.lastRequest!.param as object[])[0] as ResourceStr as Resource, this.context);
+    const shortcutName = resource2String((this.myDialog.lastRequest!.param as object[])[0] as ResourceStr as Resource, context);
     return `${shortcutName}`;
   }
 }

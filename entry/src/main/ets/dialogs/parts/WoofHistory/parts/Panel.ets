@@ -10,7 +10,8 @@ import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, stan
 import { meowHistorian } from "../../../../hosts/userdata/history/classes/meowHistorian";
 import { meowHistoryChunk } from "../../../../hosts/userdata/history/classes/meowHistoryChunk";
 import { meowHistoryEntry } from "../../../../hosts/userdata/history/classes/meowHistoryEntry";
-import { EntryButton } from "./EntryButton";
+import { groupByDates } from "../../../../hosts/userdata/history/scripts/helpers";
+import { DayCard } from "./DayCard";
 import { defaultMonthButtonHeight, MonthButton } from "./MonthButton";
 
 @ComponentV2
@@ -25,55 +26,49 @@ struct WoofHistoryPanel {
   // Search
   @Local searchKey: string = ''; // The key to search in current month's index.
   @Local isSearching: boolean = false;
+  @Local useFastSearch: boolean = true;
   searchInputId: string = `WoofHistory_search_${Date.now().toString(16)}`;
   // Select
   @Local selectedTimeStamps: Set<number> = new Set();
   // Events
   @Event requestVisit: (url: string) => void;
+  @Event requestRefreshTitle: (text: string) => void;
   // Obj
   scroller: Scroller = new Scroller();
 
   aboutToAppear(): void {
     // Load latest month
+    const startTime = Date.now();
     this.myHistoryChunk = this.myMeowHistorian.getChunk(0);
     this.myMeowHistorian.getHistoryEntries(0).then((result) => {
       this.myEntries = result;
       setTimeout(() => {
         this.scroller.scrollEdge(Edge.Bottom); // Scroll to latest
+        const duration = Date.now() - startTime;
+        this.refreshInfo(duration);
       }, 1);
     });
   }
 
   build() {
+    // Entries
     Column({ space: defaultInnerRadius }) {
-      // Status
-      Text(`${this.myHistoryChunk?.year}-${this.myHistoryChunk?.month} (${this.myEntries.length}/${this.myHistoryChunk?.getSize()})`).attributeModifier(new MooTextModifier());
-
-      // Entries
-      List({ scroller: this.scroller }) {
-        Repeat(this.myEntries)
-          .each((obj: RepeatItem<meowHistoryEntry>) => {
-            EntryButton({
-              item: obj.item,
+      List({ scroller: this.scroller, space: standardSpacing * 0.5 }) {
+        Repeat(groupByDates(this.myEntries))
+          .each((obj: RepeatItem<meowHistoryEntry[]>) => {
+            DayCard({
+              myLayout: this.myLayout,
+              obj: obj.item,
+              selectedTimeStamps: this.selectedTimeStamps,
               isSelecting: this.isSelecting,
-              isSelected: this.selectedTimeStamps.has(obj.item.time),
-              clickAction: () => {
-                if (!this.isSelecting) {
-                  // Request visit
-                  this.requestVisit(obj.item.url);
-                  return;
-                }
-
-                // Select / Deselect
-                if (this.selectedTimeStamps.has(obj.item.time)) {
-                  this.selectedTimeStamps.delete(obj.item.time);
-                } else {
-                  this.selectedTimeStamps.add(obj.item.time);
-                }
-              }
+              requestVisit: (url) => {
+                this.requestVisit(url);
+              },
             });
           })
           .virtualScroll();
+
+        // Placeholder for empty result
         if (this.myEntries.length == 0) {
           ListItem() {
             Text(this.isSearching ? $r('app.string.General_wait') : 'No history found. ヽ（´ー｀）┌')
@@ -85,9 +80,8 @@ struct WoofHistoryPanel {
           };
         }
       }
-      .backgroundColor(useEffects() ? getColor(meowThemeColorType.PRIMARY) : getColor(meowThemeColorType.SECONDARY))
-      .border({ radius: defaultInnerRadius, width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth') })
-      .padding(standardSpacing * 0.75)
+      // .cachedCount(1)
+      .borderRadius(defaultInnerRadius)
       .height('auto')
       .layoutWeight(1)
       .width('100%');
@@ -143,7 +137,13 @@ struct WoofHistoryPanel {
             }
           })
           .layoutWeight(1);
-        // Text(`[Result] of ${this.searchKey} (${this.searchResult.length}) (${this.searchTime} ms):${'\n\n'}${this.searchResult.join(',\n\n')}`);
+
+        MooCapsuleButton({
+          text: this.useFastSearch ? $r('app.string.History_search_fast') : $r('app.string.History_search_full'),
+          clickAction: () => {
+            this.useFastSearch = !this.useFastSearch;
+          }
+        });
 
         // Edit
         MooSymbolButton({
@@ -175,12 +175,15 @@ struct WoofHistoryPanel {
             isEnabled: this.selectedTimeStamps.size > 0,
             needDoubleConfirm: true,
             clickAction: () => {
+              const startTime = Date.now();
               animateToImmediately(defaultAnimation(), () => {
                 this.myEntries = this.myEntries.filter((entry) => !this.selectedTimeStamps.has(entry.time));
               });
               this.myMeowHistorian.deleteHistory(this.selectedTimeStamps);
               // Splice all delete targets from myHistoryChunkEntries
               this.selectedTimeStamps = new Set();
+              const duration = Date.now() - startTime;
+              this.refreshInfo(duration);
             }
           });
         }
@@ -195,19 +198,26 @@ struct WoofHistoryPanel {
    * Submit search search.
    */
   async search() {
+    const startTime = Date.now();
     if (this.myHistoryChunk == undefined) {
       return;
     }
     animateToImmediately(defaultAnimation(), () => {
       this.isSearching = true;
     });
-    this.myEntries = [];
-    const res = await this.myHistoryChunk.lookUpHistoryEntries(this.searchKey, Number.MAX_VALUE);
+    let res: meowHistoryEntry[];
+    if (this.useFastSearch) {
+      res = await this.myHistoryChunk.lookUpHistoryEntries(this.searchKey, Number.MAX_VALUE) ?? [];
+    } else {
+      res = await this.myHistoryChunk.lookUpHistoryEntriesBruteForce(this.searchKey, 0.8, Number.MAX_VALUE) ?? [];
+    }
     // this.myEntries = await this.myMeowHistorian.lookUpHistoryEntries(this.searchKey, Number.MAX_VALUE) ?? [];
     animateToImmediately(defaultAnimation(), () => {
       this.myEntries = res;
       this.isSearching = false;
     });
+    const duration = Date.now() - startTime;
+    this.refreshInfo(duration);
   }
 
   deselectAll() {
@@ -216,6 +226,17 @@ struct WoofHistoryPanel {
 
   selectAll() {
     this.selectedTimeStamps = new Set(this.myEntries.map((entry) => entry.time));
+  }
+
+  /**
+   * Refresh info of this month / current display information.
+   * @param duration The duration of the last search process.
+   * @returns A string.
+   */
+  refreshInfo(duration: number) {
+    const info = `${this.myHistoryChunk?.year}-${this.myHistoryChunk?.month} (${this.myEntries.length}/${this.myHistoryChunk?.getSize()}) (${duration} ms)`;
+    this.requestRefreshTitle(info);
+    return info;
   }
 }
 

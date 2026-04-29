@@ -24,7 +24,7 @@ import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/cat
 import lazy { readArrayBufferConcurrent, saveHybrid } from "../../../../catstypicalframework/utils/storage";
 import { collections, fastbuffer } from "@kit.ArkTS";
 import lazy { buildIndexToDisk, loadIndexFromDisk } from "../scripts/indexing";
-import lazy { binarySearch, loadChunkFromDisk, tokenize } from "../scripts/helpers";
+import lazy { binarySearch, isMatchFast, loadChunkFromDisk, tokenize } from "../scripts/helpers";
 import { meowHistoryEntry } from "./meowHistoryEntry";
 import { meowHistoryIndexFileBundle } from "./meowHistoryIndexFileBundle";
 
@@ -97,7 +97,7 @@ export class meowHistoryChunk {
    * Looks up history entries for a given query. Would load index and entries from disk.
    * @param query Any query word(s) / string.
    * @param maxResults The maximum number of results to return.
-   * @returns A promise that resolves to an array of meowHistory objects.
+   * @returns A promise that resolves to an array of meowHistory objects, in ascending order.
    */
   async lookUpHistoryEntries(query: string, maxResults: number = 20): Promise<meowHistoryEntry[]> {
     // const startTime = Date.now();
@@ -115,7 +115,7 @@ export class meowHistoryChunk {
       meow(`this.getEntries() failed to do its mission! Query of key ${query} @ ${this.indexPath}`, 'meowHistoryChunk][lookUpHistoryEntries', meowLevel.ERROR);
       return [];
     }
-    
+
     if (query === '') {
       return Array.from(this.entries);
     }
@@ -169,6 +169,42 @@ export class meowHistoryChunk {
 
     // meow(`Looked up history entries for query "${query}" in chunk ${this.indexPath} (${Date.now() - startTime} ms)`, 'meowHistoryChunk][lookUpHistoryEntries', meowLevel.INFO);
     return fetchedHistories;
+  }
+
+  /**
+   * Looks up history entries for a given query using BRUTE FORCE. Would load index and entries from disk.
+   * @param query Any query word(s) / string.
+   * @param minHitRate The minimum hit rate (a number between 0 and 1).
+   * @param maxResults The maximum number of results to return.
+   * @returns A promise that resolves to an array of meowHistory objects, in ascending order.
+   */
+  async lookUpHistoryEntriesBruteForce(query: string, minHitRate: number = 0.8, maxResults: number = 20) {
+    // Get history entries.
+    await this.loadEntriesFromDisk();
+    if (!this.entries) {
+      meow(`this.getEntries() failed to do its mission! Query of key ${query} @ ${this.indexPath}`, 'meowHistoryChunk][lookUpHistoryEntries', meowLevel.ERROR);
+      return [];
+    }
+    
+    // Early break
+    if (query === '') {
+      return Array.from(this.entries);
+    }
+
+    // Search
+    const results: meowHistoryEntry[] = [];
+    for (const entry of this.entries) {
+      const url = entry.url.toLowerCase();
+      const title = entry.title.toLowerCase();
+      if (isMatchFast(url + title, tokenize(query), minHitRate)) {
+        results.push(entry);
+      }
+      if (results.length >= maxResults) {
+        break;
+      }
+    }
+
+    return results;
   }
 
   /**

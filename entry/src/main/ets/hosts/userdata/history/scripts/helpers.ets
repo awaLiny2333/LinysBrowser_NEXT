@@ -1,8 +1,8 @@
-import lazy { readArrayBufferConcurrent } from "../../../../catstypicalframework/utils/storage";
+import lazy collections from "@arkts.collections";
 import lazy { fastbuffer } from "@kit.ArkTS";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import lazy { readArrayBufferConcurrent } from "../../../../catstypicalframework/utils/storage";
 import lazy { meowHistoryEntry } from "../classes/meowHistoryEntry";
-import lazy collections from "@arkts.collections";
 
 /**
  * Fetches the history entries from one chunk file on the disk.
@@ -76,7 +76,7 @@ const LETTER_RANGE = `${LATIN_RANGE}${GREEK_RANGE}${CYRILLIC_RANGE}${ARABIC_RANG
 const TOKEN_REGEX = new RegExp(`[${CJK_RANGE}]|[${LETTER_RANGE}]+|\\d+`, "gu");
 
 /**
- * Divides a segment of multi-language text into a collections.Set of tokens.
+ * Divides a segment of multi-language text into a collections.Set of tokens in lower case.
  * Compatible with environments that do not support escape (e.g., some ArkTS engines)
  * @param text The text to be tokenized.
  * @returns A collections.Set containing all the tokenized lowercase words.
@@ -118,3 +118,86 @@ export function binarySearch<T, K>(
   return -1;
 }
 
+/**
+ * Ultra-fast single-pass match for lowercase, regex-safe keys.
+ * Assumes both text and all keys are already lowercased and contain
+ * no special regex characters (only letters, digits, spaces, etc.).
+ *
+ * @param text   Lowercased text to search.
+ * @param keys   Set of lowercased, regex-safe keys.
+ * @param minHitRate Minimum hit rate (0–1).
+ * @returns True if enough distinct keys were found.
+ * @author DeepSeek @ Apr 29 2026.
+ */
+export function isMatchFast(text: string, keys: collections.Set<string>, minHitRate: number): boolean {
+  // If the set is empty, consider it a match by default
+  if (keys.size === 0) return true;
+
+  // Pre-compute the required number of hits and the maximum allowed misses.
+  // Note: we use keys.size instead of keys.length.
+  const needHits = Math.ceil(minHitRate * keys.size);
+  let maxMiss = keys.size - needHits;
+
+  let hits = 0;
+  let miss = 0;
+
+  // Iterate over the Set using for...of
+  for (const key of keys) {
+    // Skip empty strings if any were added; adjust maxMiss to keep the math correct.
+    if (!key) {
+      maxMiss--;
+      continue;
+    }
+
+    if (text.includes(key)) {
+      hits++;
+      // Early exit: we already have enough hits
+      if (hits >= needHits) return true;
+    } else {
+      miss++;
+      // Early exit: missed too many keys, impossible to reach the required hit rate
+      if (miss > maxMiss) return false;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Group entries by their full UTC date (year, month, day).
+ * @param entries - Array of history entries sorted in ascending order by time.
+ * @returns An array of groups, each group containing entries with the same UTC date.
+ * @author DeepSeek @ Apr 29 2026.
+ */
+export function groupByDates(entries: meowHistoryEntry[]): meowHistoryEntry[][] {
+  const startTime = Date.now();
+  
+  if (!entries || entries.length === 0) return [];
+
+  // Calculate a simple UTC day key directly from the timestamp to avoid Date objects.
+  // This uses the fact that timestamps are in milliseconds.
+  const DAY_MS = 86_400_000; // 24 * 60 * 60 * 1000
+  const getDateKey = (entry: meowHistoryEntry): number => Math.floor(entry.time / DAY_MS);
+
+  const groups: meowHistoryEntry[][] = [];
+  let currentGroup: meowHistoryEntry[] = [entries[0]];
+  let lastKey = getDateKey(entries[0]);
+
+  for (let i = 1; i < entries.length; i++) {
+    const entry = entries[i];
+    const key = getDateKey(entry);
+
+    if (key === lastKey) {
+      currentGroup.push(entry);
+    } else {
+      groups.push(currentGroup);
+      currentGroup = [entry];
+      lastKey = key;
+    }
+  }
+
+  groups.push(currentGroup);
+  
+  meow(`Grouped ${entries.length} entries into ${groups.length} groups (${Date.now() - startTime} ms)`, 'helpers][groupByDates', meowLevel.INFO);
+  return groups;
+}

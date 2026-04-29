@@ -1,6 +1,7 @@
 import { defaultInnerRadius, defaultItemRadius } from "../../catstypicalframework/utils/ui";
 import { meowThemeColorType, getColor, standardSpacing, useEffects, defaultAnimation, isPreferRightHand } from "../settings";
 import { MooStringItem } from "./MooStringItem";
+import { MooTextButton } from "./MooTextButton";
 import { MooTextModifier } from "./MooTextModifier";
 
 @ComponentV2
@@ -50,15 +51,14 @@ struct MooStringArrayList {
 
       // New item button
       ListItem() {
-        Text($r('app.string.General_new')).attributeModifier(new MooTextModifier())
-          .padding(standardSpacing * 0.75)
-          .borderRadius(defaultItemRadius)
-          .hoverEffect(HoverEffect.Highlight)
-          .onClick(() => {
+        MooTextButton({
+          text: $r('app.string.General_new'),
+          clickAction: () => {
             animateToImmediately(defaultAnimation(), () => {
               this.onNew();
             });
-          });
+          }
+        })
       };
     }
     .alignListItem(isPreferRightHand() ? ListItemAlign.End : ListItemAlign.Start)

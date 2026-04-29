@@ -69,6 +69,14 @@
       "value": "屏蔽上表  󰖿"
     },
     {
+      "name": "General_expand",
+      "value": "展开  󰃛"
+    },
+    {
+      "name": "General_collapse",
+      "value": "收起  󰃘"
+    },
+    {
       "name": "Settings",
       "value": "设置"
     },
@@ -678,7 +686,15 @@
     },
     {
       "name": "History",
-      "value": "历史"
+      "value": "󰏕"
+    },
+    {
+      "name": "History_search_fast",
+      "value": "快搜  󰇝"
+    },
+    {
+      "name": "History_search_full",
+      "value": "细搜  󰊮"
     },
     {
       "name": "Permission_reason_DETECT_GESTURES",

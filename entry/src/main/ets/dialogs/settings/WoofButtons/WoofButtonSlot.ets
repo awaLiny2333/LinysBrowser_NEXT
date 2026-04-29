@@ -1,10 +1,10 @@
-import { defaultInnerRadius, defaultItemRadius } from "../../../catstypicalframework/utils/ui";
-import { buttonIconArray, generalButtonHeight, getButtonIcon, meowButtons } from "../../../components/parts/Buttons/constants";
+import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import mooMenuButton from "../../../components/common/MooMenuButton";
 import { MooSymbolButton } from "../../../components/common/MooSymbolButton";
+import { MooTextButton } from "../../../components/common/MooTextButton";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
-import { MeowTitleBarHeight } from "../../../components/parts/Homepage/MeowTitleBar";
-import { useEffects, getColor, meowThemeColorType, standardSpacing, defaultAnimation, isPreferRightHand } from "../../../components/settings";
+import { buttonIconArray, generalButtonHeight, getButtonIcon, meowButtons } from "../../../components/parts/Buttons/constants";
+import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from "../../../components/settings";
 
 @ComponentV2
 struct ButtonSlot {
@@ -45,15 +45,14 @@ struct ButtonSlot {
 
         ListItem() {
           // New item button
-          Text($r('app.string.General_new')).attributeModifier(new MooTextModifier())
-            .padding(standardSpacing * 0.75)
-            .borderRadius(defaultItemRadius)
-            .hoverEffect(HoverEffect.Highlight)
-            .onClick(() => {
+          MooTextButton({
+            text: $r('app.string.General_new'),
+            clickAction: () => {
               animateToImmediately(defaultAnimation(), () => {
                 this.showAdd = !this.showAdd;
               });
-            })
+            }
+          })
             .opacity(0.75)
             .bindContextMenu(this.showAdd, this.addMenuBuilder(), {
               aboutToDisappear: () => {
