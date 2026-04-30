@@ -185,24 +185,26 @@ export class meowHistoryChunk {
       meow(`this.getEntries() failed to do its mission! Query of key ${query} @ ${this.indexPath}`, 'meowHistoryChunk][lookUpHistoryEntries', meowLevel.ERROR);
       return [];
     }
-    
+
     // Early break
     if (query === '') {
       return Array.from(this.entries).reverse();
     }
 
-    // Search
+    // Search in reversed order
     const results: meowHistoryEntry[] = [];
-    for (const entry of this.entries) {
+    for (let i = this.entries.length - 1; i >= 0; i--) {
+      const entry = this.entries[i];
       const url = entry.url.toLowerCase();
       const title = entry.title.toLowerCase();
       if (isMatchFast(url + title, tokenize(query), minHitRate)) {
         results.push(entry);
-      }
-      if (results.length >= maxResults) {
-        break;
+        if (results.length >= maxResults) {
+          break;
+        }
       }
     }
+    // No need results.reverse()
 
     return results;
   }

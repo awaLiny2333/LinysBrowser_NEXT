@@ -7,6 +7,8 @@ import { MooSymbolButton } from "../../../../components/common/MooSymbolButton";
 import { MooTextInputV2 } from "../../../../components/common/MooTextInputV2";
 import { MooTextModifier } from "../../../../components/common/MooTextModifier";
 import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from "../../../../components/settings";
+import { meowAppStatuses } from "../../../../hosts/system/windows/classes/meowAppStatuses";
+import { globalMessage, meowAppMessageType } from "../../../../hosts/system/windows/scripts/messaging";
 import { meowHistorian } from "../../../../hosts/userdata/history/classes/meowHistorian";
 import { meowHistoryChunk } from "../../../../hosts/userdata/history/classes/meowHistoryChunk";
 import { meowHistoryEntry } from "../../../../hosts/userdata/history/classes/meowHistoryEntry";
@@ -18,7 +20,8 @@ import { defaultMonthButtonHeight, MonthButton } from "./MonthButton";
 struct WoofHistoryPanel {
   // Host
   @Param @Require myLayout: meowLayout;
-  @Local myMeowHistorian: meowHistorian = AppStorageV2.connect<meowHistorian>(meowHistorian)!; // Should be initialized by flow.
+  @Local myMeowHistorian: meowHistorian = AppStorageV2.connect<meowHistorian>(meowHistorian)!;
+  @Local myApp: meowAppStatuses = AppStorageV2.connect<meowAppStatuses>(meowAppStatuses)!;
   // Display
   @Local myHistoryChunk: meowHistoryChunk | undefined;
   @Local myEntries: meowHistoryEntry[] = [];
@@ -188,13 +191,20 @@ struct WoofHistoryPanel {
             needDoubleConfirm: true,
             clickAction: () => {
               const startTime = Date.now();
+
+              // Optimistic update.
               animateToImmediately(defaultAnimation(), () => {
                 this.myEntries = this.myEntries.filter((entry) => !this.selectedTimeStamps.has(entry.time));
                 this.myEntriesGrouped = groupByDates(this.myEntries);
               });
+
+              globalMessage(meowAppMessageType.HISTORY_DELETED, this.selectedTimeStamps);
+
+              // Real job.
               this.myMeowHistorian.deleteHistory(this.selectedTimeStamps);
-              // Splice all delete targets from myHistoryChunkEntries
               this.selectedTimeStamps = new Set();
+
+              // Report
               const duration = Date.now() - startTime;
               this.refreshInfo(duration);
             }
@@ -205,6 +215,32 @@ struct WoofHistoryPanel {
     }
     .alignItems(isPreferRightHand() ? HorizontalAlign.End : HorizontalAlign.Start)
     .padding(standardSpacing);
+  }
+
+  @Monitor('myApp.crossAppMessageTunnel')
+  receiveMessage() {
+    const msg = this.myApp.crossAppMessageTunnel!;
+    if (msg.type == meowAppMessageType.HISTORY_DELETED) {
+      if (this.isSelecting) {
+        // Do nothing.
+        return;
+      }
+      
+      meow(`About to sync.`, 'Panel][WoofHistory', meowLevel.INFO);
+
+      // Sync.
+      const startTime = Date.now();
+
+      // Optimistic update.
+      animateToImmediately(defaultAnimation(), () => {
+        this.myEntries = this.myEntries.filter((entry) => !(msg.payload as Set<number>).has(entry.time));
+        this.myEntriesGrouped = groupByDates(this.myEntries);
+      });
+
+      // Report
+      const duration = Date.now() - startTime;
+      this.refreshInfo(duration);
+    }
   }
 
   /**

@@ -43,7 +43,7 @@ struct DayCard {
                 this.showFull = !this.showFull;
               });
             }
-          })
+          });
         }
       }.direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl);
 
@@ -51,6 +51,7 @@ struct DayCard {
         Repeat(this.obj)
           .each((obj: RepeatItem<meowHistoryEntry>) => {
             EntryButton({
+              myLayout: this.myLayout,
               item: obj.item,
               isSelecting: this.isSelecting,
               isSelected: this.selectedTimeStamps.has(obj.item.time),
@@ -79,7 +80,7 @@ struct DayCard {
       .padding(standardSpacing * 0.75)
       .nestedScroll({ scrollForward: NestedScrollMode.SELF_FIRST, scrollBackward: NestedScrollMode.SELF_FIRST })
       .height('auto')
-      .constraintSize(this.showFull ? { maxHeight: undefined } : { maxHeight: Math.max(this.myLayout.height * 0.125, 40) }) // Prevent lag. As if we don't limit the height, all items would be rendered at once as they are thought to be visible!
+      .constraintSize(this.showFull ? { maxHeight: undefined } : { maxHeight: Math.max(Math.min(this.myLayout.height * 0.125, 168), 40) }) // Prevent lag. As if we don't limit the height, all items would be rendered at once as they are thought to be visible!
       .width('100%');
     }
     .alignItems(HorizontalAlign.Start);

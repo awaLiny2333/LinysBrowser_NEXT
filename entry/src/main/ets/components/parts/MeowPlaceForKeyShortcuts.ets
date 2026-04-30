@@ -5,6 +5,8 @@ import { meowUiGoBackSource, meowUiStatuses } from '../../hosts/system/windows/c
 import { searchBarId } from './Homepage/MeowSearchBar';
 import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../hosts/system/dialogs/scripts/dialog';
+import { newWindow } from '../../hosts/system/windows/scripts/multiwindows';
+import { common } from '@kit.AbilityKit';
 
 @ComponentV2
 struct MeowPlaceForKeyShortcuts {
@@ -62,6 +64,7 @@ struct MeowPlaceForKeyShortcuts {
         meow(`Print Page!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
       });
       Blank().keyboardShortcut(this.myKey.newWindow.value, this.myKey.newWindow.keys, () => {
+        newWindow(this.getUIContext().getHostContext() as common.UIAbilityContext);
         meow(`New Window!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
       });
       Blank().keyboardShortcut(this.myKey.pin.value, this.myKey.pin.keys, () => {

@@ -31,7 +31,7 @@ struct WoofHistoryPanelWrapped {
         },
         requestVisit: (url: string) => {
           // Visit
-          meow(`Visit: ${url}`, 'WoofHistoryPanel', meowLevel.INFO);
+          meow(`Visit: [${url}]`, 'WoofHistoryPanel', meowLevel.INFO);
           this.controller.close();
         }
       });
