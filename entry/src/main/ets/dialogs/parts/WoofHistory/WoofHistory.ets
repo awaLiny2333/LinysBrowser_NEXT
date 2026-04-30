@@ -1,4 +1,5 @@
 import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
+import lazy { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
 import { resource2String } from '../../../catstypicalframework/utils/resource';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { WoofUniFrame } from '../../WoofUniFrame';
@@ -27,6 +28,11 @@ struct WoofHistoryPanelWrapped {
         myLayout: this.myLayout,
         requestRefreshTitle: (info: string) => {
           this.info = info;
+        },
+        requestVisit: (url: string) => {
+          // Visit
+          meow(`Visit: ${url}`, 'WoofHistoryPanel', meowLevel.INFO);
+          this.controller.close();
         }
       });
     };

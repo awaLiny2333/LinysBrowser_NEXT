@@ -119,9 +119,9 @@ export function binarySearch<T, K>(
 }
 
 /**
- * Ultra-fast single-pass match for lowercase, regex-safe keys.
- * Assumes both text and all keys are already lowercased and contain
- * no special regex characters (only letters, digits, spaces, etc.).
+ * Fast single-pass match for lowercase keys. 
+ * If the text contains minHitRate * 100% of the keys,
+ * then this is considered true for a match.
  *
  * @param text   Lowercased text to search.
  * @param keys   Set of lowercased, regex-safe keys.
