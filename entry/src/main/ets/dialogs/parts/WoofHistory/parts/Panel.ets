@@ -144,7 +144,9 @@ struct WoofHistoryPanel {
         })
           .onAppear(() => {
             try {
-              this.getUIContext().getFocusController().requestFocus(this.searchInputId);
+              if (this.myLayout.freeWindow) {
+                this.getUIContext().getFocusController().requestFocus(this.searchInputId);
+              }
             } catch (e) {
               meow(`this.getUIContext().getFocusController().requestFocus("${this.searchInputId}"); failed: ${e}`, 'WoofHistory][Panel', meowLevel.ERROR);
             }
@@ -225,7 +227,7 @@ struct WoofHistoryPanel {
         // Do nothing.
         return;
       }
-      
+
       meow(`About to sync.`, 'Panel][WoofHistory', meowLevel.INFO);
 
       // Sync.

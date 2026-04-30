@@ -32,6 +32,7 @@ struct EntryButton {
         // Title
         Text(`${this.item.title}`)
           .attributeModifier(new MooTextModifier())
+          .fontWeight(FontWeight.Medium)
           .wordBreak(WordBreak.BREAK_ALL)
           .layoutWeight(0.618)
           .maxLines(1);
@@ -49,6 +50,7 @@ struct EntryButton {
         // Url ONLY
         Text(this.item.url)
           .attributeModifier(new MooTextModifier())
+          .fontWeight(FontWeight.Medium)
           .layoutWeight(1)
           .wordBreak(WordBreak.BREAK_ALL)
           .maxLines(1);
@@ -67,7 +69,7 @@ struct EntryButton {
     .borderRadius(defaultItemRadius)
     .hoverEffect(HoverEffect.Highlight);
   }
-  
+
   @Builder
   flexLayout() {
     Flex(meowFlexOptions) {
