@@ -46,7 +46,7 @@ struct Index {
    * @returns Whether the back button was handled.
    */
   onBackPress(): boolean | void {
-    return this.myUi.goBackUni(meowUiGoBackSource.BACK);
+    return this.myUi.goBackUni(meowUiGoBackSource.BACK, this.getUIContext());
   }
 
   build() {

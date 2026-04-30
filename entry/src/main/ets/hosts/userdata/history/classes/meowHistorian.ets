@@ -246,9 +246,11 @@ export class meowHistorian {
    * Look up the query in all chunks in time order, and return query results.
    * @param query The query.
    * @param maxResults The maximum number of results to return.
+   * @param bruteForce To use brute force or not.
+   * @param minHitRate The minimum keyword hit rate for brute force.
    * @returns The query results.
    */
-  async lookUpHistoryEntries(query: string, maxResults: number) {
+  async lookUpHistoryEntries(query: string, maxResults: number, bruteForce: boolean, minHitRate = 0.8) {
     if (this.busy) {
       meow(`Busy. Rejected history: ["${query}", ${maxResults}]`, 'meowHistorian][lookUpHistoryEntries', meowLevel.WARN);
       return [];
@@ -275,7 +277,7 @@ export class meowHistorian {
       const targetChunks = this.chunks.slice(currentStartIndex, end); // 1. Directly slice the array to get the target chunks.
 
       const remaining = maxResults - result.length;
-      const promises = targetChunks.map(chunk => chunk.lookUpHistoryEntries(query, remaining)); // 2. Request concurrently for the remaining amount.
+      const promises = targetChunks.map(chunk => (bruteForce ? chunk.lookUpHistoryEntriesBruteForce(query, minHitRate, remaining) : chunk.lookUpHistoryEntries(query, remaining))); // 2. Request concurrently for the remaining amount.
 
       const allResults = await Promise.all(promises); // 3. Wait for the results.
 
@@ -297,9 +299,26 @@ export class meowHistorian {
     } // The loop
 
     // result.sort((a, b) => b.time - a.time);
-    meow(`Looked up history: ["${query}", ${maxResults}], result is ${result.join(', ')} (${Date.now() - startTime} ms)`, 'meowHistorian][lookUpHistoryEntries', meowLevel.WARN);
+    meow(`Looked up history: ["${query}", ${maxResults}], result length ${result.length} (${Date.now() - startTime} ms)`, 'meowHistorian][lookUpHistoryEntries', meowLevel.WARN);
     this.busy = false;
     return result;
+  }
+
+  /**
+   * Look up the query in a specific chunk in descending (new to old) time order, and return query results.
+   * @param chunk The chunk.
+   * @param query The query.
+   * @param maxResults The maximum number of results to return.
+   * @param bruteForce To use brute force or not.
+   * @param minHitRate The minimum keyword hit rate for brute force.
+   * @returns The query results.
+   */
+  async lookUpHistoryEntriesFromChunk(chunk: meowHistoryChunk, query: string, maxResults: number, bruteForce: boolean, minHitRate: number = 0.8) {
+    if (bruteForce) {
+      return await chunk.lookUpHistoryEntriesBruteForce(query, minHitRate, maxResults) ?? [];
+    } else {
+      return await chunk.lookUpHistoryEntries(query, maxResults) ?? [];
+    }
   }
 
   // Helpers

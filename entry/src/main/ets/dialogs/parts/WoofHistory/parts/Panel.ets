@@ -22,6 +22,7 @@ struct WoofHistoryPanel {
   // Display
   @Local myHistoryChunk: meowHistoryChunk | undefined;
   @Local myEntries: meowHistoryEntry[] = [];
+  @Local myEntriesGrouped: meowHistoryEntry[][] = [];
   @Local isSelecting: boolean = false;
   // Search
   @Local searchKey: string = ''; // The key to search in current month's index.
@@ -40,10 +41,8 @@ struct WoofHistoryPanel {
     // Load latest month
     const startTime = Date.now();
     this.myHistoryChunk = this.myMeowHistorian.getChunk(0);
-    this.myMeowHistorian.getHistoryEntries(0).then((result) => {
-      this.myEntries = result;
+    this.search().then(() => {
       setTimeout(() => {
-        this.scroller.scrollEdge(Edge.Bottom); // Scroll to latest
         const duration = Date.now() - startTime;
         this.refreshInfo(duration);
       }, 1);
@@ -51,10 +50,11 @@ struct WoofHistoryPanel {
   }
 
   build() {
-    // Entries
     Column({ space: defaultInnerRadius }) {
+
+      // Entries
       List({ scroller: this.scroller, space: standardSpacing * 0.5 }) {
-        Repeat(groupByDates(this.myEntries))
+        Repeat(this.myEntriesGrouped)
           .each((obj: RepeatItem<meowHistoryEntry[]>) => {
             DayCard({
               myLayout: this.myLayout,
@@ -80,7 +80,6 @@ struct WoofHistoryPanel {
           };
         }
       }
-      // .cachedCount(1)
       .borderRadius(defaultInnerRadius)
       .height('auto')
       .layoutWeight(1)
@@ -89,6 +88,16 @@ struct WoofHistoryPanel {
       // Months
       if (!this.isSelecting) {
         List({ space: standardSpacing * 0.75 }) {
+          ListItem() {
+            MonthButton({
+              desc: '󰀩',
+              isSelected: this.myHistoryChunk === undefined,
+              clickAction: () => {
+                this.myHistoryChunk = undefined;
+                this.search();
+              }
+            });
+          };
           Repeat(this.myMeowHistorian.getChunks())
             .each((obj: RepeatItem<meowHistoryChunk>) => {
               ListItem() {
@@ -108,6 +117,7 @@ struct WoofHistoryPanel {
         .alignListItem(ListItemAlign.Center)
         .backgroundColor(useEffects() ? getColor(meowThemeColorType.PRIMARY) : getColor(meowThemeColorType.SECONDARY))
         .border({ radius: defaultInnerRadius, width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth') })
+        .direction(isPreferRightHand() ? Direction.Rtl : Direction.Ltr)
         .padding(standardSpacing * 0.75)
         .listDirection(Axis.Horizontal)
         .height(defaultMonthButtonHeight + standardSpacing * 1.5)
@@ -138,10 +148,12 @@ struct WoofHistoryPanel {
           })
           .layoutWeight(1);
 
+        // Switch mode
         MooCapsuleButton({
           text: this.useFastSearch ? $r('app.string.History_search_fast') : $r('app.string.History_search_full'),
           clickAction: () => {
             this.useFastSearch = !this.useFastSearch;
+            this.search();
           }
         });
 
@@ -178,6 +190,7 @@ struct WoofHistoryPanel {
               const startTime = Date.now();
               animateToImmediately(defaultAnimation(), () => {
                 this.myEntries = this.myEntries.filter((entry) => !this.selectedTimeStamps.has(entry.time));
+                this.myEntriesGrouped = groupByDates(this.myEntries);
               });
               this.myMeowHistorian.deleteHistory(this.selectedTimeStamps);
               // Splice all delete targets from myHistoryChunkEntries
@@ -195,25 +208,39 @@ struct WoofHistoryPanel {
   }
 
   /**
-   * Submit search search.
+   * Submit search search. Only rely on this.myHistoryChunk.
    */
   async search() {
     const startTime = Date.now();
-    if (this.myHistoryChunk == undefined) {
-      return;
-    }
+    const global = this.myHistoryChunk == undefined;
     animateToImmediately(defaultAnimation(), () => {
       this.isSearching = true;
     });
+
+    // Search
     let res: meowHistoryEntry[];
     if (this.useFastSearch) {
-      res = await this.myHistoryChunk.lookUpHistoryEntries(this.searchKey, Number.MAX_VALUE) ?? [];
+      // Use index
+      if (global) {
+        res = await this.myMeowHistorian.lookUpHistoryEntries(this.searchKey, Number.MAX_VALUE, false) ?? [];
+      } else {
+        res = await this.myMeowHistorian.lookUpHistoryEntriesFromChunk(this.myHistoryChunk!, this.searchKey, Number.MAX_VALUE, false) ?? [];
+      }
     } else {
-      res = await this.myHistoryChunk.lookUpHistoryEntriesBruteForce(this.searchKey, 0.8, Number.MAX_VALUE) ?? [];
+      // Use brute force
+      if (global) {
+        res = await this.myMeowHistorian.lookUpHistoryEntries(this.searchKey, Number.MAX_VALUE, true, 0.8) ?? [];
+      } else {
+        res = await this.myMeowHistorian.lookUpHistoryEntriesFromChunk(this.myHistoryChunk!, this.searchKey, Number.MAX_VALUE, true, 0.8) ?? [];
+      }
     }
+
+    meow(`Looked up history: ["${this.searchKey}", ${Number.MAX_VALUE}], result length ${res.length} (${Date.now() - startTime} ms)`, 'WoofHistory][Panel', meowLevel.WARN);
+
     // this.myEntries = await this.myMeowHistorian.lookUpHistoryEntries(this.searchKey, Number.MAX_VALUE) ?? [];
     animateToImmediately(defaultAnimation(), () => {
       this.myEntries = res;
+      this.myEntriesGrouped = groupByDates(res);
       this.isSearching = false;
     });
     const duration = Date.now() - startTime;
@@ -234,9 +261,15 @@ struct WoofHistoryPanel {
    * @returns A string.
    */
   refreshInfo(duration: number) {
-    const info = `${this.myHistoryChunk?.year}-${this.myHistoryChunk?.month} (${this.myEntries.length}/${this.myHistoryChunk?.getSize()}) (${duration} ms)`;
-    this.requestRefreshTitle(info);
-    return info;
+    if (this.myHistoryChunk == undefined) {
+      const info = `󰀩 (${this.myEntries.length}) (${duration} ms)`;
+      this.requestRefreshTitle(info);
+      return info;
+    } else {
+      const info = `${this.myHistoryChunk?.year}-${this.myHistoryChunk?.month} (${this.myEntries.length}/${this.myHistoryChunk?.getSize()}) (${duration} ms)`;
+      this.requestRefreshTitle(info);
+      return info;
+    }
   }
 }
 

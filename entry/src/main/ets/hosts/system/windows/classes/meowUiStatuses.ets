@@ -36,9 +36,9 @@ export class meowUiStatuses {
    * @param source The source of the go back action.
    * @returns Whether ANY action was performed.
    */
-  goBackUni(source: meowUiGoBackSource) {
+  goBackUni(source: meowUiGoBackSource, uiContext: UIContext) {
     let didSomething = false;
-    
+
     // TODO: Do we need go back in bookmarks?
 
     // Close dialogs.
@@ -72,6 +72,14 @@ export class meowUiStatuses {
     if (this.showMore) {
       animateToImmediately(defaultAnimation(), () => {
         this.showMore = false;
+      });
+      didSomething = true;
+    }
+
+    if (this.searchBarFocused) {
+      uiContext.getFocusController().clearFocus();
+      animateToImmediately(defaultAnimation(), () => {
+        this.searchBarFocused = false;
       });
       didSomething = true;
     }

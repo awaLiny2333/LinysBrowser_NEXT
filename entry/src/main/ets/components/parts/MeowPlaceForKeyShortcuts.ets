@@ -20,7 +20,7 @@ struct MeowPlaceForKeyShortcuts {
         });
       }
       Blank().keyboardShortcut(this.myKey.esc.value, this.myKey.esc.keys, () => {
-        this.myUi.goBackUni(meowUiGoBackSource.ESC);
+        this.myUi.goBackUni(meowUiGoBackSource.ESC, this.getUIContext());
         meow(`ESC!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
       });
       Blank().keyboardShortcut(this.myKey.newTab.value, this.myKey.newTab.keys, () => {

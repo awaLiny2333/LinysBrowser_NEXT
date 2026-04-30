@@ -97,7 +97,7 @@ export class meowHistoryChunk {
    * Looks up history entries for a given query. Would load index and entries from disk.
    * @param query Any query word(s) / string.
    * @param maxResults The maximum number of results to return.
-   * @returns A promise that resolves to an array of meowHistory objects, in ascending order.
+   * @returns A promise that resolves to an array of meowHistory objects, in descending order.
    */
   async lookUpHistoryEntries(query: string, maxResults: number = 20): Promise<meowHistoryEntry[]> {
     // const startTime = Date.now();
@@ -117,7 +117,7 @@ export class meowHistoryChunk {
     }
 
     if (query === '') {
-      return Array.from(this.entries);
+      return Array.from(this.entries).reverse();
     }
 
     // Tokenize query
@@ -176,7 +176,7 @@ export class meowHistoryChunk {
    * @param query Any query word(s) / string.
    * @param minHitRate The minimum hit rate (a number between 0 and 1).
    * @param maxResults The maximum number of results to return.
-   * @returns A promise that resolves to an array of meowHistory objects, in ascending order.
+   * @returns A promise that resolves to an array of meowHistory objects, in descending order.
    */
   async lookUpHistoryEntriesBruteForce(query: string, minHitRate: number = 0.8, maxResults: number = 20) {
     // Get history entries.
@@ -188,7 +188,7 @@ export class meowHistoryChunk {
     
     // Early break
     if (query === '') {
-      return Array.from(this.entries);
+      return Array.from(this.entries).reverse();
     }
 
     // Search
