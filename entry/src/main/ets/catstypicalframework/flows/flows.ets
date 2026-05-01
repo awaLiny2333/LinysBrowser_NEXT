@@ -50,22 +50,21 @@ import { getUpdateAvoid, getUpdateFreeWindowMode, listenAvoid, listenFocus, list
  * For example starting to load the homepage wallpaper.
  */
 export function earlyOnCreate(context: Context, launchWant: Want) {
-  // const startTime = Date.now();
   const paramWindowName = launchWant.parameters?.windowName as string | undefined;
 
   // Determine window name
-  const isNewWindow = paramWindowName == undefined;
+  const isNewWindow = paramWindowName == undefined; // ASSERT THAT ALL LEGAL LATER WINDOWS ARE CREATED WITH THIS PARAM IN THE LAUNCHWANT. SO THAT WITHOUT THIS PARAM MUST BE THE FIRST WINDOW OF THIS APP.
   let myWindowId = paramWindowName || generateTimeBasedWindowId();
 
   // Register window
   const myApp = AppStorageV2.connect(meowAppStatuses, () => new meowAppStatuses())!;
   myApp.windowNames.push(myWindowId);
 
-  // Get filesDir
-  const filesDir = context.filesDir;
-
   // Shared hosts
   if (isNewWindow) {
+    // Get filesDir
+    const filesDir = context.filesDir;
+    // init
     AppStorageV2.connect(meowBookmarkStash, () => new meowBookmarkStash(`${filesDir}/html_bookmarks.html`))!;
     AppStorageV2.connect(meowHistorian, () => new meowHistorian(`${filesDir}`))!;
     AppStorageV2.connect(meowKeyboardMan, () => new meowKeyboardMan())!;
@@ -75,11 +74,9 @@ export function earlyOnCreate(context: Context, launchWant: Want) {
   }
 
   // Window private hosts
+  AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${myWindowId}`, () => new meowUiStatuses(myWindowId));
   AppStorageV2.connect(meowDialogManager, `meowDialogManager_${myWindowId}`, () => new meowDialogManager());
   AppStorageV2.connect(meowMisc, `meowMisc_${myWindowId}`, () => new meowMisc());
-  AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${myWindowId}`, () => new meowUiStatuses(myWindowId));
-
-  // meow(`Finished in ${Date.now() - startTime} ms.`, 'earlyOnCreate', meowLevel.WARN);
 }
 
 /**
@@ -87,20 +84,20 @@ export function earlyOnCreate(context: Context, launchWant: Want) {
  * @param context The context.
  * */
 export async function earlyOnWindowStageCreate(context: Context) {
+  const startTime = Date.now();
   const myApp = AppStorageV2.connect(meowAppStatuses)!;
   const isNewWindow = myApp.windowNames.length == 1;
   const myWindowId = myApp.windowNames[myApp.windowNames.length - 1];
 
   // Some other windows had done this already.
   if (!isNewWindow) {
-    meow(`Skipped.`, `earlyOnWindowStageCreate][${myWindowId}`, meowLevel.WARN);
+    meow(`Skipped. (${Date.now() - startTime} ms)`, `earlyOnWindowStageCreate][${myWindowId}`, meowLevel.WARN);
     return;
   }
 
   // ONLY FOR NEW WINDOW (NEW LAUNCHES):
 
   // Environments
-  const startTime = Date.now();
   const filesDir = context.filesDir;
 
   // Settings
@@ -134,7 +131,6 @@ export async function earlyOnWindowStageCreate(context: Context) {
  * @param windowObj window.Window
  * */
 export async function aboutToLoadContent(windowStage: window.WindowStage, windowObj: window.Window, context: Context) {
-  // const startTime = Date.now();
   console.log(`aboutToLoadContent: context = ${context}`); // Just to USE it so that it won't be an unused param.
 
   // Enable window status auto save.
@@ -153,8 +149,6 @@ export async function aboutToLoadContent(windowStage: window.WindowStage, window
   } catch (e) {
     meow(`window.setImmersiveModeEnabledState(true) Failed: ${e}`, 'init', meowLevel.ERROR);
   }
-
-  // meow(`Finished in ${Date.now() - startTime} ms.`, 'aboutToLoadContent', meowLevel.WARN);
 }
 
 /**
