@@ -52,7 +52,7 @@ export class meowKeyboardMan {
     for (let i = 0; i < settingsStrings.length; i++) {
       const settingsString = settingsStrings[i].split(' ');
       this.shortcuts[i].fromArray(settingsString);
-      meow(`#${i}: ${settingsString} => ${this.shortcuts[i]}`, 'earlyOnWindowStageCreate', meowLevel.WARN);
+      meow(`#${i}: ${settingsString} => ${this.shortcuts[i]}`, 'earlyOnWindowStageCreate', meowLevel.INFO);
     }
   }
 

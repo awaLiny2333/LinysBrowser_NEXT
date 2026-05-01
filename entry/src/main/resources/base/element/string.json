@@ -81,6 +81,14 @@
       "value": "Collapse  󰃘"
     },
     {
+      "name": "General_empty",
+      "value": "Nothing here. ヽ（´ー｀）┌"
+    },
+    {
+      "name": "General_export",
+      "value": "Export  󰃕"
+    },
+    {
       "name": "Settings",
       "value": "Settings"
     },
@@ -707,6 +715,10 @@
     {
       "name": "History_search_full",
       "value": "Full  󰊮"
+    },
+    {
+      "name": "FaultLogs",
+      "value": "Fault Logs"
     },
     {
       "name": "Permission_reason_DETECT_GESTURES",

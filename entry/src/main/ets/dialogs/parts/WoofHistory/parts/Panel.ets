@@ -74,7 +74,7 @@ struct WoofHistoryPanel {
         // Placeholder for empty result
         if (this.myEntries.length == 0) {
           ListItem() {
-            Text(this.isSearching ? $r('app.string.General_wait') : 'No history found. ヽ（´ー｀）┌')
+            Text(this.isSearching ? $r('app.string.General_wait') : $r('app.string.General_empty'))
               .attributeModifier(new MooTextModifier())
               .opacity(0.7)
               .padding(standardSpacing * 0.75)

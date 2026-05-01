@@ -34,7 +34,7 @@ import { meowManagedSettings } from '../../hosts/userdata/settings/classes/meowM
 import { meowAvoid } from '../hosts/meowAvoid';
 import { meowLayout } from '../hosts/meowLayout';
 import { meowMisc } from '../hosts/meowMisc';
-import { meow, meowLevel } from '../utils/catsLogger';
+import { listenCrash, meow, meowLevel } from '../utils/catsLogger';
 import { ensureDirectoryExist } from '../utils/storage';
 import { getUpdateAvoid, getUpdateFreeWindowMode, listenAvoid, listenFocus, listenFreeWindowMode, listenSmartReachability, meowPx2vp, shortModeThreshold, updateNavigationIndicator, wideModeThreshold } from '../utils/ui';
 
@@ -61,19 +61,8 @@ export function earlyOnCreate(context: Context, launchWant: Want) {
   const myApp = AppStorageV2.connect(meowAppStatuses, () => new meowAppStatuses())!;
   myApp.windowNames.push(myWindowId);
 
-  if (isNewWindow) {
-    // Is the first window of this app.
-    // Just use the generated timestamp based window name.
-    // And push it into the list.
-
-  } else {
-    // Is a new window of this app.
-    // Use the given window name already pushed into the list
-    // by an existing window.
-  }
-
+  // Get filesDir
   const filesDir = context.filesDir;
-
 
   // Shared hosts
   if (isNewWindow) {
@@ -112,15 +101,23 @@ export async function earlyOnWindowStageCreate(context: Context) {
   const filesDir = context.filesDir;
 
   // Ensure directory
-  await ensureDirectoryExist(`${filesDir}/history`);
-  await ensureDirectoryExist(`${filesDir}/history-index`);
+  await ensureDirectoryExist(`${filesDir}/continue`); // Last opened tabs
+  await ensureDirectoryExist(`${filesDir}/easylist`); // Ad blocker rules
+  await ensureDirectoryExist(`${filesDir}/faultlogs`); // fault logs
+  await ensureDirectoryExist(`${filesDir}/history`); // History chunk files
+  await ensureDirectoryExist(`${filesDir}/history-index`); // History index files
+  await ensureDirectoryExist(`${filesDir}/zones`); // Zones
 
   // Settings
   const mySettings = AppStorageV2.connect(meowManagedSettings)!;
   await mySettings.initFrom(`${filesDir}/settings.json.browsercatsettings.txt`);
 
+  // Key shortcuts
   const myKey = AppStorageV2.connect(meowKeyboardMan)!;
   myKey.initFromSettings();
+
+  // Listen crash
+  listenCrash(`${filesDir}/faultlogs`);
 
   // setTimeout(() => {
   //   webview.WebviewController.initializeWebEngine();

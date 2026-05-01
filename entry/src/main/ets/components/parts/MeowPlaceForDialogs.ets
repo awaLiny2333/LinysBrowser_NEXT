@@ -19,6 +19,7 @@ import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dia
 import { meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
 import lazy { localMessage, meowAppMessageType } from '../../hosts/system/windows/scripts/messaging';
 import { WoofHistoryDialog } from '../../dialogs/parts/WoofHistory/WoofHistory';
+import { WoofFaultLogsDialog } from '../../dialogs/parts/WoofFaultLogs/WoofFaultLogs';
 
 /**
  * A place for dialogs.
@@ -164,6 +165,13 @@ struct MeowPlaceForDialogs {
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
+  woofFaultLogsDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofFaultLogsDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    alignment: DialogAlignment.Center,
+    width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
 
   build() {
     // Nothing
@@ -220,6 +228,9 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.HISTORY:
         this.woofHistoryDialogController.open();
+        break;
+      case openDialogRequestType.FAULTLOGS:
+        this.woofFaultLogsDialogController.open();
         break;
       default:
         break;

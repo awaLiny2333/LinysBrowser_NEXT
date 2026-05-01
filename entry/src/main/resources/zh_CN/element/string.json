@@ -81,6 +81,14 @@
       "value": "收起  󰃘"
     },
     {
+      "name": "General_export",
+      "value": "导出  󰃕"
+    },
+    {
+      "name": "General_empty",
+      "value": "空空如也。ヽ（´ー｀）┌"
+    },
+    {
       "name": "Settings",
       "value": "设置"
     },
@@ -707,6 +715,10 @@
     {
       "name": "History_search_full",
       "value": "细搜  󰊮"
+    },
+    {
+      "name": "FaultLogs",
+      "value": "错误日志"
     },
     {
       "name": "Permission_reason_DETECT_GESTURES",

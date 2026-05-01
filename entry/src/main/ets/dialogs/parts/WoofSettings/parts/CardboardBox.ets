@@ -5,9 +5,12 @@ import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { MooSwitch } from '../../../../components/common/MooSwitch';
 import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton';
+import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
+import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 
 @ComponentV2
 struct SettingsCardboardBox {
+  @Param @Require myDialog: meowDialogManager;
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
   build() {
@@ -30,7 +33,7 @@ struct SettingsCardboardBox {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_cardboardBox_debug_faultLogs'),
           clickAction: () => {
-            // TODO: Fault logs display entrance.
+            requestDialog(this.myDialog, openDialogRequestType.FAULTLOGS, undefined, true);
           }
         });
       };
@@ -52,7 +55,7 @@ struct SettingsCardboardBox {
             // TODO: Import settings entrance.
           }
         });
-        
+
         // Everything
         Text($r('app.string.Settings_category_cardboardBox_backup_everything_desc')).attributeModifier(new MooTextModifier());
         MooCapsuleButton({

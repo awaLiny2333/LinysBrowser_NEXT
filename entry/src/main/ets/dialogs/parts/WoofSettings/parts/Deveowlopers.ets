@@ -42,6 +42,12 @@ struct SettingsDeveowlopers {
             requestDialog(this.myDialog, openDialogRequestType.DEV, undefined, true);
           }
         });
+        MooCapsuleButton({
+          text: 'JS Crash  󰃴',
+          clickAction: () => {
+            JSON.parse('');
+          }
+        });
       };
     };
   }
