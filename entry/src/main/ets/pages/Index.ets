@@ -10,7 +10,7 @@ import lazy { MeowPlaceForDialogs } from '../components/parts/MeowPlaceForDialog
 import lazy { MeowSearchBar } from '../components/parts/Homepage/MeowSearchBar';
 import lazy { MeowTitleBarHeight, MeowTitleBar } from '../components/parts/Homepage/MeowTitleBar';
 import lazy { MeowTitleTop } from '../components/parts/Homepage/MeowTitleTop';
-import lazy { isTabsStyleVertical, defaultAnimation, defaultHorizontalTabsHeight, defaultSidebarWidth, getColor, meowThemeColorType, mooTextType, showGiganticWindowTitle, sidebarShouldBeOnTheRight, standardSpacing, titleBarPositionBottom, useEffects } from '../components/settings';
+import lazy { isTabsStyleVertical, defaultAnimation, defaultHorizontalTabsHeight, defaultSidebarWidth, getColor, meowThemeColorType, mooTextType, showGiganticWindowTitle, sidebarShouldBeOnTheRight, standardSpacing, titleBarPositionBottom, useEffects, isPreferRightHand } from '../components/settings';
 import lazy { showingSidebar } from '../components/statuses';
 import lazy { MeowShortcutsPanel } from '../components/parts/Homepage/MeowShortcuts';
 import { meowManagedSettings } from '../hosts/userdata/settings/classes/meowManagedSettings';
@@ -22,6 +22,8 @@ import { meowUiGoBackSource, meowUiStatuses } from '../hosts/system/windows/clas
 import { getLastWindowId } from '../hosts/system/windows/scripts/multiwindows';
 import { MeowPlaceForKeyShortcuts } from '../components/parts/MeowPlaceForKeyShortcuts';
 import { meowAppMessageType } from '../hosts/system/windows/scripts/messaging';
+import { meowButtons } from '../components/parts/Buttons/constants';
+import { MeowWindowInfoBar } from '../components/parts/Homepage/MeowWindowInfoBar';
 
 @Entry
 @ComponentV2
@@ -119,14 +121,23 @@ struct Index {
                 myAvoid: this.myAvoid,
               });
             }
+
             if (this.myUi.showMore) {
-              MeowButtonsMore({
-                myUi: this.myUi,
+              if ((this.mySettings.settingsData[80].value as meowButtons[]).length > 0) {
+                MeowButtonsMore({
+                  myUi: this.myUi,
+                  myAvoid: this.myAvoid,
+                  myDialog: this.myDialog
+                });
+              }
+              MeowWindowInfoBar({
+                myUi: this.myUi, 
+                myLayout: this.myLayout,
                 myAvoid: this.myAvoid,
-                myDialog: this.myDialog
               });
             }
           }
+          .alignItems(isPreferRightHand() ? HorizontalAlign.End : HorizontalAlign.Start)
           .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
           .backgroundColor(getColor(meowThemeColorType.SECONDARY))
           .alignRules({
@@ -142,12 +153,20 @@ struct Index {
         if (titleBarPositionBottom()) {
           Column({ space: standardSpacing }) {
             if (this.myUi.showMore) {
-              MeowButtonsMore({
+              if ((this.mySettings.settingsData[80].value as meowButtons[]).length > 0) {
+                MeowButtonsMore({
+                  myUi: this.myUi,
+                  myAvoid: this.myAvoid,
+                  myDialog: this.myDialog
+                });
+              }
+              MeowWindowInfoBar({
                 myUi: this.myUi,
+                myLayout: this.myLayout,
                 myAvoid: this.myAvoid,
-                myDialog: this.myDialog
               });
             }
+
             MeowTitleBar({
               myUi: this.myUi,
               myAvoid: this.myAvoid,
@@ -163,6 +182,7 @@ struct Index {
               });
             }
           }
+          .alignItems(isPreferRightHand() ? HorizontalAlign.End : HorizontalAlign.Start)
           .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
           .backgroundColor(getColor(meowThemeColorType.SECONDARY))
           .alignRules({
@@ -230,6 +250,7 @@ struct Index {
     meow(`---`, 'Index][launch', meowLevel.INFO);
     meow(`Successfully launched the app. (${Date.now() - this.myMisc.launchStartTime} ms)`, 'Index][launch', meowLevel.INFO);
     meow(`Window ID: ${this.myUi.windowId}`, 'Index][launch', meowLevel.INFO);
+    meow(`Window Alias: ${this.myUi.windowAlias}`, 'Index][launch', meowLevel.INFO);
     meow(`---`, 'Index][launch', meowLevel.INFO);
     setTimeout(() => {
       this.render = true;

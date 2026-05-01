@@ -21,7 +21,7 @@ import { common, Configuration, ConfigurationConstant } from '@kit.AbilityKit';
 import { AppStorageV2, window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import lazy Want from '@ohos.app.ability.Want';
-import { isPreferRightHandFromSettings } from '../../components/settings';
+import { defaultNewWindowAlias, isPreferRightHandFromSettings } from '../../components/settings';
 import { meowDialogManager } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowResources } from '../../hosts/system/storage/classes/meowResources';
 import { meowAppStatuses } from '../../hosts/system/windows/classes/meowAppStatuses';
@@ -76,8 +76,8 @@ export function earlyOnCreate(context: Context, launchWant: Want) {
 
   // Window private hosts
   AppStorageV2.connect(meowDialogManager, `meowDialogManager_${myWindowId}`, () => new meowDialogManager());
-  AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${myWindowId}`, () => new meowUiStatuses(myWindowId));
   AppStorageV2.connect(meowMisc, `meowMisc_${myWindowId}`, () => new meowMisc());
+  AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${myWindowId}`, () => new meowUiStatuses(myWindowId));
 
   // meow(`Finished in ${Date.now() - startTime} ms.`, 'earlyOnCreate', meowLevel.WARN);
 }
@@ -89,16 +89,23 @@ export function earlyOnCreate(context: Context, launchWant: Want) {
 export async function earlyOnWindowStageCreate(context: Context) {
   const myApp = AppStorageV2.connect(meowAppStatuses)!;
   const isNewWindow = myApp.windowNames.length == 1;
+  const myWindowId = myApp.windowNames[myApp.windowNames.length - 1];
 
+  // Some other windows had done this already.
   if (!isNewWindow) {
-    // Some other windows had done this already.
-    const myWindowId = myApp.windowNames[myApp.windowNames.length - 1];
     meow(`Skipped.`, `earlyOnWindowStageCreate][${myWindowId}`, meowLevel.WARN);
     return;
   }
 
+  // ONLY FOR NEW WINDOW (NEW LAUNCHES):
+
+  // Environments
   const startTime = Date.now();
   const filesDir = context.filesDir;
+
+  // Settings
+  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
+  await mySettings.initFrom(`${filesDir}/settings.json.browsercatsettings.txt`); // This can ONLY be initialized here as it requires async - await processing.
 
   // Ensure directory
   await ensureDirectoryExist(`${filesDir}/continue`); // Last opened tabs
@@ -107,10 +114,6 @@ export async function earlyOnWindowStageCreate(context: Context) {
   await ensureDirectoryExist(`${filesDir}/history`); // History chunk files
   await ensureDirectoryExist(`${filesDir}/history-index`); // History index files
   await ensureDirectoryExist(`${filesDir}/zones`); // Zones
-
-  // Settings
-  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
-  await mySettings.initFrom(`${filesDir}/settings.json.browsercatsettings.txt`);
 
   // Key shortcuts
   const myKey = AppStorageV2.connect(meowKeyboardMan)!;
@@ -127,7 +130,7 @@ export async function earlyOnWindowStageCreate(context: Context) {
 }
 
 /**
- * Called in onWindowStageCreate, before windowStage.LoadContent
+ * Called in onWindowStageCreate, before windowStage.LoadContent, for EVERY WINDOW.
  * @param windowObj window.Window
  * */
 export async function aboutToLoadContent(windowStage: window.WindowStage, windowObj: window.Window, context: Context) {
@@ -155,7 +158,7 @@ export async function aboutToLoadContent(windowStage: window.WindowStage, window
 }
 
 /**
- * Called immediately after windowStage.LoadContent
+ * Called immediately after windowStage.LoadContent, for EVERY WINDOW.
  * @param window window.Window
  * */
 export function onLoadContent(window: window.Window, context: common.UIAbilityContext) {
@@ -177,6 +180,7 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
   // Save windows
   const myUi: meowUiStatuses = AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${myWindowId}`)!;
   myUi.windowObj = window;
+  myUi.windowAlias = defaultNewWindowAlias();
 
   // Initialize App status
   const dark = context.config.colorMode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK;

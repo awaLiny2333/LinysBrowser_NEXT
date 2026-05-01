@@ -19,11 +19,13 @@ struct MeowTitleBar {
 
   build() {
     Row({ space: standardSpacing * 0.125 }) {
-      MeowButtonsSlot({
-        myUi: this.myUi,
-        myDialog: this.myDialog,
-        buttons: this.mySettings.settingsData[76].value as meowButtons[]
-      });
+      if ((this.mySettings.settingsData[76].value as meowButtons[]).length > 0) {
+        MeowButtonsSlot({
+          myUi: this.myUi,
+          myDialog: this.myDialog,
+          buttons: this.mySettings.settingsData[76].value as meowButtons[]
+        });
+      }
 
       if (this.myLayout.wideMode) {
         MeowSearchBar({
@@ -35,11 +37,13 @@ struct MeowTitleBar {
         Blank();
       }
 
-      MeowButtonsSlot({
-        myUi: this.myUi,
-        myDialog: this.myDialog,
-        buttons: this.mySettings.settingsData[79].value as meowButtons[]
-      });
+      if ((this.mySettings.settingsData[79].value as meowButtons[]).length > 0) {
+        MeowButtonsSlot({
+          myUi: this.myUi,
+          myDialog: this.myDialog,
+          buttons: this.mySettings.settingsData[79].value as meowButtons[]
+        });
+      }
     }
     .height(MeowTitleBarHeight)
     .width('100%')

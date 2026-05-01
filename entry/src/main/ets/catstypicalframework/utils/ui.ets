@@ -58,17 +58,17 @@ export function measureTextHeight(text: string, uiContext: UIContext, fontSize: 
 
 export let defaultAnima: AnimateParam = { curve: Curve.FastOutSlowIn, duration: 350 };
 
-export const defaultRoundedRadius: number = deviceInfo.deviceType == deviceInfo.DeviceTypes.TYPE_2IN1 ? 15 : 15; // 30
+export const defaultRoundedRadius = 15; // 30
 
-export const defaultInnerRadius: number = deviceInfo.deviceType == deviceInfo.DeviceTypes.TYPE_2IN1 ? 8 : 8; // 20
+export const defaultInnerRadius = 8; // 20
 
-export const defaultItemRadius: number = deviceInfo.deviceType == deviceInfo.DeviceTypes.TYPE_2IN1 ? 5 : 5;
+export const defaultItemRadius = 5;
 
-export const defaultMenuItemRadius: number = deviceInfo.deviceType == deviceInfo.DeviceTypes.TYPE_2IN1 ? 5 : 18;
+export const defaultMenuItemRadius = deviceInfo.deviceType == deviceInfo.DeviceTypes.TYPE_2IN1 ? 5 : 18;
 
 // Decor (Free window mode)
 
-export const defaultDecorHeight: number = 40;
+export const defaultDecorHeight = 40;
 
 /**
  * Sets the decor height to defaultDecorHeight (50).

@@ -1,3 +1,4 @@
+import { getRandomEmoticon } from "../../../../catstypicalframework/utils/meow";
 import { meowButtons } from "../../../../components/parts/Buttons/constants";
 /**
  * Default user agents in a specified string format.
@@ -20,7 +21,7 @@ export function defaultUserAgents() {
  * @returns 'Foxy Meowy Dodgy! Welcome to a new window!'
  * */
 export function defaultNewWindowName(): string {
-  return 'Meowy Default Name!';
+  return getRandomEmoticon();
 }
 
 /**

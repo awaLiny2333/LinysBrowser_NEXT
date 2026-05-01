@@ -1,10 +1,11 @@
-import { meowBookmarkItem } from "../../../userdata/bookmarks/classes/meowBookmarkItem";
-import { meowAppMessage } from "./meowAppMessage";
 import { AppStorageV2, window } from "@kit.ArkUI";
-import { meowManagedSettings } from "../../../userdata/settings/classes/meowManagedSettings";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import { getRandomEmoticon } from "../../../../catstypicalframework/utils/meow";
 import { defaultAnimation } from "../../../../components/settings";
+import { meowBookmarkItem } from "../../../userdata/bookmarks/classes/meowBookmarkItem";
+import { meowManagedSettings } from "../../../userdata/settings/classes/meowManagedSettings";
 import { meowDialogManager } from "../../dialogs/classes/meowDialogManager";
+import { meowAppMessage } from "./meowAppMessage";
 
 /**
  * The statuses that are limited to the current window only.
@@ -26,7 +27,7 @@ export class meowUiStatuses {
   // Messaging (Shared)
   @Trace localMessageTunnel: meowAppMessage | undefined = undefined; // The great tunnel for local window messaging! *TEMPORARY* but often NOT cleared after reception.
 
-  constructor(windowId: string, windowAlias: string = 'Meowy window alias!') {
+  constructor(windowId: string, windowAlias: string = '') {
     this.windowId = windowId;
     this.windowAlias = windowAlias;
   }

@@ -224,3 +224,12 @@ export function shortcutsShouldBeOnTheRight() {
   const reverseShortcuts = mySettings.settingsData[50].value as boolean;
   return isPreferRightHand() && !reverseShortcuts;
 }
+
+/**
+ * Gets the default new window alias.
+ * @returns The default new window alias.
+ */
+export function defaultNewWindowAlias() {
+  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
+  return mySettings.settingsData[26].value as string;
+}
