@@ -5,9 +5,12 @@ import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { MooSwitch } from '../../../../components/common/MooSwitch';
 import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton';
+import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
+import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
 
 @ComponentV2
 struct SettingsSecurity {
+  @Param @Require myDialog: meowDialogManager;
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
   build() {
@@ -36,7 +39,7 @@ struct SettingsSecurity {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_security_cookies_viewManage'),
           clickAction: () => {
-            // TODO: Cookies manager entrance.
+            requestDialog(this.myDialog, openDialogRequestType.COOKIES, undefined, true); // Go with no params.
           }
         });
       };

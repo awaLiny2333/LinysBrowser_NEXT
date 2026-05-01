@@ -721,6 +721,14 @@
       "value": "Fault Logs"
     },
     {
+      "name": "Cookies",
+      "value": "Cookies"
+    },
+    {
+      "name": "Cookies_clearAll",
+      "value": "Clear ALL cookies from ALL domains"
+    },
+    {
       "name": "Permission_reason_DETECT_GESTURES",
       "value": "Let the BrowserCat know what hand you are using and help BrowserCat optimize layout!"
     }

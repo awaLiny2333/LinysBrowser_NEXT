@@ -118,5 +118,5 @@ function buildCrashLogFileName(timestampMs: number) {
   const m = pad(date.getMinutes());
   const s = pad(date.getSeconds());
   const ms = pad(date.getMilliseconds(), 3);
-  return `${Y}${M}${D}_${h}${m}${s}-${ms}.log`;
+  return `${Y}${M}${D}_${h}${m}${s}${ms}.log`;
 }

@@ -50,7 +50,7 @@ struct WoofSettings {
           SettingsStorage();
         };
         FlowItem() {
-          SettingsSecurity();
+          SettingsSecurity({ myDialog: this.myDialog });
         };
         FlowItem() {
           SettingsCardboardBox({ myDialog: this.myDialog });

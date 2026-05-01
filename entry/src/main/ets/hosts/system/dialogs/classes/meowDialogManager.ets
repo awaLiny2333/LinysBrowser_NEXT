@@ -87,6 +87,7 @@ export enum openDialogRequestType {
   KEY_SHORTCUTS_PICKER,
   BUTTONS,
   HISTORY,
+  COOKIES,
   FAULTLOGS
 }
 

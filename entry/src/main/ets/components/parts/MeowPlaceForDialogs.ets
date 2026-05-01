@@ -19,7 +19,8 @@ import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dia
 import { meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
 import lazy { localMessage, meowAppMessageType } from '../../hosts/system/windows/scripts/messaging';
 import { WoofHistoryDialog } from '../../dialogs/parts/WoofHistory/WoofHistory';
-import { WoofFaultLogsDialog } from '../../dialogs/parts/WoofFaultLogs/WoofFaultLogs';
+import { WoofFaultLogsDialog } from '../../dialogs/settings/WoofFaultLogs/WoofFaultLogs';
+import { WoofCookiesDialog } from '../../dialogs/settings/WoofCookies/WoofCookies';
 
 /**
  * A place for dialogs.
@@ -165,6 +166,13 @@ struct MeowPlaceForDialogs {
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
+  woofCookiesDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofCookiesDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    alignment: DialogAlignment.Center,
+    width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
   woofFaultLogsDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofFaultLogsDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
@@ -228,6 +236,9 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.HISTORY:
         this.woofHistoryDialogController.open();
+        break;
+      case openDialogRequestType.COOKIES:
+        this.woofCookiesDialogController.open();
         break;
       case openDialogRequestType.FAULTLOGS:
         this.woofFaultLogsDialogController.open();

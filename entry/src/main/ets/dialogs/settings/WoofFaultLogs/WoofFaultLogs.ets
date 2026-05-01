@@ -40,7 +40,7 @@ struct FaultLogsPanel {
       Repeat(this.logs)
         .each((item: RepeatItem<faultLogInfo>) => {
           ListItem() {
-            UniContentCard({ title: `#${item.index} ${item.item.name}`, icon: $r('sys.symbol.doc_text') }) {
+            UniContentCard({ title: `#${this.logs.length - item.index} ${item.item.name}`, icon: $r('sys.symbol.doc_text') }) {
               FaultLogsEntry({ name: item.item.name, path: item.item.path });
             };
           }.padding({ bottom: standardSpacing });

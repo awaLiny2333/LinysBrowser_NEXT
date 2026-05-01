@@ -60,6 +60,9 @@ struct MeowButton {
       case meowButtons.HISTORY:
         requestDialog(this.myDialog, openDialogRequestType.HISTORY);
         break;
+      case meowButtons.COOKIES:
+        requestDialog(this.myDialog, openDialogRequestType.COOKIES, 'meow.url'); // TODO: auto pass in current viewing url.
+        break;
       default:
         break;
     }
