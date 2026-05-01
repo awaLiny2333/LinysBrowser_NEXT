@@ -27,7 +27,7 @@ struct MeowWindowInfoBar {
       Row({ space: standardSpacing * 0.125 }) {
         MooTextButton({
           radius: defaultInnerRadius,
-          text: this.myUi.windowAlias,
+          text: `󰁫  ${this.myUi.windowAlias}`,
           clickAction: () => {
             animateToImmediately(defaultAnimation(), () => {
               this.isEditing = !this.isEditing;
@@ -71,7 +71,8 @@ struct MeowWindowInfoBar {
     .alignItems(isPreferRightHand() ? HorizontalAlign.End : HorizontalAlign.Start)
     .margin({ left: this.myAvoid.left, right: this.myAvoid.right })
     .padding(this.mySpacing())
-    .border(useEffects() ? { radius: defaultInnerRadius + (this.isEditing ? standardSpacing * 0.7 : standardSpacing * 0.4), width: 1, color: $r('sys.color.icon_fourth') } : { width: 0, radius: 0 })
+    .borderRadius(defaultInnerRadius + (this.isEditing ? standardSpacing * 0.7 : standardSpacing * 0.4))
+    .border(useEffects() ? { width: 1, color: $r('sys.color.icon_fourth') } : { width: 0 })
     .backgroundColor(getColor(meowThemeColorType.PRIMARY));
   }
 
@@ -84,9 +85,7 @@ struct MeowWindowInfoBar {
    */
   focusInput() {
     try {
-      if (this.myLayout.freeWindow) {
-        this.getUIContext().getFocusController().requestFocus(this.searchInputId);
-      }
+      this.getUIContext().getFocusController().requestFocus(this.searchInputId);
     } catch (e) {
       meow(`this.getUIContext().getFocusController().requestFocus("${this.searchInputId}"); failed: ${e}`, 'MeowWindowInfoBar', meowLevel.ERROR);
     }

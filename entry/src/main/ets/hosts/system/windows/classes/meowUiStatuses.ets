@@ -1,6 +1,5 @@
 import { AppStorageV2, window } from "@kit.ArkUI";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import { getRandomEmoticon } from "../../../../catstypicalframework/utils/meow";
 import { defaultAnimation } from "../../../../components/settings";
 import { meowBookmarkItem } from "../../../userdata/bookmarks/classes/meowBookmarkItem";
 import { meowManagedSettings } from "../../../userdata/settings/classes/meowManagedSettings";
@@ -17,6 +16,7 @@ export class meowUiStatuses {
   @Trace windowAlias: string;
   @Trace windowObj: window.Window | undefined;
   // UI
+  @Trace pin: boolean = false;
   @Trace showMore: boolean = false;
   @Trace showTabs: boolean = false;
   @Trace sidebarShrunk: boolean = true;
@@ -94,6 +94,21 @@ export class meowUiStatuses {
   private goBackWeb() {
     meow(`Try!`, 'meowUiStatuses][goBackWeb', meowLevel.WARN);
     return false; // TODO: return if go back is successful. E.g. if there is no backward page, then we cannot go back, return false.
+  }
+
+  /**
+   * Toggle the pin state of the window.
+   */
+  async togglePin() {
+    if (this.windowObj) {
+      await this.windowObj.setWindowTopmost(!this.pin)
+        .then(() => {
+          this.pin = !this.pin;
+        })
+        .catch((e: BusinessError) => {
+          meow(`Failed to set window topmost: ${e.message}`, `meowUiStatuses][${this.windowId}`, meowLevel.ERROR);
+        });
+    }
   }
 }
 

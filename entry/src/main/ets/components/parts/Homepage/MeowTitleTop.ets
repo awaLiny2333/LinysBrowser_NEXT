@@ -1,14 +1,14 @@
+import { common } from '@kit.AbilityKit';
 import { meowAvoid } from '../../../catstypicalframework/hosts/meowAvoid';
 import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import { windowTopAvoidLeft, windowTopAvoidRight } from '../../../catstypicalframework/utils/ui';
-import { common } from '@kit.AbilityKit';
-import { showWindowTitle,windowTitlePosition } from '../../settings';
-import { MooTextModifier } from '../../common/MooTextModifier';
-import { MooSymbolButtonSmall } from '../../common/MooSymbolButtonSmall';
-import { newWindow } from '../../../hosts/system/windows/scripts/multiwindows';
-import { meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
+import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
-import { meowDialogManager,openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
+import { meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
+import { newWindow } from '../../../hosts/system/windows/scripts/multiwindows';
+import { MooSymbolButtonSmall } from '../../common/MooSymbolButtonSmall';
+import { MooTextModifier } from '../../common/MooTextModifier';
+import { showWindowTitle, windowTitlePosition } from '../../settings';
 
 
 /**
@@ -53,8 +53,9 @@ struct MeowTitleTop {
       // right button(s)
       if (this.myLayout.freeWindow) {
         MooSymbolButtonSmall({
-          icon: $r('sys.symbol.pin'),
+          icon: this.myUi.pin ? $r('sys.symbol.pin_vertical_fill') : $r('sys.symbol.pin'),
           clickAction: () => {
+            this.myUi.togglePin();
             // TODO: Pin window.
           }
         });

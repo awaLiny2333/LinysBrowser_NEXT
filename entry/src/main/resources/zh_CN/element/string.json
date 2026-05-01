@@ -731,6 +731,10 @@
     {
       "name": "Permission_reason_DETECT_GESTURES",
       "value": "让冲浪喵知道你正在使用哪只手，并自动响应优化布局！"
+    },
+    {
+      "name": "Permission_reason_WINDOW_TOPMOST",
+      "value": "让冲浪喵呈现在最顶层！"
     }
   ]
 }

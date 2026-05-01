@@ -37,7 +37,7 @@
       }
     ],
     "requestPermissions": [
-            {
+      {
         "name": "ohos.permission.DETECT_GESTURE",
         "reason": "$string:Permission_reason_DETECT_GESTURES",
         "usedScene": {
@@ -47,6 +47,16 @@
           ]
         }
       },
+      {
+        "name": "ohos.permission.WINDOW_TOPMOST",
+        "reason": "$string:Permission_reason_WINDOW_TOPMOST",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "EntryAbility"
+          ]
+        }
+      }
     ]
   }
 }

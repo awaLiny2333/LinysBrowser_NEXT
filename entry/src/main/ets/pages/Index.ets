@@ -159,12 +159,12 @@ struct Index {
                   myAvoid: this.myAvoid,
                   myDialog: this.myDialog
                 });
+                MeowWindowInfoBar({
+                  myUi: this.myUi,
+                  myLayout: this.myLayout,
+                  myAvoid: this.myAvoid,
+                });
               }
-              MeowWindowInfoBar({
-                myUi: this.myUi,
-                myLayout: this.myLayout,
-                myAvoid: this.myAvoid,
-              });
             }
 
             MeowTitleBar({

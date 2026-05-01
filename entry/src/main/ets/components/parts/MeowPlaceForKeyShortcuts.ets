@@ -68,6 +68,7 @@ struct MeowPlaceForKeyShortcuts {
         meow(`New Window!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
       });
       Blank().keyboardShortcut(this.myKey.pin.value, this.myKey.pin.keys, () => {
+        this.myUi.togglePin();
         meow(`Pin window to top!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
       });
       Blank().keyboardShortcut(this.myKey.save.value, this.myKey.save.keys, () => {
