@@ -6,7 +6,6 @@ import { defaultMooCapsuleButtonHeight, MooCapsuleButton } from "../../../compon
 import { MooTextButton } from "../../../components/common/MooTextButton";
 import { MooTextInputV2 } from "../../../components/common/MooTextInputV2";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
-import { UniRowOfCapsuleButtons } from "../../../components/common/UniRowOfCapsuleButtons";
 import { standardSpacing } from "../../../components/settings";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { WoofUniFrame } from "../../WoofUniFrame";
@@ -68,19 +67,16 @@ struct CookiesPanel {
         });
 
         // Clear
-        UniRowOfCapsuleButtons() {
-          MooCapsuleButton({
-            text: $r('app.string.General_clear'),
-            needDoubleConfirm: true,
-            clickAction: () => {
-              // Clear all cookies
-              webview.WebCookieManager.clearAllCookiesSync();
-              this.cookies = undefined;
-              meow(`webview.WebCookieManager.clearAllCookiesSync() succeeded`, 'WoofCookiesDialog', meowLevel.INFO);
-            }
-          });
-          Text($r('app.string.Cookies_clearAll')).attributeModifier(new MooTextModifier());
-        };
+        MooCapsuleButton({
+          text: $r('app.string.Cookies_clearAll'),
+          needDoubleConfirm: true,
+          clickAction: () => {
+            // Clear all cookies
+            webview.WebCookieManager.clearAllCookiesSync();
+            this.cookies = undefined;
+            meow(`webview.WebCookieManager.clearAllCookiesSync() succeeded`, 'WoofCookiesDialog', meowLevel.INFO);
+          }
+        });
       }.alignItems(HorizontalAlign.Start);
     }
     .onAppear(() => {
