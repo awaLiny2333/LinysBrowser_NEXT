@@ -2,9 +2,11 @@ import lazy { webview } from "@kit.ArkWeb";
 import lazy { BusinessError } from "@kit.BasicServicesKit";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import lazy { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
+import { defaultMooCapsuleButtonHeight, MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
 import { MooTextButton } from "../../../components/common/MooTextButton";
 import { MooTextInputV2 } from "../../../components/common/MooTextInputV2";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
+import { UniRowOfCapsuleButtons } from "../../../components/common/UniRowOfCapsuleButtons";
 import { standardSpacing } from "../../../components/settings";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { WoofUniFrame } from "../../WoofUniFrame";
@@ -28,38 +30,64 @@ struct CookiesPanel {
   }
 
   build() {
-    Column({ space: standardSpacing }) {
-      if (this.cookies) {
-        Text(this.cookies).attributeModifier(new MooTextModifier());
-      } else {
-        MooTextButton({
-          text: $r('app.string.General_empty'),
-        });
+    Stack() {
+      // Cookies
+      List() {
+        ListItem() {
+          if (this.cookies) {
+            Text(this.cookies).attributeModifier(new MooTextModifier());
+          } else {
+            MooTextButton({
+              text: $r('app.string.General_empty'),
+            });
+          }
+        };
       }
+      .height('auto')
+      .width('100%')
+      .margin({ bottom: defaultMooCapsuleButtonHeight * 2 + standardSpacing * 2 });
 
-      // Search bar
-      MooTextInputV2({
-        icon: $r('sys.symbol.magnifyingglass'),
-        text: this.searchKey,
-        placeholder: '',
-        myId: this.searchInputId,
-        onChange: (value) => {
-          this.searchKey = value;
-          // this.search();
-        },
-        onSubmit: () => {
-          this.search();
-          setTimeout(() => {
-            this.focusInput();
-          }, 10);
-        }
-      });
+      // Bottom bar
+      Column({ space: standardSpacing }) {
+        // Search bar
+        MooTextInputV2({
+          icon: $r('sys.symbol.magnifyingglass'),
+          text: this.searchKey,
+          placeholder: '',
+          myId: this.searchInputId,
+          onChange: (value) => {
+            this.searchKey = value;
+            // this.search();
+          },
+          onSubmit: () => {
+            this.search();
+            setTimeout(() => {
+              this.focusInput();
+            }, 10);
+          }
+        });
+
+        // Clear
+        UniRowOfCapsuleButtons() {
+          MooCapsuleButton({
+            text: $r('app.string.General_clear'),
+            needDoubleConfirm: true,
+            clickAction: () => {
+              // Clear all cookies
+              webview.WebCookieManager.clearAllCookiesSync();
+              this.cookies = undefined;
+              meow(`webview.WebCookieManager.clearAllCookiesSync() succeeded`, 'WoofCookiesDialog', meowLevel.INFO);
+            }
+          });
+          Text($r('app.string.Cookies_clearAll')).attributeModifier(new MooTextModifier());
+        };
+      }.alignItems(HorizontalAlign.Start);
     }
-    .alignItems(HorizontalAlign.Start)
     .onAppear(() => {
       this.focusInput();
     })
-    .padding(standardSpacing);
+    .padding(standardSpacing)
+    .alignContent(Alignment.Bottom);
   }
 
   /**
