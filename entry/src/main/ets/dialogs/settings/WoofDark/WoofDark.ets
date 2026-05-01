@@ -52,7 +52,7 @@ struct WoofDarkDialog {
         DarkPanel();
         MooTabSegmentV2({
           initSelected: AppStorageV2.connect(meowManagedSettings)!.settingsData[60].value as boolean ? 1 : 0,
-          items: new SegmentButtonV2Items([{ text: $r('app.string.General_disabled') }, { text: $r('app.string.General_blockListed') }]),
+          items: new SegmentButtonV2Items([{ text: $r('app.string.General_disabled') }, { text: $r('app.string.General_pardonListed') }]),
           onSelected: (index) => {
             // 'top' | 'bottom'
             const mySettings = AppStorageV2.connect(meowManagedSettings)!;

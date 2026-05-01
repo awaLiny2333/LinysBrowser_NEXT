@@ -61,6 +61,10 @@
       "value": "Disabled  󰁕"
     },
     {
+      "name": "General_pardonListed",
+      "value": "Pardon listed  󰖿"
+    },
+    {
       "name": "General_blockAll",
       "value": "Block all  󰆨"
     },
@@ -562,11 +566,11 @@
     },
     {
       "name": "AdBlocker",
-      "value": "Ad Blocker Pardons"
+      "value": "Ad Blocker"
     },
     {
       "name": "AdBlocker_tutorial",
-      "value": "Once ad blocking is on, these domains get a paw-don from the Great Filter!"
+      "value": "Once ad blocking is on, these domains get a paw-don from the Great Filter! You can also turn this whole feature off at the bottom."
     },
     {
       "name": "AdBlocker_rules",
@@ -594,11 +598,11 @@
     },
     {
       "name": "Dark",
-      "value": "Force Dark Exemptions"
+      "value": "Force Dark Mode"
     },
     {
       "name": "Dark_tutorial",
-      "value": "Once dark mode is on, these domains get a paw-don from the Great Darkener!"
+      "value": "Once dark mode is on, these domains get a paw-don from the Great Darkener! You can also turn this whole feature off at the bottom."
     },
     {
       "name": "KeyShortcuts",

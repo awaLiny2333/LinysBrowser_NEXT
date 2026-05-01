@@ -61,6 +61,10 @@
       "value": "关掉  󰁕"
     },
     {
+      "name": "General_pardonListed",
+      "value": "赦免上表  󰖿"
+    },
+    {
       "name": "General_blockAll",
       "value": "全部屏蔽  󰆨"
     },
@@ -562,11 +566,11 @@
     },
     {
       "name": "AdBlocker",
-      "value": "广告过滤赦免"
+      "value": "广告过滤"
     },
     {
       "name": "AdBlocker_tutorial",
-      "value": "启用广告过滤之后，此列表中的域名将会在大过滤器爪下得到赦免！"
+      "value": "启用广告过滤之后，此列表中的域名将会在大过滤器爪下得到赦免！你也可以在底下直接把整个功能关掉。"
     },
     {
       "name": "AdBlocker_rules",
@@ -591,6 +595,14 @@
     {
       "name": "JavaScripts_tutorial",
       "value": "通过此处的设置，我们可以选择屏蔽所有 / 某些域名上的网页 JavaScript！"
+    },
+    {
+      "name": "Dark",
+      "value": "强制深色模式"
+    },
+    {
+      "name": "Dark_tutorial",
+      "value": "强制深色模式开启后，此列表中的域名将会在大黑化器爪下得到赦免！你也可以在底下直接把整个功能关掉。"
     },
     {
       "name": "KeyShortcuts",
