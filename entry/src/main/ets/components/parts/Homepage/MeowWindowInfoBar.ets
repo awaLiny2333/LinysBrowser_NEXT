@@ -71,7 +71,7 @@ struct MeowWindowInfoBar {
     .alignItems(isPreferRightHand() ? HorizontalAlign.End : HorizontalAlign.Start)
     .margin({ left: this.myAvoid.left, right: this.myAvoid.right })
     .padding(this.mySpacing())
-    .borderRadius(defaultInnerRadius + (this.isEditing ? standardSpacing * 0.7 : standardSpacing * 0.4))
+    .borderRadius(defaultInnerRadius + (this.isEditing ? standardSpacing * 0.5 : standardSpacing * 0.3))
     .border(useEffects() ? { width: 1, color: $r('sys.color.icon_fourth') } : { width: 0 })
     .backgroundColor(getColor(meowThemeColorType.PRIMARY));
   }

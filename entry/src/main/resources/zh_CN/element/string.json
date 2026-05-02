@@ -733,6 +733,34 @@
       "value": "清除【所有】域名的曲奇  󰀁"
     },
     {
+      "name": "ResMonitor_CPU",
+      "value": "CPU"
+    },
+    {
+      "name": "ResMonitor_VRAM",
+      "value": "显存"
+    },
+    {
+      "name": "ResMonitor_PSS",
+      "value": "物理集"
+    },
+    {
+      "name": "ResMonitor_VSS",
+      "value": "虚拟集"
+    },
+    {
+      "name": "ResMonitor_nativeHeap",
+      "value": "原生堆"
+    },
+    {
+      "name": "ResMonitor_sharedDirty",
+      "value": "共享脏"
+    },
+    {
+      "name": "ResMonitor_privateDirty",
+      "value": "私有脏"
+    },
+    {
       "name": "Permission_reason_DETECT_GESTURES",
       "value": "让冲浪喵知道你正在使用哪只手，并自动响应优化布局！"
     },

@@ -7,6 +7,7 @@ import lazy { defaultDecorHeight, defaultInnerRadius, shortModeThreshold, update
 import lazy { MooTextModifier } from '../components/common/MooTextModifier';
 import { meowButtons } from '../components/parts/Buttons/constants';
 import lazy { MeowButtonsMore } from '../components/parts/Buttons/MeowButtonsMore';
+import { MeowResMonitor } from '../components/parts/Homepage/MeowResMonitor';
 import lazy { MeowSearchBar } from '../components/parts/Homepage/MeowSearchBar';
 import lazy { MeowShortcutsPanel } from '../components/parts/Homepage/MeowShortcuts';
 import lazy { MeowTitleBar, MeowTitleBarHeight } from '../components/parts/Homepage/MeowTitleBar';
@@ -104,8 +105,9 @@ struct Index {
           myUi: this.myUi
         });
 
-        // Top Title Bar
+        // Title Bar
         if (!titleBarPositionBottom()) {
+          // Top Title Bar
           Column({ space: standardSpacing }) {
             MeowTitleBar({
               myUi: this.myUi,
@@ -121,7 +123,6 @@ struct Index {
                 myAvoid: this.myAvoid,
               });
             }
-
             if (this.myUi.showMore) {
               this.MoreOptions();
             }
@@ -136,15 +137,12 @@ struct Index {
           .translate({ y: this.topAvoidHeight() })
           .padding(!titleBarPositionBottom() ? { bottom: standardSpacing } : 0)
           .width('100%');
-        }
-
-        // Bottom Title Bar
-        if (titleBarPositionBottom()) {
+        } else {
+          // Bottom Title Bar
           Column({ space: standardSpacing }) {
             if (this.myUi.showMore) {
               this.MoreOptions();
             }
-
             MeowTitleBar({
               myUi: this.myUi,
               myAvoid: this.myAvoid,
@@ -267,7 +265,11 @@ struct Index {
           myLayout: this.myLayout,
           myAvoid: this.myAvoid,
         });
-
+        if (this.mySettings.settingsData[75].value as boolean) {
+          MeowResMonitor({
+            myAvoid: this.myAvoid
+          });
+        }
         // Text('Test').height(800);
       }
       .alignItems(isPreferRightHand() ? HorizontalAlign.End : HorizontalAlign.Start)
