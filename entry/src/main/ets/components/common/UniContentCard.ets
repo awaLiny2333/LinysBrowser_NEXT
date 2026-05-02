@@ -13,6 +13,7 @@ struct UniContentCard {
   @Param @Once title: ResourceStr = '';
   @Param @Once icon: Resource = $r('sys.symbol.gearshape');
   @Param @Once roundedRadius: number = defaultRoundedRadius;
+  @Param @Once space: number = standardSpacing;
   // UI
   @Param @Once expanded: boolean = this.title ? false : true;
   @Param @Once shiftBackgroundColor: boolean = false;
@@ -21,7 +22,7 @@ struct UniContentCard {
   @Event clickAction: () => void;
 
   build() {
-    Column({ space: standardSpacing }) {
+    Column({ space: this.space }) {
       if (this.title) {
         Row({ space: standardSpacing }) {
           SymbolGlyph(this.icon)

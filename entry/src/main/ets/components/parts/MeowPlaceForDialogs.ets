@@ -21,6 +21,7 @@ import lazy { localMessage, meowAppMessageType } from '../../hosts/system/window
 import { WoofHistoryDialog } from '../../dialogs/parts/WoofHistory/WoofHistory';
 import { WoofFaultLogsDialog } from '../../dialogs/settings/WoofFaultLogs/WoofFaultLogs';
 import { WoofCookiesDialog } from '../../dialogs/settings/WoofCookies/WoofCookies';
+import { WoofUpdatesDialog } from '../../dialogs/settings/WoofUpdates/WoofUpdates';
 
 /**
  * A place for dialogs.
@@ -180,6 +181,13 @@ struct MeowPlaceForDialogs {
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
+  woofUpdatesDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofUpdatesDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    alignment: DialogAlignment.Center,
+    width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
 
   build() {
     // Nothing
@@ -242,6 +250,9 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.FAULTLOGS:
         this.woofFaultLogsDialogController.open();
+        break;
+      case openDialogRequestType.UPDATES:
+        this.woofUpdatesDialogController.open();
         break;
       default:
         break;

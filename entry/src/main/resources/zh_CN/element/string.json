@@ -761,6 +761,10 @@
       "value": "私有脏"
     },
     {
+      "name": "Updates",
+      "value": "更新历史"
+    },
+    {
       "name": "Permission_reason_DETECT_GESTURES",
       "value": "让冲浪喵知道你正在使用哪只手，并自动响应优化布局！"
     },

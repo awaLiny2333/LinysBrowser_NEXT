@@ -5,10 +5,13 @@ import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton';
 import BuildProfile from 'BuildProfile';
+import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
+import { meowDialogManager,openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 
 @ComponentV2
 struct SettingsAbout {
   // Hosts
+  @Param @Require myDialog: meowDialogManager;
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
   // Local
   @Local clickCount: number = 0;
@@ -66,7 +69,7 @@ struct SettingsAbout {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_about_update_history'),
           clickAction: () => {
-            // TODO: Update history entrance.
+            requestDialog(this.myDialog, openDialogRequestType.UPDATES, undefined, true);
           }
         });
       };

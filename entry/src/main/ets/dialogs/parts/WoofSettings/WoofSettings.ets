@@ -56,7 +56,7 @@ struct WoofSettings {
           SettingsCardboardBox({ myDialog: this.myDialog });
         };
         FlowItem() {
-          SettingsAbout();
+          SettingsAbout({ myDialog: this.myDialog });
         };
         if (getDevMode()) {
           FlowItem() {

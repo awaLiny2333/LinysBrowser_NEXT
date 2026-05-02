@@ -88,7 +88,8 @@ export enum openDialogRequestType {
   BUTTONS,
   HISTORY,
   COOKIES,
-  FAULTLOGS
+  FAULTLOGS,
+  UPDATES
 }
 
 /**
