@@ -69,22 +69,22 @@ export class meowUiStatuses {
       }
     }
 
-    // Back in BrowserCat UI.
-    if (this.showMore) {
-      animateToImmediately(defaultAnimation(), () => {
-        this.showMore = false;
-      });
-      didSomething = true;
-    }
-
     if (this.searchBarFocused) {
       uiContext.getFocusController().clearFocus();
       animateToImmediately(defaultAnimation(), () => {
         this.searchBarFocused = false;
       });
-      didSomething = true;
+      return true;
     }
 
+    // Back in BrowserCat UI.
+    if (this.showMore) {
+      animateToImmediately(defaultAnimation(), () => {
+        this.showMore = false;
+      });
+      return true;
+    }
+    
     return didSomething;
   }
 

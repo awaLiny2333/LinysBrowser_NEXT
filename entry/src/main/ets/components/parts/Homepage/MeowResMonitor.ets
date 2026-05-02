@@ -97,7 +97,7 @@ struct DataBlock {
       Text(this.value).attributeModifier(new MooTextModifier(mooTextType.TITLE));
     }
     .padding(standardSpacing * 0.85)
-    .backgroundColor(useEffects() ? getColor(meowThemeColorType.PRIMARY) : getColor(meowThemeColorType.SECONDARY))
+    .backgroundColor(getColor(meowThemeColorType.PRIMARY))
     .border({ radius: defaultInnerRadius + standardSpacing * 0.25, width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth') })
     .alignItems(HorizontalAlign.Start);
   }
