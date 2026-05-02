@@ -1,5 +1,5 @@
 import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
-import { mooTextType, standardSpacing } from '../../../../components/settings';
+import { defaultAnimation, mooTextType, standardSpacing } from '../../../../components/settings';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
@@ -10,6 +10,9 @@ import BuildProfile from 'BuildProfile';
 struct SettingsAbout {
   // Hosts
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+  // Local
+  @Local clickCount: number = 0;
+  timeoutId: number | undefined = undefined;
 
   build() {
     Column({ space: standardSpacing }) {
@@ -21,7 +24,21 @@ struct SettingsAbout {
 
       // Debug
       UniContentCard({ title: $r('app.string.Settings_category_about'), icon: $r('sys.symbol.edit_badge_star') }) {
-        Text(`${BuildProfile.VERSION_NAME} (${BuildProfile.VERSION_CODE}) [${BuildProfile.BUILD_MODE_NAME}]`).attributeModifier(new MooTextModifier(mooTextType.TITLE)); // Version info
+        Text(`${BuildProfile.VERSION_NAME} (${BuildProfile.VERSION_CODE}) [${BuildProfile.BUILD_MODE_NAME}]`).attributeModifier(new MooTextModifier(mooTextType.TITLE))
+          .onClick(() => {
+            // Turn on Deveowlopers Options
+            this.clickCount++;
+            if (this.clickCount == 7) {
+              animateToImmediately(defaultAnimation(), () => {
+                this.mySettings.setByIndex(74, true);
+              });
+            }
+            clearTimeout(this.timeoutId);
+            this.timeoutId = setTimeout(() => {
+              this.clickCount = 0;
+            }, 2000);
+          }); // Version info
+
         Text(`Built @ ${BuildProfile.LINYS_BUILD_TIME}`).attributeModifier(new MooTextModifier()).opacity(0.75); // Build time
         Text(`${BuildProfile.BUNDLE_NAME}`).attributeModifier(new MooTextModifier()).opacity(0.5); // Bundle name
         MooCapsuleButton({
@@ -43,7 +60,7 @@ struct SettingsAbout {
           }
         });
       };
-      
+
       // Debug
       UniContentCard({ title: $r('app.string.Settings_category_about_update'), icon: $r('sys.symbol.clock_arrow_2_circlepath') }) {
         MooCapsuleButton({
