@@ -1,7 +1,7 @@
 import { meowAvoid } from '../../../catstypicalframework/hosts/meowAvoid';
 import { standardSpacing, getColor, meowThemeColorType, fontSizeMedium, useEffects, isPreferRightHand, defaultAnimation } from '../../settings';
 import { MeowButtonsSlot } from '../Buttons/MeowButtonsSlot';
-import { meowButtons } from '../Buttons/constants';
+import { meowButtonsType } from '../Buttons/constants';
 import { MeowTitleBarHeight } from './MeowTitleBar';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
@@ -40,14 +40,14 @@ struct MeowSearchBar {
         MeowButtonsSlot({
           myUi: this.myUi,
           myDialog: this.myDialog,
-          buttons: this.mySettings.settingsData[77].value as meowButtons[]
+          buttons: this.mySettings.settingsData[77].value as meowButtonsType[]
         });
       }
       // Always on
       MeowButtonsSlot({
         myUi: this.myUi,
         myDialog: this.myDialog,
-        buttons: this.mySettings.settingsData[78].value as meowButtons[]
+        buttons: this.mySettings.settingsData[78].value as meowButtonsType[]
       });
     }
     .padding(this.needFullPadding ? { left: standardSpacing, right: standardSpacing } : 0)

@@ -1,8 +1,7 @@
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
-import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
-import { getColor, meowFlexOptions, meowThemeColorType, mooTextType, standardSpacing, useEffects } from "../../../components/settings";
+import { meowFlexOptions, mooTextType, standardSpacing } from "../../../components/settings";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { WoofUniFrame } from "../../WoofUniFrame";
 import { updateHistories } from "./updateHistories";
@@ -17,23 +16,17 @@ struct UpdateRecords {
       Repeat(updateHistories)
         .each((item) => {
           ListItem() {
-            UniContentCard({ space: standardSpacing * 1.5 }) {
+            UniContentCard({ space: standardSpacing * 1.618 }) {
               // Title & Tags
               Flex(meowFlexOptions) {
-                // Title
                 Column() {
                   Text(item.item.version).attributeModifier(new MooTextModifier(mooTextType.TITLE));
                   Text(item.item.date).attributeModifier(new MooTextModifier()).opacity(0.5);
-                }
-                .alignItems(HorizontalAlign.Start);
-                // Tags
-                Repeat(item.item.tag)
-                  .each((tag) => {
-                    Text(tag.item).attributeModifier(new MooTextModifier())
-                      .padding(standardSpacing * 0.75)
-                      .backgroundColor(useEffects() ? getColor(meowThemeColorType.PRIMARY) : getColor(meowThemeColorType.SECONDARY))
-                      .border({ width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth'), radius: defaultInnerRadius });
-                  });
+                }.alignItems(HorizontalAlign.Start); // Title
+                Blank(); // Spacing
+                Repeat(item.item.tag).each((tag) => {
+                  Text(tag.item).attributeModifier(new MooTextModifier(mooTextType.TITLE)).padding(standardSpacing * 0.5).opacity(0.5);
+                }); // Tags
               };
               // Desc
               Text(item.item.description_zh).attributeModifier(new MooTextModifier());

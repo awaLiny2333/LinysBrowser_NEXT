@@ -4,7 +4,7 @@ import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDia
 import { meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
 import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { isPreferRightHand } from '../../settings';
-import { meowButtons } from './constants';
+import { meowButtonsType } from './constants';
 import { MeowButtonsSlot } from './MeowButtonsSlot';
 
 @ComponentV2
@@ -18,7 +18,7 @@ export struct MeowButtonsMore {
     MeowButtonsSlot({
       myDialog: this.myDialog,
       myUi: this.myUi,
-      buttons: this.mySettings.settingsData[80].value as meowButtons[]
+      buttons: this.mySettings.settingsData[80].value as meowButtonsType[]
     })
       .alignSelf(isPreferRightHand() ? ItemAlign.End : ItemAlign.Start)
       .padding({ left: this.myAvoid.left, right: this.myAvoid.right });

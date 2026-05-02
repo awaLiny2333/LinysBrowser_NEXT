@@ -1,67 +1,87 @@
+import { window } from '@kit.ArkUI';
 import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
-import { meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
+import { allWindowOrientations, meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
 import { MooSymbolButton } from '../../common/MooSymbolButton';
-import { defaultAnimation } from '../../settings';
-import { getButtonIcon, meowButtons } from './constants';
+import { defaultAnimation, getColor, meowThemeColorType } from '../../settings';
+import { getButtonIcon, meowButtonsType } from './constants';
 
 @ComponentV2
 struct MeowButton {
   @Param @Require myDialog: meowDialogManager;
   @Param @Require myUi: meowUiStatuses;
-  @Param @Require type: meowButtons;
+  @Param @Require type: meowButtonsType;
+  // Local
+  @Local showMenu: boolean = false;
+
+  /**
+   * Determines if this button should be displayed. (E.g. The Scratching Board button should only show up if it holds contents)
+   * @returns True or false!
+   */
+  showMe() {
+    return true;
+  }
 
   build() {
     if (this.showMe()) {
       MooSymbolButton({
         icon: getButtonIcon(this.type),
+        isEnabled: this.myEnabled(),
         clickAction: () => {
-          this.clickAction();
+          this.myClickAction();
         },
-        onHold: this.onHold(),
-      });
+        onHold: this.myOnHold(),
+      })
+        .bindMenu(this.showMenu, this.myMenu, {
+          onWillDisappear: () => {
+            this.showMenu = false;
+          }
+        });
     }
   }
 
   /**
    * Different things to happen after clicking the button.
    */
-  clickAction() {
+  myClickAction() {
     // To be continued...
     switch (this.type) {
-      case meowButtons.MORE:
+      case meowButtonsType.MORE:
         animateToImmediately(defaultAnimation(), () => {
           this.myUi.showMore = !this.myUi.showMore;
         });
         break;
-      case meowButtons.TABS:
+      case meowButtonsType.TABS:
         this.myUi.showTabs = !this.myUi.showTabs;
         break;
-      case meowButtons.BOOKMARKS:
+      case meowButtonsType.BOOKMARKS:
         requestDialog(this.myDialog, openDialogRequestType.BOOKMARKS);
         break;
-      case meowButtons.DOWNLOADS:
+      case meowButtonsType.DOWNLOADS:
         break;
-      case meowButtons.SETTINGS:
+      case meowButtonsType.SETTINGS:
         requestDialog(this.myDialog, openDialogRequestType.SETTINGS);
         break;
-      case meowButtons.ADBLOCKER:
+      case meowButtonsType.ADBLOCKER:
         requestDialog(this.myDialog, openDialogRequestType.ADBLOCKER);
         break;
-      case meowButtons.JAVASCRIPTS:
+      case meowButtonsType.JAVASCRIPTS:
         requestDialog(this.myDialog, openDialogRequestType.WEB_JAVASCRIPTS);
         break;
-      case meowButtons.IMAGES:
+      case meowButtonsType.IMAGES:
         requestDialog(this.myDialog, openDialogRequestType.WEB_IMAGES);
         break;
-      case meowButtons.DARK:
+      case meowButtonsType.DARK:
         requestDialog(this.myDialog, openDialogRequestType.DARK);
         break;
-      case meowButtons.HISTORY:
+      case meowButtonsType.HISTORY:
         requestDialog(this.myDialog, openDialogRequestType.HISTORY);
         break;
-      case meowButtons.COOKIES:
+      case meowButtonsType.COOKIES:
         requestDialog(this.myDialog, openDialogRequestType.COOKIES, 'meow.url'); // TODO: auto pass in current viewing url.
+        break;
+      case meowButtonsType.ORIENTATION:
+        this.showMenu = !this.showMenu;
         break;
       default:
         break;
@@ -72,12 +92,12 @@ struct MeowButton {
    * Determines if this button is highlighted. (E.g. the Tabs button is highlighted if the tabs bar is being displayed)
    * @returns True, false or undefined.
    */
-  onHold() {
+  myOnHold() {
     // To be continued...
     switch (this.type) {
-      case meowButtons.MORE:
+      case meowButtonsType.MORE:
         return this.myUi.showMore;
-      case meowButtons.TABS:
+      case meowButtonsType.TABS:
         return this.myUi.showTabs;
       default:
         return undefined;
@@ -85,11 +105,38 @@ struct MeowButton {
   }
 
   /**
-   * Determines if this button should be displayed. (E.g. The Scratching Board button should only show up if it holds contents)
-   * @returns True or false!
+   * Determines if current button is enabled.
+   * @returns True or false.
    */
-  showMe() {
-    return true;
+  myEnabled() {
+    switch (this.type) {
+      case meowButtonsType.EXTENSIONS:
+        return false;
+      default:
+        return true;
+    }
+  }
+
+  /**
+   * The general menu.
+   */
+  @Builder
+  myMenu() {
+    if (this.type == meowButtonsType.ORIENTATION) {
+      Menu() {
+        ForEach(allWindowOrientations, (ori: window.Orientation, idx: number) => {
+          MenuItem({
+            content: $r('app.string.Orientation_select_'.concat(idx.toString())),
+          })
+            .onClick(() => {
+              this.myUi.setOrientation(ori);
+            })
+            .backgroundColor(ori == this.myUi.orientation ? getColor(meowThemeColorType.SECONDARY) : undefined);
+        });
+      }
+      .fontColor(getColor(meowThemeColorType.FONT))
+      .backgroundColor(getColor(meowThemeColorType.PRIMARY));
+    }
   }
 }
 

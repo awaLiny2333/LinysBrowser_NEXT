@@ -89,7 +89,10 @@ export enum openDialogRequestType {
   HISTORY,
   COOKIES,
   FAULTLOGS,
-  UPDATES
+  UPDATES,
+  QUICK_UA,
+  QR,
+  DOWNLOADS
 }
 
 /**

@@ -3,13 +3,13 @@ import mooMenuButton from "../../../components/common/MooMenuButton";
 import { MooSymbolButton } from "../../../components/common/MooSymbolButton";
 import { MooTextButton } from "../../../components/common/MooTextButton";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
-import { buttonIconArray, generalButtonHeight, getButtonIcon, meowButtons } from "../../../components/parts/Buttons/constants";
+import { buttonIconArray, generalButtonHeight, getButtonIcon, meowButtonsType } from "../../../components/parts/Buttons/constants";
 import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from "../../../components/settings";
 
 @ComponentV2
 struct ButtonSlot {
   // Params
-  @Param @Require buttons: meowButtons[];
+  @Param @Require buttons: meowButtonsType[];
   @Param @Require desc: ResourceStr;
   // Local
   @Local showAdd: boolean = false;
@@ -23,7 +23,7 @@ struct ButtonSlot {
       // List
       List({ space: standardSpacing * 0.125 }) {
         Repeat(this.buttons)
-          .each((obj: RepeatItem<meowButtons>) => {
+          .each((obj: RepeatItem<meowButtonsType>) => {
             ListItem() {
               ButtonSlotButton({
                 item: obj.item,
@@ -78,7 +78,7 @@ struct ButtonSlot {
   addMenuBuilder() {
     List() {
       Repeat(buttonIconArray)
-        .each((obj: RepeatItem<[meowButtons, Resource]>) => {
+        .each((obj: RepeatItem<[meowButtonsType, Resource]>) => {
           ListItem() {
             MooSymbolButton({
               icon: obj.item[1], clickAction: () => {
@@ -102,7 +102,7 @@ export { ButtonSlot };
 
 @ComponentV2
 struct ButtonSlotButton {
-  @Param @Require item: meowButtons;
+  @Param @Require item: meowButtonsType;
   @Local isMenu: boolean = false;
   // Events
   @Event requestDelete: () => void;

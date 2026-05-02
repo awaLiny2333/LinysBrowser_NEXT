@@ -765,6 +765,78 @@
       "value": "更新历史"
     },
     {
+      "name": "Orientation_select_0",
+      "value": "未定义／系统判定"
+    },
+    {
+      "name": "Orientation_select_1",
+      "value": "竖屏"
+    },
+    {
+      "name": "Orientation_select_2",
+      "value": "横屏"
+    },
+    {
+      "name": "Orientation_select_3",
+      "value": "反向竖屏"
+    },
+    {
+      "name": "Orientation_select_4",
+      "value": "反向横屏"
+    },
+    {
+      "name": "Orientation_select_5",
+      "value": "自动旋转／不受控制中心控制"
+    },
+    {
+      "name": "Orientation_select_6",
+      "value": "自动竖向旋转／不受控制中心控制"
+    },
+    {
+      "name": "Orientation_select_7",
+      "value": "自动横向旋转／不受控制中心控制"
+    },
+    {
+      "name": "Orientation_select_8",
+      "value": "自动旋转／控制中心控制／不受系统限制"
+    },
+    {
+      "name": "Orientation_select_9",
+      "value": "自动竖向旋转／控制中心控制"
+    },
+    {
+      "name": "Orientation_select_10",
+      "value": "自动横向旋转／控制中心控制"
+    },
+    {
+      "name": "Orientation_select_11",
+      "value": "锁定"
+    },
+    {
+      "name": "Orientation_select_12",
+      "value": "自动旋转／控制中心控制／受系统限制"
+    },
+    {
+      "name": "Orientation_select_13",
+      "value": "临时竖屏"
+    },
+    {
+      "name": "Orientation_select_14",
+      "value": "临时横屏"
+    },
+    {
+      "name": "Orientation_select_15",
+      "value": "临时反向竖屏"
+    },
+    {
+      "name": "Orientation_select_16",
+      "value": "临时反向横屏"
+    },
+    {
+      "name": "Orientation_select_17",
+      "value": "跟随桌面"
+    },
+    {
       "name": "Permission_reason_DETECT_GESTURES",
       "value": "让冲浪喵知道你正在使用哪只手，并自动响应优化布局！"
     },

@@ -25,7 +25,7 @@ export const defaultHorizontalTabsHeight = 50;
 
 export const meowFlexOptions: FlexOptions = {
   wrap: FlexWrap.Wrap,
-  space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) },
+  space: { main: LengthMetrics.vp(standardSpacing), cross: LengthMetrics.vp(standardSpacing) },
   alignItems: ItemAlign.Center
 };
 

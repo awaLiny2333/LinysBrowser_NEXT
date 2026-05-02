@@ -1,5 +1,6 @@
 import { getRandomEmoticon } from "../../../../catstypicalframework/utils/meow";
-import { meowButtons } from "../../../../components/parts/Buttons/constants";
+import { meowButtonsType } from "../../../../components/parts/Buttons/constants";
+
 /**
  * Default user agents in a specified string format.
  * @returns Firefox, Chrome and Edge.
@@ -56,21 +57,21 @@ export function defaultSearchEngine() {
 // Defaults for the button system.
 
 export function defaultButtonsControl() {
-  return [meowButtons.BACKWARD, meowButtons.FORWARD, meowButtons.REFRESH, meowButtons.HOME].join('\n');
+  return [meowButtonsType.BACKWARD, meowButtonsType.FORWARD, meowButtonsType.REFRESH, meowButtonsType.HOME].join('\n');
 }
 
 export function defaultButtonsAddressBarOnFocus() {
-  return [meowButtons.GO].join('\n');
+  return [meowButtonsType.GO].join('\n');
 }
 
 export function defaultButtonsAddressBar() {
-  return [meowButtons.ADDRESS_KEYWORD_SWITH, meowButtons.RE_SEARCH].join('\n');
+  return [meowButtonsType.ADDRESS_KEYWORD_SWITH, meowButtonsType.RE_SEARCH].join('\n');
 }
 
 export function defaultButtonsTitle() {
-  return [meowButtons.MORE, meowButtons.SCRATCHING_BOARD, meowButtons.TABS, meowButtons.BOOKMARKS, meowButtons.DOWNLOADS, meowButtons.SETTINGS].join('\n');
+  return [meowButtonsType.MORE, meowButtonsType.SCRATCHING_BOARD, meowButtonsType.TABS, meowButtonsType.BOOKMARKS, meowButtonsType.DOWNLOADS, meowButtonsType.SETTINGS].join('\n');
 }
 
 export function defaltButtonsMore() {
-  return [meowButtons.EXTENSIONS, meowButtons.ROTATE, meowButtons.SAVE, meowButtons.PRINT, meowButtons.DARK, meowButtons.COOKIES, meowButtons.IMAGES, meowButtons.JAVASCRIPTS, meowButtons.ADBLOCKER, meowButtons.HISTORY, meowButtons.USERAGENTS, meowButtons.QRCODE, meowButtons.FULLSCREEN].join('\n');
+  return [meowButtonsType.EXTENSIONS, meowButtonsType.ORIENTATION, meowButtonsType.SAVE, meowButtonsType.PRINT, meowButtonsType.DARK, meowButtonsType.COOKIES, meowButtonsType.IMAGES, meowButtonsType.JAVASCRIPTS, meowButtonsType.ADBLOCKER, meowButtonsType.HISTORY, meowButtonsType.USERAGENTS, meowButtonsType.QRCODE, meowButtonsType.FULLSCREEN].join('\n');
 }

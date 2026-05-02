@@ -5,7 +5,7 @@ import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDia
 import { meowUiStatuses } from "../../../hosts/system/windows/classes/meowUiStatuses";
 import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { isPreferRightHand, standardSpacing } from "../../settings";
-import { meowButtons } from "../Buttons/constants";
+import { meowButtonsType } from "../Buttons/constants";
 import { MeowButtonsSlot } from "../Buttons/MeowButtonsSlot";
 import { MeowSearchBar } from "./MeowSearchBar";
 
@@ -19,11 +19,11 @@ struct MeowTitleBar {
 
   build() {
     Row({ space: standardSpacing * 0.125 }) {
-      if ((this.mySettings.settingsData[76].value as meowButtons[]).length > 0) {
+      if ((this.mySettings.settingsData[76].value as meowButtonsType[]).length > 0) {
         MeowButtonsSlot({
           myUi: this.myUi,
           myDialog: this.myDialog,
-          buttons: this.mySettings.settingsData[76].value as meowButtons[]
+          buttons: this.mySettings.settingsData[76].value as meowButtonsType[]
         });
       }
 
@@ -37,11 +37,11 @@ struct MeowTitleBar {
         Blank();
       }
 
-      if ((this.mySettings.settingsData[79].value as meowButtons[]).length > 0) {
+      if ((this.mySettings.settingsData[79].value as meowButtonsType[]).length > 0) {
         MeowButtonsSlot({
           myUi: this.myUi,
           myDialog: this.myDialog,
-          buttons: this.mySettings.settingsData[79].value as meowButtons[]
+          buttons: this.mySettings.settingsData[79].value as meowButtonsType[]
         });
       }
     }

@@ -1,19 +1,19 @@
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
 import { standardSpacing } from '../../settings';
-import { generalButtonHeight, meowButtons } from './constants';
+import { generalButtonHeight, meowButtonsType } from './constants';
 import { MeowButton } from './MeowButton';
 
 @ComponentV2
 struct MeowButtonsSlot {
   @Param @Require myDialog: meowDialogManager;
   @Param @Require myUi: meowUiStatuses;
-  @Param @Require buttons: meowButtons[] = [];
+  @Param @Require buttons: meowButtonsType[] = [];
 
   build() {
     List({ space: standardSpacing * 0.125 }) {
       Repeat(this.buttons)
-        .each((item: RepeatItem<meowButtons>) => {
+        .each((item: RepeatItem<meowButtonsType>) => {
           ListItem() {
             MeowButton({
               myUi: this.myUi,

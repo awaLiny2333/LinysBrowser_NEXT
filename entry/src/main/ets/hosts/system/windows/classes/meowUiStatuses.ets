@@ -21,6 +21,7 @@ export class meowUiStatuses {
   @Trace showTabs: boolean = false;
   @Trace sidebarShrunk: boolean = true;
   @Trace searchBarFocused: boolean = false;
+  @Trace orientation: window.Orientation = window.Orientation.AUTO_ROTATION_RESTRICTED;
   // MeowBookmarksPanel
   @Trace openedStack: meowBookmarkItem[] = [];
   @Trace openedIndexOfLevels: (meowBookmarkItem | undefined)[] = [];
@@ -84,7 +85,7 @@ export class meowUiStatuses {
       });
       return true;
     }
-    
+
     return didSomething;
   }
 
@@ -110,6 +111,22 @@ export class meowUiStatuses {
         });
     }
   }
+
+  /**
+   * Sets the display orientation of the window.
+   */
+  async setOrientation(orientation: window.Orientation) {
+    return this.windowObj?.setPreferredOrientation(orientation)
+      .then((data) => {
+        meow(`this.windowObj?.setPreferredOrientation(orientation) Set ${orientation}, Returned: ${JSON.stringify(data)}`, `meowUiStatuses][${this.windowId}][setOrientation`);
+        this.orientation = orientation;
+        return true;
+      })
+      .catch((err: string) => {
+        meow(`this.windowObj?.setPreferredOrientation(orientation) Failed: ${JSON.stringify(err)}`, `meowUiStatuses][${this.windowId}][setOrientation`, meowLevel.ERROR);
+        return false;
+      });
+  }
 }
 
 /**
@@ -119,3 +136,28 @@ export enum meowUiGoBackSource {
   BACK,
   ESC
 }
+
+/**
+* All window orientation enums.
+* @returns The GRAND list orz.
+* */
+export const allWindowOrientations = [
+  window.Orientation.UNSPECIFIED,
+  window.Orientation.PORTRAIT,
+  window.Orientation.LANDSCAPE,
+  window.Orientation.PORTRAIT_INVERTED,
+  window.Orientation.LANDSCAPE_INVERTED,
+  window.Orientation.AUTO_ROTATION,
+  window.Orientation.AUTO_ROTATION_PORTRAIT,
+  window.Orientation.AUTO_ROTATION_LANDSCAPE,
+  window.Orientation.AUTO_ROTATION_RESTRICTED,
+  window.Orientation.AUTO_ROTATION_PORTRAIT_RESTRICTED,
+  window.Orientation.AUTO_ROTATION_LANDSCAPE_RESTRICTED,
+  window.Orientation.LOCKED,
+  window.Orientation.AUTO_ROTATION_UNSPECIFIED,
+  window.Orientation.USER_ROTATION_PORTRAIT,
+  window.Orientation.USER_ROTATION_LANDSCAPE,
+  window.Orientation.USER_ROTATION_PORTRAIT_INVERTED,
+  window.Orientation.USER_ROTATION_LANDSCAPE_INVERTED,
+  window.Orientation.FOLLOW_DESKTOP
+];

@@ -5,7 +5,7 @@ import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
 import lazy { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
 import lazy { defaultDecorHeight, defaultInnerRadius, shortModeThreshold, updateNavigationIndicator, wideModeThreshold } from '../catstypicalframework/utils/ui';
 import lazy { MooTextModifier } from '../components/common/MooTextModifier';
-import { meowButtons } from '../components/parts/Buttons/constants';
+import { meowButtonsType } from '../components/parts/Buttons/constants';
 import lazy { MeowButtonsMore } from '../components/parts/Buttons/MeowButtonsMore';
 import { MeowResMonitor } from '../components/parts/Homepage/MeowResMonitor';
 import lazy { MeowSearchBar } from '../components/parts/Homepage/MeowSearchBar';
@@ -253,7 +253,7 @@ struct Index {
   MoreOptions() {
     Scroll() {
       Column({ space: standardSpacing }) {
-        if ((this.mySettings.settingsData[80].value as meowButtons[]).length > 0) {
+        if ((this.mySettings.settingsData[80].value as meowButtonsType[]).length > 0) {
           MeowButtonsMore({
             myUi: this.myUi,
             myAvoid: this.myAvoid,
