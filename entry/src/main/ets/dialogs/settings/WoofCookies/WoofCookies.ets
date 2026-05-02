@@ -124,6 +124,7 @@ struct WoofCookiesDialog {
     WoofUniFrame({
       controller: this.controller,
       title: $r('app.string.Cookies'),
+      shiftBackgroundColor: true,
       myDialog: this.myDialog, myLayout: this.myLayout,
     }) {
       CookiesPanel({ myDialog: this.myDialog, myLayout: this.myLayout });

@@ -48,7 +48,7 @@ struct WoofUniFrame {
         // Tutorial. TODO: This nesting is ugly.
         if (this.showTutorial && !this.myLayout.shortMode) {
           Column() {
-            UniContentCard({ roundedRadius: defaultInnerRadius }) {
+            UniContentCard({ roundedRadius: defaultInnerRadius, shiftBackgroundColor: this.shiftBackgroundColor }) {
               Text(this.tutorial).attributeModifier(new MooTextModifier()).width('100%');
             };
           }.padding({ left: standardSpacing, right: standardSpacing, top: standardSpacing });

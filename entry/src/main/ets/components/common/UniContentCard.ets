@@ -15,6 +15,7 @@ struct UniContentCard {
   @Param @Once roundedRadius: number = defaultRoundedRadius;
   // UI
   @Param @Once expanded: boolean = this.title ? false : true;
+  @Param @Once shiftBackgroundColor: boolean = false;
   @Local isHover: boolean = false;
   // Events
   @Event clickAction: () => void;
@@ -40,7 +41,7 @@ struct UniContentCard {
     .brightness(this.isHover ? (this.expanded ? 1.02 : 1.05) : 1)
     .animation(defaultAnimation())
     .width('100%')
-    .backgroundColor(getColor(meowThemeColorType.PRIMARY))
+    .backgroundColor(this.shiftBackgroundColor ? getColor(meowThemeColorType.SECONDARY) : getColor(meowThemeColorType.PRIMARY))
     .border({ radius: this.roundedRadius, width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth') })
     .padding(standardSpacing * 1.25)
     .alignItems(HorizontalAlign.Start)
