@@ -1,8 +1,8 @@
-import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
-import { defaultInnerRadius, defaultRoundedRadius, measureTextWidth } from '../../../catstypicalframework/utils/ui';
-import { MooTextModifier } from '../../../components/common/MooTextModifier';
-import { fontSizeSmall, getColor, meowThemeColorType, minimumCardWidth, mooTextType, standardSpacing, useEffects } from '../../../components/settings';
-import { Contribution } from './creditDetails';
+import { meowLayout } from '../../../../catstypicalframework/hosts/meowLayout';
+import { defaultInnerRadius, defaultRoundedRadius, measureTextWidth } from '../../../../catstypicalframework/utils/ui';
+import { MooTextModifier } from '../../../../components/common/MooTextModifier';
+import { fontSizeSmall, getColor, meowThemeColorType, minimumCardWidth, mooTextType, standardSpacing, useEffects } from '../../../../components/settings';
+import { Contribution } from '../creditDetails';
 
 @ReusableV2
 @ComponentV2

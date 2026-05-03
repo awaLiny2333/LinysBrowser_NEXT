@@ -1,8 +1,8 @@
-import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
-import { MooTextModifier } from '../../../components/common/MooTextModifier';
-import { meowFlexOptions, mooTextType, standardSpacing } from '../../../components/settings';
+import { meowLayout } from '../../../../catstypicalframework/hosts/meowLayout';
+import { MooTextModifier } from '../../../../components/common/MooTextModifier';
+import { meowFlexOptions, mooTextType, standardSpacing } from '../../../../components/settings';
 import { CreditCard } from './CreditCard';
-import { CreditDetails } from './creditDetails';
+import { CreditDetails } from '../creditDetails';
 
 @ComponentV2
 struct CreditUser {
