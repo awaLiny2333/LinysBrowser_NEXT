@@ -6,7 +6,7 @@ import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton';
 import BuildProfile from 'BuildProfile';
 import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
-import { meowDialogManager,openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
+import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 
 @ComponentV2
 struct SettingsAbout {
@@ -60,6 +60,14 @@ struct SettingsAbout {
           text: $r('app.string.Settings_category_about_site_gitee'),
           clickAction: () => {
             // TODO: Site Gitee entrance.
+          }
+        });
+
+        Text($r('app.string.Settings_category_about_thank')).attributeModifier(new MooTextModifier());
+        MooCapsuleButton({
+          text: $r('app.string.Settings_category_about_credits'),
+          clickAction: () => {
+            requestDialog(this.myDialog, openDialogRequestType.CREDITS, undefined, true);
           }
         });
       };

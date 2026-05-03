@@ -90,6 +90,7 @@ export enum openDialogRequestType {
   COOKIES,
   FAULTLOGS,
   UPDATES,
+  CREDITS,
   QUICK_UA,
   QUICK_SE,
   QR,

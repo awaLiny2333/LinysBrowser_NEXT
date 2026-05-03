@@ -4,8 +4,10 @@ import { meowMisc } from '../../catstypicalframework/hosts/meowMisc';
 import { defaultRoundedRadius } from '../../catstypicalframework/utils/ui';
 import lazy { WoofBookmarksDialog } from '../../dialogs/parts/WoofBookmarks/WoofBookmarks';
 import lazy { WoofCatsDevDialog } from '../../dialogs/parts/WoofCatsDev/WoofCatsDevCards';
+import lazy { WoofCreditsDialog } from '../../dialogs/parts/WoofCredits/WoofCredits';
 import lazy { WoofHistoryDialog } from '../../dialogs/parts/WoofHistory/WoofHistory';
 import lazy { WoofSettingsDialog } from '../../dialogs/parts/WoofSettings/WoofSettings';
+import lazy { WoofUpdatesDialog } from '../../dialogs/parts/WoofUpdates/WoofUpdates';
 import lazy { WoofColorPickerDialog } from '../../dialogs/public/WoofColorPicker/WoofColorPicker';
 import lazy { WoofKeyShortcutPickerDialog } from '../../dialogs/public/WoofKeyShortcutPicker/WoofKeyShortcutPicker';
 import lazy { WoofQRDialog } from '../../dialogs/public/WoofQR/WoofQR';
@@ -18,9 +20,8 @@ import lazy { WoofFaultLogsDialog } from '../../dialogs/settings/WoofFaultLogs/W
 import lazy { WoofHomepageDialog } from '../../dialogs/settings/WoofHomepage/WoofHomepage';
 import lazy { WoofJavaScriptsDialog } from '../../dialogs/settings/WoofJavaScripts/WoofJavaScripts';
 import lazy { WoofKeyShortcutsDialog } from '../../dialogs/settings/WoofKeyShortcuts/WoofKeyShortcuts';
-import { WoofQuickSEDialog } from '../../dialogs/settings/WoofQuickSE/WoofQuickSE';
-import { WoofQuickUADialog } from '../../dialogs/settings/WoofQuickUA/WoofQuickUA';
-import lazy { WoofUpdatesDialog } from '../../dialogs/settings/WoofUpdates/WoofUpdates';
+import lazy { WoofQuickSEDialog } from '../../dialogs/settings/WoofQuickSE/WoofQuickSE';
+import lazy { WoofQuickUADialog } from '../../dialogs/settings/WoofQuickUA/WoofQuickUA';
 import lazy { WoofWebImagesDialog } from '../../dialogs/settings/WoofWebImages/WoofWebImages';
 import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
@@ -212,6 +213,13 @@ struct MeowPlaceForDialogs {
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
+  woofCreditsDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofCreditsDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    alignment: DialogAlignment.Center,
+    width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
 
   build() {
     // Nothing
@@ -286,6 +294,9 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.QUICK_SE:
         this.woofQuickSEDialoController.open();
+        break;
+      case openDialogRequestType.CREDITS:
+        this.woofCreditsDialogController.open();
         break;
       default:
         break;

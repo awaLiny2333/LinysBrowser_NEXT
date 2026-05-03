@@ -525,6 +525,10 @@
       "value": "Thank you! My friend! For having a try on this even more chaotic browser in a life that's already chaotic enough! :3"
     },
     {
+      "name": "Settings_category_about_credits",
+      "value": "Credits  󰈘"
+    },
+    {
       "name": "Settings_category_about_update",
       "value": "Updates"
     },
@@ -855,6 +859,10 @@
     {
       "name": "QuickSE",
       "value": "Re-Search On"
+    },
+    {
+      "name": "UserCredits",
+      "value": "Credits"
     },
     {
       "name": "Permission_reason_DETECT_GESTURES",

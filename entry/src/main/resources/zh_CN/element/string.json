@@ -525,6 +525,10 @@
       "value": "感谢你！我的朋友！在足够混乱的生活中选择体验这个更加混乱的浏览器！:3"
     },
     {
+      "name": "Settings_category_about_credits",
+      "value": "致谢  󰈘"
+    },
+    {
       "name": "Settings_category_about_update",
       "value": "更新"
     },
@@ -855,6 +859,10 @@
     {
       "name": "QuickSE",
       "value": "重新搜索于"
+    },
+    {
+      "name": "UserCredits",
+      "value": "致谢"
     },
     {
       "name": "Permission_reason_DETECT_GESTURES",

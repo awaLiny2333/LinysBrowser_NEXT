@@ -56,6 +56,21 @@ export function measureTextHeight(text: string, uiContext: UIContext, fontSize: 
     .width as number);
 }
 
+/**
+ * Returns the text's width.
+ * @param text The text.
+ * @param uiContext The UIContext.
+ * @param fontSize The fontSize.
+ * @param fontWeight The fontWeight.
+ * @returns The width in vp.
+ * */
+export function measureTextWidth(text: string, uiContext: UIContext, fontSize: number, fontWeight: FontWeight): number {
+  return meowPx2vp(uiContext
+    .getMeasureUtils()
+    .measureTextSize({ textContent: text, fontSize: fontSize, fontWeight: fontWeight })
+    .width as number);
+}
+
 export let defaultAnima: AnimateParam = { curve: Curve.FastOutSlowIn, duration: 350 };
 
 export const defaultRoundedRadius = 15; // 30
