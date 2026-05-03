@@ -8,6 +8,7 @@ import lazy { WoofHistoryDialog } from '../../dialogs/parts/WoofHistory/WoofHist
 import lazy { WoofSettingsDialog } from '../../dialogs/parts/WoofSettings/WoofSettings';
 import lazy { WoofColorPickerDialog } from '../../dialogs/public/WoofColorPicker/WoofColorPicker';
 import lazy { WoofKeyShortcutPickerDialog } from '../../dialogs/public/WoofKeyShortcutPicker/WoofKeyShortcutPicker';
+import { WoofQRDialog } from '../../dialogs/public/WoofQR/WoofQR';
 import lazy { WoofAdBlockerDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlocker';
 import lazy { WoofAdBlockerRulesDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlockerRules';
 import lazy { WoofButtonsDialog } from '../../dialogs/settings/WoofButtons/WoofButtons';
@@ -188,6 +189,13 @@ struct MeowPlaceForDialogs {
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
+  woofQRDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofQRDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
 
   build() {
     // Nothing
@@ -253,6 +261,9 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.UPDATES:
         this.woofUpdatesDialogController.open();
+        break;
+      case openDialogRequestType.QR:
+        this.woofQRDialogController.open();
         break;
       default:
         break;

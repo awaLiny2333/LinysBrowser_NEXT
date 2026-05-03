@@ -176,6 +176,9 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
   myUi.windowObj = window;
   myUi.windowAlias = defaultNewWindowAlias();
 
+  //Listen window status
+  myUi.listenWindowStatusChange();
+
   // Initialize App status
   const dark = context.config.colorMode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
   const smartReachabilitySaysWeShouldPreferRightHand = isPreferRightHandFromSettings(); // Set the value of myUi.smartReachabilitySaysWeShouldPreferRightHand here as a starting position for smart reachability.

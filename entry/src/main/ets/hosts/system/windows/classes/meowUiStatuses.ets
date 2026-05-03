@@ -5,6 +5,7 @@ import { meowBookmarkItem } from "../../../userdata/bookmarks/classes/meowBookma
 import { meowManagedSettings } from "../../../userdata/settings/classes/meowManagedSettings";
 import { meowDialogManager } from "../../dialogs/classes/meowDialogManager";
 import { meowAppMessage } from "./meowAppMessage";
+import { BusinessError } from "@kit.BasicServicesKit";
 
 /**
  * The statuses that are limited to the current window only.
@@ -22,6 +23,7 @@ export class meowUiStatuses {
   @Trace sidebarShrunk: boolean = true;
   @Trace searchBarFocused: boolean = false;
   @Trace orientation: window.Orientation = window.Orientation.AUTO_ROTATION_RESTRICTED;
+  @Trace fullscreenStatus: meowUiFullscreenStatus = meowUiFullscreenStatus.NONE;
   // MeowBookmarksPanel
   @Trace openedStack: meowBookmarkItem[] = [];
   @Trace openedIndexOfLevels: (meowBookmarkItem | undefined)[] = [];
@@ -34,13 +36,30 @@ export class meowUiStatuses {
   }
 
   /**
+   * Listen to window status changes.
+   */
+  listenWindowStatusChange() {
+    if (this.windowObj) {
+      try {
+        this.windowObj.on('windowStatusDidChange', (status) => {
+          // If a maximized window is manually recovered by the user:
+          if (this.fullscreenStatus == meowUiFullscreenStatus.FULLSCREEN_FULL && status != window.WindowStatusType.FULL_SCREEN) {
+            meow(`Window changed from FULL_SCREEN to ${status}! Go NONE!`, `windowStatusDidChange][${this.windowId}`);
+            this.fullscreenStatus = meowUiFullscreenStatus.NONE;
+          }
+        });
+      } catch (e) {
+        meow(`Failed to listen window status change: ${e.message}`, `meowUiStatuses][${this.windowId}`, meowLevel.ERROR);
+      }
+    }
+  }
+
+  /**
    * The universal go back action on this window.
    * @param source The source of the go back action.
    * @returns Whether ANY action was performed.
    */
   goBackUni(source: meowUiGoBackSource, uiContext: UIContext) {
-    let didSomething = false;
-
     // TODO: Do we need go back in bookmarks?
 
     // Close dialogs.
@@ -55,19 +74,26 @@ export class meowUiStatuses {
     if (source == meowUiGoBackSource.ESC) {
       const webBackEsc = mySettings.settingsData[11].value as boolean;
       if (webBackEsc) {
-        didSomething = this.goBackWeb();
-        if (didSomething) {
+        if (this.goBackWeb()) {
           return true;
         }
       }
     } else if (source == meowUiGoBackSource.BACK) {
       const webBackBack = mySettings.settingsData[10].value as boolean;
       if (webBackBack) {
-        didSomething = this.goBackWeb();
-        if (didSomething) {
+        if (this.goBackWeb()) {
           return true;
         }
       }
+    }
+
+    // Back in BrowserCat UI.
+
+    const inFullscreen = this.fullscreenStatus != meowUiFullscreenStatus.NONE;
+
+    if (inFullscreen) {
+      this.fullscreenExit();
+      return true;
     }
 
     if (this.searchBarFocused) {
@@ -78,7 +104,6 @@ export class meowUiStatuses {
       return true;
     }
 
-    // Back in BrowserCat UI.
     if (this.showMore) {
       animateToImmediately(defaultAnimation(), () => {
         this.showMore = false;
@@ -86,7 +111,7 @@ export class meowUiStatuses {
       return true;
     }
 
-    return didSomething;
+    return false;
   }
 
   /**
@@ -127,6 +152,66 @@ export class meowUiStatuses {
         return false;
       });
   }
+
+  /**
+   * Toggle the windowed fullscreen status of the window.
+   */
+  async fullscreenWindowed() {
+    switch (this.fullscreenStatus) {
+      case meowUiFullscreenStatus.NONE:
+        animateToImmediately(defaultAnimation(), () => {
+          this.fullscreenStatus = meowUiFullscreenStatus.FULLSCREEN_WINDOWED;
+        });
+        break;
+      case meowUiFullscreenStatus.FULLSCREEN_WINDOWED:
+        animateToImmediately(defaultAnimation(), () => {
+          this.fullscreenStatus = meowUiFullscreenStatus.NONE;
+        });
+        break;
+      case meowUiFullscreenStatus.FULLSCREEN_FULL:
+        // Exit fullscreen
+        this.windowObj?.recover().catch((e: BusinessError) => {
+          meow(`Failed to recover window: ${e.message}`, `meowUiStatuses][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
+        });
+        this.fullscreenStatus = meowUiFullscreenStatus.FULLSCREEN_WINDOWED;
+        break;
+    }
+  }
+
+  /**
+   * Toggle the full fullscreen status of the window.
+   */
+  async fullscreenFull() {
+    switch (this.fullscreenStatus) {
+      case meowUiFullscreenStatus.NONE:
+        this.fullscreenStatus = meowUiFullscreenStatus.FULLSCREEN_FULL; // Put this line first to avoid render / display flaws. // This seems helpless to the issue :P
+        // Enter fullscreen
+        this.windowObj?.maximize().catch((e: BusinessError) => {
+          meow(`Failed to maximize window: ${e.message}`, `meowUiStatuses][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
+        });
+        break;
+      case meowUiFullscreenStatus.FULLSCREEN_WINDOWED:
+        this.fullscreenStatus = meowUiFullscreenStatus.FULLSCREEN_FULL;
+        // Enter fullscreen
+        this.windowObj?.maximize().catch((e: BusinessError) => {
+          meow(`Failed to maximize window: ${e.message}`, `meowUiStatuses][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
+        });
+        break;
+      case meowUiFullscreenStatus.FULLSCREEN_FULL:
+        this.fullscreenExit();
+        break;
+    }
+  }
+
+  /**
+   * Exit fullscreen.
+   */
+  private fullscreenExit() {
+    this.windowObj?.recover().catch((e: BusinessError) => {
+      meow(`Failed to recover window: ${e.message}`, `meowUiStatuses][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
+    });
+    this.fullscreenStatus = meowUiFullscreenStatus.NONE;
+  }
 }
 
 /**
@@ -135,6 +220,12 @@ export class meowUiStatuses {
 export enum meowUiGoBackSource {
   BACK,
   ESC
+}
+
+export enum meowUiFullscreenStatus {
+  NONE,
+  FULLSCREEN_WINDOWED,
+  FULLSCREEN_FULL
 }
 
 /**

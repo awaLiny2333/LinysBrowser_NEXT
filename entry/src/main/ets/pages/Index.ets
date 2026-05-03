@@ -21,7 +21,7 @@ import { meowDialogManager, openDialogRequestType } from '../hosts/system/dialog
 import lazy { requestDialog } from '../hosts/system/dialogs/scripts/dialog';
 import { meowResources } from '../hosts/system/storage/classes/meowResources';
 import { meowAppStatuses } from '../hosts/system/windows/classes/meowAppStatuses';
-import { meowUiGoBackSource, meowUiStatuses } from '../hosts/system/windows/classes/meowUiStatuses';
+import { meowUiFullscreenStatus, meowUiGoBackSource, meowUiStatuses } from '../hosts/system/windows/classes/meowUiStatuses';
 import { meowAppMessageType } from '../hosts/system/windows/scripts/messaging';
 import { getLastWindowId } from '../hosts/system/windows/scripts/multiwindows';
 import { meowManagedSettings } from '../hosts/userdata/settings/classes/meowManagedSettings';
@@ -95,79 +95,82 @@ struct Index {
           .width('100%')
           .height('100%');
         }
-        .padding(this.mainFrameMargin())
+        .padding(this.myUi.fullscreenStatus == meowUiFullscreenStatus.NONE ? this.mainFrameMargin() : 0)
         .animation(defaultAnimation());
 
-        MeowTitleTop({
-          myAvoid: this.myAvoid,
-          myLayout: this.myLayout,
-          myDialog: this.myDialog,
-          myUi: this.myUi
-        });
-
-        // Title Bar
-        if (!titleBarPositionBottom()) {
-          // Top Title Bar
-          Column({ space: standardSpacing }) {
-            MeowTitleBar({
-              myUi: this.myUi,
-              myAvoid: this.myAvoid,
-              myLayout: this.myLayout,
-              myDialog: this.myDialog,
-            });
-            if (!this.myLayout.wideMode) {
-              MeowSearchBar({
-                needFullPadding: true,
+        // Decors
+        if (this.myUi.fullscreenStatus == meowUiFullscreenStatus.NONE) {
+          // Top bar
+          MeowTitleTop({
+            myAvoid: this.myAvoid,
+            myLayout: this.myLayout,
+            myDialog: this.myDialog,
+            myUi: this.myUi
+          });
+          // Title Bar
+          if (!titleBarPositionBottom()) {
+            // Top Title Bar
+            Column({ space: standardSpacing }) {
+              MeowTitleBar({
                 myUi: this.myUi,
-                myDialog: this.myDialog,
                 myAvoid: this.myAvoid,
+                myLayout: this.myLayout,
+                myDialog: this.myDialog,
               });
+              if (!this.myLayout.wideMode) {
+                MeowSearchBar({
+                  needFullPadding: true,
+                  myUi: this.myUi,
+                  myDialog: this.myDialog,
+                  myAvoid: this.myAvoid,
+                });
+              }
+              if (this.myUi.showMore) {
+                this.MoreOptions();
+              }
             }
-            if (this.myUi.showMore) {
-              this.MoreOptions();
-            }
-          }
-          .alignItems(isPreferRightHand() ? HorizontalAlign.End : HorizontalAlign.Start)
-          .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
-          .backgroundColor(getColor(meowThemeColorType.SECONDARY))
-          .alignRules({
-            top: { anchor: '__container__', align: VerticalAlign.Top },
-            middle: { anchor: '__container__', align: HorizontalAlign.Center }
-          })
-          .translate({ y: this.topAvoidHeight() })
-          .padding(!titleBarPositionBottom() ? { bottom: standardSpacing } : 0)
-          .width('100%');
-        } else {
-          // Bottom Title Bar
-          Column({ space: standardSpacing }) {
-            if (this.myUi.showMore) {
-              this.MoreOptions();
-            }
-            MeowTitleBar({
-              myUi: this.myUi,
-              myAvoid: this.myAvoid,
-              myLayout: this.myLayout,
-              myDialog: this.myDialog,
-            });
-            if (!this.myLayout.wideMode) {
-              MeowSearchBar({
-                needFullPadding: true,
+            .alignItems(isPreferRightHand() ? HorizontalAlign.End : HorizontalAlign.Start)
+            .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
+            .backgroundColor(getColor(meowThemeColorType.SECONDARY))
+            .alignRules({
+              top: { anchor: '__container__', align: VerticalAlign.Top },
+              middle: { anchor: '__container__', align: HorizontalAlign.Center }
+            })
+            .translate({ y: this.topAvoidHeight() })
+            .padding(!titleBarPositionBottom() ? { bottom: standardSpacing } : 0)
+            .width('100%');
+          } else {
+            // Bottom Title Bar
+            Column({ space: standardSpacing }) {
+              if (this.myUi.showMore) {
+                this.MoreOptions();
+              }
+              MeowTitleBar({
                 myUi: this.myUi,
-                myDialog: this.myDialog,
                 myAvoid: this.myAvoid,
+                myLayout: this.myLayout,
+                myDialog: this.myDialog,
               });
+              if (!this.myLayout.wideMode) {
+                MeowSearchBar({
+                  needFullPadding: true,
+                  myUi: this.myUi,
+                  myDialog: this.myDialog,
+                  myAvoid: this.myAvoid,
+                });
+              }
             }
+            .alignItems(isPreferRightHand() ? HorizontalAlign.End : HorizontalAlign.Start)
+            .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
+            .backgroundColor(getColor(meowThemeColorType.SECONDARY))
+            .alignRules({
+              bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+              middle: { anchor: '__container__', align: HorizontalAlign.Center }
+            })
+            .translate({ y: -this.bottomAvoidHeight() }) // Bottom avoid.
+            .padding(titleBarPositionBottom() ? { top: standardSpacing } : 0)
+            .width('100%');
           }
-          .alignItems(isPreferRightHand() ? HorizontalAlign.End : HorizontalAlign.Start)
-          .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
-          .backgroundColor(getColor(meowThemeColorType.SECONDARY))
-          .alignRules({
-            bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
-            middle: { anchor: '__container__', align: HorizontalAlign.Center }
-          })
-          .translate({ y: -this.bottomAvoidHeight() }) // Bottom avoid.
-          .padding(titleBarPositionBottom() ? { top: standardSpacing } : 0)
-          .width('100%');
         }
 
         // Gigantic window title

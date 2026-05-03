@@ -51,6 +51,7 @@ struct MeowPlaceForKeyShortcuts {
         meow(`Search in Page!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
       });
       Blank().keyboardShortcut(this.myKey.fullscreen.value, this.myKey.fullscreen.keys, () => {
+        this.myUi.fullscreenFull();
         meow(`Fullscreen!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
       });
       Blank().keyboardShortcut(this.myKey.history.value, this.myKey.history.keys, () => {
@@ -78,6 +79,7 @@ struct MeowPlaceForKeyShortcuts {
         meow(`Zones!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
       });
       Blank().keyboardShortcut(this.myKey.fullscreenWindowed.value, this.myKey.fullscreenWindowed.keys, () => {
+        this.myUi.fullscreenWindowed();
         meow(`Windowed Fullscreen!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
       });
     };

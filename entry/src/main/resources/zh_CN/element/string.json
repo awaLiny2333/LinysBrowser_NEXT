@@ -837,6 +837,18 @@
       "value": "跟随桌面"
     },
     {
+      "name": "Fullscreen_full",
+      "value": "全屏"
+    },
+    {
+      "name": "Fullscreen_windowed",
+      "value": "窗口化全屏"
+    },
+    {
+      "name": "QR",
+      "value": "二维码"
+    },
+    {
       "name": "Permission_reason_DETECT_GESTURES",
       "value": "让冲浪喵知道你正在使用哪只手，并自动响应优化布局！"
     },

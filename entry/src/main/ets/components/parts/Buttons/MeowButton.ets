@@ -1,4 +1,3 @@
-import { window } from '@kit.ArkUI';
 import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
 import { allWindowOrientations, meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
@@ -80,7 +79,13 @@ struct MeowButton {
       case meowButtonsType.COOKIES:
         requestDialog(this.myDialog, openDialogRequestType.COOKIES, 'meow.url'); // TODO: auto pass in current viewing url.
         break;
+      case meowButtonsType.QRCODE:
+        requestDialog(this.myDialog, openDialogRequestType.QR, ['Title', 'meow.url']); // TODO: auto pass in current viewing url.
+        break;
       case meowButtonsType.ORIENTATION:
+        this.showMenu = !this.showMenu;
+        break;
+      case meowButtonsType.FULLSCREEN:
         this.showMenu = !this.showMenu;
         break;
       default:
@@ -124,15 +129,35 @@ struct MeowButton {
   myMenu() {
     if (this.type == meowButtonsType.ORIENTATION) {
       Menu() {
-        ForEach(allWindowOrientations, (ori: window.Orientation, idx: number) => {
+        Repeat(allWindowOrientations).each((ori) => {
           MenuItem({
-            content: $r('app.string.Orientation_select_'.concat(idx.toString())),
+            content: $r('app.string.Orientation_select_'.concat(ori.index.toString())),
           })
             .onClick(() => {
-              this.myUi.setOrientation(ori);
+              this.myUi.setOrientation(ori.item);
             })
-            .backgroundColor(ori == this.myUi.orientation ? getColor(meowThemeColorType.SECONDARY) : undefined);
+            .backgroundColor(ori.item == this.myUi.orientation ? getColor(meowThemeColorType.SECONDARY) : undefined);
         });
+      }
+      .fontColor(getColor(meowThemeColorType.FONT))
+      .backgroundColor(getColor(meowThemeColorType.PRIMARY));
+
+    } else if (this.type == meowButtonsType.FULLSCREEN) {
+      Menu() {
+        MenuItem({
+          content: $r('app.string.Fullscreen_full'),
+        })
+          .onClick(() => {
+            this.myUi.fullscreenFull();
+            // FULL fullscreen
+          });
+        MenuItem({
+          content: $r('app.string.Fullscreen_windowed'),
+        })
+          .onClick(() => {
+            this.myUi.fullscreenWindowed();
+            // Windowed fullscreen
+          });
       }
       .fontColor(getColor(meowThemeColorType.FONT))
       .backgroundColor(getColor(meowThemeColorType.PRIMARY));
