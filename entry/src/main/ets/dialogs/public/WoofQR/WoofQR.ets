@@ -23,7 +23,7 @@ struct WoofQR {
   build() {
     Column({ space: this.myLayout.wideMode ? standardSpacing : standardSpacing * 0.25 }) {
       // QR
-      QRCode(this.url).color(getColor(meowThemeColorType.PRIMARY)).backgroundColor('transparent').width('100%');
+      QRCode(this.url).color(getColor(meowThemeColorType.FONT)).backgroundColor('transparent').width('100%');
       
       // Texts
       if (!this.myLayout.shortMode) {

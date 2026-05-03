@@ -8,6 +8,8 @@ import { CreditDetails } from '../creditDetails';
 struct CreditUser {
   @Param @Require details: CreditDetails;
   @Param @Require myLayout: meowLayout;
+  // Events
+  @Event requestVisit: (url: string) => void;
 
   build() {
     Column({ space: standardSpacing }) {
@@ -18,7 +20,10 @@ struct CreditUser {
         Repeat(this.details.contributions).each((con) => {
           CreditCard({
             myLayout: this.myLayout,
-            item: con.item
+            item: con.item,
+            requestVisit: (url: string) => {
+              this.requestVisit(url);
+            }
           });
         });
       }

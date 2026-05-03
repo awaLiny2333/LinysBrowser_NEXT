@@ -174,49 +174,61 @@ struct WoofHistoryPanel {
           }
         });
 
-        if (this.isSelecting) {
-          Text(this.selectedTimeStamps.size.toString()).attributeModifier(new MooTextModifier()).padding({ left: standardSpacing * 0.5, right: standardSpacing * 0.5 });
-
-          MooCapsuleButton({
-            text: (this.myEntries.length == this.selectedTimeStamps.size) ? $r('app.string.General_unselect') : $r('app.string.General_selectall'),
-            clickAction: () => {
-              if (this.myEntries.length == this.selectedTimeStamps.size) {
-                this.deselectAll();
-              } else {
-                this.selectAll();
-              }
-            }
-          });
-          MooCapsuleButton({
-            text: $r('app.string.General_delete'),
-            isEnabled: this.selectedTimeStamps.size > 0,
-            needDoubleConfirm: true,
-            clickAction: () => {
-              const startTime = Date.now();
-
-              // Optimistic update.
-              animateToImmediately(defaultAnimation(), () => {
-                this.myEntries = this.myEntries.filter((entry) => !this.selectedTimeStamps.has(entry.time));
-                this.myEntriesGrouped = groupByDates(this.myEntries);
-              });
-
-              globalMessage(meowAppMessageType.HISTORY_DELETED, this.selectedTimeStamps);
-
-              // Real job.
-              this.myMeowHistorian.deleteHistory(this.selectedTimeStamps);
-              this.selectedTimeStamps = new Set();
-
-              // Report
-              const duration = Date.now() - startTime;
-              this.refreshInfo(duration);
-            }
-          });
+        if (this.isSelecting && this.myLayout.wideMode) {
+          this.editBar();
         }
       }
       .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl);
+
+      if (this.isSelecting && !this.myLayout.wideMode) {
+        this.editBar();
+      }
     }
     .alignItems(isPreferRightHand() ? HorizontalAlign.End : HorizontalAlign.Start)
     .padding(standardSpacing);
+  }
+
+  @Builder
+  editBar() {
+    Row({ space: standardSpacing }) {
+      Text(this.selectedTimeStamps.size.toString()).attributeModifier(new MooTextModifier()).padding({ left: standardSpacing * 0.5, right: standardSpacing * 0.5 });
+
+      MooCapsuleButton({
+        text: (this.myEntries.length == this.selectedTimeStamps.size) ? $r('app.string.General_unselect') : $r('app.string.General_selectall'),
+        clickAction: () => {
+          if (this.myEntries.length == this.selectedTimeStamps.size) {
+            this.deselectAll();
+          } else {
+            this.selectAll();
+          }
+        }
+      });
+      MooCapsuleButton({
+        text: $r('app.string.General_delete'),
+        isEnabled: this.selectedTimeStamps.size > 0,
+        needDoubleConfirm: true,
+        clickAction: () => {
+          const startTime = Date.now();
+
+          // Optimistic update.
+          animateToImmediately(defaultAnimation(), () => {
+            this.myEntries = this.myEntries.filter((entry) => !this.selectedTimeStamps.has(entry.time));
+            this.myEntriesGrouped = groupByDates(this.myEntries);
+          });
+
+          globalMessage(meowAppMessageType.HISTORY_DELETED, this.selectedTimeStamps);
+
+          // Real job.
+          this.myMeowHistorian.deleteHistory(this.selectedTimeStamps);
+          this.selectedTimeStamps = new Set();
+
+          // Report
+          const duration = Date.now() - startTime;
+          this.refreshInfo(duration);
+        }
+      });
+    }
+    .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl);
   }
 
   @Monitor('myApp.crossAppMessageTunnel')

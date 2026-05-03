@@ -31,7 +31,7 @@ export class meowDialogManager {
    * @returns True if the dialog manager is empty.
    */
   isEmpty() {
-    return this.openedDialogs.length === 0;
+    return this.openedDialogs.length == 0;
   }
 
   /**
@@ -65,6 +65,15 @@ export class meowDialogManager {
       return;
     }
     this.openedDialogs[this.openedDialogs.length - 1].close();
+  }
+
+  /**
+   * Closes all dialogs.
+   */
+  closeAll() {
+    for (const controller of this.openedDialogs) {
+      controller.close();
+    }
   }
 }
 

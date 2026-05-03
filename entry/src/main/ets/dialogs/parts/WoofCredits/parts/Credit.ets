@@ -6,6 +6,8 @@ import { CreditUser } from './CreditUser';
 @ComponentV2
 struct UserCredits {
   @Param @Require myLayout: meowLayout;
+  // Events
+  @Event requestVisit: (url: string) => void;
 
   build() {
     // The list
@@ -15,7 +17,10 @@ struct UserCredits {
         .each((item) => {
           CreditUser({
             myLayout: this.myLayout,
-            details: item.item
+            details: item.item,
+            requestVisit: (url) => {
+              this.requestVisit(url);
+            }
           });
         })
         .virtualScroll();

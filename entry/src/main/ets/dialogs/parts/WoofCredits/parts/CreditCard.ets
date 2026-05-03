@@ -9,7 +9,8 @@ import { Contribution } from '../creditDetails';
 struct CreditCard {
   @Param @Require item: Contribution;
   @Param @Require myLayout: meowLayout;
-  maxLines = 3;
+  // Events
+  @Event requestVisit: (url: string) => void;
 
   build() {
     Column({ space: standardSpacing }) {
@@ -26,6 +27,12 @@ struct CreditCard {
         });
       };
     }
+    .hoverEffect(HoverEffect.Highlight)
+    .onClick(() => {
+      // Visit link
+      const url = this.item.site.replaceAll('%s', this.item.id.toString());
+      this.requestVisit(url);
+    })
     .width(this.cardWidth())
     .height(this.cardHeight())
     .alignItems(HorizontalAlign.Start)
@@ -36,7 +43,7 @@ struct CreditCard {
 
   @Computed
   get widthMultiplier(): number {
-    const textWidth = measureTextWidth(this.item.desc, this.getUIContext(), fontSizeSmall, FontWeight.Normal) / this.maxLines;
+    const textWidth = measureTextWidth(this.item.desc, this.getUIContext(), fontSizeSmall, FontWeight.Normal) / 3;
     return Math.max(1, Math.ceil(textWidth / (minimumCardWidth / 2)));
   }
 
