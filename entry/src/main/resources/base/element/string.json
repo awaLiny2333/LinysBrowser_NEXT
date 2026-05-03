@@ -849,6 +849,14 @@
       "value": "QR Code"
     },
     {
+      "name": "QuickUA",
+      "value": "Quick UA Switch"
+    },
+    {
+      "name": "QuickSE",
+      "value": "Re-Search On"
+    },
+    {
       "name": "Permission_reason_DETECT_GESTURES",
       "value": "Let the BrowserCat know what hand you are using and help BrowserCat optimize layout!"
     },

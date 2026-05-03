@@ -8,6 +8,9 @@ import { MooTextButton } from './MooTextButton';
 struct MooStringPairArrayList {
   // Configs
   @Param @Once allowSelect: boolean = false;
+  @Param @Once allowAdd: boolean = true;
+  @Param @Once allowEdit: boolean = true;
+  @Param @Once maxheight: number | undefined = 240;
   @Param @Once defaultItem: string[] = ['label', 'link'];
   // Data
   @Param selectedIndex: number = -1;
@@ -46,7 +49,7 @@ struct MooStringPairArrayList {
               item: item.item,
               index: item.index,
               allowSelect: this.allowSelect,
-              allowEdit: true,
+              allowEdit: this.allowEdit,
               onEdited: (newValues) => {
                 // Notice upper level.
                 this.onEdited(item.index, newValues);
@@ -65,22 +68,24 @@ struct MooStringPairArrayList {
           .key((item) => item[0] + '\\' + item[1]);
 
         // New item button
-        Row() {
-          MooTextButton({
-            text: $r('app.string.General_new'),
-            clickAction: () => {
-              animateToImmediately(defaultAnimation(), () => {
-                this.onNew();
-              });
-            }
-          })
-        }.justifyContent(FlexAlign.End).width('100%');
+        if (this.allowAdd) {
+          Row() {
+            MooTextButton({
+              text: $r('app.string.General_new'),
+              clickAction: () => {
+                animateToImmediately(defaultAnimation(), () => {
+                  this.onNew();
+                });
+              }
+            })
+          }.justifyContent(FlexAlign.End).width('100%');
+        }
       };
     }
     .padding(standardSpacing * 0.75)
     .backgroundColor(useEffects() ? getColor(meowThemeColorType.PRIMARY) : getColor(meowThemeColorType.SECONDARY))
     .border({ width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth'), radius: defaultInnerRadius })
-    .constraintSize({ maxHeight: 240 })
+    .constraintSize({ maxHeight: this.maxheight })
     .height('auto')
     .width('auto')
     .scrollable(ScrollDirection.Vertical)

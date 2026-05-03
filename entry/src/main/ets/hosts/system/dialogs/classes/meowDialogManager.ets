@@ -91,6 +91,7 @@ export enum openDialogRequestType {
   FAULTLOGS,
   UPDATES,
   QUICK_UA,
+  QUICK_SE,
   QR,
   DOWNLOADS
 }

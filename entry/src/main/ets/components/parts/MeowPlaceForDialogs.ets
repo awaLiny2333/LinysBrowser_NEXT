@@ -8,7 +8,7 @@ import lazy { WoofHistoryDialog } from '../../dialogs/parts/WoofHistory/WoofHist
 import lazy { WoofSettingsDialog } from '../../dialogs/parts/WoofSettings/WoofSettings';
 import lazy { WoofColorPickerDialog } from '../../dialogs/public/WoofColorPicker/WoofColorPicker';
 import lazy { WoofKeyShortcutPickerDialog } from '../../dialogs/public/WoofKeyShortcutPicker/WoofKeyShortcutPicker';
-import { WoofQRDialog } from '../../dialogs/public/WoofQR/WoofQR';
+import lazy { WoofQRDialog } from '../../dialogs/public/WoofQR/WoofQR';
 import lazy { WoofAdBlockerDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlocker';
 import lazy { WoofAdBlockerRulesDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlockerRules';
 import lazy { WoofButtonsDialog } from '../../dialogs/settings/WoofButtons/WoofButtons';
@@ -18,6 +18,8 @@ import lazy { WoofFaultLogsDialog } from '../../dialogs/settings/WoofFaultLogs/W
 import lazy { WoofHomepageDialog } from '../../dialogs/settings/WoofHomepage/WoofHomepage';
 import lazy { WoofJavaScriptsDialog } from '../../dialogs/settings/WoofJavaScripts/WoofJavaScripts';
 import lazy { WoofKeyShortcutsDialog } from '../../dialogs/settings/WoofKeyShortcuts/WoofKeyShortcuts';
+import { WoofQuickSEDialog } from '../../dialogs/settings/WoofQuickSE/WoofQuickSE';
+import { WoofQuickUADialog } from '../../dialogs/settings/WoofQuickUA/WoofQuickUA';
 import lazy { WoofUpdatesDialog } from '../../dialogs/settings/WoofUpdates/WoofUpdates';
 import lazy { WoofWebImagesDialog } from '../../dialogs/settings/WoofWebImages/WoofWebImages';
 import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
@@ -196,6 +198,20 @@ struct MeowPlaceForDialogs {
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
+  woofQuickUADialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofQuickUADialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
+  woofQuickSEDialoController: CustomDialogController = new CustomDialogController({
+    builder: WoofQuickSEDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
 
   build() {
     // Nothing
@@ -264,6 +280,12 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.QR:
         this.woofQRDialogController.open();
+        break;
+      case openDialogRequestType.QUICK_UA:
+        this.woofQuickUADialogController.open();
+        break;
+      case openDialogRequestType.QUICK_SE:
+        this.woofQuickSEDialoController.open();
         break;
       default:
         break;

@@ -96,11 +96,7 @@ export class meowUiStatuses {
       return true;
     }
 
-    if (this.searchBarFocused) {
-      uiContext.getFocusController().clearFocus();
-      animateToImmediately(defaultAnimation(), () => {
-        this.searchBarFocused = false;
-      });
+    if (this.clearAddressBarFocus(uiContext)) {
       return true;
     }
 
@@ -211,6 +207,21 @@ export class meowUiStatuses {
       meow(`Failed to recover window: ${e.message}`, `meowUiStatuses][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
     });
     this.fullscreenStatus = meowUiFullscreenStatus.NONE;
+  }
+
+  /**
+   * Clear address bar focus.
+   * @param uiContext The uiContext.
+   */
+  clearAddressBarFocus(uiContext: UIContext) {
+    if (this.searchBarFocused) {
+      uiContext.getFocusController().clearFocus();
+      animateToImmediately(defaultAnimation(), () => {
+        this.searchBarFocused = false;
+      });
+      return true;
+    }
+    return false;
   }
 }
 

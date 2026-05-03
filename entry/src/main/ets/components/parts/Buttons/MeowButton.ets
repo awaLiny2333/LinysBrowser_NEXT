@@ -82,6 +82,18 @@ struct MeowButton {
       case meowButtonsType.QRCODE:
         requestDialog(this.myDialog, openDialogRequestType.QR, ['Title', 'meow.url']); // TODO: auto pass in current viewing url.
         break;
+      case meowButtonsType.USERAGENTS:
+        this.myUi.clearAddressBarFocus(this.getUIContext());
+        requestDialog(this.myDialog, openDialogRequestType.QUICK_UA, 0); // TODO: pass in current web's UA.
+        break;
+      case meowButtonsType.RE_SEARCH:
+        this.myUi.clearAddressBarFocus(this.getUIContext());
+        requestDialog(this.myDialog, openDialogRequestType.QUICK_SE, 0); // TODO: pass in current web's search engine.
+        break;
+      case meowButtonsType.GO:
+        this.myUi.clearAddressBarFocus(this.getUIContext());
+        // TODO: Visit the site!
+        break;
       case meowButtonsType.ORIENTATION:
         this.showMenu = !this.showMenu;
         break;
