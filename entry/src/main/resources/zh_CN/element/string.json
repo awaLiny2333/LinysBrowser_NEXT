@@ -89,6 +89,10 @@
       "value": "空空如也。ヽ（´ー｀）┌"
     },
     {
+      "name": "General_noChange",
+      "value": "无变更。ヽ（´ー｀）┌"
+    },
+    {
       "name": "ErrorPrompt_contact",
       "value": "如果你觉得这是一个 Bug / 这不是你的错，还请拜托联系 Liny 报告这个问题 / 寻求帮助！"
     },

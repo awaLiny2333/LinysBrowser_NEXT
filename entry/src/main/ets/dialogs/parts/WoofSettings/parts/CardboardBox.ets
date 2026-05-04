@@ -72,7 +72,7 @@ struct SettingsCardboardBox {
                   isError: false,
                   title: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok'),
                   contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok_desc'),
-                  additional: result.changes || []
+                  changes: result.changes || []
                 } as ErrorPromptDetails, true);
                 break;
               default:
@@ -127,7 +127,7 @@ struct SettingsCardboardBox {
                   isError: false,
                   title: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok'),
                   contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok_desc'),
-                  additional: [okStringDir, okStringFiles]
+                  changes: [okStringDir, okStringFiles]
                 } as ErrorPromptDetails, true);
                 break;
               case importResult.PARTIAL_OK:
@@ -135,7 +135,7 @@ struct SettingsCardboardBox {
                   isError: true,
                   title: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok_partial'),
                   contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok_partial_desc'),
-                  additional: [okStringDir, okStringFiles, failStringDir, failStringFiles]
+                  changes: [okStringDir, okStringFiles, failStringDir, failStringFiles]
                 } as ErrorPromptDetails, true);
                 break;
               case importResult.DECOMPRESS_FAIL:
@@ -143,7 +143,7 @@ struct SettingsCardboardBox {
                   isError: true,
                   title: $r('app.string.Settings_category_cardboardBox_backup_import_result_fail'),
                   contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_fail_extract'),
-                  additional: [failStringDir, failStringFiles]
+                  changes: [failStringDir, failStringFiles]
                 } as ErrorPromptDetails, true);
                 break;
               default:

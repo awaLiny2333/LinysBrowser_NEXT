@@ -15,11 +15,13 @@ struct WoofPrompt {
   @Param @Require controller: CustomDialogController;
   @Param @Require myDialog: meowDialogManager;
   @Param @Require myLayout: meowLayout;
-  // Local
+  // Configs
   @Local isError: boolean = false;
   @Local title: ResourceStr | undefined = undefined;
   @Local contents: ResourceStr | undefined = undefined;
-  @Local additional: ResourceStr[] | undefined = undefined;
+  @Local changes: ResourceStr[] | undefined = undefined;
+  // UI
+  myDefaultRadius: number = defaultInnerRadius + 2;
 
   aboutToAppear(): void {
     const req = this.myDialog.lastRequest;
@@ -28,9 +30,9 @@ struct WoofPrompt {
       this.isError = details.isError;
       this.title = details.title;
       this.contents = details.contents;
-      this.additional = details.additional?.filter(item => item.toString() != '');
-      if (this.additional?.length == 0) {
-        this.additional = [$r('app.string.General_empty')];
+      this.changes = details.changes?.filter(item => item.toString() != '');
+      if (this.changes?.length == 0) {
+        this.changes = [$r('app.string.General_noChange')]; // Fill it with a notice saying no change.
       }
     }
   }
@@ -41,25 +43,25 @@ struct WoofPrompt {
       Scroll() {
         Column({ space: standardSpacing * 1 }) {
           // Info
-          UniContentCard({ roundedRadius: defaultInnerRadius + 2 }) {
+          UniContentCard({ roundedRadius: this.myDefaultRadius }) {
             // Text
             if (this.contents) {
               Text(this.contents).attributeModifier(new MooTextModifier());
             }
           };
 
-          // Desc additional
-          if (this.additional && !isBlank(this.additional.join(''))) {
+          // Changes
+          if (this.changes && !isBlank(this.changes.join(''))) {
             List({ space: standardSpacing }) {
-              Repeat(this.additional)
+              Repeat(this.changes)
                 .each((item) => {
-                  UniContentCard({ roundedRadius: defaultInnerRadius + 2 }) {
+                  UniContentCard({ roundedRadius: this.myDefaultRadius }) {
                     Text(item.item).attributeModifier(new MooTextModifier()).lineSpacing(LengthMetrics.vp(standardSpacing * 0.5)).opacity(0.75);
                   };
                 })
                 .virtualScroll();
             }
-            .borderRadius(defaultInnerRadius + 2)
+            .borderRadius(this.myDefaultRadius)
             .width('100%')
             .height('auto')
             .constraintSize({ maxHeight: this.myLayout.height * 0.5 });
@@ -75,7 +77,7 @@ struct WoofPrompt {
 
           // Contacts
           if (this.isError) {
-            UniContentCard({ roundedRadius: defaultInnerRadius + 2 }) {
+            UniContentCard({ roundedRadius: this.myDefaultRadius }) {
               Text($r('app.string.ErrorPrompt_contact')).attributeModifier(new MooTextModifier()).padding({ bottom: standardSpacing * 0.5 });
               MooCapsuleButton({
                 text: $r('app.string.Settings_category_about_site_bilibili'),
