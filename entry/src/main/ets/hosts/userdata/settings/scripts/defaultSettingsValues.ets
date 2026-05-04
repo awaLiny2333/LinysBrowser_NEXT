@@ -72,6 +72,10 @@ export function defaultButtonsTitle() {
   return [meowButtonsType.MORE, meowButtonsType.SCRATCHING_BOARD, meowButtonsType.TABS, meowButtonsType.BOOKMARKS, meowButtonsType.DOWNLOADS, meowButtonsType.SETTINGS].join('\n');
 }
 
+/**
+ * Returns the default buttons set up for More Panel. Contains no meowButtonsType.EXTENSIONS.
+ * @returns The set up array.
+ */
 export function defaltButtonsMore() {
-  return [meowButtonsType.EXTENSIONS, meowButtonsType.ORIENTATION, meowButtonsType.SAVE, meowButtonsType.PRINT, meowButtonsType.DARK, meowButtonsType.COOKIES, meowButtonsType.IMAGES, meowButtonsType.JAVASCRIPTS, meowButtonsType.ADBLOCKER, meowButtonsType.HISTORY, meowButtonsType.USERAGENTS, meowButtonsType.QRCODE, meowButtonsType.FULLSCREEN].join('\n');
+  return [meowButtonsType.ORIENTATION, meowButtonsType.SAVE, meowButtonsType.PRINT, meowButtonsType.DARK, meowButtonsType.COOKIES, meowButtonsType.IMAGES, meowButtonsType.JAVASCRIPTS, meowButtonsType.ADBLOCKER, meowButtonsType.HISTORY, meowButtonsType.USERAGENTS, meowButtonsType.QRCODE, meowButtonsType.FULLSCREEN].join('\n');
 }
