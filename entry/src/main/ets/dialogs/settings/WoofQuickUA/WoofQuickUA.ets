@@ -70,7 +70,7 @@ struct WoofQuickUADialog {
   @Require myLayout: meowLayout;
 
   build() {
-    WoofUniFrame({ controller: this.controller, title: $r('app.string.QuickUA'), myLayout: this.myLayout, myDialog: this.myDialog }) {
+    WoofUniFrame({ controller: this.controller, title: $r('app.string.QuickUA'), shiftBackgroundColor: true, myLayout: this.myLayout, myDialog: this.myDialog }) {
       WoofQuickUAPanel({
         myDialog: this.myDialog,
         onSelect: (n) => {

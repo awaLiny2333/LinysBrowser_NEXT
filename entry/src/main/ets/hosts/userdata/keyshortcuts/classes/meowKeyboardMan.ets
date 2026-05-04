@@ -47,6 +47,10 @@ export class meowKeyboardMan {
   initFromSettings() {
     const mySettings = AppStorageV2.connect(meowManagedSettings)!;
     const settingsStrings = mySettings.settingsData[29].value as string[];
+    if (!settingsStrings) {
+      meow(`No settings found for key shortcuts.`, 'meowKeyboardMan', meowLevel.WARN);
+      return;
+    }
 
     // Process each shortcut.
     for (let i = 0; i < settingsStrings.length; i++) {

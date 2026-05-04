@@ -71,7 +71,7 @@ struct WoofQuickSEDialog {
   @Require myLayout: meowLayout;
 
   build() {
-    WoofUniFrame({ controller: this.controller, title: $r('app.string.QuickSE'), myLayout: this.myLayout, myDialog: this.myDialog }) {
+    WoofUniFrame({ controller: this.controller, title: $r('app.string.QuickSE'), shiftBackgroundColor: true, myLayout: this.myLayout, myDialog: this.myDialog }) {
       WoofQuickSEPanel({
         myDialog: this.myDialog,
         onSelect: (n) => {
