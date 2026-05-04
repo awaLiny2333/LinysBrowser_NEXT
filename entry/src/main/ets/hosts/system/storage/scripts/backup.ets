@@ -2,79 +2,19 @@
  * All functions about app backup.
  */
 
-import { AppStorageV2 } from "@kit.ArkUI";
-import { dirCopy, ensureDirectoryExist, fileCopy, fileDocumentPick2Path, fileDocumentPickCopySave, fileDocumentPickSave } from "../../../../catstypicalframework/utils/storage";
-import { meowManagedSettings } from "../../../userdata/settings/classes/meowManagedSettings";
-import { zlib } from "@kit.BasicServicesKit";
-import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-
-/**
- * Export settings to a file, calling a picker.
- */
-export async function exportSettings() {
-  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
-  const jsonContents = mySettings.toString();
-  await fileDocumentPickSave('settings.json.browsercatsettings', jsonContents);
-}
+import lazy { AppStorageV2 } from "@kit.ArkUI";
+import lazy { dirCopy, ensureDirectoryExist, fileCopy, fileDocumentPick2Path, fileDocumentPickCopySave, fileDocumentPickSave } from "../../../../catstypicalframework/utils/storage";
+import lazy { meowManagedSettings, meowManagedSettingsInitResult } from "../../../userdata/settings/classes/meowManagedSettings";
+import lazy { zlib } from "@kit.BasicServicesKit";
+import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import lazy BuildProfile from "BuildProfile";
 
 export enum importResult {
   OK,
   PARTIAL_OK,
   PICK_FAIL,
-  EXTRACT_FAIL,
-  IMPORT_FAIL
-}
-
-/**
- * Import settings from a file, calling a picker.
- * @returns True or false
- */
-export async function importSettings(): Promise<importResult> {
-  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
-  const result = await fileDocumentPick2Path(['browsercatsettings'], 1);
-  if (result.succeed) {
-    const path = result.sourcePaths![0];
-    const r = await mySettings.initFrom(path);
-    if (r != true) {
-      await mySettings.initFrom();
-      return importResult.IMPORT_FAIL;
-    }
-    mySettings.requestSaveToDisk();
-    return importResult.OK;
-  }
-  return importResult.PICK_FAIL;
-}
-
-/**
- * Export everything to a file, calling a picker.
- * @param context The context.
- * @returns True or false
- */
-export async function exportEverything(context: Context): Promise<boolean> {
-  const filesDir = context.filesDir;
-  const tempDir = context.tempDir;
-  const fileName = 'profile.zip.browsercatprofile';
-  const zipPath: string = `${tempDir}/${fileName}.zip`;
-
-  // Zip everything in sandbox
-  const options: zlib.Options = {
-    level: zlib.CompressLevel.COMPRESS_LEVEL_DEFAULT_COMPRESSION,
-    memLevel: zlib.MemLevel.MEM_LEVEL_DEFAULT,
-    strategy: zlib.CompressStrategy.COMPRESS_STRATEGY_DEFAULT_STRATEGY
-  };
-  try {
-    await zlib.compressFile(filesDir, zipPath, options);
-    meow(`await zlib.compressFile("${filesDir}", "${zipPath}", options); OK: ${zipPath}`, 'exportEverything');
-    try {
-      return await fileDocumentPickCopySave(zipPath, fileName);
-    } catch (e) {
-      meow(`await fileDocumentPickCopySave("${zipPath}"); failed: ${(e as BusinessError).code} - ${(e as BusinessError).message}`, 'exportEverything', meowLevel.ERROR);
-      return false;
-    }
-  } catch (err) {
-    meow(`await zlib.compressFile("${filesDir}", "${zipPath}", options); failed: ${(err as BusinessError).code} - ${(err as BusinessError).message}`, 'exportEverything', meowLevel.ERROR);
-    return false;
-  }
+  DECOMPRESS_FAIL,
+  DECODE_FAIL
 }
 
 const filesToImport = [
@@ -98,6 +38,68 @@ export interface importEverythingResult {
   importedDirs: string[];
   failedFiles: string[];
   failedDirs: string[];
+}
+
+/**
+ * Export settings to a file, calling a picker.
+ */
+export async function exportSettings() {
+  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
+  const jsonContents = mySettings.toString();
+  await fileDocumentPickSave(`settings.json.${BuildProfile.VERSION_NAME}.browsercatsettings`, jsonContents);
+}
+
+/**
+ * Import settings from a file, calling a picker.
+ * @returns A meowManagedSettingsInitResult.
+ */
+export async function importSettings(): Promise<meowManagedSettingsInitResult> {
+  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
+  const result = await fileDocumentPick2Path(['browsercatsettings'], 1);
+  if (result.succeed) {
+    const path = result.sourcePaths![0];
+    const r = await mySettings.initFrom(path);
+    if (r.result == importResult.OK) {
+      // Great success!
+    } else {
+      await mySettings.initFrom(); // Reset to the original settings.
+    }
+    mySettings.requestSaveToDisk();
+    return r;
+  }
+  return { result: importResult.PICK_FAIL, changes: [] };
+}
+
+/**
+ * Export everything to a file, calling a picker.
+ * @param context The context.
+ * @returns True or false
+ */
+export async function exportEverything(context: Context): Promise<boolean> {
+  const filesDir = context.filesDir;
+  const tempDir = context.tempDir;
+  const fileName = `profile.zip.${BuildProfile.VERSION_NAME}.browsercatprofile`;
+  const zipPath: string = `${tempDir}/${fileName}.zip`;
+
+  // Zip everything in sandbox
+  const options: zlib.Options = {
+    level: zlib.CompressLevel.COMPRESS_LEVEL_DEFAULT_COMPRESSION,
+    memLevel: zlib.MemLevel.MEM_LEVEL_DEFAULT,
+    strategy: zlib.CompressStrategy.COMPRESS_STRATEGY_DEFAULT_STRATEGY
+  };
+  try {
+    await zlib.compressFile(filesDir, zipPath, options);
+    meow(`await zlib.compressFile("${filesDir}", "${zipPath}", options); OK: ${zipPath}`, 'exportEverything');
+    try {
+      return await fileDocumentPickCopySave(zipPath, fileName);
+    } catch (e) {
+      meow(`await fileDocumentPickCopySave("${zipPath}"); failed: ${(e as BusinessError).code} - ${(e as BusinessError).message}`, 'exportEverything', meowLevel.ERROR);
+      return false;
+    }
+  } catch (err) {
+    meow(`await zlib.compressFile("${filesDir}", "${zipPath}", options); failed: ${(err as BusinessError).code} - ${(err as BusinessError).message}`, 'exportEverything', meowLevel.ERROR);
+    return false;
+  }
 }
 
 /**
@@ -152,6 +154,6 @@ export async function importEverything(context: Context): Promise<importEverythi
   } catch (e) {
     // Extract error
     meow(`await zlib.decompressFile("${zipPath}", "${tempExtractionDir}"); failed: ${e}`, 'importEverything', meowLevel.ERROR);
-    return { result: importResult.EXTRACT_FAIL, importedFiles: [], failedFiles: filesToImport, importedDirs: [], failedDirs: dirsToImport };
+    return { result: importResult.DECOMPRESS_FAIL, importedFiles: [], failedFiles: filesToImport, importedDirs: [], failedDirs: dirsToImport };
   }
 }

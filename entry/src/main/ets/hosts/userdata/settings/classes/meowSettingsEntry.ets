@@ -25,30 +25,37 @@ export class meowSettingsEntry {
 
   /**
    * Sets the value of the setting entry based on the provided string.
-   * @param value The string representation of the value.
+   * @param newValue The string representation of the value.
+   * @returns An array containing the key, old value, and new value (if changes are made).
    */
-  setValueFromString(value: string) {
+  setValueFromString(newValue: string) {
+    const thisValue = this.valueToString();
+    const compareNewValue = newValue.replaceAll('\n', '\\n');
+    if (compareNewValue == thisValue) {
+      // meow(`Skipped [${this.key}] - [${newValue}] because target is same as current.`, 'meowSettingsEntry][setValueFromString', meowLevel.INFO);
+      return [this.key, thisValue];
+    }
     // Convert value according to the type value.
     switch (this.type) {
       case meowSettingsEntryType.NUMBER:
-        this.value = Number(value);
+        this.value = Number(newValue);
         break;
       case meowSettingsEntryType.STRING:
-        this.value = value;
+        this.value = newValue;
         break;
       case meowSettingsEntryType.BOOLEAN:
-        this.value = value === 'true';
+        this.value = newValue === 'true';
         break;
       case meowSettingsEntryType.STRING_ARRAY:
-        if (value) {
-          this.value = value.split('\n').map(item => item.trim());
+        if (newValue) {
+          this.value = newValue.split('\n').map(item => item.trim());
         } else {
           this.value = [];
         }
         break;
       case meowSettingsEntryType.STRING_ARRAY_PAIR:
-        if (value) {
-          const seq = value.split('\n').map(item => item.trim());
+        if (newValue) {
+          const seq = newValue.split('\n').map(item => item.trim());
           const result: string[][] = [];
           for (let i = 0; i < seq.length; i += 2) {
             result.push([seq[i], seq[i + 1]]);
@@ -61,6 +68,8 @@ export class meowSettingsEntry {
       default:
         this.value = undefined;
     }
+    // meow(`[${this.key}]: [${thisValue}] → [${compareNewValue}]`, 'meowSettingsEntry][setValueFromString', meowLevel.WARN);
+    return [this.key, thisValue, compareNewValue];
   }
 
   /**
@@ -73,9 +82,12 @@ export class meowSettingsEntry {
 
   /**
    * Converts the value to a string.
-   * @returns The string representation in JSON compatible style of the value.
+   * @returns The string representation in JSON compatible style of the value. Returns empty if the value is undefined.
    */
   private valueToString() {
+    if (this.value === undefined) {
+      return '';
+    }
     switch (this.type) {
       case meowSettingsEntryType.NUMBER:
         return this.value?.toString() || '0';

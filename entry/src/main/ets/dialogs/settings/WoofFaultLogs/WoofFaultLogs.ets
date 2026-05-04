@@ -82,7 +82,7 @@ struct FaultLogsEntry {
 
   build() {
     Column({ space: standardSpacing }) {
-      Text(this.content).attributeModifier(new MooTextModifier());
+      Text(this.content).attributeModifier(new MooTextModifier()).maxLines(25).textOverflow({ overflow: TextOverflow.Ellipsis }).width('100%');
       MooCapsuleButton({
         text: $r('app.string.General_export'),
         clickAction: () => {

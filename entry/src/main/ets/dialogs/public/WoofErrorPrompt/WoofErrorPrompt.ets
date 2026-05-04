@@ -1,12 +1,14 @@
+import { LengthMetrics } from "@kit.ArkUI";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
+import { isBlank } from "../../../catstypicalframework/utils/strings";
+import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
+import { UniContentCard } from "../../../components/common/UniContentCard";
 import { standardSpacing } from "../../../components/settings";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { WoofUniFrame } from "../../WoofUniFrame";
-import { LengthMetrics } from "@kit.ArkUI";
 import { ErrorPromptDetails } from "./errorPromptScripts";
-import { UniContentCard } from "../../../components/common/UniContentCard";
 
 @ComponentV2
 struct WoofPrompt {
@@ -26,7 +28,10 @@ struct WoofPrompt {
       this.isError = details.isError;
       this.title = details.title;
       this.contents = details.contents;
-      this.additional = details.additional;
+      this.additional = details.additional?.filter(item => item.toString() != '');
+      if (this.additional?.length == 0) {
+        this.additional = [$r('app.string.General_empty')];
+      }
     }
   }
 
@@ -36,36 +41,41 @@ struct WoofPrompt {
       Scroll() {
         Column({ space: standardSpacing * 1 }) {
           // Info
-          UniContentCard() {
+          UniContentCard({ roundedRadius: defaultInnerRadius + 2 }) {
             // Text
             if (this.contents) {
               Text(this.contents).attributeModifier(new MooTextModifier());
             }
+          };
 
-            // Desc additional
-            if (this.additional) {
+          // Desc additional
+          if (this.additional && !isBlank(this.additional.join(''))) {
+            List({ space: standardSpacing }) {
               Repeat(this.additional)
                 .each((item) => {
-                  if (item.item) {
+                  UniContentCard({ roundedRadius: defaultInnerRadius + 2 }) {
                     Text(item.item).attributeModifier(new MooTextModifier()).lineSpacing(LengthMetrics.vp(standardSpacing * 0.5)).opacity(0.75);
-                  }
-                });
+                  };
+                })
+                .virtualScroll();
             }
+            .borderRadius(defaultInnerRadius + 2)
+            .width('100%')
+            .height('auto')
+            .constraintSize({ maxHeight: this.myLayout.height * 0.5 });
+          }
 
-            Blank();
-
-            // Confirm
-            MooCapsuleButton({
-              text: $r('app.string.General_confirm'),
-              clickAction: () => {
-                this.controller.close();
-              }
-            });
-          };
+          // Confirm
+          MooCapsuleButton({
+            text: $r('app.string.General_confirm'),
+            clickAction: () => {
+              this.controller.close();
+            }
+          });
 
           // Contacts
           if (this.isError) {
-            UniContentCard() {
+            UniContentCard({ roundedRadius: defaultInnerRadius + 2 }) {
               Text($r('app.string.ErrorPrompt_contact')).attributeModifier(new MooTextModifier()).padding({ bottom: standardSpacing * 0.5 });
               MooCapsuleButton({
                 text: $r('app.string.Settings_category_about_site_bilibili'),

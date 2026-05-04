@@ -64,22 +64,23 @@ struct SettingsCardboardBox {
             const result = await importSettings();
             this.myUi.isExportingData = false;
 
-            switch (result) {
-              case (importResult.OK):
+            switch (result.result) {
+              case importResult.PICK_FAIL:
+                break;
+              case importResult.OK:
                 requestDialog(this.myDialog, openDialogRequestType.ERROR_PROMPT, {
                   isError: false,
                   title: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok'),
                   contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok_desc'),
-                  additional: ['ヽ（´ー｀）┌']
+                  additional: result.changes || []
                 } as ErrorPromptDetails, true);
-              case (importResult.PICK_FAIL):
                 break;
               default:
+                // Assume all the other errors are all "Decode" errors. This is not good. But anyway :<
                 requestDialog(this.myDialog, openDialogRequestType.ERROR_PROMPT, {
                   isError: true,
                   title: $r('app.string.Settings_category_cardboardBox_backup_import_result_fail'),
                   contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_fail_decode'),
-                  additional: ['／(=∵=)＼']
                 } as ErrorPromptDetails, true);
             }
           }
@@ -108,25 +109,25 @@ struct SettingsCardboardBox {
             // Build status list of files and folders:
             const FOLDER_ICON = '󰃅';
             const FILE_ICON = '󰂼';
-            const OK_PREFIX = '󰀓 ';
-            const FAIL_PREFIX = '󰁖 ';
-            const okString = [
-              ...result.importedDirs.map(d => `${OK_PREFIX}${FOLDER_ICON} ${d}`),
-              ...result.importedFiles.map(f => `${OK_PREFIX}${FILE_ICON} ${f}`)
-            ].join('\n');
-            const failString = [
-              ...result.failedDirs.map(d => `${FAIL_PREFIX}${FOLDER_ICON} ${d}`),
-              ...result.failedFiles.map(f => `${FAIL_PREFIX}${FILE_ICON} ${f}`)
-            ].join('\n');
+            const OK_PREFIX = '󰀓';
+            const FAIL_PREFIX = '󰁖';
+            const okStringDir = result.importedDirs.map(d => `${OK_PREFIX}  ${FOLDER_ICON}  ${d}`).join('\n');
+            const okStringFiles = result.importedFiles.map(f => `${OK_PREFIX}  ${FILE_ICON}  ${f}`).join('\n');
+
+            const failStringDir = result.failedDirs.map(d => `${FAIL_PREFIX}  ${FOLDER_ICON}  ${d}`).join('\n');
+            const failStringFiles = result.failedFiles.map(f => `${FAIL_PREFIX}  ${FILE_ICON}  ${f}`).join('\n');
 
             // Result.
             switch (result.result) {
+              case importResult.PICK_FAIL:
+                // Do nothing. The user may selected nothing.
+                break;
               case importResult.OK:
                 requestDialog(this.myDialog, openDialogRequestType.ERROR_PROMPT, {
                   isError: false,
                   title: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok'),
                   contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok_desc'),
-                  additional: ['ヽ（´ー｀）┌', okString]
+                  additional: [okStringDir, okStringFiles]
                 } as ErrorPromptDetails, true);
                 break;
               case importResult.PARTIAL_OK:
@@ -134,20 +135,24 @@ struct SettingsCardboardBox {
                   isError: true,
                   title: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok_partial'),
                   contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok_partial_desc'),
-                  additional: [okString, failString]
+                  additional: [okStringDir, okStringFiles, failStringDir, failStringFiles]
                 } as ErrorPromptDetails, true);
                 break;
-              case importResult.EXTRACT_FAIL:
+              case importResult.DECOMPRESS_FAIL:
                 requestDialog(this.myDialog, openDialogRequestType.ERROR_PROMPT, {
                   isError: true,
                   title: $r('app.string.Settings_category_cardboardBox_backup_import_result_fail'),
                   contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_fail_extract'),
-                  additional: [failString]
+                  additional: [failStringDir, failStringFiles]
                 } as ErrorPromptDetails, true);
                 break;
-              case importResult.PARTIAL_OK:
-                // Do nothing. The user may selected nothing.
-                break;
+              default:
+                // Assume all the other errors are all "Decode" errors. This is not good. But anyway :<
+                requestDialog(this.myDialog, openDialogRequestType.ERROR_PROMPT, {
+                  isError: true,
+                  title: $r('app.string.Settings_category_cardboardBox_backup_import_result_fail'),
+                  contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_fail_decode'),
+                } as ErrorPromptDetails, true);
             }
           }
         });

@@ -90,7 +90,7 @@
     },
     {
       "name": "ErrorPrompt_contact",
-      "value": "Nya~ if u think this is a bug or not your fault, please contact Liny to repurrt it or ask for heowp!"
+      "value": "Nya~ if u think this is a bug or not your fault, please contact Liny to repurrt it or get heowp!"
     },
     {
       "name": "Settings",
@@ -498,7 +498,7 @@
     },
     {
       "name": "Settings_category_cardboardBox_backup_everything_desc",
-      "value": "Or export a full data backup—including bookmarks, history, settings, etc.—packed into a single file!"
+      "value": "Or export a full data backup—including bookmarks, history, settings, etc. — packed into a single file!"
     },
     {
       "name": "Settings_category_cardboardBox_backup_everything_export",

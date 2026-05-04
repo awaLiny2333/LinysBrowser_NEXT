@@ -16,9 +16,16 @@
 import lazy { fastbuffer } from "@kit.ArkTS";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import lazy { readArrayBufferConcurrent, saveHybrid } from "../../../../catstypicalframework/utils/storage";
+import { compareDiff } from "../../../../catstypicalframework/utils/strings";
+import { importResult } from "../../../system/storage/scripts/backup";
 import lazy { defaultSettingsEntries } from "../scripts/defaultSettingsEntries";
 import lazy { settingsParserJSON } from "../scripts/helpers";
 import { meowSettingsEntry, meowSettingsEntryType } from "./meowSettingsEntry";
+
+export interface meowManagedSettingsInitResult {
+  result: importResult;
+  changes?: string[];
+}
 
 @ObservedV2
 export class meowManagedSettings {
@@ -40,11 +47,11 @@ export class meowManagedSettings {
   /**
    * Init from settings file.
    * @param settingsFilePath The path to the settings file. By default is the settingsFileSavePath initialized in the constructor. If the file doesn't exist, then nothing would happen.
-   * @returns true if success, false if failed.
+   * @returns A meowManagedSettingsInitResult.
    *
    * @author ChatGLM @ Apr 4, modified by awa_Liny.
    */
-  async initFrom(settingsFilePath: string = this.settingsFileSavePath) {
+  async initFrom(settingsFilePath: string = this.settingsFileSavePath): Promise<meowManagedSettingsInitResult> {
     let settingsText: string = '';
     const startTime = Date.now();
 
@@ -55,13 +62,13 @@ export class meowManagedSettings {
     } catch (e) {
       meow(`Load settings file from ${settingsFilePath} failed: ${e}`, 'meowSettings][initFrom', meowLevel.ERROR);
       this.ready = true;
-      return false;
+      return { result: importResult.DECODE_FAIL };
     }
 
     if (!settingsText) {
       meow(`Returned earlier if settingsText is undefined or empty (no file loaded). Would this ever happen? :O`, 'meowSettings][initFrom', meowLevel.WARN);
       this.ready = true;
-      return false;
+      return { result: importResult.DECODE_FAIL };
     }
 
     // Parse and load
@@ -71,10 +78,11 @@ export class meowManagedSettings {
     
     if (!re.success) {
       meow(`[initFrom] settingsParserJSON failed. Rejected.`, 'meowSettings][initFrom', meowLevel.WARN);
-      return false;
+      return { result: importResult.DECODE_FAIL };
     }
     
     const kvObj = re.data;
+    const changes: string[] = [];
 
     // 2. Traverse the default configuration array
     for (let i = 0; i < this.settingsData.length; i++) {
@@ -86,13 +94,19 @@ export class meowManagedSettings {
       // Use !== undefined to check if the key exists
       if (jsonValue !== undefined) {
         // Only update if this configuration is present in the JSON
-        entry.setValueFromString(jsonValue);
+        const thisChange = entry.setValueFromString(jsonValue);
+        if (thisChange.length == 3) {
+          // Some changes are made.
+          changes.push(`${thisChange[0].toUpperCase()}\n${compareDiff(thisChange[1], thisChange[2])}`);
+        }
       }
     }
 
+    changes.sort();
+    
     meow(`Loaded settings from ${settingsFilePath} (${Date.now() - startTime} ms)`, 'meowSettings][initFrom', meowLevel.INFO);
     this.ready = true;
-    return true;
+    return { result: importResult.OK, changes: changes };
   }
 
   /**
