@@ -44,25 +44,31 @@ struct SettingsAbout {
 
         Text(`Built @ ${BuildProfile.LINYS_BUILD_TIME}`).attributeModifier(new MooTextModifier()).opacity(0.75); // Build time
         Text(`${BuildProfile.BUNDLE_NAME}`).attributeModifier(new MooTextModifier()).opacity(0.5); // Bundle name
+
+        // Contacts
         MooCapsuleButton({
           text: $r('app.string.Settings_category_about_site_bilibili'),
           clickAction: () => {
             // TODO: Site Bilibili entrance.
+            this.myDialog.closeAll();
           }
         });
         MooCapsuleButton({
           text: $r('app.string.Settings_category_about_site_github'),
           clickAction: () => {
             // TODO: Site Github entrance.
+            this.myDialog.closeAll();
           }
         });
         MooCapsuleButton({
           text: $r('app.string.Settings_category_about_site_gitee'),
           clickAction: () => {
             // TODO: Site Gitee entrance.
+            this.myDialog.closeAll();
           }
         });
 
+        // Credits
         Text($r('app.string.Settings_category_about_thank')).attributeModifier(new MooTextModifier());
         MooCapsuleButton({
           text: $r('app.string.Settings_category_about_credits'),

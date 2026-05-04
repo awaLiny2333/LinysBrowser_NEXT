@@ -24,6 +24,8 @@ export class meowUiStatuses {
   @Trace searchBarFocused: boolean = false;
   @Trace orientation: window.Orientation = window.Orientation.AUTO_ROTATION_RESTRICTED;
   @Trace fullscreenStatus: meowUiFullscreenStatus = meowUiFullscreenStatus.NONE;
+  // Settings
+  @Trace isExportingData: boolean = false;
   // MeowBookmarksPanel
   @Trace openedStack: meowBookmarkItem[] = [];
   @Trace openedIndexOfLevels: (meowBookmarkItem | undefined)[] = [];

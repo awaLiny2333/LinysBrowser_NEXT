@@ -81,6 +81,7 @@ export class meowDialogManager {
  * Types of dialogs
  */
 export enum openDialogRequestType {
+  ERROR_PROMPT,
   DEV,
   SETTINGS,
   COLOR_PICKER,

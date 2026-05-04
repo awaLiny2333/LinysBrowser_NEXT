@@ -39,12 +39,12 @@ export class meowManagedSettings {
 
   /**
    * Init from settings file.
-   * @param settingsFilePath The path to the settings file. If the file doesn't exist, then nothing would happen.
+   * @param settingsFilePath The path to the settings file. By default is the settingsFileSavePath initialized in the constructor. If the file doesn't exist, then nothing would happen.
    * @returns true if success, false if failed.
    *
    * @author ChatGLM @ Apr 4, modified by awa_Liny.
    */
-  async initFrom(settingsFilePath: string) {
+  async initFrom(settingsFilePath: string = this.settingsFileSavePath) {
     let settingsText: string = '';
     const startTime = Date.now();
 
@@ -67,7 +67,14 @@ export class meowManagedSettings {
     // Parse and load
 
     // 1. Parse the JSON string into a Record<string, string>
-    const kvObj = settingsParserJSON(settingsText);
+    const re = settingsParserJSON(settingsText);
+    
+    if (!re.success) {
+      meow(`[initFrom] settingsParserJSON failed. Rejected.`, 'meowSettings][initFrom', meowLevel.WARN);
+      return false;
+    }
+    
+    const kvObj = re.data;
 
     // 2. Traverse the default configuration array
     for (let i = 0; i < this.settingsData.length; i++) {
@@ -85,7 +92,7 @@ export class meowManagedSettings {
 
     meow(`Loaded settings from ${settingsFilePath} (${Date.now() - startTime} ms)`, 'meowSettings][initFrom', meowLevel.INFO);
     this.ready = true;
-    return settingsText;
+    return true;
   }
 
   /**
@@ -140,7 +147,7 @@ export class meowManagedSettings {
 
   /**
    * Converts the settings data to a JSON string.
-   * @param sort Whether to sort the entries by key before converting to JSON.
+   * @param sort Whether to sort the entries by key before converting to JSON. By default is true.
    * @returns The JSON string representation of the settings data.
    */
   toString(sort: boolean = true) {

@@ -89,6 +89,10 @@
       "value": "Export  󰃕"
     },
     {
+      "name": "ErrorPrompt_contact",
+      "value": "Nya~ if u think this is a bug or not your fault, please contact Liny to repurrt it or ask for heowp!"
+    },
+    {
       "name": "Settings",
       "value": "Settings"
     },
@@ -503,6 +507,34 @@
     {
       "name": "Settings_category_cardboardBox_backup_everything_import",
       "value": "Import all data  󰙧"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_import_result_ok",
+      "value": "Import OK!"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_import_result_ok_desc",
+      "value": "No prawblem! You may need to restart the App to apply all new stuffs!"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_import_result_ok_partial",
+      "value": "Import OK! (partially)"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_import_result_ok_partial_desc",
+      "value": "We could only find some of the files we were looking for! "
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_import_result_fail",
+      "value": "Import failed... ゞ◎Д◎ヾ"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_import_result_fail_extract",
+      "value": "The import and decompression failed. Is the file corrupted?"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_import_result_fail_decode",
+      "value": "The import and decoding failed. Is the file corrupted?"
     },
     {
       "name": "Settings_category_about",

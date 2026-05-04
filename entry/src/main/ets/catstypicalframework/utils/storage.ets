@@ -94,6 +94,33 @@ export async function fileDocumentPick2Path(fileSuffixFilters: string[] = [".meo
 }
 
 /**
+ * Pick a place to save a file, pulling up a DocumentViewPicker.
+ * @param sourcePath The source path.
+ * @returns True or false.
+ */
+export async function fileDocumentPickCopySave(sourcePath: string, nameOverwrite?: string) {
+  if (!canIUse("SystemCapability.FileManagement.UserFileService")) {
+    console.error('[fileDocumentPick2Path] DocumentViewPicker.select failed. canIUse("SystemCapability.FileManagement.UserFileService") is false!');
+    return true;
+  }
+
+  try {
+    return (new picker.DocumentViewPicker())
+      .save({
+        newFileNames: [nameOverwrite || fileNameOfPath(sourcePath)]
+      })
+      .then(async (pickedUris) => {
+        await fileCopy(sourcePath, uri_2_path(pickedUris[0]), true);
+        console.info(`[fileDocumentPickCopySave] DocumentViewPicker.save successfully, uris[0]: ${pickedUris[0]}`);
+        return true;
+      });
+  } catch (e) {
+    console.error(`[fileDocumentPickCopySave] DocumentViewPicker failed: ${e}`);
+    return false;
+  }
+}
+
+/**
  * Pick a file from device gallery, pulling up a PhotoViewPicker.
  * @returns Majorly the path.
  * */
@@ -204,18 +231,31 @@ export async function saveHybrid(fullFilePath: string, content: string | ArrayBu
  * @param fullSourcePath The source path.
  * @param fullDestPath The destination path.
  * @param overwrite Whether to overwrite the destination file if it exists.
- * @returns true if succeed, false if failed.
+ * @returns true if succeed, false if failed, undefined if the file exists but not to overwrite.
  */
 export async function fileCopy(fullSourcePath: string, fullDestPath: string, overwrite: boolean) {
+  // Check source
   try {
-    if (fileIo.accessSync(fullDestPath)) {
+    if (!(await fileIo.access(fullSourcePath))) {
+      console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestPath}, ${overwrite}) test accessSync failed: source file ${fullSourcePath} doesn't exist`);
+      return false;
+    }
+  } catch (e) {
+    console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestPath}, ${overwrite}) test source accessSync failed: ${e}`);
+  }
+  
+  // Check destination
+  try {
+    if (await fileIo.access(fullDestPath)) {
       if (!overwrite) {
         return undefined;
       }
     }
   } catch (e) {
-    console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestPath}, ${overwrite}) test accessSync failed: ${e}`);
+    console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestPath}, ${overwrite}) test destination accessSync failed: ${e}`);
   }
+  
+  // Copy
   return fileIo.copyFile(fullSourcePath, fullDestPath)
     .catch((e: BusinessError) => {
       console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestPath}, ${overwrite}) failed: ${e}`);
@@ -224,6 +264,53 @@ export async function fileCopy(fullSourcePath: string, fullDestPath: string, ove
     .then(() => {
       return true;
     });
+}
+
+/**
+ * Copy a directory.
+ * @param fullSourcePath The source path.
+ * @param destParentFolderPath The destination folder path.
+ * @param overwrite Whether to overwrite the destination file if it exists.
+ * @returns true if succeed, false if failed, undefined if the file exists but not to overwrite.
+ */
+export async function dirCopy(fullSourcePath: string, destParentFolderPath: string, overwrite: boolean) {
+  // Check source
+  const sourceName = fileNameOfPath(fullSourcePath);
+
+  try {
+    if (!(await fileIo.access(fullSourcePath))) {
+      console.error(`[dirCopy] fileIo.copyFile(${fullSourcePath}, ${destParentFolderPath}, ${overwrite}) test accessSync failed: source dir ${fullSourcePath} doesn't exist`);
+      return false;
+    }
+  } catch (e) {
+    console.error(`[dirCopy] fileIo.copyFile(${fullSourcePath}, ${destParentFolderPath}, ${overwrite}) test source accessSync failed: ${e}`);
+  }
+
+  // Check destination
+  try {
+    if (await fileIo.access(`${destParentFolderPath}/${sourceName}`)) {
+      if (!overwrite) {
+        return undefined;
+      } else {
+        // Overwrite
+        await fileIo.rmdir(`${destParentFolderPath}/${sourceName}`);
+        await fileIo.mkdir(`${destParentFolderPath}/${sourceName}`);
+        console.warn(`[dirCopy] dir ${destParentFolderPath}/${sourceName} overwritten`);
+      }
+    }
+  } catch (e) {
+    console.error(`[dirCopy] fileIo.copyFile(${fullSourcePath}, ${destParentFolderPath}, ${overwrite}) test destination accessSync failed: ${e}`);
+  }
+
+  // Copy
+  try {
+    await fileIo.copyDir(fullSourcePath, destParentFolderPath);
+    console.info(`[dirCopy] dir ${fullSourcePath} copied to ${destParentFolderPath}`);
+    return true;
+  } catch (e) {
+    console.error(`[dirCopy] fileIo.copyDir(${fullSourcePath}, ${destParentFolderPath}, ${overwrite}) failed: ${e}`);
+    return false;
+  }
 }
 
 /**

@@ -10,6 +10,7 @@ import lazy { WoofSettingsDialog } from '../../dialogs/parts/WoofSettings/WoofSe
 import lazy { WoofUpdatesDialog } from '../../dialogs/parts/WoofUpdates/WoofUpdates';
 import lazy { WoofColorPickerDialog } from '../../dialogs/public/WoofColorPicker/WoofColorPicker';
 import lazy { WoofKeyShortcutPickerDialog } from '../../dialogs/public/WoofKeyShortcutPicker/WoofKeyShortcutPicker';
+import { WoofPromptDialog } from '../../dialogs/public/WoofErrorPrompt/WoofErrorPrompt';
 import lazy { WoofQRDialog } from '../../dialogs/public/WoofQR/WoofQR';
 import lazy { WoofAdBlockerDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlocker';
 import lazy { WoofAdBlockerRulesDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlockerRules';
@@ -40,6 +41,13 @@ struct MeowPlaceForDialogs {
   @Param @Require myAvoid: meowAvoid;
   @Param @Require myMisc: meowMisc;
 
+  WoofPromptDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofPromptDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
   WoofCatsDevDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofCatsDevDialog({
       myDialog: this.myDialog,
@@ -232,6 +240,9 @@ struct MeowPlaceForDialogs {
       return;
     }
     switch (lastRequest.target) {
+      case openDialogRequestType.ERROR_PROMPT:
+        this.WoofPromptDialogController.open();
+        break;
       case openDialogRequestType.DEV:
         this.WoofCatsDevDialogController.open();
         break;

@@ -89,6 +89,10 @@
       "value": "空空如也。ヽ（´ー｀）┌"
     },
     {
+      "name": "ErrorPrompt_contact",
+      "value": "如果你觉得这是一个 Bug / 这不是你的错，还请拜托联系 Liny 报告这个问题 / 寻求帮助！"
+    },
+    {
       "name": "Settings",
       "value": "设置"
     },
@@ -503,6 +507,34 @@
     {
       "name": "Settings_category_cardboardBox_backup_everything_import",
       "value": "导入完整数据  󰙧"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_import_result_ok",
+      "value": "导入成功！"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_import_result_ok_desc",
+      "value": "文件没有问题。可能需要重启以激活所有新导入的东西！"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_import_result_ok_partial",
+      "value": "导入成功！（部分）"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_import_result_ok_partial_desc",
+      "value": "我们只能读取到部分所需的文件……"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_import_result_fail",
+      "value": "导入失败…… ゞ◎Д◎ヾ"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_import_result_fail_extract",
+      "value": "导入解压失败了。是不是文件损坏了？"
+    },
+    {
+      "name": "Settings_category_cardboardBox_backup_import_result_fail_decode",
+      "value": "导入解析失败了。是不是文件损坏了？"
     },
     {
       "name": "Settings_category_about",
