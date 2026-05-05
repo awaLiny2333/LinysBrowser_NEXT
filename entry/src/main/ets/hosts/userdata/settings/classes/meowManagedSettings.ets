@@ -21,10 +21,9 @@ import { importResult } from "../../../system/storage/scripts/backup";
 import lazy { defaultSettingsEntries } from "../scripts/defaultSettingsEntries";
 import lazy { settingsParserJSON } from "../scripts/helpers";
 import { meowSettingsEntry, meowSettingsEntryType } from "./meowSettingsEntry";
-
 export interface meowManagedSettingsInitResult {
   result: importResult;
-  changes?: string[];
+  changes: string[];
 }
 
 @ObservedV2
@@ -62,25 +61,25 @@ export class meowManagedSettings {
     } catch (e) {
       meow(`Load settings file from ${settingsFilePath} failed: ${e}`, 'meowSettings][initFrom', meowLevel.ERROR);
       this.ready = true;
-      return { result: importResult.DECODE_FAIL };
+      return { result: importResult.DECODE_FAIL, changes: [] };
     }
 
     if (!settingsText) {
       meow(`Returned earlier if settingsText is undefined or empty (no file loaded). Would this ever happen? :O`, 'meowSettings][initFrom', meowLevel.WARN);
       this.ready = true;
-      return { result: importResult.DECODE_FAIL };
+      return { result: importResult.DECODE_FAIL, changes: [] };
     }
 
     // Parse and load
 
     // 1. Parse the JSON string into a Record<string, string>
     const re = settingsParserJSON(settingsText);
-    
+
     if (!re.success) {
       meow(`[initFrom] settingsParserJSON failed. Rejected.`, 'meowSettings][initFrom', meowLevel.WARN);
-      return { result: importResult.DECODE_FAIL };
+      return { result: importResult.DECODE_FAIL, changes: [] };
     }
-    
+
     const kvObj = re.data;
     const changes: string[] = [];
 
@@ -103,7 +102,7 @@ export class meowManagedSettings {
     }
 
     changes.sort();
-    
+
     meow(`Loaded settings from ${settingsFilePath} (${Date.now() - startTime} ms)`, 'meowSettings][initFrom', meowLevel.INFO);
     this.ready = true;
     return { result: importResult.OK, changes: changes };

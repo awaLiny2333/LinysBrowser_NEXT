@@ -30,10 +30,7 @@ struct WoofPrompt {
       this.isError = details.isError;
       this.title = details.title;
       this.contents = details.contents;
-      this.changes = details.changes?.filter(item => item.toString() != '');
-      if (this.changes?.length == 0) {
-        this.changes = [$r('app.string.General_noChange')]; // Fill it with a notice saying no change.
-      }
+      this.changes = details.additions?.filter(item => item.toString() != '');
     }
   }
 

@@ -72,16 +72,11 @@ struct SettingsCardboardBox {
                   isError: false,
                   title: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok'),
                   contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok_desc'),
-                  changes: result.changes || []
+                  additions: result.changes.length > 0 ? result.changes : [$r('app.string.General_noChange')]
                 } as ErrorPromptDetails, true);
                 break;
               default:
-                // Assume all the other errors are all "Decode" errors. This is not good. But anyway :<
-                requestDialog(this.myDialog, openDialogRequestType.ERROR_PROMPT, {
-                  isError: true,
-                  title: $r('app.string.Settings_category_cardboardBox_backup_import_result_fail'),
-                  contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_fail_decode'),
-                } as ErrorPromptDetails, true);
+                this.requestDecodeError(); // Assume all the other errors are all "Decode" errors.
             }
           }
         });
@@ -120,14 +115,13 @@ struct SettingsCardboardBox {
             // Result.
             switch (result.result) {
               case importResult.PICK_FAIL:
-                // Do nothing. The user may selected nothing.
-                break;
+                break; // Do nothing. The user may selected nothing.
               case importResult.OK:
                 requestDialog(this.myDialog, openDialogRequestType.ERROR_PROMPT, {
                   isError: false,
                   title: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok'),
                   contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok_desc'),
-                  changes: [okStringDir, okStringFiles]
+                  additions: [okStringDir, okStringFiles]
                 } as ErrorPromptDetails, true);
                 break;
               case importResult.PARTIAL_OK:
@@ -135,7 +129,7 @@ struct SettingsCardboardBox {
                   isError: true,
                   title: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok_partial'),
                   contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok_partial_desc'),
-                  changes: [okStringDir, okStringFiles, failStringDir, failStringFiles]
+                  additions: [okStringDir, okStringFiles, failStringDir, failStringFiles]
                 } as ErrorPromptDetails, true);
                 break;
               case importResult.DECOMPRESS_FAIL:
@@ -143,21 +137,25 @@ struct SettingsCardboardBox {
                   isError: true,
                   title: $r('app.string.Settings_category_cardboardBox_backup_import_result_fail'),
                   contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_fail_extract'),
-                  changes: [failStringDir, failStringFiles]
+                  additions: [failStringDir, failStringFiles]
                 } as ErrorPromptDetails, true);
                 break;
               default:
-                // Assume all the other errors are all "Decode" errors. This is not good. But anyway :<
-                requestDialog(this.myDialog, openDialogRequestType.ERROR_PROMPT, {
-                  isError: true,
-                  title: $r('app.string.Settings_category_cardboardBox_backup_import_result_fail'),
-                  contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_fail_decode'),
-                } as ErrorPromptDetails, true);
+                this.requestDecodeError(); // Assume all the other errors are all "Decode" errors. This is not good. But anyway :<
             }
           }
         });
       };
     };
+  }
+
+  requestDecodeError() {
+    requestDialog(this.myDialog, openDialogRequestType.ERROR_PROMPT, {
+      isError: true,
+      title: $r('app.string.Settings_category_cardboardBox_backup_import_result_fail'),
+      contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_fail_decode'),
+      additions: [$r('app.string.General_noChange')]
+    } as ErrorPromptDetails, true);
   }
 }
 
