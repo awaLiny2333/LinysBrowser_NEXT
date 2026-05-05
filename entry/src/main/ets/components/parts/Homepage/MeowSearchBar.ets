@@ -1,12 +1,13 @@
-import { meowAvoid } from '../../../catstypicalframework/hosts/meowAvoid';
-import { standardSpacing, getColor, meowThemeColorType, fontSizeMedium, useEffects, isPreferRightHand, defaultAnimation } from '../../settings';
-import { MeowButtonsSlot } from '../Buttons/MeowButtonsSlot';
-import { meowButtonsType } from '../Buttons/constants';
-import { MeowTitleBarHeight } from './MeowTitleBar';
+import { AppStorageV2 } from '@kit.ArkUI';
+import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
+import lazy { meow } from '../../../catstypicalframework/utils/catsLogger';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
 import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
-import { AppStorageV2 } from '@kit.ArkUI';
+import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from '../../settings';
+import { meowButtonsType } from '../Buttons/constants';
+import { MeowButtonsSlot } from '../Buttons/MeowButtonsSlot';
+import { MeowTitleBarHeight } from './MeowTitleBar';
 
 /**
  * The search bar.
@@ -15,111 +16,82 @@ import { AppStorageV2 } from '@kit.ArkUI';
  */
 @ComponentV2
 struct MeowSearchBar {
-  @Param @Once needFullPadding: boolean = false; // .padding({ left: standardSpacing * 0.5, right: standardSpacing * 0.5 });
   // Hosts
-  @Param @Require myAvoid: meowAvoid;
   @Param @Require myUi: meowUiStatuses;
+  @Param @Require myLayout: meowLayout;
   @Param @Require myDialog: meowDialogManager;
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
   build() {
     Row() {
-      AddressInput({
-        placeholder: ' 󰀩 ...',
-        myAvoid: this.myAvoid,
-        onBarFocus: () => {
-          this.onBarFocus();
-        },
-        onBarBlur: () => {
-          this.onBarBlur();
-        }
-      });
-      Row().width(standardSpacing);
-      if (this.myUi.searchBarFocused) {
-        // On focus
-        MeowButtonsSlot({
-          myUi: this.myUi,
-          myDialog: this.myDialog,
-          buttons: this.mySettings.settingsData[77].value as meowButtonsType[]
-        });
+      if (this.myLayout.wideMode) {
+        Blank().width(standardSpacing * 0.75);
+      }
+
+      this.AddressInput(); // Input
+
+      if (this.showOnFocusButtons || this.showAlwaysOnButtons) {
+        Blank().width(standardSpacing * 0.75);
+      }
+
+      // On focus
+      if (this.showOnFocusButtons) {
+        MeowButtonsSlot(this.myUi, this.myDialog, 77);
       }
       // Always on
-      MeowButtonsSlot({
-        myUi: this.myUi,
-        myDialog: this.myDialog,
-        buttons: this.mySettings.settingsData[78].value as meowButtonsType[]
-      });
+      if (this.showAlwaysOnButtons) {
+        MeowButtonsSlot(this.myUi, this.myDialog, 78);
+      }
+
+      if (!this.showOnFocusButtons && !this.showAlwaysOnButtons && this.myLayout.wideMode) {
+        Blank().width(standardSpacing * 0.75);
+      }
     }
-    .padding(this.needFullPadding ? { left: standardSpacing, right: standardSpacing } : 0)
     .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl);
   }
 
-  onBarFocus() {
-    animateToImmediately(defaultAnimation(), () => {
-      this.myUi.searchBarFocused = true;
-    });
+  @Computed
+  get showOnFocusButtons() {
+    return this.myUi.searchBarFocused && (this.mySettings.settingsData[77].value as meowButtonsType[]).length > 0;
   }
 
-  onBarBlur() {
-    animateToImmediately(defaultAnimation(), () => {
-      this.myUi.searchBarFocused = false;
-    });
+  @Computed
+  get showAlwaysOnButtons() {
+    return (this.mySettings.settingsData[78].value as meowButtonsType[]).length > 0;
+  }
+
+  @Builder
+  AddressInput() {
+    TextInput({ text: this.myUi.searchContent, placeholder: ' 󰀩 ...' })
+      .height(MeowTitleBarHeight)
+      .fontColor(getColor(meowThemeColorType.FONT))
+      .caretColor(getColor(meowThemeColorType.FONT))
+      .selectedBackgroundColor(getColor(meowThemeColorType.FONT))
+      .border(useEffects() ? { width: 1, color: $r('sys.color.icon_fourth') } : { width: 0 })
+      .backgroundColor(useEffects() ? $r('app.color.blur_background_contrast') : getColor(meowThemeColorType.PRIMARY))
+      .layoutWeight(1)
+      .id(searchBarId)
+      .onFocus(() => {
+        animateToImmediately(defaultAnimation(), () => {
+          this.myUi.searchBarFocused = true;
+        });
+      })
+      .onBlur(() => {
+        animateToImmediately(defaultAnimation(), () => {
+          this.myUi.searchBarFocused = false;
+        });
+      })
+      .onChange((c) => {
+        this.myUi.searchContent = c;
+        // TODO: Handle input change
+      })
+      .onSubmit(() => {
+        // TODO: Handle input submission (Visit the site for SearchBar!)
+        meow(`Visit / load [${this.myUi.searchContent}]!`);
+      });
   }
 }
 
 export { MeowSearchBar };
-
-/**
- * Basically the same as MooTextInputV2 but with some modifications on color and style.
- *
- * @see entry/src/main/ets/components/common/MooTextInputV2.ets
- */
-@ComponentV2
-struct AddressInput {
-  // Configs
-  @Param @Once placeholder: string | undefined = undefined;
-  @Param icon: Resource | undefined = undefined;
-  @Param text: string = '';
-  // Hosts
-  @Param @Require myAvoid: meowAvoid;
-  // Events
-  @Event onChange: (c: string) => void;
-  @Event onSubmit: () => void;
-  @Event onBarFocus: () => void;
-  @Event onBarBlur: () => void;
-
-  build() {
-    Row({ space: standardSpacing }) {
-      if (this.icon) {
-        SymbolGlyph(this.icon)
-          .fontColor([getColor(meowThemeColorType.FONT)])
-          .fontSize(fontSizeMedium);
-      }
-      TextInput({ text: this.text as string, placeholder: this.placeholder })
-        .height(MeowTitleBarHeight)
-        .fontColor(getColor(meowThemeColorType.FONT))
-        .caretColor(getColor(meowThemeColorType.FONT))
-        .selectedBackgroundColor(getColor(meowThemeColorType.FONT))
-        .border(useEffects() ? { width: 1, color: $r('sys.color.icon_fourth') } : { width: 0 })
-        .backgroundColor(useEffects() ? $r('app.color.blur_background_contrast') : getColor(meowThemeColorType.PRIMARY))
-        .layoutWeight(1)
-        .id(searchBarId)
-        .onFocus(() => {
-          this.onBarFocus();
-        })
-        .onBlur(() => {
-          this.onBarBlur();
-        })
-        .onChange((c) => {
-          this.onChange(c);
-        })
-        .onSubmit(() => {
-          this.onSubmit();
-        });
-    }
-    .height(MeowTitleBarHeight)
-    .layoutWeight(1);
-  }
-}
 
 export const searchBarId = 'MeowAddressInput';

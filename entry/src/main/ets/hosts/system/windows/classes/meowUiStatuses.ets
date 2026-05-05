@@ -21,9 +21,11 @@ export class meowUiStatuses {
   @Trace showMore: boolean = false;
   @Trace showTabs: boolean = false;
   @Trace sidebarShrunk: boolean = true;
-  @Trace searchBarFocused: boolean = false;
   @Trace orientation: window.Orientation = window.Orientation.AUTO_ROTATION_RESTRICTED;
   @Trace fullscreenStatus: meowUiFullscreenStatus = meowUiFullscreenStatus.NONE;
+  // Search
+  @Trace searchBarFocused: boolean = false;
+  @Trace searchContent: string = '';
   // Settings
   @Trace isExportingData: boolean = false;
   // MeowBookmarksPanel

@@ -4,7 +4,6 @@ import { defaultAnimation, fontSizeSymbol, getColor, meowThemeColorType, standar
 /**
  * Normal symbol buttons.
  */
-// @ReusableV2
 @ComponentV2
 struct MooSymbolButton {
   @Param icon: Resource = $r('sys.symbol.square_stack_3d');

@@ -8,82 +8,80 @@ import { requestDialog } from '../../hosts/system/dialogs/scripts/dialog';
 import { newWindow } from '../../hosts/system/windows/scripts/multiwindows';
 import { common } from '@kit.AbilityKit';
 
-@ComponentV2
-struct MeowPlaceForKeyShortcuts {
-  @Param @Require myDialog: meowDialogManager;
-  @Param @Require myUi: meowUiStatuses;
-  @Local myKey: meowKeyboardMan = AppStorageV2.connect(meowKeyboardMan)!;
+const myKey: meowKeyboardMan = AppStorageV2.connect(meowKeyboardMan)!;
 
-  build() {
-    Row() {
-      if (!(this.myKey.esc.value == FunctionKey.ESC && this.myKey.esc.keys.length == 0)) {
-        Blank().keyboardShortcut(FunctionKey.ESC, [], () => {
-          // To block ESC.
-        });
+@Builder
+export function MeowPlaceForKeyShortcuts(
+  myDialog: meowDialogManager,
+  myUi: meowUiStatuses,
+  context: UIContext
+) {
+  Row() {
+    if (!(myKey.esc.value == FunctionKey.ESC && myKey.esc.keys.length == 0)) {
+      Blank().keyboardShortcut(FunctionKey.ESC, [], () => {
+        // To block ESC.
+      });
+    }
+    Blank().keyboardShortcut(myKey.esc.value, myKey.esc.keys, () => {
+      myUi.goBackUni(meowUiGoBackSource.ESC, context);
+      meow(`ESC!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+    });
+    Blank().keyboardShortcut(myKey.newTab.value, myKey.newTab.keys, () => {
+      meow(`New Tab!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+    });
+    Blank().keyboardShortcut(myKey.closeTab.value, myKey.closeTab.keys, () => {
+      meow(`Close Tab!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+    });
+    Blank().keyboardShortcut(myKey.showTabs.value, myKey.showTabs.keys, () => {
+      myUi.showTabs = !myUi.showTabs;
+      if (myUi.showTabs) {
+        meow(`Show Tabs!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+      } else {
+        meow(`Hide Tabs!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
       }
-      Blank().keyboardShortcut(this.myKey.esc.value, this.myKey.esc.keys, () => {
-        this.myUi.goBackUni(meowUiGoBackSource.ESC, this.getUIContext());
-        meow(`ESC!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
-      });
-      Blank().keyboardShortcut(this.myKey.newTab.value, this.myKey.newTab.keys, () => {
-        meow(`New Tab!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
-      });
-      Blank().keyboardShortcut(this.myKey.closeTab.value, this.myKey.closeTab.keys, () => {
-        meow(`Close Tab!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
-      });
-      Blank().keyboardShortcut(this.myKey.showTabs.value, this.myKey.showTabs.keys, () => {
-        this.myUi.showTabs = !this.myUi.showTabs;
-        if (this.myUi.showTabs) {
-          meow(`Show Tabs!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
-        } else {
-          meow(`Hide Tabs!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
-        }
-      });
-      Blank().keyboardShortcut(this.myKey.focusAddress.value, this.myKey.focusAddress.keys, () => {
-        try {
-          this.getUIContext().getFocusController().requestFocus(searchBarId);
-          meow(`Focus Address!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
-        } catch (e) {
-          meow(`Focus Address Failed: ${e}`, `MeowPlaceForShortcuts`, meowLevel.WARN);
-        }
-      });
-      Blank().keyboardShortcut(this.myKey.searchInPage.value, this.myKey.searchInPage.keys, () => {
-        meow(`Search in Page!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
-      });
-      Blank().keyboardShortcut(this.myKey.fullscreen.value, this.myKey.fullscreen.keys, () => {
-        this.myUi.fullscreenFull();
-        meow(`Fullscreen!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
-      });
-      Blank().keyboardShortcut(this.myKey.history.value, this.myKey.history.keys, () => {
-        requestDialog(this.myDialog, openDialogRequestType.HISTORY);
-        meow(`History!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
-      });
-      Blank().keyboardShortcut(this.myKey.refresh.value, this.myKey.refresh.keys, () => {
-        meow(`Refresh!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
-      });
-      Blank().keyboardShortcut(this.myKey.print.value, this.myKey.print.keys, () => {
-        meow(`Print Page!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
-      });
-      Blank().keyboardShortcut(this.myKey.newWindow.value, this.myKey.newWindow.keys, () => {
-        newWindow(this.getUIContext().getHostContext() as common.UIAbilityContext);
-        meow(`New Window!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
-      });
-      Blank().keyboardShortcut(this.myKey.pin.value, this.myKey.pin.keys, () => {
-        this.myUi.togglePin();
-        meow(`Pin window to top!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
-      });
-      Blank().keyboardShortcut(this.myKey.save.value, this.myKey.save.keys, () => {
-        meow(`Save Page!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
-      });
-      Blank().keyboardShortcut(this.myKey.zones.value, this.myKey.zones.keys, () => {
-        meow(`Zones!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
-      });
-      Blank().keyboardShortcut(this.myKey.fullscreenWindowed.value, this.myKey.fullscreenWindowed.keys, () => {
-        this.myUi.fullscreenWindowed();
-        meow(`Windowed Fullscreen!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
-      });
-    };
-  }
+    });
+    Blank().keyboardShortcut(myKey.focusAddress.value, myKey.focusAddress.keys, () => {
+      try {
+        context.getFocusController().requestFocus(searchBarId);
+        meow(`Focus Address!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+      } catch (e) {
+        meow(`Focus Address Failed: ${e}`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+      }
+    });
+    Blank().keyboardShortcut(myKey.searchInPage.value, myKey.searchInPage.keys, () => {
+      meow(`Search in Page!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+    });
+    Blank().keyboardShortcut(myKey.fullscreen.value, myKey.fullscreen.keys, () => {
+      myUi.fullscreenFull();
+      meow(`Fullscreen!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+    });
+    Blank().keyboardShortcut(myKey.history.value, myKey.history.keys, () => {
+      requestDialog(myDialog, openDialogRequestType.HISTORY);
+      meow(`History!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+    });
+    Blank().keyboardShortcut(myKey.refresh.value, myKey.refresh.keys, () => {
+      meow(`Refresh!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+    });
+    Blank().keyboardShortcut(myKey.print.value, myKey.print.keys, () => {
+      meow(`Print Page!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+    });
+    Blank().keyboardShortcut(myKey.newWindow.value, myKey.newWindow.keys, () => {
+      newWindow(context.getHostContext() as common.UIAbilityContext);
+      meow(`New Window!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+    });
+    Blank().keyboardShortcut(myKey.pin.value, myKey.pin.keys, () => {
+      myUi.togglePin();
+      meow(`Pin window to top!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+    });
+    Blank().keyboardShortcut(myKey.save.value, myKey.save.keys, () => {
+      meow(`Save Page!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+    });
+    Blank().keyboardShortcut(myKey.zones.value, myKey.zones.keys, () => {
+      meow(`Zones!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+    });
+    Blank().keyboardShortcut(myKey.fullscreenWindowed.value, myKey.fullscreenWindowed.keys, () => {
+      myUi.fullscreenWindowed();
+      meow(`Windowed Fullscreen!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+    });
+  };
 }
-
-export { MeowPlaceForKeyShortcuts };

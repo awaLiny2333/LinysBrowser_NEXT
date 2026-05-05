@@ -1,56 +1,38 @@
 import { AppStorageV2 } from "@kit.ArkUI";
-import { meowAvoid } from "../../../catstypicalframework/hosts/meowAvoid";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { meowUiStatuses } from "../../../hosts/system/windows/classes/meowUiStatuses";
 import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
-import { isPreferRightHand, standardSpacing } from "../../settings";
+import { standardSpacing } from "../../settings";
 import { meowButtonsType } from "../Buttons/constants";
 import { MeowButtonsSlot } from "../Buttons/MeowButtonsSlot";
 import { MeowSearchBar } from "./MeowSearchBar";
 
-@ComponentV2
-struct MeowTitleBar {
-  @Param @Require myUi: meowUiStatuses;
-  @Param @Require myAvoid: meowAvoid;
-  @Param @Require myLayout: meowLayout;
-  @Param @Require myDialog: meowDialogManager;
-  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+const mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
-  build() {
-    Row({ space: standardSpacing * 0.125 }) {
-      if ((this.mySettings.settingsData[76].value as meowButtonsType[]).length > 0) {
-        MeowButtonsSlot({
-          myUi: this.myUi,
-          myDialog: this.myDialog,
-          buttons: this.mySettings.settingsData[76].value as meowButtonsType[]
-        });
-      }
-
-      if (this.myLayout.wideMode) {
-        MeowSearchBar({
-          myUi: this.myUi,
-          myDialog: this.myDialog,
-          myAvoid: this.myAvoid,
-        }).layoutWeight(1).padding(isPreferRightHand() ? { left: standardSpacing * 0.75 } : { right: standardSpacing * 0.75 });
-      } else {
-        Blank();
-      }
-
-      if ((this.mySettings.settingsData[79].value as meowButtonsType[]).length > 0) {
-        MeowButtonsSlot({
-          myUi: this.myUi,
-          myDialog: this.myDialog,
-          buttons: this.mySettings.settingsData[79].value as meowButtonsType[]
-        });
-      }
+@Builder
+export function MeowTitleBar(myUi: meowUiStatuses, myLayout: meowLayout, myDialog: meowDialogManager) {
+  Row({ space: standardSpacing * 0.125 }) {
+    if ((mySettings.settingsData[76].value as meowButtonsType[]).length > 0) {
+      MeowButtonsSlot(myUi, myDialog, 76);
     }
-    .height(MeowTitleBarHeight)
-    .width('100%')
-    .padding({ left: this.myAvoid.left, right: this.myAvoid.right });
-  }
-}
 
-export { MeowTitleBar };
+    if (myLayout.wideMode) {
+      MeowSearchBar({
+        myUi: myUi,
+        myLayout: myLayout,
+        myDialog: myDialog,
+      }).layoutWeight(1);
+    } else {
+      Blank();
+    }
+
+    if ((mySettings.settingsData[79].value as meowButtonsType[]).length > 0) {
+      MeowButtonsSlot(myUi, myDialog, 79);
+    }
+  }
+  .height(MeowTitleBarHeight)
+  .width('100%');
+}
 
 export const MeowTitleBarHeight = 36;

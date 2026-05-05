@@ -1,3 +1,4 @@
+import { meow } from '../../../catstypicalframework/utils/catsLogger';
 import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
 import { allWindowOrientations, meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
@@ -92,7 +93,8 @@ struct MeowButton {
         break;
       case meowButtonsType.GO:
         this.myUi.clearAddressBarFocus(this.getUIContext());
-        // TODO: Visit the site!
+        meow(`Visit / load [${this.myUi.searchContent}]!`);
+        // TODO: Visit the site for GO button!
         break;
       case meowButtonsType.ORIENTATION:
         this.showMenu = !this.showMenu;

@@ -6,7 +6,7 @@ import lazy { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
 import lazy { defaultDecorHeight, defaultInnerRadius, shortModeThreshold, updateNavigationIndicator, wideModeThreshold } from '../catstypicalframework/utils/ui';
 import lazy { MooTextModifier } from '../components/common/MooTextModifier';
 import { meowButtonsType } from '../components/parts/Buttons/constants';
-import lazy { MeowButtonsMore } from '../components/parts/Buttons/MeowButtonsMore';
+import { MeowButtonsSlot } from '../components/parts/Buttons/MeowButtonsSlot';
 import { MeowResMonitor } from '../components/parts/Homepage/MeowResMonitor';
 import lazy { MeowSearchBar } from '../components/parts/Homepage/MeowSearchBar';
 import lazy { MeowShortcutsPanel } from '../components/parts/Homepage/MeowShortcuts';
@@ -17,8 +17,7 @@ import lazy { MeowPlaceForDialogs } from '../components/parts/MeowPlaceForDialog
 import { MeowPlaceForKeyShortcuts } from '../components/parts/MeowPlaceForKeyShortcuts';
 import lazy { defaultAnimation, defaultHorizontalTabsHeight, defaultSidebarWidth, getColor, isPreferRightHand, isTabsStyleVertical, meowThemeColorType, mooTextType, showGiganticWindowTitle, sidebarShouldBeOnTheRight, standardSpacing, titleBarPositionBottom, useEffects } from '../components/settings';
 import lazy { showingSidebar } from '../components/statuses';
-import { meowDialogManager, openDialogRequestType } from '../hosts/system/dialogs/classes/meowDialogManager';
-import lazy { requestDialog } from '../hosts/system/dialogs/scripts/dialog';
+import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
 import { meowResources } from '../hosts/system/storage/classes/meowResources';
 import { meowAppStatuses } from '../hosts/system/windows/classes/meowAppStatuses';
 import { meowUiFullscreenStatus, meowUiGoBackSource, meowUiStatuses } from '../hosts/system/windows/classes/meowUiStatuses';
@@ -65,10 +64,7 @@ struct Index {
         });
 
         // Shortcuts handler
-        MeowPlaceForKeyShortcuts({
-          myUi: this.myUi,
-          myDialog: this.myDialog
-        });
+        MeowPlaceForKeyShortcuts(this.myDialog, this.myUi, this.getUIContext());
 
         // Main
         // This is ugly.
@@ -82,12 +78,7 @@ struct Index {
                 .animation(defaultAnimation());
             }
             // Shortcuts
-            MeowShortcutsPanel({
-              myLayout: this.myLayout
-            })
-              .onClick(() => {
-                requestDialog(this.myDialog, openDialogRequestType.HOMEPAGE);
-              });
+            MeowShortcutsPanel({ myLayout: this.myLayout, myDialog: this.myDialog });
           }
           .border(useEffects() ? { radius: defaultInnerRadius, width: 1, color: $r('sys.color.icon_fourth') } : { width: 0, radius: 0 })
           .backgroundColor(getColor(meowThemeColorType.PRIMARY))
@@ -95,82 +86,61 @@ struct Index {
           .width('100%')
           .height('100%');
         }
-        .padding(this.myUi.fullscreenStatus == meowUiFullscreenStatus.NONE ? this.mainFrameMargin() : 0)
+        .padding(this.myUi.fullscreenStatus == meowUiFullscreenStatus.NONE ? this.mainFrameSpace : 0)
         .animation(defaultAnimation());
 
-        // Decors
         if (this.myUi.fullscreenStatus == meowUiFullscreenStatus.NONE) {
           // Top bar
-          MeowTitleTop({
-            myAvoid: this.myAvoid,
-            myLayout: this.myLayout,
-            myDialog: this.myDialog,
-            myUi: this.myUi
-          });
-          // Title Bar
-          if (!titleBarPositionBottom()) {
-            // Top Title Bar
+          MeowTitleTop(this.myAvoid, this.myLayout, this.myDialog, this.myUi, this.getUIContext());
+
+          // Title bar
+          Scroll() {
             Column({ space: standardSpacing }) {
-              MeowTitleBar({
-                myUi: this.myUi,
-                myAvoid: this.myAvoid,
-                myLayout: this.myLayout,
-                myDialog: this.myDialog,
-              });
+              // Title bar
+              MeowTitleBar(this.myUi, this.myLayout, this.myDialog);
               if (!this.myLayout.wideMode) {
                 MeowSearchBar({
-                  needFullPadding: true,
                   myUi: this.myUi,
+                  myLayout: this.myLayout,
                   myDialog: this.myDialog,
-                  myAvoid: this.myAvoid,
                 });
               }
+
+              // More
               if (this.myUi.showMore) {
-                this.MoreOptions();
+                // Meow buttons
+                if ((this.mySettings.settingsData[80].value as meowButtonsType[]).length > 0) {
+                  MeowButtonsSlot(this.myUi, this.myDialog, 80);
+                }
+                // Majorly the window alias
+                MeowWindowInfoBar({
+                  myUi: this.myUi,
+                });
+                // Resource monitor
+                if (this.mySettings.settingsData[75].value as boolean) {
+                  MeowResMonitor();
+                }
               }
             }
             .alignItems(isPreferRightHand() ? HorizontalAlign.End : HorizontalAlign.Start)
             .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
             .backgroundColor(getColor(meowThemeColorType.SECONDARY))
-            .alignRules({
+            .padding(!titleBarPositionBottom() ? { bottom: standardSpacing, top: 1, left: this.myAvoid.left, right: this.myAvoid.right } : { top: standardSpacing, bottom: 1, left: this.myAvoid.left, right: this.myAvoid.right })
+            .width('100%');
+          }
+          .alignRules(!titleBarPositionBottom()
+            ? {
               top: { anchor: '__container__', align: VerticalAlign.Top },
               middle: { anchor: '__container__', align: HorizontalAlign.Center }
-            })
-            .translate({ y: this.topAvoidHeight() })
-            .padding(!titleBarPositionBottom() ? { bottom: standardSpacing } : 0)
-            .width('100%');
-          } else {
-            // Bottom Title Bar
-            Column({ space: standardSpacing }) {
-              if (this.myUi.showMore) {
-                this.MoreOptions();
-              }
-              MeowTitleBar({
-                myUi: this.myUi,
-                myAvoid: this.myAvoid,
-                myLayout: this.myLayout,
-                myDialog: this.myDialog,
-              });
-              if (!this.myLayout.wideMode) {
-                MeowSearchBar({
-                  needFullPadding: true,
-                  myUi: this.myUi,
-                  myDialog: this.myDialog,
-                  myAvoid: this.myAvoid,
-                });
-              }
             }
-            .alignItems(isPreferRightHand() ? HorizontalAlign.End : HorizontalAlign.Start)
-            .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
-            .backgroundColor(getColor(meowThemeColorType.SECONDARY))
-            .alignRules({
+            : {
               bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
               middle: { anchor: '__container__', align: HorizontalAlign.Center }
             })
-            .translate({ y: -this.bottomAvoidHeight() }) // Bottom avoid.
-            .padding(titleBarPositionBottom() ? { top: standardSpacing } : 0)
-            .width('100%');
-          }
+          .translate({ y: !titleBarPositionBottom() ? this.topAvoidHeight : -this.bottomAvoidHeight }) // Bottom avoid.
+          .constraintSize({ maxHeight: this.maxHeightTitleBar() })
+          .scrollable(ScrollDirection.Vertical)
+          .edgeEffect(EdgeEffect.Spring);
         }
 
         // Gigantic window title
@@ -226,7 +196,8 @@ struct Index {
    * Get the bottom avoid height for title bar.
    * @returns The bottom avoid height.
    */
-  bottomAvoidHeight() {
+  @Computed
+  get bottomAvoidHeight() {
     const h = this.myLayout.freeWindow ? standardSpacing : this.myAvoid.bottom; // No bottom avoid for free windows.
     return (titleBarPositionBottom() || useEffects() ? h : 0);
   }
@@ -235,54 +206,19 @@ struct Index {
    * Get the top avoid height for title bar.
    * @returns The top avoid height.
    */
-  topAvoidHeight() {
+  @Computed
+  get topAvoidHeight() {
     return this.myLayout.freeWindow ? defaultDecorHeight : this.myAvoid.top;
   }
 
   /**
-   * Get the maximum height of the more options panel.
-   * @returns The maximum height of the more options panel.
+   * Get the maximum height of the Title Bar (Entire).
+   * @returns The maximum height of the Title Bar (Entire).
    */
-  maxHeightMore() {
-    const avoids = this.bottomAvoidHeight() + this.topAvoidHeight();
-    const titleBarHeight = this.myLayout.wideMode
-      ? MeowTitleBarHeight // Single bar for wide mode.
-      : (MeowTitleBarHeight * 2 + standardSpacing); // Double bar for non-wide mode.
+  maxHeightTitleBar() {
+    const avoids = this.bottomAvoidHeight + this.topAvoidHeight;
     const effectsCorrection = useEffects() ? standardSpacing : 0;
-    return this.myLayout.height - avoids - titleBarHeight - standardSpacing * 2 + effectsCorrection;
-  }
-
-  @Builder
-  MoreOptions() {
-    Scroll() {
-      Column({ space: standardSpacing }) {
-        if ((this.mySettings.settingsData[80].value as meowButtonsType[]).length > 0) {
-          MeowButtonsMore({
-            myUi: this.myUi,
-            myAvoid: this.myAvoid,
-            myDialog: this.myDialog
-          });
-        }
-        MeowWindowInfoBar({
-          myUi: this.myUi,
-          myLayout: this.myLayout,
-          myAvoid: this.myAvoid,
-        });
-        if (this.mySettings.settingsData[75].value as boolean) {
-          MeowResMonitor({
-            myAvoid: this.myAvoid
-          });
-        }
-        // Text('Test').height(800);
-      }
-      .alignItems(isPreferRightHand() ? HorizontalAlign.End : HorizontalAlign.Start)
-      .width('100%');
-    }
-    .constraintSize({ maxHeight: this.maxHeightMore() })
-    .scrollable(ScrollDirection.Vertical)
-    .edgeEffect(EdgeEffect.Spring)
-    .height('auto')
-    .width('100%');
+    return this.myLayout.height - avoids - standardSpacing + effectsCorrection;
   }
 
   // Actions
@@ -301,7 +237,8 @@ struct Index {
 
   // Values
 
-  mainFrameMargin(): Margin {
+  @Computed
+  get mainFrameSpace(): Margin {
     // Vertical
     const slimCompensation = this.myLayout.wideMode ? 0 : MeowTitleBarHeight + standardSpacing; // For double layer title bar on phones / slim windows.
     const tabsHorizontalCompensation = this.myUi.showTabs && !isTabsStyleVertical(this.myLayout) ? defaultHorizontalTabsHeight : 0;
@@ -312,10 +249,10 @@ struct Index {
       // Bottom
       const freeWindowCompensation = (this.myLayout.freeWindow ? standardSpacing : 0);
       top = this.myAvoid.top;
-      bottom = this.myAvoid.bottom + freeWindowCompensation + (MeowTitleBarHeight + standardSpacing) + slimCompensation + tabsHorizontalCompensation;
+      bottom = this.myAvoid.bottom + freeWindowCompensation + (MeowTitleBarHeight + standardSpacing) + slimCompensation + tabsHorizontalCompensation + 1; // + 1 is for the 1vp border of the main frame when effects are on.
     } else {
       // Top
-      top = this.myAvoid.top + (MeowTitleBarHeight + standardSpacing) + slimCompensation + tabsHorizontalCompensation;
+      top = this.myAvoid.top + (MeowTitleBarHeight + standardSpacing) + slimCompensation + tabsHorizontalCompensation + 1; // Same.
       const showBottomAvoid = this.mySettings.settingsData[5].value as boolean; // Allow user to disable bottom avoid.
       bottom = (showBottomAvoid ? this.myAvoid.bottom : 0) + (useEffects() ? standardSpacing : 0);
     }

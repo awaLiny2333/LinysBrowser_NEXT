@@ -1,73 +1,65 @@
-import { meowAvoid } from "../../../catstypicalframework/hosts/meowAvoid";
 import { addUnitsToSize } from "../../../catstypicalframework/utils/storage";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { getCPU, getNativeHeapSize, getPrivateDirty, getPss, getSharedDirty, getVRAM, getVss } from "../../../hosts/system/performance/scripts/funcAsync";
 import { MooTextModifier } from "../../common/MooTextModifier";
 import { getColor, isPreferRightHand, meowThemeColorType, mooTextType, standardSpacing, useEffects } from "../../settings";
 
-@ComponentV2
-struct MeowResMonitor {
-  @Param @Require myAvoid: meowAvoid;
-
-  build() {
-    Scroll() {
-      Row({ space: standardSpacing }) {
-        DataBlock({
-          label: $r('app.string.ResMonitor_CPU'),
-          valueRetriever: async () => {
-            return `${(await getCPU() * 100).toFixed(2)}%`;
-          },
-        });
-        DataBlock({
-          label: $r('app.string.ResMonitor_VRAM'),
-          refreshInterval: 7000,
-          valueRetriever: async () => {
-            return `${addUnitsToSize(await getVRAM())}`;
-          },
-        });
-        DataBlock({
-          label: $r('app.string.ResMonitor_PSS'),
-          valueRetriever: async () => {
-            return `${addUnitsToSize(await getPss())}`;
-          },
-        });
-        DataBlock({
-          label: $r('app.string.ResMonitor_VSS'),
-          valueRetriever: async () => {
-            return `${addUnitsToSize(await getVss())}`;
-          },
-        });
-        DataBlock({
-          label: $r('app.string.ResMonitor_nativeHeap'),
-          valueRetriever: async () => {
-            return `${addUnitsToSize(await getNativeHeapSize())}`;
-          },
-        });
-        DataBlock({
-          label: $r('app.string.ResMonitor_sharedDirty'),
-          valueRetriever: async () => {
-            return `${addUnitsToSize(await getSharedDirty())}`;
-          },
-        });
-        DataBlock({
-          label: $r('app.string.ResMonitor_privateDirty'),
-          valueRetriever: async () => {
-            return `${addUnitsToSize(await getPrivateDirty())}`;
-          },
-        });
-      };
-    }
-    .borderRadius(defaultInnerRadius + standardSpacing * 0.25)
-    .scrollBar(BarState.Off)
-    .margin({ left: this.myAvoid.left, right: this.myAvoid.right })
-    .align(isPreferRightHand() ? Alignment.End : Alignment.Start)
-    .width('100%')
-    .scrollable(ScrollDirection.Horizontal)
-    .edgeEffect(EdgeEffect.Spring);
+@Builder
+export function MeowResMonitor() {
+  Scroll() {
+    Row({ space: standardSpacing }) {
+      DataBlock({
+        label: $r('app.string.ResMonitor_CPU'),
+        valueRetriever: async () => {
+          return `${(await getCPU() * 100).toFixed(2)}%`;
+        },
+      });
+      DataBlock({
+        label: $r('app.string.ResMonitor_VRAM'),
+        refreshInterval: 7000,
+        valueRetriever: async () => {
+          return `${addUnitsToSize(await getVRAM())}`;
+        },
+      });
+      DataBlock({
+        label: $r('app.string.ResMonitor_PSS'),
+        valueRetriever: async () => {
+          return `${addUnitsToSize(await getPss())}`;
+        },
+      });
+      DataBlock({
+        label: $r('app.string.ResMonitor_VSS'),
+        valueRetriever: async () => {
+          return `${addUnitsToSize(await getVss())}`;
+        },
+      });
+      DataBlock({
+        label: $r('app.string.ResMonitor_nativeHeap'),
+        valueRetriever: async () => {
+          return `${addUnitsToSize(await getNativeHeapSize())}`;
+        },
+      });
+      DataBlock({
+        label: $r('app.string.ResMonitor_sharedDirty'),
+        valueRetriever: async () => {
+          return `${addUnitsToSize(await getSharedDirty())}`;
+        },
+      });
+      DataBlock({
+        label: $r('app.string.ResMonitor_privateDirty'),
+        valueRetriever: async () => {
+          return `${addUnitsToSize(await getPrivateDirty())}`;
+        },
+      });
+    };
   }
+  .borderRadius(defaultInnerRadius + standardSpacing * 0.25)
+  .scrollBar(BarState.Off)
+  .align(isPreferRightHand() ? Alignment.End : Alignment.Start)
+  .width('100%')
+  .scrollable(ScrollDirection.Horizontal)
+  .edgeEffect(EdgeEffect.Spring);
 }
-
-export { MeowResMonitor };
 
 @ComponentV2
 struct DataBlock {

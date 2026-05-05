@@ -1,22 +1,18 @@
-import { meowAvoid } from "../../../catstypicalframework/hosts/meowAvoid";
+import lazy { common } from "@kit.AbilityKit";
+import { AppStorageV2 } from "@kit.ArkUI";
+import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 import { defaultInnerRadius, wideModeThreshold } from "../../../catstypicalframework/utils/ui";
 import { meowUiStatuses } from "../../../hosts/system/windows/classes/meowUiStatuses";
 import { newWindow } from "../../../hosts/system/windows/scripts/multiwindows";
+import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { MooSymbolButton } from "../../common/MooSymbolButton";
 import { MooTextButton } from "../../common/MooTextButton";
 import lazy { MooTextInputV2 } from "../../common/MooTextInputV2";
-import { defaultAnimation, meowThemeColorType, getColor, standardSpacing, useEffects, isPreferRightHand } from "../../settings";
-import lazy { common } from "@kit.AbilityKit";
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
-import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
-import { AppStorageV2 } from "@kit.ArkUI";
-import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
+import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from "../../settings";
 
 @ComponentV2
 struct MeowWindowInfoBar {
   @Param @Require myUi: meowUiStatuses;
-  @Param @Require myAvoid: meowAvoid;
-  @Param @Require myLayout: meowLayout;
   // Local
   @Local isEditing: boolean = false;
   @Local windowAliasEditing: string = this.myUi.windowAlias;
@@ -69,7 +65,6 @@ struct MeowWindowInfoBar {
     }
     .constraintSize({ maxWidth: wideModeThreshold })
     .alignItems(isPreferRightHand() ? HorizontalAlign.End : HorizontalAlign.Start)
-    .margin({ left: this.myAvoid.left, right: this.myAvoid.right })
     .padding(this.mySpacing())
     .borderRadius(defaultInnerRadius + (this.isEditing ? standardSpacing * 0.5 : standardSpacing * 0.3))
     .border(useEffects() ? { width: 1, color: $r('sys.color.icon_fourth') } : { width: 0 })

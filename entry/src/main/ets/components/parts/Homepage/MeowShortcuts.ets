@@ -12,10 +12,13 @@ import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppSt
 import { meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
 import { MooTextModifier } from '../../common/MooTextModifier';
 import { defaultAnimation, getColor, inDarkMode, meowThemeColorType, shortcutsShouldBeOnTheRight, standardSpacing, useEffects } from '../../settings';
+import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
+import { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
 
 @ComponentV2
 struct MeowShortcutsPanel {
   @Param @Require myLayout: meowLayout;
+  @Param @Require myDialog: meowDialogManager;
   // Host
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
   @Local myBookmarks: meowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
@@ -38,7 +41,10 @@ struct MeowShortcutsPanel {
     .width('100%')
     .height('100%')
     .edgeEffect(EdgeEffect.Spring)
-    .padding(standardSpacing);
+    .padding(standardSpacing)
+    .onClick(() => {
+      requestDialog(this.myDialog, openDialogRequestType.HOMEPAGE);
+    });
   }
 
   getFolder() {
