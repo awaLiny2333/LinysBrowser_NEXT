@@ -91,7 +91,7 @@ struct Index {
 
         if (this.myUi.fullscreenStatus == meowUiFullscreenStatus.NONE) {
           // Top bar
-          MeowTitleTop(this.myAvoid, this.myLayout, this.myDialog, this.myUi, this.getUIContext());
+          MeowTitleTop(this.myLayout, this.myDialog, this.myUi, this.getUIContext());
 
           // Title bar
           Scroll() {
@@ -144,7 +144,7 @@ struct Index {
         }
 
         // Gigantic window title
-        if (showGiganticWindowTitle(this.myLayout)) {
+        if (showGiganticWindowTitle(this.myUi)) {
           Text(this.myUi.windowAlias)
             .attributeModifier(new MooTextModifier(mooTextType.TITLE))
             .fontSize(128)
@@ -198,7 +198,7 @@ struct Index {
    */
   @Computed
   get bottomAvoidHeight() {
-    const h = this.myLayout.freeWindow ? standardSpacing : this.myAvoid.bottom; // No bottom avoid for free windows.
+    const h = this.myApp.freeWindow ? standardSpacing : this.myAvoid.bottom; // No bottom avoid for free windows.
     return (titleBarPositionBottom() || useEffects() ? h : 0);
   }
 
@@ -208,7 +208,7 @@ struct Index {
    */
   @Computed
   get topAvoidHeight() {
-    return this.myLayout.freeWindow ? defaultDecorHeight : this.myAvoid.top;
+    return this.myApp.freeWindow ? defaultDecorHeight : this.myAvoid.top;
   }
 
   /**
@@ -247,7 +247,7 @@ struct Index {
     let bottom: number;
     if (titleBarPositionBottom()) {
       // Bottom
-      const freeWindowCompensation = (this.myLayout.freeWindow ? standardSpacing : 0);
+      const freeWindowCompensation = (this.myApp.freeWindow ? standardSpacing : 0);
       top = this.myAvoid.top;
       bottom = this.myAvoid.bottom + freeWindowCompensation + (MeowTitleBarHeight + standardSpacing) + slimCompensation + tabsHorizontalCompensation + 1; // + 1 is for the 1vp border of the main frame when effects are on.
     } else {

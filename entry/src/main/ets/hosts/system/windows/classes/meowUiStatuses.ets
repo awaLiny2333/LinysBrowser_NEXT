@@ -16,7 +16,9 @@ export class meowUiStatuses {
   @Trace windowId: string;
   @Trace windowAlias: string;
   @Trace windowObj: window.Window | undefined;
+  @Trace windowStage: window.WindowStage | undefined;
   // UI
+  @Trace isOnFocus: boolean = true;
   @Trace pin: boolean = false;
   @Trace showMore: boolean = false;
   @Trace showTabs: boolean = false;
@@ -37,25 +39,6 @@ export class meowUiStatuses {
   constructor(windowId: string, windowAlias: string = '') {
     this.windowId = windowId;
     this.windowAlias = windowAlias;
-  }
-
-  /**
-   * Listen to window status changes.
-   */
-  listenWindowStatusChange() {
-    if (this.windowObj) {
-      try {
-        this.windowObj.on('windowStatusDidChange', (status) => {
-          // If a maximized window is manually recovered by the user:
-          if (this.fullscreenStatus == meowUiFullscreenStatus.FULLSCREEN_FULL && status != window.WindowStatusType.FULL_SCREEN) {
-            meow(`Window changed from FULL_SCREEN to ${status}! Go NONE!`, `windowStatusDidChange][${this.windowId}`);
-            this.fullscreenStatus = meowUiFullscreenStatus.NONE;
-          }
-        });
-      } catch (e) {
-        meow(`Failed to listen window status change: ${e.message}`, `meowUiStatuses][${this.windowId}`, meowLevel.ERROR);
-      }
-    }
   }
 
   /**

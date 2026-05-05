@@ -36,13 +36,24 @@ import { meowLayout } from '../hosts/meowLayout';
 import { meowMisc } from '../hosts/meowMisc';
 import { listenCrash, meow, meowLevel } from '../utils/catsLogger';
 import { ensureDirectoryExist } from '../utils/storage';
-import { getUpdateAvoid, getUpdateFreeWindowMode, listenAvoid, listenFocus, listenFreeWindowMode, listenSmartReachability, meowPx2vp, shortModeThreshold, updateNavigationIndicator, wideModeThreshold } from '../utils/ui';
+import { updateAvoid, updateFreeWindowMode, listenAvoid, listenFocus, listenFreeWindowMode, listenSmartReachability, listenWindowStatusChange, meowPx2vp, offAvoid, offFocus, offWindowStatusChange, shortModeThreshold, updateNavigationIndicator, wideModeThreshold } from '../utils/ui';
+
+// Enums
+/**
+ * The sources of wants.
+ */
+export enum wantSource {
+  ONCREATE = 'ONCREATE',
+  RUNTIME = 'RUNTIME'
+}
 
 // Flows
+
 /**
  * Called on early on create, before everything.
  * Only put actions that doesn't use any performance here (Highly concurrent functions!)
  * @param context The context.
+ * @returns the windowId.
  *
  * Jobs in this function are executed in the very first place of launch.
  * They should be either sync tasks,
@@ -58,7 +69,7 @@ export function earlyOnCreate(context: Context, launchWant: Want) {
 
   // Register window
   const myApp = AppStorageV2.connect(meowAppStatuses, () => new meowAppStatuses())!;
-  myApp.windowNames.push(myWindowId);
+  myApp.windowIds.push(myWindowId);
 
   // Shared hosts
   if (isNewWindow) {
@@ -77,6 +88,9 @@ export function earlyOnCreate(context: Context, launchWant: Want) {
   AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${myWindowId}`, () => new meowUiStatuses(myWindowId));
   AppStorageV2.connect(meowDialogManager, `meowDialogManager_${myWindowId}`, () => new meowDialogManager());
   AppStorageV2.connect(meowMisc, `meowMisc_${myWindowId}`, () => new meowMisc());
+  AppStorageV2.connect(meowAvoid, `meowAvoid_${myWindowId}`, () => new meowAvoid(0, 0, 0, 0));
+
+  return myWindowId;
 }
 
 /**
@@ -86,8 +100,8 @@ export function earlyOnCreate(context: Context, launchWant: Want) {
 export async function earlyOnWindowStageCreate(context: Context) {
   const startTime = Date.now();
   const myApp = AppStorageV2.connect(meowAppStatuses)!;
-  const isNewWindow = myApp.windowNames.length == 1;
-  const myWindowId = myApp.windowNames[myApp.windowNames.length - 1];
+  const isNewWindow = myApp.windowIds.length == 1;
+  const myWindowId = myApp.windowIds[myApp.windowIds.length - 1];
 
   // Some other windows had done this already.
   if (!isNewWindow) {
@@ -112,84 +126,75 @@ export async function earlyOnWindowStageCreate(context: Context) {
   await ensureDirectoryExist(`${filesDir}/history-index`); // History index files
   await ensureDirectoryExist(`${filesDir}/zones`); // Zones
 
-  // Key shortcuts
-  const myKey = AppStorageV2.connect(meowKeyboardMan)!;
-  myKey.initFromSettings();
-
-  // Listen crash
-  listenCrash(`${filesDir}/faultlogs`);
-
-  // setTimeout(() => {
-  //   webview.WebviewController.initializeWebEngine();
-  // }, 100);
-
   meow(`Finished in ${Date.now() - startTime} ms.`, 'earlyOnWindowStageCreate', meowLevel.WARN);
 }
 
 /**
  * Called in onWindowStageCreate, before windowStage.LoadContent, for EVERY WINDOW.
+ * @param windowStage window.WindowStage
  * @param windowObj window.Window
+ * @param context common.UIAbilityContext
  * */
 export async function aboutToLoadContent(windowStage: window.WindowStage, windowObj: window.Window, context: Context) {
-  console.log(`aboutToLoadContent: context = ${context}`); // Just to USE it so that it won't be an unused param.
+  console.log(`aboutToLoadContent: windowStage = ${windowStage}, windowObj = ${windowObj}, context = ${context}`); // Just to USE them so that it won't be markded as unused and give me a yellow <!>.
+}
 
-  // Enable window status auto save.
-  windowStage.setWindowRectAutoSave(true)
+/**
+ * Called immediately after windowStage.LoadContent, for EVERY WINDOW.
+ * @param windowStage window.WindowStage
+ * @param windowObj window.Window
+ * @param context common.UIAbilityContext
+ * */
+export function onLoadContent(windowStage: window.WindowStage, windowObj: window.Window, context: common.UIAbilityContext) {
+  const startTime = Date.now();
+  const myApp = AppStorageV2.connect(meowAppStatuses)!;
+  const isNewWindow = myApp.windowIds.length == 1;
+  const myWindowId = myApp.windowIds[myApp.windowIds.length - 1];
+
+  // UI
+
+  windowStage.setWindowRectAutoSave(true) // Enable window status auto save.
     .then(() => {
       meow('windowStage.setWindowRectAutoSave(true) Success!', 'init', meowLevel.INFO);
     })
     .catch((err: BusinessError) => {
       meow(`windowStage.setWindowRectAutoSave(true) Failed: ${err}`, 'init', meowLevel.ERROR);
     });
-
-  // Immersive
   try {
-    windowObj.setImmersiveModeEnabledState(true);
+    windowObj.setImmersiveModeEnabledState(true); // Immersive
     meow('window.setImmersiveModeEnabledState(true) Success!', 'init', meowLevel.INFO);
   } catch (e) {
     meow(`window.setImmersiveModeEnabledState(true) Failed: ${e}`, 'init', meowLevel.ERROR);
   }
-}
-
-/**
- * Called immediately after windowStage.LoadContent, for EVERY WINDOW.
- * @param window window.Window
- * */
-export function onLoadContent(window: window.Window, context: common.UIAbilityContext) {
-  const startTime = Date.now();
-  const myApp = AppStorageV2.connect(meowAppStatuses)!;
-  const isNewWindow = myApp.windowNames.length == 1;
-  const myWindowId = myApp.windowNames[myApp.windowNames.length - 1];
-
-  // Disable title bar (status bar on phones & tablets)
   try {
-    window.setWindowDecorVisible(false);
+    windowObj.setWindowDecorVisible(false); // Disable title bar (status bar on phones & tablets)
   } catch (e) {
     meow(`window.setWindowDecorVisible(false) Failed: ${e}`, 'init', meowLevel.ERROR);
   }
+  updateNavigationIndicator(windowObj); // Navigation indicator
 
-  // Navigation indicator
-  updateNavigationIndicator(window);
+  // SHARED HOSTS
 
-  // Save windows
+  // Init myApp
+  if (isNewWindow) {
+    const dark = context.config.colorMode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
+    const smartReachabilitySaysWeShouldPreferRightHand = isPreferRightHandFromSettings(); // Set the value of myUi.smartReachabilitySaysWeShouldPreferRightHand here as a starting position for smart reachability.
+    myApp.dark = dark;
+    myApp.smartReachabilitySaysWeShouldPreferRightHand = smartReachabilitySaysWeShouldPreferRightHand;
+    updateFreeWindowMode(context, windowObj);
+  }
+
+  // PRIVATE HOSTS
+
+  // Init myUI
   const myUi: meowUiStatuses = AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${myWindowId}`)!;
-  myUi.windowObj = window;
+  myUi.windowStage = windowStage;
+  myUi.windowObj = windowObj;
   myUi.windowAlias = defaultNewWindowAlias();
 
-  //Listen window status
-  myUi.listenWindowStatusChange();
-
-  // Initialize App status
-  const dark = context.config.colorMode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
-  const smartReachabilitySaysWeShouldPreferRightHand = isPreferRightHandFromSettings(); // Set the value of myUi.smartReachabilitySaysWeShouldPreferRightHand here as a starting position for smart reachability.
-  myApp.dark = dark;
-  myApp.smartReachabilitySaysWeShouldPreferRightHand = smartReachabilitySaysWeShouldPreferRightHand;
-  // const powerSave = power.getPowerMode() == power.DevicePowerMode.MODE_POWER_SAVE;
-  // myApp.powerSave = powerSave;
-
-  // Initialize window status
+  // Init myLayout
   try {
-    const rect: window.Rect = window.getWindowProperties().windowRect;
+    const rect: window.Rect = windowObj.getWindowProperties().windowRect;
     const width = meowPx2vp(rect.width);
     const height = meowPx2vp(rect.height);
     const wideMode = width > wideModeThreshold;
@@ -198,37 +203,41 @@ export function onLoadContent(window: window.Window, context: common.UIAbilityCo
   } catch (e) {
     meow(`AppStorageV2.connect(meowLayout, () => new meowLayout(wideMode, shortMode, width, height, dark, powerSave, smartReachabilitySaysWeShouldPreferRightHand)); Failed: ${e}`, 'init', meowLevel.ERROR);
   }
-  AppStorageV2.connect(meowAvoid, `meowAvoid_${myWindowId}`, () => new meowAvoid(0, 0, 0, 0));
 
-  getUpdateFreeWindowMode(context, window, myWindowId);
-  getUpdateAvoid(window, myWindowId);
+  // Init myAvoid
+  updateAvoid(windowObj, myWindowId);
 
+  // Listen for focus, window status (myUi) and avoid (myAvoid).
   setTimeout(() => {
-    listenFocus(window, myWindowId);
-    listenAvoid(window, myWindowId);
-    listenFreeWindowMode(context, window, myWindowId);
-    listenSmartReachability();
-  }, 1); // Delayed execution, reduce launch time.
+    listenWindowStatusChange(myWindowId); // Listen window status
+    listenFocus(myWindowId);
+    listenAvoid(myWindowId);
+  }, 100); // Delayed execution, reduce launch time.
 
-  // listenPowerSave(); // This is useless for now. :P
-  // watchLaunch(); // This is chicken rib. >O
+  // SHARED USER DATA & LISTENERS
 
   if (isNewWindow) {
-    // Init History here to avoid resource competition
+    // Init History
     let myMeowHistorian = AppStorageV2.connect(meowHistorian)!;
     myMeowHistorian.init();
 
     // Load bookmarks
     let myMeowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
     myMeowBookmarkStash.loadFromDisk();
+    
+    // Key shortcuts
+    const myKey = AppStorageV2.connect(meowKeyboardMan)!;
+    myKey.initFromSettings();
+
+    // App level Listen
+    setTimeout(() => {
+      listenFreeWindowMode(context);
+      listenSmartReachability();
+      listenCrash(`${context.filesDir}/faultlogs`);
+    }, 100);
   }
 
   meow(`Finished in ${Date.now() - startTime} ms.`, 'onLoadContent', meowLevel.WARN);
-}
-
-export enum wantSource {
-  ONCREATE = 'ONCREATE',
-  RUNTIME = 'RUNTIME'
 }
 
 /**
@@ -240,11 +249,10 @@ export function onWant(want: Want, source: wantSource) {
 }
 
 /**
- * Called on configuration update.
+ * Called on configuration update. Majorly used to update the color mode.
  * @param config The new configuration.
  */
 export function onConfigUpdate(config: Configuration) {
-  // Update colorMode.
   try {
     const myApp = AppStorageV2.connect(meowAppStatuses)!;
     const newDark = config.colorMode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
@@ -253,5 +261,31 @@ export function onConfigUpdate(config: Configuration) {
     }
   } catch (e) {
     meow(`const myApp = AppStorageV2.connect(meowAppStatuses); failed: ${e}`, 'onConfigUpdate', meowLevel.WARN);
+  }
+}
+
+/**
+ * Called on onWindowStageWillDestroy.
+ * @param windowStage The windowStage.
+ */
+export function onWindowStageWillDestroy(windowStage: window.WindowStage) {
+  // Find the meowUiStatuses item.
+  const myApp = AppStorageV2.connect(meowAppStatuses)!;
+  let targetUi: meowUiStatuses | undefined = undefined;
+  for (const windowId of myApp.windowIds) {
+    const myUi = AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${windowId}`);
+    if (myUi && myUi.windowStage == windowStage) {
+      meow(`I think window [${myUi.windowId}] is going to leave us...`, 'onWindowStageWillDestroy', meowLevel.WARN);
+      targetUi = myUi;
+      break;
+    }
+  }
+
+  // Remove the targetUi from the windowIds array.
+  if (targetUi) {
+    myApp.windowIds = myApp.windowIds.filter(id => id != targetUi!.windowId);
+    offFocus(targetUi.windowObj!);
+    offAvoid(targetUi.windowObj!);
+    offWindowStatusChange(targetUi!.windowId);
   }
 }

@@ -1,5 +1,4 @@
 import { common } from '@kit.AbilityKit';
-import { meowAvoid } from '../../../catstypicalframework/hosts/meowAvoid';
 import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import { windowTopAvoidLeft, windowTopAvoidRight } from '../../../catstypicalframework/utils/ui';
 import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
@@ -9,7 +8,10 @@ import { newWindow } from '../../../hosts/system/windows/scripts/multiwindows';
 import { MooSymbolButtonSmall } from '../../common/MooSymbolButtonSmall';
 import { MooTextModifier } from '../../common/MooTextModifier';
 import { showWindowTitle, windowTitlePosition } from '../../settings';
+import { AppStorageV2 } from '@kit.ArkUI';
+import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
 
+const myApp = AppStorageV2.connect(meowAppStatuses)!;
 
 /**
  * The window top bar. Holds the buttons on window top, as well as the name of window / zone.
@@ -18,7 +20,6 @@ import { showWindowTitle, windowTitlePosition } from '../../settings';
  */
 @Builder
 export function MeowTitleTop(
-  myAvoid: meowAvoid,
   myLayout: meowLayout,
   myDialog: meowDialogManager,
   myUi: meowUiStatuses,
@@ -26,7 +27,7 @@ export function MeowTitleTop(
 ) {
   Row({ space: 10 }) {
     // left button(s)
-    if (myLayout.freeWindow) {
+    if (myApp.freeWindow) {
       MooSymbolButtonSmall({
         icon: $r('sys.symbol.square_stack_3d'),
         clickAction: () => {
@@ -51,7 +52,7 @@ export function MeowTitleTop(
       });
 
     // right button(s)
-    if (myLayout.freeWindow) {
+    if (myApp.freeWindow) {
       MooSymbolButtonSmall({
         icon: myUi.pin ? $r('sys.symbol.pin_vertical_fill') : $r('sys.symbol.pin'),
         clickAction: () => {
@@ -68,11 +69,9 @@ export function MeowTitleTop(
     }
   } // Title bar
   .alignItems(VerticalAlign.Top)
-  .height(myAvoid.top)
   .width('100%')
-  .padding(
-    myLayout.freeWindow
-      ? { right: windowTopAvoidRight, left: windowTopAvoidLeft, top: 6 }
-      : { top: 6 }
+  .padding(myApp.freeWindow
+    ? { right: windowTopAvoidRight, left: windowTopAvoidLeft, top: 6 }
+    : { top: 6 }
   );
 }

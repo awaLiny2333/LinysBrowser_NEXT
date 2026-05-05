@@ -48,7 +48,7 @@ export class meowKeyboardMan {
     const mySettings = AppStorageV2.connect(meowManagedSettings)!;
     const settingsStrings = mySettings.settingsData[29].value as string[];
     if (!settingsStrings) {
-      meow(`No settings found for key shortcuts.`, 'meowKeyboardMan', meowLevel.WARN);
+      meow(`No settings found for key shortcuts.`, 'meowKeyboardMan][initFromSettings', meowLevel.WARN);
       return;
     }
 
@@ -56,7 +56,7 @@ export class meowKeyboardMan {
     for (let i = 0; i < settingsStrings.length; i++) {
       const settingsString = settingsStrings[i].split(' ');
       this.shortcuts[i].fromArray(settingsString);
-      meow(`#${i}: ${settingsString} => ${this.shortcuts[i]}`, 'earlyOnWindowStageCreate', meowLevel.INFO);
+      meow(`#${i}: ${settingsString} => ${this.shortcuts[i]}`, 'meowKeyboardMan][initFromSettings', meowLevel.INFO);
     }
   }
 
@@ -77,7 +77,7 @@ export class meowKeyboardMan {
    */
   apply(index: number, fromStrings: string[]) {
     if (fromStrings.length == 0) {
-      meow(`fromStrings is empty. meowKeyboardMan.apply() REJECTED!`, 'meowKeyboardMan', meowLevel.WARN);
+      meow(`fromStrings is empty. meowKeyboardMan.apply() REJECTED!`, 'meowKeyboardMan][apply', meowLevel.WARN);
       return;
     }
 

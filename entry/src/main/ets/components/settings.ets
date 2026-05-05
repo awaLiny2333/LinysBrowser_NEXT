@@ -11,6 +11,7 @@ import Curves from '@ohos.curves';
 import { meowLayout } from "../catstypicalframework/hosts/meowLayout";
 import { meowManagedSettings } from "../hosts/userdata/settings/classes/meowManagedSettings";
 import { meowAppStatuses } from "../hosts/system/windows/classes/meowAppStatuses";
+import { meowUiStatuses } from "../hosts/system/windows/classes/meowUiStatuses";
 
 // Constants
 export const fontSizeSymbol = 24;
@@ -147,8 +148,8 @@ export function windowTitlePosition() {
  * This function always returns false if the window is on focus.
  * @returns true if the user wants to show the gigantic window title, false otherwise.
  */
-export function showGiganticWindowTitle(myLayout: meowLayout) {
-  if (myLayout.isOnFocus) {
+export function showGiganticWindowTitle(myUi: meowUiStatuses) {
+  if (myUi.isOnFocus) {
     return false;
   }
   const settings = AppStorageV2.connect(meowManagedSettings)!;

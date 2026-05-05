@@ -144,7 +144,7 @@ struct WoofHistoryPanel {
         })
           .onAppear(() => {
             try {
-              if (this.myLayout.freeWindow) {
+              if (this.myApp.freeWindow) {
                 this.getUIContext().getFocusController().requestFocus(this.searchInputId);
               }
             } catch (e) {

@@ -3,9 +3,9 @@ import lazy { deviceInfo, power, settings } from '@kit.BasicServicesKit';
 import lazy { motion } from '@kit.MultimodalAwarenessKit';
 import lazy { defaultAnimation, isSmartReachabilityOn } from '../../components/settings';
 import { meowAppStatuses } from '../../hosts/system/windows/classes/meowAppStatuses';
+import { meowUiFullscreenStatus, meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
 import { meowManagedSettings } from '../../hosts/userdata/settings/classes/meowManagedSettings';
 import lazy { meowAvoid } from '../hosts/meowAvoid';
-import lazy { meowLayout } from '../hosts/meowLayout';
 import lazy { meow, meowLevel } from './catsLogger';
 
 export const wideModeThreshold = 700;
@@ -87,14 +87,14 @@ export const defaultDecorHeight = 40;
 
 /**
  * Sets the decor height to defaultDecorHeight (50).
- * @param windowClass The window.Window object.
+ * @param windowObj The window.Window object.
  * */
-export function setDecorHeight(windowClass: window.Window) {
+export function setDecorHeight(windowObj: window.Window) {
   try {
     meow(`setDecorHeight: ${defaultDecorHeight}`, 'setDecorHeight', meowLevel.INFO);
-    windowClass.setWindowDecorHeight(defaultDecorHeight);
+    windowObj.setWindowDecorHeight(defaultDecorHeight);
   } catch (e) {
-    meow(`windowClass.setWindowDecorHeight(defaultDecorHeight) Failed: ${e}`, 'setDecorHeight', meowLevel.ERROR);
+    meow(`windowObj.setWindowDecorHeight(defaultDecorHeight) Failed: ${e}`, 'setDecorHeight', meowLevel.ERROR);
   }
 }
 
@@ -102,18 +102,19 @@ export function setDecorHeight(windowClass: window.Window) {
 
 /**
  * Enables the listeners for avoid area change.
- * @param windowClass The window.Window object.
+ * @param windowId The windowId.
  * */
-export function listenAvoid(windowClass: window.Window, windowId: string) {
+export function listenAvoid(windowId: string) {
   try {
-    windowClass.on('avoidAreaChange', (data) => {
+    const myUi = AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${windowId}`)!;
+    myUi.windowObj!.on('avoidAreaChange', (data) => {
       // meow('Changes on avoid areas!', 'avoidAreaChange', meowLevel.INFO);
-      let myLayout = AppStorageV2.connect(meowLayout, `meowLayout_${windowId}`)!;
-      let myAvoid = AppStorageV2.connect(meowAvoid, `meowAvoid_${windowId}`)!;
+      const myAvoid = AppStorageV2.connect(meowAvoid, `meowAvoid_${windowId}`)!;
+      const myApp = AppStorageV2.connect(meowAppStatuses)!;
 
       if (data.type == window.AvoidAreaType.TYPE_SYSTEM) {
         let top = meowPx2vp(data.area.topRect.height);
-        if (myLayout && !myLayout.freeWindow) {
+        if (myApp && !myApp.freeWindow) {
           // Traditional window
           myAvoid.top = top;
         } else {
@@ -123,7 +124,7 @@ export function listenAvoid(windowClass: window.Window, windowId: string) {
       }
       if (data.type == window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
         let bottom = meowPx2vp(data.area.bottomRect.height) * 0.75;
-        if (myLayout && !myLayout.freeWindow) {
+        if (myApp && !myApp.freeWindow) {
           myAvoid.bottom = Math.max(bottom, 8);
         } else {
           myAvoid.bottom = 0; // No bottom avoid for free windows.
@@ -139,24 +140,36 @@ export function listenAvoid(windowClass: window.Window, windowId: string) {
       }
     });
   } catch (e) {
-    meow(`windowClass.on('avoidAreaChange') Failed: ${e}`, 'avoidAreaChange', meowLevel.ERROR);
+    meow(`windowClass.on('avoidAreaChange') Failed: ${e}`, 'listenAvoid', meowLevel.ERROR);
+  }
+}
+
+/**
+ * Disables the listening of 'avoidAreaChange' for the windowObj.
+ * @param windowObj The window.Window object.
+ */
+export function offAvoid(windowObj: window.Window) {
+  try {
+    windowObj.off('avoidAreaChange');
+  } catch (e) {
+    meow(`windowClass.off('avoidAreaChange') Failed: ${e}`, 'offAvoid', meowLevel.ERROR);
   }
 }
 
 /**
  * Gets the avoid information and sync to AppStorage.
- * @param windowClass The window.Window object.
+ * @param windowObj The window.Window object.
  * */
-export function getUpdateAvoid(windowClass: window.Window, windowId: string) {
+export function updateAvoid(windowObj: window.Window, windowId: string) {
   try {
     let avoidArea: window.AvoidArea;
-    let avoid = AppStorageV2.connect(meowAvoid, `meowAvoid_${windowId}`)!;
-    let myLayout = AppStorageV2.connect(meowLayout, `meowLayout_${windowId}`)!;
+    const avoid = AppStorageV2.connect(meowAvoid, `meowAvoid_${windowId}`)!;
+    const myApp = AppStorageV2.connect(meowAppStatuses)!;
 
     // Get
-    avoidArea = windowClass.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
+    avoidArea = windowObj.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
     let top = meowPx2vp(avoidArea.topRect.height);
-    if (myLayout && !myLayout.freeWindow) {
+    if (myApp && !myApp.freeWindow) {
       // Traditional window
       avoid.top = top;
     } else {
@@ -164,8 +177,8 @@ export function getUpdateAvoid(windowClass: window.Window, windowId: string) {
       avoid.top = Math.max(top, defaultDecorHeight);
     }
 
-    avoidArea = windowClass.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR);
-    if (myLayout && !myLayout.freeWindow) {
+    avoidArea = windowObj.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR);
+    if (myApp && !myApp.freeWindow) {
       avoid.bottom = Math.max(meowPx2vp(avoidArea.bottomRect.height) * 0.75, 8);
     } else {
       avoid.bottom = 0; // No bottom avoid for free windows.
@@ -175,7 +188,7 @@ export function getUpdateAvoid(windowClass: window.Window, windowId: string) {
     avoid.right = Math.max(8, meowPx2vp(avoidArea.rightRect.width));
 
   } catch (e) {
-    // TODO: Implement error handling.
+    meow(`windowClass.getWindowAvoidArea Failed: ${e}`, 'getUpdateAvoid', meowLevel.ERROR);
   }
 }
 
@@ -184,24 +197,26 @@ export function getUpdateAvoid(windowClass: window.Window, windowId: string) {
 /**
  * Listens to the Free-window Mode change and automatically switch modes.
  * @param context
- * @param windowClass
- * @param storage
- * @param id
+ * @param windowId
  * */
-export function listenFreeWindowMode(context: Context, windowClass: window.Window, windowId: string) {
+export function listenFreeWindowMode(context: Context) {
   meow('ON!', 'listenFreeWindowMode');
   settings.registerKeyObserver(context, 'window_pcmode_switch_status', settings.domainName.USER_PROPERTY, () => {
     settings.getValue(context, 'window_pcmode_switch_status', settings.domainName.USER_PROPERTY)
       .then((val) => {
         const free = (val == 'true');
-        const myLayout = AppStorageV2.connect(meowLayout, `meowLayout_${windowId}`)!;
+        const myApp = AppStorageV2.connect(meowAppStatuses)!;
+        if (myApp.freeWindow != free) {
+          myApp.freeWindow = free;
+        }
 
-        // Update!
-        if (myLayout.freeWindow != free) {
-          myLayout.freeWindow = free;
+        // Update for all windows.
+        for (const windowId of myApp.windowIds) {
+          const myUi = AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${windowId}`)!;
           if (free) {
-            setDecorHeight(windowClass);
+            setDecorHeight(myUi.windowObj!);
           }
+          updateNavigationIndicator(myUi.windowObj!);
         }
         meow(`settings.getValueSync "window_pcmode_switch_status" = ${val}`, 'listenFreeWindowMode', meowLevel.INFO);
       });
@@ -211,14 +226,15 @@ export function listenFreeWindowMode(context: Context, windowClass: window.Windo
 /**
  * Checks settings to figure out if currently is in free window mode.
  * @param context The UIAbility Context.
+ * @param windowObj The window.Window object.
  * @returns A boolean value.
  * */
-export function getUpdateFreeWindowMode(context: Context, windowClass: window.Window, windowId: string) {
-  const myLayout = AppStorageV2.connect(meowLayout, `meowLayout_${windowId}`)!;
+export function updateFreeWindowMode(context: Context, windowObj: window.Window) {
+  const myApp = AppStorageV2.connect(meowAppStatuses)!;
   if (deviceInfo.deviceType == '2in1') {
     meow('Return true for 2in1 type!', 'getUpdateFreeWindowMode', meowLevel.INFO);
-    myLayout.freeWindow = true;
-    setDecorHeight(windowClass);
+    myApp.freeWindow = true;
+    setDecorHeight(windowObj);
     return true;
   }
 
@@ -226,10 +242,10 @@ export function getUpdateFreeWindowMode(context: Context, windowClass: window.Wi
   let free = (val == 'true');
 
   // Update!
-  if (myLayout.freeWindow != free) {
-    myLayout.freeWindow = free;
+  if (myApp.freeWindow != free) {
+    myApp.freeWindow = free;
     if (free) {
-      setDecorHeight(windowClass);
+      setDecorHeight(windowObj);
     }
   }
   meow(`settings.getValueSync "window_pcmode_switch_status" = ${val}`, 'getUpdateFreeWindowMode', meowLevel.INFO);
@@ -300,24 +316,70 @@ export function listenSmartReachability() {
  *
  * Works OK in both window modes (free / traditional).
  *
- * @param windowClass The window.Window object.
+ * @param windowId The windowId.
  * */
-export function listenFocus(windowClass: window.Window, windowId: string) {
+export function listenFocus(windowId: string) {
   // Focus Listener
   try {
-    windowClass.on("windowEvent", (windowEvent) => {
+    let myUi = AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${windowId}`)!;
+    myUi.windowObj!.on("windowEvent", (windowEvent) => {
       let on_focus = false;
       if (windowEvent == window.WindowEventType.WINDOW_ACTIVE || windowEvent == window.WindowEventType.WINDOW_SHOWN) {
         // Focused
         on_focus = true;
       }
-      let myLayout = AppStorageV2.connect(meowLayout, `meowLayout_${windowId}`);
-      if (myLayout) {
-        myLayout.isOnFocus = on_focus;
-      }
+      myUi.isOnFocus = on_focus;
     });
   } catch (e) {
     meow('Failed: ' + e, 'listen_focus', meowLevel.ERROR);
+  }
+}
+
+/**
+ * Disables the listeners for avoid area change.
+ * @param windowObj The window.Window object.
+ */
+export function offFocus(windowObj: window.Window) {
+  windowObj.off("windowEvent");
+}
+
+// FULLSCREEN
+
+
+/**
+ * Listen to window status changes.
+ *
+ * @param windowId the windowId.
+ */
+export function listenWindowStatusChange(windowId: string) {
+  const myUi = AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${windowId}`)!;
+  if (myUi.windowObj) {
+    try {
+      myUi.windowObj.on('windowStatusDidChange', (status) => {
+        // If a maximized window is manually recovered by the user:
+        if (myUi.fullscreenStatus == meowUiFullscreenStatus.FULLSCREEN_FULL && status != window.WindowStatusType.FULL_SCREEN) {
+          meow(`Window changed from FULL_SCREEN to ${status}! Go NONE!`, `windowStatusDidChange][${windowId}`);
+          myUi.fullscreenStatus = meowUiFullscreenStatus.NONE;
+        }
+      });
+    } catch (e) {
+      meow(`Failed to listen window status change: ${e.message}`, `meowUiStatuses][${windowId}`, meowLevel.ERROR);
+    }
+  }
+}
+
+/**
+ * Disables the listeners for window status change.
+ * @param windowId the windowId.
+ */
+export function offWindowStatusChange(windowId: string) {
+  const myUi = AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${windowId}`)!;
+  if (myUi.windowObj) {
+    try {
+      myUi.windowObj.off('windowStatusDidChange');
+    } catch (e) {
+      meow(`Failed to off window status change: ${e.message}`, `meowUiStatuses][${windowId}`, meowLevel.ERROR);
+    }
   }
 }
 

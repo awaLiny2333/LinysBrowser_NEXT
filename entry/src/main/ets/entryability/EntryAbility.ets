@@ -1,7 +1,7 @@
 import { AbilityConstant, Configuration, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
-import { aboutToLoadContent, earlyOnCreate, earlyOnWindowStageCreate as onWindowStageCreate, onConfigUpdate, onLoadContent, onWant, wantSource } from '../catstypicalframework/flows/flows';
+import { aboutToLoadContent, earlyOnCreate, earlyOnWindowStageCreate as onWindowStageCreate, onConfigUpdate, onLoadContent, onWant, onWindowStageWillDestroy, wantSource } from '../catstypicalframework/flows/flows';
 import { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
 
 const DOMAIN = 0x0000;
@@ -41,7 +41,7 @@ export default class EntryAbility extends UIAbility {
           return;
         }
         hilog.warn(DOMAIN, 'testTag', ' \nMeow onLoadContent');
-        onLoadContent(mainWindow, this.context);
+        onLoadContent(windowStage, mainWindow, this.context);
       });
 
     } catch (e) {
@@ -51,6 +51,10 @@ export default class EntryAbility extends UIAbility {
 
   onConfigurationUpdate(newConfig: Configuration): void {
     onConfigUpdate(newConfig);
+  }
+  
+  onWindowStageWillDestroy(windowStage: window.WindowStage): void {
+    onWindowStageWillDestroy(windowStage);
   }
 
   onDestroy(): void {

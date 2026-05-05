@@ -10,7 +10,7 @@ import lazy { meowAppStatuses } from "../classes/meowAppStatuses";
  */
 export function getLastWindowId() {
   const myApp = AppStorageV2.connect(meowAppStatuses)!;
-  return myApp.windowNames[myApp.windowNames.length - 1];
+  return myApp.windowIds[myApp.windowIds.length - 1];
 }
 
 /**
