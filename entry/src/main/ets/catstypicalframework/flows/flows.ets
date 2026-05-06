@@ -22,6 +22,7 @@ import { AppStorageV2, window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import lazy Want from '@ohos.app.ability.Want';
 import { defaultNewWindowAlias, isPreferRightHandFromSettings } from '../../components/settings';
+import { concatSearchWithEngine } from '../../hosts/app/tabs/scripts/searchEngines';
 import { meowDialogManager } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowResources } from '../../hosts/system/storage/classes/meowResources';
 import { meowAppStatuses } from '../../hosts/system/windows/classes/meowAppStatuses';
@@ -191,6 +192,7 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
   myUi.windowStage = windowStage;
   myUi.windowObj = windowObj;
   myUi.windowAlias = defaultNewWindowAlias();
+  myUi.searchUnifyResult.url = concatSearchWithEngine('').result;
 
   // Init myLayout
   try {

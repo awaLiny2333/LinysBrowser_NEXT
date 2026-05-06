@@ -31,7 +31,7 @@ export class meowUiHost {
   @Trace fullscreenStatus: meowUiFullscreenStatus = meowUiFullscreenStatus.NONE;
   // Search & Address bar
   @Trace searchContent: string = '';
-  @Trace searchUnifyResult: UnifyDestinationResult = { url: '', type: UnifyDestinationResultType.URL_SCHEMED }; // TODO: THIS IS NOT GOOD
+  @Trace searchUnifyResult: UnifyDestinationResult = { url: '', type: UnifyDestinationResultType.URL_SCHEMED }; // this empty url is filled in flow.
   @Trace searchKeywordEntries: [string, string][] = [];
   @Trace searchKeywordEntriesExpanded: boolean = false;
   @Trace addressBarPreferHttps: boolean = false;
