@@ -41,7 +41,7 @@ export function MeowPlaceForKeyShortcuts(
     });
     Blank().keyboardShortcut(myKey.focusAddress.value, myKey.focusAddress.keys, () => {
       try {
-        myUi.focusAddressbar(context);
+        myUi.requestAddressBarFocus(context);
         meow(`Focus Address!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
       } catch (e) {
         meow(`Focus Address Failed: ${e}`, `MeowPlaceForShortcuts`, meowLevel.WARN);

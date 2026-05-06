@@ -5,29 +5,29 @@ import lazy { meow, meowLevel } from '../../../catstypicalframework/utils/catsLo
 import lazy { measureTextWidth } from '../../../catstypicalframework/utils/ui';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
-import { SearchBarStatuses } from '../../../hosts/system/windows/scripts/searchBarStatuses';
+import { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addressBarStatuses';
 import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { MooTextModifier } from '../../common/MooTextModifier';
-import { searchBarId } from '../../constants';
-import { defaultAnimation, fontSizeSmall, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from '../../settings';
+import { addressBarId } from '../../constants';
+import { fontSizeSmall, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from '../../settings';
 import { meowButtonsType } from '../Buttons/constants';
 import { MeowButtonsSlot } from '../Buttons/MeowButtonsSlot';
 import { MeowTitleBarHeight } from './MeowTitleBar';
 
 /**
- * The search bar.
+ * The address bar.
  *
  * @todo FLUENT Switch between wide and non-wide mode. (Perhaps with custom node?)
  */
 @ComponentV2
-struct MeowSearchBar {
+struct MeowAddressBar {
   // Hosts
   @Param @Require myUi: meowUiHost;
   @Param @Require myLayout: meowLayout;
   @Param @Require myDialog: meowDialogManager;
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
   // Local
-  @Local searchBarWidth: number = 10;
+  @Local barWidth: number = 10;
   focusBlurTimeoutId: number | undefined = undefined;
 
   build() {
@@ -37,7 +37,7 @@ struct MeowSearchBar {
       }
 
       // Input
-      if (this.myUi.searchBarStatus == SearchBarStatuses.SHIFTED) {
+      if (this.myUi.addressBarStatus == AddressBarStatuses.SHIFTED) {
         this.AddressInputKeyword();
       } else {
         this.AddressInputNormal();
@@ -78,7 +78,7 @@ struct MeowSearchBar {
               TextInput({ text: it.item[1], placeholder: '󰒟' })
                 .addressBarProps()
                 .focusBlur()
-                .id(it.index == 0 ? searchBarId : undefined)
+                .id(it.index == 0 ? addressBarId : undefined)
                 .width(it.index == 0 && this.hasFreeSpace || !this.myUi.searchKeywordEntriesExpand ? undefined : 'auto')
                 .layoutWeight(it.index == 0 && this.hasFreeSpace || !this.myUi.searchKeywordEntriesExpand ? 1 : undefined)
                 .onChange((c) => {
@@ -88,7 +88,7 @@ struct MeowSearchBar {
                     newUrl.params.set(it.item[0], c);
                     this.myUi.setCurrentSearchContent(newUrl.toString(), false, true);
                   } catch (e) {
-                    meow(`Invalid URL: ${this.myUi.searchContent}`, 'MeowSearchBar][Keyword][onChange', meowLevel.WARN);
+                    meow(`Invalid URL: ${this.myUi.searchContent}`, 'MeowAddressBar][Keyword][onChange', meowLevel.WARN);
                   }
                 })
                 .onSubmit(() => this.go());
@@ -96,12 +96,12 @@ struct MeowSearchBar {
           });
       }
       .padding({ right: 2 })
-      .width(this.hasFreeSpace ? this.searchBarWidth : undefined);
+      .width(this.hasFreeSpace ? this.barWidth : undefined);
     }
     .scrollBar(BarState.Off)
     .onAreaChange((oldValue, newValue) => {
       if (newValue.width != oldValue.width) {
-        this.searchBarWidth = newValue.width as number;
+        this.barWidth = newValue.width as number;
       }
     })
     .layoutWeight(1)
@@ -117,7 +117,7 @@ struct MeowSearchBar {
         .addressBarProps()
         .focusBlur()
         .layoutWeight(1)
-        .id(searchBarId)
+        .id(addressBarId)
         .onChange((c) => {
           this.myUi.setCurrentSearchContent(c, true, true);
         })
@@ -127,18 +127,16 @@ struct MeowSearchBar {
   }
 
   setOnFocus() {
-    animateToImmediately(defaultAnimation(), () => {
-      this.myUi.searchBarFocused = true;
-    });
+    this.myUi.reportAddressBarFocus();
   }
 
   setBlur() {
-    // Currently no work. Like SaaS without the Internet.
+    this.myUi.reportAddressBarBlur();
   }
 
   go() {
     this.myUi.submitSearchOrLoad();
-    this.myUi.clearAddressBarFocus(this.getUIContext());
+    this.myUi.requestAddressBarBlur(this.getUIContext());
   }
 
   @Styles
@@ -162,12 +160,12 @@ struct MeowSearchBar {
       needLength += measureTextWidth(entry[1] ? entry[1] : '󰒟', this.getUIContext(), fontSizeSmall, FontWeight.Normal);
       needLength += paddingEachInput + spaceEachEntry;
     }
-    return this.searchBarWidth - needLength > 0;
+    return this.barWidth - needLength > 0;
   }
 
   @Computed
   get showOnFocusButtons() {
-    return this.myUi.searchBarFocused && (this.mySettings.settingsData[77].value as meowButtonsType[]).length > 0;
+    return this.myUi.addressBarFocused && (this.mySettings.settingsData[77].value as meowButtonsType[]).length > 0;
   }
 
   @Computed
@@ -188,4 +186,4 @@ function addressBarProps() {
 }
 
 
-export { MeowSearchBar };
+export { MeowAddressBar };

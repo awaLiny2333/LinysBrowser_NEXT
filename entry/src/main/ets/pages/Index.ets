@@ -9,7 +9,7 @@ import { meowButtonsType } from '../components/parts/Buttons/constants';
 import { MeowButtonsSlot } from '../components/parts/Buttons/MeowButtonsSlot';
 import { MeowDestination } from '../components/parts/Homepage/MeowDestination';
 import { MeowResMonitor } from '../components/parts/Homepage/MeowResMonitor';
-import lazy { MeowSearchBar } from '../components/parts/Homepage/MeowSearchBar';
+import lazy { MeowAddressBar } from '../components/parts/Homepage/MeowAddressBar';
 import lazy { MeowShortcutsPanel } from '../components/parts/Homepage/MeowShortcuts';
 import lazy { MeowTitleBar, MeowTitleBarHeight } from '../components/parts/Homepage/MeowTitleBar';
 import lazy { MeowTitleTop } from '../components/parts/Homepage/MeowTitleTop';
@@ -99,15 +99,20 @@ struct Index {
             Column({ space: standardSpacing }) {
               // Title bar
               MeowTitleBar(this.myUi, this.myLayout, this.myDialog);
+              
+              if (this.myUi.addressBarFocused && titleBarPositionBottom()) {
+                MeowDestination(this.myUi, this.getUIContext());
+              }
+              
               if (!this.myLayout.wideMode) {
-                MeowSearchBar({
+                MeowAddressBar({
                   myUi: this.myUi,
                   myLayout: this.myLayout,
                   myDialog: this.myDialog,
                 });
               }
               
-              if (this.myUi.searchBarFocused) {
+              if (this.myUi.addressBarFocused && !titleBarPositionBottom()) {
                 MeowDestination(this.myUi, this.getUIContext());
               }
 
@@ -187,10 +192,10 @@ struct Index {
 
       // If window resize then disable focus.
       if (somethingChanged) {
-        if (this.myUi.searchBarFocused) {
+        if (this.myUi.addressBarFocused) {
           this.getUIContext().getFocusController().clearFocus();
           animateToImmediately(defaultAnimation(), () => {
-            this.myUi.searchBarFocused = false;
+            this.myUi.addressBarFocused = false;
           });
         }
       }

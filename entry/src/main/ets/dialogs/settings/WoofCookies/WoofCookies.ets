@@ -51,7 +51,7 @@ struct CookiesPanel {
 
       // Bottom bar
       Column({ space: standardSpacing }) {
-        // Search bar
+        // Address bar
         MooTextInputV2({
           icon: $r('sys.symbol.magnifyingglass'),
           text: this.searchKey,

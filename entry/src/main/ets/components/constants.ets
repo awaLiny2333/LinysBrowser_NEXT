@@ -1,1 +1,1 @@
-export const searchBarId = 'MeowAddressInput';
+export const addressBarId = 'MeowAddressInput';

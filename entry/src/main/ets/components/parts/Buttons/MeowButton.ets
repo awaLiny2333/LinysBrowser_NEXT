@@ -2,7 +2,7 @@ import { meow } from '../../../catstypicalframework/utils/catsLogger';
 import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
 import { allWindowOrientations, meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
-import { SearchBarStatuses } from '../../../hosts/system/windows/scripts/searchBarStatuses';
+import { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addressBarStatuses';
 import { MooSymbolButton } from '../../common/MooSymbolButton';
 import { defaultAnimation, getColor, meowThemeColorType } from '../../settings';
 import { getButtonIcon, meowButtonsType } from './constants';
@@ -24,7 +24,7 @@ struct MeowButton {
       case meowButtonsType.ADDRESS_KEYWORD_SWITCH:
         return this.myUi.searchKeywordEntries.length > 0;
       case meowButtonsType.ADDRESS_KEYWORD_EXPAND:
-        return this.myUi.searchBarStatus == SearchBarStatuses.SHIFTED;
+        return this.myUi.addressBarStatus == AddressBarStatuses.SHIFTED;
       default:
         return true;
     }
@@ -51,7 +51,7 @@ struct MeowButton {
   myIcon() {
     switch (this.type) {
       case meowButtonsType.ADDRESS_KEYWORD_SWITCH:
-        return this.myUi.searchBarStatus == SearchBarStatuses.SHIFTED ? $r('sys.symbol.text_and_t') : getButtonIcon(this.type);
+        return this.myUi.addressBarStatus == AddressBarStatuses.SHIFTED ? $r('sys.symbol.text_and_t') : getButtonIcon(this.type);
       case meowButtonsType.ADDRESS_KEYWORD_EXPAND:
         return this.myUi.searchKeywordEntriesExpand ? $r('sys.symbol.line') : getButtonIcon(this.type);
       default:
@@ -103,15 +103,15 @@ struct MeowButton {
         requestDialog(this.myDialog, openDialogRequestType.QR, ['Title', 'meow.url']); // TODO: auto pass in current viewing url.
         break;
       case meowButtonsType.USERAGENTS:
-        this.myUi.clearAddressBarFocus(this.getUIContext());
+        this.myUi.requestAddressBarBlur(this.getUIContext());
         requestDialog(this.myDialog, openDialogRequestType.QUICK_UA, 0); // TODO: pass in current web's UA.
         break;
       case meowButtonsType.RE_SEARCH:
-        this.myUi.clearAddressBarFocus(this.getUIContext());
+        this.myUi.requestAddressBarBlur(this.getUIContext());
         requestDialog(this.myDialog, openDialogRequestType.QUICK_SE, 0); // TODO: pass in current web's search engine.
         break;
       case meowButtonsType.GO:
-        this.myUi.clearAddressBarFocus(this.getUIContext());
+        this.myUi.requestAddressBarBlur(this.getUIContext());
         meow(`Visit / load [${this.myUi.searchContent}]!`);
         // TODO: Visit the site for GO button!
         break;
@@ -122,16 +122,16 @@ struct MeowButton {
         this.showMenu = !this.showMenu;
         break;
       case meowButtonsType.ADDRESS_KEYWORD_SWITCH:
-        const needFocus = this.myUi.searchBarFocused;
+        const needFocus = this.myUi.addressBarFocused;
         animateToImmediately(defaultAnimation(), () => {
-          if (this.myUi.searchBarStatus == SearchBarStatuses.CAN_SHIFT) {
-            this.myUi.searchBarStatus = SearchBarStatuses.SHIFTED;
-          } else if (this.myUi.searchBarStatus == SearchBarStatuses.SHIFTED) {
-            this.myUi.searchBarStatus = SearchBarStatuses.CAN_SHIFT;
+          if (this.myUi.addressBarStatus == AddressBarStatuses.CAN_SHIFT) {
+            this.myUi.addressBarStatus = AddressBarStatuses.SHIFTED;
+          } else if (this.myUi.addressBarStatus == AddressBarStatuses.SHIFTED) {
+            this.myUi.addressBarStatus = AddressBarStatuses.CAN_SHIFT;
           }
         });
         if (needFocus) {
-          this.myUi.focusAddressbar(this.getUIContext());
+          this.myUi.requestAddressBarFocus(this.getUIContext());
         }
         break;
       case meowButtonsType.ADDRESS_KEYWORD_EXPAND:

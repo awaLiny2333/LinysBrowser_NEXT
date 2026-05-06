@@ -2,13 +2,13 @@ import { AppStorageV2, window } from "@kit.ArkUI";
 import { BusinessError } from "@kit.BasicServicesKit";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import { getKeywordEntries, unifyDestination, UnifyDestinationResult, UnifyDestinationResultType } from "../../../../catstypicalframework/utils/url";
-import { searchBarId } from "../../../../components/constants";
+import { addressBarId } from "../../../../components/constants";
 import { defaultAnimation } from "../../../../components/settings";
 import { concatSearchWithEngine } from "../../../app/tabs/scripts/searchEngines";
 import { meowBookmarkItem } from "../../../userdata/bookmarks/classes/meowBookmarkItem";
 import { meowManagedSettings } from "../../../userdata/settings/classes/meowManagedSettings";
 import { meowDialogManager } from "../../dialogs/classes/meowDialogManager";
-import { SearchBarStatuses } from "../scripts/searchBarStatuses";
+import { AddressBarStatuses } from "../scripts/addressBarStatuses";
 import { meowAppMessage } from "./meowAppMessage";
 
 /**
@@ -31,12 +31,13 @@ export class meowUiHost {
   @Trace fullscreenStatus: meowUiFullscreenStatus = meowUiFullscreenStatus.NONE;
   // Search
   @Trace preferHttps: boolean = false;
-  @Trace searchBarFocused: boolean = false;
-  @Trace searchBarStatus: SearchBarStatuses = SearchBarStatuses.NO_SHIFT;
+  @Trace addressBarFocused: boolean = false;
+  @Trace addressBarStatus: AddressBarStatuses = AddressBarStatuses.NO_SHIFT;
   @Trace searchContent: string = '';
   @Trace searchUnifyResult: UnifyDestinationResult = { url: '', type: UnifyDestinationResultType.URL_SCHEMED }; // TODO: THIS IS NOT GOOD
   @Trace searchKeywordEntries: [string, string][] = [];
   @Trace searchKeywordEntriesExpand: boolean = false;
+  addressBarBlurTimeoutId: number | undefined = undefined;
   // Settings
   @Trace isExportingData: boolean = false;
   // MeowBookmarksPanel
@@ -92,7 +93,8 @@ export class meowUiHost {
       return true;
     }
 
-    if (this.clearAddressBarFocus(uiContext)) {
+    if (this.addressBarFocused) {
+      this.requestAddressBarBlur(uiContext)
       return true;
     }
 
@@ -209,34 +211,50 @@ export class meowUiHost {
    * Clear address bar focus.
    * @param uiContext The uiContext.
    */
-  clearAddressBarFocus(uiContext: UIContext) {
+  requestAddressBarBlur(uiContext: UIContext) {
     uiContext.getFocusController().clearFocus();
-    if (this.searchBarFocused) {
-      animateToImmediately(defaultAnimation(), () => {
-        this.searchBarFocused = false;
-      });
-      return true;
-    }
-    return false;
+    this.reportAddressBarBlur();
   }
 
   /**
    * Focus address bar.
    * @param uiContext The uiContext.
    */
-  focusAddressbar(uiContext: UIContext) {
+  requestAddressBarFocus(uiContext: UIContext) {
     try {
-      uiContext.getFocusController().requestFocus(searchBarId);
-      if (!this.searchBarFocused) {
-        animateToImmediately(defaultAnimation(), () => {
-          this.searchBarFocused = true;
-        });
-      }
+      uiContext.getFocusController().requestFocus(addressBarId);
+      this.reportAddressBarFocus();
       return true;
     } catch (e) {
       meow(`Failed to request focus: ${e.message}`, `meowUiHost][${this.windowId}][focusAddressbar`, meowLevel.ERROR);
+      return false;
     }
-    return false;
+  }
+
+  /**
+   * Called after focusing the adress bar, to synchronize the statuses in this meowUiHost.
+   */
+  reportAddressBarFocus() {
+    clearTimeout(this.addressBarBlurTimeoutId);
+    if (!this.addressBarFocused) {
+      animateToImmediately(defaultAnimation(), () => {
+        this.addressBarFocused = true;
+      });
+    }
+  }
+
+  /**
+   * Called after blurring the address bar, to synchronize the statuses in this meowUiHost.
+   */
+  reportAddressBarBlur() {
+    clearTimeout(this.addressBarBlurTimeoutId);
+    if (this.addressBarFocused) {
+      this.addressBarBlurTimeoutId = setTimeout(() => {
+        animateToImmediately(defaultAnimation(), () => {
+          this.addressBarFocused = false;
+        });
+      }, 100);
+    }
   }
 
   /**
@@ -277,12 +295,12 @@ export class meowUiHost {
       this.searchKeywordEntries = entriesSorted;
 
       // Switch state.
-      if (this.searchBarStatus == SearchBarStatuses.NO_SHIFT) {
-        this.searchBarStatus = SearchBarStatuses.CAN_SHIFT;
+      if (this.addressBarStatus == AddressBarStatuses.NO_SHIFT) {
+        this.addressBarStatus = AddressBarStatuses.CAN_SHIFT;
       }
     } else {
       this.searchKeywordEntries = [];
-      this.searchBarStatus = SearchBarStatuses.NO_SHIFT;
+      this.addressBarStatus = AddressBarStatuses.NO_SHIFT;
     }
   }
 

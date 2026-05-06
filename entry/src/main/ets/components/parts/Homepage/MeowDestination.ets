@@ -1,17 +1,17 @@
 import { UnifyDestinationResultType } from "../../../catstypicalframework/utils/url";
 import { SymbolButton } from "../../../dialogs/parts/WoofCatsDev/parts/common/SymbolButton";
-import { concatSearchWithEngine } from "../../../hosts/app/tabs/scripts/searchEngines";
+import lazy { concatSearchWithEngine } from "../../../hosts/app/tabs/scripts/searchEngines";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { MooCapsuleButton } from "../../common/MooCapsuleButton";
 import { MooTextModifier } from "../../common/MooTextModifier";
-import { isPreferRightHand, standardSpacing } from "../../settings";
+import { isPreferRightHand, standardSpacing, titleBarPositionBottom } from "../../settings";
 
 @Builder
 export function MeowDestination(myUi: meowUiHost, uiContext: UIContext) {
   Row({ space: standardSpacing }) {
     if (myUi.searchUnifyResult?.type == UnifyDestinationResultType.URL_UNSCHEMED) {
       MooCapsuleButton({
-        text: myUi.preferHttps ? '󰀈 HTTPS' : '󰓄 HTTP',
+        text: myUi.preferHttps ? 'HTTPS  󰀈' : 'HTTP  󰓄',
         clickAction: () => {
           myUi.preferHttps = !myUi.preferHttps;
           myUi.refreshDestination();
@@ -24,9 +24,9 @@ export function MeowDestination(myUi: meowUiHost, uiContext: UIContext) {
       .wordBreak(WordBreak.BREAK_ALL)
       .layoutWeight(1);
     SymbolButton({
-      icon: $r('sys.symbol.chevron_up'),
+      icon: titleBarPositionBottom() ? $r('sys.symbol.chevron_down') : $r('sys.symbol.chevron_up'),
       clickAction: () => {
-        myUi.clearAddressBarFocus(uiContext);
+        myUi.requestAddressBarBlur(uiContext);
       }
     });
   }

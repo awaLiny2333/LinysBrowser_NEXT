@@ -6,7 +6,7 @@ import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/me
 import { standardSpacing } from "../../settings";
 import { meowButtonsType } from "../Buttons/constants";
 import { MeowButtonsSlot } from "../Buttons/MeowButtonsSlot";
-import { MeowSearchBar } from "./MeowSearchBar";
+import { MeowAddressBar } from "./MeowAddressBar";
 
 const mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
@@ -18,7 +18,7 @@ export function MeowTitleBar(myUi: meowUiHost, myLayout: meowLayout, myDialog: m
     }
 
     if (myLayout.wideMode) {
-      MeowSearchBar({
+      MeowAddressBar({
         myUi: myUi,
         myLayout: myLayout,
         myDialog: myDialog,
