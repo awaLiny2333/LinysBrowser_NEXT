@@ -88,7 +88,7 @@ export function earlyOnCreate(context: Context, launchWant: Want) {
   AppStorageV2.connect(meowUiHost, `meowUiHost_${myWindowId}`, () => new meowUiHost(myWindowId));
   AppStorageV2.connect(meowDialogManager, `meowDialogManager_${myWindowId}`, () => new meowDialogManager());
   AppStorageV2.connect(meowMisc, `meowMisc_${myWindowId}`, () => new meowMisc());
-  AppStorageV2.connect(meowAvoid, `meowAvoid_${myWindowId}`, () => new meowAvoid(0, 0, 0, 0));
+  AppStorageV2.connect(meowAvoid, `meowAvoid_${myWindowId}`, () => new meowAvoid())
 
   return myWindowId;
 }
@@ -212,7 +212,7 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
     listenWindowStatusChange(myWindowId); // Listen window status
     listenFocus(myWindowId);
     listenAvoid(myWindowId);
-  }, 100); // Delayed execution, reduce launch time.
+  }, 50); // Delayed execution, reduce launch time.
 
   // SHARED USER DATA & LISTENERS
 
@@ -234,7 +234,7 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
       listenFreeWindowMode(context);
       listenSmartReachability();
       listenCrash(`${context.filesDir}/faultlogs`);
-    }, 100);
+    }, 50);
   }
 
   meow(`Finished in ${Date.now() - startTime} ms.`, 'onLoadContent', meowLevel.WARN);

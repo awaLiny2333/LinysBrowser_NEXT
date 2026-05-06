@@ -12,9 +12,9 @@ export function MeowDestination(myUi: meowUiHost, uiContext: UIContext) {
   Row({ space: standardSpacing }) {
     if (myUi.searchUnifyResult?.type == UnifyDestinationResultType.URL_UNSCHEMED) {
       MooCapsuleButton({
-        text: myUi.preferHttps ? 'HTTPS  󰀈' : 'HTTP  󰓄',
+        text: myUi.addressBarPreferHttps ? 'HTTPS  󰀈' : 'HTTP  󰓄',
         clickAction: () => {
-          myUi.preferHttps = !myUi.preferHttps;
+          myUi.addressBarPreferHttps = !myUi.addressBarPreferHttps;
           myUi.refreshDestination();
         }
       });

@@ -15,13 +15,14 @@ export function MeowButtonsSlot(
   List({ space: standardSpacing * 0.125 }) {
     Repeat(AppStorageV2.connect(meowManagedSettings)!.settingsData[buttons].value as meowButtonsType[])
       .each((item: RepeatItem<meowButtonsType>) => {
-        ListItem() {
-          MeowButton({
-            myUi: myUi,
-            myDialog: myDialog,
-            type: item.item
-          });
-        };
+        // ListItem() {
+        MeowButton({
+          myUi: myUi,
+          myDialog: myDialog,
+          type: item.item
+        });
+        // };
+        // Will this boost performance?
       });
   }
   .scrollBar(BarState.Off)

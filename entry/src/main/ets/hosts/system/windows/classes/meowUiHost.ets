@@ -29,14 +29,14 @@ export class meowUiHost {
   @Trace sidebarShrunk: boolean = true;
   @Trace orientation: window.Orientation = window.Orientation.AUTO_ROTATION_RESTRICTED;
   @Trace fullscreenStatus: meowUiFullscreenStatus = meowUiFullscreenStatus.NONE;
-  // Search
-  @Trace preferHttps: boolean = false;
-  @Trace addressBarFocused: boolean = false;
-  @Trace addressBarStatus: AddressBarStatuses = AddressBarStatuses.NO_SHIFT;
+  // Search & Address bar
   @Trace searchContent: string = '';
   @Trace searchUnifyResult: UnifyDestinationResult = { url: '', type: UnifyDestinationResultType.URL_SCHEMED }; // TODO: THIS IS NOT GOOD
   @Trace searchKeywordEntries: [string, string][] = [];
-  @Trace searchKeywordEntriesExpand: boolean = false;
+  @Trace searchKeywordEntriesExpanded: boolean = false;
+  @Trace addressBarPreferHttps: boolean = false;
+  @Trace addressBarFocused: boolean = false;
+  @Trace addressBarStatus: AddressBarStatuses = AddressBarStatuses.NO_SHIFT;
   addressBarBlurTimeoutId: number | undefined = undefined;
   // Settings
   @Trace isExportingData: boolean = false;
@@ -94,7 +94,7 @@ export class meowUiHost {
     }
 
     if (this.addressBarFocused) {
-      this.requestAddressBarBlur(uiContext)
+      this.requestAddressBarBlur(uiContext);
       return true;
     }
 
@@ -308,7 +308,7 @@ export class meowUiHost {
    * Refreshes the unified destination.
    */
   refreshDestination() {
-    this.searchUnifyResult = unifyDestination(this.searchContent, this.preferHttps);
+    this.searchUnifyResult = unifyDestination(this.searchContent, this.addressBarPreferHttps);
   }
 
   /**

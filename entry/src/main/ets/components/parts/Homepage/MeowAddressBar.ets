@@ -70,16 +70,16 @@ struct MeowAddressBar {
       Row({ space: standardSpacing }) {
         Repeat(this.myUi.searchKeywordEntries)
           .each((it) => {
-            if (this.myUi.searchKeywordEntriesExpand || it.index == 0) {
-              if (this.myUi.searchKeywordEntriesExpand) {
+            if (this.myUi.searchKeywordEntriesExpanded || it.index == 0) {
+              if (this.myUi.searchKeywordEntriesExpanded) {
                 Text(`${it.item[0]}`).attributeModifier(new MooTextModifier());
               }
               TextInput({ text: it.item[1], placeholder: '󰒟' })
                 .addressBarProps()
                 .focusBlur()
                 .id(it.index == 0 ? addressBarId : undefined)
-                .width(it.index == 0 && this.hasFreeSpace || !this.myUi.searchKeywordEntriesExpand ? undefined : 'auto')
-                .layoutWeight(it.index == 0 && this.hasFreeSpace || !this.myUi.searchKeywordEntriesExpand ? 1 : undefined)
+                .width(it.index == 0 && this.hasFreeSpace || !this.myUi.searchKeywordEntriesExpanded ? undefined : 'auto')
+                .layoutWeight(it.index == 0 && this.hasFreeSpace || !this.myUi.searchKeywordEntriesExpanded ? 1 : undefined)
                 .onChange((c) => {
                   it.item[1] = c;
                   try {
