@@ -92,18 +92,18 @@ struct Index {
 
         if (this.myUi.fullscreenStatus == meowUiFullscreenStatus.NONE) {
           // Top bar
-          MeowTitleTop(this.myLayout, this.myDialog, this.myUi, this.getUIContext());
+          MeowTitleTop(this.myLayout, this.myDialog, this.myUi, this.myApp, this.getUIContext());
 
           // Title bar
           Scroll() {
             Column({ space: standardSpacing }) {
               // Title bar
               MeowTitleBar(this.myUi, this.myLayout, this.myDialog, this.mySettings);
-              
+
               if (this.myUi.addressBarFocused && titleBarPositionBottom()) {
                 MeowDestination(this.myUi, this.getUIContext());
               }
-              
+
               // Address
               if (!this.myLayout.wideMode) {
                 MeowAddressBar({
@@ -112,7 +112,7 @@ struct Index {
                   myDialog: this.myDialog,
                 });
               }
-              
+
               if (this.myUi.addressBarFocused && !titleBarPositionBottom()) {
                 MeowDestination(this.myUi, this.getUIContext());
               }
@@ -207,7 +207,7 @@ struct Index {
    * Get the bottom avoid height for title bar.
    * @returns The bottom avoid height.
    */
-  @Computed
+  // @Computed
   get bottomAvoidHeight() {
     const h = this.myApp.freeWindow ? standardSpacing : this.myAvoid.bottom; // No bottom avoid for free windows.
     return (titleBarPositionBottom() || useEffects() ? h : 0);
@@ -217,7 +217,7 @@ struct Index {
    * Get the top avoid height for title bar.
    * @returns The top avoid height.
    */
-  @Computed
+  // @Computed
   get topAvoidHeight() {
     return this.myApp.freeWindow ? defaultDecorHeight : this.myAvoid.top;
   }

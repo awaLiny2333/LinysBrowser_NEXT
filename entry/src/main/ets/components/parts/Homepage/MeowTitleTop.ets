@@ -8,10 +8,9 @@ import { newWindow } from '../../../hosts/system/windows/scripts/multiwindows';
 import { MooSymbolButtonSmall } from '../../common/MooSymbolButtonSmall';
 import { MooTextModifier } from '../../common/MooTextModifier';
 import { showWindowTitle, windowTitlePosition } from '../../settings';
-import { AppStorageV2 } from '@kit.ArkUI';
 import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
 
-const myApp = AppStorageV2.connect(meowAppStatuses)!;
+// const myApp = AppStorageV2.connect(meowAppStatuses)!;
 
 /**
  * The window top bar. Holds the buttons on window top, as well as the name of window / zone.
@@ -23,6 +22,7 @@ export function MeowTitleTop(
   myLayout: meowLayout,
   myDialog: meowDialogManager,
   myUi: meowUiHost,
+  myApp: meowAppStatuses,
   context: UIContext
 ) {
   Row({ space: 10 }) {
