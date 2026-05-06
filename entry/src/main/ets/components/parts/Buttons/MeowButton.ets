@@ -155,6 +155,8 @@ struct MeowButton {
         return this.myUi.showMore;
       case meowButtonsType.TABS:
         return this.myUi.showTabs;
+      case meowButtonsType.ADDRESS_KEYWORD_SWITCH:
+        return true;
       default:
         return undefined;
     }

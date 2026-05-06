@@ -37,11 +37,14 @@ struct MeowSearchBar {
       }
 
       // Input
+      // Row() {
       if (this.myUi.searchBarStatus == SearchBarStatuses.SHIFTED) {
         this.AddressInputKeyword();
       } else {
         this.AddressInputNormal();
       }
+      // }
+      // .layoutWeight(1);
 
       if (this.showOnFocusButtons || this.showAlwaysOnButtons) {
         Blank().width(standardSpacing * 0.75);
@@ -87,7 +90,7 @@ struct MeowSearchBar {
               }
               TextInput({ text: it.item[1], placeholder: '󰒟' })
                 .padding({ left: 16, right: 16, top: 8, bottom: 7 })
-                .height(MeowTitleBarHeight - 1)
+                .height(useEffects() ? MeowTitleBarHeight - 1 : MeowTitleBarHeight)
                 .fontColor(getColor(meowThemeColorType.FONT))
                 .caretColor(getColor(meowThemeColorType.FONT))
                 .selectedBackgroundColor(getColor(meowThemeColorType.FONT))
@@ -129,21 +132,24 @@ struct MeowSearchBar {
   @Builder
   AddressInputNormal() {
     // Normal view
-    TextInput({ text: this.myUi.searchContent, placeholder: '󰀩 ...' })
-      .height(MeowTitleBarHeight)
-      .fontColor(getColor(meowThemeColorType.FONT))
-      .caretColor(getColor(meowThemeColorType.FONT))
-      .selectedBackgroundColor(getColor(meowThemeColorType.FONT))
-      .border(useEffects() ? { width: 1, color: $r('sys.color.icon_fourth') } : { width: 0 })
-      .backgroundColor(useEffects() ? $r('app.color.blur_background_contrast') : getColor(meowThemeColorType.PRIMARY))
-      .layoutWeight(1)
-      .id(searchBarId)
-      .onFocus(() => this.setOnFocus())
-      .onBlur(() => this.setBlur())
-      .onChange((c) => {
-        this.myUi.setCurrentSearchContent(c, true);
-      })
-      .onSubmit(() => this.go());
+    Row() {
+      TextInput({ text: this.myUi.searchContent, placeholder: '󰀩 ...' })
+        .height(MeowTitleBarHeight)
+        .fontColor(getColor(meowThemeColorType.FONT))
+        .caretColor(getColor(meowThemeColorType.FONT))
+        .selectedBackgroundColor(getColor(meowThemeColorType.FONT))
+        .border(useEffects() ? { width: 1, color: $r('sys.color.icon_fourth') } : { width: 0 })
+        .backgroundColor(useEffects() ? $r('app.color.blur_background_contrast') : getColor(meowThemeColorType.PRIMARY))
+        .layoutWeight(1)
+        .id(searchBarId)
+        .onFocus(() => this.setOnFocus())
+        .onBlur(() => this.setBlur())
+        .onChange((c) => {
+          this.myUi.setCurrentSearchContent(c, true);
+        })
+        .onSubmit(() => this.go());
+    }
+    .layoutWeight(1); // with .border, the bare TextInput would appear to be a little bit longer than the actural length. Therefore we need an outer container to limit its size.
   }
 
   setOnFocus() {
