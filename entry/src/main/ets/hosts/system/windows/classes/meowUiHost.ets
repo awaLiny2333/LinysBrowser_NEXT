@@ -2,7 +2,7 @@ import { AppStorageV2, window } from "@kit.ArkUI";
 import { BusinessError } from "@kit.BasicServicesKit";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import { getKeywordEntries, unifyDestination, UnifyDestinationResult, UnifyDestinationResultType } from "../../../../catstypicalframework/utils/url";
-import { addressBarId } from "../../../../components/constants";
+import { addressBarId } from "../../../../components/parts/Homepage/MeowAddressBar";
 import { defaultAnimation } from "../../../../components/settings";
 import { concatSearchWithEngine } from "../../../app/tabs/scripts/searchEngines";
 import { meowBookmarkItem } from "../../../userdata/bookmarks/classes/meowBookmarkItem";
@@ -253,7 +253,7 @@ export class meowUiHost {
         animateToImmediately(defaultAnimation(), () => {
           this.addressBarFocused = false;
         });
-      }, 100);
+      }, 50);
     }
   }
 

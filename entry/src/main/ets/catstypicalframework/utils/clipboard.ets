@@ -1,6 +1,10 @@
 import lazy { BusinessError, pasteboard } from '@kit.BasicServicesKit';
 
-export function copy(content: string) {
+/**
+ * Copy text to clipboard.
+ * @param content The content.
+ */
+export function copyText(content: string) {
   let systemPasteboard: pasteboard.SystemPasteboard = pasteboard.getSystemPasteboard();
   let pasteData: pasteboard.PasteData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN, content);
 

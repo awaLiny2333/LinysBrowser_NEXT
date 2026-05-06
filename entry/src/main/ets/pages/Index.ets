@@ -98,12 +98,13 @@ struct Index {
           Scroll() {
             Column({ space: standardSpacing }) {
               // Title bar
-              MeowTitleBar(this.myUi, this.myLayout, this.myDialog);
+              MeowTitleBar(this.myUi, this.myLayout, this.myDialog, this.mySettings);
               
               if (this.myUi.addressBarFocused && titleBarPositionBottom()) {
                 MeowDestination(this.myUi, this.getUIContext());
               }
               
+              // Address
               if (!this.myLayout.wideMode) {
                 MeowAddressBar({
                   myUi: this.myUi,

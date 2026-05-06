@@ -8,7 +8,6 @@ import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addressBarStatuses';
 import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { MooTextModifier } from '../../common/MooTextModifier';
-import { addressBarId } from '../../constants';
 import { fontSizeSmall, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from '../../settings';
 import { meowButtonsType } from '../Buttons/constants';
 import { MeowButtonsSlot } from '../Buttons/MeowButtonsSlot';
@@ -99,14 +98,14 @@ struct MeowAddressBar {
       .width(this.hasFreeSpace ? this.barWidth : undefined);
     }
     .scrollBar(BarState.Off)
+    .layoutWeight(1)
+    .scrollable(this.hasFreeSpace ? ScrollDirection.None : ScrollDirection.Horizontal)
+    .edgeEffect(EdgeEffect.Spring)
     .onAreaChange((oldValue, newValue) => {
       if (newValue.width != oldValue.width) {
         this.barWidth = newValue.width as number;
       }
-    })
-    .layoutWeight(1)
-    .scrollable(ScrollDirection.Horizontal)
-    .edgeEffect(EdgeEffect.Spring);
+    });
   }
 
   @Builder
@@ -126,23 +125,24 @@ struct MeowAddressBar {
     .layoutWeight(1); // with .border, the bare TextInput would appear to be a little bit longer than the actural length. Therefore we need an outer container to limit its size.
   }
 
-  setOnFocus() {
-    this.myUi.reportAddressBarFocus();
-  }
-
-  setBlur() {
-    this.myUi.reportAddressBarBlur();
-  }
-
+  /**
+   * Submit the search / load request.
+   */
   go() {
     this.myUi.submitSearchOrLoad();
     this.myUi.requestAddressBarBlur(this.getUIContext());
   }
 
+  // Styles
+
   @Styles
   focusBlur() {
-    .onFocus(() => this.setOnFocus())
-    .onBlur(() => this.setBlur());
+    .onFocus(() => {
+      this.myUi.reportAddressBarFocus();
+    })
+    .onBlur(() => {
+      this.myUi.reportAddressBarBlur();
+    });
   }
 
   // Getters
@@ -174,6 +174,8 @@ struct MeowAddressBar {
   }
 }
 
+export { MeowAddressBar };
+
 @Extend(TextInput)
 function addressBarProps() {
   .padding(useEffects() ? { left: 16, right: 16, top: 8, bottom: 7 } : { left: 16, right: 16, top: 8, bottom: 8 })
@@ -185,5 +187,4 @@ function addressBarProps() {
   .backgroundColor(useEffects() ? $r('app.color.blur_background_contrast') : getColor(meowThemeColorType.PRIMARY));
 }
 
-
-export { MeowAddressBar };
+export const addressBarId = 'MeowAddressInput';

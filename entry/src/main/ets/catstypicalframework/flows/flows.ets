@@ -10,10 +10,10 @@
  * - meowKeyboardMan
  *
  * Every window is expected to have one of each of the other classes:
+ * - meowUiHost
  * - meowMisc
  * - meowLayout
  * - meowAvoid
- * - meowUiHost
  * - meowDialogManager
  */
 

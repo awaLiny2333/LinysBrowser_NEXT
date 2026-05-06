@@ -4,7 +4,7 @@ import { standardSpacing } from "../../../components/settings";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { WoofUniFrame } from "../../WoofUniFrame";
 import { DemoPanel } from "./parts/DemoPanel";
-import { EditPanel } from "./parts/EditPane";
+import { EditPanel } from "./parts/EditPanel";
 
 @ComponentV2
 struct WoofColorPicker {

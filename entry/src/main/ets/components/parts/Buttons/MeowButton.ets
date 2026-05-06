@@ -1,6 +1,6 @@
 import { meow } from '../../../catstypicalframework/utils/catsLogger';
 import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
-import { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
+import lazy { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
 import { allWindowOrientations, meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addressBarStatuses';
 import { MooSymbolButton } from '../../common/MooSymbolButton';
@@ -135,9 +135,13 @@ struct MeowButton {
         }
         break;
       case meowButtonsType.ADDRESS_KEYWORD_EXPAND:
+        const needFocus2 = this.myUi.addressBarFocused;
         animateToImmediately(defaultAnimation(), () => {
           this.myUi.searchKeywordEntriesExpand = !this.myUi.searchKeywordEntriesExpand;
         });
+        if (needFocus2) {
+          this.myUi.requestAddressBarFocus(this.getUIContext());
+        }
         break;
       default:
         break;
