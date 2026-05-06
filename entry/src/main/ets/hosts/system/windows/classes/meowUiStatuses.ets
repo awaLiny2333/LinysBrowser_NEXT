@@ -6,6 +6,9 @@ import { meowManagedSettings } from "../../../userdata/settings/classes/meowMana
 import { meowDialogManager } from "../../dialogs/classes/meowDialogManager";
 import { meowAppMessage } from "./meowAppMessage";
 import { BusinessError } from "@kit.BasicServicesKit";
+import { SearchBarStatuses } from "../scripts/searchBarStatuses";
+import { searchBarId } from "../../../../components/constants";
+import { getKeywordEntries } from "../../../../catstypicalframework/utils/url";
 
 /**
  * The statuses that are limited to the current window only.
@@ -27,7 +30,10 @@ export class meowUiStatuses {
   @Trace fullscreenStatus: meowUiFullscreenStatus = meowUiFullscreenStatus.NONE;
   // Search
   @Trace searchBarFocused: boolean = false;
+  @Trace searchBarStatus: SearchBarStatuses = SearchBarStatuses.NO_SHIFT;
+  @Trace searchKeywordEntriesShowAll: boolean = false;
   @Trace searchContent: string = '';
+  @Trace searchKeywordEntries: [string, string][] = [];
   // Settings
   @Trace isExportingData: boolean = false;
   // MeowBookmarksPanel
@@ -210,6 +216,67 @@ export class meowUiStatuses {
     }
     return false;
   }
+
+  /**
+   * Focus address bar.
+   * @param uiContext The uiContext.
+   */
+  focusAddressbar(uiContext: UIContext) {
+    if (!this.searchBarFocused) {
+      try {
+        uiContext.getFocusController().requestFocus(searchBarId);
+        animateToImmediately(defaultAnimation(), () => {
+          this.searchBarFocused = true;
+        });
+        return true;
+      } catch (e) {
+        meow(`Failed to request focus: ${e.message}`, `meowUiStatuses][${this.windowId}][focusAddressbar`, meowLevel.ERROR);
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Sets the current search content of the window.
+   * @param newContent The new search content.
+   * @param doKeywordRefresh Whether to refresh the keyword entries.
+   */
+  setCurrentSearchContent(newContent: string, doKeywordRefresh: boolean) {
+    this.searchContent = newContent;
+    if (doKeywordRefresh) {
+      this.refreshKeywordEntries();
+    }
+  }
+
+  /**
+   * Refreshes the keyword entries.
+   */
+  private refreshKeywordEntries() {
+    const entries = getKeywordEntries(this.searchContent);
+    if (entries.length > 0) {
+      // Put the prefered keys to the beginning
+      let matched: [string, string][] = [];
+      let unmatched: [string, string][] = [];
+      for (let i = 0; i < entries.length; i++) {
+        let entry = entries[i];
+        if (keySet.has(entry[0])) {
+          matched.push(entry);
+        } else {
+          unmatched.push(entry);
+        }
+      }
+      const entriesSorted = [...matched, ...unmatched];
+      this.searchKeywordEntries = entriesSorted;
+
+      // Switch state.
+      if (this.searchBarStatus == SearchBarStatuses.NO_SHIFT) {
+        this.searchBarStatus = SearchBarStatuses.CAN_SHIFT;
+      }
+    } else {
+      this.searchKeywordEntries = [];
+      this.searchBarStatus = SearchBarStatuses.NO_SHIFT;
+    }
+  }
 }
 
 /**
@@ -250,3 +317,6 @@ export const allWindowOrientations = [
   window.Orientation.USER_ROTATION_LANDSCAPE_INVERTED,
   window.Orientation.FOLLOW_DESKTOP
 ];
+
+const preferedKeys: string[] = ['q', 'query', 's', 'key', 'wd', 'w', 'word', 'searchKeyWord', 'search_text', 'keyword', 'val', 'value', 'text', 'tag', 'tags', 'search'];
+const keySet = new Set(preferedKeys);

@@ -22,7 +22,7 @@ export function MeowTitleBar(myUi: meowUiStatuses, myLayout: meowLayout, myDialo
         myUi: myUi,
         myLayout: myLayout,
         myDialog: myDialog,
-      }).layoutWeight(1);
+      });
     } else {
       Blank();
     }

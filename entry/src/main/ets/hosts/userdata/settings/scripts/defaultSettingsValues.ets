@@ -65,7 +65,7 @@ export function defaultButtonsAddressBarOnFocus() {
 }
 
 export function defaultButtonsAddressBar() {
-  return [meowButtonsType.ADDRESS_KEYWORD_SWITH, meowButtonsType.RE_SEARCH].join('\n');
+  return [meowButtonsType.ADDRESS_KEYWORD_EXPAND, meowButtonsType.ADDRESS_KEYWORD_SWITCH, meowButtonsType.RE_SEARCH].join('\n');
 }
 
 export function defaultButtonsTitle() {

@@ -215,7 +215,7 @@ struct MeowPlaceForDialogs {
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofQuickSEDialoController: CustomDialogController = new CustomDialogController({
-    builder: WoofQuickSEDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    builder: WoofQuickSEDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
     alignment: DialogAlignment.Center,
     // width: '95%',
     // height: '95%',

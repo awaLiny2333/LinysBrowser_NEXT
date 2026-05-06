@@ -12,7 +12,8 @@ export enum meowButtonsType {
   REFRESH = 'REF',
   HOME = 'HOM',
   GO = 'GOO',
-  ADDRESS_KEYWORD_SWITH = 'AKS', // Only shows when search mode discovered.
+  ADDRESS_KEYWORD_SWITCH = 'AKS', // Only shows when search mode discovered.
+  ADDRESS_KEYWORD_EXPAND = 'AKE',
   RE_SEARCH = 'RES', // Only shows when search mode discovered.
   MORE = 'MOR',
   SCRATCHING_BOARD = 'SCB', // Only shows when the Scratching Board is not empty.
@@ -41,7 +42,8 @@ buttonIconMatches.set(meowButtonsType.FORWARD, $r('sys.symbol.arrow_right'));
 buttonIconMatches.set(meowButtonsType.REFRESH, $r('sys.symbol.arrow_clockwise'));
 buttonIconMatches.set(meowButtonsType.HOME, $r('sys.symbol.house'));
 buttonIconMatches.set(meowButtonsType.GO, $r('sys.symbol.arrow_up_right'));
-buttonIconMatches.set(meowButtonsType.ADDRESS_KEYWORD_SWITH, $r('sys.symbol.text_and_t'));
+buttonIconMatches.set(meowButtonsType.ADDRESS_KEYWORD_SWITCH, $r('sys.symbol.link'));
+buttonIconMatches.set(meowButtonsType.ADDRESS_KEYWORD_EXPAND, $r('sys.symbol.line_4_horizontal'));
 buttonIconMatches.set(meowButtonsType.RE_SEARCH, $r('sys.symbol.magnifyingglass'));
 buttonIconMatches.set(meowButtonsType.MORE, $r('sys.symbol.dot_grid_2x2'));
 buttonIconMatches.set(meowButtonsType.SCRATCHING_BOARD, $r('sys.symbol.doc_rectify'));

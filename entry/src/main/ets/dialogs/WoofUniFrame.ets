@@ -20,7 +20,7 @@ struct WoofUniFrame {
   @Param title: ResourceStr = 'Title';
   @BuilderParam contentsBuilder: () => void;
   // UI
-  @Local showTutorial: boolean = false;
+  @Param @Once showTutorial: boolean = false;
 
   aboutToAppear(): void {
     if (this.controller) {

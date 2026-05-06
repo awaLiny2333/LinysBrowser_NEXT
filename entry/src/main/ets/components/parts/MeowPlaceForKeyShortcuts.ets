@@ -2,7 +2,6 @@ import { meowKeyboardMan } from '../../hosts/userdata/keyshortcuts/classes/meowK
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meow, meowLevel } from '../../catstypicalframework/utils/catsLogger';
 import { meowUiGoBackSource, meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
-import { searchBarId } from './Homepage/MeowSearchBar';
 import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../hosts/system/dialogs/scripts/dialog';
 import { newWindow } from '../../hosts/system/windows/scripts/multiwindows';
@@ -42,7 +41,7 @@ export function MeowPlaceForKeyShortcuts(
     });
     Blank().keyboardShortcut(myKey.focusAddress.value, myKey.focusAddress.keys, () => {
       try {
-        context.getFocusController().requestFocus(searchBarId);
+        myUi.focusAddressbar(context);
         meow(`Focus Address!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
       } catch (e) {
         meow(`Focus Address Failed: ${e}`, `MeowPlaceForShortcuts`, meowLevel.WARN);

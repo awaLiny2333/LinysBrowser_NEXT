@@ -5,6 +5,7 @@ import { MooStringPairArrayList } from "../../../components/common/MooStringPair
 import { standardSpacing } from "../../../components/settings";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { meowAppStatuses } from "../../../hosts/system/windows/classes/meowAppStatuses";
+import { meowUiStatuses } from "../../../hosts/system/windows/classes/meowUiStatuses";
 import { meowAppMessageType } from "../../../hosts/system/windows/scripts/messaging";
 import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { defaultSearchEngine } from "../../../hosts/userdata/settings/scripts/defaultSettingsValues";
@@ -13,6 +14,8 @@ import { WoofUniFrame } from "../../WoofUniFrame";
 @ComponentV2
 struct WoofQuickSEPanel {
   @Param @Require myDialog: meowDialogManager;
+  @Param @Require myLayout: meowLayout;
+  @Param @Require myUi: meowUiStatuses;
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
   @Local myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
   // Local
@@ -68,12 +71,18 @@ struct WoofQuickSEPanel {
 struct WoofQuickSEDialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
+  @Require myUi: meowUiStatuses;
   @Require myLayout: meowLayout;
 
   build() {
-    WoofUniFrame({ controller: this.controller, title: $r('app.string.QuickSE'), shiftBackgroundColor: true, myLayout: this.myLayout, myDialog: this.myDialog }) {
+    WoofUniFrame({
+      controller: this.controller, title: $r('app.string.QuickSE'), shiftBackgroundColor: true, myLayout: this.myLayout, myDialog: this.myDialog,
+      tutorial: `󰀩 ${this.myUi.searchKeywordEntries.length > 0 ? this.myUi.searchKeywordEntries[0][1] : this.myUi.searchContent}`, showTutorial: true
+    }) {
       WoofQuickSEPanel({
+        myLayout: this.myLayout,
         myDialog: this.myDialog,
+        myUi: this.myUi,
         onSelect: (n) => {
           // Apply to current web.
           meow(`Apply Search Engine #${n} from QuickSE!`, 'WoofQuickSE', meowLevel.WARN);
