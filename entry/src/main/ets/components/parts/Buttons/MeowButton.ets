@@ -131,6 +131,7 @@ struct MeowButton {
           }
         });
         if (needFocus) {
+          meow('qwq')
           this.myUi.focusAddressbar(this.getUIContext());
         }
         break;

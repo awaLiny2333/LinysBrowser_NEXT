@@ -207,14 +207,13 @@ export class meowUiStatuses {
    * @param uiContext The uiContext.
    */
   clearAddressBarFocus(uiContext: UIContext) {
+    uiContext.getFocusController().clearFocus();
     if (this.searchBarFocused) {
-      uiContext.getFocusController().clearFocus();
       animateToImmediately(defaultAnimation(), () => {
         this.searchBarFocused = false;
       });
-      return true;
     }
-    return false;
+    return true;
   }
 
   /**
@@ -222,16 +221,16 @@ export class meowUiStatuses {
    * @param uiContext The uiContext.
    */
   focusAddressbar(uiContext: UIContext) {
-    if (!this.searchBarFocused) {
-      try {
-        uiContext.getFocusController().requestFocus(searchBarId);
+    try {
+      uiContext.getFocusController().requestFocus(searchBarId);
+      if (!this.searchBarFocused) {
         animateToImmediately(defaultAnimation(), () => {
           this.searchBarFocused = true;
         });
-        return true;
-      } catch (e) {
-        meow(`Failed to request focus: ${e.message}`, `meowUiStatuses][${this.windowId}][focusAddressbar`, meowLevel.ERROR);
       }
+      return true;
+    } catch (e) {
+      meow(`Failed to request focus: ${e.message}`, `meowUiStatuses][${this.windowId}][focusAddressbar`, meowLevel.ERROR);
     }
     return false;
   }

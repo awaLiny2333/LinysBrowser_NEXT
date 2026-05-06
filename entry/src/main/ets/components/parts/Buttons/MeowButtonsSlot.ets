@@ -7,7 +7,7 @@ import { MeowButton } from './MeowButton';
 import { AppStorageV2 } from '@kit.ArkUI';
 
 @Builder
-function MeowButtonsSlot(
+export function MeowButtonsSlot(
   myUi: meowUiStatuses,
   myDialog: meowDialogManager,
   buttons: number
@@ -29,5 +29,3 @@ function MeowButtonsSlot(
   .height(generalButtonHeight)
   .listDirection(Axis.Horizontal);
 }
-
-export { MeowButtonsSlot };
