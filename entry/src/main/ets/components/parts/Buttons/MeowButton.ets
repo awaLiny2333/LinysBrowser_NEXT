@@ -1,7 +1,7 @@
 import { meow } from '../../../catstypicalframework/utils/catsLogger';
 import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
-import { allWindowOrientations, meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
+import { allWindowOrientations, meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { SearchBarStatuses } from '../../../hosts/system/windows/scripts/searchBarStatuses';
 import { MooSymbolButton } from '../../common/MooSymbolButton';
 import { defaultAnimation, getColor, meowThemeColorType } from '../../settings';
@@ -10,7 +10,7 @@ import { getButtonIcon, meowButtonsType } from './constants';
 @ComponentV2
 struct MeowButton {
   @Param @Require myDialog: meowDialogManager;
-  @Param @Require myUi: meowUiStatuses;
+  @Param @Require myUi: meowUiHost;
   @Param @Require type: meowButtonsType;
   // Local
   @Local showMenu: boolean = false;
@@ -53,7 +53,7 @@ struct MeowButton {
       case meowButtonsType.ADDRESS_KEYWORD_SWITCH:
         return this.myUi.searchBarStatus == SearchBarStatuses.SHIFTED ? $r('sys.symbol.text_and_t') : getButtonIcon(this.type);
       case meowButtonsType.ADDRESS_KEYWORD_EXPAND:
-        return this.myUi.searchKeywordEntriesShowAll ? $r('sys.symbol.line') : getButtonIcon(this.type);
+        return this.myUi.searchKeywordEntriesExpand ? $r('sys.symbol.line') : getButtonIcon(this.type);
       default:
         return getButtonIcon(this.type);
     }
@@ -131,13 +131,12 @@ struct MeowButton {
           }
         });
         if (needFocus) {
-          meow('qwq')
           this.myUi.focusAddressbar(this.getUIContext());
         }
         break;
       case meowButtonsType.ADDRESS_KEYWORD_EXPAND:
         animateToImmediately(defaultAnimation(), () => {
-          this.myUi.searchKeywordEntriesShowAll = !this.myUi.searchKeywordEntriesShowAll;
+          this.myUi.searchKeywordEntriesExpand = !this.myUi.searchKeywordEntriesExpand;
         });
         break;
       default:

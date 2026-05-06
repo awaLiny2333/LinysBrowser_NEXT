@@ -2,7 +2,7 @@ import { AppStorageV2 } from '@kit.ArkUI';
 import { meowBookmarkItem } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkItem';
 import { meowBookmarkStash } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkStash';
 import { globalMessage, meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
-import { meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
+import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
 import { defaultAnimation, isPreferRightHand, minimumCardWidth, standardSpacing } from '../../settings';
 import { BookmarksColumn } from './BookmarksColumn';
@@ -15,7 +15,7 @@ struct MeowBookmarksPanel {
   // Config
   @Param @Once selectMode: boolean = false; // False for normal (display and edit) mode, true for select mode.
   // Hosts
-  @Param @Require myUi: meowUiStatuses;
+  @Param @Require myUi: meowUiHost;
   @Local myBookmarks: meowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
   @Local myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!; // For event receiving.
   // UI

@@ -3,7 +3,7 @@ import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import { windowTopAvoidLeft, windowTopAvoidRight } from '../../../catstypicalframework/utils/ui';
 import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
-import { meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
+import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { newWindow } from '../../../hosts/system/windows/scripts/multiwindows';
 import { MooSymbolButtonSmall } from '../../common/MooSymbolButtonSmall';
 import { MooTextModifier } from '../../common/MooTextModifier';
@@ -22,7 +22,7 @@ const myApp = AppStorageV2.connect(meowAppStatuses)!;
 export function MeowTitleTop(
   myLayout: meowLayout,
   myDialog: meowDialogManager,
-  myUi: meowUiStatuses,
+  myUi: meowUiHost,
   context: UIContext
 ) {
   Row({ space: 10 }) {

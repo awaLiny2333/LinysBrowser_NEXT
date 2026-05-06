@@ -2,7 +2,7 @@ import lazy { common } from "@kit.AbilityKit";
 import { AppStorageV2 } from "@kit.ArkUI";
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 import { defaultInnerRadius, wideModeThreshold } from "../../../catstypicalframework/utils/ui";
-import { meowUiStatuses } from "../../../hosts/system/windows/classes/meowUiStatuses";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { newWindow } from "../../../hosts/system/windows/scripts/multiwindows";
 import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { MooSymbolButton } from "../../common/MooSymbolButton";
@@ -12,7 +12,7 @@ import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, stan
 
 @ComponentV2
 struct MeowWindowInfoBar {
-  @Param @Require myUi: meowUiStatuses;
+  @Param @Require myUi: meowUiHost;
   // Local
   @Local isEditing: boolean = false;
   @Local windowAliasEditing: string = this.myUi.windowAlias;

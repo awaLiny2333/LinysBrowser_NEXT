@@ -4,7 +4,7 @@ import { standardSpacing, waterFlowColumnsTemplate } from '../../../components/s
 import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { getDevMode } from '../../../hosts/system/storage/settings';
-import { meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
+import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { WoofUniFrame } from '../../WoofUniFrame';
 import { SettingsAbout } from './parts/About';
 import { SettingsAccessibility } from './parts/Accessibility';
@@ -23,7 +23,7 @@ struct WoofSettings {
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
   @Param @Require myDialog: meowDialogManager;
   @Param @Require myLayout: meowLayout;
-  @Param @Require myUi: meowUiStatuses;
+  @Param @Require myUi: meowUiHost;
 
   build() {
     Scroll() {
@@ -79,7 +79,7 @@ struct WoofSettingsDialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
   @Require myLayout: meowLayout;
-  @Require myUi: meowUiStatuses;
+  @Require myUi: meowUiHost;
 
   build() {
     WoofUniFrame({ controller: this.controller, title: $r('app.string.Settings'), myDialog: this.myDialog, myLayout: this.myLayout }) {

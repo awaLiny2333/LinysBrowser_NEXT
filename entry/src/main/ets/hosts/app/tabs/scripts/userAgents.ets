@@ -1,5 +1,5 @@
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import lazy { getCurrentUserAgent } from "../setings";
+import lazy { getCurrentUserAgent } from "../settings";
 
 /**
  * Apply user agent from settings.

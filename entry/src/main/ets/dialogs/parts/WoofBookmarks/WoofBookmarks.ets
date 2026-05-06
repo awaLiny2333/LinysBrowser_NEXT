@@ -4,14 +4,14 @@ import { MeowBookmarksPanel } from '../../../components/parts/Bookmarks/MeowBook
 import { WoofUniFrame } from '../../WoofUniFrame';
 import lazy { meowBookmarkItem } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkItem';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
-import { meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
+import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 
 @CustomDialog
 struct WoofBookmarksDialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
   @Require myLayout: meowLayout;
-  @Require myUi: meowUiStatuses;
+  @Require myUi: meowUiHost;
   @Require selectMode: boolean;
   onSelect: (folder: meowBookmarkItem, path: string) => void = (folder, path) => {
     // Do nothing by default.

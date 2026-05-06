@@ -7,6 +7,7 @@ import lazy { defaultDecorHeight, defaultInnerRadius, shortModeThreshold, update
 import lazy { MooTextModifier } from '../components/common/MooTextModifier';
 import { meowButtonsType } from '../components/parts/Buttons/constants';
 import { MeowButtonsSlot } from '../components/parts/Buttons/MeowButtonsSlot';
+import { MeowDestination } from '../components/parts/Homepage/MeowDestination';
 import { MeowResMonitor } from '../components/parts/Homepage/MeowResMonitor';
 import lazy { MeowSearchBar } from '../components/parts/Homepage/MeowSearchBar';
 import lazy { MeowShortcutsPanel } from '../components/parts/Homepage/MeowShortcuts';
@@ -20,7 +21,7 @@ import lazy { showingSidebar } from '../components/statuses';
 import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
 import { meowResources } from '../hosts/system/storage/classes/meowResources';
 import { meowAppStatuses } from '../hosts/system/windows/classes/meowAppStatuses';
-import { meowUiFullscreenStatus, meowUiGoBackSource, meowUiStatuses } from '../hosts/system/windows/classes/meowUiStatuses';
+import { meowUiFullscreenStatus, meowUiGoBackSource, meowUiHost } from '../hosts/system/windows/classes/meowUiHost';
 import { meowAppMessageType } from '../hosts/system/windows/scripts/messaging';
 import { getLastWindowId } from '../hosts/system/windows/scripts/multiwindows';
 import { meowManagedSettings } from '../hosts/userdata/settings/classes/meowManagedSettings';
@@ -34,7 +35,7 @@ struct Index {
   @Local myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!; // Should be initialized by flows.
   // Hosts (private)
-  @Local myUi: meowUiStatuses = AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${this.myWindowId}`)!;
+  @Local myUi: meowUiHost = AppStorageV2.connect(meowUiHost, `meowUiHost_${this.myWindowId}`)!;
   @Local myDialog: meowDialogManager = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myWindowId}`)!;
   // catsTypicalFramework (private)
   @Local myLayout: meowLayout = AppStorageV2.connect(meowLayout, `meowLayout_${this.myWindowId}`)!;
@@ -104,6 +105,10 @@ struct Index {
                   myLayout: this.myLayout,
                   myDialog: this.myDialog,
                 });
+              }
+              
+              if (this.myUi.searchBarFocused) {
+                MeowDestination(this.myUi, this.getUIContext());
               }
 
               // More

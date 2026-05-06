@@ -1,7 +1,7 @@
 import lazy { AppStorageV2 } from "@kit.ArkUI";
 import lazy { meowAppMessage } from "../classes/meowAppMessage";
 import lazy { meowAppStatuses } from "../classes/meowAppStatuses";
-import lazy { meowUiStatuses } from "../classes/meowUiStatuses";
+import lazy { meowUiHost } from "../classes/meowUiHost";
 
 export enum meowAppMessageType {
   SETTINGS_UA_REFRESH,
@@ -42,7 +42,7 @@ export function globalMessage(type: meowAppMessageType, content: object | string
  * @param type The type of the message.
  * @param content The content of the message.
  */
-export function localMessage(myUi: meowUiStatuses, type: meowAppMessageType, content: object | string | boolean | number | undefined = undefined) {
+export function localMessage(myUi: meowUiHost, type: meowAppMessageType, content: object | string | boolean | number | undefined = undefined) {
   myUi.localMessageTunnel = new meowAppMessage(type, content);
 }
 

@@ -11,14 +11,14 @@ import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/me
 import { meowDialogManager, openDialogRequestType } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { requestDialog } from "../../../hosts/system/dialogs/scripts/dialog";
 import { meowResources } from "../../../hosts/system/storage/classes/meowResources";
-import { meowUiStatuses } from "../../../hosts/system/windows/classes/meowUiStatuses";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { meowAppMessageType } from "../../../hosts/system/windows/scripts/messaging";
 import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
 struct WoofHomepage {
   @Param @Require myDialog: meowDialogManager;
-  @Param @Require myUi: meowUiStatuses;
+  @Param @Require myUi: meowUiHost;
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
   build() {
@@ -106,7 +106,7 @@ struct WoofHomepageDialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
   @Require myLayout: meowLayout;
-  @Require myUi: meowUiStatuses;
+  @Require myUi: meowUiHost;
 
   build() {
     WoofUniFrame({ controller: this.controller, title: $r('app.string.Homepage'), myLayout: this.myLayout, myDialog: this.myDialog }) {

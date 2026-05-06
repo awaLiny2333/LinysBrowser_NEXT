@@ -3,7 +3,7 @@ import lazy { deviceInfo, power, settings } from '@kit.BasicServicesKit';
 import lazy { motion } from '@kit.MultimodalAwarenessKit';
 import lazy { defaultAnimation, isSmartReachabilityOn } from '../../components/settings';
 import { meowAppStatuses } from '../../hosts/system/windows/classes/meowAppStatuses';
-import { meowUiFullscreenStatus, meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
+import { meowUiFullscreenStatus, meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
 import { meowManagedSettings } from '../../hosts/userdata/settings/classes/meowManagedSettings';
 import lazy { meowAvoid } from '../hosts/meowAvoid';
 import lazy { meow, meowLevel } from './catsLogger';
@@ -106,7 +106,7 @@ export function setDecorHeight(windowObj: window.Window) {
  * */
 export function listenAvoid(windowId: string) {
   try {
-    const myUi = AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${windowId}`)!;
+    const myUi = AppStorageV2.connect(meowUiHost, `meowUiHost_${windowId}`)!;
     myUi.windowObj!.on('avoidAreaChange', (data) => {
       // meow('Changes on avoid areas!', 'avoidAreaChange', meowLevel.INFO);
       const myAvoid = AppStorageV2.connect(meowAvoid, `meowAvoid_${windowId}`)!;
@@ -212,7 +212,7 @@ export function listenFreeWindowMode(context: Context) {
 
         // Update for all windows.
         for (const windowId of myApp.windowIds) {
-          const myUi = AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${windowId}`)!;
+          const myUi = AppStorageV2.connect(meowUiHost, `meowUiHost_${windowId}`)!;
           if (free) {
             setDecorHeight(myUi.windowObj!);
           }
@@ -321,14 +321,14 @@ export function listenSmartReachability() {
 export function listenFocus(windowId: string) {
   // Focus Listener
   try {
-    let myUi = AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${windowId}`)!;
+    let myUi = AppStorageV2.connect(meowUiHost, `meowUiHost_${windowId}`)!;
     myUi.windowObj!.on("windowEvent", (windowEvent) => {
       let on_focus = false;
       if (windowEvent == window.WindowEventType.WINDOW_ACTIVE || windowEvent == window.WindowEventType.WINDOW_SHOWN) {
         // Focused
         on_focus = true;
       }
-      myUi.isOnFocus = on_focus;
+      myUi.windowFocused = on_focus;
     });
   } catch (e) {
     meow('Failed: ' + e, 'listen_focus', meowLevel.ERROR);
@@ -352,7 +352,7 @@ export function offFocus(windowObj: window.Window) {
  * @param windowId the windowId.
  */
 export function listenWindowStatusChange(windowId: string) {
-  const myUi = AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${windowId}`)!;
+  const myUi = AppStorageV2.connect(meowUiHost, `meowUiHost_${windowId}`)!;
   if (myUi.windowObj) {
     try {
       myUi.windowObj.on('windowStatusDidChange', (status) => {
@@ -363,7 +363,7 @@ export function listenWindowStatusChange(windowId: string) {
         }
       });
     } catch (e) {
-      meow(`Failed to listen window status change: ${e.message}`, `meowUiStatuses][${windowId}`, meowLevel.ERROR);
+      meow(`Failed to listen window status change: ${e.message}`, `meowUiHost][${windowId}`, meowLevel.ERROR);
     }
   }
 }
@@ -373,12 +373,12 @@ export function listenWindowStatusChange(windowId: string) {
  * @param windowId the windowId.
  */
 export function offWindowStatusChange(windowId: string) {
-  const myUi = AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${windowId}`)!;
+  const myUi = AppStorageV2.connect(meowUiHost, `meowUiHost_${windowId}`)!;
   if (myUi.windowObj) {
     try {
       myUi.windowObj.off('windowStatusDidChange');
     } catch (e) {
-      meow(`Failed to off window status change: ${e.message}`, `meowUiStatuses][${windowId}`, meowLevel.ERROR);
+      meow(`Failed to off window status change: ${e.message}`, `meowUiHost][${windowId}`, meowLevel.ERROR);
     }
   }
 }

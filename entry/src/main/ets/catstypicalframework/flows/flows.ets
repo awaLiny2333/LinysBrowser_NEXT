@@ -13,7 +13,7 @@
  * - meowMisc
  * - meowLayout
  * - meowAvoid
- * - meowUiStatuses
+ * - meowUiHost
  * - meowDialogManager
  */
 
@@ -25,7 +25,7 @@ import { defaultNewWindowAlias, isPreferRightHandFromSettings } from '../../comp
 import { meowDialogManager } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowResources } from '../../hosts/system/storage/classes/meowResources';
 import { meowAppStatuses } from '../../hosts/system/windows/classes/meowAppStatuses';
-import { meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
+import { meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
 import { generateTimeBasedWindowId } from '../../hosts/system/windows/scripts/multiwindows';
 import { meowBookmarkStash } from '../../hosts/userdata/bookmarks/classes/meowBookmarkStash';
 import { meowHistorian } from '../../hosts/userdata/history/classes/meowHistorian';
@@ -85,7 +85,7 @@ export function earlyOnCreate(context: Context, launchWant: Want) {
   }
 
   // Window private hosts
-  AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${myWindowId}`, () => new meowUiStatuses(myWindowId));
+  AppStorageV2.connect(meowUiHost, `meowUiHost_${myWindowId}`, () => new meowUiHost(myWindowId));
   AppStorageV2.connect(meowDialogManager, `meowDialogManager_${myWindowId}`, () => new meowDialogManager());
   AppStorageV2.connect(meowMisc, `meowMisc_${myWindowId}`, () => new meowMisc());
   AppStorageV2.connect(meowAvoid, `meowAvoid_${myWindowId}`, () => new meowAvoid(0, 0, 0, 0));
@@ -187,7 +187,7 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
   // PRIVATE HOSTS
 
   // Init myUI
-  const myUi: meowUiStatuses = AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${myWindowId}`)!;
+  const myUi: meowUiHost = AppStorageV2.connect(meowUiHost, `meowUiHost_${myWindowId}`)!;
   myUi.windowStage = windowStage;
   myUi.windowObj = windowObj;
   myUi.windowAlias = defaultNewWindowAlias();
@@ -269,11 +269,11 @@ export function onConfigUpdate(config: Configuration) {
  * @param windowStage The windowStage.
  */
 export function onWindowStageWillDestroy(windowStage: window.WindowStage) {
-  // Find the meowUiStatuses item.
+  // Find the meowUiHost item.
   const myApp = AppStorageV2.connect(meowAppStatuses)!;
-  let targetUi: meowUiStatuses | undefined = undefined;
+  let targetUi: meowUiHost | undefined = undefined;
   for (const windowId of myApp.windowIds) {
-    const myUi = AppStorageV2.connect(meowUiStatuses, `meowUiStatuses_${windowId}`);
+    const myUi = AppStorageV2.connect(meowUiHost, `meowUiHost_${windowId}`);
     if (myUi && myUi.windowStage == windowStage) {
       meow(`I think window [${myUi.windowId}] is going to leave us...`, 'onWindowStageWillDestroy', meowLevel.WARN);
       targetUi = myUi;

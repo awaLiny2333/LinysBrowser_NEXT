@@ -10,7 +10,7 @@ import { defaultAnimation, getColor, meowThemeColorType, mooTextType, standardSp
 import { meowManagedSettings } from "../../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { resetAnimations, resetColors } from "../../../../hosts/userdata/settings/scripts/reset";
 import { globalMessage, meowAppMessageType } from "../../../../hosts/system/windows/scripts/messaging";
-import { meowUiStatuses } from "../../../../hosts/system/windows/classes/meowUiStatuses";
+import { meowUiHost } from "../../../../hosts/system/windows/classes/meowUiHost";
 import { meowAppStatuses } from "../../../../hosts/system/windows/classes/meowAppStatuses";
 import { requestDialog } from "../../../../hosts/system/dialogs/scripts/dialog";
 import { meowDialogManager, openDialogRequestType } from "../../../../hosts/system/dialogs/classes/meowDialogManager";
@@ -19,7 +19,7 @@ import { meowDialogManager, openDialogRequestType } from "../../../../hosts/syst
 struct SettingsAppearance {
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
   @Param myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
-  @Param @Require myUi: meowUiStatuses;
+  @Param @Require myUi: meowUiHost;
   @Param @Require myDialog: meowDialogManager;
 
   build() {
@@ -286,7 +286,7 @@ export { SettingsAppearance };
 struct ColorDemoBlock {
   // Hosts
   @Param @Require myDialog: meowDialogManager;
-  @Param @Require myUi: meowUiStatuses;
+  @Param @Require myUi: meowUiHost;
   // Data
   @Param @Require color: ResourceColor;
   @Param @Require settingsId: number;

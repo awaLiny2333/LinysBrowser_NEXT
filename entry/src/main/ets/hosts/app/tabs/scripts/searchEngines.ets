@@ -1,5 +1,5 @@
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import lazy { getSearchEngineFromSettings } from "../setings";
+import lazy { getSearchEngineFromSettings } from "../settings";
 
 export enum concatSeStatus {
   SUCCESS = 0,
@@ -33,7 +33,7 @@ export function concatSearchWithEngine(query: string, engine: string = getSearch
   // Has %s
   try {
     const result = engine.replace('%s', encodeURIComponent(query));
-    meow(`Successfully encoded query: ${query}`, 'searchEngines', meowLevel.INFO);
+    // meow(`Successfully encoded query: ${query}`, 'searchEngines', meowLevel.INFO);
     return {
       status: concatSeStatus.SUCCESS,
       result: result

@@ -4,7 +4,7 @@ import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import lazy { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
 import lazy { measureTextWidth } from '../../../catstypicalframework/utils/ui';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
-import { meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
+import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { SearchBarStatuses } from '../../../hosts/system/windows/scripts/searchBarStatuses';
 import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { MooTextModifier } from '../../common/MooTextModifier';
@@ -22,7 +22,7 @@ import { MeowTitleBarHeight } from './MeowTitleBar';
 @ComponentV2
 struct MeowSearchBar {
   // Hosts
-  @Param @Require myUi: meowUiStatuses;
+  @Param @Require myUi: meowUiHost;
   @Param @Require myLayout: meowLayout;
   @Param @Require myDialog: meowDialogManager;
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
@@ -71,22 +71,22 @@ struct MeowSearchBar {
       Row({ space: standardSpacing }) {
         Repeat(this.myUi.searchKeywordEntries)
           .each((it) => {
-            if (this.myUi.searchKeywordEntriesShowAll || it.index == 0) {
-              if (this.myUi.searchKeywordEntriesShowAll) {
+            if (this.myUi.searchKeywordEntriesExpand || it.index == 0) {
+              if (this.myUi.searchKeywordEntriesExpand) {
                 Text(`${it.item[0]}`).attributeModifier(new MooTextModifier());
               }
               TextInput({ text: it.item[1], placeholder: '󰒟' })
                 .addressBarProps()
                 .focusBlur()
                 .id(it.index == 0 ? searchBarId : undefined)
-                .width(it.index == 0 && this.hasFreeSpace || !this.myUi.searchKeywordEntriesShowAll ? undefined : 'auto')
-                .layoutWeight(it.index == 0 && this.hasFreeSpace || !this.myUi.searchKeywordEntriesShowAll ? 1 : undefined)
+                .width(it.index == 0 && this.hasFreeSpace || !this.myUi.searchKeywordEntriesExpand ? undefined : 'auto')
+                .layoutWeight(it.index == 0 && this.hasFreeSpace || !this.myUi.searchKeywordEntriesExpand ? 1 : undefined)
                 .onChange((c) => {
                   it.item[1] = c;
                   try {
                     const newUrl = url.URL.parseURL(this.myUi.searchContent);
                     newUrl.params.set(it.item[0], c);
-                    this.myUi.setCurrentSearchContent(newUrl.toString(), false);
+                    this.myUi.setCurrentSearchContent(newUrl.toString(), false, true);
                   } catch (e) {
                     meow(`Invalid URL: ${this.myUi.searchContent}`, 'MeowSearchBar][Keyword][onChange', meowLevel.WARN);
                   }
@@ -119,7 +119,7 @@ struct MeowSearchBar {
         .layoutWeight(1)
         .id(searchBarId)
         .onChange((c) => {
-          this.myUi.setCurrentSearchContent(c, true);
+          this.myUi.setCurrentSearchContent(c, true, true);
         })
         .onSubmit(() => this.go());
     }
@@ -137,8 +137,8 @@ struct MeowSearchBar {
   }
 
   go() {
-    // TODO: Handle input submission (Visit the site for SearchBar!)
-    meow(`Visit / load [${this.myUi.searchContent}]!`, 'MeowSearchBar][Keyword][GOs', meowLevel.WARN);
+    this.myUi.submitSearchOrLoad();
+    this.myUi.clearAddressBarFocus(this.getUIContext());
   }
 
   @Styles

@@ -25,7 +25,7 @@ import lazy { WoofQuickSEDialog } from '../../dialogs/settings/WoofQuickSE/WoofQ
 import lazy { WoofQuickUADialog } from '../../dialogs/settings/WoofQuickUA/WoofQuickUA';
 import lazy { WoofWebImagesDialog } from '../../dialogs/settings/WoofWebImages/WoofWebImages';
 import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
-import { meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
+import { meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
 import lazy { localMessage, meowAppMessageType } from '../../hosts/system/windows/scripts/messaging';
 
 /**
@@ -35,7 +35,7 @@ import lazy { localMessage, meowAppMessageType } from '../../hosts/system/window
 @ComponentV2
 struct MeowPlaceForDialogs {
   @Param @Require myDialog: meowDialogManager;
-  @Param @Require myUi: meowUiStatuses;
+  @Param @Require myUi: meowUiHost;
   // catstypicalframework
   @Param @Require myLayout: meowLayout;
   @Param @Require myAvoid: meowAvoid;

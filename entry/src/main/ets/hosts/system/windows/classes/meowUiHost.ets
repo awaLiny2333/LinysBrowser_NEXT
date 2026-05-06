@@ -1,27 +1,28 @@
 import { AppStorageV2, window } from "@kit.ArkUI";
+import { BusinessError } from "@kit.BasicServicesKit";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import { getKeywordEntries, unifyDestination, UnifyDestinationResult, UnifyDestinationResultType } from "../../../../catstypicalframework/utils/url";
+import { searchBarId } from "../../../../components/constants";
 import { defaultAnimation } from "../../../../components/settings";
+import { concatSearchWithEngine } from "../../../app/tabs/scripts/searchEngines";
 import { meowBookmarkItem } from "../../../userdata/bookmarks/classes/meowBookmarkItem";
 import { meowManagedSettings } from "../../../userdata/settings/classes/meowManagedSettings";
 import { meowDialogManager } from "../../dialogs/classes/meowDialogManager";
-import { meowAppMessage } from "./meowAppMessage";
-import { BusinessError } from "@kit.BasicServicesKit";
 import { SearchBarStatuses } from "../scripts/searchBarStatuses";
-import { searchBarId } from "../../../../components/constants";
-import { getKeywordEntries } from "../../../../catstypicalframework/utils/url";
+import { meowAppMessage } from "./meowAppMessage";
 
 /**
  * The statuses that are limited to the current window only.
  */
 @ObservedV2
-export class meowUiStatuses {
+export class meowUiHost {
   // Window info
   @Trace windowId: string;
   @Trace windowAlias: string;
   @Trace windowObj: window.Window | undefined;
   @Trace windowStage: window.WindowStage | undefined;
   // UI
-  @Trace isOnFocus: boolean = true;
+  @Trace windowFocused: boolean = true;
   @Trace pin: boolean = false;
   @Trace showMore: boolean = false;
   @Trace showTabs: boolean = false;
@@ -29,11 +30,13 @@ export class meowUiStatuses {
   @Trace orientation: window.Orientation = window.Orientation.AUTO_ROTATION_RESTRICTED;
   @Trace fullscreenStatus: meowUiFullscreenStatus = meowUiFullscreenStatus.NONE;
   // Search
+  @Trace preferHttps: boolean = false;
   @Trace searchBarFocused: boolean = false;
   @Trace searchBarStatus: SearchBarStatuses = SearchBarStatuses.NO_SHIFT;
-  @Trace searchKeywordEntriesShowAll: boolean = false;
   @Trace searchContent: string = '';
+  @Trace searchUnifyResult: UnifyDestinationResult = { url: '', type: UnifyDestinationResultType.URL_SCHEMED }; // TODO: THIS IS NOT GOOD
   @Trace searchKeywordEntries: [string, string][] = [];
+  @Trace searchKeywordEntriesExpand: boolean = false;
   // Settings
   @Trace isExportingData: boolean = false;
   // MeowBookmarksPanel
@@ -107,7 +110,7 @@ export class meowUiStatuses {
    * Go backwards in web.
    */
   private goBackWeb() {
-    meow(`Try!`, 'meowUiStatuses][goBackWeb', meowLevel.WARN);
+    meow(`Try!`, 'meowUiHost][goBackWeb', meowLevel.WARN);
     return false; // TODO: return if go back is successful. E.g. if there is no backward page, then we cannot go back, return false.
   }
 
@@ -121,7 +124,7 @@ export class meowUiStatuses {
           this.pin = !this.pin;
         })
         .catch((e: BusinessError) => {
-          meow(`Failed to set window topmost: ${e.message}`, `meowUiStatuses][${this.windowId}`, meowLevel.ERROR);
+          meow(`Failed to set window topmost: ${e.message}`, `meowUiHost][${this.windowId}`, meowLevel.ERROR);
         });
     }
   }
@@ -132,12 +135,12 @@ export class meowUiStatuses {
   async setOrientation(orientation: window.Orientation) {
     return this.windowObj?.setPreferredOrientation(orientation)
       .then((data) => {
-        meow(`this.windowObj?.setPreferredOrientation(orientation) Set ${orientation}, Returned: ${JSON.stringify(data)}`, `meowUiStatuses][${this.windowId}][setOrientation`);
+        meow(`this.windowObj?.setPreferredOrientation(orientation) Set ${orientation}, Returned: ${JSON.stringify(data)}`, `meowUiHost][${this.windowId}][setOrientation`);
         this.orientation = orientation;
         return true;
       })
       .catch((err: string) => {
-        meow(`this.windowObj?.setPreferredOrientation(orientation) Failed: ${JSON.stringify(err)}`, `meowUiStatuses][${this.windowId}][setOrientation`, meowLevel.ERROR);
+        meow(`this.windowObj?.setPreferredOrientation(orientation) Failed: ${JSON.stringify(err)}`, `meowUiHost][${this.windowId}][setOrientation`, meowLevel.ERROR);
         return false;
       });
   }
@@ -160,7 +163,7 @@ export class meowUiStatuses {
       case meowUiFullscreenStatus.FULLSCREEN_FULL:
         // Exit fullscreen
         this.windowObj?.recover().catch((e: BusinessError) => {
-          meow(`Failed to recover window: ${e.message}`, `meowUiStatuses][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
+          meow(`Failed to recover window: ${e.message}`, `meowUiHost][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
         });
         this.fullscreenStatus = meowUiFullscreenStatus.FULLSCREEN_WINDOWED;
         break;
@@ -176,14 +179,14 @@ export class meowUiStatuses {
         this.fullscreenStatus = meowUiFullscreenStatus.FULLSCREEN_FULL; // Put this line first to avoid render / display flaws. // This seems helpless to the issue :P
         // Enter fullscreen
         this.windowObj?.maximize().catch((e: BusinessError) => {
-          meow(`Failed to maximize window: ${e.message}`, `meowUiStatuses][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
+          meow(`Failed to maximize window: ${e.message}`, `meowUiHost][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
         });
         break;
       case meowUiFullscreenStatus.FULLSCREEN_WINDOWED:
         this.fullscreenStatus = meowUiFullscreenStatus.FULLSCREEN_FULL;
         // Enter fullscreen
         this.windowObj?.maximize().catch((e: BusinessError) => {
-          meow(`Failed to maximize window: ${e.message}`, `meowUiStatuses][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
+          meow(`Failed to maximize window: ${e.message}`, `meowUiHost][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
         });
         break;
       case meowUiFullscreenStatus.FULLSCREEN_FULL:
@@ -197,7 +200,7 @@ export class meowUiStatuses {
    */
   private fullscreenExit() {
     this.windowObj?.recover().catch((e: BusinessError) => {
-      meow(`Failed to recover window: ${e.message}`, `meowUiStatuses][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
+      meow(`Failed to recover window: ${e.message}`, `meowUiHost][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
     });
     this.fullscreenStatus = meowUiFullscreenStatus.NONE;
   }
@@ -212,8 +215,9 @@ export class meowUiStatuses {
       animateToImmediately(defaultAnimation(), () => {
         this.searchBarFocused = false;
       });
+      return true;
     }
-    return true;
+    return false;
   }
 
   /**
@@ -230,7 +234,7 @@ export class meowUiStatuses {
       }
       return true;
     } catch (e) {
-      meow(`Failed to request focus: ${e.message}`, `meowUiStatuses][${this.windowId}][focusAddressbar`, meowLevel.ERROR);
+      meow(`Failed to request focus: ${e.message}`, `meowUiHost][${this.windowId}][focusAddressbar`, meowLevel.ERROR);
     }
     return false;
   }
@@ -240,17 +244,20 @@ export class meowUiStatuses {
    * @param newContent The new search content.
    * @param doKeywordRefresh Whether to refresh the keyword entries.
    */
-  setCurrentSearchContent(newContent: string, doKeywordRefresh: boolean) {
+  setCurrentSearchContent(newContent: string, doKeywordRefresh: boolean, doDestinationRefresh: boolean) {
     this.searchContent = newContent;
     if (doKeywordRefresh) {
       this.refreshKeywordEntries();
+    }
+    if (doDestinationRefresh) {
+      this.refreshDestination();
     }
   }
 
   /**
    * Refreshes the keyword entries.
    */
-  private refreshKeywordEntries() {
+  refreshKeywordEntries() {
     const entries = getKeywordEntries(this.searchContent);
     if (entries.length > 0) {
       // Put the prefered keys to the beginning
@@ -264,6 +271,8 @@ export class meowUiStatuses {
           unmatched.push(entry);
         }
       }
+      // const matched = entries.filter(([key]) => keySet.has(key));
+      // const unmatched = entries.filter(([key]) => !keySet.has(key));
       const entriesSorted = [...matched, ...unmatched];
       this.searchKeywordEntries = entriesSorted;
 
@@ -275,6 +284,26 @@ export class meowUiStatuses {
       this.searchKeywordEntries = [];
       this.searchBarStatus = SearchBarStatuses.NO_SHIFT;
     }
+  }
+
+  /**
+   * Refreshes the unified destination.
+   */
+  refreshDestination() {
+    this.searchUnifyResult = unifyDestination(this.searchContent, this.preferHttps);
+  }
+
+  /**
+   * The universal gateway to submit search!
+   */
+  submitSearchOrLoad(url?: string) {
+    if (url) {
+      this.searchContent = url;
+      this.refreshKeywordEntries();
+      this.refreshDestination();
+    }
+    // SEARCH / LOAD!
+    meow(`Visit / load [${this.searchUnifyResult?.url || concatSearchWithEngine('').result}]!`, 'meowUiHost][submitSearchOrLoad', meowLevel.WARN);
   }
 }
 

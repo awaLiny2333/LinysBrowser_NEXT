@@ -8,13 +8,13 @@ import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton
 import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
 import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 import { exportEverything, exportSettings, importEverything, importResult, importSettings } from '../../../../hosts/system/storage/scripts/backup';
-import { meowUiStatuses } from '../../../../hosts/system/windows/classes/meowUiStatuses';
+import { meowUiHost } from '../../../../hosts/system/windows/classes/meowUiHost';
 import { ErrorPromptDetails } from '../../../public/WoofErrorPrompt/errorPromptScripts';
 
 @ComponentV2
 struct SettingsCardboardBox {
   @Param @Require myDialog: meowDialogManager;
-  @Param @Require myUi: meowUiStatuses;
+  @Param @Require myUi: meowUiHost;
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
   build() {

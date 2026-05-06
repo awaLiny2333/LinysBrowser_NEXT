@@ -1,5 +1,5 @@
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
-import { meowUiStatuses } from '../../../hosts/system/windows/classes/meowUiStatuses';
+import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { standardSpacing } from '../../settings';
 import { generalButtonHeight, meowButtonsType } from './constants';
@@ -8,7 +8,7 @@ import { AppStorageV2 } from '@kit.ArkUI';
 
 @Builder
 export function MeowButtonsSlot(
-  myUi: meowUiStatuses,
+  myUi: meowUiHost,
   myDialog: meowDialogManager,
   buttons: number
 ) {

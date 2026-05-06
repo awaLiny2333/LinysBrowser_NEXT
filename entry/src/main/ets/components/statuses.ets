@@ -2,7 +2,7 @@
  * ALL UI STATUSES GETTERS SHOULD BE HERE!
  */
 import { meowLayout } from "../catstypicalframework/hosts/meowLayout";
-import { meowUiStatuses } from "../hosts/system/windows/classes/meowUiStatuses";
+import { meowUiHost } from "../hosts/system/windows/classes/meowUiHost";
 import { isTabsStyleVertical } from "./settings";
 
 /**
@@ -12,7 +12,7 @@ import { isTabsStyleVertical } from "./settings";
  * @param myLayout The layout of the current window.
  * @returns True if the sidebar should be shown, false otherwise.
  */
-export function showingSidebar(myUi: meowUiStatuses, myLayout: meowLayout) {
+export function showingSidebar(myUi: meowUiHost, myLayout: meowLayout) {
   // Exclude || myUi.showBookmarks for now. Let's see what it is like to put the bookmarks in a dialog...
   if (myUi.showTabs && isTabsStyleVertical(myLayout)) {
     return true;

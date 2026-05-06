@@ -7,7 +7,7 @@ import { UniContentCard } from "../../../components/common/UniContentCard";
 import { standardSpacing } from "../../../components/settings";
 import { meowDialogManager, openDialogRequestType } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { requestDialog } from "../../../hosts/system/dialogs/scripts/dialog";
-import { meowUiStatuses } from "../../../hosts/system/windows/classes/meowUiStatuses";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { meowAppMessageType } from "../../../hosts/system/windows/scripts/messaging";
 import { meowKeyboardMan } from "../../../hosts/userdata/keyshortcuts/classes/meowKeyboardMan";
 import { WoofUniFrame } from "../../WoofUniFrame";
@@ -15,7 +15,7 @@ import { WoofUniFrame } from "../../WoofUniFrame";
 @ComponentV2
 struct KeyShortcutsPanel {
   @Require @Param myDialog: meowDialogManager;
-  @Require @Param myUi: meowUiStatuses;
+  @Require @Param myUi: meowUiHost;
   @Local myKey: meowKeyboardMan = AppStorageV2.connect(meowKeyboardMan)!;
   @Local lastListenerIndex: number = -1;
 
@@ -69,7 +69,7 @@ struct KeyShortcutsPanel {
 struct WoofKeyShortcutsDialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
-  @Require myUi: meowUiStatuses;
+  @Require myUi: meowUiHost;
   @Require myLayout: meowLayout;
 
   build() {

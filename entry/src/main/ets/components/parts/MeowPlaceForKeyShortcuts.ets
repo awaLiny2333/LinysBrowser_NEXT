@@ -1,7 +1,7 @@
 import { meowKeyboardMan } from '../../hosts/userdata/keyshortcuts/classes/meowKeyboardMan';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meow, meowLevel } from '../../catstypicalframework/utils/catsLogger';
-import { meowUiGoBackSource, meowUiStatuses } from '../../hosts/system/windows/classes/meowUiStatuses';
+import { meowUiGoBackSource, meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
 import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../hosts/system/dialogs/scripts/dialog';
 import { newWindow } from '../../hosts/system/windows/scripts/multiwindows';
@@ -12,7 +12,7 @@ const myKey: meowKeyboardMan = AppStorageV2.connect(meowKeyboardMan)!;
 @Builder
 export function MeowPlaceForKeyShortcuts(
   myDialog: meowDialogManager,
-  myUi: meowUiStatuses,
+  myUi: meowUiHost,
   context: UIContext
 ) {
   Row() {
