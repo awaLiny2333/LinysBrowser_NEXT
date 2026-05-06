@@ -82,19 +82,14 @@ struct MeowShortcutItem {
       Text(this.getLabel()).attributeModifier(new MooTextModifier())
         .brightness(this.isHover ? (inDarkMode() ? 1.1 : 0.9) : 1)
         .animation(defaultAnimation())
-        .padding(standardSpacing * 1.25)
-        .border({
-          width: (useEffects() ? 1 : 0),
-          color: $r('sys.color.icon_fourth'),
-          radius: defaultInnerRadius
-        })
         .onHover((isHover) => {
           if (isHover != this.isHover) {
             this.isHover = isHover;
           }
         })
         .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
-        // .hoverEffect(HoverEffect.Highlight)
+        .border({ radius: defaultInnerRadius, width: (useEffects() ? 1 : 0), color: $r('sys.color.icon_fourth') })
+        .padding(standardSpacing * 1.25)
         .backgroundColor(getColor(meowThemeColorType.SECONDARY))
         .fontColor(getColor(meowThemeColorType.FONT))
         .onClick(() => {
