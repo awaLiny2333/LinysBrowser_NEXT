@@ -44,18 +44,25 @@ struct MooStringItem {
           .layoutWeight(this.isEditing ? 1 : undefined)
           .margin({ top: standardSpacing * 0.5, bottom: standardSpacing * 0.5 })
           .padding(isPreferRightHand() ? { left: standardSpacing } : { right: standardSpacing });
-        MooSymbolButtonSmall({
-          icon: this.allowEdit
-            ? (this.isEditing ? $r('sys.symbol.chevron_down') : $r('sys.symbol.pencil_line'))
-            : $r('sys.symbol.archivebox'),
-          clickAction: () => {
-            if (this.allowEdit) {
+        
+        // Small button
+        if (this.allowEdit) {
+          if (this.isEditing) {
+            MooSymbolButtonSmall($r('sys.symbol.chevron_down'), () => {
               animateToImmediately(defaultAnimation(), () => {
-                this.isEditing = !this.isEditing;
+                this.isEditing = false;
               });
-            }
+            });
+          } else {
+            MooSymbolButtonSmall($r('sys.symbol.pencil_line'), () => {
+              animateToImmediately(defaultAnimation(), () => {
+                this.isEditing = true;
+              });
+            });
           }
-        });
+        } else {
+          MooSymbolButtonSmall($r('sys.symbol.archivebox'));
+        }
       }
       .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl);
 

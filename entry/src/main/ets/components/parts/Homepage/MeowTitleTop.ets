@@ -28,11 +28,8 @@ export function MeowTitleTop(
   Row({ space: 10 }) {
     // left button(s)
     if (myApp.freeWindow) {
-      MooSymbolButtonSmall({
-        icon: $r('sys.symbol.square_stack_3d'),
-        clickAction: () => {
-          // TODO: Open zones panel.
-        }
+      MooSymbolButtonSmall($r('sys.symbol.square_stack_3d'), () => {
+        // TODO: Open zones panel.
       });
     }
 
@@ -53,18 +50,17 @@ export function MeowTitleTop(
 
     // right button(s)
     if (myApp.freeWindow) {
-      MooSymbolButtonSmall({
-        icon: myUi.pin ? $r('sys.symbol.pin_vertical_fill') : $r('sys.symbol.pin'),
-        clickAction: () => {
+      if (myUi.pin) {
+        MooSymbolButtonSmall($r('sys.symbol.pin_vertical_fill'), () => {
           myUi.togglePin();
-          // TODO: Pin window.
-        }
-      });
-      MooSymbolButtonSmall({
-        icon: $r('sys.symbol.plus'),
-        clickAction: () => {
-          newWindow(context.getHostContext() as common.UIAbilityContext);
-        }
+        });
+      } else {
+        MooSymbolButtonSmall($r('sys.symbol.pin'), () => {
+          myUi.togglePin();
+        });
+      }
+      MooSymbolButtonSmall($r('sys.symbol.plus'), () => {
+        newWindow(context.getHostContext() as common.UIAbilityContext);
       });
     }
   } // Title bar

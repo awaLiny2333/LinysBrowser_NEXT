@@ -17,13 +17,15 @@ struct MooSlider {
   build() {
     Row() {
       if (this.lock) {
-        MooSymbolButtonSmall({
-          icon: this.locked ? $r('sys.symbol.lock') : $r('sys.symbol.lock_open'),
-          clickAction: () => {
-            // Unlock the slider.
+        if (this.locked) {
+          MooSymbolButtonSmall($r('sys.symbol.lock'), () => {
             this.locked = !this.locked;
-          }
-        });
+          });
+        } else {
+          MooSymbolButtonSmall($r('sys.symbol.lock_open'), () => {
+            this.locked = !this.locked;
+          });
+        }
       }
       Slider({
         value: this.value,
