@@ -6,7 +6,7 @@ import { meowFlexOptions, standardSpacing } from '../../../../components/setting
 import { meowHistoryEntry } from '../../../../hosts/userdata/history/classes/meowHistoryEntry';
 
 @ComponentV2
-struct EntryButton {
+struct HistoryEntryButton {
   @Param @Require myLayout: meowLayout;
   @Param @Require isSelected: boolean;
   @Param @Require isSelecting: boolean;
@@ -101,7 +101,7 @@ struct EntryButton {
       }
 
       // Time
-      Text(`${new Date(this.item.time).toLocaleTimeString([], { hour12: false })}`)
+      Text(`${new Date(this.item.time).toLocaleTimeString().padStart(11, '0')}`)
         .attributeModifier(new MooTextModifier())
         .maxLines(1)
         .opacity(0.45);
@@ -115,4 +115,4 @@ struct EntryButton {
   }
 }
 
-export { EntryButton };
+export { HistoryEntryButton };

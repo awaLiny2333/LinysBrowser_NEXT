@@ -26,7 +26,7 @@ export struct SimpleBookmarksShowcase {
           const index = this.openedFolderStack.findIndex((folder) => folder == item);
 
           if (index == -1) {
-            meow(`Rejected to open folder ${item.name} as there is something wrong with the index. Falling back to root.`, 'SimpleBookmarksShowcase', meowLevel.WARN);
+            meow(`Rejected to open folder ${item.title} as there is something wrong with the index. Falling back to root.`, 'SimpleBookmarksShowcase', meowLevel.WARN);
             this.openedFolderStack = [this.folder];
             this.currentFolderChildren = Array.from(this.folder.children);
             return;
@@ -35,7 +35,7 @@ export struct SimpleBookmarksShowcase {
           // Go back to that layer
           this.openedFolderStack.splice(index + 1);
           this.currentFolderChildren = Array.from((item as meowBookmarkItem).children);
-          meow(`Opening folder: ${item.name}`, 'SimpleBookmarksShowcase', meowLevel.INFO);
+          meow(`Opening folder: ${item.title}`, 'SimpleBookmarksShowcase', meowLevel.INFO);
         }
       });
 
@@ -50,9 +50,9 @@ export struct SimpleBookmarksShowcase {
                   if (repeatItem.item.isFolder) {
                     this.openedFolderStack.push(repeatItem.item as meowBookmarkItem);
                     this.currentFolderChildren = Array.from((repeatItem.item as meowBookmarkItem).children);
-                    meow(`Opening folder: ${repeatItem.item.name}`, 'SimpleBookmarksShowcase', meowLevel.INFO);
+                    meow(`Opening folder: ${repeatItem.item.title}`, 'SimpleBookmarksShowcase', meowLevel.INFO);
                   } else {
-                    meow(`Opening bookmark: ${repeatItem.item.name}`, 'SimpleBookmarksShowcase', meowLevel.INFO);
+                    meow(`Opening bookmark: ${repeatItem.item.title}`, 'SimpleBookmarksShowcase', meowLevel.INFO);
                   }
                 },
                 saveAction: () => {
@@ -64,14 +64,14 @@ export struct SimpleBookmarksShowcase {
                     this.folder.children.splice(repeatItem.index, 1);
                     this.saveAction();
                   } catch (e) {
-                    meow(`Failed to delete item #${repeatItem.index} in folder ${this.folder.name}: ${e}`, 'SimpleBookmarksShowcase', meowLevel.ERROR);
+                    meow(`Failed to delete item #${repeatItem.index} in folder ${this.folder.title}: ${e}`, 'SimpleBookmarksShowcase', meowLevel.ERROR);
                   }
                   this.refreshCurrent();
                 }
               });
             };
           })
-          .key((item) => `${item.name}/${item.date_modified}`)
+          .key((item) => `${item.title}/${item.date_modified}`)
           .onMove((from: number, to: number) => {
             try {
               // Modify the real object.
@@ -118,13 +118,13 @@ export struct SimpleBookmarksShowcase {
   refreshRoot() {
     this.openedFolderStack = [this.folder];
     this.currentFolderChildren = Array.from(this.folder.children);
-    meow(`Refreshing root folder: ${this.folder.name}`, 'SimpleBookmarksShowcase][refreshRoot', meowLevel.INFO);
+    meow(`Refreshing root folder: ${this.folder.title}`, 'SimpleBookmarksShowcase][refreshRoot', meowLevel.INFO);
   }
 
   @Monitor('updateFlag')
   refreshCurrent() {
     this.currentFolderChildren = Array.from(this.openedFolderStack[this.openedFolderStack.length - 1].children);
-    meow(`Refreshing current folder: ${this.folder.name}`, 'SimpleBookmarksShowcase][refreshCurrent', meowLevel.INFO);
+    meow(`Refreshing current folder: ${this.folder.title}`, 'SimpleBookmarksShowcase][refreshCurrent', meowLevel.INFO);
   }
 }
 
@@ -135,10 +135,10 @@ struct BookmarksItem {
   @Event saveAction: () => void;
   @Event deleteAction: () => void;
   // Info
-  @Local label: string = this.item.name;
+  @Local label: string = this.item.title;
   // Editing
   @Local isEditing: boolean = false;
-  @Local labelEditing: string = this.item.name;
+  @Local labelEditing: string = this.item.title;
   @Local urlEditing: string = this.item.url;
 
   build() {
@@ -168,8 +168,8 @@ struct BookmarksItem {
               this.labelEditing = value;
             })
             .onSubmit(() => {
-              this.item.name = this.labelEditing;
-              this.label = this.item.name;
+              this.item.title = this.labelEditing;
+              this.label = this.item.title;
               this.saveAction();
             })
             .width('auto');
@@ -207,8 +207,8 @@ struct BookmarksItem {
    */
   @Monitor('item')
   refreshLabelUrl() {
-    this.label = this.item.name;
-    this.labelEditing = this.item.name;
+    this.label = this.item.title;
+    this.labelEditing = this.item.title;
     this.urlEditing = this.item.url;
     this.isEditing = false;
   }
@@ -223,7 +223,7 @@ struct PathDisplay {
     Flex({ wrap: FlexWrap.Wrap, alignItems: ItemAlign.Center }) {
       Repeat(this.folderStack)
         .each((repeatItem) => {
-          Text(`${repeatItem.item.name}`)
+          Text(`${repeatItem.item.title}`)
             .borderRadius(defaultInnerRadius)
             .padding(5)
             .hoverEffect(HoverEffect.Highlight)

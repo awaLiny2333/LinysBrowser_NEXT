@@ -1,15 +1,18 @@
 import { AppStorageV2, window } from "@kit.ArkUI";
 import { BusinessError } from "@kit.BasicServicesKit";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import { getKeywordEntries, unifyDestination, UnifyDestinationResult, UnifyDestinationResultType } from "../../../../catstypicalframework/utils/url";
+import { getKeywordEntries, unifyDestination, UnifiedDestinationResult, UnifiedDestinationResultType } from "../../../../catstypicalframework/utils/url";
 import { addressBarId } from "../../../../components/parts/Homepage/MeowAddressBar";
 import { defaultAnimation } from "../../../../components/settings";
-import { concatSearchWithEngine } from "../../../app/tabs/scripts/searchEngines";
-import { meowBookmarkItem } from "../../../userdata/bookmarks/classes/meowBookmarkItem";
-import { meowManagedSettings } from "../../../userdata/settings/classes/meowManagedSettings";
-import { meowDialogManager } from "../../dialogs/classes/meowDialogManager";
-import { AddressBarStatuses } from "../scripts/addressBarStatuses";
-import { meowAppMessage } from "./meowAppMessage";
+import lazy { concatSearchWithEngine } from "../../../app/tabs/scripts/searchEngines";
+import lazy { meowBookmarkItem } from "../../../userdata/bookmarks/classes/meowBookmarkItem";
+import lazy { meowBookmarkStash } from "../../../userdata/bookmarks/classes/meowBookmarkStash";
+import lazy { meowHistorian } from "../../../userdata/history/classes/meowHistorian";
+import lazy { meowHistoryEntry } from "../../../userdata/history/classes/meowHistoryEntry";
+import lazy { meowManagedSettings } from "../../../userdata/settings/classes/meowManagedSettings";
+import lazy { meowDialogManager } from "../../dialogs/classes/meowDialogManager";
+import lazy { AddressBarStatuses } from "../scripts/addressBarStatuses";
+import lazy { meowAppMessage } from "./meowAppMessage";
 
 /**
  * The statuses that are limited to the current window only.
@@ -30,14 +33,19 @@ export class meowUiHost {
   @Trace orientation: window.Orientation = window.Orientation.AUTO_ROTATION_RESTRICTED;
   @Trace fullscreenStatus: meowUiFullscreenStatus = meowUiFullscreenStatus.NONE;
   // Search & Address bar
-  @Trace searchContent: string = '';
-  @Trace searchUnifyResult: UnifyDestinationResult = { url: '', type: UnifyDestinationResultType.URL_SCHEMED }; // this empty url is filled in flow.
+  @Trace addressBarContent: string = '';
+  @Trace addressBarCurrentFieldContent: string = ''; // The current focused field / TextInput content. Majorly used for suggesting things.
+  @Trace searchUnifyResult: UnifiedDestinationResult = { url: '', type: UnifiedDestinationResultType.URL_SCHEMED }; // this empty url is filled in flow.
   @Trace searchKeywordEntries: [string, string][] = [];
   @Trace searchKeywordEntriesExpanded: boolean = false;
   @Trace addressBarPreferHttps: boolean = false;
   @Trace addressBarFocused: boolean = false;
   @Trace addressBarStatus: AddressBarStatuses = AddressBarStatuses.NO_SHIFT;
   addressBarBlurTimeoutId: number | undefined = undefined;
+  // Suggesting
+  @Trace suggestionsHistories: meowHistoryEntry[] = [];
+  @Trace suggestionsBookmarks: meowBookmarkItem[] = [];
+  suggestionsRefreshTimeoutId: number | undefined = undefined;
   // Settings
   @Trace isExportingData: boolean = false;
   // MeowBookmarksPanel
@@ -115,6 +123,8 @@ export class meowUiHost {
     meow(`Try!`, 'meowUiHost][goBackWeb', meowLevel.WARN);
     return false; // TODO: return if go back is successful. E.g. if there is no backward page, then we cannot go back, return false.
   }
+
+  // WINDOW
 
   /**
    * Toggle the pin state of the window.
@@ -207,6 +217,8 @@ export class meowUiHost {
     this.fullscreenStatus = meowUiFullscreenStatus.NONE;
   }
 
+  // FOCUS
+
   /**
    * Clear address bar focus.
    * @param uiContext The uiContext.
@@ -257,13 +269,15 @@ export class meowUiHost {
     }
   }
 
+  // SEARCH
+
   /**
    * Sets the current search content of the window.
    * @param newContent The new search content.
    * @param doKeywordRefresh Whether to refresh the keyword entries.
    */
   setCurrentSearchContent(newContent: string, doKeywordRefresh: boolean, doDestinationRefresh: boolean) {
-    this.searchContent = newContent;
+    this.addressBarContent = newContent;
     if (doKeywordRefresh) {
       this.refreshKeywordEntries();
     }
@@ -273,10 +287,25 @@ export class meowUiHost {
   }
 
   /**
+   * Sets the current field content of the address bar.
+   * @param newContent The new field content.
+   */
+  setCurrentFieldContent(newContent: string, timeout: number = 1) {
+    if (this.addressBarCurrentFieldContent != newContent) {
+      this.addressBarCurrentFieldContent = newContent;
+      // Refresh suggestions
+      clearTimeout(this.suggestionsRefreshTimeoutId);
+      this.suggestionsRefreshTimeoutId = setTimeout(() => {
+        this.refreshSuggestions();
+      }, timeout);
+    }
+  }
+
+  /**
    * Refreshes the keyword entries.
    */
   refreshKeywordEntries() {
-    const entries = getKeywordEntries(this.searchContent);
+    const entries = getKeywordEntries(this.addressBarContent);
     if (entries.length > 0) {
       // Put the prefered keys to the beginning
       let matched: [string, string][] = [];
@@ -308,7 +337,42 @@ export class meowUiHost {
    * Refreshes the unified destination.
    */
   refreshDestination() {
-    this.searchUnifyResult = unifyDestination(this.searchContent, this.addressBarPreferHttps);
+    this.searchUnifyResult = unifyDestination(this.addressBarContent, this.addressBarPreferHttps);
+  }
+
+  /**
+   * Refreshes the suggestions.
+   */
+  async refreshSuggestions() {
+    const mySettings = AppStorageV2.connect(meowManagedSettings)!;
+    const maxResultsBookmarks = mySettings.settingsData[12].value as number;
+    const maxResultsHistorian = mySettings.settingsData[13].value as number;
+
+    // History
+    const myHistorian = AppStorageV2.connect(meowHistorian)!;
+    if (this.addressBarCurrentFieldContent.length > 0 && maxResultsHistorian > 0) {
+      const resultsHistories = await myHistorian.lookUpHistoryEntries(this.addressBarCurrentFieldContent, maxResultsHistorian, false, 0.8, true);
+      animateToImmediately(defaultAnimation(), () => {
+        this.suggestionsHistories = resultsHistories;
+      });
+    } else {
+      animateToImmediately(defaultAnimation(), () => {
+        this.suggestionsHistories = [];
+      });
+    }
+
+    // Bookmarks
+    const myBookmarks = AppStorageV2.connect(meowBookmarkStash)!;
+    if (this.addressBarCurrentFieldContent.length > 0 && maxResultsBookmarks > 0) {
+      const resultsBookmarks = myBookmarks.lookUpBookmarksEntries(this.addressBarCurrentFieldContent, maxResultsBookmarks, 0.8);
+      animateToImmediately(defaultAnimation(), () => {
+        this.suggestionsBookmarks = resultsBookmarks;
+      });
+    } else {
+      animateToImmediately(defaultAnimation(), () => {
+        this.suggestionsBookmarks = [];
+      });
+    }
   }
 
   /**
@@ -316,7 +380,7 @@ export class meowUiHost {
    */
   submitSearchOrLoad(url?: string) {
     if (url) {
-      this.searchContent = url;
+      this.addressBarContent = url;
       this.refreshKeywordEntries();
       this.refreshDestination();
     }

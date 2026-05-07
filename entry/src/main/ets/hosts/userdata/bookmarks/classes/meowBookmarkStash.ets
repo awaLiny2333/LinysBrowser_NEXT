@@ -3,6 +3,7 @@ import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/cat
 import lazy { fileDocumentPick2Path, fileDocumentPickSave, saveHybrid } from "../../../../catstypicalframework/utils/storage";
 import lazy { parseBookmarksConcurrent, parseToHTMLConcurrent } from "../scripts/parser";
 import lazy { nowHtmlTimestamp } from "../scripts/helpers";
+import { isMatchFast, tokenize } from "../../../../catstypicalframework/utils/strings";
 
 @ObservedV2
 export class meowBookmarkStash {
@@ -17,6 +18,56 @@ export class meowBookmarkStash {
   }
 
   // Look up
+
+  /**
+   * Look up bookmarks entries, with no duplicated items.
+   * @param query The query word.
+   * @param maxResults The maximum number of results to return.
+   * @param minHitRate The minimum hit rate to return.
+   * @returns The search results.
+   * @author CodeGenie in DevEco Studio Preview @ May 7 2026, help refined by DeepSeek Web and awa_Liny itself! :P
+   */
+  lookUpBookmarksEntries(query: string, maxResults: number, minHitRate = 0.8): meowBookmarkItem[] {
+    if (query == '') {
+      return [];
+    }
+
+    // Tokenize query
+    const queryTokens = tokenize(query);
+
+    if (queryTokens.size == 0) {
+      return [];
+    }
+
+    const addedKeys = new Set<string>();
+
+    // Search
+    const results: meowBookmarkItem[] = [];
+    const search = (node: meowBookmarkItem) => {
+      if (node.isFolder) {
+        for (const child of node.children) {
+          if (results.length >= maxResults) break;
+          search(child);
+        }
+      } else {
+        // Is bookmark
+        if (results.length >= maxResults) {
+          return; // Enough
+        }
+        const url = node.url.toLowerCase();
+        const title = node.title.toLowerCase();
+        const key = `${url}|${title}`;
+        if (!addedKeys.has(key) && isMatchFast(key, queryTokens, minHitRate)) {
+          results.push(node);
+          addedKeys.add(key);
+        }
+      }
+    };
+    search(this.root);
+
+    // Limit results
+    return results;
+  }
 
   /**
      * Get folder by path.
@@ -40,7 +91,7 @@ export class meowBookmarkStash {
 
           if (isPathStart) {
             // 第一段必须严格等于当前根节点的名字
-            if (current.name !== segment) return undefined;
+            if (current.title !== segment) return undefined;
             isPathStart = false;
           } else {
             // 后续段必须在当前节点的 children 里找
@@ -49,7 +100,7 @@ export class meowBookmarkStash {
             let found = false;
             for (let j = 0; j < current.children.length; j++) {
               const child = current.children[j];
-              if (child.name === segment) {
+              if (child.title === segment) {
                 current = child;
                 found = true;
                 break; // 命中立刻跳出内层循环

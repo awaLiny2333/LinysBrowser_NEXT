@@ -31,14 +31,14 @@ export function isLegalUrl(source: string): boolean {
   }
 }
 
-export enum UnifyDestinationResultType {
+export enum UnifiedDestinationResultType {
   URL_UNSCHEMED,
   URL_SCHEMED,
   SEARCH
 }
 
-export interface UnifyDestinationResult {
-  type: UnifyDestinationResultType;
+export interface UnifiedDestinationResult {
+  type: UnifiedDestinationResultType;
   url: string;
 }
 
@@ -49,14 +49,14 @@ export interface UnifyDestinationResult {
  * @param useHttps Whether to use https when unifying the URL.
  * @returns The unified url.
  */
-export function unifyDestination(content: string, useHttps: boolean): UnifyDestinationResult {
+export function unifyDestination(content: string, useHttps: boolean): UnifiedDestinationResult {
   if (isLegalUrl(content)) {
-    return { type: UnifyDestinationResultType.URL_SCHEMED, url: content };
+    return { type: UnifiedDestinationResultType.URL_SCHEMED, url: content };
   }
   if (isLegalHttpUrl(content)) {
-    return { type: UnifyDestinationResultType.URL_UNSCHEMED, url: `http${useHttps ? 's' : ''}://${content}` };
+    return { type: UnifiedDestinationResultType.URL_UNSCHEMED, url: `http${useHttps ? 's' : ''}://${content}` };
   }
-  return { type: UnifyDestinationResultType.SEARCH, url: concatSearchWithEngine(content).result };
+  return { type: UnifiedDestinationResultType.SEARCH, url: concatSearchWithEngine(content).result };
 }
 
 // ↓ Coded by DeepSeek @ May 6 2026

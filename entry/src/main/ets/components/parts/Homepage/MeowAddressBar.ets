@@ -76,19 +76,27 @@ struct MeowAddressBar {
               }
               TextInput({ text: it.item[1], placeholder: '󰒟' })
                 .addressBarProps()
-                .focusBlur()
                 .id(it.index == 0 ? addressBarId : undefined)
                 .width(it.index == 0 && this.hasFreeSpace || !this.myUi.searchKeywordEntriesExpanded ? undefined : 'auto')
                 .layoutWeight(it.index == 0 && this.hasFreeSpace || !this.myUi.searchKeywordEntriesExpanded ? 1 : undefined)
+                .onFocus(() => {
+                  this.myUi.setCurrentFieldContent(it.item[1]);
+                  this.myUi.reportAddressBarFocus();
+                })
+                .onBlur(() => {
+                  this.myUi.reportAddressBarBlur();
+                })
                 .onChange((c) => {
                   it.item[1] = c;
                   try {
-                    const newUrl = url.URL.parseURL(this.myUi.searchContent);
+                    // TODO: is this unnecessarily slow?
+                    const newUrl = url.URL.parseURL(this.myUi.addressBarContent);
                     newUrl.params.set(it.item[0], c);
                     this.myUi.setCurrentSearchContent(newUrl.toString(), false, true);
                   } catch (e) {
-                    meow(`Invalid URL: ${this.myUi.searchContent}`, 'MeowAddressBar][Keyword][onChange', meowLevel.WARN);
+                    meow(`Invalid URL: ${this.myUi.addressBarContent}`, 'MeowAddressBar][Keyword][onChange', meowLevel.WARN);
                   }
+                  this.myUi.setCurrentFieldContent(it.item[1]);
                 })
                 .onSubmit(() => this.go());
             }
@@ -112,13 +120,20 @@ struct MeowAddressBar {
   AddressInputNormal() {
     // Normal view
     Row() {
-      TextInput({ text: this.myUi.searchContent, placeholder: '󰀩 ...' })
+      TextInput({ text: this.myUi.addressBarContent, placeholder: '󰀩 ...' })
         .addressBarProps()
-        .focusBlur()
         .layoutWeight(1)
         .id(addressBarId)
+        .onFocus(() => {
+          this.myUi.setCurrentFieldContent(this.myUi.addressBarContent);
+          this.myUi.reportAddressBarFocus();
+        })
+        .onBlur(() => {
+          this.myUi.reportAddressBarBlur();
+        })
         .onChange((c) => {
           this.myUi.setCurrentSearchContent(c, true, true);
+          this.myUi.setCurrentFieldContent(c);
         })
         .onSubmit(() => this.go());
     }
@@ -131,18 +146,6 @@ struct MeowAddressBar {
   go() {
     this.myUi.submitSearchOrLoad();
     this.myUi.requestAddressBarBlur(this.getUIContext());
-  }
-
-  // Styles
-
-  @Styles
-  focusBlur() {
-    .onFocus(() => {
-      this.myUi.reportAddressBarFocus();
-    })
-    .onBlur(() => {
-      this.myUi.reportAddressBarBlur();
-    });
   }
 
   // Getters

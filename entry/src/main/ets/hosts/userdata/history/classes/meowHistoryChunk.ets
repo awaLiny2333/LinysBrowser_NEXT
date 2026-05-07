@@ -24,9 +24,10 @@ import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/cat
 import lazy { readArrayBufferConcurrent, saveHybrid } from "../../../../catstypicalframework/utils/storage";
 import { collections, fastbuffer } from "@kit.ArkTS";
 import lazy { buildIndexToDisk, loadIndexFromDisk } from "../scripts/indexing";
-import lazy { binarySearch, isMatchFast, loadChunkFromDisk, tokenize } from "../scripts/helpers";
+import lazy { binarySearch, loadChunkFromDisk } from "../scripts/helpers";
 import { meowHistoryEntry } from "./meowHistoryEntry";
 import { meowHistoryIndexFileBundle } from "./meowHistoryIndexFileBundle";
+import { isMatchFast, tokenize } from "../../../../catstypicalframework/utils/strings";
 
 @Sendable
 export class meowHistoryChunk {
@@ -197,7 +198,7 @@ export class meowHistoryChunk {
       const entry = this.entries[i];
       const url = entry.url.toLowerCase();
       const title = entry.title.toLowerCase();
-      if (isMatchFast(url + title, tokenize(query), minHitRate)) {
+      if (isMatchFast(url + ' ' + title, tokenize(query), minHitRate)) {
         results.push(entry);
         if (results.length >= maxResults) {
           break;

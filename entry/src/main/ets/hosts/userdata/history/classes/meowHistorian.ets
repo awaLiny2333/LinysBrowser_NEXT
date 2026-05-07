@@ -248,9 +248,10 @@ export class meowHistorian {
    * @param maxResults The maximum number of results to return.
    * @param bruteForce To use brute force or not.
    * @param minHitRate The minimum keyword hit rate for brute force.
+   * @param unique Whether to return unique results only.
    * @returns The query results.
    */
-  async lookUpHistoryEntries(query: string, maxResults: number, bruteForce: boolean, minHitRate = 0.8) {
+  async lookUpHistoryEntries(query: string, maxResults: number, bruteForce: boolean, minHitRate = 0.8, unique = false) {
     if (this.busy) {
       meow(`Busy. Rejected history: ["${query}", ${maxResults}]`, 'meowHistorian][lookUpHistoryEntries', meowLevel.WARN);
       return [];
@@ -263,6 +264,7 @@ export class meowHistorian {
     this.busy = true;
     const result: meowHistoryEntry[] = [];
 
+    const addedKeys = new Set<string>();
 
     // Optimized by ChatGLM @ Apr 6 2026
     // Prefer the latest 3 months.
@@ -284,6 +286,16 @@ export class meowHistorian {
       for (let i = 0; i < allResults.length; i++) {
         const chunkResult = allResults[i];
         for (let j = 0; j < chunkResult.length; j++) {
+          // Unique
+          if (unique) {
+            const key = `${chunkResult[j].url}|${chunkResult[j].title}`;
+            if (addedKeys.has(key)) {
+              continue;
+            }
+            addedKeys.add(key);
+          }
+          
+          // Push
           result.push(chunkResult[j]);
           if (result.length >= maxResults) {
             break;

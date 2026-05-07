@@ -162,7 +162,7 @@ export function buildNodeHTML(node: meowBookmarkItem, indent: string): string {
   let result = "";
 
   if (node.isFolder) {
-    const name = encodeHtmlString(node.name);
+    const name = encodeHtmlString(node.title);
     const addDate = node.date_added;
     const modDate = node.date_modified;
 
@@ -181,7 +181,7 @@ export function buildNodeHTML(node: meowBookmarkItem, indent: string): string {
     result += `${indent}</DL><p>\n`;
   } else {
     // Leaf node format: <DT><A> defines the actual bookmark.
-    const name = encodeHtmlString(node.name);
+    const name = encodeHtmlString(node.title);
     const url = encodeHtmlString(node.url);
     const addDate = node.date_added;
 

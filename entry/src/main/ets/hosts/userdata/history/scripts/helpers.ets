@@ -66,26 +66,6 @@ export async function loadChunkFromDisk(chunkPath: string) {
   return history;
 }
 
-// Promote regular expressions to constants and avoid repeated construction.
-const CJK_RANGE = "\\u4e00-\\u9fff\\u3400-\\u4dbf\\uf900-\\ufaff";
-const LATIN_RANGE = "A-Za-z\\u00C0-\\u024F";
-const GREEK_RANGE = "\\u0370-\\u03FF";
-const CYRILLIC_RANGE = "\\u0400-\\u04FF";
-const ARABIC_RANGE = "\\u0600-\\u06FF";
-const LETTER_RANGE = `${LATIN_RANGE}${GREEK_RANGE}${CYRILLIC_RANGE}${ARABIC_RANGE}`;
-const TOKEN_REGEX = new RegExp(`[${CJK_RANGE}]|[${LETTER_RANGE}]+|\\d+`, "gu");
-
-/**
- * Divides a segment of multi-language text into a collections.Set of tokens in lower case.
- * Compatible with environments that do not support escape (e.g., some ArkTS engines)
- * @param text The text to be tokenized.
- * @returns A collections.Set containing all the tokenized lowercase words.
- * @author DeepSeek @ Apr 2 2026, modified by awa_Liny.
- */
-export function tokenize(text: string): collections.Set<string> {
-  return new collections.Set(text.match(TOKEN_REGEX)?.map(s => s.toLowerCase()) ?? []);
-}
-
 /**
  * Ultra-fast general ascending binary search
  * @param arr ordered array (supports native Array and collections.Array)
@@ -116,51 +96,6 @@ export function binarySearch<T, K>(
   }
 
   return -1;
-}
-
-/**
- * Fast single-pass match for lowercase keys. 
- * If the text contains minHitRate * 100% of the keys,
- * then this is considered true for a match.
- *
- * @param text   Lowercased text to search.
- * @param keys   Set of lowercased, regex-safe keys.
- * @param minHitRate Minimum hit rate (0–1).
- * @returns True if enough distinct keys were found.
- * @author DeepSeek @ Apr 29 2026.
- */
-export function isMatchFast(text: string, keys: collections.Set<string>, minHitRate: number): boolean {
-  // If the set is empty, consider it a match by default
-  if (keys.size === 0) return true;
-
-  // Pre-compute the required number of hits and the maximum allowed misses.
-  // Note: we use keys.size instead of keys.length.
-  const needHits = Math.ceil(minHitRate * keys.size);
-  let maxMiss = keys.size - needHits;
-
-  let hits = 0;
-  let miss = 0;
-
-  // Iterate over the Set using for...of
-  for (const key of keys) {
-    // Skip empty strings if any were added; adjust maxMiss to keep the math correct.
-    if (!key) {
-      maxMiss--;
-      continue;
-    }
-
-    if (text.includes(key)) {
-      hits++;
-      // Early exit: we already have enough hits
-      if (hits >= needHits) return true;
-    } else {
-      miss++;
-      // Early exit: missed too many keys, impossible to reach the required hit rate
-      if (miss > maxMiss) return false;
-    }
-  }
-
-  return false;
 }
 
 /**

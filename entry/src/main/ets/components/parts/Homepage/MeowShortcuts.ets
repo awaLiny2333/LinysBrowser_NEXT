@@ -122,7 +122,7 @@ struct MeowShortcutItem {
    */
   getLabel() {
     this.refreshFlag;
-    return `${this.item.isFolder ? (this.showingChildren ? '󰃛  ' : '󰃅  ') : ''}${this.item.name}`;
+    return `${this.item.isFolder ? (this.showingChildren ? '󰃛  ' : '󰃅  ') : ''}${this.item.title}`;
   }
 
   getChildren() {

@@ -15,7 +15,7 @@ struct WoofBookmarksDialog {
   @Require selectMode: boolean;
   onSelect: (folder: meowBookmarkItem, path: string) => void = (folder, path) => {
     // Do nothing by default.
-    meow(`Selected ${folder.name} at ${path}`, 'WoofBookmarksDialog][onSelect', meowLevel.INFO);
+    meow(`Selected ${folder.title} at ${path}`, 'WoofBookmarksDialog][onSelect', meowLevel.INFO);
   };
 
   build() {

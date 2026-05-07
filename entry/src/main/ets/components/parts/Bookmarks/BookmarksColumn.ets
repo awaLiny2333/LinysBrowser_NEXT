@@ -66,12 +66,12 @@ struct BookmarksColumn {
       try {
         records = event.getData().getRecords();
       } catch (e) {
-        meow(`Error handling drag event: ${e}`, `BookmarksColumn][onDrop][${this.folder.name}`, meowLevel.ERROR);
+        meow(`Error handling drag event: ${e}`, `BookmarksColumn][onDrop][${this.folder.title}`, meowLevel.ERROR);
         return;
       }
 
       // Process after getting the data.
-      meow(`onDrop: [${records.length}]`, `BookmarksColumn][onDrop][${this.folder.name}`);
+      meow(`onDrop: [${records.length}]`, `BookmarksColumn][onDrop][${this.folder.title}`);
       const result = this.receiveDrop(records);
 
       // Feedback to determine if the bookmark items are ok to be deleted.
@@ -139,7 +139,7 @@ struct BookmarksColumn {
                 }
               },
               onEdited: (newValues) => {
-                item.item.name = newValues[0];
+                item.item.title = newValues[0];
                 item.item.url = newValues[1];
                 item.item.date_modified = nowHtmlTimestamp();
                 // meow(`heard this.onEdit(${index}, [${newValues[0]}, ${newValues[1]}])`, 'BookmarksColumn][onEdit', meowLevel.WARN);
@@ -277,7 +277,7 @@ struct BookmarksColumn {
           }
         });
       } else {
-        Text(this.folder.name).attributeModifier(new MooTextModifier()).wordBreak(WordBreak.BREAK_ALL).maxLines(2).padding({ left: standardSpacing * 0.5, right: standardSpacing * 0.5 }).layoutWeight(1);
+        Text(this.folder.title).attributeModifier(new MooTextModifier()).wordBreak(WordBreak.BREAK_ALL).maxLines(2).padding({ left: standardSpacing * 0.5, right: standardSpacing * 0.5 }).layoutWeight(1);
       }
 
       if (this.selectMode) {
@@ -322,7 +322,7 @@ struct BookmarksColumn {
    */
   getLabelLinkItem(item: meowBookmarkItem) {
     this.refreshFlag;
-    return [item.name, item.url];
+    return [item.title, item.url];
   }
 
   /**
@@ -338,17 +338,17 @@ struct BookmarksColumn {
     const item = pack[1] as meowBookmarkItem[];
 
     // log levels
-    meow(`Received drop from level ${fromLevel} to level ${this.level}`, `BookmarksColumn][onDrop][${this.folder.name}`, meowLevel.INFO);
+    meow(`Received drop from level ${fromLevel} to level ${this.level}`, `BookmarksColumn][onDrop][${this.folder.title}`, meowLevel.INFO);
 
     // Level check.
     if ((fromLevel != undefined) && (fromLevel <= this.level)) {
-      meow(`Level check failed!`, `BookmarksColumn][onDrop][${this.folder.name}`, meowLevel.ERROR);
+      meow(`Level check failed!`, `BookmarksColumn][onDrop][${this.folder.title}`, meowLevel.ERROR);
       return false;
     }
 
     // Boundary check.
     if (records.length > item.length) {
-      meow(`Out of bounds!`, `BookmarksColumn][onDrop][${this.folder.name}`, meowLevel.ERROR);
+      meow(`Out of bounds!`, `BookmarksColumn][onDrop][${this.folder.title}`, meowLevel.ERROR);
       return false;
     }
 
@@ -359,7 +359,7 @@ struct BookmarksColumn {
       // Ignore unknown type.
       const type = records[i].getTypes().join('.');
       if (type != meowBookmarkItemUnifiedType) {
-        meow(`Unknown record type: ${type}. Accepts only [${meowBookmarkItemUnifiedType}]!`, `BookmarksColumn][onDrop][${this.folder.name}`, meowLevel.ERROR);
+        meow(`Unknown record type: ${type}. Accepts only [${meowBookmarkItemUnifiedType}]!`, `BookmarksColumn][onDrop][${this.folder.title}`, meowLevel.ERROR);
         return false;
       }
 
@@ -375,7 +375,7 @@ struct BookmarksColumn {
     try {
       this.folder.children.push(...newItems);
     } catch (e) {
-      meow(`Error adding item: ${e}`, `BookmarksColumn][onDrop][${this.folder.name}`, meowLevel.ERROR);
+      meow(`Error adding item: ${e}`, `BookmarksColumn][onDrop][${this.folder.title}`, meowLevel.ERROR);
       return false;
     }
 

@@ -4,7 +4,7 @@ import { MooTextButton } from '../../../../components/common/MooTextButton';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, mooTextType, standardSpacing, useEffects } from '../../../../components/settings';
 import { meowHistoryEntry } from '../../../../hosts/userdata/history/classes/meowHistoryEntry';
-import { EntryButton } from './EntryButton';
+import { HistoryEntryButton } from './HistoryEntryButton';
 
 @ComponentV2
 struct DayCard {
@@ -50,7 +50,7 @@ struct DayCard {
       List() {
         Repeat(this.obj)
           .each((obj: RepeatItem<meowHistoryEntry>) => {
-            EntryButton({
+            HistoryEntryButton({
               myLayout: this.myLayout,
               item: obj.item,
               isSelecting: this.isSelecting,

@@ -1,5 +1,5 @@
 import { copyText } from "../../../catstypicalframework/utils/clipboard";
-import { UnifyDestinationResultType } from "../../../catstypicalframework/utils/url";
+import { UnifiedDestinationResultType } from "../../../catstypicalframework/utils/url";
 import { SymbolButton } from "../../../dialogs/parts/WoofCatsDev/parts/common/SymbolButton";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { MooCapsuleButton } from "../../common/MooCapsuleButton";
@@ -9,7 +9,7 @@ import { isPreferRightHand, standardSpacing, titleBarPositionBottom } from "../.
 @Builder
 export function MeowDestination(myUi: meowUiHost, uiContext: UIContext) {
   Row({ space: standardSpacing }) {
-    if (myUi.searchUnifyResult?.type == UnifyDestinationResultType.URL_UNSCHEMED) {
+    if (myUi.searchUnifyResult?.type == UnifiedDestinationResultType.URL_UNSCHEMED) {
       MooCapsuleButton({
         text: myUi.addressBarPreferHttps ? 'HTTPS  󰀈' : 'HTTP  󰓄',
         clickAction: () => {

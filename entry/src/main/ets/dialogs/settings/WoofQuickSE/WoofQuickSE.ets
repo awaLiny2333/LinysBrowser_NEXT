@@ -77,7 +77,7 @@ struct WoofQuickSEDialog {
   build() {
     WoofUniFrame({
       controller: this.controller, title: $r('app.string.QuickSE'), shiftBackgroundColor: true, myLayout: this.myLayout, myDialog: this.myDialog,
-      tutorial: `󰀩 ${this.myUi.searchKeywordEntries.length > 0 ? this.myUi.searchKeywordEntries[0][1] : this.myUi.searchContent}`, showTutorial: true
+      tutorial: `󰀩 ${this.myUi.searchKeywordEntries.length > 0 ? this.myUi.searchKeywordEntries[0][1] : this.myUi.addressBarContent}`, showTutorial: true
     }) {
       WoofQuickSEPanel({
         myLayout: this.myLayout,

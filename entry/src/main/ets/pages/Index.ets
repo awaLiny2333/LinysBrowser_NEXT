@@ -25,6 +25,7 @@ import { meowUiFullscreenStatus, meowUiGoBackSource, meowUiHost } from '../hosts
 import { meowAppMessageType } from '../hosts/system/windows/scripts/messaging';
 import { getLastWindowId } from '../hosts/system/windows/scripts/multiwindows';
 import { meowManagedSettings } from '../hosts/userdata/settings/classes/meowManagedSettings';
+import { MeowSuggestions } from '../components/parts/Homepage/MeowSuggestions';
 
 @Entry
 @ComponentV2
@@ -97,12 +98,13 @@ struct Index {
           // Title bar
           Scroll() {
             Column({ space: standardSpacing }) {
-              // Title bar
-              MeowTitleBar(this.myUi, this.myLayout, this.myDialog, this.mySettings);
-
               if (this.myUi.addressBarFocused && titleBarPositionBottom()) {
+                MeowSuggestions({ myUi: this.myUi, myLayout: this.myLayout });
                 MeowDestination(this.myUi, this.getUIContext());
               }
+
+              // Title bar
+              MeowTitleBar(this.myUi, this.myLayout, this.myDialog, this.mySettings);
 
               // Address
               if (!this.myLayout.wideMode) {
@@ -115,6 +117,7 @@ struct Index {
 
               if (this.myUi.addressBarFocused && !titleBarPositionBottom()) {
                 MeowDestination(this.myUi, this.getUIContext());
+                MeowSuggestions({ myUi: this.myUi, myLayout: this.myLayout });
               }
 
               // More
@@ -175,30 +178,25 @@ struct Index {
       this.actionsOnAppear();
     })
     .onAreaChange((o, n) => {
-      let somethingChanged = false;
       if (o.width != n.width) {
-        somethingChanged = true;
         this.myLayout.width = n.width as number;
-        animateToImmediately(defaultAnimation(), () => {
-          this.myLayout.wideMode = this.myLayout.width > wideModeThreshold;
-        });
+        const newWideMode = this.myLayout.width > wideModeThreshold;
+        const wideModeChanged = this.myLayout.wideMode != newWideMode;
+        const needRefocus = this.myUi.addressBarFocused && wideModeChanged;
+        if (wideModeChanged) {
+          animateToImmediately(defaultAnimation(), () => {
+            this.myLayout.wideMode = newWideMode;
+          });
+        }
+        if (needRefocus) {
+          this.myUi.requestAddressBarFocus(this.getUIContext());
+        }
       }
       if (o.height != n.height) {
-        somethingChanged = true;
         this.myLayout.height = n.height as number;
         animateToImmediately(defaultAnimation(), () => {
           this.myLayout.shortMode = this.myLayout.height < shortModeThreshold;
         });
-      }
-
-      // If window resize then disable focus.
-      if (somethingChanged) {
-        if (this.myUi.addressBarFocused) {
-          this.getUIContext().getFocusController().clearFocus();
-          animateToImmediately(defaultAnimation(), () => {
-            this.myUi.addressBarFocused = false;
-          });
-        }
       }
     });
   }
@@ -229,7 +227,7 @@ struct Index {
   maxHeightTitleBar() {
     const avoids = this.bottomAvoidHeight + this.topAvoidHeight;
     const effectsCorrection = useEffects() ? standardSpacing : 0;
-    return this.myLayout.height - avoids - standardSpacing + effectsCorrection;
+    return this.myLayout.height - avoids + effectsCorrection;
   }
 
   // Actions

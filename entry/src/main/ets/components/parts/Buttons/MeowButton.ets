@@ -75,10 +75,10 @@ struct MeowButton {
         requestDialog(this.myDialog, openDialogRequestType.HISTORY);
         break;
       case meowButtonsType.COOKIES:
-        requestDialog(this.myDialog, openDialogRequestType.COOKIES, this.myUi.searchContent); // TODO: auto pass in current viewing url.
+        requestDialog(this.myDialog, openDialogRequestType.COOKIES, this.myUi.addressBarContent); // TODO: auto pass in current viewing url.
         break;
       case meowButtonsType.QRCODE:
-        requestDialog(this.myDialog, openDialogRequestType.QR, ['Title', this.myUi.searchContent]); // TODO: auto pass in current viewing url.
+        requestDialog(this.myDialog, openDialogRequestType.QR, ['Title', this.myUi.addressBarContent]); // TODO: auto pass in current viewing url.
         break;
       case meowButtonsType.USERAGENTS:
         this.myUi.requestAddressBarBlur(this.getUIContext());
@@ -90,7 +90,7 @@ struct MeowButton {
         break;
       case meowButtonsType.GO:
         this.myUi.requestAddressBarBlur(this.getUIContext());
-        meow(`Visit / load [${this.myUi.searchContent}]!`);
+        meow(`Visit / load [${this.myUi.addressBarContent}]!`);
         // TODO: Visit the site for GO button!
         break;
       case meowButtonsType.ADDRESS_KEYWORD_SWITCH:

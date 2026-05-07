@@ -9,15 +9,15 @@ import lazy { nowHtmlTimestamp } from "../scripts/helpers";
 @Sendable
 export class meowBookmarkItem {
   isFolder: boolean;
-  name: string;
+  title: string;
   url: string;
   date_added: number;
   date_modified: number;
   children: collections.Array<meowBookmarkItem> = new collections.Array<meowBookmarkItem>();
 
-  constructor(isFolder: boolean, name: string, url: string, date_added?: number, date_modified?: number) {
+  constructor(isFolder: boolean, title: string, url: string, date_added?: number, date_modified?: number) {
     this.isFolder = isFolder;
-    this.name = name;
+    this.title = title;
     this.url = url;
     this.date_added = date_added || nowHtmlTimestamp();
     this.date_modified = date_modified || nowHtmlTimestamp();
@@ -29,13 +29,13 @@ export class meowBookmarkItem {
    * @returns A shallow copy of the given item.
    */
   static from(item: meowBookmarkItem) {
-    const clone = new meowBookmarkItem(item.isFolder, item.name, item.url, item.date_added, item.date_modified);
+    const clone = new meowBookmarkItem(item.isFolder, item.title, item.url, item.date_added, item.date_modified);
     clone.children = item.children;
     return clone;
   }
 
   toString(): string {
-    return this.name;
+    return this.title;
   }
 
   /**
