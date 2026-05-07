@@ -49,7 +49,9 @@ struct MeowButton {
         });
         break;
       case meowButtonsType.TABS:
-        this.myUi.showTabs = !this.myUi.showTabs;
+        animateToImmediately(defaultAnimation(), () => {
+          this.myUi.showTabs = !this.myUi.showTabs;
+        });
         break;
       case meowButtonsType.BOOKMARKS:
         requestDialog(this.myDialog, openDialogRequestType.BOOKMARKS);

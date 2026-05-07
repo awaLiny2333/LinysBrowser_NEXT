@@ -6,6 +6,7 @@ import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dia
 import { requestDialog } from '../../hosts/system/dialogs/scripts/dialog';
 import { newWindow } from '../../hosts/system/windows/scripts/multiwindows';
 import { common } from '@kit.AbilityKit';
+import { defaultAnimation } from '../settings';
 
 const myKey: meowKeyboardMan = AppStorageV2.connect(meowKeyboardMan)!;
 
@@ -32,7 +33,9 @@ export function MeowPlaceForKeyShortcuts(
       meow(`Close Tab!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
     });
     Blank().keyboardShortcut(myKey.showTabs.value, myKey.showTabs.keys, () => {
-      myUi.showTabs = !myUi.showTabs;
+      animateToImmediately(defaultAnimation(), () => {
+        myUi.showTabs = !myUi.showTabs;
+      });
       if (myUi.showTabs) {
         meow(`Show Tabs!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
       } else {

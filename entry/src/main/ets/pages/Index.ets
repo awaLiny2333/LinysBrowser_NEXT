@@ -16,7 +16,7 @@ import lazy { MeowTitleTop } from '../components/parts/Homepage/MeowTitleTop';
 import { MeowWindowInfoBar } from '../components/parts/Homepage/MeowWindowInfoBar';
 import lazy { MeowPlaceForDialogs } from '../components/parts/MeowPlaceForDialogs';
 import { MeowPlaceForKeyShortcuts } from '../components/parts/MeowPlaceForKeyShortcuts';
-import lazy { defaultAnimation, defaultHorizontalTabsHeight, defaultSidebarWidth, getColor, isPreferRightHand, isTabsStyleVertical, meowThemeColorType, mooTextType, showGiganticWindowTitle, sidebarShouldBeOnTheRight, standardSpacing, titleBarPositionBottom, useEffects } from '../components/settings';
+import lazy { defaultAnimation, defaultSidebarWidth, getColor, isPreferRightHand, isTabsStyleVertical, meowThemeColorType, mooTextType, showGiganticWindowTitle, sidebarShouldBeOnTheRight, standardSpacing, titleBarPositionBottom, useEffects } from '../components/settings';
 import lazy { showingSidebar } from '../components/statuses';
 import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
 import { meowResources } from '../hosts/system/storage/classes/meowResources';
@@ -26,6 +26,8 @@ import { meowAppMessageType } from '../hosts/system/windows/scripts/messaging';
 import { getLastWindowId } from '../hosts/system/windows/scripts/multiwindows';
 import { meowManagedSettings } from '../hosts/userdata/settings/classes/meowManagedSettings';
 import { MeowSuggestions } from '../components/parts/Homepage/MeowSuggestions';
+import { defaultTabsHorizontalHeight, MeowTabsHorizontal } from '../components/parts/Tabs/Horizontal';
+import { MeowTabsVertical } from '../components/parts/Tabs/Vertical';
 
 @Entry
 @ComponentV2
@@ -68,9 +70,10 @@ struct Index {
         // Shortcuts handler
         MeowPlaceForKeyShortcuts(this.myDialog, this.myUi, this.getUIContext());
 
-        // Main
         // This is ugly.
-        Column() {
+        // Main frame
+        Stack({ alignContent: sidebarShouldBeOnTheRight() ? Alignment.End : Alignment.Start }) {
+          // Web frame
           Stack() {
             // Backdrop
             if (this.myResources.backgroundImage) {
@@ -82,14 +85,16 @@ struct Index {
             // Shortcuts
             MeowShortcutsPanel({ myLayout: this.myLayout, myDialog: this.myDialog });
           }
+          .margin(this.mainFrameSpace)
           .border(useEffects() ? { radius: defaultInnerRadius, width: 1, color: $r('sys.color.icon_fourth') } : { width: 0, radius: 0 })
-          .backgroundColor(getColor(meowThemeColorType.PRIMARY))
-          .clip(true)
-          .width('100%')
-          .height('100%');
+          .clip(true);
+
+          // Vertical tabss
+          if (this.showingVerticalTab) {
+            MeowTabsVertical();
+          }
         }
-        .padding(this.myUi.fullscreenStatus == meowUiFullscreenStatus.NONE ? this.mainFrameSpace : 0)
-        .animation(defaultAnimation());
+        .padding(this.myUi.fullscreenStatus == meowUiFullscreenStatus.NONE ? this.outerFrameSpace : 0);
 
         if (this.myUi.fullscreenStatus == meowUiFullscreenStatus.NONE) {
           // Top bar
@@ -101,6 +106,11 @@ struct Index {
               if (this.myUi.addressBarFocused && titleBarPositionBottom()) {
                 MeowSuggestions({ myUi: this.myUi, myLayout: this.myLayout });
                 MeowDestination(this.myUi, this.getUIContext());
+              }
+
+              // Tabs (Horizontal)
+              if (this.showingHorizontalTab) {
+                MeowTabsHorizontal();
               }
 
               // Title bar
@@ -226,13 +236,18 @@ struct Index {
    * @returns The maximum height of the Title Bar (Entire).
    */
   maxHeightTitleArea() {
+    // Total area
     const avoids = this.bottomAvoidHeight + this.topAvoidHeight;
     const effectsCorrection = useEffects() ? standardSpacing : 0;
     const maxHeightTitleArea = this.myLayout.height - avoids + effectsCorrection;
     this.myLayout.heightTitleArea = maxHeightTitleArea;
 
-    const heightTitleBar = this.myLayout.wideMode ? MeowTitleBarHeight + standardSpacing : 2 * (MeowTitleBarHeight + standardSpacing);
-    this.myLayout.heightTitleBar = heightTitleBar;
+    // Title bar
+    const tabsComp = this.showingHorizontalTab ? defaultTabsHorizontalHeight + standardSpacing : 0;
+    const newTitleHeight = tabsComp + (this.myLayout.wideMode ? MeowTitleBarHeight + standardSpacing : 2 * (MeowTitleBarHeight + standardSpacing));
+    if (newTitleHeight != this.myLayout.heightTitleBar) {
+      this.myLayout.heightTitleBar = newTitleHeight;
+    }
 
     return maxHeightTitleArea;
   }
@@ -253,42 +268,68 @@ struct Index {
 
   // Values
 
+  /**
+   * Whether to show horizontal tabs.
+   */
+  get showingHorizontalTab() {
+    return this.myUi.showTabs && !isTabsStyleVertical(this.myLayout);
+  }
+
+  /**
+   * Whether to show vertical tabs.
+   */
+  get showingVerticalTab() {
+    return this.myUi.showTabs && isTabsStyleVertical(this.myLayout);
+  }
+
   @Computed
-  get mainFrameSpace(): Margin {
+  get outerFrameSpace(): Margin {
     // Vertical
     const slimCompensation = this.myLayout.wideMode ? 0 : MeowTitleBarHeight + standardSpacing; // For double layer title bar on phones / slim windows.
-    const tabsHorizontalCompensation = this.myUi.showTabs && !isTabsStyleVertical(this.myLayout) ? defaultHorizontalTabsHeight : 0;
-
+    const tabsComp = this.showingHorizontalTab ? defaultTabsHorizontalHeight + standardSpacing : 0;
     let top: number;
     let bottom: number;
     if (titleBarPositionBottom()) {
       // Bottom
       const freeWindowCompensation = (this.myApp.freeWindow ? standardSpacing : 0);
       top = this.myAvoid.top;
-      bottom = this.myAvoid.bottom + freeWindowCompensation + (MeowTitleBarHeight + standardSpacing) + slimCompensation + tabsHorizontalCompensation + 1; // + 1 is for the 1vp border of the main frame when effects are on.
+      bottom = this.myAvoid.bottom + freeWindowCompensation + (MeowTitleBarHeight + standardSpacing) + slimCompensation + tabsComp + 1; // + 1 is for the 1vp border of the main frame when effects are on.
     } else {
       // Top
-      top = this.myAvoid.top + (MeowTitleBarHeight + standardSpacing) + slimCompensation + tabsHorizontalCompensation + 1; // Same.
+      top = this.myAvoid.top + (MeowTitleBarHeight + standardSpacing) + slimCompensation + tabsComp + 1; // Same.
       const showBottomAvoid = this.mySettings.settingsData[5].value as boolean; // Allow user to disable bottom avoid.
       bottom = (showBottomAvoid ? this.myAvoid.bottom : 0) + (useEffects() ? standardSpacing : 0);
     }
 
     // Horizontal
-    const sidebarOnR = sidebarShouldBeOnTheRight();
-    const sidebarCompensation = showingSidebar(this.myUi, this.myLayout) ? defaultSidebarWidth : 0;
-    const sidebarCompL = sidebarOnR ? 0 : sidebarCompensation;
-    const sidebarCompR = sidebarOnR ? sidebarCompensation : 0;
-
     let left: number;
     let right: number;
     if (useEffects()) {
-      left = this.myAvoid.left + sidebarCompL;
-      right = this.myAvoid.right + sidebarCompR;
+      left = this.myAvoid.left;
+      right = this.myAvoid.right;
     } else {
-      left = 0 + sidebarCompL;
-      right = 0 + sidebarCompR;
+      left = 0;
+      right = 0;
     }
     return { top, bottom, left, right };
+  }
+
+  @Computed
+  get mainFrameSpace(): Margin {
+    // side bar compensation
+    const isShowingSidebar = showingSidebar(this.myUi, this.myLayout);
+    const sidebarComp = isShowingSidebar && this.myLayout.wideMode ? defaultSidebarWidth : 0;
+    const effectsSideBarSpaceComp = isShowingSidebar && useEffects() ? standardSpacing : 0;
+    const sidebarOnR = sidebarShouldBeOnTheRight();
+    const left = sidebarOnR ? 0 : sidebarComp + effectsSideBarSpaceComp;
+    const right = sidebarOnR ? sidebarComp + effectsSideBarSpaceComp : 0;
+
+    return {
+      top: 0,
+      bottom: 0,
+      left,
+      right,
+    };
   }
 
   /**
