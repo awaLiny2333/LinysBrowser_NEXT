@@ -151,8 +151,9 @@ struct Index {
               bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
               middle: { anchor: '__container__', align: HorizontalAlign.Center }
             })
+          .scrollBar(BarState.Off)
           .translate({ y: !titleBarPositionBottom() ? this.topAvoidHeight : -this.bottomAvoidHeight }) // Bottom avoid.
-          .constraintSize({ maxHeight: this.maxHeightTitleBar() })
+          .constraintSize({ maxHeight: this.maxHeightTitleArea() })
           .scrollable(ScrollDirection.Vertical)
           .edgeEffect(EdgeEffect.Spring);
         }
@@ -224,10 +225,16 @@ struct Index {
    * Get the maximum height of the Title Bar (Entire).
    * @returns The maximum height of the Title Bar (Entire).
    */
-  maxHeightTitleBar() {
+  maxHeightTitleArea() {
     const avoids = this.bottomAvoidHeight + this.topAvoidHeight;
     const effectsCorrection = useEffects() ? standardSpacing : 0;
-    return this.myLayout.height - avoids + effectsCorrection;
+    const maxHeightTitleArea = this.myLayout.height - avoids + effectsCorrection;
+    this.myLayout.heightTitleArea = maxHeightTitleArea;
+
+    const heightTitleBar = this.myLayout.wideMode ? MeowTitleBarHeight + standardSpacing : 2 * (MeowTitleBarHeight + standardSpacing);
+    this.myLayout.heightTitleBar = heightTitleBar;
+
+    return maxHeightTitleArea;
   }
 
   // Actions

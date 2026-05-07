@@ -43,5 +43,8 @@ export function MeowDestination(myUi: meowUiHost, uiContext: UIContext) {
     }
     .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl);
   }
+  .height(defaultMeowDestinationHeight)
   .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl);
 }
+
+export const defaultMeowDestinationHeight = 44;

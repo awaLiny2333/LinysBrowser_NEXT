@@ -272,15 +272,19 @@ export class meowHistorian {
     // Loop till all history entries are checked or maxResults is reached.
 
     let currentStartIndex = 0;
-    const maxConcurrency = 6; // Max concurrent promises.
+    const maxConcurrency = 5; // Max concurrent promises.
 
     while (result.length < maxResults) {
       const end = Math.min(currentStartIndex + maxConcurrency, this.chunks.length);
       const targetChunks = this.chunks.slice(currentStartIndex, end); // 1. Directly slice the array to get the target chunks.
 
+      if (targetChunks.length == 0) {
+        meow(`No more chunks to check.`, 'meowHistorian][lookUpHistoryEntries', meowLevel.WARN);
+        break;
+      }
+
       const remaining = maxResults - result.length;
       const promises = targetChunks.map(chunk => (bruteForce ? chunk.lookUpHistoryEntriesBruteForce(query, minHitRate, remaining) : chunk.lookUpHistoryEntries(query, remaining))); // 2. Request concurrently for the remaining amount.
-
       const allResults = await Promise.all(promises); // 3. Wait for the results.
 
       for (let i = 0; i < allResults.length; i++) {
@@ -294,7 +298,7 @@ export class meowHistorian {
             }
             addedKeys.add(key);
           }
-          
+
           // Push
           result.push(chunkResult[j]);
           if (result.length >= maxResults) {
@@ -309,8 +313,6 @@ export class meowHistorian {
       currentStartIndex += maxConcurrency;
       if (currentStartIndex >= this.chunks.length) break; // 5. If is enough
     } // The loop
-
-    // result.sort((a, b) => b.time - a.time);
     meow(`Looked up history: ["${query}", ${maxResults}], result length ${result.length} (${Date.now() - startTime} ms)`, 'meowHistorian][lookUpHistoryEntries', meowLevel.WARN);
     this.busy = false;
     return result;

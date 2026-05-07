@@ -52,7 +52,6 @@ export class meowHistoryIndexFileBundle {
       // }
 
       // Optimized by ChatGLM @ Apr 6 2026
-      // 假设这是在某个类的方法内部
       const len = text.length;
       let pos = 0;
 

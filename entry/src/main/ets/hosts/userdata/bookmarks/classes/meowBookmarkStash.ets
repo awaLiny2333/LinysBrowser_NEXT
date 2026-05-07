@@ -70,10 +70,11 @@ export class meowBookmarkStash {
   }
 
   /**
-     * Get folder by path.
-     * @param path The path. e.g. '/Bookmarks~Meow/New Folder can now be renamed/Bookmarks~Meow/UpSchool'
-     * @returns The target meowBookmarkItem, or undefined if not found.
-     */
+    * Get folder by path.
+    * @param path The path. e.g. '/Bookmarks~Meow/New Folder can now be renamed/Bookmarks~Meow/UpSchool'
+    * @returns The target meowBookmarkItem, or undefined if not found.
+    * @author ChatGLM Web.
+    */
   getFolder(path: string): meowBookmarkItem | undefined {
     if (!path || path.length === 0) return undefined;
 

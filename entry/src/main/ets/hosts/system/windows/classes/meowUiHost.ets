@@ -343,17 +343,18 @@ export class meowUiHost {
   /**
    * Refreshes the suggestions.
    */
-  async refreshSuggestions() {
+  refreshSuggestions() {
     const mySettings = AppStorageV2.connect(meowManagedSettings)!;
     const maxResultsBookmarks = mySettings.settingsData[12].value as number;
     const maxResultsHistorian = mySettings.settingsData[13].value as number;
 
     // History
-    const myHistorian = AppStorageV2.connect(meowHistorian)!;
     if (this.addressBarCurrentFieldContent.length > 0 && maxResultsHistorian > 0) {
-      const resultsHistories = await myHistorian.lookUpHistoryEntries(this.addressBarCurrentFieldContent, maxResultsHistorian, false, 0.8, true);
-      animateToImmediately(defaultAnimation(), () => {
-        this.suggestionsHistories = resultsHistories;
+      const myHistorian = AppStorageV2.connect(meowHistorian)!;
+      myHistorian.lookUpHistoryEntries(this.addressBarCurrentFieldContent, maxResultsHistorian, false, 0.8, true).then((resultsHistories) => {
+        animateToImmediately(defaultAnimation(), () => {
+          this.suggestionsHistories = resultsHistories;
+        });
       });
     } else {
       animateToImmediately(defaultAnimation(), () => {
@@ -362,17 +363,17 @@ export class meowUiHost {
     }
 
     // Bookmarks
+    let newSuggestionsBookmarks: meowBookmarkItem[];
     const myBookmarks = AppStorageV2.connect(meowBookmarkStash)!;
     if (this.addressBarCurrentFieldContent.length > 0 && maxResultsBookmarks > 0) {
       const resultsBookmarks = myBookmarks.lookUpBookmarksEntries(this.addressBarCurrentFieldContent, maxResultsBookmarks, 0.8);
-      animateToImmediately(defaultAnimation(), () => {
-        this.suggestionsBookmarks = resultsBookmarks;
-      });
+      newSuggestionsBookmarks = resultsBookmarks;
     } else {
-      animateToImmediately(defaultAnimation(), () => {
-        this.suggestionsBookmarks = [];
-      });
+      newSuggestionsBookmarks = [];
     }
+    animateToImmediately(defaultAnimation(), () => {
+      this.suggestionsBookmarks = newSuggestionsBookmarks;
+    });
   }
 
   /**
