@@ -261,7 +261,7 @@ export class meowHistorian {
     meow(`Looking up history: ["${query}", ${maxResults}]`, 'meowHistorian][lookUpHistoryEntries', meowLevel.WARN);
 
     const startTime = Date.now();
-    this.busy = true;
+    // this.busy = true;
     const result: meowHistoryEntry[] = [];
 
     const addedKeys = new Set<string>();

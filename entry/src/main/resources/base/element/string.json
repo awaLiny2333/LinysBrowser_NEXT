@@ -325,11 +325,11 @@
       "value": "Tabs style 󰎵"
     },
     {
-      "name": "Settings_category_appearance_layout_shrinkSideBar",
-      "value": "Shrink side bar"
+      "name": "Settings_category_appearance_layout_shrinkVerticalTabs",
+      "value": "Shrink vertical tabs"
     },
     {
-      "name": "Settings_category_appearance_layout_shrinkSideBarButton",
+      "name": "Settings_category_appearance_layout_shrinkVerticalTabsButton",
       "value": "Shrink button"
     },
     {

@@ -325,11 +325,11 @@
       "value": "标签栏位置 󰎵"
     },
     {
-      "name": "Settings_category_appearance_layout_shrinkSideBar",
-      "value": "收起侧边栏"
+      "name": "Settings_category_appearance_layout_shrinkVerticalTabs",
+      "value": "收起垂直标签栏"
     },
     {
-      "name": "Settings_category_appearance_layout_shrinkSideBarButton",
+      "name": "Settings_category_appearance_layout_shrinkVerticalTabsButton",
       "value": "收起按钮"
     },
     {

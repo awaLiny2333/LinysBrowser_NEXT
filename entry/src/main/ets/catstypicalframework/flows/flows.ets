@@ -89,7 +89,7 @@ export function earlyOnCreate(context: Context, launchWant: Want) {
   AppStorageV2.connect(meowUiHost, `meowUiHost_${myWindowId}`, () => new meowUiHost(myWindowId));
   AppStorageV2.connect(meowDialogManager, `meowDialogManager_${myWindowId}`, () => new meowDialogManager());
   AppStorageV2.connect(meowMisc, `meowMisc_${myWindowId}`, () => new meowMisc());
-  AppStorageV2.connect(meowAvoid, `meowAvoid_${myWindowId}`, () => new meowAvoid())
+  AppStorageV2.connect(meowAvoid, `meowAvoid_${myWindowId}`, () => new meowAvoid());
 
   return myWindowId;
 }
@@ -194,6 +194,13 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
   myUi.windowAlias = defaultNewWindowAlias();
   myUi.searchUnifyResult.url = concatSearchWithEngine('').result;
 
+  // UI states
+  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
+  myUi.showTabs = mySettings.settingsData[22].value as boolean;
+  if (mySettings.settingsData[14].value as boolean) {
+    myUi.verticalTabsShrunk = true;
+  }
+
   // Init myLayout
   try {
     const rect: window.Rect = windowObj.getWindowProperties().windowRect;
@@ -226,7 +233,7 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
     // Load bookmarks
     let myMeowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
     myMeowBookmarkStash.loadFromDisk();
-    
+
     // Key shortcuts
     const myKey = AppStorageV2.connect(meowKeyboardMan)!;
     myKey.initFromSettings();

@@ -2,16 +2,19 @@ import { meow } from '../../../catstypicalframework/utils/catsLogger';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
 import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import lazy { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
-import { allWindowOrientations, meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
+import { allWindowOrientations, meowUiHost, SidebarContentsStatus } from '../../../hosts/system/windows/classes/meowUiHost';
 import { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addressBarStatuses';
+import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { defaultAnimation, fontSizeSymbol, getColor, meowThemeColorType, useEffects, standardSpacing } from '../../settings';
 import { getButtonIcon, meowButtonsType } from './constants';
+import { AppStorageV2 } from '@kit.ArkUI';
 
 @ComponentV2
 struct MeowButton {
   @Param @Require myDialog: meowDialogManager;
   @Param @Require myUi: meowUiHost;
   @Param @Require type: meowButtonsType;
+  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
   build() {
     if (this.showMe) {
@@ -51,6 +54,16 @@ struct MeowButton {
       case meowButtonsType.TABS:
         animateToImmediately(defaultAnimation(), () => {
           this.myUi.showTabs = !this.myUi.showTabs;
+        });
+        this.mySettings.setByIndex(22, this.myUi.showTabs);
+        break;
+      case meowButtonsType.SIDEBAR:
+        animateToImmediately(defaultAnimation(), () => {
+          if (this.myUi.sidebarStatus == SidebarContentsStatus.HIDDEN) {
+            this.myUi.sidebarStatus = SidebarContentsStatus.NONE;
+          } else {
+            this.myUi.sidebarStatus = SidebarContentsStatus.HIDDEN;
+          }
         });
         break;
       case meowButtonsType.BOOKMARKS:
@@ -168,6 +181,8 @@ struct MeowButton {
         return this.myUi.showMore;
       case meowButtonsType.TABS:
         return this.myUi.showTabs;
+      case meowButtonsType.SIDEBAR:
+        return this.myUi.sidebarStatus != SidebarContentsStatus.HIDDEN;
       case meowButtonsType.ADDRESS_KEYWORD_SWITCH:
         return true;
       default:

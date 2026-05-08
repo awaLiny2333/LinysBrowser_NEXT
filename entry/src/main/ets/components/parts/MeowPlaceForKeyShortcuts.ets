@@ -1,19 +1,19 @@
-import { meowKeyboardMan } from '../../hosts/userdata/keyshortcuts/classes/meowKeyboardMan';
-import { AppStorageV2 } from '@kit.ArkUI';
+import { common } from '@kit.AbilityKit';
 import { meow, meowLevel } from '../../catstypicalframework/utils/catsLogger';
-import { meowUiGoBackSource, meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
 import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../hosts/system/dialogs/scripts/dialog';
+import { meowUiGoBackSource, meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
 import { newWindow } from '../../hosts/system/windows/scripts/multiwindows';
-import { common } from '@kit.AbilityKit';
+import { meowKeyboardMan } from '../../hosts/userdata/keyshortcuts/classes/meowKeyboardMan';
+import { meowManagedSettings } from '../../hosts/userdata/settings/classes/meowManagedSettings';
 import { defaultAnimation } from '../settings';
-
-const myKey: meowKeyboardMan = AppStorageV2.connect(meowKeyboardMan)!;
 
 @Builder
 export function MeowPlaceForKeyShortcuts(
   myDialog: meowDialogManager,
   myUi: meowUiHost,
+  myKey: meowKeyboardMan,
+  mySettings: meowManagedSettings,
   context: UIContext
 ) {
   Row() {
@@ -36,6 +36,7 @@ export function MeowPlaceForKeyShortcuts(
       animateToImmediately(defaultAnimation(), () => {
         myUi.showTabs = !myUi.showTabs;
       });
+      mySettings.setByIndex(22, myUi.showTabs);
       if (myUi.showTabs) {
         meow(`Show Tabs!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
       } else {

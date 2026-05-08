@@ -7,27 +7,28 @@ import lazy { defaultDecorHeight, defaultInnerRadius, shortModeThreshold, update
 import lazy { MooTextModifier } from '../components/common/MooTextModifier';
 import { meowButtonsType } from '../components/parts/Buttons/constants';
 import { MeowButtonsSlot } from '../components/parts/Buttons/MeowButtonsSlot';
+import lazy { MeowAddressBar } from '../components/parts/Homepage/MeowAddressBar';
 import { MeowDestination } from '../components/parts/Homepage/MeowDestination';
 import { MeowResMonitor } from '../components/parts/Homepage/MeowResMonitor';
-import lazy { MeowAddressBar } from '../components/parts/Homepage/MeowAddressBar';
 import lazy { MeowShortcutsPanel } from '../components/parts/Homepage/MeowShortcuts';
+import { MeowSidebar } from '../components/parts/Homepage/MeowSidebar';
+import { MeowSuggestions } from '../components/parts/Homepage/MeowSuggestions';
 import lazy { MeowTitleBar, MeowTitleBarHeight } from '../components/parts/Homepage/MeowTitleBar';
 import lazy { MeowTitleTop } from '../components/parts/Homepage/MeowTitleTop';
 import { MeowWindowInfoBar } from '../components/parts/Homepage/MeowWindowInfoBar';
 import lazy { MeowPlaceForDialogs } from '../components/parts/MeowPlaceForDialogs';
 import { MeowPlaceForKeyShortcuts } from '../components/parts/MeowPlaceForKeyShortcuts';
-import lazy { defaultAnimation, defaultSidebarWidth, getColor, isPreferRightHand, isTabsStyleVertical, meowThemeColorType, mooTextType, showGiganticWindowTitle, sidebarShouldBeOnTheRight, standardSpacing, titleBarPositionBottom, useEffects } from '../components/settings';
-import lazy { showingSidebar } from '../components/statuses';
+import { defaultTabsHorizontalHeight, MeowTabsHorizontal } from '../components/parts/Tabs/Horizontal';
+import { MeowTabsVertical } from '../components/parts/Tabs/Vertical';
+import lazy { defaultAnimation, getColor, isPreferRightHand, isTabsStyleVertical, meowThemeColorType, mooTextType, showGiganticWindowTitle, sidebarShouldBeOnTheRight, standardSpacing, titleBarPositionBottom, useEffects } from '../components/settings';
 import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
 import { meowResources } from '../hosts/system/storage/classes/meowResources';
 import { meowAppStatuses } from '../hosts/system/windows/classes/meowAppStatuses';
-import { meowUiFullscreenStatus, meowUiGoBackSource, meowUiHost } from '../hosts/system/windows/classes/meowUiHost';
+import { meowUiFullscreenStatus, meowUiGoBackSource, meowUiHost, SidebarContentsStatus } from '../hosts/system/windows/classes/meowUiHost';
 import { meowAppMessageType } from '../hosts/system/windows/scripts/messaging';
 import { getLastWindowId } from '../hosts/system/windows/scripts/multiwindows';
+import { meowKeyboardMan } from '../hosts/userdata/keyshortcuts/classes/meowKeyboardMan';
 import { meowManagedSettings } from '../hosts/userdata/settings/classes/meowManagedSettings';
-import { MeowSuggestions } from '../components/parts/Homepage/MeowSuggestions';
-import { defaultTabsHorizontalHeight, MeowTabsHorizontal } from '../components/parts/Tabs/Horizontal';
-import { MeowTabsVertical } from '../components/parts/Tabs/Vertical';
 
 @Entry
 @ComponentV2
@@ -37,6 +38,7 @@ struct Index {
   @Local myResources: meowResources = AppStorageV2.connect(meowResources)!;
   @Local myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!; // Should be initialized by flows.
+  @Local myKey: meowKeyboardMan = AppStorageV2.connect(meowKeyboardMan)!;
   // Hosts (private)
   @Local myUi: meowUiHost = AppStorageV2.connect(meowUiHost, `meowUiHost_${this.myWindowId}`)!;
   @Local myDialog: meowDialogManager = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myWindowId}`)!;
@@ -68,7 +70,7 @@ struct Index {
         });
 
         // Shortcuts handler
-        MeowPlaceForKeyShortcuts(this.myDialog, this.myUi, this.getUIContext());
+        MeowPlaceForKeyShortcuts(this.myDialog, this.myUi, this.myKey, this.mySettings, this.getUIContext());
 
         // This is ugly.
         // Main frame
@@ -89,10 +91,28 @@ struct Index {
           .border(useEffects() ? { radius: defaultInnerRadius, width: 1, color: $r('sys.color.icon_fourth') } : { width: 0, radius: 0 })
           .clip(true);
 
-          // Vertical tabss
-          if (this.showingVerticalTab) {
-            MeowTabsVertical();
+          // Sidebars
+          Row({ space: standardSpacing }) {
+            if (this.showingVerticalTab) {
+              MeowTabsVertical({ myUi: this.myUi });
+            }
+            if (this.myUi.sidebarStatus != SidebarContentsStatus.HIDDEN) {
+              MeowSidebar({ myLayout: this.myLayout });
+            }
           }
+          .direction(sidebarShouldBeOnTheRight() ? Direction.Ltr : Direction.Rtl)
+          .onAreaChange((o, n) => {
+            if (o.width != n.width) {
+              animateToImmediately(defaultAnimation(), () => {
+                this.myUi.sideAreaWidth = n.width as number;
+              });
+            }
+          })
+          .justifyContent(FlexAlign.Center)
+          .padding(this.sideAreaPadding)
+          .height('100%')
+          .backgroundColor(useEffects() ? getColor(meowThemeColorType.SECONDARY) : getColor(meowThemeColorType.SECONDARY))
+          .useEffect(useEffects(), EffectType.WINDOW_EFFECT);
         }
         .padding(this.myUi.fullscreenStatus == meowUiFullscreenStatus.NONE ? this.outerFrameSpace : 0);
 
@@ -163,7 +183,7 @@ struct Index {
             })
           .scrollBar(BarState.Off)
           .translate({ y: !titleBarPositionBottom() ? this.topAvoidHeight : -this.bottomAvoidHeight }) // Bottom avoid.
-          .constraintSize({ maxHeight: this.maxHeightTitleArea() })
+          .constraintSize({ maxHeight: this.maxHeightTitleArea })
           .scrollable(ScrollDirection.Vertical)
           .edgeEffect(EdgeEffect.Spring);
         }
@@ -212,46 +232,6 @@ struct Index {
     });
   }
 
-  /**
-   * Get the bottom avoid height for title bar.
-   * @returns The bottom avoid height.
-   */
-  // @Computed
-  get bottomAvoidHeight() {
-    const h = this.myApp.freeWindow ? standardSpacing : this.myAvoid.bottom; // No bottom avoid for free windows.
-    return (titleBarPositionBottom() || useEffects() ? h : 0);
-  }
-
-  /**
-   * Get the top avoid height for title bar.
-   * @returns The top avoid height.
-   */
-  // @Computed
-  get topAvoidHeight() {
-    return this.myApp.freeWindow ? defaultDecorHeight : this.myAvoid.top;
-  }
-
-  /**
-   * Get the maximum height of the Title Bar (Entire).
-   * @returns The maximum height of the Title Bar (Entire).
-   */
-  maxHeightTitleArea() {
-    // Total area
-    const avoids = this.bottomAvoidHeight + this.topAvoidHeight;
-    const effectsCorrection = useEffects() ? standardSpacing : 0;
-    const maxHeightTitleArea = this.myLayout.height - avoids + effectsCorrection;
-    this.myLayout.heightTitleArea = maxHeightTitleArea;
-
-    // Title bar
-    const tabsComp = this.showingHorizontalTab ? defaultTabsHorizontalHeight + standardSpacing : 0;
-    const newTitleHeight = tabsComp + (this.myLayout.wideMode ? MeowTitleBarHeight + standardSpacing : 2 * (MeowTitleBarHeight + standardSpacing));
-    if (newTitleHeight != this.myLayout.heightTitleBar) {
-      this.myLayout.heightTitleBar = newTitleHeight;
-    }
-
-    return maxHeightTitleArea;
-  }
-
   // Actions
 
   actionsOnAppear() {
@@ -269,6 +249,23 @@ struct Index {
   // Values
 
   /**
+   * Get the bottom avoid height for title bar.
+   * @returns The bottom avoid height.
+   */
+  get bottomAvoidHeight() {
+    const h = this.myApp.freeWindow ? standardSpacing : this.myAvoid.bottom; // No bottom avoid for free windows.
+    return (titleBarPositionBottom() || useEffects() ? h : 0);
+  }
+
+  /**
+   * Get the top avoid height for title bar.
+   * @returns The top avoid height.
+   */
+  get topAvoidHeight() {
+    return this.myApp.freeWindow ? defaultDecorHeight : this.myAvoid.top;
+  }
+
+  /**
    * Whether to show horizontal tabs.
    */
   get showingHorizontalTab() {
@@ -282,21 +279,67 @@ struct Index {
     return this.myUi.showTabs && isTabsStyleVertical(this.myLayout);
   }
 
-  @Computed
+  /**
+   * If showing any side panels (either sidebar or vertical tab).
+   */
+  get showingSideArea() {
+    return this.showingVerticalTab || this.myUi.sidebarStatus;
+  }
+
+  /**
+   * The padding for the side area.
+   */
+  get sideAreaPadding(): Padding | number {
+    if (!this.showingSideArea) {
+      return 0;
+    }
+    if (useEffects()) {
+      if (sidebarShouldBeOnTheRight()) {
+        return { left: standardSpacing - 1 };
+      } else {
+        return { right: standardSpacing - 1 };
+      }
+    } else {
+      return standardSpacing;
+    }
+  }
+
+  /**
+   * Get the maximum height of the Title Bar (Entire).
+   * @returns The maximum height of the Title Bar (Entire).
+   */
+  get maxHeightTitleArea() {
+    // Total area
+    const avoids = this.bottomAvoidHeight + this.topAvoidHeight;
+    const effectsCorrection = useEffects() ? standardSpacing : 0;
+    const maxHeightTitleArea = this.myLayout.height - avoids + effectsCorrection;
+    this.myLayout.heightTitleArea = maxHeightTitleArea;
+
+    // Title bar
+    const tabsComp = this.showingHorizontalTab ? defaultTabsHorizontalHeight + standardSpacing : 0;
+    const newTitleHeight = tabsComp + (this.myLayout.wideMode ? MeowTitleBarHeight + standardSpacing : 2 * (MeowTitleBarHeight + standardSpacing));
+    if (newTitleHeight != this.myLayout.heightTitleBar) {
+      this.myLayout.heightTitleBar = newTitleHeight;
+    }
+
+    return maxHeightTitleArea;
+  }
+
+  /**
+   * The space between the outer window border and the main frame.
+   */
   get outerFrameSpace(): Margin {
     // Vertical
-    const slimCompensation = this.myLayout.wideMode ? 0 : MeowTitleBarHeight + standardSpacing; // For double layer title bar on phones / slim windows.
-    const tabsComp = this.showingHorizontalTab ? defaultTabsHorizontalHeight + standardSpacing : 0;
     let top: number;
     let bottom: number;
     if (titleBarPositionBottom()) {
       // Bottom
       const freeWindowCompensation = (this.myApp.freeWindow ? standardSpacing : 0);
       top = this.myAvoid.top;
-      bottom = this.myAvoid.bottom + freeWindowCompensation + (MeowTitleBarHeight + standardSpacing) + slimCompensation + tabsComp + 1; // + 1 is for the 1vp border of the main frame when effects are on.
+      bottom = this.myAvoid.bottom + freeWindowCompensation + this.myLayout.heightTitleBar + 1; // + 1 is for the 1vp border of the main frame when effects are on.
     } else {
       // Top
-      top = this.myAvoid.top + (MeowTitleBarHeight + standardSpacing) + slimCompensation + tabsComp + 1; // Same.
+      top = this.myAvoid.top + this.myLayout.heightTitleBar + 1; // Same.
       const showBottomAvoid = this.mySettings.settingsData[5].value as boolean; // Allow user to disable bottom avoid.
       bottom = (showBottomAvoid ? this.myAvoid.bottom : 0) + (useEffects() ? standardSpacing : 0);
     }
@@ -314,15 +357,17 @@ struct Index {
     return { top, bottom, left, right };
   }
 
-  @Computed
+  /**
+   * The space between the main frame and the available web frame.
+   * The sidebar and stuffs are between them.
+   */
   get mainFrameSpace(): Margin {
     // side bar compensation
-    const isShowingSidebar = showingSidebar(this.myUi, this.myLayout);
-    const sidebarComp = isShowingSidebar && this.myLayout.wideMode ? defaultSidebarWidth : 0;
-    const effectsSideBarSpaceComp = isShowingSidebar && useEffects() ? standardSpacing : 0;
     const sidebarOnR = sidebarShouldBeOnTheRight();
-    const left = sidebarOnR ? 0 : sidebarComp + effectsSideBarSpaceComp;
-    const right = sidebarOnR ? sidebarComp + effectsSideBarSpaceComp : 0;
+    const borderShift = useEffects() ? 1 : 0;
+    const sideAreaShift = this.myLayout.wideMode ? this.myUi.sideAreaWidth + borderShift : 0;
+    const left = sidebarOnR ? 0 : sideAreaShift;
+    const right = sidebarOnR ? sideAreaShift : 0;
 
     return {
       top: 0,
@@ -331,6 +376,8 @@ struct Index {
       right,
     };
   }
+
+  // LISTENERS
 
   /**
    * Updates the display of navigation indicator on receiving the broadcast message.

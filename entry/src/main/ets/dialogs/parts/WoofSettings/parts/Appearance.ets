@@ -112,14 +112,14 @@ struct SettingsAppearance {
           }
         });
         MooSwitch({
-          text: $r('app.string.Settings_category_appearance_layout_shrinkSideBar'),
+          text: $r('app.string.Settings_category_appearance_layout_shrinkVerticalTabs'),
           isOn: this.mySettings.settingsData[14].value as boolean,
           onChange: (r) => {
             this.mySettings.setByIndex(14, r);
           }
         });
         MooSwitch({
-          text: $r('app.string.Settings_category_appearance_layout_shrinkSideBarButton'),
+          text: $r('app.string.Settings_category_appearance_layout_shrinkVerticalTabsButton'),
           isOn: this.mySettings.settingsData[15].value as boolean,
           onChange: (r) => {
             this.mySettings.setByIndex(15, r);

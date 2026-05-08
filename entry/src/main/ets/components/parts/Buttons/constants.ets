@@ -18,6 +18,7 @@ export enum meowButtonsType {
   MORE = 'MOR',
   SCRATCHING_BOARD = 'SCB', // Only shows when the Scratching Board is not empty.
   TABS = 'TAB',
+  SIDEBAR = 'SDB',
   BOOKMARKS = 'BKM',
   DOWNLOADS = 'DNL',
   SETTINGS = 'SET',
@@ -48,6 +49,7 @@ buttonIconMatches.set(meowButtonsType.RE_SEARCH, $r('sys.symbol.magnifyingglass'
 buttonIconMatches.set(meowButtonsType.MORE, $r('sys.symbol.dot_grid_2x2'));
 buttonIconMatches.set(meowButtonsType.SCRATCHING_BOARD, $r('sys.symbol.doc_rectify'));
 buttonIconMatches.set(meowButtonsType.TABS, $r('sys.symbol.rectangle_stack'));
+buttonIconMatches.set(meowButtonsType.SIDEBAR, $r('sys.symbol.rectangle_righthalf_inset_filled'));
 buttonIconMatches.set(meowButtonsType.BOOKMARKS, $r('sys.symbol.bookmark'));
 buttonIconMatches.set(meowButtonsType.DOWNLOADS, $r('sys.symbol.download'));
 buttonIconMatches.set(meowButtonsType.SETTINGS, $r('sys.symbol.gearshape'));

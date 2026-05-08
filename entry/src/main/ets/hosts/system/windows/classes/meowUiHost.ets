@@ -29,7 +29,9 @@ export class meowUiHost {
   @Trace pin: boolean = false;
   @Trace showMore: boolean = false;
   @Trace showTabs: boolean = false;
-  @Trace sidebarShrunk: boolean = true;
+  @Trace sidebarStatus: SidebarContentsStatus = SidebarContentsStatus.HIDDEN;
+  @Trace sideAreaWidth: number = 0; // The side area includes all things (Vertical tabs, side bar panels)
+  @Trace verticalTabsShrunk: boolean = false;
   @Trace orientation: window.Orientation = window.Orientation.AUTO_ROTATION_RESTRICTED;
   @Trace fullscreenStatus: meowUiFullscreenStatus = meowUiFullscreenStatus.NONE;
   // Search & Address bar
@@ -388,6 +390,13 @@ export class meowUiHost {
     // SEARCH / LOAD!
     meow(`Visit / load [${this.searchUnifyResult?.url || concatSearchWithEngine('').result}]!`, 'meowUiHost][submitSearchOrLoad', meowLevel.WARN);
   }
+}
+
+export enum SidebarContentsStatus {
+  HIDDEN,
+  NONE,
+  BOOKMARKS,
+  SCRATCHING_BOARD,
 }
 
 /**

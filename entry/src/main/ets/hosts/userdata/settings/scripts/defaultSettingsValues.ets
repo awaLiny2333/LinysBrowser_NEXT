@@ -69,7 +69,7 @@ export function defaultButtonsAddressBar() {
 }
 
 export function defaultButtonsTitle() {
-  return [meowButtonsType.MORE, meowButtonsType.SCRATCHING_BOARD, meowButtonsType.TABS, meowButtonsType.BOOKMARKS, meowButtonsType.DOWNLOADS, meowButtonsType.SETTINGS].join('\n');
+  return [meowButtonsType.MORE, meowButtonsType.SCRATCHING_BOARD, meowButtonsType.TABS, meowButtonsType.SIDEBAR, meowButtonsType.BOOKMARKS, meowButtonsType.DOWNLOADS, meowButtonsType.SETTINGS].join('\n');
 }
 
 /**

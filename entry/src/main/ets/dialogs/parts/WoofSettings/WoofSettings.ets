@@ -64,8 +64,8 @@ struct WoofSettings {
           };
         }
       }
+      .clip(false) // To eliminate the cuts on the edges
       .columnsTemplate(waterFlowColumnsTemplate(this.myLayout))
-      // .animation(defaultAnimation())
       .columnsGap(standardSpacing)
       .rowsGap(standardSpacing);
     }
