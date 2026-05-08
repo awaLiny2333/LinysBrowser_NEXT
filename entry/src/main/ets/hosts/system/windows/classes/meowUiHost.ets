@@ -394,6 +394,11 @@ export class meowUiHost {
   }
 }
 
+/**
+ * Uses the same system of representation as meowButtonsType.
+ * Because we may want to store this info / order permanently into the settings as well,
+ * like all the customizable buttons.
+ */
 export enum SidebarContentsStatus {
   BOOKMARKS = meowButtonsType.BOOKMARKS,
   HISTORY = meowButtonsType.HISTORY,

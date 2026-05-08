@@ -94,7 +94,7 @@ struct Index {
           // Sidebars
           Row({ space: standardSpacing }) {
             if (this.showingVerticalTab) {
-              MeowTabsVertical({ myUi: this.myUi });
+              MeowTabsVertical({ myUi: this.myUi, myLayout: this.myLayout });
             }
             if (this.myUi.showSidebar) {
               MeowSidebar({ myLayout: this.myLayout, myUi: this.myUi });
@@ -154,7 +154,12 @@ struct Index {
               if (this.myUi.showMore) {
                 // Meow buttons
                 if ((this.mySettings.settingsData[80].value as meowButtonsType[]).length > 0) {
-                  MeowButtonsSlot(this.myUi, this.myDialog, 80);
+                  Scroll() {
+                    MeowButtonsSlot(this.myUi, this.myDialog, 80);
+                  }
+                  .scrollBar(BarState.Off)
+                  .scrollable(ScrollDirection.Horizontal)
+                  .edgeEffect(EdgeEffect.Spring);
                 }
                 // Majorly the window alias
                 MeowWindowInfoBar({

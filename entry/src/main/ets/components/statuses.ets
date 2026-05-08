@@ -8,7 +8,7 @@ export function sidebarWidth(myLayout: meowLayout) {
   if (myLayout.wideMode) {
     return defaultSidebarWidth;
   } else {
-    return myLayout.width - 2 * standardSpacing;
+    return (myLayout.width - 2 * standardSpacing) * 0.9;
   }
 }
 
