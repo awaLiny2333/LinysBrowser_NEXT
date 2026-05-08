@@ -5,13 +5,13 @@ import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
 import lazy { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
 import lazy { defaultDecorHeight, defaultInnerRadius, shortModeThreshold, updateNavigationIndicator, wideModeThreshold } from '../catstypicalframework/utils/ui';
 import lazy { MooTextModifier } from '../components/common/MooTextModifier';
-import { meowButtonsType } from '../components/parts/Buttons/constants';
-import { MeowButtonsSlot } from '../components/parts/Buttons/MeowButtonsSlot';
+import { meowButtonsType } from '../components/parts/MeowButtons/constants';
+import { MeowButtonsSlot } from '../components/parts/MeowButtons/MeowButtonsSlot';
 import lazy { MeowAddressBar } from '../components/parts/Homepage/MeowAddressBar';
 import { MeowDestination } from '../components/parts/Homepage/MeowDestination';
 import { MeowResMonitor } from '../components/parts/Homepage/MeowResMonitor';
 import lazy { MeowShortcutsPanel } from '../components/parts/Homepage/MeowShortcuts';
-import { MeowSidebar } from '../components/parts/Homepage/MeowSidebar';
+import { MeowSidebar } from '../components/parts/Sidebar/MeowSidebar';
 import { MeowSuggestions } from '../components/parts/Homepage/MeowSuggestions';
 import lazy { MeowTitleBar, MeowTitleBarHeight } from '../components/parts/Homepage/MeowTitleBar';
 import lazy { MeowTitleTop } from '../components/parts/Homepage/MeowTitleTop';
@@ -101,18 +101,38 @@ struct Index {
             }
           }
           .direction(sidebarShouldBeOnTheRight() ? Direction.Ltr : Direction.Rtl)
+          .justifyContent(FlexAlign.Center)
+          // NOTE: We add the padding and then translate this a unit of standardSpacing to catch the hover action in order to expand the vertical tabs.
+          .padding(this.sideAreaPadding)
+          .translate(useEffects() ? (sidebarShouldBeOnTheRight() ? { x: standardSpacing } : { x: -standardSpacing }) : undefined)
+          // END NOTE
+          .height('100%')
+          .backgroundColor(useEffects() ? getColor(meowThemeColorType.SECONDARY) : getColor(meowThemeColorType.PRIMARY))
+          .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
           .onAreaChange((o, n) => {
             if (o.width != n.width) {
+              let newW = n.width as number;
+              if (useEffects()) {
+                newW -= standardSpacing;
+              }
               animateToImmediately(defaultAnimation(), () => {
-                this.myUi.sideAreaWidth = n.width as number;
+                this.myUi.sideAreaWidth = Math.max(0, newW);
               });
             }
           })
-          .justifyContent(FlexAlign.Center)
-          .padding(this.sideAreaPadding)
-          .height('100%')
-          .backgroundColor(useEffects() ? getColor(meowThemeColorType.SECONDARY) : getColor(meowThemeColorType.PRIMARY))
-          .useEffect(useEffects(), EffectType.WINDOW_EFFECT);
+          .onHover((isHover) => {
+            if (!(this.mySettings.settingsData[14].value as boolean)) {
+              return;
+            }
+            // Auto shrink
+            animateToImmediately(defaultAnimation(), () => {
+              if (isHover) {
+                this.myUi.verticalTabsShrunk = false;
+              } else {
+                this.myUi.verticalTabsShrunk = true;
+              }
+            });
+          });
         }
         .padding(this.myUi.fullscreenStatus == meowUiFullscreenStatus.NONE ? this.outerFrameSpace : 0);
 
@@ -300,9 +320,9 @@ struct Index {
     }
     if (useEffects()) {
       if (sidebarShouldBeOnTheRight()) {
-        return { left: standardSpacing - 1 };
+        return { left: standardSpacing - 1, right: standardSpacing };
       } else {
-        return { right: standardSpacing - 1 };
+        return { right: standardSpacing - 1, left: standardSpacing };
       }
     } else {
       return standardSpacing;

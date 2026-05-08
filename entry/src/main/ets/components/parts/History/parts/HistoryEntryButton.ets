@@ -1,8 +1,8 @@
 import { meowLayout } from '../../../../catstypicalframework/hosts/meowLayout';
 import { isBlank } from '../../../../catstypicalframework/utils/strings';
 import { defaultItemRadius } from '../../../../catstypicalframework/utils/ui';
-import { MooTextModifier } from '../../../../components/common/MooTextModifier';
-import { meowFlexOptions, standardSpacing } from '../../../../components/settings';
+import { MooTextModifier } from '../../../common/MooTextModifier';
+import { meowFlexOptions, standardSpacing } from '../../../settings';
 import { meowHistoryEntry } from '../../../../hosts/userdata/history/classes/meowHistoryEntry';
 
 @ComponentV2

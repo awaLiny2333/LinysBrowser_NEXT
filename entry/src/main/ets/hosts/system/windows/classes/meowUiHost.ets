@@ -1,9 +1,9 @@
 import { AppStorageV2, window } from "@kit.ArkUI";
 import { BusinessError } from "@kit.BasicServicesKit";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import { getKeywordEntries, unifyDestination, UnifiedDestinationResult, UnifiedDestinationResultType } from "../../../../catstypicalframework/utils/url";
-import { meowButtonsType } from "../../../../components/parts/Buttons/constants";
+import { getKeywordEntries, UnifiedDestinationResult, UnifiedDestinationResultType, unifyDestination } from "../../../../catstypicalframework/utils/url";
 import { addressBarId } from "../../../../components/parts/Homepage/MeowAddressBar";
+import { SidebarPageType } from "../../../../components/parts/Sidebar/constants";
 import { defaultAnimation } from "../../../../components/settings";
 import lazy { concatSearchWithEngine } from "../../../app/tabs/scripts/searchEngines";
 import lazy { meowBookmarkItem } from "../../../userdata/bookmarks/classes/meowBookmarkItem";
@@ -30,7 +30,7 @@ export class meowUiHost {
   @Trace pin: boolean = false;
   @Trace showMore: boolean = false;
   @Trace showTabs: boolean = false;
-  @Trace sidebarStatus: SidebarContentsStatus = SidebarContentsStatus.BOOKMARKS;
+  @Trace sidebarPage: string = SidebarPageType.HISTORIES;
   @Trace showSidebar: boolean = false;
   @Trace sideAreaWidth: number = 0; // The side area includes all things (Vertical tabs, side bar panels)
   @Trace verticalTabsShrunk: boolean = false;
@@ -392,17 +392,6 @@ export class meowUiHost {
     // SEARCH / LOAD!
     meow(`Visit / load [${this.searchUnifyResult?.url || concatSearchWithEngine('').result}]!`, 'meowUiHost][submitSearchOrLoad', meowLevel.WARN);
   }
-}
-
-/**
- * Uses the same system of representation as meowButtonsType.
- * Because we may want to store this info / order permanently into the settings as well,
- * like all the customizable buttons.
- */
-export enum SidebarContentsStatus {
-  BOOKMARKS = meowButtonsType.BOOKMARKS,
-  HISTORY = meowButtonsType.HISTORY,
-  SCRATCHING_BOARD = meowButtonsType.SCRATCHING_BOARD,
 }
 
 /**

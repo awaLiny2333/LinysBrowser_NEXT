@@ -1,4 +1,5 @@
 import { AppStorageV2 } from '@kit.ArkUI';
+import { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
 import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
 import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { globalMessage, meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
@@ -20,9 +21,9 @@ struct MeowBookmarksPanel {
   @Local myBookmarks: meowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
   @Local myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!; // For event receiving.
   // UI
-  @Local maxColumn: number = 1;
-  @Local dialogWidth: number = 0;
-  @Local columnWidth: number = 0;
+  @Param @Once maxColumn: number = 1;
+  @Param @Once panelWidth: number = 0;
+  @Param @Once columnWidth: number = 0;
   // Event
   @Event requestVisit: (url: string) => void;
   @Event onSelect: (folder: meowBookmarkItem, path: string) => void;
@@ -30,9 +31,15 @@ struct MeowBookmarksPanel {
   aboutToAppear(): void {
     // Initialize
     if (this.myUi.openedStack.length == 0) {
-      this.myUi.openedStack = [this.myBookmarks.root];
-      this.myUi.openedIndexOfLevels = [undefined];
+      this.refreshRoot();
     }
+  }
+  
+  @Monitor('myBookmarks.root') 
+  refreshRoot() {
+    this.myUi.openedStack = [this.myBookmarks.root];
+    this.myUi.openedIndexOfLevels = [undefined];
+    meow('REFRESH!', 'MeowBookmarksPanel][refreshRoot', meowLevel.WARN);
   }
 
   build() {
@@ -101,8 +108,8 @@ struct MeowBookmarksPanel {
     }
     .scrollBar(this.maxColumn < this.myUi.openedStack.length ? BarState.On : BarState.Off)
     .onAreaChange((oldValue, newValue) => {
-      if ((oldValue.width as number != newValue.width as number) && (newValue.width as number != this.dialogWidth)) {
-        this.dialogWidth = newValue.width as number;
+      if ((oldValue.width as number != newValue.width as number) && (newValue.width as number != this.panelWidth)) {
+        this.panelWidth = newValue.width as number;
       }
       this.recalculateLayout();
     })
@@ -116,11 +123,11 @@ struct MeowBookmarksPanel {
    * Recalculate the layout of the dialog.
    */
   recalculateLayout() {
-    const maxColumn = Math.floor(this.dialogWidth / (minimumCardWidth * 0.5));
+    const maxColumn = Math.floor(this.panelWidth / (minimumCardWidth * 0.5));
     const columnCount = Math.min(maxColumn, this.myUi.openedStack.length);
     const columnSpaceCount = columnCount - 1;
     const frameSpace = this.needPadding ? 2 * standardSpacing : 0;
-    const columnWidth = (this.dialogWidth - columnSpaceCount * standardSpacing * 0.75 - frameSpace) / columnCount;
+    const columnWidth = (this.panelWidth - columnSpaceCount * standardSpacing * 0.75 - frameSpace) / columnCount;
 
     animateToImmediately(defaultAnimation(), () => {
       this.maxColumn = columnCount;

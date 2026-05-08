@@ -3,14 +3,14 @@ import lazy { meow, meowLevel } from '../../../catstypicalframework/utils/catsLo
 import { resource2String } from '../../../catstypicalframework/utils/resource';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { WoofUniFrame } from '../../WoofUniFrame';
-import { WoofHistoryPanel } from './parts/Panel';
+import { HistoryPanel } from '../../../components/parts/History/Panel';
 
 /**
  * We have to wrap another @ComponentV2 component in order to refresh the title... :P
  * Theoratically this brings almost no performance loss!
  */
 @ComponentV2
-struct WoofHistoryPanelWrapped {
+struct HistoryPanelWrapped {
   @Param @Require controller: CustomDialogController;
   @Param @Require myDialog: meowDialogManager;
   @Param @Require myLayout: meowLayout;
@@ -24,14 +24,14 @@ struct WoofHistoryPanelWrapped {
       title: `${resource2String($r('app.string.History'), this.getUIContext().getHostContext()!)} ${this.info}`,
       myDialog: this.myDialog, myLayout: this.myLayout,
     }) {
-      WoofHistoryPanel({
+      HistoryPanel({
         myLayout: this.myLayout,
         requestRefreshTitle: (info: string) => {
           this.info = info;
         },
         requestVisit: (url: string) => {
           // Visit
-          meow(`Visit: [${url}]`, 'WoofHistoryPanel', meowLevel.INFO);
+          meow(`Visit: [${url}]`, 'HistoryPanel', meowLevel.INFO);
           this.controller.close();
         }
       });
@@ -46,7 +46,7 @@ struct WoofHistoryDialog {
   @Require myLayout: meowLayout;
 
   build() {
-    WoofHistoryPanelWrapped({
+    HistoryPanelWrapped({
       controller: this.controller,
       myDialog: this.myDialog,
       myLayout: this.myLayout,

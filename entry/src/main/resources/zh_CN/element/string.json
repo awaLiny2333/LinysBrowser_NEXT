@@ -326,7 +326,7 @@
     },
     {
       "name": "Settings_category_appearance_layout_shrinkVerticalTabs",
-      "value": "收起垂直标签栏"
+      "value": "自动收起垂直标签栏"
     },
     {
       "name": "Settings_category_appearance_layout_shrinkVerticalTabsButton",

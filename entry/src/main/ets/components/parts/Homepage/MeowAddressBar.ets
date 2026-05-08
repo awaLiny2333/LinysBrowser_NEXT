@@ -9,8 +9,8 @@ import { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addres
 import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { MooTextModifier } from '../../common/MooTextModifier';
 import { fontSizeSmall, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from '../../settings';
-import { meowButtonsType } from '../Buttons/constants';
-import { MeowButtonsSlot } from '../Buttons/MeowButtonsSlot';
+import { meowButtonsType } from '../MeowButtons/constants';
+import { MeowButtonsSlot } from '../MeowButtons/MeowButtonsSlot';
 import { MeowTitleBarHeight } from './MeowTitleBar';
 
 /**

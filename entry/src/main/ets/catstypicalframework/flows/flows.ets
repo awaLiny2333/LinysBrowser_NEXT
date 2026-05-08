@@ -194,27 +194,43 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
   myUi.windowAlias = defaultNewWindowAlias();
   myUi.searchUnifyResult.url = concatSearchWithEngine('').result;
 
-  // UI states
-  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
-  myUi.showTabs = mySettings.settingsData[22].value as boolean;
-  if (mySettings.settingsData[14].value as boolean) {
-    myUi.verticalTabsShrunk = true;
-  }
-
   // Init myLayout
+  let width = 0;
+  let height = 0;
   try {
     const rect: window.Rect = windowObj.getWindowProperties().windowRect;
-    const width = meowPx2vp(rect.width);
-    const height = meowPx2vp(rect.height);
-    const wideMode = width > wideModeThreshold;
-    const shortMode = height < shortModeThreshold;
-    AppStorageV2.connect(meowLayout, `meowLayout_${myWindowId}`, () => new meowLayout(wideMode, shortMode, width, height));
+    width = meowPx2vp(rect.width);
+    height = meowPx2vp(rect.height);
   } catch (e) {
-    meow(`AppStorageV2.connect(meowLayout, () => new meowLayout(wideMode, shortMode, width, height, dark, powerSave, smartReachabilitySaysWeShouldPreferRightHand)); Failed: ${e}`, 'init', meowLevel.ERROR);
+    meow(`windowObj.getWindowProperties().windowRect failed: ${e}`, 'init', meowLevel.ERROR);
   }
+  const wideMode = width > wideModeThreshold;
+  const shortMode = height < shortModeThreshold;
+  const myLayout = AppStorageV2.connect(meowLayout, `meowLayout_${myWindowId}`, () => new meowLayout(wideMode, shortMode, width, height))!;
 
   // Init myAvoid
   updateAvoid(windowObj, myWindowId);
+
+  // UI STATUSES
+
+  // Tabs
+  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
+  if (myLayout.wideMode || mySettings.settingsData[3].value as string == 'horizontal') {
+    // Don't block the user's eyes with this tabs panel if they don't appear to have a large screen ovo and have a vertical tab
+    myUi.showTabs = mySettings.settingsData[22].value as boolean;
+  }
+  myUi.verticalTabsShrunk = mySettings.settingsData[14].value as boolean;
+
+  // Side bar
+  if (myLayout.wideMode) {
+    myUi.showSidebar = mySettings.settingsData[82].value as boolean;
+  }
+  const selectedSidebarPage = mySettings.settingsData[83].value as string;
+  if (selectedSidebarPage != '') {
+    myUi.sidebarPage = selectedSidebarPage;
+  }
+
+  // END UI STATUSES
 
   // Listen for focus, window status (myUi) and avoid (myAvoid).
   setTimeout(() => {

@@ -13,7 +13,7 @@ import { getButtonIcon, meowButtonsType } from './constants';
 struct MeowButton {
   @Param @Require myDialog: meowDialogManager;
   @Param @Require myUi: meowUiHost;
-  @Param @Require type: meowButtonsType;
+  @Param @Require type: string;
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
   build() {
@@ -61,6 +61,7 @@ struct MeowButton {
         animateToImmediately(defaultAnimation(), () => {
           this.myUi.showSidebar = !this.myUi.showSidebar;
         });
+        this.mySettings.setByIndex(82, this.myUi.showSidebar);
         break;
       case meowButtonsType.BOOKMARKS:
         requestDialog(this.myDialog, openDialogRequestType.BOOKMARKS);
@@ -82,7 +83,7 @@ struct MeowButton {
       case meowButtonsType.DARK:
         requestDialog(this.myDialog, openDialogRequestType.DARK);
         break;
-      case meowButtonsType.HISTORY:
+      case meowButtonsType.HISTORIES:
         requestDialog(this.myDialog, openDialogRequestType.HISTORY);
         break;
       case meowButtonsType.COOKIES:

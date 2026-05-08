@@ -1,6 +1,6 @@
 import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import lazy { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
-import { MeowBookmarksPanel } from '../../../components/parts/Bookmarks/MeowBookmarksPanel';
+import { MeowBookmarksPanel } from '../../../components/parts/Bookmarks/Panel';
 import { WoofUniFrame } from '../../WoofUniFrame';
 import lazy { meowBookmarkItem } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkItem';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';

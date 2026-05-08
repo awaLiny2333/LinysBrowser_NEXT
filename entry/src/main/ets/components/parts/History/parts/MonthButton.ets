@@ -1,6 +1,6 @@
 import { defaultItemRadius } from '../../../../catstypicalframework/utils/ui';
-import { MooTextModifier } from '../../../../components/common/MooTextModifier';
-import { defaultAnimation, getColor, meowThemeColorType, mooTextType, standardSpacing, useEffects } from '../../../../components/settings';
+import { MooTextModifier } from '../../../common/MooTextModifier';
+import { defaultAnimation, getColor, meowThemeColorType, mooTextType, standardSpacing, useEffects } from '../../../settings';
 
 @ComponentV2
 struct MonthButton {

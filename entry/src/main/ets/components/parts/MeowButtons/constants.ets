@@ -25,7 +25,7 @@ export enum meowButtonsType {
   FULLSCREEN = 'FUL',
   QRCODE = 'QRC',
   USERAGENTS = 'UAG',
-  HISTORY = 'HIS',
+  HISTORIES = 'HIS',
   ADBLOCKER = 'ADB',
   JAVASCRIPTS = 'JVS',
   IMAGES = 'IMG',
@@ -37,7 +37,10 @@ export enum meowButtonsType {
   EXTENSIONS = 'EXT'
 }
 
-export const buttonIconMatches: Map<meowButtonsType, Resource> = new Map();
+/**
+ * The matches from button type to their icons.
+ */
+export const buttonIconMatches: Map<string, Resource> = new Map();
 buttonIconMatches.set(meowButtonsType.BACKWARD, $r('sys.symbol.arrow_left'));
 buttonIconMatches.set(meowButtonsType.FORWARD, $r('sys.symbol.arrow_right'));
 buttonIconMatches.set(meowButtonsType.REFRESH, $r('sys.symbol.arrow_clockwise'));
@@ -56,7 +59,7 @@ buttonIconMatches.set(meowButtonsType.SETTINGS, $r('sys.symbol.gearshape'));
 buttonIconMatches.set(meowButtonsType.FULLSCREEN, $r('sys.symbol.arrow_up_left_and_arrow_down_right'));
 buttonIconMatches.set(meowButtonsType.QRCODE, $r('sys.symbol.qrcode'));
 buttonIconMatches.set(meowButtonsType.USERAGENTS, $r('sys.symbol.label'));
-buttonIconMatches.set(meowButtonsType.HISTORY, $r('sys.symbol.arrow_counterclockwise_clock'));
+buttonIconMatches.set(meowButtonsType.HISTORIES, $r('sys.symbol.arrow_counterclockwise_clock'));
 buttonIconMatches.set(meowButtonsType.ADBLOCKER, $r('sys.symbol.ad_circle_slash'));
 buttonIconMatches.set(meowButtonsType.JAVASCRIPTS, $r('sys.symbol.slider_vertical_3'));
 buttonIconMatches.set(meowButtonsType.IMAGES, $r('sys.symbol.picture_on_square_1'));
@@ -67,15 +70,18 @@ buttonIconMatches.set(meowButtonsType.SAVE, $r('sys.symbol.save'));
 buttonIconMatches.set(meowButtonsType.ORIENTATION, $r('sys.symbol.rectangle_portrait_rotate'));
 buttonIconMatches.set(meowButtonsType.EXTENSIONS, $r('sys.symbol.root'));
 
-export const buttonIconArray: [meowButtonsType, Resource][] = Array.from(buttonIconMatches.entries());
+export const buttonIconArray: [string, Resource][] = Array.from(buttonIconMatches.entries());
 
 /**
  * Gets the icon of a button.
+ * Note that this is also used by the icons in the sidebar.
+ *
  * @param button The button to get the icon of.
  * @returns The icon of the button.
+ * @see MeowSidebar entry/src/main/ets/components/parts/Sidebar/MeowSidebar.ets and its affiliates.
  */
-export function getButtonIcon(button: meowButtonsType): Resource {
+export function getButtonIcon(button: string): Resource {
   return buttonIconMatches.get(button) ?? $r('sys.symbol.questionmark_circle');
 }
 
-export const generalButtonHeight: number = 31;
+export const defaultMeowButtonHeight: number = 31;

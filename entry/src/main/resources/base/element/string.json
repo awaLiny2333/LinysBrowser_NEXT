@@ -326,7 +326,7 @@
     },
     {
       "name": "Settings_category_appearance_layout_shrinkVerticalTabs",
-      "value": "Shrink vertical tabs"
+      "value": "Auto shrink vertical tabs"
     },
     {
       "name": "Settings_category_appearance_layout_shrinkVerticalTabsButton",

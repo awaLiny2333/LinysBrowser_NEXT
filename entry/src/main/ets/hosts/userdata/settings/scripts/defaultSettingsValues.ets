@@ -1,5 +1,6 @@
 import { getRandomEmoticon } from "../../../../catstypicalframework/utils/meow";
-import { meowButtonsType } from "../../../../components/parts/Buttons/constants";
+import { meowButtonsType } from "../../../../components/parts/MeowButtons/constants";
+import { sidebarContentIconArray } from "../../../../components/parts/Sidebar/constants";
 
 /**
  * Default user agents in a specified string format.
@@ -77,5 +78,13 @@ export function defaultButtonsTitle() {
  * @returns The set up array.
  */
 export function defaltButtonsMore() {
-  return [meowButtonsType.ORIENTATION, meowButtonsType.SAVE, meowButtonsType.PRINT, meowButtonsType.DARK, meowButtonsType.COOKIES, meowButtonsType.IMAGES, meowButtonsType.JAVASCRIPTS, meowButtonsType.ADBLOCKER, meowButtonsType.HISTORY, meowButtonsType.USERAGENTS, meowButtonsType.QRCODE, meowButtonsType.FULLSCREEN].join('\n');
+  return [meowButtonsType.ORIENTATION, meowButtonsType.SAVE, meowButtonsType.PRINT, meowButtonsType.DARK, meowButtonsType.COOKIES, meowButtonsType.IMAGES, meowButtonsType.JAVASCRIPTS, meowButtonsType.ADBLOCKER, meowButtonsType.HISTORIES, meowButtonsType.USERAGENTS, meowButtonsType.QRCODE, meowButtonsType.FULLSCREEN].join('\n');
+}
+
+/**
+ * These buttons are a bit different from the traditional meowButtons. They are used in the sidebar.
+ * @returns A series of buttons.
+ */
+export function defaultButtonsSidebar() {
+  return sidebarContentIconArray.join('\n');
 }

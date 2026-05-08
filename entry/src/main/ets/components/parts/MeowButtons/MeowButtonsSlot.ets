@@ -1,10 +1,9 @@
+import { AppStorageV2 } from '@kit.ArkUI';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { standardSpacing } from '../../settings';
-import { meowButtonsType } from './constants';
 import { MeowButton } from './MeowButton';
-import { AppStorageV2 } from '@kit.ArkUI';
 
 @Builder
 export function MeowButtonsSlot(
@@ -14,8 +13,8 @@ export function MeowButtonsSlot(
 ) {
   Scroll() {
     Row({ space: standardSpacing * 0.125 }) {
-      Repeat(AppStorageV2.connect(meowManagedSettings)!.settingsData[buttons].value as meowButtonsType[])
-        .each((item: RepeatItem<meowButtonsType>) => {
+      Repeat(AppStorageV2.connect(meowManagedSettings)!.settingsData[buttons].value as string[])
+        .each((item: RepeatItem<string>) => {
           MeowButton({
             myUi: myUi,
             myDialog: myDialog,

@@ -1,8 +1,8 @@
 import { meowLayout } from '../../../../catstypicalframework/hosts/meowLayout';
 import { defaultInnerRadius } from '../../../../catstypicalframework/utils/ui';
-import { MooTextButton } from '../../../../components/common/MooTextButton';
-import { MooTextModifier } from '../../../../components/common/MooTextModifier';
-import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, mooTextType, standardSpacing, useEffects } from '../../../../components/settings';
+import { MooTextButton } from '../../../common/MooTextButton';
+import { MooTextModifier } from '../../../common/MooTextModifier';
+import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, mooTextType, standardSpacing, useEffects } from '../../../settings';
 import { meowHistoryEntry } from '../../../../hosts/userdata/history/classes/meowHistoryEntry';
 import { HistoryEntryButton } from './HistoryEntryButton';
 

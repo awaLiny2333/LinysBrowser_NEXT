@@ -21,6 +21,7 @@ struct MeowTabsVertical {
             animateToImmediately(defaultAnimation(), () => {
               this.myUi.verticalTabsShrunk = !this.myUi.verticalTabsShrunk;
             });
+            this.mySettings.setByIndex(14, this.myUi.verticalTabsShrunk);
           }
         });
       }
@@ -34,19 +35,6 @@ struct MeowTabsVertical {
       .backgroundColor(useEffects() ? undefined : getColor(meowThemeColorType.PRIMARY))
       .border({ width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth'), radius: useEffects() ? defaultInnerRadius : 0 });
     }
-    .onHover((isHover) => {
-      if (!(this.mySettings.settingsData[14].value as boolean)) {
-        return;
-      }
-      // Auto shrink
-      animateToImmediately(defaultAnimation(), () => {
-        if (isHover) {
-          this.myUi.verticalTabsShrunk = false;
-        } else {
-          this.myUi.verticalTabsShrunk = true;
-        }
-      });
-    })
     .clip(true)
     .alignItems(sidebarShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
     .height('100%')

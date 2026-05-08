@@ -1,15 +1,15 @@
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
-import mooMenuButton from "../../../components/common/MooMenuButton";
 import { MooSymbolButton } from "../../../components/common/MooSymbolButton";
 import { MooTextButton } from "../../../components/common/MooTextButton";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
-import { buttonIconArray, generalButtonHeight, getButtonIcon, meowButtonsType } from "../../../components/parts/Buttons/constants";
+import { buttonIconArray, defaultMeowButtonHeight } from "../../../components/parts/MeowButtons/constants";
+import { SlotEditButton } from "./SlotEditButton";
 import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from "../../../components/settings";
 
 @ComponentV2
 struct ButtonSlot {
   // Params
-  @Param @Require buttons: meowButtonsType[];
+  @Param @Require buttons: string[];
   @Param @Require desc: ResourceStr;
   // Local
   @Local showAdd: boolean = false;
@@ -23,17 +23,18 @@ struct ButtonSlot {
       // List
       List({ space: standardSpacing * 0.125 }) {
         Repeat(this.buttons)
-          .each((obj: RepeatItem<meowButtonsType>) => {
+          .each((obj: RepeatItem<string>) => {
             ListItem() {
-              ButtonSlotButton({
-                item: obj.item,
+              SlotEditButton({
+                type: obj.item,
+                isEditing: true,
                 requestDelete: () => {
                   animateToImmediately(defaultAnimation(), () => {
                     this.buttons.splice(obj.index, 1);
                   });
                   this.onChange();
                 }
-              });
+              })
             };
           })
           .onMove((from: number, to: number) => {
@@ -67,7 +68,7 @@ struct ButtonSlot {
       .border({ width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth'), radius: defaultInnerRadius })
       .alignListItem(ListItemAlign.Center)
       .listDirection(Axis.Horizontal)
-      .height(generalButtonHeight + 2 * standardSpacing * 0.75)
+      .height(defaultMeowButtonHeight + 2 * standardSpacing * 0.75)
       .width('auto')
       .scrollBar(BarState.Off);
     }
@@ -78,7 +79,7 @@ struct ButtonSlot {
   addMenuBuilder() {
     List() {
       Repeat(buttonIconArray)
-        .each((obj: RepeatItem<[meowButtonsType, Resource]>) => {
+        .each((obj: RepeatItem<[string, Resource]>) => {
           ListItem() {
             MooSymbolButton({
               icon: obj.item[1], clickAction: () => {
@@ -99,38 +100,3 @@ struct ButtonSlot {
 }
 
 export { ButtonSlot };
-
-@ComponentV2
-struct ButtonSlotButton {
-  @Param @Require item: meowButtonsType;
-  @Local isMenu: boolean = false;
-  // Events
-  @Event requestDelete: () => void;
-
-  build() {
-    MooSymbolButton({
-      icon: getButtonIcon(this.item), clickAction: () => {
-        this.isMenu = !this.isMenu;
-      }
-    })
-      .bindContextMenu(this.isMenu, this.contextMenuBuilder(), {
-        aboutToDisappear: () => {
-          this.isMenu = false;
-        },
-        backgroundColor: useEffects() ? undefined : getColor(meowThemeColorType.PRIMARY)
-      });
-  }
-
-  @Builder
-  contextMenuBuilder() {
-    Column() {
-      mooMenuButton({
-        text: $r('app.string.General_delete'),
-        clickAction: () => {
-          this.requestDelete();
-        }
-      });
-    }
-    .alignItems(HorizontalAlign.Start);
-  }
-}

@@ -1,7 +1,7 @@
 import { AppStorageV2 } from "@kit.ArkUI";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
-import { meowButtonsType } from "../../../components/parts/Buttons/constants";
+import { meowButtonsType } from "../../../components/parts/MeowButtons/constants";
 import { MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
@@ -10,7 +10,7 @@ import { defaultAnimation, isPreferRightHand, standardSpacing } from "../../../c
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { WoofUniFrame } from "../../WoofUniFrame";
-import { ButtonSlot } from "./WoofButtonSlot";
+import { ButtonSlot } from "./ButtonSlot";
 
 @ComponentV2
 struct ButtonsManager {

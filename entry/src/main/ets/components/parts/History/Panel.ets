@@ -1,23 +1,23 @@
 import { AppStorageV2 } from "@kit.ArkUI";
-import { meowLayout } from "../../../../catstypicalframework/hosts/meowLayout";
-import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import { defaultInnerRadius, defaultItemRadius } from "../../../../catstypicalframework/utils/ui";
-import { MooCapsuleButton } from "../../../../components/common/MooCapsuleButton";
-import { MooSymbolButton } from "../../../../components/common/MooSymbolButton";
-import { MooTextInputV2 } from "../../../../components/common/MooTextInputV2";
-import { MooTextModifier } from "../../../../components/common/MooTextModifier";
-import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from "../../../../components/settings";
-import { meowAppStatuses } from "../../../../hosts/system/windows/classes/meowAppStatuses";
-import { globalMessage, meowAppMessageType } from "../../../../hosts/system/windows/scripts/messaging";
-import { meowHistorian } from "../../../../hosts/userdata/history/classes/meowHistorian";
-import { meowHistoryChunk } from "../../../../hosts/userdata/history/classes/meowHistoryChunk";
-import { meowHistoryEntry } from "../../../../hosts/userdata/history/classes/meowHistoryEntry";
-import { groupByDates } from "../../../../hosts/userdata/history/scripts/helpers";
-import { DayCard } from "./DayCard";
-import { defaultMonthButtonHeight, MonthButton } from "./MonthButton";
+import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
+import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
+import { defaultInnerRadius, defaultItemRadius } from "../../../catstypicalframework/utils/ui";
+import { MooCapsuleButton } from "../../common/MooCapsuleButton";
+import { MooSymbolButton } from "../../common/MooSymbolButton";
+import { MooTextInputV2 } from "../../common/MooTextInputV2";
+import { MooTextModifier } from "../../common/MooTextModifier";
+import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from "../../settings";
+import { meowAppStatuses } from "../../../hosts/system/windows/classes/meowAppStatuses";
+import { globalMessage, meowAppMessageType } from "../../../hosts/system/windows/scripts/messaging";
+import { meowHistorian } from "../../../hosts/userdata/history/classes/meowHistorian";
+import { meowHistoryChunk } from "../../../hosts/userdata/history/classes/meowHistoryChunk";
+import { meowHistoryEntry } from "../../../hosts/userdata/history/classes/meowHistoryEntry";
+import { groupByDates } from "../../../hosts/userdata/history/scripts/helpers";
+import { DayCard } from "./parts/DayCard";
+import { defaultMonthButtonHeight, MonthButton } from "./parts/MonthButton";
 
 @ComponentV2
-struct WoofHistoryPanel {
+struct HistoryPanel {
   // Config
   @Param @Once allowEdit: boolean = true;
   @Param @Once needPadding: boolean = true;
@@ -328,6 +328,6 @@ struct WoofHistoryPanel {
   }
 }
 
-export { WoofHistoryPanel };
+export { HistoryPanel };
 
 export const defaultTextHeight = 32;

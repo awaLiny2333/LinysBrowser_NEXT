@@ -3,8 +3,8 @@ import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDia
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { standardSpacing } from "../../settings";
-import { meowButtonsType } from "../Buttons/constants";
-import { MeowButtonsSlot } from "../Buttons/MeowButtonsSlot";
+import { meowButtonsType } from "../MeowButtons/constants";
+import { MeowButtonsSlot } from "../MeowButtons/MeowButtonsSlot";
 import { MeowAddressBar } from "./MeowAddressBar";
 
 // const mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!; // meowManagedSettings is not initialized until the process in flow is done. This would crash the app.
