@@ -24,7 +24,7 @@ import lazy { defaultAnimation, getColor, isPreferRightHand, isTabsStyleVertical
 import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
 import { meowResources } from '../hosts/system/storage/classes/meowResources';
 import { meowAppStatuses } from '../hosts/system/windows/classes/meowAppStatuses';
-import { meowUiFullscreenStatus, meowUiGoBackSource, meowUiHost, SidebarContentsStatus } from '../hosts/system/windows/classes/meowUiHost';
+import { meowUiFullscreenStatus, meowUiGoBackSource, meowUiHost } from '../hosts/system/windows/classes/meowUiHost';
 import { meowAppMessageType } from '../hosts/system/windows/scripts/messaging';
 import { getLastWindowId } from '../hosts/system/windows/scripts/multiwindows';
 import { meowKeyboardMan } from '../hosts/userdata/keyshortcuts/classes/meowKeyboardMan';
@@ -96,8 +96,8 @@ struct Index {
             if (this.showingVerticalTab) {
               MeowTabsVertical({ myUi: this.myUi });
             }
-            if (this.myUi.sidebarStatus != SidebarContentsStatus.HIDDEN) {
-              MeowSidebar({ myLayout: this.myLayout });
+            if (this.myUi.showSidebar) {
+              MeowSidebar({ myLayout: this.myLayout, myUi: this.myUi });
             }
           }
           .direction(sidebarShouldBeOnTheRight() ? Direction.Ltr : Direction.Rtl)
@@ -111,7 +111,7 @@ struct Index {
           .justifyContent(FlexAlign.Center)
           .padding(this.sideAreaPadding)
           .height('100%')
-          .backgroundColor(useEffects() ? getColor(meowThemeColorType.SECONDARY) : getColor(meowThemeColorType.SECONDARY))
+          .backgroundColor(useEffects() ? getColor(meowThemeColorType.SECONDARY) : getColor(meowThemeColorType.PRIMARY))
           .useEffect(useEffects(), EffectType.WINDOW_EFFECT);
         }
         .padding(this.myUi.fullscreenStatus == meowUiFullscreenStatus.NONE ? this.outerFrameSpace : 0);
@@ -283,7 +283,7 @@ struct Index {
    * If showing any side panels (either sidebar or vertical tab).
    */
   get showingSideArea() {
-    return this.showingVerticalTab || this.myUi.sidebarStatus;
+    return this.showingVerticalTab || this.myUi.showSidebar;
   }
 
   /**

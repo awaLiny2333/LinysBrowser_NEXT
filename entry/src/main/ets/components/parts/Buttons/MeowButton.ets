@@ -1,13 +1,13 @@
+import { AppStorageV2 } from '@kit.ArkUI';
 import { meow } from '../../../catstypicalframework/utils/catsLogger';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
 import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import lazy { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
-import { allWindowOrientations, meowUiHost, SidebarContentsStatus } from '../../../hosts/system/windows/classes/meowUiHost';
+import { allWindowOrientations, meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addressBarStatuses';
 import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
-import { defaultAnimation, fontSizeSymbol, getColor, meowThemeColorType, useEffects, standardSpacing } from '../../settings';
+import { defaultAnimation, fontSizeSymbol, getColor, meowThemeColorType, standardSpacing, useEffects } from '../../settings';
 import { getButtonIcon, meowButtonsType } from './constants';
-import { AppStorageV2 } from '@kit.ArkUI';
 
 @ComponentV2
 struct MeowButton {
@@ -59,11 +59,7 @@ struct MeowButton {
         break;
       case meowButtonsType.SIDEBAR:
         animateToImmediately(defaultAnimation(), () => {
-          if (this.myUi.sidebarStatus == SidebarContentsStatus.HIDDEN) {
-            this.myUi.sidebarStatus = SidebarContentsStatus.NONE;
-          } else {
-            this.myUi.sidebarStatus = SidebarContentsStatus.HIDDEN;
-          }
+          this.myUi.showSidebar = !this.myUi.showSidebar;
         });
         break;
       case meowButtonsType.BOOKMARKS:
@@ -182,7 +178,7 @@ struct MeowButton {
       case meowButtonsType.TABS:
         return this.myUi.showTabs;
       case meowButtonsType.SIDEBAR:
-        return this.myUi.sidebarStatus != SidebarContentsStatus.HIDDEN;
+        return this.myUi.showSidebar;
       case meowButtonsType.ADDRESS_KEYWORD_SWITCH:
         return true;
       default:

@@ -1,9 +1,9 @@
 import { AppStorageV2 } from '@kit.ArkUI';
+import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
+import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
+import { globalMessage, meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
 import { meowBookmarkItem } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkItem';
 import { meowBookmarkStash } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkStash';
-import { globalMessage, meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
-import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
-import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
 import { defaultAnimation, isPreferRightHand, minimumCardWidth, standardSpacing } from '../../settings';
 import { BookmarksColumn } from './BookmarksColumn';
 
@@ -13,6 +13,7 @@ import { BookmarksColumn } from './BookmarksColumn';
 @ComponentV2
 struct MeowBookmarksPanel {
   // Config
+  @Param @Once needPadding: boolean = true;
   @Param @Once selectMode: boolean = false; // False for normal (display and edit) mode, true for select mode.
   // Hosts
   @Param @Require myUi: meowUiHost;
@@ -96,7 +97,7 @@ struct MeowBookmarksPanel {
       .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl)
       .justifyContent(isPreferRightHand() ? FlexAlign.End : FlexAlign.Start)
       .alignItems(VerticalAlign.Bottom)
-      .padding(standardSpacing);
+      .padding(this.needPadding ? standardSpacing : 0);
     }
     .scrollBar(this.maxColumn < this.myUi.openedStack.length ? BarState.On : BarState.Off)
     .onAreaChange((oldValue, newValue) => {
@@ -118,7 +119,7 @@ struct MeowBookmarksPanel {
     const maxColumn = Math.floor(this.dialogWidth / (minimumCardWidth * 0.5));
     const columnCount = Math.min(maxColumn, this.myUi.openedStack.length);
     const columnSpaceCount = columnCount - 1;
-    const frameSpace = 2 * standardSpacing;
+    const frameSpace = this.needPadding ? 2 * standardSpacing : 0;
     const columnWidth = (this.dialogWidth - columnSpaceCount * standardSpacing * 0.75 - frameSpace) / columnCount;
 
     animateToImmediately(defaultAnimation(), () => {

@@ -2,6 +2,7 @@ import { AppStorageV2, window } from "@kit.ArkUI";
 import { BusinessError } from "@kit.BasicServicesKit";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import { getKeywordEntries, unifyDestination, UnifiedDestinationResult, UnifiedDestinationResultType } from "../../../../catstypicalframework/utils/url";
+import { meowButtonsType } from "../../../../components/parts/Buttons/constants";
 import { addressBarId } from "../../../../components/parts/Homepage/MeowAddressBar";
 import { defaultAnimation } from "../../../../components/settings";
 import lazy { concatSearchWithEngine } from "../../../app/tabs/scripts/searchEngines";
@@ -29,7 +30,8 @@ export class meowUiHost {
   @Trace pin: boolean = false;
   @Trace showMore: boolean = false;
   @Trace showTabs: boolean = false;
-  @Trace sidebarStatus: SidebarContentsStatus = SidebarContentsStatus.HIDDEN;
+  @Trace sidebarStatus: SidebarContentsStatus = SidebarContentsStatus.BOOKMARKS;
+  @Trace showSidebar: boolean = false;
   @Trace sideAreaWidth: number = 0; // The side area includes all things (Vertical tabs, side bar panels)
   @Trace verticalTabsShrunk: boolean = false;
   @Trace orientation: window.Orientation = window.Orientation.AUTO_ROTATION_RESTRICTED;
@@ -393,10 +395,9 @@ export class meowUiHost {
 }
 
 export enum SidebarContentsStatus {
-  HIDDEN,
-  NONE,
-  BOOKMARKS,
-  SCRATCHING_BOARD,
+  BOOKMARKS = meowButtonsType.BOOKMARKS,
+  HISTORY = meowButtonsType.HISTORY,
+  SCRATCHING_BOARD = meowButtonsType.SCRATCHING_BOARD,
 }
 
 /**

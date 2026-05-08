@@ -18,6 +18,9 @@ import { defaultMonthButtonHeight, MonthButton } from "./MonthButton";
 
 @ComponentV2
 struct WoofHistoryPanel {
+  // Config
+  @Param @Once allowEdit: boolean = true;
+  @Param @Once needPadding: boolean = true;
   // Host
   @Param @Require myLayout: meowLayout;
   @Local myMeowHistorian: meowHistorian = AppStorageV2.connect<meowHistorian>(meowHistorian)!;
@@ -162,17 +165,19 @@ struct WoofHistoryPanel {
           }
         });
 
-        // Edit
-        MooSymbolButton({
-          icon: this.isSelecting ? $r('sys.symbol.square_and_pencil_fill') : $r('sys.symbol.square_and_pencil'),
-          onHold: this.isSelecting,
-          clickAction: () => {
-            animateToImmediately(defaultAnimation(), () => {
-              this.deselectAll();
-              this.isSelecting = !this.isSelecting;
-            });
-          }
-        });
+        // Edit button
+        if (this.allowEdit) {
+          MooSymbolButton({
+            icon: this.isSelecting ? $r('sys.symbol.square_and_pencil_fill') : $r('sys.symbol.square_and_pencil'),
+            onHold: this.isSelecting,
+            clickAction: () => {
+              animateToImmediately(defaultAnimation(), () => {
+                this.deselectAll();
+                this.isSelecting = !this.isSelecting;
+              });
+            }
+          });
+        }
 
         if (this.isSelecting && this.myLayout.wideMode) {
           this.editBar();
@@ -185,7 +190,7 @@ struct WoofHistoryPanel {
       }
     }
     .alignItems(isPreferRightHand() ? HorizontalAlign.End : HorizontalAlign.Start)
-    .padding(standardSpacing);
+    .padding(this.needPadding ? standardSpacing : 0);
   }
 
   @Builder
