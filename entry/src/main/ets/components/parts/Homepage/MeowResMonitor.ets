@@ -2,7 +2,8 @@ import { addUnitsToSize } from "../../../catstypicalframework/utils/storage";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { getCPU, getNativeHeapSize, getPrivateDirty, getPss, getSharedDirty, getVRAM, getVss } from "../../../hosts/system/performance/scripts/funcAsync";
 import { MooTextModifier } from "../../common/MooTextModifier";
-import { getColor, isPreferRightHand, meowThemeColorType, mooTextType, standardSpacing, useEffects } from "../../settings";
+import { standardSpacing,mooTextType,meowThemeColorType } from "../../constants";
+import { getColor, isPreferRightHand, useEffects } from "../../settings";
 
 @Builder
 export function MeowResMonitor() {

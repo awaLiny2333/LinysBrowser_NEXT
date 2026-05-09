@@ -5,7 +5,8 @@ import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton
 import { MooSwitch } from '../../../../components/common/MooSwitch';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
-import { defaultAnimation, mooTextType, standardSpacing } from '../../../../components/settings';
+import { standardSpacing,mooTextType } from '../../../../components/constants';
+import { defaultAnimation } from '../../../../components/settings';
 import lazy { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 import lazy { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
 import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';

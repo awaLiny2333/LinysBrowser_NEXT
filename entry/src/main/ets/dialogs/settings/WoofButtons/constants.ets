@@ -1,4 +1,4 @@
-import { unifiedButtonIconMatches } from "../../../components/common/constants";
+import { unifiedButtonIconMatches } from "../../../components/constants";
 
 /**
  * All available buttons for MeowButtons.

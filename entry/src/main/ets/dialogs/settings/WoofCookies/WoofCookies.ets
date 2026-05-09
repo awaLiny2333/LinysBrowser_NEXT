@@ -7,7 +7,7 @@ import { MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
 import { MooTextButton } from "../../../components/common/MooTextButton";
 import { MooTextInputV2 } from "../../../components/common/MooTextInputV2";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
-import { standardComponentHeight, standardSpacing } from "../../../components/settings";
+import { standardComponentHeight, standardSpacing } from "../../../components/constants";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { meowAppStatuses } from "../../../hosts/system/windows/classes/meowAppStatuses";
 import { WoofUniFrame } from "../../WoofUniFrame";

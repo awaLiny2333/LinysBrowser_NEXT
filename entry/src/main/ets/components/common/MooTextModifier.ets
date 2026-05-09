@@ -1,5 +1,6 @@
-import { fontSizeMedium, fontSizeSmall, getColor, meowThemeColorType, mooTextType } from '../settings';
 import { TextModifier } from '@kit.ArkUI';
+import { getColor } from '../settings';
+import { meowThemeColorType, mooTextType, fontSizeSmall, fontSizeMedium } from '../constants';
 
 export class MooTextModifier implements AttributeModifier<TextModifier> {
 

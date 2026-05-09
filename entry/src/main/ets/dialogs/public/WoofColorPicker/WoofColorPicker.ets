@@ -1,6 +1,6 @@
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { hex2hsv, hsv2hex } from "../../../catstypicalframework/utils/colors";
-import { standardSpacing } from "../../../components/settings";
+import { standardSpacing } from "../../../components/constants";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { WoofUniFrame } from "../../WoofUniFrame";
 import { DemoPanel } from "./parts/DemoPanel";

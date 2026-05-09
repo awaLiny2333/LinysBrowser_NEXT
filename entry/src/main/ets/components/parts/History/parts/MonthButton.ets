@@ -1,6 +1,7 @@
 import { defaultItemRadius } from '../../../../catstypicalframework/utils/ui';
+import { standardSpacing, mooTextType, meowThemeColorType, typicalTextHeightNormal } from '../../../constants';
 import { MooTextModifier } from '../../../common/MooTextModifier';
-import { defaultAnimation, getColor, meowThemeColorType, mooTextType, standardSpacing, useEffects } from '../../../settings';
+import { defaultAnimation, getColor, useEffects } from '../../../settings';
 
 @ComponentV2
 struct MonthButton {
@@ -14,8 +15,8 @@ struct MonthButton {
   build() {
     Column() {
       if (this.year > 0) {
-        Text(this.year.toString()).attributeModifier(new MooTextModifier()).opacity(0.75).height(20)
-        Text(this.month.toString()).attributeModifier(new MooTextModifier()).height(20)
+        Text(this.year.toString()).attributeModifier(new MooTextModifier()).opacity(0.75);
+        Text(this.month.toString()).attributeModifier(new MooTextModifier());
       } else if (this.desc) {
         Text(this.desc).attributeModifier(new MooTextModifier(mooTextType.TITLE));
       }
@@ -39,4 +40,4 @@ struct MonthButton {
 
 export { MonthButton };
 
-export const defaultMonthButtonHeight = 2 * 20 + 2 * standardSpacing;
+export const defaultMonthButtonHeight = 2 * typicalTextHeightNormal + 2 * standardSpacing;

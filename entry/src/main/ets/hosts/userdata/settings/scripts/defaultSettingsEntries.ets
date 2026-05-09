@@ -123,8 +123,9 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('buttons_address_bar', meowSettingsEntryType.STRING_ARRAY, defaultButtonsAddressBar()),
   new meowSettingsEntry('buttons_title', meowSettingsEntryType.STRING_ARRAY, defaultButtonsTitle()),
   new meowSettingsEntry('buttons_more', meowSettingsEntryType.STRING_ARRAY, defaltButtonsMore()),
-  // Side bar
+  // Side bar / vertical tabs
   new meowSettingsEntry('buttons_sidebar', meowSettingsEntryType.STRING_ARRAY_PAIR, defaultButtonsSidebar()),
   new meowSettingsEntry('show_sidebar', meowSettingsEntryType.BOOLEAN, 'false'), // #82
   new meowSettingsEntry('sidebar_content', meowSettingsEntryType.STRING, 'HIS'), // #83
+  new meowSettingsEntry('tabs_vertical_auto_hide_no_push', meowSettingsEntryType.BOOLEAN, 'true'), // #84
 ];

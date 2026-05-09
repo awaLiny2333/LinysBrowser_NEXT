@@ -8,7 +8,8 @@ import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/me
 import { MooSymbolButton } from "../../common/MooSymbolButton";
 import { MooTextButton } from "../../common/MooTextButton";
 import lazy { MooTextInputV2 } from "../../common/MooTextInputV2";
-import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from "../../settings";
+import { standardSpacing,meowThemeColorType } from "../../constants";
+import { defaultAnimation, getColor, isPreferRightHand, useEffects } from "../../settings";
 
 @ComponentV2
 struct MeowWindowInfoBar {

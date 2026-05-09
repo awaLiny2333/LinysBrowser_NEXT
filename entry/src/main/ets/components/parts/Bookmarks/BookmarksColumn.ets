@@ -2,14 +2,15 @@ import { unifiedDataChannel } from '@kit.ArkData';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
+import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
+import { meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
 import { meowBookmarkItem } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkItem';
 import { nowHtmlTimestamp } from '../../../hosts/userdata/bookmarks/scripts/helpers';
-import { meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
-import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
 import { MooStringItem } from '../../common/MooStringItem';
 import { MooSymbolButton } from '../../common/MooSymbolButton';
 import { MooTextModifier } from '../../common/MooTextModifier';
-import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from '../../settings';
+import { meowThemeColorType, standardSpacing } from '../../constants';
+import { defaultAnimation, getColor, isPreferRightHand, useEffects } from '../../settings';
 
 /**
  * The Unified Type name of bookmark items.

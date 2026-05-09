@@ -1,6 +1,6 @@
 import { UniContentCard } from '../../../../../components/common/UniContentCard';
 import { meowMisc } from '../../../../../catstypicalframework/hosts/meowMisc';
-import { meowFlexOptions } from '../../../../../components/settings';
+import { meowFlexOptions } from '../../../../../components/constants';
 import { hintGC } from '../../../../../catstypicalframework/utils/performance';
 import { meowAvoid } from '../../../../../catstypicalframework/hosts/meowAvoid';
 import { meowLayout } from '../../../../../catstypicalframework/hosts/meowLayout';

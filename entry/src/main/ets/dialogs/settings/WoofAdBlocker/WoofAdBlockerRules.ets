@@ -3,7 +3,7 @@ import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
 import { fileCopy, fileDocumentPick2Path, fileNameOfPath, listFilesUnderDir, unlinkFile } from '../../../catstypicalframework/utils/storage';
 import { MooStringArrayList } from '../../../components/common/MooStringArrayList';
-import { standardSpacing } from '../../../components/settings';
+import { standardSpacing } from '../../../components/constants';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
 import { globalMessage, meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';

@@ -6,43 +6,13 @@
  * For other settings (like whether to download directly to Downloads folder),
  * the getters are put in the settings.ets files in each host folder under entry/src/main/ets/hosts.
  */
-import { AppStorageV2, LengthMetrics } from "@kit.ArkUI";
+import { AppStorageV2 } from "@kit.ArkUI";
 import Curves from '@ohos.curves';
 import { meowLayout } from "../catstypicalframework/hosts/meowLayout";
-import { meowManagedSettings } from "../hosts/userdata/settings/classes/meowManagedSettings";
 import { meowAppStatuses } from "../hosts/system/windows/classes/meowAppStatuses";
 import { meowUiHost } from "../hosts/system/windows/classes/meowUiHost";
-
-// Constants
-export const fontSizeSymbol = 24;
-
-export const fontSizeMedium = 22;
-export const fontSizeSmall = 16;
-
-export const standardComponentHeight = 40;
-export const standardSpacing = 8;
-export const minimumCardWidth = 520; // Minimum width required for cards (e.g. in a multi-column waterFlow)
-
-export const meowFlexOptions: FlexOptions = {
-  wrap: FlexWrap.Wrap,
-  space: { main: LengthMetrics.vp(standardSpacing), cross: LengthMetrics.vp(standardSpacing) },
-  alignItems: ItemAlign.Center
-};
-
-// Types
-
-export enum meowThemeColorType {
-  PRIMARY = 0,
-  SECONDARY = 1,
-  FONT = 2,
-}
-
-export enum mooTextType {
-  NORMAL = 0,
-  TITLE = 1,
-}
-
-// Getters of values
+import { meowManagedSettings } from "../hosts/userdata/settings/classes/meowManagedSettings";
+import { meowThemeColorType, minimumCardWidth } from "./constants";
 
 /**
  * Gets the color from the current theme.

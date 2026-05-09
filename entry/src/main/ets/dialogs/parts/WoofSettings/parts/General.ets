@@ -4,7 +4,7 @@ import { MooStringPairArrayList } from '../../../../components/common/MooStringP
 import { MooTextInputV2 } from '../../../../components/common/MooTextInputV2';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
-import { mooTextType, standardSpacing } from '../../../../components/settings';
+import { mooTextType, standardSpacing } from '../../../../components/constants';
 import { applyUserAgentFromSettings } from '../../../../hosts/app/tabs/scripts/userAgents';
 import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { defaultSearchEngine, urlDefaultBlank } from '../../../../hosts/userdata/settings/scripts/defaultSettingsValues';

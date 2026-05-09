@@ -8,8 +8,8 @@ import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addressBarStatuses';
 import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { MooTextModifier } from '../../common/MooTextModifier';
-import { fontSizeSmall, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from '../../settings';
-import { UnifiedButtonsType } from '../../common/constants';
+import { fontSizeSmall, meowThemeColorType, standardSpacing, UnifiedButtonsType } from '../../constants';
+import { getColor, isPreferRightHand, useEffects } from '../../settings';
 import { MeowButtonsSlot } from '../MeowButtons/MeowButtonsSlot';
 import { MeowTitleBarHeight } from './MeowTitleBar';
 

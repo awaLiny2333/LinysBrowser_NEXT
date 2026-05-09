@@ -2,9 +2,10 @@ import { meowLayout } from '../../../../catstypicalframework/hosts/meowLayout';
 import { defaultInnerRadius } from '../../../../catstypicalframework/utils/ui';
 import { MooTextButton } from '../../../common/MooTextButton';
 import { MooTextModifier } from '../../../common/MooTextModifier';
-import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, mooTextType, standardSpacing, useEffects } from '../../../settings';
+import { defaultAnimation, getColor, isPreferRightHand, useEffects } from '../../../settings';
 import { meowHistoryEntry } from '../../../../hosts/userdata/history/classes/meowHistoryEntry';
 import { HistoryEntryButton } from './HistoryEntryButton';
+import { standardSpacing,mooTextType,meowThemeColorType } from '../../../constants';
 
 @ComponentV2
 struct DayCard {

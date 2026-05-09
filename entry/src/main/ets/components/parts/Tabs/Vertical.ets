@@ -4,7 +4,9 @@ import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { SymbolButton } from "../../../dialogs/parts/WoofCatsDev/parts/common/SymbolButton";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
-import { defaultAnimation, getColor, meowThemeColorType, sidebarShouldBeOnTheRight, standardSpacing, useEffects } from "../../settings";
+import { defaultAnimation, sidebarShouldBeOnTheRight, useEffects, getColor } from "../../settings";
+import { standardSpacing, meowThemeColorType } from "../../constants";
+import { defaultTabsVerticalShrunkWidth, defaultTabsVerticalWidth } from "./constants";
 
 @ComponentV2
 struct MeowTabsVertical {
@@ -21,7 +23,6 @@ struct MeowTabsVertical {
             animateToImmediately(defaultAnimation(), () => {
               this.myUi.verticalTabsShrunk = !this.myUi.verticalTabsShrunk;
             });
-            this.mySettings.setByIndex(14, this.myUi.verticalTabsShrunk);
           }
         });
       }
@@ -38,10 +39,8 @@ struct MeowTabsVertical {
     .clip(true)
     .alignItems(sidebarShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
     .height('100%')
-    .width(this.myUi.verticalTabsShrunk && this.myLayout.wideMode ? 32 : defaultTabsVerticalWidth);
+    .width(this.myUi.verticalTabsShrunk && this.myLayout.wideMode ? defaultTabsVerticalShrunkWidth : defaultTabsVerticalWidth);
   }
 }
 
 export { MeowTabsVertical };
-
-export const defaultTabsVerticalWidth = 260;

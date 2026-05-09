@@ -2,8 +2,7 @@ import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
-import { standardSpacing } from "../../settings";
-import { UnifiedButtonsType } from "../../common/constants";
+import { standardSpacing, UnifiedButtonsType } from "../../constants";
 import { MeowButtonsSlot } from "../MeowButtons/MeowButtonsSlot";
 import { MeowAddressBar } from "./MeowAddressBar";
 

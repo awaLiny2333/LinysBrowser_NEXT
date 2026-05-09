@@ -4,7 +4,8 @@ import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { meowBookmarkItem } from "../../../hosts/userdata/bookmarks/classes/meowBookmarkItem";
 import { meowHistoryEntry } from "../../../hosts/userdata/history/classes/meowHistoryEntry";
 import { MooTextModifier } from "../../common/MooTextModifier";
-import { getColor, meowThemeColorType, standardComponentHeight, standardSpacing, useEffects } from "../../settings";
+import { meowThemeColorType, standardComponentHeight, standardSpacing } from "../../constants";
+import { getColor, useEffects } from "../../settings";
 import { SuggestionEntryButton } from "./MeowSuggestionEntry";
 
 @ComponentV2

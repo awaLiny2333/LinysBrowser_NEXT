@@ -1,7 +1,8 @@
-import { defaultItemRadius, defaultRoundedRadius, defaultInnerRadius } from '../../../../catstypicalframework/utils/ui';
+import { defaultInnerRadius, defaultItemRadius, defaultRoundedRadius } from '../../../../catstypicalframework/utils/ui';
 import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
-import { standardSpacing, getColor, meowThemeColorType, useEffects } from '../../../../components/settings';
+import { meowThemeColorType, standardSpacing } from '../../../../components/constants';
+import { getColor, useEffects } from '../../../../components/settings';
 
 @ComponentV2
 struct DemoPanel {

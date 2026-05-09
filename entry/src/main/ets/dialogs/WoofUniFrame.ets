@@ -4,7 +4,8 @@ import { defaultInnerRadius } from '../catstypicalframework/utils/ui';
 import { MooSymbolButton } from '../components/common/MooSymbolButton';
 import { MooTextModifier } from '../components/common/MooTextModifier';
 import { UniContentCard } from '../components/common/UniContentCard';
-import { defaultAnimation, getColor, meowThemeColorType, mooTextType, standardSpacing, useEffects } from '../components/settings';
+import { meowThemeColorType, mooTextType, standardSpacing } from '../components/constants';
+import { defaultAnimation, getColor, useEffects } from '../components/settings';
 import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
 
 @ComponentV2

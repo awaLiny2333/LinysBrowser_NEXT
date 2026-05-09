@@ -7,7 +7,8 @@ import lazy { MooCapsuleButton } from "../../../components/common/MooCapsuleButt
 import { MooTextButton } from "../../../components/common/MooTextButton";
 import lazy { MooTextModifier } from "../../../components/common/MooTextModifier";
 import lazy { UniContentCard } from "../../../components/common/UniContentCard";
-import { defaultAnimation, standardSpacing } from "../../../components/settings";
+import { standardSpacing } from "../../../components/constants";
+import { defaultAnimation } from "../../../components/settings";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { WoofUniFrame } from "../../WoofUniFrame";
 interface faultLogInfo {

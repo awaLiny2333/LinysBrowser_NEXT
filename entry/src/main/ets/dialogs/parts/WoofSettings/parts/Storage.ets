@@ -4,7 +4,7 @@ import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { UniRowOfCapsuleButtons } from '../../../../components/common/UniRowOfCapsuleButtons';
-import lazy { mooTextType, standardSpacing } from '../../../../components/settings';
+import lazy { mooTextType, standardSpacing } from '../../../../components/constants';
 import lazy { scanHistoryIndexSize } from '../../../../hosts/userdata/history/scripts/storage';
 import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
 import lazy { removeWebCache, scanWebCacheSize } from '../../../../hosts/system/storage/scripts/storage';

@@ -2,9 +2,9 @@ import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { MooSymbolButton } from "../../../components/common/MooSymbolButton";
 import { MooTextButton } from "../../../components/common/MooTextButton";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
-import { defaultMooSymbolSize } from "../../../components/common/constants";
 import { SlotEditButton } from "../../../components/common/SlotEditButton";
-import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from "../../../components/settings";
+import { defaultMooSymbolSize, meowThemeColorType, standardSpacing } from "../../../components/constants";
+import { defaultAnimation, getColor, isPreferRightHand, useEffects } from "../../../components/settings";
 import { meowButtonsIconArray } from "./constants";
 
 @ComponentV2
@@ -36,7 +36,7 @@ struct ButtonSlot {
                   });
                   this.onChange();
                 }
-              })
+              });
             };
           })
           .onMove((from: number, to: number) => {

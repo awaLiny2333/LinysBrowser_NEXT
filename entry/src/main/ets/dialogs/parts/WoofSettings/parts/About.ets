@@ -1,12 +1,13 @@
-import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
-import { defaultAnimation, mooTextType, standardSpacing } from '../../../../components/settings';
 import { AppStorageV2 } from '@kit.ArkUI';
+import BuildProfile from 'BuildProfile';
+import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
-import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton';
-import BuildProfile from 'BuildProfile';
-import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
+import { mooTextType, standardSpacing } from '../../../../components/constants';
+import { defaultAnimation } from '../../../../components/settings';
 import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
+import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
+import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
 
 @ComponentV2
 struct SettingsAbout {

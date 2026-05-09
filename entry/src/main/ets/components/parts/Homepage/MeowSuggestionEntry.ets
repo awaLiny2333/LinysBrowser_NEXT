@@ -9,7 +9,7 @@ import { defaultItemRadius } from "../../../catstypicalframework/utils/ui";
 import { meowBookmarkItem } from "../../../hosts/userdata/bookmarks/classes/meowBookmarkItem";
 import { meowHistoryEntry } from "../../../hosts/userdata/history/classes/meowHistoryEntry";
 import { MooTextModifier } from "../../common/MooTextModifier";
-import { standardSpacing, meowFlexOptions } from "../../settings";
+import { standardSpacing, meowFlexOptions } from "../../constants";
 
 @ComponentV2
 struct SuggestionEntryButton {

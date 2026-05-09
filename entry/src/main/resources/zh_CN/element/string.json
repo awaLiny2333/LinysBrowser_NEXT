@@ -325,12 +325,16 @@
       "value": "标签栏位置 󰎵"
     },
     {
-      "name": "Settings_category_appearance_layout_shrinkVerticalTabs",
-      "value": "自动收起垂直标签栏"
+      "name": "Settings_category_appearance_layout_shrinkVerticalTabsButton",
+      "value": "收起垂直标签栏按钮"
     },
     {
-      "name": "Settings_category_appearance_layout_shrinkVerticalTabsButton",
-      "value": "收起按钮"
+      "name": "Settings_category_appearance_layout_shrinkVerticalTabsAuto",
+      "value": "自动收起"
+    },
+    {
+      "name": "Settings_category_appearance_layout_shrinkVerticalTabsNoPush",
+      "value": "展开时不挤压页面"
     },
     {
       "name": "Settings_category_appearance_windows",

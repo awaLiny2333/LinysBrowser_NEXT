@@ -1,5 +1,6 @@
 import { defaultRoundedRadius } from "../../catstypicalframework/utils/ui";
-import { defaultAnimation, fontSizeSymbol, getColor, meowThemeColorType, mooTextType, standardSpacing, useEffects } from "../settings";
+import { fontSizeSymbol, meowThemeColorType, mooTextType, standardSpacing } from "../constants";
+import { defaultAnimation, getColor, useEffects } from "../settings";
 import { MooTextModifier } from "./MooTextModifier";
 
 /**

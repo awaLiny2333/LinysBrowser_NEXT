@@ -2,7 +2,7 @@ import { AppStorageV2 } from "@kit.ArkUI";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 import { MooStringPairArrayList } from "../../../components/common/MooStringPairArrayList";
-import { standardSpacing } from "../../../components/settings";
+import { standardSpacing } from "../../../components/constants";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { meowAppStatuses } from "../../../hosts/system/windows/classes/meowAppStatuses";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";

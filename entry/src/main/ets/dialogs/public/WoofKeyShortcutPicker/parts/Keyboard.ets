@@ -1,6 +1,7 @@
 import { defaultInnerRadius } from "../../../../catstypicalframework/utils/ui";
 import { MooTextModifier } from "../../../../components/common/MooTextModifier";
-import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, useEffects } from "../../../../components/settings";
+import { standardSpacing,meowThemeColorType } from "../../../../components/constants";
+import { defaultAnimation, getColor, useEffects } from "../../../../components/settings";
 import { isFn, isModifier, keyDisplay } from "../../../../hosts/userdata/keyshortcuts/scripts/helpers";
 
 // Don't want to export this,

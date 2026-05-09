@@ -1,6 +1,7 @@
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
-import { getColor, meowThemeColorType, mooTextType, standardSpacing } from "../../../components/settings";
+import { standardSpacing,meowThemeColorType,mooTextType } from "../../../components/constants";
+import { getColor } from "../../../components/settings";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { WoofUniFrame } from "../../WoofUniFrame";
 

@@ -6,14 +6,15 @@ import { MooSwitch } from "../../../../components/common/MooSwitch";
 import { MooTabSegmentV2 } from "../../../../components/common/MooTabSegmentV2";
 import { MooTextModifier } from "../../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../../components/common/UniContentCard";
-import { defaultAnimation, getColor, meowThemeColorType, mooTextType, standardSpacing, useEffects } from "../../../../components/settings";
+import { meowThemeColorType, mooTextType, standardSpacing } from "../../../../components/constants";
+import { defaultAnimation, getColor, useEffects } from "../../../../components/settings";
+import { meowDialogManager, openDialogRequestType } from "../../../../hosts/system/dialogs/classes/meowDialogManager";
+import { requestDialog } from "../../../../hosts/system/dialogs/scripts/dialog";
+import { meowAppStatuses } from "../../../../hosts/system/windows/classes/meowAppStatuses";
+import { meowUiHost } from "../../../../hosts/system/windows/classes/meowUiHost";
+import { globalMessage, meowAppMessageType } from "../../../../hosts/system/windows/scripts/messaging";
 import { meowManagedSettings } from "../../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { resetAnimations, resetColors } from "../../../../hosts/userdata/settings/scripts/reset";
-import { globalMessage, meowAppMessageType } from "../../../../hosts/system/windows/scripts/messaging";
-import { meowUiHost } from "../../../../hosts/system/windows/classes/meowUiHost";
-import { meowAppStatuses } from "../../../../hosts/system/windows/classes/meowAppStatuses";
-import { requestDialog } from "../../../../hosts/system/dialogs/scripts/dialog";
-import { meowDialogManager, openDialogRequestType } from "../../../../hosts/system/dialogs/classes/meowDialogManager";
 
 @ComponentV2
 struct SettingsAppearance {
@@ -112,17 +113,24 @@ struct SettingsAppearance {
           }
         });
         MooSwitch({
-          text: $r('app.string.Settings_category_appearance_layout_shrinkVerticalTabs'),
+          text: $r('app.string.Settings_category_appearance_layout_shrinkVerticalTabsButton'),
+          isOn: this.mySettings.settingsData[15].value as boolean,
+          onChange: (r) => {
+            this.mySettings.setByIndex(15, r);
+          }
+        });
+        MooSwitch({
+          text: $r('app.string.Settings_category_appearance_layout_shrinkVerticalTabsAuto'),
           isOn: this.mySettings.settingsData[14].value as boolean,
           onChange: (r) => {
             this.mySettings.setByIndex(14, r);
           }
         });
         MooSwitch({
-          text: $r('app.string.Settings_category_appearance_layout_shrinkVerticalTabsButton'),
-          isOn: this.mySettings.settingsData[15].value as boolean,
+          text: $r('app.string.Settings_category_appearance_layout_shrinkVerticalTabsNoPush'),
+          isOn: this.mySettings.settingsData[84].value as boolean,
           onChange: (r) => {
-            this.mySettings.setByIndex(15, r);
+            this.mySettings.setByIndex(84, r);
           }
         });
       };

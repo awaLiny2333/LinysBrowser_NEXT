@@ -3,7 +3,7 @@ import { UniContentCard } from '../../../../../components/common/UniContentCard'
 import { SimpleSettingsExamples } from './SimpleSettingsExamples';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowManagedSettings } from '../../../../../hosts/userdata/settings/classes/meowManagedSettings';
-import { meowFlexOptions } from '../../../../../components/settings';
+import { meowFlexOptions } from '../../../../../components/constants';
 
 /**
  * Settings status and control examples.

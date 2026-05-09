@@ -5,7 +5,7 @@ import { meowHistoryEntry } from '../../../../../hosts/userdata/history/classes/
 import { UniContentCard } from '../../../../../components/common/UniContentCard';
 import { SimpleHistoryShowcase } from './SimpleHistoryShowcase';
 import { AppStorageV2 } from '@kit.ArkUI';
-import { meowFlexOptions } from '../../../../../components/settings';
+import { meowFlexOptions } from '../../../../../components/constants';
 
 /**
  * History data and operations.

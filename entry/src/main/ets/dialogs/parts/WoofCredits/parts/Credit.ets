@@ -1,5 +1,5 @@
 import { meowLayout } from '../../../../catstypicalframework/hosts/meowLayout';
-import { standardSpacing } from '../../../../components/settings';
+import { standardSpacing } from '../../../../components/constants';
 import { userCredits } from '../creditDetails';
 import { CreditUser } from './CreditUser';
 

@@ -1,5 +1,6 @@
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
-import { getColor, meowThemeColorType, standardComponentHeight, standardSpacing, useEffects } from "../../settings";
+import { standardSpacing, meowThemeColorType, standardComponentHeight } from "../../constants";
+import { getColor, useEffects } from "../../settings";
 
 @ComponentV2
 struct MeowTabsHorizontal {

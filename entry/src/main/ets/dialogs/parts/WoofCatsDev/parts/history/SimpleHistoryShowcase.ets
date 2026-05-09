@@ -4,7 +4,7 @@ import { AppStorageV2 } from '@kit.ArkUI';
 import { meowHistoryChunk } from '../../../../../hosts/userdata/history/classes/meowHistoryChunk';
 import { meowHistoryEntry } from '../../../../../hosts/userdata/history/classes/meowHistoryEntry';
 import { UniContentCard } from '../../../../../components/common/UniContentCard';
-import { meowFlexOptions } from '../../../../../components/settings';
+import { meowFlexOptions } from '../../../../../components/constants';
 
 /**
  * A simple history showcase component. Includes history entries of all different months and a request field to search for history.

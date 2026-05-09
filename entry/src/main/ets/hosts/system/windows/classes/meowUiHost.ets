@@ -316,7 +316,7 @@ export class meowUiHost {
       let unmatched: [string, string][] = [];
       for (let i = 0; i < entries.length; i++) {
         let entry = entries[i];
-        if (keySet.has(entry[0])) {
+        if (preferedKeysSet.has(entry[0])) {
           matched.push(entry);
         } else {
           unmatched.push(entry);
@@ -434,4 +434,4 @@ export const ALL_WINDOW_ORIENTATIONS = [
 ];
 
 const preferedKeys: string[] = ['q', 'query', 's', 'key', 'wd', 'w', 'word', 'searchKeyWord', 'search_text', 'keyword', 'val', 'value', 'text', 'tag', 'tags', 'search'];
-const keySet = new Set(preferedKeys);
+const preferedKeysSet = new Set(preferedKeys);

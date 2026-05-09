@@ -5,7 +5,8 @@ import { MooSlider } from '../../../../components/common/MooSlider';
 import { MooTextInputV2 } from '../../../../components/common/MooTextInputV2';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniRowOfCapsuleButtons } from '../../../../components/common/UniRowOfCapsuleButtons';
-import { standardSpacing, getColor, meowThemeColorType, useEffects } from '../../../../components/settings';
+import { standardSpacing, meowThemeColorType } from '../../../../components/constants';
+import { getColor, useEffects } from '../../../../components/settings';
 
 @ComponentV2
 struct EditPanel {

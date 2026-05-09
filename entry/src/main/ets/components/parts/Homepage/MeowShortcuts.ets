@@ -5,15 +5,16 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
+import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
+import { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
+import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
+import { meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
 import { meowBookmarkItem } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkItem';
 import { meowBookmarkStash } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkStash';
 import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
-import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
-import { meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
 import { MooTextModifier } from '../../common/MooTextModifier';
-import { defaultAnimation, getColor, inDarkMode, meowThemeColorType, shortcutsShouldBeOnTheRight, standardSpacing, useEffects } from '../../settings';
-import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
-import { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
+import { meowThemeColorType, standardSpacing } from '../../constants';
+import { defaultAnimation, getColor, inDarkMode, shortcutsShouldBeOnTheRight, useEffects } from '../../settings';
 
 @ComponentV2
 struct MeowShortcutsPanel {

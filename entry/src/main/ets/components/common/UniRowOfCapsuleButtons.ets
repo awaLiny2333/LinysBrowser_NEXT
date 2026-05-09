@@ -1,4 +1,5 @@
-import { standardSpacing, isPreferRightHand } from '../settings';
+import { standardSpacing } from '../constants';
+import { isPreferRightHand } from '../settings';
 
 /**
  * The special container to fit a row of capsule buttons, smart reachability compatible.

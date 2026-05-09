@@ -1,6 +1,6 @@
 import { defaultInnerRadius } from "../../catstypicalframework/utils/ui";
-import { defaultMooSymbolSize } from "./constants";
-import { defaultAnimation, fontSizeSymbol, getColor, meowThemeColorType, standardSpacing, useEffects } from "../settings";
+import { defaultMooSymbolSize, fontSizeSymbol, meowThemeColorType, standardSpacing } from "../constants";
+import { defaultAnimation, getColor, useEffects } from "../settings";
 
 /**
  * Normal symbol buttons.

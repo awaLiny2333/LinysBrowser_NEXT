@@ -1,5 +1,5 @@
 import { defaultItemRadius } from '../../catstypicalframework/utils/ui';
-import { standardSpacing } from '../settings';
+import { standardSpacing } from '../constants';
 import { MooTextModifier } from './MooTextModifier';
 
 @ComponentV2

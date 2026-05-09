@@ -1,6 +1,6 @@
 import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { AppStorageV2, SegmentButtonV2Items } from '@kit.ArkUI';
-import { defaultAnimation, mooTextType, standardSpacing } from '../../../../components/settings';
+import { defaultAnimation } from '../../../../components/settings';
 import { MooSwitch } from '../../../../components/common/MooSwitch';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
@@ -8,6 +8,7 @@ import { MooTabSegmentV2 } from '../../../../components/common/MooTabSegmentV2';
 import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton';
 import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
 import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
+import { standardSpacing,mooTextType } from '../../../../components/constants';
 
 @ComponentV2
 struct SettingsAccessibility {

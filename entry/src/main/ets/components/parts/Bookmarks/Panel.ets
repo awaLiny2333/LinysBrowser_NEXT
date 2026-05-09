@@ -5,7 +5,8 @@ import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { globalMessage, meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
 import { meowBookmarkItem } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkItem';
 import { meowBookmarkStash } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkStash';
-import { defaultAnimation, isPreferRightHand, minimumCardWidth, standardSpacing } from '../../settings';
+import { minimumCardWidth, standardSpacing } from '../../constants';
+import { defaultAnimation, isPreferRightHand } from '../../settings';
 import { BookmarksColumn } from './BookmarksColumn';
 
 /**
@@ -34,8 +35,8 @@ struct MeowBookmarksPanel {
       this.refreshRoot();
     }
   }
-  
-  @Monitor('myBookmarks.root') 
+
+  @Monitor('myBookmarks.root')
   refreshRoot() {
     this.myUi.openedStack = [this.myBookmarks.root];
     this.myUi.openedIndexOfLevels = [undefined];

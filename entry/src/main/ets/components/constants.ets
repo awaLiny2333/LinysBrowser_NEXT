@@ -1,6 +1,42 @@
+// TEXTS
+
 /**
- * The scripts for the new buttons system!
+ * Note tha we don't recommend using any preset / fixed values to represent the size (height / width) of a Text component, as its size also varies by the fonts and many other factors.
+ * Use the text measuring methods instead!
+ * → measureTextHeight and measureTextWidth in entry/src/main/ets/catstypicalframework/utils/ui.ets
  */
+import { LengthMetrics } from "@kit.ArkUI";
+
+export const typicalTextHeightNormal = 20;
+
+export const fontSizeSymbol = 24;
+export const fontSizeMedium = 22;
+export const fontSizeSmall = 16;
+
+export enum mooTextType {
+  NORMAL = 0,
+  TITLE = 1,
+}
+
+// Generic UI
+
+export const standardComponentHeight = 40;
+export const standardSpacing = 8;
+export const minimumCardWidth = 520; // Minimum width required for cards (e.g. in a multi-column waterFlow)
+
+export const meowFlexOptions: FlexOptions = {
+  wrap: FlexWrap.Wrap,
+  space: { main: LengthMetrics.vp(standardSpacing), cross: LengthMetrics.vp(standardSpacing) },
+  alignItems: ItemAlign.Center
+};
+
+export enum meowThemeColorType {
+  PRIMARY = 0,
+  SECONDARY = 1,
+  FONT = 2,
+}
+
+// BUTTONS
 
 /**
  * Important buttons providing key features in the app.
@@ -39,6 +75,7 @@ export enum UnifiedButtonsType {
 
 /**
  * The matches from button type to their icons.
+ * Valid for both MeowButtons and the sidebar buttons.
  */
 export const unifiedButtonIconMatches: Map<string, Resource> = new Map();
 unifiedButtonIconMatches.set(UnifiedButtonsType.BACKWARD, $r('sys.symbol.arrow_left'));
@@ -72,14 +109,14 @@ unifiedButtonIconMatches.set(UnifiedButtonsType.EXTENSIONS, $r('sys.symbol.root'
 
 /**
  * Gets the icon of a button.
- * Note that this is also used by the icons in the sidebar.
+ * Note that this is used by MeowButtons and the sidebar buttons.
  *
- * @param button The button to get the icon of.
+ * @param code The button to get the icon of.
  * @returns The icon of the button.
  * @see MeowSidebar entry/src/main/ets/components/parts/Sidebar/MeowSidebar.ets and its affiliates.
  */
-export function getButtonIcon(button: string, fallback: Resource = $r('sys.symbol.questionmark_circle')): Resource {
-  return unifiedButtonIconMatches.get(button) ?? fallback;
+export function getButtonIcon(code: string, fallback: Resource = $r('sys.symbol.questionmark_circle')): Resource {
+  return unifiedButtonIconMatches.get(code) ?? fallback;
 }
 
 /**

@@ -1,8 +1,8 @@
-import { defaultInnerRadius, defaultItemRadius } from "../../catstypicalframework/utils/ui";
-import { meowThemeColorType, getColor, standardSpacing, useEffects, defaultAnimation, isPreferRightHand } from "../settings";
+import { defaultInnerRadius } from "../../catstypicalframework/utils/ui";
+import { meowThemeColorType, standardSpacing } from "../constants";
+import { defaultAnimation, getColor, isPreferRightHand, useEffects } from "../settings";
 import { MooStringItem } from "./MooStringItem";
 import { MooTextButton } from "./MooTextButton";
-import { MooTextModifier } from "./MooTextModifier";
 
 @ComponentV2
 struct MooStringArrayList {
@@ -58,7 +58,7 @@ struct MooStringArrayList {
               this.onNew();
             });
           }
-        })
+        });
       };
     }
     .alignListItem(isPreferRightHand() ? ListItemAlign.End : ListItemAlign.Start)

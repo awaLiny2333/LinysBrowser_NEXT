@@ -6,13 +6,14 @@ import { MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
 import { MooSlider } from "../../../components/common/MooSlider";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
-import { defaultAnimation, standardSpacing } from "../../../components/settings";
-import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
+import { standardSpacing } from "../../../components/constants";
+import { defaultAnimation } from "../../../components/settings";
 import { meowDialogManager, openDialogRequestType } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { requestDialog } from "../../../hosts/system/dialogs/scripts/dialog";
 import { meowResources } from "../../../hosts/system/storage/classes/meowResources";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { meowAppMessageType } from "../../../hosts/system/windows/scripts/messaging";
+import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2

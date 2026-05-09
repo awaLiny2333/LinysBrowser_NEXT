@@ -4,7 +4,7 @@ import { meow } from "../../../catstypicalframework/utils/catsLogger";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
-import { standardSpacing } from "../../../components/settings";
+import { standardSpacing } from "../../../components/constants";
 import { meowDialogManager, openDialogRequestType } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { requestDialog } from "../../../hosts/system/dialogs/scripts/dialog";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";

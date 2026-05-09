@@ -5,8 +5,8 @@ import mooMenuButton from './MooMenuButton';
 import { MooSymbolButton } from './MooSymbolButton';
 import { MooTextInputV2 } from './MooTextInputV2';
 import { MooTextModifier } from './MooTextModifier';
-import { defaultMooSymbolSize, getButtonIcon } from './constants';
-import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, useEffects } from '../settings';
+import { defaultMooSymbolSize, getButtonIcon, standardSpacing, meowThemeColorType } from '../constants';
+import { defaultAnimation, getColor, useEffects } from '../settings';
 import { meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
 import { meowManagedSettings } from '../../hosts/userdata/settings/classes/meowManagedSettings';
 

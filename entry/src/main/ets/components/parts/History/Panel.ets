@@ -6,7 +6,7 @@ import { MooCapsuleButton } from "../../common/MooCapsuleButton";
 import { MooSymbolButton } from "../../common/MooSymbolButton";
 import { MooTextInputV2 } from "../../common/MooTextInputV2";
 import { MooTextModifier } from "../../common/MooTextModifier";
-import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from "../../settings";
+import { defaultAnimation, getColor, isPreferRightHand, useEffects } from "../../settings";
 import { meowAppStatuses } from "../../../hosts/system/windows/classes/meowAppStatuses";
 import { globalMessage, meowAppMessageType } from "../../../hosts/system/windows/scripts/messaging";
 import { meowHistorian } from "../../../hosts/userdata/history/classes/meowHistorian";
@@ -15,6 +15,7 @@ import { meowHistoryEntry } from "../../../hosts/userdata/history/classes/meowHi
 import { groupByDates } from "../../../hosts/userdata/history/scripts/helpers";
 import { DayCard } from "./parts/DayCard";
 import { defaultMonthButtonHeight, MonthButton } from "./parts/MonthButton";
+import { standardSpacing,meowThemeColorType } from "../../constants";
 
 @ComponentV2
 struct HistoryPanel {

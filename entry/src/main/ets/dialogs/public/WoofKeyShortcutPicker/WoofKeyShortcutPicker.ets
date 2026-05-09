@@ -2,7 +2,7 @@ import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { resource2String } from "../../../catstypicalframework/utils/resource";
 import { MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
 import { UniRowOfCapsuleButtons } from "../../../components/common/UniRowOfCapsuleButtons";
-import { standardSpacing } from "../../../components/settings";
+import { standardSpacing } from "../../../components/constants";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { WoofUniFrame } from "../../WoofUniFrame";
 import { Keyboard } from "./parts/Keyboard";

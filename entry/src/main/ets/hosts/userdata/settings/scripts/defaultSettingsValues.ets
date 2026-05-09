@@ -1,5 +1,5 @@
 import { getRandomEmoticon } from "../../../../catstypicalframework/utils/meow";
-import { UnifiedButtonsType } from "../../../../components/common/constants";
+import { UnifiedButtonsType } from "../../../../components/constants";
 import { SidebarPageType } from "../../../../components/parts/Sidebar/constants";
 
 /**

@@ -4,7 +4,8 @@ import { SymbolButton } from "../../../dialogs/parts/WoofCatsDev/parts/common/Sy
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { MooCapsuleButton } from "../../common/MooCapsuleButton";
 import { MooTextModifier } from "../../common/MooTextModifier";
-import { isPreferRightHand, standardComponentHeight, standardSpacing, titleBarPositionBottom } from "../../settings";
+import { standardComponentHeight, standardSpacing } from "../../constants";
+import { isPreferRightHand, titleBarPositionBottom } from "../../settings";
 
 @Builder
 export function MeowDestination(myUi: meowUiHost, uiContext: UIContext) {

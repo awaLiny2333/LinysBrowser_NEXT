@@ -1,5 +1,6 @@
 import { defaultItemRadius } from '../../catstypicalframework/utils/ui';
-import { getColor, meowThemeColorType } from '../settings';
+import { meowThemeColorType } from '../constants';
+import { getColor } from '../settings';
 
 /**
  * Once this is made a Builder, icon updates won't trigger UI refresh. My bad.

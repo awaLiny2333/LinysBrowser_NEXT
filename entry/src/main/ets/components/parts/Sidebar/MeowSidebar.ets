@@ -4,13 +4,13 @@ import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { MooSymbolButton } from "../../common/MooSymbolButton";
 import { MooTextButton } from "../../common/MooTextButton";
-import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, useEffects } from "../../settings";
-import { MeowBookmarksPanel } from "../Bookmarks/Panel";
-import { defaultMooSymbolSize, getButtonIcon } from "../../common/constants";
-import { SidebarPageType, sidebarContentIconArray, defaultSidebarWidth } from "./constants";
-import { SlotEditButton } from "../../common/SlotEditButton";
-import { HistoryPanel } from "../History/Panel";
 import { MooTextModifier } from "../../common/MooTextModifier";
+import { SlotEditButton } from "../../common/SlotEditButton";
+import { defaultMooSymbolSize, getButtonIcon, meowThemeColorType, standardSpacing } from "../../constants";
+import { defaultAnimation, getColor, useEffects } from "../../settings";
+import { MeowBookmarksPanel } from "../Bookmarks/Panel";
+import { HistoryPanel } from "../History/Panel";
+import { defaultSidebarWidth, sidebarContentIconArray, SidebarPageType } from "./constants";
 
 @ComponentV2
 struct MeowSidebar {
@@ -48,7 +48,7 @@ struct MeowSidebar {
         .opacity(this.isEditing ? 0.5 : 1)
         .layoutWeight(1)
         .width('100%');
-        
+
         this.buttonRow();
       }
     }

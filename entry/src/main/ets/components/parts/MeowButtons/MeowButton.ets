@@ -6,8 +6,8 @@ import lazy { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog
 import { ALL_WINDOW_ORIENTATIONS, meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addressBarStatuses';
 import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
-import { defaultAnimation, fontSizeSymbol, getColor, meowThemeColorType, standardSpacing, useEffects } from '../../settings';
-import { defaultMooSymbolSize, getButtonIcon, UnifiedButtonsType } from '../../common/constants';
+import { defaultAnimation, getColor, useEffects } from '../../settings';
+import { defaultMooSymbolSize, fontSizeSymbol, getButtonIcon, standardSpacing, meowThemeColorType, UnifiedButtonsType } from '../../constants';
 
 @ComponentV2
 struct MeowButton {

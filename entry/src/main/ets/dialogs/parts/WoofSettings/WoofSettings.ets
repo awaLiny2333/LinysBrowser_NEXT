@@ -1,6 +1,6 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
-import { standardSpacing, waterFlowColumnsTemplate } from '../../../components/settings';
+import { waterFlowColumnsTemplate } from '../../../components/settings';
 import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { getDevMode } from '../../../hosts/system/storage/settings';
@@ -17,6 +17,7 @@ import { SettingsHistory } from './parts/History';
 import { SettingsOnStartUp } from './parts/OnStartUp';
 import { SettingsSecurity } from './parts/Security';
 import { SettingsStorage } from './parts/Storage';
+import { standardSpacing } from '../../../components/constants';
 
 @ComponentV2
 struct WoofSettings {

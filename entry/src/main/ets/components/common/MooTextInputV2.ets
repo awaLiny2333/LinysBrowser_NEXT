@@ -1,5 +1,6 @@
 import { defaultInnerRadius } from '../../catstypicalframework/utils/ui';
-import { fontSizeMedium, getColor, meowThemeColorType, standardComponentHeight, standardSpacing, useEffects } from '../settings';
+import { fontSizeMedium, meowThemeColorType, standardComponentHeight, standardSpacing } from '../constants';
+import { getColor, useEffects } from '../settings';
 
 @ComponentV2
 struct MooTextInputV2 {

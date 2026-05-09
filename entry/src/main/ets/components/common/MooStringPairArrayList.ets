@@ -1,6 +1,7 @@
 import { LengthMetrics } from '@kit.ArkUI';
 import { defaultInnerRadius } from '../../catstypicalframework/utils/ui';
-import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from '../settings';
+import { meowThemeColorType, standardSpacing } from '../constants';
+import { defaultAnimation, getColor, isPreferRightHand, useEffects } from '../settings';
 import { MooStringItem } from './MooStringItem';
 import { MooTextButton } from './MooTextButton';
 

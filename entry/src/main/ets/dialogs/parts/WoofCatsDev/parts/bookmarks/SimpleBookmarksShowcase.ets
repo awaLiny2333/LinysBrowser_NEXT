@@ -1,7 +1,7 @@
 import { meow, meowLevel } from '../../../../../catstypicalframework/utils/catsLogger';
 import { defaultInnerRadius, defaultRoundedRadius } from '../../../../../catstypicalframework/utils/ui';
 import { meowBookmarkItem } from '../../../../../hosts/userdata/bookmarks/classes/meowBookmarkItem';
-import { meowFlexOptions } from '../../../../../components/settings';
+import { meowFlexOptions } from '../../../../../components/constants';
 import { SymbolButton } from '../common/SymbolButton';
 import { UniContentCard } from '../../../../../components/common/UniContentCard';
 

@@ -3,24 +3,25 @@ import { meowAvoid } from '../catstypicalframework/hosts/meowAvoid';
 import { meowLayout } from '../catstypicalframework/hosts/meowLayout';
 import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
 import lazy { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
-import lazy { defaultWindowTopDecorHeight, defaultInnerRadius, shortModeThreshold, updateNavigationIndicator, wideModeThreshold } from '../catstypicalframework/utils/ui';
+import lazy { defaultInnerRadius, defaultWindowTopDecorHeight, shortModeThreshold, updateNavigationIndicator, wideModeThreshold } from '../catstypicalframework/utils/ui';
 import lazy { MooTextModifier } from '../components/common/MooTextModifier';
-import { UnifiedButtonsType } from '../components/common/constants';
-import { MeowButtonsSlot } from '../components/parts/MeowButtons/MeowButtonsSlot';
+import { meowThemeColorType, mooTextType, standardComponentHeight, standardSpacing, UnifiedButtonsType } from '../components/constants';
 import lazy { MeowAddressBar } from '../components/parts/Homepage/MeowAddressBar';
 import { MeowDestination } from '../components/parts/Homepage/MeowDestination';
 import { MeowResMonitor } from '../components/parts/Homepage/MeowResMonitor';
 import lazy { MeowShortcutsPanel } from '../components/parts/Homepage/MeowShortcuts';
-import { MeowSidebar } from '../components/parts/Sidebar/MeowSidebar';
 import { MeowSuggestions } from '../components/parts/Homepage/MeowSuggestions';
 import lazy { MeowTitleBar, MeowTitleBarHeight } from '../components/parts/Homepage/MeowTitleBar';
 import lazy { MeowTitleTop } from '../components/parts/Homepage/MeowTitleTop';
 import { MeowWindowInfoBar } from '../components/parts/Homepage/MeowWindowInfoBar';
+import { MeowButtonsSlot } from '../components/parts/MeowButtons/MeowButtonsSlot';
 import lazy { MeowPlaceForDialogs } from '../components/parts/MeowPlaceForDialogs';
 import { MeowPlaceForKeyShortcuts } from '../components/parts/MeowPlaceForKeyShortcuts';
+import { MeowSidebar } from '../components/parts/Sidebar/MeowSidebar';
+import { defaultTabsVerticalShrunkWidth, defaultTabsVerticalWidth } from '../components/parts/Tabs/constants';
 import { MeowTabsHorizontal } from '../components/parts/Tabs/Horizontal';
 import { MeowTabsVertical } from '../components/parts/Tabs/Vertical';
-import lazy { defaultAnimation, getColor, isPreferRightHand, isTabsStyleVertical, meowThemeColorType, mooTextType, showGiganticWindowTitle, sidebarShouldBeOnTheRight, standardComponentHeight, standardSpacing, titleBarPositionBottom, useEffects } from '../components/settings';
+import { defaultAnimation, getColor, isPreferRightHand, isTabsStyleVertical, showGiganticWindowTitle, sidebarShouldBeOnTheRight, titleBarPositionBottom, useEffects } from '../components/settings';
 import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
 import { meowResources } from '../hosts/system/storage/classes/meowResources';
 import { meowAppStatuses } from '../hosts/system/windows/classes/meowAppStatuses';
@@ -115,13 +116,20 @@ struct Index {
               if (useEffects()) {
                 newW -= standardSpacing;
               }
+              if (this.verticalTabsAutoShrink && this.verticalTabsShrinkExpandNoPush) {
+                // Auto shrink, and we don't want to push the web contents away everytime the mouse travels across the tabs bar.
+                if (this.showingVerticalTab && !this.myUi.verticalTabsShrunk) {
+                  newW -= (defaultTabsVerticalWidth - defaultTabsVerticalShrunkWidth);
+                }
+              }
               animateToImmediately(defaultAnimation(), () => {
-                this.myUi.sideAreaWidth = Math.max(0, newW);
+                this.myUi.sideAreaWidth = Math.ceil(Math.max(0, newW));
               });
+              meow(`New sideAreaWidth: ${this.myUi.sideAreaWidth}!`, 'Index', meowLevel.INFO);
             }
           })
           .onHover((isHover) => {
-            if (!(this.mySettings.settingsData[14].value as boolean)) {
+            if (!(this.verticalTabsAutoShrink)) {
               return;
             }
             // Auto shrink
@@ -312,6 +320,20 @@ struct Index {
   }
 
   /**
+   * Whether to auto shrink vertical tabs.
+   */
+  get verticalTabsAutoShrink() {
+    return this.mySettings.settingsData[14].value as boolean;
+  }
+
+  /**
+   * If the user wants no push to the web contents when expanding the vertical tabs.
+   */
+  get verticalTabsShrinkExpandNoPush() {
+    return this.mySettings.settingsData[84].value as boolean;
+  }
+
+  /**
    * The padding for the side area.
    */
   get sideAreaPadding(): Padding | number {
@@ -389,8 +411,9 @@ struct Index {
   get mainFrameSpace(): Margin {
     // side bar compensation
     const sidebarOnR = sidebarShouldBeOnTheRight();
+    const baseSideAreaWidth = this.myUi.sideAreaWidth; // The base width of side area in an ideal way.
     const borderShift = useEffects() ? 1 : 0;
-    const sideAreaShift = this.myLayout.wideMode ? this.myUi.sideAreaWidth + borderShift : 0;
+    const sideAreaShift = this.myLayout.wideMode ? baseSideAreaWidth + borderShift : 0;
     const left = sidebarOnR ? 0 : sideAreaShift;
     const right = sidebarOnR ? sideAreaShift : 0;
 

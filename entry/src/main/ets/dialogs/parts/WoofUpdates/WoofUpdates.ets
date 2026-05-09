@@ -1,7 +1,7 @@
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
-import { meowFlexOptions, mooTextType, standardSpacing } from "../../../components/settings";
+import { meowFlexOptions, mooTextType, standardSpacing } from "../../../components/constants";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { WoofUniFrame } from "../../WoofUniFrame";
 import { updateHistories } from "./updateHistories";

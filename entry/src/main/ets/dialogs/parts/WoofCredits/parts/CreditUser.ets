@@ -1,6 +1,6 @@
 import { meowLayout } from '../../../../catstypicalframework/hosts/meowLayout';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
-import { meowFlexOptions, mooTextType, standardSpacing } from '../../../../components/settings';
+import { meowFlexOptions, mooTextType, standardSpacing } from '../../../../components/constants';
 import { CreditCard } from './CreditCard';
 import { CreditDetails } from '../creditDetails';
 
