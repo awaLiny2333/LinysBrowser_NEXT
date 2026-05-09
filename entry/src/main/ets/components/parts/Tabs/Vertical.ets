@@ -1,11 +1,10 @@
 import { AppStorageV2 } from "@kit.ArkUI";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
-import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { SymbolButton } from "../../../dialogs/parts/WoofCatsDev/parts/common/SymbolButton";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
-import { defaultAnimation, sidebarShouldBeOnTheRight, useEffects, getColor } from "../../settings";
-import { standardSpacing, meowThemeColorType, defaultTabsVerticalWidth, defaultTabsVerticalShrunkWidth } from "../../constants";
+import { defaultTabsVerticalShrunkWidth, defaultTabsVerticalWidth, standardSpacing } from "../../constants";
+import { defaultAnimation, sidebarShouldBeOnTheRight } from "../../settings";
 
 @ComponentV2
 struct MeowTabsVertical {
@@ -32,8 +31,6 @@ struct MeowTabsVertical {
       .alignItems(sidebarShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
       .width(defaultTabsVerticalWidth)
       .layoutWeight(1)
-      .backgroundColor(useEffects() ? undefined : getColor(meowThemeColorType.PRIMARY))
-      .border({ width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth'), radius: useEffects() ? defaultInnerRadius : 0 });
     }
     .clip(true)
     .alignItems(sidebarShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
