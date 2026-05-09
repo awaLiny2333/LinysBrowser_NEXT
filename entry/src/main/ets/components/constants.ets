@@ -35,7 +35,19 @@ export enum meowThemeColorType {
   FONT = 2,
 }
 
-// BUTTONS
+// Tabs
+
+/**
+ * Default width for vertical tabs.
+ */
+export const defaultTabsVerticalWidth = 260;
+
+/**
+ * Default width for vertical tabs when shrunk.
+ */
+export const defaultTabsVerticalShrunkWidth = 32;
+
+// Buttons
 
 /**
  * Important buttons providing key features in the app.
@@ -122,3 +134,42 @@ export function getButtonIcon(code: string, fallback: Resource = $r('sys.symbol.
  * The default side length of MooSymbolButtons / MeowButtons (basically anythiong built around icon Symbols)
  */
 export const defaultMooSymbolSize = 31;
+
+// MeowButtons
+
+/**
+ * All available buttons for MeowButtons.
+ * Specially built for meowButtons.
+ */
+export const meowButtonsIconArray: [string, Resource][] = Array.from(unifiedButtonIconMatches.entries());
+
+// Side bar
+
+/**
+ * Uses the UnifiedButtonsType standards.
+ * Because we may want to store this info / order permanently into the settings as well,
+ * like all the customizable buttons.
+ */
+export enum SidebarPageType {
+  BOOKMARKS = 'BKM',
+  HISTORIES = 'HIS',
+  SCRATCHING_BOARD = 'SCB',
+  DOWNLOADS = 'DNL'
+}
+
+/**
+ * All available pre-set content / panels for the sidebar.
+ */
+export const sidebarContentIconArray: string[] = [
+  SidebarPageType.BOOKMARKS,
+  SidebarPageType.HISTORIES,
+  SidebarPageType.SCRATCHING_BOARD,
+  SidebarPageType.DOWNLOADS
+];
+
+export const sidebarContentIconSet = new Set(sidebarContentIconArray);
+
+/**
+ * Default sidebar width.
+ */
+export const defaultSidebarWidth = 360;

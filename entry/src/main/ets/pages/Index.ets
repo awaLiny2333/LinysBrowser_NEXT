@@ -5,7 +5,7 @@ import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
 import lazy { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
 import lazy { defaultInnerRadius, defaultWindowTopDecorHeight, shortModeThreshold, updateNavigationIndicator, wideModeThreshold } from '../catstypicalframework/utils/ui';
 import lazy { MooTextModifier } from '../components/common/MooTextModifier';
-import { meowThemeColorType, mooTextType, standardComponentHeight, standardSpacing, UnifiedButtonsType } from '../components/constants';
+import { defaultTabsVerticalShrunkWidth, defaultTabsVerticalWidth, meowThemeColorType, mooTextType, standardComponentHeight, standardSpacing, UnifiedButtonsType } from '../components/constants';
 import lazy { MeowAddressBar } from '../components/parts/Homepage/MeowAddressBar';
 import { MeowDestination } from '../components/parts/Homepage/MeowDestination';
 import { MeowResMonitor } from '../components/parts/Homepage/MeowResMonitor';
@@ -18,7 +18,6 @@ import { MeowButtonsSlot } from '../components/parts/MeowButtons/MeowButtonsSlot
 import lazy { MeowPlaceForDialogs } from '../components/parts/MeowPlaceForDialogs';
 import { MeowPlaceForKeyShortcuts } from '../components/parts/MeowPlaceForKeyShortcuts';
 import { MeowSidebar } from '../components/parts/Sidebar/MeowSidebar';
-import { defaultTabsVerticalShrunkWidth, defaultTabsVerticalWidth } from '../components/parts/Tabs/constants';
 import { MeowTabsHorizontal } from '../components/parts/Tabs/Horizontal';
 import { MeowTabsVertical } from '../components/parts/Tabs/Vertical';
 import { defaultAnimation, getColor, isPreferRightHand, isTabsStyleVertical, showGiganticWindowTitle, sidebarShouldBeOnTheRight, titleBarPositionBottom, useEffects } from '../components/settings';
@@ -125,7 +124,7 @@ struct Index {
               animateToImmediately(defaultAnimation(), () => {
                 this.myUi.sideAreaWidth = Math.ceil(Math.max(0, newW));
               });
-              meow(`New sideAreaWidth: ${this.myUi.sideAreaWidth}!`, 'Index', meowLevel.INFO);
+              // meow(`New sideAreaWidth: ${this.myUi.sideAreaWidth}!`, 'Index', meowLevel.INFO);
             }
           })
           .onHover((isHover) => {

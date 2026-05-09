@@ -3,9 +3,8 @@ import { MooSymbolButton } from "../../../components/common/MooSymbolButton";
 import { MooTextButton } from "../../../components/common/MooTextButton";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { SlotEditButton } from "../../../components/common/SlotEditButton";
-import { defaultMooSymbolSize, meowThemeColorType, standardSpacing } from "../../../components/constants";
+import { defaultMooSymbolSize, meowButtonsIconArray, meowThemeColorType, standardSpacing } from "../../../components/constants";
 import { defaultAnimation, getColor, isPreferRightHand, useEffects } from "../../../components/settings";
-import { meowButtonsIconArray } from "./constants";
 
 @ComponentV2
 struct ButtonSlot {

@@ -5,8 +5,7 @@ import { SymbolButton } from "../../../dialogs/parts/WoofCatsDev/parts/common/Sy
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { defaultAnimation, sidebarShouldBeOnTheRight, useEffects, getColor } from "../../settings";
-import { standardSpacing, meowThemeColorType } from "../../constants";
-import { defaultTabsVerticalShrunkWidth, defaultTabsVerticalWidth } from "./constants";
+import { standardSpacing, meowThemeColorType, defaultTabsVerticalWidth, defaultTabsVerticalShrunkWidth } from "../../constants";
 
 @ComponentV2
 struct MeowTabsVertical {

@@ -86,5 +86,16 @@ export function MeowPlaceForKeyShortcuts(
       myUi.fullscreenWindowed();
       meow(`Windowed Fullscreen!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
     });
+    Blank().keyboardShortcut(myKey.sidebar.value, myKey.sidebar.keys, () => {
+      animateToImmediately(defaultAnimation(), () => {
+        myUi.showSidebar = !myUi.showSidebar;
+      });
+      mySettings.setByIndex(82, myUi.showSidebar);
+      if (myUi.showSidebar) {
+        meow(`Show Sidebar!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+      } else {
+        meow(`Hide Sidebar!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+      }
+    });
   };
 }

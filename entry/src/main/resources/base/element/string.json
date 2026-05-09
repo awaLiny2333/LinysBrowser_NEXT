@@ -674,7 +674,7 @@
     },
     {
       "name": "KeyShortcuts_showTabs",
-      "value": "󰨴  Show tabs"
+      "value": "󰨴  Show tabs bar"
     },
     {
       "name": "KeyShortcuts_focusAddress",
@@ -723,6 +723,10 @@
     {
       "name": "KeyShortcuts_esc",
       "value": "󰃊  Escape / back"
+    },
+    {
+      "name": "KeyShortcuts_showSidebar",
+      "value": "󰨴  Show sidebar"
     },
     {
       "name": "Buttons",

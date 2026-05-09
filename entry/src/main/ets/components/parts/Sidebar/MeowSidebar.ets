@@ -1,16 +1,17 @@
 import { AppStorageV2 } from "@kit.ArkUI";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
+import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { MooSymbolButton } from "../../common/MooSymbolButton";
 import { MooTextButton } from "../../common/MooTextButton";
+import { MooTextInputV2 } from "../../common/MooTextInputV2";
 import { MooTextModifier } from "../../common/MooTextModifier";
-import { SlotEditButton } from "../../common/SlotEditButton";
-import { defaultMooSymbolSize, getButtonIcon, meowThemeColorType, standardSpacing } from "../../constants";
+import { SlotEditButton, symbolIconOptions } from "../../common/SlotEditButton";
+import { defaultMooSymbolSize, defaultSidebarWidth, getButtonIcon, meowThemeColorType, sidebarContentIconArray, sidebarContentIconSet, SidebarPageType, standardSpacing } from "../../constants";
 import { defaultAnimation, getColor, useEffects } from "../../settings";
 import { MeowBookmarksPanel } from "../Bookmarks/Panel";
 import { HistoryPanel } from "../History/Panel";
-import { defaultSidebarWidth, sidebarContentIconArray, SidebarPageType } from "./constants";
 
 @ComponentV2
 struct MeowSidebar {
@@ -20,6 +21,7 @@ struct MeowSidebar {
   // Local
   @Local showAdd: boolean = false;
   @Local isEditing: boolean = false;
+  @Local theList: string[][] = this.mySettings.settingsData[81].value as string[][]; // theList would get directly the address, so all modifications are 通透的!
   // Render
   @Local render: boolean = false;
 
@@ -69,27 +71,20 @@ struct MeowSidebar {
   @Builder
   buttonRow() {
     List() {
-      Repeat(this.mySettings.settingsData[81].value as string[][])
+      Repeat(this.theList)
         .each((item: RepeatItem<string[]>) => {
           ListItem() {
             SlotEditButton({
               type: item.item[1],
-              myUi: this.myUi,
-              param: item.item[1],
-              paramIconId: item.item[0],
-              hasParam: !sidebarContentIconArray.includes(item.item[1]),
+              extraParam: item.item[1],
+              extraIcon: item.item[0],
+              isEditing: this.isEditing,
+              hasParam: !sidebarContentIconSet.has(item.item[1]),
               myOnHold: () => {
                 return this.myUi.sidebarPage == item.item[1];
               },
-              isEditing: this.isEditing,
               editParamSubmit: (result) => {
-                const list = this.mySettings.settingsData[81].value as string[][];
-                list[item.index][1] = result;
-                this.mySettings.requestSaveToDisk();
-              },
-              editParamIconIdSubmit: (result) => {
-                const list = this.mySettings.settingsData[81].value as string[][];
-                list[item.index][0] = result;
+                this.theList[item.index][1] = result;
                 this.mySettings.requestSaveToDisk();
               },
               clickAction: () => {
@@ -99,21 +94,22 @@ struct MeowSidebar {
                 this.mySettings.setByIndex(83, this.myUi.sidebarPage);
               },
               requestDelete: () => {
-                const list = this.mySettings.settingsData[81].value as string[][];
                 animateToImmediately(defaultAnimation(), () => {
-                  list.splice(item.index, 1);
+                  this.theList.splice(item.index, 1);
                 });
                 this.mySettings.requestSaveToDisk();
+              },
+              menuExtra: sidebarContentIconSet.has(item.item[1]) ? undefined : () => {
+                this.iconSelect(item);
               }
             });
           };
         })
         .onMove((from: number, to: number) => {
           // Move
-          const list = this.mySettings.settingsData[81].value as string[][];
-          const item = list[from];
-          list.splice(from, 1);
-          list.splice(to, 0, item);
+          const item = this.theList[from];
+          this.theList.splice(from, 1);
+          this.theList.splice(to, 0, item);
           this.mySettings.requestSaveToDisk();
         });
 
@@ -136,7 +132,7 @@ struct MeowSidebar {
         });
       } else {
         ListItem() {
-          Text('|').attributeModifier(new MooTextModifier()).height(defaultMooSymbolSize).opacity(0.5).padding({ left: standardSpacing, right: standardSpacing }); // Spacing
+          Text('|').attributeModifier(new MooTextModifier()).height(defaultMooSymbolSize).opacity(0.5).padding({ left: standardSpacing * 0.7, right: standardSpacing * 0.7 }); // Spacing
         };
       }
 
@@ -195,6 +191,51 @@ struct MeowSidebar {
     .listDirection(Axis.Horizontal)
     .width('auto')
     .height('auto');
+  }
+
+  /**
+   * The panel to select a sidebar button.
+   * @param item The item of the button string.
+   */
+  @Builder
+  iconSelect(item: RepeatItem<string[]>) {
+    // Icon select
+    Flex({ wrap: FlexWrap.Wrap }) {
+      Repeat(symbolIconOptions)
+        .each((icon) => {
+          MooSymbolButton({
+            icon: $r('sys.symbol.'.concat(icon.item)),
+            clickAction: () => {
+              animateToImmediately(defaultAnimation(), () => {
+                item.item[0] = icon.item;
+              });
+              // Will trigger the change event in the text input, so we don't need to request for a save here.
+              // this.mySettings.requestSaveToDisk();
+            }
+          });
+        });
+    }
+    .constraintSize({ maxWidth: 10 * defaultMooSymbolSize + standardSpacing + (useEffects() ? 2 : 0) })
+    .padding(standardSpacing * 0.5)
+    .backgroundColor(getColor(meowThemeColorType.SECONDARY))
+    .border({ radius: defaultInnerRadius, width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth') });
+
+    // Other id
+    MooTextInputV2({
+      text: item.item[0],
+      icon: $r('sys.symbol.rename'),
+      placeholder: '󰊄',
+      autoLength: true,
+      onChange: (value) => {
+        if (item.item[0] != value) {
+          animateToImmediately(defaultAnimation(), () => {
+            item.item[0] = value;
+          });
+        }
+        this.mySettings.requestSaveToDisk();
+      },
+    })
+      .padding({ left: standardSpacing * 0.5 });
   }
 
   /**

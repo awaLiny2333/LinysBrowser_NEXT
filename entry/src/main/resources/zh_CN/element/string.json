@@ -674,7 +674,7 @@
     },
     {
       "name": "KeyShortcuts_showTabs",
-      "value": "󰨴  显示标签页"
+      "value": "󰨴  显示标签页栏"
     },
     {
       "name": "KeyShortcuts_focusAddress",
@@ -723,6 +723,10 @@
     {
       "name": "KeyShortcuts_esc",
       "value": "󰃊  返回"
+    },
+    {
+      "name": "KeyShortcuts_showSidebar",
+      "value": "󰨴  显示侧边栏"
     },
     {
       "name": "Buttons",

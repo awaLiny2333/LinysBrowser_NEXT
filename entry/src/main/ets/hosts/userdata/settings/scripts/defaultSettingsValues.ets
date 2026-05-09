@@ -1,6 +1,5 @@
 import { getRandomEmoticon } from "../../../../catstypicalframework/utils/meow";
-import { UnifiedButtonsType } from "../../../../components/constants";
-import { SidebarPageType } from "../../../../components/parts/Sidebar/constants";
+import { SidebarPageType, UnifiedButtonsType } from "../../../../components/constants";
 
 /**
  * Default user agents in a specified string format.

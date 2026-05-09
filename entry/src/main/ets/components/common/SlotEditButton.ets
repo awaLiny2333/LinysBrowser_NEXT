@@ -1,14 +1,10 @@
-import { AppStorageV2 } from '@kit.ArkUI';
 import { getRandomEmoticon } from '../../catstypicalframework/utils/meow';
-import { defaultInnerRadius } from '../../catstypicalframework/utils/ui';
+import { getButtonIcon, meowThemeColorType, standardSpacing } from '../constants';
+import { defaultAnimation, getColor, useEffects } from '../settings';
 import mooMenuButton from './MooMenuButton';
 import { MooSymbolButton } from './MooSymbolButton';
 import { MooTextInputV2 } from './MooTextInputV2';
 import { MooTextModifier } from './MooTextModifier';
-import { defaultMooSymbolSize, getButtonIcon, standardSpacing, meowThemeColorType } from '../constants';
-import { defaultAnimation, getColor, useEffects } from '../settings';
-import { meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
-import { meowManagedSettings } from '../../hosts/userdata/settings/classes/meowManagedSettings';
 
 /**
  * An edit button that has two modes (isEditing?)
@@ -24,16 +20,15 @@ struct SlotEditButton {
   // Params
   @Param @Require isEditing: boolean;
   @Param @Require type: string;
-  @Param @Require hasParam: boolean; // Params for each button. like the links for some buttons to open a web page in the side bar.
-  @Param @Once paramIconId: string | undefined = undefined;
-  @Param @Once param: string = '';
-  // Hosts
-  @Param myUi: meowUiHost | undefined = undefined;
-  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+  @Param @Require hasParam: boolean; // Params for each button is like the links for some buttons to open a web page in the side bar.
+  @Param extraIcon: string | undefined = undefined; // Icon linked to type has a HIGHER priority than this iconId.
+  @Param extraParam: string = '';
+  // Meow
+  @BuilderParam menuExtra?: () => void;
   // Local
-  @Local isMenu: boolean = false;
-  @Local isSelectingIcon: boolean = this.paramIconId !== undefined;
   @Local menuSubmitted: boolean = false; // This is purely for animation :P
+  @Local isMenu: boolean = false;
+  @Local paramEdit: string = this.extraParam;
   // Events
   @Event myOnHold: () => boolean = () => {
     return false;
@@ -44,7 +39,11 @@ struct SlotEditButton {
   @Event clickAction: () => void;
   @Event requestDelete: () => void;
   @Event editParamSubmit: (result: string) => void;
-  @Event editParamIconIdSubmit: (result: string) => void;
+
+  @Monitor('param')
+  refreshParamEdit() {
+    this.paramEdit = this.extraParam;
+  }
 
   build() {
     MooSymbolButton({
@@ -84,72 +83,30 @@ struct SlotEditButton {
             }, 1);
           }
         });
+        if (this.menuExtra) {
+          this.menuExtra();
+        }
         if (this.hasParam) {
-          // Icon array
-          if (this.isSelectingIcon) {
-            Flex({ wrap: FlexWrap.Wrap }) {
-              Repeat(symbolIconOptions)
-                .each((item) => {
-                  MooSymbolButton({
-                    icon: $r('sys.symbol.'.concat(item.item)),
-                    clickAction: () => {
-                      animateToImmediately(defaultAnimation(), () => {
-                        this.paramIconId = item.item;
-                      });
-                      this.editParamIconIdSubmit(this.paramIconId || 'link');
-                    }
-                  });
-                });
-            }
-            .constraintSize({ maxWidth: 10 * defaultMooSymbolSize + standardSpacing })
-            .padding(standardSpacing * 0.5)
-            .backgroundColor(getColor(meowThemeColorType.SECONDARY))
-            .border({ radius: defaultInnerRadius, width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth') });
-
-            MooTextInputV2({
-              text: this.paramIconId,
-              icon: $r('sys.symbol.rename'),
-              placeholder: '󰊄',
-              autoLength: true,
-              onChange: (value) => {
-                this.paramIconId = value;
-              },
-              onSubmit: () => {
-                this.editParamIconIdSubmit(this.paramIconId || 'link');
-              }
-            })
-              .padding({ left: standardSpacing * 0.5 });
-          }
-
           // Param edit
-          Row({ space: standardSpacing * 0.5 }) {
-            MooSymbolButton({
-              icon: this.myIcon,
-              clickAction: () => {
-                animateToImmediately(defaultAnimation(), () => {
-                  this.isSelectingIcon = !this.isSelectingIcon;
-                });
-              }
-            });
-            MooTextInputV2({
-              text: this.param,
-              placeholder: '󰁫',
-              autoLength: true,
-              onChange: (value) => {
-                this.param = value;
-              },
-              onSubmit: () => {
-                this.editParamSubmit(this.param);
-                animateToImmediately(defaultAnimation(), () => {
-                  this.menuSubmitted = true;
-                });
-                setTimeout(() => {
-                  this.isMenu = false;
-                }, 1000);
-              }
-            });
-          }
-          .padding({ left: standardSpacing * 0.5 });
+          MooTextInputV2({
+            text: this.extraParam,
+            icon: this.myIcon,
+            placeholder: '󰁫',
+            autoLength: true,
+            onChange: (value) => {
+              this.paramEdit = value;
+            },
+            onSubmit: () => {
+              this.editParamSubmit(this.paramEdit);
+              animateToImmediately(defaultAnimation(), () => {
+                this.menuSubmitted = true;
+              });
+              setTimeout(() => {
+                this.isMenu = false;
+              }, 1000);
+            }
+          })
+            .padding({ left: standardSpacing * 0.5 });
         }
       }
     }
@@ -160,7 +117,7 @@ struct SlotEditButton {
   }
 
   get myIcon() {
-    return getButtonIcon(this.type, $r('sys.symbol.'.concat(this.paramIconId || 'link')) || $r('sys.symbol.questionmark_circle'));
+    return getButtonIcon(this.type, $r('sys.symbol.'.concat(this.extraIcon || 'link')) || $r('sys.symbol.questionmark_circle'));
   }
 }
 

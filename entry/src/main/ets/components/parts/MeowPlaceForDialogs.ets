@@ -14,7 +14,7 @@ import { WoofPromptDialog } from '../../dialogs/public/WoofErrorPrompt/WoofError
 import lazy { WoofQRDialog } from '../../dialogs/public/WoofQR/WoofQR';
 import lazy { WoofAdBlockerDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlocker';
 import lazy { WoofAdBlockerRulesDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlockerRules';
-import lazy { WoofButtonsDialog } from '../../dialogs/settings/WoofButtons/ButtonsManager';
+import lazy { WoofButtonsDialog } from '../../dialogs/settings/WoofMeowButtons/ButtonsManager';
 import lazy { WoofCookiesDialog } from '../../dialogs/settings/WoofCookies/WoofCookies';
 import lazy { WoofDarkDialog } from '../../dialogs/settings/WoofDark/WoofDark';
 import lazy { WoofFaultLogsDialog } from '../../dialogs/settings/WoofFaultLogs/WoofFaultLogs';
