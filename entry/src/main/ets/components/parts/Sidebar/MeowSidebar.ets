@@ -20,34 +20,45 @@ struct MeowSidebar {
   // Local
   @Local showAdd: boolean = false;
   @Local isEditing: boolean = false;
+  // Render
+  @Local render: boolean = false;
 
   build() {
     Column({ space: standardSpacing * 0.75 }) {
       // The panels
-      // Look how well they are aligned! Bravo! ヽ（´ー｀）┌
-      Column() {
-        if (this.myUi.sidebarPage == SidebarPageType.SCRATCHING_BOARD) {
-          // TODO: scratching board UI.
-        } else if (this.myUi.sidebarPage == SidebarPageType.DOWNLOADS) {
-          // TODO: downloads UI.
-        } else if (this.myUi.sidebarPage == SidebarPageType.HISTORIES) {
-          // History
-          HistoryPanel({ myLayout: this.myLayout, allowEdit: false, needPadding: false });
-        } else if (this.myUi.sidebarPage == SidebarPageType.BOOKMARKS) {
-          // Bookmarks
-          MeowBookmarksPanel({ myUi: this.myUi, needPadding: false, panelWidth: this.sidebarWidth, columnWidth: this.sidebarWidth, maxColumn: 1 });
-        } else {
-          Text(this.myUi.sidebarPage).attributeModifier(new MooTextModifier());
-          // TODO: web show url of [this.myUi.sidebarPage]
+      if (this.render) {
+        // Look how well they are aligned! Bravo! ヽ（´ー｀）┌
+        Column() {
+          if (this.myUi.sidebarPage == SidebarPageType.SCRATCHING_BOARD) {
+            // TODO: scratching board UI.
+          } else if (this.myUi.sidebarPage == SidebarPageType.DOWNLOADS) {
+            // TODO: downloads UI.
+          } else if (this.myUi.sidebarPage == SidebarPageType.HISTORIES) {
+            // History
+            HistoryPanel({ myLayout: this.myLayout, allowEdit: false, needPadding: false });
+          } else if (this.myUi.sidebarPage == SidebarPageType.BOOKMARKS) {
+            // Bookmarks
+            MeowBookmarksPanel({ myUi: this.myUi, needPadding: false, panelWidth: this.sidebarWidth, columnWidth: this.sidebarWidth, maxColumn: 1 });
+          } else {
+            Text(`[${this.myUi.sidebarPage}]`).attributeModifier(new MooTextModifier());
+            // TODO: web show url of [this.myUi.sidebarPage]
+          }
         }
+        .enabled(!this.isEditing)
+        .opacity(this.isEditing ? 0.5 : 1)
+        .layoutWeight(1)
+        .width('100%');
+        
+        this.buttonRow();
       }
-      .enabled(!this.isEditing)
-      .opacity(this.isEditing ? 0.5 : 1)
-      .layoutWeight(1)
-      .width('100%');
-
-      this.buttonRow();
     }
+    .onAppear(() => {
+      setTimeout(() => {
+        animateToImmediately(defaultAnimation(), () => {
+          this.render = true;
+        });
+      }, 10);
+    })
     .width(this.sidebarWidth)
     .height('100%');
   }
@@ -142,6 +153,7 @@ struct MeowSidebar {
         });
       };
     }
+    .scrollBar(BarState.Off)
     .listDirection(Axis.Horizontal)
     .width('100%')
     .height(defaultMeowButtonHeight);

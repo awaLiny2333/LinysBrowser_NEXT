@@ -126,5 +126,5 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   // Side bar
   new meowSettingsEntry('buttons_sidebar', meowSettingsEntryType.STRING_ARRAY_PAIR, defaultButtonsSidebar()),
   new meowSettingsEntry('show_sidebar', meowSettingsEntryType.BOOLEAN, 'false'), // #82
-  new meowSettingsEntry('sidebar_content', meowSettingsEntryType.STRING, ''), // #83
+  new meowSettingsEntry('sidebar_content', meowSettingsEntryType.STRING, 'HIS'), // #83
 ];

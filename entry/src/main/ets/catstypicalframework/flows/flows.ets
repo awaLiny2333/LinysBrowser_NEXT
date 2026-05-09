@@ -226,9 +226,7 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
     myUi.showSidebar = mySettings.settingsData[82].value as boolean;
   }
   const selectedSidebarPage = mySettings.settingsData[83].value as string;
-  if (selectedSidebarPage != '') {
-    myUi.sidebarPage = selectedSidebarPage;
-  }
+  myUi.sidebarPage = selectedSidebarPage || '';
 
   // END UI STATUSES
 
