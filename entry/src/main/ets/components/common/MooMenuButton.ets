@@ -1,5 +1,6 @@
 import { defaultMenuItemRadius } from "../../catstypicalframework/utils/ui";
 import { standardSpacing } from "../settings";
+import { MooTextModifier } from "./MooTextModifier";
 
 @ComponentV2
 struct mooMenuButton {
@@ -8,6 +9,7 @@ struct mooMenuButton {
 
   build() {
     Text(this.text)
+      .attributeModifier(new MooTextModifier())
       .onClick(() => {
         if (this.clickAction) {
           this.clickAction();

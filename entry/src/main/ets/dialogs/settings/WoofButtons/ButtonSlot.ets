@@ -2,9 +2,10 @@ import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { MooSymbolButton } from "../../../components/common/MooSymbolButton";
 import { MooTextButton } from "../../../components/common/MooTextButton";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
-import { buttonIconArray, defaultMeowButtonHeight } from "../../../components/parts/MeowButtons/constants";
-import { SlotEditButton } from "./SlotEditButton";
+import { defaultMooSymbolSize } from "../../../components/common/constants";
+import { SlotEditButton } from "../../../components/common/SlotEditButton";
 import { defaultAnimation, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from "../../../components/settings";
+import { meowButtonsIconArray } from "./constants";
 
 @ComponentV2
 struct ButtonSlot {
@@ -69,7 +70,7 @@ struct ButtonSlot {
       .border({ width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth'), radius: defaultInnerRadius })
       .alignListItem(ListItemAlign.Center)
       .listDirection(Axis.Horizontal)
-      .height(defaultMeowButtonHeight + 2 * standardSpacing * 0.75)
+      .height(defaultMooSymbolSize + 2 * standardSpacing * 0.75)
       .width('auto')
       .scrollBar(BarState.Off);
     }
@@ -79,7 +80,7 @@ struct ButtonSlot {
   @Builder
   addMenuBuilder() {
     List() {
-      Repeat(buttonIconArray)
+      Repeat(meowButtonsIconArray)
         .each((obj: RepeatItem<[string, Resource]>) => {
           ListItem() {
             MooSymbolButton({

@@ -1,5 +1,5 @@
 import lazy { meowBookmarkItem } from "../classes/meowBookmarkItem";
-import { ENTITY_MAP } from "./entityMap";
+import { HTML_ENTITY_MAP } from "./entityMap";
 
 /**
  * Escapes special characters to prevent HTML injection and structural breakage.
@@ -96,7 +96,7 @@ function resolveEntity(body: string): string | null {
   }
 
   // 处理命名实体 &nbsp;
-  const val = ENTITY_MAP.get(body);
+  const val = HTML_ENTITY_MAP.get(body);
   return val !== undefined ? val : null;
 }
 

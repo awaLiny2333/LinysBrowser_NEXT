@@ -1,14 +1,14 @@
 import { AppStorageV2 } from '@kit.ArkUI';
-import { getRandomEmoticon } from '../../../catstypicalframework/utils/meow';
-import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
-import mooMenuButton from '../../../components/common/MooMenuButton';
-import { defaultMooSymbolButtonSize, MooSymbolButton } from '../../../components/common/MooSymbolButton';
-import { MooTextInputV2 } from '../../../components/common/MooTextInputV2';
-import { MooTextModifier } from '../../../components/common/MooTextModifier';
-import { getButtonIcon } from '../../../components/parts/MeowButtons/constants';
-import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, useEffects } from '../../../components/settings';
-import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
-import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
+import { getRandomEmoticon } from '../../catstypicalframework/utils/meow';
+import { defaultInnerRadius } from '../../catstypicalframework/utils/ui';
+import mooMenuButton from './MooMenuButton';
+import { MooSymbolButton } from './MooSymbolButton';
+import { MooTextInputV2 } from './MooTextInputV2';
+import { MooTextModifier } from './MooTextModifier';
+import { defaultMooSymbolSize, getButtonIcon } from './constants';
+import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, useEffects } from '../settings';
+import { meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
+import { meowManagedSettings } from '../../hosts/userdata/settings/classes/meowManagedSettings';
 
 /**
  * An edit button that has two modes (isEditing?)
@@ -88,7 +88,7 @@ struct SlotEditButton {
           // Icon array
           if (this.isSelectingIcon) {
             Flex({ wrap: FlexWrap.Wrap }) {
-              Repeat(iconOptions)
+              Repeat(symbolIconOptions)
                 .each((item) => {
                   MooSymbolButton({
                     icon: $r('sys.symbol.'.concat(item.item)),
@@ -101,7 +101,7 @@ struct SlotEditButton {
                   });
                 });
             }
-            .constraintSize({ maxWidth: 10 * (defaultMooSymbolButtonSize - 7) + standardSpacing })
+            .constraintSize({ maxWidth: 10 * defaultMooSymbolSize + standardSpacing })
             .padding(standardSpacing * 0.5)
             .backgroundColor(getColor(meowThemeColorType.SECONDARY))
             .border({ radius: defaultInnerRadius, width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth') });
@@ -168,8 +168,9 @@ export { SlotEditButton };
 
 /**
  * Available pre-set options for link icons in the menu.
+ * Selected based on Liny's personal interests! ┐(￣ヮ￣)┌
  */
-export const iconOptions: string[] = [
+export const symbolIconOptions: string[] = [
   'link', 'checkmark', 'xmark', 'pawprint', 'lock',
   'cup', 'battery', 'bookmark', 'doc', 'doc_text',
   'hobbyhorse', 'cloud_and_stars', 'fork_knife', 'message', 'paintpalette',

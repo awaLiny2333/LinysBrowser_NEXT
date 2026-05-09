@@ -1,6 +1,5 @@
 import { defaultInnerRadius } from '../../catstypicalframework/utils/ui';
-import { fontSizeMedium, getColor, meowThemeColorType, standardSpacing, useEffects } from '../settings';
-import { defaultMooCapsuleButtonHeight } from './MooCapsuleButton';
+import { fontSizeMedium, getColor, meowThemeColorType, standardComponentHeight, standardSpacing, useEffects } from '../settings';
 
 @ComponentV2
 struct MooTextInputV2 {
@@ -24,7 +23,7 @@ struct MooTextInputV2 {
       TextInput({ text: this.text as string, placeholder: this.placeholder })
         .id(this.myId)
         .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
-        .height(defaultMooCapsuleButtonHeight)
+        .height(standardComponentHeight)
         .fontColor(getColor(meowThemeColorType.FONT))
         .caretColor(getColor(meowThemeColorType.FONT))
         .selectedBackgroundColor(getColor(meowThemeColorType.PRIMARY))
@@ -39,7 +38,7 @@ struct MooTextInputV2 {
           this.onSubmit();
         });
     }
-    .height(defaultMooCapsuleButtonHeight);
+    .height(standardComponentHeight);
   }
 }
 

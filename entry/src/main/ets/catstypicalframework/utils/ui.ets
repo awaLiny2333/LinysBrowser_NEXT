@@ -71,28 +71,25 @@ export function measureTextWidth(text: string, uiContext: UIContext, fontSize: n
     .width as number);
 }
 
-export let defaultAnima: AnimateParam = { curve: Curve.FastOutSlowIn, duration: 350 };
+// Radiuses
 
 export const defaultRoundedRadius = 15; // 30
-
 export const defaultInnerRadius = 8; // 20
-
 export const defaultItemRadius = 5;
-
 export const defaultMenuItemRadius = deviceInfo.deviceType == deviceInfo.DeviceTypes.TYPE_2IN1 ? 5 : 18;
 
 // Decor (Free window mode)
 
-export const defaultDecorHeight = 40;
+export const defaultWindowTopDecorHeight = 40;
 
 /**
- * Sets the decor height to defaultDecorHeight (50).
+ * Sets the decor height to defaultDecorHeight (40).
  * @param windowObj The window.Window object.
  * */
 export function setDecorHeight(windowObj: window.Window) {
   try {
-    meow(`setDecorHeight: ${defaultDecorHeight}`, 'setDecorHeight', meowLevel.INFO);
-    windowObj.setWindowDecorHeight(defaultDecorHeight);
+    meow(`setDecorHeight: ${defaultWindowTopDecorHeight}`, 'setDecorHeight', meowLevel.INFO);
+    windowObj.setWindowDecorHeight(defaultWindowTopDecorHeight);
   } catch (e) {
     meow(`windowObj.setWindowDecorHeight(defaultDecorHeight) Failed: ${e}`, 'setDecorHeight', meowLevel.ERROR);
   }
@@ -119,7 +116,7 @@ export function listenAvoid(windowId: string) {
           myAvoid.top = top;
         } else {
           // Free window
-          myAvoid.top = Math.max(top, defaultDecorHeight);
+          myAvoid.top = Math.max(top, defaultWindowTopDecorHeight);
         }
       }
       if (data.type == window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
@@ -174,7 +171,7 @@ export function updateAvoid(windowObj: window.Window, windowId: string) {
       avoid.top = top;
     } else {
       // Free window
-      avoid.top = Math.max(top, defaultDecorHeight);
+      avoid.top = Math.max(top, defaultWindowTopDecorHeight);
     }
 
     avoidArea = windowObj.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR);

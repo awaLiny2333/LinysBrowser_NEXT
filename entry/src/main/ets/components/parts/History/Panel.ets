@@ -124,9 +124,9 @@ struct HistoryPanel {
         .backgroundColor(useEffects() ? getColor(meowThemeColorType.PRIMARY) : getColor(meowThemeColorType.SECONDARY))
         .border({ radius: defaultInnerRadius, width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth') })
         .direction(isPreferRightHand() ? Direction.Rtl : Direction.Ltr)
-        .padding(standardSpacing * 0.75)
         .listDirection(Axis.Horizontal)
-        .height(defaultMonthButtonHeight + standardSpacing * 1.5)
+        .padding(standardSpacing * 0.75)
+        .height(defaultMonthButtonHeight + standardSpacing * 0.75 * 2)
         .width('auto');
       }
 
@@ -329,5 +329,3 @@ struct HistoryPanel {
 }
 
 export { HistoryPanel };
-
-export const defaultTextHeight = 32;

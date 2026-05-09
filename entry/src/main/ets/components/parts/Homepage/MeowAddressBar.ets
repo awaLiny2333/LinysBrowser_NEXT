@@ -9,7 +9,7 @@ import { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addres
 import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { MooTextModifier } from '../../common/MooTextModifier';
 import { fontSizeSmall, getColor, isPreferRightHand, meowThemeColorType, standardSpacing, useEffects } from '../../settings';
-import { meowButtonsType } from '../MeowButtons/constants';
+import { UnifiedButtonsType } from '../../common/constants';
 import { MeowButtonsSlot } from '../MeowButtons/MeowButtonsSlot';
 import { MeowTitleBarHeight } from './MeowTitleBar';
 
@@ -168,12 +168,12 @@ struct MeowAddressBar {
 
   @Computed
   get showOnFocusButtons() {
-    return this.myUi.addressBarFocused && (this.mySettings.settingsData[77].value as meowButtonsType[]).length > 0;
+    return this.myUi.addressBarFocused && (this.mySettings.settingsData[77].value as UnifiedButtonsType[]).length > 0;
   }
 
   @Computed
   get showAlwaysOnButtons() {
-    return (this.mySettings.settingsData[78].value as meowButtonsType[]).length > 0;
+    return (this.mySettings.settingsData[78].value as UnifiedButtonsType[]).length > 0;
   }
 }
 

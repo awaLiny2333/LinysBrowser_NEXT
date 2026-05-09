@@ -4,7 +4,7 @@ import { SymbolButton } from "../../../dialogs/parts/WoofCatsDev/parts/common/Sy
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { MooCapsuleButton } from "../../common/MooCapsuleButton";
 import { MooTextModifier } from "../../common/MooTextModifier";
-import { isPreferRightHand, standardSpacing, titleBarPositionBottom } from "../../settings";
+import { isPreferRightHand, standardComponentHeight, standardSpacing, titleBarPositionBottom } from "../../settings";
 
 @Builder
 export function MeowDestination(myUi: meowUiHost, uiContext: UIContext) {
@@ -43,8 +43,6 @@ export function MeowDestination(myUi: meowUiHost, uiContext: UIContext) {
     }
     .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl);
   }
-  .height(defaultMeowDestinationHeight)
+  .height(standardComponentHeight)
   .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl);
 }
-
-export const defaultMeowDestinationHeight = 44;

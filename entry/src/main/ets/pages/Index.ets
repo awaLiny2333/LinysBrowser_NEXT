@@ -3,9 +3,9 @@ import { meowAvoid } from '../catstypicalframework/hosts/meowAvoid';
 import { meowLayout } from '../catstypicalframework/hosts/meowLayout';
 import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
 import lazy { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
-import lazy { defaultDecorHeight, defaultInnerRadius, shortModeThreshold, updateNavigationIndicator, wideModeThreshold } from '../catstypicalframework/utils/ui';
+import lazy { defaultWindowTopDecorHeight, defaultInnerRadius, shortModeThreshold, updateNavigationIndicator, wideModeThreshold } from '../catstypicalframework/utils/ui';
 import lazy { MooTextModifier } from '../components/common/MooTextModifier';
-import { meowButtonsType } from '../components/parts/MeowButtons/constants';
+import { UnifiedButtonsType } from '../components/common/constants';
 import { MeowButtonsSlot } from '../components/parts/MeowButtons/MeowButtonsSlot';
 import lazy { MeowAddressBar } from '../components/parts/Homepage/MeowAddressBar';
 import { MeowDestination } from '../components/parts/Homepage/MeowDestination';
@@ -18,9 +18,9 @@ import lazy { MeowTitleTop } from '../components/parts/Homepage/MeowTitleTop';
 import { MeowWindowInfoBar } from '../components/parts/Homepage/MeowWindowInfoBar';
 import lazy { MeowPlaceForDialogs } from '../components/parts/MeowPlaceForDialogs';
 import { MeowPlaceForKeyShortcuts } from '../components/parts/MeowPlaceForKeyShortcuts';
-import { defaultTabsHorizontalHeight, MeowTabsHorizontal } from '../components/parts/Tabs/Horizontal';
+import { MeowTabsHorizontal } from '../components/parts/Tabs/Horizontal';
 import { MeowTabsVertical } from '../components/parts/Tabs/Vertical';
-import lazy { defaultAnimation, getColor, isPreferRightHand, isTabsStyleVertical, meowThemeColorType, mooTextType, showGiganticWindowTitle, sidebarShouldBeOnTheRight, standardSpacing, titleBarPositionBottom, useEffects } from '../components/settings';
+import lazy { defaultAnimation, getColor, isPreferRightHand, isTabsStyleVertical, meowThemeColorType, mooTextType, showGiganticWindowTitle, sidebarShouldBeOnTheRight, standardComponentHeight, standardSpacing, titleBarPositionBottom, useEffects } from '../components/settings';
 import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
 import { meowResources } from '../hosts/system/storage/classes/meowResources';
 import { meowAppStatuses } from '../hosts/system/windows/classes/meowAppStatuses';
@@ -173,7 +173,7 @@ struct Index {
               // More
               if (this.myUi.showMore) {
                 // Meow buttons
-                if ((this.mySettings.settingsData[80].value as meowButtonsType[]).length > 0) {
+                if ((this.mySettings.settingsData[80].value as UnifiedButtonsType[]).length > 0) {
                   Scroll() {
                     MeowButtonsSlot(this.myUi, this.myDialog, 80);
                   }
@@ -287,7 +287,7 @@ struct Index {
    * @returns The top avoid height.
    */
   get topAvoidHeight() {
-    return this.myApp.freeWindow ? defaultDecorHeight : this.myAvoid.top;
+    return this.myApp.freeWindow ? defaultWindowTopDecorHeight : this.myAvoid.top;
   }
 
   /**
@@ -341,7 +341,7 @@ struct Index {
     this.myLayout.heightTitleArea = maxHeightTitleArea;
 
     // Title bar
-    const tabsComp = this.showingHorizontalTab ? defaultTabsHorizontalHeight + standardSpacing : 0;
+    const tabsComp = this.showingHorizontalTab ? standardComponentHeight + standardSpacing : 0;
     const newTitleHeight = tabsComp + (this.myLayout.wideMode ? MeowTitleBarHeight + standardSpacing : 2 * (MeowTitleBarHeight + standardSpacing));
     if (newTitleHeight != this.myLayout.heightTitleBar) {
       this.myLayout.heightTitleBar = newTitleHeight;

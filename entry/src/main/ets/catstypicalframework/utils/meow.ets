@@ -5,7 +5,7 @@
 /**
  * Meow meowme owowwow.
  */
-export const emoticons = [
+const emoticons = [
   'ฅ(*´꒳`*)ฅ',
   '꒰ᐡ•̀ᴗ•́ᐡ꒱',
   '(*・ω・)',

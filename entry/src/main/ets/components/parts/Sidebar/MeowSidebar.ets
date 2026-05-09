@@ -6,9 +6,9 @@ import { MooSymbolButton } from "../../common/MooSymbolButton";
 import { MooTextButton } from "../../common/MooTextButton";
 import { defaultAnimation, getColor, meowThemeColorType, standardSpacing, useEffects } from "../../settings";
 import { MeowBookmarksPanel } from "../Bookmarks/Panel";
-import { defaultMeowButtonHeight, getButtonIcon } from "../MeowButtons/constants";
+import { defaultMooSymbolSize, getButtonIcon } from "../../common/constants";
 import { SidebarPageType, sidebarContentIconArray, defaultSidebarWidth } from "./constants";
-import { SlotEditButton } from "../../../dialogs/settings/WoofButtons/SlotEditButton";
+import { SlotEditButton } from "../../common/SlotEditButton";
 import { HistoryPanel } from "../History/Panel";
 import { MooTextModifier } from "../../common/MooTextModifier";
 
@@ -136,7 +136,7 @@ struct MeowSidebar {
         });
       } else {
         ListItem() {
-          Text('|').attributeModifier(new MooTextModifier()).height(defaultMeowButtonHeight).opacity(0.5).padding({ left: standardSpacing, right: standardSpacing }); // Spacing
+          Text('|').attributeModifier(new MooTextModifier()).height(defaultMooSymbolSize).opacity(0.5).padding({ left: standardSpacing, right: standardSpacing }); // Spacing
         };
       }
 
@@ -156,7 +156,7 @@ struct MeowSidebar {
     .scrollBar(BarState.Off)
     .listDirection(Axis.Horizontal)
     .width('100%')
-    .height(defaultMeowButtonHeight);
+    .height(defaultMooSymbolSize);
   }
 
   /**

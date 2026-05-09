@@ -14,10 +14,9 @@ struct MonthButton {
   build() {
     Column() {
       if (this.year > 0) {
-        Text(this.year.toString()).attributeModifier(new MooTextModifier()).opacity(0.75);
-        Text(this.month.toString()).attributeModifier(new MooTextModifier());
-      }
-      if (this.desc) {
+        Text(this.year.toString()).attributeModifier(new MooTextModifier()).opacity(0.75).height(20)
+        Text(this.month.toString()).attributeModifier(new MooTextModifier()).height(20)
+      } else if (this.desc) {
         Text(this.desc).attributeModifier(new MooTextModifier(mooTextType.TITLE));
       }
     }

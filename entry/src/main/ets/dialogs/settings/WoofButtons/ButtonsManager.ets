@@ -1,7 +1,7 @@
 import { AppStorageV2 } from "@kit.ArkUI";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
-import { meowButtonsType } from "../../../components/parts/MeowButtons/constants";
+import { UnifiedButtonsType } from "../../../components/common/constants";
 import { MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
@@ -17,11 +17,11 @@ struct ButtonsManager {
   @Param @Require controller: CustomDialogController;
   @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
   // Temp copies
-  @Local tempButtonsControl: meowButtonsType[] = Array.from(this.mySettings.settingsData[76].value as meowButtonsType[]);
-  @Local tempButtonsAddressBarOnFocus: meowButtonsType[] = Array.from(this.mySettings.settingsData[77].value as meowButtonsType[]);
-  @Local tempButtonsAddressBar: meowButtonsType[] = Array.from(this.mySettings.settingsData[78].value as meowButtonsType[]);
-  @Local tempButtonsTitle: meowButtonsType[] = Array.from(this.mySettings.settingsData[79].value as meowButtonsType[]);
-  @Local tempButtonsMore: meowButtonsType[] = Array.from(this.mySettings.settingsData[80].value as meowButtonsType[]);
+  @Local tempButtonsControl: UnifiedButtonsType[] = Array.from(this.mySettings.settingsData[76].value as UnifiedButtonsType[]);
+  @Local tempButtonsAddressBarOnFocus: UnifiedButtonsType[] = Array.from(this.mySettings.settingsData[77].value as UnifiedButtonsType[]);
+  @Local tempButtonsAddressBar: UnifiedButtonsType[] = Array.from(this.mySettings.settingsData[78].value as UnifiedButtonsType[]);
+  @Local tempButtonsTitle: UnifiedButtonsType[] = Array.from(this.mySettings.settingsData[79].value as UnifiedButtonsType[]);
+  @Local tempButtonsMore: UnifiedButtonsType[] = Array.from(this.mySettings.settingsData[80].value as UnifiedButtonsType[]);
   // Local
   @Local showNotice: boolean = false;
 
@@ -103,11 +103,11 @@ struct ButtonsManager {
    * @author CodeGenie in DevEco Studio Preview 6.0.5.433 @ Apr 26 2026.
    */
   verifyLegal(): boolean {
-    return this.tempButtonsControl.some(button => button === meowButtonsType.SETTINGS) ||
-      this.tempButtonsAddressBarOnFocus.some(button => button === meowButtonsType.SETTINGS) ||
-      this.tempButtonsAddressBar.some(button => button === meowButtonsType.SETTINGS) ||
-      this.tempButtonsTitle.some(button => button === meowButtonsType.SETTINGS) ||
-      this.tempButtonsMore.some(button => button === meowButtonsType.SETTINGS);
+    return this.tempButtonsControl.some(button => button === UnifiedButtonsType.SETTINGS) ||
+      this.tempButtonsAddressBarOnFocus.some(button => button === UnifiedButtonsType.SETTINGS) ||
+      this.tempButtonsAddressBar.some(button => button === UnifiedButtonsType.SETTINGS) ||
+      this.tempButtonsTitle.some(button => button === UnifiedButtonsType.SETTINGS) ||
+      this.tempButtonsMore.some(button => button === UnifiedButtonsType.SETTINGS);
   }
 }
 

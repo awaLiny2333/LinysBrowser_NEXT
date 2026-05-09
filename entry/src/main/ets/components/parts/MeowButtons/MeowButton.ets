@@ -3,11 +3,11 @@ import { meow } from '../../../catstypicalframework/utils/catsLogger';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
 import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import lazy { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
-import { allWindowOrientations, meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
+import { ALL_WINDOW_ORIENTATIONS, meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addressBarStatuses';
 import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { defaultAnimation, fontSizeSymbol, getColor, meowThemeColorType, standardSpacing, useEffects } from '../../settings';
-import { getButtonIcon, meowButtonsType } from './constants';
+import { defaultMooSymbolSize, getButtonIcon, UnifiedButtonsType } from '../../common/constants';
 
 @ComponentV2
 struct MeowButton {
@@ -20,6 +20,9 @@ struct MeowButton {
     if (this.showMe) {
       // We write a SymbolGlyph instead of using the existing MooSymbolButton because we need the bindMenu to work, but we don't want extra __common__ layers on the custom components.
       SymbolGlyph(this.myIcon)
+        .width(defaultMooSymbolSize)
+        .height(defaultMooSymbolSize)
+        .align(Alignment.Center)
         .opacity(this.myEnabled ? 1 : 0.4)
         .enabled(this.myEnabled)
         .margin(this.myOnHold ? { left: standardSpacing / 4, right: standardSpacing / 4 } : 0)
@@ -46,66 +49,66 @@ struct MeowButton {
   myClickAction() {
     // To be continued...
     switch (this.type) {
-      case meowButtonsType.MORE:
+      case UnifiedButtonsType.MORE:
         animateToImmediately(defaultAnimation(), () => {
           this.myUi.showMore = !this.myUi.showMore;
         });
         break;
-      case meowButtonsType.TABS:
+      case UnifiedButtonsType.TABS:
         animateToImmediately(defaultAnimation(), () => {
           this.myUi.showTabs = !this.myUi.showTabs;
         });
         this.mySettings.setByIndex(22, this.myUi.showTabs);
         break;
-      case meowButtonsType.SIDEBAR:
+      case UnifiedButtonsType.SIDEBAR:
         animateToImmediately(defaultAnimation(), () => {
           this.myUi.showSidebar = !this.myUi.showSidebar;
         });
         this.mySettings.setByIndex(82, this.myUi.showSidebar);
         break;
-      case meowButtonsType.BOOKMARKS:
+      case UnifiedButtonsType.BOOKMARKS:
         requestDialog(this.myDialog, openDialogRequestType.BOOKMARKS);
         break;
-      case meowButtonsType.DOWNLOADS:
+      case UnifiedButtonsType.DOWNLOADS:
         break;
-      case meowButtonsType.SETTINGS:
+      case UnifiedButtonsType.SETTINGS:
         requestDialog(this.myDialog, openDialogRequestType.SETTINGS);
         break;
-      case meowButtonsType.ADBLOCKER:
+      case UnifiedButtonsType.ADBLOCKER:
         requestDialog(this.myDialog, openDialogRequestType.ADBLOCKER);
         break;
-      case meowButtonsType.JAVASCRIPTS:
+      case UnifiedButtonsType.JAVASCRIPTS:
         requestDialog(this.myDialog, openDialogRequestType.WEB_JAVASCRIPTS);
         break;
-      case meowButtonsType.IMAGES:
+      case UnifiedButtonsType.IMAGES:
         requestDialog(this.myDialog, openDialogRequestType.WEB_IMAGES);
         break;
-      case meowButtonsType.DARK:
+      case UnifiedButtonsType.DARK:
         requestDialog(this.myDialog, openDialogRequestType.DARK);
         break;
-      case meowButtonsType.HISTORIES:
+      case UnifiedButtonsType.HISTORIES:
         requestDialog(this.myDialog, openDialogRequestType.HISTORY);
         break;
-      case meowButtonsType.COOKIES:
+      case UnifiedButtonsType.COOKIES:
         requestDialog(this.myDialog, openDialogRequestType.COOKIES, this.myUi.addressBarContent); // TODO: auto pass in current viewing url.
         break;
-      case meowButtonsType.QRCODE:
+      case UnifiedButtonsType.QRCODE:
         requestDialog(this.myDialog, openDialogRequestType.QR, ['Title', this.myUi.addressBarContent]); // TODO: auto pass in current viewing url.
         break;
-      case meowButtonsType.USERAGENTS:
+      case UnifiedButtonsType.USERAGENTS:
         this.myUi.requestAddressBarBlur(this.getUIContext());
         requestDialog(this.myDialog, openDialogRequestType.QUICK_UA, 0); // TODO: pass in current web's UA.
         break;
-      case meowButtonsType.RE_SEARCH:
+      case UnifiedButtonsType.RE_SEARCH:
         this.myUi.requestAddressBarBlur(this.getUIContext());
         requestDialog(this.myDialog, openDialogRequestType.QUICK_SE, 0); // TODO: pass in current web's search engine.
         break;
-      case meowButtonsType.GO:
+      case UnifiedButtonsType.GO:
         this.myUi.requestAddressBarBlur(this.getUIContext());
         meow(`Visit / load [${this.myUi.addressBarContent}]!`);
         // TODO: Visit the site for GO button!
         break;
-      case meowButtonsType.ADDRESS_KEYWORD_SWITCH:
+      case UnifiedButtonsType.ADDRESS_KEYWORD_SWITCH:
         const needFocus = this.myUi.addressBarFocused;
         animateToImmediately(defaultAnimation(), () => {
           if (this.myUi.addressBarStatus == AddressBarStatuses.CAN_SHIFT) {
@@ -118,7 +121,7 @@ struct MeowButton {
           this.myUi.requestAddressBarFocus(this.getUIContext());
         }
         break;
-      case meowButtonsType.ADDRESS_KEYWORD_EXPAND:
+      case UnifiedButtonsType.ADDRESS_KEYWORD_EXPAND:
         const needFocus2 = this.myUi.addressBarFocused;
         animateToImmediately(defaultAnimation(), () => {
           this.myUi.searchKeywordEntriesExpanded = !this.myUi.searchKeywordEntriesExpanded;
@@ -141,9 +144,9 @@ struct MeowButton {
   // @Computed
   get showMe() {
     switch (this.type) {
-      case meowButtonsType.ADDRESS_KEYWORD_SWITCH:
+      case UnifiedButtonsType.ADDRESS_KEYWORD_SWITCH:
         return this.myUi.searchKeywordEntries.length > 0;
-      case meowButtonsType.ADDRESS_KEYWORD_EXPAND:
+      case UnifiedButtonsType.ADDRESS_KEYWORD_EXPAND:
         return this.myUi.addressBarStatus == AddressBarStatuses.SHIFTED;
       default:
         return true;
@@ -157,9 +160,9 @@ struct MeowButton {
   // @Computed
   get myIcon() {
     switch (this.type) {
-      case meowButtonsType.ADDRESS_KEYWORD_SWITCH:
+      case UnifiedButtonsType.ADDRESS_KEYWORD_SWITCH:
         return this.myUi.addressBarStatus == AddressBarStatuses.SHIFTED ? $r('sys.symbol.text_and_t') : getButtonIcon(this.type);
-      case meowButtonsType.ADDRESS_KEYWORD_EXPAND:
+      case UnifiedButtonsType.ADDRESS_KEYWORD_EXPAND:
         return this.myUi.searchKeywordEntriesExpanded ? $r('sys.symbol.line') : getButtonIcon(this.type);
       default:
         return getButtonIcon(this.type);
@@ -174,13 +177,13 @@ struct MeowButton {
   get myOnHold() {
     // To be continued...
     switch (this.type) {
-      case meowButtonsType.MORE:
+      case UnifiedButtonsType.MORE:
         return this.myUi.showMore;
-      case meowButtonsType.TABS:
+      case UnifiedButtonsType.TABS:
         return this.myUi.showTabs;
-      case meowButtonsType.SIDEBAR:
+      case UnifiedButtonsType.SIDEBAR:
         return this.myUi.showSidebar;
-      case meowButtonsType.ADDRESS_KEYWORD_SWITCH:
+      case UnifiedButtonsType.ADDRESS_KEYWORD_SWITCH:
         return true;
       default:
         return undefined;
@@ -194,7 +197,7 @@ struct MeowButton {
   // @Computed
   get myEnabled() {
     switch (this.type) {
-      case meowButtonsType.EXTENSIONS:
+      case UnifiedButtonsType.EXTENSIONS:
         return false;
       default:
         return true;
@@ -205,7 +208,7 @@ struct MeowButton {
    * Determines if current button has a menu.
    */
   get hasMenu() {
-    return this.type == meowButtonsType.ORIENTATION || this.type == meowButtonsType.FULLSCREEN;
+    return this.type == UnifiedButtonsType.ORIENTATION || this.type == UnifiedButtonsType.FULLSCREEN;
   }
 
   // Builders
@@ -216,8 +219,8 @@ struct MeowButton {
   @Builder
   myMenu() {
     Menu() {
-      if (this.type == meowButtonsType.ORIENTATION) {
-        Repeat(allWindowOrientations).each((ori) => {
+      if (this.type == UnifiedButtonsType.ORIENTATION) {
+        Repeat(ALL_WINDOW_ORIENTATIONS).each((ori) => {
           MenuItem({
             content: $r('app.string.Orientation_select_'.concat(ori.index.toString())),
           })
@@ -226,7 +229,7 @@ struct MeowButton {
             })
             .backgroundColor(ori.item == this.myUi.orientation ? getColor(meowThemeColorType.SECONDARY) : undefined);
         });
-      } else if (this.type == meowButtonsType.FULLSCREEN) {
+      } else if (this.type == UnifiedButtonsType.FULLSCREEN) {
         MenuItem({
           content: $r('app.string.Fullscreen_full'),
         })

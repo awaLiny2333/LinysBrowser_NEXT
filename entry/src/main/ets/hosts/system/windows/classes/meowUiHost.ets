@@ -412,7 +412,7 @@ export enum meowUiFullscreenStatus {
 * All window orientation enums.
 * @returns The GRAND list orz.
 * */
-export const allWindowOrientations = [
+export const ALL_WINDOW_ORIENTATIONS = [
   window.Orientation.UNSPECIFIED,
   window.Orientation.PORTRAIT,
   window.Orientation.LANDSCAPE,

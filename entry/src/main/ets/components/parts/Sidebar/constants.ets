@@ -10,6 +10,9 @@ export enum SidebarPageType {
   DOWNLOADS = 'DNL'
 }
 
+/**
+ * All available pre-set content / panels for the sidebar.
+ */
 export const sidebarContentIconArray: string[] = [
   SidebarPageType.BOOKMARKS,
   SidebarPageType.HISTORIES,
@@ -17,4 +20,7 @@ export const sidebarContentIconArray: string[] = [
   SidebarPageType.DOWNLOADS
 ];
 
+/**
+ * Default sidebar width.
+ */
 export const defaultSidebarWidth = 360;

@@ -19,6 +19,7 @@ export const fontSizeSymbol = 24;
 export const fontSizeMedium = 22;
 export const fontSizeSmall = 16;
 
+export const standardComponentHeight = 40;
 export const standardSpacing = 8;
 export const minimumCardWidth = 520; // Minimum width required for cards (e.g. in a multi-column waterFlow)
 

@@ -1,5 +1,5 @@
 import { getRandomEmoticon } from "../../../../catstypicalframework/utils/meow";
-import { meowButtonsType } from "../../../../components/parts/MeowButtons/constants";
+import { UnifiedButtonsType } from "../../../../components/common/constants";
 import { SidebarPageType } from "../../../../components/parts/Sidebar/constants";
 
 /**
@@ -58,19 +58,19 @@ export function defaultSearchEngine() {
 // Defaults for the button system.
 
 export function defaultButtonsControl() {
-  return [meowButtonsType.BACKWARD, meowButtonsType.FORWARD, meowButtonsType.REFRESH, meowButtonsType.HOME].join('\n');
+  return [UnifiedButtonsType.BACKWARD, UnifiedButtonsType.FORWARD, UnifiedButtonsType.REFRESH, UnifiedButtonsType.HOME].join('\n');
 }
 
 export function defaultButtonsAddressBarOnFocus() {
-  return [meowButtonsType.GO].join('\n');
+  return [UnifiedButtonsType.GO].join('\n');
 }
 
 export function defaultButtonsAddressBar() {
-  return [meowButtonsType.ADDRESS_KEYWORD_EXPAND, meowButtonsType.ADDRESS_KEYWORD_SWITCH, meowButtonsType.RE_SEARCH].join('\n');
+  return [UnifiedButtonsType.ADDRESS_KEYWORD_EXPAND, UnifiedButtonsType.ADDRESS_KEYWORD_SWITCH, UnifiedButtonsType.RE_SEARCH].join('\n');
 }
 
 export function defaultButtonsTitle() {
-  return [meowButtonsType.MORE, meowButtonsType.SCRATCHING_BOARD, meowButtonsType.TABS, meowButtonsType.SIDEBAR, meowButtonsType.BOOKMARKS, meowButtonsType.DOWNLOADS, meowButtonsType.SETTINGS].join('\n');
+  return [UnifiedButtonsType.MORE, UnifiedButtonsType.SCRATCHING_BOARD, UnifiedButtonsType.TABS, UnifiedButtonsType.SIDEBAR, UnifiedButtonsType.BOOKMARKS, UnifiedButtonsType.DOWNLOADS, UnifiedButtonsType.SETTINGS].join('\n');
 }
 
 /**
@@ -78,7 +78,7 @@ export function defaultButtonsTitle() {
  * @returns The set up array.
  */
 export function defaltButtonsMore() {
-  return [meowButtonsType.ORIENTATION, meowButtonsType.SAVE, meowButtonsType.PRINT, meowButtonsType.DARK, meowButtonsType.COOKIES, meowButtonsType.IMAGES, meowButtonsType.JAVASCRIPTS, meowButtonsType.ADBLOCKER, meowButtonsType.HISTORIES, meowButtonsType.USERAGENTS, meowButtonsType.QRCODE, meowButtonsType.FULLSCREEN].join('\n');
+  return [UnifiedButtonsType.ORIENTATION, UnifiedButtonsType.SAVE, UnifiedButtonsType.PRINT, UnifiedButtonsType.DARK, UnifiedButtonsType.COOKIES, UnifiedButtonsType.IMAGES, UnifiedButtonsType.JAVASCRIPTS, UnifiedButtonsType.ADBLOCKER, UnifiedButtonsType.HISTORIES, UnifiedButtonsType.USERAGENTS, UnifiedButtonsType.QRCODE, UnifiedButtonsType.FULLSCREEN].join('\n');
 }
 
 /**

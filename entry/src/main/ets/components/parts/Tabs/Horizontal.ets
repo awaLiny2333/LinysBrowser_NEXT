@@ -1,5 +1,5 @@
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
-import { getColor, meowThemeColorType, standardSpacing, useEffects } from "../../settings";
+import { getColor, meowThemeColorType, standardComponentHeight, standardSpacing, useEffects } from "../../settings";
 
 @ComponentV2
 struct MeowTabsHorizontal {
@@ -12,11 +12,9 @@ struct MeowTabsHorizontal {
         .backgroundColor(getColor(meowThemeColorType.PRIMARY))
         .border({ width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth'), radius: defaultInnerRadius });
     }
-    .height(defaultTabsHorizontalHeight)
+    .height(standardComponentHeight)
     .width('100%');
   }
 }
 
 export { MeowTabsHorizontal };
-
-export const defaultTabsHorizontalHeight = 40;

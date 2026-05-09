@@ -4,8 +4,7 @@ import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { meowBookmarkItem } from "../../../hosts/userdata/bookmarks/classes/meowBookmarkItem";
 import { meowHistoryEntry } from "../../../hosts/userdata/history/classes/meowHistoryEntry";
 import { MooTextModifier } from "../../common/MooTextModifier";
-import { getColor, meowThemeColorType, standardSpacing, useEffects } from "../../settings";
-import { defaultMeowDestinationHeight } from "./MeowDestination";
+import { getColor, meowThemeColorType, standardComponentHeight, standardSpacing, useEffects } from "../../settings";
 import { SuggestionEntryButton } from "./MeowSuggestionEntry";
 
 @ComponentV2
@@ -64,7 +63,7 @@ struct MeowSuggestions {
    * Get the max height of the suggestions frame in non-wide mode.
    */
   get maxHeightNonWideMode() {
-    const maxH = this.myLayout.heightTitleArea - this.myLayout.heightTitleBar - defaultMeowDestinationHeight - 2 * standardSpacing;
+    const maxH = this.myLayout.heightTitleArea - this.myLayout.heightTitleBar - standardComponentHeight - 2 * standardSpacing;
     if (maxH > shortModeThreshold) {
       return maxH * 0.75;
     }
@@ -129,7 +128,7 @@ struct SuggestionsFrame {
    * Get the max height of the suggestions frame.
    */
   get maxHeightPart() {
-    const maxH = this.myLayout.heightTitleArea - this.myLayout.heightTitleBar - defaultMeowDestinationHeight - 20 - 3 * standardSpacing;
+    const maxH = this.myLayout.heightTitleArea - this.myLayout.heightTitleBar - standardComponentHeight - 20 - 3 * standardSpacing;
     if (maxH > shortModeThreshold) {
       return maxH * 0.75;
     }

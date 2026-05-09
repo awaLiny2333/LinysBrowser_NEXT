@@ -1,5 +1,5 @@
 import { defaultInnerRadius } from "../../catstypicalframework/utils/ui";
-import { defaultAnimation, getColor, meowThemeColorType, isPreferRightHand, useEffects } from "../settings";
+import { defaultAnimation, getColor, meowThemeColorType, isPreferRightHand, useEffects, standardComponentHeight } from "../settings";
 
 @ComponentV2
 struct MooCapsuleButton {
@@ -15,6 +15,7 @@ struct MooCapsuleButton {
 
   build() {
     Button(this.text)
+      .height(standardComponentHeight)
       .alignSelf(isPreferRightHand() ? ItemAlign.End : ItemAlign.Start)
       .border({
         width: this.lastChance ? 2 : (useEffects() ? 1 : 0),
@@ -67,5 +68,3 @@ struct MooCapsuleButton {
 }
 
 export { MooCapsuleButton };
-
-export const defaultMooCapsuleButtonHeight = 40;

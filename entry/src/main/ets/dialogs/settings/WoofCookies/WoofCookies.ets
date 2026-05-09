@@ -3,11 +3,11 @@ import lazy { webview } from "@kit.ArkWeb";
 import lazy { BusinessError } from "@kit.BasicServicesKit";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import lazy { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
-import { defaultMooCapsuleButtonHeight, MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
+import { MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
 import { MooTextButton } from "../../../components/common/MooTextButton";
 import { MooTextInputV2 } from "../../../components/common/MooTextInputV2";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
-import { standardSpacing } from "../../../components/settings";
+import { standardComponentHeight, standardSpacing } from "../../../components/settings";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { meowAppStatuses } from "../../../hosts/system/windows/classes/meowAppStatuses";
 import { WoofUniFrame } from "../../WoofUniFrame";
@@ -47,7 +47,7 @@ struct CookiesPanel {
       }
       .height('auto')
       .width('100%')
-      .margin({ bottom: defaultMooCapsuleButtonHeight * 2 + standardSpacing * 2 });
+      .margin({ bottom: standardComponentHeight * 2 + standardSpacing * 2 });
 
       // Bottom bar
       Column({ space: standardSpacing }) {

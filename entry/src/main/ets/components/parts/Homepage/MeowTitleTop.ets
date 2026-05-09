@@ -11,7 +11,6 @@ import { showWindowTitle, windowTitlePosition } from '../../settings';
 import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
 
 // const myApp = AppStorageV2.connect(meowAppStatuses)!;
-
 /**
  * The window top bar. Holds the buttons on window top, as well as the name of window / zone.
  *
@@ -64,10 +63,8 @@ export function MeowTitleTop(
       });
     }
   } // Title bar
+  .justifyContent(FlexAlign.Center)
   .alignItems(VerticalAlign.Top)
   .width('100%')
-  .padding(myApp.freeWindow
-    ? { right: windowTopAvoidRight, left: windowTopAvoidLeft, top: 6 }
-    : { top: 6 }
-  );
+  .padding(myApp.freeWindow ? { right: windowTopAvoidRight, left: windowTopAvoidLeft, top: 6 } : { top: 6 });
 }
