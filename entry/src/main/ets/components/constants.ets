@@ -1,12 +1,11 @@
-// TEXTS
+import { LengthMetrics } from "@kit.ArkUI";
 
+// TEXTS
 /**
  * Note tha we don't recommend using any preset / fixed values to represent the size (height / width) of a Text component, as its size also varies by the fonts and many other factors.
  * Use the text measuring methods instead!
  * → measureTextHeight and measureTextWidth in entry/src/main/ets/catstypicalframework/utils/ui.ets
  */
-import { LengthMetrics } from "@kit.ArkUI";
-
 export const typicalTextHeightNormal = 20;
 
 export const fontSizeSymbol = 24;
