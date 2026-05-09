@@ -10,6 +10,7 @@ import { defaultMeowButtonHeight, getButtonIcon } from "../MeowButtons/constants
 import { SidebarPageType, sidebarContentIconArray, defaultSidebarWidth } from "./constants";
 import { SlotEditButton } from "../../../dialogs/settings/WoofButtons/SlotEditButton";
 import { HistoryPanel } from "../History/Panel";
+import { MooTextModifier } from "../../common/MooTextModifier";
 
 @ComponentV2
 struct MeowSidebar {
@@ -36,6 +37,7 @@ struct MeowSidebar {
           // Bookmarks
           MeowBookmarksPanel({ myUi: this.myUi, needPadding: false, panelWidth: this.sidebarWidth, columnWidth: this.sidebarWidth, maxColumn: 1 });
         } else {
+          Text(this.myUi.sidebarPage).attributeModifier(new MooTextModifier());
           // TODO: web show url of [this.myUi.sidebarPage]
         }
       }
@@ -44,81 +46,110 @@ struct MeowSidebar {
       .layoutWeight(1)
       .width('100%');
 
-      // Button list content
-      List() {
-        Repeat(this.mySettings.settingsData[81].value as string[])
-          .each((item: RepeatItem<string>) => {
-            ListItem() {
-              SlotEditButton({
-                type: item.item,
-                myUi: this.myUi,
-                myOnHold: () => {
-                  return this.myUi.sidebarPage == item.item;
-                },
-                isEditing: this.isEditing,
-                clickAction: () => {
-                  animateToImmediately(defaultAnimation(), () => {
-                    this.myUi.sidebarPage = item.item;
-                  });
-                  this.mySettings.setByIndex(83, this.myUi.sidebarPage);
-                },
-                requestDelete: () => {
-                  const list = this.mySettings.settingsData[81].value as string[];
-                  list.splice(item.index, 1);
-                  this.mySettings.requestSaveToDisk();
-                }
-              });
-            };
-          })
-          .onMove((from: number, to: number) => {
-            // Move
-            const list = this.mySettings.settingsData[81].value as string[];
-            const item = list[from];
-            list.splice(from, 1);
-            list.splice(to, 0, item);
-            this.mySettings.requestSaveToDisk();
-          });
-
-        // Add button
-        if (this.isEditing) {
-          ListItem() {
-            MooTextButton({
-              text: $r('app.string.General_new'),
-              clickAction: () => {
-                this.showAdd = !this.showAdd;
-              }
-            });
-          }
-          .opacity(0.75)
-          .bindContextMenu(this.showAdd, this.addMenuBuilder(), {
-            aboutToDisappear: () => {
-              this.showAdd = false;
-            },
-            backgroundColor: useEffects() ? undefined : getColor(meowThemeColorType.PRIMARY)
-          });
-        }
-
-        // Edit toggle button
-        ListItem() {
-          MooSymbolButton({
-            icon: this.isEditing ? $r('sys.symbol.square_and_pencil_fill') : $r('sys.symbol.square_and_pencil'),
-            onHold: this.isEditing,
-            clickAction: () => {
-              animateToImmediately(defaultAnimation(), () => {
-                this.isEditing = !this.isEditing;
-              });
-            }
-          });
-        };
-      }
-      .listDirection(Axis.Horizontal)
-      .width('100%')
-      .height(defaultMeowButtonHeight);
+      this.buttonRow();
     }
     .width(this.sidebarWidth)
     .height('100%');
   }
 
+  /**
+   * Button list content.
+   */
+  @Builder
+  buttonRow() {
+    List() {
+      Repeat(this.mySettings.settingsData[81].value as string[][])
+        .each((item: RepeatItem<string[]>) => {
+          ListItem() {
+            SlotEditButton({
+              type: item.item[1],
+              myUi: this.myUi,
+              param: item.item[1],
+              paramIconId: item.item[0],
+              hasParam: !sidebarContentIconArray.includes(item.item[1]),
+              myOnHold: () => {
+                return this.myUi.sidebarPage == item.item[1];
+              },
+              isEditing: this.isEditing,
+              editParamSubmit: (result) => {
+                const list = this.mySettings.settingsData[81].value as string[][];
+                list[item.index][1] = result;
+                this.mySettings.requestSaveToDisk();
+              },
+              editParamIconIdSubmit: (result) => {
+                const list = this.mySettings.settingsData[81].value as string[][];
+                list[item.index][0] = result;
+                this.mySettings.requestSaveToDisk();
+              },
+              clickAction: () => {
+                animateToImmediately(defaultAnimation(), () => {
+                  this.myUi.sidebarPage = item.item[1];
+                });
+                this.mySettings.setByIndex(83, this.myUi.sidebarPage);
+              },
+              requestDelete: () => {
+                const list = this.mySettings.settingsData[81].value as string[][];
+                animateToImmediately(defaultAnimation(), () => {
+                  list.splice(item.index, 1);
+                });
+                this.mySettings.requestSaveToDisk();
+              }
+            });
+          };
+        })
+        .onMove((from: number, to: number) => {
+          // Move
+          const list = this.mySettings.settingsData[81].value as string[][];
+          const item = list[from];
+          list.splice(from, 1);
+          list.splice(to, 0, item);
+          this.mySettings.requestSaveToDisk();
+        });
+
+      // Add button
+      if (this.isEditing) {
+        ListItem() {
+          MooTextButton({
+            text: $r('app.string.General_new'),
+            clickAction: () => {
+              this.showAdd = !this.showAdd;
+            }
+          });
+        }
+        .opacity(0.75)
+        .bindContextMenu(this.showAdd, this.addMenuBuilder(), {
+          aboutToDisappear: () => {
+            this.showAdd = false;
+          },
+          backgroundColor: useEffects() ? undefined : getColor(meowThemeColorType.PRIMARY)
+        });
+      } else {
+        ListItem() {
+          Text('|').attributeModifier(new MooTextModifier()).height(defaultMeowButtonHeight).opacity(0.5).padding({ left: standardSpacing, right: standardSpacing }); // Spacing
+        };
+      }
+
+      // Edit toggle button
+      ListItem() {
+        MooSymbolButton({
+          icon: this.isEditing ? $r('sys.symbol.square_and_pencil_fill') : $r('sys.symbol.square_and_pencil'),
+          onHold: this.isEditing,
+          clickAction: () => {
+            animateToImmediately(defaultAnimation(), () => {
+              this.isEditing = !this.isEditing;
+            });
+          }
+        });
+      };
+    }
+    .listDirection(Axis.Horizontal)
+    .width('100%')
+    .height(defaultMeowButtonHeight);
+  }
+
+  /**
+   * The menu content used to add new sidebar button.
+   */
   @Builder
   addMenuBuilder() {
     List() {
@@ -126,15 +157,27 @@ struct MeowSidebar {
         .each((obj: RepeatItem<string>) => {
           ListItem() {
             MooSymbolButton({
-              icon: getButtonIcon(obj.item), clickAction: () => {
+              icon: getButtonIcon(obj.item, $r('sys.symbol.link')), clickAction: () => {
+                const list = this.mySettings.settingsData[81].value as string[][];
                 animateToImmediately(defaultAnimation(), () => {
-                  const list = this.mySettings.settingsData[81].value as string[];
-                  list.push(obj.item);
+                  list.push(['', obj.item]);
                 });
+                this.mySettings.requestSaveToDisk();
               }
             });
           };
         });
+      ListItem() {
+        MooSymbolButton({
+          icon: $r('sys.symbol.link'), clickAction: () => {
+            const list = this.mySettings.settingsData[81].value as string[][];
+            animateToImmediately(defaultAnimation(), () => {
+              list.push(['link', '']);
+            });
+            this.mySettings.requestSaveToDisk();
+          }
+        });
+      };
     }
     .scrollBar(BarState.Off)
     .listDirection(Axis.Horizontal)

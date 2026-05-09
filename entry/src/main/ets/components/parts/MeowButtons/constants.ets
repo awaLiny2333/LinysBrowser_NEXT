@@ -80,8 +80,8 @@ export const buttonIconArray: [string, Resource][] = Array.from(buttonIconMatche
  * @returns The icon of the button.
  * @see MeowSidebar entry/src/main/ets/components/parts/Sidebar/MeowSidebar.ets and its affiliates.
  */
-export function getButtonIcon(button: string): Resource {
-  return buttonIconMatches.get(button) ?? $r('sys.symbol.questionmark_circle');
+export function getButtonIcon(button: string, fallback: Resource = $r('sys.symbol.questionmark_circle')): Resource {
+  return buttonIconMatches.get(button) ?? fallback;
 }
 
 export const defaultMeowButtonHeight: number = 31;

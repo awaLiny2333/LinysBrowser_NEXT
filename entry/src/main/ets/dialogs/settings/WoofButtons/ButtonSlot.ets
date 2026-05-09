@@ -27,6 +27,7 @@ struct ButtonSlot {
             ListItem() {
               SlotEditButton({
                 type: obj.item,
+                hasParam: false,
                 isEditing: true,
                 requestDelete: () => {
                   animateToImmediately(defaultAnimation(), () => {

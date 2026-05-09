@@ -1,6 +1,6 @@
 import { getRandomEmoticon } from "../../../../catstypicalframework/utils/meow";
 import { meowButtonsType } from "../../../../components/parts/MeowButtons/constants";
-import { sidebarContentIconArray } from "../../../../components/parts/Sidebar/constants";
+import { sidebarContentIconArray, SidebarPageType } from "../../../../components/parts/Sidebar/constants";
 
 /**
  * Default user agents in a specified string format.
@@ -86,5 +86,10 @@ export function defaltButtonsMore() {
  * @returns A series of buttons.
  */
 export function defaultButtonsSidebar() {
-  return sidebarContentIconArray.join('\n');
+  return [
+    '\n' + SidebarPageType.BOOKMARKS,
+    '\n' + SidebarPageType.HISTORIES,
+    '\n' + SidebarPageType.SCRATCHING_BOARD,
+    '\n' + SidebarPageType.DOWNLOADS
+  ].join('\n');
 }

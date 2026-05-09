@@ -8,7 +8,7 @@ struct MooTextInputV2 {
   @Param icon: Resource | undefined = undefined;
   @Param text: string = '';
   @Param myId: string | undefined = undefined;
-
+  @Param autoLength: boolean = false;
   // Events
   @Event onChange: (c: string) => void;
   @Event onSubmit: () => void;
@@ -30,7 +30,8 @@ struct MooTextInputV2 {
         .selectedBackgroundColor(getColor(meowThemeColorType.PRIMARY))
         .border(useEffects() ? { width: 1, color: $r('sys.color.icon_fourth'), radius: defaultInnerRadius } : { width: 0, radius: defaultInnerRadius })
         .backgroundColor(useEffects() ? $r('app.color.blur_background_contrast') : getColor(meowThemeColorType.SECONDARY))
-        .layoutWeight(1)
+        .layoutWeight(this.autoLength ? undefined : 1)
+        .width(this.autoLength ? 'auto' : undefined)
         .onChange((c) => {
           this.onChange(c);
         })

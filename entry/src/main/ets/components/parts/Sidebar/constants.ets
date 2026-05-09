@@ -10,7 +10,7 @@ export enum SidebarPageType {
   DOWNLOADS = 'DNL'
 }
 
-export const sidebarContentIconArray = [
+export const sidebarContentIconArray: string[] = [
   SidebarPageType.BOOKMARKS,
   SidebarPageType.HISTORIES,
   SidebarPageType.SCRATCHING_BOARD,

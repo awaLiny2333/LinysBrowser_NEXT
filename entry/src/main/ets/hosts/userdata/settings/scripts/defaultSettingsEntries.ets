@@ -114,15 +114,17 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   // Debug
   new meowSettingsEntry('DEV_MODE', meowSettingsEntryType.BOOLEAN, 'false'), // #74
   new meowSettingsEntry('resource_monitor', meowSettingsEntryType.BOOLEAN, 'true'), // #75
+  // ---
+  // Updates introduced in 2.0.0
+  // ---
   // Manage buttons
   new meowSettingsEntry('buttons_control', meowSettingsEntryType.STRING_ARRAY, defaultButtonsControl()),
   new meowSettingsEntry('buttons_address_bar_on_focus', meowSettingsEntryType.STRING_ARRAY, defaultButtonsAddressBarOnFocus()),
   new meowSettingsEntry('buttons_address_bar', meowSettingsEntryType.STRING_ARRAY, defaultButtonsAddressBar()),
   new meowSettingsEntry('buttons_title', meowSettingsEntryType.STRING_ARRAY, defaultButtonsTitle()),
   new meowSettingsEntry('buttons_more', meowSettingsEntryType.STRING_ARRAY, defaltButtonsMore()),
-  new meowSettingsEntry('buttons_sidebar', meowSettingsEntryType.STRING_ARRAY, defaultButtonsSidebar()),
-
-  // Updates introduced in 2.0.0
+  // Side bar
+  new meowSettingsEntry('buttons_sidebar', meowSettingsEntryType.STRING_ARRAY_PAIR, defaultButtonsSidebar()),
   new meowSettingsEntry('show_sidebar', meowSettingsEntryType.BOOLEAN, 'false'), // #82
   new meowSettingsEntry('sidebar_content', meowSettingsEntryType.STRING, ''), // #83
 ];

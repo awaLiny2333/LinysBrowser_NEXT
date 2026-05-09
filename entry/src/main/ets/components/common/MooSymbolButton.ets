@@ -15,6 +15,8 @@ struct MooSymbolButton {
 
   build() {
     SymbolGlyph(this.icon)
+      .width(defaultMooSymbolButtonSize - 2 * 3.5)
+      .height(defaultMooSymbolButtonSize - 2 * 3.5)
       .opacity(this.isEnabled ? 1 : 0.4)
       .enabled(this.isEnabled)
       .margin(this.onHold ? { left: standardSpacing / 4, right: standardSpacing / 4 } : 0)
@@ -34,3 +36,5 @@ struct MooSymbolButton {
 }
 
 export { MooSymbolButton };
+
+export const defaultMooSymbolButtonSize = 38;
