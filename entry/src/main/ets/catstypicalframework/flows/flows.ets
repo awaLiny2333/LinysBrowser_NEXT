@@ -2,11 +2,11 @@
  * About hosts in multi window environment:
  *
  * ALL WINDOWS SHARE:
+ * - meowAppHost
  * - meowManagedSettings
  * - meowResources
  * - meowBookmarkStash
  * - meowHistorian
- * - meowAppStatuses
  * - meowKeyboardMan
  *
  * Every window is expected to have one of each of the other classes:
@@ -21,12 +21,13 @@ import { common, Configuration, ConfigurationConstant } from '@kit.AbilityKit';
 import { AppStorageV2, window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import lazy Want from '@ohos.app.ability.Want';
-import { defaultNewWindowAlias, isPreferRightHandFromSettings } from '../../components/settings';
+import { defaultNewWindowAlias, getMySettings, isPreferRightHandFromSettings, isTabsStyleVertical } from '../../components/settings';
 import { concatSearchWithEngine } from '../../hosts/app/tabs/scripts/searchEngines';
 import { meowDialogManager } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowResources } from '../../hosts/system/storage/classes/meowResources';
-import { meowAppStatuses } from '../../hosts/system/windows/classes/meowAppStatuses';
+import { meowAppHost } from '../../hosts/system/windows/classes/meowAppHost';
 import { meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
+import { getMyApp } from '../../hosts/system/windows/scripts/helpers';
 import { generateTimeBasedWindowId } from '../../hosts/system/windows/scripts/multiwindows';
 import { meowBookmarkStash } from '../../hosts/userdata/bookmarks/classes/meowBookmarkStash';
 import { meowHistorian } from '../../hosts/userdata/history/classes/meowHistorian';
@@ -37,7 +38,7 @@ import { meowLayout } from '../hosts/meowLayout';
 import { meowMisc } from '../hosts/meowMisc';
 import { listenCrash, meow, meowLevel } from '../utils/catsLogger';
 import { ensureDirectoryExist } from '../utils/storage';
-import { updateAvoid, updateFreeWindowMode, listenAvoid, listenFocus, listenFreeWindowMode, listenSmartReachability, listenWindowStatusChange, meowPx2vp, offAvoid, offFocus, offWindowStatusChange, shortModeThreshold, updateNavigationIndicator, wideModeThreshold } from '../utils/ui';
+import { listenAvoid, listenFocus, listenFreeWindowMode, listenSmartReachability, listenWindowStatusChange, meowPx2vp, offAvoid, offFocus, offWindowStatusChange, shortModeThreshold, updateAvoid, updateFreeWindowMode, updateNavigationIndicator, wideModeThreshold } from '../utils/ui';
 
 // Enums
 /**
@@ -69,7 +70,7 @@ export function earlyOnCreate(context: Context, launchWant: Want) {
   let myWindowId = paramWindowName || generateTimeBasedWindowId();
 
   // Register window
-  const myApp = AppStorageV2.connect(meowAppStatuses, () => new meowAppStatuses())!;
+  const myApp = AppStorageV2.connect(meowAppHost, () => new meowAppHost())!;
   myApp.windowIds.push(myWindowId);
 
   // Shared hosts
@@ -100,7 +101,7 @@ export function earlyOnCreate(context: Context, launchWant: Want) {
  * */
 export async function earlyOnWindowStageCreate(context: Context) {
   const startTime = Date.now();
-  const myApp = AppStorageV2.connect(meowAppStatuses)!;
+  const myApp = getMyApp();
   const isNewWindow = myApp.windowIds.length == 1;
   const myWindowId = myApp.windowIds[myApp.windowIds.length - 1];
 
@@ -116,8 +117,7 @@ export async function earlyOnWindowStageCreate(context: Context) {
   const filesDir = context.filesDir;
 
   // Settings
-  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
-  await mySettings.initFrom(`${filesDir}/settings.json.browsercatsettings.txt`); // This can ONLY be initialized here as it requires async - await processing.
+  await getMySettings().initFrom(`${filesDir}/settings.json.browsercatsettings.txt`); // This can ONLY be initialized here as it requires async - await processing.
 
   // Ensure directory
   await ensureDirectoryExist(`${filesDir}/continue`); // Last opened tabs
@@ -148,7 +148,7 @@ export async function aboutToLoadContent(windowStage: window.WindowStage, window
  * */
 export function onLoadContent(windowStage: window.WindowStage, windowObj: window.Window, context: common.UIAbilityContext) {
   const startTime = Date.now();
-  const myApp = AppStorageV2.connect(meowAppStatuses)!;
+  const myApp = getMyApp();
   const isNewWindow = myApp.windowIds.length == 1;
   const myWindowId = myApp.windowIds[myApp.windowIds.length - 1];
 
@@ -214,12 +214,12 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
   // UI STATUSES
 
   // Tabs
-  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
-  if (myLayout.wideMode || mySettings.settingsData[3].value as string == 'horizontal') {
+  const mySettings = getMySettings();
+  if (myLayout.wideMode || !isTabsStyleVertical(myLayout)) {
     // Don't block the user's eyes with this tabs panel if they don't appear to have a large screen ovo and have a vertical tab
     myUi.showTabs = mySettings.settingsData[22].value as boolean;
   }
-  myUi.verticalTabsShrunk = mySettings.settingsData[14].value as boolean;
+  myUi.sideAreaShrunk = mySettings.settingsData[14].value as boolean;
 
   // Side bar
   if (myLayout.wideMode) {
@@ -259,8 +259,8 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
       listenCrash(`${context.filesDir}/faultlogs`);
     }, 50);
   }
-
-  meow(`Finished in ${Date.now() - startTime} ms.`, 'onLoadContent', meowLevel.WARN);
+  const myMisc = AppStorageV2.connect(meowMisc, `meowMisc_${myWindowId}`)!;
+  meow(`Stage finished in ${Date.now() - startTime} ms, since Misc ${Date.now() - myMisc.launchStartTime} ms.`, `onLoadContent][${myWindowId}`, meowLevel.WARN);
 }
 
 /**
@@ -276,14 +276,10 @@ export function onWant(want: Want, source: wantSource) {
  * @param config The new configuration.
  */
 export function onConfigUpdate(config: Configuration) {
-  try {
-    const myApp = AppStorageV2.connect(meowAppStatuses)!;
-    const newDark = config.colorMode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
-    if (myApp.dark != newDark) {
-      myApp.dark = newDark;
-    }
-  } catch (e) {
-    meow(`const myApp = AppStorageV2.connect(meowAppStatuses); failed: ${e}`, 'onConfigUpdate', meowLevel.WARN);
+  const myApp = getMyApp();
+  const newDark = config.colorMode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
+  if (myApp.dark != newDark) {
+    myApp.dark = newDark;
   }
 }
 
@@ -293,7 +289,7 @@ export function onConfigUpdate(config: Configuration) {
  */
 export function onWindowStageWillDestroy(windowStage: window.WindowStage) {
   // Find the meowUiHost item.
-  const myApp = AppStorageV2.connect(meowAppStatuses)!;
+  const myApp = getMyApp();
   let targetUi: meowUiHost | undefined = undefined;
   for (const windowId of myApp.windowIds) {
     const myUi = AppStorageV2.connect(meowUiHost, `meowUiHost_${windowId}`);

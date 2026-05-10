@@ -1,15 +1,13 @@
 import lazy { url } from '@kit.ArkTS';
-import { AppStorageV2 } from '@kit.ArkUI';
 import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import lazy { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
 import lazy { measureTextWidth } from '../../../catstypicalframework/utils/ui';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addressBarStatuses';
-import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { MooTextModifier } from '../../common/MooTextModifier';
-import { fontSizeSmall, meowThemeColorType, standardSpacing, UnifiedButtonsType } from '../../constants';
-import { getColor, isPreferRightHand, useEffects } from '../../settings';
+import { fontSizeSmall, meowThemeColorType, standardSpacing } from '../../constants';
+import { getColor, isPreferRightHand, meowButtonsAddressBarAlways, meowButtonsAddressBarOnFocus, useEffects } from '../../settings';
 import { MeowButtonsSlot } from '../MeowButtons/MeowButtonsSlot';
 import { MeowTitleBarHeight } from './MeowTitleBar';
 
@@ -24,7 +22,6 @@ struct MeowAddressBar {
   @Param @Require myUi: meowUiHost;
   @Param @Require myLayout: meowLayout;
   @Param @Require myDialog: meowDialogManager;
-  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
   // Local
   @Local barWidth: number = 10;
   focusBlurTimeoutId: number | undefined = undefined;
@@ -168,12 +165,12 @@ struct MeowAddressBar {
 
   @Computed
   get showOnFocusButtons() {
-    return this.myUi.addressBarFocused && (this.mySettings.settingsData[77].value as UnifiedButtonsType[]).length > 0;
+    return this.myUi.addressBarFocused && meowButtonsAddressBarOnFocus().length > 0;
   }
 
   @Computed
   get showAlwaysOnButtons() {
-    return (this.mySettings.settingsData[78].value as UnifiedButtonsType[]).length > 0;
+    return meowButtonsAddressBarAlways().length > 0;
   }
 }
 

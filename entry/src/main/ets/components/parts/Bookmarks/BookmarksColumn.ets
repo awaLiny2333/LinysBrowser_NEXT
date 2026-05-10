@@ -1,8 +1,8 @@
 import { unifiedDataChannel } from '@kit.ArkData';
-import { AppStorageV2 } from '@kit.ArkUI';
 import { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
-import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
+import { meowAppHost } from '../../../hosts/system/windows/classes/meowAppHost';
+import { getMyApp } from '../../../hosts/system/windows/scripts/helpers';
 import { meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
 import { meowBookmarkItem } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkItem';
 import { nowHtmlTimestamp } from '../../../hosts/userdata/bookmarks/scripts/helpers';
@@ -24,7 +24,7 @@ struct BookmarksColumn {
   // Config
   @Param @Once selectMode: boolean = false; // False for normal (display and edit) mode, true for select mode.
   // Host
-  @Local myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!; // For event receiving.
+  @Local myApp: meowAppHost = getMyApp(); // For event receiving.
   // Params
   @Param @Require folder: meowBookmarkItem;
   @Param @Require level: number;
@@ -159,14 +159,13 @@ struct BookmarksColumn {
               .draggable(this.inDragMode ? true : undefined)
               .onDragStart((event: DragEvent) => {
                 // Put the item (to be sent) in AppStatuses.
-                const myApp = AppStorageV2.connect(meowAppStatuses)!;
 
                 // Only report level when the current folder is opened.
                 // The entire layer verification design is to ensure that
                 // the dragged item won't be dropped into itself (or its sub folders)
                 // So for a folder that is not opened, it can be dragged anywhere.
                 const reportedLevel = (this.selectedItem == item.item) ? this.level : undefined;
-                myApp.dataTunnelForBookmarks = [reportedLevel, [item.item]]; // [number | undefined, meowBookmarkItem[]]
+                getMyApp().dataTunnelForBookmarks = [reportedLevel, [item.item]]; // [number | undefined, meowBookmarkItem[]]
 
                 // Fill (actually zero) data :P
                 let data = new unifiedDataChannel.ApplicationDefinedRecord();
@@ -333,8 +332,7 @@ struct BookmarksColumn {
    */
   receiveDrop(records: unifiedDataChannel.UnifiedRecord[]) {
     // Grab it from AppStatuses
-    const myApp = AppStorageV2.connect(meowAppStatuses)!;
-    const pack = myApp.dataTunnelForBookmarks as (meowBookmarkItem[] | number)[];
+    const pack = getMyApp().dataTunnelForBookmarks as (meowBookmarkItem[] | number)[];
     const fromLevel = pack[0] as number | undefined;
     const item = pack[1] as meowBookmarkItem[];
 
@@ -381,7 +379,7 @@ struct BookmarksColumn {
     }
 
     // Clear tunnel
-    myApp.dataTunnelForBookmarks = [];
+    getMyApp().dataTunnelForBookmarks = [];
 
     // Save bookmarks
     this.requestSaveAndBroadcastSync();

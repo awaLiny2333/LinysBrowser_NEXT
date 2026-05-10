@@ -1,4 +1,4 @@
-import { AppStorageV2, SegmentButtonV2Items } from "@kit.ArkUI";
+import { SegmentButtonV2Items } from "@kit.ArkUI";
 import { defaultInnerRadius } from "../../../../catstypicalframework/utils/ui";
 import { MooCapsuleButton } from "../../../../components/common/MooCapsuleButton";
 import { MooSlider } from "../../../../components/common/MooSlider";
@@ -7,19 +7,21 @@ import { MooTabSegmentV2 } from "../../../../components/common/MooTabSegmentV2";
 import { MooTextModifier } from "../../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../../components/common/UniContentCard";
 import { meowThemeColorType, mooTextType, standardSpacing } from "../../../../components/constants";
-import { defaultAnimation, getColor, useEffects } from "../../../../components/settings";
+import { defaultAnimation, getColor, getMySettings, useEffects } from "../../../../components/settings";
+import { forceWebDarkMode } from "../../../../hosts/app/tabs/settings";
 import { meowDialogManager, openDialogRequestType } from "../../../../hosts/system/dialogs/classes/meowDialogManager";
 import { requestDialog } from "../../../../hosts/system/dialogs/scripts/dialog";
-import { meowAppStatuses } from "../../../../hosts/system/windows/classes/meowAppStatuses";
+import { meowAppHost } from "../../../../hosts/system/windows/classes/meowAppHost";
 import { meowUiHost } from "../../../../hosts/system/windows/classes/meowUiHost";
+import { getMyApp } from "../../../../hosts/system/windows/scripts/helpers";
 import { globalMessage, meowAppMessageType } from "../../../../hosts/system/windows/scripts/messaging";
 import { meowManagedSettings } from "../../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { resetAnimations, resetColors } from "../../../../hosts/userdata/settings/scripts/reset";
 
 @ComponentV2
 struct SettingsAppearance {
-  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
-  @Param myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
+  @Local mySettings: meowManagedSettings = getMySettings();
+  @Param myApp: meowAppHost = getMyApp();
   @Param @Require myUi: meowUiHost;
   @Param @Require myDialog: meowDialogManager;
 
@@ -113,21 +115,21 @@ struct SettingsAppearance {
           }
         });
         MooSwitch({
-          text: $r('app.string.Settings_category_appearance_layout_shrinkVerticalTabsButton'),
+          text: $r('app.string.Settings_category_appearance_layout_shrinkSideAreaButton'),
           isOn: this.mySettings.settingsData[15].value as boolean,
           onChange: (r) => {
             this.mySettings.setByIndex(15, r);
           }
         });
         MooSwitch({
-          text: $r('app.string.Settings_category_appearance_layout_shrinkVerticalTabsAuto'),
+          text: $r('app.string.Settings_category_appearance_layout_shrinkSideAreaAuto'),
           isOn: this.mySettings.settingsData[14].value as boolean,
           onChange: (r) => {
             this.mySettings.setByIndex(14, r);
           }
         });
         MooSwitch({
-          text: $r('app.string.Settings_category_appearance_layout_shrinkVerticalTabsNoPush'),
+          text: $r('app.string.Settings_category_appearance_layout_shrinkSideAreaNoPush'),
           isOn: this.mySettings.settingsData[84].value as boolean,
           onChange: (r) => {
             this.mySettings.setByIndex(84, r);
@@ -250,7 +252,7 @@ struct SettingsAppearance {
 
         MooSwitch({
           text: $r('app.string.Settings_category_appearance_colors_forceDarkMode'),
-          isOn: this.mySettings.settingsData[60].value as boolean,
+          isOn: forceWebDarkMode(),
           onChange: (r) => {
             this.mySettings.setByIndex(60, r);
           }
@@ -329,8 +331,7 @@ struct ColorDemoBlock {
     // Receive the result.
     if (this.myUi.localMessageTunnel?.type == meowAppMessageType.COLOR_PICKED) {
       if (this.pendingColorDialog) {
-        const mySettings = AppStorageV2.connect(meowManagedSettings)!;
-        mySettings.setByIndex(this.settingsId, this.myUi.localMessageTunnel.payload as string);
+        getMySettings().setByIndex(this.settingsId, this.myUi.localMessageTunnel.payload as string);
       }
     }
     // Stop 'listening'.

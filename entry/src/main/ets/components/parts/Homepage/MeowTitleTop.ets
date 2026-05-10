@@ -8,9 +8,9 @@ import { newWindow } from '../../../hosts/system/windows/scripts/multiwindows';
 import { MooSymbolButtonSmall } from '../../common/MooSymbolButtonSmall';
 import { MooTextModifier } from '../../common/MooTextModifier';
 import { showWindowTitle, windowTitlePosition } from '../../settings';
-import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
+import { meowAppHost } from '../../../hosts/system/windows/classes/meowAppHost';
+import { meowMisc } from '../../../catstypicalframework/hosts/meowMisc';
 
-// const myApp = AppStorageV2.connect(meowAppStatuses)!;
 /**
  * The window top bar. Holds the buttons on window top, as well as the name of window / zone.
  *
@@ -21,7 +21,8 @@ export function MeowTitleTop(
   myLayout: meowLayout,
   myDialog: meowDialogManager,
   myUi: meowUiHost,
-  myApp: meowAppStatuses,
+  myApp: meowAppHost,
+  myMisc: meowMisc,
   context: UIContext
 ) {
   Row({ space: 10 }) {
@@ -33,7 +34,7 @@ export function MeowTitleTop(
     }
 
     // Window Title Text
-    Text(showWindowTitle(myLayout) ? `${myUi.windowAlias} (${myUi.windowId})` : '')
+    Text(showWindowTitle(myLayout) ? `${myUi.windowAlias} (${myUi.windowId}) (${myMisc.launchEndTime - myMisc.launchStartTime} ms)` : '')
       .attributeModifier(new MooTextModifier())
       .textAlign(windowTitlePosition())
       .layoutWeight(1)

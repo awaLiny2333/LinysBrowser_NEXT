@@ -2,12 +2,12 @@
  * All functions about app backup.
  */
 
-import lazy { AppStorageV2 } from "@kit.ArkUI";
-import lazy { dirCopy, ensureDirectoryExist, fileCopy, fileDocumentPick2Path, fileDocumentPickCopySave, fileDocumentPickSave } from "../../../../catstypicalframework/utils/storage";
-import lazy { meowManagedSettings, meowManagedSettingsInitResult } from "../../../userdata/settings/classes/meowManagedSettings";
 import lazy { zlib } from "@kit.BasicServicesKit";
-import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import lazy BuildProfile from "BuildProfile";
+import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import lazy { dirCopy, ensureDirectoryExist, fileCopy, fileDocumentPick2Path, fileDocumentPickCopySave, fileDocumentPickSave } from "../../../../catstypicalframework/utils/storage";
+import { getMySettings } from "../../../../components/settings";
+import lazy { meowManagedSettingsInitResult } from "../../../userdata/settings/classes/meowManagedSettings";
 
 export enum importResult {
   OK,
@@ -44,8 +44,7 @@ export interface importEverythingResult {
  * Export settings to a file, calling a picker.
  */
 export async function exportSettings() {
-  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
-  const jsonContents = mySettings.toString();
+  const jsonContents = getMySettings().toString();
   await fileDocumentPickSave(`settings.json.${BuildProfile.VERSION_NAME}.browsercatsettings`, jsonContents);
 }
 
@@ -54,7 +53,7 @@ export async function exportSettings() {
  * @returns A meowManagedSettingsInitResult.
  */
 export async function importSettings(): Promise<meowManagedSettingsInitResult> {
-  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
+  const mySettings = getMySettings()
   const result = await fileDocumentPick2Path(['browsercatsettings'], 1);
   if (result.succeed) {
     const path = result.sourcePaths![0];

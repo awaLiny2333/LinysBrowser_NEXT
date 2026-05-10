@@ -1,23 +1,20 @@
-import { AppStorageV2 } from "@kit.ArkUI";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 import { MooStringPairArrayList } from "../../../components/common/MooStringPairArrayList";
 import { standardSpacing } from "../../../components/constants";
+import { searchEngineList } from "../../../hosts/app/tabs/settings";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
-import { meowAppStatuses } from "../../../hosts/system/windows/classes/meowAppStatuses";
+import { meowAppHost } from "../../../hosts/system/windows/classes/meowAppHost";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
+import { getMyApp } from "../../../hosts/system/windows/scripts/helpers";
 import { meowAppMessageType } from "../../../hosts/system/windows/scripts/messaging";
-import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { defaultSearchEngine } from "../../../hosts/userdata/settings/scripts/defaultSettingsValues";
 import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
 struct WoofQuickSEPanel {
   @Param @Require myDialog: meowDialogManager;
-  @Param @Require myLayout: meowLayout;
-  @Param @Require myUi: meowUiHost;
-  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
-  @Local myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
+  @Local myApp: meowAppHost = getMyApp();
   // Local
   @Local selectedIndexSE: number = this.getCurrentWebSEIndex();
   @Local refreshFlagSE: boolean = false;
@@ -49,7 +46,7 @@ struct WoofQuickSEPanel {
 
   getSEs() {
     this.refreshFlagSE;
-    return Array.from(this.mySettings.settingsData[43].value as string[][]);
+    return Array.from(searchEngineList());
   }
 
   /**
@@ -80,9 +77,7 @@ struct WoofQuickSEDialog {
       tutorial: `󰀩 ${this.myUi.searchKeywordEntries.length > 0 ? this.myUi.searchKeywordEntries[0][1] : this.myUi.addressBarContent}`, showTutorial: true
     }) {
       WoofQuickSEPanel({
-        myLayout: this.myLayout,
         myDialog: this.myDialog,
-        myUi: this.myUi,
         onSelect: (n) => {
           // Apply to current web.
           meow(`Apply Search Engine #${n} from QuickSE!`, 'WoofQuickSE', meowLevel.WARN);

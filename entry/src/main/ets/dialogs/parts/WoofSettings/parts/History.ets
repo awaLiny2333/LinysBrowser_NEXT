@@ -3,17 +3,17 @@ import { meowHistorian } from '../../../../hosts/userdata/history/classes/meowHi
 import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { mooTextType, standardSpacing } from '../../../../components/constants';
 import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton';
-// import { MooSlider } from '../../../common/MooSlider';
 import { MooSwitch } from '../../../../components/common/MooSwitch';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
+import { getMySettings } from '../../../../components/settings';
 
 @ComponentV2
 struct SettingsHistory {
   @Param @Require myDialog: meowDialogManager;
-  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+  @Local mySettings: meowManagedSettings = getMySettings();
   @Local myMeowHistorian: meowHistorian = AppStorageV2.connect(meowHistorian)!;
 
   build() {

@@ -1,6 +1,6 @@
 import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
-import { AppStorageV2, SegmentButtonV2Items } from '@kit.ArkUI';
-import { defaultAnimation } from '../../../../components/settings';
+import { SegmentButtonV2Items } from '@kit.ArkUI';
+import { defaultAnimation, getMySettings } from '../../../../components/settings';
 import { MooSwitch } from '../../../../components/common/MooSwitch';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
@@ -8,11 +8,11 @@ import { MooTabSegmentV2 } from '../../../../components/common/MooTabSegmentV2';
 import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton';
 import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
 import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
-import { standardSpacing,mooTextType } from '../../../../components/constants';
+import { standardSpacing, mooTextType } from '../../../../components/constants';
 
 @ComponentV2
 struct SettingsAccessibility {
-  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+  @Local mySettings: meowManagedSettings = getMySettings();
   @Param @Require myDialog: meowDialogManager;
 
   build() {
@@ -67,13 +67,18 @@ struct SettingsAccessibility {
             this.mySettings.setByIndex(51, r);
           }
         });
-        MooSwitch({
-          text: $r('app.string.Settings_category_accessibility_singleHand_reverseSideMenus'),
-          isOn: this.mySettings.settingsData[48].value as boolean,
-          onChange: (r) => {
-            this.mySettings.setByIndex(48, r);
-          }
-        });
+
+        // We don't currently have side menus in BrowserCat 2.0.0
+        // OvO so see you later!
+
+        // MooSwitch({
+        // text: $r('app.string.Settings_category_accessibility_singleHand_reverseSideMenus'),
+        // isOn: this.mySettings.settingsData[48].value as boolean,
+        // onChange: (r) => {
+        // this.mySettings.setByIndex(48, r);
+        // }
+        // });
+
         MooSwitch({
           text: $r('app.string.Settings_category_accessibility_singleHand_reverseSideBars'),
           isOn: this.mySettings.settingsData[49].value as boolean,

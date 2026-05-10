@@ -118,7 +118,7 @@ export class meowManagedSettings {
    * @param index The index of the setting to set.
    * @param value The value to set.
    */
-  setByIndex(index: number, value: string | number | boolean) {
+  setByIndex(index: number, value: string | number | boolean | string[] | [string, string][]) {
     if (index < 0 || index >= this.settingsData.length) {
       meow(`Rejected. Index out of range`, 'meowSettings][set', meowLevel.WARN);
       return;
@@ -149,10 +149,9 @@ export class meowManagedSettings {
         timeout = 250; // Timeout is designed for continuous changes, like continuously typing STRING and sliding NUMBER. But for boolean, the toggle happens in one instance.
         break;
       default:
-        meow(`Rejected. Unknown / wrong type`, 'meowSettings][set', meowLevel.WARN);
-        return;
+        meow(`Setting id #${index}, type is (${type}) detected <${typeof value}> value [${value}]! Is this correct?`, 'meowSettings][set', meowLevel.WARN);
     }
-    this.settingsData[index].value = (value);
+    this.settingsData[index].value = value;
     this.requestSaveToDisk(timeout);
   }
 

@@ -1,15 +1,14 @@
-import { AppStorageV2 } from "@kit.ArkUI";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
+import { SymbolButton } from "../../../dialogs/parts/WoofCatsDev/parts/common/SymbolButton";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
-import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { MooSymbolButton } from "../../common/MooSymbolButton";
 import { MooTextButton } from "../../common/MooTextButton";
 import { MooTextInputV2 } from "../../common/MooTextInputV2";
 import { MooTextModifier } from "../../common/MooTextModifier";
 import { SlotEditButton, symbolIconOptions } from "../../common/SlotEditButton";
-import { defaultMooSymbolSize, defaultSidebarWidth, getButtonIcon, meowThemeColorType, sidebarContentIconArray, sidebarContentIconSet, SidebarPageType, standardSpacing } from "../../constants";
-import { defaultAnimation, getColor, useEffects } from "../../settings";
+import { defaultMooSymbolSize, defaultSidebarShrunkWidth, defaultSidebarWidth, getButtonIcon, meowThemeColorType, sidebarContentIconArray, sidebarContentIconSet, standardSpacing, UnifiedButtonsType } from "../../constants";
+import { defaultAnimation, getColor, getMySettings, sideAreaShrinkButton, sidebarButtons, sidebarShouldBeOnTheRight, titleBarPositionBottom, useEffects } from "../../settings";
 import { MeowBookmarksPanel } from "../Bookmarks/Panel";
 import { HistoryPanel } from "../History/Panel";
 
@@ -17,28 +16,30 @@ import { HistoryPanel } from "../History/Panel";
 struct MeowSidebar {
   @Param @Require myLayout: meowLayout;
   @Param @Require myUi: meowUiHost;
-  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
   // Local
   @Local showAdd: boolean = false;
   @Local isEditing: boolean = false;
-  @Local theList: string[][] = this.mySettings.settingsData[81].value as string[][]; // theList would get directly the address, so all modifications are 通透的!
+  @Local theList: [string, string][] = sidebarButtons(); // theList would get directly the address, so all modifications are 通透的!
   // Render
   @Local render: boolean = false;
 
   build() {
     Column({ space: standardSpacing * 0.75 }) {
+      if (this.showShrinkButton && !titleBarPositionBottom()) {
+        this.shrinkButton();
+      }
       // The panels
       if (this.render) {
         // Look how well they are aligned! Bravo! ヽ（´ー｀）┌
         Column() {
-          if (this.myUi.sidebarPage == SidebarPageType.SCRATCHING_BOARD) {
+          if (this.myUi.sidebarPage == UnifiedButtonsType.SCRATCHING_BOARD) {
             // TODO: scratching board UI.
-          } else if (this.myUi.sidebarPage == SidebarPageType.DOWNLOADS) {
+          } else if (this.myUi.sidebarPage == UnifiedButtonsType.DOWNLOADS) {
             // TODO: downloads UI.
-          } else if (this.myUi.sidebarPage == SidebarPageType.HISTORIES) {
+          } else if (this.myUi.sidebarPage == UnifiedButtonsType.HISTORIES) {
             // History
             HistoryPanel({ myLayout: this.myLayout, allowEdit: false, needPadding: false });
-          } else if (this.myUi.sidebarPage == SidebarPageType.BOOKMARKS) {
+          } else if (this.myUi.sidebarPage == UnifiedButtonsType.BOOKMARKS) {
             // Bookmarks
             MeowBookmarksPanel({ myUi: this.myUi, needPadding: false, panelWidth: this.sidebarWidth, columnWidth: this.sidebarWidth, maxColumn: 1 });
           } else {
@@ -49,7 +50,7 @@ struct MeowSidebar {
         .enabled(!this.isEditing)
         .opacity(this.isEditing ? 0.5 : 1)
         .layoutWeight(1)
-        .width('100%');
+        .width(this.sidebarWidth);
 
         this.buttonRow();
       }
@@ -59,10 +60,18 @@ struct MeowSidebar {
         animateToImmediately(defaultAnimation(), () => {
           this.render = true;
         });
-      }, 10);
+      }, 50);
     })
-    .width(this.sidebarWidth)
+    .alignItems(sidebarShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
+    .width(this.myUi.sideAreaShrunk && this.myLayout.wideMode ? defaultSidebarShrunkWidth : this.sidebarWidth)
     .height('100%');
+  }
+
+  /**
+   * The width of the sidebar.
+   */
+  get sidebarWidth() {
+    return this.myLayout.wideMode ? defaultSidebarWidth : (this.myLayout.width - 2 * standardSpacing) * 0.9;
   }
 
   /**
@@ -71,6 +80,13 @@ struct MeowSidebar {
   @Builder
   buttonRow() {
     List() {
+      // Shrink button
+      if (this.showShrinkButton && titleBarPositionBottom()) {
+        ListItem() {
+          this.shrinkButton();
+        };
+      }
+
       Repeat(this.theList)
         .each((item: RepeatItem<string[]>) => {
           ListItem() {
@@ -85,19 +101,19 @@ struct MeowSidebar {
               },
               editParamSubmit: (result) => {
                 this.theList[item.index][1] = result;
-                this.mySettings.requestSaveToDisk();
+                getMySettings().requestSaveToDisk();
               },
               clickAction: () => {
                 animateToImmediately(defaultAnimation(), () => {
                   this.myUi.sidebarPage = item.item[1];
                 });
-                this.mySettings.setByIndex(83, this.myUi.sidebarPage);
+                getMySettings().setByIndex(83, this.myUi.sidebarPage);
               },
               requestDelete: () => {
                 animateToImmediately(defaultAnimation(), () => {
                   this.theList.splice(item.index, 1);
                 });
-                this.mySettings.requestSaveToDisk();
+                getMySettings().requestSaveToDisk();
               },
               menuExtra: sidebarContentIconSet.has(item.item[1]) ? undefined : () => {
                 this.iconSelect(item);
@@ -110,7 +126,7 @@ struct MeowSidebar {
           const item = this.theList[from];
           this.theList.splice(from, 1);
           this.theList.splice(to, 0, item);
-          this.mySettings.requestSaveToDisk();
+          getMySettings().requestSaveToDisk();
         });
 
       // Add button
@@ -156,6 +172,25 @@ struct MeowSidebar {
   }
 
   /**
+   * To show shrink button or not.
+   */
+  get showShrinkButton() {
+    return sideAreaShrinkButton() && this.myLayout.wideMode && !this.myUi.showingVerticalTab;
+  }
+
+  @Builder
+  shrinkButton() {
+    SymbolButton({
+      icon: this.myUi.sideAreaShrunk ? $r('sys.symbol.arrow_up_left_and_arrow_down_right') : $r('sys.symbol.arrow_down_right_and_arrow_up_left'),
+      clickAction: () => {
+        animateToImmediately(defaultAnimation(), () => {
+          this.myUi.sideAreaShrunk = !this.myUi.sideAreaShrunk;
+        });
+      }
+    });
+  }
+
+  /**
    * The menu content used to add new sidebar button.
    */
   @Builder
@@ -166,11 +201,10 @@ struct MeowSidebar {
           ListItem() {
             MooSymbolButton({
               icon: getButtonIcon(obj.item, $r('sys.symbol.link')), clickAction: () => {
-                const list = this.mySettings.settingsData[81].value as string[][];
                 animateToImmediately(defaultAnimation(), () => {
-                  list.push(['', obj.item]);
+                  this.theList.push(['', obj.item]);
                 });
-                this.mySettings.requestSaveToDisk();
+                getMySettings().requestSaveToDisk();
               }
             });
           };
@@ -178,11 +212,10 @@ struct MeowSidebar {
       ListItem() {
         MooSymbolButton({
           icon: $r('sys.symbol.link'), clickAction: () => {
-            const list = this.mySettings.settingsData[81].value as string[][];
             animateToImmediately(defaultAnimation(), () => {
-              list.push(['link', '']);
+              this.theList.push(['link', '']);
             });
-            this.mySettings.requestSaveToDisk();
+            getMySettings().requestSaveToDisk();
           }
         });
       };
@@ -210,7 +243,7 @@ struct MeowSidebar {
                 item.item[0] = icon.item;
               });
               // Will trigger the change event in the text input, so we don't need to request for a save here.
-              // this.mySettings.requestSaveToDisk();
+              // getMySettings().requestSaveToDisk();
             }
           });
         });
@@ -232,17 +265,10 @@ struct MeowSidebar {
             item.item[0] = value;
           });
         }
-        this.mySettings.requestSaveToDisk();
+        getMySettings().requestSaveToDisk();
       },
     })
       .padding({ left: standardSpacing * 0.5 });
-  }
-
-  /**
-   * The width of the sidebar.
-   */
-  get sidebarWidth() {
-    return this.myLayout.wideMode ? defaultSidebarWidth : (this.myLayout.width - 2 * standardSpacing) * 0.9;
   }
 }
 

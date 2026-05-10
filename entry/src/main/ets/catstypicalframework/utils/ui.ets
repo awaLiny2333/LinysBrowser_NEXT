@@ -1,10 +1,10 @@
 import { AppStorageV2, display, window } from '@kit.ArkUI';
 import lazy { deviceInfo, power, settings } from '@kit.BasicServicesKit';
 import lazy { motion } from '@kit.MultimodalAwarenessKit';
-import lazy { defaultAnimation, isSmartReachabilityOn } from '../../components/settings';
-import { meowAppStatuses } from '../../hosts/system/windows/classes/meowAppStatuses';
+import lazy { defaultAnimation, isSmartReachabilityOn, showNavigationIndicator } from '../../components/settings';
+import { meowAppHost } from '../../hosts/system/windows/classes/meowAppHost';
 import { meowUiFullscreenStatus, meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
-import { meowManagedSettings } from '../../hosts/userdata/settings/classes/meowManagedSettings';
+import { getMyApp } from '../../hosts/system/windows/scripts/helpers';
 import lazy { meowAvoid } from '../hosts/meowAvoid';
 import lazy { meow, meowLevel } from './catsLogger';
 
@@ -107,7 +107,7 @@ export function listenAvoid(windowId: string) {
     myUi.windowObj!.on('avoidAreaChange', (data) => {
       // meow('Changes on avoid areas!', 'avoidAreaChange', meowLevel.INFO);
       const myAvoid = AppStorageV2.connect(meowAvoid, `meowAvoid_${windowId}`)!;
-      const myApp = AppStorageV2.connect(meowAppStatuses)!;
+      const myApp = getMyApp();
 
       if (data.type == window.AvoidAreaType.TYPE_SYSTEM) {
         let top = meowPx2vp(data.area.topRect.height);
@@ -161,7 +161,7 @@ export function updateAvoid(windowObj: window.Window, windowId: string) {
   try {
     let avoidArea: window.AvoidArea;
     const avoid = AppStorageV2.connect(meowAvoid, `meowAvoid_${windowId}`)!;
-    const myApp = AppStorageV2.connect(meowAppStatuses)!;
+    const myApp = getMyApp();
 
     // Get
     avoidArea = windowObj.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
@@ -202,7 +202,7 @@ export function listenFreeWindowMode(context: Context) {
     settings.getValue(context, 'window_pcmode_switch_status', settings.domainName.USER_PROPERTY)
       .then((val) => {
         const free = (val == 'true');
-        const myApp = AppStorageV2.connect(meowAppStatuses)!;
+        const myApp = getMyApp();
         if (myApp.freeWindow != free) {
           myApp.freeWindow = free;
         }
@@ -227,7 +227,7 @@ export function listenFreeWindowMode(context: Context) {
  * @returns A boolean value.
  * */
 export function updateFreeWindowMode(context: Context, windowObj: window.Window) {
-  const myApp = AppStorageV2.connect(meowAppStatuses)!;
+  const myApp = getMyApp();
   if (deviceInfo.deviceType == '2in1') {
     meow('Return true for 2in1 type!', 'getUpdateFreeWindowMode', meowLevel.INFO);
     myApp.freeWindow = true;
@@ -267,7 +267,7 @@ export function listenPowerSave(interval: number = 10000) {
   setInterval(() => {
     const newMode = power.getPowerMode();
     const isPowerSave = (newMode == power.DevicePowerMode.MODE_POWER_SAVE || newMode == power.DevicePowerMode.MODE_EXTREME_POWER_SAVE || newMode == power.DevicePowerMode.MODE_CUSTOM_POWER_SAVE);
-    const myApp = AppStorageV2.connect(meowAppStatuses);
+    const myApp = getMyApp();
     if (myApp) {
       if (myApp.powerSave != isPowerSave) {
         animateToImmediately(defaultAnimation(), () => {
@@ -292,8 +292,10 @@ export function listenSmartReachability() {
         } else {
           const useRightHand = m == motion.HoldingHandStatus.RIGHT_HAND_HELD;
           if (isSmartReachabilityOn()) {
-            const myApp = AppStorageV2.connect(meowAppStatuses)!;
-            if (myApp.smartReachabilitySaysWeShouldPreferRightHand != useRightHand) myApp.smartReachabilitySaysWeShouldPreferRightHand = useRightHand;
+            const myApp = getMyApp();
+            if (myApp.smartReachabilitySaysWeShouldPreferRightHand != useRightHand) {
+              myApp.smartReachabilitySaysWeShouldPreferRightHand = useRightHand;
+            }
           }
         }
       });
@@ -387,9 +389,7 @@ export function offWindowStatusChange(windowId: string) {
  * @param window The window.Window object.
  */
 export function updateNavigationIndicator(window: window.Window) {
-  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
-  const showNavigationIndicator = mySettings.settingsData[6].value as boolean;
-  window.setSpecificSystemBarEnabled('navigationIndicator', showNavigationIndicator).catch((e: BusinessError) => {
+  window.setSpecificSystemBarEnabled('navigationIndicator', showNavigationIndicator()).catch((e: BusinessError) => {
     meow(`Failed: ${e}`, 'setSpecificSystemBarEnabled', meowLevel.ERROR);
   });
 }

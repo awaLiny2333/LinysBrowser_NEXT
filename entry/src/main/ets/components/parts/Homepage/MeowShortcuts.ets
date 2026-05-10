@@ -7,23 +7,22 @@ import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
 import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
-import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
+import { meowAppHost } from '../../../hosts/system/windows/classes/meowAppHost';
+import { getMyApp } from '../../../hosts/system/windows/scripts/helpers';
 import { meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
 import { meowBookmarkItem } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkItem';
 import { meowBookmarkStash } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkStash';
-import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { MooTextModifier } from '../../common/MooTextModifier';
 import { meowThemeColorType, standardSpacing } from '../../constants';
-import { defaultAnimation, getColor, inDarkMode, shortcutsShouldBeOnTheRight, useEffects } from '../../settings';
+import { defaultAnimation, getColor, inDarkMode, shortcutsHeight, shortcutsPath, shortcutsShouldBeOnTheRight, useEffects } from '../../settings';
 
 @ComponentV2
 struct MeowShortcutsPanel {
   @Param @Require myLayout: meowLayout;
   @Param @Require myDialog: meowDialogManager;
   // Host
-  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
   @Local myBookmarks: meowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
-  @Local myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!; // For event receiving.
+  @Local myApp: meowAppHost = getMyApp(); // For event receiving.
   // Local
   @Local refreshFlag: boolean = true;
 
@@ -35,7 +34,7 @@ struct MeowShortcutsPanel {
             MeowShortcutItem({ item: item.item });
           });
       }
-      .padding({ top: (1 - (this.mySettings.settingsData[46].value as number / 100)) * this.myLayout.height });
+      .padding({ top: (1 - (shortcutsHeight() / 100)) * this.myLayout.height });
     }
     .scrollBar(BarState.Off)
     .align(Alignment.Bottom)
@@ -50,7 +49,7 @@ struct MeowShortcutsPanel {
 
   getFolder() {
     this.refreshFlag; // To trigger refresh!
-    const folder = this.myBookmarks.getFolder(this.mySettings.settingsData[45].value as string);
+    const folder = this.myBookmarks.getFolder(shortcutsPath());
     if (folder == undefined) {
       return []; // Wrong path. Return empty array.
     }
@@ -70,7 +69,7 @@ struct MeowShortcutsPanel {
 struct MeowShortcutItem {
   @Param @Require item: meowBookmarkItem;
   // Host
-  @Local myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!; // For event receiving.
+  @Local myApp: meowAppHost = getMyApp(); // For event receiving.
   // Data
   @Local showingChildren: boolean = false;
   @Local refreshFlag: boolean = true;

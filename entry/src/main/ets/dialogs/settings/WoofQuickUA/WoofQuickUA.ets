@@ -1,19 +1,18 @@
-import { AppStorageV2 } from "@kit.ArkUI";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 import { MooStringPairArrayList } from "../../../components/common/MooStringPairArrayList";
 import { standardSpacing } from "../../../components/constants";
+import { userAgentList } from "../../../hosts/app/tabs/settings";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
-import { meowAppStatuses } from "../../../hosts/system/windows/classes/meowAppStatuses";
+import { meowAppHost } from "../../../hosts/system/windows/classes/meowAppHost";
+import { getMyApp } from "../../../hosts/system/windows/scripts/helpers";
 import { meowAppMessageType } from "../../../hosts/system/windows/scripts/messaging";
-import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
 struct WoofQuickUAPanel {
   @Param @Require myDialog: meowDialogManager;
-  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
-  @Local myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
+  @Local myApp: meowAppHost = getMyApp();
   // Local
   @Local selectedIndexUA: number = this.getCurrentWebUAIndex();
   @Local refreshFlagUA: boolean = false;
@@ -45,7 +44,7 @@ struct WoofQuickUAPanel {
 
   getUAs() {
     this.refreshFlagUA;
-    return Array.from(this.mySettings.settingsData[41].value as string[][]);
+    return Array.from(userAgentList());
   }
 
   /**

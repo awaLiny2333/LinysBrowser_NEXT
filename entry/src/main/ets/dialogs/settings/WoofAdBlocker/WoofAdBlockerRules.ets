@@ -1,19 +1,17 @@
-import { AppStorageV2 } from '@kit.ArkUI';
 import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
 import { fileCopy, fileDocumentPick2Path, fileNameOfPath, listFilesUnderDir, unlinkFile } from '../../../catstypicalframework/utils/storage';
 import { MooStringArrayList } from '../../../components/common/MooStringArrayList';
 import { standardSpacing } from '../../../components/constants';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
-import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
+import { meowAppHost } from '../../../hosts/system/windows/classes/meowAppHost';
+import { getMyApp } from '../../../hosts/system/windows/scripts/helpers';
 import { globalMessage, meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
-import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { WoofUniFrame } from '../../WoofUniFrame';
 
 @ComponentV2
 struct AdBlockerRulesPanel {
-  @Local myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
-  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+  @Local myApp: meowAppHost = getMyApp();
   // Data
   easylistDirPath: string = this.getUIContext().getHostContext()!.filesDir + '/easylist';
   @Local myRules: string[] = [];

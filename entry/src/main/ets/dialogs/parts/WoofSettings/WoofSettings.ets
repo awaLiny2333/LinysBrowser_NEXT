@@ -1,7 +1,6 @@
-import { AppStorageV2 } from '@kit.ArkUI';
 import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
+import { standardSpacing } from '../../../components/constants';
 import { waterFlowColumnsTemplate } from '../../../components/settings';
-import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { getDevMode } from '../../../hosts/system/storage/settings';
 import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
@@ -17,11 +16,9 @@ import { SettingsHistory } from './parts/History';
 import { SettingsOnStartUp } from './parts/OnStartUp';
 import { SettingsSecurity } from './parts/Security';
 import { SettingsStorage } from './parts/Storage';
-import { standardSpacing } from '../../../components/constants';
 
 @ComponentV2
 struct WoofSettings {
-  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
   @Param @Require myDialog: meowDialogManager;
   @Param @Require myLayout: meowLayout;
   @Param @Require myUi: meowUiHost;

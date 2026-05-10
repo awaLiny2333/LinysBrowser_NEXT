@@ -1,18 +1,49 @@
 /**
  * ALL UI RELATED SETTINGS OPTIONS SHOULD BE SEATED HERE.
- * IN CASE OF A SITUATION IN WHICH I NEED TO CHANGE SOME ORDERS IN defaultSettingsEntries.
- * GATEHREING THEM ALL HERE MAKES IT EASIER.
+ *
+ * The range only includes the UI settings options that affect the layout or appearance,
+ * i.e. values READ / USED by the UI.
  *
  * For other settings (like whether to download directly to Downloads folder),
  * the getters are put in the settings.ets files in each host folder under entry/src/main/ets/hosts.
+ *
+ * For settings that doesn't affect the UI (e.g. usages to WRITE / SET the settings),
+ * they may not be here but in individual settings UI components.
+ * See the component files in entry/src/main/ets/dialogs/parts/WoofSettings/parts.
+ *
+ * Some usages by the WoofCatsDev (Deveowloper's Panel)
+ * are also managed by the panel UI itself, and they don't need to be here as well.
+ * See entry/src/main/ets/dialogs/parts/WoofCatsDev/parts/settings/SimpleSettingsExamples.ets.
+ *
+ * ALL IN ALL, the meowManagedSettings should ONLY be accessed in
+ * 1) This [settings.ets] file (UI statuses / values, e.g. whether to use advanced effects or not)
+ * 2) Other [settings.ets] files in different host directories under [entry/src/main/ets/hosts] (Other settings, e.g. sites to allow ads on)
+ * 3) UI component files in the settings dialog [entry/src/main/ets/dialogs/parts/WoofSettings/parts] (Write / set operations majorly)
+ * 4) WoofCatsDev panel in [entry/src/main/ets/dialogs/parts/WoofCatsDev/parts/settings/SimpleSettingsExamples.ets] (They are just, legacy... :P)
  */
+
 import { AppStorageV2 } from "@kit.ArkUI";
 import Curves from '@ohos.curves';
 import { meowLayout } from "../catstypicalframework/hosts/meowLayout";
-import { meowAppStatuses } from "../hosts/system/windows/classes/meowAppStatuses";
 import { meowUiHost } from "../hosts/system/windows/classes/meowUiHost";
+import { getMyApp } from "../hosts/system/windows/scripts/helpers";
 import { meowManagedSettings } from "../hosts/userdata/settings/classes/meowManagedSettings";
-import { meowThemeColorType, minimumCardWidth } from "./constants";
+import { meowThemeColorType, minimumCardWidth, UnifiedButtonsType } from "./constants";
+
+let settings: meowManagedSettings | undefined = undefined;
+
+/**
+ * Guarantee the existence of the settings instance and return it.
+ * @returns The meowManagedSettings object!
+ */
+export function getMySettings() {
+  if (!settings) {
+    settings = AppStorageV2.connect(meowManagedSettings)!;
+  }
+  return settings;
+}
+
+// ENVIRONMENT
 
 /**
  * Gets the color from the current theme.
@@ -35,20 +66,16 @@ export function getColor(type: meowThemeColorType): ResourceColor {
   }
 
   // No effects
-  const settings = AppStorageV2.connect(meowManagedSettings)!;
-  const myApp = AppStorageV2.connect(meowAppStatuses)!;
-  return settings.settingsData[myApp.dark ? 65 + type : 62 + type].value as string;
+  return getMySettings().settingsData[getMyApp().dark ? 65 + type : 62 + type].value as string;
 }
-
 
 /**
  * Gets the default animation param.
  * @returns The default animation param.
  */
 export function defaultAnimation() {
-  const settings = AppStorageV2.connect(meowManagedSettings)!;
-  const animation_damping_coefficient = settings.settingsData[40].value as number;
-  const animation_response = settings.settingsData[39].value as number;
+  const animation_damping_coefficient = getMySettings().settingsData[40].value as number;
+  const animation_response = getMySettings().settingsData[39].value as number;
   const ap: AnimateParam = { curve: Curves.springMotion(animation_response / 100, (100 - animation_damping_coefficient) / 100) };
   return ap;
 }
@@ -61,15 +88,12 @@ export function waterFlowColumnsTemplate(layout: meowLayout) {
   return "1fr ".repeat(Math.ceil(layout.width / minimumCardWidth));
 }
 
-// Statuses
-
 /**
  * Gets if the app UI is using advanced effects.
  * @returns true if the app UI is using advanced effects, false otherwise.
  */
 export function useEffects() {
-  const settings = AppStorageV2.connect(meowManagedSettings)!;
-  return settings.settingsData[7].value as boolean;
+  return getMySettings().settingsData[7].value as boolean;
 }
 
 /**
@@ -77,20 +101,20 @@ export function useEffects() {
  * @returns true if the app is in dark mode, false otherwise.
  */
 export function inDarkMode() {
-  const myApp = AppStorageV2.connect(meowAppStatuses)!;
-  return myApp.dark;
+  return getMyApp().dark;
 }
+
+// LAYOUT
 
 /**
  * Gets if the user wants to show the window title.
  * @returns true if the user wants to show the window title, false otherwise.
  */
 export function showWindowTitle(layout: meowLayout) {
-  const settings = AppStorageV2.connect(meowManagedSettings)!;
   if (layout.wideMode) {
-    return settings.settingsData[23].value as boolean;
+    return getMySettings().settingsData[23].value as boolean;
   }
-  return settings.settingsData[24].value as boolean;
+  return getMySettings().settingsData[24].value as boolean;
 }
 
 /**
@@ -98,8 +122,7 @@ export function showWindowTitle(layout: meowLayout) {
  * @returns The position of the window title.
  */
 export function windowTitlePosition() {
-  const settings = AppStorageV2.connect(meowManagedSettings)!;
-  const value = settings.settingsData[25].value as string;
+  const value = getMySettings().settingsData[25].value as string;
   switch (value) {
     case 'left':
       return TextAlign.Start;
@@ -121,8 +144,7 @@ export function showGiganticWindowTitle(myUi: meowUiHost) {
   if (myUi.windowFocused) {
     return false;
   }
-  const settings = AppStorageV2.connect(meowManagedSettings)!;
-  return settings.settingsData[2].value as boolean;
+  return getMySettings().settingsData[2].value as boolean;
 }
 
 /**
@@ -130,10 +152,34 @@ export function showGiganticWindowTitle(myUi: meowUiHost) {
  * @returns true if the title bar is at the bottom, false otherwise.
  */
 export function titleBarPositionBottom() {
-  // return true;
-  const settings = AppStorageV2.connect(meowManagedSettings)!;
-  return settings.settingsData[1].value == 'bottom';
+  return getMySettings().settingsData[1].value == 'bottom';
 }
+
+/**
+ * Gets if the user wants to show the navigation indicator.
+ * @returns true if the user wants to show the navigation indicator, false otherwise.
+ */
+export function showNavigationIndicator() {
+  return getMySettings().settingsData[6].value as boolean;
+}
+
+/**
+ * Gets if the user wants to show the resource monitor.
+ * @returns true if the user wants to show the resource monitor, false otherwise.
+ */
+export function showResourceMonitor() {
+  return getMySettings().settingsData[75].value as boolean;
+}
+
+/**
+ * Gets if the user wants to show the bottom avoid.
+ * @returns true if the user wants to show the bottom avoid, false otherwise.
+ */
+export function showBottomAvoid() {
+  return getMySettings().settingsData[5].value as boolean;
+}
+
+// HAND PREFERENCES
 
 /**
  * Gets if the user prefers right hand. This inclused considering the smartReachability's suggestion.
@@ -141,8 +187,7 @@ export function titleBarPositionBottom() {
  */
 export function isPreferRightHand(): boolean {
   if (isSmartReachabilityOn()) {
-    const myApp = AppStorageV2.connect(meowAppStatuses)!;
-    return myApp.smartReachabilitySaysWeShouldPreferRightHand;
+    return getMyApp().smartReachabilitySaysWeShouldPreferRightHand;
   }
   return isPreferRightHandFromSettings();
 }
@@ -152,8 +197,7 @@ export function isPreferRightHand(): boolean {
  * @returns true if the user prefers right hand, false otherwise.
  */
 export function isPreferRightHandFromSettings() {
-  const settings = AppStorageV2.connect(meowManagedSettings)!;
-  return settings.settingsData[47].value == 'right';
+  return getMySettings().settingsData[47].value == 'right';
 }
 
 /**
@@ -161,9 +205,10 @@ export function isPreferRightHandFromSettings() {
  * @returns true if the user enables smart reachability, false otherwise.
  */
 export function isSmartReachabilityOn() {
-  const settings = AppStorageV2.connect(meowManagedSettings)!;
-  return settings.settingsData[51].value as boolean;
+  return getMySettings().settingsData[51].value as boolean;
 }
+
+// TABS & SIDE BAR (SIDE AREA)
 
 /**
  * Check the settings and see if the current tabs style is vertical, taking into consideration the current layout wide mode status.
@@ -171,8 +216,28 @@ export function isSmartReachabilityOn() {
  * @returns True if the current tabs style is vertical, false otherwise.
  */
 export function isTabsStyleVertical(myLayout: meowLayout) {
-  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
-  return mySettings.settingsData[myLayout.wideMode ? 3 : 4].value as string == 'vertical';
+  return getMySettings().settingsData[myLayout.wideMode ? 3 : 4].value as string == 'vertical';
+}
+
+/**
+ * Whether to show the shrink button.
+ */
+export function sideAreaShrinkButton() {
+  return getMySettings().settingsData[15].value as boolean;
+}
+
+/**
+ * Whether to auto shrink side area.
+ */
+export function sideAreaShrinkAuto() {
+  return getMySettings().settingsData[14].value as boolean;
+}
+
+/**
+ * If the user wants no push to the web contents when expanding the side area.
+ */
+export function sideAreaShrinkExpandNoPush() {
+  return getMySettings().settingsData[84].value as boolean;
 }
 
 /**
@@ -180,19 +245,27 @@ export function isTabsStyleVertical(myLayout: meowLayout) {
  * @returns True if the sidebar should be on the right, false otherwise.
  */
 export function sidebarShouldBeOnTheRight() {
-  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
-  const reverseSidebar = mySettings.settingsData[49].value as boolean;
+  const reverseSidebar = getMySettings().settingsData[49].value as boolean;
   return isPreferRightHand() && !reverseSidebar;
 }
+
+// HOMEPAGE
 
 /**
  * Check the settings and see if the shortcuts should be on the right.
  * @returns True if the shortcuts should be on the right, false otherwise.
  */
 export function shortcutsShouldBeOnTheRight() {
-  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
-  const reverseShortcuts = mySettings.settingsData[50].value as boolean;
+  const reverseShortcuts = getMySettings().settingsData[50].value as boolean;
   return isPreferRightHand() && !reverseShortcuts;
+}
+
+export function shortcutsHeight() {
+  return getMySettings().settingsData[46].value as number;
+}
+
+export function shortcutsPath() {
+  return getMySettings().settingsData[45].value as string;
 }
 
 /**
@@ -200,6 +273,84 @@ export function shortcutsShouldBeOnTheRight() {
  * @returns The default new window alias.
  */
 export function defaultNewWindowAlias() {
-  const mySettings = AppStorageV2.connect(meowManagedSettings)!;
-  return mySettings.settingsData[26].value as string;
+  return getMySettings().settingsData[26].value as string;
+}
+
+// MISC
+
+/**
+ * Gets if the user wants to use system back to go back in the web.
+ * @returns true if the user enables going back in web by system back, false otherwise.
+ */
+export function webBackBack() {
+  const webBackBack = getMySettings().settingsData[10].value as boolean;
+  return webBackBack;
+}
+
+/**
+ * Gets if the user wants to use esc key shortcuts to go back in the web.
+ * @returns true if the user enables going back in web by esc key shortcuts, false otherwise.
+ */
+export function webBackEsc() {
+  const webBackEsc = getMySettings().settingsData[11].value as boolean;
+  return webBackEsc;
+}
+
+/**
+ * Gets the maximum number of suggestions for bookmarks.
+ * @returns The maximum number of suggestions for bookmarks.
+ */
+export function maxSuggestionsBookmark() {
+  return getMySettings().settingsData[12].value as number;
+}
+
+/**
+ * Gets the maximum number of suggestions for history.
+ * @returns The maximum number of suggestions for history.
+ */
+export function maxSuggestionsHistory() {
+  return getMySettings().settingsData[13].value as number;
+}
+
+// MeowButtons & Side bar buttons
+
+export function meowButtonsControl() {
+  return getMySettings().settingsData[76].value as UnifiedButtonsType[];
+}
+
+export function meowButtonsAddressBarOnFocus() {
+  return getMySettings().settingsData[77].value as UnifiedButtonsType[];
+}
+
+export function meowButtonsAddressBarAlways() {
+  return getMySettings().settingsData[78].value as UnifiedButtonsType[];
+}
+
+export function meowButtonsTitle() {
+  return getMySettings().settingsData[79].value as UnifiedButtonsType[];
+}
+
+export function meowButtonsMore() {
+  return getMySettings().settingsData[80].value as UnifiedButtonsType[];
+}
+
+/**
+ * Gets the buttons for the specified slot.
+ * They are in a format of [<symbolId>, <buttonType / url>][]
+ *
+ * @param slotId The id of the slot. ([76, 80])
+ * @returns The buttons for the specified slot.
+ */
+export function meowButtonsOfSlot(slotId: number) {
+  return getMySettings().settingsData[slotId].value as UnifiedButtonsType[];
+}
+
+/**
+ * Gets the buttons for the sidebar.
+ * They are in a format of [<symbolId>, <buttonType / url>][]
+ *
+ * @returns The buttons for the sidebar.
+ */
+export function sidebarButtons() {
+  return getMySettings().settingsData[81].value as [string, string][];
 }

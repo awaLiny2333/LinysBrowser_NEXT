@@ -1,18 +1,18 @@
-import { meowManagedSettings } from "../../../../hosts/userdata/settings/classes/meowManagedSettings";
-import { mooTextType, standardSpacing } from "../../../../components/constants";
+import { MooCapsuleButton } from "../../../../components/common/MooCapsuleButton";
+import { MooSlider } from "../../../../components/common/MooSlider";
+import { MooSwitch } from "../../../../components/common/MooSwitch";
 import { MooTextModifier } from "../../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../../components/common/UniContentCard";
-import { MooSwitch } from "../../../../components/common/MooSwitch";
-import { AppStorageV2 } from "@kit.ArkUI";
-import { MooSlider } from "../../../../components/common/MooSlider";
-import { MooCapsuleButton } from "../../../../components/common/MooCapsuleButton";
-import { requestDialog } from "../../../../hosts/system/dialogs/scripts/dialog";
+import { mooTextType, standardSpacing } from "../../../../components/constants";
+import { getMySettings } from "../../../../components/settings";
 import { meowDialogManager, openDialogRequestType } from "../../../../hosts/system/dialogs/classes/meowDialogManager";
+import { requestDialog } from "../../../../hosts/system/dialogs/scripts/dialog";
+import { meowManagedSettings } from "../../../../hosts/userdata/settings/classes/meowManagedSettings";
 
 @ComponentV2
 struct SettingsExperience {
   @Param @Require myDialog: meowDialogManager;
-  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+  @Local mySettings: meowManagedSettings = getMySettings();
 
   build() {
     Column({ space: standardSpacing }) {

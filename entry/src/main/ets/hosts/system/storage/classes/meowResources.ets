@@ -1,6 +1,7 @@
 import lazy { image } from "@kit.ImageKit";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import lazy { fileCopy, fileDocumentPick2Path, galleryPick2Path, readArrayBufferConcurrent } from "../../../../catstypicalframework/utils/storage";
+import lazy { defaultAnimation } from "../../../../components/settings";
 
 /**
  * The one who manages miscallaneous resources.
@@ -27,7 +28,9 @@ export class meowResources {
       return;
     }
     const backgroundImage = await image.createImageSource(buf).createPixelMap();
-    this.backgroundImage = backgroundImage;
+    animateToImmediately(defaultAnimation(), () => {
+      this.backgroundImage = backgroundImage;
+    });
   }
 
   /**

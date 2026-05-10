@@ -5,8 +5,9 @@ import { MooTextModifier } from '../../../common/MooTextModifier';
 import { meowFlexOptions, standardSpacing } from '../../../constants';
 import { meowHistoryEntry } from '../../../../hosts/userdata/history/classes/meowHistoryEntry';
 
+// @ReusableV2
 @ComponentV2
-struct HistoryEntryButton {
+struct HistoryEntry {
   @Param @Require myLayout: meowLayout;
   @Param @Require isSelected: boolean;
   @Param @Require isSelecting: boolean;
@@ -115,4 +116,4 @@ struct HistoryEntryButton {
   }
 }
 
-export { HistoryEntryButton };
+export { HistoryEntry };

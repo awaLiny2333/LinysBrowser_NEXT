@@ -1,15 +1,13 @@
 import lazy { common } from "@kit.AbilityKit";
-import { AppStorageV2 } from "@kit.ArkUI";
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 import { defaultInnerRadius, wideModeThreshold } from "../../../catstypicalframework/utils/ui";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { newWindow } from "../../../hosts/system/windows/scripts/multiwindows";
-import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { MooSymbolButton } from "../../common/MooSymbolButton";
 import { MooTextButton } from "../../common/MooTextButton";
 import lazy { MooTextInputV2 } from "../../common/MooTextInputV2";
-import { standardSpacing,meowThemeColorType } from "../../constants";
-import { defaultAnimation, getColor, isPreferRightHand, useEffects } from "../../settings";
+import { meowThemeColorType, standardSpacing } from "../../constants";
+import { defaultAnimation, getColor, isPreferRightHand, getMySettings, useEffects } from "../../settings";
 
 @ComponentV2
 struct MeowWindowInfoBar {
@@ -55,8 +53,7 @@ struct MeowWindowInfoBar {
               this.myUi.windowAlias = this.windowAliasEditing;
               this.isEditing = false;
             });
-            const mySettings = AppStorageV2.connect(meowManagedSettings)!;
-            mySettings.setByIndex(26, this.windowAliasEditing);
+            getMySettings().setByIndex(26, this.windowAliasEditing);
           }
         })
           .onAppear(() => {

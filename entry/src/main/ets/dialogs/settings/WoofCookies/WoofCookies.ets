@@ -1,4 +1,3 @@
-import { AppStorageV2 } from "@kit.ArkUI";
 import lazy { webview } from "@kit.ArkWeb";
 import lazy { BusinessError } from "@kit.BasicServicesKit";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
@@ -9,15 +8,13 @@ import { MooTextInputV2 } from "../../../components/common/MooTextInputV2";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { standardComponentHeight, standardSpacing } from "../../../components/constants";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
-import { meowAppStatuses } from "../../../hosts/system/windows/classes/meowAppStatuses";
+import { getMyApp } from "../../../hosts/system/windows/scripts/helpers";
 import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
 struct CookiesPanel {
   // Hosts
   @Param @Require myDialog: meowDialogManager;
-  @Param @Require myLayout: meowLayout;
-  @Local myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
   // Local
   @Local cookies: string | undefined = undefined;
   @Local searchKey: string = '';
@@ -108,7 +105,7 @@ struct CookiesPanel {
    */
   focusInput() {
     try {
-      if (this.myApp.freeWindow) {
+      if (getMyApp().freeWindow) {
         this.getUIContext().getFocusController().requestFocus(this.searchInputId);
       }
     } catch (e) {
@@ -130,7 +127,7 @@ struct WoofCookiesDialog {
       shiftBackgroundColor: true,
       myDialog: this.myDialog, myLayout: this.myLayout,
     }) {
-      CookiesPanel({ myDialog: this.myDialog, myLayout: this.myLayout });
+      CookiesPanel({ myDialog: this.myDialog });
     };
   }
 }

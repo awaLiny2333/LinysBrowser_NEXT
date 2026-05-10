@@ -1,12 +1,12 @@
 import lazy { escapeForJson } from "../scripts/helpers";
 
 export enum meowSettingsEntryType {
-  UNDEFINED = -1,
-  NUMBER = 0,
-  STRING = 1,
-  BOOLEAN = 2,
-  STRING_ARRAY = 3,
-  STRING_ARRAY_PAIR = 4,
+  UNDEFINED = '',
+  NUMBER = 'NUMBER',
+  STRING = 'STRING',
+  BOOLEAN = 'BOOLEAN',
+  STRING_ARRAY = 'STRING_ARRAY',
+  STRING_ARRAY_PAIR = 'STRING_ARRAY_PAIR',
 }
 
 @ObservedV2

@@ -5,7 +5,7 @@ import { meowAppMessage } from "./meowAppMessage";
  * The statuses that is shared across the entire app, across different windows / instances.
  */
 @ObservedV2
-export class meowAppStatuses {
+export class meowAppHost {
   @Trace windowIds: string[] = [];
   // Background tasks
   @Trace refreshingWebCacheSize: boolean = false;

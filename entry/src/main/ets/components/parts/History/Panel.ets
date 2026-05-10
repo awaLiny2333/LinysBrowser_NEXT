@@ -7,7 +7,7 @@ import { MooSymbolButton } from "../../common/MooSymbolButton";
 import { MooTextInputV2 } from "../../common/MooTextInputV2";
 import { MooTextModifier } from "../../common/MooTextModifier";
 import { defaultAnimation, getColor, isPreferRightHand, useEffects } from "../../settings";
-import { meowAppStatuses } from "../../../hosts/system/windows/classes/meowAppStatuses";
+import { meowAppHost } from "../../../hosts/system/windows/classes/meowAppHost";
 import { globalMessage, meowAppMessageType } from "../../../hosts/system/windows/scripts/messaging";
 import { meowHistorian } from "../../../hosts/userdata/history/classes/meowHistorian";
 import { meowHistoryChunk } from "../../../hosts/userdata/history/classes/meowHistoryChunk";
@@ -15,7 +15,8 @@ import { meowHistoryEntry } from "../../../hosts/userdata/history/classes/meowHi
 import { groupByDates } from "../../../hosts/userdata/history/scripts/helpers";
 import { DayCard } from "./parts/DayCard";
 import { defaultMonthButtonHeight, MonthButton } from "./parts/MonthButton";
-import { standardSpacing,meowThemeColorType } from "../../constants";
+import { standardSpacing, meowThemeColorType } from "../../constants";
+import { getMyApp } from "../../../hosts/system/windows/scripts/helpers";
 
 @ComponentV2
 struct HistoryPanel {
@@ -25,7 +26,7 @@ struct HistoryPanel {
   // Host
   @Param @Require myLayout: meowLayout;
   @Local myMeowHistorian: meowHistorian = AppStorageV2.connect<meowHistorian>(meowHistorian)!;
-  @Local myApp: meowAppStatuses = AppStorageV2.connect<meowAppStatuses>(meowAppStatuses)!;
+  @Local myApp: meowAppHost = getMyApp();
   // Display
   @Local myHistoryChunk: meowHistoryChunk | undefined;
   @Local myEntries: meowHistoryEntry[] = [];
@@ -58,7 +59,6 @@ struct HistoryPanel {
 
   build() {
     Column({ space: defaultInnerRadius }) {
-
       // Entries
       List({ scroller: this.scroller, space: standardSpacing * 0.5 }) {
         Repeat(this.myEntriesGrouped)
@@ -225,12 +225,12 @@ struct HistoryPanel {
           globalMessage(meowAppMessageType.HISTORY_DELETED, this.selectedTimeStamps);
 
           // Real job.
-          this.myMeowHistorian.deleteHistory(this.selectedTimeStamps);
+          this.myMeowHistorian.deleteHistory(this.selectedTimeStamps).then(() => {
+            // Report
+            const duration = Date.now() - startTime;
+            this.refreshInfo(duration);
+          });
           this.selectedTimeStamps = new Set();
-
-          // Report
-          const duration = Date.now() - startTime;
-          this.refreshInfo(duration);
         }
       });
     }

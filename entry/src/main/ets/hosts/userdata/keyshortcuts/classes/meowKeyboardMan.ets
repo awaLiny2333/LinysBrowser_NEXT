@@ -1,6 +1,6 @@
-import { AppStorageV2 } from "@kit.ArkUI";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import { meowManagedSettings } from "../../settings/classes/meowManagedSettings";
+import { getMySettings } from "../../../../components/settings";
+import { keyShortcutsString } from "../settings";
 import { meowKeyBind } from "./meowKeyBind";
 
 @ObservedV2
@@ -52,8 +52,7 @@ export class meowKeyboardMan {
    * Load from settings.
    */
   initFromSettings() {
-    const mySettings = AppStorageV2.connect(meowManagedSettings)!;
-    const settingsStrings = mySettings.settingsData[29].value as string[];
+    const settingsStrings = keyShortcutsString();
     if (!settingsStrings) {
       meow(`No settings found for key shortcuts.`, 'meowKeyboardMan][initFromSettings', meowLevel.WARN);
       return;
@@ -71,9 +70,9 @@ export class meowKeyboardMan {
    * Save to settings.
    */
   private saveToSettings() {
-    const mySettings = AppStorageV2.connect(meowManagedSettings)!;
-    const settingsStrings = this.shortcuts.map(shortcut => shortcut.toArray().join(' '));
-    mySettings.settingsData[29].value = settingsStrings;
+    const mySettings = getMySettings();
+    const newSettingsStrings = this.shortcuts.map(shortcut => shortcut.toArray().join(' '));
+    mySettings.setByIndex(29, newSettingsStrings);
     mySettings.requestSaveToDisk();
   }
 

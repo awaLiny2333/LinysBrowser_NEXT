@@ -118,7 +118,7 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   // Updates introduced in 2.0.0
   // ---
   // Manage buttons
-  new meowSettingsEntry('buttons_control', meowSettingsEntryType.STRING_ARRAY, defaultButtonsControl()),
+  new meowSettingsEntry('buttons_control', meowSettingsEntryType.STRING_ARRAY, defaultButtonsControl()), // #76
   new meowSettingsEntry('buttons_address_bar_on_focus', meowSettingsEntryType.STRING_ARRAY, defaultButtonsAddressBarOnFocus()),
   new meowSettingsEntry('buttons_address_bar', meowSettingsEntryType.STRING_ARRAY, defaultButtonsAddressBar()),
   new meowSettingsEntry('buttons_title', meowSettingsEntryType.STRING_ARRAY, defaultButtonsTitle()),

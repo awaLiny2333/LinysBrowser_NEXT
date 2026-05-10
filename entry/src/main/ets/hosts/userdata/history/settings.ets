@@ -1,13 +1,11 @@
-import lazy { AppStorageV2 } from "@kit.ArkUI";
-import lazy { meowManagedSettings } from "../settings/classes/meowManagedSettings";
+import { getMySettings } from "../../../components/settings";
 
 /**
  * Gets if the current settings allows recording new history entries.
  * @returns True or false!
  */
 export function recordNewHistoryFromSettings() {
-  const settings = AppStorageV2.connect(meowManagedSettings)!;
-  return settings.settingsData[69].value as boolean;
+  return getMySettings().settingsData[69].value as boolean;
 }
 
 /**
@@ -17,8 +15,7 @@ export function recordNewHistoryFromSettings() {
  * @deprecated As we no longer need to care about this for our brand new history managing system!
  */
 export function historyIndexLoadQuantityFromSettings() {
-  const settings = AppStorageV2.connect(meowManagedSettings)!;
-  return settings.settingsData[71].value as number;
+  return getMySettings().settingsData[71].value as number;
 }
 
 /**
@@ -26,6 +23,5 @@ export function historyIndexLoadQuantityFromSettings() {
  * @returns The number!
  */
 export function historySuggestionQuantityFromSettings() {
-  const settings = AppStorageV2.connect(meowManagedSettings)!;
-  return settings.settingsData[13].value as number;
+  return getMySettings().settingsData[13].value as number;
 }

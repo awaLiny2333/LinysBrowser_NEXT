@@ -1,19 +1,16 @@
-import { AppStorageV2 } from '@kit.ArkUI';
 import BuildProfile from 'BuildProfile';
 import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { mooTextType, standardSpacing } from '../../../../components/constants';
-import { defaultAnimation } from '../../../../components/settings';
+import { defaultAnimation, getMySettings } from '../../../../components/settings';
 import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
-import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
 
 @ComponentV2
 struct SettingsAbout {
   // Hosts
   @Param @Require myDialog: meowDialogManager;
-  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
   // Local
   @Local clickCount: number = 0;
   timeoutId: number | undefined = undefined;
@@ -34,7 +31,7 @@ struct SettingsAbout {
             this.clickCount++;
             if (this.clickCount == 7) {
               animateToImmediately(defaultAnimation(), () => {
-                this.mySettings.setByIndex(74, true);
+                getMySettings().setByIndex(74, true);
               });
             }
             clearTimeout(this.timeoutId);

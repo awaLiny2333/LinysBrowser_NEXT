@@ -1,17 +1,14 @@
-import lazy { AppStorageV2 } from "@kit.ArkUI";
 import lazy { webview } from "@kit.ArkWeb";
-import lazy { meowManagedSettings } from "../../userdata/settings/classes/meowManagedSettings";
+import { getMySettings } from "../../../components/settings";
 import lazy { defaultSearchEngine, urlDefaultBlank } from "../../userdata/settings/scripts/defaultSettingsValues";
 
 // Cookies
-
 /**
  * Check if intelligent tracking prevention is enabled.
  * @returns True if enabled, false otherwise.
  */
 export function intelligentTrackingPrevention() {
-  const settings = AppStorageV2.connect(meowManagedSettings)!;
-  const result = settings.settingsData[33].value as boolean;
+  const result = getMySettings().settingsData[33].value as boolean;
   return result;
 }
 
@@ -20,22 +17,32 @@ export function intelligentTrackingPrevention() {
  * @returns True if allowed, false otherwise.
  */
 export function thirdPartyCookies() {
-  const settings = AppStorageV2.connect(meowManagedSettings)!;
-  const result = settings.settingsData[34].value as boolean;
+  const result = getMySettings().settingsData[34].value as boolean;
   return result;
 }
 
 // URL
 
 /**
+ * Gets the new tab url set by the user from settings.
+ * @returns The new tab url set in meowManagedSettings.
+ */
+export function userNewTabUrl() {
+  return getMySettings().settingsData[31].value as string;
+}
+
+export function userHomeUrl() {
+  return getMySettings().settingsData[30].value as string;
+}
+
+/**
  * Gets the new tab url from settings.
  * @returns The new tab url set in meowManagedSettings or the urlDefaultBlank if not set.
  */
-export function getNewTabUrlFromSettings(): string {
-  const settings = AppStorageV2.connect(meowManagedSettings)!;
-  const userNewTabUrl = settings.settingsData[31].value as string;
-  if (userNewTabUrl) {
-    return userNewTabUrl;
+export function newTabUrl(): string {
+  const tryNewTabUrl = userNewTabUrl();
+  if (tryNewTabUrl) {
+    return tryNewTabUrl;
   }
   return urlDefaultBlank();
 }
@@ -44,39 +51,100 @@ export function getNewTabUrlFromSettings(): string {
  * Gets the home url from settings.
  * @returns The home url set in meowManagedSettings or the urlDefaultBlank if not set.
  */
-export function getHomeUrlFromSettings(): string {
-  const settings = AppStorageV2.connect(meowManagedSettings)!;
-  const userHomeUrl = settings.settingsData[30].value as string;
-  if (userHomeUrl) {
-    return userHomeUrl;
+export function homeUrl(): string {
+  const tryHomeUrl = userHomeUrl();
+  if (tryHomeUrl) {
+    return tryHomeUrl;
   }
   return urlDefaultBlank();
 }
 
 // Search Engines
 
+export function searchEngineList() {
+  return getMySettings().settingsData[43].value as string[][];
+}
+
+export function searchEngineSelected() {
+  return getMySettings().settingsData[44].value as number;
+}
+
 /**
  * Gets the default search engine from settings.
  * @returns The default search engine set in meowManagedSettings or the defaultSearchEngine if not set.
  */
 export function getSearchEngineFromSettings() {
-  const settings = AppStorageV2.connect(meowManagedSettings)!;
-  const seList = settings.settingsData[43].value as string[][];
-  const seSelected = settings.settingsData[44].value as number;
-  const se = seSelected == -1 ? defaultSearchEngine() : seList[seSelected][1];
+  const seSelected = searchEngineSelected();
+  const se = seSelected == -1 ? defaultSearchEngine() : searchEngineList()[seSelected][1];
   return se;
 }
 
 // User Agents
+
+export function userAgentList() {
+  return getMySettings().settingsData[41].value as string[][];
+}
+
+export function userAgentSelected() {
+  return getMySettings().settingsData[42].value as number;
+}
 
 /**
  * Get user agent from settings.
  * @returns The UA string, or an empty string if selected the default UA but webview.WebviewController.getDefaultUserAgent() returned nothing.
  */
 export function getCurrentUserAgent(): string {
-  const settings = AppStorageV2.connect(meowManagedSettings)!;
-  const uaList = settings.settingsData[41].value as string[][];
-  const uaSelected = settings.settingsData[42].value as number;
+  const uaSelected = userAgentSelected();
   const uaDefault = webview.WebviewController.getDefaultUserAgent();
-  return uaSelected == -1 ? uaDefault : uaList[uaSelected][1];
+  return uaSelected == -1 ? uaDefault : userAgentList()[uaSelected][1];
+}
+
+// SITE
+
+/**
+ * If web dark mode is forced.
+ * @returns True if forced, false otherwise.
+ */
+export function forceWebDarkMode() {
+  return getMySettings().settingsData[60].value as boolean;
+}
+
+export function forceWebDarkExceptions() {
+  return getMySettings().settingsData[61].value as string[];
+}
+
+/**
+ * If web images are disabled on all sites.
+ * @returns True if disabled, false otherwise.
+ */
+export function disableWebImagesOnAllSites() {
+  return getMySettings().settingsData[58].value as boolean;
+}
+
+export function disableWebImagesSites() {
+  return getMySettings().settingsData[59].value as string[];
+}
+
+/**
+ * If web JavaScripts are disabled on all sites.
+ * @returns True if disabled, false otherwise.
+ */
+export function disableWebJavaScriptsOnAllSites() {
+  return getMySettings().settingsData[55].value as boolean;
+}
+
+export function disableWebJavaScriptSites() {
+  return getMySettings().settingsData[56].value as string[];
+}
+
+/**
+ * If ad blocker is enabled.
+ * @returns True if enabled, false otherwise.
+ */
+export function useAdBlock() {
+  return getMySettings().settingsData[52].value as boolean;
+}
+
+export function adBlockExceptions() {
+  return getMySettings().settingsData[53].value as string[];
 }

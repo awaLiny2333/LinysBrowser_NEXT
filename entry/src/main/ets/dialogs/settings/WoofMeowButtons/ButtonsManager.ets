@@ -1,27 +1,24 @@
-import { AppStorageV2 } from "@kit.ArkUI";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
-import { standardSpacing, UnifiedButtonsType } from "../../../components/constants";
 import { MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
 import { UniRowOfCapsuleButtons } from "../../../components/common/UniRowOfCapsuleButtons";
-import { defaultAnimation, isPreferRightHand } from "../../../components/settings";
+import { standardSpacing, UnifiedButtonsType } from "../../../components/constants";
+import { defaultAnimation, getMySettings, isPreferRightHand, meowButtonsAddressBarAlways, meowButtonsAddressBarOnFocus, meowButtonsControl, meowButtonsMore, meowButtonsTitle } from "../../../components/settings";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
-import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { WoofUniFrame } from "../../WoofUniFrame";
 import { ButtonSlot } from "./ButtonSlot";
 
 @ComponentV2
 struct ButtonsManager {
   @Param @Require controller: CustomDialogController;
-  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
   // Temp copies
-  @Local tempButtonsControl: UnifiedButtonsType[] = Array.from(this.mySettings.settingsData[76].value as UnifiedButtonsType[]);
-  @Local tempButtonsAddressBarOnFocus: UnifiedButtonsType[] = Array.from(this.mySettings.settingsData[77].value as UnifiedButtonsType[]);
-  @Local tempButtonsAddressBar: UnifiedButtonsType[] = Array.from(this.mySettings.settingsData[78].value as UnifiedButtonsType[]);
-  @Local tempButtonsTitle: UnifiedButtonsType[] = Array.from(this.mySettings.settingsData[79].value as UnifiedButtonsType[]);
-  @Local tempButtonsMore: UnifiedButtonsType[] = Array.from(this.mySettings.settingsData[80].value as UnifiedButtonsType[]);
+  @Local tempButtonsControl: UnifiedButtonsType[] = Array.from(meowButtonsControl());
+  @Local tempButtonsAddressBarOnFocus: UnifiedButtonsType[] = Array.from(meowButtonsAddressBarOnFocus());
+  @Local tempButtonsAddressBar: UnifiedButtonsType[] = Array.from(meowButtonsAddressBarAlways());
+  @Local tempButtonsTitle: UnifiedButtonsType[] = Array.from(meowButtonsTitle());
+  @Local tempButtonsMore: UnifiedButtonsType[] = Array.from(meowButtonsMore());
   // Local
   @Local showNotice: boolean = false;
 
@@ -72,13 +69,13 @@ struct ButtonsManager {
             // Confirm
             if (this.verifyLegal()) {
               // Fill the data
-              this.mySettings.settingsData[76].value = this.tempButtonsControl;
-              this.mySettings.settingsData[77].value = this.tempButtonsAddressBarOnFocus;
-              this.mySettings.settingsData[78].value = this.tempButtonsAddressBar;
-              this.mySettings.settingsData[79].value = this.tempButtonsTitle;
-              this.mySettings.settingsData[80].value = this.tempButtonsMore;
+              getMySettings().setByIndex(76, this.tempButtonsControl);
+              getMySettings().setByIndex(77, this.tempButtonsAddressBarOnFocus);
+              getMySettings().setByIndex(78, this.tempButtonsAddressBar);
+              getMySettings().setByIndex(79, this.tempButtonsTitle);
+              getMySettings().setByIndex(80, this.tempButtonsMore);
               // Save
-              this.mySettings.requestSaveToDisk();
+              getMySettings().requestSaveToDisk();
               this.controller.close();
             } else {
               // Show notice.

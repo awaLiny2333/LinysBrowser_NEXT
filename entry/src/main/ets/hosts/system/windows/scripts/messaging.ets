@@ -1,7 +1,6 @@
-import lazy { AppStorageV2 } from "@kit.ArkUI";
 import lazy { meowAppMessage } from "../classes/meowAppMessage";
-import lazy { meowAppStatuses } from "../classes/meowAppStatuses";
 import lazy { meowUiHost } from "../classes/meowUiHost";
+import lazy { getMyApp } from "./helpers";
 
 export enum meowAppMessageType {
   SETTINGS_UA_REFRESH,
@@ -22,8 +21,7 @@ export enum meowAppMessageType {
  * @param content The content of the message.
  */
 export function globalMessage(type: meowAppMessageType, content: object | string | boolean | number | undefined = undefined) {
-  const myApp = AppStorageV2.connect(meowAppStatuses)!;
-  myApp.crossAppMessageTunnel = new meowAppMessage(type, content);
+  getMyApp().crossAppMessageTunnel = new meowAppMessage(type, content);
 }
 
 // Example use of global messaging:

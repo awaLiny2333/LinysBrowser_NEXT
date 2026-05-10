@@ -1,7 +1,7 @@
 /**
- * Modified from HistoryEntryButton.
+ * Modified from HistoryEntry.
  *
- * @see entry/src/main/ets/dialogs/parts/WoofHistory/parts/HistoryEntryButton.ets
+ * @see entry/src/main/ets/dialogs/parts/WoofHistory/parts/HistoryEntry.ets
  */
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { isBlank } from "../../../catstypicalframework/utils/strings";

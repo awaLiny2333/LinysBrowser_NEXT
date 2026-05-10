@@ -1,9 +1,9 @@
 import { defaultInnerRadius } from '../../../../../catstypicalframework/utils/ui';
 import { UniContentCard } from '../../../../../components/common/UniContentCard';
 import { SimpleSettingsExamples } from './SimpleSettingsExamples';
-import { AppStorageV2 } from '@kit.ArkUI';
 import { meowManagedSettings } from '../../../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { meowFlexOptions } from '../../../../../components/constants';
+import { getMySettings } from '../../../../../components/settings';
 
 /**
  * Settings status and control examples.
@@ -13,7 +13,7 @@ struct SettingsDevCard {
   // Environment
   context: Context = this.getUIContext().getHostContext()!;
   // App
-  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!; // Should be initialized by flows.
+  @Local mySettings: meowManagedSettings = getMySettings(); // Should be initialized by flows.
 
   build() {
     UniContentCard({ title: 'meowManagedSettings' }) {

@@ -1,5 +1,5 @@
 import { getRandomEmoticon } from "../../../../catstypicalframework/utils/meow";
-import { SidebarPageType, UnifiedButtonsType } from "../../../../components/constants";
+import { UnifiedButtonsType } from "../../../../components/constants";
 
 /**
  * Default user agents in a specified string format.
@@ -86,9 +86,9 @@ export function defaltButtonsMore() {
  */
 export function defaultButtonsSidebar() {
   return [
-    '\n' + SidebarPageType.BOOKMARKS,
-    '\n' + SidebarPageType.HISTORIES,
-    '\n' + SidebarPageType.SCRATCHING_BOARD,
-    '\n' + SidebarPageType.DOWNLOADS
+    '\n' + UnifiedButtonsType.BOOKMARKS,
+    '\n' + UnifiedButtonsType.HISTORIES,
+    '\n' + UnifiedButtonsType.SCRATCHING_BOARD,
+    '\n' + UnifiedButtonsType.DOWNLOADS
   ].join('\n');
 }

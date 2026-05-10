@@ -1,6 +1,5 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
-import { meowAppStatuses } from '../../../hosts/system/windows/classes/meowAppStatuses';
 import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { globalMessage, meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
 import { meowBookmarkItem } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkItem';
@@ -20,7 +19,6 @@ struct MeowBookmarksPanel {
   // Hosts
   @Param @Require myUi: meowUiHost;
   @Local myBookmarks: meowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
-  @Local myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!; // For event receiving.
   // UI
   @Param @Once maxColumn: number = 1;
   @Param @Once panelWidth: number = 0;

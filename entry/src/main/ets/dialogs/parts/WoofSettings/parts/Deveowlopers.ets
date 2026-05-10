@@ -1,12 +1,11 @@
 import { bundleManager } from '@kit.AbilityKit';
-import { AppStorageV2 } from '@kit.ArkUI';
 import BuildProfile from 'BuildProfile';
 import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton';
 import { MooSwitch } from '../../../../components/common/MooSwitch';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { standardSpacing,mooTextType } from '../../../../components/constants';
-import { defaultAnimation } from '../../../../components/settings';
+import { defaultAnimation, getMySettings } from '../../../../components/settings';
 import lazy { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 import lazy { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
 import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
@@ -14,7 +13,7 @@ import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes
 @ComponentV2
 struct SettingsDeveowlopers {
   // Hosts
-  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
+  @Local mySettings: meowManagedSettings = getMySettings();
   @Param @Require myDialog: meowDialogManager;
   // Information
   @Local versionName: string = "Version Name";

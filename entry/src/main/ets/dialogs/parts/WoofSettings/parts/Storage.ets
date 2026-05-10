@@ -1,19 +1,20 @@
-import { AppStorageV2 } from '@kit.ArkUI';
 import lazy { addUnitsToSize } from '../../../../catstypicalframework/utils/storage';
 import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { UniRowOfCapsuleButtons } from '../../../../components/common/UniRowOfCapsuleButtons';
 import lazy { mooTextType, standardSpacing } from '../../../../components/constants';
+import { getMySettings } from '../../../../components/settings';
+import lazy { removeWebCache, scanWebCacheSize } from '../../../../hosts/system/storage/scripts/storage';
+import { meowAppHost } from '../../../../hosts/system/windows/classes/meowAppHost';
+import { getMyApp } from '../../../../hosts/system/windows/scripts/helpers';
 import lazy { scanHistoryIndexSize } from '../../../../hosts/userdata/history/scripts/storage';
 import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
-import lazy { removeWebCache, scanWebCacheSize } from '../../../../hosts/system/storage/scripts/storage';
-import { meowAppStatuses } from '../../../../hosts/system/windows/classes/meowAppStatuses';
 
 @ComponentV2
 struct SettingsStorage {
-  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
-  @Local myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
+  @Local mySettings: meowManagedSettings = getMySettings();
+  @Local myApp: meowAppHost = getMyApp();
 
   build() {
     Column({ space: standardSpacing }) {

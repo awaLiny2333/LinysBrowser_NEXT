@@ -1,4 +1,3 @@
-import { AppStorageV2 } from "@kit.ArkUI";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { meow } from "../../../catstypicalframework/utils/catsLogger";
 import { unlinkFile } from "../../../catstypicalframework/utils/storage";
@@ -7,20 +6,18 @@ import { MooSlider } from "../../../components/common/MooSlider";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
 import { standardSpacing } from "../../../components/constants";
-import { defaultAnimation } from "../../../components/settings";
+import { defaultAnimation, getMySettings, shortcutsHeight, shortcutsPath } from "../../../components/settings";
 import { meowDialogManager, openDialogRequestType } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { requestDialog } from "../../../hosts/system/dialogs/scripts/dialog";
-import { meowResources } from "../../../hosts/system/storage/classes/meowResources";
+import { getMyResource } from "../../../hosts/system/storage/scripts/helpers";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { meowAppMessageType } from "../../../hosts/system/windows/scripts/messaging";
-import { meowManagedSettings } from "../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
 struct WoofHomepage {
   @Param @Require myDialog: meowDialogManager;
   @Param @Require myUi: meowUiHost;
-  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
   build() {
     Scroll() {
@@ -30,26 +27,23 @@ struct WoofHomepage {
           MooCapsuleButton({
             text: $r('app.string.Homepage_backdrop_selectFromFiles'),
             clickAction: () => {
-              const myResources = AppStorageV2.connect(meowResources)!;
-              myResources.pickBackgroundImageFromDocuments();
+              getMyResource().pickBackgroundImageFromDocuments();
             }
           });
           MooCapsuleButton({
             text: $r('app.string.Homepage_backdrop_selectFromGallery'),
             clickAction: () => {
-              const myResources = AppStorageV2.connect(meowResources)!;
-              myResources.pickBackgroundImageFromGallery();
+              getMyResource().pickBackgroundImageFromGallery();
             }
           });
           MooCapsuleButton({
             text: $r('app.string.General_delete'),
             needDoubleConfirm: true,
-            isEnabled: (AppStorageV2.connect(meowResources)!).backgroundImage != undefined,
+            isEnabled: getMyResource().backgroundImage != undefined,
             clickAction: () => {
-              const myResources = AppStorageV2.connect(meowResources)!;
-              unlinkFile(myResources.backgroundImagePath);
+              unlinkFile(getMyResource().backgroundImagePath);
               animateToImmediately(defaultAnimation(), () => {
-                myResources.backgroundImage = undefined;
+                getMyResource().backgroundImage = undefined;
               });
             }
           });
@@ -57,7 +51,7 @@ struct WoofHomepage {
 
         // Shortcuts
         UniContentCard({ title: $r('app.string.Homepage_shortcuts'), icon: $r('sys.symbol.quick_help'), expanded: true }) {
-          Text(this.mySettings.settingsData[45].value as string).attributeModifier(new MooTextModifier());
+          Text(shortcutsPath()).attributeModifier(new MooTextModifier());
           MooCapsuleButton({
             text: $r('app.string.General_select'),
             clickAction: () => {
@@ -68,7 +62,7 @@ struct WoofHomepage {
             text: $r('app.string.General_unselect'),
             needDoubleConfirm: true,
             clickAction: () => {
-              this.mySettings.setByIndex(45, '');
+              getMySettings().setByIndex(45, '');
             }
           });
 
@@ -76,10 +70,10 @@ struct WoofHomepage {
           MooSlider({
             min: 0,
             max: 100,
-            value: this.mySettings.settingsData[46].value as number,
+            value: shortcutsHeight(),
             step: 1,
             onChange: (r: number) => {
-              this.mySettings.setByIndex(46, r);
+              getMySettings().setByIndex(46, r);
             }
           });
         };
@@ -97,7 +91,7 @@ struct WoofHomepage {
     if (this.myUi.localMessageTunnel?.type == meowAppMessageType.BOOKMARKS_PICKED) {
       const path = this.myUi.localMessageTunnel.payload as string;
       meow(`Received folder! ${path}`, 'WoofHomepage][receiveMessage');
-      this.mySettings.setByIndex(45, path);
+      getMySettings().setByIndex(45, path);
     }
   }
 }

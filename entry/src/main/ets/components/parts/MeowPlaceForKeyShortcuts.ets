@@ -5,15 +5,13 @@ import { requestDialog } from '../../hosts/system/dialogs/scripts/dialog';
 import { meowUiGoBackSource, meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
 import { newWindow } from '../../hosts/system/windows/scripts/multiwindows';
 import { meowKeyboardMan } from '../../hosts/userdata/keyshortcuts/classes/meowKeyboardMan';
-import { meowManagedSettings } from '../../hosts/userdata/settings/classes/meowManagedSettings';
-import { defaultAnimation } from '../settings';
+import { defaultAnimation, getMySettings } from '../settings';
 
 @Builder
 export function MeowPlaceForKeyShortcuts(
   myDialog: meowDialogManager,
   myUi: meowUiHost,
   myKey: meowKeyboardMan,
-  mySettings: meowManagedSettings,
   context: UIContext
 ) {
   Row() {
@@ -36,7 +34,7 @@ export function MeowPlaceForKeyShortcuts(
       animateToImmediately(defaultAnimation(), () => {
         myUi.showTabs = !myUi.showTabs;
       });
-      mySettings.setByIndex(22, myUi.showTabs);
+      getMySettings().setByIndex(22, myUi.showTabs);
       if (myUi.showTabs) {
         meow(`Show Tabs!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
       } else {
@@ -90,7 +88,7 @@ export function MeowPlaceForKeyShortcuts(
       animateToImmediately(defaultAnimation(), () => {
         myUi.showSidebar = !myUi.showSidebar;
       });
-      mySettings.setByIndex(82, myUi.showSidebar);
+      getMySettings().setByIndex(82, myUi.showSidebar);
       if (myUi.showSidebar) {
         meow(`Show Sidebar!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
       } else {

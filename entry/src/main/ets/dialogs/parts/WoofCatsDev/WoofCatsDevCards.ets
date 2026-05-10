@@ -1,9 +1,7 @@
-import { AppStorageV2 } from '@kit.ArkUI';
 import { meowAvoid } from '../../../catstypicalframework/hosts/meowAvoid';
 import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import { meowMisc } from '../../../catstypicalframework/hosts/meowMisc';
 import { standardSpacing } from '../../../components/constants';
-import { meowResources } from '../../../hosts/system/storage/classes/meowResources';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { WoofUniFrame } from '../../WoofUniFrame';
 import { BookmarksDevCard } from './parts/bookmarks/Card';
@@ -14,7 +12,6 @@ import { SettingsDevCard } from './parts/settings/Card';
 
 @ComponentV2
 struct CatsDevCards {
-  @Local myResources: meowResources = AppStorageV2.connect(meowResources)!;
   @Param @Require myLayout: meowLayout;
   @Param @Require myAvoid: meowAvoid;
   @Param @Require myMisc: meowMisc;

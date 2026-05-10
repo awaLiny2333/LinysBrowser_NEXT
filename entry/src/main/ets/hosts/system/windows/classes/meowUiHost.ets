@@ -1,16 +1,16 @@
 import { AppStorageV2, window } from "@kit.ArkUI";
 import { BusinessError } from "@kit.BasicServicesKit";
+import { meowLayout } from "../../../../catstypicalframework/hosts/meowLayout";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import { getKeywordEntries, UnifiedDestinationResult, UnifiedDestinationResultType, unifyDestination } from "../../../../catstypicalframework/utils/url";
-import { SidebarPageType } from "../../../../components/constants";
+import { UnifiedButtonsType } from "../../../../components/constants";
 import { addressBarId } from "../../../../components/parts/Homepage/MeowAddressBar";
-import { defaultAnimation } from "../../../../components/settings";
+import { defaultAnimation, isTabsStyleVertical, maxSuggestionsBookmark, maxSuggestionsHistory, sideAreaShrinkAuto, webBackBack, webBackEsc } from "../../../../components/settings";
 import lazy { concatSearchWithEngine } from "../../../app/tabs/scripts/searchEngines";
 import lazy { meowBookmarkItem } from "../../../userdata/bookmarks/classes/meowBookmarkItem";
 import lazy { meowBookmarkStash } from "../../../userdata/bookmarks/classes/meowBookmarkStash";
 import lazy { meowHistorian } from "../../../userdata/history/classes/meowHistorian";
 import lazy { meowHistoryEntry } from "../../../userdata/history/classes/meowHistoryEntry";
-import lazy { meowManagedSettings } from "../../../userdata/settings/classes/meowManagedSettings";
 import lazy { meowDialogManager } from "../../dialogs/classes/meowDialogManager";
 import lazy { AddressBarStatuses } from "../scripts/addressBarStatuses";
 import lazy { meowAppMessage } from "./meowAppMessage";
@@ -28,14 +28,15 @@ export class meowUiHost {
   // UI
   @Trace windowFocused: boolean = true;
   @Trace pin: boolean = false;
-  @Trace showMore: boolean = false;
-  @Trace showTabs: boolean = false;
-  @Trace sidebarPage: string = SidebarPageType.HISTORIES;
-  @Trace showSidebar: boolean = false;
-  @Trace sideAreaWidth: number = 0; // The side area includes all things (Vertical tabs, side bar panels)
-  @Trace verticalTabsShrunk: boolean = false;
   @Trace orientation: window.Orientation = window.Orientation.AUTO_ROTATION_RESTRICTED;
   @Trace fullscreenStatus: meowUiFullscreenStatus = meowUiFullscreenStatus.NONE;
+  @Trace showMore: boolean = false;
+  // Side area
+  @Trace showTabs: boolean = false;
+  @Trace sidebarPage: string = UnifiedButtonsType.HISTORIES;
+  @Trace showSidebar: boolean = false;
+  @Trace sideAreaWidth: number = 0; // The side area includes all things (Vertical tabs, side bar panels)
+  @Trace sideAreaShrunk: boolean = false;
   // Search & Address bar
   @Trace addressBarContent: string = '';
   @Trace addressBarCurrentFieldContent: string = ''; // The current focused field / TextInput content. Majorly used for suggesting things.
@@ -64,6 +65,14 @@ export class meowUiHost {
   }
 
   /**
+   * Whether to show vertical tabs.
+   */
+  get showingVerticalTab() {
+    const myLayout = AppStorageV2.connect(meowLayout, `meowLayout_${this.windowId}`)!;
+    return this.showTabs && isTabsStyleVertical(myLayout);
+  }
+
+  /**
    * The universal go back action on this window.
    * @param source The source of the go back action.
    * @returns Whether ANY action was performed.
@@ -79,17 +88,14 @@ export class meowUiHost {
     }
 
     // Back in web.
-    const mySettings = AppStorageV2.connect(meowManagedSettings)!;
     if (source == meowUiGoBackSource.ESC) {
-      const webBackEsc = mySettings.settingsData[11].value as boolean;
-      if (webBackEsc) {
+      if (webBackEsc()) {
         if (this.goBackWeb()) {
           return true;
         }
       }
     } else if (source == meowUiGoBackSource.BACK) {
-      const webBackBack = mySettings.settingsData[10].value as boolean;
-      if (webBackBack) {
+      if (webBackBack()) {
         if (this.goBackWeb()) {
           return true;
         }
@@ -98,8 +104,15 @@ export class meowUiHost {
 
     // Back in BrowserCat UI.
 
-    const inFullscreen = this.fullscreenStatus != meowUiFullscreenStatus.NONE;
+    if (sideAreaShrinkAuto() && (this.showSidebar || this.showingVerticalTab) && !this.sideAreaShrunk) {
+      animateToImmediately(defaultAnimation(), () => {
+        this.sideAreaShrunk = true;
+      });
+      meow(`Auto shrink vertical tabs.`, 'goBackUni');
+      return true;
+    }
 
+    const inFullscreen = this.fullscreenStatus != meowUiFullscreenStatus.NONE;
     if (inFullscreen) {
       this.fullscreenExit();
       return true;
@@ -348,9 +361,8 @@ export class meowUiHost {
    * Refreshes the suggestions.
    */
   refreshSuggestions() {
-    const mySettings = AppStorageV2.connect(meowManagedSettings)!;
-    const maxResultsBookmarks = mySettings.settingsData[12].value as number;
-    const maxResultsHistorian = mySettings.settingsData[13].value as number;
+    const maxResultsBookmarks = maxSuggestionsBookmark();
+    const maxResultsHistorian = maxSuggestionsHistory();
 
     // History
     if (this.addressBarCurrentFieldContent.length > 0 && maxResultsHistorian > 0) {

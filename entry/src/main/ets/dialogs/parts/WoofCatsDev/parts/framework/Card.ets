@@ -4,8 +4,8 @@ import { meowFlexOptions } from '../../../../../components/constants';
 import { hintGC } from '../../../../../catstypicalframework/utils/performance';
 import { meowAvoid } from '../../../../../catstypicalframework/hosts/meowAvoid';
 import { meowLayout } from '../../../../../catstypicalframework/hosts/meowLayout';
-import { meowAppStatuses } from '../../../../../hosts/system/windows/classes/meowAppStatuses';
-import { AppStorageV2 } from '@kit.ArkUI';
+import { meowAppHost } from '../../../../../hosts/system/windows/classes/meowAppHost';
+import { getMyApp } from '../../../../../hosts/system/windows/scripts/helpers';
 
 /**
  * CatsTypicalFramework stuffs.
@@ -16,7 +16,7 @@ struct CatsTypicalFrameworkDevCard {
   @Param @Require myLayout: meowLayout;
   @Param @Require myAvoid: meowAvoid;
   @Param @Require myMisc: meowMisc;
-  @Local myApp: meowAppStatuses = AppStorageV2.connect(meowAppStatuses)!;
+  @Local myApp: meowAppHost = getMyApp();
 
   build() {
     UniContentCard({ title: 'CatsTypicalFramework' }) {

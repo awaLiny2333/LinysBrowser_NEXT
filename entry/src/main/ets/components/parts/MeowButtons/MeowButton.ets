@@ -1,12 +1,10 @@
-import { AppStorageV2 } from '@kit.ArkUI';
 import { meow } from '../../../catstypicalframework/utils/catsLogger';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
 import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import lazy { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
 import { ALL_WINDOW_ORIENTATIONS, meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addressBarStatuses';
-import { meowManagedSettings } from '../../../hosts/userdata/settings/classes/meowManagedSettings';
-import { defaultAnimation, getColor, useEffects } from '../../settings';
+import { defaultAnimation, getColor, getMySettings, useEffects } from '../../settings';
 import { defaultMooSymbolSize, fontSizeSymbol, getButtonIcon, standardSpacing, meowThemeColorType, UnifiedButtonsType } from '../../constants';
 
 @ComponentV2
@@ -14,7 +12,6 @@ struct MeowButton {
   @Param @Require myDialog: meowDialogManager;
   @Param @Require myUi: meowUiHost;
   @Param @Require type: string;
-  @Local mySettings: meowManagedSettings = AppStorageV2.connect(meowManagedSettings)!;
 
   build() {
     if (this.showMe) {
@@ -58,13 +55,13 @@ struct MeowButton {
         animateToImmediately(defaultAnimation(), () => {
           this.myUi.showTabs = !this.myUi.showTabs;
         });
-        this.mySettings.setByIndex(22, this.myUi.showTabs);
+        getMySettings().setByIndex(22, this.myUi.showTabs);
         break;
       case UnifiedButtonsType.SIDEBAR:
         animateToImmediately(defaultAnimation(), () => {
           this.myUi.showSidebar = !this.myUi.showSidebar;
         });
-        this.mySettings.setByIndex(82, this.myUi.showSidebar);
+        getMySettings().setByIndex(82, this.myUi.showSidebar);
         break;
       case UnifiedButtonsType.BOOKMARKS:
         requestDialog(this.myDialog, openDialogRequestType.BOOKMARKS);

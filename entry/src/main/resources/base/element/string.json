@@ -325,15 +325,15 @@
       "value": "Tabs style 󰎵"
     },
     {
-      "name": "Settings_category_appearance_layout_shrinkVerticalTabsButton",
-      "value": "Shrink vertical tabs button"
+      "name": "Settings_category_appearance_layout_shrinkSideAreaButton",
+      "value": "Shrink side area button"
     },
     {
-      "name": "Settings_category_appearance_layout_shrinkVerticalTabsAuto",
+      "name": "Settings_category_appearance_layout_shrinkSideAreaAuto",
       "value": "Auto shrink"
     },
     {
-      "name": "Settings_category_appearance_layout_shrinkVerticalTabsNoPush",
+      "name": "Settings_category_appearance_layout_shrinkSideAreaNoPush",
       "value": "No-push expansion"
     },
     {
