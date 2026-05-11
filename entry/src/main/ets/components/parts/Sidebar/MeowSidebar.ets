@@ -38,10 +38,18 @@ struct MeowSidebar {
             // TODO: downloads UI.
           } else if (this.myUi.sidebarPage == UnifiedButtonsType.HISTORIES) {
             // History
-            HistoryPanel({ myLayout: this.myLayout, allowEdit: false, needPadding: false });
+            HistoryPanel({
+              myLayout: this.myLayout, allowEdit: false, needPadding: false, lite: true, autoFocus: false, requestVisit: (url) => {
+                this.myUi.submitSearchOrLoad(url);
+              }
+            });
           } else if (this.myUi.sidebarPage == UnifiedButtonsType.BOOKMARKS) {
             // Bookmarks
-            MeowBookmarksPanel({ myUi: this.myUi, needPadding: false, panelWidth: this.sidebarWidth, columnWidth: this.sidebarWidth, maxColumn: 1 });
+            MeowBookmarksPanel({
+              myUi: this.myUi, needPadding: false, panelWidth: this.sidebarWidth, columnWidth: this.sidebarWidth, maxColumn: 1, requestVisit: (url) => {
+                this.myUi.submitSearchOrLoad(url);
+              }
+            });
           } else {
             Text(`[${this.myUi.sidebarPage}]`).attributeModifier(new MooTextModifier());
             // TODO: web show url of [this.myUi.sidebarPage]
@@ -63,7 +71,7 @@ struct MeowSidebar {
       }, 50);
     })
     .alignItems(sidebarShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
-    .width(this.myUi.sideAreaShrunk && this.myLayout.wideMode ? defaultSidebarShrunkWidth : this.sidebarWidth)
+    .width(this.myUi.sideAreaShrunk && !this.myUi.sideAreaShrinkBlock && this.myLayout.wideMode ? defaultSidebarShrunkWidth : this.sidebarWidth)
     .height('100%');
   }
 
@@ -114,6 +122,17 @@ struct MeowSidebar {
                   this.theList.splice(item.index, 1);
                 });
                 getMySettings().requestSaveToDisk();
+              },
+              aboutToShowMenu: () => {
+                this.myUi.sideAreaShrinkBlock = true;
+              },
+              didHideMenu: () => {
+                this.myUi.sideAreaShrunk = false;
+                setTimeout(() => {
+                  animateToImmediately(defaultAnimation(), () => {
+                    this.myUi.sideAreaShrinkBlock = false;
+                  });
+                }, 10);
               },
               menuExtra: sidebarContentIconSet.has(item.item[1]) ? undefined : () => {
                 this.iconSelect(item);

@@ -37,6 +37,8 @@ struct SlotEditButton {
    * Triggered if not editing!
    */
   @Event clickAction: () => void;
+  @Event aboutToShowMenu: () => void;
+  @Event didHideMenu: () => void;
   @Event requestDelete: () => void;
   @Event editParamSubmit: (result: string) => void;
 
@@ -53,6 +55,7 @@ struct SlotEditButton {
         if (this.isEditing) {
           if (!this.isMenu) {
             this.menuSubmitted = false;
+            this.aboutToShowMenu();
           }
           this.isMenu = !this.isMenu;
         } else {
@@ -61,8 +64,9 @@ struct SlotEditButton {
       }
     })
       .bindContextMenu(this.isMenu && this.isEditing, this.contextMenuBuilder(), {
-        aboutToDisappear: () => {
+        onDidDisappear: () => {
           this.isMenu = false;
+          this.didHideMenu();
         },
         backgroundColor: useEffects() ? undefined : getColor(meowThemeColorType.PRIMARY)
       });

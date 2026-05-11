@@ -15,7 +15,7 @@ struct MeowTabsVertical {
       if (this.showShrinkButton && !titleBarPositionBottom()) {
         this.shrinkButton();
       }
-      
+
       Column() {
         Text('Meow Vertical Tabs!');
       }
@@ -32,7 +32,7 @@ struct MeowTabsVertical {
     .clip(true)
     .alignItems(sidebarShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
     .height('100%')
-    .width(this.myUi.sideAreaShrunk && this.myLayout.wideMode ? defaultTabsVerticalShrunkWidth : this.verticalTabsWidth);
+    .width(this.myUi.sideAreaShrunk && !this.myUi.sideAreaShrinkBlock && this.myLayout.wideMode ? defaultTabsVerticalShrunkWidth : this.verticalTabsWidth);
   }
 
   /**
@@ -41,7 +41,7 @@ struct MeowTabsVertical {
   get verticalTabsWidth() {
     return this.myLayout.wideMode ? defaultTabsVerticalWidth : (this.myLayout.width - 2 * standardSpacing) * 0.9;
   }
-  
+
   get showShrinkButton() {
     return sideAreaShrinkButton() && this.myLayout.wideMode;
   }

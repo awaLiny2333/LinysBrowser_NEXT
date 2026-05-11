@@ -36,6 +36,7 @@ export class meowUiHost {
   @Trace sidebarPage: string = UnifiedButtonsType.HISTORIES;
   @Trace showSidebar: boolean = false;
   @Trace sideAreaWidth: number = 0; // The side area includes all things (Vertical tabs, side bar panels)
+  @Trace sideAreaShrinkBlock: boolean = false; // When this is true, the side area should NOT auto shrink. This is currently only used by the sidebar button editor.
   @Trace sideAreaShrunk: boolean = false;
   // Search & Address bar
   @Trace addressBarContent: string = '';
@@ -231,7 +232,9 @@ export class meowUiHost {
     this.windowObj?.recover().catch((e: BusinessError) => {
       meow(`Failed to recover window: ${e.message}`, `meowUiHost][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
     });
-    this.fullscreenStatus = meowUiFullscreenStatus.NONE;
+    animateToImmediately(defaultAnimation(), () => {
+      this.fullscreenStatus = meowUiFullscreenStatus.NONE;
+    });
   }
 
   // FOCUS

@@ -1,27 +1,29 @@
 import { AppStorageV2 } from "@kit.ArkUI";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
+import { isBlank } from "../../../catstypicalframework/utils/strings";
 import { defaultInnerRadius, defaultItemRadius } from "../../../catstypicalframework/utils/ui";
-import { MooCapsuleButton } from "../../common/MooCapsuleButton";
-import { MooSymbolButton } from "../../common/MooSymbolButton";
-import { MooTextInputV2 } from "../../common/MooTextInputV2";
-import { MooTextModifier } from "../../common/MooTextModifier";
-import { defaultAnimation, getColor, isPreferRightHand, useEffects } from "../../settings";
 import { meowAppHost } from "../../../hosts/system/windows/classes/meowAppHost";
+import { getMyApp } from "../../../hosts/system/windows/scripts/helpers";
 import { globalMessage, meowAppMessageType } from "../../../hosts/system/windows/scripts/messaging";
 import { meowHistorian } from "../../../hosts/userdata/history/classes/meowHistorian";
 import { meowHistoryChunk } from "../../../hosts/userdata/history/classes/meowHistoryChunk";
 import { meowHistoryEntry } from "../../../hosts/userdata/history/classes/meowHistoryEntry";
-import { groupByDates } from "../../../hosts/userdata/history/scripts/helpers";
-import { DayCard } from "./parts/DayCard";
+import { MooCapsuleButton } from "../../common/MooCapsuleButton";
+import { MooSymbolButton } from "../../common/MooSymbolButton";
+import { MooTextInputV2 } from "../../common/MooTextInputV2";
+import { MooTextModifier } from "../../common/MooTextModifier";
+import { meowThemeColorType, mooTextType, standardSpacing } from "../../constants";
+import { defaultAnimation, getColor, isPreferRightHand, useEffects } from "../../settings";
+import { HistoryEntry } from "./parts/HistoryEntry";
 import { defaultMonthButtonHeight, MonthButton } from "./parts/MonthButton";
-import { standardSpacing, meowThemeColorType } from "../../constants";
-import { getMyApp } from "../../../hosts/system/windows/scripts/helpers";
 
 @ComponentV2
 struct HistoryPanel {
   // Config
+  @Param @Once autoFocus: boolean = true;
   @Param @Once allowEdit: boolean = true;
+  @Param @Once lite: boolean = false;
   @Param @Once needPadding: boolean = true;
   // Host
   @Param @Require myLayout: meowLayout;
@@ -30,7 +32,6 @@ struct HistoryPanel {
   // Display
   @Local myHistoryChunk: meowHistoryChunk | undefined;
   @Local myEntries: meowHistoryEntry[] = [];
-  @Local myEntriesGrouped: meowHistoryEntry[][] = [];
   @Local isSelecting: boolean = false;
   // Search
   @Local searchKey: string = ''; // The key to search in current month's index.
@@ -61,17 +62,20 @@ struct HistoryPanel {
     Column({ space: defaultInnerRadius }) {
       // Entries
       List({ scroller: this.scroller, space: standardSpacing * 0.5 }) {
-        Repeat(this.myEntriesGrouped)
-          .each((obj: RepeatItem<meowHistoryEntry[]>) => {
-            DayCard({
-              myLayout: this.myLayout,
-              obj: obj.item,
-              selectedTimeStamps: this.selectedTimeStamps,
-              isSelecting: this.isSelecting,
-              requestVisit: (url) => {
-                this.requestVisit(url);
-              },
-            });
+        Repeat(this.myEntries)
+          .each((obj: RepeatItem<meowHistoryEntry>) => {
+            if (obj.index == 0 || (obj.item.dateKey != this.myEntries[obj.index - 1]?.dateKey)) {
+              // Title
+              Column() {
+                Text(`${new Date(obj.item.time).toLocaleDateString()}`)
+                  .attributeModifier(new MooTextModifier(mooTextType.TITLE))
+                  .padding(standardSpacing * 0.75);
+                this.entry(obj);
+              }
+              .alignItems(HorizontalAlign.End);
+            } else {
+              this.entry(obj);
+            }
           })
           .virtualScroll();
 
@@ -148,7 +152,7 @@ struct HistoryPanel {
         })
           .onAppear(() => {
             try {
-              if (this.myApp.freeWindow) {
+              if (this.myApp.freeWindow && this.autoFocus) {
                 this.getUIContext().getFocusController().requestFocus(this.searchInputId);
               }
             } catch (e) {
@@ -195,6 +199,35 @@ struct HistoryPanel {
   }
 
   @Builder
+  entry(obj: RepeatItem<meowHistoryEntry>) {
+    if (this.lite) {
+      // Lite, only title.
+      Text(!isBlank(obj.item.title) ? obj.item.title : obj.item.url)
+        .attributeModifier(new MooTextModifier())
+        .wordBreak(WordBreak.BREAK_ALL)
+        .width('100%')
+        .opacity(0.75)
+        .maxLines(1)
+        .onClick(() => {
+          this.selectDeselectItem(obj.item);
+        })
+        .padding(standardSpacing * 0.75)
+        .borderRadius(defaultItemRadius)
+        .hoverEffect(HoverEffect.Highlight);
+    } else {
+      HistoryEntry({
+        myLayout: this.myLayout,
+        isSelected: this.selectedTimeStamps.has(obj.item.time),
+        isSelecting: this.isSelecting,
+        item: obj.item,
+        clickAction: () => {
+          this.selectDeselectItem(obj.item);
+        }
+      });
+    }
+  }
+
+  @Builder
   editBar() {
     Row({ space: standardSpacing }) {
       Text(this.selectedTimeStamps.size.toString()).attributeModifier(new MooTextModifier()).padding({ left: standardSpacing * 0.5, right: standardSpacing * 0.5 });
@@ -219,7 +252,6 @@ struct HistoryPanel {
           // Optimistic update.
           animateToImmediately(defaultAnimation(), () => {
             this.myEntries = this.myEntries.filter((entry) => !this.selectedTimeStamps.has(entry.time));
-            this.myEntriesGrouped = groupByDates(this.myEntries);
           });
 
           globalMessage(meowAppMessageType.HISTORY_DELETED, this.selectedTimeStamps);
@@ -254,7 +286,6 @@ struct HistoryPanel {
       // Optimistic update.
       animateToImmediately(defaultAnimation(), () => {
         this.myEntries = this.myEntries.filter((entry) => !(msg.payload as Set<number>).has(entry.time));
-        this.myEntriesGrouped = groupByDates(this.myEntries);
       });
 
       // Report
@@ -296,11 +327,22 @@ struct HistoryPanel {
     // this.myEntries = await this.myMeowHistorian.lookUpHistoryEntries(this.searchKey, Number.MAX_VALUE) ?? [];
     animateToImmediately(defaultAnimation(), () => {
       this.myEntries = res;
-      this.myEntriesGrouped = groupByDates(res);
       this.isSearching = false;
     });
     const duration = Date.now() - startTime;
     this.refreshInfo(duration);
+  }
+
+  selectDeselectItem(item: meowHistoryEntry) {
+    if (this.isSelecting) {
+      if (this.selectedTimeStamps.has(item.time)) {
+        this.selectedTimeStamps.delete(item.time);
+      } else {
+        this.selectedTimeStamps.add(item.time);
+      }
+    } else {
+      this.requestVisit(item.url);
+    }
   }
 
   deselectAll() {

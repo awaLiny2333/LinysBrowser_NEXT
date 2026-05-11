@@ -1,24 +1,27 @@
 import { meowLayout } from '../../../../catstypicalframework/hosts/meowLayout';
 import { isBlank } from '../../../../catstypicalframework/utils/strings';
 import { defaultItemRadius } from '../../../../catstypicalframework/utils/ui';
-import { MooTextModifier } from '../../../common/MooTextModifier';
-import { meowFlexOptions, standardSpacing } from '../../../constants';
 import { meowHistoryEntry } from '../../../../hosts/userdata/history/classes/meowHistoryEntry';
+import { MooTextModifier } from '../../../common/MooTextModifier';
+import { standardSpacing } from '../../../constants';
 
-// @ReusableV2
 @ComponentV2
 struct HistoryEntry {
+  // Params
+  @Param @Require item: meowHistoryEntry;
+  // Host
   @Param @Require myLayout: meowLayout;
+  // Environments
   @Param @Require isSelected: boolean;
   @Param @Require isSelecting: boolean;
-  @Param @Require item: meowHistoryEntry;
+  // Events
   @Event clickAction: () => void;
 
   build() {
     if (this.myLayout.wideMode) {
       this.rowLayout();
     } else {
-      this.flexLayout();
+      this.colLayout();
     }
   }
 
@@ -46,7 +49,6 @@ struct HistoryEntry {
             .maxLines(1)
             .opacity(0.7);
         }
-
       } else {
         // Url ONLY
         Text(this.item.url)
@@ -57,12 +59,9 @@ struct HistoryEntry {
           .maxLines(1);
       }
 
-      // Time
-      Text(`${new Date(this.item.time).toLocaleTimeString().padStart(11, '0')}`)
-        .attributeModifier(new MooTextModifier())
-        .maxLines(1)
-        .opacity(0.45);
+      this.time();
     }
+    .width('100%')
     .onClick(() => {
       this.clickAction();
     })
@@ -72,8 +71,8 @@ struct HistoryEntry {
   }
 
   @Builder
-  flexLayout() {
-    Flex(meowFlexOptions) {
+  colLayout() {
+    Column({ space: standardSpacing * 0.5 }) {
       if (this.isSelecting) {
         Text(`${this.isSelected ? '󰀒' : '󰁵'}`).attributeModifier(new MooTextModifier());
       }
@@ -101,18 +100,29 @@ struct HistoryEntry {
           .maxLines(1);
       }
 
-      // Time
-      Text(`${new Date(this.item.time).toLocaleTimeString().padStart(11, '0')}`)
-        .attributeModifier(new MooTextModifier())
-        .maxLines(1)
-        .opacity(0.45);
+      this.time();
     }
+    .width('100%')
+    .alignItems(HorizontalAlign.Start)
     .onClick(() => {
       this.clickAction();
     })
     .padding(standardSpacing * 0.75)
     .borderRadius(defaultItemRadius)
     .hoverEffect(HoverEffect.Highlight);
+  }
+
+  @Builder
+  time() {
+    Text(this.myDate)
+      .attributeModifier(new MooTextModifier())
+      .maxLines(1)
+      .opacity(0.45);
+  }
+
+  // @Computed
+  get myDate() {
+    return new Date(this.item.time).toLocaleTimeString().padStart(11, '0');
   }
 }
 

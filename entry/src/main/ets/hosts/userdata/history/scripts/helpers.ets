@@ -4,6 +4,8 @@ import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/cat
 import lazy { readArrayBufferConcurrent } from "../../../../catstypicalframework/utils/storage";
 import lazy { meowHistoryEntry } from "../classes/meowHistoryEntry";
 
+export const DAY_MS = 86_400_000; // 24 * 60 * 60 * 1000
+
 /**
  * Fetches the history entries from one chunk file on the disk.
  * @returns The history entries in a sendable collections.Array<meowHistoryEntry>.
@@ -106,7 +108,7 @@ export function binarySearch<T, K>(
  */
 export function groupByDates(entries: meowHistoryEntry[]): meowHistoryEntry[][] {
   const startTime = Date.now();
-  
+
   if (!entries || entries.length === 0) return [];
 
   // Calculate a simple UTC day key directly from the timestamp to avoid Date objects.
@@ -132,7 +134,7 @@ export function groupByDates(entries: meowHistoryEntry[]): meowHistoryEntry[][] 
   }
 
   groups.push(currentGroup);
-  
+
   meow(`Grouped ${entries.length} entries into ${groups.length} groups (${Date.now() - startTime} ms)`, 'helpers][groupByDates', meowLevel.INFO);
   return groups;
 }

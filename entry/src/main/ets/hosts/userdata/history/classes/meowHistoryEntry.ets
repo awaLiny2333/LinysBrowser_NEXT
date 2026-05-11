@@ -19,12 +19,14 @@
 import { collections } from "@kit.ArkTS";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import lazy { tokenize } from "../../../../catstypicalframework/utils/strings";
+import { DAY_MS } from "../scripts/helpers";
 
 @Sendable
 export class meowHistoryEntry {
   title: string;
   url: string;
   time: number;
+  dateKey: number;
   // Generated ↓
   tokens: collections.Set<string> | undefined;
 
@@ -32,6 +34,7 @@ export class meowHistoryEntry {
     this.title = title;
     this.url = url;
     this.time = time;
+    this.dateKey = Math.floor(this.time / DAY_MS);
   }
 
   /**
