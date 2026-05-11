@@ -1,16 +1,16 @@
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
-import { SymbolButton } from "../../../dialogs/parts/WoofCatsDev/parts/common/SymbolButton";
+import lazy { SymbolButton } from "../../../dialogs/parts/WoofCatsDev/parts/common/SymbolButton";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
-import { MooSymbolButton } from "../../common/MooSymbolButton";
-import { MooTextButton } from "../../common/MooTextButton";
-import { MooTextInputV2 } from "../../common/MooTextInputV2";
-import { MooTextModifier } from "../../common/MooTextModifier";
-import { SlotEditButton, symbolIconOptions } from "../../common/SlotEditButton";
+import lazy { MooSymbolButton } from "../../common/MooSymbolButton";
+import lazy { MooTextButton } from "../../common/MooTextButton";
+import lazy { MooTextInputV2 } from "../../common/MooTextInputV2";
+import lazy { MooTextModifier } from "../../common/MooTextModifier";
+import lazy { SlotEditButton, symbolIconOptions } from "../../common/SlotEditButton";
 import { defaultMooSymbolSize, defaultSidebarShrunkWidth, defaultSidebarWidth, getButtonIcon, meowThemeColorType, sidebarContentIconArray, sidebarContentIconSet, standardSpacing, UnifiedButtonsType } from "../../constants";
 import { defaultAnimation, getColor, getMySettings, sideAreaShrinkButton, sidebarButtons, sidebarShouldBeOnTheRight, titleBarPositionBottom, useEffects } from "../../settings";
-import { MeowBookmarksPanel } from "../Bookmarks/Panel";
-import { HistoryPanel } from "../History/Panel";
+import lazy { MeowBookmarksPanel } from "../Bookmarks/Panel";
+import lazy { HistoryPanel } from "../History/Panel";
 
 @ComponentV2
 struct MeowSidebar {
