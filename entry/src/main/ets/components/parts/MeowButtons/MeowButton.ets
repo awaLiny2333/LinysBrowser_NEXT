@@ -87,10 +87,10 @@ struct MeowButton {
         requestDialog(this.myDialog, openDialogRequestType.HISTORY);
         break;
       case UnifiedButtonsType.COOKIES:
-        requestDialog(this.myDialog, openDialogRequestType.COOKIES, this.myUi.addressBarContent); // TODO: auto pass in current viewing url.
+        requestDialog(this.myDialog, openDialogRequestType.COOKIES, this.myUi.addressBarContentMajor); // TODO: auto pass in current viewing url.
         break;
       case UnifiedButtonsType.QRCODE:
-        requestDialog(this.myDialog, openDialogRequestType.QR, ['Title', this.myUi.addressBarContent]); // TODO: auto pass in current viewing url.
+        requestDialog(this.myDialog, openDialogRequestType.QR, ['Title', this.myUi.addressBarContentMajor]); // TODO: auto pass in current viewing url.
         break;
       case UnifiedButtonsType.USERAGENTS:
         this.myUi.requestAddressBarBlur(this.getUIContext());
@@ -102,7 +102,7 @@ struct MeowButton {
         break;
       case UnifiedButtonsType.GO:
         this.myUi.requestAddressBarBlur(this.getUIContext());
-        meow(`Visit / load [${this.myUi.addressBarContent}]!`);
+        meow(`Visit / load [${this.myUi.addressBarContentMajor}]!`);
         // TODO: Visit the site for GO button!
         break;
       case UnifiedButtonsType.ADDRESS_KEYWORD_SWITCH:
@@ -125,6 +125,7 @@ struct MeowButton {
         });
         if (needFocus2) {
           this.myUi.requestAddressBarFocus(this.getUIContext());
+          this.myUi.setCurrentFieldContent(this.myUi.searchKeywordEntries[0][1]); // Or the last input field of keywords would set this, as its onChange callback would be triggered.
         }
         break;
       default:

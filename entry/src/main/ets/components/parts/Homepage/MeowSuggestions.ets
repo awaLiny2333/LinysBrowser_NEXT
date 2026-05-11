@@ -1,4 +1,5 @@
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
+import { resource2String } from "../../../catstypicalframework/utils/resource";
 import { defaultInnerRadius, shortModeThreshold } from "../../../catstypicalframework/utils/ui";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { meowBookmarkItem } from "../../../hosts/userdata/bookmarks/classes/meowBookmarkItem";
@@ -37,14 +38,16 @@ struct MeowSuggestions {
   contents() {
     SuggestionsFrame({
       needScroll: this.myLayout.wideMode,
-      myLayout: this.myLayout, title: $r('app.string.Settings_category_history'), list: this.myUi.suggestionsHistories,
+      myUi: this.myUi,
+      myLayout: this.myLayout, title: resource2String($r('app.string.Settings_category_history'), this.getUIContext().getHostContext()!), list: this.myUi.suggestionsHistories,
       clickAction: (url) => {
         this.visit(url);
       }
     });
     SuggestionsFrame({
       needScroll: this.myLayout.wideMode,
-      myLayout: this.myLayout, title: $r('app.string.Bookmarks'), list: this.myUi.suggestionsBookmarks,
+      myUi: this.myUi,
+      myLayout: this.myLayout, title: resource2String($r('app.string.Bookmarks'), this.getUIContext().getHostContext()!), list: this.myUi.suggestionsBookmarks,
       clickAction: (url) => {
         this.visit(url);
       }
@@ -79,8 +82,9 @@ struct SuggestionsFrame {
   // Config
   @Param @Require @Once needScroll: boolean;
   // Params
-  @Param @Require title: ResourceStr;
   @Param @Require myLayout: meowLayout;
+  @Param @Require myUi: meowUiHost;
+  @Param @Require title: string;
   @Param @Require list: Array<meowBookmarkItem | meowHistoryEntry>;
   // Event
   @Event clickAction: (url: string) => void;
@@ -88,7 +92,7 @@ struct SuggestionsFrame {
   build() {
     if (this.list.length > 0) {
       Column({ space: standardSpacing }) {
-        Text(this.title).attributeModifier(new MooTextModifier()).padding({ left: standardSpacing * 0.5, right: standardSpacing * 0.5 }).opacity(0.5).height(20);
+        Text(`${this.title} (${this.myUi.addressBarContentCurrentField})`).attributeModifier(new MooTextModifier()).padding({ left: standardSpacing * 0.5, right: standardSpacing * 0.5 }).opacity(0.5).height(20).maxLines(1).wordBreak(WordBreak.BREAK_ALL);
         if (this.needScroll) {
           Scroll() {
             this.coreRepeat();

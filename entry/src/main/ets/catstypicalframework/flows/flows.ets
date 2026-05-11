@@ -219,7 +219,7 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
     // Don't block the user's eyes with this tabs panel if they don't appear to have a large screen ovo and have a vertical tab
     myUi.showTabs = mySettings.settingsData[22].value as boolean;
   }
-  myUi.sideAreaShrunk = mySettings.settingsData[14].value as boolean;
+  myUi.sideAreaShrunkExpect = mySettings.settingsData[14].value as boolean;
 
   // Side bar
   if (myLayout.wideMode) {

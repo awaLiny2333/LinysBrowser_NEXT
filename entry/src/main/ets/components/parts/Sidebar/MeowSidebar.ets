@@ -1,6 +1,5 @@
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
-import lazy { SymbolButton } from "../../../dialogs/parts/WoofCatsDev/parts/common/SymbolButton";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import lazy { MooSymbolButton } from "../../common/MooSymbolButton";
 import lazy { MooTextButton } from "../../common/MooTextButton";
@@ -11,6 +10,7 @@ import { defaultMooSymbolSize, defaultSidebarShrunkWidth, defaultSidebarWidth, g
 import { defaultAnimation, getColor, getMySettings, sideAreaShrinkButton, sidebarButtons, sidebarShouldBeOnTheRight, titleBarPositionBottom, useEffects } from "../../settings";
 import lazy { MeowBookmarksPanel } from "../Bookmarks/Panel";
 import lazy { HistoryPanel } from "../History/Panel";
+import lazy { shrinkButton } from "./SidebarShrinkButton";
 
 @ComponentV2
 struct MeowSidebar {
@@ -26,7 +26,7 @@ struct MeowSidebar {
   build() {
     Column({ space: standardSpacing * 0.75 }) {
       if (this.showShrinkButton && !titleBarPositionBottom()) {
-        this.shrinkButton();
+        shrinkButton(this.myUi);
       }
       // The panels
       if (this.render) {
@@ -71,7 +71,7 @@ struct MeowSidebar {
       }, 50);
     })
     .alignItems(sidebarShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
-    .width(this.myUi.sideAreaShrunk && !this.myUi.sideAreaShrinkBlock && this.myLayout.wideMode ? defaultSidebarShrunkWidth : this.sidebarWidth)
+    .width(this.myUi.sideAreaShrunkSummarized && this.myLayout.wideMode ? defaultSidebarShrunkWidth : this.sidebarWidth)
     .height('100%');
   }
 
@@ -91,7 +91,7 @@ struct MeowSidebar {
       // Shrink button
       if (this.showShrinkButton && titleBarPositionBottom()) {
         ListItem() {
-          this.shrinkButton();
+          shrinkButton(this.myUi);
         };
       }
 
@@ -127,12 +127,8 @@ struct MeowSidebar {
                 this.myUi.sideAreaShrinkBlock = true;
               },
               didHideMenu: () => {
-                this.myUi.sideAreaShrunk = false;
-                setTimeout(() => {
-                  animateToImmediately(defaultAnimation(), () => {
-                    this.myUi.sideAreaShrinkBlock = false;
-                  });
-                }, 10);
+                this.myUi.sideAreaShrunkExpect = false;
+                this.myUi.sideAreaShrinkBlock = false;
               },
               menuExtra: sidebarContentIconSet.has(item.item[1]) ? undefined : () => {
                 this.iconSelect(item);
@@ -160,7 +156,12 @@ struct MeowSidebar {
         }
         .opacity(0.75)
         .bindContextMenu(this.showAdd, this.addMenuBuilder(), {
-          aboutToDisappear: () => {
+          aboutToAppear: () => {
+            this.myUi.sideAreaShrinkBlock = true;
+          },
+          onDidDisappear: () => {
+            this.myUi.sideAreaShrunkExpect = false;
+            this.myUi.sideAreaShrinkBlock = false;
             this.showAdd = false;
           },
           backgroundColor: useEffects() ? undefined : getColor(meowThemeColorType.PRIMARY)
@@ -195,18 +196,6 @@ struct MeowSidebar {
    */
   get showShrinkButton() {
     return sideAreaShrinkButton() && this.myLayout.wideMode && !this.myUi.showingVerticalTab;
-  }
-
-  @Builder
-  shrinkButton() {
-    SymbolButton({
-      icon: this.myUi.sideAreaShrunk ? $r('sys.symbol.arrow_up_left_and_arrow_down_right') : $r('sys.symbol.arrow_down_right_and_arrow_up_left'),
-      clickAction: () => {
-        animateToImmediately(defaultAnimation(), () => {
-          this.myUi.sideAreaShrunk = !this.myUi.sideAreaShrunk;
-        });
-      }
-    });
   }
 
   /**

@@ -37,10 +37,10 @@ export class meowUiHost {
   @Trace showSidebar: boolean = false;
   @Trace sideAreaWidth: number = 0; // The side area includes all things (Vertical tabs, side bar panels)
   @Trace sideAreaShrinkBlock: boolean = false; // When this is true, the side area should NOT auto shrink. This is currently only used by the sidebar button editor.
-  @Trace sideAreaShrunk: boolean = false;
+  @Trace sideAreaShrunkExpect: boolean = false;
   // Search & Address bar
-  @Trace addressBarContent: string = '';
-  @Trace addressBarCurrentFieldContent: string = ''; // The current focused field / TextInput content. Majorly used for suggesting things.
+  @Trace addressBarContentMajor: string = '';
+  @Trace addressBarContentCurrentField: string = ''; // The current focused field / TextInput content. Majorly used for suggesting things.
   @Trace searchUnifyResult: UnifiedDestinationResult = { url: '', type: UnifiedDestinationResultType.URL_SCHEMED }; // this empty url is filled in flow.
   @Trace searchKeywordEntries: [string, string][] = [];
   @Trace searchKeywordEntriesExpanded: boolean = false;
@@ -57,7 +57,7 @@ export class meowUiHost {
   // MeowBookmarksPanel
   @Trace openedStack: meowBookmarkItem[] = [];
   @Trace openedIndexOfLevels: (meowBookmarkItem | undefined)[] = [];
-  // Messaging (Shared)
+  // Messaging
   @Trace localMessageTunnel: meowAppMessage | undefined = undefined; // The great tunnel for local window messaging! *TEMPORARY* but often NOT cleared after reception.
 
   constructor(windowId: string, windowAlias: string = '') {
@@ -71,6 +71,13 @@ export class meowUiHost {
   get showingVerticalTab() {
     const myLayout = AppStorageV2.connect(meowLayout, `meowLayout_${this.windowId}`)!;
     return this.showTabs && isTabsStyleVertical(myLayout);
+  }
+
+  /**
+   * Whether the side area is shrunk. Takes the blocker into consideration.
+   */
+  get sideAreaShrunkSummarized() {
+    return this.sideAreaShrunkExpect && !this.sideAreaShrinkBlock;
   }
 
   /**
@@ -105,9 +112,10 @@ export class meowUiHost {
 
     // Back in BrowserCat UI.
 
-    if (sideAreaShrinkAuto() && (this.showSidebar || this.showingVerticalTab) && !this.sideAreaShrunk) {
+    // Have side area ENABLED & AUTOSHRINK & EXPANDED & NOT BLOCKED
+    if ((this.showSidebar || this.showingVerticalTab) && sideAreaShrinkAuto() && !this.sideAreaShrunkExpect && !this.sideAreaShrinkBlock) {
       animateToImmediately(defaultAnimation(), () => {
-        this.sideAreaShrunk = true;
+        this.sideAreaShrunkExpect = true;
       });
       meow(`Auto shrink vertical tabs.`, 'goBackUni');
       return true;
@@ -297,7 +305,7 @@ export class meowUiHost {
    * @param doKeywordRefresh Whether to refresh the keyword entries.
    */
   setCurrentSearchContent(newContent: string, doKeywordRefresh: boolean, doDestinationRefresh: boolean) {
-    this.addressBarContent = newContent;
+    this.addressBarContentMajor = newContent;
     if (doKeywordRefresh) {
       this.refreshKeywordEntries();
     }
@@ -311,8 +319,8 @@ export class meowUiHost {
    * @param newContent The new field content.
    */
   setCurrentFieldContent(newContent: string, timeout: number = 1) {
-    if (this.addressBarCurrentFieldContent != newContent) {
-      this.addressBarCurrentFieldContent = newContent;
+    if (this.addressBarContentCurrentField != newContent) {
+      this.addressBarContentCurrentField = newContent;
       // Refresh suggestions
       clearTimeout(this.suggestionsRefreshTimeoutId);
       this.suggestionsRefreshTimeoutId = setTimeout(() => {
@@ -325,7 +333,7 @@ export class meowUiHost {
    * Refreshes the keyword entries.
    */
   refreshKeywordEntries() {
-    const entries = getKeywordEntries(this.addressBarContent);
+    const entries = getKeywordEntries(this.addressBarContentMajor);
     if (entries.length > 0) {
       // Put the prefered keys to the beginning
       let matched: [string, string][] = [];
@@ -357,7 +365,7 @@ export class meowUiHost {
    * Refreshes the unified destination.
    */
   refreshDestination() {
-    this.searchUnifyResult = unifyDestination(this.addressBarContent, this.addressBarPreferHttps);
+    this.searchUnifyResult = unifyDestination(this.addressBarContentMajor, this.addressBarPreferHttps);
   }
 
   /**
@@ -368,9 +376,9 @@ export class meowUiHost {
     const maxResultsHistorian = maxSuggestionsHistory();
 
     // History
-    if (this.addressBarCurrentFieldContent.length > 0 && maxResultsHistorian > 0) {
+    if (this.addressBarContentCurrentField.length > 0 && maxResultsHistorian > 0) {
       const myHistorian = AppStorageV2.connect(meowHistorian)!;
-      myHistorian.lookUpHistoryEntries(this.addressBarCurrentFieldContent, maxResultsHistorian, false, 0.8, true).then((resultsHistories) => {
+      myHistorian.lookUpHistoryEntries(this.addressBarContentCurrentField, maxResultsHistorian, false, 0.8, true).then((resultsHistories) => {
         animateToImmediately(defaultAnimation(), () => {
           this.suggestionsHistories = resultsHistories;
         });
@@ -384,8 +392,8 @@ export class meowUiHost {
     // Bookmarks
     let newSuggestionsBookmarks: meowBookmarkItem[];
     const myBookmarks = AppStorageV2.connect(meowBookmarkStash)!;
-    if (this.addressBarCurrentFieldContent.length > 0 && maxResultsBookmarks > 0) {
-      const resultsBookmarks = myBookmarks.lookUpBookmarksEntries(this.addressBarCurrentFieldContent, maxResultsBookmarks, 0.8);
+    if (this.addressBarContentCurrentField.length > 0 && maxResultsBookmarks > 0) {
+      const resultsBookmarks = myBookmarks.lookUpBookmarksEntries(this.addressBarContentCurrentField, maxResultsBookmarks, 0.8);
       newSuggestionsBookmarks = resultsBookmarks;
     } else {
       newSuggestionsBookmarks = [];
@@ -400,7 +408,7 @@ export class meowUiHost {
    */
   submitSearchOrLoad(url?: string) {
     if (url) {
-      this.addressBarContent = url;
+      this.addressBarContentMajor = url;
       this.refreshKeywordEntries();
       this.refreshDestination();
     }

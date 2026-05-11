@@ -115,10 +115,10 @@ struct Index {
               }
               if (sideAreaShrinkAuto() && sideAreaShrinkExpandNoPush()) {
                 // Auto shrink, and we don't want to push the web contents away everytime the mouse travels across the tabs bar.
-                if (this.myUi.showingVerticalTab && !this.myUi.sideAreaShrunk) {
+                if (this.myUi.showingVerticalTab && !this.myUi.sideAreaShrunkSummarized) {
                   newW -= (defaultTabsVerticalWidth - defaultTabsVerticalShrunkWidth);
                 }
-                if (this.myUi.showSidebar && !this.myUi.sideAreaShrunk) {
+                if (this.myUi.showSidebar && !this.myUi.sideAreaShrunkSummarized) {
                   newW -= (defaultSidebarWidth - defaultSidebarShrunkWidth);
                 }
               }
@@ -135,9 +135,9 @@ struct Index {
             // Auto shrink
             animateToImmediately(defaultAnimation(), () => {
               if (isHover) {
-                this.myUi.sideAreaShrunk = false;
+                this.myUi.sideAreaShrunkExpect = false;
               } else {
-                this.myUi.sideAreaShrunk = true;
+                this.myUi.sideAreaShrunkExpect = true;
               }
             });
           });

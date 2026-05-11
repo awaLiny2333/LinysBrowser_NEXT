@@ -87,11 +87,11 @@ struct MeowAddressBar {
                   it.item[1] = c;
                   try {
                     // TODO: is this unnecessarily slow?
-                    const newUrl = url.URL.parseURL(this.myUi.addressBarContent);
+                    const newUrl = url.URL.parseURL(this.myUi.addressBarContentMajor);
                     newUrl.params.set(it.item[0], c);
                     this.myUi.setCurrentSearchContent(newUrl.toString(), false, true);
                   } catch (e) {
-                    meow(`Invalid URL: ${this.myUi.addressBarContent}`, 'MeowAddressBar][Keyword][onChange', meowLevel.WARN);
+                    meow(`Invalid URL: ${this.myUi.addressBarContentMajor}`, 'MeowAddressBar][Keyword][onChange', meowLevel.WARN);
                   }
                   this.myUi.setCurrentFieldContent(it.item[1]);
                 })
@@ -117,12 +117,12 @@ struct MeowAddressBar {
   AddressInputNormal() {
     // Normal view
     Row() {
-      TextInput({ text: this.myUi.addressBarContent, placeholder: '󰀩 ...' })
+      TextInput({ text: this.myUi.addressBarContentMajor, placeholder: '󰀩 ...' })
         .addressBarProps()
         .layoutWeight(1)
         .id(addressBarId)
         .onFocus(() => {
-          this.myUi.setCurrentFieldContent(this.myUi.addressBarContent);
+          this.myUi.setCurrentFieldContent(this.myUi.addressBarContentMajor);
           this.myUi.reportAddressBarFocus();
         })
         .onBlur(() => {

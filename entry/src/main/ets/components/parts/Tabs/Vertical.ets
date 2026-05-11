@@ -1,8 +1,8 @@
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
-import { SymbolButton } from "../../../dialogs/parts/WoofCatsDev/parts/common/SymbolButton";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { defaultTabsVerticalShrunkWidth, defaultTabsVerticalWidth, standardSpacing } from "../../constants";
-import { defaultAnimation, sideAreaShrinkButton, sidebarShouldBeOnTheRight, titleBarPositionBottom } from "../../settings";
+import { sideAreaShrinkButton, sidebarShouldBeOnTheRight, titleBarPositionBottom } from "../../settings";
+import { shrinkButton } from "../Sidebar/SidebarShrinkButton";
 
 @ComponentV2
 struct MeowTabsVertical {
@@ -13,7 +13,7 @@ struct MeowTabsVertical {
     Column({ space: standardSpacing * 0.75 }) {
       // Shrink button
       if (this.showShrinkButton && !titleBarPositionBottom()) {
-        this.shrinkButton();
+        shrinkButton(this.myUi);
       }
 
       Column() {
@@ -26,13 +26,13 @@ struct MeowTabsVertical {
 
       // Shrink button
       if (this.showShrinkButton && titleBarPositionBottom()) {
-        this.shrinkButton();
+        shrinkButton(this.myUi);
       }
     }
     .clip(true)
     .alignItems(sidebarShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
     .height('100%')
-    .width(this.myUi.sideAreaShrunk && !this.myUi.sideAreaShrinkBlock && this.myLayout.wideMode ? defaultTabsVerticalShrunkWidth : this.verticalTabsWidth);
+    .width(this.myUi.sideAreaShrunkSummarized && this.myLayout.wideMode ? defaultTabsVerticalShrunkWidth : this.verticalTabsWidth);
   }
 
   /**
@@ -44,18 +44,6 @@ struct MeowTabsVertical {
 
   get showShrinkButton() {
     return sideAreaShrinkButton() && this.myLayout.wideMode;
-  }
-
-  @Builder
-  shrinkButton() {
-    SymbolButton({
-      icon: this.myUi.sideAreaShrunk ? $r('sys.symbol.arrow_up_left_and_arrow_down_right') : $r('sys.symbol.arrow_down_right_and_arrow_up_left'),
-      clickAction: () => {
-        animateToImmediately(defaultAnimation(), () => {
-          this.myUi.sideAreaShrunk = !this.myUi.sideAreaShrunk;
-        });
-      }
-    });
   }
 }
 
