@@ -7,7 +7,7 @@ export function shrinkButton(myUi: meowUiHost) {
   SymbolButton({
     icon: myUi.sideAreaShrunkSummarized ? $r('sys.symbol.arrow_up_left_and_arrow_down_right') : $r('sys.symbol.arrow_down_right_and_arrow_up_left'),
     clickAction: () => {
-      if (myUi.sideAreaShrinkBlock) {
+      if (myUi.sideAreaShrinkBlock_menu) {
         return;
       }
       animateToImmediately(defaultAnimation(), () => {
@@ -15,5 +15,5 @@ export function shrinkButton(myUi: meowUiHost) {
       });
     }
   })
-    .opacity(myUi.sideAreaShrinkBlock ? 0.5 : 1);
+    .opacity(myUi.sideAreaShrunkBlocked ? 0.5 : 1);
 }

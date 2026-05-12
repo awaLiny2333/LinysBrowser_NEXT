@@ -1,4 +1,4 @@
-import { meowBookmarkItem } from "../../../userdata/bookmarks/classes/meowBookmarkItem";
+import { MeowBookmarkDragInfo } from "../../../userdata/bookmarks/classes/meowBookmarkStash";
 import { meowAppMessage } from "./meowAppMessage";
 
 /**
@@ -18,5 +18,5 @@ export class meowAppHost {
   // Messaging (Shared)
   @Trace crossAppMessageTunnel: meowAppMessage | undefined = undefined; // The great tunnel for cross-window messaging! *TEMPORARY* but not cleared after reception.
   // Messaging (Dedicated)
-  @Trace dataTunnelForBookmarks: (number | undefined | meowBookmarkItem[])[] = [];
+  @Trace dataTunnelForBookmarks: MeowBookmarkDragInfo | undefined = undefined;
 }

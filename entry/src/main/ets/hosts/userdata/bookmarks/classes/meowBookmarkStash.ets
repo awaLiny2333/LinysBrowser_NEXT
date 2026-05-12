@@ -3,7 +3,12 @@ import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/cat
 import lazy { fileDocumentPick2Path, fileDocumentPickSave, saveHybrid } from "../../../../catstypicalframework/utils/storage";
 import lazy { parseBookmarksConcurrent, parseToHTMLConcurrent } from "../scripts/parser";
 import lazy { nowHtmlTimestamp } from "../scripts/helpers";
-import { isMatchFast, tokenize } from "../../../../catstypicalframework/utils/strings";
+import lazy { isMatchFast, tokenize } from "../../../../catstypicalframework/utils/strings";
+
+export interface MeowBookmarkDragInfo {
+  item: meowBookmarkItem;
+  parent: meowBookmarkItem;
+}
 
 @ObservedV2
 export class meowBookmarkStash {

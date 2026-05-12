@@ -95,7 +95,23 @@ struct Index {
               MeowTabsVertical({ myUi: this.myUi, myLayout: this.myLayout });
             }
             if (this.myUi.showSidebar) {
-              MeowSidebar({ myLayout: this.myLayout, myUi: this.myUi });
+              MeowSidebar({
+                myLayout: this.myLayout, myUi: this.myUi,
+                onItemDragStart: () => {
+                  this.onDragFromSideArea();
+                },
+                onDropSidebar: () => {
+                  this.onDropSideArea();
+                },
+                onDragEnterSidebar: () => {
+                  // meow(`Drag entered Sidebar!`, 'Index', meowLevel.WARN);
+                  this.onDragEnterSideArea();
+                },
+                onDragLeaveSidebar: () => {
+                  // meow(`Drag left Sidebar!`, 'Index', meowLevel.WARN);
+                  this.onDragLeaveSideArea();
+                }
+              });
             }
           }
           .direction(sidebarShouldBeOnTheRight() ? Direction.Ltr : Direction.Rtl)
@@ -133,13 +149,31 @@ struct Index {
               return;
             }
             // Auto shrink
-            animateToImmediately(defaultAnimation(), () => {
-              if (isHover) {
+            if (isHover) {
+              animateToImmediately(defaultAnimation(), () => {
                 this.myUi.sideAreaShrunkExpect = false;
-              } else {
-                this.myUi.sideAreaShrunkExpect = true;
-              }
-            });
+              });
+            } else {
+              setTimeout(() => {
+                animateToImmediately(defaultAnimation(), () => {
+                  this.myUi.sideAreaShrunkExpect = true;
+                });
+              }, 10);
+            }
+          })
+          .onDrop(() => {
+            // Do no real work for now.
+            // TODO: perhaps we can quickly open new tabs here? or send all dropped items to the Scratching Board!
+            meow(`Into Scratching Board! 快到碗裡來！`, 'Index][SideArea][onDrop', meowLevel.WARN);
+            this.onDropSideArea();
+          })
+          .onDragEnter(() => {
+            // meow(`Drag entered Side area!`, 'Index', meowLevel.WARN);
+            this.onDragEnterSideArea();
+          })
+          .onDragLeave(() => {
+            // meow(`Drag left Side area!`, 'Index', meowLevel.WARN);
+            this.onDragLeaveSideArea();
           });
         }
         .padding(this.myUi.fullscreenStatus == meowUiFullscreenStatus.NONE ? this.outerFrameSpace : 0);
@@ -279,6 +313,45 @@ struct Index {
     }, 10);
   }
 
+  /**
+   * Something is dragged away from the side area.
+   * We set the drag block.
+   */
+  onDragFromSideArea() {
+    this.myUi.sideAreaShrinkBlock_drag = true;
+  }
+
+  /**
+   * Something is dropped to the side area.
+   * We switch the status back to a true expectation and release the drag block.
+   */
+  onDropSideArea() {
+    this.myUi.sideAreaShrunkExpect = false;
+    setTimeout(() => {
+      this.myUi.sideAreaShrinkBlock_drag = false;
+    }, 10);
+  }
+
+  /**
+   * Something is dragged into the side area.
+   * Set the drag block.
+   */
+  onDragEnterSideArea() {
+    animateToImmediately(defaultAnimation(), () => {
+      this.myUi.sideAreaShrinkBlock_drag = true;
+    });
+  }
+
+  /**
+   * Something is dragged out of the side area.
+   * Release the drag block.
+   */
+  onDragLeaveSideArea() {
+    animateToImmediately(defaultAnimation(), () => {
+      this.myUi.sideAreaShrinkBlock_drag = false;
+    });
+  }
+
   // Values
 
   /**
@@ -406,6 +479,19 @@ struct Index {
     const msg = this.myApp.crossAppMessageTunnel!;
     if (msg.type == meowAppMessageType.SETTINGS_NAV_INDICATOR_UPDATE) {
       updateNavigationIndicator(this.myUi.windowObj!);
+    } else if (msg.type == meowAppMessageType.BOOKMARKS_DRAGGED) {
+      // Find the folder dragged...
+      for (let i = 0; i < this.myUi.openedStack.length; i++) {
+        const folder = this.myUi.openedStack[i];
+        if (msg.payload == folder) {
+          // And clost all the right to it.
+          meow(`Folder [${msg.payload}] Dragged! Closing folders to the right!`, `Index][${this.myWindowId}`, meowLevel.WARN);
+          this.myUi.openedStack = this.myUi.openedStack.slice(0, i);
+          this.myUi.openedIndexOfLevels = this.myUi.openedIndexOfLevels.slice(0, i);
+          this.myUi.openedIndexOfLevels[i - 1] = undefined; // Clear opened index in that level.
+          break;
+        }
+      }
     }
   }
 }

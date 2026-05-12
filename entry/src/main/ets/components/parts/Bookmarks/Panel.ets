@@ -20,10 +20,15 @@ struct MeowBookmarksPanel {
   @Param @Require myUi: meowUiHost;
   @Local myBookmarks: meowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
   // UI
-  @Param @Once maxColumn: number = 1;
   @Param @Once panelWidth: number = 0;
+  @Param @Once maxColumn: number = 1;
   @Param @Once columnWidth: number = 0;
-  // Event
+  // Events (Drag drop)
+  @Event onDragEnterColumn: () => void;
+  @Event onDragLeaveColumn: () => void;
+  @Event onDropColumn: () => void;
+  @Event onItemDragStart: () => void;
+  // Events (Panel)
   @Event requestVisit: (url: string) => void;
   @Event onSelect: (folder: meowBookmarkItem, path: string) => void;
 
@@ -49,12 +54,24 @@ struct MeowBookmarksPanel {
             BookmarksColumn({
               selectMode: this.selectMode,
               canCloseThis: item.index > 0,
-              columnWidth: this.columnWidth,
-              avoidBar: this.maxColumn < this.myUi.openedStack.length,
+              columnWidth: this.cWidth,
+              avoidBar: this.maxC < this.myUi.openedStack.length,
               selectedItem: this.myUi.openedIndexOfLevels[item.index],
               folder: item.item,
               level: item.index,
-              onSubLevelOpen: (folder) => {
+              onItemDragStart: () => {
+                this.onItemDragStart();
+              },
+              onDragEnterColumn: () => {
+                this.onDragEnterColumn();
+              },
+              onDragLeaveColumn: () => {
+                this.onDragLeaveColumn();
+              },
+              onDropColumn: () => {
+                this.onDropColumn();
+              },
+              requestSubLevelOpen: (folder) => {
                 animateToImmediately(defaultAnimation(), () => {
                   this.closeAllRightOf(item.index); // Pop all levels on the right
                   this.myUi.openedIndexOfLevels[item.index] = folder; // Set opened index in that level.
@@ -62,23 +79,16 @@ struct MeowBookmarksPanel {
                   this.myUi.openedStack.push(folder);
                   this.myUi.openedIndexOfLevels.push(undefined);
                 });
-                this.recalculateLayout();
               },
-              onSubLevelClose: () => {
-                this.closeAllRightOfWithAnima(item.index); // Pop all levels on the right
-                this.recalculateLayout();
+              requestSubLevelClose: () => {
+                this.closeAllRightOf_Animated(item.index); // Pop all levels on the right
               },
-              onCardClose: () => {
-                // The base layer folder won't call this. I trust it.
-                this.closeAllRightOfWithAnima(item.index - 1); // Pop all levels on the right
-                this.recalculateLayout();
+              requestCardClose: () => {
+                // The base layer folder won't call this. I trust it. :P
+                this.closeAllRightOf_Animated(item.index - 1); // Pop all levels on the right
               },
-              onVisit: (url: string) => {
+              requestVisit: (url: string) => {
                 this.requestVisit(url);
-              },
-              onDropReceivedAnOpenedFolder: (fromLayer: number) => {
-                this.closeAllRightOfWithAnima(fromLayer); // Pop all levels on the right
-                this.recalculateLayout();
               },
               requestSaveAndBroadcastSync: () => {
                 this.myBookmarks.requestSaveToDisk();
@@ -105,12 +115,11 @@ struct MeowBookmarksPanel {
       .alignItems(VerticalAlign.Bottom)
       .padding(this.needPadding ? standardSpacing : 0);
     }
-    .scrollBar(this.maxColumn < this.myUi.openedStack.length ? BarState.On : BarState.Off)
+    .scrollBar(this.maxC < this.myUi.openedStack.length ? BarState.On : BarState.Off)
     .onAreaChange((oldValue, newValue) => {
       if ((oldValue.width as number != newValue.width as number) && (newValue.width as number != this.panelWidth)) {
         this.panelWidth = newValue.width as number;
       }
-      this.recalculateLayout();
     })
     .direction(isPreferRightHand() ? Direction.Rtl : Direction.Ltr)
     .width('100%')
@@ -118,20 +127,19 @@ struct MeowBookmarksPanel {
     .scrollable(ScrollDirection.Horizontal);
   }
 
-  /**
-   * Recalculate the layout of the dialog.
-   */
-  recalculateLayout() {
+  get maxC() {
+    const maxColumn = Math.floor(this.panelWidth / (minimumCardWidth * 0.5));
+    const columnCount = Math.min(maxColumn, this.myUi.openedStack.length);
+    return columnCount;
+  }
+
+  get cWidth() {
     const maxColumn = Math.floor(this.panelWidth / (minimumCardWidth * 0.5));
     const columnCount = Math.min(maxColumn, this.myUi.openedStack.length);
     const columnSpaceCount = columnCount - 1;
     const frameSpace = this.needPadding ? 2 * standardSpacing : 0;
     const columnWidth = (this.panelWidth - columnSpaceCount * standardSpacing * 0.75 - frameSpace) / columnCount;
-
-    animateToImmediately(defaultAnimation(), () => {
-      this.maxColumn = columnCount;
-      this.columnWidth = columnWidth;
-    });
+    return columnWidth;
   }
 
   /**
@@ -139,7 +147,7 @@ struct MeowBookmarksPanel {
    * The #idx card is safe from this.
    * @param idx The index of the level to close.
    */
-  closeAllRightOfWithAnima(idx: number) {
+  closeAllRightOf_Animated(idx: number) {
     animateToImmediately(defaultAnimation(), () => {
       this.closeAllRightOf(idx);
     });

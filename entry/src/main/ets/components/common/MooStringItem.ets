@@ -10,7 +10,7 @@ import { UniRowOfCapsuleButtons } from './UniRowOfCapsuleButtons';
 @ComponentV2
 struct MooStringItem {
   // Config
-  @Param @Require allowSelect: boolean;
+  @Param @Require clickable: boolean;
   @Param @Require allowEdit: boolean;
   @Param enableLabelField: boolean = true;
   @Param enableLinkField: boolean = true; // For use cases like folders, which don't have links.
@@ -30,7 +30,7 @@ struct MooStringItem {
    * should do the rest of the backward data syncing / assigning jobs!
    */
   @Event onEdited: (newValues: string[]) => void;
-  @Event onSelect: (selectedIndex: number) => void;
+  @Event clickAction: (selectedIndex: number) => void;
   @Event onDelete: (index: number) => void;
   // UI
   @Local displayLabel: string = this.item[0];
@@ -122,11 +122,11 @@ struct MooStringItem {
     .padding(this.isEditing ? standardSpacing : standardSpacing * 0.25)
     .animation(defaultAnimation())
     .alignItems(HorizontalAlign.Start)
-    .hoverEffect(this.allowSelect ? HoverEffect.Highlight : undefined)
+    .hoverEffect(this.clickable ? HoverEffect.Highlight : undefined)
     .backgroundColor(useEffects() ? $r('app.color.blur_background_contrast') : getColor(meowThemeColorType.PRIMARY))
     .onClick(() => {
-      if (this.allowSelect) {
-        this.onSelect(this.index);
+      if (this.clickable) {
+        this.clickAction(this.index);
       }
     });
   }

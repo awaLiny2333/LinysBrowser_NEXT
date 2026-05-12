@@ -33,11 +33,11 @@ struct MooStringPairArrayList {
         // The fixed default item
         MooStringItem({
           isSelected: this.selectedIndex == -1,
-          allowSelect: this.allowSelect,
+          clickable: this.allowSelect,
           item: this.defaultItem,
           index: -1,
           allowEdit: false,
-          onSelect: (n) => {
+          clickAction: (n) => {
             this.onSelect(n);
           }
         });
@@ -49,7 +49,7 @@ struct MooStringPairArrayList {
               isSelected: this.selectedIndex == item.index,
               item: item.item,
               index: item.index,
-              allowSelect: this.allowSelect,
+              clickable: this.allowSelect,
               allowEdit: this.allowEdit,
               onEdited: (newValues) => {
                 // Notice upper level.
@@ -61,7 +61,7 @@ struct MooStringPairArrayList {
                 }
                 this.onDelete(index);
               },
-              onSelect: (n) => {
+              clickAction: (n) => {
                 this.onSelect(n);
               }
             });

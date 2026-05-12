@@ -36,7 +36,8 @@ export class meowUiHost {
   @Trace sidebarPage: string = UnifiedButtonsType.HISTORIES;
   @Trace showSidebar: boolean = false;
   @Trace sideAreaWidth: number = 0; // The side area includes all things (Vertical tabs, side bar panels)
-  @Trace sideAreaShrinkBlock: boolean = false; // When this is true, the side area should NOT auto shrink. This is currently only used by the sidebar button editor.
+  @Trace sideAreaShrinkBlock_menu: boolean = false; // When this is true, the side area should NOT auto shrink. This is currently only used by the sidebar button editor.
+  @Trace sideAreaShrinkBlock_drag: boolean = false;
   @Trace sideAreaShrunkExpect: boolean = false;
   // Search & Address bar
   @Trace addressBarContentMajor: string = '';
@@ -77,7 +78,14 @@ export class meowUiHost {
    * Whether the side area is shrunk. Takes the blocker into consideration.
    */
   get sideAreaShrunkSummarized() {
-    return this.sideAreaShrunkExpect && !this.sideAreaShrinkBlock;
+    return this.sideAreaShrunkExpect && !this.sideAreaShrinkBlock_menu && !this.sideAreaShrinkBlock_drag;
+  }
+
+  /**
+   * Whether the side area is blocked from shrinking.
+   */
+  get sideAreaShrunkBlocked() {
+    return this.sideAreaShrinkBlock_menu || this.sideAreaShrinkBlock_drag;
   }
 
   /**
@@ -113,7 +121,7 @@ export class meowUiHost {
     // Back in BrowserCat UI.
 
     // Have side area ENABLED & AUTOSHRINK & EXPANDED & NOT BLOCKED
-    if ((this.showSidebar || this.showingVerticalTab) && sideAreaShrinkAuto() && !this.sideAreaShrunkExpect && !this.sideAreaShrinkBlock) {
+    if ((this.showSidebar || this.showingVerticalTab) && sideAreaShrinkAuto() && !this.sideAreaShrunkExpect && !this.sideAreaShrinkBlock_menu) {
       animateToImmediately(defaultAnimation(), () => {
         this.sideAreaShrunkExpect = true;
       });

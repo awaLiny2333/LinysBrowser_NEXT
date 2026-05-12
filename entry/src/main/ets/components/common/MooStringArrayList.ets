@@ -23,7 +23,7 @@ struct MooStringArrayList {
         .each((item) => {
           ListItem() {
             MooStringItem({
-              allowSelect: true,
+              clickable: true,
               allowEdit: true,
               isSelected: false,
               // isSelected: this.selected.has(item.index),

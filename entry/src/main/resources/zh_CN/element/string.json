@@ -597,6 +597,10 @@
       "value": "选文件夹"
     },
     {
+      "name": "Bookmarks_drop",
+      "value": "松手加入此文件夹！"
+    },
+    {
       "name": "Homepage",
       "value": "猫咪的主页"
     },

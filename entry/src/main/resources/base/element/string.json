@@ -597,6 +597,10 @@
       "value": "Pick a Folder"
     },
     {
+      "name": "Bookmarks_drop",
+      "value": "Drop to add / move into this folder!"
+    },
+    {
       "name": "Homepage",
       "value": "Cat's Home Page"
     },

@@ -22,6 +22,11 @@ struct MeowSidebar {
   @Local theList: [string, string][] = sidebarButtons(); // theList would get directly the address, so all modifications are 通透的!
   // Render
   @Local render: boolean = false;
+  // Events
+  @Event onDropSidebar: () => void;
+  @Event onItemDragStart: () => void;
+  @Event onDragEnterSidebar: () => void;
+  @Event onDragLeaveSidebar: () => void;
 
   build() {
     Column({ space: standardSpacing * 0.75 }) {
@@ -39,15 +44,29 @@ struct MeowSidebar {
           } else if (this.myUi.sidebarPage == UnifiedButtonsType.HISTORIES) {
             // History
             HistoryPanel({
-              myLayout: this.myLayout, allowEdit: false, needPadding: false, lite: true, autoFocus: false, requestVisit: (url) => {
-                this.myUi.submitSearchOrLoad(url);
-              }
+              myLayout: this.myLayout, allowEdit: false, needPadding: false, lite: true, autoFocus: false,
+              requestVisit: (url) => {
+                this.genericRequestVisit(url);
+              },
             });
           } else if (this.myUi.sidebarPage == UnifiedButtonsType.BOOKMARKS) {
             // Bookmarks
             MeowBookmarksPanel({
-              myUi: this.myUi, needPadding: false, panelWidth: this.sidebarWidth, columnWidth: this.sidebarWidth, maxColumn: 1, requestVisit: (url) => {
-                this.myUi.submitSearchOrLoad(url);
+              myUi: this.myUi, needPadding: false, panelWidth: this.sidebarWidth, columnWidth: this.sidebarWidth, maxColumn: 1,
+              requestVisit: (url) => {
+                this.genericRequestVisit(url);
+              },
+              onItemDragStart: () => {
+                this.onItemDragStart();
+              },
+              onDropColumn: () => {
+                this.onDropSidebar();
+              },
+              onDragEnterColumn: () => {
+                this.onDragEnterSidebar();
+              },
+              onDragLeaveColumn: () => {
+                this.onDragLeaveSidebar();
               }
             });
           } else {
@@ -73,6 +92,10 @@ struct MeowSidebar {
     .alignItems(sidebarShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
     .width(this.myUi.sideAreaShrunkSummarized && this.myLayout.wideMode ? defaultSidebarShrunkWidth : this.sidebarWidth)
     .height('100%');
+  }
+
+  genericRequestVisit(url: string) {
+    this.myUi.submitSearchOrLoad(url);
   }
 
   /**
@@ -124,11 +147,11 @@ struct MeowSidebar {
                 getMySettings().requestSaveToDisk();
               },
               aboutToShowMenu: () => {
-                this.myUi.sideAreaShrinkBlock = true;
+                this.myUi.sideAreaShrinkBlock_menu = true;
               },
               didHideMenu: () => {
                 this.myUi.sideAreaShrunkExpect = false;
-                this.myUi.sideAreaShrinkBlock = false;
+                this.myUi.sideAreaShrinkBlock_menu = false;
               },
               menuExtra: sidebarContentIconSet.has(item.item[1]) ? undefined : () => {
                 this.iconSelect(item);
@@ -157,11 +180,11 @@ struct MeowSidebar {
         .opacity(0.75)
         .bindContextMenu(this.showAdd, this.addMenuBuilder(), {
           aboutToAppear: () => {
-            this.myUi.sideAreaShrinkBlock = true;
+            this.myUi.sideAreaShrinkBlock_menu = true;
           },
           onDidDisappear: () => {
             this.myUi.sideAreaShrunkExpect = false;
-            this.myUi.sideAreaShrinkBlock = false;
+            this.myUi.sideAreaShrinkBlock_menu = false;
             this.showAdd = false;
           },
           backgroundColor: useEffects() ? undefined : getColor(meowThemeColorType.PRIMARY)
