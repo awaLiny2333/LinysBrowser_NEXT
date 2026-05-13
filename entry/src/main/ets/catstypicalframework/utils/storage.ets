@@ -243,7 +243,7 @@ export async function fileCopy(fullSourcePath: string, fullDestPath: string, ove
   } catch (e) {
     console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestPath}, ${overwrite}) test source accessSync failed: ${e}`);
   }
-  
+
   // Check destination
   try {
     if (await fileIo.access(fullDestPath)) {
@@ -254,7 +254,7 @@ export async function fileCopy(fullSourcePath: string, fullDestPath: string, ove
   } catch (e) {
     console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestPath}, ${overwrite}) test destination accessSync failed: ${e}`);
   }
-  
+
   // Copy
   return fileIo.copyFile(fullSourcePath, fullDestPath)
     .catch((e: BusinessError) => {
@@ -264,6 +264,39 @@ export async function fileCopy(fullSourcePath: string, fullDestPath: string, ove
     .then(() => {
       return true;
     });
+}
+
+export function fileCopySync(fullSourcePath: string, fullDestPath: string, overwrite: boolean) {
+  // Check source
+  try {
+    if (!(fileIo.accessSync(fullSourcePath))) {
+      console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestPath}, ${overwrite}) test accessSync failed: source file ${fullSourcePath} doesn't exist`);
+      return false;
+    }
+  } catch (e) {
+    console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestPath}, ${overwrite}) test source accessSync failed: ${e}`);
+  }
+
+  // Check destination
+  try {
+    if (fileIo.accessSync(fullDestPath)) {
+      if (!overwrite) {
+        return undefined;
+      }
+    }
+  } catch (e) {
+    console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestPath}, ${overwrite}) test destination accessSync failed: ${e}`);
+  }
+
+  // Copy
+  try {
+    fileIo.copyFileSync(fullSourcePath, fullDestPath);
+  } catch (e) {
+    console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestPath}, ${overwrite}) failed: ${e}`);
+    return false;
+  }
+  
+  return true;
 }
 
 /**

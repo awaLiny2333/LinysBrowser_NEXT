@@ -10,6 +10,7 @@ import { defaultMooSymbolSize, defaultSidebarShrunkWidth, defaultSidebarWidth, g
 import { defaultAnimation, getColor, getMySettings, sideAreaShrinkButton, sidebarButtons, sidebarShouldBeOnTheRight, titleBarPositionBottom, useEffects } from "../../settings";
 import lazy { MeowBookmarksPanel } from "../Bookmarks/Panel";
 import lazy { HistoryPanel } from "../History/Panel";
+import lazy { ScratchingBoardPanel } from "../ScratchingBoard/Panel";
 import lazy { shrinkButton } from "./SidebarShrinkButton";
 
 @ComponentV2
@@ -38,7 +39,7 @@ struct MeowSidebar {
         // Look how well they are aligned! Bravo! ヽ（´ー｀）┌
         Column() {
           if (this.myUi.sidebarPage == UnifiedButtonsType.SCRATCHING_BOARD) {
-            // TODO: scratching board UI.
+            ScratchingBoardPanel({ myUi: this.myUi });
           } else if (this.myUi.sidebarPage == UnifiedButtonsType.DOWNLOADS) {
             // TODO: downloads UI.
           } else if (this.myUi.sidebarPage == UnifiedButtonsType.HISTORIES) {

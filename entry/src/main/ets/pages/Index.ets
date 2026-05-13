@@ -29,6 +29,8 @@ import { getMyApp } from '../hosts/system/windows/scripts/helpers';
 import { meowAppMessageType } from '../hosts/system/windows/scripts/messaging';
 import { getLastWindowId } from '../hosts/system/windows/scripts/multiwindows';
 import { meowKeyboardMan } from '../hosts/userdata/keyshortcuts/classes/meowKeyboardMan';
+import { unifiedDataChannel } from '@kit.ArkData';
+import { getMyBoard } from '../hosts/app/scratchingboard/scripts/helpers';
 
 @Entry
 @ComponentV2
@@ -161,11 +163,12 @@ struct Index {
               }, 10);
             }
           })
-          .onDrop(() => {
+          .onDrop((e) => {
             // Do no real work for now.
             // TODO: perhaps we can quickly open new tabs here? or send all dropped items to the Scratching Board!
             meow(`Into Scratching Board! 快到碗裡來！`, 'Index][SideArea][onDrop', meowLevel.WARN);
             this.onDropSideArea();
+            this.dropToScratchingBoard(e);
           })
           .onDragEnter(() => {
             // meow(`Drag entered Side area!`, 'Index', meowLevel.WARN);
@@ -349,6 +352,22 @@ struct Index {
   onDragLeaveSideArea() {
     animateToImmediately(defaultAnimation(), () => {
       this.myUi.sideAreaShrinkBlock_drag = false;
+    });
+  }
+
+  dropToScratchingBoard(e: DragEvent) {
+    let records: unifiedDataChannel.UnifiedRecord[] = [];
+    try {
+      records = e.getData().getRecords();
+      meow(`Received ${records.length} records from drag event.`, 'Index][dropToScratchingBoard');
+    } catch (e) {
+      meow(`Failed to get records from drag event: ${e}`, 'Index][dropToScratchingBoard', meowLevel.ERROR);
+    }
+
+    const myBoard = getMyBoard();
+    // Process them!
+    animateToImmediately(defaultAnimation(), () => {
+      myBoard.addEntries(records, this.getUIContext().getHostContext()!.tempDir);
     });
   }
 

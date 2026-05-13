@@ -22,6 +22,7 @@ import { AppStorageV2, window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import lazy Want from '@ohos.app.ability.Want';
 import { defaultNewWindowAlias, getMySettings, isPreferRightHandFromSettings, isTabsStyleVertical } from '../../components/settings';
+import { meowBoardHolder } from '../../hosts/app/scratchingboard/classes/meowBoardHolder';
 import { concatSearchWithEngine } from '../../hosts/app/tabs/scripts/searchEngines';
 import { meowDialogManager } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowResources } from '../../hosts/system/storage/classes/meowResources';
@@ -82,6 +83,7 @@ export function earlyOnCreate(context: Context, launchWant: Want) {
     AppStorageV2.connect(meowHistorian, () => new meowHistorian(`${filesDir}`))!;
     AppStorageV2.connect(meowKeyboardMan, () => new meowKeyboardMan())!;
     AppStorageV2.connect(meowManagedSettings, () => new meowManagedSettings(`${filesDir}/settings.json.browsercatsettings.txt`))!;
+    AppStorageV2.connect(meowBoardHolder, () => new meowBoardHolder());
     const myResources = AppStorageV2.connect(meowResources, () => new meowResources(`${filesDir}/homepage_background_arrayBuffer`))!;
     myResources.loadBackgroundImage();
   }
@@ -115,6 +117,7 @@ export async function earlyOnWindowStageCreate(context: Context) {
 
   // Environments
   const filesDir = context.filesDir;
+  const tempDir = context.tempDir;
 
   // Settings
   await getMySettings().initFrom(`${filesDir}/settings.json.browsercatsettings.txt`); // This can ONLY be initialized here as it requires async - await processing.
@@ -126,6 +129,7 @@ export async function earlyOnWindowStageCreate(context: Context) {
   await ensureDirectoryExist(`${filesDir}/history`); // History chunk files
   await ensureDirectoryExist(`${filesDir}/history-index`); // History index files
   await ensureDirectoryExist(`${filesDir}/zones`); // Zones
+  await ensureDirectoryExist(`${tempDir}/dragdrop-temp`); // Drag drop temps
 
   meow(`Finished in ${Date.now() - startTime} ms.`, 'earlyOnWindowStageCreate', meowLevel.WARN);
 }
