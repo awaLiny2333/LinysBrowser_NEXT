@@ -4,7 +4,6 @@ import lazy { fileDocumentPick2Path, fileDocumentPickSave, saveHybrid } from "..
 import lazy { parseBookmarksConcurrent, parseToHTMLConcurrent } from "../scripts/parser";
 import lazy { nowHtmlTimestamp } from "../scripts/helpers";
 import lazy { isMatchFast, tokenize } from "../../../../catstypicalframework/utils/strings";
-
 export interface MeowBookmarkDragInfo {
   item: meowBookmarkItem;
   parent: meowBookmarkItem;

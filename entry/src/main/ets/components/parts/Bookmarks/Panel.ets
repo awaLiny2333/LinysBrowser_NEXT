@@ -30,7 +30,7 @@ struct MeowBookmarksPanel {
   @Event onItemDragStart: () => void;
   // Events (Panel)
   @Event requestVisit: (url: string) => void;
-  @Event onSelect: (folder: meowBookmarkItem, path: string) => void;
+  @Event onSelect: (folder: meowBookmarkItem, path: string) => void; // Called when this column folder is selected. For select mode only.
 
   aboutToAppear(): void {
     // Initialize

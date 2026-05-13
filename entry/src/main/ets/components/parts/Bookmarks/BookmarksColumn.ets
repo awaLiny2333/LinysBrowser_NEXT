@@ -52,7 +52,7 @@ struct BookmarksColumn {
   @Event requestSubLevelClose: () => void; // Close the opening sub folder
   @Event requestCardClose: () => void; // This card is closed
   @Event requestVisit: (url: string) => void;
-  @Event onSelect: (item: meowBookmarkItem) => void; // For select mode only.
+  @Event onSelect: (item: meowBookmarkItem) => void; // Called when this column folder is selected. For select mode only.
 
   build() {
     Column({ space: standardSpacing }) {
@@ -352,18 +352,25 @@ struct BookmarksColumn {
 
     getMyApp().dataTunnelForBookmarks = { item: item, parent: this.folder };
 
-    // Fill (actually zero) data :P
+    // Fill data :P
     let unifiedData = new unifiedDataChannel.UnifiedData();
-
+    
+    if (!item.isFolder) {
+      // URL record
+      let hyperlinkRecord: unifiedDataChannel.Hyperlink = new unifiedDataChannel.Hyperlink();
+      hyperlinkRecord.url = item.url;
+      hyperlinkRecord.description = item.title;
+      unifiedData.addRecord(hyperlinkRecord);
+      // Text in MD
+      let textRecord: unifiedDataChannel.PlainText = new unifiedDataChannel.PlainText();
+      textRecord.textContent = `[${item.title}](${item.url})`;
+      unifiedData.addRecord(textRecord);
+    }
+    
     // Application defined bookmark item record
     let bookmarkItemRecord = new unifiedDataChannel.ApplicationDefinedRecord();
     bookmarkItemRecord.applicationDefinedType = meowBookmarkItemUnifiedType;
     unifiedData.addRecord(bookmarkItemRecord);
-    // URL record
-    let hyperlinkRecord: unifiedDataChannel.Hyperlink = new unifiedDataChannel.Hyperlink();
-    hyperlinkRecord.url = item.url;
-    hyperlinkRecord.description = item.title;
-    unifiedData.addRecord(hyperlinkRecord);
 
     // Set!
     event.setData(unifiedData);
