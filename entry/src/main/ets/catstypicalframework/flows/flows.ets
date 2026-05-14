@@ -117,7 +117,7 @@ export async function earlyOnWindowStageCreate(context: Context) {
 
   // Environments
   const filesDir = context.filesDir;
-  const tempDir = context.tempDir;
+  // const tempDir = context.tempDir;
 
   // Settings
   await getMySettings().initFrom(`${filesDir}/settings.json.browsercatsettings.txt`); // This can ONLY be initialized here as it requires async - await processing.
@@ -129,7 +129,7 @@ export async function earlyOnWindowStageCreate(context: Context) {
   await ensureDirectoryExist(`${filesDir}/history`); // History chunk files
   await ensureDirectoryExist(`${filesDir}/history-index`); // History index files
   await ensureDirectoryExist(`${filesDir}/zones`); // Zones
-  await ensureDirectoryExist(`${tempDir}/dragdrop-temp`); // Drag drop temps
+  // await ensureDirectoryExist(`${tempDir}/dragdrop-temp`); // Drag drop temps
 
   meow(`Finished in ${Date.now() - startTime} ms.`, 'earlyOnWindowStageCreate', meowLevel.WARN);
 }

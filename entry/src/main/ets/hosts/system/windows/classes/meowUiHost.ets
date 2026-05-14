@@ -120,6 +120,18 @@ export class meowUiHost {
 
     // Back in BrowserCat UI.
 
+    if (this.addressBarFocused) {
+      this.requestAddressBarBlur(uiContext);
+      return true;
+    }
+
+    if (this.showMore) {
+      animateToImmediately(defaultAnimation(), () => {
+        this.showMore = false;
+      });
+      return true;
+    }
+
     // Have side area ENABLED & AUTOSHRINK & EXPANDED & NOT BLOCKED
     if ((this.showSidebar || this.showingVerticalTab) && sideAreaShrinkAuto() && !this.sideAreaShrunkExpect && !this.sideAreaShrinkBlock_menu) {
       animateToImmediately(defaultAnimation(), () => {
@@ -132,18 +144,6 @@ export class meowUiHost {
     const inFullscreen = this.fullscreenStatus != meowUiFullscreenStatus.NONE;
     if (inFullscreen) {
       this.fullscreenExit();
-      return true;
-    }
-
-    if (this.addressBarFocused) {
-      this.requestAddressBarBlur(uiContext);
-      return true;
-    }
-
-    if (this.showMore) {
-      animateToImmediately(defaultAnimation(), () => {
-        this.showMore = false;
-      });
       return true;
     }
 
@@ -195,6 +195,7 @@ export class meowUiHost {
    * Toggle the windowed fullscreen status of the window.
    */
   async fullscreenWindowed() {
+    this.showMore = false;
     switch (this.fullscreenStatus) {
       case meowUiFullscreenStatus.NONE:
         animateToImmediately(defaultAnimation(), () => {
@@ -220,6 +221,7 @@ export class meowUiHost {
    * Toggle the full fullscreen status of the window.
    */
   async fullscreenFull() {
+    this.showMore = false;
     switch (this.fullscreenStatus) {
       case meowUiFullscreenStatus.NONE:
         this.fullscreenStatus = meowUiFullscreenStatus.FULLSCREEN_FULL; // Put this line first to avoid render / display flaws. // This seems helpless to the issue :P

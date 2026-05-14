@@ -4,6 +4,7 @@ import lazy { taskpool } from '@kit.ArkTS';
 import lazy { common, OpenLinkOptions } from '@kit.AbilityKit';
 import lazy { meow, meowLevel } from './catsLogger';
 import lazy { photoAccessHelper } from '@kit.MediaLibraryKit';
+import { MIME_TYPES_MAP_LITE } from './storage-ext';
 
 // Picker
 /**
@@ -227,6 +228,43 @@ export async function saveHybrid(fullFilePath: string, content: string | ArrayBu
 }
 
 /**
+ * Save an image to album.
+ * @param context The common.UIAbilityContext.
+ * @param imageBuffer The ArrayBuffer of that image.
+ * @param ext The extension name of the image file.
+ */
+export async function saveImageToAlbum(context: common.UIAbilityContext, imageBuffer: ArrayBuffer, ext: string): Promise<boolean> {
+  // First save the file to disk.
+  const srcFilePath = `${context.tempDir}/saveImage.${ext || 'img'}`;
+  await saveHybrid(srcFilePath, imageBuffer, true);
+
+  // Then save to gallery
+  let srcFileUri = path_2_uri(srcFilePath);
+  console.info('[saveImageToAlbum] Source URI: ' + srcFileUri);
+
+  try {
+    // Show dialog to ask for permission and get destination url.
+    let phAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
+    let desFileUris: string[] = await phAccessHelper.showAssetsCreationDialog([srcFileUri], [{ fileNameExtension: ext || 'jpg', photoType: photoAccessHelper.PhotoType.IMAGE }]); // TODO: ext || 'jpg' is bad. Come up with a better idea! :P
+    console.info(`[saveImageToAlbum] Destination URIs: ${desFileUris}`);
+
+    // Copy there
+    let desFile: fileIo.File = await fileIo.open(desFileUris[0], fileIo.OpenMode.WRITE_ONLY);
+    let srcFile: fileIo.File = await fileIo.open(srcFileUri, fileIo.OpenMode.READ_ONLY);
+    await fileIo.copyFile(srcFile.fd, desFile.fd);
+    fileIo.closeSync(srcFile);
+    fileIo.closeSync(desFile);
+    console.info('[saveImageToAlbum] create asset by dialog successfully');
+
+    unlinkFile(srcFilePath); // Clear
+    return true;
+  } catch (err) {
+    console.error(`[saveImageToAlbum] failed to create asset by dialog successfully errCode is: ${err.code}, ${err.message}`);
+    return false;
+  }
+};
+
+/**
  * Copy a file.
  * @param fullSourcePath The source path.
  * @param fullDestPath The destination path.
@@ -264,39 +302,6 @@ export async function fileCopy(fullSourcePath: string, fullDestPath: string, ove
     .then(() => {
       return true;
     });
-}
-
-export function fileCopySync(fullSourcePath: string, fullDestPath: string, overwrite: boolean) {
-  // Check source
-  try {
-    if (!(fileIo.accessSync(fullSourcePath))) {
-      console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestPath}, ${overwrite}) test accessSync failed: source file ${fullSourcePath} doesn't exist`);
-      return false;
-    }
-  } catch (e) {
-    console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestPath}, ${overwrite}) test source accessSync failed: ${e}`);
-  }
-
-  // Check destination
-  try {
-    if (fileIo.accessSync(fullDestPath)) {
-      if (!overwrite) {
-        return undefined;
-      }
-    }
-  } catch (e) {
-    console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestPath}, ${overwrite}) test destination accessSync failed: ${e}`);
-  }
-
-  // Copy
-  try {
-    fileIo.copyFileSync(fullSourcePath, fullDestPath);
-  } catch (e) {
-    console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestPath}, ${overwrite}) failed: ${e}`);
-    return false;
-  }
-  
-  return true;
 }
 
 /**
@@ -379,6 +384,8 @@ export async function ensureDirectoryExist(dirPath: string) {
     console.error(`[ensureDirectoryExist] fileIo.mkdir(${dirPath}) failed: ${e}`);
   }
 }
+
+// Delete
 
 /**
  * Clear a directory.
@@ -682,8 +689,7 @@ export function mimeOfFileName(fileName: string): string {
   }
 
   // 1. 只取文件名部分，防止路径中的点号干扰 (例如 /path.to/my-file)
-  const baseName = fileName.split(/[\\/]/)
-    .pop() || '';
+  const baseName = fileName.split(/[\\/]/).pop() || '';
 
   // 2. 提取后缀名
   const lastDotIndex = baseName.lastIndexOf('.');
@@ -693,62 +699,9 @@ export function mimeOfFileName(fileName: string): string {
     return 'application/octet-stream';
   }
 
-  const ext = baseName.slice(lastDotIndex + 1)
-    .toLowerCase();
+  const ext = baseName.slice(lastDotIndex + 1).toLowerCase();
 
-  // 3. 扩展后的 MIME 映射表
-  const mimeMap: Record<string, string> = {
-    // 文本
-    'txt': 'text/plain',
-    'html': 'text/html',
-    'htm': 'text/html',
-    'css': 'text/css',
-    'csv': 'text/csv',
-    'xml': 'application/xml',
-
-    // 脚本 & 数据
-    'js': 'application/javascript',
-    'mjs': 'application/javascript',
-    'ts': 'text/typescript',
-    'json': 'application/json',
-    'yaml': 'text/yaml',
-    'yml': 'text/yaml',
-
-    // 图片
-    'png': 'image/png',
-    'jpg': 'image/jpeg',
-    'jpeg': 'image/jpeg',
-    'gif': 'image/gif',
-    'svg': 'image/svg+xml',
-    'webp': 'image/webp',
-    'ico': 'image/x-icon',
-
-    // 视频 & 音频
-    'mp4': 'video/mp4',
-    'webm': 'video/webm',
-    'ogg': 'video/ogg',
-    'mp3': 'audio/mpeg',
-    'wav': 'audio/wav',
-    'flac': 'audio/flac',
-
-    // 文档
-    'pdf': 'application/pdf',
-    'doc': 'application/msword',
-    'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'xls': 'application/vnd.ms-excel',
-    'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    'ppt': 'application/vnd.ms-powerpoint',
-    'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-
-    // 压缩包
-    'zip': 'application/zip',
-    'rar': 'application/x-rar-compressed',
-    '7z': 'application/x-7z-compressed',
-    'gz': 'application/gzip',
-    'tar': 'application/x-tar',
-  };
-
-  return mimeMap[ext] || 'application/octet-stream';
+  return MIME_TYPES_MAP_LITE[ext] || 'application/octet-stream';
 }
 
 /**

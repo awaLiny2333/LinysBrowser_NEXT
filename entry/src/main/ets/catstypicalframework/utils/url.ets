@@ -1,9 +1,10 @@
 import lazy { url } from '@kit.ArkTS';
 import lazy { concatSearchWithEngine } from '../../hosts/app/tabs/scripts/searchEngines';
-import lazy { SINGLE_LABEL_ALLOWLIST, LEGAL_TOP_LEVEL_DOMAINS } from './url-extra';
+import lazy { SINGLE_LABEL_ALLOWLIST, LEGAL_TOP_LEVEL_DOMAINS } from './url-ext';
 
 /**
  * Get keyword entries from a URL.
+ * 
  * @param source the url.
  * @returns the keyword entries.
  */
@@ -13,7 +14,6 @@ export function getKeywordEntries(source: string): [string, string][] {
     const iterator = theUrl.params.entries();
     return Array.from(iterator);
   } catch (e) {
-    // meow(`Failed to parse URL: ${source}`, 'getKeywordEntries', meowLevel.WARN);
     return [];
   }
 }
@@ -48,13 +48,30 @@ export function unifyDestination(content: string, useHttps: boolean): UnifiedDes
   return { type: UnifiedDestinationResultType.SEARCH, url: concatSearchWithEngine(content).result };
 }
 
-const LEGAL_CHARACTERS_REGEX = /^[A-Za-z0-9\-._~:/?#[\]@!$&'()*+,;=%]+$/; // RFC 3986 允许的合法字符白名单
-const INVALID_PERCENT_ENCODING_REGEX = /%(?![0-9A-Fa-f]{2})/; // 非法的百分号编码 ( % 后不跟两个十六进制字符 )
-const SCHEME_REGEX = /^([a-zA-Z][a-zA-Z0-9+\-.]*):/; // 提取 Scheme (协议名)
-const PORT_REGEX = /^\d{1,5}$/; // 端口号格式 (1-5位纯数字)
+// Constants of regex for some parts of url validation
+const IPV4_MATCH_REGEX = /(.*):((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))$/;
+const IPV6_PREFIX_MATCH_REGEX = /^[0-9a-fA-F]{1,4}$/;
+const IS_VALID_DOMAIN_ASCII_REGEX = /^[A-Z0-9]([A-Z0-9-]*[A-Z0-9])?$/;
+const IS_VALID_DOMAIN_LOOSE_REGEX = /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/;
 
-// ↓ Coded by DeepSeek @ May 6 2026
+// More
+const LEGAL_CHARACTERS_REGEX = /^[A-Za-z0-9\-._~:/?#[\]@!$&'()*+,;=%]+$/; // RFC 3986 allowed chars
+const INVALID_PERCENT_ENCODING_REGEX = /%(?![0-9A-Fa-f]{2})/; // Illegal percent encoding ( % not followed by two hex characters )
+const SCHEME_REGEX = /^([a-zA-Z][a-zA-Z0-9+\-.]*):/; // Extract Scheme ( protocol name )
+const PORT_REGEX = /^\d{1,5}$/; // Port number format ( 1-5 digits )
 
+// Matches for tail elimination: if it ends with ) ' " and there is no corresponding opening symbol before it
+const UNMATCHED_CLOSING_PAREN_REGEX = /^[^(]*\)$/;
+const UNMATCHED_CLOSING_QUOTE_REGEX = /^[^']*$'$/;
+const UNMATCHED_CLOSING_DOUBLE_QUOTE_REGEX = /^[^"]*"$"/;
+
+/**
+ * Check if a string is a valid IPv4 address.
+ * 
+ * @param ip The address.
+ * @returns True or false.
+ * @author DeepSeek @ May 6 2026
+ */
 export function isValidIPv4(ip: string): boolean {
   const parts = ip.split('.');
   if (parts.length !== 4) return false;
@@ -69,8 +86,13 @@ export function isValidIPv4(ip: string): boolean {
   return true;
 }
 
-const IPV4_MATCH_REGEX = /(.*):((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))$/
-
+/**
+ * Check if a string is a valid IPv6 address.
+ * 
+ * @param ip The address.
+ * @returns True or false.
+ * @author DeepSeek @ May 6 2026
+ */
 export function isValidIPv6(ip: string): boolean {
   // 支持 Zone ID（例如 %eth0）
   const zoneMatch = ip.match(/^([^%]+)(%[a-zA-Z0-9]+)?$/);
@@ -90,8 +112,14 @@ export function isValidIPv6(ip: string): boolean {
   return isValidIPv6Prefix(address, 8);
 }
 
-const IPV6_PREFIX_MATCH_REGEX = /^[0-9a-fA-F]{1,4}$/;
-
+/**
+ * Check if a string is a valid IPv6 prefix.
+ * 
+ * @param prefix The prefix.
+ * @param maxGroups The maximum number of groups allowed.
+ * @returns True or false.
+ * @author DeepSeek @ May 6 2026
+ */
 export function isValidIPv6Prefix(prefix: string, maxGroups: number): boolean {
   if (prefix === '::') return true;
   if (prefix.includes('::')) {
@@ -117,9 +145,14 @@ export function isValidIPv6Prefix(prefix: string, maxGroups: number): boolean {
   return true;
 }
 
-const IS_VALID_DOMAIN_ASCII_REGEX = /^[A-Z0-9]([A-Z0-9-]*[A-Z0-9])?$/
-
-export function isValidDomain(host: string): boolean {
+/**
+ * Checks if a host is a legal HTTP(s) domain.
+ * 
+ * @param host The host.
+ * @returns True or false.
+ * @author DeepSeek @ May 6 2026
+ */
+export function isValidDomainHttp(host: string): boolean {
   const upperHost = host.toUpperCase();
 
   // 单标签域名：白名单放行（全部大写）
@@ -144,13 +177,13 @@ export function isValidDomain(host: string): boolean {
   return true;
 }
 
-// ↓ Coded by ChatGLM Web @ May 13 2026
-
-const IS_VALID_DOMAIN_LOOSE_REGEX = /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/
-
 /**
- * 校验域名 (RFC 3986 宽松规范)
- * 不强制要求公网顶级后缀(.com等)，支持内网域名和自定义后缀
+ * Validate domain name (RFC 3986 lenient specification)
+ * No requirement for public top-level suffixes (.com, etc.), supports custom domain names / suffixes
+ * 
+ * @param domain The host.
+ * @returns True or false.
+ * @author ChatGLM Web @ May 13 2026
  */
 export function isValidDomainLoose(domain: string): boolean {
   // 整体长度限制 (DNS 规范最长 253)
@@ -167,7 +200,6 @@ export function isValidDomainLoose(domain: string): boolean {
     return IS_VALID_DOMAIN_LOOSE_REGEX.test(label);
   });
 }
-
 
 /**
  * Check if a URL is legal.
@@ -188,61 +220,40 @@ export function isLegalUrl(url: string): [boolean, boolean] {
     const scheme = schemeMatch[1].toLowerCase();
     // 明确指定了 http 或 https，走严格 HTTP 校验
     if (scheme === 'http' || scheme === 'https') {
-      return isLegalUrlHttp(url);
+      return validateUrlCore(url, isValidDomainHttp);
     } else {
       // 明确指定了其他协议，走宽松校验
-      return isLegalUrlLoose(url);
+      return validateUrlCore(url, isValidDomainLoose);
     }
   } else {
     // 没有指定协议 (如 example.com 或 //example.com)，预期后续补 http，走严格 HTTP 校验
-    return isLegalUrlHttp(url);
+    return validateUrlCore(url, isValidDomainHttp);
   }
 }
 
 /**
- * 宽松 URL 校验 (适用于 FTP, WS 等各种协议，不校验 TLD 合法性)
- */
-function isLegalUrlLoose(url: string): [boolean, boolean] {
-  return validateUrlCore(url, isValidDomainLoose);
-}
-
-/**
- * 严格 HTTP URL 校验 (要求公网合法 TLD，且仅允许 http/https 协议或无协议)
- */
-function isLegalUrlHttp(url: string): [boolean, boolean] {
-  // HTTP 专属拦截：如果提供了协议，必须且只能是 http 或 https.
-  // Chat GLM wrote this. We don't need such defence. :P We need performance more than that.
-
-  // const schemeMatch = url.match(/^([a-zA-Z][a-zA-Z0-9+\-.]*):/);
-  // if (schemeMatch) {
-  //   const scheme = schemeMatch[1].toLowerCase();
-  //   if (scheme !== 'http' && scheme !== 'https') {
-  //     return [false, true]; // 协议不合法，但确实提供了协议
-  //   }
-  // }
-
-  // 走核心逻辑，并注入严格的域名校验
-  return validateUrlCore(url, isValidDomain);
-}
-
-/**
  * Shared logic of core url validation.
+ * 
  * @param url The url.
  * @param domainValidator The domain validation function.
  * @returns A tuple [isLegal, hasScheme]:
  *  - isLegal: True if the URL is structurally legal.
  *  - hasScheme: True if a valid scheme (like http:, mailto:) was explicitly provided.
  *               If false, the URL is legal but may require manually prepending "http://" .
+ * @author ChatGLM Web @ May 13 2026
  */
 function validateUrlCore(url: string, domainValidator: (host: string) => boolean): [boolean, boolean] {
   // 1. 基础类型与格式校验
   if (typeof url !== 'string' || url.length === 0) return [false, false];
   if (url.trim() !== url) return [false, false];
 
-  // 合法字符白名单 (拒绝双引号、尖括号等非法字符)
-  if (!LEGAL_CHARACTERS_REGEX.test(url)) return [false, false];
-  // 严格的百分号编码校验
-  if (INVALID_PERCENT_ENCODING_REGEX.test(url)) return [false, false];
+  if (!LEGAL_CHARACTERS_REGEX.test(url)) return [false, false]; // 合法字符白名单 (拒绝双引号、尖括号等非法字符)
+  if (INVALID_PERCENT_ENCODING_REGEX.test(url)) return [false, false]; // 严格的百分号编码校验
+
+  // 【新增】启发式脏数据拦截：防止从自然语言文本中错误提取的尾部标点
+  if (UNMATCHED_CLOSING_PAREN_REGEX.test(url)) return [false, false];
+  if (UNMATCHED_CLOSING_QUOTE_REGEX.test(url)) return [false, false];
+  if (UNMATCHED_CLOSING_DOUBLE_QUOTE_REGEX.test(url)) return [false, false];
 
   // 2. 提取 Scheme
   const schemeMatch = url.match(SCHEME_REGEX);

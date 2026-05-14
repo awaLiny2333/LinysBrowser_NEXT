@@ -368,7 +368,7 @@ struct Index {
     const myBoard = getMyBoard();
     // Process them!
     animateToImmediately(defaultAnimation(), () => {
-      myBoard.addEntries(records, this.getUIContext().getHostContext()!.tempDir);
+      myBoard.addEntries(records);
     });
   }
 
