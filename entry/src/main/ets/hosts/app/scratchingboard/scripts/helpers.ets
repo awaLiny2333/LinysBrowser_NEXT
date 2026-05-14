@@ -1,7 +1,7 @@
 import lazy { unifiedDataChannel, uniformTypeDescriptor } from "@kit.ArkData";
 import lazy { AppStorageV2 } from "@kit.ArkUI";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import { fileCopySync, path_2_uri, uri_2_path } from "../../../../catstypicalframework/utils/storage";
+import { fileCopySync, fileNameOfPath, path_2_uri, uri_2_path } from "../../../../catstypicalframework/utils/storage";
 import { isLegalUrl } from "../../../../catstypicalframework/utils/url";
 import lazy { meowBoardHolder, MeowScratchingBoardData, MeowScratchingBoardDataType } from "../classes/meowBoardHolder";
 
@@ -35,7 +35,7 @@ export const meowBoardHolderAccepteTypesSet = new Set<string>([
  */
 export function unifiedRecord2BoardData(records: unifiedDataChannel.UnifiedRecord[], unique: boolean, tempDir: string) {
   const newRecords: MeowScratchingBoardData[] = [];
-  const contentSet = new Set<string>(); // 合并去重：同时用于 URL 和 TEXT
+  let lastAdd = '';
 
   records.forEach((rec) => {
     const type = rec.getType();
@@ -44,9 +44,9 @@ export function unifiedRecord2BoardData(records: unifiedDataChannel.UnifiedRecor
         const items = splitUrls((rec as unifiedDataChannel.PlainText).textContent);
         for (const item of items) {
           const content = item.content as string;
-          if (!contentSet.has(content)) {
+          if (lastAdd != content) {
             if (unique) {
-              contentSet.add(content);
+              lastAdd = content;
             }
             newRecords.push(item);
           }
@@ -59,9 +59,9 @@ export function unifiedRecord2BoardData(records: unifiedDataChannel.UnifiedRecor
         const description = (rec as unifiedDataChannel.Hyperlink).description;
 
         // URL 原子处理
-        if (!contentSet.has(url)) {
+        if (lastAdd != url) {
           if (unique) {
-            contentSet.add(url);
+            lastAdd = url;
           }
           newRecords.push({
             type: MeowScratchingBoardDataType.URL,
@@ -70,9 +70,9 @@ export function unifiedRecord2BoardData(records: unifiedDataChannel.UnifiedRecor
         }
 
         // description 原子处理
-        if (description && !contentSet.has(description)) {
+        if (description && lastAdd != description) {
           if (unique) {
-            contentSet.add(description);
+            lastAdd = description;
           }
           newRecords.push({
             type: MeowScratchingBoardDataType.TEXT,
@@ -84,13 +84,16 @@ export function unifiedRecord2BoardData(records: unifiedDataChannel.UnifiedRecor
 
       case uniformTypeDescriptor.UniformDataType.IMAGE: {
         const imgUri = (rec as unifiedDataChannel.Image).imageUri;
-        if (!contentSet.has(imgUri)) {
+        if (lastAdd != imgUri) {
           if (unique) {
-            contentSet.add(imgUri);
+            lastAdd = imgUri;
           }
 
-          const newPath = `${tempDir}/dragdrop-temp/${Date.now()}`; // TODO: suffix for images.
-          fileCopySync(uri_2_path(imgUri), newPath, false);
+          const imgPath = uri_2_path(imgUri);
+          const originalName = fileNameOfPath(imgPath);
+          const originalExt = originalName.includes('.') ? `.${originalName.split('.').pop()}` : '';
+          const newPath = `${tempDir}/dragdrop-temp/${Date.now()}${originalExt}`;
+          fileCopySync(imgPath, newPath, false);
 
           newRecords.push({
             type: MeowScratchingBoardDataType.IMAGE,
@@ -100,9 +103,9 @@ export function unifiedRecord2BoardData(records: unifiedDataChannel.UnifiedRecor
         }
 
         const uri = (rec as unifiedDataChannel.Image).uri;
-        if (!contentSet.has(uri)) {
+        if (lastAdd != uri) {
           if (unique) {
-            contentSet.add(uri);
+            lastAdd = uri;
           }
           newRecords.push({
             type: MeowScratchingBoardDataType.URL,
@@ -135,31 +138,25 @@ interface UrlMatch {
 export function splitUrls(text: string): MeowScratchingBoardData[] {
   const startTime = Date.now();
 
+  const result: MeowScratchingBoardData[] = [];
   if (!text || text.length === 0) {
-    return [];
+    return result;
   }
 
   const segments = text.split(/(\s+)/);
-  const filteredSegments: string[] = [];
   for (let i = 0; i < segments.length; i++) {
-    if (segments[i].length > 0) {
-      filteredSegments.push(segments[i]);
-    }
-  }
-
-  const result: MeowScratchingBoardData[] = [];
-
-  for (let i = 0; i < filteredSegments.length; i++) {
-    const seg = filteredSegments[i];
-    if (/\s/.test(seg)) {
-      result.push({
-        type: MeowScratchingBoardDataType.TEXT,
-        content: seg
-      });
-    } else {
-      const parts = splitToken(seg);
-      for (let j = 0; j < parts.length; j++) {
-        result.push(parts[j]);
+    const seg = segments[i];
+    if (seg.length > 0) {
+      if (/\s/.test(seg)) {
+        result.push({
+          type: MeowScratchingBoardDataType.TEXT,
+          content: seg
+        });
+      } else {
+        const parts = splitToken(seg);
+        for (let j = 0; j < parts.length; j++) {
+          result.push(parts[j]);
+        }
       }
     }
   }
@@ -167,11 +164,11 @@ export function splitUrls(text: string): MeowScratchingBoardData[] {
   const merged = mergeTextSegments(result);
   // 去除每个 TEXT 的首尾空白，并丢弃空 TEXT
 
-  const r = trimAndFilterTextEntries(merged);
+  // const r = trimAndFilterTextEntries(merged);
 
   meow(`Done in (${Date.now() - startTime} ms)`, 'splitUrls', meowLevel.WARN);
 
-  return r;
+  return merged;
 }
 
 function splitToken(token: string): MeowScratchingBoardData[] {
@@ -188,10 +185,10 @@ function splitToken(token: string): MeowScratchingBoardData[] {
 
   if (start > 0) {
     const leftText = token.substring(0, start);
-    const leftParts = splitToken(leftText);
-    for (let i = 0; i < leftParts.length; i++) {
-      parts.push(leftParts[i]);
-    }
+    parts.push({
+      type: MeowScratchingBoardDataType.TEXT,
+      content: leftText
+    });
   }
 
   parts.push({
@@ -211,6 +208,7 @@ function splitToken(token: string): MeowScratchingBoardData[] {
 }
 
 function findFirstUrlInToken(token: string): UrlMatch | null {
+  const startTime = Date.now();
   let bestStart = -1;
   let bestEnd = -1;
   let bestUrl = '';
@@ -220,6 +218,7 @@ function findFirstUrlInToken(token: string): UrlMatch | null {
       const candidate = token.substring(start, end);
       const isLegalTuple = isLegalUrl(candidate);
       const isLegal = isLegalTuple[0];
+      // meow(`Candidate: ${candidate} - Legal: ${isLegal} (${isLegalTuple[1]}) (${Date.now() - startTime} ms)`, 'findFirstUrlInToken');
       if (isLegal) {
         if (bestStart === -1 || start < bestStart) {
           bestStart = start;
@@ -229,10 +228,16 @@ function findFirstUrlInToken(token: string): UrlMatch | null {
         break;
       }
     }
+    
+    if (token.length - start < bestEnd - bestStart) {
+      // Pointless to continue
+      break;
+    }
   }
 
   if (bestStart !== -1) {
     const match: UrlMatch = { url: bestUrl, start: bestStart, end: bestEnd };
+    meow(`Found URL: ${bestUrl} at ${bestStart}-${bestEnd} (${Date.now() - startTime} ms)`, 'findFirstUrlInToken');
     return match;
   }
   return null;
@@ -240,12 +245,24 @@ function findFirstUrlInToken(token: string): UrlMatch | null {
 
 function mergeTextSegments(data: MeowScratchingBoardData[]): MeowScratchingBoardData[] {
   const merged: MeowScratchingBoardData[] = [];
-  for (let i = 0; i < data.length; i++) {
-    const item = data[i];
+
+  // 提取出的“修剪末尾文本”逻辑
+  const trimLastIfText = (lastItem: MeowScratchingBoardData | undefined): void => {
+    if (lastItem !== undefined && lastItem.type === MeowScratchingBoardDataType.TEXT) {
+      lastItem.content = lastItem.content.trim();
+    }
+  };
+
+  // Process all data entries
+  for (const item of data) {
+    const last = merged[merged.length - 1]; // May be undefined! :Os
     if (item.type === MeowScratchingBoardDataType.TEXT) {
-      if (merged.length > 0 && merged[merged.length - 1].type === MeowScratchingBoardDataType.TEXT) {
-        merged[merged.length - 1].content = merged[merged.length - 1].content + item.content;
+      // IS TEXT!
+      if (merged.length > 0 && last.type === MeowScratchingBoardDataType.TEXT) {
+        // Merge if last is also TEXT.
+        last.content = last.content + item.content;
       } else {
+        // Push a new one.
         const newItem: MeowScratchingBoardData = {
           type: MeowScratchingBoardDataType.TEXT,
           content: item.content
@@ -253,6 +270,8 @@ function mergeTextSegments(data: MeowScratchingBoardData[]): MeowScratchingBoard
         merged.push(newItem);
       }
     } else {
+      // Trim last text if is not TEXT.
+      trimLastIfText(last);
       const newItem: MeowScratchingBoardData = {
         type: item.type,
         content: item.content
@@ -260,36 +279,10 @@ function mergeTextSegments(data: MeowScratchingBoardData[]): MeowScratchingBoard
       merged.push(newItem);
     }
   }
-  return merged;
-}
 
-/**
- * 去除每个 TEXT 条目首尾空白（包括换行、空格等），
- * 如果结果为空白字符串，则删除该条目。
- * URL 条目保持不变。
- */
-function trimAndFilterTextEntries(data: MeowScratchingBoardData[]): MeowScratchingBoardData[] {
-  const cleaned: MeowScratchingBoardData[] = [];
-  for (let i = 0; i < data.length; i++) {
-    const item = data[i];
-    if (item.type === MeowScratchingBoardDataType.TEXT) {
-      const trimmed = item.content.trim(); // 去除首尾所有空白
-      if (trimmed.length > 0) {
-        const newItem: MeowScratchingBoardData = {
-          type: MeowScratchingBoardDataType.TEXT,
-          content: trimmed
-        };
-        cleaned.push(newItem);
-      }
-      // 空字符串则跳过
-    } else {
-      // URL 或 IMAGE 原样保留
-      const newItem: MeowScratchingBoardData = {
-        type: item.type,
-        content: item.content
-      };
-      cleaned.push(newItem);
-    }
-  }
-  return cleaned;
+  // 循环结束后，修剪最后一个文本
+  const last = merged[merged.length - 1];
+  trimLastIfText(last);
+
+  return merged;
 }

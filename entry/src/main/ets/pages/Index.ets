@@ -166,6 +166,7 @@ struct Index {
           .onDrop((e) => {
             // Do no real work for now.
             // TODO: perhaps we can quickly open new tabs here? or send all dropped items to the Scratching Board!
+            console.log(' ');
             meow(`Into Scratching Board! 快到碗裡來！`, 'Index][SideArea][onDrop', meowLevel.WARN);
             this.onDropSideArea();
             this.dropToScratchingBoard(e);

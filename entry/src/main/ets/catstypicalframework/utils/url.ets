@@ -48,6 +48,11 @@ export function unifyDestination(content: string, useHttps: boolean): UnifiedDes
   return { type: UnifiedDestinationResultType.SEARCH, url: concatSearchWithEngine(content).result };
 }
 
+const LEGAL_CHARACTERS_REGEX = /^[A-Za-z0-9\-._~:/?#[\]@!$&'()*+,;=%]+$/; // RFC 3986 允许的合法字符白名单
+const INVALID_PERCENT_ENCODING_REGEX = /%(?![0-9A-Fa-f]{2})/; // 非法的百分号编码 ( % 后不跟两个十六进制字符 )
+const SCHEME_REGEX = /^([a-zA-Z][a-zA-Z0-9+\-.]*):/; // 提取 Scheme (协议名)
+const PORT_REGEX = /^\d{1,5}$/; // 端口号格式 (1-5位纯数字)
+
 // ↓ Coded by DeepSeek @ May 6 2026
 
 export function isValidIPv4(ip: string): boolean {
@@ -64,6 +69,8 @@ export function isValidIPv4(ip: string): boolean {
   return true;
 }
 
+const IPV4_MATCH_REGEX = /(.*):((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))$/
+
 export function isValidIPv6(ip: string): boolean {
   // 支持 Zone ID（例如 %eth0）
   const zoneMatch = ip.match(/^([^%]+)(%[a-zA-Z0-9]+)?$/);
@@ -71,7 +78,7 @@ export function isValidIPv6(ip: string): boolean {
   const address = zoneMatch[1];
 
   // 内嵌 IPv4（如 ::ffff:192.0.2.1）
-  const ipv4Match = address.match(/(.*):((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))$/);
+  const ipv4Match = address.match(IPV4_MATCH_REGEX);
   if (ipv4Match) {
     const prefix = ipv4Match[1];
     const ipv4 = ipv4Match[2];
@@ -82,6 +89,8 @@ export function isValidIPv6(ip: string): boolean {
 
   return isValidIPv6Prefix(address, 8);
 }
+
+const IPV6_PREFIX_MATCH_REGEX = /^[0-9a-fA-F]{1,4}$/;
 
 export function isValidIPv6Prefix(prefix: string, maxGroups: number): boolean {
   if (prefix === '::') return true;
@@ -95,7 +104,7 @@ export function isValidIPv6Prefix(prefix: string, maxGroups: number): boolean {
     // :: 至少省略 1 组，因此总组数不得超过 maxGroups - 1
     if (total > maxGroups - 1) return false;
     for (const part of leftParts.concat(rightParts)) {
-      if (!/^[0-9a-fA-F]{1,4}$/.test(part)) return false;
+      if (!IPV6_PREFIX_MATCH_REGEX.test(part)) return false;
     }
     return true;
   }
@@ -103,10 +112,12 @@ export function isValidIPv6Prefix(prefix: string, maxGroups: number): boolean {
   const parts = prefix.split(':');
   if (parts.length !== maxGroups) return false;
   for (const part of parts) {
-    if (!/^[0-9a-fA-F]{1,4}$/.test(part)) return false;
+    if (!IPV6_PREFIX_MATCH_REGEX.test(part)) return false;
   }
   return true;
 }
+
+const IS_VALID_DOMAIN_ASCII_REGEX = /^[A-Z0-9]([A-Z0-9-]*[A-Z0-9])?$/
 
 export function isValidDomain(host: string): boolean {
   const upperHost = host.toUpperCase();
@@ -128,12 +139,14 @@ export function isValidDomain(host: string): boolean {
   // 逐标签检查（使用大写字母正则）
   for (const label of labels) {
     if (label.length === 0 || label.length > 63) return false;
-    if (!/^[A-Z0-9]([A-Z0-9-]*[A-Z0-9])?$/.test(label)) return false;
+    if (!IS_VALID_DOMAIN_ASCII_REGEX.test(label)) return false;
   }
   return true;
 }
 
 // ↓ Coded by ChatGLM Web @ May 13 2026
+
+const IS_VALID_DOMAIN_LOOSE_REGEX = /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/
 
 /**
  * 校验域名 (RFC 3986 宽松规范)
@@ -151,7 +164,7 @@ export function isValidDomainLoose(domain: string): boolean {
     // 每个标签最长 63
     if (label.length === 0 || label.length > 63) return false;
     // 允许字母、数字、连字符，且不能以连字符开头或结尾
-    return /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(label);
+    return IS_VALID_DOMAIN_LOOSE_REGEX.test(label);
   });
 }
 
@@ -169,7 +182,7 @@ export function isValidDomainLoose(domain: string): boolean {
  * @author ChatGLM Web @ May 13 2026
  */
 export function isLegalUrl(url: string): [boolean, boolean] {
-  const schemeMatch = url.match(/^([a-zA-Z][a-zA-Z0-9+\-.]*):/);
+  const schemeMatch = url.match(SCHEME_REGEX);
 
   if (schemeMatch) {
     const scheme = schemeMatch[1].toLowerCase();
@@ -199,7 +212,7 @@ function isLegalUrlLoose(url: string): [boolean, boolean] {
 function isLegalUrlHttp(url: string): [boolean, boolean] {
   // HTTP 专属拦截：如果提供了协议，必须且只能是 http 或 https.
   // Chat GLM wrote this. We don't need such defence. :P We need performance more than that.
-  
+
   // const schemeMatch = url.match(/^([a-zA-Z][a-zA-Z0-9+\-.]*):/);
   // if (schemeMatch) {
   //   const scheme = schemeMatch[1].toLowerCase();
@@ -227,12 +240,12 @@ function validateUrlCore(url: string, domainValidator: (host: string) => boolean
   if (url.trim() !== url) return [false, false];
 
   // 合法字符白名单 (拒绝双引号、尖括号等非法字符)
-  if (!/^[A-Za-z0-9\-._~:/?#[\]@!$&'()*+,;=%]+$/.test(url)) return [false, false];
+  if (!LEGAL_CHARACTERS_REGEX.test(url)) return [false, false];
   // 严格的百分号编码校验
-  if (/%(?![0-9A-Fa-f]{2})/.test(url)) return [false, false];
+  if (INVALID_PERCENT_ENCODING_REGEX.test(url)) return [false, false];
 
   // 2. 提取 Scheme
-  const schemeMatch = url.match(/^([a-zA-Z][a-zA-Z0-9+\-.]*):/);
+  const schemeMatch = url.match(SCHEME_REGEX);
   let remaining: string;
   let hasScheme = false;
 
@@ -304,7 +317,7 @@ function validateUrlCore(url: string, domainValidator: (host: string) => boolean
 
   // 6. 校验端口
   if (port !== undefined) {
-    if (!/^\d{1,5}$/.test(port)) return [false, hasScheme];
+    if (!PORT_REGEX.test(port)) return [false, hasScheme];
     const portNum = parseInt(port, 10);
     if (portNum > 65535) return [false, hasScheme];
   }
