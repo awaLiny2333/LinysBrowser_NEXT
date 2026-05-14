@@ -1,7 +1,6 @@
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import lazy { isLegalUrl } from "../../../../catstypicalframework/utils/url";
 import lazy { MeowScratchingBoardData, MeowScratchingBoardDataType } from "../classes/meowBoardHolder";
-
 // Helper interface to replace object literal types
 interface UrlMatch {
   url: string;
@@ -15,7 +14,7 @@ const FIND_LOOSE_URL_REGEX = /(?:[A-Za-z][A-Za-z0-9+.-]*:|\/\/|localhost|[A-Za-z
  * Splits a text into segments of plain text and URLs.
  * URLs are validated using isLegalUrl and become URL-type entries.
  * All other content becomes TEXT-type entries.
- * 
+ *
  * @param text The text to be analyzed.
  * @returns MeowScratchingBoardData[]
  * @author DeepSeek Web @ May 13 2026, optimized by Liny and ChatGLM Web @ May 14 2026
@@ -28,14 +27,15 @@ export function splitUrls(text: string): MeowScratchingBoardData[] {
     return result;
   }
 
-  // const segments = text.split(/(\s+)/);
-  const segments = text.split(/(\s+|[。！？；，、])/);
+  const segments = text.split(/(\s+)/);
+  // const segments = text.split(/(\s+|[。！？；，、])/);
   for (let i = 0; i < segments.length; i++) {
     const seg = segments[i];
     if (seg.length > 0) {
       if (/\s/.test(seg)) {
         result.push(new MeowScratchingBoardData(MeowScratchingBoardDataType.TEXT, seg));
       } else {
+        // meow(`Going to split token [${seg}]!`, 'splitUrls');
         const parts = splitToken(seg);
         for (let j = 0; j < parts.length; j++) {
           result.push(parts[j]);
@@ -51,7 +51,7 @@ export function splitUrls(text: string): MeowScratchingBoardData[] {
 
 /**
  * Splits a token (potentially containing urls) into MeowScratchingBoardData[].
- * 
+ *
  * @param token The token to be analyzed.
  * @returns MeowScratchingBoardData[]
  * @author DeepSeek Web @ May 13 2026
@@ -59,6 +59,7 @@ export function splitUrls(text: string): MeowScratchingBoardData[] {
 function splitToken(token: string): MeowScratchingBoardData[] {
   const urlMatch = findFirstUrlInToken(token);
   if (urlMatch === null) {
+    // meow(`No URL found in token [${token}]`, 'splitToken');
     return [new MeowScratchingBoardData(MeowScratchingBoardDataType.TEXT, token)];
   }
 
@@ -77,10 +78,13 @@ function splitToken(token: string): MeowScratchingBoardData[] {
 
   if (end < token.length) {
     const rightText = token.substring(end);
+    // meow(`Found url [${url}] in token [${token}]! Passing rightTexts onward: [${rightText}]`, 'splitToken');
     const rightParts = splitToken(rightText);
     for (let i = 0; i < rightParts.length; i++) {
       parts.push(rightParts[i]);
     }
+  } else {
+    // meow(`Found url [${url}] in token [${token}]!`, 'splitToken');
   }
 
   return parts;
@@ -88,7 +92,7 @@ function splitToken(token: string): MeowScratchingBoardData[] {
 
 /**
  * Finds the first URL in a token.
- * 
+ *
  * @param token The token.
  * @returns UrlMatch | null
  * @author DeepSeek Web @ May 13 2026, optimized by Liny and ChatGLM Web @ May 14 2026
@@ -103,54 +107,50 @@ function findFirstUrlInToken(token: string): UrlMatch | null {
   // 4. localhost
   // 尾部匹配所有 RFC 3986 合法字符，避免误截断
 
-  let match: RegExpExecArray | null;
-  while ((match = FIND_LOOSE_URL_REGEX.exec(token)) !== null) {
-    const startIdx = match.index;
-    const candidateBase = match[0];
-
-    // 1. 快速校验整个候选字符串
-    if (isLegalUrl(candidateBase)[0]) {
-      const result: UrlMatch = { url: candidateBase, start: startIdx, end: startIdx + candidateBase.length };
-      meow(`Found URL: ${candidateBase} at ${startIdx}-${startIdx + candidateBase.length} (${Date.now() - startTime} ms)`, 'findFirstUrlInToken][A');
-      return result;
-    } else {
-      meow(`Rejected URL: ${candidateBase} (${Date.now() - startTime} ms)`, 'findFirstUrlInToken][A');
-    }
-
-    // 2. 剥离常见的附着在 URL 尾部的标点符号 (如 .,;:!?)")
-    const stripped = candidateBase.replace(/[.,;:!?)"']+$/, '');
-    if (stripped.length > 0 && stripped.length < candidateBase.length) {
-      if (isLegalUrl(stripped)[0]) {
-        const result: UrlMatch = { url: stripped, start: startIdx, end: startIdx + stripped.length };
-        meow(`Found URL: ${stripped} at ${startIdx}-${startIdx + stripped.length} (${Date.now() - startTime} ms)`, 'findFirstUrlInToken][B');
-        return result;
+  let searchStart = 0;
+    while (searchStart < token.length) {
+      // 优化：URL 只可能以字母、数字或 / 开头，跳过其他字符（如中文字符）
+      const firstChar = token[searchStart];
+      if (!/[A-Za-z0-9/]/.test(firstChar)) {
+        searchStart++;
+        continue;
       }
-    }
 
-    // 3. 兜底：按 URL 结构分隔符切割校验 (处理 URL 与其他合法字符粘连的情况)
-    const boundaries = new Set<number>();
-    const seps = '/?#&=,;:@';
-    for (let i = 0; i < candidateBase.length; i++) {
-      if (seps.includes(candidateBase[i])) {
-        boundaries.add(i);
-        boundaries.add(i + 1);
+      FIND_LOOSE_URL_REGEX.lastIndex = searchStart;
+      const match = FIND_LOOSE_URL_REGEX.exec(token);
+      if (!match) break;
+
+      const startIdx = match.index;
+      const candidateBase = match[0];
+
+      // 从当前匹配的最长候选开始，逐步缩短寻找合法 URL
+      // 先剥离尾部常见的附着标点
+      let currentCandidate = candidateBase.replace(/[.,;:!?)"']+$/, '');
+    
+      while (currentCandidate.length > 0) {
+        if (isLegalUrl(currentCandidate)[0]) {
+          const globalEnd = startIdx + currentCandidate.length;
+          const result: UrlMatch = { url: currentCandidate, start: startIdx, end: globalEnd };
+          meow(`Found URL: ${currentCandidate} at${startIdx}-${globalEnd} (${Date.now() - startTime} ms)`, 'findFirstUrlInToken');
+          return result;
+        }
+
+        // 缩短策略：
+        // 对于没有 scheme 的 URL (如 example.com)，它必须包含点号才是合法的
+        const hasScheme = /^[A-Za-z][A-Za-z0-9+.-]*:/.test(currentCandidate) || currentCandidate.startsWith("//");
+        if (!hasScheme && currentCandidate !== "localhost" && !currentCandidate.includes(".")) {
+          break; // 已经不可能是合法的 scheme-less URL 了，提前终止内部循环
+        }
+
+        // 逐字符缩短。这能完美处理类似 "example.comnow" 或 "http://example.comnow" 粘连的情况
+        currentCandidate = currentCandidate.substring(0, currentCandidate.length - 1);
       }
-    }
-    // 降序排列，优先匹配最长合法前缀
-    const sortedBoundaries = Array.from(boundaries).sort((a, b) => b - a);
 
-    for (const len of sortedBoundaries) {
-      if (len === 0 || len === candidateBase.length || len === stripped.length) continue;
-      const candidate = candidateBase.substring(0, len);
-      if (isLegalUrl(candidate)[0]) {
-        const result: UrlMatch = { url: candidate, start: startIdx, end: startIdx + len };
-        meow(`Found URL: ${candidate} at ${startIdx}-${startIdx + len} (${Date.now() - startTime} ms)`, 'findFirstUrlInToken][C');
-        return result;
-      }
+      // 如果在当前匹配中没有找到合法 URL，从下一个位置继续搜索
+      searchStart = startIdx + 1;
     }
-  }
 
-  return null;
+    return null;
 }
 
 /**
