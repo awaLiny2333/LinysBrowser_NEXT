@@ -88,7 +88,7 @@ struct Index {
             MeowShortcutsPanel({ myLayout: this.myLayout, myDialog: this.myDialog });
           }
           .margin(this.mainFrameSpace)
-          .border(useEffects() ? { radius: defaultInnerRadius, width: 1, color: $r('sys.color.icon_fourth') } : { width: 0, radius: 0 })
+          .border(useEffects() && this.isNotAnySortOfFullscreen ? { radius: defaultInnerRadius, width: 1, color: $r('sys.color.icon_fourth') } : { width: 0, radius: 0 })
           .clip(true);
 
           // Sidebars
@@ -120,7 +120,7 @@ struct Index {
           .justifyContent(FlexAlign.Center)
           // NOTE: We add the padding and then translate this a unit of standardSpacing to catch the hover action in order to expand the vertical tabs.
           .padding(this.sideAreaPadding)
-          .translate(useEffects() ? (sidebarShouldBeOnTheRight() ? { x: standardSpacing } : { x: -standardSpacing }) : undefined)
+          .translate(useEffects() && this.isNotAnySortOfFullscreen ? (sidebarShouldBeOnTheRight() ? { x: standardSpacing } : { x: -standardSpacing }) : undefined)
           // END NOTE
           .height('100%')
           .backgroundColor(useEffects() ? getColor(meowThemeColorType.SECONDARY) : getColor(meowThemeColorType.PRIMARY))
@@ -180,9 +180,9 @@ struct Index {
             this.onDragLeaveSideArea();
           });
         }
-        .padding(this.myUi.fullscreenStatus == meowUiFullscreenStatus.NONE ? this.outerFrameSpace : 0);
+        .padding(this.isNotAnySortOfFullscreen ? this.outerFrameSpace : 0);
 
-        if (this.myUi.fullscreenStatus == meowUiFullscreenStatus.NONE) {
+        if (this.isNotAnySortOfFullscreen) {
           // Top bar
           MeowTitleTop(this.myLayout, this.myDialog, this.myUi, this.myApp, this.myMisc, this.getUIContext());
 
@@ -392,6 +392,13 @@ struct Index {
   }
 
   /**
+   * Whether the app is not in any sort of fullscreen.
+   */
+  get isNotAnySortOfFullscreen() {
+    return this.myUi.fullscreenStatus == meowUiFullscreenStatus.NONE;
+  }
+
+  /**
    * Whether to show horizontal tabs.
    */
   get showingHorizontalTab() {
@@ -405,7 +412,7 @@ struct Index {
     if (!(this.myUi.showingVerticalTab || this.myUi.showSidebar)) {
       return 0;
     }
-    if (useEffects()) {
+    if (useEffects() && this.isNotAnySortOfFullscreen) {
       if (sidebarShouldBeOnTheRight()) {
         return { left: standardSpacing - 1, right: standardSpacing };
       } else {

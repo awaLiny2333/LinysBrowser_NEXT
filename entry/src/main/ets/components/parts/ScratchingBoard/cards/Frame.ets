@@ -11,7 +11,7 @@ export struct ScratchingBoardCardFrame {
       this.contentsBuilder();
     }
     .width('100%')
-    .backgroundColor(getColor(meowThemeColorType.PRIMARY))
+    .backgroundColor(getColor(useEffects() ? meowThemeColorType.PRIMARY : meowThemeColorType.SECONDARY))
     .border({ radius: defaultInnerRadius, width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth') })
     .padding(standardSpacing * 0.7)
     .alignItems(HorizontalAlign.Start);

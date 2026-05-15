@@ -8,6 +8,7 @@ import { getMyBoard } from "../../../hosts/app/scratchingboard/scripts/helpers";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { MooCapsuleButton } from "../../common/MooCapsuleButton";
 import { MooSymbolButton } from "../../common/MooSymbolButton";
+import { MooSymbolButtonMeow } from "../../common/MooSymbolButtonMeow";
 import { MooTextModifier } from "../../common/MooTextModifier";
 import { mooTextType, standardComponentHeight, standardSpacing } from "../../constants";
 import { defaultAnimation, isPreferRightHand } from "../../settings";
@@ -26,11 +27,12 @@ export struct ScratchingBoardPanel {
             ListItem() {
               ScratchingBoardCardFrame() {
                 if (item.item.type == MeowScratchingBoardDataType.TEXT) {
-                  // Url card
+                  // Text card
                   Text(item.item.textContent).attributeModifier(new MooTextModifier()).width('100%').padding(standardSpacing * 0.5).hoverEffect(HoverEffect.Highlight).borderRadius(defaultItemRadius)
                     .onClick(() => {
                       copyText(item.item.textContent); // Copy
                     });
+                  
                 } else if (item.item.type == MeowScratchingBoardDataType.URL) {
                   // Url card
                   Text(item.item.textContent).attributeModifier(new MooTextModifier()).width('100%').padding(standardSpacing * 0.5).hoverEffect(HoverEffect.Highlight).borderRadius(defaultItemRadius)
@@ -40,28 +42,29 @@ export struct ScratchingBoardPanel {
                     });
                   Row() {
                     MooSymbolButton({
-                      icon: $r('sys.symbol.plus_square_on_square'),
-                      clickAction: () => {
-                        copyText(item.item.textContent); // Copy
-                      }
-                    });
-                    MooSymbolButton({
                       icon: $r('sys.symbol.arrow_up_right'),
                       clickAction: () => {
                         this.myUi.submitSearchOrLoad(item.item.textContent);
                       }
                     });
+                    MooSymbolButtonMeow({
+                      icon: $r('sys.symbol.plus_square_on_square'),
+                      clickAction: () => {
+                        copyText(item.item.textContent); // Copy
+                      }
+                    });
                   }
                   .justifyContent(isPreferRightHand() ? FlexAlign.End : FlexAlign.Start)
                   .width('100%');
+                  
                 } else if (item.item.type == MeowScratchingBoardDataType.IMAGE) {
                   if (item.item.payload) {
                     Image((item.item.payload as [ArrayBuffer, image.PixelMap])[1]).width('100%').padding(standardSpacing * 0.5).hoverEffect(HoverEffect.Highlight).borderRadius(defaultItemRadius)
                       .onClick(() => {
-                        // Copy image
+                        copyImage((item.item.payload as [ArrayBuffer, image.PixelMap])[1]);
                       });
                   }
-                  Text(item.item.textContent).attributeModifier(new MooTextModifier()).width('100%').padding(standardSpacing * 0.5).hoverEffect(HoverEffect.Highlight).borderRadius(defaultItemRadius).opacity(0.75);
+                  Text(item.item.textContent).attributeModifier(new MooTextModifier()).width('100%').padding(standardSpacing * 0.5).borderRadius(defaultItemRadius).opacity(0.75);
                   Row() {
                     MooSymbolButton({
                       icon: $r('sys.symbol.download'),
@@ -77,7 +80,7 @@ export struct ScratchingBoardPanel {
                         saveImageToAlbum(this.getUIContext().getHostContext()! as common.UIAbilityContext, (item.item.payload as [ArrayBuffer, image.PixelMap])[0], item.item.extraContent);
                       }
                     });
-                    MooSymbolButton({
+                    MooSymbolButtonMeow({
                       icon: $r('sys.symbol.plus_square_on_square'),
                       clickAction: () => {
                         // Copy image
