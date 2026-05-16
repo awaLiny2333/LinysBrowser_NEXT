@@ -32,7 +32,7 @@ export struct ScratchingBoardPanel {
                     .onClick(() => {
                       copyText(item.item.textContent); // Copy
                     });
-                  
+
                 } else if (item.item.type == MeowScratchingBoardDataType.URL) {
                   // Url card
                   Text(item.item.textContent).attributeModifier(new MooTextModifier()).width('100%').padding(standardSpacing * 0.5).hoverEffect(HoverEffect.Highlight).borderRadius(defaultItemRadius)
@@ -56,7 +56,7 @@ export struct ScratchingBoardPanel {
                   }
                   .justifyContent(isPreferRightHand() ? FlexAlign.End : FlexAlign.Start)
                   .width('100%');
-                  
+
                 } else if (item.item.type == MeowScratchingBoardDataType.IMAGE) {
                   if (item.item.payload) {
                     Image((item.item.payload as [ArrayBuffer, image.PixelMap])[1]).width('100%').padding(standardSpacing * 0.5).hoverEffect(HoverEffect.Highlight).borderRadius(defaultItemRadius)
@@ -97,12 +97,18 @@ export struct ScratchingBoardPanel {
           .virtualScroll();
       }
       .borderRadius(defaultInnerRadius)
-      .margin({ bottom: standardSpacing * 0.75 + standardComponentHeight })
+      .margin({ bottom: this.myUi.dropHover ? 0 : standardSpacing * 0.75 + standardComponentHeight })
+      .opacity(this.myUi.dropHover ? 0.5 : 1)
       .width('100%')
       .height('auto');
 
-      if (this.myBoard.records.length > 0) {
-        // Clear
+      if (this.myUi.dropHover) {
+        // Drop notice.
+        Text($r('app.string.ScratchingBoard_drop')).attributeModifier(new MooTextModifier(mooTextType.TITLE))
+          .width('100%').height('100%').padding(standardSpacing)
+          .hitTestBehavior(HitTestMode.Transparent).textAlign(TextAlign.Center);
+      } else if (this.myBoard.records.length > 0) {
+        // Clear button if there is contents.
         MooCapsuleButton({
           text: $r('app.string.General_clear'),
           needDoubleConfirm: true,

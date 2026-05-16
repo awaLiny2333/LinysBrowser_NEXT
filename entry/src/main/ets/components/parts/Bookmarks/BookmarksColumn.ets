@@ -354,7 +354,7 @@ struct BookmarksColumn {
 
     // Fill data :P
     let unifiedData = new unifiedDataChannel.UnifiedData();
-    
+
     if (!item.isFolder) {
       // URL record
       let hyperlinkRecord: unifiedDataChannel.Hyperlink = new unifiedDataChannel.Hyperlink();
@@ -366,7 +366,7 @@ struct BookmarksColumn {
       textRecord.textContent = `[${item.title}](${item.url})`;
       unifiedData.addRecord(textRecord);
     }
-    
+
     // Application defined bookmark item record
     let bookmarkItemRecord = new unifiedDataChannel.ApplicationDefinedRecord();
     bookmarkItemRecord.applicationDefinedType = meowBookmarkItemUnifiedType;
@@ -401,7 +401,7 @@ struct BookmarksColumn {
         const thisRecord = records[i] as unifiedDataChannel.Hyperlink;
         usableBookmarks.push(new meowBookmarkItem(false, thisRecord.description || 'Meow', thisRecord.url));
       } else {
-        meow(`[${i}] Rejected. Unknown record type: ${type}. Accepts only [${meowBookmarkItemUnifiedType}]!`, `BookmarksColumn][onDrop][${this.folder.title}`, meowLevel.ERROR);
+        meow(`[${i}] Rejected. Unknown record type: ${type}. Accepts only [${meowBookmarkItemUnifiedType}] or [${uniformTypeDescriptor.UniformDataType.HYPERLINK}]!`, `BookmarksColumn][onDrop][${this.folder.title}`, meowLevel.ERROR);
       }
     }
 
@@ -410,8 +410,12 @@ struct BookmarksColumn {
     if (!legalMeowBookmarkItemUnifiedType) {
       // Push the usable links to the folder.
       try {
-        this.folder.children.push(...usableBookmarks);
-        this.requestSaveAndBroadcastSync();
+        if (usableBookmarks.length > 0) {
+          this.folder.children.push(...usableBookmarks);
+          this.requestSaveAndBroadcastSync();
+        } else {
+          meow(`No usable bookmarks discovered. No actions taken.`, `BookmarksColumn][onDrop][${this.folder.title}`, meowLevel.WARN);
+        }
       } catch (e) {
         meow(`Error adding bookmarks: ${e}`, `BookmarksColumn][onDrop][${this.folder.title}`, meowLevel.ERROR);
       }

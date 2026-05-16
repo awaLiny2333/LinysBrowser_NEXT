@@ -72,6 +72,7 @@ struct MeowAddressBar {
                 Text(`${it.item[0]}`).attributeModifier(new MooTextModifier());
               }
               TextInput({ text: it.item[1], placeholder: '󰒟' })
+                .allowDrop(null)
                 .addressBarProps()
                 .id(it.index == 0 ? addressBarId : undefined)
                 .width(it.index == 0 && this.hasFreeSpace || !this.myUi.searchKeywordEntriesExpanded ? undefined : 'auto')
@@ -118,6 +119,7 @@ struct MeowAddressBar {
     // Normal view
     Row() {
       TextInput({ text: this.myUi.addressBarContentMajor, placeholder: '󰀩 ...' })
+        .allowDrop(null)
         .addressBarProps()
         .layoutWeight(1)
         .id(addressBarId)

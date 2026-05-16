@@ -23,6 +23,9 @@ export function MeowTitleTop(
   myUi: meowUiHost,
   myApp: meowAppHost,
   myMisc: meowMisc,
+  // onDrop: (event: DragEvent) => void,
+  // onDragEnter: (event: DragEvent) => void,
+  // onDragLeave: (event: DragEvent) => void,
   context: UIContext
 ) {
   Row({ space: 10 }) {

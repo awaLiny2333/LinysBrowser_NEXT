@@ -164,10 +164,6 @@ struct Index {
             }
           })
           .onDrop((e) => {
-            // Do no real work for now.
-            // TODO: perhaps we can quickly open new tabs here? or send all dropped items to the Scratching Board!
-            console.log(' ');
-            meow(`Into Scratching Board! 快到碗裡來！`, 'Index][SideArea][onDrop', meowLevel.WARN);
             this.onDropSideArea();
             this.dropToScratchingBoard(e);
           })
@@ -203,7 +199,7 @@ struct Index {
               MeowTitleBar(this.myUi, this.myLayout, this.myDialog);
 
               // Address
-              if (!this.myLayout.wideMode) {
+              if (!this.myLayout.wideMode && !this.myUi.dropHover) {
                 MeowAddressBar({
                   myUi: this.myUi,
                   myLayout: this.myLayout,
@@ -237,6 +233,7 @@ struct Index {
                 }
               }
             }
+            .opacity(this.myUi.dropHover ? 0.5 : 1)
             .alignItems(isPreferRightHand() ? HorizontalAlign.End : HorizontalAlign.Start)
             .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
             .backgroundColor(getColor(meowThemeColorType.SECONDARY))
@@ -276,6 +273,16 @@ struct Index {
     .backgroundColor(getColor(meowThemeColorType.SECONDARY))
     .height('100%')
     .width('100%')
+    .onDragEnter(() => {
+      this.onDragEnterAnyArea();
+    })
+    .onDragLeave(() => {
+      this.onDragLeaveAnyArea();
+    })
+    .onDrop((e) => {
+      this.onDropAnyArea();
+      this.dropToScratchingBoard(e);
+    })
     .onAppear(() => {
       this.actionsOnAppear();
     })
@@ -317,23 +324,14 @@ struct Index {
     }, 10);
   }
 
+  // Drag drop side area
+
   /**
    * Something is dragged away from the side area.
    * We set the drag block.
    */
   onDragFromSideArea() {
     this.myUi.sideAreaShrinkBlock_drag = true;
-  }
-
-  /**
-   * Something is dropped to the side area.
-   * We switch the status back to a true expectation and release the drag block.
-   */
-  onDropSideArea() {
-    this.myUi.sideAreaShrunkExpect = false;
-    setTimeout(() => {
-      this.myUi.sideAreaShrinkBlock_drag = false;
-    }, 10);
   }
 
   /**
@@ -344,6 +342,7 @@ struct Index {
     animateToImmediately(defaultAnimation(), () => {
       this.myUi.sideAreaShrinkBlock_drag = true;
     });
+    this.onDragEnterAnyArea();
   }
 
   /**
@@ -354,9 +353,57 @@ struct Index {
     animateToImmediately(defaultAnimation(), () => {
       this.myUi.sideAreaShrinkBlock_drag = false;
     });
+    this.onDragLeaveAnyArea();
   }
 
+  /**
+   * Something is dropped to the side area.
+   * We switch the status back to a true expectation and release the drag block.
+   */
+  onDropSideArea() {
+    this.onDropAnyArea();
+    this.myUi.sideAreaShrunkExpect = false;
+    setTimeout(() => {
+      this.myUi.sideAreaShrinkBlock_drag = false;
+    }, 10);
+  }
+
+  // Drag drop ANY area
+
+  onDragEnterAnyArea() {
+    clearTimeout(this.myUi.dropHoverFlipTimeoutId);
+    this.myUi.dropHoverFlipTimeoutId = setTimeout(() => {
+      animateToImmediately(defaultAnimation(), () => {
+        this.myUi.dropHover = true;
+      });
+    }, 10);
+  }
+
+  onDragLeaveAnyArea() {
+    clearTimeout(this.myUi.dropHoverFlipTimeoutId);
+    this.myUi.dropHoverFlipTimeoutId = setTimeout(() => {
+      animateToImmediately(defaultAnimation(), () => {
+        this.myUi.dropHover = false;
+      });
+    }, 10);
+  }
+
+  onDropAnyArea() {
+    clearTimeout(this.myUi.dropHoverFlipTimeoutId);
+    animateToImmediately(defaultAnimation(), () => {
+      this.myUi.dropHover = false;
+    });
+  }
+  
+  // Scratching board
+
+  /**
+   * Something is dropped to the scratching board.
+   * @param e The event to be processed.
+   */
   dropToScratchingBoard(e: DragEvent) {
+    console.log(' ');
+    meow(`Into Scratching Board! 快到碗裡來！`, 'Index][SideArea][onDrop', meowLevel.WARN);
     let records: unifiedDataChannel.UnifiedRecord[] = [];
     try {
       records = e.getData().getRecords();
@@ -477,7 +524,7 @@ struct Index {
 
   /**
    * The space between the main frame and the available web frame.
-   * The sidebar and stuffs are between them.
+   * The side area and stuffs are between them.
    */
   get mainFrameSpace(): Margin {
     // side bar compensation
@@ -504,21 +551,19 @@ struct Index {
   @Monitor('myApp.crossAppMessageTunnel')
   receiveMessage() {
     const msg = this.myApp.crossAppMessageTunnel!;
-    if (msg.type == meowAppMessageType.SETTINGS_NAV_INDICATOR_UPDATE) {
-      updateNavigationIndicator(this.myUi.windowObj!);
-    } else if (msg.type == meowAppMessageType.BOOKMARKS_DRAGGED) {
-      // Find the folder dragged...
-      for (let i = 0; i < this.myUi.openedStack.length; i++) {
-        const folder = this.myUi.openedStack[i];
-        if (msg.payload == folder) {
-          // And clost all the right to it.
-          meow(`Folder [${msg.payload}] Dragged! Closing folders to the right!`, `Index][${this.myWindowId}`, meowLevel.WARN);
-          this.myUi.openedStack = this.myUi.openedStack.slice(0, i);
-          this.myUi.openedIndexOfLevels = this.myUi.openedIndexOfLevels.slice(0, i);
-          this.myUi.openedIndexOfLevels[i - 1] = undefined; // Clear opened index in that level.
-          break;
+    switch (msg.type) {
+      case meowAppMessageType.SETTINGS_NAV_INDICATOR_UPDATE:
+        updateNavigationIndicator(this.myUi.windowObj!);
+        break;
+      case meowAppMessageType.BOOKMARKS_DRAGGED:
+        // Find the folder dragged...
+        const index = this.myUi.openedStack.findIndex(folder => msg.payload === folder);
+        if (index !== -1) {
+          meow(`Folder #${index} [${msg.payload}] Dragged! Closing folders from it on (inclusive)!`, `Index][${this.myWindowId}`, meowLevel.WARN);
+          this.myUi.openedStack = this.myUi.openedStack.slice(0, index);
+          this.myUi.openedIndexOfLevels = this.myUi.openedIndexOfLevels.slice(0, index);
+          this.myUi.openedIndexOfLevels[index - 1] = undefined; // the folder at index 0 is always the root foldr. We cannot drag the root folder, so this is always safe.
         }
-      }
     }
   }
 }

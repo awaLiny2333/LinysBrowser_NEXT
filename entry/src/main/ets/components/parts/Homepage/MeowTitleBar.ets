@@ -1,6 +1,7 @@
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
+import { MooTextModifier } from "../../common/MooTextModifier";
 import { standardSpacing } from "../../constants";
 import { meowButtonsControl, meowButtonsTitle } from "../../settings";
 import { MeowButtonsSlot } from "../MeowButtons/MeowButtonsSlot";
@@ -13,14 +14,18 @@ export function MeowTitleBar(myUi: meowUiHost, myLayout: meowLayout, myDialog: m
       MeowButtonsSlot(myUi, myDialog, 76);
     }
 
-    if (myLayout.wideMode) {
+    if (myLayout.wideMode && !myUi.dropHover) {
       MeowAddressBar({
         myUi: myUi,
         myLayout: myLayout,
         myDialog: myDialog,
       });
     } else {
-      Blank();
+      if (myUi.dropHover) {
+        Text($r('app.string.ScratchingBoard_drop')).attributeModifier(new MooTextModifier()).layoutWeight(1).textAlign(TextAlign.Center);
+      } else {
+        Blank();
+      }
     }
 
     if (meowButtonsTitle().length > 0) {

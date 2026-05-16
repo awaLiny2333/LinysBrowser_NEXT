@@ -913,6 +913,10 @@
       "value": "致谢"
     },
     {
+      "name": "ScratchingBoard_drop",
+      "value": "松手投喂猫抓板！"
+    },
+    {
       "name": "Permission_reason_DETECT_GESTURES",
       "value": "让冲浪喵知道你正在使用哪只手，并自动响应优化布局！"
     },

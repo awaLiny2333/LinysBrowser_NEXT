@@ -31,6 +31,8 @@ export class meowUiHost {
   @Trace orientation: window.Orientation = window.Orientation.AUTO_ROTATION_RESTRICTED;
   @Trace fullscreenStatus: meowUiFullscreenStatus = meowUiFullscreenStatus.NONE;
   @Trace showMore: boolean = false;
+  @Trace dropHover: boolean = false;
+  dropHoverFlipTimeoutId: number | undefined = undefined;
   // Side area
   @Trace showTabs: boolean = false;
   @Trace sidebarPage: string = UnifiedButtonsType.HISTORIES;
