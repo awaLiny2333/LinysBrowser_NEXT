@@ -199,12 +199,16 @@ struct Index {
               MeowTitleBar(this.myUi, this.myLayout, this.myDialog);
 
               // Address
-              if (!this.myLayout.wideMode && !this.myUi.dropHover) {
-                MeowAddressBar({
-                  myUi: this.myUi,
-                  myLayout: this.myLayout,
-                  myDialog: this.myDialog,
-                });
+              if (!this.myLayout.wideMode) {
+                if (this.myUi.dropHover) {
+                  Text($r('app.string.ScratchingBoard_drop')).attributeModifier(new MooTextModifier()).width('100%').textAlign(TextAlign.Center);
+                } else {
+                  MeowAddressBar({
+                    myUi: this.myUi,
+                    myLayout: this.myLayout,
+                    myDialog: this.myDialog,
+                  });
+                }
               }
 
               if (this.myUi.addressBarFocused && !titleBarPositionBottom()) {
@@ -394,7 +398,7 @@ struct Index {
       this.myUi.dropHover = false;
     });
   }
-  
+
   // Scratching board
 
   /**
@@ -415,7 +419,7 @@ struct Index {
     const myBoard = getMyBoard();
     // Process them!
     animateToImmediately(defaultAnimation(), () => {
-      myBoard.addEntries(records);
+      myBoard.addEntries(records, `${this.getUIContext().getHostContext()!.tempDir}/scratching-board`);
     });
   }
 

@@ -21,7 +21,7 @@ export function MeowTitleBar(myUi: meowUiHost, myLayout: meowLayout, myDialog: m
         myDialog: myDialog,
       });
     } else {
-      if (myUi.dropHover) {
+      if (myLayout.wideMode && myUi.dropHover) {
         Text($r('app.string.ScratchingBoard_drop')).attributeModifier(new MooTextModifier()).layoutWeight(1).textAlign(TextAlign.Center);
       } else {
         Blank();

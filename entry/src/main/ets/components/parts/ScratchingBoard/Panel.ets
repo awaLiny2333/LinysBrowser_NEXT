@@ -1,7 +1,7 @@
 import { common } from "@kit.AbilityKit";
 import { image } from "@kit.ImageKit";
 import { copyImage, copyText } from "../../../catstypicalframework/utils/clipboard";
-import { fileDocumentPickSave, saveImageToAlbum } from "../../../catstypicalframework/utils/storage";
+import { addUnitsToSize, fileDocumentPickSave, saveImageToAlbum } from "../../../catstypicalframework/utils/storage";
 import { defaultInnerRadius, defaultItemRadius } from "../../../catstypicalframework/utils/ui";
 import { meowBoardHolder, MeowScratchingBoardDataType } from "../../../hosts/app/scratchingboard/classes/meowBoardHolder";
 import { getMyBoard } from "../../../hosts/app/scratchingboard/scripts/helpers";
@@ -59,36 +59,38 @@ export struct ScratchingBoardPanel {
 
                 } else if (item.item.type == MeowScratchingBoardDataType.IMAGE) {
                   if (item.item.payload) {
-                    Image((item.item.payload as [ArrayBuffer, image.PixelMap])[1]).width('100%').padding(standardSpacing * 0.5).hoverEffect(HoverEffect.Highlight).borderRadius(defaultItemRadius)
+                    Image(this.imagePayload(item.item.payload)[2])
+                      .width('100%').padding(standardSpacing * 0.5).hoverEffect(HoverEffect.Highlight).borderRadius(defaultItemRadius)
                       .onClick(() => {
-                        copyImage((item.item.payload as [ArrayBuffer, image.PixelMap])[1]);
+                        copyImage(this.imagePayload(item.item.payload)[1]);
                       });
                   }
-                  Text(item.item.textContent).attributeModifier(new MooTextModifier()).width('100%').padding(standardSpacing * 0.5).borderRadius(defaultItemRadius).opacity(0.75);
-                  Row() {
+                  Flex({ wrap: FlexWrap.Wrap, justifyContent: isPreferRightHand() ? FlexAlign.End : FlexAlign.Start, alignItems: ItemAlign.Center }) {
+                    Text(`${addUnitsToSize(this.imagePayload(item.item.payload)[0].byteLength)} ${this.imagePayload(item.item.payload)[3].mimeType.substring(6).toUpperCase()} - ${this.imagePayload(item.item.payload)[3].size.width} × ${this.imagePayload(item.item.payload)[3].size.height}`)
+                      .attributeModifier(new MooTextModifier()).opacity(0.9).padding(standardSpacing * 0.5);
                     MooSymbolButton({
                       icon: $r('sys.symbol.download'),
                       clickAction: () => {
                         // Download
-                        fileDocumentPickSave(item.item.textContent, (item.item.payload as [ArrayBuffer, image.PixelMap])[0]);
+                        fileDocumentPickSave(item.item.textContent, this.imagePayload(item.item.payload)[0]);
                       }
                     });
                     MooSymbolButton({
                       icon: $r('sys.symbol.picture_badge_arrow_down'),
                       clickAction: () => {
                         // Save to Gallery
-                        saveImageToAlbum(this.getUIContext().getHostContext()! as common.UIAbilityContext, (item.item.payload as [ArrayBuffer, image.PixelMap])[0], item.item.extraContent);
+                        saveImageToAlbum(this.getUIContext().getHostContext()! as common.UIAbilityContext, this.imagePayload(item.item.payload)[2]);
                       }
                     });
                     MooSymbolButtonMeow({
                       icon: $r('sys.symbol.plus_square_on_square'),
                       clickAction: () => {
                         // Copy image
-                        copyImage((item.item.payload as [ArrayBuffer, image.PixelMap])[1]);
+                        copyImage(this.imagePayload(item.item.payload)[1]);
                       }
                     });
                   }
-                  .justifyContent(isPreferRightHand() ? FlexAlign.End : FlexAlign.Start)
+                  // .justifyContent(isPreferRightHand() ? FlexAlign.End : FlexAlign.Start)
                   .width('100%');
                 }
               };
@@ -128,5 +130,9 @@ export struct ScratchingBoardPanel {
       }
     }
     .height('auto');
+  }
+
+  imagePayload(payload: object | undefined) {
+    return payload as [ArrayBuffer, image.PixelMap, string, image.ImageInfo];
   }
 }

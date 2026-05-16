@@ -34,9 +34,11 @@ export async function retrieveDownloadDirectory(context: Context) {
  */
 export async function fileDocumentPickSave(fileName: string, content: string | ArrayBuffer): Promise<boolean | void | undefined> {
   try {
+    const ext = fileName.includes('.') ? fileName.split('.').pop() : '';
     return (new picker.DocumentViewPicker())
       .save({
-        newFileNames: [fileName]
+        newFileNames: [fileName],
+        fileSuffixChoices: [ext]
       })
       .then(async (pickedUris) => {
         const result = await saveHybrid(pickedUris[0], content, true);
@@ -192,8 +194,12 @@ export async function pickDirectory(): Promise<string | undefined> {
  * @param content A string or an ArrayBuffer, fills the file's content.
  * @param overwrite overwrite or not. Default is false.
  * */
-export async function saveHybrid(fullFilePath: string, content: string | ArrayBuffer, overwrite = false) {
+export async function saveHybrid(fullFilePath: string, content: string | ArrayBuffer | undefined, overwrite = false) {
   const startTime = Date.now();
+  if (!content) {
+    console.error(`[saveHybrid][${fullFilePath}] content is undefined.`);
+    return false;
+  }
 
   try {
     if (await fileIo.access(fullFilePath)) {
@@ -230,22 +236,18 @@ export async function saveHybrid(fullFilePath: string, content: string | ArrayBu
 /**
  * Save an image to album.
  * @param context The common.UIAbilityContext.
- * @param imageBuffer The ArrayBuffer of that image.
- * @param ext The extension name of the image file.
+ * @param srcFilePath The source path.
  */
-export async function saveImageToAlbum(context: common.UIAbilityContext, imageBuffer: ArrayBuffer, ext: string): Promise<boolean> {
-  // First save the file to disk.
-  const srcFilePath = `${context.tempDir}/saveImage.${ext || 'img'}`;
-  await saveHybrid(srcFilePath, imageBuffer, true);
-
+export async function saveImageToAlbum(context: common.UIAbilityContext, srcFilePath: string): Promise<boolean> {
   // Then save to gallery
-  let srcFileUri = path_2_uri(srcFilePath);
+  const srcFileUri = path_2_uri(srcFilePath);
+  const ext = srcFilePath.includes('.') ? srcFilePath.split('.').pop() : ''; // TODO: This is bad. Come up with a better idea! :P
   console.info('[saveImageToAlbum] Source URI: ' + srcFileUri);
 
   try {
     // Show dialog to ask for permission and get destination url.
     let phAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
-    let desFileUris: string[] = await phAccessHelper.showAssetsCreationDialog([srcFileUri], [{ fileNameExtension: ext || 'jpg', photoType: photoAccessHelper.PhotoType.IMAGE }]); // TODO: ext || 'jpg' is bad. Come up with a better idea! :P
+    let desFileUris: string[] = await phAccessHelper.showAssetsCreationDialog([srcFileUri], [{ fileNameExtension: ext, photoType: photoAccessHelper.PhotoType.IMAGE }]);
     console.info(`[saveImageToAlbum] Destination URIs: ${desFileUris}`);
 
     // Copy there

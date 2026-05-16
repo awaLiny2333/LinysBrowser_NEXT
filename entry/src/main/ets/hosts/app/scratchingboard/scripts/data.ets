@@ -1,7 +1,7 @@
 import lazy { unifiedDataChannel, uniformTypeDescriptor } from "@kit.ArkData";
 import lazy { image } from "@kit.ImageKit";
 import lazy { meow } from "../../../../catstypicalframework/utils/catsLogger";
-import lazy { fileNameOfPath, readArrayBufferConcurrent, uri_2_path } from "../../../../catstypicalframework/utils/storage";
+import lazy { ensureDirectoryExist, fileNameOfPath, path_2_uri, readArrayBufferConcurrent, saveHybrid, uri_2_path } from "../../../../catstypicalframework/utils/storage";
 import lazy { MeowScratchingBoardData, MeowScratchingBoardDataType } from "../classes/meowBoardHolder";
 import lazy { splitUrls } from "./url";
 
@@ -21,11 +21,12 @@ export const meowBoardHolderAccepteTypesSet = new Set<string>([
  * @returns MeowScratchingBoardData[]
  * @author DeepSeek Web @ May 13 2026
  */
-export function unifiedRecord2BoardData(records: unifiedDataChannel.UnifiedRecord[], unique: boolean) {
+export async function unifiedRecord2BoardData(records: unifiedDataChannel.UnifiedRecord[], unique: boolean, imgTempDir: string) {
   const newRecords: MeowScratchingBoardData[] = [];
   let lastAdd = '';
+  ensureDirectoryExist(imgTempDir);
 
-  records.forEach((rec) => {
+  for (const rec of records) {
     const type = rec.getType();
     switch (type) {
       case uniformTypeDescriptor.UniformDataType.PLAIN_TEXT: {
@@ -46,7 +47,7 @@ export function unifiedRecord2BoardData(records: unifiedDataChannel.UnifiedRecor
         const url = (rec as unifiedDataChannel.Hyperlink).url;
         const description = (rec as unifiedDataChannel.Hyperlink).description;
 
-        // URL 
+        // URL
         if (lastAdd != url) {
           if (unique) {
             lastAdd = url;
@@ -54,7 +55,7 @@ export function unifiedRecord2BoardData(records: unifiedDataChannel.UnifiedRecor
           newRecords.push(new MeowScratchingBoardData(MeowScratchingBoardDataType.URL, url));
         }
 
-        // description 
+        // description
         if (description && lastAdd != description) {
           if (unique) {
             lastAdd = description;
@@ -65,28 +66,32 @@ export function unifiedRecord2BoardData(records: unifiedDataChannel.UnifiedRecor
       }
 
       case uniformTypeDescriptor.UniformDataType.IMAGE: {
+        // Image and imageUri
         const imgUri = (rec as unifiedDataChannel.Image).imageUri;
         if (lastAdd != imgUri) {
           if (unique) {
             lastAdd = imgUri;
           }
-
-          const imgPath = uri_2_path(imgUri);
-          const originalName = fileNameOfPath(imgPath);
+          // Bunch of values.
+          const originalPath = uri_2_path(imgUri);
+          const originalName = fileNameOfPath(originalPath);
           const originalExt = originalName.includes('.') ? `${originalName.split('.').pop()}` : '';
-          const imgEntry = new MeowScratchingBoardData(MeowScratchingBoardDataType.IMAGE, originalName, originalExt);
-
-          readArrayBufferConcurrent(imgPath).then((buffer) => {
-            image.createImageSource(buffer).createPixelMap().then((result) => {
-              imgEntry.payload = [buffer, result];
-            });
-          });
-
-          newRecords.push(imgEntry);
+          const newName = `${Date.now().toString(16)}-${newRecords.length}.${originalExt}`;
+          const newPath = `${imgTempDir}/${newName}`;
+          const newUri = path_2_uri(newPath);
+          // Read, copy and get info.
+          const buffer = await readArrayBufferConcurrent(originalPath);
+          const pixelMap = await image.createImageSource(buffer).createPixelMap();
+          const info = await pixelMap.getImageInfo();
+          await saveHybrid(newPath, buffer);
+          // Push to new record list!
+          newRecords.push(new MeowScratchingBoardData(MeowScratchingBoardDataType.IMAGE, newName, originalExt, [buffer, pixelMap, newUri, info]));
+          newRecords.push(new MeowScratchingBoardData(MeowScratchingBoardDataType.URL, imgUri));
         }
-
+        
+        // Uri
         const uri = (rec as unifiedDataChannel.Image).uri;
-        if (lastAdd != uri) {
+        if (lastAdd != uri && (imgUri != uri)) {
           if (unique) {
             lastAdd = uri;
           }
@@ -98,7 +103,8 @@ export function unifiedRecord2BoardData(records: unifiedDataChannel.UnifiedRecor
         meow(`Entry of type ${type} is not accepted!`, 'meowBoardHolder][addEntry');
       }
     }
-  });
+
+  }
 
   return newRecords;
 }
