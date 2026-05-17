@@ -4,8 +4,8 @@ import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/
 import lazy { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
 import { ALL_WINDOW_ORIENTATIONS, meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addressBarStatuses';
+import { defaultMooSymbolSize, fontSizeSymbol, getButtonIcon, meowThemeColorType, standardSpacing, UnifiedButtonsType } from '../../constants';
 import { defaultAnimation, getColor, getMySettings, useEffects } from '../../settings';
-import { defaultMooSymbolSize, fontSizeSymbol, getButtonIcon, standardSpacing, meowThemeColorType, UnifiedButtonsType } from '../../constants';
 
 @ComponentV2
 struct MeowButton {
@@ -127,6 +127,9 @@ struct MeowButton {
           this.myUi.requestAddressBarFocus(this.getUIContext());
           this.myUi.setCurrentFieldContent(this.myUi.searchKeywordEntries[0][1]); // Or the last input field of keywords would set this, as its onChange callback would be triggered.
         }
+        break;
+      case UnifiedButtonsType.SCRATCHING_BOARD:
+        requestDialog(this.myDialog, openDialogRequestType.SCRATCHING_BOARD);
         break;
       default:
         break;

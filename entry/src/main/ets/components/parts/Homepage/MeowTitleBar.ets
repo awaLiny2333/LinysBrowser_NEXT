@@ -2,7 +2,7 @@ import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { MooTextModifier } from "../../common/MooTextModifier";
-import { standardSpacing } from "../../constants";
+import { standardComponentHeight, standardSpacing } from "../../constants";
 import { meowButtonsControl, meowButtonsTitle } from "../../settings";
 import { MeowButtonsSlot } from "../MeowButtons/MeowButtonsSlot";
 import { MeowAddressBar } from "./MeowAddressBar";
@@ -22,7 +22,7 @@ export function MeowTitleBar(myUi: meowUiHost, myLayout: meowLayout, myDialog: m
       });
     } else {
       if (myLayout.wideMode && myUi.dropHover) {
-        Text($r('app.string.ScratchingBoard_drop')).attributeModifier(new MooTextModifier()).layoutWeight(1).textAlign(TextAlign.Center);
+        Text($r('app.string.ScratchingBoard_drop')).attributeModifier(new MooTextModifier()).layoutWeight(1).textAlign(TextAlign.Center).height(standardComponentHeight);
       } else {
         Blank();
       }

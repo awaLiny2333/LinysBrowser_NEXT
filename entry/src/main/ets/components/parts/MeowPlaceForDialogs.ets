@@ -27,6 +27,7 @@ import lazy { WoofWebImagesDialog } from '../../dialogs/settings/WoofWebImages/W
 import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
 import lazy { localMessage, meowAppMessageType } from '../../hosts/system/windows/scripts/messaging';
+import { WoofScratchingBoardDialog } from '../../dialogs/parts/WoofScratchingBoard/WoofScratchingBoard';
 
 /**
  * A place for dialogs.
@@ -228,6 +229,13 @@ struct MeowPlaceForDialogs {
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
+  woofScratchingBoardDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofScratchingBoardDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
+    alignment: DialogAlignment.Center,
+    width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
 
   build() {
     // Nothing
@@ -308,6 +316,9 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.CREDITS:
         this.woofCreditsDialogController.open();
+        break;
+      case openDialogRequestType.SCRATCHING_BOARD:
+        this.woofScratchingBoardDialogController.open();
         break;
       default:
         break;

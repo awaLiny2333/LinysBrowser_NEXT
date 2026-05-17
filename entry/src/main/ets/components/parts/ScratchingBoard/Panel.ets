@@ -18,8 +18,11 @@ import { ScratchingBoardCardFrame } from "./cards/Frame";
 export struct ScratchingBoardPanel {
   @Param @Require myUi: meowUiHost;
   @Local myBoard: meowBoardHolder = getMyBoard();
+  @Param @Once needPadding: boolean = true;
   // Local
   @Local panelWidth: number = 0;
+  // Events
+  @Event onSearchSubmitOrLoad: () => void; // Majorly to notify the parent level about the event, like to close the dialog or things.
 
   build() {
     Stack({ alignContent: isPreferRightHand() ? Alignment.BottomEnd : Alignment.BottomStart }) {
@@ -72,6 +75,7 @@ export struct ScratchingBoardPanel {
           .height('100%');
       }
     }
+    .padding(this.needPadding ? standardSpacing : 0)
     .onAreaChange((oldValue, newValue) => {
       if (oldValue.width != newValue.width) {
         this.panelWidth = newValue.width as number;
@@ -97,12 +101,14 @@ export struct ScratchingBoardPanel {
         .fontWeight(FontWeight.Bold)
         .onClick(() => {
           this.myUi.submitSearchOrLoad(item.item.textContent);
+          this.onSearchSubmitOrLoad();
         });
       Row() {
         MooSymbolButton({
           icon: $r('sys.symbol.arrow_up_right'),
           clickAction: () => {
             this.myUi.submitSearchOrLoad(item.item.textContent);
+            this.onSearchSubmitOrLoad();
           }
         });
         MooSymbolButtonMeow({
@@ -122,11 +128,13 @@ export struct ScratchingBoardPanel {
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
             this.myUi.submitSearchOrLoad(item.item.textContent);
+            this.onSearchSubmitOrLoad();
           });
         MooSymbolButton({
           icon: $r('sys.symbol.arrow_up_right'),
           clickAction: () => {
             this.myUi.submitSearchOrLoad(item.item.textContent);
+            this.onSearchSubmitOrLoad();
           }
         });
         MooSymbolButtonMeow({

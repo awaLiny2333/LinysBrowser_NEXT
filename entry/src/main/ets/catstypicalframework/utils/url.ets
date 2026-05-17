@@ -188,10 +188,10 @@ export function isValidDomainHttp(host: string): boolean {
 export function isValidDomainHttpSchemed(host: string): boolean {
   const upperHost = host.toUpperCase();
 
-  // // 单标签域名：白名单放行（全部大写）
-  // if (!upperHost.includes('.')) {
-  //   return SINGLE_LABEL_ALLOWLIST.has(upperHost);
-  // }
+  // 单标签域名：全部放行！
+  if (!upperHost.includes('.')) {
+    return true;
+  }
 
   // 多标签域名：总长度限制（大写后长度不变）
   if (upperHost.length > 253) return false;

@@ -39,7 +39,7 @@ struct MeowSidebar {
         // Look how well they are aligned! Bravo! ヽ（´ー｀）┌
         Column() {
           if (this.myUi.sidebarPage == UnifiedButtonsType.SCRATCHING_BOARD) {
-            ScratchingBoardPanel({ myUi: this.myUi });
+            ScratchingBoardPanel({ myUi: this.myUi, needPadding: false });
           } else if (this.myUi.sidebarPage == UnifiedButtonsType.DOWNLOADS) {
             // TODO: downloads UI.
           } else if (this.myUi.sidebarPage == UnifiedButtonsType.HISTORIES) {
