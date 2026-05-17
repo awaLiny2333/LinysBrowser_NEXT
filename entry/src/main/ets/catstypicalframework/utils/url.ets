@@ -4,7 +4,7 @@ import lazy { SINGLE_LABEL_ALLOWLIST, LEGAL_TOP_LEVEL_DOMAINS } from './url-ext'
 
 /**
  * Get keyword entries from a URL.
- * 
+ *
  * @param source the url.
  * @returns the keyword entries.
  */
@@ -67,7 +67,7 @@ const UNMATCHED_CLOSING_DOUBLE_QUOTE_REGEX = /^[^"]*"$"/;
 
 /**
  * Check if a string is a valid IPv4 address.
- * 
+ *
  * @param ip The address.
  * @returns True or false.
  * @author DeepSeek @ May 6 2026
@@ -88,7 +88,7 @@ export function isValidIPv4(ip: string): boolean {
 
 /**
  * Check if a string is a valid IPv6 address.
- * 
+ *
  * @param ip The address.
  * @returns True or false.
  * @author DeepSeek @ May 6 2026
@@ -114,7 +114,7 @@ export function isValidIPv6(ip: string): boolean {
 
 /**
  * Check if a string is a valid IPv6 prefix.
- * 
+ *
  * @param prefix The prefix.
  * @param maxGroups The maximum number of groups allowed.
  * @returns True or false.
@@ -147,7 +147,7 @@ export function isValidIPv6Prefix(prefix: string, maxGroups: number): boolean {
 
 /**
  * Checks if a host is a legal HTTP(s) domain.
- * 
+ *
  * @param host The host.
  * @returns True or false.
  * @author DeepSeek @ May 6 2026
@@ -178,9 +178,42 @@ export function isValidDomainHttp(host: string): boolean {
 }
 
 /**
+ * Checks if a host is a legal HTTP(s) domain. 
+ * This method should be used if the scheme is clearly set as HTTP(s), and this doesn't block host names with only one word.
+ *
+ * @param host The host.
+ * @returns True or false.
+ * @author DeepSeek @ May 6 2026
+ */
+export function isValidDomainHttpSchemed(host: string): boolean {
+  const upperHost = host.toUpperCase();
+
+  // // 单标签域名：白名单放行（全部大写）
+  // if (!upperHost.includes('.')) {
+  //   return SINGLE_LABEL_ALLOWLIST.has(upperHost);
+  // }
+
+  // 多标签域名：总长度限制（大写后长度不变）
+  if (upperHost.length > 253) return false;
+
+  const labels = upperHost.split('.');
+
+  // 顶级域直接与大写集合匹配
+  const tld = labels[labels.length - 1];
+  if (!LEGAL_TOP_LEVEL_DOMAINS.has(tld)) return false;
+
+  // 逐标签检查（使用大写字母正则）
+  for (const label of labels) {
+    if (label.length === 0 || label.length > 63) return false;
+    if (!IS_VALID_DOMAIN_ASCII_REGEX.test(label)) return false;
+  }
+  return true;
+}
+
+/**
  * Validate domain name (RFC 3986 lenient specification)
  * No requirement for public top-level suffixes (.com, etc.), supports custom domain names / suffixes
- * 
+ *
  * @param domain The host.
  * @returns True or false.
  * @author ChatGLM Web @ May 13 2026
@@ -220,7 +253,7 @@ export function isLegalUrl(url: string): [boolean, boolean] {
     const scheme = schemeMatch[1].toLowerCase();
     // 明确指定了 http 或 https，走严格 HTTP 校验
     if (scheme === 'http' || scheme === 'https') {
-      return validateUrlCore(url, isValidDomainHttp);
+      return validateUrlCore(url, isValidDomainHttpSchemed);
     } else {
       // 明确指定了其他协议，走宽松校验
       return validateUrlCore(url, isValidDomainLoose);
@@ -233,7 +266,7 @@ export function isLegalUrl(url: string): [boolean, boolean] {
 
 /**
  * Shared logic of core url validation.
- * 
+ *
  * @param url The url.
  * @param domainValidator The domain validation function.
  * @returns A tuple [isLegal, hasScheme]:
@@ -269,7 +302,9 @@ function validateUrlCore(url: string, domainValidator: (host: string) => boolean
     } else if (remaining.startsWith('/')) {
       return [false, hasScheme]; // 残缺的层级 URL
     } else {
-      return [remaining.length > 0, hasScheme]; // Opaque URI
+      // Opaque URI (如 mailto:test@a.com)
+      if (remaining.length === 0) return [false, hasScheme];
+      return [true, hasScheme];
     }
   } else {
     if (url.startsWith('//')) {

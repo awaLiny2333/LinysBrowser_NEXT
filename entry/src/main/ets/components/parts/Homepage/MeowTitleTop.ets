@@ -1,15 +1,13 @@
 import { common } from '@kit.AbilityKit';
 import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
+import { meowMisc } from '../../../catstypicalframework/hosts/meowMisc';
 import { windowTopAvoidLeft, windowTopAvoidRight } from '../../../catstypicalframework/utils/ui';
-import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
-import { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
+import { meowAppHost } from '../../../hosts/system/windows/classes/meowAppHost';
 import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { newWindow } from '../../../hosts/system/windows/scripts/multiwindows';
 import { MooSymbolButtonSmall } from '../../common/MooSymbolButtonSmall';
 import { MooTextModifier } from '../../common/MooTextModifier';
 import { showWindowTitle, windowTitlePosition } from '../../settings';
-import { meowAppHost } from '../../../hosts/system/windows/classes/meowAppHost';
-import { meowMisc } from '../../../catstypicalframework/hosts/meowMisc';
 
 /**
  * The window top bar. Holds the buttons on window top, as well as the name of window / zone.
@@ -19,7 +17,6 @@ import { meowMisc } from '../../../catstypicalframework/hosts/meowMisc';
 @Builder
 export function MeowTitleTop(
   myLayout: meowLayout,
-  myDialog: meowDialogManager,
   myUi: meowUiHost,
   myApp: meowAppHost,
   myMisc: meowMisc,
@@ -46,10 +43,6 @@ export function MeowTitleTop(
       .maxLines(1)
       .wordBreak(WordBreak.BREAK_ALL)
       .textOverflow({ overflow: TextOverflow.Ellipsis })
-      .onClick(() => {
-        // Open
-        requestDialog(myDialog, openDialogRequestType.DEV);
-      });
 
     // right button(s)
     if (myApp.freeWindow) {

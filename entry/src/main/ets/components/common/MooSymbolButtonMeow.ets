@@ -3,7 +3,7 @@ import { defaultMooSymbolSize, fontSizeSymbol, meowThemeColorType } from "../con
 import { defaultAnimation, getColor, useEffects } from "../settings";
 
 /**
- * Normal symbol buttons.
+ * Symbol buttons that changes into another state for a while after being clicked.
  */
 @ComponentV2
 export struct MooSymbolButtonMeow {
