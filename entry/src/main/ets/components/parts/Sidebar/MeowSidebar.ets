@@ -75,6 +75,7 @@ struct MeowSidebar {
             // TODO: web show url of [this.myUi.sidebarPage]
           }
         }
+        .justifyContent(FlexAlign.End)
         .enabled(!this.isEditing)
         .opacity(this.isEditing ? 0.5 : 1)
         .layoutWeight(1)
