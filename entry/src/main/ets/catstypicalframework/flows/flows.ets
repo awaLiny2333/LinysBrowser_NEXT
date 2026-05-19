@@ -23,6 +23,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import lazy Want from '@ohos.app.ability.Want';
 import { defaultNewWindowAlias, getMySettings, isPreferRightHandFromSettings, isTabsStyleVertical } from '../../components/settings';
 import { meowBoardHolder } from '../../hosts/app/scratchingboard/classes/meowBoardHolder';
+import { meowTabsBunch } from '../../hosts/app/tabs/classes/meowTabsBunch';
 import { concatSearchWithEngine } from '../../hosts/app/tabs/scripts/searchEngines';
 import { meowDialogManager } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowResources } from '../../hosts/system/storage/classes/meowResources';
@@ -232,7 +233,13 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
   const selectedSidebarPage = mySettings.settingsData[83].value as string;
   myUi.sidebarPage = selectedSidebarPage || '';
 
-  // END UI STATUSES
+  // TABS
+
+  try {
+    AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${myWindowId}`, () => new meowTabsBunch(windowObj.getUIContext(), myUi));
+  } catch (e) {
+    meow(`meowTabsBunch_${myWindowId} failed: ${e}`, 'init', meowLevel.ERROR);
+  }
 
   // Listen for focus, window status (myUi) and avoid (myAvoid).
   setTimeout(() => {

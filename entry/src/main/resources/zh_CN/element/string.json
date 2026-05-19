@@ -917,6 +917,18 @@
       "value": "松手投喂猫抓板！"
     },
     {
+      "name": "Jump_title",
+      "value": "网页尝试跳转！"
+    },
+    {
+      "name": "Jump_from",
+      "value": "来自"
+    },
+    {
+      "name": "Permission_reason_INTERNET",
+      "value": "让冲浪喵访问互联网！"
+    },
+    {
       "name": "Permission_reason_DETECT_GESTURES",
       "value": "让冲浪喵知道你正在使用哪只手，并自动响应优化布局！"
     },

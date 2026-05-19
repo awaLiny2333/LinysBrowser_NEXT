@@ -1,6 +1,6 @@
 import lazy { webview } from "@kit.ArkWeb";
 import { getMySettings } from "../../../components/settings";
-import lazy { defaultSearchEngine, urlDefaultBlank } from "../../userdata/settings/scripts/defaultSettingsValues";
+import lazy { defaultSearchEngine } from "../../userdata/settings/scripts/defaultSettingsValues";
 
 // Cookies
 /**
@@ -35,29 +35,6 @@ export function userHomeUrl() {
   return getMySettings().settingsData[30].value as string;
 }
 
-/**
- * Gets the new tab url from settings.
- * @returns The new tab url set in meowManagedSettings or the urlDefaultBlank if not set.
- */
-export function newTabUrl(): string {
-  const tryNewTabUrl = userNewTabUrl();
-  if (tryNewTabUrl) {
-    return tryNewTabUrl;
-  }
-  return urlDefaultBlank();
-}
-
-/**
- * Gets the home url from settings.
- * @returns The home url set in meowManagedSettings or the urlDefaultBlank if not set.
- */
-export function homeUrl(): string {
-  const tryHomeUrl = userHomeUrl();
-  if (tryHomeUrl) {
-    return tryHomeUrl;
-  }
-  return urlDefaultBlank();
-}
 
 // Search Engines
 
@@ -101,6 +78,22 @@ export function getCurrentUserAgent(): string {
 
 // SITE
 
+// AdBlock
+
+/**
+ * If ad blocker is enabled.
+ * @returns True if enabled, false otherwise.
+ */
+export function useAdBlock() {
+  return getMySettings().settingsData[52].value as boolean;
+}
+
+export function adBlockExceptions() {
+  return getMySettings().settingsData[53].value as string[];
+}
+
+// Dark
+
 /**
  * If web dark mode is forced.
  * @returns True if forced, false otherwise.
@@ -113,10 +106,12 @@ export function forceWebDarkExceptions() {
   return getMySettings().settingsData[61].value as string[];
 }
 
-/**
- * If web images are disabled on all sites.
- * @returns True if disabled, false otherwise.
- */
+// Images
+
+export function disableWebImages() {
+  return getMySettings().settingsData[57].value as boolean;
+}
+
 export function disableWebImagesOnAllSites() {
   return getMySettings().settingsData[58].value as boolean;
 }
@@ -125,26 +120,16 @@ export function disableWebImagesSites() {
   return getMySettings().settingsData[59].value as string[];
 }
 
-/**
- * If web JavaScripts are disabled on all sites.
- * @returns True if disabled, false otherwise.
- */
+// JS
+
+export function disableWebJavaScripts() {
+  return getMySettings().settingsData[54].value as boolean;
+}
+
 export function disableWebJavaScriptsOnAllSites() {
   return getMySettings().settingsData[55].value as boolean;
 }
 
 export function disableWebJavaScriptSites() {
   return getMySettings().settingsData[56].value as string[];
-}
-
-/**
- * If ad blocker is enabled.
- * @returns True if enabled, false otherwise.
- */
-export function useAdBlock() {
-  return getMySettings().settingsData[52].value as boolean;
-}
-
-export function adBlockExceptions() {
-  return getMySettings().settingsData[53].value as string[];
 }

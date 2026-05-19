@@ -6,6 +6,7 @@ import { getKeywordEntries, UnifiedDestinationResult, UnifiedDestinationResultTy
 import { UnifiedButtonsType } from "../../../../components/constants";
 import { addressBarId } from "../../../../components/parts/Homepage/MeowAddressBar";
 import { defaultAnimation, isTabsStyleVertical, maxSuggestionsBookmark, maxSuggestionsHistory, sideAreaShrinkAuto, webBackBack, webBackEsc } from "../../../../components/settings";
+import { meowTabsBunch } from "../../../app/tabs/classes/meowTabsBunch";
 import lazy { concatSearchWithEngine } from "../../../app/tabs/scripts/searchEngines";
 import lazy { meowBookmarkItem } from "../../../userdata/bookmarks/classes/meowBookmarkItem";
 import lazy { meowBookmarkStash } from "../../../userdata/bookmarks/classes/meowBookmarkStash";
@@ -30,6 +31,7 @@ export class meowUiHost {
   @Trace pin: boolean = false;
   @Trace orientation: window.Orientation = window.Orientation.AUTO_ROTATION_RESTRICTED;
   @Trace fullscreenStatus: meowUiFullscreenStatus = meowUiFullscreenStatus.NONE;
+  @Trace webFullscreenHandler: FullScreenExitHandler | undefined = undefined;
   @Trace showMore: boolean = false;
   @Trace dropHover: boolean = false;
   dropHoverFlipTimeoutId: number | undefined = undefined;
@@ -208,6 +210,7 @@ export class meowUiHost {
         animateToImmediately(defaultAnimation(), () => {
           this.fullscreenStatus = meowUiFullscreenStatus.NONE;
         });
+        this.webFullscreenHandler?.exitFullScreen();
         break;
       case meowUiFullscreenStatus.FULLSCREEN_FULL:
         // Exit fullscreen
@@ -248,7 +251,8 @@ export class meowUiHost {
   /**
    * Exit fullscreen.
    */
-  private fullscreenExit() {
+  fullscreenExit() {
+    this.webFullscreenHandler?.exitFullScreen();
     this.windowObj?.recover().catch((e: BusinessError) => {
       meow(`Failed to recover window: ${e.message}`, `meowUiHost][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
     });
@@ -424,8 +428,11 @@ export class meowUiHost {
       this.refreshKeywordEntries();
       this.refreshDestination();
     }
+    const target = this.searchUnifyResult?.url || concatSearchWithEngine('').result;
+    const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.windowId}`)!;
+    myTabs.loadOnCurrentTab(target);
     // SEARCH / LOAD!
-    meow(`Visit / load [${this.searchUnifyResult?.url || concatSearchWithEngine('').result}]!`, 'meowUiHost][submitSearchOrLoad', meowLevel.WARN);
+    meow(`Visit / load [${target}]!`, 'meowUiHost][submitSearchOrLoad', meowLevel.WARN);
   }
 }
 

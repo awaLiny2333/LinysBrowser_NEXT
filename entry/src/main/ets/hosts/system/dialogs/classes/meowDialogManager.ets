@@ -105,7 +105,11 @@ export enum openDialogRequestType {
   QUICK_SE,
   QR,
   DOWNLOADS,
-  SCRATCHING_BOARD
+  SCRATCHING_BOARD,
+  JUMP,
+  ALERT,
+  PROMPT,
+  CONFIRM
 }
 
 /**

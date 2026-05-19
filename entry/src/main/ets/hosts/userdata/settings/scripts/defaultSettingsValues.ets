@@ -26,14 +26,6 @@ export function defaultNewWindowName(): string {
 }
 
 /**
- * Default link of blank page.
- * @returns 'meow://home'
- * */
-export function urlDefaultBlank() {
-  return 'meow://home';
-}
-
-/**
  * Preset search engines in a specified string format.
  * @returns Baidu and Google.
  * @example 'Bing\nhttps://www.cn.bing.com/search?q=%s'

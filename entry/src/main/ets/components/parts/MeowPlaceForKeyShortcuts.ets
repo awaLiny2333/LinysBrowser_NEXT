@@ -6,6 +6,8 @@ import { meowUiGoBackSource, meowUiHost } from '../../hosts/system/windows/class
 import { newWindow } from '../../hosts/system/windows/scripts/multiwindows';
 import { meowKeyboardMan } from '../../hosts/userdata/keyshortcuts/classes/meowKeyboardMan';
 import { defaultAnimation, getMySettings } from '../settings';
+import { AppStorageV2 } from '@kit.ArkUI';
+import { meowTabsBunch } from '../../hosts/app/tabs/classes/meowTabsBunch';
 
 @Builder
 export function MeowPlaceForKeyShortcuts(
@@ -26,9 +28,17 @@ export function MeowPlaceForKeyShortcuts(
     });
     Blank().keyboardShortcut(myKey.newTab.value, myKey.newTab.keys, () => {
       meow(`New Tab!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+      const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${myUi.windowId}`)!;
+      animateToImmediately(defaultAnimation(), () => {
+        myTabs.newTabWrapped();
+      });
     });
     Blank().keyboardShortcut(myKey.closeTab.value, myKey.closeTab.keys, () => {
       meow(`Close Tab!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+      const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${myUi.windowId}`)!;
+      animateToImmediately(defaultAnimation(), () => {
+        myTabs.closeCurrent();
+      });
     });
     Blank().keyboardShortcut(myKey.showTabs.value, myKey.showTabs.keys, () => {
       animateToImmediately(defaultAnimation(), () => {

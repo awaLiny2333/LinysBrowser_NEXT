@@ -1,6 +1,7 @@
 import lazy { url } from '@kit.ArkTS';
 import lazy { concatSearchWithEngine } from '../../hosts/app/tabs/scripts/searchEngines';
 import lazy { SINGLE_LABEL_ALLOWLIST, LEGAL_TOP_LEVEL_DOMAINS } from './url-ext';
+import { Want, common } from '@kit.AbilityKit';
 
 /**
  * Get keyword entries from a URL.
@@ -27,6 +28,41 @@ export enum UnifiedDestinationResultType {
 export interface UnifiedDestinationResult {
   type: UnifiedDestinationResultType;
   url: string;
+}
+
+/**
+ * Checks if a test url belongs to a specific domain.
+ * @param testUrl The url to be tested.
+ * @param domain The domain.
+ * @returns True or false.
+ */
+export function belongsToDomain(testUrl: string, domain: string) {
+  try {
+    const theUrl = url.URL.parseURL(testUrl);
+    const result = theUrl.host.endsWith(domain);
+    // console.log(`[belongsToDomain] [${testUrl}] host: (${theUrl.host}) ${result ? 'belongs to' : 'is not under'} [${domain}]`);
+    return result;
+  } catch (e) {
+    console.error(`[belongsToDomain] [${testUrl}]?→[${domain}] error: ${e}`);
+    return false;
+  }
+}
+
+/**
+ * Jumps to an external link using want.
+ * @param url the link
+ * */
+export function jumpUrl(url: string, context: common.UIAbilityContext) {
+  const want: Want = {
+    uri: url
+  };
+  context.startAbility(want).then(() => {
+    // Pull up success
+    console.log('[Meow][jumpUrl] Pull up application for want ' + url + ' Success!');
+  }).catch(() => {
+    // Pull up failure
+    console.error('[Meow][jumpUrl] Pull up application for want ' + url + ' Failed!');
+  });
 }
 
 /**
@@ -178,7 +214,7 @@ export function isValidDomainHttp(host: string): boolean {
 }
 
 /**
- * Checks if a host is a legal HTTP(s) domain. 
+ * Checks if a host is a legal HTTP(s) domain.
  * This method should be used if the scheme is clearly set as HTTP(s), and this doesn't block host names with only one word.
  *
  * @param host The host.

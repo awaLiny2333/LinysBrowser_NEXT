@@ -2,6 +2,7 @@ import { common } from '@kit.AbilityKit';
 import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import { meowMisc } from '../../../catstypicalframework/hosts/meowMisc';
 import { windowTopAvoidLeft, windowTopAvoidRight } from '../../../catstypicalframework/utils/ui';
+import { meowTabsBunch } from '../../../hosts/app/tabs/classes/meowTabsBunch';
 import { meowAppHost } from '../../../hosts/system/windows/classes/meowAppHost';
 import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { newWindow } from '../../../hosts/system/windows/scripts/multiwindows';
@@ -20,6 +21,7 @@ export function MeowTitleTop(
   myUi: meowUiHost,
   myApp: meowAppHost,
   myMisc: meowMisc,
+  myTabs: meowTabsBunch,
   // onDrop: (event: DragEvent) => void,
   // onDragEnter: (event: DragEvent) => void,
   // onDragLeave: (event: DragEvent) => void,
@@ -34,7 +36,8 @@ export function MeowTitleTop(
     }
 
     // Window Title Text
-    Text(showWindowTitle(myLayout) ? `${myUi.windowAlias} (${myUi.windowId}) (${myMisc.launchEndTime - myMisc.launchStartTime} ms)` : '')
+    // Text(showWindowTitle(myLayout) ? `${myUi.windowId} | ${myTabs.currentTab?.title || 'Meowl'} | ${myUi.windowAlias} | ${myMisc.launchEndTime - myMisc.launchStartTime} ms` : '')
+    Text(showWindowTitle(myLayout) ? `${myTabs.currentTab?.title || 'Meow'}｜${myUi.windowAlias}` : '')
       .attributeModifier(new MooTextModifier())
       .textAlign(windowTitlePosition())
       .layoutWeight(1)

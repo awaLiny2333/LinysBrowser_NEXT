@@ -1,6 +1,6 @@
-import { AbilityConstant, Configuration, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
+import { AbilityConstant, Configuration, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { aboutToLoadContent, earlyOnCreate, earlyOnWindowStageCreate as onWindowStageCreate, onConfigUpdate, onLoadContent, onWant, onWindowStageWillDestroy, wantSource } from '../catstypicalframework/flows/flows';
 import { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
 
@@ -9,14 +9,17 @@ const DOMAIN = 0x0000;
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.warn(DOMAIN, 'testTag', '%{public}s', `Ability onCreate, launchParam: ${launchParam}`);
-    
+
     earlyOnCreate(this.context, want);
 
-    try {
-      this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
-    } catch (err) {
-      hilog.error(DOMAIN, 'testTag', 'Failed to set colorMode. Cause: %{public}s', JSON.stringify(err));
-    }
+    // Causes performance issue:
+    "根据最新进展，您可以将setColorMode设置去掉，每个窗口设置application的深浅色模式，每次拉起一个窗口，所有窗口都做深浅色切换，导致越来越慢，本地注释setColorMode后恢复正常。";
+
+    // try {
+    //   this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
+    // } catch (err) {
+    //   hilog.error(DOMAIN, 'testTag', 'Failed to set colorMode. Cause: %{public}s', JSON.stringify(err));
+    // }
 
     onWant(want, wantSource.ONCREATE);
   }
@@ -52,7 +55,7 @@ export default class EntryAbility extends UIAbility {
   onConfigurationUpdate(newConfig: Configuration): void {
     onConfigUpdate(newConfig);
   }
-  
+
   onWindowStageWillDestroy(windowStage: window.WindowStage): void {
     onWindowStageWillDestroy(windowStage);
   }

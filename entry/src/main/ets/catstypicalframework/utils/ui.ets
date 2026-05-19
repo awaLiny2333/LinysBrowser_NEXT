@@ -2,7 +2,6 @@ import { AppStorageV2, display, window } from '@kit.ArkUI';
 import lazy { deviceInfo, power, settings } from '@kit.BasicServicesKit';
 import lazy { motion } from '@kit.MultimodalAwarenessKit';
 import lazy { defaultAnimation, isSmartReachabilityOn, showNavigationIndicator } from '../../components/settings';
-import { meowAppHost } from '../../hosts/system/windows/classes/meowAppHost';
 import { meowUiFullscreenStatus, meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
 import { getMyApp } from '../../hosts/system/windows/scripts/helpers';
 import lazy { meowAvoid } from '../hosts/meowAvoid';
@@ -359,6 +358,7 @@ export function listenWindowStatusChange(windowId: string) {
         if (myUi.fullscreenStatus == meowUiFullscreenStatus.FULLSCREEN_FULL && status != window.WindowStatusType.FULL_SCREEN) {
           meow(`Window changed from FULL_SCREEN to ${status}! Go NONE!`, `windowStatusDidChange][${windowId}`);
           myUi.fullscreenStatus = meowUiFullscreenStatus.NONE;
+          myUi.webFullscreenHandler?.exitFullScreen();
         }
       });
     } catch (e) {

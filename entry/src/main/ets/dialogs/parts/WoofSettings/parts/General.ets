@@ -13,7 +13,7 @@ import { meowAppHost } from '../../../../hosts/system/windows/classes/meowAppHos
 import { getMyApp } from '../../../../hosts/system/windows/scripts/helpers';
 import { globalMessage, meowAppMessageType } from '../../../../hosts/system/windows/scripts/messaging';
 import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
-import { defaultSearchEngine, urlDefaultBlank } from '../../../../hosts/userdata/settings/scripts/defaultSettingsValues';
+import { defaultSearchEngine } from '../../../../hosts/userdata/settings/scripts/defaultSettingsValues';
 
 @ComponentV2
 struct SettingsGeneral {
@@ -108,7 +108,6 @@ struct SettingsGeneral {
         Text($r('app.string.Settings_category_general_surf_newTabUrl')).attributeModifier(new MooTextModifier());
         MooTextInputV2({
           text: userNewTabUrl(),
-          placeholder: urlDefaultBlank(),
           onChange: (c) => {
             this.mySettings.setByIndex(31, c);
           }
@@ -117,7 +116,6 @@ struct SettingsGeneral {
         Text($r('app.string.Settings_category_general_surf_homeUrl')).attributeModifier(new MooTextModifier());
         MooTextInputV2({
           text: userHomeUrl(),
-          placeholder: urlDefaultBlank(),
           onChange: (c) => {
             this.mySettings.setByIndex(30, c);
           }

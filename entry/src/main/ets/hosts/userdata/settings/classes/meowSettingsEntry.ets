@@ -26,15 +26,21 @@ export class meowSettingsEntry {
   /**
    * Sets the value of the setting entry based on the provided string.
    * @param newValue The string representation of the value.
+   * @param compareMode Use compare mode or not. If set true, then
    * @returns An array containing the key, old value, and new value (if changes are made).
    */
-  setValueFromString(newValue: string) {
-    const thisValue = this.valueToString();
-    const compareNewValue = newValue.replaceAll('\n', '\\n');
-    if (compareNewValue == thisValue) {
-      // meow(`Skipped [${this.key}] - [${newValue}] because target is same as current.`, 'meowSettingsEntry][setValueFromString', meowLevel.INFO);
-      return [this.key, thisValue];
+  setValueFromString(newValue: string, compareMode: boolean = false) {
+    let thisValue = '';
+    let compareNewValue = '';
+    if (compareMode) {
+      thisValue = this.valueToString();
+      compareNewValue = newValue.replaceAll('\n', '\\n');
+      if (compareNewValue == thisValue) {
+        // meow(`Skipped [${this.key}] - [${newValue}] because target is same as current.`, 'meowSettingsEntry][setValueFromString', meowLevel.INFO);
+        return [this.key, thisValue];
+      }
     }
+
     // Convert value according to the type value.
     switch (this.type) {
       case meowSettingsEntryType.NUMBER:
@@ -52,6 +58,7 @@ export class meowSettingsEntry {
         } else {
           this.value = [];
         }
+        console.warn(`${this.key}, ${this.type}, ${this.value}`);
         break;
       case meowSettingsEntryType.STRING_ARRAY_PAIR:
         if (newValue) {
@@ -68,6 +75,7 @@ export class meowSettingsEntry {
       default:
         this.value = undefined;
     }
+    
     // meow(`[${this.key}]: [${thisValue}] → [${compareNewValue}]`, 'meowSettingsEntry][setValueFromString', meowLevel.WARN);
     return [this.key, thisValue, compareNewValue];
   }

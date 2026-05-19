@@ -1,3 +1,4 @@
+import { meowTabsBunch } from '../../../hosts/app/tabs/classes/meowTabsBunch';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { standardSpacing } from '../../constants';

@@ -31,6 +31,7 @@ import { getLastWindowId } from '../hosts/system/windows/scripts/multiwindows';
 import { meowKeyboardMan } from '../hosts/userdata/keyshortcuts/classes/meowKeyboardMan';
 import { unifiedDataChannel } from '@kit.ArkData';
 import { getMyBoard } from '../hosts/app/scratchingboard/scripts/helpers';
+import { meowTabsBunch } from '../hosts/app/tabs/classes/meowTabsBunch';
 
 @Entry
 @ComponentV2
@@ -46,6 +47,7 @@ struct Index {
   @Local myLayout: meowLayout = AppStorageV2.connect(meowLayout, `meowLayout_${this.myWindowId}`)!;
   @Local myAvoid: meowAvoid = AppStorageV2.connect(meowAvoid, `meowAvoid_${this.myWindowId}`)!;
   @Local myMisc: meowMisc = AppStorageV2.connect(meowMisc, `meowMisc_${this.myWindowId}`)!;
+  @Local myTabs: meowTabsBunch = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.myWindowId}`)!;
   // Render control
   @Local render: boolean = false;
 
@@ -86,6 +88,10 @@ struct Index {
             }
             // Shortcuts
             MeowShortcutsPanel({ myLayout: this.myLayout, myDialog: this.myDialog });
+
+            if (this.myTabs.currentNode && this.myTabs.currentTab?.url) {
+              NodeContainer(this.myTabs.currentNode)
+            }
           }
           .margin(this.mainFrameSpace)
           .border(useEffects() && this.isNotAnySortOfFullscreen ? { radius: defaultInnerRadius, width: 1, color: $r('sys.color.icon_fourth') } : { width: 0, radius: 0 })
@@ -94,7 +100,7 @@ struct Index {
           // Sidebars
           Row({ space: standardSpacing }) {
             if (this.myUi.showingVerticalTab) {
-              MeowTabsVertical({ myUi: this.myUi, myLayout: this.myLayout });
+              MeowTabsVertical({ myUi: this.myUi, myLayout: this.myLayout, myTabs: this.myTabs });
             }
             if (this.myUi.showSidebar) {
               MeowSidebar({
@@ -180,7 +186,7 @@ struct Index {
 
         if (this.isNotAnySortOfFullscreen) {
           // Top bar
-          MeowTitleTop(this.myLayout, this.myUi, this.myApp, this.myMisc, this.getUIContext());
+          MeowTitleTop(this.myLayout, this.myUi, this.myApp, this.myMisc, this.myTabs, this.getUIContext());
 
           // Title bar
           Scroll() {

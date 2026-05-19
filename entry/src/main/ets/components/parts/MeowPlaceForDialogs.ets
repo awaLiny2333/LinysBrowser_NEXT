@@ -10,7 +10,7 @@ import lazy { WoofSettingsDialog } from '../../dialogs/parts/WoofSettings/WoofSe
 import lazy { WoofUpdatesDialog } from '../../dialogs/parts/WoofUpdates/WoofUpdates';
 import lazy { WoofColorPickerDialog } from '../../dialogs/public/WoofColorPicker/WoofColorPicker';
 import lazy { WoofKeyShortcutPickerDialog } from '../../dialogs/public/WoofKeyShortcutPicker/WoofKeyShortcutPicker';
-import { WoofPromptDialog } from '../../dialogs/public/WoofErrorPrompt/WoofErrorPrompt';
+import lazy { WoofErrorPromptDialog } from '../../dialogs/public/WoofErrorPrompt/WoofErrorPrompt';
 import lazy { WoofQRDialog } from '../../dialogs/public/WoofQR/WoofQR';
 import lazy { WoofAdBlockerDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlocker';
 import lazy { WoofAdBlockerRulesDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlockerRules';
@@ -27,7 +27,11 @@ import lazy { WoofWebImagesDialog } from '../../dialogs/settings/WoofWebImages/W
 import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
 import lazy { localMessage, meowAppMessageType } from '../../hosts/system/windows/scripts/messaging';
-import { WoofScratchingBoardDialog } from '../../dialogs/parts/WoofScratchingBoard/WoofScratchingBoard';
+import lazy { WoofScratchingBoardDialog } from '../../dialogs/parts/WoofScratchingBoard/WoofScratchingBoard';
+import lazy { WoofJumpDialog } from '../../dialogs/Web/WoofJump';
+import lazy { WoofAlertDialog } from '../../dialogs/Web/WoofAlert';
+import lazy { WoofConfirmDialog } from '../../dialogs/Web/WoofConfirm';
+import { WoofPromptDialog } from '../../dialogs/Web/WoofPrompt';
 
 /**
  * A place for dialogs.
@@ -42,8 +46,8 @@ struct MeowPlaceForDialogs {
   @Param @Require myAvoid: meowAvoid;
   @Param @Require myMisc: meowMisc;
 
-  WoofPromptDialogController: CustomDialogController = new CustomDialogController({
-    builder: WoofPromptDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+  WoofErrorPromptDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofErrorPromptDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
     // width: '95%',
     // height: '95%',
@@ -236,6 +240,34 @@ struct MeowPlaceForDialogs {
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
+  woofJumpDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofJumpDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
+  woofAlertDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofAlertDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
+  woofConfirmDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofConfirmDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
+  woofPromptDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofPromptDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
 
   build() {
     // Nothing
@@ -249,7 +281,7 @@ struct MeowPlaceForDialogs {
     }
     switch (lastRequest.target) {
       case openDialogRequestType.ERROR_PROMPT:
-        this.WoofPromptDialogController.open();
+        this.WoofErrorPromptDialogController.open();
         break;
       case openDialogRequestType.DEV:
         this.WoofCatsDevDialogController.open();
@@ -319,6 +351,18 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.SCRATCHING_BOARD:
         this.woofScratchingBoardDialogController.open();
+        break;
+      case openDialogRequestType.JUMP:
+        this.woofJumpDialogController.open();
+        break;
+      case openDialogRequestType.ALERT:
+        this.woofAlertDialogController.open();
+        break;
+      case openDialogRequestType.CONFIRM:
+        this.woofConfirmDialogController.open();
+        break;
+      case openDialogRequestType.PROMPT:
+        this.woofPromptDialogController.open();
         break;
       default:
         break;

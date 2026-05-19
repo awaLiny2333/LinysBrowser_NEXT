@@ -1,5 +1,7 @@
+import { AppStorageV2 } from '@kit.ArkUI';
 import { meow } from '../../../catstypicalframework/utils/catsLogger';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
+import { meowTabsBunch } from '../../../hosts/app/tabs/classes/meowTabsBunch';
 import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import lazy { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
 import { ALL_WINDOW_ORIENTATIONS, meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
@@ -11,6 +13,7 @@ import { defaultAnimation, getColor, getMySettings, useEffects } from '../../set
 struct MeowButton {
   @Param @Require myDialog: meowDialogManager;
   @Param @Require myUi: meowUiHost;
+  @Param myTab: meowTabsBunch = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.myUi.windowId}`)!;
   @Param @Require type: string;
 
   build() {
@@ -130,6 +133,18 @@ struct MeowButton {
         break;
       case UnifiedButtonsType.SCRATCHING_BOARD:
         requestDialog(this.myDialog, openDialogRequestType.SCRATCHING_BOARD);
+        break;
+      case UnifiedButtonsType.BACKWARD:
+        this.myTab.goBackCurrent();
+        break;
+      case UnifiedButtonsType.FORWARD:
+        this.myTab.goForwardCurrent();
+        break;
+      case UnifiedButtonsType.REFRESH:
+        this.myTab.refreshCurrent();
+        break;
+      case UnifiedButtonsType.HOME:
+        this.myTab.goHomeCurrent();
         break;
       default:
         break;

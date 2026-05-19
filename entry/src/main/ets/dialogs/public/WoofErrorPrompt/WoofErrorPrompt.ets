@@ -111,7 +111,7 @@ struct WoofPrompt {
 }
 
 @CustomDialog
-struct WoofPromptDialog {
+export struct WoofErrorPromptDialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
   @Require myLayout: meowLayout;
@@ -120,5 +120,3 @@ struct WoofPromptDialog {
     WoofPrompt({ controller: this.controller, myDialog: this.myDialog, myLayout: this.myLayout });
   }
 }
-
-export { WoofPromptDialog };

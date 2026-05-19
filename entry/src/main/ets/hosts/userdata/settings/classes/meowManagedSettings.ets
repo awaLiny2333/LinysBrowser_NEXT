@@ -93,7 +93,7 @@ export class meowManagedSettings {
       // Use !== undefined to check if the key exists
       if (jsonValue !== undefined) {
         // Only update if this configuration is present in the JSON
-        const thisChange = entry.setValueFromString(jsonValue);
+        const thisChange = entry.setValueFromString(jsonValue, true);
         if (thisChange.length == 3) {
           // Some changes are made.
           changes.push(`${thisChange[0].toUpperCase()}\n${compareDiff(thisChange[1], thisChange[2])}`);
