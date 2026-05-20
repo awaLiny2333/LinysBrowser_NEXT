@@ -7,7 +7,7 @@ import { meowDialogManager, openDialogRequestType } from "../../../system/dialog
 import { requestDialog } from "../../../system/dialogs/scripts/dialog";
 import { meowUiFullscreenStatus, meowUiHost } from "../../../system/windows/classes/meowUiHost";
 import { defaultBlankUrl, viewableSchemes } from "../scripts/helpers";
-import { disableWebImages, disableWebImagesOnAllSites, disableWebImagesSites, disableWebJavaScripts, disableWebJavaScriptSites, disableWebJavaScriptsOnAllSites, forceWebDarkExceptions, forceWebDarkMode, userHomeUrl, userNewTabUrl } from "../settings";
+import { disableWebImages, disableWebImagesOnAllSites, disableWebImagesSites, disableWebJavaScripts, disableWebJavaScriptSites, disableWebJavaScriptsOnAllSites, forceWebDarkExceptions, forceWebDarkMode, intelligentTrackingPrevention, userHomeUrl, userNewTabUrl } from "../settings";
 import { meowTabsBunch } from "./meowTabsBunch";
 import { TabNodeController } from "./WebNode";
 
@@ -24,6 +24,8 @@ export class meowTabInfo {
   @Trace forceDark: boolean = true;
   @Trace xJS: boolean = false;
   @Trace xImage: boolean = false;
+  // Permissions
+  allowedPermissions: string[] = [];
 
   constructor(myUi: meowUiHost) {
     this.myUi = myUi;
@@ -206,6 +208,30 @@ export class meowTabInfo {
 
   // Requests
 
+  onControllerAttached() {
+    // Set Default error page
+    try {
+      this.controller!.setErrorPageEnabled(true);
+    } catch (e) {
+      meow(`Failed: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
+    }
+    // Set intelligent tracking prevention
+    try {
+      let itp = intelligentTrackingPrevention();
+      this.controller!.enableIntelligentTrackingPrevention(itp);
+      // meow(`ArkWeb Intelligent Tracking Prevention [${itp}]!`, 'meowTabInfo][onControllerAttached');
+    } catch (e) {
+      meow(`onControllerAttached enableIntelligentTrackingPrevention error: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
+    }
+    // if (useAdBlock()) {
+    //   try {
+    //     this.controller!.enableAdsBlock(true);
+    //   } catch (e) {
+    //     meow(`this.controller?.enableAdsBlock(true); failed: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
+    //   }
+    // }
+  }
+
   requestNewTab(url: string) {
     const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.myUi.windowId}`)!;
     let result: WebviewController | null = null;
@@ -251,18 +277,54 @@ export class meowTabInfo {
       requestDialog(myDialog, openDialogRequestType.ALERT, event);
     }
   }
-  
+
   requestConfirm(event: OnConfirmEvent) {
     if (event) {
       const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
       requestDialog(myDialog, openDialogRequestType.CONFIRM, event);
     }
   }
-  
+
   requestPrompt(event: OnPromptEvent) {
     if (event) {
       const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
       requestDialog(myDialog, openDialogRequestType.PROMPT, event);
     }
+  }
+
+  requestSslError(event: SslErrorEvent) {
+    if (event) {
+      const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
+      requestDialog(myDialog, openDialogRequestType.SSL_ERROR, event);
+    }
+  }
+
+  requestWebPermissions(event: OnPermissionRequestEvent) {
+    if (!event) {
+      return;
+    }
+    // Check if some permissions are already allowed
+    let needFurtherAsk = false;
+    for (const per of event.request.getAccessibleResource()) {
+      if (!this.allowedPermissions.includes(per)) {
+        needFurtherAsk = true;
+      }
+    }
+    if (!needFurtherAsk) {
+      event.request.grant(event.request.getAccessibleResource());
+      meow(`Directly granted: [${event.request.getAccessibleResource().join(', ')}]`, 'meowTabInfo][requestWebPermissions', meowLevel.WARN);
+      return;
+    }
+    // Need further ask (new, not formerly allowed permissions), request a dialog.
+    const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
+    requestDialog(myDialog, openDialogRequestType.WEB_PERMISSIONS, [event, this]);
+  }
+
+  requestScreenCapture(event: OnScreenCaptureRequestEvent) {
+    if (!event) {
+      return;
+    }
+    const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
+    requestDialog(myDialog, openDialogRequestType.SCREEN_CAPTURE, event);
   }
 }

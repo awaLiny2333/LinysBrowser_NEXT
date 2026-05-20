@@ -81,14 +81,17 @@ function WebBuilder(pk: meowTabInfo) {
       pk.requestAlert(e);
       return true;
     })
+    .onSslErrorEvent((e) => {
+      pk.requestSslError(e);
+    })
     .onLoadIntercept((event) => {
       return pk.requestload(event);
     })
     .onPermissionRequest((event) => {
-
+      pk.requestWebPermissions(event);
     })
-    .onSslErrorEvent((e) => {
-
+    .onScreenCaptureRequest((event) => {
+      pk.requestScreenCapture(event);
     })
     .onHttpAuthRequest((e) => {
 
@@ -97,19 +100,10 @@ function WebBuilder(pk: meowTabInfo) {
     .onContextMenuShow((event) => {
 
       return true;
+    })
+    .onControllerAttached(() => {
+      pk.onControllerAttached();
     });
-  // .onAdsBlocked((e) => {
-  //   console.log(`[onAdsBlocked] ${e.url}: ${e.adsBlocked}`);
-  // })
-  // .onControllerAttached(() => {
-  // if (useAdBlock()) {
-  //   try {
-  //     pk.controller!.enableAdsBlock(true);
-  //   } catch (e) {
-  //     meow(`newTab.controller?.enableAdsBlock(true); failed: ${e}`, 'meowTabsBunch][newTab', meowLevel.ERROR);
-  //   }
-  // }
-  // });
 }
 
 export class TabNodeController extends NodeController {

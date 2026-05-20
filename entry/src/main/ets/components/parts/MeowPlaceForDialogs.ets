@@ -32,6 +32,9 @@ import lazy { WoofJumpDialog } from '../../dialogs/Web/WoofJump';
 import lazy { WoofAlertDialog } from '../../dialogs/Web/WoofAlert';
 import lazy { WoofConfirmDialog } from '../../dialogs/Web/WoofConfirm';
 import { WoofPromptDialog } from '../../dialogs/Web/WoofPrompt';
+import { WoofSslErrorDialog } from '../../dialogs/Web/WoofSslError';
+import { WoofPermissionsDialog } from '../../dialogs/Web/WoofPermissions';
+import { WoofRequestScreenCaptureDialog } from '../../dialogs/Web/WoofRequestScreenCapture';
 
 /**
  * A place for dialogs.
@@ -268,6 +271,27 @@ struct MeowPlaceForDialogs {
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
+  woofSslErrorDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofSslErrorDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
+  woofPermissionsDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofPermissionsDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
+  woofRequestScreenCaptureDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofRequestScreenCaptureDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
 
   build() {
     // Nothing
@@ -363,6 +387,15 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.PROMPT:
         this.woofPromptDialogController.open();
+        break;
+      case openDialogRequestType.SSL_ERROR:
+        this.woofSslErrorDialogController.open();
+        break;
+      case openDialogRequestType.WEB_PERMISSIONS:
+        this.woofPermissionsDialogController.open();
+        break;
+      case openDialogRequestType.SCREEN_CAPTURE:
+        this.woofRequestScreenCaptureDialogController.open();
         break;
       default:
         break;

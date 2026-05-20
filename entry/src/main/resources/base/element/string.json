@@ -925,6 +925,34 @@
       "value": "From "
     },
     {
+      "name": "SslError_title",
+      "value": "SSL Error Warning! Proceed?"
+    },
+    {
+      "name": "WebPermissions_title",
+      "value": "Permission requests!"
+    },
+    {
+      "name": "WebPermissions_desc_TYPE_MIDI_SYSEX",
+      "value": "󰂬  MIDI SYSEX"
+    },
+    {
+      "name": "WebPermissions_desc_TYPE_VIDEO_CAPTURE",
+      "value": "󰑛  Video capture, e.g. the camera"
+    },
+    {
+      "name": "WebPermissions_desc_TYPE_AUDIO_CAPTURE",
+      "value": "󰀆  Audio capture, e.g. the microphone"
+    },
+    {
+      "name": "WebPermissions_desc_TYPE_SENSOR",
+      "value": "󰊢  Sensors, e.g. the accelerometer"
+    },
+    {
+      "name": "ScreenCapture_title",
+      "value": "Allow screen capture?"
+    },
+    {
       "name": "Permission_reason_INTERNET",
       "value": "Let the BrowserCat visit the web!"
     },
@@ -935,6 +963,34 @@
     {
       "name": "Permission_reason_WINDOW_TOPMOST",
       "value": "Show BrowserCat on top of other things!"
+    },
+    {
+      "name": "Permission_reason_CAMERA",
+      "value": "Let web pages in BrowserCat access the camera!"
+    },
+    {
+      "name": "Permission_reason_MICROPHONE",
+      "value": "Let web pages in BrowserCat access the microphone!"
+    },
+    {
+      "name": "Permission_reason_ACCELEROMETER",
+      "value": "Let web pages in BrowserCat access the accelerometer!"
+    },
+    {
+      "name": "Permission_reason_GYROSCOPE",
+      "value": "Let web pages in BrowserCat access the gyroscope!"
+    },
+    {
+      "name": "Permission_reason_SHORT_TERM_WRITE_IMAGEVIDEO",
+      "value": "Let web pages in BrowserCat save files!"
+    },
+    {
+      "name": "Permission_reason_ACCESS_FIDO2_ONLINEAUTH",
+      "value": "Let web pages in BrowserCat utilize the FIDO2 online authentication!"
+    },
+    {
+      "name": "Permission_reason_READ_PASTEBOARD",
+      "value": "Let web pages in BrowserCat read the pasteboard!"
     }
   ]
 }

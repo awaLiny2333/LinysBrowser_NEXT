@@ -48,6 +48,16 @@
         }
       },
       {
+        "name": "ohos.permission.GET_NETWORK_INFO",
+        "reason": "$string:Permission_reason_INTERNET",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "HomeAbility"
+          ]
+        }
+      },
+      {
         "name": "ohos.permission.DETECT_GESTURE",
         "reason": "$string:Permission_reason_DETECT_GESTURES",
         "usedScene": {
@@ -66,7 +76,77 @@
             "EntryAbility"
           ]
         }
-      }
+      },
+      {
+        "name": "ohos.permission.CAMERA",
+        "reason": "$string:Permission_reason_CAMERA",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "EntryAbility"
+          ]
+        }
+      },
+      {
+        "name": "ohos.permission.MICROPHONE",
+        "reason": "$string:Permission_reason_MICROPHONE",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "EntryAbility"
+          ]
+        }
+      },
+      {
+        "name": "ohos.permission.ACCELEROMETER",
+        "reason": "$string:Permission_reason_ACCELEROMETER",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "EntryAbility"
+          ]
+        }
+      },
+      {
+        "name": "ohos.permission.GYROSCOPE",
+        "reason": "$string:Permission_reason_GYROSCOPE",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "EntryAbility"
+          ]
+        }
+      },
+      {
+        "name": "ohos.permission.SHORT_TERM_WRITE_IMAGEVIDEO",
+        "reason": "$string:Permission_reason_SHORT_TERM_WRITE_IMAGEVIDEO",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "EntryAbility"
+          ]
+        }
+      },
+      {
+        "name": "ohos.permission.ACCESS_FIDO2_ONLINEAUTH",
+        "reason": "$string:Permission_reason_ACCESS_FIDO2_ONLINEAUTH",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "EntryAbility"
+          ]
+        }
+      },
+      {
+        "name": "ohos.permission.READ_PASTEBOARD",
+        "reason": "$string:Permission_reason_READ_PASTEBOARD",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "EntryAbility"
+          ]
+        }
+      },
     ]
   }
 }

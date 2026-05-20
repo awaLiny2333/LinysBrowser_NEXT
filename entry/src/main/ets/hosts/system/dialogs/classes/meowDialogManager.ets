@@ -109,7 +109,10 @@ export enum openDialogRequestType {
   JUMP,
   ALERT,
   PROMPT,
-  CONFIRM
+  CONFIRM,
+  SSL_ERROR,
+  WEB_PERMISSIONS,
+  SCREEN_CAPTURE
 }
 
 /**

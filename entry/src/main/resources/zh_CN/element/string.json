@@ -925,6 +925,34 @@
       "value": "来自"
     },
     {
+      "name": "SslError_title",
+      "value": "SSL 错误警告！要继续访问吗？"
+    },
+    {
+      "name": "WebPermissions_title",
+      "value": "权限申请！"
+    },
+    {
+      "name": "WebPermissions_desc_TYPE_MIDI_SYSEX",
+      "value": "󰂬  MIDI SYSEX"
+    },
+    {
+      "name": "WebPermissions_desc_TYPE_VIDEO_CAPTURE",
+      "value": "󰑛  视频捕获，例如相机"
+    },
+    {
+      "name": "WebPermissions_desc_TYPE_AUDIO_CAPTURE",
+      "value": "󰀆  音频捕获，例如麦克风"
+    },
+    {
+      "name": "WebPermissions_desc_TYPE_SENSOR",
+      "value": "󰊢  传感器，例如加速度传感器"
+    },
+    {
+      "name": "ScreenCapture_title",
+      "value": "允许网页捕获屏幕？"
+    },
+    {
       "name": "Permission_reason_INTERNET",
       "value": "让冲浪喵访问互联网！"
     },
@@ -935,6 +963,34 @@
     {
       "name": "Permission_reason_WINDOW_TOPMOST",
       "value": "让冲浪喵呈现在最顶层！"
+    },
+    {
+      "name": "Permission_reason_CAMERA",
+      "value": "让冲浪喵中的网页访问相机！"
+    },
+    {
+      "name": "Permission_reason_MICROPHONE",
+      "value": "让冲浪喵中的网页访问麦克风！"
+    },
+    {
+      "name": "Permission_reason_ACCELEROMETER",
+      "value": "让冲浪喵中的网页访问加速度传感器！"
+    },
+    {
+      "name": "Permission_reason_GYROSCOPE",
+      "value": "让冲浪喵中的网页访问陀螺仪！"
+    },
+    {
+      "name": "Permission_reason_SHORT_TERM_WRITE_IMAGEVIDEO",
+      "value": "让冲浪喵中的网页访问短时写入图片视频！"
+    },
+    {
+      "name": "Permission_reason_ACCESS_FIDO2_ONLINEAUTH",
+      "value": "让冲浪喵中的网页使用 FIDO2 在线认证！"
+    },
+    {
+      "name": "Permission_reason_READ_PASTEBOARD",
+      "value": "让冲浪喵中的网页读取剪贴板！"
     }
   ]
 }

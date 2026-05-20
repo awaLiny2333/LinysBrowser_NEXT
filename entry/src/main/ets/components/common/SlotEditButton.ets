@@ -42,7 +42,7 @@ struct SlotEditButton {
   @Event requestDelete: () => void;
   @Event editParamSubmit: (result: string) => void;
 
-  @Monitor('param')
+  @Monitor('extraParam')
   refreshParamEdit() {
     this.paramEdit = this.extraParam;
   }

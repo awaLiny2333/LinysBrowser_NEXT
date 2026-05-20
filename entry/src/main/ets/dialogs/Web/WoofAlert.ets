@@ -30,8 +30,7 @@ struct WoofAlertPanel {
         this.data?.result.handleCancel();
       }
     }) {
-      Text(this.data?.message).attributeModifier(new MooTextModifier()).width('100%')
-        .padding(standardSpacing * 1.5);
+      Text(this.data?.message).attributeModifier(new MooTextModifier()).width('100%').padding(standardSpacing * 1.5);
     };
   }
 }
