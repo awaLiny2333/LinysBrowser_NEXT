@@ -147,6 +147,26 @@
           ]
         }
       },
+      {
+        "name": "ohos.permission.LOCATION",
+        "reason": "$string:Permission_reason_LOCATION",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "EntryAbility"
+          ]
+        }
+      },
+      {
+        "name": "ohos.permission.APPROXIMATELY_LOCATION",
+        "reason": "$string:Permission_reason_APPROXIMATELY_LOCATION",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "EntryAbility"
+          ]
+        }
+      },
     ]
   }
 }

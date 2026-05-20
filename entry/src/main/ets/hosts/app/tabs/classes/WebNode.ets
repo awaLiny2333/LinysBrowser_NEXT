@@ -5,18 +5,13 @@ import { meowTabInfo } from './meowTabInfo';
 
 @Builder
 function WebBuilder(pk: meowTabInfo) {
-  // Column() {
-  //   Text(pk.tab_force_dark ? 'tab_force_dark!' : 'tab_force_dark NO')
-  //   Text(pk.tab_disable_js ? 'tab_disable_js!' : 'tab_disable_js NO')
-  //   Text(pk.tab_disable_image ? 'tab_disable_image!' : 'tab_disable_image NO')
-
   Web({
     src: pk.url || '',
     controller: pk.controller
   })
     .mediaPlayGestureAccess(false)
     .layoutWeight(1)
-    // .backgroundColor('transparent') // Or the web would flash on load
+    .geolocationAccess(true)
     .databaseAccess(true)
     .fileAccess(true)
     .domStorageAccess(true)
@@ -33,13 +28,15 @@ function WebBuilder(pk: meowTabInfo) {
       meow(`Activate! ${pk.url}`, 'WebNode][onActivateContent');
     })
     .onWindowNew((event) => {
-      if (!event) {
-        return;
-      }
       const result = pk.requestNewTab(event.targetUrl);
       setTimeout(() => {
-        event.handler.setWebController(result);
-      }, 0); // No idea why we need a timeout... :O
+        meow(`onWindowNew: ${event.targetUrl} -> ${result}`, 'WebNode][onWindowNew');
+        event.handler.setWebController(pk.controller);
+      }); 
+      // TODO: This timeout is essential to not block the original web. 
+      // But this would lead to the original web's misunderstanding that 
+      // the new popup request failed and no controller was returned.
+      // So some sites may think that this browser has no popup permission.
     })
     .onTitleReceive(() => {
       pk.updateTitle();
@@ -92,6 +89,9 @@ function WebBuilder(pk: meowTabInfo) {
     })
     .onScreenCaptureRequest((event) => {
       pk.requestScreenCapture(event);
+    })
+    .onGeolocationShow((event) => {
+      pk.requestGeolocation(event);
     })
     .onHttpAuthRequest((e) => {
 

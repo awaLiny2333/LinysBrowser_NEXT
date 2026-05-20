@@ -25,7 +25,7 @@ export class meowTabInfo {
   @Trace xJS: boolean = false;
   @Trace xImage: boolean = false;
   // Permissions
-  allowedPermissions: string[] = [];
+  allowedWebPermissions: string[] = [];
 
   constructor(myUi: meowUiHost) {
     this.myUi = myUi;
@@ -232,11 +232,15 @@ export class meowTabInfo {
     // }
   }
 
-  requestNewTab(url: string) {
+  requestUiUpdate() {
+    this.node?.update(this);
+  }
+
+  requestNewTab(url: string): WebviewController | null {
     const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.myUi.windowId}`)!;
-    let result: WebviewController | null = null;
+    let result: WebviewController | undefined = undefined;
     animateToImmediately(defaultAnimation(), () => {
-      result = myTabs.newTabBare(url).controller || null;
+      result = myTabs.newTabBare(url).controller;
     });
     return result || null;
   }
@@ -257,39 +261,31 @@ export class meowTabInfo {
 
   requestload(event: OnLoadInterceptEvent) {
     let intercept = false;
-    if (event) {
-      const url: string = event.data.getRequestUrl();
-      const scheme = url.split(':')[0];
-      if (!viewableSchemes.includes(scheme)) {
-        intercept = true;
-        // Ask for decision from the user to jump or not.
-        meow(`Jump to [${url}]?`, 'meowTabInfo][requestload');
-        const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
-        requestDialog(myDialog, openDialogRequestType.JUMP, [this.url, event.data.getRequestUrl()]);
-      }
+    const url: string = event.data.getRequestUrl();
+    const scheme = url.split(':')[0];
+    if (!viewableSchemes.includes(scheme)) {
+      intercept = true;
+      // Ask for decision from the user to jump or not.
+      meow(`Jump to [${url}]?`, 'meowTabInfo][requestload');
+      const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
+      requestDialog(myDialog, openDialogRequestType.JUMP, [this.url, event.data.getRequestUrl()]);
     }
     return intercept;
   }
 
   requestAlert(event: OnAlertEvent) {
-    if (event) {
-      const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
-      requestDialog(myDialog, openDialogRequestType.ALERT, event);
-    }
+    const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
+    requestDialog(myDialog, openDialogRequestType.ALERT, event);
   }
 
   requestConfirm(event: OnConfirmEvent) {
-    if (event) {
-      const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
-      requestDialog(myDialog, openDialogRequestType.CONFIRM, event);
-    }
+    const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
+    requestDialog(myDialog, openDialogRequestType.CONFIRM, event);
   }
 
   requestPrompt(event: OnPromptEvent) {
-    if (event) {
-      const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
-      requestDialog(myDialog, openDialogRequestType.PROMPT, event);
-    }
+    const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
+    requestDialog(myDialog, openDialogRequestType.PROMPT, event);
   }
 
   requestSslError(event: SslErrorEvent) {
@@ -300,13 +296,10 @@ export class meowTabInfo {
   }
 
   requestWebPermissions(event: OnPermissionRequestEvent) {
-    if (!event) {
-      return;
-    }
     // Check if some permissions are already allowed
     let needFurtherAsk = false;
-    for (const per of event.request.getAccessibleResource()) {
-      if (!this.allowedPermissions.includes(per)) {
+    for (const prt of event.request.getAccessibleResource()) { // prt for 'Protected Resource Type'
+      if (!this.allowedWebPermissions.includes(prt)) {
         needFurtherAsk = true;
       }
     }
@@ -321,10 +314,12 @@ export class meowTabInfo {
   }
 
   requestScreenCapture(event: OnScreenCaptureRequestEvent) {
-    if (!event) {
-      return;
-    }
     const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
     requestDialog(myDialog, openDialogRequestType.SCREEN_CAPTURE, event);
+  }
+
+  requestGeolocation(event: OnGeolocationShowEvent) {
+    const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
+    requestDialog(myDialog, openDialogRequestType.WEB_GEOLOCATION, event);
   }
 }

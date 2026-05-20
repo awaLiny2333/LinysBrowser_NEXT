@@ -953,6 +953,10 @@
       "value": "Allow screen capture?"
     },
     {
+      "name": "Geolocation_title",
+      "value": "Allow geolocation access?"
+    },
+    {
       "name": "Permission_reason_INTERNET",
       "value": "Let the BrowserCat visit the web!"
     },
@@ -991,6 +995,14 @@
     {
       "name": "Permission_reason_READ_PASTEBOARD",
       "value": "Let web pages in BrowserCat read the pasteboard!"
+    },
+    {
+      "name": "Permission_reason_LOCATION",
+      "value": "Let web pages in BrowserCat access your precise location!"
+    },
+    {
+      "name": "Permission_reason_APPROXIMATELY_LOCATION",
+      "value": "Let web pages in BrowserCat access your approximate location!"
     }
   ]
 }

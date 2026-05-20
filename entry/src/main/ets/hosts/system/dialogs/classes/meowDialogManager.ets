@@ -112,7 +112,8 @@ export enum openDialogRequestType {
   CONFIRM,
   SSL_ERROR,
   WEB_PERMISSIONS,
-  SCREEN_CAPTURE
+  SCREEN_CAPTURE,
+  WEB_GEOLOCATION
 }
 
 /**

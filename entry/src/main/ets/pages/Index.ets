@@ -90,7 +90,7 @@ struct Index {
             MeowShortcutsPanel({ myLayout: this.myLayout, myDialog: this.myDialog });
 
             if (this.myTabs.currentNode && this.myTabs.currentTab?.url) {
-              NodeContainer(this.myTabs.currentNode)
+              NodeContainer(this.myTabs.currentNode);
             }
           }
           .margin(this.mainFrameSpace)

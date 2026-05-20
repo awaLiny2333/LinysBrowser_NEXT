@@ -31,10 +31,11 @@ import lazy { WoofScratchingBoardDialog } from '../../dialogs/parts/WoofScratchi
 import lazy { WoofJumpDialog } from '../../dialogs/Web/WoofJump';
 import lazy { WoofAlertDialog } from '../../dialogs/Web/WoofAlert';
 import lazy { WoofConfirmDialog } from '../../dialogs/Web/WoofConfirm';
-import { WoofPromptDialog } from '../../dialogs/Web/WoofPrompt';
-import { WoofSslErrorDialog } from '../../dialogs/Web/WoofSslError';
-import { WoofPermissionsDialog } from '../../dialogs/Web/WoofPermissions';
-import { WoofRequestScreenCaptureDialog } from '../../dialogs/Web/WoofRequestScreenCapture';
+import lazy { WoofPromptDialog } from '../../dialogs/Web/WoofPrompt';
+import lazy { WoofSslErrorDialog } from '../../dialogs/Web/WoofSslError';
+import lazy { WoofPermissionsDialog } from '../../dialogs/Web/permissions/WoofPermissions';
+import lazy { WoofRequestScreenCaptureDialog } from '../../dialogs/Web/permissions/WoofRequestScreenCapture';
+import lazy { WoofWebGeolocationDialog } from '../../dialogs/Web/permissions/WoofLocation';
 
 /**
  * A place for dialogs.
@@ -292,6 +293,14 @@ struct MeowPlaceForDialogs {
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
+  woofWebGeolocationDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofWebGeolocationDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
+  
 
   build() {
     // Nothing
@@ -396,6 +405,9 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.SCREEN_CAPTURE:
         this.woofRequestScreenCaptureDialogController.open();
+        break;
+      case openDialogRequestType.WEB_GEOLOCATION:
+        this.woofWebGeolocationDialogController.open();
         break;
       default:
         break;

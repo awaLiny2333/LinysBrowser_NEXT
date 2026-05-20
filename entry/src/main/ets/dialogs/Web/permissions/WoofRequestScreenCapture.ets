@@ -1,10 +1,10 @@
-import { meowLayout } from "../../catstypicalframework/hosts/meowLayout";
-import { defaultInnerRadius } from "../../catstypicalframework/utils/ui";
-import { MooTextModifier } from "../../components/common/MooTextModifier";
-import { UniContentCard } from "../../components/common/UniContentCard";
-import { standardSpacing } from "../../components/constants";
-import { meowDialogManager } from "../../hosts/system/dialogs/classes/meowDialogManager";
-import { WoofUniFrame } from "../WoofUniFrame";
+import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
+import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
+import { MooTextModifier } from "../../../components/common/MooTextModifier";
+import { UniContentCard } from "../../../components/common/UniContentCard";
+import { standardSpacing } from "../../../components/constants";
+import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
 struct WoofRequestScreenCapturePanel {

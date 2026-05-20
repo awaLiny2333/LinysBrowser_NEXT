@@ -36,18 +36,28 @@ export function protectedResourceTypes_2_Permissions(prts: string[]) {
 }
 
 /**
- * Requests permission from user.
+ * Requests permission from user, for ProtectedResourceTypes.
+ * @param context The common.UIAbilityContext.
  * @param prts protected resource types.
  * */
-export function requestUserPermission(context: common.UIAbilityContext, prts: string[]) {
+export async function requestUserPermissionFromProtectedResourceTypes(context: common.UIAbilityContext, prts: string[]) {
   const ps = protectedResourceTypes_2_Permissions(prts);
-  if (ps.length == 0) {
+  await requestUserPermission(context, ps);
+}
+
+/**
+ * Requests permission from user.
+ * @param context The common.UIAbilityContext.
+ * @param permissions OHOS system permissions.
+ */
+export async function requestUserPermission(context: common.UIAbilityContext, permissions: Permissions[]) {
+  if (permissions.length == 0) {
     meow(`No HarmonyOS @kit.AbilityKit Permission requested`, 'permission][requestUserPermission', meowLevel.WARN);
     return;
   }
   const atManager = abilityAccessCtrl.createAtManager();
-  meow(`Requesting HarmonyOS @kit.AbilityKit permission: [${ps.join(', ')}]`, 'permission][requestUserPermission', meowLevel.WARN);
-  atManager.requestPermissionsFromUser(context, ps)
+  meow(`Requesting HarmonyOS @kit.AbilityKit permission: [${permissions.join(', ')}]`, 'permission][requestUserPermission', meowLevel.WARN);
+  await atManager.requestPermissionsFromUser(context, permissions)
     .catch((e: BusinessError) => {
       meow(`Failed to request permission: ${e}`, 'permission][requestUserPermission', meowLevel.ERROR);
     });

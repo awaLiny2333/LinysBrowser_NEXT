@@ -1,16 +1,16 @@
 import { common } from "@kit.AbilityKit";
-import { meowLayout } from "../../catstypicalframework/hosts/meowLayout";
-import { meow, meowLevel } from "../../catstypicalframework/utils/catsLogger";
-import { requestUserPermission } from "../../catstypicalframework/utils/permission";
-import { MooCapsuleButton } from "../../components/common/MooCapsuleButton";
-import { MooTextModifier } from "../../components/common/MooTextModifier";
-import { UniContentCard } from "../../components/common/UniContentCard";
-import { UniRowOfCapsuleButtons } from "../../components/common/UniRowOfCapsuleButtons";
-import { standardSpacing } from "../../components/constants";
-import { defaultAnimation } from "../../components/settings";
-import { meowTabInfo } from "../../hosts/app/tabs/classes/meowTabInfo";
-import { meowDialogManager } from "../../hosts/system/dialogs/classes/meowDialogManager";
-import { WoofUniFrame } from "../WoofUniFrame";
+import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
+import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
+import { requestUserPermissionFromProtectedResourceTypes } from "../../../catstypicalframework/utils/permission";
+import { MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
+import { MooTextModifier } from "../../../components/common/MooTextModifier";
+import { UniContentCard } from "../../../components/common/UniContentCard";
+import { UniRowOfCapsuleButtons } from "../../../components/common/UniRowOfCapsuleButtons";
+import { standardSpacing } from "../../../components/constants";
+import { defaultAnimation } from "../../../components/settings";
+import { meowTabInfo } from "../../../hosts/app/tabs/classes/meowTabInfo";
+import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
 struct WoofPermissionsPanel {
@@ -84,19 +84,19 @@ struct WoofPermissionsPanel {
     };
   }
 
-  checkSubmit() {
+  async checkSubmit() {
     if (this.desc.length > 0) {
       // Not yet.
       return;
     }
     // Remember
     for (const per of this.allowed) {
-      if (!(this.tabInfo!.allowedPermissions.includes(per))) {
-        this.tabInfo!.allowedPermissions.push(per);
+      if (!(this.tabInfo!.allowedWebPermissions.includes(per))) {
+        this.tabInfo!.allowedWebPermissions.push(per);
       }
     }
     // Request permissions from system
-    requestUserPermission(this.getUIContext().getHostContext() as common.UIAbilityContext, this.allowed);
+    await requestUserPermissionFromProtectedResourceTypes(this.getUIContext().getHostContext() as common.UIAbilityContext, this.allowed);
     // Submit
     this.data?.request.grant(this.allowed);
     meow(`Granted: [${this.allowed}], denied: [${this.denied}]`, 'WoofPermissions][checkSubmit', meowLevel.WARN);
@@ -106,7 +106,7 @@ struct WoofPermissionsPanel {
   parsePermissionReq(event: OnPermissionRequestEvent) {
     const p: string[] = [];
     for (const permission of event.request.getAccessibleResource()) {
-      if (this.tabInfo!.allowedPermissions.includes(permission)) {
+      if (this.tabInfo!.allowedWebPermissions.includes(permission)) {
         this.allowed.push(permission);
       } else {
         p.push(permission); // Push to ask if not remembered to allow

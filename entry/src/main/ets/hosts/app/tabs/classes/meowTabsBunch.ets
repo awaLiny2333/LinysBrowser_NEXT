@@ -139,6 +139,7 @@ export class meowTabsBunch {
       this.currentNode.attachWeb();
       this.currentNode.rebuild();
       this.currentTab.syncUrl();
+      this.currentTab.requestUiUpdate();
     } else {
       // Clear the url field
       if (!this.myUi.addressBarFocused) {

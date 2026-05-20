@@ -953,6 +953,10 @@
       "value": "允许网页捕获屏幕？"
     },
     {
+      "name": "Geolocation_title",
+      "value": "允许网页访问地理位置？"
+    },
+    {
       "name": "Permission_reason_INTERNET",
       "value": "让冲浪喵访问互联网！"
     },
@@ -991,6 +995,14 @@
     {
       "name": "Permission_reason_READ_PASTEBOARD",
       "value": "让冲浪喵中的网页读取剪贴板！"
+    },
+    {
+      "name": "Permission_reason_LOCATION",
+      "value": "让冲浪喵中的网页获取具体地理位置！"
+    },
+    {
+      "name": "Permission_reason_APPROXIMATELY_LOCATION",
+      "value": "让冲浪喵中的网页获取模糊地理位置！"
     }
   ]
 }
