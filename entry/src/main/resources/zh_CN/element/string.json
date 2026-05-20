@@ -1003,6 +1003,10 @@
     {
       "name": "Permission_reason_APPROXIMATELY_LOCATION",
       "value": "让冲浪喵中的网页获取模糊地理位置！"
+    },
+    {
+      "name": "Permission_reason_LOCK_WINDOW_CURSOR",
+      "value": "让冲浪喵中的网页锁定窗口光标！"
     }
   ]
 }

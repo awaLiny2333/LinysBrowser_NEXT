@@ -56,10 +56,10 @@ struct WoofPermissionsPanel {
               // Allow deny buttons
               UniRowOfCapsuleButtons() {
                 MooCapsuleButton({
-                  text: $r('app.string.General_cancel'),
+                  text: $r('app.string.General_confirm'),
                   needDoubleConfirm: true,
                   clickAction: () => {
-                    this.denied.push(item.item);
+                    this.allowed.push(item.item);
                     animateToImmediately(defaultAnimation(), () => {
                       this.desc.splice(item.index, 1);
                     });
@@ -67,10 +67,10 @@ struct WoofPermissionsPanel {
                   }
                 });
                 MooCapsuleButton({
-                  text: $r('app.string.General_confirm'),
+                  text: $r('app.string.General_cancel'),
                   needDoubleConfirm: true,
                   clickAction: () => {
-                    this.allowed.push(item.item);
+                    this.denied.push(item.item);
                     animateToImmediately(defaultAnimation(), () => {
                       this.desc.splice(item.index, 1);
                     });

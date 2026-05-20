@@ -167,6 +167,16 @@
           ]
         }
       },
+      {
+        "name": "ohos.permission.LOCK_WINDOW_CURSOR",
+        "reason": "$string:Permission_reason_LOCK_WINDOW_CURSOR",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "EntryAbility"
+          ]
+        }
+      },
     ]
   }
 }
