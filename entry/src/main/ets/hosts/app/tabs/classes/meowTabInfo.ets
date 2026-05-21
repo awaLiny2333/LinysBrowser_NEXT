@@ -353,7 +353,7 @@ export class meowTabInfo {
   /**
    * Request client (SSL) authentication.
    * Adapted from https://developer.huawei.com/consumer/cn/doc/harmonyos-references/arkts-basic-components-web-events#onverifypin22
-   * 
+   *
    * @param event The OnClientAuthenticationEvent.
    */
   requestClientAuthentication(event: OnClientAuthenticationEvent) {
@@ -382,6 +382,8 @@ export class meowTabInfo {
           meow(`event.handler.confirm(data.keyUri, ${type}); failed, err: ${JSON.stringify(e)}`, 'requestClientAuthentication', meowLevel.ERROR);
         }
       }).catch((err: BusinessError) => {
+        // Note that if no certificate is available on the device, this would throw ↓ and this is normal. Just install a certificate and the dialog would show.
+        // 29700001: Internal error. Possible causes: 1. IPC communication failed; 2. Memory operation error; 3. File operation error.
         meow(`openAuthorizeDialog request cred auth failed, err: ${JSON.stringify(err)}`, 'requestClientAuthentication', meowLevel.ERROR);
       });
   }
@@ -406,5 +408,14 @@ export class meowTabInfo {
         meow(`onVerifyPin fail ${err}`, 'requestVerifyPin', meowLevel.ERROR);
         event.handler.confirm(PinVerifyResult.PIN_VERIFICATION_FAILED);
       });
+  }
+
+  requestHttpAuth(event: OnHttpAuthRequestEvent) {
+    if (event.handler.isHttpAuthInfoSaved()) {
+      meow(`HttpAuthInfo saved, skip`, 'requestHttpAuth', meowLevel.WARN);
+      return;
+    }
+    const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
+    requestDialog(myDialog, openDialogRequestType.HTTP_AUTH, event, true);
   }
 }

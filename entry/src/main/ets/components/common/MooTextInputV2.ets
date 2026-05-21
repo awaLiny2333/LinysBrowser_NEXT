@@ -4,7 +4,8 @@ import { getColor, useEffects } from '../settings';
 
 @ComponentV2
 struct MooTextInputV2 {
-  @Param @Once placeholder: string | undefined = undefined;
+  @Param @Once placeholder: ResourceStr | undefined = undefined;
+  @Param @Once type: InputType = InputType.Normal
   @Param icon: Resource | undefined = undefined;
   @Param text: string = '';
   @Param myId: string | undefined = undefined;
@@ -23,6 +24,8 @@ struct MooTextInputV2 {
       }
       TextInput({ text: this.text as string, placeholder: this.placeholder })
         .id(this.myId)
+        .type(this.type)
+        .enableAutoFill(true)
         .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
         .height(standardComponentHeight)
         .fontColor(getColor(meowThemeColorType.FONT))

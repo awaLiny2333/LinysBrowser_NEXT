@@ -1,9 +1,9 @@
-import { meowLayout } from "../../catstypicalframework/hosts/meowLayout";
-import { jumpUrl } from "../../catstypicalframework/utils/url";
-import { MooTextAreaV2 } from "../../components/common/MooTextAreaV2";
-import { standardSpacing } from "../../components/constants";
-import { meowDialogManager } from "../../hosts/system/dialogs/classes/meowDialogManager";
-import { WoofUniFrame } from "../WoofUniFrame";
+import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
+import { jumpUrl } from "../../../catstypicalframework/utils/url";
+import { MooTextAreaV2 } from "../../../components/common/MooTextAreaV2";
+import { standardSpacing } from "../../../components/constants";
+import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { WoofUniFrame } from "../../WoofUniFrame";
 import { common } from "@kit.AbilityKit";
 
 @ComponentV2

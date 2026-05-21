@@ -2,7 +2,6 @@ import { BuilderNode, FrameNode, NodeController, UIContext } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { meow } from '../../../../catstypicalframework/utils/catsLogger';
 import { meowTabInfo } from './meowTabInfo';
-import { certificateManagerDialog } from '@kit.DeviceCertificateKit';
 
 @Builder
 function WebBuilder(pk: meowTabInfo) {
@@ -55,12 +54,6 @@ function WebBuilder(pk: meowTabInfo) {
       pk.progress = event.newProgress;
       pk.updateUrl();
     })
-    .onSearchResultReceive((result) => {
-      meow(`onSearchResultReceive: ${result.activeMatchOrdinal}/${result.numberOfMatches}`, 'WebNode][onSearchResultReceive');
-    })
-    .onErrorReceive((e) => {
-      console.error(`[ArkWeb][onErrorReceive] [${e.request.getRequestUrl()}], isMainFrame=${e.request.isMainFrame()}, ${e.error.getErrorInfo()}, ${JSON.stringify(e.request.getRequestHeader())}`);
-    })
     .onFullScreenEnter((event) => {
       pk.requestFullScreen(event);
     })
@@ -100,13 +93,19 @@ function WebBuilder(pk: meowTabInfo) {
     .onGeolocationShow((event) => {
       pk.requestGeolocation(event);
     })
-    .onHttpAuthRequest((e) => {
-
+    .onHttpAuthRequest((event) => {
+      pk.requestHttpAuth(event);
       return true;
+    })
+    .onSearchResultReceive((result) => {
+      meow(`onSearchResultReceive: ${result.activeMatchOrdinal}/${result.numberOfMatches}`, 'WebNode][onSearchResultReceive');
     })
     .onContextMenuShow((event) => {
 
       return true;
+    })
+    .onWindowExit(() => {
+
     })
     .onControllerAttached(() => {
       pk.onControllerAttached();

@@ -81,16 +81,24 @@
       "value": "Collapse  󰃘"
     },
     {
+      "name": "General_export",
+      "value": "Export  󰃕"
+    },
+    {
+      "name": "General_username",
+      "value": "󰙬  Username"
+    },
+    {
+      "name": "General_password",
+      "value": "󰒛  Password"
+    },
+    {
       "name": "General_empty",
       "value": "Nothing here. ヽ（´ー｀）┌"
     },
     {
       "name": "General_noChange",
       "value": "No changes. ヽ（´ー｀）┌"
-    },
-    {
-      "name": "General_export",
-      "value": "Export  󰃕"
     },
     {
       "name": "ErrorPrompt_contact",
@@ -955,6 +963,10 @@
     {
       "name": "Geolocation_title",
       "value": "Allow geolocation access?"
+    },
+    {
+      "name": "HttpAuth_title",
+      "value": "Log in to"
     },
     {
       "name": "Permission_reason_INTERNET",

@@ -28,14 +28,15 @@ import lazy { WoofPermissionsDialog } from '../../dialogs/web/permissions/WoofPe
 import lazy { WoofRequestScreenCaptureDialog } from '../../dialogs/web/permissions/WoofRequestScreenCapture';
 import lazy { WoofQuickSEDialog } from '../../dialogs/web/settings/WoofQuickSE';
 import lazy { WoofQuickUADialog } from '../../dialogs/web/settings/WoofQuickUA';
-import lazy { WoofAlertDialog } from '../../dialogs/web/WoofAlert';
-import lazy { WoofConfirmDialog } from '../../dialogs/web/WoofConfirm';
-import lazy { WoofJumpDialog } from '../../dialogs/web/WoofJump';
-import lazy { WoofPromptDialog } from '../../dialogs/web/WoofPrompt';
-import lazy { WoofSslErrorDialog } from '../../dialogs/web/WoofSslError';
+import lazy { WoofAlertDialog } from '../../dialogs/web/window/WoofAlert';
+import lazy { WoofConfirmDialog } from '../../dialogs/web/window/WoofConfirm';
+import lazy { WoofJumpDialog } from '../../dialogs/web/misc/WoofJump';
+import lazy { WoofPromptDialog } from '../../dialogs/web/window/WoofPrompt';
+import lazy { WoofSslErrorDialog } from '../../dialogs/web/misc/WoofSslError';
 import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
 import lazy { localMessage, meowAppMessageType } from '../../hosts/system/windows/scripts/messaging';
+import { WoofHttpAuthDialog } from '../../dialogs/web/auth/WoofHttpAuth';
 
 /**
  * A place for dialogs.
@@ -300,6 +301,13 @@ struct MeowPlaceForDialogs {
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
+  woofHttpAuthDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofHttpAuthDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
 
 
   build() {
@@ -408,6 +416,9 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.WEB_GEOLOCATION:
         this.woofWebGeolocationDialogController.open();
+        break;
+      case openDialogRequestType.HTTP_AUTH:
+        this.woofHttpAuthDialogController.open();
         break;
       default:
         break;
