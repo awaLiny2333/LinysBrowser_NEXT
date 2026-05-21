@@ -286,10 +286,13 @@ struct HistoryPanel {
       // Report
       const duration = Date.now() - startTime;
       this.refreshInfo(duration);
-      
+
     } else if (msg.type == meowAppMessageType.HISTORY_ADDED) {
       if (this.isSelecting) {
         return; // Do nothing.
+      }
+      if (this.myHistoryChunk != undefined && this.myHistoryChunk != this.myMeowHistorian.getChunk(0)) {
+        return; // Not this month, not grand view, then no update.
       }
       meow(`About to sync for refresh.`, 'Panel][WoofHistory', meowLevel.INFO);
       this.search();
