@@ -1,6 +1,6 @@
 import { defaultRoundedRadius } from "../../catstypicalframework/utils/ui";
 import { fontSizeSymbol, meowThemeColorType, mooTextType, standardSpacing } from "../constants";
-import { defaultAnimation, getColor, useEffects } from "../settings";
+import { defaultAnimation, getColor, isPreferRightHand, useEffects } from "../settings";
 import { MooTextModifier } from "./MooTextModifier";
 
 /**
@@ -11,8 +11,8 @@ import { MooTextModifier } from "./MooTextModifier";
 struct UniContentCard {
   @BuilderParam contentsBuilder: () => void;
   // Settings
-  @Param @Once title: ResourceStr = '';
-  @Param @Once icon: Resource = $r('sys.symbol.gearshape');
+  @Param title: ResourceStr = '';
+  @Param icon: Resource = $r('sys.symbol.gearshape');
   @Param @Once roundedRadius: number = defaultRoundedRadius;
   @Param @Once space: number = standardSpacing;
   // UI
@@ -31,9 +31,10 @@ struct UniContentCard {
             .fontColor([getColor(meowThemeColorType.FONT)])
             .opacity(0.75);
           Text(this.title)
+            .layoutWeight(1)
             .attributeModifier(new MooTextModifier(mooTextType.TITLE))
             .opacity(0.75);
-        };
+        }.width('100%');
       }
 
       if (this.expanded) {
@@ -46,7 +47,7 @@ struct UniContentCard {
     .backgroundColor(this.shiftBackgroundColor ? getColor(meowThemeColorType.SECONDARY) : getColor(meowThemeColorType.PRIMARY))
     .border({ radius: this.roundedRadius, width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth') })
     .padding(standardSpacing * 1.25)
-    .alignItems(HorizontalAlign.Start)
+    .alignItems(isPreferRightHand() ? HorizontalAlign.End : HorizontalAlign.Start)
     .onHover((isHover) => {
       if (isHover != this.isHover) {
         this.isHover = isHover;

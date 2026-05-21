@@ -22,6 +22,7 @@ import { AppStorageV2, window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import lazy Want from '@ohos.app.ability.Want';
 import { defaultNewWindowAlias, getMySettings, isPreferRightHandFromSettings, isTabsStyleVertical } from '../../components/settings';
+import { meowDawnloada } from '../../hosts/app/downloads/classes/meowDawnloada';
 import { meowBoardHolder } from '../../hosts/app/scratchingboard/classes/meowBoardHolder';
 import { meowTabsBunch } from '../../hosts/app/tabs/classes/meowTabsBunch';
 import { concatSearchWithEngine } from '../../hosts/app/tabs/scripts/searchEngines';
@@ -85,6 +86,7 @@ export function earlyOnCreate(context: Context, launchWant: Want) {
     AppStorageV2.connect(meowKeyboardMan, () => new meowKeyboardMan())!;
     AppStorageV2.connect(meowManagedSettings, () => new meowManagedSettings(`${filesDir}/settings.json.browsercatsettings.txt`))!;
     AppStorageV2.connect(meowBoardHolder, () => new meowBoardHolder());
+    AppStorageV2.connect(meowDawnloada, () => new meowDawnloada());
     const myResources = AppStorageV2.connect(meowResources, () => new meowResources(`${filesDir}/homepage_background_arrayBuffer`))!;
     myResources.loadBackgroundImage();
   }
@@ -158,7 +160,8 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
   const myWindowId = myApp.windowIds[myApp.windowIds.length - 1];
 
   // UI
-
+  
+  getMyApp().lastFocusedWindowId = myWindowId;
   windowStage.setWindowRectAutoSave(true) // Enable window status auto save.
     .then(() => {
       meow('windowStage.setWindowRectAutoSave(true) Success!', 'init', meowLevel.INFO);

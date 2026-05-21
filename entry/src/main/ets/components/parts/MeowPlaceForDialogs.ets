@@ -25,6 +25,7 @@ import lazy { WoofKeyShortcutsDialog } from '../../dialogs/settings/WoofKeyShort
 import lazy { WoofButtonsDialog } from '../../dialogs/settings/WoofMeowButtons/ButtonsManager';
 import lazy { WoofWebImagesDialog } from '../../dialogs/settings/WoofWebImages/WoofWebImages';
 import lazy { WoofHttpAuthDialog } from '../../dialogs/web/auth/WoofHttpAuth';
+import { WoofDownloadAskDialog } from '../../dialogs/web/misc/WoofDownloadAsk';
 import lazy { WoofJumpDialog } from '../../dialogs/web/misc/WoofJump';
 import lazy { WoofSslErrorDialog } from '../../dialogs/web/misc/WoofSslError';
 import lazy { WoofWebGeolocationDialog } from '../../dialogs/web/permissions/WoofLocation';
@@ -316,6 +317,13 @@ struct MeowPlaceForDialogs {
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
+  woofDownloadAskDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofDownloadAskDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
 
 
   build() {
@@ -403,6 +411,9 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.DOWNLOADS:
         this.woofDownloadsDialogController.open();
+        break;
+      case openDialogRequestType.DOWNLOAD_ASK:
+        this.woofDownloadAskDialogController.open();
         break;
       case openDialogRequestType.JUMP:
         this.woofJumpDialogController.open();

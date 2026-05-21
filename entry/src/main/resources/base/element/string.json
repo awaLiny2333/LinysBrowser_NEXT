@@ -85,6 +85,18 @@
       "value": "Export  󰃕"
     },
     {
+      "name": "General_copyLink",
+      "value": "Copy  󰊡"
+    },
+    {
+      "name": "General_pause",
+      "value": "Pause  󰂱"
+    },
+    {
+      "name": "General_continue",
+      "value": "Continue  󰂴"
+    },
+    {
       "name": "General_username",
       "value": "󰙬  Username"
     },
@@ -971,6 +983,34 @@
     {
       "name": "Downloads_title",
       "value": "Downloads"
+    },
+    {
+      "name": "Downloads_state_in_progress",
+      "value": "~"
+    },
+    {
+      "name": "Downloads_state_completed",
+      "value": "Completed"
+    },
+    {
+      "name": "Downloads_state_canceled",
+      "value": "Canceled"
+    },
+    {
+      "name": "Downloads_state_interrupted",
+      "value": "Interrupted"
+    },
+    {
+      "name": "Downloads_state_pending",
+      "value": "Pending"
+    },
+    {
+      "name": "Downloads_state_paused",
+      "value": "Paused"
+    },
+    {
+      "name": "Downloads_state_unknown",
+      "value": "Unknown"
     },
     {
       "name": "Permission_reason_INTERNET",

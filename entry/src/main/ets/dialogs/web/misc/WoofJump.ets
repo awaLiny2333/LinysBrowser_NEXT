@@ -27,7 +27,7 @@ struct WoofJumpPanel {
     WoofUniFrame({
       controller: this.controller, title: $r('app.string.Jump_title'), myLayout: this.myLayout, myDialog: this.myDialog, showConfirmButton: true, showCancelButton: true, shiftBackgroundColor: true,
       onConfirm: () => {
-        jumpUrl(this.url,this.getUIContext().getHostContext()! as common.UIAbilityContext)
+        jumpUrl(this.url, this.getUIContext().getHostContext()! as common.UIAbilityContext);
         this.controller.close();
       },
       onCancel: () => {

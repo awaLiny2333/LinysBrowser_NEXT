@@ -43,7 +43,8 @@ struct MeowSidebar {
             ScratchingBoardPanel({ myUi: this.myUi, needPadding: false });
           } else if (this.myUi.sidebarPage == UnifiedButtonsType.DOWNLOADS) {
             DownloadsPanel({
-              needPadding: false
+              needPadding: false,
+              needLayoutWeightFull: true
             });
           } else if (this.myUi.sidebarPage == UnifiedButtonsType.HISTORIES) {
             // History

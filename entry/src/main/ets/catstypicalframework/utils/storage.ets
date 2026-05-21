@@ -733,7 +733,8 @@ export function showInFiles(path: string, context: common.UIAbilityContext) {
   };
   try {
     context.openLink(link, openLinkOptions);
+    meow(`Open ${path} in file manager!`, 'showInFiles');
   } catch (e) {
-    console.error(e);
+    meow(`Open ${path} in file manager failed: ${e}`, 'showInFiles', meowLevel.ERROR);
   }
 }

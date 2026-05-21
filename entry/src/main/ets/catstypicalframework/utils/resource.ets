@@ -29,3 +29,24 @@ export function resourceColor2Metrics(c: ResourceColor) {
     return undefined;
   }
 }
+
+/**
+ * Converts file type to symbol.
+ * @param mimeType 
+ * @returns
+ */
+export function symbolForFileType(mimeType: string) {
+  if (mimeType.startsWith('image/')) {
+    return $r('sys.symbol.picture');
+  } else if (mimeType.startsWith('video/')) {
+    return $r('sys.symbol.video');
+  } else if (mimeType.startsWith('audio/')) {
+    return $r('sys.symbol.music');
+  } else if (mimeType.startsWith('text/')) {
+    return $r('sys.symbol.doc_text');
+  } else if (mimeType.startsWith('application/')) {
+    return $r('sys.symbol.square_grid_2x2_checkmark_topleft_filled');
+  } else {
+    return $r('sys.symbol.doc');
+  }
+}

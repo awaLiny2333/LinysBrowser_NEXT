@@ -1,18 +1,19 @@
 import { AppStorageV2, UIContext } from "@kit.ArkUI";
 import { webview } from "@kit.ArkWeb";
+import { certificateManager, certificateManagerDialog } from "@kit.DeviceCertificateKit";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import { belongsToDomain } from "../../../../catstypicalframework/utils/url";
 import { defaultAnimation } from "../../../../components/settings";
 import { meowDialogManager, openDialogRequestType } from "../../../system/dialogs/classes/meowDialogManager";
 import { requestDialog } from "../../../system/dialogs/scripts/dialog";
 import { meowUiFullscreenStatus, meowUiHost } from "../../../system/windows/classes/meowUiHost";
+import { meowHistorian } from "../../../userdata/history/classes/meowHistorian";
+import { meowHistoryEntry } from "../../../userdata/history/classes/meowHistoryEntry";
+import { getMyDawn } from "../../downloads/scripts/helper";
 import { defaultBlankUrl, viewableSchemes } from "../scripts/helpers";
 import { disableWebImages, disableWebImagesOnAllSites, disableWebImagesSites, disableWebJavaScripts, disableWebJavaScriptSites, disableWebJavaScriptsOnAllSites, forceWebDarkExceptions, forceWebDarkMode, intelligentTrackingPrevention, recordNewHistoryFromSettings, userHomeUrl, userNewTabUrl } from "../settings";
 import { meowTabsBunch } from "./meowTabsBunch";
 import { TabNodeController } from "./WebNode";
-import { certificateManager, certificateManagerDialog } from "@kit.DeviceCertificateKit";
-import { meowHistorian } from "../../../userdata/history/classes/meowHistorian";
-import { meowHistoryEntry } from "../../../userdata/history/classes/meowHistoryEntry";
 
 @ObservedV2
 export class meowTabInfo {
@@ -292,14 +293,25 @@ export class meowTabInfo {
     } catch (e) {
       meow(`Failed: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
     }
+
     // Set intelligent tracking prevention
     try {
       let itp = intelligentTrackingPrevention();
       this.controller!.enableIntelligentTrackingPrevention(itp);
       // meow(`ArkWeb Intelligent Tracking Prevention [${itp}]!`, 'meowTabInfo][onControllerAttached');
     } catch (e) {
-      meow(`onControllerAttached enableIntelligentTrackingPrevention error: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
+      meow(`enableIntelligentTrackingPrevention error: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
     }
+
+    // Set download delegate
+    try {
+      const delegate = getMyDawn().delegate;
+      this.controller?.setDownloadDelegate(delegate);
+      meow(`setDownloadDelegate for the new tab!`, 'meowTabInfo][onControllerAttached');
+    } catch (e) {
+      meow(`setDownloadDelegate error: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
+    }
+
     // if (useAdBlock()) {
     //   try {
     //     this.controller!.enableAdsBlock(true);

@@ -85,6 +85,18 @@
       "value": "导出  󰃕"
     },
     {
+      "name": "General_copyLink",
+      "value": "复制  󰊡"
+    },
+    {
+      "name": "General_pause",
+      "value": "暂停  󰂱"
+    },
+    {
+      "name": "General_continue",
+      "value": "继续  󰂴"
+    },
+    {
       "name": "General_username",
       "value": "󰙬  用户名 / 账户"
     },
@@ -971,6 +983,34 @@
     {
       "name": "Downloads_title",
       "value": "下载"
+    },
+    {
+      "name": "Downloads_state_in_progress",
+      "value": "~"
+    },
+    {
+      "name": "Downloads_state_completed",
+      "value": "已完成"
+    },
+    {
+      "name": "Downloads_state_canceled",
+      "value": "已取消"
+    },
+    {
+      "name": "Downloads_state_interrupted",
+      "value": "已中断"
+    },
+    {
+      "name": "Downloads_state_pending",
+      "value": "等待中"
+    },
+    {
+      "name": "Downloads_state_paused",
+      "value": "已暂停"
+    },
+    {
+      "name": "Downloads_state_unknown",
+      "value": "未知"
     },
     {
       "name": "Permission_reason_INTERNET",

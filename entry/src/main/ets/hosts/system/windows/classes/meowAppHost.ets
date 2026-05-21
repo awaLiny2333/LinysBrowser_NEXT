@@ -15,6 +15,7 @@ export class meowAppHost {
   @Trace powerSave: boolean = false;
   @Trace smartReachabilitySaysWeShouldPreferRightHand: boolean = true; // What a long name
   @Trace freeWindow: boolean = false; // Free window mode
+  @Trace lastFocusedWindowId: string = '';
   // Messaging (Shared)
   @Trace crossAppMessageTunnel: meowAppMessage | undefined = undefined; // The great tunnel for cross-window messaging! *TEMPORARY* but not cleared after reception.
   // Messaging (Dedicated)
