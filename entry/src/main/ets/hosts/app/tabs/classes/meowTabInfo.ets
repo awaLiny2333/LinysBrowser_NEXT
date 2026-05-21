@@ -24,6 +24,7 @@ export class meowTabInfo {
   @Trace forceDark: boolean = true;
   @Trace xJS: boolean = false;
   @Trace xImage: boolean = false;
+  @Trace overrideUA: string | undefined;
   // Permissions
   allowedWebPermissions: string[] = [];
 
@@ -62,6 +63,7 @@ export class meowTabInfo {
       const newUrl = this.url || '';
       if (this.myUi.addressBarContentMajor != newUrl) {
         this.myUi.setCurrentSearchContent(newUrl, true, true);
+        this.myUi.tryAutoShift();
       }
     }
   }
@@ -206,6 +208,30 @@ export class meowTabInfo {
     return false;
   }
 
+  /**
+   * Override tab user agent.
+   * @param newUA The new user agent.
+   */
+  overrideTabUA(newUA: string) {
+    this.overrideUA = newUA;
+    try {
+      this.controller?.setCustomUserAgent(newUA);
+      meow(`Override tab user agent to: ${newUA}`, 'meowTabInfo][overrideTabUA');
+    } catch (e) {
+      meow(`Failed: ${e}`, 'meowTabInfo][overrideTabUA', meowLevel.ERROR);
+    }
+  }
+
+  resetTabUA() {
+    this.overrideUA = undefined;
+    try {
+      this.controller?.setCustomUserAgent(webview.WebviewController.getDefaultUserAgent());
+      meow(`Reset tab user agent`, 'meowTabInfo][resetTabUA');
+    } catch (e) {
+      meow(`Failed: ${e}`, 'meowTabInfo][resetTabUA', meowLevel.ERROR);
+    }
+  }
+
   // Requests
 
   onControllerAttached() {
@@ -268,30 +294,30 @@ export class meowTabInfo {
       // Ask for decision from the user to jump or not.
       meow(`Jump to [${url}]?`, 'meowTabInfo][requestload');
       const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
-      requestDialog(myDialog, openDialogRequestType.JUMP, [this.url, event.data.getRequestUrl()]);
+      requestDialog(myDialog, openDialogRequestType.JUMP, [this.url, event.data.getRequestUrl()], true);
     }
     return intercept;
   }
 
   requestAlert(event: OnAlertEvent) {
     const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
-    requestDialog(myDialog, openDialogRequestType.ALERT, event);
+    requestDialog(myDialog, openDialogRequestType.ALERT, event, true);
   }
 
   requestConfirm(event: OnConfirmEvent) {
     const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
-    requestDialog(myDialog, openDialogRequestType.CONFIRM, event);
+    requestDialog(myDialog, openDialogRequestType.CONFIRM, event, true);
   }
 
   requestPrompt(event: OnPromptEvent) {
     const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
-    requestDialog(myDialog, openDialogRequestType.PROMPT, event);
+    requestDialog(myDialog, openDialogRequestType.PROMPT, event, true);
   }
 
   requestSslError(event: SslErrorEvent) {
     if (event) {
       const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
-      requestDialog(myDialog, openDialogRequestType.SSL_ERROR, event);
+      requestDialog(myDialog, openDialogRequestType.SSL_ERROR, event, true);
     }
   }
 
@@ -310,16 +336,16 @@ export class meowTabInfo {
     }
     // Need further ask (new, not formerly allowed permissions), request a dialog.
     const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
-    requestDialog(myDialog, openDialogRequestType.WEB_PERMISSIONS, [event, this]);
+    requestDialog(myDialog, openDialogRequestType.WEB_PERMISSIONS, [event, this], true);
   }
 
   requestScreenCapture(event: OnScreenCaptureRequestEvent) {
     const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
-    requestDialog(myDialog, openDialogRequestType.SCREEN_CAPTURE, event);
+    requestDialog(myDialog, openDialogRequestType.SCREEN_CAPTURE, event, true);
   }
 
   requestGeolocation(event: OnGeolocationShowEvent) {
     const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
-    requestDialog(myDialog, openDialogRequestType.WEB_GEOLOCATION, event);
+    requestDialog(myDialog, openDialogRequestType.WEB_GEOLOCATION, event, true);
   }
 }

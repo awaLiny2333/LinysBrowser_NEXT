@@ -1,3 +1,7 @@
+/**
+ * Theoratically the 'Permissions' in 'WoofPermissions' only refers to 'Protected Resources' in web.
+ */
+
 import { common } from "@kit.AbilityKit";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";

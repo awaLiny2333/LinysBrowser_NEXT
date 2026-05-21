@@ -1,7 +1,7 @@
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
-import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 import { MooStringPairArrayList } from "../../../components/common/MooStringPairArrayList";
 import { standardSpacing } from "../../../components/constants";
+import { meowTabInfo } from "../../../hosts/app/tabs/classes/meowTabInfo";
 import { userAgentList } from "../../../hosts/app/tabs/settings";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { meowAppHost } from "../../../hosts/system/windows/classes/meowAppHost";
@@ -20,10 +20,12 @@ struct WoofQuickUAPanel {
   @Event onSelect: (n: number) => void;
 
   getCurrentWebUAIndex() {
-    if (this.myDialog.lastRequest) {
-      return this.myDialog.lastRequest.param as number;
+    if (!this.myDialog.lastRequest) {
+      return -1;
     };
-    return 0;
+    const tabInfo = this.myDialog.lastRequest.param as meowTabInfo;
+    const idx = userAgentList().findIndex((ua) => ua[1] == tabInfo.overrideUA);
+    return idx;
   }
 
   build() {
@@ -67,14 +69,27 @@ struct WoofQuickUADialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
   @Require myLayout: meowLayout;
+  // TabInfo
+  targetTabInfo: meowTabInfo | undefined;
+
+  aboutToAppear(): void {
+    // Get the meowTabInfo from the tunnel
+    const req = this.myDialog.lastRequest;
+    this.targetTabInfo = req?.param as meowTabInfo;
+  }
 
   build() {
     WoofUniFrame({ controller: this.controller, title: $r('app.string.QuickUA'), shiftBackgroundColor: true, myLayout: this.myLayout, myDialog: this.myDialog }) {
       WoofQuickUAPanel({
         myDialog: this.myDialog,
         onSelect: (n) => {
-          // Apply to current web.
-          meow(`Apply user agent #${n} from QuickUA!`, 'WoofQuickUA', meowLevel.WARN);
+          if (this.targetTabInfo) {
+            if (n < 0) {
+              this.targetTabInfo.resetTabUA(); // Reset to default.
+            } else {
+              this.targetTabInfo.overrideTabUA(userAgentList()[n][1]); // Apply to current web.
+            }
+          }
           this.controller.close();
         }
       });

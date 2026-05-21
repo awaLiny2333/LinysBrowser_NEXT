@@ -6,36 +6,36 @@ import lazy { WoofBookmarksDialog } from '../../dialogs/parts/WoofBookmarks/Woof
 import lazy { WoofCatsDevDialog } from '../../dialogs/parts/WoofCatsDev/WoofCatsDevCards';
 import lazy { WoofCreditsDialog } from '../../dialogs/parts/WoofCredits/WoofCredits';
 import lazy { WoofHistoryDialog } from '../../dialogs/parts/WoofHistory/WoofHistory';
+import lazy { WoofScratchingBoardDialog } from '../../dialogs/parts/WoofScratchingBoard/WoofScratchingBoard';
 import lazy { WoofSettingsDialog } from '../../dialogs/parts/WoofSettings/WoofSettings';
 import lazy { WoofUpdatesDialog } from '../../dialogs/parts/WoofUpdates/WoofUpdates';
 import lazy { WoofColorPickerDialog } from '../../dialogs/public/WoofColorPicker/WoofColorPicker';
-import lazy { WoofKeyShortcutPickerDialog } from '../../dialogs/public/WoofKeyShortcutPicker/WoofKeyShortcutPicker';
 import lazy { WoofErrorPromptDialog } from '../../dialogs/public/WoofErrorPrompt/WoofErrorPrompt';
+import lazy { WoofKeyShortcutPickerDialog } from '../../dialogs/public/WoofKeyShortcutPicker/WoofKeyShortcutPicker';
 import lazy { WoofQRDialog } from '../../dialogs/public/WoofQR/WoofQR';
 import lazy { WoofAdBlockerDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlocker';
 import lazy { WoofAdBlockerRulesDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlockerRules';
-import lazy { WoofButtonsDialog } from '../../dialogs/settings/WoofMeowButtons/ButtonsManager';
 import lazy { WoofCookiesDialog } from '../../dialogs/settings/WoofCookies/WoofCookies';
 import lazy { WoofDarkDialog } from '../../dialogs/settings/WoofDark/WoofDark';
 import lazy { WoofFaultLogsDialog } from '../../dialogs/settings/WoofFaultLogs/WoofFaultLogs';
 import lazy { WoofHomepageDialog } from '../../dialogs/settings/WoofHomepage/WoofHomepage';
 import lazy { WoofJavaScriptsDialog } from '../../dialogs/settings/WoofJavaScripts/WoofJavaScripts';
 import lazy { WoofKeyShortcutsDialog } from '../../dialogs/settings/WoofKeyShortcuts/WoofKeyShortcuts';
-import lazy { WoofQuickSEDialog } from '../../dialogs/settings/WoofQuickSE/WoofQuickSE';
-import lazy { WoofQuickUADialog } from '../../dialogs/settings/WoofQuickUA/WoofQuickUA';
+import lazy { WoofButtonsDialog } from '../../dialogs/settings/WoofMeowButtons/ButtonsManager';
 import lazy { WoofWebImagesDialog } from '../../dialogs/settings/WoofWebImages/WoofWebImages';
+import lazy { WoofWebGeolocationDialog } from '../../dialogs/web/permissions/WoofLocation';
+import lazy { WoofPermissionsDialog } from '../../dialogs/web/permissions/WoofPermissions';
+import lazy { WoofRequestScreenCaptureDialog } from '../../dialogs/web/permissions/WoofRequestScreenCapture';
+import lazy { WoofQuickSEDialog } from '../../dialogs/web/settings/WoofQuickSE';
+import lazy { WoofQuickUADialog } from '../../dialogs/web/settings/WoofQuickUA';
+import lazy { WoofAlertDialog } from '../../dialogs/web/WoofAlert';
+import lazy { WoofConfirmDialog } from '../../dialogs/web/WoofConfirm';
+import lazy { WoofJumpDialog } from '../../dialogs/web/WoofJump';
+import lazy { WoofPromptDialog } from '../../dialogs/web/WoofPrompt';
+import lazy { WoofSslErrorDialog } from '../../dialogs/web/WoofSslError';
 import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
 import lazy { localMessage, meowAppMessageType } from '../../hosts/system/windows/scripts/messaging';
-import lazy { WoofScratchingBoardDialog } from '../../dialogs/parts/WoofScratchingBoard/WoofScratchingBoard';
-import lazy { WoofJumpDialog } from '../../dialogs/Web/WoofJump';
-import lazy { WoofAlertDialog } from '../../dialogs/Web/WoofAlert';
-import lazy { WoofConfirmDialog } from '../../dialogs/Web/WoofConfirm';
-import lazy { WoofPromptDialog } from '../../dialogs/Web/WoofPrompt';
-import lazy { WoofSslErrorDialog } from '../../dialogs/Web/WoofSslError';
-import lazy { WoofPermissionsDialog } from '../../dialogs/Web/permissions/WoofPermissions';
-import lazy { WoofRequestScreenCaptureDialog } from '../../dialogs/Web/permissions/WoofRequestScreenCapture';
-import lazy { WoofWebGeolocationDialog } from '../../dialogs/Web/permissions/WoofLocation';
 
 /**
  * A place for dialogs.
@@ -300,7 +300,7 @@ struct MeowPlaceForDialogs {
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
-  
+
 
   build() {
     // Nothing

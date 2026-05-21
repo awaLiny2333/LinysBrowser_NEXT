@@ -2,6 +2,7 @@ import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 import { MooStringPairArrayList } from "../../../components/common/MooStringPairArrayList";
 import { standardSpacing } from "../../../components/constants";
+import { concatSearchWithEngine, concatSeStatus } from "../../../hosts/app/tabs/scripts/searchEngines";
 import { searchEngineList } from "../../../hosts/app/tabs/settings";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { meowAppHost } from "../../../hosts/system/windows/classes/meowAppHost";
@@ -16,7 +17,7 @@ struct WoofQuickSEPanel {
   @Param @Require myDialog: meowDialogManager;
   @Local myApp: meowAppHost = getMyApp();
   // Local
-  @Local selectedIndexSE: number = this.getCurrentWebSEIndex();
+  @Local selectedIndexSE: number = -2; // show no selection
   @Local refreshFlagSE: boolean = false;
   // Event
   @Event onSelect: (n: number) => void;
@@ -74,17 +75,25 @@ struct WoofQuickSEDialog {
   build() {
     WoofUniFrame({
       controller: this.controller, title: $r('app.string.QuickSE'), shiftBackgroundColor: true, myLayout: this.myLayout, myDialog: this.myDialog,
-      tutorial: `󰀩 ${this.myUi.searchKeywordEntries.length > 0 ? this.myUi.searchKeywordEntries[0][1] : this.myUi.addressBarContentMajor}`, showTutorial: true
+      tutorial: `󰀩  ${this.searchQuery()}`, showTutorial: true
     }) {
       WoofQuickSEPanel({
         myDialog: this.myDialog,
         onSelect: (n) => {
-          // Apply to current web.
-          meow(`Apply Search Engine #${n} from QuickSE!`, 'WoofQuickSE', meowLevel.WARN);
+          const targetSE = n >= 0 ? searchEngineList()[n][1] : undefined;
+          const concatSearchR = concatSearchWithEngine(this.searchQuery(), targetSE);
+          if (concatSearchR.status == concatSeStatus.SUCCESS) {
+            meow(`Apply Search Engine #${n} - [${targetSE}] from QuickSE!`, 'WoofQuickSE', meowLevel.WARN);
+            this.myUi.submitSearchOrLoad(concatSearchR.result);
+          }
           this.controller.close();
         }
       });
     };
+  }
+
+  searchQuery() {
+    return this.myUi.searchKeywordEntries.length > 0 ? this.myUi.searchKeywordEntries[0][1] : this.myUi.addressBarContentMajor;
   }
 }
 

@@ -11,10 +11,12 @@ import { defaultAnimation, getColor, getMySettings, useEffects } from '../../set
 
 @ComponentV2
 struct MeowButton {
+  // Config
+  @Param @Require type: string;
+  // Hosts
   @Param @Require myDialog: meowDialogManager;
   @Param @Require myUi: meowUiHost;
   @Param myTab: meowTabsBunch = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.myUi.windowId}`)!;
-  @Param @Require type: string;
 
   build() {
     if (this.showMe) {
@@ -97,7 +99,7 @@ struct MeowButton {
         break;
       case UnifiedButtonsType.USERAGENTS:
         this.myUi.requestAddressBarBlur(this.getUIContext());
-        requestDialog(this.myDialog, openDialogRequestType.QUICK_UA, 0); // TODO: pass in current web's UA.
+        requestDialog(this.myDialog, openDialogRequestType.QUICK_UA, this.myTab.currentTab); // TODO: pass in current web's UA.
         break;
       case UnifiedButtonsType.RE_SEARCH:
         this.myUi.requestAddressBarBlur(this.getUIContext());

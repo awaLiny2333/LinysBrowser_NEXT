@@ -346,6 +346,17 @@ export class meowUiHost {
   }
 
   /**
+   * Tries to auto shift the address bar, if there are query keys available.
+   */
+  tryAutoShift() {
+    if (this.addressBarStatus == AddressBarStatuses.CAN_SHIFT) {
+      animateToImmediately(defaultAnimation(), () => {
+        this.addressBarStatus = AddressBarStatuses.SHIFTED;
+      });
+    }
+  }
+
+  /**
    * Refreshes the keyword entries.
    */
   refreshKeywordEntries() {
