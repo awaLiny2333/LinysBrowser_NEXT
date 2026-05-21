@@ -993,6 +993,10 @@
       "value": "Let web pages in BrowserCat utilize the FIDO2 online authentication!"
     },
     {
+      "name": "Permission_reason_ACCESS_CERT_MANAGER",
+      "value": "Let web pages in BrowserCat access the device certificate manager and pass online authentications!"
+    },
+    {
       "name": "Permission_reason_READ_PASTEBOARD",
       "value": "Let web pages in BrowserCat read the pasteboard!"
     },

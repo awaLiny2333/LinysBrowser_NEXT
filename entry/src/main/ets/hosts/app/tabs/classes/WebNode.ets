@@ -2,6 +2,7 @@ import { BuilderNode, FrameNode, NodeController, UIContext } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { meow } from '../../../../catstypicalframework/utils/catsLogger';
 import { meowTabInfo } from './meowTabInfo';
+import { certificateManagerDialog } from '@kit.DeviceCertificateKit';
 
 @Builder
 function WebBuilder(pk: meowTabInfo) {
@@ -32,9 +33,9 @@ function WebBuilder(pk: meowTabInfo) {
       setTimeout(() => {
         meow(`onWindowNew: ${event.targetUrl} -> ${result}`, 'WebNode][onWindowNew');
         event.handler.setWebController(pk.controller);
-      }); 
-      // TODO: This timeout is essential to not block the original web. 
-      // But this would lead to the original web's misunderstanding that 
+      });
+      // TODO: This timeout is essential to not block the original web.
+      // But this would lead to the original web's misunderstanding that
       // the new popup request failed and no controller was returned.
       // So some sites may think that this browser has no popup permission.
     })
@@ -80,6 +81,12 @@ function WebBuilder(pk: meowTabInfo) {
     })
     .onSslErrorEvent((e) => {
       pk.requestSslError(e);
+    })
+    .onClientAuthenticationRequest((event) => {
+      pk.requestClientAuthentication(event);
+    })
+    .onVerifyPin((event) => {
+      pk.requestVerifyPin(event);
     })
     .onLoadIntercept((event) => {
       return pk.requestload(event);

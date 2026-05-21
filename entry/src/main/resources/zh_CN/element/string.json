@@ -993,6 +993,10 @@
       "value": "让冲浪喵中的网页使用 FIDO2 在线认证！"
     },
     {
+      "name": "Permission_reason_ACCESS_CERT_MANAGER",
+      "value": "让冲浪喵中的网页访问设备证书管理器并通过在线认证！"
+    },
+    {
       "name": "Permission_reason_READ_PASTEBOARD",
       "value": "让冲浪喵中的网页读取剪贴板！"
     },

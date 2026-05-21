@@ -138,6 +138,16 @@
         }
       },
       {
+        "name": "ohos.permission.ACCESS_CERT_MANAGER",
+        "reason": "$string:Permission_reason_ACCESS_CERT_MANAGER",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "EntryAbility"
+          ]
+        }
+      },
+      {
         "name": "ohos.permission.READ_PASTEBOARD",
         "reason": "$string:Permission_reason_READ_PASTEBOARD",
         "usedScene": {

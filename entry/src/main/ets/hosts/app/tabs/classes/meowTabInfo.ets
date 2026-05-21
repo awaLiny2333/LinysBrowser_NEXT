@@ -1,4 +1,4 @@
-import { AppStorageV2 } from "@kit.ArkUI";
+import { AppStorageV2, UIContext } from "@kit.ArkUI";
 import { webview } from "@kit.ArkWeb";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import { belongsToDomain } from "../../../../catstypicalframework/utils/url";
@@ -10,6 +10,7 @@ import { defaultBlankUrl, viewableSchemes } from "../scripts/helpers";
 import { disableWebImages, disableWebImagesOnAllSites, disableWebImagesSites, disableWebJavaScripts, disableWebJavaScriptSites, disableWebJavaScriptsOnAllSites, forceWebDarkExceptions, forceWebDarkMode, intelligentTrackingPrevention, userHomeUrl, userNewTabUrl } from "../settings";
 import { meowTabsBunch } from "./meowTabsBunch";
 import { TabNodeController } from "./WebNode";
+import { certificateManager, certificateManagerDialog } from "@kit.DeviceCertificateKit";
 
 @ObservedV2
 export class meowTabInfo {
@@ -347,5 +348,63 @@ export class meowTabInfo {
   requestGeolocation(event: OnGeolocationShowEvent) {
     const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
     requestDialog(myDialog, openDialogRequestType.WEB_GEOLOCATION, event, true);
+  }
+
+  /**
+   * Request client (SSL) authentication.
+   * Adapted from https://developer.huawei.com/consumer/cn/doc/harmonyos-references/arkts-basic-components-web-events#onverifypin22
+   * 
+   * @param event The OnClientAuthenticationEvent.
+   */
+  requestClientAuthentication(event: OnClientAuthenticationEvent) {
+    // 收到客户端证书请求事件
+    meow(`onClientAuthenticationRequest!`, 'requestClientAuthentication');
+    let certTypes: Array<certificateManagerDialog.CertificateType> = [
+      certificateManagerDialog.CertificateType.CREDENTIAL_UKEY,
+      certificateManagerDialog.CertificateType.CREDENTIAL_USER,
+      certificateManagerDialog.CertificateType.CREDENTIAL_APP,
+    ];
+    let certPurpose: certificateManager.CertificatePurpose = certificateManager.CertificatePurpose.PURPOSE_ALL;
+    // 调用证书管理，打开证书选择框
+    certificateManagerDialog.openAuthorizeDialog(UIContext.getCallingScopeUIContext()?.getHostContext(), { certTypes: certTypes, certPurpose: certPurpose })
+      .then((data: certificateManagerDialog.CertReference) => {
+        meow(`openAuthorizeDialog request cred auth success`, 'requestClientAuthentication');
+        // This is bad. HarmonyOS has multiple sets of enums to represent credential / certificate types...
+        const typeMap = new Map<certificateManagerDialog.CertificateType, CredentialType>([
+          [certificateManagerDialog.CertificateType.CREDENTIAL_UKEY, CredentialType.CREDENTIAL_UKEY],
+          [certificateManagerDialog.CertificateType.CREDENTIAL_USER, CredentialType.CREDENTIAL_USER],
+          [certificateManagerDialog.CertificateType.CREDENTIAL_APP, CredentialType.CREDENTIAL_APP],
+        ]);
+        const type = typeMap.get(data.certType) ?? CredentialType.CREDENTIAL_UKEY;
+        try {
+          event.handler.confirm(data.keyUri, type);
+        } catch (e) {
+          meow(`event.handler.confirm(data.keyUri, ${type}); failed, err: ${JSON.stringify(e)}`, 'requestClientAuthentication', meowLevel.ERROR);
+        }
+      }).catch((err: BusinessError) => {
+        meow(`openAuthorizeDialog request cred auth failed, err: ${JSON.stringify(err)}`, 'requestClientAuthentication', meowLevel.ERROR);
+      });
+  }
+
+  /**
+   * Request PIN verification.
+   * Adapted from https://developer.huawei.com/consumer/cn/doc/harmonyos-references/arkts-basic-components-web-events#onverifypin22
+   *
+   * @param event The VerifyPinEvent.
+   */
+  requestVerifyPin(event: VerifyPinEvent) {
+    // 收到PIN码认证请求事件
+    meow(`onVerifyPin`, 'requestVerifyPin');
+    // 调用证书管理，打开PIN码输入框
+    certificateManagerDialog.openUkeyAuthDialog(UIContext.getCallingScopeUIContext()?.getHostContext(), { keyUri: event.identity })
+      .then(() => {
+        // 通知webPIN码认证成功
+        meow(`onVerifyPin success`, 'requestVerifyPin');
+        event.handler.confirm(PinVerifyResult.PIN_VERIFICATION_SUCCESS);
+      }).catch((err: BusinessError) => {
+        // 通知webPIN码认证失败
+        meow(`onVerifyPin fail ${err}`, 'requestVerifyPin', meowLevel.ERROR);
+        event.handler.confirm(PinVerifyResult.PIN_VERIFICATION_FAILED);
+      });
   }
 }

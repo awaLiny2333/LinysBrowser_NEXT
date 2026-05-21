@@ -58,7 +58,7 @@ export class meowSettingsEntry {
         } else {
           this.value = [];
         }
-        console.warn(`${this.key}, ${this.type}, ${this.value}`);
+        // console.warn(`${this.key}, ${this.type}, ${this.value}`);
         break;
       case meowSettingsEntryType.STRING_ARRAY_PAIR:
         if (newValue) {
