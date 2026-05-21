@@ -9,6 +9,7 @@ import lazy { SlotEditButton, symbolIconOptions } from "../../common/SlotEditBut
 import { defaultMooSymbolSize, defaultSidebarShrunkWidth, defaultSidebarWidth, getButtonIcon, meowThemeColorType, sidebarContentIconArray, sidebarContentIconSet, standardSpacing, UnifiedButtonsType } from "../../constants";
 import { defaultAnimation, getColor, getMySettings, sideAreaShrinkButton, sidebarButtons, sidebarShouldBeOnTheRight, titleBarPositionBottom, useEffects } from "../../settings";
 import lazy { MeowBookmarksPanel } from "../Bookmarks/Panel";
+import { DownloadsPanel } from "../Downloads/Panel";
 import lazy { HistoryPanel } from "../History/Panel";
 import lazy { ScratchingBoardPanel } from "../ScratchingBoard/Panel";
 import lazy { shrinkButton } from "./SidebarShrinkButton";
@@ -41,7 +42,9 @@ struct MeowSidebar {
           if (this.myUi.sidebarPage == UnifiedButtonsType.SCRATCHING_BOARD) {
             ScratchingBoardPanel({ myUi: this.myUi, needPadding: false });
           } else if (this.myUi.sidebarPage == UnifiedButtonsType.DOWNLOADS) {
-            // TODO: downloads UI.
+            DownloadsPanel({
+              needPadding: false
+            });
           } else if (this.myUi.sidebarPage == UnifiedButtonsType.HISTORIES) {
             // History
             HistoryPanel({

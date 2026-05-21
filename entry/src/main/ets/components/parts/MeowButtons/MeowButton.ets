@@ -72,6 +72,7 @@ struct MeowButton {
         requestDialog(this.myDialog, openDialogRequestType.BOOKMARKS);
         break;
       case UnifiedButtonsType.DOWNLOADS:
+        requestDialog(this.myDialog, openDialogRequestType.DOWNLOADS);
         break;
       case UnifiedButtonsType.SETTINGS:
         requestDialog(this.myDialog, openDialogRequestType.SETTINGS);

@@ -79,13 +79,13 @@ struct SettingsExperience {
       };
 
       UniContentCard({ title: $r('app.string.Settings_category_experience_downloads'), icon: $r('sys.symbol.download') }) {
-        MooSwitch({
-          text: $r('app.string.Settings_category_experience_downloads_directSave'),
-          isOn: this.mySettings.settingsData[72].value as boolean,
-          onChange: (r) => {
-            this.mySettings.setByIndex(72, r);
-          }
-        });
+        // MooSwitch({
+        //   text: $r('app.string.Settings_category_experience_downloads_directSave'),
+        //   isOn: this.mySettings.settingsData[72].value as boolean,
+        //   onChange: (r) => {
+        //     this.mySettings.setByIndex(72, r);
+        //   }
+        // });
         MooSwitch({
           text: $r('app.string.Settings_category_experience_downloads_openOnFinish'),
           isOn: this.mySettings.settingsData[73].value as boolean,

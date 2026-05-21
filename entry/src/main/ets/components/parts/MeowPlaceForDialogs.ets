@@ -5,6 +5,7 @@ import { defaultRoundedRadius } from '../../catstypicalframework/utils/ui';
 import lazy { WoofBookmarksDialog } from '../../dialogs/parts/WoofBookmarks/WoofBookmarks';
 import lazy { WoofCatsDevDialog } from '../../dialogs/parts/WoofCatsDev/WoofCatsDevCards';
 import lazy { WoofCreditsDialog } from '../../dialogs/parts/WoofCredits/WoofCredits';
+import { WoofDownloadsDialog } from '../../dialogs/parts/WoofDownloads/WoofDownloads';
 import lazy { WoofHistoryDialog } from '../../dialogs/parts/WoofHistory/WoofHistory';
 import lazy { WoofScratchingBoardDialog } from '../../dialogs/parts/WoofScratchingBoard/WoofScratchingBoard';
 import lazy { WoofSettingsDialog } from '../../dialogs/parts/WoofSettings/WoofSettings';
@@ -245,6 +246,13 @@ struct MeowPlaceForDialogs {
     // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
+  woofDownloadsDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofDownloadsDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
+    alignment: DialogAlignment.Center,
+    width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
   woofJumpDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofJumpDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
@@ -392,6 +400,9 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.SCRATCHING_BOARD:
         this.woofScratchingBoardDialogController.open();
+        break;
+      case openDialogRequestType.DOWNLOADS:
+        this.woofDownloadsDialogController.open();
         break;
       case openDialogRequestType.JUMP:
         this.woofJumpDialogController.open();
