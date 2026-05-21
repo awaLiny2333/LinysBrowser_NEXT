@@ -432,6 +432,7 @@ export class meowUiHost {
 
   /**
    * The universal gateway to submit search!
+   * @param url If set, then load the URL. If not, then loads the searchUnifyResult.url
    */
   submitSearchOrLoad(url?: string) {
     if (url) {
@@ -444,6 +445,15 @@ export class meowUiHost {
     myTabs.loadOnCurrentTab(target);
     // SEARCH / LOAD!
     meow(`Visit / load [${target}]!`, 'meowUiHost][submitSearchOrLoad', meowLevel.WARN);
+  }
+
+  /**
+   * Open a new tab with the given URL.
+   * @param url The URL.
+   */
+  openNewTab(url: string) {
+    const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.windowId}`)!;
+    myTabs.newTabWrapped(url);
   }
 }
 

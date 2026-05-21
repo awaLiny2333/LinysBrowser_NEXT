@@ -7,10 +7,12 @@ import { meowDialogManager, openDialogRequestType } from "../../../system/dialog
 import { requestDialog } from "../../../system/dialogs/scripts/dialog";
 import { meowUiFullscreenStatus, meowUiHost } from "../../../system/windows/classes/meowUiHost";
 import { defaultBlankUrl, viewableSchemes } from "../scripts/helpers";
-import { disableWebImages, disableWebImagesOnAllSites, disableWebImagesSites, disableWebJavaScripts, disableWebJavaScriptSites, disableWebJavaScriptsOnAllSites, forceWebDarkExceptions, forceWebDarkMode, intelligentTrackingPrevention, userHomeUrl, userNewTabUrl } from "../settings";
+import { disableWebImages, disableWebImagesOnAllSites, disableWebImagesSites, disableWebJavaScripts, disableWebJavaScriptSites, disableWebJavaScriptsOnAllSites, forceWebDarkExceptions, forceWebDarkMode, intelligentTrackingPrevention, recordNewHistoryFromSettings, userHomeUrl, userNewTabUrl } from "../settings";
 import { meowTabsBunch } from "./meowTabsBunch";
 import { TabNodeController } from "./WebNode";
 import { certificateManager, certificateManagerDialog } from "@kit.DeviceCertificateKit";
+import { meowHistorian } from "../../../userdata/history/classes/meowHistorian";
+import { meowHistoryEntry } from "../../../userdata/history/classes/meowHistoryEntry";
 
 @ObservedV2
 export class meowTabInfo {
@@ -28,6 +30,9 @@ export class meowTabInfo {
   @Trace overrideUA: string | undefined;
   // Permissions
   allowedWebPermissions: string[] = [];
+  // History
+  saveHistoryTimeoutId: number | undefined;
+  lastSavedHistoryEntry: meowHistoryEntry | undefined;
 
   constructor(myUi: meowUiHost) {
     this.myUi = myUi;
@@ -50,6 +55,9 @@ export class meowTabInfo {
 
       // Web statuses
       this.updateWebUiStatuses();
+
+      // Save to history
+      this.tryPunchHistory();
     } catch (e) {
       meow(`this.url = this.controller?.getUrl(); failed: ${e}`, 'meowTabInfo][updateUrl', meowLevel.ERROR);
     }
@@ -151,6 +159,48 @@ export class meowTabInfo {
     } catch (e) {
       meow(`this.controller?.loadUrl(userHomeUrl()); failed: ${e}`, 'meowTabInfo][goHome', meowLevel.ERROR);
     }
+  }
+
+  /**
+   * Try to punch a hole in the history tape! Requests the meowHistorian to save a new history after a certain period of time.
+   * @param timeout The timeout. (By default 1999 ms).
+   */
+  tryPunchHistory(timeout: number = 1999) {
+    if (!recordNewHistoryFromSettings()) {
+      meow(`Record new history from settings is disabled!`, 'meowTabInfo][tryPunchHistory');
+      return;
+    }
+    if (this.saveHistoryTimeoutId) {
+      clearTimeout(this.saveHistoryTimeoutId);
+      meow(`Cleared old timeout.`, 'meowTabInfo][tryPunchHistory');
+    } else {
+      console.warn(' ');
+      meow(`Punching [${this.title}](${this.url}) in ${timeout} ms!`, 'meowTabInfo][tryPunchHistory', meowLevel.WARN);
+    }
+    this.saveHistoryTimeoutId = setTimeout(() => {
+      const myHistory = AppStorageV2.connect(meowHistorian)!;
+      const newEntry = new meowHistoryEntry(this.title || '', this.url || '', Date.now());
+      // Check and push.
+      if (newEntry.url != this.lastSavedHistoryEntry?.url) {
+        myHistory.pushHistory(newEntry);
+        this.lastSavedHistoryEntry = newEntry;
+        meow(`Saved [${newEntry.title}](${newEntry.url})`, 'meowTabInfo][tryPunchHistory', meowLevel.WARN);
+      } else {
+        // this.lastSavedHistoryEntry must exist!
+        if (newEntry.title != this.lastSavedHistoryEntry.title) {
+          // Update in name.
+          // TODO: find a quick way to update the old title.
+          meow(`Update title [${this.lastSavedHistoryEntry.title}] => [${newEntry.title}]`, 'meowTabInfo][tryPunchHistory', meowLevel.WARN);
+          myHistory.deleteHistory(new Set([this.lastSavedHistoryEntry.time])).then(() => {
+            myHistory.pushHistory(newEntry);
+          });
+        } else {
+          // Completely the same.
+          meow(`Duplicate [${newEntry.title}](${newEntry.url}) rejected!`, 'meowTabInfo][tryPunchHistory', meowLevel.WARN);
+        }
+      }
+      this.saveHistoryTimeoutId = undefined;
+    }, timeout);
   }
 
   // Web settings

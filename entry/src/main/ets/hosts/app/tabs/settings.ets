@@ -2,6 +2,15 @@ import lazy { webview } from "@kit.ArkWeb";
 import { getMySettings } from "../../../components/settings";
 import lazy { defaultSearchEngine } from "../../userdata/settings/scripts/defaultSettingsValues";
 
+// History
+/**
+ * Gets if the current settings allows recording new history entries.
+ * @returns True or false!
+ */
+export function recordNewHistoryFromSettings() {
+  return getMySettings().settingsData[69].value as boolean;
+}
+
 // Cookies
 /**
  * Check if intelligent tracking prevention is enabled.

@@ -14,6 +14,7 @@ export enum meowAppMessageType {
   COLOR_PICKER_CLOSED,
   KEY_SHORTCUTS_PICKED, 
   HISTORY_DELETED,
+  HISTORY_ADDED
 }
 
 /**

@@ -25,13 +25,20 @@ struct MeowShortcutsPanel {
   @Local myApp: meowAppHost = getMyApp(); // For event receiving.
   // Local
   @Local refreshFlag: boolean = true;
+  // Events
+  @Event requestVisit: (item: meowBookmarkItem) => void;
 
   build() {
     Scroll() {
       Column({ space: standardSpacing * 0.5 }) {
         Repeat(this.getFolder())
           .each((item) => {
-            MeowShortcutItem({ item: item.item });
+            MeowShortcutItem({
+              item: item.item,
+              requestVisit: (bookmark) => {
+                this.requestVisit(bookmark);
+              }
+            });
           });
       }
       .padding({ top: (1 - (shortcutsHeight() / 100)) * this.myLayout.height });
@@ -76,6 +83,8 @@ struct MeowShortcutItem {
   // UI
   @Param paddingValue: number = 0;
   @Local isHover: boolean = false;
+  // Events
+  @Event requestVisit: (item: meowBookmarkItem) => void;
 
   build() {
     Column({ space: standardSpacing * 0.75 }) {
@@ -98,7 +107,7 @@ struct MeowShortcutItem {
               this.showingChildren = !this.showingChildren;
             });
           } else {
-            // Visit!
+            this.requestVisit(this.item);
           }
         });
 
@@ -106,7 +115,7 @@ struct MeowShortcutItem {
       if (this.item.isFolder && this.showingChildren && this.item.children.length > 0) {
         Repeat(this.getChildren())
           .each((item) => {
-            MeowShortcutItem({ item: item.item, paddingValue: standardSpacing * 2.33 });
+            MeowShortcutItem({ item: item.item, paddingValue: standardSpacing * 2.33, requestVisit: this.requestVisit });
           });
       }
     }

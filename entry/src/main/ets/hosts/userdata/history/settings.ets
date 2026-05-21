@@ -1,14 +1,6 @@
 import { getMySettings } from "../../../components/settings";
 
 /**
- * Gets if the current settings allows recording new history entries.
- * @returns True or false!
- */
-export function recordNewHistoryFromSettings() {
-  return getMySettings().settingsData[69].value as boolean;
-}
-
-/**
  * Gets the maximum quantity of history chunks to be loaded on app startup.
  * @returns The number!
  *

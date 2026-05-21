@@ -23,6 +23,9 @@ import lazy { WoofJavaScriptsDialog } from '../../dialogs/settings/WoofJavaScrip
 import lazy { WoofKeyShortcutsDialog } from '../../dialogs/settings/WoofKeyShortcuts/WoofKeyShortcuts';
 import lazy { WoofButtonsDialog } from '../../dialogs/settings/WoofMeowButtons/ButtonsManager';
 import lazy { WoofWebImagesDialog } from '../../dialogs/settings/WoofWebImages/WoofWebImages';
+import lazy { WoofHttpAuthDialog } from '../../dialogs/web/auth/WoofHttpAuth';
+import lazy { WoofJumpDialog } from '../../dialogs/web/misc/WoofJump';
+import lazy { WoofSslErrorDialog } from '../../dialogs/web/misc/WoofSslError';
 import lazy { WoofWebGeolocationDialog } from '../../dialogs/web/permissions/WoofLocation';
 import lazy { WoofPermissionsDialog } from '../../dialogs/web/permissions/WoofPermissions';
 import lazy { WoofRequestScreenCaptureDialog } from '../../dialogs/web/permissions/WoofRequestScreenCapture';
@@ -30,13 +33,10 @@ import lazy { WoofQuickSEDialog } from '../../dialogs/web/settings/WoofQuickSE';
 import lazy { WoofQuickUADialog } from '../../dialogs/web/settings/WoofQuickUA';
 import lazy { WoofAlertDialog } from '../../dialogs/web/window/WoofAlert';
 import lazy { WoofConfirmDialog } from '../../dialogs/web/window/WoofConfirm';
-import lazy { WoofJumpDialog } from '../../dialogs/web/misc/WoofJump';
 import lazy { WoofPromptDialog } from '../../dialogs/web/window/WoofPrompt';
-import lazy { WoofSslErrorDialog } from '../../dialogs/web/misc/WoofSslError';
 import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
 import lazy { localMessage, meowAppMessageType } from '../../hosts/system/windows/scripts/messaging';
-import { WoofHttpAuthDialog } from '../../dialogs/web/auth/WoofHttpAuth';
 
 /**
  * A place for dialogs.
@@ -183,7 +183,7 @@ struct MeowPlaceForDialogs {
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofHistoryDialogController: CustomDialogController = new CustomDialogController({
-    builder: WoofHistoryDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    builder: WoofHistoryDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
     alignment: DialogAlignment.Center,
     width: '95%',
     // height: '95%',

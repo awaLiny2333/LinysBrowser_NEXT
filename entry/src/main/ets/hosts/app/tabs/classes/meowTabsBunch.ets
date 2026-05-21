@@ -4,6 +4,8 @@ import lazy { applyEasyListFromDisk } from "../scripts/adBlocker";
 import { applyUserAgentFromSettings } from "../scripts/userAgents";
 import { meowTabInfo } from "./meowTabInfo";
 import lazy { TabNodeController } from "./WebNode";
+import lazy { webview } from "@kit.ArkWeb";
+import { thirdPartyCookies } from "../settings";
 
 @ObservedV2
 export class meowTabsBunch {
@@ -28,6 +30,7 @@ export class meowTabsBunch {
 
   async init() {
     applyUserAgentFromSettings();
+    webview.WebCookieManager.putAcceptThirdPartyCookieEnabled(thirdPartyCookies());
     // try {
     //   webview.AdsBlockManager.addAdsBlockDisallowedList(Array.from(adBlockExceptions()));
     // } catch (e) {

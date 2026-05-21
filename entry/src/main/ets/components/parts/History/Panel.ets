@@ -253,7 +253,6 @@ struct HistoryPanel {
           animateToImmediately(defaultAnimation(), () => {
             this.myEntries = this.myEntries.filter((entry) => !this.selectedTimeStamps.has(entry.time));
           });
-
           globalMessage(meowAppMessageType.HISTORY_DELETED, this.selectedTimeStamps);
 
           // Real job.
@@ -274,14 +273,10 @@ struct HistoryPanel {
     const msg = this.myApp.crossAppMessageTunnel!;
     if (msg.type == meowAppMessageType.HISTORY_DELETED) {
       if (this.isSelecting) {
-        // Do nothing.
-        return;
+        return; // Do nothing.
       }
-
       meow(`About to sync.`, 'Panel][WoofHistory', meowLevel.INFO);
-
-      // Sync.
-      const startTime = Date.now();
+      const startTime = Date.now(); // Sync.
 
       // Optimistic update.
       animateToImmediately(defaultAnimation(), () => {
@@ -291,6 +286,13 @@ struct HistoryPanel {
       // Report
       const duration = Date.now() - startTime;
       this.refreshInfo(duration);
+      
+    } else if (msg.type == meowAppMessageType.HISTORY_ADDED) {
+      if (this.isSelecting) {
+        return; // Do nothing.
+      }
+      meow(`About to sync for refresh.`, 'Panel][WoofHistory', meowLevel.INFO);
+      this.search();
     }
   }
 

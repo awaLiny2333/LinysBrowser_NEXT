@@ -87,7 +87,13 @@ struct Index {
                 .animation(defaultAnimation());
             }
             // Shortcuts
-            MeowShortcutsPanel({ myLayout: this.myLayout, myDialog: this.myDialog });
+            MeowShortcutsPanel({
+              myLayout: this.myLayout, myDialog: this.myDialog, requestVisit: (bookmark) => {
+                animateToImmediately(defaultAnimation(), () => {
+                  this.myTabs.newTabWrapped(bookmark.url);
+                });
+              }
+            });
 
             if (this.myTabs.currentNode && this.myTabs.currentTab?.url) {
               NodeContainer(this.myTabs.currentNode);

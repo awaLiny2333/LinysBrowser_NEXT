@@ -17,6 +17,7 @@ import lazy { fileIo } from "@kit.CoreFileKit";
 import lazy { buildAllIndexToDisk, buildIndexToDisk } from "../scripts/indexing";
 import lazy { meowHistoryEntry } from "./meowHistoryEntry";
 import { meowHistoryChunk } from "./meowHistoryChunk";
+import { globalMessage, meowAppMessageType } from "../../../system/windows/scripts/messaging";
 
 @ObservedV2
 export class meowHistorian {
@@ -142,6 +143,7 @@ export class meowHistorian {
     meow(`Pushed history: ["${newHistoryEntry.url}", "${newHistoryEntry.title}", ${newHistoryEntry.time}] (${Date.now() - startTime} ms)`, 'meowHistorian][pushHistory', meowLevel.INFO);
     this.lastUpdate = newHistoryEntry.time;
     this.busy = false;
+    globalMessage(meowAppMessageType.HISTORY_ADDED);
     return true;
   }
 
