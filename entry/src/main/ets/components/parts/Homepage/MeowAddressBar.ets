@@ -74,6 +74,7 @@ struct MeowAddressBar {
               TextInput({ text: it.item[1], placeholder: '󰒟' })
                 .allowDrop(null)
                 .addressBarProps()
+                .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
                 .id(it.index == 0 ? addressBarId : undefined)
                 .width(it.index == 0 && this.hasFreeSpace || !this.myUi.searchKeywordEntriesExpanded ? undefined : 'auto')
                 .layoutWeight(it.index == 0 && this.hasFreeSpace || !this.myUi.searchKeywordEntriesExpanded ? 1 : undefined)
@@ -121,6 +122,7 @@ struct MeowAddressBar {
       TextInput({ text: this.myUi.addressBarContentMajor, placeholder: '󰀩 ...' })
         .allowDrop(null)
         .addressBarProps()
+        .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
         .layoutWeight(1)
         .id(addressBarId)
         .onFocus(() => {

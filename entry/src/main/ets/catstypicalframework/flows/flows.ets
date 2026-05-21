@@ -241,12 +241,14 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
     meow(`meowTabsBunch_${myWindowId} failed: ${e}`, 'init', meowLevel.ERROR);
   }
 
-  // Listen for focus, window status (myUi) and avoid (myAvoid).
+  // Listen for focus, window status (myUi) and avoid (myAvoid)
+  // And other delayable jobs
   setTimeout(() => {
     listenWindowStatusChange(myWindowId); // Listen window status
     listenFocus(myWindowId);
     listenAvoid(myWindowId);
-  }, 50); // Delayed execution, reduce launch time.
+    myUi.updateWindowBackgroundColor();
+  }, 30); // Delayed execution, reduce launch time.
 
   // SHARED USER DATA & LISTENERS
 
@@ -291,6 +293,13 @@ export function onConfigUpdate(config: Configuration) {
   const newDark = config.colorMode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
   if (myApp.dark != newDark) {
     myApp.dark = newDark;
+    // Set all window background colors
+    for (const id of myApp.windowIds) {
+      const myUi = AppStorageV2.connect(meowUiHost, `meowUiHost_${id}`);
+      if (myUi) {
+        myUi.updateWindowBackgroundColor();
+      }
+    }
   }
 }
 

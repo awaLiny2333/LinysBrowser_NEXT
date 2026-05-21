@@ -1,4 +1,5 @@
 import { SegmentButtonV2Items } from "@kit.ArkUI";
+import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import { defaultInnerRadius } from "../../../../catstypicalframework/utils/ui";
 import { MooCapsuleButton } from "../../../../components/common/MooCapsuleButton";
 import { MooSlider } from "../../../../components/common/MooSlider";
@@ -220,9 +221,13 @@ struct SettingsAppearance {
           text: $r('app.string.Settings_category_appearance_colors_effects'),
           isOn: this.mySettings.settingsData[7].value as boolean,
           onChange: (r) => {
-            animateToImmediately(defaultAnimation(), () => {
-              this.mySettings.setByIndex(7, r);
-            });
+            if (useEffects() != r) {
+              meow(`Use Effects change!`, 'WoofSettings][Appearance', meowLevel.WARN);
+              animateToImmediately(defaultAnimation(), () => {
+                this.mySettings.setByIndex(7, r);
+              });
+              globalMessage(meowAppMessageType.USE_EFFECTS_UPDATED, r); // Majorly used to notify background color update.
+            }
           }
         });
 

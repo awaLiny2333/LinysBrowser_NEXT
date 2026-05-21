@@ -3,9 +3,9 @@ import { BusinessError } from "@kit.BasicServicesKit";
 import { meowLayout } from "../../../../catstypicalframework/hosts/meowLayout";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import { getKeywordEntries, UnifiedDestinationResult, UnifiedDestinationResultType, unifyDestination } from "../../../../catstypicalframework/utils/url";
-import { UnifiedButtonsType } from "../../../../components/constants";
+import { meowThemeColorType, UnifiedButtonsType } from "../../../../components/constants";
 import { addressBarId } from "../../../../components/parts/Homepage/MeowAddressBar";
-import { defaultAnimation, isTabsStyleVertical, maxSuggestionsBookmark, maxSuggestionsHistory, sideAreaShrinkAuto, webBackBack, webBackEsc } from "../../../../components/settings";
+import { defaultAnimation, getColor, isTabsStyleVertical, maxSuggestionsBookmark, maxSuggestionsHistory, sideAreaShrinkAuto, useEffects, webBackBack, webBackEsc } from "../../../../components/settings";
 import { meowTabsBunch } from "../../../app/tabs/classes/meowTabsBunch";
 import lazy { concatSearchWithEngine } from "../../../app/tabs/scripts/searchEngines";
 import lazy { meowBookmarkItem } from "../../../userdata/bookmarks/classes/meowBookmarkItem";
@@ -14,6 +14,7 @@ import lazy { meowHistorian } from "../../../userdata/history/classes/meowHistor
 import lazy { meowHistoryEntry } from "../../../userdata/history/classes/meowHistoryEntry";
 import lazy { meowDialogManager } from "../../dialogs/classes/meowDialogManager";
 import lazy { AddressBarStatuses } from "../scripts/addressBarStatuses";
+import { getMyApp } from "../scripts/helpers";
 import lazy { meowAppMessage } from "./meowAppMessage";
 
 /**
@@ -259,6 +260,26 @@ export class meowUiHost {
     animateToImmediately(defaultAnimation(), () => {
       this.fullscreenStatus = meowUiFullscreenStatus.NONE;
     });
+  }
+  
+  /**
+   * Updates the background color for the window.
+   */
+  updateWindowBackgroundColor() {
+    let color = getColor(meowThemeColorType.SECONDARY) as ResourceColor as string;
+    if (useEffects()) {
+      if (getMyApp().dark) {
+        color = '#ff000000'; // Set all black
+      } else {
+        color = '#ffffffff'; // Set all white
+      }
+    }
+    try {
+      this.windowObj?.setWindowBackgroundColor(color);
+      meow(`windowObj.setWindowBackgroundColor("${color}") Success!`, 'meowUiHost][updateWindowBackgroundColor', meowLevel.INFO);
+    } catch (e) {
+      meow(`windowObj.setWindowBackgroundColor("${color}") Failed: ${e}`, 'meowUiHost][updateWindowBackgroundColor', meowLevel.ERROR);
+    }
   }
 
   // FOCUS

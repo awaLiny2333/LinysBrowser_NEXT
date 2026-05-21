@@ -580,6 +580,10 @@ struct Index {
           this.myUi.openedIndexOfLevels = this.myUi.openedIndexOfLevels.slice(0, index);
           this.myUi.openedIndexOfLevels[index - 1] = undefined; // the folder at index 0 is always the root foldr. We cannot drag the root folder, so this is always safe.
         }
+        break;
+      case meowAppMessageType.USE_EFFECTS_UPDATED:
+        this.myUi.updateWindowBackgroundColor();
+        break;
     }
   }
 }
