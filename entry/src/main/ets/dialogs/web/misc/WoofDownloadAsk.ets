@@ -1,5 +1,6 @@
 import { webview } from "@kit.ArkWeb";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
+import { symbolForFileType } from "../../../catstypicalframework/utils/resource";
 import { addUnitsToSize } from "../../../catstypicalframework/utils/storage";
 import { MooTextInputV2 } from "../../../components/common/MooTextInputV2";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
@@ -49,6 +50,7 @@ struct WoofDownloadAskPanel {
         // Custom file name
         MooTextInputV2({
           text: this.filename,
+          icon: symbolForFileType(this.webDlItem?.getMimeType() || ''),
           myId: this.inputId,
           onChange: (value) => {
             this.filename = value;

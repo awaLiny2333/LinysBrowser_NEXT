@@ -1,5 +1,6 @@
 import { meow, meowLevel } from "./catsLogger";
 import { ColorMetrics } from "@kit.ArkUI";
+import { exactMimeSymbols,prefixRules } from "./resource-ext";
 
 /**
  * Analyses a ResourceStr and converts it to a string object.
@@ -31,22 +32,23 @@ export function resourceColor2Metrics(c: ResourceColor) {
 }
 
 /**
- * Converts file type to symbol.
- * @param mimeType 
- * @returns
+ * Converts file type to symbol, with detailed support for common download types.
+ * @param mimeType The MIME type (may contain parameters like charset).
+ * @returns The HarmonyOS symbol resource.
  */
-export function symbolForFileType(mimeType: string) {
-  if (mimeType.startsWith('image/')) {
-    return $r('sys.symbol.picture');
-  } else if (mimeType.startsWith('video/')) {
-    return $r('sys.symbol.video');
-  } else if (mimeType.startsWith('audio/')) {
-    return $r('sys.symbol.music');
-  } else if (mimeType.startsWith('text/')) {
-    return $r('sys.symbol.doc_text');
-  } else if (mimeType.startsWith('application/')) {
-    return $r('sys.symbol.square_grid_2x2_checkmark_topleft_filled');
-  } else {
-    return $r('sys.symbol.doc');
+export function symbolForFileType(mimeType: string): Resource {
+  const type = mimeType.split(';')[0].trim().toLowerCase(); // Cleaning: Remove parameters and convert to lowercase.
+
+  const exactHit = exactMimeSymbols.get(type); // Prefer exact hit.
+  if (exactHit) {
+    return exactHit;
   }
+
+  // Backup rules
+  for (const rule of prefixRules) {
+    if (type.startsWith(rule.prefix)) {
+      return rule.symbol;
+    }
+  }
+  return $r('sys.symbol.doc');
 }
