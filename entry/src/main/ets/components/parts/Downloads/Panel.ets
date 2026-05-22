@@ -115,22 +115,24 @@ export struct DownloadsPanel {
       .edgeEffect(EdgeEffect.Spring)
       .width('100%');
 
+      Text($r('app.string.Downloads_overview')).attributeModifier(new MooTextModifier(mooTextType.TITLE)).opacity(0.75).width('100%');
+
       // Overview
       UniContentCard({
-        title: `${resource2String($r('app.string.Downloads_overview'), this.getUIContext().getHostContext()!)} (${this.myDawn.progress}%)`,
-        icon: $r('sys.symbol.download'), roundedRadius: defaultInnerRadius, shiftBackgroundColor: !useEffects(), expanded: true
+        title: `${this.myDawn.progress}%`,
+        icon: $r('sys.symbol.download'), roundedRadius: defaultInnerRadius, shiftBackgroundColor: !useEffects()
       }) {
         Text(this.estTime(this.myDawn.totalSize - this.myDawn.currentSize, this.myDawn.currentSpeed)).width('100%').attributeModifier(new MooTextModifier());
         if (this.myDawn.totalSize > 0) {
           Text(`󰙧  ${addUnitsToSize(this.myDawn.currentSize)}/${addUnitsToSize(this.myDawn.totalSize)}`).width('100%').attributeModifier(new MooTextModifier());
           Text(`󰚩  ${addUnitsToSize(this.myDawn.currentSpeed)}/s`).width('100%').attributeModifier(new MooTextModifier());
+          // Progress
+          MooProgress({
+            show: true,
+            percentage: this.myDawn.progress,
+            rounded: true
+          });
         }
-        // Progress
-        MooProgress({
-          show: this.myDawn.totalSize > 0,
-          percentage: this.myDawn.progress,
-          rounded: true
-        });
       };
     }
     .padding(this.needPadding ? standardSpacing : 0)

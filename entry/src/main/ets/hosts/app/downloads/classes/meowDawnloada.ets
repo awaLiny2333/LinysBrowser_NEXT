@@ -140,6 +140,14 @@ export class meowDawnloada {
   }
 
   /**
+   * Start a download task.
+   * @param url The url.
+   */
+  startDownload(url: string) {
+    // TODO: implement this!
+  }
+  
+  /**
    * Get the meowDawnloadaItem of a webview.WebDownloadItem.
    * @param webDlItem The webview.WebDownloadItem.
    * @returns The meowDawnloadaItem or undefined if not found (Which indicates a bug).
