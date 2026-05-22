@@ -31,7 +31,7 @@ struct MeowSidebar {
   @Event onDragLeaveSidebar: () => void;
 
   build() {
-    Column({ space: standardSpacing * 0.75 }) {
+    Column({ space: standardSpacing }) {
       if (this.showShrinkButton && !titleBarPositionBottom()) {
         shrinkButton(this.myUi);
       }
@@ -42,10 +42,7 @@ struct MeowSidebar {
           if (this.myUi.sidebarPage == UnifiedButtonsType.SCRATCHING_BOARD) {
             ScratchingBoardPanel({ myUi: this.myUi, needPadding: false });
           } else if (this.myUi.sidebarPage == UnifiedButtonsType.DOWNLOADS) {
-            DownloadsPanel({
-              needPadding: false,
-              needLayoutWeightFull: true
-            });
+            DownloadsPanel({ needPadding: false });
           } else if (this.myUi.sidebarPage == UnifiedButtonsType.HISTORIES) {
             // History
             HistoryPanel({
@@ -84,7 +81,7 @@ struct MeowSidebar {
         .opacity(this.isEditing ? 0.5 : 1)
         .layoutWeight(1)
         .width(this.sidebarWidth);
-        
+
         if (!this.myUi.sideAreaShrunkSummarized) {
           this.buttonRow();
         }

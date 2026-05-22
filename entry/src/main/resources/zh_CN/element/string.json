@@ -985,6 +985,10 @@
       "value": "下载"
     },
     {
+      "name": "Downloads_overview",
+      "value": "总共"
+    },
+    {
       "name": "Downloads_state_in_progress",
       "value": "󰣚  下载中"
     },

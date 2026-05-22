@@ -13,6 +13,11 @@ import lazy { common } from "@kit.AbilityKit";
 export class meowDawnloada {
   delegate: webview.WebDownloadDelegate = new webview.WebDownloadDelegate();
   @Trace items: meowDawnloadaItem[] = [];
+  // Status
+  @Trace totalSize: number = 0;
+  @Trace currentSize: number = 0;
+  @Trace progress: number = 0;
+  @Trace currentSpeed: number = 0;
 
   constructor() {
     this.delegate.onBeforeDownload((item) => {
@@ -27,6 +32,7 @@ export class meowDawnloada {
         return;
       }
       meowItem.fetchUpdate(item);
+      this.statusUpdate();
     });
     this.delegate.onDownloadFailed((item) => {
       meow(`onDownloadFailed: [${item.getGuid()}][${item.getUrl()}]`, 'meowDawnloada', meowLevel.ERROR);
@@ -35,6 +41,7 @@ export class meowDawnloada {
         return;
       }
       meowItem.fetchUpdate(item);
+      this.statusUpdate();
     });
     this.delegate.onDownloadFinish((item) => {
       meow(`onDownloadFinish: [${item.getGuid()}][${item.getUrl()}]`, 'meowDawnloada', meowLevel.WARN);
@@ -43,6 +50,7 @@ export class meowDawnloada {
         return;
       }
       meowItem.fetchUpdate(item);
+      this.statusUpdate();
       if (isDownloadAutoView()) {
         const context = UIContext.getLastFocusedUIContext()?.getHostContext() as common.UIAbilityContext;
         if (context) {
@@ -111,6 +119,24 @@ export class meowDawnloada {
     animateToImmediately(defaultAnimation(), () => {
       this.items.splice(this.items.indexOf(meowItem), 1);
     });
+  }
+
+  /**
+   * Updates the overall download statuses by examining all the download items in list.
+   */
+  statusUpdate() {
+    this.totalSize = 0;
+    this.currentSize = 0;
+    this.currentSpeed = 0;
+    for (const meowItem of this.items) {
+      if (meowItem.state != webview.WebDownloadState.IN_PROGRESS && meowItem.state != webview.WebDownloadState.PAUSED && meowItem.state != webview.WebDownloadState.COMPLETED) {
+        continue; // Skip invalid tasks.
+      }
+      this.totalSize += meowItem.item.getTotalBytes();
+      this.currentSize += meowItem.item.getReceivedBytes();
+      this.currentSpeed += meowItem.item.getCurrentSpeed();
+    }
+    this.progress = Math.round(this.currentSize / this.totalSize * 100);
   }
 
   /**

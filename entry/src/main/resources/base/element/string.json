@@ -985,6 +985,10 @@
       "value": "Downloads"
     },
     {
+      "name": "Downloads_overview",
+      "value": "Overview"
+    },
+    {
       "name": "Downloads_state_in_progress",
       "value": "󰣚  In Progress"
     },
