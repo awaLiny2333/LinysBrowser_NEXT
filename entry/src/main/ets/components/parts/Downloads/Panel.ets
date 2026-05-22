@@ -10,6 +10,7 @@ import { mooTextType, standardSpacing } from "../../constants";
 import { webview } from "@kit.ArkWeb";
 import { resource2String, symbolForFileType } from "../../../catstypicalframework/utils/resource";
 import { meow } from "../../../catstypicalframework/utils/catsLogger";
+import { defaultRoundedRadius } from "../../../catstypicalframework/utils/ui";
 
 @ComponentV2
 export struct DownloadsPanel {
@@ -22,7 +23,9 @@ export struct DownloadsPanel {
     Scroll() {
       Column({ space: standardSpacing }) {
         if (this.myDawn.items.length == 0) {
-          Text($r('app.string.Downloads_title')).width('100%').attributeModifier(new MooTextModifier(mooTextType.TITLE)).opacity(0.75).textAlign(TextAlign.Center).padding(standardSpacing * 2);
+          Text($r('app.string.General_empty')).attributeModifier(new MooTextModifier(mooTextType.TITLE))
+            .layoutWeight(1).width('100%')
+            .opacity(0.5).textAlign(TextAlign.Center).padding(standardSpacing * 2);
         } else {
           Repeat(this.myDawn.items)
             .each((item) => {
@@ -94,6 +97,7 @@ export struct DownloadsPanel {
         }
       };
     }
+    .borderRadius(defaultRoundedRadius)
     .align(Alignment.BottomStart)
     .scrollable(ScrollDirection.Vertical)
     .edgeEffect(EdgeEffect.Spring)

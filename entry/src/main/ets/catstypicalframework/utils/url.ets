@@ -6,12 +6,12 @@ import { Want, common } from '@kit.AbilityKit';
 /**
  * Get keyword entries from a URL.
  *
- * @param source the url.
+ * @param sourceUrl the url.
  * @returns the keyword entries.
  */
-export function getKeywordEntries(source: string): [string, string][] {
+export function getKeywordEntries(sourceUrl: string): [string, string][] {
   try {
-    const theUrl = url.URL.parseURL(source);
+    const theUrl = url.URL.parseURL(sourceUrl);
     const iterator = theUrl.params.entries();
     return Array.from(iterator);
   } catch (e) {

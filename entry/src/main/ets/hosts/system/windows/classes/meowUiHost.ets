@@ -261,7 +261,7 @@ export class meowUiHost {
       this.fullscreenStatus = meowUiFullscreenStatus.NONE;
     });
   }
-  
+
   /**
    * Updates the background color for the window.
    */
@@ -370,10 +370,18 @@ export class meowUiHost {
    * Tries to auto shift the address bar, if there are query keys available.
    */
   tryAutoShift() {
-    if (this.addressBarStatus == AddressBarStatuses.CAN_SHIFT) {
+    if (this.addressBarStatus == AddressBarStatuses.CAN_SHIFT && preferedKeysSet.has(this.searchKeywordEntries[0][0])) {
+      // Shift to search keyword entries.
       animateToImmediately(defaultAnimation(), () => {
         this.addressBarStatus = AddressBarStatuses.SHIFTED;
       });
+    } else {
+      // Shift back to pure url.
+      if (this.addressBarStatus == AddressBarStatuses.SHIFTED) {
+        animateToImmediately(defaultAnimation(), () => {
+          this.addressBarStatus = AddressBarStatuses.NO_SHIFT;
+        });
+      }
     }
   }
 

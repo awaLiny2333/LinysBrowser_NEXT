@@ -5,7 +5,7 @@ import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
 import lazy { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
 import lazy { defaultInnerRadius, defaultWindowTopDecorHeight, shortModeThreshold, updateNavigationIndicator, wideModeThreshold } from '../catstypicalframework/utils/ui';
 import lazy { MooTextModifier } from '../components/common/MooTextModifier';
-import lazy { defaultSidebarShrunkWidth, defaultSidebarWidth, defaultTabsVerticalShrunkWidth, defaultTabsVerticalWidth, meowThemeColorType, mooTextType, standardComponentHeight, standardSpacing } from '../components/constants';
+import lazy { defaultSidebarShrunkWidth, defaultSidebarWidth, defaultTabsVerticalShrunkWidth, defaultTabsVerticalWidth, meowThemeColorType, mooTextType, standardComponentHeight, standardSpacing, UnifiedButtonsType } from '../components/constants';
 import lazy { MeowAddressBar } from '../components/parts/Homepage/MeowAddressBar';
 import lazy { MeowDestination } from '../components/parts/Homepage/MeowDestination';
 import lazy { MeowResMonitor } from '../components/parts/Homepage/MeowResMonitor';
@@ -20,7 +20,7 @@ import lazy { MeowPlaceForKeyShortcuts } from '../components/parts/MeowPlaceForK
 import lazy { MeowSidebar } from '../components/parts/Sidebar/MeowSidebar';
 import lazy { MeowTabsHorizontal } from '../components/parts/Tabs/Horizontal';
 import lazy { MeowTabsVertical } from '../components/parts/Tabs/Vertical';
-import lazy { defaultAnimation, getColor, isPreferRightHand, isTabsStyleVertical, meowButtonsMore, showBottomAvoid, showGiganticWindowTitle, showResourceMonitor, sideAreaShrinkAuto, sideAreaShrinkExpandNoPush, sidebarShouldBeOnTheRight, titleBarPositionBottom, useEffects } from '../components/settings';
+import lazy { defaultAnimation, getColor, isPreferRightHand, isTabsStyleVertical, meowButtonsMore, showBottomAvoid, showGiganticWindowTitle, showResourceMonitor, sideAreaShrinkAuto, sideAreaShrinkExpandNoPush, sidebarButtons, sidebarShouldBeOnTheRight, titleBarPositionBottom, useEffects } from '../components/settings';
 import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
 import { getMyResource } from '../hosts/system/storage/scripts/helpers';
 import { meowAppHost } from '../hosts/system/windows/classes/meowAppHost';
@@ -72,7 +72,7 @@ struct Index {
         });
 
         // Shortcuts handler
-        MeowPlaceForKeyShortcuts(this.myDialog, this.myUi, this.myKey, this.getUIContext());
+        MeowPlaceForKeyShortcuts(this.myDialog, this.myUi, this.myKey, this.myTabs, this.getUIContext());
 
         // This is ugly.
         // Main frame
@@ -178,6 +178,22 @@ struct Index {
           .onDrop((e) => {
             this.onDropSideArea();
             this.dropToScratchingBoard(e);
+
+            // Check if there is scratching board panel added to the sidebar,
+            // If added then switch to that page.
+            let hasBoard = false;
+            const buttons = sidebarButtons();
+            for (const button of buttons) {
+              if (button[1] == UnifiedButtonsType.SCRATCHING_BOARD) {
+                hasBoard = true;
+                break;
+              }
+            }
+            if (hasBoard) {
+              animateToImmediately(defaultAnimation(), () => {
+                this.myUi.sidebarPage = UnifiedButtonsType.SCRATCHING_BOARD;
+              });
+            }
           })
           .onDragEnter(() => {
             // meow(`Drag entered Side area!`, 'Index', meowLevel.WARN);

@@ -347,7 +347,7 @@ export function meowButtonsOfSlot(slotId: number) {
 
 /**
  * Gets the buttons for the sidebar.
- * They are in a format of [<symbolId>, <buttonType / url>][]
+ * They are in a format of [symbolId, buttonType / url][]
  *
  * @returns The buttons for the sidebar.
  */

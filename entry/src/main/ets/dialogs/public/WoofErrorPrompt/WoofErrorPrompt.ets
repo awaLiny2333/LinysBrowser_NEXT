@@ -43,7 +43,7 @@ struct WoofPrompt {
           UniContentCard({ roundedRadius: this.myDefaultRadius }) {
             // Text
             if (this.contents) {
-              Text(this.contents).attributeModifier(new MooTextModifier());
+              Text(this.contents).attributeModifier(new MooTextModifier()).width('100%');
             }
           };
 
@@ -53,7 +53,7 @@ struct WoofPrompt {
               Repeat(this.changes)
                 .each((item) => {
                   UniContentCard({ roundedRadius: this.myDefaultRadius }) {
-                    Text(item.item).attributeModifier(new MooTextModifier()).lineSpacing(LengthMetrics.vp(standardSpacing * 0.5)).opacity(0.75);
+                    Text(item.item).attributeModifier(new MooTextModifier()).lineSpacing(LengthMetrics.vp(standardSpacing * 0.5)).opacity(0.75).width('100%');
                   };
                 })
                 .virtualScroll();
@@ -75,7 +75,7 @@ struct WoofPrompt {
           // Contacts
           if (this.isError) {
             UniContentCard({ roundedRadius: this.myDefaultRadius }) {
-              Text($r('app.string.ErrorPrompt_contact')).attributeModifier(new MooTextModifier()).padding({ bottom: standardSpacing * 0.5 });
+              Text($r('app.string.ErrorPrompt_contact')).attributeModifier(new MooTextModifier()).padding({ bottom: standardSpacing * 0.5 }).width('100%');
               MooCapsuleButton({
                 text: $r('app.string.Settings_category_about_site_bilibili'),
                 clickAction: () => {

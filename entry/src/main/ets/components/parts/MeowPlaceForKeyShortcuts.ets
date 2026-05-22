@@ -14,6 +14,7 @@ export function MeowPlaceForKeyShortcuts(
   myDialog: meowDialogManager,
   myUi: meowUiHost,
   myKey: meowKeyboardMan,
+  myTabs: meowTabsBunch,
   context: UIContext
 ) {
   Row() {
@@ -71,6 +72,7 @@ export function MeowPlaceForKeyShortcuts(
       meow(`History!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
     });
     Blank().keyboardShortcut(myKey.refresh.value, myKey.refresh.keys, () => {
+      myTabs.refreshCurrent();
       meow(`Refresh!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
     });
     Blank().keyboardShortcut(myKey.print.value, myKey.print.keys, () => {

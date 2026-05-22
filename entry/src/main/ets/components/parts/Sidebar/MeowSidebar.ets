@@ -84,8 +84,10 @@ struct MeowSidebar {
         .opacity(this.isEditing ? 0.5 : 1)
         .layoutWeight(1)
         .width(this.sidebarWidth);
-
-        this.buttonRow();
+        
+        if (!this.myUi.sideAreaShrunkSummarized) {
+          this.buttonRow();
+        }
       }
     }
     .onAppear(() => {
@@ -116,54 +118,50 @@ struct MeowSidebar {
    */
   @Builder
   buttonRow() {
-    List() {
+    Flex({ wrap: FlexWrap.Wrap }) {
       // Shrink button
       if (this.showShrinkButton && titleBarPositionBottom()) {
-        ListItem() {
-          shrinkButton(this.myUi);
-        };
+        shrinkButton(this.myUi);
       }
 
       Repeat(this.theList)
         .each((item: RepeatItem<string[]>) => {
-          ListItem() {
-            SlotEditButton({
-              type: item.item[1],
-              extraParam: item.item[1],
-              extraIcon: item.item[0],
-              isEditing: this.isEditing,
-              hasParam: !sidebarContentIconSet.has(item.item[1]),
-              myOnHold: () => {
-                return this.myUi.sidebarPage == item.item[1];
-              },
-              editParamSubmit: (result) => {
-                this.theList[item.index][1] = result;
-                getMySettings().requestSaveToDisk();
-              },
-              clickAction: () => {
-                animateToImmediately(defaultAnimation(), () => {
-                  this.myUi.sidebarPage = item.item[1];
-                });
-                getMySettings().setByIndex(83, this.myUi.sidebarPage);
-              },
-              requestDelete: () => {
-                animateToImmediately(defaultAnimation(), () => {
-                  this.theList.splice(item.index, 1);
-                });
-                getMySettings().requestSaveToDisk();
-              },
-              aboutToShowMenu: () => {
-                this.myUi.sideAreaShrinkBlock_menu = true;
-              },
-              didHideMenu: () => {
-                this.myUi.sideAreaShrunkExpect = false;
-                this.myUi.sideAreaShrinkBlock_menu = false;
-              },
-              menuExtra: sidebarContentIconSet.has(item.item[1]) ? undefined : () => {
-                this.iconSelect(item);
-              }
-            });
-          };
+          SlotEditButton({
+            type: item.item[1],
+            extraParam: item.item[1],
+            extraIcon: item.item[0],
+            isEditing: this.isEditing,
+            hasParam: !sidebarContentIconSet.has(item.item[1]),
+            myOnHold: () => {
+              return this.myUi.sidebarPage == item.item[1];
+            },
+            editParamSubmit: (result) => {
+              this.theList[item.index][1] = result;
+              getMySettings().requestSaveToDisk();
+            },
+            clickAction: () => {
+              animateToImmediately(defaultAnimation(), () => {
+                this.myUi.sidebarPage = item.item[1];
+              });
+              getMySettings().setByIndex(83, this.myUi.sidebarPage);
+            },
+            requestDelete: () => {
+              animateToImmediately(defaultAnimation(), () => {
+                this.theList.splice(item.index, 1);
+              });
+              getMySettings().requestSaveToDisk();
+            },
+            aboutToShowMenu: () => {
+              this.myUi.sideAreaShrinkBlock_menu = true;
+            },
+            didHideMenu: () => {
+              this.myUi.sideAreaShrunkExpect = false;
+              this.myUi.sideAreaShrinkBlock_menu = false;
+            },
+            menuExtra: sidebarContentIconSet.has(item.item[1]) ? undefined : () => {
+              this.iconSelect(item);
+            }
+          });
         })
         .onMove((from: number, to: number) => {
           // Move
@@ -175,26 +173,24 @@ struct MeowSidebar {
 
       // Add button
       if (this.isEditing) {
-        ListItem() {
-          MooTextButton({
-            text: $r('app.string.General_new'),
-            clickAction: () => {
-              this.showAdd = !this.showAdd;
-            }
+        MooTextButton({
+          text: $r('app.string.General_new'),
+          clickAction: () => {
+            this.showAdd = !this.showAdd;
+          }
+        })
+          .opacity(0.75)
+          .bindContextMenu(this.showAdd, this.addMenuBuilder(), {
+            aboutToAppear: () => {
+              this.myUi.sideAreaShrinkBlock_menu = true;
+            },
+            onDidDisappear: () => {
+              this.myUi.sideAreaShrunkExpect = false;
+              this.myUi.sideAreaShrinkBlock_menu = false;
+              this.showAdd = false;
+            },
+            backgroundColor: useEffects() ? undefined : getColor(meowThemeColorType.PRIMARY)
           });
-        }
-        .opacity(0.75)
-        .bindContextMenu(this.showAdd, this.addMenuBuilder(), {
-          aboutToAppear: () => {
-            this.myUi.sideAreaShrinkBlock_menu = true;
-          },
-          onDidDisappear: () => {
-            this.myUi.sideAreaShrunkExpect = false;
-            this.myUi.sideAreaShrinkBlock_menu = false;
-            this.showAdd = false;
-          },
-          backgroundColor: useEffects() ? undefined : getColor(meowThemeColorType.PRIMARY)
-        });
       } else {
         ListItem() {
           Text('|').attributeModifier(new MooTextModifier()).height(defaultMooSymbolSize).opacity(0.5).padding({ left: standardSpacing * 0.7, right: standardSpacing * 0.7 }); // Spacing
@@ -202,22 +198,18 @@ struct MeowSidebar {
       }
 
       // Edit toggle button
-      ListItem() {
-        MooSymbolButton({
-          icon: this.isEditing ? $r('sys.symbol.square_and_pencil_fill') : $r('sys.symbol.square_and_pencil'),
-          onHold: this.isEditing,
-          clickAction: () => {
-            animateToImmediately(defaultAnimation(), () => {
-              this.isEditing = !this.isEditing;
-            });
-          }
-        });
-      };
+      MooSymbolButton({
+        icon: this.isEditing ? $r('sys.symbol.square_and_pencil_fill') : $r('sys.symbol.square_and_pencil'),
+        onHold: this.isEditing,
+        clickAction: () => {
+          animateToImmediately(defaultAnimation(), () => {
+            this.isEditing = !this.isEditing;
+          });
+        }
+      });
     }
-    .scrollBar(BarState.Off)
-    .listDirection(Axis.Horizontal)
-    .width('100%')
-    .height(defaultMooSymbolSize);
+    .clip(true)
+    .width('100%');
   }
 
   /**
