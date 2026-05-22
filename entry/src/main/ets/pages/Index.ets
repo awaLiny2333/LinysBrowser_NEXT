@@ -32,6 +32,7 @@ import { meowKeyboardMan } from '../hosts/userdata/keyshortcuts/classes/meowKeyb
 import { unifiedDataChannel } from '@kit.ArkData';
 import { getMyBoard } from '../hosts/app/scratchingboard/scripts/helpers';
 import { meowTabsBunch } from '../hosts/app/tabs/classes/meowTabsBunch';
+import { MooProgress } from '../components/common/MooProgress';
 
 @Entry
 @ComponentV2
@@ -98,7 +99,14 @@ struct Index {
             if (this.myTabs.currentNode && this.myTabs.currentTab?.url) {
               NodeContainer(this.myTabs.currentNode);
             }
+
+            // Progress bar
+            MooProgress({
+              show: (this.myTabs.currentTab?.progress || -1) > 0,
+              percentage: (this.myTabs.currentTab?.progress || -1)
+            });
           }
+          .alignContent(Alignment.TopStart)
           .margin(this.mainFrameSpace)
           .border(useEffects() && this.isNotAnySortOfFullscreen ? { radius: defaultInnerRadius, width: 1, color: $r('sys.color.icon_fourth') } : { width: 0, radius: 0 })
           .clip(true);

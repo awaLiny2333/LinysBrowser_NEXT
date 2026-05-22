@@ -84,7 +84,7 @@ export function compareDiff(oldStr: string, newStr: string): string {
 }
 
 /**
- * Fast single-pass match for lowercase keys. 
+ * Fast single-pass match for lowercase keys.
  * If the text contains minHitRate * 100% of the keys,
  * then this is considered true for a match.
  *
@@ -146,4 +146,23 @@ const TOKEN_REGEX = new RegExp(`[${CJK_RANGE}]|[${LETTER_RANGE}]+|\\d+`, "gu");
  */
 export function tokenize(text: string): collections.Set<string> {
   return new collections.Set(text.match(TOKEN_REGEX)?.map(s => s.toLowerCase()) ?? []);
+}
+
+/**
+ * Turn seconds into hh:mm:ss format.
+ * @param seconds Seconds.
+ * @returns String formatted as HH:MM:SS.
+ */
+export function addUnitsToSeconds(seconds: number): string {
+  const totalSecs = Math.floor(seconds); // 仅处理整数秒，避免小数导致不对齐
+  const hours = Math.floor(totalSecs / 3600);
+  const minutes = Math.floor((totalSecs % 3600) / 60);
+  const secs = totalSecs % 60;
+
+  // 用 padStart 保证每个字段至少两位
+  const hh = String(hours).padStart(2, '0');
+  const mm = String(minutes).padStart(2, '0');
+  const ss = String(secs).padStart(2, '0');
+
+  return `${hh}:${mm}:${ss}`;
 }

@@ -17,7 +17,7 @@ struct UniContentCard {
   @Param @Once space: number = standardSpacing;
   // UI
   @Param @Once expanded: boolean = this.title ? false : true;
-  @Param @Once shiftBackgroundColor: boolean = false;
+  @Param shiftBackgroundColor: boolean = false;
   @Local isHover: boolean = false;
   // Events
   @Event clickAction: () => void;

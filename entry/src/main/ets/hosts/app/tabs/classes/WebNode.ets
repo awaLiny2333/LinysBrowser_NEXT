@@ -52,6 +52,9 @@ function WebBuilder(pk: meowTabInfo) {
     })
     .onProgressChange((event) => {
       pk.progress = event.newProgress;
+      if (pk.progress == 100) {
+        pk.progress = -1;
+      }
       pk.updateUrl();
     })
     .onFullScreenEnter((event) => {

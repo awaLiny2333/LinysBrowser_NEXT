@@ -986,31 +986,31 @@
     },
     {
       "name": "Downloads_state_in_progress",
-      "value": "~"
+      "value": "󰣚  In Progress"
     },
     {
       "name": "Downloads_state_completed",
-      "value": "Completed"
+      "value": "󰤎  Completed"
     },
     {
       "name": "Downloads_state_canceled",
-      "value": "Canceled"
+      "value": "󰁕  Canceled"
     },
     {
       "name": "Downloads_state_interrupted",
-      "value": "Interrupted"
+      "value": "󰄊  Interrupted"
     },
     {
       "name": "Downloads_state_pending",
-      "value": "Pending"
+      "value": "󰃯  Pending"
     },
     {
       "name": "Downloads_state_paused",
-      "value": "Paused"
+      "value": "󰂰  Paused"
     },
     {
       "name": "Downloads_state_unknown",
-      "value": "Unknown"
+      "value": "󰄀  Unknown"
     },
     {
       "name": "Permission_reason_INTERNET",

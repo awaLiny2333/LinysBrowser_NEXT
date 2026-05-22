@@ -11,6 +11,8 @@ import { webview } from "@kit.ArkWeb";
 import { resource2String, symbolForFileType } from "../../../catstypicalframework/utils/resource";
 import { meow } from "../../../catstypicalframework/utils/catsLogger";
 import { defaultRoundedRadius } from "../../../catstypicalframework/utils/ui";
+import { addUnitsToSeconds } from "../../../catstypicalframework/utils/strings";
+import { useEffects } from "../../settings";
 
 @ComponentV2
 export struct DownloadsPanel {
@@ -29,10 +31,13 @@ export struct DownloadsPanel {
         } else {
           Repeat(this.myDawn.items)
             .each((item) => {
-              UniContentCard({ title: `${item.item.fileName} (${item.item.progress}%)`, icon: symbolForFileType(item.item.mimeType) }) {
-                Text(item.item.mimeType).width('100%').attributeModifier(new MooTextModifier());
-                Text(`${resource2String(this.humanWordState(item.item.state), this.getUIContext().getHostContext()!)} ${addUnitsToSize(item.item.currentSize)}/${addUnitsToSize(item.item.totalSize)} ${addUnitsToSize(item.item.currentSpeed)}/s`).width('100%').attributeModifier(new MooTextModifier());
-                Text(item.item.url).width('100%').attributeModifier(new MooTextModifier()).opacity(0.75).maxLines(3);
+              UniContentCard({ title: `${item.item.fileName} (${item.item.progress}%)`, icon: symbolForFileType(item.item.mimeType), shiftBackgroundColor: !useEffects(), expanded: true }) {
+                Text(resource2String(this.humanWordState(item.item.state), this.getUIContext().getHostContext()!)).width('100%').attributeModifier(new MooTextModifier());
+                Text(this.estTime(item.item.totalSize - item.item.currentSize, item.item.currentSpeed)).width('100%').attributeModifier(new MooTextModifier());
+                Text(`󰙧  ${addUnitsToSize(item.item.currentSize)}/${addUnitsToSize(item.item.totalSize)}`).width('100%').attributeModifier(new MooTextModifier());
+                Text(`󰚩  ${addUnitsToSize(item.item.currentSpeed)}/s`).width('100%').attributeModifier(new MooTextModifier());
+                Text(`󰊡  ${item.item.url}`).width('100%').attributeModifier(new MooTextModifier()).opacity(0.75).maxLines(3);
+                Text(`󰕖  ${item.item.mimeType}`).width('100%').attributeModifier(new MooTextModifier()).opacity(0.5);
                 // Control buttons
                 Scroll() {
                   UniRowOfCapsuleButtons() {
@@ -125,5 +130,17 @@ export struct DownloadsPanel {
       default:
         return $r('app.string.General_wait');
     }
+  }
+
+  /**
+   * Estimate time remaining.
+   * @param remaining The remaining part.
+   * @param speed The speed.
+   * @returns A string.
+   */
+  estTime(remaining: number, speed: number) {
+    if (remaining == 0) return '󰏝  ヽ(°◇° )ノ';
+    if (speed == 0) return '󰏝  ∞';
+    return '󰏝  ' + addUnitsToSeconds(Math.ceil(remaining / speed));
   }
 }
