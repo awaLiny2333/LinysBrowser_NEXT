@@ -1,13 +1,13 @@
 import lazy { common } from "@kit.AbilityKit";
-import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
-import { defaultInnerRadius, wideModeThreshold } from "../../../catstypicalframework/utils/ui";
-import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
-import { newWindow } from "../../../hosts/system/windows/scripts/multiwindows";
-import { MooSymbolButton } from "../../common/MooSymbolButton";
-import { MooTextButton } from "../../common/MooTextButton";
-import lazy { MooTextInputV2 } from "../../common/MooTextInputV2";
-import { meowThemeColorType, standardSpacing } from "../../constants";
-import { defaultAnimation, getColor, isPreferRightHand, getMySettings, useEffects } from "../../settings";
+import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import { defaultInnerRadius, wideModeThreshold } from "../../../../catstypicalframework/utils/ui";
+import { meowUiHost } from "../../../../hosts/system/windows/classes/meowUiHost";
+import { newWindow } from "../../../../hosts/system/windows/scripts/multiwindows";
+import { MooSymbolButton } from "../../../common/MooSymbolButton";
+import { MooTextButton } from "../../../common/MooTextButton";
+import lazy { MooTextInputV2 } from "../../../common/MooTextInputV2";
+import { meowThemeColorType, standardSpacing } from "../../../constants";
+import { defaultAnimation, getColor, isPreferRightHand, getMySettings, useEffects } from "../../../settings";
 
 @ComponentV2
 struct MeowWindowInfoBar {

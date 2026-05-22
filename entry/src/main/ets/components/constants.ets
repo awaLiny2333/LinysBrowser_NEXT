@@ -22,6 +22,7 @@ export enum mooTextType {
 export const standardComponentHeight = 40;
 export const standardSpacing = 8;
 export const minimumCardWidth = 520; // Minimum width required for cards (e.g. in a multi-column waterFlow)
+export const textInputSlimHeight = 36;
 
 export const meowFlexOptions: FlexOptions = {
   wrap: FlexWrap.Wrap,
@@ -81,6 +82,7 @@ export enum UnifiedButtonsType {
   PRINT = 'PRT',
   SAVE = 'SAV',
   ORIENTATION = 'ORN',
+  SEARCH_IN_PAGE = 'SIP',
   EXTENSIONS = 'EXT'
 }
 
@@ -116,6 +118,7 @@ unifiedButtonIconMatches.set(UnifiedButtonsType.DARK, $r('sys.symbol.star_2_moon
 unifiedButtonIconMatches.set(UnifiedButtonsType.PRINT, $r('sys.symbol.printer'));
 unifiedButtonIconMatches.set(UnifiedButtonsType.SAVE, $r('sys.symbol.save'));
 unifiedButtonIconMatches.set(UnifiedButtonsType.ORIENTATION, $r('sys.symbol.rectangle_portrait_rotate'));
+unifiedButtonIconMatches.set(UnifiedButtonsType.SEARCH_IN_PAGE, $r('sys.symbol.doc_text_badge_magnifyingglass'));
 unifiedButtonIconMatches.set(UnifiedButtonsType.EXTENSIONS, $r('sys.symbol.root'));
 
 /**
@@ -166,3 +169,7 @@ export const defaultSidebarWidth = 360;
  * Default sidebar width when shrunk.
  */
 export const defaultSidebarShrunkWidth = 32;
+
+// Search in page
+
+export const searchInPageInputId = `MeowSearchInPage_input`;

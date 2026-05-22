@@ -8,6 +8,7 @@ import { meowKeyboardMan } from '../../hosts/userdata/keyshortcuts/classes/meowK
 import { defaultAnimation, getMySettings } from '../settings';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowTabsBunch } from '../../hosts/app/tabs/classes/meowTabsBunch';
+import { searchInPageInputId } from '../constants';
 
 @Builder
 export function MeowPlaceForKeyShortcuts(
@@ -61,6 +62,14 @@ export function MeowPlaceForKeyShortcuts(
       }
     });
     Blank().keyboardShortcut(myKey.searchInPage.value, myKey.searchInPage.keys, () => {
+      if (!myUi.inPageSearchShow) {
+        animateToImmediately(defaultAnimation(), () => {
+          myUi.inPageSearchShow = true;
+        });
+      } else {
+        // Focus
+        focusControl.requestFocus(searchInPageInputId);
+      }
       meow(`Search in Page!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
     });
     Blank().keyboardShortcut(myKey.fullscreen.value, myKey.fullscreen.keys, () => {

@@ -3,18 +3,18 @@
  */
 
 import { AppStorageV2 } from '@kit.ArkUI';
-import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
-import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
-import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
-import { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
-import { meowAppHost } from '../../../hosts/system/windows/classes/meowAppHost';
-import { getMyApp } from '../../../hosts/system/windows/scripts/helpers';
-import { meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
-import { meowBookmarkItem } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkItem';
-import { meowBookmarkStash } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkStash';
-import { MooTextModifier } from '../../common/MooTextModifier';
-import { meowThemeColorType, standardSpacing } from '../../constants';
-import { defaultAnimation, getColor, inDarkMode, shortcutsHeight, shortcutsPath, shortcutsShouldBeOnTheRight, useEffects } from '../../settings';
+import { meowLayout } from '../../../../catstypicalframework/hosts/meowLayout';
+import { defaultInnerRadius } from '../../../../catstypicalframework/utils/ui';
+import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
+import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
+import { meowAppHost } from '../../../../hosts/system/windows/classes/meowAppHost';
+import { getMyApp } from '../../../../hosts/system/windows/scripts/helpers';
+import { meowAppMessageType } from '../../../../hosts/system/windows/scripts/messaging';
+import { meowBookmarkItem } from '../../../../hosts/userdata/bookmarks/classes/meowBookmarkItem';
+import { meowBookmarkStash } from '../../../../hosts/userdata/bookmarks/classes/meowBookmarkStash';
+import { MooTextModifier } from '../../../common/MooTextModifier';
+import { meowThemeColorType, standardSpacing } from '../../../constants';
+import { defaultAnimation, getColor, inDarkMode, shortcutsHeight, shortcutsPath, shortcutsShouldBeOnTheRight, useEffects } from '../../../settings';
 
 @ComponentV2
 struct MeowShortcutsPanel {

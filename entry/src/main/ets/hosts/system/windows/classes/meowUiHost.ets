@@ -4,7 +4,7 @@ import { meowLayout } from "../../../../catstypicalframework/hosts/meowLayout";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import { getKeywordEntries, UnifiedDestinationResult, UnifiedDestinationResultType, unifyDestination } from "../../../../catstypicalframework/utils/url";
 import { meowThemeColorType, UnifiedButtonsType } from "../../../../components/constants";
-import { addressBarId } from "../../../../components/parts/Homepage/MeowAddressBar";
+import { addressBarId } from "../../../../components/parts/Homepage/addressBar/MeowAddressBar";
 import { defaultAnimation, getColor, isTabsStyleVertical, maxSuggestionsBookmark, maxSuggestionsHistory, sideAreaShrinkAuto, useEffects, webBackBack, webBackEsc } from "../../../../components/settings";
 import { meowTabsBunch } from "../../../app/tabs/classes/meowTabsBunch";
 import lazy { concatSearchWithEngine } from "../../../app/tabs/scripts/searchEngines";
@@ -54,6 +54,8 @@ export class meowUiHost {
   @Trace addressBarFocused: boolean = false;
   @Trace addressBarStatus: AddressBarStatuses = AddressBarStatuses.NO_SHIFT;
   addressBarBlurTimeoutId: number | undefined = undefined;
+  // In-page search
+  @Trace inPageSearchShow: boolean = false;
   // Suggesting
   @Trace suggestionsHistories: meowHistoryEntry[] = [];
   @Trace suggestionsBookmarks: meowBookmarkItem[] = [];
@@ -143,6 +145,16 @@ export class meowUiHost {
         this.sideAreaShrunkExpect = true;
       });
       meow(`Auto shrink vertical tabs.`, 'goBackUni');
+      return true;
+    }
+
+    // In-page search
+    if (this.inPageSearchShow) {
+      const myTabs: meowTabsBunch = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.windowId}`)!;
+      myTabs.currentTabSearchCancel();
+      animateToImmediately(defaultAnimation(), () => {
+        this.inPageSearchShow = false;
+      });
       return true;
     }
 

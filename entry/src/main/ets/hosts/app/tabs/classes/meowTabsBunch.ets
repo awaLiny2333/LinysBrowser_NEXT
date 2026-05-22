@@ -6,6 +6,7 @@ import { meowTabInfo } from "./meowTabInfo";
 import lazy { TabNodeController } from "./WebNode";
 import lazy { webview } from "@kit.ArkWeb";
 import { thirdPartyCookies } from "../settings";
+import { defaultAnimation } from "../../../../components/settings";
 
 @ObservedV2
 export class meowTabsBunch {
@@ -143,6 +144,12 @@ export class meowTabsBunch {
       this.currentNode.rebuild();
       this.currentTab.syncUrl();
       this.currentTab.requestUiUpdate();
+      // Show search in page bar
+      if (this.currentTab.isSearching && !this.myUi.inPageSearchShow) {
+        animateToImmediately(defaultAnimation(), () => {
+          this.myUi.inPageSearchShow = true;
+        });
+      }
     } else {
       // Clear the url field
       if (!this.myUi.addressBarFocused) {
@@ -176,5 +183,102 @@ export class meowTabsBunch {
     if (this.currentTab) {
       this.currentTab.goHome();
     }
+  }
+
+  /**
+   * Gets the current tab search total result count.
+   */
+  get currentTabSearchResultCount() {
+    return this.currentTab?.searchResultCount;
+  }
+
+  /**
+   * Gets the current search result index.
+   */
+  get currentTabSearchIdx() {
+    return this.currentTab?.currentSearchResultIdx;
+  }
+
+  /**
+   * Gets the current tab search is done.
+   */
+  get currentTabSearchIsDone() {
+    return this.currentTab?.searchIsDone;
+  }
+
+  /**
+   * Gets the current tab search is in search mode.
+   */
+  get currentTabSearchIsSearching() {
+    return this.currentTab?.isSearching;
+  }
+
+  /**
+   * Gets the current tab search key in the input field.
+   */
+  get currentTabSearchKey() {
+    return this.currentTab?.inputSearchKey;
+  }
+
+  /**
+   * Gets the current tab search key that is searched last time.
+   */
+  get currentTabSearchedSearchKey() {
+    return this.currentTab?.searchedSearchKey;
+  }
+
+  /**
+   * Sets the current tab search key.
+   */
+  setCurrentTabSearchKey(searchKey: string) {
+    if (this.currentTab) {
+      this.currentTab.inputSearchKey = searchKey;
+    } else {
+      meow(`No current tab found!`, 'meowTabBunch][setCurrentTabSearchKey', meowLevel.WARN);
+    }
+  }
+
+  /**
+   * Submits the search on current tab.
+   */
+  submitCurrentTabSearchKey() {
+    if (!this.currentTab) {
+      meow(`No current tab found!`, 'meowTabBunch][submitCurrentTabSearchKey', meowLevel.WARN);
+      return;
+    }
+    this.currentTab.searchInPage();
+  }
+
+  /**
+   * Go to last search result on current tab.
+   */
+  currentTabSearchLast() {
+    if (!this.currentTab) {
+      meow(`No current tab found!`, 'meowTabBunch][currentTabSearchLast', meowLevel.WARN);
+      return;
+    }
+    this.currentTab.searchLast();
+  }
+
+  /**
+   * Go to next search result on current tab.
+   */
+  currentTabSearchNext() {
+    if (!this.currentTab) {
+      meow(`No current tab found!`, 'meowTabBunch][currentTabSearchNext', meowLevel.WARN);
+      return;
+    }
+    this.currentTab.searchNext();
+  }
+
+  /**
+   * Cancel search on current tab.
+   */
+  currentTabSearchCancel() {
+    if (!this.currentTab) {
+      meow(`No current tab found!`, 'meowTabBunch][currentTabSearchCancel', meowLevel.WARN);
+      return;
+    }
+    this.currentTab.searchCancel();
   }
 }

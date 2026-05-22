@@ -5,15 +5,15 @@ import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
 import lazy { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
 import lazy { defaultInnerRadius, defaultWindowTopDecorHeight, shortModeThreshold, updateNavigationIndicator, wideModeThreshold } from '../catstypicalframework/utils/ui';
 import lazy { MooTextModifier } from '../components/common/MooTextModifier';
-import lazy { defaultSidebarShrunkWidth, defaultSidebarWidth, defaultTabsVerticalShrunkWidth, defaultTabsVerticalWidth, meowThemeColorType, mooTextType, standardComponentHeight, standardSpacing, UnifiedButtonsType } from '../components/constants';
-import lazy { MeowAddressBar } from '../components/parts/Homepage/MeowAddressBar';
-import lazy { MeowDestination } from '../components/parts/Homepage/MeowDestination';
-import lazy { MeowResMonitor } from '../components/parts/Homepage/MeowResMonitor';
-import lazy { MeowShortcutsPanel } from '../components/parts/Homepage/MeowShortcuts';
-import lazy { MeowSuggestions } from '../components/parts/Homepage/MeowSuggestions';
-import lazy { MeowTitleBar, MeowTitleBarHeight } from '../components/parts/Homepage/MeowTitleBar';
-import lazy { MeowTitleTop } from '../components/parts/Homepage/MeowTitleTop';
-import lazy { MeowWindowInfoBar } from '../components/parts/Homepage/MeowWindowInfoBar';
+import lazy { defaultSidebarShrunkWidth, defaultSidebarWidth, defaultTabsVerticalShrunkWidth, defaultTabsVerticalWidth, meowThemeColorType, mooTextType, standardComponentHeight, standardSpacing, textInputSlimHeight, UnifiedButtonsType } from '../components/constants';
+import lazy { MeowAddressBar } from '../components/parts/Homepage/addressBar/MeowAddressBar';
+import lazy { MeowDestination } from '../components/parts/Homepage/addressBar/MeowDestination';
+import lazy { MeowResMonitor } from '../components/parts/Homepage/more/MeowResMonitor';
+import lazy { MeowShortcutsPanel } from '../components/parts/Homepage/frame/MeowShortcuts';
+import lazy { MeowSuggestions } from '../components/parts/Homepage/addressBar/MeowSuggestions';
+import lazy { MeowTitleBar } from '../components/parts/Homepage/frame/MeowTitleBar';
+import lazy { MeowTitleTop } from '../components/parts/Homepage/frame/MeowTitleTop';
+import lazy { MeowWindowInfoBar } from '../components/parts/Homepage/more/MeowWindowInfoBar';
 import lazy { MeowButtonsSlot } from '../components/parts/MeowButtons/MeowButtonsSlot';
 import lazy { MeowPlaceForDialogs } from '../components/parts/MeowPlaceForDialogs';
 import lazy { MeowPlaceForKeyShortcuts } from '../components/parts/MeowPlaceForKeyShortcuts';
@@ -33,6 +33,7 @@ import { unifiedDataChannel } from '@kit.ArkData';
 import { getMyBoard } from '../hosts/app/scratchingboard/scripts/helpers';
 import { meowTabsBunch } from '../hosts/app/tabs/classes/meowTabsBunch';
 import { MooProgress } from '../components/common/MooProgress';
+import { MeowSearchInPage } from '../components/parts/Homepage/frame/MeowSearchInPage';
 
 @Entry
 @ComponentV2
@@ -82,10 +83,7 @@ struct Index {
           Stack() {
             // Backdrop
             if (getMyResource().backgroundImage) {
-              Image(getMyResource().backgroundImage)
-                .opacity(useEffects() ? 0.5 : 1)
-                .grayscale(useEffects() ? 1 : 0)
-                .animation(defaultAnimation());
+              Image(getMyResource().backgroundImage).opacity(useEffects() ? 0.5 : 1).grayscale(useEffects() ? 1 : 0).animation(defaultAnimation());
             }
             // Shortcuts
             MeowShortcutsPanel({
@@ -215,7 +213,7 @@ struct Index {
         .padding(this.isNotAnySortOfFullscreen ? this.outerFrameSpace : 0);
 
         if (this.isNotAnySortOfFullscreen) {
-          // Top bar
+          // Window Top bar
           MeowTitleTop(this.myLayout, this.myUi, this.myApp, this.myMisc, this.myTabs, this.getUIContext());
 
           // Title bar
@@ -239,11 +237,7 @@ struct Index {
                 if (this.myUi.dropHover) {
                   Text($r('app.string.ScratchingBoard_drop')).attributeModifier(new MooTextModifier()).width('100%').textAlign(TextAlign.Center);
                 } else {
-                  MeowAddressBar({
-                    myUi: this.myUi,
-                    myLayout: this.myLayout,
-                    myDialog: this.myDialog,
-                  });
+                  MeowAddressBar({ myUi: this.myUi, myLayout: this.myLayout, myDialog: this.myDialog, });
                 }
               }
 
@@ -264,9 +258,7 @@ struct Index {
                   .edgeEffect(EdgeEffect.Spring);
                 }
                 // Majorly the window alias
-                MeowWindowInfoBar({
-                  myUi: this.myUi,
-                });
+                MeowWindowInfoBar({ myUi: this.myUi });
                 // Resource monitor
                 if (showResourceMonitor()) {
                   MeowResMonitor();
@@ -277,23 +269,41 @@ struct Index {
             .alignItems(isPreferRightHand() ? HorizontalAlign.End : HorizontalAlign.Start)
             .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
             .backgroundColor(getColor(meowThemeColorType.SECONDARY))
-            .padding(!titleBarPositionBottom() ? { bottom: standardSpacing, top: 1, left: this.myAvoid.left, right: this.myAvoid.right } : { top: standardSpacing, bottom: 1, left: this.myAvoid.left, right: this.myAvoid.right })
+            .padding(titleBarPositionBottom()
+              ? { top: standardSpacing, bottom: 1, left: this.myAvoid.left, right: this.myAvoid.right }
+              : { bottom: standardSpacing, top: 1, left: this.myAvoid.left, right: this.myAvoid.right })
             .width('100%');
           }
-          .alignRules(!titleBarPositionBottom()
+          .alignRules(titleBarPositionBottom()
             ? {
-              top: { anchor: '__container__', align: VerticalAlign.Top },
+              bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
               middle: { anchor: '__container__', align: HorizontalAlign.Center }
             }
             : {
-              bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+              top: { anchor: '__container__', align: VerticalAlign.Top },
               middle: { anchor: '__container__', align: HorizontalAlign.Center }
             })
           .scrollBar(BarState.Off)
-          .translate({ y: !titleBarPositionBottom() ? this.topAvoidHeight : -this.bottomAvoidHeight }) // Bottom avoid.
+          .translate({
+            y: titleBarPositionBottom()
+              ? -(this.myUi.inPageSearchShow ? this.searchInPageBarHeight + standardSpacing : this.bottomAvoidHeight)
+              : this.topAvoidHeight
+          }) // Bottom avoid.
           .constraintSize({ maxHeight: this.maxHeightTitleArea })
           .scrollable(ScrollDirection.Vertical)
           .edgeEffect(EdgeEffect.Spring);
+
+          // Bottom bar
+          if (this.myUi.inPageSearchShow) {
+            MeowSearchInPage({
+              myTabs: this.myTabs,
+              alignRulesMy: {
+                bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+                middle: { anchor: '__container__', align: HorizontalAlign.Center }
+              },
+              translateOptionsMy: { y: -this.searchInPageBarBottomAvoid }
+            });
+          }
         }
 
         // Gigantic window title
@@ -523,12 +533,28 @@ struct Index {
 
     // Title bar
     const tabsComp = this.showingHorizontalTab ? standardComponentHeight + standardSpacing : 0;
-    const newTitleHeight = tabsComp + (this.myLayout.wideMode ? MeowTitleBarHeight + standardSpacing : 2 * (MeowTitleBarHeight + standardSpacing));
+    const newTitleHeight = tabsComp + (this.myLayout.wideMode ? textInputSlimHeight + standardSpacing : 2 * (textInputSlimHeight + standardSpacing));
     if (newTitleHeight != this.myLayout.heightTitleBar) {
       this.myLayout.heightTitleBar = newTitleHeight;
     }
 
     return maxHeightTitleArea;
+  }
+
+  /**
+   * Includes the height from the bottom of the physical window / screen,
+   * to the exact top of the search in page bar (no top padding).
+   * So it includes the bottom avoid of the screen.
+   */
+  get searchInPageBarHeight() {
+    return textInputSlimHeight - (useEffects() ? 2 : 0) + this.searchInPageBarBottomAvoid;
+  }
+
+  /**
+   * The maximum between this.myAvoid.bottom and a standardSpacing.
+   */
+  get searchInPageBarBottomAvoid() {
+    return Math.max(this.myAvoid.bottom, standardSpacing);
   }
 
   /**
@@ -543,10 +569,24 @@ struct Index {
       const freeWindowCompensation = (this.myApp.freeWindow ? standardSpacing : 0);
       top = this.myAvoid.top;
       bottom = this.myAvoid.bottom + freeWindowCompensation + this.myLayout.heightTitleBar + 1; // + 1 is for the 1vp border of the main frame when effects are on.
+      if (this.myUi.inPageSearchShow) {
+        // searchInPageBarHeight includes bottomAvoidHeight,
+        // and bottomAvoidHeight is in the bottom value already when title bar is on BOTTOM edge,
+        // so we need to exclude it.
+        bottom += this.searchInPageBarHeight - this.bottomAvoidHeight + standardSpacing;
+        // And an extra standardSpacing is required to separate the search in page bar and the base address bar.
+      }
     } else {
       // Top
       top = this.myAvoid.top + this.myLayout.heightTitleBar + 1; // Same.
       bottom = (showBottomAvoid() ? this.myAvoid.bottom : 0) + (useEffects() ? standardSpacing : 0);
+      if (this.myUi.inPageSearchShow) {
+        // When title bar is on TOP edge,
+        // The bottom part has only bare bottom avoid.
+        // Then we just add the searchInPageBarHeight into it.
+        // This searchInPageBarHeight contains no top / bottom padding, so we need an extra standardSpacing for non effects mode.
+        bottom += this.searchInPageBarHeight + (!useEffects() ? standardSpacing : 0);
+      }
     }
 
     // Horizontal

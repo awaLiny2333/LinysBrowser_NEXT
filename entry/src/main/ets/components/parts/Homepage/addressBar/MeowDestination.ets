@@ -1,11 +1,11 @@
-import { copyText } from "../../../catstypicalframework/utils/clipboard";
-import { UnifiedDestinationResultType } from "../../../catstypicalframework/utils/url";
-import { SymbolButton } from "../../../dialogs/parts/WoofCatsDev/parts/common/SymbolButton";
-import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
-import { MooCapsuleButton } from "../../common/MooCapsuleButton";
-import { MooTextModifier } from "../../common/MooTextModifier";
-import { standardComponentHeight, standardSpacing } from "../../constants";
-import { isPreferRightHand, titleBarPositionBottom } from "../../settings";
+import { copyText } from "../../../../catstypicalframework/utils/clipboard";
+import { UnifiedDestinationResultType } from "../../../../catstypicalframework/utils/url";
+import { SymbolButton } from "../../../../dialogs/parts/WoofCatsDev/parts/common/SymbolButton";
+import { meowUiHost } from "../../../../hosts/system/windows/classes/meowUiHost";
+import { MooCapsuleButton } from "../../../common/MooCapsuleButton";
+import { MooTextModifier } from "../../../common/MooTextModifier";
+import { standardComponentHeight, standardSpacing } from "../../../constants";
+import { isPreferRightHand, titleBarPositionBottom } from "../../../settings";
 
 @Builder
 export function MeowDestination(myUi: meowUiHost, uiContext: UIContext) {

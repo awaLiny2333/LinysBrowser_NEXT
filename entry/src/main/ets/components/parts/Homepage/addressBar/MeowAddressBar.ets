@@ -1,15 +1,14 @@
 import lazy { url } from '@kit.ArkTS';
-import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
-import lazy { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
-import lazy { measureTextWidth } from '../../../catstypicalframework/utils/ui';
-import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
-import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
-import { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addressBarStatuses';
-import { MooTextModifier } from '../../common/MooTextModifier';
-import { fontSizeSmall, meowThemeColorType, standardSpacing } from '../../constants';
-import { getColor, isPreferRightHand, meowButtonsAddressBarAlways, meowButtonsAddressBarOnFocus, useEffects } from '../../settings';
-import { MeowButtonsSlot } from '../MeowButtons/MeowButtonsSlot';
-import { MeowTitleBarHeight } from './MeowTitleBar';
+import { meowLayout } from '../../../../catstypicalframework/hosts/meowLayout';
+import lazy { meow, meowLevel } from '../../../../catstypicalframework/utils/catsLogger';
+import lazy { measureTextWidth } from '../../../../catstypicalframework/utils/ui';
+import { meowDialogManager } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
+import { meowUiHost } from '../../../../hosts/system/windows/classes/meowUiHost';
+import { AddressBarStatuses } from '../../../../hosts/system/windows/scripts/addressBarStatuses';
+import { MooTextModifier } from '../../../common/MooTextModifier';
+import { fontSizeSmall, meowThemeColorType, standardSpacing, textInputSlimHeight } from '../../../constants';
+import { getColor, isPreferRightHand, meowButtonsAddressBarAlways, meowButtonsAddressBarOnFocus, useEffects } from '../../../settings';
+import { MeowButtonsSlot } from '../../MeowButtons/MeowButtonsSlot';
 
 /**
  * The address bar.
@@ -71,7 +70,7 @@ struct MeowAddressBar {
               if (this.myUi.searchKeywordEntriesExpanded) {
                 Text(`${it.item[0]}`).attributeModifier(new MooTextModifier());
               }
-              TextInput({ text: it.item[1], placeholder: '󰒟' })
+              TextInput({ text: it.item[1], placeholder: '󰒟  ...' })
                 .allowDrop(null)
                 .addressBarProps()
                 .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
@@ -119,7 +118,7 @@ struct MeowAddressBar {
   AddressInputNormal() {
     // Normal view
     Row() {
-      TextInput({ text: this.myUi.addressBarContentMajor, placeholder: '󰀩 ...' })
+      TextInput({ text: this.myUi.addressBarContentMajor, placeholder: '󰀩  ...' })
         .allowDrop(null)
         .addressBarProps()
         .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
@@ -161,7 +160,7 @@ struct MeowAddressBar {
     const spaceEachEntry = standardSpacing * 2;
     for (const entry of this.myUi.searchKeywordEntries) {
       needLength += measureTextWidth(entry[0], this.getUIContext(), fontSizeSmall, FontWeight.Normal);
-      needLength += measureTextWidth(entry[1] ? entry[1] : '󰒟', this.getUIContext(), fontSizeSmall, FontWeight.Normal);
+      needLength += measureTextWidth(entry[1] ? entry[1] : '󰒟  ...', this.getUIContext(), fontSizeSmall, FontWeight.Normal);
       needLength += paddingEachInput + spaceEachEntry;
     }
     return this.barWidth - needLength > 0;
@@ -183,7 +182,7 @@ export { MeowAddressBar };
 @Extend(TextInput)
 function addressBarProps() {
   .padding(useEffects() ? { left: 16, right: 16, top: 8, bottom: 7 } : { left: 16, right: 16, top: 8, bottom: 8 })
-  .height(useEffects() ? MeowTitleBarHeight - 1 : MeowTitleBarHeight)
+  .height(useEffects() ? textInputSlimHeight - 1 : textInputSlimHeight)
   .fontColor(getColor(meowThemeColorType.FONT))
   .caretColor(getColor(meowThemeColorType.FONT))
   .selectedBackgroundColor(getColor(meowThemeColorType.FONT))

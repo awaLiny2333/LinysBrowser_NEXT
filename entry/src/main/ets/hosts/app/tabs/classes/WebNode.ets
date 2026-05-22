@@ -102,6 +102,7 @@ function WebBuilder(pk: meowTabInfo) {
     })
     .onSearchResultReceive((result) => {
       meow(`onSearchResultReceive: ${result.activeMatchOrdinal}/${result.numberOfMatches}`, 'WebNode][onSearchResultReceive');
+      pk.receiveSearchResult(result);
     })
     .onContextMenuShow((event) => {
 

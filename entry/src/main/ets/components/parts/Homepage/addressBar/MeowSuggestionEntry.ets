@@ -3,13 +3,13 @@
  *
  * @see entry/src/main/ets/dialogs/parts/WoofHistory/parts/HistoryEntry.ets
  */
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
-import { isBlank } from "../../../catstypicalframework/utils/strings";
-import { defaultItemRadius } from "../../../catstypicalframework/utils/ui";
-import { meowBookmarkItem } from "../../../hosts/userdata/bookmarks/classes/meowBookmarkItem";
-import { meowHistoryEntry } from "../../../hosts/userdata/history/classes/meowHistoryEntry";
-import { MooTextModifier } from "../../common/MooTextModifier";
-import { standardSpacing, meowFlexOptions } from "../../constants";
+import { meowLayout } from "../../../../catstypicalframework/hosts/meowLayout";
+import { isBlank } from "../../../../catstypicalframework/utils/strings";
+import { defaultItemRadius } from "../../../../catstypicalframework/utils/ui";
+import { meowBookmarkItem } from "../../../../hosts/userdata/bookmarks/classes/meowBookmarkItem";
+import { meowHistoryEntry } from "../../../../hosts/userdata/history/classes/meowHistoryEntry";
+import { MooTextModifier } from "../../../common/MooTextModifier";
+import { standardSpacing, meowFlexOptions } from "../../../constants";
 
 @ComponentV2
 struct SuggestionEntryButton {

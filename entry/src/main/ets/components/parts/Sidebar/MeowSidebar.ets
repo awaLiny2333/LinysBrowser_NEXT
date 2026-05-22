@@ -81,10 +81,8 @@ struct MeowSidebar {
         .opacity(this.isEditing ? 0.5 : 1)
         .layoutWeight(1)
         .width(this.sidebarWidth);
-
-        if (!this.myUi.sideAreaShrunkSummarized) {
-          this.buttonRow();
-        }
+        
+        this.buttonRow();
       }
     }
     .onAppear(() => {
@@ -206,7 +204,7 @@ struct MeowSidebar {
       });
     }
     .clip(true)
-    .width('100%');
+    .width(this.sidebarWidth);
   }
 
   /**

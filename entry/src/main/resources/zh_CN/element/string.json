@@ -1017,6 +1017,10 @@
       "value": "󰄀  未知"
     },
     {
+      "name": "SearchInPage_noTab",
+      "value": "还没有打开网页 ┐(￣ヮ￣)┌"
+    },
+    {
       "name": "Permission_reason_INTERNET",
       "value": "让冲浪喵访问互联网！"
     },

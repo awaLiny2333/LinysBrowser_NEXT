@@ -1017,6 +1017,10 @@
       "value": "󰄀  Unknown"
     },
     {
+      "name": "SearchInPage_noTab",
+      "value": "No page opened... ┐(￣ヮ￣)┌"
+    },
+    {
       "name": "Permission_reason_INTERNET",
       "value": "Let the BrowserCat visit the web!"
     },

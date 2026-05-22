@@ -149,6 +149,11 @@ struct MeowButton {
       case UnifiedButtonsType.HOME:
         this.myTab.goHomeCurrent();
         break;
+      case UnifiedButtonsType.SEARCH_IN_PAGE:
+        animateToImmediately(defaultAnimation(), () => {
+          this.myUi.inPageSearchShow = !this.myUi.inPageSearchShow;
+        });
+        break;
       default:
         break;
     }
@@ -204,6 +209,8 @@ struct MeowButton {
         return this.myUi.showSidebar;
       case UnifiedButtonsType.ADDRESS_KEYWORD_SWITCH:
         return true;
+      case UnifiedButtonsType.SEARCH_IN_PAGE:
+        return this.myUi.inPageSearchShow;
       default:
         return undefined;
     }

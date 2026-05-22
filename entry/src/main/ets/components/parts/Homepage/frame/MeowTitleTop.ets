@@ -1,14 +1,14 @@
 import { common } from '@kit.AbilityKit';
-import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
-import { meowMisc } from '../../../catstypicalframework/hosts/meowMisc';
-import { windowTopAvoidLeft, windowTopAvoidRight } from '../../../catstypicalframework/utils/ui';
-import { meowTabsBunch } from '../../../hosts/app/tabs/classes/meowTabsBunch';
-import { meowAppHost } from '../../../hosts/system/windows/classes/meowAppHost';
-import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
-import { newWindow } from '../../../hosts/system/windows/scripts/multiwindows';
-import { MooSymbolButtonSmall } from '../../common/MooSymbolButtonSmall';
-import { MooTextModifier } from '../../common/MooTextModifier';
-import { showWindowTitle, windowTitlePosition } from '../../settings';
+import { meowLayout } from '../../../../catstypicalframework/hosts/meowLayout';
+import { meowMisc } from '../../../../catstypicalframework/hosts/meowMisc';
+import { windowTopAvoidLeft, windowTopAvoidRight } from '../../../../catstypicalframework/utils/ui';
+import { meowTabsBunch } from '../../../../hosts/app/tabs/classes/meowTabsBunch';
+import { meowAppHost } from '../../../../hosts/system/windows/classes/meowAppHost';
+import { meowUiHost } from '../../../../hosts/system/windows/classes/meowUiHost';
+import { newWindow } from '../../../../hosts/system/windows/scripts/multiwindows';
+import { MooSymbolButtonSmall } from '../../../common/MooSymbolButtonSmall';
+import { MooTextModifier } from '../../../common/MooTextModifier';
+import { showWindowTitle, windowTitlePosition } from '../../../settings';
 
 /**
  * The window top bar. Holds the buttons on window top, as well as the name of window / zone.

@@ -34,6 +34,13 @@ export class meowTabInfo {
   // History
   saveHistoryTimeoutId: number | undefined;
   lastSavedHistoryEntry: meowHistoryEntry | undefined;
+  // Search in page
+  @Trace inputSearchKey: string = '';
+  @Trace searchedSearchKey: string = '';
+  @Trace isSearching: boolean = false;
+  @Trace searchIsDone: boolean = true;
+  @Trace currentSearchResultIdx: number = -1;
+  @Trace searchResultCount: number = 0;
 
   constructor(myUi: meowUiHost) {
     this.myUi = myUi;
@@ -204,6 +211,59 @@ export class meowTabInfo {
     }, timeout);
   }
 
+  /**
+   * Search in page.
+   */
+  searchInPage() {
+    try {
+      this.controller?.searchAllAsync(this.inputSearchKey);
+      this.isSearching = true;
+      this.searchedSearchKey = this.inputSearchKey || '';
+      meow(`Submit in-page search for [${this.inputSearchKey}]!`, 'meowTabInfo][searchInPage', meowLevel.INFO);
+    } catch (e) {
+      meow(`Failed to submit in-page search for [${this.inputSearchKey}]: ${e}`, 'meowTabInfo][searchInPage', meowLevel.ERROR);
+    }
+  }
+
+  /**
+   * Search last.
+   */
+  searchLast() {
+    try {
+      this.controller?.searchNext(false);
+    } catch (e) {
+      meow(`Failed to search last for [${this.searchedSearchKey}]: ${e}`, 'meowTabInfo][currentTabSearchLast', meowLevel.ERROR);
+    }
+  }
+
+  /**
+   * Search next.
+   */
+  searchNext() {
+    try {
+      this.controller?.searchNext(true);
+    } catch (e) {
+      meow(`Failed to search next for [${this.searchedSearchKey}]: ${e}`, 'meowTabInfo][currentTabSearchNext', meowLevel.ERROR);
+    }
+  }
+
+  /**
+   * Cancel current search.
+   */
+  searchCancel() {
+    try {
+      this.controller?.clearMatches();
+      this.isSearching = false;
+      this.inputSearchKey = '';
+      this.searchedSearchKey = '';
+      this.searchResultCount = 0;
+      this.currentSearchResultIdx = 0;
+      this.searchIsDone = true;
+    } catch (e) {
+      meow(`Failed to cancel for [${this.searchedSearchKey}]: ${e}`, 'meowTabInfo][currentTabSearchCancel', meowLevel.ERROR);
+    }
+  }
+
   // Web settings
 
   forceDarkMe() {
@@ -274,6 +334,9 @@ export class meowTabInfo {
     }
   }
 
+  /**
+   * Resets the tab user agent.
+   */
   resetTabUA() {
     this.overrideUA = undefined;
     try {
@@ -479,5 +542,11 @@ export class meowTabInfo {
     }
     const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
     requestDialog(myDialog, openDialogRequestType.HTTP_AUTH, event, true);
+  }
+
+  receiveSearchResult(result: OnSearchResultReceiveEvent) {
+    this.currentSearchResultIdx = result.activeMatchOrdinal;
+    this.searchResultCount = result.numberOfMatches;
+    this.searchIsDone = result.isDoneCounting;
   }
 }
