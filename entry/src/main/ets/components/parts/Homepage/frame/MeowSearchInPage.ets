@@ -13,7 +13,7 @@ export struct MeowSearchInPage {
 
   build() {
     Row({ space: standardSpacing }) {
-      if (this.myTabs.currentTabSearchKey == undefined) {
+      if (this.myTabs.currentTabSearchInputKey == undefined) {
         Text($r('app.string.SearchInPage_noTab')).attributeModifier(new MooTextModifier()).opacity(0.75).layoutWeight(1).textAlign(TextAlign.Center);
       } else {
         MooTextInputV2({
@@ -23,14 +23,15 @@ export struct MeowSearchInPage {
           myId: searchInPageInputId,
           shiftBackgroundColor: true,
           myHeight: this.myHeight,
-          text: this.myTabs.currentTabSearchKey,
+          text: this.myTabs.currentTabSearchInputKey,
           onChange: (c) => {
-            this.myTabs.setCurrentTabSearchKey(c);
+            this.myTabs.currentTabSearchSetKey(c);
           },
           onSubmit: () => {
             this.go();
           }
         });
+        // Controls
         Row() {
           SymbolButton({
             icon: $r('sys.symbol.magnifyingglass'),
@@ -54,6 +55,7 @@ export struct MeowSearchInPage {
               this.myTabs.currentTabSearchLast(); // Last one
             }
           });
+          // Index indicator
           Text(`${(this.myTabs.currentTabSearchIdx || 0) + 1}/${this.myTabs.currentTabSearchResultCount}`).attributeModifier(new MooTextModifier()).padding(standardSpacing * 0.75);
           SymbolButton({
             icon: $r('sys.symbol.chevron_down'),
@@ -75,10 +77,10 @@ export struct MeowSearchInPage {
   }
 
   go() {
-    if (this.myTabs.currentTabSearchKey == this.myTabs.currentTabSearchedSearchKey) {
+    if (this.myTabs.currentTabSearchInputKey == this.myTabs.currentTabSearchSearchedKey) {
       this.myTabs.currentTabSearchNext(); // Go for next one.
     } else {
-      this.myTabs.submitCurrentTabSearchKey(); // Search new.
+      this.myTabs.currentTabSearchSubmit(); // Search new.
     }
     setTimeout(() => {
       focusControl.requestFocus(searchInPageInputId);

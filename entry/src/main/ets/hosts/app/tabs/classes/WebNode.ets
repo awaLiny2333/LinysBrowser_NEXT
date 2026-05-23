@@ -45,10 +45,12 @@ function WebBuilder(pk: meowTabInfo) {
     .onPageBegin(() => {
       pk.progress = 0;
       pk.updateUrl();
+      pk.onPageBegin();
     })
     .onPageEnd(() => {
       pk.progress = -1;
       pk.updateUrl();
+      pk.onPageEnd();
     })
     .onProgressChange((event) => {
       pk.progress = event.newProgress;
@@ -101,7 +103,6 @@ function WebBuilder(pk: meowTabInfo) {
       return true;
     })
     .onSearchResultReceive((result) => {
-      meow(`onSearchResultReceive: ${result.activeMatchOrdinal}/${result.numberOfMatches}`, 'WebNode][onSearchResultReceive');
       pk.receiveSearchResult(result);
     })
     .onContextMenuShow((event) => {

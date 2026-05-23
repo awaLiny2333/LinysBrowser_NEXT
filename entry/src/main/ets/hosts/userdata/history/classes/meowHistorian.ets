@@ -99,7 +99,6 @@ export class meowHistorian {
     }
 
     const startTime = Date.now();
-    this.busy = true;
 
     // Check existence of target chunk file
     const chunkFilePath = `${this.chunkBasePath}/${this.historyChunkName(newHistoryEntry.time)}`;
@@ -165,7 +164,6 @@ export class meowHistorian {
     }
 
     const startTime = Date.now();
-    this.busy = true;
 
     // 1. Build map of filePaths to timestamps
     const pathTsMap = new Map<string, Set<string>>();
@@ -214,7 +212,6 @@ export class meowHistorian {
       meow(`Busy. Rejected history: ["${index}"]`, 'meowHistorian][getHistoryEntries', meowLevel.WARN);
       return [];
     }
-    this.busy = true;
 
     await this.chunks[index].loadEntriesFromDisk();
     const result = Array.from(this.chunks[index].entries || []);
@@ -229,17 +226,15 @@ export class meowHistorian {
    * Rebuilds the index of all chunks.
    */
   async rebuildIndex() {
-    if (this.busy || this.isRebuilding) {
-      meow(`Busy. Rejected rebuild`, 'meowHistorian][rebuildIndex', meowLevel.WARN);
+    if (this.isRebuilding) {
+      meow(`Rebuilding. Rejected rebuild`, 'meowHistorian][rebuildIndex', meowLevel.WARN);
       return false;
     }
-    this.busy = true;
     this.isRebuilding = true;
 
     await clearDirectory(`${this.indexBasePath}`); // Clear all built index files.
     await buildAllIndexToDisk(`${this.indexBasePath}`, this.chunks, true); // BUILD!
-
-    this.busy = false;
+    
     this.isRebuilding = false;
     return true;
   }
@@ -263,7 +258,6 @@ export class meowHistorian {
     meow(`Looking up history: ["${query}", ${maxResults}]`, 'meowHistorian][lookUpHistoryEntries', meowLevel.WARN);
 
     const startTime = Date.now();
-    // this.busy = true;
     const result: meowHistoryEntry[] = [];
 
     const addedKeys = new Set<string>();

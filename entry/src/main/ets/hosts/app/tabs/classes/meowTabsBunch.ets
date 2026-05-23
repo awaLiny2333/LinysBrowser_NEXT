@@ -1,12 +1,11 @@
+import lazy { webview } from "@kit.ArkWeb";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import { defaultAnimation } from "../../../../components/settings";
 import { meowUiHost } from "../../../system/windows/classes/meowUiHost";
-import lazy { applyEasyListFromDisk } from "../scripts/adBlocker";
 import { applyUserAgentFromSettings } from "../scripts/userAgents";
+import { thirdPartyCookies } from "../settings";
 import { meowTabInfo } from "./meowTabInfo";
 import lazy { TabNodeController } from "./WebNode";
-import lazy { webview } from "@kit.ArkWeb";
-import { thirdPartyCookies } from "../settings";
-import { defaultAnimation } from "../../../../components/settings";
 
 @ObservedV2
 export class meowTabsBunch {
@@ -41,9 +40,9 @@ export class meowTabsBunch {
     this.initialized = true;
   }
 
-  async applyEasyListFromDisk() {
-    await applyEasyListFromDisk(this.uiContext.getHostContext()!.filesDir, this.uiContext.getHostContext()!.tempDir);
-  }
+  // async applyEasyListFromDisk() {
+  //   await applyEasyListFromDisk(this.uiContext.getHostContext()!.filesDir, this.uiContext.getHostContext()!.tempDir);
+  // }s
 
   /**
    * Ensures there is at least one tab.
@@ -142,7 +141,7 @@ export class meowTabsBunch {
     if (this.currentNode) {
       this.currentNode.attachWeb();
       this.currentNode.rebuild();
-      this.currentTab.syncUrl();
+      this.currentTab.syncUrlUI();
       this.currentTab.requestUiUpdate();
       // Show search in page bar
       if (this.currentTab.isSearching && !this.myUi.inPageSearchShow) {
@@ -162,7 +161,30 @@ export class meowTabsBunch {
    * Refresh the current tab.
    */
   refreshCurrent() {
-    if (this.currentTab) {
+    if (this.currentTab && !this.currentTab.isLoading) {
+      this.currentTab.refresh();
+    }
+  }
+
+  /**
+   * Stop the current tab.
+   */
+  stopCurrent() {
+    if (this.currentTab && this.currentTab.isLoading) {
+      this.currentTab.stop();
+    }
+  }
+
+  /**
+   * Refresh or stop the current tab.
+   */
+  refreshStopCurrent() {
+    if (!this.currentTab) {
+      return;
+    }
+    if (this.currentTab.isLoading) {
+      this.currentTab.stop();
+    } else {
       this.currentTab.refresh();
     }
   }
@@ -183,6 +205,16 @@ export class meowTabsBunch {
     if (this.currentTab) {
       this.currentTab.goHome();
     }
+  }
+  
+  // GETTERS
+  
+  get currentTabCanBack() {
+    return this.currentTab?.canBack;
+  }
+  
+  get currentTabCanForw() {
+    return this.currentTab?.canForw;
   }
 
   /**
@@ -216,21 +248,23 @@ export class meowTabsBunch {
   /**
    * Gets the current tab search key in the input field.
    */
-  get currentTabSearchKey() {
+  get currentTabSearchInputKey() {
     return this.currentTab?.inputSearchKey;
   }
 
   /**
    * Gets the current tab search key that is searched last time.
    */
-  get currentTabSearchedSearchKey() {
+  get currentTabSearchSearchedKey() {
     return this.currentTab?.searchedSearchKey;
   }
+  
+  // IN-PAGE SEARCH
 
   /**
    * Sets the current tab search key.
    */
-  setCurrentTabSearchKey(searchKey: string) {
+  currentTabSearchSetKey(searchKey: string) {
     if (this.currentTab) {
       this.currentTab.inputSearchKey = searchKey;
     } else {
@@ -241,7 +275,7 @@ export class meowTabsBunch {
   /**
    * Submits the search on current tab.
    */
-  submitCurrentTabSearchKey() {
+  currentTabSearchSubmit() {
     if (!this.currentTab) {
       meow(`No current tab found!`, 'meowTabBunch][submitCurrentTabSearchKey', meowLevel.WARN);
       return;

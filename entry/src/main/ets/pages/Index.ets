@@ -76,7 +76,7 @@ struct Index {
         // Shortcuts handler
         MeowPlaceForKeyShortcuts(this.myDialog, this.myUi, this.myKey, this.myTabs, this.getUIContext());
 
-        // This is ugly.
+        // This nesting is ugly.
         // Main frame
         Stack({ alignContent: sidebarShouldBeOnTheRight() ? Alignment.End : Alignment.Start }) {
           // Web frame
@@ -93,16 +93,12 @@ struct Index {
                 });
               }
             });
-
+            // Web
             if (this.myTabs.currentNode && this.myTabs.currentTab?.url) {
               NodeContainer(this.myTabs.currentNode);
             }
-
             // Progress bar
-            MooProgress({
-              show: (this.myTabs.currentTab?.progress || -1) > 0,
-              percentage: (this.myTabs.currentTab?.progress || -1)
-            });
+            MooProgress({ show: (this.myTabs.currentTab?.progress || -1) > 0, percentage: (this.myTabs.currentTab?.progress || -1) });
           }
           .alignContent(Alignment.TopStart)
           .margin(this.mainFrameSpace)
@@ -124,11 +120,9 @@ struct Index {
                   this.onDropSideArea();
                 },
                 onDragEnterSidebar: () => {
-                  // meow(`Drag entered Sidebar!`, 'Index', meowLevel.WARN);
                   this.onDragEnterSideArea();
                 },
                 onDragLeaveSidebar: () => {
-                  // meow(`Drag left Sidebar!`, 'Index', meowLevel.WARN);
                   this.onDragLeaveSideArea();
                 }
               });
@@ -136,7 +130,9 @@ struct Index {
           }
           .direction(sidebarShouldBeOnTheRight() ? Direction.Ltr : Direction.Rtl)
           .justifyContent(FlexAlign.Center)
-          // NOTE: We add the padding and then translate this a unit of standardSpacing to catch the hover action in order to expand the vertical tabs.
+          // NOTE: We add the padding and then translate this a unit of standardSpacing
+          // to catch the cursor's hover action when it is swung brainlessly to the edge of the screen
+          // in order to expand the vertical tabs.
           .padding(this.sideAreaPadding)
           .translate(useEffects() && this.isNotAnySortOfFullscreen ? (sidebarShouldBeOnTheRight() ? { x: standardSpacing } : { x: -standardSpacing }) : undefined)
           // END NOTE
@@ -144,69 +140,20 @@ struct Index {
           .backgroundColor(useEffects() ? getColor(meowThemeColorType.SECONDARY) : getColor(meowThemeColorType.PRIMARY))
           .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
           .onAreaChange((o, n) => {
-            if (o.width != n.width) {
-              let newW = n.width as number;
-              if (useEffects()) {
-                newW -= standardSpacing;
-              }
-              if (sideAreaShrinkAuto() && sideAreaShrinkExpandNoPush()) {
-                // Auto shrink, and we don't want to push the web contents away everytime the mouse travels across the tabs bar.
-                if (this.myUi.showingVerticalTab && !this.myUi.sideAreaShrunkSummarized) {
-                  newW -= (defaultTabsVerticalWidth - defaultTabsVerticalShrunkWidth);
-                }
-                if (this.myUi.showSidebar && !this.myUi.sideAreaShrunkSummarized) {
-                  newW -= (defaultSidebarWidth - defaultSidebarShrunkWidth);
-                }
-              }
-              animateToImmediately(defaultAnimation(), () => {
-                this.myUi.sideAreaWidth = Math.ceil(Math.max(0, newW));
-              });
-              // meow(`New sideAreaWidth: ${this.myUi.sideAreaWidth}!`, 'Index', meowLevel.INFO);
-            }
+            this.actionsOnSideAreaChange(o, n);
           })
           .onHover((isHover) => {
-            if (!(sideAreaShrinkAuto())) {
-              return;
-            }
-            // Auto shrink
-            if (isHover) {
-              animateToImmediately(defaultAnimation(), () => {
-                this.myUi.sideAreaShrunkExpect = false;
-              });
-            } else {
-              setTimeout(() => {
-                animateToImmediately(defaultAnimation(), () => {
-                  this.myUi.sideAreaShrunkExpect = true;
-                });
-              }, 10);
-            }
+            this.actionsOnSideAreaHover(isHover);
           })
           .onDrop((e) => {
             this.onDropSideArea();
             this.dropToScratchingBoard(e);
-
-            // Check if there is scratching board panel added to the sidebar,
-            // If added then switch to that page.
-            let hasBoard = false;
-            const buttons = sidebarButtons();
-            for (const button of buttons) {
-              if (button[1] == UnifiedButtonsType.SCRATCHING_BOARD) {
-                hasBoard = true;
-                break;
-              }
-            }
-            if (hasBoard) {
-              animateToImmediately(defaultAnimation(), () => {
-                this.myUi.sidebarPage = UnifiedButtonsType.SCRATCHING_BOARD;
-              });
-            }
+            this.checkShowScratchingBoard();
           })
           .onDragEnter(() => {
-            // meow(`Drag entered Side area!`, 'Index', meowLevel.WARN);
             this.onDragEnterSideArea();
           })
           .onDragLeave(() => {
-            // meow(`Drag left Side area!`, 'Index', meowLevel.WARN);
             this.onDragLeaveSideArea();
           });
         }
@@ -337,26 +284,7 @@ struct Index {
       this.actionsOnAppear();
     })
     .onAreaChange((o, n) => {
-      if (o.width != n.width) {
-        this.myLayout.width = n.width as number;
-        const newWideMode = this.myLayout.width > wideModeThreshold;
-        const wideModeChanged = this.myLayout.wideMode != newWideMode;
-        const needRefocus = this.myUi.addressBarFocused && wideModeChanged;
-        if (wideModeChanged) {
-          animateToImmediately(defaultAnimation(), () => {
-            this.myLayout.wideMode = newWideMode;
-          });
-        }
-        if (needRefocus) {
-          this.myUi.requestAddressBarFocus(this.getUIContext());
-        }
-      }
-      if (o.height != n.height) {
-        this.myLayout.height = n.height as number;
-        animateToImmediately(defaultAnimation(), () => {
-          this.myLayout.shortMode = this.myLayout.height < shortModeThreshold;
-        });
-      }
+      this.actionsOnBaseAreaChange(o, n);
     });
   }
 
@@ -372,6 +300,69 @@ struct Index {
     setTimeout(() => {
       this.render = true;
     }, 10);
+  }
+
+  actionsOnBaseAreaChange(o: Area, n: Area) {
+    if (o.width != n.width) {
+      this.myLayout.width = n.width as number;
+      const newWideMode = this.myLayout.width > wideModeThreshold;
+      const wideModeChanged = this.myLayout.wideMode != newWideMode;
+      const needRefocus = this.myUi.addressBarFocused && wideModeChanged;
+      if (wideModeChanged) {
+        animateToImmediately(defaultAnimation(), () => {
+          this.myLayout.wideMode = newWideMode;
+        });
+      }
+      if (needRefocus) {
+        this.myUi.requestAddressBarFocus(this.getUIContext());
+      }
+    }
+    if (o.height != n.height) {
+      this.myLayout.height = n.height as number;
+      animateToImmediately(defaultAnimation(), () => {
+        this.myLayout.shortMode = this.myLayout.height < shortModeThreshold;
+      });
+    }
+  }
+
+  actionsOnSideAreaChange(o: Area, n: Area) {
+    if (o.width == n.width) {
+      return;
+    }
+    let newW = n.width as number;
+    if (useEffects()) {
+      newW -= standardSpacing;
+    }
+    if (sideAreaShrinkAuto() && sideAreaShrinkExpandNoPush()) {
+      // Auto shrink, and we don't want to push the web contents away everytime the mouse travels across the tabs bar.
+      if (this.myUi.showingVerticalTab && !this.myUi.sideAreaShrunkSummarized) {
+        newW -= (defaultTabsVerticalWidth - defaultTabsVerticalShrunkWidth);
+      }
+      if (this.myUi.showSidebar && !this.myUi.sideAreaShrunkSummarized) {
+        newW -= (defaultSidebarWidth - defaultSidebarShrunkWidth);
+      }
+    }
+    animateToImmediately(defaultAnimation(), () => {
+      this.myUi.sideAreaWidth = Math.ceil(Math.max(0, newW));
+    });
+  }
+
+  actionsOnSideAreaHover(isHover: boolean) {
+    if (!(sideAreaShrinkAuto())) {
+      return;
+    }
+    // Auto shrink
+    if (isHover) {
+      animateToImmediately(defaultAnimation(), () => {
+        this.myUi.sideAreaShrunkExpect = false;
+      });
+    } else {
+      setTimeout(() => {
+        animateToImmediately(defaultAnimation(), () => {
+          this.myUi.sideAreaShrunkExpect = true;
+        });
+      }, 10);
+    }
   }
 
   // Drag drop side area
@@ -467,6 +458,26 @@ struct Index {
     animateToImmediately(defaultAnimation(), () => {
       myBoard.addEntries(records, `${this.getUIContext().getHostContext()!.tempDir}/scratching-board`);
     });
+  }
+
+  /**
+   * Check if there is scratching board panel in sidebar,
+   * If so then call sidebar to switch to that page.
+   */
+  checkShowScratchingBoard() {
+    let hasBoard = false;
+    const buttons = sidebarButtons();
+    for (const button of buttons) {
+      if (button[1] == UnifiedButtonsType.SCRATCHING_BOARD) {
+        hasBoard = true;
+        break;
+      }
+    }
+    if (hasBoard) {
+      animateToImmediately(defaultAnimation(), () => {
+        this.myUi.sidebarPage = UnifiedButtonsType.SCRATCHING_BOARD;
+      });
+    }
   }
 
   // Values

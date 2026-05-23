@@ -24,6 +24,8 @@ export class meowTabInfo {
   @Trace title: string | undefined;
   @Trace url: string | undefined = userNewTabUrl();
   @Trace progress: number = -1; // -1 for not loading, other positive values from 0 ~ 100 is the progress for loading.
+  @Trace canBack: boolean = false;
+  @Trace canForw: boolean = false;
   // Web settings
   @Trace forceDark: boolean = true;
   @Trace xJS: boolean = false;
@@ -47,7 +49,21 @@ export class meowTabInfo {
     this.controller = new webview.WebviewController();
   }
 
+  // Statuses
+
+  get isLoading() {
+    return this.progress != -1;
+  }
+
   // UI
+
+  onPageBegin() {
+    // Do things.
+  }
+
+  onPageEnd() {
+    // Do things.
+  }
 
   /**
    * Fetches url from controller and syncs it to the UI.
@@ -59,7 +75,7 @@ export class meowTabInfo {
         url = '';
       }
       this.url = url;
-      this.syncUrl();
+      this.syncUrlUI();
 
       // Web statuses
       this.updateWebUiStatuses();
@@ -73,15 +89,30 @@ export class meowTabInfo {
 
   /**
    * Sync the url of this tab to the address bar.
+   * Also analyzes the new url and tries to shift to search keywords view (address bar) if possible.
    */
-  syncUrl() {
+  syncUrlUI() {
     const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.myUi.windowId}`)!;
-    if (myTabs.currentTab == this && !this.myUi.addressBarFocused) {
+    if (myTabs.currentTab != this) {
+      return; // Not my stage.
+    }
+    // ENTER ME!
+    
+    // Update address bar
+    if (!this.myUi.addressBarFocused) {
       const newUrl = this.url || '';
       if (this.myUi.addressBarContentMajor != newUrl) {
         this.myUi.setCurrentSearchContent(newUrl, true, true);
         this.myUi.tryAutoShift();
       }
+    }
+    
+    // Update forward / backward
+    try {
+      this.canBack = this.controller?.accessBackward() || false;
+      this.canForw = this.controller?.accessForward() || false;
+    } catch (e) {
+      meow(`this.controller?.accessBackward() / accessForward() failed: ${e}`, 'meowTabInfo][syncUrlUI', meowLevel.ERROR);
     }
   }
 
@@ -133,6 +164,14 @@ export class meowTabInfo {
       this.controller?.refresh();
     } catch (e) {
       meow(`this.controller?.refresh(); failed: ${e}`, 'meowTabInfo][refresh', meowLevel.ERROR);
+    }
+  }
+
+  stop() {
+    try {
+      this.controller?.stop();
+    } catch (e) {
+      meow(`this.controller?.stop(); failed: ${e}`, 'meowTabInfo][stop', meowLevel.ERROR);
     }
   }
 

@@ -69,7 +69,7 @@ export function defaultButtonsTitle() {
  * @returns The set up array.
  */
 export function defaltButtonsMore() {
-  return [UnifiedButtonsType.ORIENTATION, UnifiedButtonsType.SAVE, UnifiedButtonsType.PRINT, UnifiedButtonsType.DARK, UnifiedButtonsType.COOKIES, UnifiedButtonsType.IMAGES, UnifiedButtonsType.JAVASCRIPTS, UnifiedButtonsType.ADBLOCKER, UnifiedButtonsType.HISTORIES, UnifiedButtonsType.USERAGENTS, UnifiedButtonsType.QRCODE, UnifiedButtonsType.FULLSCREEN].join('\n');
+  return [UnifiedButtonsType.ORIENTATION, UnifiedButtonsType.SAVE, UnifiedButtonsType.PRINT, UnifiedButtonsType.DARK, UnifiedButtonsType.COOKIES, UnifiedButtonsType.IMAGES, UnifiedButtonsType.JAVASCRIPTS, UnifiedButtonsType.ADBLOCKER, UnifiedButtonsType.HISTORIES, UnifiedButtonsType.USERAGENTS, UnifiedButtonsType.QRCODE, UnifiedButtonsType.FULLSCREEN, UnifiedButtonsType.SEARCH_IN_PAGE].join('\n');
 }
 
 /**

@@ -2,7 +2,7 @@ import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { MooStringPairArrayList } from "../../../components/common/MooStringPairArrayList";
 import { standardSpacing } from "../../../components/constants";
 import { meowTabInfo } from "../../../hosts/app/tabs/classes/meowTabInfo";
-import { userAgentList } from "../../../hosts/app/tabs/settings";
+import { userAgentList, userAgentSelected } from "../../../hosts/app/tabs/settings";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { meowAppHost } from "../../../hosts/system/windows/classes/meowAppHost";
 import { getMyApp } from "../../../hosts/system/windows/scripts/helpers";
@@ -19,18 +19,21 @@ struct WoofQuickUAPanel {
   // Event
   @Event onSelect: (n: number) => void;
 
-  getCurrentWebUAIndex() {
+  getCurrentWebUAIndex(): number {
     if (!this.myDialog.lastRequest) {
-      return -1;
+      return userAgentSelected();
     };
     const tabInfo = this.myDialog.lastRequest.param as meowTabInfo;
-    const idx = userAgentList().findIndex((ua) => ua[1] == tabInfo.overrideUA);
-    return idx;
+    if (tabInfo.overrideUA) {
+      return userAgentList().findIndex((ua) => ua[1] == tabInfo.overrideUA);
+    } else {
+      return userAgentSelected();
+    }
   }
 
   build() {
     MooStringPairArrayList({
-      defaultItem: ['HarmonyOS', ''], // TODO: set this to the real default UA.
+      defaultItem: ['HarmonyOS', ''], // Leaving this empty is good enough. You can see below there is special treatment for n < 0.
       selectedIndex: this.selectedIndexUA,
       array: this.getUAs(),
       maxheight: undefined,

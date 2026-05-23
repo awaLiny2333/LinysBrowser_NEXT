@@ -16,7 +16,7 @@ struct MeowButton {
   // Hosts
   @Param @Require myDialog: meowDialogManager;
   @Param @Require myUi: meowUiHost;
-  @Param myTab: meowTabsBunch = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.myUi.windowId}`)!;
+  @Param myTabs: meowTabsBunch = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.myUi.windowId}`)!;
 
   build() {
     if (this.showMe) {
@@ -100,7 +100,7 @@ struct MeowButton {
         break;
       case UnifiedButtonsType.USERAGENTS:
         this.myUi.requestAddressBarBlur(this.getUIContext());
-        requestDialog(this.myDialog, openDialogRequestType.QUICK_UA, this.myTab.currentTab); // TODO: pass in current web's UA.
+        requestDialog(this.myDialog, openDialogRequestType.QUICK_UA, this.myTabs.currentTab); // TODO: pass in current web's UA.
         break;
       case UnifiedButtonsType.RE_SEARCH:
         this.myUi.requestAddressBarBlur(this.getUIContext());
@@ -138,16 +138,16 @@ struct MeowButton {
         requestDialog(this.myDialog, openDialogRequestType.SCRATCHING_BOARD);
         break;
       case UnifiedButtonsType.BACKWARD:
-        this.myTab.goBackCurrent();
+        this.myTabs.goBackCurrent();
         break;
       case UnifiedButtonsType.FORWARD:
-        this.myTab.goForwardCurrent();
+        this.myTabs.goForwardCurrent();
         break;
       case UnifiedButtonsType.REFRESH:
-        this.myTab.refreshCurrent();
+        this.myTabs.refreshStopCurrent();
         break;
       case UnifiedButtonsType.HOME:
-        this.myTab.goHomeCurrent();
+        this.myTabs.goHomeCurrent();
         break;
       case UnifiedButtonsType.SEARCH_IN_PAGE:
         animateToImmediately(defaultAnimation(), () => {
@@ -188,6 +188,8 @@ struct MeowButton {
         return this.myUi.addressBarStatus == AddressBarStatuses.SHIFTED ? $r('sys.symbol.text_and_t') : getButtonIcon(this.type);
       case UnifiedButtonsType.ADDRESS_KEYWORD_EXPAND:
         return this.myUi.searchKeywordEntriesExpanded ? $r('sys.symbol.line') : getButtonIcon(this.type);
+      case UnifiedButtonsType.REFRESH:
+        return this.myTabs.currentTab?.isLoading ? $r('sys.symbol.xmark') : getButtonIcon(this.type);
       default:
         return getButtonIcon(this.type);
     }
@@ -225,6 +227,10 @@ struct MeowButton {
     switch (this.type) {
       case UnifiedButtonsType.EXTENSIONS:
         return false;
+      case UnifiedButtonsType.BACKWARD:
+        return this.myTabs.currentTabCanBack;
+      case UnifiedButtonsType.FORWARD:
+        return this.myTabs.currentTabCanForw;
       default:
         return true;
     }

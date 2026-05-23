@@ -350,6 +350,7 @@ export class meowUiHost {
 
   /**
    * Sets the current search content of the window.
+   * Also refreshes the keyword entries and / or destination on demand (passed in args).
    * @param newContent The new search content.
    * @param doKeywordRefresh Whether to refresh the keyword entries.
    */
@@ -382,11 +383,16 @@ export class meowUiHost {
    * Tries to auto shift the address bar, if there are query keys available.
    */
   tryAutoShift() {
-    if (this.addressBarStatus == AddressBarStatuses.CAN_SHIFT && preferedKeysSet.has(this.searchKeywordEntries[0][0])) {
+    if (this.addressBarStatus == AddressBarStatuses.NO_SHIFT) {
+      return;
+    }
+    if (preferedKeysSet.has(this.searchKeywordEntries[0][0])) {
       // Shift to search keyword entries.
-      animateToImmediately(defaultAnimation(), () => {
-        this.addressBarStatus = AddressBarStatuses.SHIFTED;
-      });
+      if (this.addressBarStatus == AddressBarStatuses.CAN_SHIFT) {
+        animateToImmediately(defaultAnimation(), () => {
+          this.addressBarStatus = AddressBarStatuses.SHIFTED;
+        });
+      }
     } else {
       // Shift back to pure url.
       if (this.addressBarStatus == AddressBarStatuses.SHIFTED) {
