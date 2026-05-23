@@ -189,16 +189,18 @@ export class meowTabsBunch {
     }
   }
 
-  goBackCurrent() {
+  goBackCurrent(): boolean {
     if (this.currentTab) {
-      this.currentTab.goBack();
+      return this.currentTab.goBack();
     }
+    return false;
   }
 
-  goForwardCurrent() {
+  goForwardCurrent(): boolean {
     if (this.currentTab) {
-      this.currentTab.goForward();
+      return this.currentTab.goForward();
     }
+    return false;
   }
 
   goHomeCurrent() {
@@ -206,13 +208,13 @@ export class meowTabsBunch {
       this.currentTab.goHome();
     }
   }
-  
+
   // GETTERS
-  
+
   get currentTabCanBack() {
     return this.currentTab?.canBack;
   }
-  
+
   get currentTabCanForw() {
     return this.currentTab?.canForw;
   }
@@ -258,7 +260,7 @@ export class meowTabsBunch {
   get currentTabSearchSearchedKey() {
     return this.currentTab?.searchedSearchKey;
   }
-  
+
   // IN-PAGE SEARCH
 
   /**

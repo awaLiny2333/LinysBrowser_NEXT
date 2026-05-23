@@ -97,7 +97,7 @@ export class meowTabInfo {
       return; // Not my stage.
     }
     // ENTER ME!
-    
+
     // Update address bar
     if (!this.myUi.addressBarFocused) {
       const newUrl = this.url || '';
@@ -106,7 +106,7 @@ export class meowTabInfo {
         this.myUi.tryAutoShift();
       }
     }
-    
+
     // Update forward / backward
     try {
       this.canBack = this.controller?.accessBackward() || false;
@@ -175,24 +175,32 @@ export class meowTabInfo {
     }
   }
 
+  /**
+   * Go back.
+   * @returns True if successful.
+   */
   goBack() {
     try {
       if (this.controller?.accessBackward()) {
         this.controller?.backward();
+        return true;
       }
     } catch (e) {
       meow(`this.controller?.back(); failed: ${e}`, 'meowTabInfo][goBack', meowLevel.ERROR);
     }
+    return false;
   }
 
   goForward() {
     try {
       if (this.controller?.accessForward()) {
         this.controller?.forward();
+        return true;
       }
     } catch (e) {
       meow(`this.controller?.forward(); failed: ${e}`, 'meowTabInfo][goForward', meowLevel.ERROR);
     }
+    return false;
   }
 
   goHome() {

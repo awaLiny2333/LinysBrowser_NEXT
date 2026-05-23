@@ -169,10 +169,11 @@ export class meowUiHost {
 
   /**
    * Go backwards in web.
+   * @returns if go back is successful. E.g. if there is no backward page, then we cannot go back, return false.
    */
   private goBackWeb() {
-    meow(`Try!`, 'meowUiHost][goBackWeb', meowLevel.WARN);
-    return false; // TODO: return if go back is successful. E.g. if there is no backward page, then we cannot go back, return false.
+    const myTabs: meowTabsBunch = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.windowId}`)!;
+    return myTabs.goBackCurrent();
   }
 
   // WINDOW

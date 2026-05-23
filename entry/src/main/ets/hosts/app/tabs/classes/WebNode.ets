@@ -103,7 +103,6 @@ function WebBuilder(pk: meowTabInfo) {
       pk.receiveSearchResult(result);
     })
     .onContextMenuShow((event) => {
-
       return true;
     })
     .onActivateContent(() => {

@@ -66,19 +66,10 @@ struct Index {
   build() {
     RelativeContainer() {
       if (this.render) {
-        // Dialog handler
-        MeowPlaceForDialogs({
-          myDialog: this.myDialog,
-          myLayout: this.myLayout,
-          myAvoid: this.myAvoid,
-          myUi: this.myUi,
-          myMisc: this.myMisc
-        });
-
-        // Shortcuts handler
+        // Interaction handlers
+        MeowPlaceForDialogs({ myDialog: this.myDialog, myLayout: this.myLayout, myAvoid: this.myAvoid, myUi: this.myUi, myMisc: this.myMisc });
         MeowPlaceForKeyShortcuts(this.myDialog, this.myUi, this.myKey, this.myTabs, this.getUIContext());
 
-        // This nesting is ugly.
         // Main frame
         Stack({ alignContent: sidebarShouldBeOnTheRight() ? Alignment.End : Alignment.Start }) {
           // Web frame
@@ -90,8 +81,9 @@ struct Index {
             // Shortcuts
             MeowShortcutsPanel({
               myLayout: this.myLayout, myDialog: this.myDialog, requestVisit: (bookmark) => {
+                // Load directly
                 animateToImmediately(defaultAnimation(), () => {
-                  this.myTabs.newTabWrapped(bookmark.url);
+                  this.myUi.submitSearchOrLoad(bookmark.url);
                 });
               }
             });
