@@ -52,6 +52,8 @@ struct Index {
   @Local myTabs: meowTabsBunch = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.myWindowId}`)!;
   // Render control
   @Local render: boolean = false;
+  // Sidebar Gesture
+  pan_x: number = 0;
 
   /**
    * Things that would happen when the user presses the back button.
@@ -155,7 +157,19 @@ struct Index {
           })
           .onDragLeave(() => {
             this.onDragLeaveSideArea();
-          });
+          })
+          .gesture(
+            PanGesture({ direction: PanDirection.Left | PanDirection.Right })
+              .onActionStart(() => {
+                this.pan_x = 0;
+              })
+              .onActionUpdate((e) => {
+                this.pan_x = e.offsetX;
+              })
+              .onActionEnd(() => {
+                this.actionsOnSideAreaPanGestureEnd();
+              })
+          );
         }
         .padding(this.isNotAnySortOfFullscreen ? this.outerFrameSpace : 0);
 
@@ -170,15 +184,12 @@ struct Index {
                 MeowSuggestions({ myUi: this.myUi, myLayout: this.myLayout });
                 MeowDestination(this.myUi, this.getUIContext());
               }
-
               // Tabs (Horizontal)
               if (this.showingHorizontalTab) {
                 MeowTabsHorizontal();
               }
-
               // Title bar
               MeowTitleBar(this.myUi, this.myLayout, this.myDialog);
-
               // Address
               if (!this.myLayout.wideMode) {
                 if (this.myUi.dropHover) {
@@ -187,12 +198,11 @@ struct Index {
                   MeowAddressBar({ myUi: this.myUi, myLayout: this.myLayout, myDialog: this.myDialog, });
                 }
               }
-
+              // Additionals
               if (this.myUi.addressBarFocused && !titleBarPositionBottom()) {
                 MeowDestination(this.myUi, this.getUIContext());
                 MeowSuggestions({ myUi: this.myUi, myLayout: this.myLayout });
               }
-
               // More
               if (this.myUi.showMore) {
                 // Meow buttons
@@ -362,6 +372,48 @@ struct Index {
           this.myUi.sideAreaShrunkExpect = true;
         });
       }, 10);
+    }
+  }
+
+  actionsOnSideAreaPanGestureEnd() {
+    if (sidebarShouldBeOnTheRight()) {
+      // meow(`Pan gesture END. Sidebar on the right, pan_x = ${this.pan_x}`, 'Index', meowLevel.WARN);
+      if (this.pan_x < 0) {
+        // ←
+        if (this.myUi.sideAreaShrunkSummarized) {
+          // Expand
+          animateToImmediately(defaultAnimation(), () => {
+            this.myUi.sideAreaShrunkExpect = false;
+          });
+        }
+      } else {
+        // →
+        if (!this.myUi.sideAreaShrunkSummarized) {
+          // Shrink
+          animateToImmediately(defaultAnimation(), () => {
+            this.myUi.sideAreaShrunkExpect = true;
+          });
+        }
+      }
+    } else {
+      // meow(`Pan gesture END. Sidebar on the left, pan_x = ${this.pan_x}`, 'Index', meowLevel.WARN);
+      if (this.pan_x < 0) {
+        // ←
+        if (!this.myUi.sideAreaShrunkSummarized) {
+          // Shrink
+          animateToImmediately(defaultAnimation(), () => {
+            this.myUi.sideAreaShrunkExpect = true;
+          });
+        }
+      } else {
+        // →
+        if (this.myUi.sideAreaShrunkSummarized) {
+          // Expand
+          animateToImmediately(defaultAnimation(), () => {
+            this.myUi.sideAreaShrunkExpect = false;
+          });
+        }
+      }
     }
   }
 

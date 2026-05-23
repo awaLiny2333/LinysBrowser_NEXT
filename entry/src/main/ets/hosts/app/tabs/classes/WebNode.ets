@@ -24,9 +24,6 @@ function WebBuilder(pk: meowTabInfo) {
     .javaScriptAccess(!pk.xJS)
     .imageAccess(!pk.xImage)
     .onlineImageAccess(!pk.xImage)
-    .onActivateContent(() => {
-      meow(`Activate! ${pk.url}`, 'WebNode][onActivateContent');
-    })
     .onWindowNew((event) => {
       const result = pk.requestNewTab(event.targetUrl);
       setTimeout(() => {
@@ -109,8 +106,11 @@ function WebBuilder(pk: meowTabInfo) {
 
       return true;
     })
+    .onActivateContent(() => {
+      meow(`Activate! ${pk.url}`, 'WebNode][onActivateContent');
+    })
     .onWindowExit(() => {
-
+      meow(`Exit! ${pk.url}`, 'WebNode][onWindowExit');
     })
     .onControllerAttached(() => {
       pk.onControllerAttached();

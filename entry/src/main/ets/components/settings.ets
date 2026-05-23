@@ -246,7 +246,11 @@ export function sideAreaShrinkExpandNoPush() {
  */
 export function sidebarShouldBeOnTheRight() {
   const reverseSidebar = getMySettings().settingsData[49].value as boolean;
-  return isPreferRightHand() && !reverseSidebar;
+  if (isPreferRightHand()) {
+    return !reverseSidebar;
+  } else {
+    return reverseSidebar;
+  }
 }
 
 // HOMEPAGE
@@ -257,7 +261,11 @@ export function sidebarShouldBeOnTheRight() {
  */
 export function shortcutsShouldBeOnTheRight() {
   const reverseShortcuts = getMySettings().settingsData[50].value as boolean;
-  return isPreferRightHand() && !reverseShortcuts;
+  if (isPreferRightHand()) {
+    return !reverseShortcuts;
+  } else {
+    return reverseShortcuts;
+  }
 }
 
 export function shortcutsHeight() {
