@@ -34,7 +34,7 @@ export async function retrieveDownloadDirectory(context: Context) {
  */
 export async function fileDocumentPickSave(fileName: string, content: string | ArrayBuffer): Promise<boolean | void | undefined> {
   try {
-    const ext = fileName.includes('.') ? fileName.split('.').pop() : '';
+    const ext = extensionOfName(fileName);
     return (new picker.DocumentViewPicker())
       .save({
         newFileNames: [fileName],
@@ -109,7 +109,7 @@ export async function fileDocumentPickCopySave(sourcePath: string, nameOverwrite
   }
 
   const fileName = fileNameOfPath(sourcePath);
-  const ext = fileName.includes('.') ? fileName.split('.').pop() : '';
+  const ext = extensionOfName(fileName);
   try {
     return (new picker.DocumentViewPicker())
       .save({
@@ -245,7 +245,7 @@ export async function saveHybrid(fullFilePath: string, content: string | ArrayBu
 export async function saveImageToAlbum(context: common.UIAbilityContext, srcFilePath: string): Promise<boolean> {
   // Then save to gallery
   const srcFileUri = path_2_uri(srcFilePath);
-  const ext = srcFilePath.includes('.') ? srcFilePath.split('.').pop() : ''; // TODO: This is bad. Come up with a better idea! :P
+  const ext = extensionOfName(srcFilePath);
   console.info('[saveImageToAlbum] Source URI: ' + srcFileUri);
 
   try {
@@ -727,6 +727,16 @@ export function mimeOfFileName(fileName: string): string {
 export function fileNameOfPath(path: string) {
   const sp = path.split('/');
   return sp[sp.length - 1];
+}
+
+/**
+ * Gets the extension of a file name.
+ * @param name The file name.
+ * @returns The extension.
+ */
+export function extensionOfName(name: string) {
+  const lastDotIndex = name.lastIndexOf('.');
+  return lastDotIndex > 0 ? name.slice(lastDotIndex + 1).toLowerCase() : '';
 }
 
 // Others
