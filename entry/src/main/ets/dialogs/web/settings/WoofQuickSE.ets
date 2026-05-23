@@ -22,13 +22,6 @@ struct WoofQuickSEPanel {
   // Event
   @Event onSelect: (n: number) => void;
 
-  getCurrentWebSEIndex() {
-    if (this.myDialog.lastRequest) {
-      return this.myDialog.lastRequest.param as number;
-    };
-    return 0;
-  }
-
   build() {
     MooStringPairArrayList({
       defaultItem: ['Bing', defaultSearchEngine()],

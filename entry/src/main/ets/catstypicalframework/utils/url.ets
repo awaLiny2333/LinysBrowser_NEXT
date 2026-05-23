@@ -49,6 +49,22 @@ export function belongsToDomain(testUrl: string, domain: string) {
 }
 
 /**
+ * Get the domain of a URL.
+ * @param sourceUrl The source URL.
+ * @returns The host.
+ */
+export function domainOf(sourceUrl?: string): string {
+  if (!sourceUrl) return '';
+  try {
+    const theUrl = url.URL.parseURL(sourceUrl);
+    return theUrl.host;
+  } catch (e) {
+    console.error(`[domainOf] [${sourceUrl}] error: ${e}`);
+    return '';
+  }
+}
+
+/**
  * Jumps to an external link using want.
  * @param url the link
  * */

@@ -1,6 +1,6 @@
 import { AppStorageV2 } from '@kit.ArkUI';
-import { meow } from '../../../catstypicalframework/utils/catsLogger';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
+import { domainOf } from '../../../catstypicalframework/utils/url';
 import { meowTabsBunch } from '../../../hosts/app/tabs/classes/meowTabsBunch';
 import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import lazy { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
@@ -93,23 +93,21 @@ struct MeowButton {
         requestDialog(this.myDialog, openDialogRequestType.HISTORY);
         break;
       case UnifiedButtonsType.COOKIES:
-        requestDialog(this.myDialog, openDialogRequestType.COOKIES, this.myUi.addressBarContentMajor); // TODO: auto pass in current viewing url.
+        requestDialog(this.myDialog, openDialogRequestType.COOKIES, domainOf(this.myTabs.currentTab?.url));
         break;
       case UnifiedButtonsType.QRCODE:
-        requestDialog(this.myDialog, openDialogRequestType.QR, ['Title', this.myUi.addressBarContentMajor]); // TODO: auto pass in current viewing url.
+        requestDialog(this.myDialog, openDialogRequestType.QR, [this.myTabs.currentTab?.title || 'Title', this.myTabs.currentTab?.url || 'URL']);
         break;
       case UnifiedButtonsType.USERAGENTS:
         this.myUi.requestAddressBarBlur(this.getUIContext());
-        requestDialog(this.myDialog, openDialogRequestType.QUICK_UA, this.myTabs.currentTab); // TODO: pass in current web's UA.
+        requestDialog(this.myDialog, openDialogRequestType.QUICK_UA, this.myTabs.currentTab);
         break;
       case UnifiedButtonsType.RE_SEARCH:
         this.myUi.requestAddressBarBlur(this.getUIContext());
-        requestDialog(this.myDialog, openDialogRequestType.QUICK_SE, 0); // TODO: pass in current web's search engine.
+        requestDialog(this.myDialog, openDialogRequestType.QUICK_SE);
         break;
       case UnifiedButtonsType.GO:
         this.myUi.requestAddressBarBlur(this.getUIContext());
-        meow(`Visit / load [${this.myUi.addressBarContentMajor}]!`);
-        // TODO: Visit the site for GO button!
         break;
       case UnifiedButtonsType.ADDRESS_KEYWORD_SWITCH:
         const needFocus = this.myUi.addressBarFocused;
@@ -242,6 +240,8 @@ struct MeowButton {
       case UnifiedButtonsType.USERAGENTS:
         return this.myTabs.currentTab != undefined;
       case UnifiedButtonsType.SAVE:
+        return this.myTabs.currentTab != undefined;
+      case UnifiedButtonsType.QRCODE:
         return this.myTabs.currentTab != undefined;
       default:
         return true;
