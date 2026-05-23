@@ -163,7 +163,7 @@ export const sidebarContentIconSet = new Set(sidebarContentIconArray);
 /**
  * Default sidebar width.
  */
-export const defaultSidebarWidth = 348;
+export const defaultSidebarWidth = 380;
 
 /**
  * Default sidebar width when shrunk.

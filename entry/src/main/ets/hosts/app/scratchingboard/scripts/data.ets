@@ -28,6 +28,7 @@ export async function unifiedRecord2BoardData(records: unifiedDataChannel.Unifie
 
   for (const rec of records) {
     const type = rec.getType();
+    meow(`Adding entry of type: [${type}]`, 'meowBoardHolder][addEntry');
     switch (type) {
       case uniformTypeDescriptor.UniformDataType.PLAIN_TEXT: {
         const items = splitUrls((rec as unifiedDataChannel.PlainText).textContent);

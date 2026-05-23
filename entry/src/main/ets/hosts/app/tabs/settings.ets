@@ -76,10 +76,10 @@ export function userAgentSelected() {
 }
 
 /**
- * Get user agent from settings.
+ * Get the current user agent aplied globally.
  * @returns The UA string, or an empty string if selected the default UA but webview.WebviewController.getDefaultUserAgent() returned nothing.
  */
-export function getCurrentUserAgent(): string {
+export function getCurrentAppUserAgent(): string {
   const uaSelected = userAgentSelected();
   const uaDefault = webview.WebviewController.getDefaultUserAgent();
   return uaSelected == -1 ? uaDefault : userAgentList()[uaSelected][1];
@@ -141,4 +141,30 @@ export function disableWebJavaScriptsOnAllSites() {
 
 export function disableWebJavaScriptSites() {
   return getMySettings().settingsData[56].value as string[];
+}
+
+// Context menu
+
+export function contextMenuEnabled() {
+  return getMySettings().settingsData[16].value as boolean;
+}
+
+export function contextMenuImagePreview() {
+  return getMySettings().settingsData[17].value as boolean;
+}
+
+export function contextMenuWebPreview() {
+  return getMySettings().settingsData[18].value as boolean;
+}
+
+export function contextMenuImageWidth() {
+  return getMySettings().settingsData[19].value as number;
+}
+
+export function contextMenuWebHeight() {
+  return getMySettings().settingsData[20].value as number;
+}
+
+export function contextMenuStripText() {
+  return getMySettings().settingsData[21].value as boolean;
 }

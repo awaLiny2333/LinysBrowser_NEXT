@@ -1,5 +1,5 @@
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import lazy { getCurrentUserAgent } from "../settings";
+import lazy { getCurrentAppUserAgent } from "../settings";
 import { webview } from "@kit.ArkWeb";
 
 /**
@@ -7,7 +7,7 @@ import { webview } from "@kit.ArkWeb";
  * @returns True if applied successfully, false otherwise.
  */
 export function applyUserAgentFromSettings() {
-  const ua = getCurrentUserAgent();
+  const ua = getCurrentAppUserAgent();
   meow(`User agent: [${ua}]`, 'tabs][userAgents', meowLevel.INFO);
   webview.WebviewController.setAppCustomUserAgent(ua);
 }

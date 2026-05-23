@@ -43,7 +43,7 @@ export class meowTabsBunch {
 
   // async applyEasyListFromDisk() {
   //   await applyEasyListFromDisk(this.uiContext.getHostContext()!.filesDir, this.uiContext.getHostContext()!.tempDir);
-  // }s
+  // }
 
   /**
    * Ensures there is at least one tab.
@@ -143,7 +143,6 @@ export class meowTabsBunch {
       this.currentNode.attachWeb();
       this.currentNode.rebuild();
       this.currentTab.syncUrlUI();
-      this.currentTab.requestUiUpdate();
       // Show search in page bar
       if (this.currentTab.isSearching && !this.myUi.inPageSearchShow) {
         animateToImmediately(defaultAnimation(), () => {

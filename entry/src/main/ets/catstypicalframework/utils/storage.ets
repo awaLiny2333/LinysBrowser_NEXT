@@ -1,10 +1,12 @@
-import lazy { fileIo, fileUri, picker } from '@kit.CoreFileKit';
-import lazy { BusinessError } from '@kit.BasicServicesKit';
-import lazy { taskpool } from '@kit.ArkTS';
 import lazy { common, OpenLinkOptions } from '@kit.AbilityKit';
-import lazy { meow, meowLevel } from './catsLogger';
+import lazy { taskpool, util } from '@kit.ArkTS';
+import lazy { BusinessError } from '@kit.BasicServicesKit';
+import lazy { fileIo, fileUri, picker } from '@kit.CoreFileKit';
+import { image } from '@kit.ImageKit';
 import lazy { photoAccessHelper } from '@kit.MediaLibraryKit';
-import { MIME_TYPES_MAP_LITE } from './storage-ext';
+import { http } from '@kit.NetworkKit';
+import lazy { meow, meowLevel } from './catsLogger';
+import lazy { MIME_TYPES_MAP_LITE } from './storage-ext';
 
 // Picker
 /**
@@ -659,6 +661,18 @@ export function makeFilenameLegal(filename: string) {
 }
 
 /**
+ * Decodes a base64 string to array buffer.
+ * @param base64Str The base64 string.
+ * @returns The array buffer.
+ * */
+export function base64_2_arrayBuffer(base64Str: string): Promise<ArrayBuffer> {
+  let base64 = new util.Base64Helper();
+  return base64.decode(base64Str).then((uint8Array) => {
+    return uint8Array.buffer.slice(0, uint8Array.byteLength);
+  });
+}
+
+/**
  * Adds a unit to a size in bytes.
  * @param size_in_bytes A number or bigint, the size in bytes.
  * @returns A string, the connected result of a number of size and its unit.
@@ -739,6 +753,28 @@ export function extensionOfName(name: string) {
   return lastDotIndex > 0 ? name.slice(lastDotIndex + 1).toLowerCase() : '';
 }
 
+/**
+ * Converts an ArrayBuffer to image.PixelMap object.
+ * @param buf the ArrayBuffer
+ * @returns an image.PixelMap
+ * */
+export function arrayBuffer_2_pixelMap(buf: ArrayBuffer) {
+  // ArrayBuffer => PixelMap
+  const imageSource = image.createImageSource(buf);
+  console.log('[arrayBuffer_2_pixelMap] imageSource: ' + JSON.stringify(imageSource));
+  return imageSource.createPixelMap({})
+    .then((pm) => {
+      let pixelMap = pm;
+      imageSource.release();
+      console.log('[arrayBuffer_2_pixelMap][A] Released imageSource!');
+      return pixelMap;
+    })
+    .catch((e: BusinessError) => {
+      console.error(`[arrayBuffer_2_pixelMap][A] createPixelMap failed: ${e}`);
+      return undefined
+    });
+}
+
 // Others
 
 /**
@@ -760,4 +796,36 @@ export function showInFiles(path: string, context: common.UIAbilityContext) {
   } catch (e) {
     meow(`Open ${path} in file manager failed: ${e}`, 'showInFiles', meowLevel.ERROR);
   }
+}
+
+// Download
+
+/**
+* Download a file from url.
+* @param url The url.
+* @returns Promise of the ArrayBuffer.
+* */
+export async function downloadFileHttp(url: string): Promise<ArrayBuffer> {
+  return new Promise((resolve, reject) => {
+    const httpRequest = http.createHttp();
+    httpRequest.request(url, {
+      method: http.RequestMethod.GET,
+      expectDataType: http.HttpDataType.ARRAY_BUFFER
+    }, (err, data) => {
+      if (err) {
+        const e = new Error(`Request failed: ${err.message}`);
+        reject(e);
+        meow(`Failed: ${e}`, 'downloadFileHttp', meowLevel.ERROR);
+        return;
+      }
+      if (data && data.result) {
+        resolve(data.result as ArrayBuffer);
+        meow(`RESOLVED!`, 'downloadFileHttp');
+      } else {
+        const e = new Error('No data received!');
+        meow(`Failed: ${e}`, 'downloadFileHttp', meowLevel.ERROR);
+        reject(e);
+      }
+    });
+  });
 }

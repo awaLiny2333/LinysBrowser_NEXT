@@ -2,6 +2,7 @@ import lazy { url } from '@kit.ArkTS';
 import lazy { concatSearchWithEngine } from '../../hosts/app/tabs/scripts/searchEngines';
 import lazy { SINGLE_LABEL_ALLOWLIST, LEGAL_TOP_LEVEL_DOMAINS } from './url-ext';
 import { Want, common } from '@kit.AbilityKit';
+import { UIContext } from '@kit.ArkUI';
 
 /**
  * Get keyword entries from a URL.
@@ -68,10 +69,13 @@ export function domainOf(sourceUrl?: string): string {
  * Jumps to an external link using want.
  * @param url the link
  * */
-export function jumpUrl(url: string, context: common.UIAbilityContext) {
+export function jumpUrl(url: string, context?: common.UIAbilityContext) {
   const want: Want = {
     uri: url
   };
+  if (!context) {
+    context = UIContext.getLastFocusedUIContext()?.getHostContext() as common.UIAbilityContext;
+  }
   context.startAbility(want).then(() => {
     // Pull up success
     console.log('[Meow][jumpUrl] Pull up application for want ' + url + ' Success!');

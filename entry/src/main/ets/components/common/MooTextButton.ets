@@ -6,6 +6,7 @@ import { MooTextModifier } from './MooTextModifier';
 struct MooTextButton {
   @Param @Require text: ResourceStr;
   @Param radius: number = defaultItemRadius;
+  @Param maxLines: number = 1;
   @Event clickAction: () => void;
 
   build() {
@@ -13,6 +14,7 @@ struct MooTextButton {
       .attributeModifier(new MooTextModifier())
       .padding(standardSpacing * 0.75)
       .borderRadius(this.radius)
+      .maxLines(this.maxLines)
       .hoverEffect(HoverEffect.Highlight)
       .onClick(() => {
         this.clickAction();

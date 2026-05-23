@@ -94,6 +94,16 @@ export class meowUiHost {
   get sideAreaShrunkBlocked() {
     return this.sideAreaShrinkBlock_menu || this.sideAreaShrinkBlock_drag;
   }
+  
+  get myTabs() {
+    const myTabs: meowTabsBunch = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.windowId}`)!;
+    return myTabs;
+  }
+  
+  get myLayout() {
+    const myLayout: meowLayout = AppStorageV2.connect(meowLayout, `meowLayout_${this.windowId}`)!;
+    return myLayout;
+  }
 
   /**
    * The universal go back action on this window.

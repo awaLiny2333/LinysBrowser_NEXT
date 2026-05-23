@@ -2,7 +2,6 @@ import { AppStorageV2, UIContext } from "@kit.ArkUI";
 import { webview } from "@kit.ArkWeb";
 import { certificateManager, certificateManagerDialog } from "@kit.DeviceCertificateKit";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import { belongsToDomain } from "../../../../catstypicalframework/utils/url";
 import { defaultAnimation } from "../../../../components/settings";
 import { meowDialogManager, openDialogRequestType } from "../../../system/dialogs/classes/meowDialogManager";
 import { requestDialog } from "../../../system/dialogs/scripts/dialog";
@@ -10,8 +9,8 @@ import { meowUiFullscreenStatus, meowUiHost } from "../../../system/windows/clas
 import { meowHistorian } from "../../../userdata/history/classes/meowHistorian";
 import { meowHistoryEntry } from "../../../userdata/history/classes/meowHistoryEntry";
 import { getMyDawn } from "../../downloads/scripts/helper";
-import { defaultBlankUrl, viewableSchemes } from "../scripts/helpers";
-import { disableWebImages, disableWebImagesOnAllSites, disableWebImagesSites, disableWebJavaScripts, disableWebJavaScriptSites, disableWebJavaScriptsOnAllSites, forceWebDarkExceptions, forceWebDarkMode, intelligentTrackingPrevention, recordNewHistoryFromSettings, userHomeUrl, userNewTabUrl } from "../settings";
+import { defaultBlankUrl, disableImages, disableJS, forceDark, viewableSchemes } from "../scripts/helpers";
+import { intelligentTrackingPrevention, recordNewHistoryFromSettings, userHomeUrl, userNewTabUrl } from "../settings";
 import { meowTabsBunch } from "./meowTabsBunch";
 import { TabNodeController } from "./WebNode";
 
@@ -134,27 +133,25 @@ export class meowTabInfo {
 
   updateWebUiStatuses() {
     const oldForceDark = this.forceDark;
-    const newForceDark = this.forceDarkMe();
+    const newForceDark = forceDark(this.url);
     if (oldForceDark != newForceDark) {
       this.forceDark = newForceDark;
       meow(`forceDark changed from [${oldForceDark}] to [${newForceDark}] for [${this.url}]!`, 'meowTabInfo][updateWebUiStatuses');
     }
 
     const oldDisImage = this.xImage;
-    const newDisImage = this.disableImagesMe();
+    const newDisImage = disableImages(this.url);
     if (oldDisImage != newDisImage) {
       this.xImage = newDisImage;
       meow(`xImage changed from [${oldDisImage}] to [${newDisImage}] for [${this.url}]!`, 'meowTabInfo][updateWebUiStatuses');
     }
 
     const oldDisJS = this.xJS;
-    const newDisJS = this.disableJSMe();
+    const newDisJS = disableJS(this.url);
     if (oldDisJS != newDisJS) {
       this.xJS = newDisJS;
       meow(`xJS changed from [${oldDisJS}] to [${newDisJS}] for [${this.url}]!`, 'meowTabInfo][updateWebUiStatuses');
     }
-
-    this.node?.update(this);
   }
 
   // Operations
@@ -313,60 +310,6 @@ export class meowTabInfo {
 
   // Web settings
 
-  forceDarkMe() {
-    if (!this.url) {
-      return true;
-    }
-    if (!forceWebDarkMode()) {
-      return false;
-    }
-    const exc = forceWebDarkExceptions();
-    for (const domain of exc) {
-      if (belongsToDomain(this.url, domain)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  disableImagesMe() {
-    if (!this.url) {
-      return false;
-    }
-    if (!disableWebImages()) {
-      return false;
-    }
-    if (disableWebImagesOnAllSites()) {
-      return true;
-    }
-    const dis = disableWebImagesSites();
-    for (const domain of dis) {
-      if (belongsToDomain(this.url, domain)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  disableJSMe() {
-    if (!this.url) {
-      return false;
-    }
-    if (!disableWebJavaScripts()) {
-      return false;
-    }
-    if (disableWebJavaScriptsOnAllSites()) {
-      return true;
-    }
-    const dis = disableWebJavaScriptSites();
-    for (const domain of dis) {
-      if (belongsToDomain(this.url, domain)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   /**
    * Override tab user agent.
    * @param newUA The new user agent.
@@ -431,10 +374,6 @@ export class meowTabInfo {
     // }
   }
 
-  requestUiUpdate() {
-    this.node?.update(this);
-  }
-
   requestNewTab(url: string): WebviewController | null {
     const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.myUi.windowId}`)!;
     let result: WebviewController | undefined = undefined;
@@ -475,16 +414,19 @@ export class meowTabInfo {
   requestAlert(event: OnAlertEvent) {
     const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
     requestDialog(myDialog, openDialogRequestType.ALERT, event, true);
+    return true;
   }
 
   requestConfirm(event: OnConfirmEvent) {
     const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
     requestDialog(myDialog, openDialogRequestType.CONFIRM, event, true);
+    return true;
   }
 
   requestPrompt(event: OnPromptEvent) {
     const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.myUi.windowId}`)!;
     requestDialog(myDialog, openDialogRequestType.PROMPT, event, true);
+    return true;
   }
 
   requestSslError(event: SslErrorEvent) {

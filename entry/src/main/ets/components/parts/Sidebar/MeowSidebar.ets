@@ -1,6 +1,7 @@
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
+import { MooSoloWeb } from "../../common/MooSoloWeb";
 import lazy { MooSymbolButton } from "../../common/MooSymbolButton";
 import lazy { MooTextButton } from "../../common/MooTextButton";
 import lazy { MooTextInputV2 } from "../../common/MooTextInputV2";
@@ -13,6 +14,9 @@ import { DownloadsPanel } from "../Downloads/Panel";
 import lazy { HistoryPanel } from "../History/Panel";
 import lazy { ScratchingBoardPanel } from "../ScratchingBoard/Panel";
 import lazy { shrinkButton } from "./SidebarShrinkButton";
+import lazy { webview } from "@kit.ArkWeb";
+import { userNewTabUrl } from "../../../hosts/app/tabs/settings";
+import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 
 @ComponentV2
 struct MeowSidebar {
@@ -29,6 +33,8 @@ struct MeowSidebar {
   @Event onItemDragStart: () => void;
   @Event onDragEnterSidebar: () => void;
   @Event onDragLeaveSidebar: () => void;
+  // Web
+  @Param @Once controllerMeow: webview.WebviewController = new webview.WebviewController();
 
   build() {
     Column({ space: standardSpacing }) {
@@ -71,17 +77,17 @@ struct MeowSidebar {
                 this.onDragLeaveSidebar();
               }
             });
-          } else {
-            Text(`[${this.myUi.sidebarPage}]`).attributeModifier(new MooTextModifier());
-            // TODO: web show url of [this.myUi.sidebarPage]
           }
+          // Custom Web
+          MooSoloWeb({ controllerMeow: this.controllerMeow, url: this.myUi.sidebarPage, radius: defaultInnerRadius })
+            .visibility(!sidebarContentIconSet.has(this.myUi.sidebarPage) ? Visibility.Visible : Visibility.None);
         }
         .justifyContent(FlexAlign.End)
         .enabled(!this.isEditing)
         .opacity(this.isEditing ? 0.5 : 1)
         .layoutWeight(1)
         .width(this.sidebarWidth);
-        
+
         this.buttonRow();
       }
     }
@@ -113,50 +119,68 @@ struct MeowSidebar {
    */
   @Builder
   buttonRow() {
-    Flex({ wrap: FlexWrap.Wrap }) {
+    List() {
       // Shrink button
       if (this.showShrinkButton && titleBarPositionBottom()) {
-        shrinkButton(this.myUi);
+        ListItem() {
+          shrinkButton(this.myUi);
+        };
       }
 
       Repeat(this.theList)
         .each((item: RepeatItem<string[]>) => {
-          SlotEditButton({
-            type: item.item[1],
-            extraParam: item.item[1],
-            extraIcon: item.item[0],
-            isEditing: this.isEditing,
-            hasParam: !sidebarContentIconSet.has(item.item[1]),
-            myOnHold: () => {
-              return this.myUi.sidebarPage == item.item[1];
-            },
-            editParamSubmit: (result) => {
-              this.theList[item.index][1] = result;
-              getMySettings().requestSaveToDisk();
-            },
-            clickAction: () => {
-              animateToImmediately(defaultAnimation(), () => {
-                this.myUi.sidebarPage = item.item[1];
-              });
-              getMySettings().setByIndex(83, this.myUi.sidebarPage);
-            },
-            requestDelete: () => {
-              animateToImmediately(defaultAnimation(), () => {
-                this.theList.splice(item.index, 1);
-              });
-              getMySettings().requestSaveToDisk();
-            },
-            aboutToShowMenu: () => {
-              this.myUi.sideAreaShrinkBlock_menu = true;
-            },
-            didHideMenu: () => {
-              this.myUi.sideAreaShrunkExpect = false;
-              this.myUi.sideAreaShrinkBlock_menu = false;
-            },
-            menuExtra: sidebarContentIconSet.has(item.item[1]) ? undefined : () => {
-              this.iconSelect(item);
-            }
-          });
+          ListItem() {
+            SlotEditButton({
+              type: item.item[1],
+              extraParam: item.item[1],
+              extraIcon: item.item[0],
+              isEditing: this.isEditing,
+              hasParam: !sidebarContentIconSet.has(item.item[1]),
+              myOnHold: () => {
+                return this.myUi.sidebarPage == item.item[1];
+              },
+              editParamSubmit: (result) => {
+                this.theList[item.index][1] = result;
+                getMySettings().requestSaveToDisk();
+              },
+              clickAction: () => {
+                const oldPage = this.myUi.sidebarPage;
+                animateToImmediately(defaultAnimation(), () => {
+                  this.myUi.sidebarPage = item.item[1];
+                });
+                getMySettings().setByIndex(83, this.myUi.sidebarPage);
+                
+                // Web
+                if (!sidebarContentIconSet.has(this.myUi.sidebarPage)) {
+                  // Switched to a web.
+                  if (!sidebarContentIconSet.has(oldPage)) {
+                    // Not switch from a non-web.
+                    try {
+                      this.controllerMeow.loadUrl(this.myUi.sidebarPage || userNewTabUrl());
+                    } catch (e) {
+                      meow(`this.controllerMeow.loadUrl(this.myUi.sidebarPage || userNewTabUrl()); failed: ${e}`, 'MeowSidebar', meowLevel.ERROR);
+                    }
+                  }
+                }
+              },
+              requestDelete: () => {
+                animateToImmediately(defaultAnimation(), () => {
+                  this.theList.splice(item.index, 1);
+                });
+                getMySettings().requestSaveToDisk();
+              },
+              aboutToShowMenu: () => {
+                this.myUi.sideAreaShrinkBlock_menu = true;
+              },
+              didHideMenu: () => {
+                this.myUi.sideAreaShrunkExpect = false;
+                this.myUi.sideAreaShrinkBlock_menu = false;
+              },
+              menuExtra: sidebarContentIconSet.has(item.item[1]) ? undefined : () => {
+                this.iconSelect(item);
+              }
+            });
+          };
         })
         .onMove((from: number, to: number) => {
           // Move
@@ -168,24 +192,26 @@ struct MeowSidebar {
 
       // Add button
       if (this.isEditing) {
-        MooTextButton({
-          text: $r('app.string.General_new'),
-          clickAction: () => {
-            this.showAdd = !this.showAdd;
-          }
-        })
-          .opacity(0.75)
-          .bindContextMenu(this.showAdd, this.addMenuBuilder(), {
-            aboutToAppear: () => {
-              this.myUi.sideAreaShrinkBlock_menu = true;
-            },
-            onDidDisappear: () => {
-              this.myUi.sideAreaShrunkExpect = false;
-              this.myUi.sideAreaShrinkBlock_menu = false;
-              this.showAdd = false;
-            },
-            backgroundColor: useEffects() ? undefined : getColor(meowThemeColorType.PRIMARY)
-          });
+        ListItem() {
+          MooTextButton({
+            text: $r('app.string.General_new'),
+            clickAction: () => {
+              this.showAdd = !this.showAdd;
+            }
+          })
+            .opacity(0.75)
+            .bindContextMenu(this.showAdd, this.addMenuBuilder(), {
+              aboutToAppear: () => {
+                this.myUi.sideAreaShrinkBlock_menu = true;
+              },
+              onDidDisappear: () => {
+                this.myUi.sideAreaShrunkExpect = false;
+                this.myUi.sideAreaShrinkBlock_menu = false;
+                this.showAdd = false;
+              },
+              backgroundColor: useEffects() ? undefined : getColor(meowThemeColorType.PRIMARY)
+            });
+        };
       } else {
         ListItem() {
           Text('|').attributeModifier(new MooTextModifier()).height(defaultMooSymbolSize).opacity(0.5).padding({ left: standardSpacing * 0.7, right: standardSpacing * 0.7 }); // Spacing
@@ -193,16 +219,21 @@ struct MeowSidebar {
       }
 
       // Edit toggle button
-      MooSymbolButton({
-        icon: this.isEditing ? $r('sys.symbol.square_and_pencil_fill') : $r('sys.symbol.square_and_pencil'),
-        onHold: this.isEditing,
-        clickAction: () => {
-          animateToImmediately(defaultAnimation(), () => {
-            this.isEditing = !this.isEditing;
-          });
-        }
-      });
+      ListItem() {
+        MooSymbolButton({
+          icon: this.isEditing ? $r('sys.symbol.square_and_pencil_fill') : $r('sys.symbol.square_and_pencil'),
+          onHold: this.isEditing,
+          clickAction: () => {
+            animateToImmediately(defaultAnimation(), () => {
+              this.isEditing = !this.isEditing;
+            });
+          }
+        });
+      };
     }
+    .scrollBar(BarState.Off)
+    .listDirection(Axis.Horizontal)
+    .height(defaultMooSymbolSize)
     .clip(true)
     .width(this.sidebarWidth);
   }
