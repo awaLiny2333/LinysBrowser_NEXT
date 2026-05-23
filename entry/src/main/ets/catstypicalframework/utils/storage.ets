@@ -38,7 +38,7 @@ export async function fileDocumentPickSave(fileName: string, content: string | A
     return (new picker.DocumentViewPicker())
       .save({
         newFileNames: [fileName],
-        fileSuffixChoices: [ext]
+        fileSuffixChoices: [`.${ext}`]
       })
       .then(async (pickedUris) => {
         const result = await saveHybrid(pickedUris[0], content, true);
@@ -108,10 +108,13 @@ export async function fileDocumentPickCopySave(sourcePath: string, nameOverwrite
     return true;
   }
 
+  const fileName = fileNameOfPath(sourcePath);
+  const ext = fileName.includes('.') ? fileName.split('.').pop() : '';
   try {
     return (new picker.DocumentViewPicker())
       .save({
-        newFileNames: [nameOverwrite || fileNameOfPath(sourcePath)]
+        newFileNames: [nameOverwrite || fileName],
+        fileSuffixChoices: [`.${ext}`]
       })
       .then(async (pickedUris) => {
         await fileCopy(sourcePath, uri_2_path(pickedUris[0]), true);

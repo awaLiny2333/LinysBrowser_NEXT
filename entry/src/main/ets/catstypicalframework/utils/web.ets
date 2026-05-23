@@ -33,9 +33,9 @@ export function archiveWeb(controller: WebviewController | undefined) {
   const context = UIContext.getLastFocusedUIContext()?.getHostContext()!;
   try {
     const overwriteName = makeFilenameLegal(`${controller.getTitle().substring(0, 32)} - ${controller.getUrl().substring(0, 32)}.mht`);
-    controller.storeWebArchive(`${context.tempDir}/${overwriteName}`, false)
+    controller.storeWebArchive(`${context.tempDir}/archiveWeb.mht`, false)
       .then(() => {
-        fileDocumentPickCopySave(`${context.tempDir}/${overwriteName}`, overwriteName);
+        fileDocumentPickCopySave(`${context.tempDir}/archiveWeb.mht`, overwriteName);
       })
       .catch((error: BusinessError) => {
         meow(`Failed to archive web: ${error.message}`, 'archiveWeb', meowLevel.ERROR);
