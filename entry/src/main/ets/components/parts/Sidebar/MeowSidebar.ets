@@ -17,7 +17,7 @@ import lazy { shrinkButton } from "./SidebarShrinkButton";
 import lazy { webview } from "@kit.ArkWeb";
 import { userNewTabUrl } from "../../../hosts/app/tabs/settings";
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
-import { domainOf } from "../../../catstypicalframework/utils/url";
+import { domainOf, unifyDestination } from "../../../catstypicalframework/utils/url";
 
 @ComponentV2
 struct MeowSidebar {
@@ -79,6 +79,7 @@ struct MeowSidebar {
               }
             });
           }
+
           // Custom Web
           MooSoloWeb({
             controllerMeow: this.controllerMeow, url: this.myUi.sidebarPage, radius: defaultInnerRadius, onDropMe: () => {
@@ -145,15 +146,17 @@ struct MeowSidebar {
                 return this.myUi.sidebarPage == item.item[1];
               },
               editParamSubmit: (result) => {
-                this.theList[item.index][1] = result;
+                this.theList[item.index][1] = unifyDestination(result, false).url;
                 getMySettings().requestSaveToDisk();
               },
               clickAction: () => {
+                // Switch
                 const newPage = item.item[1];
                 animateToImmediately(defaultAnimation(), () => {
                   this.myUi.sidebarPage = newPage;
                 });
                 getMySettings().setByIndex(83, this.myUi.sidebarPage);
+
                 // Web
                 let oldPage = '';
                 try {
@@ -162,10 +165,11 @@ struct MeowSidebar {
                   meow(`this.controllerMeow.getUrl() failed: ${e}`, 'MeowSidebar', meowLevel.ERROR);
                   return;
                 }
-                if (!sidebarContentIconSet.has(newPage) && domainOf(oldPage) != domainOf(newPage)) {
+                if (!sidebarContentIconSet.has(newPage) && (domainOf(oldPage) != domainOf(newPage))) {
                   // New page is a web, and domain has changed.
                   try {
-                    this.controllerMeow.loadUrl(this.myUi.sidebarPage || userNewTabUrl());
+                    meow(`oldPage: ${oldPage}, newPage: ${newPage}, domainOf(oldPage): ${domainOf(oldPage)}, domainOf(newPage): ${domainOf(newPage)}`, 'MeowSidebar', meowLevel.INFO);
+                    this.controllerMeow.loadUrl(newPage || userNewTabUrl());
                   } catch (e) {
                     meow(`this.controllerMeow.loadUrl(this.myUi.sidebarPage || userNewTabUrl()); failed: ${e}`, 'MeowSidebar', meowLevel.ERROR);
                   }

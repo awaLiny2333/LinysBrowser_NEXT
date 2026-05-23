@@ -2,6 +2,7 @@ import lazy { webview } from '@kit.ArkWeb';
 import lazy { getMyDawn } from '../../hosts/app/downloads/scripts/helper';
 import lazy { disableImages, disableJS, forceDark } from '../../hosts/app/tabs/scripts/helpers';
 import lazy { intelligentTrackingPrevention } from '../../hosts/app/tabs/settings';
+import { sidebarContentIconSet } from '../constants';
 
 /**
  * The standalone web component that can hold some contents.
@@ -62,11 +63,13 @@ export struct MooSoloWeb {
         } catch (e) {
           console.error('[previewWebView] onControllerAttached enableIntelligentTrackingPrevention error: ' + e);
         }
-        // Load
-        try {
-          this.controllerMeow.loadUrl(this.url);
-        } catch (e) {
-          console.error('[previewWebView] onControllerAttached loadUrl error: ' + e);
+        // Load if is a web.
+        if (!sidebarContentIconSet.has(this.url)) {
+          try {
+            this.controllerMeow.loadUrl(this.url);
+          } catch (e) {
+            console.error('[previewWebView] onControllerAttached loadUrl error: ' + e);
+          }
         }
       })
       .borderRadius(this.radius);
