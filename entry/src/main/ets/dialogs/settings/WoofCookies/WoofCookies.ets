@@ -2,10 +2,11 @@ import lazy { webview } from "@kit.ArkWeb";
 import lazy { BusinessError } from "@kit.BasicServicesKit";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import lazy { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
+import { copyText } from "../../../catstypicalframework/utils/clipboard";
+import { isBlank } from "../../../catstypicalframework/utils/strings";
 import { MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
 import { MooTextButton } from "../../../components/common/MooTextButton";
 import { MooTextInputV2 } from "../../../components/common/MooTextInputV2";
-import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { standardComponentHeight, standardSpacing } from "../../../components/constants";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { getMyApp } from "../../../hosts/system/windows/scripts/helpers";
@@ -16,7 +17,7 @@ struct CookiesPanel {
   // Hosts
   @Param @Require myDialog: meowDialogManager;
   // Local
-  @Local cookies: string | undefined = undefined;
+  @Local cookies: string[] = [];
   @Local searchKey: string = '';
   searchInputId: string = `WoofCookies_search_${Date.now().toString(16)}`;
 
@@ -32,15 +33,20 @@ struct CookiesPanel {
     Stack() {
       // Cookies
       List() {
-        ListItem() {
-          if (this.cookies) {
-            Text(this.cookies).attributeModifier(new MooTextModifier());
-          } else {
-            MooTextButton({
-              text: $r('app.string.General_empty'),
+        if (this.cookies.length > 0) {
+          Repeat(this.cookies)
+            .each((item) => {
+              ListItem() {
+                MooTextButton({
+                  text: item.item, clickAction: () => {
+                    copyText(item.item);
+                  }
+                });
+              };
             });
-          }
-        };
+        } else {
+          MooTextButton({ text: $r('app.string.General_empty') });
+        }
       }
       .height('auto')
       .width('100%')
@@ -73,7 +79,7 @@ struct CookiesPanel {
           clickAction: () => {
             // Clear all cookies
             webview.WebCookieManager.clearAllCookiesSync();
-            this.cookies = undefined;
+            this.cookies = [];
             meow(`webview.WebCookieManager.clearAllCookiesSync() succeeded`, 'WoofCookiesDialog', meowLevel.INFO);
           }
         });
@@ -92,7 +98,11 @@ struct CookiesPanel {
   search() {
     webview.WebCookieManager.fetchCookie(this.searchKey)
       .then((cookies) => {
-        this.cookies = cookies;
+        if (isBlank(cookies)) {
+          this.cookies = [];
+        } else {
+          this.cookies = cookies.split(' ');
+        }
         meow(`webview.WebCookieManager.fetchCookie("${this.searchKey}") succeeded: ${cookies}`, 'WoofCookiesDialog', meowLevel.INFO);
       })
       .catch((e: BusinessError) => {
