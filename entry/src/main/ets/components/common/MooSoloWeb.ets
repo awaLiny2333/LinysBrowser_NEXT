@@ -16,6 +16,8 @@ export struct MooSoloWeb {
   @Param radius: number = 0;
   // Web
   @Param @Once controllerMeow: webview.WebviewController = new webview.WebviewController();
+  // Events
+  @Event onDropMe: () => void;
 
   build() {
     Web({ src: '', controller: this.controllerMeow })
@@ -29,6 +31,9 @@ export struct MooSoloWeb {
       .javaScriptAccess(!disableJS(this.realUrl))
       .imageAccess(!disableImages(this.realUrl))
       .onlineImageAccess(!disableImages(this.realUrl))
+      .onDrop(() => {
+        this.onDropMe();
+      })
       .onProgressChange(() => {
         this.updateUrl();
       })

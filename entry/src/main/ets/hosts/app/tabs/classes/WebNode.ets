@@ -11,7 +11,7 @@ import { oopsPreviewActionsImage } from '../../../../components/parts/WebContext
 import { oopsPreviewActionsText } from '../../../../components/parts/WebContextMenu/oopsPreviewActionsText';
 import { oopsPreviewImage } from '../../../../components/parts/WebContextMenu/oopsPreviewImage';
 import { MooSoloWeb } from '../../../../components/common/MooSoloWeb';
-import { getColor, useEffects } from '../../../../components/settings';
+import { defaultAnimation, getColor, useEffects } from '../../../../components/settings';
 import { getMyApp } from '../../../system/windows/scripts/helpers';
 import { contextMenuImagePreview, contextMenuStripText, contextMenuWebHeight, contextMenuWebPreview } from '../settings';
 import { meowTabInfo } from './meowTabInfo';
@@ -52,6 +52,12 @@ struct MeowWeb {
       .javaScriptAccess(!this.pk.xJS)
       .imageAccess(!this.pk.xImage)
       .onlineImageAccess(!this.pk.xImage)
+      .onDrop(() => {
+        clearTimeout(this.pk.myUi.dropHoverFlipTimeoutId);
+        animateToImmediately(defaultAnimation(), () => {
+          this.pk.myUi.dropHover = false;
+        });
+      })
       .onControllerAttached(() => {
         this.pk.onControllerAttached();
       })
@@ -280,7 +286,7 @@ struct MeowWeb {
       }
       .alignItems(HorizontalAlign.Start)
       .layoutWeight(this.largeSpace && isLegalUrl(content)[0] && contextMenuWebPreview() ? 1 : undefined);
-      
+
       if (isLegalUrl(content)[0] && contextMenuWebPreview()) {
         MooSoloWeb({ url: content, radius: defaultInnerRadius - standardSpacing * 0.25 })
           .hoverEffect(HoverEffect.Highlight)

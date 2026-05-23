@@ -17,6 +17,7 @@ import lazy { shrinkButton } from "./SidebarShrinkButton";
 import lazy { webview } from "@kit.ArkWeb";
 import { userNewTabUrl } from "../../../hosts/app/tabs/settings";
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
+import { domainOf } from "../../../catstypicalframework/utils/url";
 
 @ComponentV2
 struct MeowSidebar {
@@ -79,7 +80,11 @@ struct MeowSidebar {
             });
           }
           // Custom Web
-          MooSoloWeb({ controllerMeow: this.controllerMeow, url: this.myUi.sidebarPage, radius: defaultInnerRadius })
+          MooSoloWeb({
+            controllerMeow: this.controllerMeow, url: this.myUi.sidebarPage, radius: defaultInnerRadius, onDropMe: () => {
+              this.onDropSidebar();
+            }
+          })
             .visibility(!sidebarContentIconSet.has(this.myUi.sidebarPage) ? Visibility.Visible : Visibility.None);
         }
         .justifyContent(FlexAlign.End)
@@ -144,22 +149,25 @@ struct MeowSidebar {
                 getMySettings().requestSaveToDisk();
               },
               clickAction: () => {
-                const oldPage = this.myUi.sidebarPage;
+                const newPage = item.item[1];
                 animateToImmediately(defaultAnimation(), () => {
-                  this.myUi.sidebarPage = item.item[1];
+                  this.myUi.sidebarPage = newPage;
                 });
                 getMySettings().setByIndex(83, this.myUi.sidebarPage);
-                
                 // Web
-                if (!sidebarContentIconSet.has(this.myUi.sidebarPage)) {
-                  // Switched to a web.
-                  if (!sidebarContentIconSet.has(oldPage)) {
-                    // Not switch from a non-web.
-                    try {
-                      this.controllerMeow.loadUrl(this.myUi.sidebarPage || userNewTabUrl());
-                    } catch (e) {
-                      meow(`this.controllerMeow.loadUrl(this.myUi.sidebarPage || userNewTabUrl()); failed: ${e}`, 'MeowSidebar', meowLevel.ERROR);
-                    }
+                let oldPage = '';
+                try {
+                  oldPage = this.controllerMeow.getUrl();
+                } catch (e) {
+                  meow(`this.controllerMeow.getUrl() failed: ${e}`, 'MeowSidebar', meowLevel.ERROR);
+                  return;
+                }
+                if (!sidebarContentIconSet.has(newPage) && domainOf(oldPage) != domainOf(newPage)) {
+                  // New page is a web, and domain has changed.
+                  try {
+                    this.controllerMeow.loadUrl(this.myUi.sidebarPage || userNewTabUrl());
+                  } catch (e) {
+                    meow(`this.controllerMeow.loadUrl(this.myUi.sidebarPage || userNewTabUrl()); failed: ${e}`, 'MeowSidebar', meowLevel.ERROR);
                   }
                 }
               },
