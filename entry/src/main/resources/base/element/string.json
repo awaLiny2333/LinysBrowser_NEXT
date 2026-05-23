@@ -1075,6 +1075,10 @@
     {
       "name": "Permission_reason_LOCK_WINDOW_CURSOR",
       "value": "Let web pages in BrowserCat lock the window cursor!"
+    },
+    {
+      "name": "Permission_reason_PRINT",
+      "value": "Let web pages in BrowserCat use the printers!"
     }
   ]
 }

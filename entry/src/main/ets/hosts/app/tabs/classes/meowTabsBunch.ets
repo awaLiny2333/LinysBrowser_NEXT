@@ -1,5 +1,6 @@
 import lazy { webview } from "@kit.ArkWeb";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import { archiveWeb, printWeb } from "../../../../catstypicalframework/utils/web";
 import { defaultAnimation } from "../../../../components/settings";
 import { meowUiHost } from "../../../system/windows/classes/meowUiHost";
 import { applyUserAgentFromSettings } from "../scripts/userAgents";
@@ -207,6 +208,14 @@ export class meowTabsBunch {
     if (this.currentTab) {
       this.currentTab.goHome();
     }
+  }
+
+  printCurrent() {
+    printWeb(this.currentTab?.controller);
+  }
+
+  saveCurrent() {
+    archiveWeb(this.currentTab?.controller);
   }
 
   // GETTERS

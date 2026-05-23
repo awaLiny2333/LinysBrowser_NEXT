@@ -154,6 +154,12 @@ struct MeowButton {
           this.myUi.inPageSearchShow = !this.myUi.inPageSearchShow;
         });
         break;
+      case UnifiedButtonsType.PRINT:
+        this.myTabs.printCurrent();
+        break;
+      case UnifiedButtonsType.SAVE:
+        this.myTabs.saveCurrent();
+        break;
       default:
         break;
     }
@@ -231,6 +237,12 @@ struct MeowButton {
         return this.myTabs.currentTabCanBack;
       case UnifiedButtonsType.FORWARD:
         return this.myTabs.currentTabCanForw;
+      case UnifiedButtonsType.PRINT:
+        return this.myTabs.currentTab != undefined;
+      case UnifiedButtonsType.USERAGENTS:
+        return this.myTabs.currentTab != undefined;
+      case UnifiedButtonsType.SAVE:
+        return this.myTabs.currentTab != undefined;
       default:
         return true;
     }

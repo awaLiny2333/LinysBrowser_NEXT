@@ -187,6 +187,16 @@
           ]
         }
       },
+      {
+        "name": "ohos.permission.PRINT",
+        "reason": "$string:Permission_reason_PRINT",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "EntryAbility"
+          ]
+        }
+      },
     ]
   }
 }

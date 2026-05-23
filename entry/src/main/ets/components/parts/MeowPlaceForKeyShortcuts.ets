@@ -86,6 +86,7 @@ export function MeowPlaceForKeyShortcuts(
     });
     Blank().keyboardShortcut(myKey.print.value, myKey.print.keys, () => {
       meow(`Print Page!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
+      myTabs.printCurrent();
     });
     Blank().keyboardShortcut(myKey.newWindow.value, myKey.newWindow.keys, () => {
       newWindow(context.getHostContext() as common.UIAbilityContext);
@@ -96,6 +97,7 @@ export function MeowPlaceForKeyShortcuts(
       meow(`Pin window to top!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
     });
     Blank().keyboardShortcut(myKey.save.value, myKey.save.keys, () => {
+      myTabs.saveCurrent();
       meow(`Save Page!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
     });
     Blank().keyboardShortcut(myKey.zones.value, myKey.zones.keys, () => {

@@ -97,8 +97,9 @@ export async function fileDocumentPick2Path(fileSuffixFilters: string[] = [".meo
 }
 
 /**
- * Pick a place to save a file, pulling up a DocumentViewPicker.
+ * Pick a place to save the copy of an existing file, pulling up a DocumentViewPicker.
  * @param sourcePath The source path.
+ * @param nameOverwrite Overwrite name.
  * @returns True or false.
  */
 export async function fileDocumentPickCopySave(sourcePath: string, nameOverwrite?: string) {
@@ -643,6 +644,15 @@ export function uri_2_path(uri: string) {
  * */
 export function path_2_uri(path: string) {
   return fileUri.getUriFromPath(path);
+}
+
+/**
+ * Filters out illegal characters in filenames, replacing all such chars with '_'.
+ * @param filename The original filename.
+ * @returns The filtered filename.
+ */
+export function makeFilenameLegal(filename: string) {
+  return filename.replace(/[\\/:*?"<>|]/g, '_');
 }
 
 /**

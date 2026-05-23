@@ -1075,6 +1075,10 @@
     {
       "name": "Permission_reason_LOCK_WINDOW_CURSOR",
       "value": "让冲浪喵中的网页锁定窗口光标！"
+    },
+    {
+      "name": "Permission_reason_PRINT",
+      "value": "让冲浪喵中使用打印机！"
     }
   ]
 }
