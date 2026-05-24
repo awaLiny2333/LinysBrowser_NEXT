@@ -5,6 +5,7 @@ import lazy { fileIo, fileUri, picker } from '@kit.CoreFileKit';
 import { image } from '@kit.ImageKit';
 import lazy { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { http } from '@kit.NetworkKit';
+import { detectBarcode } from '@kit.ScanKit';
 import lazy { meow, meowLevel } from './catsLogger';
 import lazy { MIME_TYPES_MAP_LITE } from './storage-ext';
 
@@ -244,7 +245,7 @@ export async function saveHybrid(fullFilePath: string, content: string | ArrayBu
  * @param context The common.UIAbilityContext.
  * @param srcFilePath The source path.
  */
-export async function saveImageToAlbum(context: common.UIAbilityContext, srcFilePath: string): Promise<boolean> {
+export async function saveImageToAlbum(srcFilePath: string, context: common.UIAbilityContext): Promise<boolean> {
   // Then save to gallery
   const srcFileUri = path_2_uri(srcFilePath);
   const ext = extensionOfName(srcFilePath);
@@ -267,7 +268,7 @@ export async function saveImageToAlbum(context: common.UIAbilityContext, srcFile
     unlinkFile(srcFilePath); // Clear
     return true;
   } catch (err) {
-    console.error(`[saveImageToAlbum] failed to create asset by dialog successfully errCode is: ${err.code}, ${err.message}`);
+    console.error(`[saveImageToAlbum] failed to create asset by dialog, errCode is: ${err.code}, ${err.message}`);
     return false;
   }
 };
@@ -673,6 +674,25 @@ export function base64_2_arrayBuffer(base64Str: string): Promise<ArrayBuffer> {
 }
 
 /**
+ * Scans QR code from an image file.
+ * @param path The path of the file.
+ * @returns Array<scanBarcode.ScanResult>.
+ * */
+export async function scanQrFromPath(path: string, ignoreCanIUse: boolean = false) {
+  if (canIUse("SystemCapability.Multimedia.Scan.ScanBarcode") || ignoreCanIUse) {
+    const result = await detectBarcode.decode({ uri: path_2_uri(path) })
+      .catch((e: BusinessError) => {
+        console.error(`[scanQrFromPath] Failed: ${e}`);
+        return [];
+      });
+    return result;
+  } else {
+    console.error(`[scanQrFromPath] Not supported.`);
+    return [];
+  }
+}
+
+/**
  * Adds a unit to a size in bytes.
  * @param size_in_bytes A number or bigint, the size in bytes.
  * @returns A string, the connected result of a number of size and its unit.
@@ -771,7 +791,7 @@ export function arrayBuffer_2_pixelMap(buf: ArrayBuffer) {
     })
     .catch((e: BusinessError) => {
       console.error(`[arrayBuffer_2_pixelMap][A] createPixelMap failed: ${e}`);
-      return undefined
+      return undefined;
     });
 }
 

@@ -173,7 +173,7 @@ export struct ScratchingBoardPanel {
         icon: $r('sys.symbol.picture_badge_arrow_down'),
         clickAction: () => {
           // Save to Gallery
-          saveImageToAlbum(this.getUIContext().getHostContext()! as common.UIAbilityContext, this.imagePayload(item.item.payload)[2]);
+          saveImageToAlbum(this.imagePayload(item.item.payload)[2], this.getUIContext().getHostContext()! as common.UIAbilityContext);
         }
       });
       MooSymbolButtonMeow({

@@ -1,5 +1,9 @@
+import lazy { webview } from "@kit.ArkWeb";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
+import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
+import { domainOf, unifyDestination } from "../../../catstypicalframework/utils/url";
+import { userNewTabUrl } from "../../../hosts/app/tabs/settings";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { MooSoloWeb } from "../../common/MooSoloWeb";
 import lazy { MooSymbolButton } from "../../common/MooSymbolButton";
@@ -10,14 +14,10 @@ import lazy { SlotEditButton, symbolIconOptions } from "../../common/SlotEditBut
 import { defaultMooSymbolSize, defaultSidebarShrunkWidth, defaultSidebarWidth, getButtonIcon, meowThemeColorType, sidebarContentIconArray, sidebarContentIconSet, standardSpacing, UnifiedButtonsType } from "../../constants";
 import { defaultAnimation, getColor, getMySettings, sideAreaShrinkButton, sidebarButtons, sidebarShouldBeOnTheRight, titleBarPositionBottom, useEffects } from "../../settings";
 import lazy { MeowBookmarksPanel } from "../Bookmarks/Panel";
-import { DownloadsPanel } from "../Downloads/Panel";
+import lazy { DownloadsPanel } from "../Downloads/Panel";
 import lazy { HistoryPanel } from "../History/Panel";
 import lazy { ScratchingBoardPanel } from "../ScratchingBoard/Panel";
 import lazy { shrinkButton } from "./SidebarShrinkButton";
-import lazy { webview } from "@kit.ArkWeb";
-import { userNewTabUrl } from "../../../hosts/app/tabs/settings";
-import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
-import { domainOf, unifyDestination } from "../../../catstypicalframework/utils/url";
 
 @ComponentV2
 struct MeowSidebar {

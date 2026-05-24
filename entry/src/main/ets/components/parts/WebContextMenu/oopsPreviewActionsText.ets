@@ -6,8 +6,8 @@ import { MooSymbolButton } from '../../common/MooSymbolButton';
 @ComponentV2
 export struct oopsPreviewActionsText {
   // Params
-  @Param @Require content: string;
-  @Local visitable: boolean = isLegalUrl(this.content)[0];
+  @Param @Require text: string;
+  @Local visitable: boolean = isLegalUrl(this.text)[0];
   // Events
   @Event requestCloseMenu: () => void;
   @Event requestVisit: (reqUrl: string) => void;
@@ -17,26 +17,26 @@ export struct oopsPreviewActionsText {
       Row() {
         MooSymbolButton({
           icon: $r('sys.symbol.plus_square_on_square'), clickAction: () => {
-            copyText(this.content);
+            copyText(this.text);
             this.requestCloseMenu();
           }
         }); // Copy
         MooSymbolButton({
           icon: $r('sys.symbol.arrow_up_right'), clickAction: () => {
-            this.requestVisit(this.content);
+            this.requestVisit(this.text);
             this.requestCloseMenu();
           }, isEnabled: this.visitable
         }); // Visit
         MooSymbolButton({
           icon: $r('sys.symbol.magnifyingglass'), clickAction: () => {
-            const result = concatSearchWithEngine(this.content).result;
+            const result = concatSearchWithEngine(this.text).result;
             if (result) this.requestVisit(result);
             this.requestCloseMenu();
           }
         }); // Search with default engine
         MooSymbolButton({
           icon: $r('sys.symbol.bookmark_book_closed'), clickAction: () => {
-            let link: string = 'dictionary://' + this.content;
+            let link: string = 'dictionary://' + this.text;
             try {
               jumpUrl(link);
             } catch (e) {

@@ -13,6 +13,8 @@ import { defaultBlankUrl, disableImages, disableJS, forceDark, viewableSchemes }
 import { intelligentTrackingPrevention, recordNewHistoryFromSettings, userHomeUrl, userNewTabUrl } from "../settings";
 import { meowTabsBunch } from "./meowTabsBunch";
 import { TabNodeController } from "./WebNode";
+import { image } from "@kit.ImageKit";
+import { scanBarcode } from "@kit.ScanKit";
 
 @ObservedV2
 export class meowTabInfo {
@@ -42,6 +44,25 @@ export class meowTabInfo {
   @Trace searchIsDone: boolean = true;
   @Trace currentSearchResultIdx: number = -1;
   @Trace searchResultCount: number = 0;
+  // Context menu UI
+  @Trace offsetX: number = 0;
+  @Trace offsetY: number = 0;
+  @Trace showMenu: boolean = false;
+  // Context menu data
+  contextMenuResult: WebContextMenuResult | undefined;
+  @Trace linkUrl: string = '';
+  @Trace sourceUrl: string = '';
+  @Trace unfilteredUrl: string = '';
+  @Trace selectedText: string = '';
+  @Trace isEditable: boolean = false;
+  // Context menu image
+  @Trace hasImage: boolean = false;
+  @Trace imageArrayBuffer: ArrayBuffer | undefined;
+  @Trace imagePixelMap: image.PixelMap | undefined;
+  @Trace imageFilename: string = '';
+  @Trace imagePath: string = '';
+  @Trace imageInfo: image.ImageInfo | undefined;
+  @Trace imageQrResults: scanBarcode.ScanResult[] | undefined;
 
   constructor(myUi: meowUiHost) {
     this.myUi = myUi;

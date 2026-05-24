@@ -1,36 +1,24 @@
 import { BuilderNode, FrameNode, NodeController, UIContext } from '@kit.ArkUI';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { meow } from '../../../../catstypicalframework/utils/catsLogger';
-import { copyText } from '../../../../catstypicalframework/utils/clipboard';
-import { defaultInnerRadius, measureTextWidth, meowPx2vp } from '../../../../catstypicalframework/utils/ui';
-import { isLegalUrl } from '../../../../catstypicalframework/utils/url';
-import { MooSymbolButton } from '../../../../components/common/MooSymbolButton';
-import { MooTextButton } from '../../../../components/common/MooTextButton';
-import { fontSizeSmall, meowThemeColorType, standardSpacing } from '../../../../components/constants';
-import { oopsPreviewActionsImage } from '../../../../components/parts/WebContextMenu/oopsPreviewActionsImage';
-import { oopsPreviewActionsText } from '../../../../components/parts/WebContextMenu/oopsPreviewActionsText';
-import { oopsPreviewImage } from '../../../../components/parts/WebContextMenu/oopsPreviewImage';
-import { MooSoloWeb } from '../../../../components/common/MooSoloWeb';
-import { defaultAnimation, getColor, useEffects } from '../../../../components/settings';
-import { getMyApp } from '../../../system/windows/scripts/helpers';
-import { contextMenuImagePreview, contextMenuStripText, contextMenuWebHeight, contextMenuWebPreview } from '../settings';
+import lazy { meow } from '../../../../catstypicalframework/utils/catsLogger';
+import lazy { copyText } from '../../../../catstypicalframework/utils/clipboard';
+import lazy { defaultInnerRadius, measureTextWidth, meowPx2vp } from '../../../../catstypicalframework/utils/ui';
+import lazy { isLegalUrl } from '../../../../catstypicalframework/utils/url';
+import lazy { MooSoloWeb } from '../../../../components/common/MooSoloWeb';
+import lazy { MooSymbolButton } from '../../../../components/common/MooSymbolButton';
+import lazy { MooTextButton } from '../../../../components/common/MooTextButton';
+import lazy { fontSizeSmall, meowThemeColorType, standardSpacing } from '../../../../components/constants';
+import lazy { oopsPreviewActionsImage } from '../../../../components/parts/WebContextMenu/oopsPreviewActionsImage';
+import lazy { oopsPreviewActionsText } from '../../../../components/parts/WebContextMenu/oopsPreviewActionsText';
+import lazy { oopsPreviewImage } from '../../../../components/parts/WebContextMenu/oopsPreviewImage';
+import { oopsPreviewQrResults } from '../../../../components/parts/WebContextMenu/oopsPreviewQrResults';
+import lazy { defaultAnimation, getColor, useEffects } from '../../../../components/settings';
+import lazy { getMyApp } from '../../../system/windows/scripts/helpers';
+import lazy { contextMenuImagePreview, contextMenuStripText, contextMenuWebHeight, contextMenuWebPreview } from '../settings';
 import { meowTabInfo } from './meowTabInfo';
 
 @ComponentV2
 struct MeowWeb {
   @Param @Require pk: meowTabInfo;
-  // Context menu UI
-  @Local offsetX: number = 0;
-  @Local offsetY: number = 0;
-  @Local showMenu: boolean = false;
-  // Context menu data
-  private contextMenuResult: WebContextMenuResult | undefined = undefined;
-  @Local linkUrl: string = '';
-  @Local sourceUrl: string = '';
-  @Local unfilteredUrl: string = '';
-  @Local selectedText: string = '';
-  @Local editable: boolean = false;
-  @Local hasImage: boolean = false;
 
   build() {
     Web({
@@ -147,27 +135,27 @@ struct MeowWeb {
           return false;
         }
         // Data
-        this.contextMenuResult = event.result;
-        this.linkUrl = event.param.getLinkUrl();
-        this.sourceUrl = event.param.getSourceUrl();
-        this.unfilteredUrl = event.param.getUnfilteredLinkUrl();
-        this.editable = event.param.isEditable();
-        this.hasImage = event.param.existsImageContents();
+        this.pk.contextMenuResult = event.result;
+        this.pk.linkUrl = event.param.getLinkUrl();
+        this.pk.sourceUrl = event.param.getSourceUrl();
+        this.pk.unfilteredUrl = event.param.getUnfilteredLinkUrl();
+        this.pk.isEditable = event.param.isEditable();
+        this.pk.hasImage = event.param.existsImageContents();
         let t = event.param.getSelectionText();
-        this.selectedText = contextMenuStripText() ? t.trim() : t;
+        this.pk.selectedText = contextMenuStripText() ? t.trim() : t;
         // Ui
-        this.offsetX = meowPx2vp(event?.param.x() ?? 0);
-        this.offsetY = meowPx2vp(event?.param.y() ?? 0);
-        this.showMenu = true;
+        this.pk.offsetX = meowPx2vp(event?.param.x() ?? 0);
+        this.pk.offsetY = meowPx2vp(event?.param.y() ?? 0);
+        this.pk.showMenu = true;
         return true;
       })
-      .bindContextMenu(this.showMenu, this.MenuBuilder, {
+      .bindContextMenu(this.pk.showMenu, this.MenuBuilder, {
         enableArrow: false,
         placement: Placement.BottomRight,
-        anchorPosition: { x: this.offsetX, y: this.offsetY },
+        anchorPosition: { x: this.pk.offsetX, y: this.pk.offsetY },
         onDidDisappear: () => {
-          this.showMenu = false;
-          this.contextMenuResult!.closeContextMenu();
+          this.pk.showMenu = false;
+          this.pk.contextMenuResult!.closeContextMenu();
         },
         backgroundColor: useEffects() ? Color.Transparent : getColor(meowThemeColorType.PRIMARY),
         backgroundBlurStyle: useEffects() ? BlurStyle.COMPONENT_ULTRA_THICK : BlurStyle.NONE,
@@ -182,67 +170,67 @@ struct MeowWeb {
         MooSymbolButton({
           icon: $r('sys.symbol.arrow_left'), isEnabled: this.pk.myUi.myTabs.currentTabCanBack, clickAction: () => {
             this.pk.myUi.myTabs.goBackCurrent();
-            this.showMenu = false;
+            this.pk.showMenu = false;
           }
         }); // Backward
         MooSymbolButton({
           icon: $r('sys.symbol.arrow_right'), isEnabled: this.pk.myUi.myTabs.currentTabCanForw, clickAction: () => {
             this.pk.myUi.myTabs.goForwardCurrent();
-            this.showMenu = false;
+            this.pk.showMenu = false;
           }
         }); // Forward
         MooSymbolButton({
           icon: $r('sys.symbol.arrow_clockwise'), clickAction: () => {
             this.pk.myUi.myTabs.refreshCurrent();
-            this.showMenu = false;
+            this.pk.showMenu = false;
           }
         }); // Refresh
         MooSymbolButton({
-          icon: $r('sys.symbol.selector'), isEnabled: this.editable, clickAction: () => {
-            this.contextMenuResult?.selectAll();
-            this.showMenu = false;
+          icon: $r('sys.symbol.selector'), isEnabled: this.pk.isEditable, clickAction: () => {
+            this.pk.contextMenuResult?.selectAll();
+            this.pk.showMenu = false;
           }
         }); // Select all
         MooSymbolButton({
-          icon: $r('sys.symbol.plus_square_dashed_on_square'), isEnabled: this.editable, clickAction: () => {
-            this.contextMenuResult?.paste();
-            this.showMenu = false;
+          icon: $r('sys.symbol.plus_square_dashed_on_square'), isEnabled: this.pk.isEditable, clickAction: () => {
+            this.pk.contextMenuResult?.paste();
+            this.pk.showMenu = false;
           }
         }); // Paste
         MooSymbolButton({
-          icon: $r('sys.symbol.cut'), isEnabled: this.editable, clickAction: () => {
-            this.contextMenuResult?.cut();
-            this.showMenu = false;
+          icon: $r('sys.symbol.cut'), isEnabled: this.pk.isEditable, clickAction: () => {
+            this.pk.contextMenuResult?.cut();
+            this.pk.showMenu = false;
           }
         }); // Cut
         MooSymbolButton({
-          icon: $r('sys.symbol.undo'), isEnabled: this.editable, clickAction: () => {
-            this.contextMenuResult?.undo();
-            this.showMenu = false;
+          icon: $r('sys.symbol.undo'), isEnabled: this.pk.isEditable, clickAction: () => {
+            this.pk.contextMenuResult?.undo();
+            this.pk.showMenu = false;
           }
         }); // Undo
         MooSymbolButton({
-          icon: $r('sys.symbol.redo'), isEnabled: this.editable, clickAction: () => {
-            this.contextMenuResult?.redo();
-            this.showMenu = false;
+          icon: $r('sys.symbol.redo'), isEnabled: this.pk.isEditable, clickAction: () => {
+            this.pk.contextMenuResult?.redo();
+            this.pk.showMenu = false;
           }
         }); // Redo
       }; // Always-on buttons of web control and edit.
       // Specific panels
-      if (this.selectedText) {
-        this.contentCardBuilder(this.selectedText);
+      if (this.pk.selectedText) {
+        this.contentCardBuilder(this.pk.selectedText);
       }
-      if (this.linkUrl) {
-        this.contentCardBuilder(this.linkUrl);
+      if (this.pk.linkUrl) {
+        this.contentCardBuilder(this.pk.linkUrl);
       }
-      if (this.sourceUrl && !this.hasImage) {
-        this.contentCardBuilder(this.sourceUrl); // If has image, then don't show this duplicated url address.
+      if (this.pk.sourceUrl && !this.pk.hasImage) {
+        this.contentCardBuilder(this.pk.sourceUrl); // If has image, then don't show this duplicated url address.
       }
-      if (this.unfilteredUrl && this.linkUrl != this.unfilteredUrl) {
-        this.contentCardBuilder(this.unfilteredUrl);
+      if (this.pk.unfilteredUrl && this.pk.linkUrl != this.pk.unfilteredUrl) {
+        this.contentCardBuilder(this.pk.unfilteredUrl);
       }
-      if (this.hasImage) {
-        this.imageCardBuilder(this.sourceUrl);
+      if (this.pk.hasImage) {
+        this.imageCardBuilder(this.pk.sourceUrl);
       }
     }
     .alignItems(HorizontalAlign.Start)
@@ -262,8 +250,9 @@ struct MeowWeb {
 
   @Builder
   contentCardBuilder(content: string) {
-    Flex({ direction: !this.largeSpace ? FlexDirection.Column : FlexDirection.Row }) {
+    Flex({ direction: this.largeSpace ? FlexDirection.Row : FlexDirection.Column }) {
       Column() {
+        // The text
         MooTextButton({
           text: content, maxLines: this.largeSpace ? 5 : 3,
           clickAction: () => {
@@ -272,13 +261,14 @@ struct MeowWeb {
             } else {
               copyText(content);
             }
-            this.showMenu = false;
+            this.pk.showMenu = false;
           }
         });
 
+        // The row of copy, visit and things.
         oopsPreviewActionsText({
-          content: content, requestCloseMenu: () => {
-            this.showMenu = false;
+          text: content, requestCloseMenu: () => {
+            this.pk.showMenu = false;
           }, requestVisit: (u) => {
             this.pk.myUi.openNewTab(u);
           }
@@ -287,6 +277,7 @@ struct MeowWeb {
       .alignItems(HorizontalAlign.Start)
       .layoutWeight(this.largeSpace && isLegalUrl(content)[0] && contextMenuWebPreview() ? 1 : undefined);
 
+      // Web preview
       if (isLegalUrl(content)[0] && contextMenuWebPreview()) {
         MooSoloWeb({ url: content, radius: defaultInnerRadius - standardSpacing * 0.25 })
           .hoverEffect(HoverEffect.Highlight)
@@ -299,46 +290,59 @@ struct MeowWeb {
   }
 
   @Builder
-  imageCardBuilder(url: string) {
-    Flex({
-      direction: !this.largeSpace ? FlexDirection.Column : FlexDirection.Row
-    }) {
+  imageCardBuilder(source: string) {
+    Flex({ direction: this.largeSpace ? FlexDirection.Row : FlexDirection.Column }) {
       Column() {
         MooTextButton({
-          text: url, maxLines: this.largeSpace ? 5 : 3,
-          clickAction: () => {
-            this.pk.myUi.openNewTab(url);
-            this.showMenu = false;
+          text: source, maxLines: this.largeSpace ? 5 : 3, clickAction: () => {
+            this.pk.myUi.openNewTab(source);
+            this.pk.showMenu = false;
           }
         });
+
+        // The row of copu image, save and things.s
         oopsPreviewActionsImage({
-          content: url,
+          tabInfo: this.pk, content: source,
           requestVisit: (url) => {
             this.pk.myUi.openNewTab(url);
           },
           requestCloseMenu: () => {
-            this.showMenu = false;
+            this.pk.showMenu = false;
           },
           requestCopyImage: () => {
-            this.contextMenuResult?.copyImage();
+            this.pk.contextMenuResult?.copyImage();
           }
         });
 
-        // linysPreviewQrResults();
+        // The QR scan results.
+        oopsPreviewQrResults({
+          tabInfo: this.pk,
+          requestVisit: (url) => {
+            this.pk.myUi.openNewTab(url);
+          },
+          requestCloseMenu: () => {
+            this.pk.showMenu = false;
+          },
+          requestCopy: (url) => {
+            copyText(url);
+          }
+        });
       }
       .alignItems(HorizontalAlign.Start)
       .layoutWeight(this.largeSpace ? 1 : undefined)
-      .constraintSize(!this.largeSpace || (this.linkUrl && (this.linkUrl != this.sourceUrl))
-        ? {} : { maxWidth: measureTextWidth(url, this.getUIContext(), fontSizeSmall, FontWeight.Normal) / 2 + 20 });
+      .constraintSize(!this.largeSpace || (this.pk.linkUrl && (this.pk.linkUrl != this.pk.sourceUrl))
+        ? {} : { maxWidth: measureTextWidth(source, this.getUIContext(), fontSizeSmall, FontWeight.Normal) / 2 + 20 });
 
+      // Image display
       if (contextMenuImagePreview()) {
         oopsPreviewImage({
-          url: url,
+          source: source,
+          localImagePath: this.pk.imagePath,
           requestVisit: (url) => {
             this.pk.myUi.openNewTab(url);
           },
           requestCloseMenu: () => {
-            this.showMenu = false;
+            this.pk.showMenu = false;
           }
         });
       }
@@ -357,8 +361,8 @@ export class TabNodeController extends NodeController {
 
   constructor(uiContext: UIContext, tab: meowTabInfo) {
     super();
-    let builderNode: BuilderNode<[meowTabInfo]> = new BuilderNode(uiContext); // 创建BuilderNode
-    builderNode.build(wrapBuilder<[meowTabInfo]>(WebBuilder), tab); // 创建动态Web组件
+    let builderNode: BuilderNode<[meowTabInfo]> = new BuilderNode(uiContext); // 创建 BuilderNode
+    builderNode.build(wrapBuilder<[meowTabInfo]>(WebBuilder), tab); // 创建动态 Web 组件
     this.builderNode = builderNode;
   }
 
@@ -374,7 +378,7 @@ export class TabNodeController extends NodeController {
     if (this.builderNode) {
       let frameNode: FrameNode | null = this.builderNode.getFrameNode();
       if (frameNode?.getParent() != null) {
-        hilog.error(0x0000, 'testTag', '%{public}s', 'The frameNode is already attached');
+        meow(`[WebNode][attachWeb] Failed! FrameNode already has a parent!`);
         return;
       }
       this.rootNode = this.builderNode.getFrameNode();
