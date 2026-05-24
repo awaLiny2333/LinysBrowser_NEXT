@@ -39,7 +39,10 @@ struct MeowButton {
           this.myClickAction();
         })
         .fontColor([this.myOnHold && !useEffects() ? getColor(meowThemeColorType.PRIMARY) : getColor(meowThemeColorType.FONT)])
-        .bindMenu(this.hasMenu ? this.myMenu : undefined);
+        .bindMenu(this.hasMenu ? this.myMenu : undefined, {
+          backgroundColor: useEffects() ? Color.Transparent : getColor(meowThemeColorType.PRIMARY),
+          backgroundBlurStyle: useEffects() ? BlurStyle.COMPONENT_ULTRA_THICK : BlurStyle.NONE,
+        });
     }
   }
 
@@ -290,8 +293,7 @@ struct MeowButton {
           });
       }
     }
-    .fontColor(getColor(meowThemeColorType.FONT))
-    .backgroundColor(getColor(meowThemeColorType.PRIMARY));
+    .fontColor(getColor(meowThemeColorType.FONT));
   }
 }
 

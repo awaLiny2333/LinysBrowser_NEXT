@@ -27,6 +27,9 @@
           "strictMode": {
             "caseSensitiveCheck": true,
             "useNormalizedOHMUrl": true
+          },
+          "arkOptions": {
+            // "autoLazyImport": true
           }
         },
         "bundleName": "meow.liny.browser.cat.uwu.re"

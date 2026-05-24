@@ -60,7 +60,8 @@ struct ButtonSlot {
               aboutToDisappear: () => {
                 this.showAdd = false;
               },
-              backgroundColor: useEffects() ? undefined : getColor(meowThemeColorType.PRIMARY)
+              backgroundColor: useEffects() ? Color.Transparent : getColor(meowThemeColorType.PRIMARY),
+              backgroundBlurStyle: useEffects() ? BlurStyle.COMPONENT_ULTRA_THICK : BlurStyle.NONE,
             });
         };
       }

@@ -68,7 +68,8 @@ struct SlotEditButton {
           this.isMenu = false;
           this.didHideMenu();
         },
-        backgroundColor: useEffects() ? undefined : getColor(meowThemeColorType.PRIMARY)
+        backgroundColor: useEffects() ? Color.Transparent : getColor(meowThemeColorType.PRIMARY),
+        backgroundBlurStyle: useEffects() ? BlurStyle.COMPONENT_ULTRA_THICK : BlurStyle.NONE,
       });
   }
 
@@ -114,6 +115,7 @@ struct SlotEditButton {
         }
       }
     }
+    .backgroundColor(getColor(meowThemeColorType.PRIMARY))
     .alignItems(HorizontalAlign.End)
     .onTouch((event) => {
       event.stopPropagation(); // Prevent event propagation, allowing the menu to remain open when clicked

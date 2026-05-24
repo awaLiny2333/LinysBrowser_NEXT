@@ -82,7 +82,7 @@ struct MeowSidebar {
 
           // Custom Web
           MooSoloWeb({
-            controllerMeow: this.controllerMeow, url: this.myUi.sidebarPage, radius: defaultInnerRadius, onDropMe: () => {
+            controllerMeow: this.controllerMeow, url: this.myUi.sidebarPage, radius: useEffects() ? defaultInnerRadius : 0, onDropMe: () => {
               this.onDropSidebar();
             }
           })
@@ -221,7 +221,8 @@ struct MeowSidebar {
                 this.myUi.sideAreaShrinkBlock_menu = false;
                 this.showAdd = false;
               },
-              backgroundColor: useEffects() ? undefined : getColor(meowThemeColorType.PRIMARY)
+              backgroundColor: useEffects() ? Color.Transparent : getColor(meowThemeColorType.PRIMARY),
+              backgroundBlurStyle: useEffects() ? BlurStyle.COMPONENT_ULTRA_THICK : BlurStyle.NONE,
             });
         };
       } else {
