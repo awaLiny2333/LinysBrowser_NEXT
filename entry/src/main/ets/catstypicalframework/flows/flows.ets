@@ -18,7 +18,7 @@
  */
 
 import { common, Configuration, ConfigurationConstant } from '@kit.AbilityKit';
-import { AppStorageV2, window } from '@kit.ArkUI';
+import lazy { AppStorageV2, window, KeyboardAvoidMode } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import lazy Want from '@ohos.app.ability.Want';
 import { defaultNewWindowAlias, getMySettings, isPreferRightHandFromSettings, isTabsStyleVertical } from '../../components/settings';
@@ -252,6 +252,11 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
     listenAvoid(myWindowId);
     myUi.updateWindowBackgroundColor();
     myUi.updateWindowTitle();
+    try {
+      windowObj.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE);
+    } catch (e) {
+      meow(`windowObj.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE) failed: ${e}`, 'init', meowLevel.ERROR);
+    }
   }, 30); // Delayed execution, reduce launch time.
 
   // SHARED USER DATA & LISTENERS

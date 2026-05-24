@@ -60,6 +60,10 @@ struct MeowTabsVertical {
       .layoutWeight(1);
 
       Row() {
+        // Shrink button
+        if (this.showShrinkButton && titleBarPositionBottom()) {
+          shrinkButton(this.myUi);
+        }
         MooSymbolButton({
           icon: $r('sys.symbol.plus'),
           clickAction: () => {
@@ -71,11 +75,6 @@ struct MeowTabsVertical {
       }
       .width('100%')
       .justifyContent(sidebarShouldBeOnTheRight() ? FlexAlign.End : FlexAlign.Start);
-
-      // Shrink button
-      if (this.showShrinkButton && titleBarPositionBottom()) {
-        shrinkButton(this.myUi);
-      }
     }
     .clip(true)
     .alignItems(sidebarShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
