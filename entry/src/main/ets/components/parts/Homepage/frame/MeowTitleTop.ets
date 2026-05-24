@@ -1,14 +1,13 @@
-import { common } from '@kit.AbilityKit';
+import lazy { common } from '@kit.AbilityKit';
 import { meowLayout } from '../../../../catstypicalframework/hosts/meowLayout';
-import { meowMisc } from '../../../../catstypicalframework/hosts/meowMisc';
 import { windowTopAvoidLeft, windowTopAvoidRight } from '../../../../catstypicalframework/utils/ui';
 import { meowTabsBunch } from '../../../../hosts/app/tabs/classes/meowTabsBunch';
 import { meowAppHost } from '../../../../hosts/system/windows/classes/meowAppHost';
 import { meowUiHost } from '../../../../hosts/system/windows/classes/meowUiHost';
-import { newWindow } from '../../../../hosts/system/windows/scripts/multiwindows';
+import lazy { newWindow } from '../../../../hosts/system/windows/scripts/multiwindows';
 import { MooSymbolButtonSmall } from '../../../common/MooSymbolButtonSmall';
 import { MooTextModifier } from '../../../common/MooTextModifier';
-import { showWindowTitle, windowTitlePosition } from '../../../settings';
+import { showWindowTitle, windowTitleOnAddressBar, windowTitlePosition } from '../../../settings';
 
 /**
  * The window top bar. Holds the buttons on window top, as well as the name of window / zone.
@@ -32,8 +31,7 @@ export function MeowTitleTop(
     }
 
     // Window Title Text
-    // Text(showWindowTitle(myLayout) ? `${myUi.windowId} | ${myTabs.currentTab?.title || 'Meowl'} | ${myUi.windowAlias} | ${myMisc.launchEndTime - myMisc.launchStartTime} ms` : '')
-    Text(showWindowTitle(myLayout) ? `${myTabs.currentTab?.title || 'Meow'}｜${myUi.windowAlias}` : '')
+    Text(showWindowTitle(myLayout) && !windowTitleOnAddressBar() ? `${myTabs.currentTab?.title || 'Meow'}｜${myUi.windowAlias}` : '')
       .attributeModifier(new MooTextModifier())
       .textAlign(windowTitlePosition())
       .layoutWeight(1)
@@ -41,7 +39,7 @@ export function MeowTitleTop(
       .margin({ top: 4, left: 10, right: 10 })
       .maxLines(1)
       .wordBreak(WordBreak.BREAK_ALL)
-      .textOverflow({ overflow: TextOverflow.Ellipsis })
+      .textOverflow({ overflow: TextOverflow.Ellipsis });
 
     // right button(s)
     if (myApp.freeWindow) {

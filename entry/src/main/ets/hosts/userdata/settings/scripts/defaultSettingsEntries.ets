@@ -40,7 +40,7 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('status_tabs_open', meowSettingsEntryType.BOOLEAN, 'false'), // #22
   new meowSettingsEntry('status_showing_my_windows_alias', meowSettingsEntryType.BOOLEAN, 'false'), // #23
   new meowSettingsEntry('status_showing_my_windows_alias_non_tablet', meowSettingsEntryType.BOOLEAN, 'false'),
-  new meowSettingsEntry('my_window_alias_position', meowSettingsEntryType.STRING, 'center'), // 'left' | 'center' | 'right' #25
+  new meowSettingsEntry('my_window_alias_position', meowSettingsEntryType.STRING, 'center'), // 'left' | 'center' | 'right' | 'address' #25
   new meowSettingsEntry('my_window_alias_last', meowSettingsEntryType.STRING, defaultNewWindowName()), // #26
   // Continuation
   new meowSettingsEntry('continuation_auto_exit', meowSettingsEntryType.BOOLEAN, 'false'), // #27

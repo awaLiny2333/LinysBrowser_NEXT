@@ -36,6 +36,8 @@ export class meowUiHost {
   @Trace showMore: boolean = false;
   @Trace dropHover: boolean = false;
   dropHoverFlipTimeoutId: number | undefined = undefined;
+  @Trace showAddressBarOverlay: boolean = false;
+  addressBarOverlayReShowTimeoutId: number | undefined = undefined;
   // Side area
   @Trace showTabs: boolean = false;
   @Trace sidebarPage: string = UnifiedButtonsType.HISTORIES;
@@ -316,6 +318,32 @@ export class meowUiHost {
     }
   }
 
+  requestHideAddressBarOverlay() {
+    if (this.showAddressBarOverlay) {
+      animateToImmediately(defaultAnimation(), () => {
+        this.showAddressBarOverlay = false;
+      });
+    }
+    clearTimeout(this.addressBarOverlayReShowTimeoutId);
+    this.addressBarOverlayReShowTimeoutId = setTimeout(() => {
+      if (this.addressBarFocused) {
+        return; // Reject if user is typing something
+      }
+      animateToImmediately(defaultAnimation(), () => {
+        this.showAddressBarOverlay = true;
+      });
+    }, 4399);
+  }
+
+  requestShowAddressBarOverlay() {
+    clearTimeout(this.addressBarOverlayReShowTimeoutId);
+    if (!this.showAddressBarOverlay) {
+      animateToImmediately(defaultAnimation(), () => {
+        this.showAddressBarOverlay = true;
+      });
+    }
+  }
+
   // FOCUS
 
   /**
@@ -332,6 +360,7 @@ export class meowUiHost {
    * @param uiContext The uiContext.
    */
   requestAddressBarFocus(uiContext: UIContext) {
+    this.requestHideAddressBarOverlay();
     try {
       uiContext.getFocusController().requestFocus(addressBarId);
       this.reportAddressBarFocus();
@@ -366,6 +395,7 @@ export class meowUiHost {
         });
       }, 50);
     }
+    this.requestHideAddressBarOverlay();
   }
 
   // SEARCH

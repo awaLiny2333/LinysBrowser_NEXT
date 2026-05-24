@@ -157,9 +157,9 @@ struct SettingsAppearance {
         Text($r('app.string.Settings_category_appearance_windows_windowTitlePosition')).attributeModifier(new MooTextModifier());
         MooTabSegmentV2({
           initSelected: this.selectedWindowTitlePositionFromSettings(),
-          items: new SegmentButtonV2Items([{ text: '←' }, { text: '󰁨' }, { text: '→' }]),
+          items: new SegmentButtonV2Items([{ text: '←' }, { text: '󰁨' }, { text: '→' }, { text: '󰁱' }]),
           onSelected: (index) => {
-            // 'left' | 'center' | 'right'
+            // 'left' | 'center' | 'right' | 'address'
             switch (index) {
               case 0:
                 this.mySettings.setByIndex(25, 'left');
@@ -169,6 +169,9 @@ struct SettingsAppearance {
                 break;
               case 2:
                 this.mySettings.setByIndex(25, 'right');
+                break;
+              case 3:
+                this.mySettings.setByIndex(25, 'address');
                 break;
               default:
                 break;
@@ -290,7 +293,7 @@ struct SettingsAppearance {
   }
   selectedWindowTitlePositionFromSettings() {
     const value = this.mySettings.settingsData[25].value as string;
-    const seq = ['left', 'center', 'right'];
+    const seq = ['left', 'center', 'right', 'address'];
     return seq.indexOf(value);
   }
 }

@@ -116,7 +116,7 @@ export class meowTabsBunch {
       meow(`closedTab?.node is undefined`, 'meowTabsBunch][closeTab', meowLevel.ERROR);
       return;
     }
-    
+
     this.tabs.splice(idx, 1);
 
     closedTab.node!.detachWeb();
@@ -153,6 +153,8 @@ export class meowTabsBunch {
           this.myUi.inPageSearchShow = true;
         });
       }
+      // Update addressbar overlay
+      this.myUi.requestShowAddressBarOverlay();
     } else {
       // Clear the url field
       if (!this.myUi.addressBarFocused) {

@@ -79,6 +79,9 @@ export class meowTabInfo {
 
   onPageBegin() {
     // Do things.
+
+    // Update addressbar overlay
+    this.myUi.requestShowAddressBarOverlay();
   }
 
   onPageEnd() {
@@ -146,7 +149,11 @@ export class meowTabInfo {
       if (url == defaultBlankUrl) {
         title = '';
       }
-      this.title = title;
+      if (this.title != title) {
+        animateToImmediately(defaultAnimation(), () => {
+          this.title = title;
+        });
+      }
     } catch (e) {
       meow(`this.title = this.controller?.getTitle(); failed: ${e}`, 'meowTabInfo][updateTitle', meowLevel.ERROR);
     }

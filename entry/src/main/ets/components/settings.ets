@@ -136,6 +136,14 @@ export function windowTitlePosition() {
 }
 
 /**
+ * Gets if the window title is on the address bar.
+ * @returns true if the window title is on the address bar, false otherwise.
+ */
+export function windowTitleOnAddressBar() {
+  return getMySettings().settingsData[25].value as string == 'address';
+}
+
+/**
  * Gets if the user wants to show the gigantic window title.
  * This function always returns false if the window is on focus.
  * @returns true if the user wants to show the gigantic window title, false otherwise.

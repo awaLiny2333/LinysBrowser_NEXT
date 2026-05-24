@@ -7,7 +7,7 @@ import { meowUiHost } from '../../../../hosts/system/windows/classes/meowUiHost'
 import { AddressBarStatuses } from '../../../../hosts/system/windows/scripts/addressBarStatuses';
 import { MooTextModifier } from '../../../common/MooTextModifier';
 import { fontSizeSmall, meowThemeColorType, standardSpacing, textInputSlimHeight } from '../../../constants';
-import { getColor, isPreferRightHand, meowButtonsAddressBarAlways, meowButtonsAddressBarOnFocus, useEffects } from '../../../settings';
+import { getColor, isPreferRightHand, meowButtonsAddressBarAlways, meowButtonsAddressBarOnFocus, showWindowTitle, useEffects, windowTitleOnAddressBar } from '../../../settings';
 import { MeowButtonsSlot } from '../../MeowButtons/MeowButtonsSlot';
 
 /**
@@ -27,32 +27,47 @@ struct MeowAddressBar {
 
   build() {
     Row() {
-      if (this.myLayout.wideMode) {
-        Blank().width(standardSpacing * 0.75);
-      }
-
-      // Input
-      if (this.myUi.addressBarStatus == AddressBarStatuses.SHIFTED) {
-        this.AddressInputKeyword();
+      if (this.myUi.showAddressBarOverlay && windowTitleOnAddressBar() && showWindowTitle(this.myLayout) && this.myUi.myTabs.currentTab?.url) {
+        // Overlay title
+        Text(`${this.myUi.myTabs.currentTab?.title || 'Meow'}｜${this.myUi.windowAlias}`)
+          .opacity(0.9)
+          .textAlign(TextAlign.Center).layoutWeight(1).attributeModifier(new MooTextModifier())
+          .padding(standardSpacing).borderRadius(standardSpacing).maxLines(1)
+          .hoverEffect(HoverEffect.Highlight)
+          .height(useEffects() ? textInputSlimHeight - 1 : textInputSlimHeight)
+          .margin(this.myLayout.wideMode ? { left: standardSpacing * 0.5, right: standardSpacing * 0.5 } : 0)
+          .onClick(() => {
+            this.myUi.requestHideAddressBarOverlay();
+          });
       } else {
-        this.AddressInputNormal();
-      }
+        // Space
+        if (this.myLayout.wideMode) {
+          Blank().width(standardSpacing * 0.75);
+        }
 
-      if (this.showOnFocusButtons || this.showAlwaysOnButtons) {
-        Blank().width(standardSpacing * 0.75);
-      }
+        // Input
+        if (this.myUi.addressBarStatus == AddressBarStatuses.SHIFTED) {
+          this.AddressInputKeyword();
+        } else {
+          this.AddressInputNormal();
+        }
 
-      // On focus
-      if (this.showOnFocusButtons) {
-        MeowButtonsSlot(this.myUi, this.myDialog, 77);
-      }
-      // Always on
-      if (this.showAlwaysOnButtons) {
-        MeowButtonsSlot(this.myUi, this.myDialog, 78);
-      }
+        if (this.showOnFocusButtons || this.showAlwaysOnButtons) {
+          Blank().width(standardSpacing * 0.75);
+        }
 
-      if (!(this.showOnFocusButtons || this.showAlwaysOnButtons) && this.myLayout.wideMode) {
-        Blank().width(standardSpacing * 0.75);
+        // On focus
+        if (this.showOnFocusButtons) {
+          MeowButtonsSlot(this.myUi, this.myDialog, 77);
+        }
+        // Always on
+        if (this.showAlwaysOnButtons) {
+          MeowButtonsSlot(this.myUi, this.myDialog, 78);
+        }
+
+        if (!(this.showOnFocusButtons || this.showAlwaysOnButtons) && this.myLayout.wideMode) {
+          Blank().width(standardSpacing * 0.75);
+        }
       }
     }
     .layoutWeight(this.myLayout.wideMode ? 1 : undefined)
