@@ -94,12 +94,12 @@ export class meowUiHost {
   get sideAreaShrunkBlocked() {
     return this.sideAreaShrinkBlock_menu || this.sideAreaShrinkBlock_drag;
   }
-  
+
   get myTabs() {
     const myTabs: meowTabsBunch = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.windowId}`)!;
     return myTabs;
   }
-  
+
   get myLayout() {
     const myLayout: meowLayout = AppStorageV2.connect(meowLayout, `meowLayout_${this.windowId}`)!;
     return myLayout;
@@ -187,6 +187,17 @@ export class meowUiHost {
   }
 
   // WINDOW
+
+  /**
+   * Update the window title.
+   */
+  async updateWindowTitle() {
+    meow(`Update window title to: ${this.windowAlias}`, `meowUiHost][${this.windowId}][updateWindowTitle`, meowLevel.WARN);
+    this.windowObj?.setWindowTitle(this.windowAlias)
+      .catch((e: BusinessError) => {
+        meow(`Failed to set window title: ${e.message}`, `meowUiHost][${this.windowId}][updateWindowTitle`, meowLevel.ERROR);
+      });
+  }
 
   /**
    * Toggle the pin state of the window.

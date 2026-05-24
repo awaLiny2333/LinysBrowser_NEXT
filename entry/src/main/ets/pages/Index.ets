@@ -167,7 +167,7 @@ struct Index {
 
         if (this.isNotAnySortOfFullscreen) {
           // Window Top bar
-          MeowTitleTop(this.myLayout, this.myUi, this.myApp, this.myMisc, this.myTabs, this.getUIContext());
+          MeowTitleTop(this.myLayout, this.myUi, this.myApp, this.myTabs, this.getUIContext());
 
           // Title bar
           Scroll() {

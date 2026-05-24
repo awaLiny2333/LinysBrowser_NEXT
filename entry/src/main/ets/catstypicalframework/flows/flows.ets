@@ -160,7 +160,7 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
   const myWindowId = myApp.windowIds[myApp.windowIds.length - 1];
 
   // UI
-  
+
   getMyApp().lastFocusedWindowId = myWindowId;
   windowStage.setWindowRectAutoSave(true) // Enable window status auto save.
     .then(() => {
@@ -251,6 +251,7 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
     listenFocus(myWindowId);
     listenAvoid(myWindowId);
     myUi.updateWindowBackgroundColor();
+    myUi.updateWindowTitle();
   }, 30); // Delayed execution, reduce launch time.
 
   // SHARED USER DATA & LISTENERS

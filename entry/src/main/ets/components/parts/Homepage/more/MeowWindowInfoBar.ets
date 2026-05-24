@@ -51,6 +51,7 @@ struct MeowWindowInfoBar {
           onSubmit: () => {
             animateToImmediately(defaultAnimation(), () => {
               this.myUi.windowAlias = this.windowAliasEditing;
+              this.myUi.updateWindowTitle();
               this.isEditing = false;
             });
             getMySettings().setByIndex(26, this.windowAliasEditing);
