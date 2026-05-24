@@ -233,6 +233,7 @@ struct Index {
               : { bottom: standardSpacing, top: 1, left: this.myAvoid.left, right: this.myAvoid.right })
             .width('100%');
           }
+          // .margin(this.myUi.titleTopCanShift ? { left: windowTopAvoidLeft + defaultMooSymbolSize, right: windowTopAvoidRight + defaultMooSymbolSize * 2 + 10 } : 0)
           .alignRules(titleBarPositionBottom()
             ? {
               bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
@@ -246,6 +247,7 @@ struct Index {
           .translate({
             y: titleBarPositionBottom()
               ? -(this.myUi.inPageSearchShow ? this.searchInPageBarHeight + standardSpacing : this.bottomAvoidHeight)
+              // : (this.myUi.titleTopCanShift ? standardSpacing : this.topAvoidHeight)
               : this.topAvoidHeight
           }) // Bottom avoid.
           .constraintSize({ maxHeight: this.maxHeightTitleArea })
@@ -645,6 +647,9 @@ struct Index {
       // Top
       const bottomAvoid = showBottomAvoid() ? this.myAvoid.bottom : 0;
       top = this.myAvoid.top + this.myLayout.heightTitleBar + 1; // Same.
+      // if (this.myUi.titleTopCanShift) {
+      //   top -= this.topAvoidHeight - standardSpacing;
+      // }
       bottom = bottomAvoid;
       if (useEffects()) {
         if (bottomAvoid == 0) {

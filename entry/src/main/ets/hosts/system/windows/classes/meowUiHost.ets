@@ -5,7 +5,7 @@ import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogg
 import { getKeywordEntries, UnifiedDestinationResult, UnifiedDestinationResultType, unifyDestination } from "../../../../catstypicalframework/utils/url";
 import { meowThemeColorType, UnifiedButtonsType } from "../../../../components/constants";
 import { addressBarId } from "../../../../components/parts/Homepage/addressBar/MeowAddressBar";
-import { defaultAnimation, getColor, isTabsStyleVertical, maxSuggestionsBookmark, maxSuggestionsHistory, sideAreaShrinkAuto, useEffects, webBackBack, webBackEsc } from "../../../../components/settings";
+import { defaultAnimation, getColor, isTabsStyleVertical, maxSuggestionsBookmark, maxSuggestionsHistory, showWindowTitle, sideAreaShrinkAuto, useEffects, webBackBack, webBackEsc, windowTitleOnAddressBar } from "../../../../components/settings";
 import { meowTabsBunch } from "../../../app/tabs/classes/meowTabsBunch";
 import lazy { concatSearchWithEngine } from "../../../app/tabs/scripts/searchEngines";
 import lazy { meowBookmarkItem } from "../../../userdata/bookmarks/classes/meowBookmarkItem";
@@ -75,6 +75,34 @@ export class meowUiHost {
     this.windowAlias = windowAlias;
   }
 
+  get myTabs() {
+    const myTabs: meowTabsBunch = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.windowId}`)!;
+    return myTabs;
+  }
+
+  get myLayout() {
+    const myLayout: meowLayout = AppStorageV2.connect(meowLayout, `meowLayout_${this.windowId}`)!;
+    return myLayout;
+  }
+
+  /**
+   * In free window mode, and title top (major) area is empty, and is in wide mode then is true.
+   */
+  get titleTopCanShift() {
+    return this.titleTopEmpty && getMyApp().freeWindow && this.myLayout.wideMode;
+  }
+
+  /**
+   * Whether there is nothing in the major title top area.
+   */
+  get titleTopEmpty() {
+    if (windowTitleOnAddressBar() || !showWindowTitle(this.myLayout)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   /**
    * Whether to show vertical tabs.
    */
@@ -95,16 +123,6 @@ export class meowUiHost {
    */
   get sideAreaShrunkBlocked() {
     return this.sideAreaShrinkBlock_menu || this.sideAreaShrinkBlock_drag;
-  }
-
-  get myTabs() {
-    const myTabs: meowTabsBunch = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.windowId}`)!;
-    return myTabs;
-  }
-
-  get myLayout() {
-    const myLayout: meowLayout = AppStorageV2.connect(meowLayout, `meowLayout_${this.windowId}`)!;
-    return myLayout;
   }
 
   /**
