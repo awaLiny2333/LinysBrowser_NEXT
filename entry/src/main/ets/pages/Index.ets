@@ -1,18 +1,23 @@
+import lazy { unifiedDataChannel } from '@kit.ArkData';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { meowAvoid } from '../catstypicalframework/hosts/meowAvoid';
 import { meowLayout } from '../catstypicalframework/hosts/meowLayout';
 import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
 import lazy { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
+import lazy { copyText } from '../catstypicalframework/utils/clipboard';
 import lazy { defaultInnerRadius, defaultWindowTopDecorHeight, shortModeThreshold, updateNavigationIndicator, wideModeThreshold } from '../catstypicalframework/utils/ui';
+import lazy { MooProgress } from '../components/common/MooProgress';
 import lazy { MooTextModifier } from '../components/common/MooTextModifier';
 import lazy { defaultSidebarShrunkWidth, defaultSidebarWidth, defaultTabsVerticalShrunkWidth, defaultTabsVerticalWidth, meowThemeColorType, mooTextType, standardComponentHeight, standardSpacing, textInputSlimHeight, UnifiedButtonsType } from '../components/constants';
 import lazy { MeowAddressBar } from '../components/parts/Homepage/addressBar/MeowAddressBar';
 import lazy { MeowDestination } from '../components/parts/Homepage/addressBar/MeowDestination';
-import lazy { MeowResMonitor } from '../components/parts/Homepage/more/MeowResMonitor';
-import lazy { MeowShortcutsPanel } from '../components/parts/Homepage/frame/MeowShortcuts';
 import lazy { MeowSuggestions } from '../components/parts/Homepage/addressBar/MeowSuggestions';
+import lazy { MeowSearchInPage } from '../components/parts/Homepage/frame/MeowSearchInPage';
+import lazy { MeowShortcutsPanel } from '../components/parts/Homepage/frame/MeowShortcuts';
 import lazy { MeowTitleBar } from '../components/parts/Homepage/frame/MeowTitleBar';
 import lazy { MeowTitleTop } from '../components/parts/Homepage/frame/MeowTitleTop';
+import lazy { MeowPageInfo } from '../components/parts/Homepage/more/MeowPageInfo';
+import lazy { MeowResMonitor } from '../components/parts/Homepage/more/MeowResMonitor';
 import lazy { MeowWindowInfoBar } from '../components/parts/Homepage/more/MeowWindowInfoBar';
 import lazy { MeowButtonsSlot } from '../components/parts/MeowButtons/MeowButtonsSlot';
 import lazy { MeowPlaceForDialogs } from '../components/parts/MeowPlaceForDialogs';
@@ -21,19 +26,16 @@ import lazy { MeowSidebar } from '../components/parts/Sidebar/MeowSidebar';
 import lazy { MeowTabsHorizontal } from '../components/parts/Tabs/Horizontal';
 import lazy { MeowTabsVertical } from '../components/parts/Tabs/Vertical';
 import lazy { defaultAnimation, getColor, isPreferRightHand, isTabsStyleVertical, meowButtonsMore, showBottomAvoid, showGiganticWindowTitle, showResourceMonitor, sideAreaShrinkAuto, sideAreaShrinkExpandNoPush, sidebarButtons, sidebarShouldBeOnTheRight, titleBarPositionBottom, useEffects } from '../components/settings';
+import lazy { getMyBoard } from '../hosts/app/scratchingboard/scripts/helpers';
+import { meowTabsBunch } from '../hosts/app/tabs/classes/meowTabsBunch';
 import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
-import { getMyResource } from '../hosts/system/storage/scripts/helpers';
+import lazy { getMyResource } from '../hosts/system/storage/scripts/helpers';
 import { meowAppHost } from '../hosts/system/windows/classes/meowAppHost';
 import { meowUiFullscreenStatus, meowUiGoBackSource, meowUiHost } from '../hosts/system/windows/classes/meowUiHost';
 import { getMyApp } from '../hosts/system/windows/scripts/helpers';
-import { meowAppMessageType } from '../hosts/system/windows/scripts/messaging';
+import lazy { meowAppMessageType } from '../hosts/system/windows/scripts/messaging';
 import { getLastWindowId } from '../hosts/system/windows/scripts/multiwindows';
 import { meowKeyboardMan } from '../hosts/userdata/keyshortcuts/classes/meowKeyboardMan';
-import { unifiedDataChannel } from '@kit.ArkData';
-import { getMyBoard } from '../hosts/app/scratchingboard/scripts/helpers';
-import { meowTabsBunch } from '../hosts/app/tabs/classes/meowTabsBunch';
-import { MooProgress } from '../components/common/MooProgress';
-import { MeowSearchInPage } from '../components/parts/Homepage/frame/MeowSearchInPage';
 
 @Entry
 @ComponentV2
@@ -179,6 +181,14 @@ struct Index {
               // Tabs (Horizontal)
               if (this.showingHorizontalTab) {
                 MeowTabsHorizontal();
+              }
+              // Info
+              if (this.myUi.showMore && this.myTabs.currentTab) {
+                MeowPageInfo({
+                  title: this.myTabs.currentTab.title, url: this.myTabs.currentTab.url, requestCopy: (content) => {
+                    copyText(content);
+                  }
+                });
               }
               // Title bar
               MeowTitleBar(this.myUi, this.myLayout, this.myDialog);
@@ -633,14 +643,24 @@ struct Index {
       }
     } else {
       // Top
+      const bottomAvoid = showBottomAvoid() ? this.myAvoid.bottom : 0;
       top = this.myAvoid.top + this.myLayout.heightTitleBar + 1; // Same.
-      bottom = (showBottomAvoid() ? this.myAvoid.bottom : 0) + (useEffects() ? standardSpacing : 0);
+      bottom = bottomAvoid;
+      if (useEffects()) {
+        if (bottomAvoid == 0) {
+          bottom += standardSpacing; // Only add the bottom edge space for the rounded frame if we have no bottom avoid.
+        }
+      }
       if (this.myUi.inPageSearchShow) {
         // When title bar is on TOP edge,
         // The bottom part has only bare bottom avoid.
         // Then we just add the searchInPageBarHeight into it.
         // This searchInPageBarHeight contains no top / bottom padding, so we need an extra standardSpacing for non effects mode.
-        bottom += this.searchInPageBarHeight + (!useEffects() ? standardSpacing : 0);
+        bottom += this.searchInPageBarHeight + (useEffects() ? 0 : standardSpacing);
+        if (bottomAvoid != 0) {
+          bottom += useEffects() ? standardSpacing : 0; // One unit spacing.
+          bottom -= bottomAvoid; // Bottom avoid is already included.
+        }
       }
     }
 
