@@ -180,7 +180,7 @@ struct Index {
               }
               // Tabs (Horizontal)
               if (this.showingHorizontalTab) {
-                MeowTabsHorizontal();
+                MeowTabsHorizontal({ myUi: this.myUi, myLayout: this.myLayout, myTabs: this.myTabs });
               }
               // Info
               if (this.myUi.showMore && this.myTabs.currentTab) {

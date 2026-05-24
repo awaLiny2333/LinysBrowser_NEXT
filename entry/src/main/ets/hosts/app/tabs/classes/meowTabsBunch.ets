@@ -112,7 +112,11 @@ export class meowTabsBunch {
    */
   closeTab(idx: number) {
     const closedTab = this.tabs[idx];
-
+    if (!closedTab?.node) {
+      meow(`closedTab?.node is undefined`, 'meowTabsBunch][closeTab', meowLevel.ERROR);
+      return;
+    }
+    
     this.tabs.splice(idx, 1);
 
     closedTab.node!.detachWeb();

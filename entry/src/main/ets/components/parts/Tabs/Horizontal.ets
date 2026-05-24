@@ -1,20 +1,100 @@
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
-import { standardSpacing, meowThemeColorType, standardComponentHeight } from "../../constants";
-import { getColor, useEffects } from "../../settings";
+import { MooTextModifier } from "../../common/MooTextModifier";
+import { MooSymbolButtonSmall } from "../../common/MooSymbolButtonSmall";
+import { standardSpacing, meowThemeColorType, standardComponentHeight, defaultMooSymbolSize } from "../../constants";
+import { defaultAnimation, getColor, isPreferRightHand, useEffects } from "../../settings";
+import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
+import { meowTabsBunch } from "../../../hosts/app/tabs/classes/meowTabsBunch";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
+import { MooSymbolButton } from "../../common/MooSymbolButton";
 
 @ComponentV2
 struct MeowTabsHorizontal {
+  @Param @Require myUi: meowUiHost;
+  @Param @Require myLayout: meowLayout;
+  @Param @Require myTabs: meowTabsBunch;
+  // Local
+  @Local myWidth: number = this.myLayout.width;
+  mySpacing = standardSpacing * 0.75;
+
   build() {
-    Row() {
-      Text('Meow Horizontal Tabs!')
-        .padding(standardSpacing)
-        .width('100%')
+    Row({ space: this.mySpacing }) {
+      if (this.myTabs.tabs.length == 0) {
+        Text($r('app.string.General_empty')).attributeModifier(new MooTextModifier()).opacity(0.75).padding(standardSpacing * 0.5);
+      } else {
+        List({ space: this.mySpacing }) {
+          Repeat(this.myTabs.tabs)
+            .each((item) => {
+              ListItem() {
+                // Tab item
+                Row({ space: this.mySpacing }) {
+                  // Show the title, unless is the selected tab in a tight situation
+                  if (!(this.tight && this.myTabs.currentTab == item.item)) {
+                    Text(item.item.title || 'Meow').attributeModifier(new MooTextModifier()).maxLines(1).wordBreak(WordBreak.BREAK_ALL).layoutWeight(1).textOverflow({ overflow: TextOverflow.Clip }).padding(standardSpacing * 0.5);
+                  }
+                  // Show the close button if not in tight button,
+                  // Or is the selected tab (even if in a tight situation)
+                  if (!this.tight || this.myTabs.currentTab == item.item) {
+                    MooSymbolButtonSmall($r('sys.symbol.xmark'), () => {
+                      animateToImmediately(defaultAnimation(), () => {
+                        this.myTabs.closeTab(item.index);
+                      });
+                    });
+                  }
+                }
+                .height(standardComponentHeight)
+                .justifyContent(isPreferRightHand() ? FlexAlign.End : FlexAlign.Start)
+                .width(this.widthEachTab - this.mySpacing)
+                .hoverEffect(HoverEffect.Highlight)
+                .padding(this.tight ? 1 : standardSpacing * 0.5)
+                .backgroundColor(getColor(meowThemeColorType.PRIMARY))
+                .border(this.myTabs.currentTab == item.item
+                  ? { width: 2, color: getColor(meowThemeColorType.FONT), radius: defaultInnerRadius }
+                  : { width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth'), radius: defaultInnerRadius })
+                .onClick(() => {
+                  animateToImmediately(defaultAnimation(), () => {
+                    this.myTabs.switchTo(item.index);
+                  });
+                });
+              };
+            });
+        }
+        .scrollBar(BarState.Off)
+        .alignListItem(ListItemAlign.Center)
         .height('100%')
-        .backgroundColor(getColor(meowThemeColorType.PRIMARY))
-        .border({ width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth'), radius: defaultInnerRadius });
+        .width('auto')
+        .listDirection(Axis.Horizontal);
+      }
+      // New tab
+      MooSymbolButton({
+        icon: $r('sys.symbol.plus'),
+        clickAction: () => {
+          animateToImmediately(defaultAnimation(), () => {
+            this.myTabs.newTabWrapped();
+          });
+        }
+      });
     }
+    .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl)
+    .justifyContent(FlexAlign.End)
+    .onAreaChange((o, n) => {
+      if (o.width != n.width) {
+        animateToImmediately(defaultAnimation(), () => {
+          this.myWidth = n.width as number;
+        });
+      }
+    })
     .height(standardComponentHeight)
     .width('100%');
+  }
+
+  @Computed
+  get widthEachTab() {
+    return (this.myWidth - defaultMooSymbolSize) / this.myTabs.tabs.length;
+  }
+
+  get tight() {
+    return this.widthEachTab < standardComponentHeight * 2;
   }
 }
 
