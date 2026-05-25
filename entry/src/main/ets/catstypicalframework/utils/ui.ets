@@ -337,7 +337,7 @@ export function listenFocus(windowId: string) {
       if (windowEvent == window.WindowEventType.WINDOW_ACTIVE || windowEvent == window.WindowEventType.WINDOW_SHOWN) {
         // Focused
         on_focus = true;
-        getMyApp().lastFocusedWindowId = windowId;
+        getMyApp().reportWindowFocus(windowId);
       }
       myUi.windowFocused = on_focus;
     });

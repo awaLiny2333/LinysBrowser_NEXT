@@ -18,30 +18,30 @@
  */
 
 import { common, Configuration, ConfigurationConstant } from '@kit.AbilityKit';
-import lazy { AppStorageV2, window, KeyboardAvoidMode } from '@kit.ArkUI';
+import lazy { AppStorageV2, window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import lazy Want from '@ohos.app.ability.Want';
-import { defaultNewWindowAlias, getMySettings, isPreferRightHandFromSettings, isTabsStyleVertical } from '../../components/settings';
-import { meowDawnloada } from '../../hosts/app/downloads/classes/meowDawnloada';
-import { meowBoardHolder } from '../../hosts/app/scratchingboard/classes/meowBoardHolder';
-import { meowTabsBunch } from '../../hosts/app/tabs/classes/meowTabsBunch';
-import { concatSearchWithEngine } from '../../hosts/app/tabs/scripts/searchEngines';
-import { meowDialogManager } from '../../hosts/system/dialogs/classes/meowDialogManager';
-import { meowResources } from '../../hosts/system/storage/classes/meowResources';
-import { meowAppHost } from '../../hosts/system/windows/classes/meowAppHost';
-import { meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
-import { getMyApp } from '../../hosts/system/windows/scripts/helpers';
-import { generateTimeBasedWindowId } from '../../hosts/system/windows/scripts/multiwindows';
-import { meowBookmarkStash } from '../../hosts/userdata/bookmarks/classes/meowBookmarkStash';
-import { meowHistorian } from '../../hosts/userdata/history/classes/meowHistorian';
-import { meowKeyboardMan } from '../../hosts/userdata/keyshortcuts/classes/meowKeyboardMan';
-import { meowManagedSettings } from '../../hosts/userdata/settings/classes/meowManagedSettings';
-import { meowAvoid } from '../hosts/meowAvoid';
-import { meowLayout } from '../hosts/meowLayout';
-import { meowMisc } from '../hosts/meowMisc';
-import { listenCrash, meow, meowLevel } from '../utils/catsLogger';
-import { ensureDirectoryExist } from '../utils/storage';
-import { listenAvoid, listenFocus, listenFreeWindowMode, listenSmartReachability, listenWindowStatusChange, meowPx2vp, offAvoid, offFocus, offWindowStatusChange, setDecorHeight, setKeyboardAvoidResize, shortModeThreshold, updateAvoid, updateFreeWindowMode, updateNavigationIndicator, wideModeThreshold } from '../utils/ui';
+import { defaultNewWindowAlias, getMySettings, isPreferRightHandFromSettings, isTabsStyleVertical } from '../components/settings';
+import { meowDawnloada } from '../hosts/app/downloads/classes/meowDawnloada';
+import { meowBoardHolder } from '../hosts/app/scratchingboard/classes/meowBoardHolder';
+import { meowTabsBunch } from '../hosts/app/tabs/classes/meowTabsBunch';
+import { concatSearchWithEngine } from '../hosts/app/tabs/scripts/searchEngines';
+import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
+import { meowResources } from '../hosts/system/storage/classes/meowResources';
+import { meowAppHost } from '../hosts/system/windows/classes/meowAppHost';
+import { meowUiHost } from '../hosts/system/windows/classes/meowUiHost';
+import { getMyApp } from '../hosts/system/windows/scripts/helpers';
+import { generateTimeBasedWindowId } from '../hosts/system/windows/scripts/multiwindows';
+import { meowBookmarkStash } from '../hosts/userdata/bookmarks/classes/meowBookmarkStash';
+import { meowHistorian } from '../hosts/userdata/history/classes/meowHistorian';
+import { meowKeyboardMan } from '../hosts/userdata/keyshortcuts/classes/meowKeyboardMan';
+import { meowManagedSettings } from '../hosts/userdata/settings/classes/meowManagedSettings';
+import { meowAvoid } from './hosts/meowAvoid';
+import { meowLayout } from './hosts/meowLayout';
+import { meowMisc } from './hosts/meowMisc';
+import { listenCrash, meow, meowLevel } from './utils/catsLogger';
+import { ensureDirectoryExist } from './utils/storage';
+import { listenAvoid, listenFocus, listenFreeWindowMode, listenSmartReachability, listenWindowStatusChange, meowPx2vp, offAvoid, offFocus, offWindowStatusChange, setDecorHeight, setKeyboardAvoidResize, shortModeThreshold, updateAvoid, updateFreeWindowMode, updateNavigationIndicator, wideModeThreshold } from './utils/ui';
 
 // Enums
 /**
@@ -161,7 +161,7 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
 
   // UI
 
-  getMyApp().lastFocusedWindowId = myWindowId;
+  getMyApp().reportWindowFocus(myWindowId);
   windowStage.setWindowRectAutoSave(true) // Enable window status auto save.
     .then(() => {
       meow('windowStage.setWindowRectAutoSave(true) Success!', 'init', meowLevel.INFO);
@@ -320,15 +320,14 @@ export function onWindowStageWillDestroy(windowStage: window.WindowStage) {
   for (const windowId of myApp.windowIds) {
     const myUi = AppStorageV2.connect(meowUiHost, `meowUiHost_${windowId}`);
     if (myUi && myUi.windowStage == windowStage) {
-      meow(`I think window [${myUi.windowId}] is going to leave us...`, 'onWindowStageWillDestroy', meowLevel.WARN);
+      meow(`I think window [${myUi.windowId}] is leaving us...`, 'onWindowStageWillDestroy', meowLevel.WARN);
       targetUi = myUi;
       break;
     }
   }
 
-  // Remove the targetUi from the windowIds array.
   if (targetUi) {
-    myApp.windowIds = myApp.windowIds.filter(id => id != targetUi!.windowId);
+    myApp.reportWindowClose(targetUi.windowId);
     offFocus(targetUi.windowObj!);
     offAvoid(targetUi.windowObj!);
     offWindowStatusChange(targetUi!.windowId);

@@ -1,7 +1,7 @@
 import { AbilityConstant, Configuration, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { aboutToLoadContent, earlyOnCreate, earlyOnWindowStageCreate as onWindowStageCreate, onConfigUpdate, onLoadContent, onWant, onWindowStageWillDestroy, wantSource } from '../catstypicalframework/flows/flows';
+import { aboutToLoadContent, earlyOnCreate, earlyOnWindowStageCreate as onWindowStageCreate, onConfigUpdate, onLoadContent, onWant, onWindowStageWillDestroy, wantSource } from '../catstypicalframework/flows';
 import { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
 
 const DOMAIN = 0x0000;
