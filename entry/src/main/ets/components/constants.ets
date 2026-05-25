@@ -177,9 +177,11 @@ export const defaultSidebarShrunkWidth = 32;
 
 export const searchInPageInputId = `MeowSearchInPage_input`;
 
-// Title bar
+// Title bar & Window top
 
 export const titleTopLeftRightMargin: Margin = {
   left: windowTopAvoidLeft + defaultMooSymbolSize + 4,
   right: windowTopAvoidRight + (defaultMooSymbolSize + standardSpacing) * 2
 };
+
+export const defaultWindowTopDecorHeight = 36 + 2 * standardSpacing; // Measured by eyes :P

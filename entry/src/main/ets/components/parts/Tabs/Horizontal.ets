@@ -5,7 +5,7 @@ import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { MooSymbolButton } from "../../common/MooSymbolButton";
 import { MooSymbolButtonSmall } from "../../common/MooSymbolButtonSmall";
 import { MooTextModifier } from "../../common/MooTextModifier";
-import { defaultMooSymbolSize, meowThemeColorType, minimumCardWidth, standardComponentHeight, standardSpacing } from "../../constants";
+import { defaultMooSymbolSize, meowThemeColorType, standardComponentHeight, standardSpacing, textInputSlimHeight } from "../../constants";
 import { defaultAnimation, getColor, isPreferRightHand, useEffects } from "../../settings";
 
 @ComponentV2
@@ -30,7 +30,7 @@ struct MeowTabsHorizontal {
                 Row({ space: this.mySpacing }) {
                   // Show the title, unless is the selected tab in a tight situation
                   if (!(this.tight && this.myTabs.currentTab == item.item)) {
-                    Text(item.item.title || 'Meow').attributeModifier(new MooTextModifier()).maxLines(1).wordBreak(WordBreak.BREAK_ALL).layoutWeight(1).textOverflow({ overflow: TextOverflow.Clip }).padding(standardSpacing * 0.5);
+                    Text(item.item.title || 'Meow').attributeModifier(new MooTextModifier()).maxLines(1).wordBreak(WordBreak.BREAK_ALL).layoutWeight(1).textOverflow({ overflow: TextOverflow.Clip }).padding(standardSpacing * 0.6);
                   }
                   // Show the close button if not in tight button,
                   // Or is the selected tab (even if in a tight situation)
@@ -39,14 +39,14 @@ struct MeowTabsHorizontal {
                       animateToImmediately(defaultAnimation(), () => {
                         this.myTabs.closeTab(item.index);
                       });
-                    });
+                    }, undefined, 6);
                   }
                 }
-                .height(standardComponentHeight)
+                .height(textInputSlimHeight)
                 .justifyContent(isPreferRightHand() ? FlexAlign.End : FlexAlign.Start)
                 .width(this.widthEachTab - this.mySpacing)
                 .hoverEffect(HoverEffect.Highlight)
-                .padding(this.tight ? 1 : standardSpacing * 0.5)
+                .padding(this.tight ? 1 : standardSpacing * 0.25)
                 .backgroundColor(getColor(meowThemeColorType.PRIMARY))
                 .border(this.myTabs.currentTab == item.item
                   ? { width: 2, color: getColor(meowThemeColorType.FONT), radius: defaultInnerRadius }
@@ -84,7 +84,7 @@ struct MeowTabsHorizontal {
         });
       }
     })
-    .height(standardComponentHeight)
+    .height(textInputSlimHeight)
     .width('100%');
   }
 

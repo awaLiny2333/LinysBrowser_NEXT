@@ -5,10 +5,10 @@ import { meowLayout } from '../catstypicalframework/hosts/meowLayout';
 import { meowMisc } from '../catstypicalframework/hosts/meowMisc';
 import lazy { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
 import lazy { copyText } from '../catstypicalframework/utils/clipboard';
-import lazy { defaultInnerRadius, defaultWindowTopDecorHeight, shortModeThreshold, updateNavigationIndicator, wideModeThreshold } from '../catstypicalframework/utils/ui';
+import lazy { defaultInnerRadius, shortModeThreshold, updateNavigationIndicator, wideModeThreshold } from '../catstypicalframework/utils/ui';
 import lazy { MooProgress } from '../components/common/MooProgress';
 import lazy { MooTextModifier } from '../components/common/MooTextModifier';
-import lazy { defaultSidebarShrunkWidth, defaultSidebarWidth, defaultTabsVerticalShrunkWidth, defaultTabsVerticalWidth, meowThemeColorType, mooTextType, standardComponentHeight, standardSpacing, textInputSlimHeight, titleTopLeftRightMargin, UnifiedButtonsType } from '../components/constants';
+import lazy { defaultSidebarShrunkWidth, defaultSidebarWidth, defaultTabsVerticalShrunkWidth, defaultTabsVerticalWidth, defaultWindowTopDecorHeight, meowThemeColorType, mooTextType, standardSpacing, textInputSlimHeight, titleTopLeftRightMargin, UnifiedButtonsType } from '../components/constants';
 import lazy { MeowAddressBar } from '../components/parts/Homepage/addressBar/MeowAddressBar';
 import lazy { MeowDestination } from '../components/parts/Homepage/addressBar/MeowDestination';
 import lazy { MeowSuggestions } from '../components/parts/Homepage/addressBar/MeowSuggestions';
@@ -616,7 +616,7 @@ struct Index {
     this.myLayout.heightTitleArea = maxHeightTitleArea;
 
     // Title bar
-    const tabsComp = this.showingHorizontalTab ? standardComponentHeight + standardSpacing : 0;
+    const tabsComp = this.showingHorizontalTab ? textInputSlimHeight + standardSpacing : 0;
     const newTitleHeight = tabsComp + (this.myLayout.wideMode ? textInputSlimHeight + standardSpacing : 2 * (textInputSlimHeight + standardSpacing));
     if (newTitleHeight != this.myLayout.heightTitleBar) {
       this.myLayout.heightTitleBar = newTitleHeight;

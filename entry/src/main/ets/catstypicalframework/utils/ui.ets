@@ -1,6 +1,7 @@
-import { AppStorageV2, display, window, KeyboardAvoidMode } from '@kit.ArkUI';
+import { AppStorageV2, display, KeyboardAvoidMode, window } from '@kit.ArkUI';
 import lazy { deviceInfo, power, settings } from '@kit.BasicServicesKit';
 import lazy { motion } from '@kit.MultimodalAwarenessKit';
+import { defaultWindowTopDecorHeight } from '../../components/constants';
 import lazy { defaultAnimation, isSmartReachabilityOn, showNavigationIndicator } from '../../components/settings';
 import { meowUiFullscreenStatus, meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
 import { getMyApp } from '../../hosts/system/windows/scripts/helpers';
@@ -78,8 +79,6 @@ export const defaultItemRadius = 5;
 export const defaultMenuItemRadius = deviceInfo.deviceType == deviceInfo.DeviceTypes.TYPE_2IN1 ? 5 : 18;
 
 // Decor (Free window mode)
-
-export const defaultWindowTopDecorHeight = 53; // Measured by eyes :P
 
 /**
  * Sets the decor height to defaultDecorHeight (40).
