@@ -27,7 +27,7 @@ export function MeowDestination(myUi: meowUiHost, uiContext: UIContext) {
       .layoutWeight(1);
 
     // Buttons
-    // TODO: Using a nested row here is not good. Solve this one day.
+    // Using a nested row here is not good. But rendering an extra Row isn't really a big problem... Is it :P
     Row() {
       SymbolButton({
         icon: $r('sys.symbol.plus_square_on_square'),

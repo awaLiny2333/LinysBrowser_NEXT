@@ -103,7 +103,7 @@ struct MeowAddressBar {
                 .onChange((c) => {
                   it.item[1] = c;
                   try {
-                    // TODO: is this unnecessarily slow?
+                    // The safest way to do so...
                     const newUrl = url.URL.parseURL(this.myUi.addressBarContentMajor);
                     newUrl.params.set(it.item[0], c);
                     this.myUi.setCurrentSearchContent(newUrl.toString(), false, true);

@@ -26,3 +26,12 @@ const emoticons = [
 export function getRandomEmoticon() {
   return emoticons[Math.floor(Math.random() * emoticons.length)];
 }
+
+/**
+ * The meowy links.
+ */
+export enum MeowLinks {
+  BILI = 'https://space.bilibili.com/678438347',
+  GITHUB = 'https://github.com/awaLiny2333/LinysBrowser_NEXT',
+  GITEE = 'https://gitee.com/awa_Liny/LinysBrowser_NEXT'
+}

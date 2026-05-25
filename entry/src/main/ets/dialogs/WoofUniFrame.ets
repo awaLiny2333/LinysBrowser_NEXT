@@ -89,7 +89,7 @@ struct WoofUniFrame {
           .padding({ left: 12, right: 10, top: 10, bottom: 7 })
           .backgroundColor(getColor(this.shiftBackgroundColor && !useEffects() ? meowThemeColorType.PRIMARY : meowThemeColorType.SECONDARY))
           .useEffect(useEffects(), EffectType.WINDOW_EFFECT);
-          // Tutorial. TODO: This nesting is ugly.
+          // Tutorial. This nesting is ugly :O but we have no other simpler ways to put paddings here.
           if (this.showTutorial) {
             Column() {
               UniContentCard({ roundedRadius: defaultInnerRadius, shiftBackgroundColor: this.shiftBackgroundColor }) {

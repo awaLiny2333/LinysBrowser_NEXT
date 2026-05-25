@@ -45,11 +45,6 @@ export struct oopsPreviewActionsText {
             this.requestCloseMenu();
           }
         }); // Search in dictionary
-        // MooSymbolButton({
-        //   icon: $r('sys.symbol.share'), clickAction: () => {
-        //     // TODO: share text.
-        //   }
-        // }); // Share
       }; // Buttons
     }
     .scrollBar(BarState.Off)

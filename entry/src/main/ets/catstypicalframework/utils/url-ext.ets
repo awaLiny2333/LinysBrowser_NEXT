@@ -7,7 +7,7 @@ export const SINGLE_LABEL_ALLOWLIST: Set<string> = new Set([
 
 /**
  * All legal top domains admitted by ICANN (Updated Jan 28 2026)
- * THIS IS NOT ELEGANT TODO: Help with this.
+ * THIS IS NOT ELEGANT BUT IT JUST WORKS :P
  * */
 export const LEGAL_TOP_LEVEL_DOMAINS: Set<string> = new Set([
   'AAA',

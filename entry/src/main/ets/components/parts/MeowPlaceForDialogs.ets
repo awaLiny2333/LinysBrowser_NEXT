@@ -54,7 +54,7 @@ struct MeowPlaceForDialogs {
   @Param @Require myMisc: meowMisc;
 
   WoofErrorPromptDialogController: CustomDialogController = new CustomDialogController({
-    builder: WoofErrorPromptDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
+    builder: WoofErrorPromptDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
     alignment: DialogAlignment.Center,
     // width: '95%',
     // height: '95%',

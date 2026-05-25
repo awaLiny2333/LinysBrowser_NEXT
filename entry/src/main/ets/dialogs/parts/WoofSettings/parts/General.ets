@@ -125,7 +125,6 @@ struct SettingsGeneral {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_general_homepage_customize'),
           clickAction: () => {
-            // TODO: Homepage customization entrance.
             requestDialog(this.myDialog, openDialogRequestType.HOMEPAGE, undefined, true);
           }
         });

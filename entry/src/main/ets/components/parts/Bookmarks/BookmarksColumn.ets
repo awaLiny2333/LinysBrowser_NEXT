@@ -2,6 +2,7 @@ import { unifiedDataChannel, uniformTypeDescriptor } from '@kit.ArkData';
 import { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
 import { meowAppHost } from '../../../hosts/system/windows/classes/meowAppHost';
+import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { getMyApp } from '../../../hosts/system/windows/scripts/helpers';
 import { globalMessage, meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
 import { meowBookmarkItem } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkItem';
@@ -23,7 +24,8 @@ export const meowBookmarkItemUnifiedType = 'ApplicationDefined.meowBookmarkItem.
 struct BookmarksColumn {
   // Config
   @Param @Once selectMode: boolean = false; // False for normal (display and edit) mode, true for select mode.
-  // Host
+  // Hosts
+  @Param @Require myUi: meowUiHost;
   @Local myApp: meowAppHost = getMyApp(); // For event receiving.
   // Params
   @Param @Require folder: meowBookmarkItem;
@@ -190,13 +192,16 @@ struct BookmarksColumn {
                 }
               }
             })
-              .opacity((this.selectMode && !item.item.isFolder) || (this.myApp.dataTunnelForBookmarks?.item == item.item) ? 0.5 : 1) // TODO: would this be laggy?
+              .opacity((this.selectMode && !item.item.isFolder) || (this.myApp.dataTunnelForBookmarks?.item == item.item) ? 0.5 : 1) // This might be potentially a performance throttle, but it works for now... :P
               .draggable(this.inDragMode && !this.selectMode ? true : undefined)
               .onDragStart((event: DragEvent) => {
                 if (this.selectedItem == item.item) {
                   this.requestSubLevelClose();
                 }
-                globalMessage(meowAppMessageType.BOOKMARKS_DRAGGED, item.item); // This would ensure the folder dragged is not an "opened" folder.
+                // This would call all bookmark panels across all windows to close the folder
+                // and therefore ensure that the folder dragged is not an "opened" folder:
+                globalMessage(meowAppMessageType.BOOKMARKS_DRAGGED, item.item);
+                // Drag.
                 this.onItemDragStart();
                 this.sendDrag(event, item.item);
               })
@@ -270,9 +275,11 @@ struct BookmarksColumn {
           icon: $r('sys.symbol.book_closed_right_left_badge_plus'),
           clickAction: () => {
             // New bookmark
-            const label = `New Bookmark on ${new Date().toLocaleString()}`;
-            const link = '';
-            const newBookmark = new meowBookmarkItem(false, label, link); // TODO: grab current page info!
+            const autoLabel = `New Bookmark on ${new Date().toLocaleString()}`;
+            const canFetch = this.myUi.myTabs.currentTab?.url;
+            const label = canFetch ? this.myUi.myTabs.currentTab?.title || autoLabel : autoLabel;
+            const link = canFetch ? this.myUi.myTabs.currentTab?.url || '' : '';
+            const newBookmark = new meowBookmarkItem(false, label, link);
             animateToImmediately(defaultAnimation(), () => {
               try {
                 this.folder.children.push(newBookmark);

@@ -268,7 +268,6 @@ struct SettingsAppearance {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_appearance_colors_forceDarkMode_manage'),
           clickAction: () => {
-            // TODO: manage web darkmode entrance.s
             requestDialog(this.myDialog, openDialogRequestType.DARK, undefined, true);
           }
         });

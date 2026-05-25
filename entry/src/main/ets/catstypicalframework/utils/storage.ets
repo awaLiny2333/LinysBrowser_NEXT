@@ -539,8 +539,7 @@ export async function readArrayBuffer(fullFilePath: string, offset?: number, len
     // Read to ArrayBuffer
     let buf: ArrayBuffer = new ArrayBuffer(length || stat.size);
     let readLen = await fileIo.read(file.fd, buf, { offset: offset, length: length });
-
-    // TODO: Is this optimizable?
+    
     let result = (length || stat.size) == readLen ? buf : buf.slice(0, readLen); // Copy?
     fileIo.close(file)
       .catch((e: BusinessError) => {

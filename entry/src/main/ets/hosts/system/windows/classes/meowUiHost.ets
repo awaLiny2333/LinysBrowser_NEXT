@@ -134,7 +134,6 @@ export class meowUiHost {
    * @returns Whether ANY action was performed.
    */
   goBackUni(source: meowUiGoBackSource, uiContext: UIContext) {
-    // TODO: Do we need go back in bookmarks?
 
     // Close dialogs.
     const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.windowId}`)!;
@@ -551,7 +550,7 @@ export class meowUiHost {
   }
 
   /**
-   * The universal gateway to submit search!
+   * The universal gateway to submit search on CURRENT TAB!
    * @param url If set, then load the URL. If not, then loads the searchUnifyResult.url
    */
   submitSearchOrLoad(url?: string) {
@@ -568,12 +567,27 @@ export class meowUiHost {
   }
 
   /**
-   * Open a new tab with the given URL.
+   * Open a NEW TAB with the given URL.
    * @param url The URL.
    */
   openNewTab(url: string) {
     const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.windowId}`)!;
     myTabs.newTabWrapped(url);
+  }
+
+  /**
+   * Open a URL in the current tab or a new tab depending on the current tab's state.
+   * @param url The URL.
+   */
+  openUrlAuto(url: string) {
+    const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.windowId}`)!;
+    if (myTabs.currentTab?.url) {
+      // Current tab is not empty.
+      this.openNewTab(url);
+    } else {
+      // Current tab is empty / no tab is current.
+      this.submitSearchOrLoad(url);
+    }
   }
 }
 

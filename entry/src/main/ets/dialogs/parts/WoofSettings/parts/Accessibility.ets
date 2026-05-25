@@ -99,7 +99,6 @@ struct SettingsAccessibility {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_accessibility_keyShortcuts_manage'),
           clickAction: () => {
-            // TODO: key shortcuts manage entrance.
             requestDialog(this.myDialog, openDialogRequestType.KEY_SHORTCUTS, undefined, true);
           }
         });

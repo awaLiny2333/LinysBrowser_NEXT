@@ -1,5 +1,6 @@
 import { LengthMetrics } from "@kit.ArkUI";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
+import { MeowLinks } from "../../../catstypicalframework/utils/meow";
 import { isBlank } from "../../../catstypicalframework/utils/strings";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
@@ -7,6 +8,7 @@ import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
 import { standardSpacing } from "../../../components/constants";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { WoofUniFrame } from "../../WoofUniFrame";
 import { ErrorPromptDetails } from "./errorPromptScripts";
 
@@ -15,6 +17,7 @@ struct WoofPrompt {
   @Param @Require controller: CustomDialogController;
   @Param @Require myDialog: meowDialogManager;
   @Param @Require myLayout: meowLayout;
+  @Param @Require myUi: meowUiHost;
   // Configs
   @Local isError: boolean = false;
   @Local title: ResourceStr | undefined = undefined;
@@ -79,21 +82,21 @@ struct WoofPrompt {
               MooCapsuleButton({
                 text: $r('app.string.Settings_category_about_site_bilibili'),
                 clickAction: () => {
-                  // TODO: Site Bilibili entrance.
+                  this.myUi.openUrlAuto(MeowLinks.BILI);
                   this.myDialog.closeAll();
                 }
               });
               MooCapsuleButton({
                 text: $r('app.string.Settings_category_about_site_github'),
                 clickAction: () => {
-                  // TODO: Site Github entrance.
+                  this.myUi.openUrlAuto(MeowLinks.GITHUB);
                   this.myDialog.closeAll();
                 }
               });
               MooCapsuleButton({
                 text: $r('app.string.Settings_category_about_site_gitee'),
                 clickAction: () => {
-                  // TODO: Site Gitee entrance.
+                  this.myUi.openUrlAuto(MeowLinks.GITEE);
                   this.myDialog.closeAll();
                 }
               });
@@ -115,8 +118,9 @@ export struct WoofErrorPromptDialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
   @Require myLayout: meowLayout;
+  @Require myUi: meowUiHost;
 
   build() {
-    WoofPrompt({ controller: this.controller, myDialog: this.myDialog, myLayout: this.myLayout });
+    WoofPrompt({ controller: this.controller, myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi });
   }
 }

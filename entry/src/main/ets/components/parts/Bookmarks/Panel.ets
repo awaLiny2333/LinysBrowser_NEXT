@@ -52,6 +52,7 @@ struct MeowBookmarksPanel {
         Repeat(this.myUi.openedStack)
           .each((item: RepeatItem<meowBookmarkItem>) => {
             BookmarksColumn({
+              myUi: this.myUi,
               selectMode: this.selectMode,
               canCloseThis: item.index > 0,
               columnWidth: this.cWidth,

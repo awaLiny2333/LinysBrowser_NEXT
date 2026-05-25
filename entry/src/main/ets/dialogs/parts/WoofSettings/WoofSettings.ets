@@ -54,7 +54,7 @@ struct WoofSettings {
           SettingsCardboardBox({ myDialog: this.myDialog, myUi: this.myUi });
         };
         FlowItem() {
-          SettingsAbout({ myDialog: this.myDialog });
+          SettingsAbout({ myDialog: this.myDialog, myUi: this.myUi });
         };
         if (getDevMode()) {
           FlowItem() {
