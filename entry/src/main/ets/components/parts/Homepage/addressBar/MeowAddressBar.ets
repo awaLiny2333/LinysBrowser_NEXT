@@ -31,6 +31,7 @@ struct MeowAddressBar {
         // Overlay title
         Text(`${this.myUi.myTabs.currentTab?.title || 'Meow'}｜${this.myUi.windowAlias}`)
           .opacity(0.9)
+          .backgroundColor(getColor(meowThemeColorType.PRIMARY))
           .textAlign(TextAlign.Center).layoutWeight(1).attributeModifier(new MooTextModifier())
           .padding(standardSpacing).borderRadius(standardSpacing).maxLines(1)
           .hoverEffect(HoverEffect.Highlight)

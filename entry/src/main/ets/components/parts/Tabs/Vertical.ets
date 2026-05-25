@@ -65,7 +65,7 @@ struct MeowTabsVertical {
           shrinkButton(this.myUi);
         }
         MooSymbolButton({
-          icon: $r('sys.symbol.plus'),
+          icon: $r('sys.symbol.plus_square'),
           clickAction: () => {
             animateToImmediately(defaultAnimation(), () => {
               this.myTabs.newTabWrapped();

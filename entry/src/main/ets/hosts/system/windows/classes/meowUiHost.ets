@@ -106,7 +106,7 @@ export class meowUiHost {
   /**
    * Whether to show vertical tabs.
    */
-  get showingVerticalTab() {
+  get showingVerticalTabs() {
     const myLayout = AppStorageV2.connect(meowLayout, `meowLayout_${this.windowId}`)!;
     return this.showTabs && isTabsStyleVertical(myLayout);
   }
@@ -170,7 +170,7 @@ export class meowUiHost {
     }
 
     // Have side area ENABLED & AUTOSHRINK & EXPANDED & NOT BLOCKED
-    if ((this.showSidebar || this.showingVerticalTab) && sideAreaShrinkAuto() && !this.sideAreaShrunkExpect && !this.sideAreaShrinkBlock_menu) {
+    if ((this.showSidebar || this.showingVerticalTabs) && sideAreaShrinkAuto() && !this.sideAreaShrunkExpect && !this.sideAreaShrinkBlock_menu) {
       animateToImmediately(defaultAnimation(), () => {
         this.sideAreaShrunkExpect = true;
       });

@@ -8,7 +8,7 @@ import lazy { copyText } from '../catstypicalframework/utils/clipboard';
 import lazy { defaultInnerRadius, defaultWindowTopDecorHeight, shortModeThreshold, updateNavigationIndicator, wideModeThreshold } from '../catstypicalframework/utils/ui';
 import lazy { MooProgress } from '../components/common/MooProgress';
 import lazy { MooTextModifier } from '../components/common/MooTextModifier';
-import lazy { defaultSidebarShrunkWidth, defaultSidebarWidth, defaultTabsVerticalShrunkWidth, defaultTabsVerticalWidth, meowThemeColorType, mooTextType, standardComponentHeight, standardSpacing, textInputSlimHeight, UnifiedButtonsType } from '../components/constants';
+import lazy { defaultSidebarShrunkWidth, defaultSidebarWidth, defaultTabsVerticalShrunkWidth, defaultTabsVerticalWidth, meowThemeColorType, mooTextType, standardComponentHeight, standardSpacing, textInputSlimHeight, titleTopLeftRightMargin, UnifiedButtonsType } from '../components/constants';
 import lazy { MeowAddressBar } from '../components/parts/Homepage/addressBar/MeowAddressBar';
 import lazy { MeowDestination } from '../components/parts/Homepage/addressBar/MeowDestination';
 import lazy { MeowSuggestions } from '../components/parts/Homepage/addressBar/MeowSuggestions';
@@ -103,7 +103,7 @@ struct Index {
 
           // Sidebars
           Row({ space: standardSpacing }) {
-            if (this.myUi.showingVerticalTab) {
+            if (this.myUi.showingVerticalTabs) {
               MeowTabsVertical({ myUi: this.myUi, myLayout: this.myLayout, myTabs: this.myTabs });
             }
             if (this.myUi.showSidebar) {
@@ -168,27 +168,18 @@ struct Index {
         .padding(this.isNotAnySortOfFullscreen ? this.outerFrameSpace : 0);
 
         if (this.isNotAnySortOfFullscreen) {
-          // Window Top bar
-          MeowTitleTop(this.myLayout, this.myUi, this.myApp, this.myTabs, this.getUIContext());
-
           // Title bar
           Scroll() {
             Column({ space: standardSpacing }) {
+              // Additionals for bottom title bar
               if (this.myUi.addressBarFocused && titleBarPositionBottom()) {
                 MeowSuggestions({ myUi: this.myUi, myLayout: this.myLayout });
                 MeowDestination(this.myUi, this.getUIContext());
               }
               // Tabs (Horizontal)
               if (this.showingHorizontalTab) {
-                MeowTabsHorizontal({ myUi: this.myUi, myLayout: this.myLayout, myTabs: this.myTabs });
-              }
-              // Info
-              if (this.myUi.showMore && this.myTabs.currentTab) {
-                MeowPageInfo({
-                  title: this.myTabs.currentTab.title, url: this.myTabs.currentTab.url, requestCopy: (content) => {
-                    copyText(content);
-                  }
-                });
+                MeowTabsHorizontal({ myUi: this.myUi, myLayout: this.myLayout, myTabs: this.myTabs })
+                  .padding(this.myUi.titleTopCanShift && !titleBarPositionBottom() ? titleTopLeftRightMargin : 0);
               }
               // Title bar
               MeowTitleBar(this.myUi, this.myLayout, this.myDialog);
@@ -200,10 +191,18 @@ struct Index {
                   MeowAddressBar({ myUi: this.myUi, myLayout: this.myLayout, myDialog: this.myDialog, });
                 }
               }
-              // Additionals
+              // Additionals for top title bar
               if (this.myUi.addressBarFocused && !titleBarPositionBottom()) {
                 MeowDestination(this.myUi, this.getUIContext());
                 MeowSuggestions({ myUi: this.myUi, myLayout: this.myLayout });
+              }
+              // Info
+              if (this.myUi.showMore && this.myTabs.currentTab?.url) {
+                MeowPageInfo({
+                  title: this.myTabs.currentTab.title, url: this.myTabs.currentTab.url, requestCopy: (content) => {
+                    copyText(content);
+                  }
+                });
               }
               // More
               if (this.myUi.showMore) {
@@ -226,14 +225,11 @@ struct Index {
             }
             .opacity(this.myUi.dropHover ? 0.5 : 1)
             .alignItems(isPreferRightHand() ? HorizontalAlign.End : HorizontalAlign.Start)
-            .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
-            .backgroundColor(getColor(meowThemeColorType.SECONDARY))
             .padding(titleBarPositionBottom()
               ? { top: standardSpacing, bottom: 1, left: this.myAvoid.left, right: this.myAvoid.right }
               : { bottom: standardSpacing, top: 1, left: this.myAvoid.left, right: this.myAvoid.right })
             .width('100%');
           }
-          // .margin(this.myUi.titleTopCanShift ? { left: windowTopAvoidLeft + defaultMooSymbolSize, right: windowTopAvoidRight + defaultMooSymbolSize * 2 + 10 } : 0)
           .alignRules(titleBarPositionBottom()
             ? {
               bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
@@ -247,12 +243,33 @@ struct Index {
           .translate({
             y: titleBarPositionBottom()
               ? -(this.myUi.inPageSearchShow ? this.searchInPageBarHeight + standardSpacing : this.bottomAvoidHeight)
-              // : (this.myUi.titleTopCanShift ? standardSpacing : this.topAvoidHeight)
-              : this.topAvoidHeight
+              : (this.myUi.titleTopCanShift ? standardSpacing : this.topAvoidHeight)
+            // : this.topAvoidHeight
           }) // Bottom avoid.
           .constraintSize({ maxHeight: this.maxHeightTitleArea })
           .scrollable(ScrollDirection.Vertical)
-          .edgeEffect(EdgeEffect.Spring);
+          .edgeEffect(EdgeEffect.Spring)
+          .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
+          .backgroundColor(getColor(meowThemeColorType.SECONDARY))
+          .onTouch((event: TouchEvent) => {
+            // Drag
+            if (event.type === TouchType.Down) {
+              try {
+                if (canIUse('SystemCapability.Window.SessionManager') && this.myUi.windowObj) {
+                  this.myUi.windowObj.startMoving().then(() => {
+                    meow('Succeeded in starting moving window', 'Index][windowMove');
+                  }).catch((err: BusinessError) => {
+                    meow(`Failed to start moving. Cause code: ${err.code}, message: ${err.message}`, 'Index][windowMove', meowLevel.ERROR);
+                  });
+                }
+              } catch (exception) {
+                meow(`Failed to start moving. Cause code: ${exception.code}, message: ${exception.message}`, 'Index][windowMove', meowLevel.ERROR);
+              }
+            }
+          });
+
+          // Window Top bar
+          MeowTitleTop(this.myLayout, this.myUi, this.myApp, this.myTabs, this.getUIContext());
 
           // Bottom bar
           if (this.myUi.inPageSearchShow) {
@@ -349,7 +366,7 @@ struct Index {
     }
     if (sideAreaShrinkAuto() && sideAreaShrinkExpandNoPush()) {
       // Auto shrink, and we don't want to push the web contents away everytime the mouse travels across the tabs bar.
-      if (this.myUi.showingVerticalTab && !this.myUi.sideAreaShrunkSummarized) {
+      if (this.myUi.showingVerticalTabs && !this.myUi.sideAreaShrunkSummarized) {
         newW -= (defaultTabsVerticalWidth - defaultTabsVerticalShrunkWidth);
       }
       if (this.myUi.showSidebar && !this.myUi.sideAreaShrunkSummarized) {
@@ -573,7 +590,7 @@ struct Index {
    * The padding for the side area.
    */
   get sideAreaPadding(): Padding | number {
-    if (!(this.myUi.showingVerticalTab || this.myUi.showSidebar)) {
+    if (!(this.myUi.showingVerticalTabs || this.myUi.showSidebar)) {
       return 0;
     }
     if (useEffects() && this.isNotAnySortOfFullscreen) {
@@ -647,9 +664,9 @@ struct Index {
       // Top
       const bottomAvoid = showBottomAvoid() ? this.myAvoid.bottom : 0;
       top = this.myAvoid.top + this.myLayout.heightTitleBar + 1; // Same.
-      // if (this.myUi.titleTopCanShift) {
-      //   top -= this.topAvoidHeight - standardSpacing;
-      // }
+      if (this.myUi.titleTopCanShift) {
+        top -= this.topAvoidHeight - standardSpacing;
+      }
       bottom = bottomAvoid;
       if (useEffects()) {
         if (bottomAvoid == 0) {

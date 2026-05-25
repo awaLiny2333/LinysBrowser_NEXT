@@ -8,11 +8,12 @@ import { getColor } from '../settings';
  * @param clickAction The action.
  */
 @Builder
-export function MooSymbolButtonSmall(icon: Resource, clickAction?: () => void) {
+export function MooSymbolButtonSmall(icon: Resource, clickAction?: () => void, hitTestMode?: HitTestMode) {
   SymbolGlyph(icon)
     .padding(7)
     .borderRadius(defaultItemRadius)
     .hoverEffect(HoverEffect.Highlight)
     .onClick(() => clickAction?.())
-    .fontColor([getColor(meowThemeColorType.FONT)]);
+    .fontColor([getColor(meowThemeColorType.FONT)])
+    .hitTestBehavior(hitTestMode || HitTestMode.Default);
 }

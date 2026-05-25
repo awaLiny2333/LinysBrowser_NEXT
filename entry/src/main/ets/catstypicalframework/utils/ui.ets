@@ -1,4 +1,4 @@
-import { AppStorageV2, display, window } from '@kit.ArkUI';
+import { AppStorageV2, display, window, KeyboardAvoidMode } from '@kit.ArkUI';
 import lazy { deviceInfo, power, settings } from '@kit.BasicServicesKit';
 import lazy { motion } from '@kit.MultimodalAwarenessKit';
 import lazy { defaultAnimation, isSmartReachabilityOn, showNavigationIndicator } from '../../components/settings';
@@ -79,7 +79,7 @@ export const defaultMenuItemRadius = deviceInfo.deviceType == deviceInfo.DeviceT
 
 // Decor (Free window mode)
 
-export const defaultWindowTopDecorHeight = 40;
+export const defaultWindowTopDecorHeight = 53; // Measured by eyes :P
 
 /**
  * Sets the decor height to defaultDecorHeight (40).
@@ -95,6 +95,18 @@ export function setDecorHeight(windowObj: window.Window) {
 }
 
 // Avoid
+
+/**
+ * Sets the keyboard avoid mode to RESIZE.
+ * @param windowObj The window.Window object.
+ */
+export function setKeyboardAvoidResize(windowObj: window.Window) {
+  try {
+    windowObj.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE);
+  } catch (e) {
+    meow(`windowObj.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE) failed: ${e}`, 'init', meowLevel.ERROR);
+  }
+}
 
 /**
  * Enables the listeners for avoid area change.
@@ -390,9 +402,10 @@ export function offWindowStatusChange(windowId: string) {
  * @param window The window.Window object.
  */
 export function updateNavigationIndicator(window: window.Window) {
-  window.setSpecificSystemBarEnabled('navigationIndicator', showNavigationIndicator()).catch((e: BusinessError) => {
-    meow(`Failed: ${e}`, 'setSpecificSystemBarEnabled', meowLevel.ERROR);
-  });
+  window.setSpecificSystemBarEnabled('navigationIndicator', showNavigationIndicator())
+    .catch((e: BusinessError) => {
+      meow(`Failed: ${e}`, 'setSpecificSystemBarEnabled', meowLevel.ERROR);
+    });
 }
 
 // Toast

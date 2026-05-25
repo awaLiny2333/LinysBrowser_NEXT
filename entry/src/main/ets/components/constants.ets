@@ -1,4 +1,5 @@
 import { LengthMetrics } from "@kit.ArkUI";
+import { windowTopAvoidLeft, windowTopAvoidRight } from "../catstypicalframework/utils/ui";
 
 // TEXTS
 /**
@@ -55,6 +56,7 @@ export const defaultTabsVerticalShrunkWidth = 32;
  * No matter what, the settings button ('SET') must be in one of the slots.
  */
 export enum UnifiedButtonsType {
+  MOVE = 'MOV',
   BACKWARD = 'BAK',
   FORWARD = 'FOR',
   REFRESH = 'REF',
@@ -91,6 +93,7 @@ export enum UnifiedButtonsType {
  * Valid for both MeowButtons and the sidebar buttons.
  */
 export const unifiedButtonIconMatches: Map<string, Resource> = new Map();
+unifiedButtonIconMatches.set(UnifiedButtonsType.MOVE, $r('sys.symbol.move'));
 unifiedButtonIconMatches.set(UnifiedButtonsType.BACKWARD, $r('sys.symbol.arrow_left'));
 unifiedButtonIconMatches.set(UnifiedButtonsType.FORWARD, $r('sys.symbol.arrow_right'));
 unifiedButtonIconMatches.set(UnifiedButtonsType.REFRESH, $r('sys.symbol.arrow_clockwise'));
@@ -173,3 +176,10 @@ export const defaultSidebarShrunkWidth = 32;
 // Search in page
 
 export const searchInPageInputId = `MeowSearchInPage_input`;
+
+// Title bar
+
+export const titleTopLeftRightMargin: Margin = {
+  left: windowTopAvoidLeft + defaultMooSymbolSize + 4,
+  right: windowTopAvoidRight + (defaultMooSymbolSize + standardSpacing) * 2
+};

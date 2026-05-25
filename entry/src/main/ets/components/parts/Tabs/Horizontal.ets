@@ -1,12 +1,12 @@
-import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
-import { MooTextModifier } from "../../common/MooTextModifier";
-import { MooSymbolButtonSmall } from "../../common/MooSymbolButtonSmall";
-import { standardSpacing, meowThemeColorType, standardComponentHeight, defaultMooSymbolSize } from "../../constants";
-import { defaultAnimation, getColor, isPreferRightHand, useEffects } from "../../settings";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
+import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { meowTabsBunch } from "../../../hosts/app/tabs/classes/meowTabsBunch";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { MooSymbolButton } from "../../common/MooSymbolButton";
+import { MooSymbolButtonSmall } from "../../common/MooSymbolButtonSmall";
+import { MooTextModifier } from "../../common/MooTextModifier";
+import { defaultMooSymbolSize, meowThemeColorType, minimumCardWidth, standardComponentHeight, standardSpacing } from "../../constants";
+import { defaultAnimation, getColor, isPreferRightHand, useEffects } from "../../settings";
 
 @ComponentV2
 struct MeowTabsHorizontal {
@@ -67,7 +67,7 @@ struct MeowTabsHorizontal {
       }
       // New tab
       MooSymbolButton({
-        icon: $r('sys.symbol.plus'),
+        icon: $r('sys.symbol.plus_square'),
         clickAction: () => {
           animateToImmediately(defaultAnimation(), () => {
             this.myTabs.newTabWrapped();

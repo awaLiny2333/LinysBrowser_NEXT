@@ -1,6 +1,6 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
-import { domainOf } from '../../../catstypicalframework/utils/url';
+import lazy { domainOf } from '../../../catstypicalframework/utils/url';
 import { meowTabsBunch } from '../../../hosts/app/tabs/classes/meowTabsBunch';
 import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import lazy { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';

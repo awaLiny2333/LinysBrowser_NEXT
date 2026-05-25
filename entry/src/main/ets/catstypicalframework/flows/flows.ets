@@ -41,7 +41,7 @@ import { meowLayout } from '../hosts/meowLayout';
 import { meowMisc } from '../hosts/meowMisc';
 import { listenCrash, meow, meowLevel } from '../utils/catsLogger';
 import { ensureDirectoryExist } from '../utils/storage';
-import { listenAvoid, listenFocus, listenFreeWindowMode, listenSmartReachability, listenWindowStatusChange, meowPx2vp, offAvoid, offFocus, offWindowStatusChange, shortModeThreshold, updateAvoid, updateFreeWindowMode, updateNavigationIndicator, wideModeThreshold } from '../utils/ui';
+import { listenAvoid, listenFocus, listenFreeWindowMode, listenSmartReachability, listenWindowStatusChange, meowPx2vp, offAvoid, offFocus, offWindowStatusChange, setDecorHeight, setKeyboardAvoidResize, shortModeThreshold, updateAvoid, updateFreeWindowMode, updateNavigationIndicator, wideModeThreshold } from '../utils/ui';
 
 // Enums
 /**
@@ -180,7 +180,6 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
   } catch (e) {
     meow(`window.setWindowDecorVisible(false) Failed: ${e}`, 'init', meowLevel.ERROR);
   }
-  updateNavigationIndicator(windowObj); // Navigation indicator
 
   // SHARED HOSTS
 
@@ -250,14 +249,12 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
     listenWindowStatusChange(myWindowId); // Listen window status
     listenFocus(myWindowId);
     listenAvoid(myWindowId);
+    setKeyboardAvoidResize(windowObj);
+    setDecorHeight(windowObj);
     myUi.updateWindowBackgroundColor();
     myUi.updateWindowTitle();
-    try {
-      windowObj.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE);
-    } catch (e) {
-      meow(`windowObj.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE) failed: ${e}`, 'init', meowLevel.ERROR);
-    }
-  }, 30); // Delayed execution, reduce launch time.
+    updateNavigationIndicator(windowObj); // Navigation indicator
+  }, 1); // Delayed execution, reduce launch time.
 
   // SHARED USER DATA & LISTENERS
 

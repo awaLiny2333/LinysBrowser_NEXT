@@ -27,7 +27,7 @@ export function MeowTitleTop(
     if (myApp.freeWindow) {
       MooSymbolButtonSmall($r('sys.symbol.square_stack_3d'), () => {
         // TODO: Open zones panel.
-      });
+      }, HitTestMode.BLOCK_HIERARCHY);
     }
 
     // Window Title Text
@@ -46,19 +46,20 @@ export function MeowTitleTop(
       if (myUi.pin) {
         MooSymbolButtonSmall($r('sys.symbol.pin_vertical_fill'), () => {
           myUi.togglePin();
-        });
+        }, HitTestMode.BLOCK_HIERARCHY);
       } else {
         MooSymbolButtonSmall($r('sys.symbol.pin'), () => {
           myUi.togglePin();
-        });
+        }, HitTestMode.BLOCK_HIERARCHY);
       }
       MooSymbolButtonSmall($r('sys.symbol.plus'), () => {
         newWindow(context.getHostContext() as common.UIAbilityContext);
-      });
+      }, HitTestMode.BLOCK_HIERARCHY);
     }
   } // Title bar
+  .hitTestBehavior(HitTestMode.None)
   .justifyContent(FlexAlign.Center)
   .alignItems(VerticalAlign.Top)
   .width('100%')
-  .padding(myApp.freeWindow ? { right: windowTopAvoidRight, left: windowTopAvoidLeft, top: 6 } : { top: 6 });
+  .padding(myApp.freeWindow ? { right: windowTopAvoidRight, left: windowTopAvoidLeft, top: 12.5 } : { top: 12.5 });
 }

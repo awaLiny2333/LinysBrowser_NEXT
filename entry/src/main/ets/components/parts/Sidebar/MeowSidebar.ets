@@ -255,7 +255,7 @@ struct MeowSidebar {
    * To show shrink button or not.
    */
   get showShrinkButton() {
-    return sideAreaShrinkButton() && this.myLayout.wideMode && !this.myUi.showingVerticalTab;
+    return sideAreaShrinkButton() && this.myLayout.wideMode && !this.myUi.showingVerticalTabs;
   }
 
   /**
