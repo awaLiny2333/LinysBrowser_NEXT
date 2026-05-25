@@ -6,7 +6,7 @@ import { mooTextType, standardSpacing } from '../../../../components/constants';
 import { getMySettings } from '../../../../components/settings';
 import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
-import { exportEverything, exportSettings, importEverything, importResult, importSettings } from '../../../../hosts/system/storage/scripts/backup';
+import { exportEverything, exportSettings, importEverything, importResult, importSettings } from '../../../../hosts/system/resources/scripts/backup';
 import { meowUiHost } from '../../../../hosts/system/windows/classes/meowUiHost';
 import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { ErrorPromptDetails } from '../../../public/WoofErrorPrompt/errorPromptScripts';

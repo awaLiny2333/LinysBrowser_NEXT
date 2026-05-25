@@ -2,7 +2,7 @@ import { meowTabInfo } from "../../../hosts/app/tabs/classes/meowTabInfo";
 import { scanBarcode } from "@kit.ScanKit";
 import { oopsPreviewActionsText } from "./oopsPreviewActionsText";
 import { MooTextButton } from "../../common/MooTextButton";
-import { getMyApp } from "../../../hosts/system/windows/scripts/helpers";
+import { getCreateMyApp } from "../../../hosts/system/windows/scripts/helpers";
 
 @ComponentV2
 export struct oopsPreviewQrResults {
@@ -42,6 +42,6 @@ export struct oopsPreviewQrResults {
    * If the window is in free window or wide mode. We would have many space to put more things!
    */
   get largeSpace() {
-    return this.tabInfo.myUi.myLayout.wideMode || getMyApp().freeWindow;
+    return this.tabInfo.myUi.myLayout.wideMode || getCreateMyApp().freeWindow;
   }
 }

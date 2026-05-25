@@ -29,10 +29,10 @@ import lazy { defaultAnimation, getColor, isPreferRightHand, isTabsStyleVertical
 import lazy { getMyBoard } from '../hosts/app/scratchingboard/scripts/helpers';
 import { meowTabsBunch } from '../hosts/app/tabs/classes/meowTabsBunch';
 import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
-import lazy { getMyResource } from '../hosts/system/storage/scripts/helpers';
+import lazy { getMyResource } from '../hosts/system/resources/scripts/helpers';
 import { meowAppHost } from '../hosts/system/windows/classes/meowAppHost';
 import { meowUiFullscreenStatus, meowUiGoBackSource, meowUiHost } from '../hosts/system/windows/classes/meowUiHost';
-import { getMyApp } from '../hosts/system/windows/scripts/helpers';
+import { getCreateMyApp } from '../hosts/system/windows/scripts/helpers';
 import lazy { meowAppMessageType } from '../hosts/system/windows/scripts/messaging';
 import { getLastWindowId } from '../hosts/system/windows/scripts/multiwindows';
 import { meowKeyboardMan } from '../hosts/userdata/keyshortcuts/classes/meowKeyboardMan';
@@ -42,7 +42,7 @@ import { meowKeyboardMan } from '../hosts/userdata/keyshortcuts/classes/meowKeyb
 struct Index {
   @Local myWindowId: string = getLastWindowId(); // To know who I am!
   // Hosts (public)
-  @Local myApp: meowAppHost = getMyApp();
+  @Local myApp: meowAppHost = getCreateMyApp();
   @Local myKey: meowKeyboardMan = AppStorageV2.connect(meowKeyboardMan)!;
   // Hosts (private)
   @Local myUi: meowUiHost = AppStorageV2.connect(meowUiHost, `meowUiHost_${this.myWindowId}`)!;

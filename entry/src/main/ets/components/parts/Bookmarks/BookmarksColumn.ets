@@ -3,7 +3,7 @@ import { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger'
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
 import { meowAppHost } from '../../../hosts/system/windows/classes/meowAppHost';
 import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
-import { getMyApp } from '../../../hosts/system/windows/scripts/helpers';
+import { getCreateMyApp } from '../../../hosts/system/windows/scripts/helpers';
 import { globalMessage, meowAppMessageType } from '../../../hosts/system/windows/scripts/messaging';
 import { meowBookmarkItem } from '../../../hosts/userdata/bookmarks/classes/meowBookmarkItem';
 import { nowHtmlTimestamp } from '../../../hosts/userdata/bookmarks/scripts/helpers';
@@ -26,7 +26,7 @@ struct BookmarksColumn {
   @Param @Once selectMode: boolean = false; // False for normal (display and edit) mode, true for select mode.
   // Hosts
   @Param @Require myUi: meowUiHost;
-  @Local myApp: meowAppHost = getMyApp(); // For event receiving.
+  @Local myApp: meowAppHost = getCreateMyApp(); // For event receiving.
   // Params
   @Param @Require folder: meowBookmarkItem;
   @Param @Require level: number;
@@ -357,7 +357,7 @@ struct BookmarksColumn {
   sendDrag(event: DragEvent, item: meowBookmarkItem) {
     // Put the item (to be sent) in meowAppHost.
 
-    getMyApp().dataTunnelForBookmarks = { item: item, parent: this.folder };
+    getCreateMyApp().dataTunnelForBookmarks = { item: item, parent: this.folder };
 
     // Fill data :P
     let unifiedData = new unifiedDataChannel.UnifiedData();
@@ -432,7 +432,7 @@ struct BookmarksColumn {
     // NOW THIS IS A LEGAL DROP FROM FOLDER TO FOLDER!
 
     // Grab info from AppStatuses
-    const pack = getMyApp().dataTunnelForBookmarks;
+    const pack = getCreateMyApp().dataTunnelForBookmarks;
     if (pack == undefined) {
       meow(`getMyApp().dataTunnelForBookmarks is undefined. Rejected!`, `BookmarksColumn][onDrop][${this.folder.title}`, meowLevel.ERROR);
       return false;

@@ -12,7 +12,7 @@ import lazy { oopsPreviewActionsText } from '../../../../components/parts/WebCon
 import lazy { oopsPreviewImage } from '../../../../components/parts/WebContextMenu/oopsPreviewImage';
 import { oopsPreviewQrResults } from '../../../../components/parts/WebContextMenu/oopsPreviewQrResults';
 import lazy { defaultAnimation, getColor, useEffects } from '../../../../components/settings';
-import lazy { getMyApp } from '../../../system/windows/scripts/helpers';
+import lazy { getCreateMyApp } from '../../../system/windows/scripts/helpers';
 import lazy { contextMenuImagePreview, contextMenuStripText, contextMenuWebHeight, contextMenuWebPreview } from '../settings';
 import { meowTabInfo } from './meowTabInfo';
 
@@ -245,7 +245,7 @@ struct MeowWeb {
    * If the window is in free window or wide mode. We would have many space to put more things!
    */
   get largeSpace() {
-    return this.pk.myUi.myLayout.wideMode || getMyApp().freeWindow;
+    return this.pk.myUi.myLayout.wideMode || getCreateMyApp().freeWindow;
   }
 
   @Builder
@@ -284,7 +284,7 @@ struct MeowWeb {
           .height(contextMenuWebHeight())
           .padding(standardSpacing * 0.5)
           .borderRadius(defaultInnerRadius)
-          .layoutWeight(getMyApp().freeWindow ? 3 : this.pk.myUi.myLayout.wideMode ? 2 : undefined);
+          .layoutWeight(getCreateMyApp().freeWindow ? 3 : this.pk.myUi.myLayout.wideMode ? 2 : undefined);
       }
     }.width('auto');
   }

@@ -9,7 +9,7 @@ import { standardSpacing } from "../../../components/constants";
 import { defaultAnimation, getMySettings, shortcutsHeight, shortcutsPath } from "../../../components/settings";
 import { meowDialogManager, openDialogRequestType } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { requestDialog } from "../../../hosts/system/dialogs/scripts/dialog";
-import { getMyResource } from "../../../hosts/system/storage/scripts/helpers";
+import { getMyResource } from "../../../hosts/system/resources/scripts/helpers";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { meowAppMessageType } from "../../../hosts/system/windows/scripts/messaging";
 import { WoofUniFrame } from "../../WoofUniFrame";

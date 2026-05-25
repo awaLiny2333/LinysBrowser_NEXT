@@ -5,14 +5,14 @@ import { meowTabInfo } from "../../../hosts/app/tabs/classes/meowTabInfo";
 import { userAgentList, userAgentSelected } from "../../../hosts/app/tabs/settings";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { meowAppHost } from "../../../hosts/system/windows/classes/meowAppHost";
-import { getMyApp } from "../../../hosts/system/windows/scripts/helpers";
+import { getCreateMyApp } from "../../../hosts/system/windows/scripts/helpers";
 import { meowAppMessageType } from "../../../hosts/system/windows/scripts/messaging";
 import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
 struct WoofQuickUAPanel {
   @Param @Require myDialog: meowDialogManager;
-  @Local myApp: meowAppHost = getMyApp();
+  @Local myApp: meowAppHost = getCreateMyApp();
   // Local
   @Local selectedIndexUA: number = this.getCurrentWebUAIndex();
   @Local refreshFlagUA: boolean = false;

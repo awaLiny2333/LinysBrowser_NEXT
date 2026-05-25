@@ -111,12 +111,12 @@ export async function fileDocumentPickCopySave(sourcePath: string, nameOverwrite
     return true;
   }
 
-  const fileName = fileNameOfPath(sourcePath);
+  const fileName = nameOverwrite || fileNameOfPath(sourcePath);
   const ext = extensionOfName(fileName);
   try {
     return (new picker.DocumentViewPicker())
       .save({
-        newFileNames: [nameOverwrite || fileName],
+        newFileNames: [fileName],
         fileSuffixChoices: [`.${ext}`]
       })
       .then(async (pickedUris) => {
@@ -539,7 +539,7 @@ export async function readArrayBuffer(fullFilePath: string, offset?: number, len
     // Read to ArrayBuffer
     let buf: ArrayBuffer = new ArrayBuffer(length || stat.size);
     let readLen = await fileIo.read(file.fd, buf, { offset: offset, length: length });
-    
+
     let result = (length || stat.size) == readLen ? buf : buf.slice(0, readLen); // Copy?
     fileIo.close(file)
       .catch((e: BusinessError) => {

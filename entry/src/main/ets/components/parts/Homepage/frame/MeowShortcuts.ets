@@ -8,7 +8,7 @@ import { defaultInnerRadius } from '../../../../catstypicalframework/utils/ui';
 import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
 import { meowAppHost } from '../../../../hosts/system/windows/classes/meowAppHost';
-import { getMyApp } from '../../../../hosts/system/windows/scripts/helpers';
+import { getCreateMyApp } from '../../../../hosts/system/windows/scripts/helpers';
 import { meowAppMessageType } from '../../../../hosts/system/windows/scripts/messaging';
 import { meowBookmarkItem } from '../../../../hosts/userdata/bookmarks/classes/meowBookmarkItem';
 import { meowBookmarkStash } from '../../../../hosts/userdata/bookmarks/classes/meowBookmarkStash';
@@ -22,7 +22,7 @@ struct MeowShortcutsPanel {
   @Param @Require myDialog: meowDialogManager;
   // Host
   @Local myBookmarks: meowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
-  @Local myApp: meowAppHost = getMyApp(); // For event receiving.
+  @Local myApp: meowAppHost = getCreateMyApp(); // For event receiving.
   // Local
   @Local refreshFlag: boolean = true;
   // Events
@@ -76,7 +76,7 @@ struct MeowShortcutsPanel {
 struct MeowShortcutItem {
   @Param @Require item: meowBookmarkItem;
   // Host
-  @Local myApp: meowAppHost = getMyApp(); // For event receiving.
+  @Local myApp: meowAppHost = getCreateMyApp(); // For event receiving.
   // Data
   @Local showingChildren: boolean = false;
   @Local refreshFlag: boolean = true;

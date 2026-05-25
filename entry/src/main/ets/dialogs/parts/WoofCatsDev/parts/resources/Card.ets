@@ -1,6 +1,6 @@
 import { UniContentCard } from '../../../../../components/common/UniContentCard';
 import { meowFlexOptions } from '../../../../../components/constants';
-import { getMyResource } from '../../../../../hosts/system/storage/scripts/helpers';
+import { getMyResource } from '../../../../../hosts/system/resources/scripts/helpers';
 
 /**
  * meowResources stuffs.

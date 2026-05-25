@@ -1,4 +1,4 @@
-import lazy { getMyApp } from "../../windows/scripts/helpers";
+import lazy { getCreateMyApp } from "../../windows/scripts/helpers";
 import lazy { openDialogRequestType, meowDialogManager, openDialogRequest } from "../classes/meowDialogManager";
 import lazy { AppStorageV2 } from "@kit.ArkUI";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
@@ -20,7 +20,7 @@ export function requestDialog(myDialog: meowDialogManager, type: openDialogReque
  * @param ignoreOpened Whether to ignore the opened dialogs.
  */
 export function requestDialogOnMostRecent(type: openDialogRequestType, param: string | number | boolean | object = '', ignoreOpened: boolean = false) {
-  const lastFocusedWindowId = getMyApp().lastFocusedWindowId;
+  const lastFocusedWindowId = getCreateMyApp().lastFocusedWindowId;
   const thatDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${lastFocusedWindowId}`);
   if (thatDialog) {
     thatDialog.requestOpen(new openDialogRequest(type, param, ignoreOpened));

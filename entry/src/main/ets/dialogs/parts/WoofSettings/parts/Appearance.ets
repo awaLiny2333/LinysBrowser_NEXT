@@ -14,7 +14,7 @@ import { meowDialogManager, openDialogRequestType } from "../../../../hosts/syst
 import { requestDialog } from "../../../../hosts/system/dialogs/scripts/dialog";
 import { meowAppHost } from "../../../../hosts/system/windows/classes/meowAppHost";
 import { meowUiHost } from "../../../../hosts/system/windows/classes/meowUiHost";
-import { getMyApp } from "../../../../hosts/system/windows/scripts/helpers";
+import { getCreateMyApp } from "../../../../hosts/system/windows/scripts/helpers";
 import { globalMessage, meowAppMessageType } from "../../../../hosts/system/windows/scripts/messaging";
 import { meowManagedSettings } from "../../../../hosts/userdata/settings/classes/meowManagedSettings";
 import { resetAnimations, resetColors } from "../../../../hosts/userdata/settings/scripts/reset";
@@ -22,7 +22,7 @@ import { resetAnimations, resetColors } from "../../../../hosts/userdata/setting
 @ComponentV2
 struct SettingsAppearance {
   @Local mySettings: meowManagedSettings = getMySettings();
-  @Param myApp: meowAppHost = getMyApp();
+  @Param myApp: meowAppHost = getCreateMyApp();
   @Param @Require myUi: meowUiHost;
   @Param @Require myDialog: meowDialogManager;
 

@@ -6,7 +6,7 @@ import lazy { zlib } from "@kit.BasicServicesKit";
 import lazy BuildProfile from "BuildProfile";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import lazy { dirCopy, ensureDirectoryExist, fileCopy, fileDocumentPick2Path, fileDocumentPickCopySave, fileDocumentPickSave } from "../../../../catstypicalframework/utils/storage";
-import { getMySettings } from "../../../../components/settings";
+import lazy { getMySettings } from "../../../../components/settings";
 import lazy { meowManagedSettingsInitResult } from "../../../userdata/settings/classes/meowManagedSettings";
 
 export enum importResult {
@@ -53,7 +53,7 @@ export async function exportSettings() {
  * @returns A meowManagedSettingsInitResult.
  */
 export async function importSettings(): Promise<meowManagedSettingsInitResult> {
-  const mySettings = getMySettings()
+  const mySettings = getMySettings();
   const result = await fileDocumentPick2Path(['browsercatsettings'], 1);
   if (result.succeed) {
     const path = result.sourcePaths![0];
@@ -80,7 +80,7 @@ export async function exportEverything(context: Context): Promise<boolean> {
   const fileName = `profile.zip.${BuildProfile.VERSION_NAME}.browsercatprofile`;
   const zipPath: string = `${tempDir}/${fileName}.zip`;
 
-  // Zip everything in sandbox
+  // Zip everything in sandbox to tempdir.
   const options: zlib.Options = {
     level: zlib.CompressLevel.COMPRESS_LEVEL_DEFAULT_COMPRESSION,
     memLevel: zlib.MemLevel.MEM_LEVEL_DEFAULT,

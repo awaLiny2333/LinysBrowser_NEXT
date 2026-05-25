@@ -14,7 +14,7 @@ import lazy { meowHistorian } from "../../../userdata/history/classes/meowHistor
 import lazy { meowHistoryEntry } from "../../../userdata/history/classes/meowHistoryEntry";
 import lazy { meowDialogManager } from "../../dialogs/classes/meowDialogManager";
 import lazy { AddressBarStatuses } from "../scripts/addressBarStatuses";
-import { getMyApp } from "../scripts/helpers";
+import { getCreateMyApp } from "../scripts/helpers";
 import lazy { meowAppMessage } from "./meowAppMessage";
 import { Want } from "@kit.AbilityKit";
 
@@ -92,7 +92,7 @@ export class meowUiHost {
    * In free window mode, and title top (major) area is empty, and is in wide mode then is true.
    */
   get titleTopCanShift() {
-    return this.titleTopEmpty && getMyApp().freeWindow && this.myLayout.wideMode;
+    return this.titleTopEmpty && getCreateMyApp().freeWindow && this.myLayout.wideMode;
   }
 
   /**
@@ -324,7 +324,7 @@ export class meowUiHost {
   updateWindowBackgroundColor() {
     let color = getColor(meowThemeColorType.SECONDARY) as ResourceColor as string;
     if (useEffects()) {
-      if (getMyApp().dark) {
+      if (getCreateMyApp().dark) {
         color = '#ff000000'; // Set all black
       } else {
         color = '#ffffffff'; // Set all white

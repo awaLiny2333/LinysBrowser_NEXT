@@ -7,7 +7,7 @@ import { searchEngineList } from "../../../hosts/app/tabs/settings";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { meowAppHost } from "../../../hosts/system/windows/classes/meowAppHost";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
-import { getMyApp } from "../../../hosts/system/windows/scripts/helpers";
+import { getCreateMyApp } from "../../../hosts/system/windows/scripts/helpers";
 import { meowAppMessageType } from "../../../hosts/system/windows/scripts/messaging";
 import { defaultSearchEngine } from "../../../hosts/userdata/settings/scripts/defaultSettingsValues";
 import { WoofUniFrame } from "../../WoofUniFrame";
@@ -15,7 +15,7 @@ import { WoofUniFrame } from "../../WoofUniFrame";
 @ComponentV2
 struct WoofQuickSEPanel {
   @Param @Require myDialog: meowDialogManager;
-  @Local myApp: meowAppHost = getMyApp();
+  @Local myApp: meowAppHost = getCreateMyApp();
   // Local
   @Local selectedIndexSE: number = -2; // show no selection
   @Local refreshFlagSE: boolean = false;

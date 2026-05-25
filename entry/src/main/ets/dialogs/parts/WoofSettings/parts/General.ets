@@ -10,7 +10,7 @@ import { searchEngineList, searchEngineSelected, userAgentList, userAgentSelecte
 import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
 import { meowAppHost } from '../../../../hosts/system/windows/classes/meowAppHost';
-import { getMyApp } from '../../../../hosts/system/windows/scripts/helpers';
+import { getCreateMyApp } from '../../../../hosts/system/windows/scripts/helpers';
 import { globalMessage, meowAppMessageType } from '../../../../hosts/system/windows/scripts/messaging';
 import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { defaultSearchEngine } from '../../../../hosts/userdata/settings/scripts/defaultSettingsValues';
@@ -20,7 +20,7 @@ struct SettingsGeneral {
   // Hosts
   @Param @Require myDialog: meowDialogManager;
   @Local mySettings: meowManagedSettings = getMySettings();
-  @Local myApp: meowAppHost = getMyApp();
+  @Local myApp: meowAppHost = getCreateMyApp();
   // Local
   @Local selectedIndexUA: number = userAgentSelected();
   @Local selectedIndexSE: number = searchEngineSelected();

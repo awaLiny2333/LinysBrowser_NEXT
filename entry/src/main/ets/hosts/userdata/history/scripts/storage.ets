@@ -2,7 +2,7 @@ import lazy { meowHistorian } from "../classes/meowHistorian";
 import lazy { taskpool } from "@kit.ArkTS";
 import lazy { AppStorageV2 } from "@kit.ArkUI";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import lazy { getFolderSizeSyncWrapped } from "../../../system/storage/scripts/storage";
+import lazy { getFolderSizeSyncWrapped } from "../../../system/resources/scripts/storage";
 
 /**
  * Gets the size of the history index folder.

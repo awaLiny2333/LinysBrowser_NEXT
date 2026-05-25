@@ -5,16 +5,16 @@ import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { UniRowOfCapsuleButtons } from '../../../../components/common/UniRowOfCapsuleButtons';
 import lazy { mooTextType, standardSpacing } from '../../../../components/constants';
 import { getMySettings } from '../../../../components/settings';
-import lazy { removeWebCache, scanWebCacheSize } from '../../../../hosts/system/storage/scripts/storage';
+import lazy { removeWebCache, scanWebCacheSize } from '../../../../hosts/system/resources/scripts/storage';
 import { meowAppHost } from '../../../../hosts/system/windows/classes/meowAppHost';
-import { getMyApp } from '../../../../hosts/system/windows/scripts/helpers';
+import { getCreateMyApp } from '../../../../hosts/system/windows/scripts/helpers';
 import lazy { scanHistoryIndexSize } from '../../../../hosts/userdata/history/scripts/storage';
 import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
 
 @ComponentV2
 struct SettingsStorage {
   @Local mySettings: meowManagedSettings = getMySettings();
-  @Local myApp: meowAppHost = getMyApp();
+  @Local myApp: meowAppHost = getCreateMyApp();
 
   build() {
     Column({ space: standardSpacing }) {

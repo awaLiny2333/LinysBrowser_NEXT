@@ -1,6 +1,6 @@
 import lazy { abilityManager, common, Want } from "@kit.AbilityKit";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import lazy { getMyApp } from "./helpers";
+import lazy { getCreateMyApp } from "./helpers";
 
 
 /**
@@ -8,7 +8,7 @@ import lazy { getMyApp } from "./helpers";
  * @returns The id.
  */
 export function getLastWindowId() {
-  const myApp = getMyApp();
+  const myApp = getCreateMyApp();
   return myApp.windowIds[myApp.windowIds.length - 1];
 }
 

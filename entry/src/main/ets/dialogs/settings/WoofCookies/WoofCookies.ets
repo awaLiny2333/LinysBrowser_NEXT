@@ -9,7 +9,7 @@ import { MooTextButton } from "../../../components/common/MooTextButton";
 import { MooTextInputV2 } from "../../../components/common/MooTextInputV2";
 import { standardComponentHeight, standardSpacing } from "../../../components/constants";
 import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
-import { getMyApp } from "../../../hosts/system/windows/scripts/helpers";
+import { getCreateMyApp } from "../../../hosts/system/windows/scripts/helpers";
 import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
@@ -115,7 +115,7 @@ struct CookiesPanel {
    */
   focusInput() {
     try {
-      if (getMyApp().freeWindow) {
+      if (getCreateMyApp().freeWindow) {
         this.getUIContext().getFocusController().requestFocus(this.searchInputId);
       }
     } catch (e) {

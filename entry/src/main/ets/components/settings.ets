@@ -26,7 +26,7 @@ import { AppStorageV2 } from "@kit.ArkUI";
 import Curves from '@ohos.curves';
 import { meowLayout } from "../catstypicalframework/hosts/meowLayout";
 import { meowUiHost } from "../hosts/system/windows/classes/meowUiHost";
-import { getMyApp } from "../hosts/system/windows/scripts/helpers";
+import { getCreateMyApp } from "../hosts/system/windows/scripts/helpers";
 import { meowManagedSettings } from "../hosts/userdata/settings/classes/meowManagedSettings";
 import { meowThemeColorType, minimumCardWidth, UnifiedButtonsType } from "./constants";
 
@@ -66,7 +66,7 @@ export function getColor(type: meowThemeColorType): ResourceColor {
   }
 
   // No effects
-  return getMySettings().settingsData[getMyApp().dark ? 65 + type : 62 + type].value as string;
+  return getMySettings().settingsData[getCreateMyApp().dark ? 65 + type : 62 + type].value as string;
 }
 
 /**
@@ -101,7 +101,7 @@ export function useEffects() {
  * @returns true if the app is in dark mode, false otherwise.
  */
 export function inDarkMode() {
-  return getMyApp().dark;
+  return getCreateMyApp().dark;
 }
 
 // LAYOUT
@@ -195,7 +195,7 @@ export function showBottomAvoid() {
  */
 export function isPreferRightHand(): boolean {
   if (isSmartReachabilityOn()) {
-    return getMyApp().smartReachabilitySaysWeShouldPreferRightHand;
+    return getCreateMyApp().smartReachabilitySaysWeShouldPreferRightHand;
   }
   return isPreferRightHandFromSettings();
 }

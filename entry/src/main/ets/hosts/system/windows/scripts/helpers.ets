@@ -7,7 +7,7 @@ let myApp: meowAppHost | undefined = undefined;
  * Guarantee the existence of the meowAppHost instance and return it.
  * @returns The meowAppHost object!
  */
-export function getMyApp() {
+export function getCreateMyApp() {
   if (!myApp) {
     myApp = AppStorageV2.connect(meowAppHost, () => new meowAppHost())!;
   }

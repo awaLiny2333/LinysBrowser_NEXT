@@ -27,9 +27,9 @@ import { meowBoardHolder } from '../hosts/app/scratchingboard/classes/meowBoardH
 import { meowTabsBunch } from '../hosts/app/tabs/classes/meowTabsBunch';
 import { concatSearchWithEngine } from '../hosts/app/tabs/scripts/searchEngines';
 import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
-import { meowResources } from '../hosts/system/storage/classes/meowResources';
+import { meowResources } from '../hosts/system/resources/classes/meowResources';
 import { meowUiHost } from '../hosts/system/windows/classes/meowUiHost';
-import { getMyApp } from '../hosts/system/windows/scripts/helpers';
+import { getCreateMyApp } from '../hosts/system/windows/scripts/helpers';
 import { generateTimeBasedWindowId } from '../hosts/system/windows/scripts/multiwindows';
 import { meowBookmarkStash } from '../hosts/userdata/bookmarks/classes/meowBookmarkStash';
 import { meowHistorian } from '../hosts/userdata/history/classes/meowHistorian';
@@ -65,7 +65,7 @@ export enum wantSource {
  * For example starting to load the homepage wallpaper.
  */
 export function earlyOnCreate(context: Context, launchWant: Want) {
-  const myApp = getMyApp();
+  const myApp = getCreateMyApp();
   const paramWindowName = myApp.lastCreatedInstanceKey;
   meow(`paramWindowName found in myApp: [${paramWindowName}]!`, 'earlyOnCreate');
 
@@ -108,7 +108,7 @@ export function earlyOnCreate(context: Context, launchWant: Want) {
  * */
 export async function earlyOnWindowStageCreate(context: Context) {
   const startTime = Date.now();
-  const myApp = getMyApp();
+  const myApp = getCreateMyApp();
   const isNewWindow = myApp.windowIds.length == 1;
   const myWindowId = myApp.windowIds[myApp.windowIds.length - 1];
 
@@ -157,13 +157,13 @@ export async function aboutToLoadContent(windowStage: window.WindowStage, window
  * */
 export function onLoadContent(windowStage: window.WindowStage, windowObj: window.Window, context: common.UIAbilityContext) {
   const startTime = Date.now();
-  const myApp = getMyApp();
+  const myApp = getCreateMyApp();
   const isNewWindow = myApp.windowIds.length == 1;
   const myWindowId = myApp.windowIds[myApp.windowIds.length - 1];
 
   // UI
 
-  getMyApp().reportWindowFocus(myWindowId);
+  getCreateMyApp().reportWindowFocus(myWindowId);
   windowStage.setWindowRectAutoSave(true) // Enable window status auto save.
     .then(() => {
       meow('windowStage.setWindowRectAutoSave(true) Success!', 'init', meowLevel.INFO);
@@ -296,7 +296,7 @@ export function onWant(want: Want, source: wantSource) {
   meow(`onWant! want info: ${JSON.stringify(want)}, source: ${source}`, 'init][onWant', meowLevel.INFO);
   const uri = want.uri;
   if (uri) {
-    const lastTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${getMyApp().lastFocusedWindowId}`);
+    const lastTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${getCreateMyApp().lastFocusedWindowId}`);
     lastTabs?.newTabWrapped(uri);
   }
 }
@@ -306,7 +306,7 @@ export function onWant(want: Want, source: wantSource) {
  * @param config The new configuration.
  */
 export function onConfigUpdate(config: Configuration) {
-  const myApp = getMyApp();
+  const myApp = getCreateMyApp();
   const newDark = config.colorMode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
   if (myApp.dark != newDark) {
     myApp.dark = newDark;
@@ -326,7 +326,7 @@ export function onConfigUpdate(config: Configuration) {
  */
 export function onWindowStageWillDestroy(windowStage: window.WindowStage) {
   // Find the meowUiHost item.
-  const myApp = getMyApp();
+  const myApp = getCreateMyApp();
   let targetUi: meowUiHost | undefined = undefined;
   for (const windowId of myApp.windowIds) {
     const myUi = AppStorageV2.connect(meowUiHost, `meowUiHost_${windowId}`);

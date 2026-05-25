@@ -1,6 +1,6 @@
 import lazy { meowAppMessage } from "../classes/meowAppMessage";
 import lazy { meowUiHost } from "../classes/meowUiHost";
-import lazy { getMyApp } from "./helpers";
+import lazy { getCreateMyApp } from "./helpers";
 
 export enum meowAppMessageType {
   SETTINGS_UA_REFRESH,
@@ -24,7 +24,7 @@ export enum meowAppMessageType {
  * @param content The content of the message.
  */
 export function globalMessage(type: meowAppMessageType, content: object | string | boolean | number | undefined = undefined) {
-  getMyApp().crossAppMessageTunnel = new meowAppMessage(type, content);
+  getCreateMyApp().crossAppMessageTunnel = new meowAppMessage(type, content);
 }
 
 // Example use of global messaging:

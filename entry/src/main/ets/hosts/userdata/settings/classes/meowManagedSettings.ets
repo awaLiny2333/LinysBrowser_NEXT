@@ -17,7 +17,7 @@ import lazy { fastbuffer } from "@kit.ArkTS";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import lazy { readArrayBufferConcurrent, saveHybrid } from "../../../../catstypicalframework/utils/storage";
 import { compareDiff } from "../../../../catstypicalframework/utils/strings";
-import { importResult } from "../../../system/storage/scripts/backup";
+import { importResult } from "../../../system/resources/scripts/backup";
 import lazy { defaultSettingsEntries } from "../scripts/defaultSettingsEntries";
 import lazy { settingsParserJSON } from "../scripts/helpers";
 import { meowSettingsEntry, meowSettingsEntryType } from "./meowSettingsEntry";

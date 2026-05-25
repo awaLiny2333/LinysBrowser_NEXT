@@ -1,6 +1,6 @@
 import { AbilityStage, Want } from '@kit.AbilityKit';
 import { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
-import { getMyApp } from '../hosts/system/windows/scripts/helpers';
+import { getCreateMyApp } from '../hosts/system/windows/scripts/helpers';
 import { generateTimeBasedWindowId } from '../hosts/system/windows/scripts/multiwindows';
 
 export default class EntryAbilityStage extends AbilityStage {
@@ -24,10 +24,10 @@ export default class EntryAbilityStage extends AbilityStage {
         meow(`User created new window! instanceKey = [${instanceKey}]`, 'Meow][HomeAbility][onAcceptWant', meowLevel.WARN);
       } else {
         // SYSTEM-CREATED new window.
-        let windowIds: string[] = getMyApp().windowIds;
+        let windowIds: string[] = getCreateMyApp().windowIds;
         if (windowIds.length > 0) {
           // Call the last of the already opened windows. Give want to that window.
-          instanceKey = getMyApp().lastFocusedWindowId;
+          instanceKey = getCreateMyApp().lastFocusedWindowId;
           meow(`Key is undefined. We have existing windows [${windowIds.join(', ')}] and let's give want to [${instanceKey}]`, 'Meow][HomeAbility][onAcceptWant', meowLevel.WARN);
         } else {
           // InstanceKey for the very first window of the entire app.
@@ -37,7 +37,7 @@ export default class EntryAbilityStage extends AbilityStage {
       }
     }
 
-    getMyApp().lastCreatedInstanceKey = instanceKey; // So that the flow in EntryAbility can grab this key and use it as its windowId.
+    getCreateMyApp().lastCreatedInstanceKey = instanceKey; // So that the flow in EntryAbility can grab this key and use it as its windowId.
 
     return instanceKey;
   }

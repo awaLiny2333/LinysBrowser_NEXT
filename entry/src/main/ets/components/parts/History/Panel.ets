@@ -4,7 +4,7 @@ import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger"
 import { isBlank } from "../../../catstypicalframework/utils/strings";
 import { defaultInnerRadius, defaultItemRadius } from "../../../catstypicalframework/utils/ui";
 import { meowAppHost } from "../../../hosts/system/windows/classes/meowAppHost";
-import { getMyApp } from "../../../hosts/system/windows/scripts/helpers";
+import { getCreateMyApp } from "../../../hosts/system/windows/scripts/helpers";
 import { globalMessage, meowAppMessageType } from "../../../hosts/system/windows/scripts/messaging";
 import { meowHistorian } from "../../../hosts/userdata/history/classes/meowHistorian";
 import { meowHistoryChunk } from "../../../hosts/userdata/history/classes/meowHistoryChunk";
@@ -28,7 +28,7 @@ struct HistoryPanel {
   // Host
   @Param @Require myLayout: meowLayout;
   @Local myMeowHistorian: meowHistorian = AppStorageV2.connect<meowHistorian>(meowHistorian)!;
-  @Local myApp: meowAppHost = getMyApp();
+  @Local myApp: meowAppHost = getCreateMyApp();
   // Display
   @Local myHistoryChunk: meowHistoryChunk | undefined;
   @Local myEntries: meowHistoryEntry[] = [];

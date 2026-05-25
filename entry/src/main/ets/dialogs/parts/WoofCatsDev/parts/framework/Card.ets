@@ -5,7 +5,7 @@ import { hintGC } from '../../../../../catstypicalframework/utils/performance';
 import { meowAvoid } from '../../../../../catstypicalframework/hosts/meowAvoid';
 import { meowLayout } from '../../../../../catstypicalframework/hosts/meowLayout';
 import { meowAppHost } from '../../../../../hosts/system/windows/classes/meowAppHost';
-import { getMyApp } from '../../../../../hosts/system/windows/scripts/helpers';
+import { getCreateMyApp } from '../../../../../hosts/system/windows/scripts/helpers';
 
 /**
  * CatsTypicalFramework stuffs.
@@ -16,7 +16,7 @@ struct CatsTypicalFrameworkDevCard {
   @Param @Require myLayout: meowLayout;
   @Param @Require myAvoid: meowAvoid;
   @Param @Require myMisc: meowMisc;
-  @Local myApp: meowAppHost = getMyApp();
+  @Local myApp: meowAppHost = getCreateMyApp();
 
   build() {
     UniContentCard({ title: 'CatsTypicalFramework' }) {

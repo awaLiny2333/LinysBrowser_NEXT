@@ -2,7 +2,7 @@ import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import { standardSpacing } from '../../../components/constants';
 import { waterFlowColumnsTemplate } from '../../../components/settings';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
-import { getDevMode } from '../../../hosts/system/storage/settings';
+import { getDevMode } from '../../../hosts/system/resources/settings';
 import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { WoofUniFrame } from '../../WoofUniFrame';
 import { SettingsAbout } from './parts/About';
