@@ -8,6 +8,7 @@ import { meowAppMessage } from "./meowAppMessage";
 export class meowAppHost {
   @Trace windowIds: string[] = [];
   @Trace windowFocusHistory: string[] = [];
+  lastCreatedInstanceKey: string = ''; // Set by EntryAbilityStage to let the created window know its windowId.
   // Background tasks
   @Trace refreshingWebCacheSize: boolean = false;
   @Trace refreshingHistoryIndexSize: boolean = false;

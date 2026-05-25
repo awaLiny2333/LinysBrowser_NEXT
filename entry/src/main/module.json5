@@ -2,6 +2,7 @@
   "module": {
     "name": "entry",
     "type": "entry",
+    "srcEntry": "./ets/entryabilitystage/EntryAbilityStage.ets",
     "description": "$string:module_desc",
     "mainElement": "EntryAbility",
     "deviceTypes": [
@@ -22,6 +23,7 @@
         "startWindowIcon": "$media:startIcon",
         "startWindowBackground": "$color:start_window_background",
         "launchType": "specified",
+        "removeMissionAfterTerminate": true,
         "exported": true,
         "orientation": "auto_rotation_restricted",
         "skills": [
@@ -30,7 +32,51 @@
               "entity.system.home"
             ],
             "actions": [
-              "ohos.want.action.home"
+              "action.system.home"
+            ],
+            "uris": [
+              {
+                "type": "general.hyperlink"
+              }
+            ]
+          },
+          {
+            "entities": [
+              "entity.system.browsable"
+            ],
+            "actions": [
+              "ohos.want.action.viewData"
+            ],
+            "uris": [
+              {
+                 // Accept All Files
+                "scheme": "file",
+                "linkFeature": "FileOpen"
+              },
+              {
+                 // Accept html
+                "scheme": "file",
+                "type": "text/html",
+                "linkFeature": "FileOpen"
+              },
+              {
+                 // Accept xhtml
+                "scheme": "file",
+                "type": "application/xhtml+xml",
+                "linkFeature": "FileOpen"
+              },
+              {
+                 // Accept mht
+                "scheme": "file",
+                "type": "message/rfc822",
+                "linkFeature": "FileOpen"
+              },
+              {
+                "scheme": "https"
+              },
+              {
+                "scheme": "http"
+              }
             ]
           }
         ]
@@ -196,7 +242,7 @@
             "EntryAbility"
           ]
         }
-      },
+      }
     ]
   }
 }

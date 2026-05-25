@@ -44,7 +44,7 @@ export function belongsToDomain(testUrl: string, domain: string) {
     // console.log(`[belongsToDomain] [${testUrl}] host: (${theUrl.host}) ${result ? 'belongs to' : 'is not under'} [${domain}]`);
     return result;
   } catch (e) {
-    console.error(`[belongsToDomain] [${testUrl}]?→[${domain}] error: ${e}`);
+    // console.error(`[belongsToDomain] [${testUrl}]?→[${domain}] error: ${e}`);
     return false;
   }
 }

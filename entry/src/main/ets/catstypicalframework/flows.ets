@@ -28,7 +28,6 @@ import { meowTabsBunch } from '../hosts/app/tabs/classes/meowTabsBunch';
 import { concatSearchWithEngine } from '../hosts/app/tabs/scripts/searchEngines';
 import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
 import { meowResources } from '../hosts/system/storage/classes/meowResources';
-import { meowAppHost } from '../hosts/system/windows/classes/meowAppHost';
 import { meowUiHost } from '../hosts/system/windows/classes/meowUiHost';
 import { getMyApp } from '../hosts/system/windows/scripts/helpers';
 import { generateTimeBasedWindowId } from '../hosts/system/windows/scripts/multiwindows';
@@ -66,18 +65,21 @@ export enum wantSource {
  * For example starting to load the homepage wallpaper.
  */
 export function earlyOnCreate(context: Context, launchWant: Want) {
-  const paramWindowName = launchWant.parameters?.windowName as string | undefined;
+  const myApp = getMyApp();
+  const paramWindowName = myApp.lastCreatedInstanceKey;
+  meow(`paramWindowName found in myApp: [${paramWindowName}]!`, 'earlyOnCreate');
 
   // Determine window name
-  const isNewWindow = paramWindowName == undefined; // ASSERT THAT ALL LEGAL LATER WINDOWS ARE CREATED WITH THIS PARAM IN THE LAUNCHWANT. SO THAT WITHOUT THIS PARAM MUST BE THE FIRST WINDOW OF THIS APP.
   let myWindowId = paramWindowName || generateTimeBasedWindowId();
 
   // Register window
-  const myApp = AppStorageV2.connect(meowAppHost, () => new meowAppHost())!;
+  const isNewWindow = myApp.windowIds.length == 0;
   myApp.windowIds.push(myWindowId);
 
   // Shared hosts
   if (isNewWindow) {
+    // Log
+    meow(`IS NEW WINDOW!`, 'flow][earlyOnCreate', meowLevel.WARN);
     // Get filesDir
     const filesDir = context.filesDir;
     // init
@@ -92,7 +94,7 @@ export function earlyOnCreate(context: Context, launchWant: Want) {
   }
 
   // Window private hosts
-  AppStorageV2.connect(meowUiHost, `meowUiHost_${myWindowId}`, () => new meowUiHost(myWindowId));
+  AppStorageV2.connect(meowUiHost, `meowUiHost_${myWindowId}`, () => new meowUiHost(launchWant, myWindowId));
   AppStorageV2.connect(meowDialogManager, `meowDialogManager_${myWindowId}`, () => new meowDialogManager());
   AppStorageV2.connect(meowMisc, `meowMisc_${myWindowId}`, () => new meowMisc());
   AppStorageV2.connect(meowAvoid, `meowAvoid_${myWindowId}`, () => new meowAvoid());
@@ -198,7 +200,7 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
   const myUi: meowUiHost = AppStorageV2.connect(meowUiHost, `meowUiHost_${myWindowId}`)!;
   myUi.windowStage = windowStage;
   myUi.windowObj = windowObj;
-  myUi.windowAlias = defaultNewWindowAlias();
+  myUi.windowAlias = defaultNewWindowAlias(); // Automatically grab the alias last time set.
   myUi.searchUnifyResult.url = concatSearchWithEngine('').result;
 
   // Init myLayout
@@ -246,14 +248,18 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
   // Listen for focus, window status (myUi) and avoid (myAvoid)
   // And other delayable jobs
   setTimeout(() => {
+    // Listen
     listenWindowStatusChange(myWindowId); // Listen window status
     listenFocus(myWindowId);
     listenAvoid(myWindowId);
+    // UI
     setKeyboardAvoidResize(windowObj);
     setDecorHeight(windowObj);
     myUi.updateWindowBackgroundColor();
     myUi.updateWindowTitle();
     updateNavigationIndicator(windowObj); // Navigation indicator
+    // Want
+    onWant(myUi.launchWant, wantSource.ONCREATE);
   }, 1); // Delayed execution, reduce launch time.
 
   // SHARED USER DATA & LISTENERS
@@ -288,6 +294,11 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
  */
 export function onWant(want: Want, source: wantSource) {
   meow(`onWant! want info: ${JSON.stringify(want)}, source: ${source}`, 'init][onWant', meowLevel.INFO);
+  const uri = want.uri;
+  if (uri) {
+    const lastTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${getMyApp().lastFocusedWindowId}`);
+    lastTabs?.newTabWrapped(uri);
+  }
 }
 
 /**

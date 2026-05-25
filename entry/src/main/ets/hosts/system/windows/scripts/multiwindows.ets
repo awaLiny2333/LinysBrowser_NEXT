@@ -43,7 +43,7 @@ export async function newWindow(context: common.UIAbilityContext, windowId: stri
     moduleName: info[0].ability.moduleName,
     abilityName: info[0].ability.abilityName,
     parameters: {
-      windowId: windowId
+      instanceKey: windowId,
     }
   };
 

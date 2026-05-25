@@ -16,6 +16,7 @@ import lazy { meowDialogManager } from "../../dialogs/classes/meowDialogManager"
 import lazy { AddressBarStatuses } from "../scripts/addressBarStatuses";
 import { getMyApp } from "../scripts/helpers";
 import lazy { meowAppMessage } from "./meowAppMessage";
+import { Want } from "@kit.AbilityKit";
 
 /**
  * The statuses that are limited to the current window only.
@@ -24,9 +25,11 @@ import lazy { meowAppMessage } from "./meowAppMessage";
 export class meowUiHost {
   // Window info
   @Trace windowId: string;
-  @Trace windowAlias: string;
+  @Trace windowAlias: string = '';
   @Trace windowObj: window.Window | undefined;
   @Trace windowStage: window.WindowStage | undefined;
+  // Wants
+  launchWant: Want;
   // UI
   @Trace windowFocused: boolean = true;
   @Trace pin: boolean = false;
@@ -70,9 +73,9 @@ export class meowUiHost {
   // Messaging
   @Trace localMessageTunnel: meowAppMessage | undefined = undefined; // The great tunnel for local window messaging! *TEMPORARY* but often NOT cleared after reception.
 
-  constructor(windowId: string, windowAlias: string = '') {
+  constructor(want: Want, windowId: string) {
+    this.launchWant = want;
     this.windowId = windowId;
-    this.windowAlias = windowAlias;
   }
 
   get myTabs() {

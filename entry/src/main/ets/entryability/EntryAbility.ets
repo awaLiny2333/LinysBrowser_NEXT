@@ -8,7 +8,7 @@ const DOMAIN = 0x0000;
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
-    hilog.warn(DOMAIN, 'testTag', '%{public}s', `Ability onCreate, launchParam: ${launchParam}`);
+    hilog.warn(DOMAIN, 'testTag', '%{public}s', ` \nAbility onCreate, launchParam: ${launchParam}`);
 
     earlyOnCreate(this.context, want);
 
@@ -20,8 +20,6 @@ export default class EntryAbility extends UIAbility {
     // } catch (err) {
     //   hilog.error(DOMAIN, 'testTag', 'Failed to set colorMode. Cause: %{public}s', JSON.stringify(err));
     // }
-
-    onWant(want, wantSource.ONCREATE);
   }
 
   onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {
