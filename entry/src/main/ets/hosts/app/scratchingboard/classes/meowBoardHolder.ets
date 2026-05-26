@@ -1,5 +1,5 @@
 import { unifiedDataChannel } from '@kit.ArkData';
-import { unifiedRecord2BoardData } from '../scripts/data';
+import lazy { unifiedRecord2BoardData } from '../scripts/data';
 
 export enum MeowScratchingBoardDataType {
   TEXT = 'TXT',

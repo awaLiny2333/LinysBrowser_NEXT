@@ -40,7 +40,7 @@ import { meowAvoid } from './hosts/meowAvoid';
 import { meowLayout } from './hosts/meowLayout';
 import { meowMisc } from './hosts/meowMisc';
 import { listenCrash, meow, meowLevel } from './utils/catsLogger';
-import { clearDirectory, ensureDirectoryExist, listFilesUnderDir } from './utils/storage';
+import { clearDirectory, ensureDirectoryExist, listFilesUnderDir, removeDir } from './utils/storage';
 import { listenAvoid, listenFocus, listenFreeWindowMode, listenSmartReachability, listenWindowStatusChange, meowPx2vp, offAvoid, offFocus, offWindowStatusChange, setDecorHeight, setKeyboardAvoidResize, shortModeThreshold, updateAvoid, updateFreeWindowMode, updateNavigationIndicator, wideModeThreshold } from './utils/ui';
 
 // Enums
@@ -147,6 +147,12 @@ export async function earlyOnWindowStageCreate(context: Context) {
       const newWorkingDir = `${context.filesDir}/continues/${files[0]}`;
       const myUi: meowUiHost = AppStorageV2.connect(meowUiHost, `meowUiHost_${myWindowId}`)!;
       myUi.workingDir = newWorkingDir;
+      // Clear others
+      // TODO: THIS IS NOT PERFECT FOR USER DATA RECOVERY. WE ARE LOSING DATA.
+      for (let i = 1; i < files.length; i++) {
+        await removeDir(`${context.filesDir}/continues/${files[i]}`);
+        meow(`Removed old [continues/${files[i]}] directory.`, 'earlyOnWindowStageCreate', meowLevel.WARN);
+      }
     }
   }
 
@@ -251,14 +257,6 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
   const selectedSidebarPage = mySettings.settingsData[83].value as string;
   myUi.sidebarPage = selectedSidebarPage || '';
 
-  // TABS
-
-  try {
-    AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${myWindowId}`, () => new meowTabsBunch(windowObj.getUIContext(), myUi));
-  } catch (e) {
-    meow(`meowTabsBunch_${myWindowId} failed: ${e}`, 'init', meowLevel.ERROR);
-  }
-
   // Listen for focus, window status (myUi) and avoid (myAvoid)
   // And other delayable jobs
   setTimeout(() => {
@@ -273,15 +271,24 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
     myUi.updateWindowTitle();
     updateNavigationIndicator(windowObj); // Navigation indicator
   }, 1);
+  
+  // TABS
 
+  // Try for windowObj.getUIContext()
+  try {
+    AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${myWindowId}`, () => new meowTabsBunch(windowObj.getUIContext(), myUi));
+  } catch (e) {
+    meow(`meowTabsBunch_${myWindowId} failed: ${e}`, 'init', meowLevel.ERROR);
+  }
+  
   // Delayed execution, reduce launch time.
   setTimeout(() => {
     // Zones and tab states
     myUi.initWorkingDir().then(() => {
       onWant(myUi.launchWant, wantSource.ONCREATE); // Want
     });
-  }, 50);
-
+  }, 20);
+  
   // SHARED USER DATA & LISTENERS
 
   if (isNewWindow) {

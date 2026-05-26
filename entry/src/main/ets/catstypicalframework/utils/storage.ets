@@ -4,8 +4,8 @@ import lazy { BusinessError } from '@kit.BasicServicesKit';
 import lazy { fileIo, fileUri, picker } from '@kit.CoreFileKit';
 import { image } from '@kit.ImageKit';
 import lazy { photoAccessHelper } from '@kit.MediaLibraryKit';
-import { http } from '@kit.NetworkKit';
-import { detectBarcode } from '@kit.ScanKit';
+import lazy { http } from '@kit.NetworkKit';
+import lazy { detectBarcode } from '@kit.ScanKit';
 import lazy { meow, meowLevel } from './catsLogger';
 import lazy { MIME_TYPES_MAP_LITE } from './storage-ext';
 

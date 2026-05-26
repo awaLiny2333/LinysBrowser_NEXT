@@ -1,6 +1,6 @@
 import { AppStorageV2, UIContext } from "@kit.ArkUI";
 import { webview } from "@kit.ArkWeb";
-import { certificateManager, certificateManagerDialog } from "@kit.DeviceCertificateKit";
+import lazy { certificateManager, certificateManagerDialog } from "@kit.DeviceCertificateKit";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import { defaultAnimation } from "../../../../components/settings";
 import { meowDialogManager, openDialogRequestType } from "../../../system/dialogs/classes/meowDialogManager";
@@ -71,7 +71,6 @@ export class meowTabInfo {
 
   constructor(myUi: meowUiHost) {
     this.myUi = myUi;
-    this.controller = new webview.WebviewController();
     this.requestWebStateUpdate();
   }
 
@@ -216,8 +215,8 @@ export class meowTabInfo {
   onPageEnd() {
     meow(`onPageEnd() called for [${this.url}]. About to request update WebState!`, 'meowTabInfo][onPageEnd');
     setTimeout(() => {
-      this.requestWebStateUpdate(100);
-    }, 7); // Call a bit later, to overwrite the existing requests.
+      this.requestWebStateUpdate(1);
+    }, 10); // Call a bit later, to overwrite the existing requests.
   }
 
   /**

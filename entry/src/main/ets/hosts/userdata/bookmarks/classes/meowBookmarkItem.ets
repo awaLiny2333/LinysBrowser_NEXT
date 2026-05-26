@@ -1,4 +1,4 @@
-import collections from "@arkts.collections";
+import lazy collections from "@arkts.collections";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import lazy { nowHtmlTimestamp } from "../scripts/helpers";
 

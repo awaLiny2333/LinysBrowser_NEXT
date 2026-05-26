@@ -28,8 +28,10 @@ export class meowResources {
       return;
     }
     const backgroundImage = await image.createImageSource(buf).createPixelMap();
-    animateToImmediately(defaultAnimation(), () => {
-      this.backgroundImage = backgroundImage;
+    setTimeout(() => {
+      animateToImmediately(defaultAnimation(), () => {
+        this.backgroundImage = backgroundImage;
+      });
     });
   }
 

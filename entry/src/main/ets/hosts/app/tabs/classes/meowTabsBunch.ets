@@ -1,12 +1,12 @@
-import { fastbuffer } from "@kit.ArkTS";
+import lazy { fastbuffer } from "@kit.ArkTS";
 import lazy { webview } from "@kit.ArkWeb";
-import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import { listFilesUnderDir, readArrayBuffer, saveHybrid } from "../../../../catstypicalframework/utils/storage";
-import { archiveWeb, printWeb } from "../../../../catstypicalframework/utils/web";
-import { defaultAnimation } from "../../../../components/settings";
+import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import lazy { listFilesUnderDir, readArrayBuffer, saveHybrid } from "../../../../catstypicalframework/utils/storage";
+import lazy { archiveWeb, printWeb } from "../../../../catstypicalframework/utils/web";
+import lazy { defaultAnimation } from "../../../../components/settings";
 import { meowUiHost } from "../../../system/windows/classes/meowUiHost";
-import { applyUserAgentFromSettings } from "../scripts/userAgents";
-import { thirdPartyCookies } from "../settings";
+import lazy { applyUserAgentFromSettings } from "../scripts/userAgents";
+import lazy { thirdPartyCookies } from "../settings";
 import { meowTabInfo } from "./meowTabInfo";
 import lazy { TabNodeController } from "./WebNode";
 
@@ -24,6 +24,7 @@ export class meowTabsBunch {
   }
 
   async init() {
+    const startTime = Date.now();
     applyUserAgentFromSettings();
     webview.WebCookieManager.putAcceptThirdPartyCookieEnabled(thirdPartyCookies());
     // try {
@@ -33,6 +34,7 @@ export class meowTabsBunch {
     // }
     // await this.applyEasyListFromDisk();
     this.initialized = true;
+    meow(`Initialized in ${Date.now() - startTime} ms`, 'meowTabsBunch][init', meowLevel.WARN);
   }
 
   // async applyEasyListFromDisk() {
@@ -46,12 +48,14 @@ export class meowTabsBunch {
   }
 
   async loadAllStatesFromDir(dir: string) {
+    const startTime = Date.now();
     if (!this.initialized) {
       await this.init();
     }
-    meow(`About to load all web states from [${dir}] to [${this.myUi.windowId}]!`, 'loadAllStatesFromDir', meowLevel.WARN);
+    meow(`About to load all web states from [${dir}] to [${this.myUi.windowId}]!`, 'meowTabsBunch][loadAllStatesFromDir', meowLevel.WARN);
 
     // Read tabs
+    const tabs2bAdded: meowTabInfo[] = [];
     const files = await listFilesUnderDir(dir) || [];
     const baseFiles = files.filter(name => (name[name.length - 1] !== 'l' && name != 'stat'));
     baseFiles.sort((a, b) => a.localeCompare(b));
@@ -65,7 +69,7 @@ export class meowTabsBunch {
       } catch (e) {
         meow(`Read label failed: ${e}`, 'meowTabsBunch][loadAllStatesFromDir', meowLevel.ERROR);
       }
-      this.tabs.push(newTab);
+      tabs2bAdded.push(newTab);
     }
 
     // Read stat
@@ -83,9 +87,19 @@ export class meowTabsBunch {
     } catch (e) {
       meow(`Read stat failed: ${e}`, 'meowTabsBunch][loadAllStatesFromDir', meowLevel.ERROR);
     }
+
+    // Push and switch
     if (baseFiles.length > 0) {
-      this.switchTo(switchTargetIdx);
+      setTimeout(() => {
+        animateToImmediately(defaultAnimation(), () => {
+          // Push all tabs2bAdded
+          this.tabs.push(...tabs2bAdded);
+          this.switchTo(switchTargetIdx);
+        });
+      });
     }
+
+    meow(`Loaded all web states in ${Date.now() - startTime} ms`, 'meowTabsBunch][loadAllStatesFromDir', meowLevel.WARN);
   }
 
   /**
@@ -156,6 +170,7 @@ export class meowTabsBunch {
    */
   newTabBare(overwriteUrl?: string) {
     const newTab = new meowTabInfo(this.myUi);
+    newTab.controller = new webview.WebviewController();
     if (overwriteUrl) {
       newTab.url = overwriteUrl;
     }
@@ -213,6 +228,9 @@ export class meowTabsBunch {
     }
     this.currentTab = this.tabs[Math.min(idx, this.tabs.length - 1)];
 
+    if (!this.currentTab.controller) {
+      this.currentTab.controller = new webview.WebviewController();
+    }
     // Auto create web node
     if (!this.currentTab.node) {
       const newNode = new TabNodeController(this.myUi.myTabs.uiContext, this.currentTab);

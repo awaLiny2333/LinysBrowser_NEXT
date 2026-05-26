@@ -102,7 +102,7 @@ struct MeowSidebar {
         animateToImmediately(defaultAnimation(), () => {
           this.render = true;
         });
-      }, 50);
+      }, 100);
     })
     .alignItems(sidebarShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
     .width(this.myUi.sideAreaShrunkSummarized && this.myLayout.wideMode ? defaultSidebarShrunkWidth : this.sidebarWidth)

@@ -5,7 +5,7 @@ import { defaultRoundedRadius } from '../../catstypicalframework/utils/ui';
 import lazy { WoofBookmarksDialog } from '../../dialogs/parts/WoofBookmarks/WoofBookmarks';
 import lazy { WoofCatsDevDialog } from '../../dialogs/parts/WoofCatsDev/WoofCatsDevCards';
 import lazy { WoofCreditsDialog } from '../../dialogs/parts/WoofCredits/WoofCredits';
-import { WoofDownloadsDialog } from '../../dialogs/parts/WoofDownloads/WoofDownloads';
+import lazy { WoofDownloadsDialog } from '../../dialogs/parts/WoofDownloads/WoofDownloads';
 import lazy { WoofHistoryDialog } from '../../dialogs/parts/WoofHistory/WoofHistory';
 import lazy { WoofScratchingBoardDialog } from '../../dialogs/parts/WoofScratchingBoard/WoofScratchingBoard';
 import lazy { WoofSettingsDialog } from '../../dialogs/parts/WoofSettings/WoofSettings';
@@ -25,7 +25,7 @@ import lazy { WoofKeyShortcutsDialog } from '../../dialogs/settings/WoofKeyShort
 import lazy { WoofButtonsDialog } from '../../dialogs/settings/WoofMeowButtons/ButtonsManager';
 import lazy { WoofWebImagesDialog } from '../../dialogs/settings/WoofWebImages/WoofWebImages';
 import lazy { WoofHttpAuthDialog } from '../../dialogs/web/auth/WoofHttpAuth';
-import { WoofDownloadAskDialog } from '../../dialogs/web/misc/WoofDownloadAsk';
+import lazy { WoofDownloadAskDialog } from '../../dialogs/web/misc/WoofDownloadAsk';
 import lazy { WoofJumpDialog } from '../../dialogs/web/misc/WoofJump';
 import lazy { WoofSslErrorDialog } from '../../dialogs/web/misc/WoofSslError';
 import lazy { WoofWebGeolocationDialog } from '../../dialogs/web/permissions/WoofLocation';
