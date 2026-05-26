@@ -66,7 +66,8 @@ struct MeowTabsHorizontal {
                   });
                 });
               };
-            });
+            })
+          .key((item) => item.webStateId)
         }
         .scrollBar(BarState.Off)
         .alignListItem(ListItemAlign.Center)

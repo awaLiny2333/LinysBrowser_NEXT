@@ -180,7 +180,10 @@ export class meowTabsBunch {
     newTab.node = newNode;
     this.tabs.push(newTab);
     this.switchTo(this.tabs.length - 1);
-    newTab.requestWebStateUpdate(10);
+    if (newTab.url == '') {
+      meow(`New tab created with empty url. Calling requestWebStateUpdate!`, 'meowTabsBunch][newTabBare', meowLevel.WARN);
+      newTab.requestWebStateUpdate(10);
+    }
     return newTab;
   }
 

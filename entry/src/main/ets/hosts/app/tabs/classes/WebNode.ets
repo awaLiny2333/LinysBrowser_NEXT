@@ -50,24 +50,24 @@ struct MeowWeb {
         this.pk.onControllerAttached();
       })
       .onTitleReceive(() => {
-        this.pk.updateUrl();
+        this.pk.updateTitleUrl();
       })
       .onPageBegin(() => {
         this.pk.progress = 0;
-        this.pk.updateUrl();
         this.pk.onPageBegin();
+        this.pk.updateTitleUrl();
       })
       .onPageEnd(() => {
         this.pk.progress = -1;
-        this.pk.updateUrl();
         this.pk.onPageEnd();
+        this.pk.updateTitleUrl();
       })
       .onProgressChange((event) => {
         this.pk.progress = event.newProgress;
         if (this.pk.progress == 100) {
           this.pk.progress = -1;
         }
-        this.pk.updateUrl();
+        this.pk.updateTitleUrl();
       })
       .onFullScreenEnter((event) => {
         this.pk.requestFullScreen(event);

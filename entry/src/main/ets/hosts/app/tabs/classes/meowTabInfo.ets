@@ -72,7 +72,6 @@ export class meowTabInfo {
 
   constructor(myUi: meowUiHost) {
     this.myUi = myUi;
-    // this.requestWebStateUpdate();
   }
 
   // Statuses
@@ -101,10 +100,10 @@ export class meowTabInfo {
 
   /**
    * Requests web state update.
-   * @param timeo The timeout. By default 1024 (ms).
+   * @param timeo The timeout. By default 2048 (ms).
    */
-  requestWebStateUpdate(timeo: number = 1024) {
-    meow(`About to request!`, 'meowTabInfo][requestWebStateUpdate', meowLevel.ERROR);
+  requestWebStateUpdate(timeo: number = 2048) {
+    meow(`Request in ${timeo} ms.`, 'meowTabInfo][requestWebStateUpdate');
     clearTimeout(this.saveWebStateTimeoutId);
     this.saveWebStateTimeoutId = setTimeout(() => {
       this.updateWebState().then(() => {
@@ -157,6 +156,7 @@ export class meowTabInfo {
     if (!this.node) {
       return false;
     }
+    const startTime = Date.now();
     const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.myUi.windowId}`)!;
 
     let state: Uint8Array = new Uint8Array();
@@ -181,7 +181,7 @@ export class meowTabInfo {
       saveHybrid(urlPath, url, true)
     ]);
 
-    meow(`Save Web State OK! [${this.url}]`, 'meowTabInfo][updateWebState', meowLevel.WARN);
+    meow(`Save Web State OK in ${Date.now() - startTime} ms! [${label}](${url})`, 'meowTabInfo][updateWebState', meowLevel.WARN);
     return true;
   }
 
@@ -213,8 +213,14 @@ export class meowTabInfo {
     // Update addressbar overlay
     this.myUi.requestShowAddressBarOverlay();
 
-    // Web states
-    this.requestWebStateUpdate();
+    // Web states.
+    // This request here is more of a fallback / backup,
+    // as some reaaally slow sites may not cause enough onProgress very quickly.
+    // And in normal cases, this exact request is going to be cleared
+    // by following requests triggered by onProgress and / or onPageEnd.
+    if (!this.restoringWebState) {
+      this.requestWebStateUpdate();
+    }
   }
 
   onPageEnd() {
@@ -224,19 +230,22 @@ export class meowTabInfo {
       this.restoringWebState = false;
     }
     meow(`onPageEnd() called for [${this.url}]. About to request update WebState!`, 'meowTabInfo][onPageEnd');
-    setTimeout(() => {
-      this.requestWebStateUpdate(1);
-    }, 10); // Call a bit later, to overwrite the existing requests.
   }
 
   /**
-   * Fetches url from controller and syncs it to the UI.
+   * Fetches url and title from controller and syncs it to the UI.
+   * Also calls to save web state and history.
    */
-  updateUrl() {
+  updateTitleUrl() {
     try {
       let url = this.controller?.getUrl();
       let title = this.controller?.getTitle();
-      if (url == this.url && this.title == title) {
+
+      const loaded = this.progress == -1;
+
+      // Only exit early in loading phase.
+      // Because if loaded is true, then this is the call after onPageEnd() event.
+      if (url == this.url && this.title == title && !loaded) {
         return;
       }
 
@@ -246,13 +255,12 @@ export class meowTabInfo {
         this.title = title;
       });
 
+      // Web settings & BrowserCat UI
       this.syncUrlUI();
-
-      // Web statuses
-      this.updateWebUiStatuses();
+      this.updateWebSettings();
 
       // Save to history
-      this.tryPunchHistory();
+      this.tryPunchHistoryWebState(loaded ? 500 : undefined);
 
     } catch (e) {
       meow(`this.url = this.controller?.getUrl(); failed: ${e}`, 'meowTabInfo][updateUrl', meowLevel.ERROR);
@@ -292,7 +300,7 @@ export class meowTabInfo {
   /**
    * Updates the UI settings for the web.
    */
-  updateWebUiStatuses() {
+  updateWebSettings() {
     const oldForceDark = this.forceDark;
     const newForceDark = forceDark(this.url);
     if (oldForceDark != newForceDark) {
@@ -375,50 +383,62 @@ export class meowTabInfo {
   }
 
   /**
-   * Try to punch a hole in the history tape! Requests the meowHistorian to save a new history after a certain period of time.
+   * Try to punch a hole in the history tape!
+   * Requests the meowHistorian to save a new history after a certain period of time.
+   * Also requests a saving of web state!
    * @param timeout The timeout. (By default 1999 ms).
    */
-  tryPunchHistory(timeout: number = 1999) {
+  tryPunchHistoryWebState(timeout: number = 1999) {
     if (this.restoringWebState) {
-      meow(`Restoring web state, skipping history punch.`, 'meowTabInfo][tryPunchHistory');
+      meow(`Restoring web state, skipping history punch.`, 'meowTabInfo][tryPunchHistoryWebState');
       return;
     }
     if (!recordNewHistoryFromSettings()) {
-      meow(`Record new history from settings is disabled!`, 'meowTabInfo][tryPunchHistory');
+      meow(`Record new history from settings is disabled!`, 'meowTabInfo][tryPunchHistoryWebState');
       return;
     }
+
+    // Clear timeouts.
     if (this.saveHistoryTimeoutId) {
       clearTimeout(this.saveHistoryTimeoutId);
-      meow(`Cleared old timeout.`, 'meowTabInfo][tryPunchHistory');
-    } else {
-      console.warn(' ');
-      meow(`Punching [${this.title}](${this.url}) in ${timeout} ms!`, 'meowTabInfo][tryPunchHistory', meowLevel.WARN);
+      this.saveHistoryTimeoutId = undefined;
+      clearTimeout(this.saveWebStateTimeoutId);
+      this.saveWebStateTimeoutId = undefined;
+      meow(`Cleared old timeout.`, 'meowTabInfo][tryPunchHistoryWebState');
     }
-    const newEntry = new meowHistoryEntry(this.title || '', this.url || '', Date.now());
+
+    // After clearing timeout, and found duplicate, then just reject it - The web passed in fake news!
+    let newEntry = new meowHistoryEntry(this.title || '', this.url || '', Date.now());
     if (newEntry.title == this.lastSavedHistoryEntry?.title && newEntry.url == this.lastSavedHistoryEntry?.url) {
+      meow(`Duplicate [${newEntry.title}](${newEntry.url}) rejected!`, 'meowTabInfo][tryPunchHistoryWebState');
       return; // Nothing changed.
     }
+
+    meow(`Punching: [${this.title}](${this.url}) in ${timeout} ms!`, 'meowTabInfo][tryPunchHistoryWebState', meowLevel.WARN);
+
+    // Punch history.
     this.saveHistoryTimeoutId = setTimeout(() => {
+      let newEntry = new meowHistoryEntry(this.title || '', this.url || '', Date.now());
       const myHistory = AppStorageV2.connect(meowHistorian)!;
       // Check and push.
       if (newEntry.url != this.lastSavedHistoryEntry?.url) {
         myHistory.pushHistory(newEntry);
         this.lastSavedHistoryEntry = newEntry;
-        meow(`Saved [${newEntry.title}](${newEntry.url})`, 'meowTabInfo][tryPunchHistory', meowLevel.WARN);
-        // Web State
-        this.requestWebStateUpdate(10);
+        this.updateWebState();
+        meow(`Saved [${newEntry.title}](${newEntry.url})`, 'meowTabInfo][tryPunchHistoryWebState', meowLevel.WARN);
       } else {
         // this.lastSavedHistoryEntry must exist!
         if (newEntry.title != this.lastSavedHistoryEntry.title) {
-          // Update in name.
+          // Update in title.
           // TODO: find a quick way to update the old title.
-          meow(`Update title [${this.lastSavedHistoryEntry.title}] => [${newEntry.title}]`, 'meowTabInfo][tryPunchHistory', meowLevel.WARN);
           myHistory.deleteHistory(new Set([this.lastSavedHistoryEntry.time])).then(() => {
             myHistory.pushHistory(newEntry);
           });
+          this.updateWebState();
+          meow(`Update title [${this.lastSavedHistoryEntry.title}] => [${newEntry.title}]`, 'meowTabInfo][tryPunchHistoryWebState', meowLevel.WARN);
         } else {
           // Completely the same.
-          meow(`Duplicate [${newEntry.title}](${newEntry.url}) rejected!`, 'meowTabInfo][tryPunchHistory', meowLevel.WARN);
+          meow(`Duplicate [${newEntry.title}](${newEntry.url}) rejected!`, 'meowTabInfo][tryPunchHistoryWebState', meowLevel.WARN);
         }
       }
       this.saveHistoryTimeoutId = undefined;
