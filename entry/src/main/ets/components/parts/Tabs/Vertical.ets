@@ -28,13 +28,22 @@ struct MeowTabsVertical {
             .each((item) => {
               ListItem() {
                 // Tab item
-                Row({ space: standardSpacing * 0.75 }) {
+                Row() {
                   Text(item.item.title || 'Meow').attributeModifier(new MooTextModifier()).maxLines(1).wordBreak(WordBreak.BREAK_ALL).layoutWeight(1).padding(standardSpacing * 0.5);
-                  MooSymbolButtonSmall($r('sys.symbol.xmark'), () => {
-                    animateToImmediately(defaultAnimation(), () => {
-                      this.myTabs.closeTab(item.index);
-                    });
-                  });
+
+                  // Web state saving / history punching indicator
+                  if (item.item.saveWebStateTimeoutId != undefined || item.item.saveHistoryTimeoutId != undefined) {
+                    MooSymbolButtonSmall($r('sys.symbol.cup'), () => {
+                      // Do nothing
+                    }, undefined, 6);
+                  } else {
+                    // Close
+                    MooSymbolButtonSmall($r('sys.symbol.xmark'), () => {
+                      animateToImmediately(defaultAnimation(), () => {
+                        this.myTabs.closeTab(item.index);
+                      });
+                    }, undefined, 6);
+                  }
                 }
                 .opacity(item.item.isActive ? 1 : 0.5)
                 .hoverEffect(HoverEffect.Highlight)

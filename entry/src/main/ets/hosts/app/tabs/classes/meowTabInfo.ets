@@ -1,7 +1,11 @@
+import { fastbuffer } from "@kit.ArkTS";
 import { AppStorageV2, UIContext } from "@kit.ArkUI";
 import { webview } from "@kit.ArkWeb";
 import lazy { certificateManager, certificateManagerDialog } from "@kit.DeviceCertificateKit";
+import { image } from "@kit.ImageKit";
+import { scanBarcode } from "@kit.ScanKit";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import { readArrayBuffer, saveHybrid, unlinkFile } from "../../../../catstypicalframework/utils/storage";
 import { defaultAnimation } from "../../../../components/settings";
 import { meowDialogManager, openDialogRequestType } from "../../../system/dialogs/classes/meowDialogManager";
 import { requestDialog } from "../../../system/dialogs/scripts/dialog";
@@ -9,14 +13,10 @@ import { meowUiFullscreenStatus, meowUiHost } from "../../../system/windows/clas
 import { meowHistorian } from "../../../userdata/history/classes/meowHistorian";
 import { meowHistoryEntry } from "../../../userdata/history/classes/meowHistoryEntry";
 import { getMyDawn } from "../../downloads/scripts/helper";
-import { defaultBlankUrl, disableImages, disableJS, forceDark, viewableSchemes } from "../scripts/helpers";
+import { disableImages, disableJS, forceDark, viewableSchemes } from "../scripts/helpers";
 import { intelligentTrackingPrevention, recordNewHistoryFromSettings, userHomeUrl, userNewTabUrl } from "../settings";
 import { meowTabsBunch } from "./meowTabsBunch";
 import { TabNodeController } from "./WebNode";
-import { image } from "@kit.ImageKit";
-import { scanBarcode } from "@kit.ScanKit";
-import { readArrayBuffer, saveHybrid, unlinkFile } from "../../../../catstypicalframework/utils/storage";
-import { fastbuffer } from "@kit.ArkTS";
 
 @ObservedV2
 export class meowTabInfo {
@@ -24,8 +24,9 @@ export class meowTabInfo {
   @Trace controller: WebviewController | undefined;
   @Trace node: TabNodeController | undefined;
   // Web States
+  @Trace restoringWebState: boolean = false;
   webStateId: string = 'meow_' + Date.now().toString(16).padStart(16, '0');
-  saveWebStateTimeoutId: number | undefined;
+  @Trace saveWebStateTimeoutId: number | undefined;
   // UI info
   @Trace title: string | undefined;
   @Trace url: string | undefined = userNewTabUrl();
@@ -40,7 +41,7 @@ export class meowTabInfo {
   // Permissions
   allowedWebPermissions: string[] = [];
   // History
-  saveHistoryTimeoutId: number | undefined;
+  @Trace saveHistoryTimeoutId: number | undefined;
   lastSavedHistoryEntry: meowHistoryEntry | undefined;
   // Search in page
   @Trace inputSearchKey: string = '';
@@ -71,7 +72,7 @@ export class meowTabInfo {
 
   constructor(myUi: meowUiHost) {
     this.myUi = myUi;
-    this.requestWebStateUpdate();
+    // this.requestWebStateUpdate();
   }
 
   // Statuses
@@ -87,6 +88,7 @@ export class meowTabInfo {
   // LIFE CYCLES
 
   callClose() {
+    clearTimeout(this.saveHistoryTimeoutId);
     clearTimeout(this.saveWebStateTimeoutId);
     this.deleteWebState();
     if (this.node) {
@@ -102,9 +104,12 @@ export class meowTabInfo {
    * @param timeo The timeout. By default 1024 (ms).
    */
   requestWebStateUpdate(timeo: number = 1024) {
+    meow(`About to request!`, 'meowTabInfo][requestWebStateUpdate', meowLevel.ERROR);
     clearTimeout(this.saveWebStateTimeoutId);
     this.saveWebStateTimeoutId = setTimeout(() => {
-      this.updateWebState();
+      this.updateWebState().then(() => {
+        this.saveWebStateTimeoutId = undefined;
+      });
     }, timeo);
   }
 
@@ -155,7 +160,7 @@ export class meowTabInfo {
     const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.myUi.windowId}`)!;
 
     let state: Uint8Array = new Uint8Array();
-    const label = this.title || 'Meow';
+    const label = this.title || '';
     const url = this.url || '';
     try {
       state = this.controller?.serializeWebState() || new Uint8Array();
@@ -213,6 +218,11 @@ export class meowTabInfo {
   }
 
   onPageEnd() {
+    // Set the fake last saved history, so that won't punch duplicated histories.
+    if (this.restoringWebState) {
+      this.lastSavedHistoryEntry = new meowHistoryEntry(this.title || '', this.url || '', Date.now());
+      this.restoringWebState = false;
+    }
     meow(`onPageEnd() called for [${this.url}]. About to request update WebState!`, 'meowTabInfo][onPageEnd');
     setTimeout(() => {
       this.requestWebStateUpdate(1);
@@ -225,10 +235,17 @@ export class meowTabInfo {
   updateUrl() {
     try {
       let url = this.controller?.getUrl();
-      if (url == defaultBlankUrl) {
-        url = '';
+      let title = this.controller?.getTitle();
+      if (url == this.url && this.title == title) {
+        return;
       }
+
+      // Update
       this.url = url;
+      animateToImmediately(defaultAnimation(), () => {
+        this.title = title;
+      });
+
       this.syncUrlUI();
 
       // Web statuses
@@ -237,8 +254,6 @@ export class meowTabInfo {
       // Save to history
       this.tryPunchHistory();
 
-      // TODO: Do we need to request a web state save here?
-      this.requestWebStateUpdate(1999);
     } catch (e) {
       meow(`this.url = this.controller?.getUrl(); failed: ${e}`, 'meowTabInfo][updateUrl', meowLevel.ERROR);
     }
@@ -271,26 +286,6 @@ export class meowTabInfo {
       this.canForw = this.controller?.accessForward() || false;
     } catch (e) {
       meow(`this.controller?.accessBackward() / accessForward() failed: ${e}`, 'meowTabInfo][syncUrlUI', meowLevel.ERROR);
-    }
-  }
-
-  /**
-   * Fetches title from controller.
-   */
-  updateTitle() {
-    try {
-      let title = this.controller?.getTitle();
-      let url = this.controller?.getUrl();
-      if (url == defaultBlankUrl) {
-        title = '';
-      }
-      if (this.title != title) {
-        animateToImmediately(defaultAnimation(), () => {
-          this.title = title;
-        });
-      }
-    } catch (e) {
-      meow(`this.title = this.controller?.getTitle(); failed: ${e}`, 'meowTabInfo][updateTitle', meowLevel.ERROR);
     }
   }
 
@@ -384,6 +379,10 @@ export class meowTabInfo {
    * @param timeout The timeout. (By default 1999 ms).
    */
   tryPunchHistory(timeout: number = 1999) {
+    if (this.restoringWebState) {
+      meow(`Restoring web state, skipping history punch.`, 'meowTabInfo][tryPunchHistory');
+      return;
+    }
     if (!recordNewHistoryFromSettings()) {
       meow(`Record new history from settings is disabled!`, 'meowTabInfo][tryPunchHistory');
       return;
@@ -395,14 +394,19 @@ export class meowTabInfo {
       console.warn(' ');
       meow(`Punching [${this.title}](${this.url}) in ${timeout} ms!`, 'meowTabInfo][tryPunchHistory', meowLevel.WARN);
     }
+    const newEntry = new meowHistoryEntry(this.title || '', this.url || '', Date.now());
+    if (newEntry.title == this.lastSavedHistoryEntry?.title && newEntry.url == this.lastSavedHistoryEntry?.url) {
+      return; // Nothing changed.
+    }
     this.saveHistoryTimeoutId = setTimeout(() => {
       const myHistory = AppStorageV2.connect(meowHistorian)!;
-      const newEntry = new meowHistoryEntry(this.title || '', this.url || '', Date.now());
       // Check and push.
       if (newEntry.url != this.lastSavedHistoryEntry?.url) {
         myHistory.pushHistory(newEntry);
         this.lastSavedHistoryEntry = newEntry;
         meow(`Saved [${newEntry.title}](${newEntry.url})`, 'meowTabInfo][tryPunchHistory', meowLevel.WARN);
+        // Web State
+        this.requestWebStateUpdate(10);
       } else {
         // this.lastSavedHistoryEntry must exist!
         if (newEntry.title != this.lastSavedHistoryEntry.title) {
@@ -538,7 +542,7 @@ export class meowTabInfo {
     //     meow(`this.controller?.enableAdsBlock(true); failed: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
     //   }
     // }
-    
+
     // Restore if possible.
     // No effect for new tabs. Trust me :P
     this.restoreWebState();

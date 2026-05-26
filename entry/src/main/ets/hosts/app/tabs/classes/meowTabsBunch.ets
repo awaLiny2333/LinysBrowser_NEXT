@@ -61,11 +61,13 @@ export class meowTabsBunch {
     baseFiles.sort((a, b) => a.localeCompare(b));
     for (const stateName of baseFiles) {
       const newTab = new meowTabInfo(this.myUi);
+      newTab.restoringWebState = true;
       newTab.webStateId = stateName;
       const labelPath = `${this.workingDir}/${stateName}_label`;
       try {
         const label = fastbuffer.from(await readArrayBuffer(labelPath)).toString();
         newTab.title = label;
+        meow(`Read label: [${label}] from [${labelPath}]`, 'meowTabsBunch][loadAllStatesFromDir', meowLevel.WARN);
       } catch (e) {
         meow(`Read label failed: ${e}`, 'meowTabsBunch][loadAllStatesFromDir', meowLevel.ERROR);
       }
@@ -178,6 +180,7 @@ export class meowTabsBunch {
     newTab.node = newNode;
     this.tabs.push(newTab);
     this.switchTo(this.tabs.length - 1);
+    newTab.requestWebStateUpdate(10);
     return newTab;
   }
 

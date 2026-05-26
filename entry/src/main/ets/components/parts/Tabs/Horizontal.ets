@@ -27,7 +27,7 @@ struct MeowTabsHorizontal {
             .each((item) => {
               ListItem() {
                 // Tab item
-                Row({ space: this.mySpacing }) {
+                Row() {
                   // Show the title, unless is the selected tab in a tight situation
                   if (!(this.tight && this.myTabs.currentTab == item.item)) {
                     Text(item.item.title || 'Meow').attributeModifier(new MooTextModifier()).maxLines(1).wordBreak(WordBreak.BREAK_ALL).layoutWeight(1).textOverflow({ overflow: TextOverflow.Clip }).padding(standardSpacing * 0.6);
@@ -35,11 +35,19 @@ struct MeowTabsHorizontal {
                   // Show the close button if not in tight button,
                   // Or is the selected tab (even if in a tight situation)
                   if (!this.tight || this.myTabs.currentTab == item.item) {
-                    MooSymbolButtonSmall($r('sys.symbol.xmark'), () => {
-                      animateToImmediately(defaultAnimation(), () => {
-                        this.myTabs.closeTab(item.index);
-                      });
-                    }, undefined, 6);
+                    // Web state saving / history punching indicator
+                    if (item.item.saveWebStateTimeoutId != undefined || item.item.saveHistoryTimeoutId != undefined) {
+                      MooSymbolButtonSmall($r('sys.symbol.cup'), () => {
+                        // Do nothing
+                      }, undefined, 6);
+                    } else {
+                      // Close
+                      MooSymbolButtonSmall($r('sys.symbol.xmark'), () => {
+                        animateToImmediately(defaultAnimation(), () => {
+                          this.myTabs.closeTab(item.index);
+                        });
+                      }, undefined, 6);
+                    }
                   }
                 }
                 .opacity(item.item.isActive ? 1 : 0.5)
@@ -95,7 +103,7 @@ struct MeowTabsHorizontal {
   }
 
   get tight() {
-    return this.widthEachTab < standardComponentHeight * 2;
+    return this.widthEachTab < standardComponentHeight;
   }
 }
 

@@ -1,8 +1,6 @@
 import lazy { belongsToDomain } from "../../../../catstypicalframework/utils/url";
 import lazy { forceWebDarkMode, forceWebDarkExceptions, disableWebImagesSites, disableWebImagesOnAllSites, disableWebImages, disableWebJavaScriptsOnAllSites, disableWebJavaScriptSites, disableWebJavaScripts } from "../settings";
 
-export const defaultBlankFile = 'meow.html';
-export const defaultBlankUrl = 'resource://rawfile/' + defaultBlankFile;
 export const viewableSchemes = ['http', 'https', 'resource', 'file', 'data', 'blob'];
 
 /**

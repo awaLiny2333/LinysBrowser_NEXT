@@ -50,7 +50,6 @@ struct MeowWeb {
         this.pk.onControllerAttached();
       })
       .onTitleReceive(() => {
-        this.pk.updateTitle();
         this.pk.updateUrl();
       })
       .onPageBegin(() => {

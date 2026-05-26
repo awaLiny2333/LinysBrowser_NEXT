@@ -250,23 +250,23 @@ struct Index {
           .scrollable(ScrollDirection.Vertical)
           .edgeEffect(EdgeEffect.Spring)
           .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
-          .backgroundColor(getColor(meowThemeColorType.SECONDARY))
-          .onTouch((event: TouchEvent) => {
-            // Drag
-            if (event.type === TouchType.Down) {
-              try {
-                if (canIUse('SystemCapability.Window.SessionManager') && this.myUi.windowObj) {
-                  this.myUi.windowObj.startMoving().then(() => {
-                    meow('Succeeded in starting moving window', 'Index][windowMove');
-                  }).catch((err: BusinessError) => {
-                    meow(`Failed to start moving. Cause code: ${err.code}, message: ${err.message}`, 'Index][windowMove', meowLevel.ERROR);
-                  });
-                }
-              } catch (exception) {
-                meow(`Failed to start moving. Cause code: ${exception.code}, message: ${exception.message}`, 'Index][windowMove', meowLevel.ERROR);
-              }
-            }
-          });
+          .backgroundColor(getColor(meowThemeColorType.SECONDARY));
+          // .onTouch((event: TouchEvent) => {
+          //   // Drag
+          //   if (event.type === TouchType.Down) {
+          //     try {
+          //       if (canIUse('SystemCapability.Window.SessionManager') && this.myUi.windowObj) {
+          //         this.myUi.windowObj.startMoving().then(() => {
+          //           meow('Succeeded in starting moving window', 'Index][windowMove');
+          //         }).catch((err: BusinessError) => {
+          //           meow(`Failed to start moving. Cause code: ${err.code}, message: ${err.message}`, 'Index][windowMove', meowLevel.ERROR);
+          //         });
+          //       }
+          //     } catch (exception) {
+          //       meow(`Failed to start moving. Cause code: ${exception.code}, message: ${exception.message}`, 'Index][windowMove', meowLevel.ERROR);
+          //     }
+          //   }
+          // });
 
           // Window Top bar
           MeowTitleTop(this.myLayout, this.myUi, this.myApp, this.myTabs, this.getUIContext());
