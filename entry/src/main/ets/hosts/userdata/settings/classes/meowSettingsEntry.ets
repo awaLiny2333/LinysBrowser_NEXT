@@ -100,7 +100,7 @@ export class meowSettingsEntry {
       case meowSettingsEntryType.NUMBER:
         return this.value?.toString() || '0';
       case meowSettingsEntryType.STRING:
-        return this.value?.toString() || '';
+        return escapeForJson(this.value?.toString()) || '';
       case meowSettingsEntryType.BOOLEAN:
         return this.value?.toString() || 'false';
       case meowSettingsEntryType.STRING_ARRAY:

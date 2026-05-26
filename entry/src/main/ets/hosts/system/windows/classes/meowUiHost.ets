@@ -17,6 +17,8 @@ import lazy { AddressBarStatuses } from "../scripts/addressBarStatuses";
 import { getCreateMyApp } from "../scripts/helpers";
 import lazy { meowAppMessage } from "./meowAppMessage";
 import { Want } from "@kit.AbilityKit";
+import { ensureDirectoryExist, removeDir } from "../../../../catstypicalframework/utils/storage";
+import { startUpOptionFromSettings, userHomeUrl, userNewTabUrl } from "../../../app/tabs/settings";
 
 /**
  * The statuses that are limited to the current window only.
@@ -28,6 +30,8 @@ export class meowUiHost {
   @Trace windowAlias: string = '';
   @Trace windowObj: window.Window | undefined;
   @Trace windowStage: window.WindowStage | undefined;
+  @Trace workingDir: string;
+  @Trace isZone: boolean = false;
   // Wants
   launchWant: Want;
   // UI
@@ -73,9 +77,50 @@ export class meowUiHost {
   // Messaging
   @Trace localMessageTunnel: meowAppMessage | undefined = undefined; // The great tunnel for local window messaging! *TEMPORARY* but often NOT cleared after reception.
 
-  constructor(want: Want, windowId: string) {
+  constructor(want: Want, windowId: string, workingDirectory: string) {
     this.launchWant = want;
     this.windowId = windowId;
+    this.workingDir = workingDirectory;
+    // Determine isZone
+    const paths = workingDirectory.split('/');
+    paths.pop(); // Zone alias name, should be == windowId
+    this.isZone = paths.pop() == 'zones'; // The zones folder name.
+  }
+
+  /**
+   * Ensures the working directory exist and determines if isZone.
+   */
+  async initWorkingDir() {
+    const alreadyExist = await ensureDirectoryExist(this.workingDir); // Opened tabs for this window.
+    meow(`Ensured directory [${this.workingDir}]. isZone = [${this.isZone}]. alreadyExist = [${alreadyExist}].`, `meowUiHost][initWorkingDir][${this.windowId}`, meowLevel.WARN);
+
+    // Load something
+    const startUpOption = startUpOptionFromSettings();
+    if (startUpOption == 'continue') {
+      await this.myTabs.loadAllStatesFromDir(this.workingDir);
+    } else if (startUpOption == 'home') {
+      await this.myTabs.newTabWrapped(userHomeUrl());
+    } else if (startUpOption == 'new tab') {
+      await this.myTabs.newTabWrapped(userNewTabUrl());
+    } else {
+      // Do nothing
+    }
+  }
+
+  /**
+   * Removes the working directory if not isZone.
+   */
+  async reportWindowClose() {
+    meow(`Window [${this.windowId}] closed.`, `meowUiHost][reportWindowClose][${this.windowId}`, meowLevel.WARN);
+    const isLastWindow = getCreateMyApp().windowIds.length == 0;
+    const nextTimeNeed = startUpOptionFromSettings() == 'continue';
+    // Remove if is either one of:
+    // 2. Not ZONE && not last window
+    // 3. Not ZONE && (IS last window &&) not next time need
+    if (!this.isZone && (!isLastWindow || !nextTimeNeed)) {
+      await removeDir(this.workingDir);
+      meow(`Removed directory [${this.workingDir}]. isLastWindow = [${isLastWindow}], nextTimeNeed = [${nextTimeNeed}].`, `meowUiHost][reportWindowClose][${this.windowId}`, meowLevel.WARN);
+    }
   }
 
   get myTabs() {
@@ -250,6 +295,15 @@ export class meowUiHost {
         meow(`this.windowObj?.setPreferredOrientation(orientation) Failed: ${JSON.stringify(err)}`, `meowUiHost][${this.windowId}][setOrientation`, meowLevel.ERROR);
         return false;
       });
+  }
+
+  /**
+   * Sets the alias of the window.
+   */
+  setWindowAlias(newAlias: string) {
+    this.windowAlias = newAlias;
+    this.updateWindowTitle();
+    // TODO: Deal with contents in continues.
   }
 
   /**

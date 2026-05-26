@@ -23,10 +23,11 @@ struct SettingsOnStartUp {
           items: new SegmentButtonV2Items([
             { text: $r('app.string.Settings_category_onStartUp_page_newTab') },
             { text: $r('app.string.Settings_category_onStartUp_page_home') },
-            { text: $r('app.string.Settings_category_onStartUp_page_continue') }
+            { text: $r('app.string.Settings_category_onStartUp_page_continue') },
+            { text: $r('app.string.Settings_category_onStartUp_page_nothing') }
           ]),
           onSelected: (index) => {
-            // 'new tab' | 'home' | 'continue'
+            // 'new tab' | 'home' | 'continue' | 'nothing'
             switch (index) {
               case 0:
                 this.mySettings.setByIndex(32, 'new tab');
@@ -36,6 +37,9 @@ struct SettingsOnStartUp {
                 break;
               case 2:
                 this.mySettings.setByIndex(32, 'continue');
+                break;
+              case 3:
+                this.mySettings.setByIndex(32, 'nothing');
                 break;
               default:
                 break;
@@ -49,7 +53,7 @@ struct SettingsOnStartUp {
 
   selectedOptionFromSettings() {
     const value = this.mySettings.settingsData[32].value as string;
-    const seq = ['new tab', 'home', 'continue'];
+    const seq = ['new tab', 'home', 'continue', 'nothing'];
     return seq.indexOf(value);
   }
 }

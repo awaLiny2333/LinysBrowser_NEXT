@@ -24,7 +24,7 @@ const filesToImport = [
 ];
 
 const dirsToImport = [
-  'continue',
+  'continues',
   'easylist',
   'faultlogs',
   'history',

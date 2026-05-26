@@ -36,6 +36,7 @@ struct MeowTabsVertical {
                     });
                   });
                 }
+                .opacity(item.item.isActive ? 1 : 0.5)
                 .hoverEffect(HoverEffect.Highlight)
                 .padding(standardSpacing * 0.5)
                 .backgroundColor(useEffects() ? getColor(meowThemeColorType.PRIMARY) : getColor(meowThemeColorType.SECONDARY))

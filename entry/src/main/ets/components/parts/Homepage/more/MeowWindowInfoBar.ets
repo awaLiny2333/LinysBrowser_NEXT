@@ -1,11 +1,13 @@
 import lazy { common } from "@kit.AbilityKit";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import { makeFilenameLegal } from "../../../../catstypicalframework/utils/storage";
 import { defaultInnerRadius, wideModeThreshold } from "../../../../catstypicalframework/utils/ui";
 import { meowUiHost } from "../../../../hosts/system/windows/classes/meowUiHost";
 import { newWindow } from "../../../../hosts/system/windows/scripts/multiwindows";
 import { MooSymbolButton } from "../../../common/MooSymbolButton";
 import { MooTextButton } from "../../../common/MooTextButton";
 import lazy { MooTextInputV2 } from "../../../common/MooTextInputV2";
+import { MooTextModifier } from "../../../common/MooTextModifier";
 import { meowThemeColorType, standardSpacing } from "../../../constants";
 import { defaultAnimation, getColor, isPreferRightHand, getMySettings, useEffects } from "../../../settings";
 
@@ -49,17 +51,21 @@ struct MeowWindowInfoBar {
             this.windowAliasEditing = value;
           },
           onSubmit: () => {
+            const finalName = makeFilenameLegal(this.windowAliasEditing, '');
+            this.windowAliasEditing = finalName;
+            this.myUi.setWindowAlias(finalName);
             animateToImmediately(defaultAnimation(), () => {
-              this.myUi.windowAlias = this.windowAliasEditing;
-              this.myUi.updateWindowTitle();
               this.isEditing = false;
             });
-            getMySettings().setByIndex(26, this.windowAliasEditing);
+            getMySettings().setByIndex(26, finalName);
           }
         })
           .onAppear(() => {
             this.focusInput();
           });
+
+        // Notice about illegal chars
+        Text($r('app.string.WindowAlias_illegalChars')).attributeModifier(new MooTextModifier()).padding(standardSpacing * 0.5);
       }
     }
     .constraintSize({ maxWidth: wideModeThreshold })

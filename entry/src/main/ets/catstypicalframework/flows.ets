@@ -26,6 +26,7 @@ import { meowDawnloada } from '../hosts/app/downloads/classes/meowDawnloada';
 import { meowBoardHolder } from '../hosts/app/scratchingboard/classes/meowBoardHolder';
 import { meowTabsBunch } from '../hosts/app/tabs/classes/meowTabsBunch';
 import { concatSearchWithEngine } from '../hosts/app/tabs/scripts/searchEngines';
+import { startUpOptionFromSettings } from '../hosts/app/tabs/settings';
 import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
 import { meowResources } from '../hosts/system/resources/classes/meowResources';
 import { meowUiHost } from '../hosts/system/windows/classes/meowUiHost';
@@ -39,7 +40,7 @@ import { meowAvoid } from './hosts/meowAvoid';
 import { meowLayout } from './hosts/meowLayout';
 import { meowMisc } from './hosts/meowMisc';
 import { listenCrash, meow, meowLevel } from './utils/catsLogger';
-import { ensureDirectoryExist } from './utils/storage';
+import { clearDirectory, ensureDirectoryExist, listFilesUnderDir } from './utils/storage';
 import { listenAvoid, listenFocus, listenFreeWindowMode, listenSmartReachability, listenWindowStatusChange, meowPx2vp, offAvoid, offFocus, offWindowStatusChange, setDecorHeight, setKeyboardAvoidResize, shortModeThreshold, updateAvoid, updateFreeWindowMode, updateNavigationIndicator, wideModeThreshold } from './utils/ui';
 
 // Enums
@@ -94,7 +95,7 @@ export function earlyOnCreate(context: Context, launchWant: Want) {
   }
 
   // Window private hosts
-  AppStorageV2.connect(meowUiHost, `meowUiHost_${myWindowId}`, () => new meowUiHost(launchWant, myWindowId));
+  AppStorageV2.connect(meowUiHost, `meowUiHost_${myWindowId}`, () => new meowUiHost(launchWant, myWindowId, `${context.filesDir}/continues/${myWindowId}`));
   AppStorageV2.connect(meowDialogManager, `meowDialogManager_${myWindowId}`, () => new meowDialogManager());
   AppStorageV2.connect(meowMisc, `meowMisc_${myWindowId}`, () => new meowMisc());
   AppStorageV2.connect(meowAvoid, `meowAvoid_${myWindowId}`, () => new meowAvoid());
@@ -112,6 +113,9 @@ export async function earlyOnWindowStageCreate(context: Context) {
   const isNewWindow = myApp.windowIds.length == 1;
   const myWindowId = myApp.windowIds[myApp.windowIds.length - 1];
 
+  // Environments
+  const filesDir = context.filesDir;
+
   // Some other windows had done this already.
   if (!isNewWindow) {
     meow(`Skipped. (${Date.now() - startTime} ms)`, `earlyOnWindowStageCreate][${myWindowId}`, meowLevel.WARN);
@@ -120,21 +124,31 @@ export async function earlyOnWindowStageCreate(context: Context) {
 
   // ONLY FOR NEW WINDOW (NEW LAUNCHES):
 
-  // Environments
-  const filesDir = context.filesDir;
-  // const tempDir = context.tempDir;
-
   // Settings
   await getMySettings().initFrom(`${filesDir}/settings.json.browsercatsettings.txt`); // This can ONLY be initialized here as it requires async - await processing.
 
   // Ensure directory
-  await ensureDirectoryExist(`${filesDir}/continue`); // Last opened tabs
+  await ensureDirectoryExist(`${filesDir}/continues`); // Last opened tabs
   await ensureDirectoryExist(`${filesDir}/easylist`); // Ad blocker rules
   await ensureDirectoryExist(`${filesDir}/faultlogs`); // fault logs
   await ensureDirectoryExist(`${filesDir}/history`); // History chunk files
   await ensureDirectoryExist(`${filesDir}/history-index`); // History index files
   await ensureDirectoryExist(`${filesDir}/zones`); // Zones
   // await ensureDirectoryExist(`${tempDir}/dragdrop-temp`); // Drag drop temps
+
+  // Continue
+  const restoreLastTabs = startUpOptionFromSettings() == 'continue';
+  if (!restoreLastTabs) {
+    await clearDirectory(`${context.filesDir}/continues`);
+  } else {
+    // Find old [continues/${windowId}] directory
+    const files = await listFilesUnderDir(`${context.filesDir}/continues`);
+    if (files && files.length > 0) {
+      const newWorkingDir = `${context.filesDir}/continues/${files[0]}`;
+      const myUi: meowUiHost = AppStorageV2.connect(meowUiHost, `meowUiHost_${myWindowId}`)!;
+      myUi.workingDir = newWorkingDir;
+    }
+  }
 
   meow(`Finished in ${Date.now() - startTime} ms.`, 'earlyOnWindowStageCreate', meowLevel.WARN);
 }
@@ -258,9 +272,15 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
     myUi.updateWindowBackgroundColor();
     myUi.updateWindowTitle();
     updateNavigationIndicator(windowObj); // Navigation indicator
-    // Want
-    onWant(myUi.launchWant, wantSource.ONCREATE);
-  }, 1); // Delayed execution, reduce launch time.
+  }, 1);
+
+  // Delayed execution, reduce launch time.
+  setTimeout(() => {
+    // Zones and tab states
+    myUi.initWorkingDir().then(() => {
+      onWant(myUi.launchWant, wantSource.ONCREATE); // Want
+    });
+  }, 50);
 
   // SHARED USER DATA & LISTENERS
 
@@ -339,6 +359,7 @@ export function onWindowStageWillDestroy(windowStage: window.WindowStage) {
 
   if (targetUi) {
     myApp.reportWindowClose(targetUi.windowId);
+    targetUi.reportWindowClose();
     offFocus(targetUi.windowObj!);
     offAvoid(targetUi.windowObj!);
     offWindowStatusChange(targetUi!.windowId);

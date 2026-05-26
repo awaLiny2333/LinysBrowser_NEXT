@@ -1,5 +1,7 @@
+import { fastbuffer } from "@kit.ArkTS";
 import lazy { webview } from "@kit.ArkWeb";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import { listFilesUnderDir, readArrayBuffer, saveHybrid } from "../../../../catstypicalframework/utils/storage";
 import { archiveWeb, printWeb } from "../../../../catstypicalframework/utils/web";
 import { defaultAnimation } from "../../../../components/settings";
 import { meowUiHost } from "../../../system/windows/classes/meowUiHost";
@@ -21,14 +23,6 @@ export class meowTabsBunch {
     this.myUi = myUi;
   }
 
-  get currentNode() {
-    if (this.currentTab) {
-      return this.currentTab.node;
-    } else {
-      return undefined;
-    }
-  }
-
   async init() {
     applyUserAgentFromSettings();
     webview.WebCookieManager.putAcceptThirdPartyCookieEnabled(thirdPartyCookies());
@@ -44,6 +38,72 @@ export class meowTabsBunch {
   // async applyEasyListFromDisk() {
   //   await applyEasyListFromDisk(this.uiContext.getHostContext()!.filesDir, this.uiContext.getHostContext()!.tempDir);
   // }
+
+  // WEB STATES
+
+  get workingDir() {
+    return this.myUi.workingDir;
+  }
+
+  async loadAllStatesFromDir(dir: string) {
+    if (!this.initialized) {
+      await this.init();
+    }
+    meow(`About to load all web states from [${dir}] to [${this.myUi.windowId}]!`, 'loadAllStatesFromDir', meowLevel.WARN);
+
+    // Read tabs
+    const files = await listFilesUnderDir(dir) || [];
+    const baseFiles = files.filter(name => (name[name.length - 1] !== 'l' && name != 'stat'));
+    baseFiles.sort((a, b) => a.localeCompare(b));
+    for (const stateName of baseFiles) {
+      const newTab = new meowTabInfo(this.myUi);
+      newTab.webStateId = stateName;
+      const labelPath = `${this.workingDir}/${stateName}_label`;
+      try {
+        const label = fastbuffer.from(await readArrayBuffer(labelPath)).toString();
+        newTab.title = label;
+      } catch (e) {
+        meow(`Read label failed: ${e}`, 'meowTabsBunch][loadAllStatesFromDir', meowLevel.ERROR);
+      }
+      this.tabs.push(newTab);
+    }
+
+    // Read stat
+    const statPath = `${this.workingDir}/stat`;
+    let switchTargetIdx = 0;
+    try {
+      const stat = fastbuffer.from(await readArrayBuffer(statPath)).toString();
+      if (stat) {
+        const statParts = stat.split(' ');
+        if (statParts.length > 0) {
+          switchTargetIdx = Number.parseInt(statParts[0]);
+          meow(`Switching to tab ${switchTargetIdx} based on stat file`, 'meowTabsBunch][loadAllStatesFromDir', meowLevel.WARN);
+        }
+      }
+    } catch (e) {
+      meow(`Read stat failed: ${e}`, 'meowTabsBunch][loadAllStatesFromDir', meowLevel.ERROR);
+    }
+    if (baseFiles.length > 0) {
+      this.switchTo(switchTargetIdx);
+    }
+  }
+
+  /**
+   * Saves the stat of this bunch to the disk.
+   * Works together with the web state system.
+   */
+  async updateSaveStat() {
+    let stat = '0';
+    if (!this.currentTab) {
+      meow(`No current tab`, 'meowTabsBunch][updateStat', meowLevel.WARN);
+    } else {
+      stat = `${this.tabs.indexOf(this.currentTab)}`;
+    }
+    const statPath = `${this.workingDir}/stat`;
+    await saveHybrid(statPath, stat, true);
+  }
+
+  // ACTIONS
 
   /**
    * Ensures there is at least one tab.
@@ -113,17 +173,26 @@ export class meowTabsBunch {
   closeTab(idx: number) {
     const closedTab = this.tabs[idx];
     if (!closedTab?.node) {
-      meow(`closedTab?.node is undefined`, 'meowTabsBunch][closeTab', meowLevel.ERROR);
-      return;
+      meow(`closedTab?.node is undefined`, 'meowTabsBunch][closeTab', meowLevel.WARN);
     }
 
     this.tabs.splice(idx, 1);
 
-    closedTab.node!.detachWeb();
-    closedTab.node!.dispose();
+    // Delete web state
+    closedTab.callClose();
 
     if (closedTab == this.currentTab) {
       this.switchTo(this.tabs.length - 1);
+    } else {
+      this.updateSaveStat();
+    }
+
+    if (this.tabs.length == 0) {
+      // No node, indicating that all tabs are closed.
+      // Clear the url field
+      if (!this.myUi.addressBarFocused) {
+        this.myUi.setCurrentSearchContent('', true, true);
+      }
     }
   }
 
@@ -134,15 +203,23 @@ export class meowTabsBunch {
   }
 
   /**
-   * Switch to a tab.
+   * Switch to a tab. Auto calls the tab to restore web state if it is not active.
    * @param idx The tab index.
    */
-  switchTo(idx: number) {
+  async switchTo(idx: number) {
     if (this.currentNode) {
       this.currentNode.detachWeb();
       this.currentNode.rebuild();
     }
-    this.currentTab = this.tabs[idx];
+    this.currentTab = this.tabs[Math.min(idx, this.tabs.length - 1)];
+
+    // Auto create web node
+    if (!this.currentTab.node) {
+      const newNode = new TabNodeController(this.myUi.myTabs.uiContext, this.currentTab);
+      this.currentTab.node = newNode;
+    }
+
+    // Check and attach
     if (this.currentNode) {
       this.currentNode.attachWeb();
       this.currentNode.rebuild();
@@ -155,12 +232,12 @@ export class meowTabsBunch {
       }
       // Update addressbar overlay
       this.myUi.requestShowAddressBarOverlay();
-    } else {
-      // Clear the url field
-      if (!this.myUi.addressBarFocused) {
-        this.myUi.setCurrentSearchContent('', true, true);
-      }
+      this.updateSaveStat();
+      return;
     }
+
+    // Save stat
+    this.updateSaveStat();
   }
 
   /**
@@ -224,6 +301,14 @@ export class meowTabsBunch {
   }
 
   // GETTERS
+
+  get currentNode() {
+    if (this.currentTab) {
+      return this.currentTab.node;
+    } else {
+      return undefined;
+    }
+  }
 
   get currentTabCanBack() {
     return this.currentTab?.canBack;

@@ -1,5 +1,4 @@
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-
 export interface settingsParserResult {
   success: boolean;
   data: Record<string, string>;
@@ -29,10 +28,10 @@ export function settingsParserJSON(settingsText: string): settingsParserResult {
  */
 const JSON_ESCAPE_MAP: Record<number, string> = {
   0x5C: '\\\\', // Backslash
-  0x22: '\\"',  // Double quote
-  0x0A: '\\n',  // Line feed
-  0x0D: '\\r',  // Carriage return
-  0x09: '\\t',  // Tab
+  0x22: '\\"', // Double quote
+  0x0A: '\\n', // Line feed
+  0x0D: '\\r', // Carriage return
+  0x09: '\\t', // Tab
 };
 
 /**
@@ -41,7 +40,11 @@ const JSON_ESCAPE_MAP: Record<number, string> = {
  * @returns The escaped string.
  * @author ChatGLM @ Apr 4 2026
  */
-export function escapeForJson(str: string): string {
+export function escapeForJson(str: string | undefined): string | undefined {
+  if (!str) {
+    return undefined;
+  }
+  
   const len = str.length;
   // Pre-allocate array to avoid dynamic expansion overhead from push()
   const result = new Array<string>(len);

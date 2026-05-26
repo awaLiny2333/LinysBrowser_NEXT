@@ -203,7 +203,7 @@ export async function pickDirectory(): Promise<string | undefined> {
  * */
 export async function saveHybrid(fullFilePath: string, content: string | ArrayBuffer | undefined, overwrite = false) {
   const startTime = Date.now();
-  if (!content) {
+  if (content == undefined) {
     console.error(`[saveHybrid][${fullFilePath}] content is undefined.`);
     return false;
   }
@@ -380,17 +380,22 @@ export async function appendTextToEndOfFile(filePath: string, str: string) {
 }
 
 /**
- * Ensure a directory exists.
+ * Ensure a directory exists, RECURSIVELY.
  * @param dirPath The folder path.
+ * @returns true if directory already exists, false if not, undefined for errors.
  */
 export async function ensureDirectoryExist(dirPath: string) {
   try {
     if (!(await fileIo.access(dirPath))) {
       await fileIo.mkdir(dirPath, true);
       meow(`dir ${dirPath} created`, 'ensureDirectoryExist');
+      return false;
+    } else {
+      return true;
     }
   } catch (e) {
     console.error(`[ensureDirectoryExist] fileIo.mkdir(${dirPath}) failed: ${e}`);
+    return undefined;
   }
 }
 
@@ -429,7 +434,7 @@ export async function clearDirectory(dirPath: string) {
  * @returns true if succeed (the file just, doesn't exist there :D), false if failed.
  */
 export async function unlinkFile(filePath: string) {
-  if (!(await fileExist(filePath))) {
+  if (!(await fileDirExist(filePath))) {
     console.log(`[unlinkFile] file [${filePath}] doesn't exist at all! Nevertheless your goal is achieved, isn't it?`);
     return true;
   }
@@ -443,6 +448,26 @@ export async function unlinkFile(filePath: string) {
   }
 }
 
+/**
+ * Remove a directory.
+ * @param dirPath The folder path.
+ * @returns true if succeed (the folder just, doesn't exist there :D), false if failed.
+ */
+export async function removeDir(dirPath: string) {
+  if (!(await fileDirExist(dirPath))) {
+    console.log(`[removeDir] dir [${dirPath}] doesn't exist at all! Nevertheless your goal is achieved, isn't it?`);
+    return true;
+  }
+  try {
+    await fileIo.rmdir(dirPath);
+    console.log(`[removeDir] removed [${dirPath}]`);
+    return true;
+  } catch (e) {
+    console.error(`[removeDir] fileIo.rmdir(${dirPath}) failed: ${e}`);
+    return false;
+  }
+}
+
 // Read
 
 /**
@@ -450,7 +475,7 @@ export async function unlinkFile(filePath: string) {
  * @param path The file path.
  * @returns true if the file exists, false if not.
  */
-export async function fileExist(path: string) {
+export async function fileDirExist(path: string) {
   try {
     const result = await fileIo.access(path);
     return result;
@@ -513,7 +538,7 @@ export function getFolderSizeSync(path: string) {
 }
 
 /**
- * Read an ArrayBuffer file from storage in a sync way.
+ * Read an ArrayBuffer file from storage in an async way.
  * @param fullFilePath the file path
  * @returns An ArrayBuffer, of the requested file's content or undefined if the file doesn't exist.
  * */
@@ -652,12 +677,25 @@ export function path_2_uri(path: string) {
 }
 
 /**
- * Filters out illegal characters in filenames, replacing all such chars with '_'.
- * @param filename The original filename.
- * @returns The filtered filename.
+ * Filter the string to a valid file name for HarmonyOS / OpenHarmony.
+ * - Replace illegal characters: \ / : * ? " < > |
+ * - Replace ASCII control characters (including carriage return, line feed, tab, etc.)
+ * - Optional: Trim leading and trailing spaces and periods (recommended to keep)
+ * - Prevent the final result from being empty
+ * @param filename original file name
+ * @param rep Replacement character, default '_'
+ * @returns valid file name
  */
-export function makeFilenameLegal(filename: string) {
-  return filename.replace(/[\\/:*?"<>|]/g, '_');
+export function makeFilenameLegal(filename: string, rep: string = '_'): string {
+  // 1. 替换非法字符 + 控制字符
+  let legal = filename.replace(/[\\/:*?"<>|\x00-\x1F\x7F]/g, rep);
+  // 2. 修剪首尾空格和点号（根据需求可选，建议保留）
+  legal = legal.trim().replace(/^\.+/, '').replace(/[.\s]+$/, '');
+  // 3. 如果结果为空，给一个默认名
+  if (legal.length === 0) {
+    legal = 'meow';
+  }
+  return legal;
 }
 
 /**

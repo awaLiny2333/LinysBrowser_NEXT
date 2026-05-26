@@ -2,6 +2,15 @@ import lazy { webview } from "@kit.ArkWeb";
 import { getMySettings } from "../../../components/settings";
 import lazy { defaultSearchEngine } from "../../userdata/settings/scripts/defaultSettingsValues";
 
+// Start up
+/**
+ * Gets the start up option from settings.
+ * @returns 'continue' | 'home' | 'new tab'
+ */
+export function startUpOptionFromSettings() {
+  return getMySettings().settingsData[32].value as string;
+}
+
 // History
 /**
  * Gets if the current settings allows recording new history entries.

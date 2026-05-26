@@ -42,6 +42,7 @@ struct MeowTabsHorizontal {
                     }, undefined, 6);
                   }
                 }
+                .opacity(item.item.isActive ? 1 : 0.5)
                 .height(textInputSlimHeight)
                 .justifyContent(isPreferRightHand() ? FlexAlign.End : FlexAlign.Start)
                 .width(this.widthEachTab - this.mySpacing)

@@ -15,12 +15,17 @@ import { meowTabsBunch } from "./meowTabsBunch";
 import { TabNodeController } from "./WebNode";
 import { image } from "@kit.ImageKit";
 import { scanBarcode } from "@kit.ScanKit";
+import { readArrayBuffer, saveHybrid, unlinkFile } from "../../../../catstypicalframework/utils/storage";
+import { fastbuffer } from "@kit.ArkTS";
 
 @ObservedV2
 export class meowTabInfo {
   @Trace myUi: meowUiHost; // NOTE: Should be updated once this tab is sent to other window!
   @Trace controller: WebviewController | undefined;
   @Trace node: TabNodeController | undefined;
+  // Web States
+  webStateId: string = 'meow_' + Date.now().toString(16).padStart(16, '0');
+  saveWebStateTimeoutId: number | undefined;
   // UI info
   @Trace title: string | undefined;
   @Trace url: string | undefined = userNewTabUrl();
@@ -67,12 +72,133 @@ export class meowTabInfo {
   constructor(myUi: meowUiHost) {
     this.myUi = myUi;
     this.controller = new webview.WebviewController();
+    this.requestWebStateUpdate();
   }
 
   // Statuses
 
   get isLoading() {
     return this.progress != -1;
+  }
+
+  get isActive() {
+    return this.node != undefined;
+  }
+
+  // LIFE CYCLES
+
+  callClose() {
+    clearTimeout(this.saveWebStateTimeoutId);
+    this.deleteWebState();
+    if (this.node) {
+      this.node.detachWeb();
+      this.node.dispose();
+    }
+  }
+
+  // WEB STATES
+
+  /**
+   * Requests web state update.
+   * @param timeo The timeout. By default 1024 (ms).
+   */
+  requestWebStateUpdate(timeo: number = 1024) {
+    clearTimeout(this.saveWebStateTimeoutId);
+    this.saveWebStateTimeoutId = setTimeout(() => {
+      this.updateWebState();
+    }, timeo);
+  }
+
+  /**
+   * Tries to restore web state. Does nothing if no available state files exist.
+   * @returns True if succeeded, false if failed.
+   */
+  async restoreWebState() {
+    const statePath = `${this.myUi.myTabs.workingDir}/${this.webStateId}`;
+
+    // Read and restore web state.
+    const arrayBuffer = await readArrayBuffer(statePath);
+    if (arrayBuffer && arrayBuffer.byteLength < 512000) {
+      const state = new Uint8Array(arrayBuffer);
+      try {
+        this.controller?.restoreWebState(state);
+        meow(`this.controller?.restoreWebState(state) succeeded.`, 'meowTabInfo][restoreWebState');
+        return true;
+      } catch (e) {
+        meow(`this.controller?.restoreWebState(state) failed: ${e}.`, 'meowTabInfo][restoreWebState', meowLevel.ERROR);
+      }
+    }
+
+    // Web state read fail, or too large. Load the URL (Give up history stack).
+    const urlPath = `${this.myUi.myTabs.workingDir}/${this.webStateId}_url`;
+    const urlBuffer = await readArrayBuffer(urlPath);
+    if (urlBuffer) {
+      try {
+        this.url = fastbuffer.from(urlBuffer).toString();
+        this.controller?.loadUrl(this.url);
+        return true;
+      } catch (e) {
+        meow(`this.url = fastbuffer.from(urlBuffer).toString(); failed: ${e}.`, 'meowTabInfo][restoreWebState', meowLevel.ERROR);
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Updates web state and save them to disk.
+   * @returns True if succeeded, false if failed.
+   */
+  async updateWebState() {
+    if (!this.node) {
+      return false;
+    }
+    const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.myUi.windowId}`)!;
+
+    let state: Uint8Array = new Uint8Array();
+    const label = this.title || 'Meow';
+    const url = this.url || '';
+    try {
+      state = this.controller?.serializeWebState() || new Uint8Array();
+    } catch (e) {
+      meow(`this.controller?.serializeWebState() failed: ${e}. Put a new Uint8Array().`, 'meowTabInfo][updateWebState', meowLevel.ERROR);
+    }
+
+    const wDir = myTabs.workingDir;
+    const statePath = `${wDir}/${this.webStateId}`;
+    const labelPath = `${wDir}/${this.webStateId}_label`;
+    const urlPath = `${wDir}/${this.webStateId}_url`;
+
+    // NOTE: Notice that labelPath and urlPath both ends with letter 'l'!
+
+    await Promise.all([
+      saveHybrid(statePath, state.buffer, true),
+      saveHybrid(labelPath, label, true),
+      saveHybrid(urlPath, url, true)
+    ]);
+
+    meow(`Save Web State OK! [${this.url}]`, 'meowTabInfo][updateWebState', meowLevel.WARN);
+    return true;
+  }
+
+  /**
+   * Deletes web state and related files.
+   * @returns True if succeeded, false if failed.
+   */
+  async deleteWebState() {
+    const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.myUi.windowId}`)!;
+
+    const wDir = myTabs.workingDir;
+    const statePath = `${wDir}/${this.webStateId}`;
+    const labelPath = `${wDir}/${this.webStateId}_label`;
+    const urlPath = `${wDir}/${this.webStateId}_url`;
+
+    await Promise.all([
+      unlinkFile(statePath),
+      unlinkFile(labelPath),
+      unlinkFile(urlPath)
+    ]);
+    return true;
   }
 
   // UI
@@ -82,10 +208,16 @@ export class meowTabInfo {
 
     // Update addressbar overlay
     this.myUi.requestShowAddressBarOverlay();
+
+    // Web states
+    this.requestWebStateUpdate();
   }
 
   onPageEnd() {
-    // Do things.
+    meow(`onPageEnd() called for [${this.url}]. About to request update WebState!`, 'meowTabInfo][onPageEnd');
+    setTimeout(() => {
+      this.requestWebStateUpdate(100);
+    }, 7); // Call a bit later, to overwrite the existing requests.
   }
 
   /**
@@ -105,6 +237,9 @@ export class meowTabInfo {
 
       // Save to history
       this.tryPunchHistory();
+
+      // TODO: Do we need to request a web state save here?
+      this.requestWebStateUpdate(1999);
     } catch (e) {
       meow(`this.url = this.controller?.getUrl(); failed: ${e}`, 'meowTabInfo][updateUrl', meowLevel.ERROR);
     }
@@ -117,8 +252,9 @@ export class meowTabInfo {
   syncUrlUI() {
     const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.myUi.windowId}`)!;
     if (myTabs.currentTab != this) {
-      return; // Not my stage.
+      return; // Not current tab.
     }
+
     // ENTER ME!
 
     // Update address bar
@@ -159,6 +295,9 @@ export class meowTabInfo {
     }
   }
 
+  /**
+   * Updates the UI settings for the web.
+   */
   updateWebUiStatuses() {
     const oldForceDark = this.forceDark;
     const newForceDark = forceDark(this.url);
@@ -400,6 +539,10 @@ export class meowTabInfo {
     //     meow(`this.controller?.enableAdsBlock(true); failed: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
     //   }
     // }
+    
+    // Restore if possible.
+    // No effect for new tabs. Trust me :P
+    this.restoreWebState();
   }
 
   requestNewTab(url: string): WebviewController | null {

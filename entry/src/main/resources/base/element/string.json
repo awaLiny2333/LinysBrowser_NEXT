@@ -141,6 +141,10 @@
       "value": "Reopen"
     },
     {
+      "name": "Settings_category_onStartUp_page_nothing",
+      "value": "Nothing"
+    },
+    {
       "name": "Settings_category_general",
       "value": "General"
     },
@@ -1019,6 +1023,10 @@
     {
       "name": "SearchInPage_noTab",
       "value": "No page opened... ┐(￣ヮ￣)┌"
+    },
+    {
+      "name": "WindowAlias_illegalChars",
+      "value": "Special characters not supported: \\ / : * ? \" < > |"
     },
     {
       "name": "Permission_reason_INTERNET",

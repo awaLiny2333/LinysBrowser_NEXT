@@ -51,7 +51,7 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   // Surf
   new meowSettingsEntry('home_url', meowSettingsEntryType.STRING, ''), // #30
   new meowSettingsEntry('new_tab_url', meowSettingsEntryType.STRING, ''),
-  new meowSettingsEntry('start_up_option', meowSettingsEntryType.STRING, 'new tab'), // 'new tab' | 'home' | 'continue' #32
+  new meowSettingsEntry('start_up_option', meowSettingsEntryType.STRING, 'new tab'), // 'new tab' | 'home' | 'continue' | 'nothing' #32
   new meowSettingsEntry('intelligent_tracking_prevention', meowSettingsEntryType.BOOLEAN, 'false'), // #33
   new meowSettingsEntry('enable_third_party_cookies', meowSettingsEntryType.BOOLEAN, 'false'),
   new meowSettingsEntry('continue_tabs_count', meowSettingsEntryType.NUMBER, '0'),

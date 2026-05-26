@@ -138,7 +138,11 @@
     },
     {
       "name": "Settings_category_onStartUp_page_continue",
-      "value": "恢复上次进度"
+      "value": "恢复上次"
+    },
+    {
+      "name": "Settings_category_onStartUp_page_nothing",
+      "value": "什么也不做"
     },
     {
       "name": "Settings_category_general",
@@ -1019,6 +1023,10 @@
     {
       "name": "SearchInPage_noTab",
       "value": "还没有打开网页 ┐(￣ヮ￣)┌"
+    },
+    {
+      "name": "WindowAlias_illegalChars",
+      "value": "不支持特殊字符：\\ / : * ? \" < > |"
     },
     {
       "name": "Permission_reason_INTERNET",
