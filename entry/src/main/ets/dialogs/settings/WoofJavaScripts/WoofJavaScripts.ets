@@ -8,36 +8,20 @@ import { disableWebJavaScriptSites, disableWebJavaScriptsOnAllSites } from '../.
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { WoofUniFrame } from '../../WoofUniFrame';
 
-@ComponentV2
-struct JavaScriptsPanel {
-  build() {
-    MooStringArrayList({
-      list: disableWebJavaScriptSites(),
-      onEdited: (index: number, newValue: string) => {
-        disableWebJavaScriptSites()[index] = newValue;
-        getMySettings().requestSaveToDisk();
-      },
-      onDelete: (index: number) => {
-        disableWebJavaScriptSites().splice(index, 1);
-        getMySettings().requestSaveToDisk();
-      },
-      onNew: () => {
-        disableWebJavaScriptSites().push('meow.net');
-        getMySettings().requestSaveToDisk();
-      }
-    })
-      .opacity(disableWebJavaScriptsOnAllSites() ? 0.5 : 1)
-      .animation(defaultAnimation())
-      .margin({ bottom: MooTabSegmentV2Height + standardSpacing });
-  }
-}
-
 @CustomDialog
 struct WoofJavaScriptsDialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
   @Require myLayout: meowLayout;
+  domain: string = 'meow.net';
 
+  aboutToAppear(): void {
+    // If with params (Opened this when browsing something)
+    if (this.myDialog.lastRequest && this.myDialog.lastRequest.param) {
+      this.domain = this.myDialog.lastRequest.param as string;
+    }
+  }
+  
   build() {
     WoofUniFrame({
       controller: this.controller, myDialog: this.myDialog, myLayout: this.myLayout, shiftBackgroundColor: true,
@@ -45,7 +29,25 @@ struct WoofJavaScriptsDialog {
       tutorial: $r('app.string.JavaScripts_tutorial')
     }) {
       Stack() {
-        JavaScriptsPanel();
+        MooStringArrayList({
+          list: disableWebJavaScriptSites(),
+          onEdited: (index: number, newValue: string) => {
+            disableWebJavaScriptSites()[index] = newValue;
+            getMySettings().requestSaveToDisk();
+          },
+          onDelete: (index: number) => {
+            disableWebJavaScriptSites().splice(index, 1);
+            getMySettings().requestSaveToDisk();
+          },
+          onNew: () => {
+            disableWebJavaScriptSites().push(this.domain);
+            getMySettings().requestSaveToDisk();
+          }
+        })
+          .opacity(disableWebJavaScriptsOnAllSites() ? 0.5 : 1)
+          .animation(defaultAnimation())
+          .margin({ bottom: MooTabSegmentV2Height + standardSpacing });
+        
         MooTabSegmentV2({
           initSelected: disableWebJavaScriptsOnAllSites() ? 0 : 1,
           items: new SegmentButtonV2Items([{ text: $r('app.string.General_blockAll') }, { text: $r('app.string.General_blockListed') }]),

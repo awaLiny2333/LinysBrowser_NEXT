@@ -97,6 +97,10 @@
       "value": "继续  󰂴"
     },
     {
+      "name": "General_view",
+      "value": "查看  󰃋"
+    },
+    {
       "name": "General_username",
       "value": "󰙬  用户名 / 账户"
     },
@@ -987,6 +991,10 @@
     {
       "name": "Downloads_title",
       "value": "下载"
+    },
+    {
+      "name": "Downloads_custom",
+      "value": "自定义下载"
     },
     {
       "name": "Downloads_overview",

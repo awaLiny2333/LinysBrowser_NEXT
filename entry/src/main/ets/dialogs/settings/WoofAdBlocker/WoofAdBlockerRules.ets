@@ -3,6 +3,7 @@ import { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger'
 import { fileCopy, fileDocumentPick2Path, fileNameOfPath, listFilesUnderDir, unlinkFile } from '../../../catstypicalframework/utils/storage';
 import { MooStringArrayList } from '../../../components/common/MooStringArrayList';
 import { standardSpacing } from '../../../components/constants';
+import { applyEasyListFromDisk } from '../../../hosts/app/tabs/scripts/adBlocker';
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowAppHost } from '../../../hosts/system/windows/classes/meowAppHost';
 import { getCreateMyApp } from '../../../hosts/system/windows/scripts/helpers';
@@ -70,7 +71,7 @@ struct AdBlockerRulesPanel {
    * Apply the changes.
    */
   applyFiles() {
-    // TODO: apply easylist rules.
+    applyEasyListFromDisk();
   }
 
   /**
@@ -93,7 +94,7 @@ struct WoofAdBlockerRulesDialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
   @Require myLayout: meowLayout;
-  
+
   build() {
     WoofUniFrame({
       controller: this.controller, myDialog: this.myDialog, myLayout: this.myLayout, shiftBackgroundColor: true,

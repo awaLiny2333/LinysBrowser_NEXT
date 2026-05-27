@@ -97,6 +97,10 @@
       "value": "Continue  󰂴"
     },
     {
+      "name": "General_view",
+      "value": "View  󰃋"
+    },
+    {
       "name": "General_username",
       "value": "󰙬  Username"
     },
@@ -987,6 +991,10 @@
     {
       "name": "Downloads_title",
       "value": "Downloads"
+    },
+    {
+      "name": "Downloads_custom",
+      "value": "Custom Download"
     },
     {
       "name": "Downloads_overview",

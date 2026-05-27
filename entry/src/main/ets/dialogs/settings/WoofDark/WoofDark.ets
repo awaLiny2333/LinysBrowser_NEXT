@@ -8,36 +8,20 @@ import { forceWebDarkExceptions, forceWebDarkMode } from '../../../hosts/app/tab
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { WoofUniFrame } from '../../WoofUniFrame';
 
-@ComponentV2
-struct DarkPanel {
-  build() {
-    MooStringArrayList({
-      list: forceWebDarkExceptions(),
-      onEdited: (index: number, newValue: string) => {
-        forceWebDarkExceptions()[index] = newValue;
-        getMySettings().requestSaveToDisk();
-      },
-      onDelete: (index: number) => {
-        forceWebDarkExceptions().splice(index, 1);
-        getMySettings().requestSaveToDisk();
-      },
-      onNew: () => {
-        forceWebDarkExceptions().push('meow.net');
-        getMySettings().requestSaveToDisk();
-      }
-    })
-      .opacity(forceWebDarkMode() ? 1 : 0.5)
-      .animation(defaultAnimation())
-      .margin({ bottom: MooTabSegmentV2Height + standardSpacing });
-  }
-}
-
 @CustomDialog
 struct WoofDarkDialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
   @Require myLayout: meowLayout;
+  domain: string = 'meow.net';
 
+  aboutToAppear(): void {
+    // If with params (Opened this when browsing something)
+    if (this.myDialog.lastRequest && this.myDialog.lastRequest.param) {
+      this.domain = this.myDialog.lastRequest.param as string;
+    }
+  }
+  
   build() {
     WoofUniFrame({
       controller: this.controller, myDialog: this.myDialog, myLayout: this.myLayout, shiftBackgroundColor: true,
@@ -45,7 +29,25 @@ struct WoofDarkDialog {
       tutorial: $r('app.string.Dark_tutorial'),
     }) {
       Stack() {
-        DarkPanel();
+        MooStringArrayList({
+          list: forceWebDarkExceptions(),
+          onEdited: (index: number, newValue: string) => {
+            forceWebDarkExceptions()[index] = newValue;
+            getMySettings().requestSaveToDisk();
+          },
+          onDelete: (index: number) => {
+            forceWebDarkExceptions().splice(index, 1);
+            getMySettings().requestSaveToDisk();
+          },
+          onNew: () => {
+            forceWebDarkExceptions().push(this.domain);
+            getMySettings().requestSaveToDisk();
+          }
+        })
+          .opacity(forceWebDarkMode() ? 1 : 0.5)
+          .animation(defaultAnimation())
+          .margin({ bottom: MooTabSegmentV2Height + standardSpacing });
+        
         MooTabSegmentV2({
           initSelected: forceWebDarkMode() ? 1 : 0,
           items: new SegmentButtonV2Items([{ text: $r('app.string.General_disabled') }, { text: $r('app.string.General_pardonListed') }]),

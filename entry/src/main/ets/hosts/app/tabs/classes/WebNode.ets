@@ -94,7 +94,7 @@ struct MeowWeb {
         this.pk.requestVerifyPin(event);
       })
       .onLoadIntercept((event) => {
-        return this.pk.requestload(event);
+        return this.pk.requestLoad(event);
       })
       .onPermissionRequest((event) => {
         this.pk.requestWebPermissions(event);

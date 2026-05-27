@@ -5,8 +5,9 @@ import lazy { listFilesUnderDir, readArrayBuffer, saveHybrid } from "../../../..
 import lazy { archiveWeb, printWeb } from "../../../../catstypicalframework/utils/web";
 import lazy { defaultAnimation } from "../../../../components/settings";
 import { meowUiHost } from "../../../system/windows/classes/meowUiHost";
+import { applyAdBlockerExceptions } from "../scripts/adBlocker";
+import { applyThirdPartyCookies } from "../scripts/cookies";
 import lazy { applyUserAgentFromSettings } from "../scripts/userAgents";
-import lazy { thirdPartyCookies } from "../settings";
 import { meowTabInfo } from "./meowTabInfo";
 import lazy { TabNodeController } from "./WebNode";
 
@@ -14,7 +15,7 @@ import lazy { TabNodeController } from "./WebNode";
 export class meowTabsBunch {
   uiContext: UIContext;
   myUi: meowUiHost;
-  initialized: boolean = false;
+  static initialized: boolean = false;
   @Trace tabs: meowTabInfo[] = [];
   @Trace currentTab: meowTabInfo | undefined = undefined;
 
@@ -23,23 +24,20 @@ export class meowTabsBunch {
     this.myUi = myUi;
   }
 
-  async init() {
+  static async init() {
     const startTime = Date.now();
+    // User agent
     applyUserAgentFromSettings();
-    webview.WebCookieManager.putAcceptThirdPartyCookieEnabled(thirdPartyCookies());
-    // try {
-    //   webview.AdsBlockManager.addAdsBlockDisallowedList(Array.from(adBlockExceptions()));
-    // } catch (e) {
-    //   meow(`webview.AdsBlockManager.addAdsBlockDisallowedList(adBlockExceptions()); failed: ${e}`, 'meowTabsBunch][newTab', meowLevel.ERROR);
-    // }
-    // await this.applyEasyListFromDisk();
-    this.initialized = true;
+    // Cookies
+    applyThirdPartyCookies();
+    // Ad blocks
+    applyAdBlockerExceptions();
+    // await applyEasyListFromDisk();
+    "设置的自定义规则文件在应用进程内对所有的Web组件生效，是一个应用级全局配置文件，并将持久化，应用重启后可继续工作。";
+    // Finish
+    meowTabsBunch.initialized = true;
     meow(`Initialized in ${Date.now() - startTime} ms`, 'meowTabsBunch][init', meowLevel.WARN);
   }
-
-  // async applyEasyListFromDisk() {
-  //   await applyEasyListFromDisk(this.uiContext.getHostContext()!.filesDir, this.uiContext.getHostContext()!.tempDir);
-  // }
 
   // WEB STATES
 
@@ -49,8 +47,8 @@ export class meowTabsBunch {
 
   async loadAllStatesFromDir(dir: string) {
     const startTime = Date.now();
-    if (!this.initialized) {
-      await this.init();
+    if (!meowTabsBunch.initialized) {
+      await meowTabsBunch.init();
     }
     meow(`About to load all web states from [${dir}] to [${this.myUi.windowId}]!`, 'meowTabsBunch][loadAllStatesFromDir', meowLevel.WARN);
 
@@ -160,8 +158,8 @@ export class meowTabsBunch {
    * @returns The new meowTabInfo.
    */
   async newTabWrapped(overwriteUrl?: string): Promise<meowTabInfo> {
-    if (!this.initialized) {
-      await this.init();
+    if (!meowTabsBunch.initialized) {
+      await meowTabsBunch.init();
     }
     return this.newTabBare(overwriteUrl);
   }

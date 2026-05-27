@@ -1,5 +1,5 @@
 import lazy { belongsToDomain } from "../../../../catstypicalframework/utils/url";
-import lazy { forceWebDarkMode, forceWebDarkExceptions, disableWebImagesSites, disableWebImagesOnAllSites, disableWebImages, disableWebJavaScriptsOnAllSites, disableWebJavaScriptSites, disableWebJavaScripts } from "../settings";
+import lazy { adBlockExceptions, disableWebImages, disableWebImagesOnAllSites, disableWebImagesSites, disableWebJavaScripts, disableWebJavaScriptSites, disableWebJavaScriptsOnAllSites, forceWebDarkExceptions, forceWebDarkMode, useAdBlock } from "../settings";
 
 export const viewableSchemes = ['http', 'https', 'resource', 'file', 'data', 'blob'];
 
@@ -70,4 +70,25 @@ export function disableJS(url: string | undefined) {
     }
   }
   return false;
+}
+
+/**
+ * Determine if a URL should have adblocker enabled.
+ * @param url The url.
+ * @returns true or false.
+ */
+export function enableAdBlocker(url: string | undefined) {
+  if (!url) {
+    return false;
+  }
+  if (!useAdBlock()) {
+    return false;
+  }
+  const exc = adBlockExceptions();
+  for (const domain of exc) {
+    if (belongsToDomain(url, domain)) {
+      return false;
+    }
+  }
+  return true;
 }

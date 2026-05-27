@@ -1,25 +1,29 @@
 import lazy { webview } from "@kit.ArkWeb";
-import lazy { meow } from "../../../catstypicalframework/utils/catsLogger";
+import lazy { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 import lazy { copyText } from "../../../catstypicalframework/utils/clipboard";
 import lazy { resource2String, symbolForFileType } from "../../../catstypicalframework/utils/resource";
-import lazy { addUnitsToSize } from "../../../catstypicalframework/utils/storage";
+import lazy { addUnitsToSize, showInFiles } from "../../../catstypicalframework/utils/storage";
 import lazy { addUnitsToSeconds } from "../../../catstypicalframework/utils/strings";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { meowDawnloada } from "../../../hosts/app/downloads/classes/meowDawnloada";
 import lazy { getMyDawn } from "../../../hosts/app/downloads/scripts/helper";
 import lazy { MooCapsuleButton } from "../../common/MooCapsuleButton";
 import { MooProgress } from "../../common/MooProgress";
+import { MooTextInputV2 } from "../../common/MooTextInputV2";
 import { MooTextModifier } from "../../common/MooTextModifier";
 import lazy { UniContentCard } from "../../common/UniContentCard";
 import lazy { UniRowOfCapsuleButtons } from "../../common/UniRowOfCapsuleButtons";
 import { mooTextType, standardSpacing } from "../../constants";
 import lazy { useEffects } from "../../settings";
+import { common } from "@kit.AbilityKit";
 
 @ComponentV2
 export struct DownloadsPanel {
   @Param @Once needPadding: boolean = true;
   // Hosts
   @Local myDawn: meowDawnloada = getMyDawn();
+  // Local
+  editingCustomDlUrl: string = '';
 
   build() {
     Column({ space: standardSpacing }) {
@@ -91,6 +95,19 @@ export struct DownloadsPanel {
                           }
                         });
                       }
+                      if (item.item.state == webview.WebDownloadState.COMPLETED) {
+                        MooCapsuleButton({
+                          text: $r('app.string.General_view'),
+                          clickAction: () => {
+                            const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+                            if (context) {
+                              showInFiles(item.item.item.getFullPath(), context);
+                            } else {
+                              meow(`Fetch UIContext failed for auto view!`, 'meowDawnloada][confirmDownload', meowLevel.ERROR);
+                            }
+                          }
+                        });
+                      }
                     };
                   }
                   .borderRadius(defaultInnerRadius)
@@ -133,6 +150,27 @@ export struct DownloadsPanel {
             rounded: true
           });
         }
+      };
+      // Custom Download
+      UniContentCard({
+        title: $r('app.string.Downloads_custom'),
+        icon: $r('sys.symbol.cube_and_arrow_down'), roundedRadius: defaultInnerRadius, shiftBackgroundColor: !useEffects()
+      }) {
+        MooTextInputV2({
+          placeholder: "󰊡  ...",
+          onChange: (c) => {
+            this.editingCustomDlUrl = c;
+          },
+          onSubmit: () => {
+            this.myDawn.startDownload(this.editingCustomDlUrl);
+          }
+        });
+        MooCapsuleButton({
+          text: $r('app.string.General_confirm'),
+          clickAction: () => {
+            this.myDawn.startDownload(this.editingCustomDlUrl);
+          }
+        });
       };
     }
     .padding(this.needPadding ? standardSpacing : 0)

@@ -1,8 +1,13 @@
+import lazy { AppStorageV2 } from '@kit.ArkUI';
 import lazy { webview } from '@kit.ArkWeb';
+import lazy { meow, meowLevel } from '../../catstypicalframework/utils/catsLogger';
 import lazy { getMyDawn } from '../../hosts/app/downloads/scripts/helper';
-import lazy { disableImages, disableJS, forceDark } from '../../hosts/app/tabs/scripts/helpers';
-import lazy { intelligentTrackingPrevention } from '../../hosts/app/tabs/settings';
-import { sidebarContentIconSet } from '../constants';
+import lazy { disableImages, disableJS, forceDark, viewableSchemes } from '../../hosts/app/tabs/scripts/helpers';
+import lazy { intelligentTrackingPrevention, useAdBlock } from '../../hosts/app/tabs/settings';
+import lazy { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
+import lazy { requestDialog } from '../../hosts/system/dialogs/scripts/dialog';
+import lazy { getLastWindowId } from '../../hosts/system/windows/scripts/multiwindows';
+import lazy { sidebarContentIconSet } from '../constants';
 
 /**
  * The standalone web component that can hold some contents.
@@ -32,6 +37,20 @@ export struct MooSoloWeb {
       .javaScriptAccess(!disableJS(this.realUrl))
       .imageAccess(!disableImages(this.realUrl))
       .onlineImageAccess(!disableImages(this.realUrl))
+      .onLoadIntercept((event) => {
+        // Intercept jumps
+        let intercept = false;
+        const url: string = event.data.getRequestUrl();
+        const scheme = url.split(':')[0];
+        if (!viewableSchemes.includes(scheme)) {
+          intercept = true;
+          // Ask for decision from the user to jump or not.
+          meow(`Jump to [${url}]?`, 'MooSoloWeb][requestload');
+          const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${getLastWindowId()}`)!;
+          requestDialog(myDialog, openDialogRequestType.JUMP, [this.url, event.data.getRequestUrl()], true);
+        }
+        return intercept;
+      })
       .onDrop(() => {
         this.onDropMe();
       })
@@ -45,30 +64,39 @@ export struct MooSoloWeb {
         this.updateUrl();
       })
       .onControllerAttached(() => {
+        // Ad blocker
+        if (useAdBlock()) {
+          try {
+            this.controllerMeow.enableAdsBlock(true);
+          } catch (e) {
+            meow(`Failed: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
+          }
+        }
         // bind download delegate
         try {
           this.controllerMeow.setDownloadDelegate(getMyDawn().delegate);
+          meow(`setDownloadDelegate for the new tab!`, 'meowTabInfo][onControllerAttached');
         } catch (e) {
-          console.error('[previewWebView] onControllerAttached setDownloadDelegate error: ' + e);
+          meow(`setDownloadDelegate error: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
         }
         // Set Default error page
         try {
           this.controllerMeow.setErrorPageEnabled(true);
         } catch (e) {
-          console.error(`[previewWebView][setErrorPageEnabled] Failed: ${e}`);
+          meow(`Failed: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
         }
         // Set intelligent tracking prevention
         try {
           this.controllerMeow.enableIntelligentTrackingPrevention(intelligentTrackingPrevention());
         } catch (e) {
-          console.error('[previewWebView] onControllerAttached enableIntelligentTrackingPrevention error: ' + e);
+          meow(`enableIntelligentTrackingPrevention error: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
         }
         // Load if is a web.
         if (!sidebarContentIconSet.has(this.url)) {
           try {
             this.controllerMeow.loadUrl(this.url);
           } catch (e) {
-            console.error('[previewWebView] onControllerAttached loadUrl error: ' + e);
+            meow('[MooSoloWeb] onControllerAttached loadUrl error: ' + e, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
           }
         }
       })
@@ -82,7 +110,7 @@ export struct MooSoloWeb {
     try {
       this.realUrl = this.controllerMeow.getUrl();
     } catch (e) {
-      console.error('[previewWebView] onProgressChange error: ' + e);
+      console.error('[MooSoloWeb] onProgressChange error: ' + e);
     }
   }
 }

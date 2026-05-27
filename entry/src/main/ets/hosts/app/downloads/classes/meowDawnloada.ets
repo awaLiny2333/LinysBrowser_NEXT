@@ -1,13 +1,15 @@
-import lazy { UIContext } from "@kit.ArkUI";
+import lazy { common } from "@kit.AbilityKit";
+import lazy { AppStorageV2, UIContext } from "@kit.ArkUI";
 import lazy { webview } from "@kit.ArkWeb";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import lazy { retrieveDownloadDirectory, showInFiles, uri_2_path } from "../../../../catstypicalframework/utils/storage";
 import lazy { defaultAnimation } from "../../../../components/settings";
 import lazy { openDialogRequestType } from "../../../system/dialogs/classes/meowDialogManager";
 import lazy { requestDialogOnMostRecent } from "../../../system/dialogs/scripts/dialog";
+import { getAllWindowIds, getLastWindowId } from "../../../system/windows/scripts/multiwindows";
+import { meowTabsBunch } from "../../tabs/classes/meowTabsBunch";
 import lazy { isDownloadAutoView } from "../settings";
 import lazy { meowDawnloadaItem } from "./meowDawnloadaItem";
-import lazy { common } from "@kit.AbilityKit";
 
 @ObservedV2
 export class meowDawnloada {
@@ -143,10 +145,37 @@ export class meowDawnloada {
    * Start a download task.
    * @param url The url.
    */
-  startDownload(url: string) {
+  async startDownload(url: string) {
     meow(`startDownload: [${url}]`, 'meowDawnloada][startDownload', meowLevel.WARN);
+
+    const wIds = getAllWindowIds();
+    for (const wId of wIds) {
+      const theTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${wId}`);
+      if (theTabs?.currentTab?.controller) {
+        try {
+          theTabs.currentTab.controller.startDownload(url);
+          return;
+        } catch (e) {
+          meow(`startDownload failed: ${e}`, 'meowDawnloada][startDownload', meowLevel.ERROR);
+          return;
+        }
+      }
+    }
+    
+    // Fallback. This is not elegant... :O
+    const randomTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${getLastWindowId()}`);
+    if (randomTabs) {
+      const t = await randomTabs.newTabWrapped();
+      setTimeout(() => {
+        try {
+          t.controller?.startDownload(url);
+        } catch (e) {
+          meow(`startDownload failed: ${e}`, 'meowDawnloada][startDownload', meowLevel.ERROR);
+        }
+      }, 100);
+    }
   }
-  
+
   /**
    * Get the meowDawnloadaItem of a webview.WebDownloadItem.
    * @param webDlItem The webview.WebDownloadItem.

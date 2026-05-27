@@ -52,13 +52,17 @@ export function belongsToDomain(testUrl: string, domain: string) {
 /**
  * Get the domain of a URL.
  * @param sourceUrl The source URL.
- * @returns The host.
+ * @returns The host without a leading 'www.' prefix.
  */
 export function domainOf(sourceUrl?: string): string {
   if (!sourceUrl) return '';
   try {
     const theUrl = url.URL.parseURL(sourceUrl);
-    return theUrl.host;
+    let host = theUrl.host;
+    if (host && host.startsWith('www.')) {
+      host = host.slice(4); // remove 'www.'
+    }
+    return host || '';
   } catch (e) {
     console.error(`[domainOf] [${sourceUrl}] error: ${e}`);
     return '';

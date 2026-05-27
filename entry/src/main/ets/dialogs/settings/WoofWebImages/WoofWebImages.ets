@@ -8,35 +8,19 @@ import { disableWebImagesOnAllSites, disableWebImagesSites } from '../../../host
 import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { WoofUniFrame } from '../../WoofUniFrame';
 
-@ComponentV2
-struct WebImagesPanel {
-  build() {
-    MooStringArrayList({
-      list: disableWebImagesSites(),
-      onEdited: (index: number, newValue: string) => {
-        disableWebImagesSites()[index] = newValue;
-        getMySettings().requestSaveToDisk();
-      },
-      onDelete: (index: number) => {
-        disableWebImagesSites().splice(index, 1);
-        getMySettings().requestSaveToDisk();
-      },
-      onNew: () => {
-        disableWebImagesSites().push('meow.net');
-        getMySettings().requestSaveToDisk();
-      }
-    })
-      .opacity(disableWebImagesOnAllSites() ? 0.5 : 1)
-      .animation(defaultAnimation())
-      .margin({ bottom: MooTabSegmentV2Height + standardSpacing });
-  }
-}
-
 @CustomDialog
 struct WoofWebImagesDialog {
   controller: CustomDialogController;
   @Require myDialog: meowDialogManager;
   @Require myLayout: meowLayout;
+  domain: string = 'meow.net';
+
+  aboutToAppear(): void {
+    // If with params (Opened this when browsing something)
+    if (this.myDialog.lastRequest && this.myDialog.lastRequest.param) {
+      this.domain = this.myDialog.lastRequest.param as string;
+    }
+  }
 
   build() {
     WoofUniFrame({
@@ -45,7 +29,25 @@ struct WoofWebImagesDialog {
       tutorial: $r('app.string.WebImages_tutorial'),
     }) {
       Stack() {
-        WebImagesPanel();
+        MooStringArrayList({
+          list: disableWebImagesSites(),
+          onEdited: (index: number, newValue: string) => {
+            disableWebImagesSites()[index] = newValue;
+            getMySettings().requestSaveToDisk();
+          },
+          onDelete: (index: number) => {
+            disableWebImagesSites().splice(index, 1);
+            getMySettings().requestSaveToDisk();
+          },
+          onNew: () => {
+            disableWebImagesSites().push(this.domain);
+            getMySettings().requestSaveToDisk();
+          }
+        })
+          .opacity(disableWebImagesOnAllSites() ? 0.5 : 1)
+          .animation(defaultAnimation())
+          .margin({ bottom: MooTabSegmentV2Height + standardSpacing });
+
         MooTabSegmentV2({
           initSelected: disableWebImagesOnAllSites() ? 0 : 1,
           items: new SegmentButtonV2Items([{ text: $r('app.string.General_blockAll') }, { text: $r('app.string.General_blockListed') }]),

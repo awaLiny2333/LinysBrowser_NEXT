@@ -14,7 +14,7 @@ import { meowHistorian } from "../../../userdata/history/classes/meowHistorian";
 import { meowHistoryEntry } from "../../../userdata/history/classes/meowHistoryEntry";
 import { getMyDawn } from "../../downloads/scripts/helper";
 import { disableImages, disableJS, forceDark, viewableSchemes } from "../scripts/helpers";
-import { intelligentTrackingPrevention, recordNewHistoryFromSettings, userHomeUrl, userNewTabUrl } from "../settings";
+import { intelligentTrackingPrevention, recordNewHistoryFromSettings, useAdBlock, userHomeUrl, userNewTabUrl } from "../settings";
 import { meowTabsBunch } from "./meowTabsBunch";
 import { TabNodeController } from "./WebNode";
 
@@ -530,6 +530,15 @@ export class meowTabInfo {
   // Requests
 
   onControllerAttached() {
+    // Ad blocker
+    if (useAdBlock()) {
+      try {
+        this.controller!.enableAdsBlock(true);
+      } catch (e) {
+        meow(`Failed: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
+      }
+    }
+
     // Set Default error page
     try {
       this.controller!.setErrorPageEnabled(true);
@@ -554,14 +563,6 @@ export class meowTabInfo {
     } catch (e) {
       meow(`setDownloadDelegate error: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
     }
-
-    // if (useAdBlock()) {
-    //   try {
-    //     this.controller!.enableAdsBlock(true);
-    //   } catch (e) {
-    //     meow(`this.controller?.enableAdsBlock(true); failed: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
-    //   }
-    // }
 
     // Restore if possible.
     // No effect for new tabs. Trust me :P
@@ -591,7 +592,8 @@ export class meowTabInfo {
     this.myUi.fullscreenExit();
   }
 
-  requestload(event: OnLoadInterceptEvent) {
+  requestLoad(event: OnLoadInterceptEvent) {
+    // Intercept jumps
     let intercept = false;
     const url: string = event.data.getRequestUrl();
     const scheme = url.split(':')[0];

@@ -81,16 +81,16 @@ struct MeowButton {
         requestDialog(this.myDialog, openDialogRequestType.SETTINGS);
         break;
       case UnifiedButtonsType.ADBLOCKER:
-        requestDialog(this.myDialog, openDialogRequestType.ADBLOCKER);
+        requestDialog(this.myDialog, openDialogRequestType.ADBLOCKER, domainOf(this.myTabs.currentTab?.url));
         break;
       case UnifiedButtonsType.JAVASCRIPTS:
-        requestDialog(this.myDialog, openDialogRequestType.WEB_JAVASCRIPTS);
+        requestDialog(this.myDialog, openDialogRequestType.WEB_JAVASCRIPTS, domainOf(this.myTabs.currentTab?.url));
         break;
       case UnifiedButtonsType.IMAGES:
-        requestDialog(this.myDialog, openDialogRequestType.WEB_IMAGES);
+        requestDialog(this.myDialog, openDialogRequestType.WEB_IMAGES, domainOf(this.myTabs.currentTab?.url));
         break;
       case UnifiedButtonsType.DARK:
-        requestDialog(this.myDialog, openDialogRequestType.DARK);
+        requestDialog(this.myDialog, openDialogRequestType.DARK, domainOf(this.myTabs.currentTab?.url));
         break;
       case UnifiedButtonsType.HISTORIES:
         requestDialog(this.myDialog, openDialogRequestType.HISTORY);
