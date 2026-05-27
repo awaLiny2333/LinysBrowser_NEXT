@@ -58,7 +58,8 @@ struct MeowTabsVertical {
                   });
                 });
               };
-            });
+            })
+            .key((item) => item.webStateId);
         }
         .borderRadius(defaultInnerRadius)
         .width('100%')

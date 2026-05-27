@@ -145,6 +145,7 @@ export class meowTabsBunch {
     } else {
       try {
         if (this.currentTab?.controller) {
+          this.currentTab.restoringWebState = false;
           this.currentTab.controller.loadUrl(url);
         }
       } catch (e) {
