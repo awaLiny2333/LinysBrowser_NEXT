@@ -329,7 +329,9 @@ struct Index {
     meow(`Window Alias: ${this.myUi.windowAlias}`, 'Index][launch', meowLevel.INFO);
     meow(`---`, 'Index][launch', meowLevel.INFO);
     setTimeout(() => {
-      this.render = true;
+      animateToImmediately(defaultAnimation(), () => {
+        this.render = true;
+      });
     }, 10);
   }
 
