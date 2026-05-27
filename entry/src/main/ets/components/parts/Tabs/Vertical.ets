@@ -34,7 +34,9 @@ struct MeowTabsVertical {
                   // Web state saving / history punching indicator
                   if (item.item.saveWebStateTimeoutId != undefined || item.item.saveHistoryTimeoutId != undefined) {
                     MooSymbolButtonSmall($r('sys.symbol.cup'), () => {
-                      // Do nothing
+                      animateToImmediately(defaultAnimation(), () => {
+                        this.myTabs.closeTab(item.index);
+                      });
                     }, undefined, 6);
                   } else {
                     // Close

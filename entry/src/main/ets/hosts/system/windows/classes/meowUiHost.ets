@@ -1,13 +1,16 @@
+import { Want } from "@kit.AbilityKit";
 import { AppStorageV2, window } from "@kit.ArkUI";
 import { BusinessError } from "@kit.BasicServicesKit";
 import { meowLayout } from "../../../../catstypicalframework/hosts/meowLayout";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import { ensureDirectoryExist, removeDir } from "../../../../catstypicalframework/utils/storage";
 import { getKeywordEntries, UnifiedDestinationResult, UnifiedDestinationResultType, unifyDestination } from "../../../../catstypicalframework/utils/url";
 import { meowThemeColorType, UnifiedButtonsType } from "../../../../components/constants";
 import { addressBarId } from "../../../../components/parts/Homepage/addressBar/MeowAddressBar";
 import { defaultAnimation, getColor, isTabsStyleVertical, maxSuggestionsBookmark, maxSuggestionsHistory, showWindowTitle, sideAreaShrinkAuto, useEffects, webBackBack, webBackEsc, windowTitleOnAddressBar } from "../../../../components/settings";
 import { meowTabsBunch } from "../../../app/tabs/classes/meowTabsBunch";
 import lazy { concatSearchWithEngine } from "../../../app/tabs/scripts/searchEngines";
+import { startUpOptionFromSettings, userHomeUrl, userNewTabUrl } from "../../../app/tabs/settings";
 import lazy { meowBookmarkItem } from "../../../userdata/bookmarks/classes/meowBookmarkItem";
 import lazy { meowBookmarkStash } from "../../../userdata/bookmarks/classes/meowBookmarkStash";
 import lazy { meowHistorian } from "../../../userdata/history/classes/meowHistorian";
@@ -16,9 +19,6 @@ import lazy { meowDialogManager } from "../../dialogs/classes/meowDialogManager"
 import lazy { AddressBarStatuses } from "../scripts/addressBarStatuses";
 import { getCreateMyApp } from "../scripts/helpers";
 import lazy { meowAppMessage } from "./meowAppMessage";
-import { Want } from "@kit.AbilityKit";
-import { ensureDirectoryExist, removeDir } from "../../../../catstypicalframework/utils/storage";
-import { startUpOptionFromSettings, userHomeUrl, userNewTabUrl } from "../../../app/tabs/settings";
 
 /**
  * The statuses that are limited to the current window only.
@@ -120,6 +120,11 @@ export class meowUiHost {
     if (!this.isZone && (!isLastWindow || !nextTimeNeed)) {
       await removeDir(this.workingDir);
       meow(`Removed directory [${this.workingDir}]. isLastWindow = [${isLastWindow}], nextTimeNeed = [${nextTimeNeed}].`, `meowUiHost][reportWindowClose][${this.windowId}`, meowLevel.WARN);
+    } else {
+      // These doesn't seem to work as intended... :(
+      // Sometimes they are not triggered?
+      // meow(`About to save all webStates to disk!`, `meowUiHost][reportWindowClose][${this.windowId}`, meowLevel.WARN);
+      // await Promise.all(this.myTabs.tabs.map((tab): Promise<boolean> => tab.saveWebState()));
     }
   }
 

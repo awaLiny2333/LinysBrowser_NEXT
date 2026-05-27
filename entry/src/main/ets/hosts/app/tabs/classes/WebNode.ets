@@ -10,7 +10,7 @@ import lazy { fontSizeSmall, meowThemeColorType, standardSpacing } from '../../.
 import lazy { oopsPreviewActionsImage } from '../../../../components/parts/WebContextMenu/oopsPreviewActionsImage';
 import lazy { oopsPreviewActionsText } from '../../../../components/parts/WebContextMenu/oopsPreviewActionsText';
 import lazy { oopsPreviewImage } from '../../../../components/parts/WebContextMenu/oopsPreviewImage';
-import { oopsPreviewQrResults } from '../../../../components/parts/WebContextMenu/oopsPreviewQrResults';
+import lazy { oopsPreviewQrResults } from '../../../../components/parts/WebContextMenu/oopsPreviewQrResults';
 import lazy { defaultAnimation, getColor, useEffects } from '../../../../components/settings';
 import lazy { getCreateMyApp } from '../../../system/windows/scripts/helpers';
 import lazy { contextMenuImagePreview, contextMenuStripText, contextMenuWebHeight, contextMenuWebPreview } from '../settings';
@@ -50,24 +50,25 @@ struct MeowWeb {
         this.pk.onControllerAttached();
       })
       .onTitleReceive(() => {
-        this.pk.updateTitleUrl();
+        this.pk.onTitle();
       })
       .onPageBegin(() => {
-        this.pk.progress = 0;
         this.pk.onPageBegin();
-        this.pk.updateTitleUrl();
       })
       .onPageEnd(() => {
-        this.pk.progress = -1;
-        this.pk.onPageEnd();
-        this.pk.updateTitleUrl();
+        this.pk.onPageEndLoadFinished();
+      })
+      .onLoadFinished(() => {
+        this.pk.onPageEndLoadFinished();
       })
       .onProgressChange((event) => {
         this.pk.progress = event.newProgress;
         if (this.pk.progress == 100) {
           this.pk.progress = -1;
+          // onPageEnd or onLoadFinished (duringLoad()) will be triggered, so we don't need to do anything here.
+        } else {
+          this.pk.onProgressChange();
         }
-        this.pk.updateTitleUrl();
       })
       .onFullScreenEnter((event) => {
         this.pk.requestFullScreen(event);

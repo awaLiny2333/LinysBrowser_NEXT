@@ -65,7 +65,7 @@ export class meowTabsBunch {
       try {
         const label = fastbuffer.from(await readArrayBuffer(labelPath)).toString();
         newTab.title = label;
-        meow(`Read label: [${label}] from [${labelPath}]`, 'meowTabsBunch][loadAllStatesFromDir', meowLevel.WARN);
+        meow(`Read label: [${label}] from [${labelPath}]`, 'meowTabsBunch][loadAllStatesFromDir');
       } catch (e) {
         meow(`Read label failed: ${e}`, 'meowTabsBunch][loadAllStatesFromDir', meowLevel.ERROR);
       }
@@ -181,7 +181,7 @@ export class meowTabsBunch {
     this.switchTo(this.tabs.length - 1);
     if (newTab.url == '') {
       meow(`New tab created with empty url. Calling requestWebStateUpdate!`, 'meowTabsBunch][newTabBare', meowLevel.WARN);
-      newTab.requestWebStateUpdate(10);
+      newTab.saveWebState();
     }
     return newTab;
   }
@@ -246,7 +246,6 @@ export class meowTabsBunch {
     if (this.currentNode) {
       this.currentNode.attachWeb();
       this.currentNode.rebuild();
-      this.currentTab.syncUrlUI();
       // Show search in page bar
       if (this.currentTab.isSearching && !this.myUi.inPageSearchShow) {
         animateToImmediately(defaultAnimation(), () => {
@@ -256,6 +255,7 @@ export class meowTabsBunch {
       // Update addressbar overlay
       this.myUi.requestShowAddressBarOverlay();
       this.updateSaveStat();
+      this.currentTab.syncUrlUI();
       return;
     }
 
