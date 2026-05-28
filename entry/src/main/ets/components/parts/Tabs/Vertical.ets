@@ -18,7 +18,7 @@ struct MeowTabsVertical {
   build() {
     Column({ space: standardSpacing * 0.75 }) {
       // Shrink button
-      if (this.showShrinkButton && !titleBarPositionBottom()) {
+      if (sideAreaShrinkButton() && !titleBarPositionBottom()) {
         shrinkButton(this.myUi);
       }
 
@@ -57,6 +57,9 @@ struct MeowTabsVertical {
                 .onClick(() => {
                   animateToImmediately(defaultAnimation(), () => {
                     this.myTabs.switchTo(item.index);
+                    if (!this.myLayout.wideMode) {
+                      this.myUi.sideAreaShrunkExpect = true;
+                    }
                   });
                 });
               };
@@ -74,7 +77,7 @@ struct MeowTabsVertical {
 
       Row() {
         // Shrink button
-        if (this.showShrinkButton && titleBarPositionBottom()) {
+        if (sideAreaShrinkButton() && titleBarPositionBottom()) {
           shrinkButton(this.myUi);
         }
         MooSymbolButton({
@@ -82,6 +85,9 @@ struct MeowTabsVertical {
           clickAction: () => {
             animateToImmediately(defaultAnimation(), () => {
               this.myTabs.newTabWrapped();
+              if (!this.myLayout.wideMode) {
+                this.myUi.sideAreaShrunkExpect = true;
+              }
             });
           }
         });
@@ -92,18 +98,14 @@ struct MeowTabsVertical {
     .clip(true)
     .alignItems(sidebarShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
     .height('100%')
-    .width(this.myUi.sideAreaShrunkSummarized && this.myLayout.wideMode ? defaultTabsVerticalShrunkWidth : this.verticalTabsWidth);
+    .width(this.myUi.sideAreaShrunkSummarized ? defaultTabsVerticalShrunkWidth : this.verticalTabsWidth);
   }
 
   /**
    * The width of the vertical tab.
    */
   get verticalTabsWidth() {
-    return this.myLayout.wideMode ? defaultTabsVerticalWidth : (this.myLayout.width - 2 * standardSpacing) * 0.9;
-  }
-
-  get showShrinkButton() {
-    return sideAreaShrinkButton() && this.myLayout.wideMode;
+    return this.myLayout.wideMode ? defaultTabsVerticalWidth : Math.round((this.myLayout.width - 2 * standardSpacing) * 0.9);
   }
 }
 

@@ -13,6 +13,7 @@ struct MooTextButton {
 
   build() {
     Text(this.text)
+      .wordBreak(WordBreak.BREAK_ALL)
       .attributeModifier(new MooTextModifier(this.style))
       .padding(standardSpacing * 0.75)
       .borderRadius(this.radius)

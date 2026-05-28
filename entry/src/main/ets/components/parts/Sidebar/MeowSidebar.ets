@@ -105,7 +105,7 @@ struct MeowSidebar {
       }, 100);
     })
     .alignItems(sidebarShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
-    .width(this.myUi.sideAreaShrunkSummarized && this.myLayout.wideMode ? defaultSidebarShrunkWidth : this.sidebarWidth)
+    .width(this.myUi.sideAreaShrunkSummarized ? defaultSidebarShrunkWidth : this.sidebarWidth)
     .height('100%');
   }
 
@@ -117,7 +117,7 @@ struct MeowSidebar {
    * The width of the sidebar.
    */
   get sidebarWidth() {
-    return this.myLayout.wideMode ? defaultSidebarWidth : (this.myLayout.width - 2 * standardSpacing) * 0.9;
+    return this.myLayout.wideMode ? defaultSidebarWidth : Math.round((this.myLayout.width - 2 * standardSpacing) * 0.9);
   }
 
   /**
@@ -255,7 +255,7 @@ struct MeowSidebar {
    * To show shrink button or not.
    */
   get showShrinkButton() {
-    return sideAreaShrinkButton() && this.myLayout.wideMode && !this.myUi.showingVerticalTabs;
+    return sideAreaShrinkButton() && !this.myUi.showingVerticalTabs;
   }
 
   /**

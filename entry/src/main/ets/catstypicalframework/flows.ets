@@ -21,7 +21,7 @@ import { common, Configuration, ConfigurationConstant } from '@kit.AbilityKit';
 import lazy { AppStorageV2, window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import lazy Want from '@ohos.app.ability.Want';
-import { defaultNewWindowAlias, getMySettings, isPreferRightHandFromSettings, isTabsStyleVertical } from '../components/settings';
+import { defaultNewWindowAlias, getMySettings, isPreferRightHandFromSettings } from '../components/settings';
 import { meowDawnloada } from '../hosts/app/downloads/classes/meowDawnloada';
 import { meowBoardHolder } from '../hosts/app/scratchingboard/classes/meowBoardHolder';
 import { meowTabsBunch } from '../hosts/app/tabs/classes/meowTabsBunch';
@@ -235,7 +235,7 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
   }
   const wideMode = width > wideModeThreshold;
   const shortMode = height < shortModeThreshold;
-  const myLayout = AppStorageV2.connect(meowLayout, `meowLayout_${myWindowId}`, () => new meowLayout(wideMode, shortMode, width, height))!;
+  AppStorageV2.connect(meowLayout, `meowLayout_${myWindowId}`, () => new meowLayout(wideMode, shortMode, width, height))!;
 
   // Init myAvoid
   updateAvoid(windowObj, myWindowId);
@@ -244,16 +244,11 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
 
   // Tabs
   const mySettings = getMySettings();
-  if (myLayout.wideMode || !isTabsStyleVertical(myLayout)) {
-    // Don't block the user's eyes with this tabs panel if they don't appear to have a large screen ovo and have a vertical tab
-    myUi.showTabs = mySettings.settingsData[22].value as boolean;
-  }
+  myUi.showTabs = mySettings.settingsData[22].value as boolean;
   myUi.sideAreaShrunkExpect = mySettings.settingsData[14].value as boolean;
 
   // Side bar
-  if (myLayout.wideMode) {
-    myUi.showSidebar = mySettings.settingsData[82].value as boolean;
-  }
+  myUi.showSidebar = mySettings.settingsData[82].value as boolean;
   const selectedSidebarPage = mySettings.settingsData[83].value as string;
   myUi.sidebarPage = selectedSidebarPage || '';
 
@@ -271,7 +266,7 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
     myUi.updateWindowTitle();
     updateNavigationIndicator(windowObj); // Navigation indicator
   }, 1);
-  
+
   // TABS
 
   // Try for windowObj.getUIContext()
@@ -280,7 +275,7 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
   } catch (e) {
     meow(`meowTabsBunch_${myWindowId} failed: ${e}`, 'init', meowLevel.ERROR);
   }
-  
+
   // Delayed execution, reduce launch time.
   setTimeout(() => {
     // Zones and tab states
@@ -288,7 +283,7 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
       onWant(myUi.launchWant, wantSource.ONCREATE); // Want
     });
   }, 20);
-  
+
   // SHARED USER DATA & LISTENERS
 
   if (isNewWindow) {

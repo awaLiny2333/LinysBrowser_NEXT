@@ -363,18 +363,33 @@ struct Index {
       return;
     }
     let newW = n.width as number;
-    if (useEffects()) {
-      newW -= standardSpacing;
-    }
-    if (sideAreaShrinkAuto() && sideAreaShrinkExpandNoPush()) {
+
+    if ((!this.myLayout.wideMode || sideAreaShrinkAuto()) && sideAreaShrinkExpandNoPush()) {
       // Auto shrink, and we don't want to push the web contents away everytime the mouse travels across the tabs bar.
-      if (this.myUi.showingVerticalTabs && !this.myUi.sideAreaShrunkSummarized) {
-        newW -= (defaultTabsVerticalWidth - defaultTabsVerticalShrunkWidth);
+
+      // Expanding
+      if (!this.myUi.sideAreaShrunkSummarized) {
+        const p90 = Math.round((this.myLayout.width - 2 * standardSpacing) * 0.9);
+        if (this.myUi.showingVerticalTabs) {
+          const tabsW = this.myLayout.wideMode ? defaultTabsVerticalWidth : p90;
+          newW -= tabsW - defaultTabsVerticalShrunkWidth;
+        }
+        if (this.myUi.showSidebar) {
+          const sidebarW = this.myLayout.wideMode ? defaultSidebarWidth : p90;
+          newW -= sidebarW - defaultSidebarShrunkWidth;
+        }
       }
-      if (this.myUi.showSidebar && !this.myUi.sideAreaShrunkSummarized) {
-        newW -= (defaultSidebarWidth - defaultSidebarShrunkWidth);
+
+      if (useEffects()) {
+        newW -= standardSpacing;
+      }
+
+      // In thin windows / phone displays, and not autoShrink ON, do not block anything.
+      if (!this.myLayout.wideMode && !sideAreaShrinkAuto()) {
+        newW = 0;
       }
     }
+
     animateToImmediately(defaultAnimation(), () => {
       this.myUi.sideAreaWidth = Math.ceil(Math.max(0, newW));
     });
@@ -710,7 +725,8 @@ struct Index {
     const sidebarOnR = sidebarShouldBeOnTheRight();
     const baseSideAreaWidth = this.myUi.sideAreaWidth; // The base width of side area in an ideal way.
     const borderShift = useEffects() ? 1 : 0;
-    const sideAreaShift = this.myLayout.wideMode ? baseSideAreaWidth + borderShift : 0;
+    const sideAreaShift = baseSideAreaWidth + borderShift;
+
     const left = sidebarOnR ? 0 : sideAreaShift;
     const right = sidebarOnR ? sideAreaShift : 0;
 
