@@ -367,7 +367,7 @@ struct Index {
     if ((!this.myLayout.wideMode || sideAreaShrinkAuto()) && sideAreaShrinkExpandNoPush()) {
       // Auto shrink, and we don't want to push the web contents away everytime the mouse travels across the tabs bar.
 
-      // Expanding
+      // Expanded, deduct the part of extra widths exceeding the defaultShrunkWidths.
       if (!this.myUi.sideAreaShrunkSummarized) {
         const p90 = Math.round((this.myLayout.width - 2 * standardSpacing) * 0.9);
         if (this.myUi.showingVerticalTabs) {

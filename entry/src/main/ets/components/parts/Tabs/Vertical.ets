@@ -14,6 +14,8 @@ struct MeowTabsVertical {
   @Param @Require myUi: meowUiHost;
   @Param @Require myLayout: meowLayout;
   @Param @Require myTabs: meowTabsBunch;
+  // Local
+  listController: ListScroller = new ListScroller();
 
   build() {
     Column({ space: standardSpacing * 0.75 }) {
@@ -23,7 +25,7 @@ struct MeowTabsVertical {
       }
 
       Column() {
-        List({ space: standardSpacing * 0.75 }) {
+        List({ space: standardSpacing * 0.75, scroller: this.listController }) {
           Repeat(this.myTabs.tabs)
             .each((item) => {
               ListItem() {
@@ -88,6 +90,7 @@ struct MeowTabsVertical {
               if (!this.myLayout.wideMode) {
                 this.myUi.sideAreaShrunkExpect = true;
               }
+              this.listController.scrollToIndex(this.myTabs.tabs.length - 1);
             });
           }
         });

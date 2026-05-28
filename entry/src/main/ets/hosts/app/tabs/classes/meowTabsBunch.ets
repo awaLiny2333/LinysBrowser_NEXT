@@ -90,12 +90,14 @@ export class meowTabsBunch {
 
     // Push and switch
     if (baseFiles.length > 0) {
-      setTimeout(() => {
-        animateToImmediately(defaultAnimation(), () => {
-          // Push all tabs2bAdded
-          this.tabs.push(...tabs2bAdded);
-          this.switchTo(switchTargetIdx);
-        });
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          animateToImmediately(defaultAnimation(), () => {
+            this.tabs.push(...tabs2bAdded);
+            this.switchTo(switchTargetIdx);
+          });
+          resolve(); // 在这里 resolve，表示整个流程完成
+        }); // 延迟时间可根据需要调整，原代码未指定则默认为 0
       });
     }
 
@@ -236,7 +238,7 @@ export class meowTabsBunch {
     } else {
       this.currentTab = target;
     }
-    
+
     if (!this.currentTab.controller) {
       this.currentTab.controller = new webview.WebviewController();
     }
