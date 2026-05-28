@@ -114,10 +114,10 @@ struct MeowWeb {
         this.pk.receiveSearchResult(result);
       })
       .onActivateContent(() => {
-        meow(`Activate! ${this.pk.url}`, 'WebNode][onActivateContent');
+        this.pk.requestActivateContent();
       })
       .onWindowExit(() => {
-        meow(`Exit! ${this.pk.url}`, 'WebNode][onWindowExit');
+        this.pk.requestExit();
       })
       .onWindowNew((event) => {
         const result = this.pk.requestNewTab(event.targetUrl);

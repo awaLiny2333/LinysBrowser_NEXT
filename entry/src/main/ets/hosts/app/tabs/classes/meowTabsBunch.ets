@@ -180,8 +180,8 @@ export class meowTabsBunch {
     this.tabs.push(newTab);
     this.switchTo(this.tabs.length - 1);
     if (newTab.url == '') {
-      meow(`New tab created with empty url. Calling requestWebStateUpdate!`, 'meowTabsBunch][newTabBare', meowLevel.WARN);
-      newTab.saveWebState();
+      // meow(`New tab created with empty url. Calling requestWebStateUpdate!`, 'meowTabsBunch][newTabBare', meowLevel.WARN);
+      newTab.saveWebState('newEmptyTab');
     }
     return newTab;
   }
@@ -224,15 +224,19 @@ export class meowTabsBunch {
 
   /**
    * Switch to a tab. Auto calls the tab to restore web state if it is not active.
-   * @param idx The tab index.
+   * @param target The tab index or the meowTabInfo itself.
    */
-  async switchTo(idx: number) {
+  async switchTo(target: number | meowTabInfo) {
     if (this.currentNode) {
       this.currentNode.detachWeb();
       this.currentNode.rebuild();
     }
-    this.currentTab = this.tabs[Math.min(idx, this.tabs.length - 1)];
-
+    if (typeof target == 'number') {
+      this.currentTab = this.tabs[Math.min(target, this.tabs.length - 1)];
+    } else {
+      this.currentTab = target;
+    }
+    
     if (!this.currentTab.controller) {
       this.currentTab.controller = new webview.WebviewController();
     }

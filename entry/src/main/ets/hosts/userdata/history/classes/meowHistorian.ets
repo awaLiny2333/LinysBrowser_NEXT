@@ -10,14 +10,13 @@
  * [HAS A] meowHistoryChunk (in meowHistoryChunk[])
  */
 
-import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import lazy { appendTextToEndOfFile, clearDirectory, listFilesUnderDir, readArrayBufferConcurrent, saveHybrid } from "../../../../catstypicalframework/utils/storage";
 import lazy { fastbuffer } from "@kit.ArkTS";
 import lazy { fileIo } from "@kit.CoreFileKit";
+import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import lazy { appendTextToEndOfFile, clearDirectory, listFilesUnderDir, readArrayBufferConcurrent, saveHybrid } from "../../../../catstypicalframework/utils/storage";
 import lazy { buildAllIndexToDisk, buildIndexToDisk } from "../scripts/indexing";
-import lazy { meowHistoryEntry } from "./meowHistoryEntry";
 import { meowHistoryChunk } from "./meowHistoryChunk";
-import { globalMessage, meowAppMessageType } from "../../../system/windows/scripts/messaging";
+import lazy { meowHistoryEntry } from "./meowHistoryEntry";
 
 @ObservedV2
 export class meowHistorian {
@@ -142,7 +141,6 @@ export class meowHistorian {
     meow(`Pushed history: ["${newHistoryEntry.url}", "${newHistoryEntry.title}", ${newHistoryEntry.time}] (${Date.now() - startTime} ms)`, 'meowHistorian][pushHistory', meowLevel.INFO);
     this.lastUpdate = newHistoryEntry.time;
     this.busy = false;
-    globalMessage(meowAppMessageType.HISTORY_ADDED);
     return true;
   }
 
