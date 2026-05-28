@@ -16,6 +16,8 @@ struct MeowTabsVertical {
   @Param @Require myTabs: meowTabsBunch;
   // Local
   listController: ListScroller = new ListScroller();
+  // Event
+  @Event onDropMe: () => void;
 
   build() {
     Column({ space: standardSpacing * 0.75 }) {
@@ -64,7 +66,15 @@ struct MeowTabsVertical {
                     }
                   });
                 });
-              };
+              }
+              .draggable(!item.item.restoringWebState)
+              .onDragStart((event) => {
+                const unifiedData = item.item.dropIntoMyAppTunnel();
+                event.setData(unifiedData);
+              })
+              .onDragEnd(() => {
+                this.myTabs.sendFinish();
+              });
             })
             .key((item) => item.webStateId);
         }
@@ -101,7 +111,12 @@ struct MeowTabsVertical {
     .clip(true)
     .alignItems(sidebarShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
     .height('100%')
-    .width(this.myUi.sideAreaShrunkSummarized ? defaultTabsVerticalShrunkWidth : this.verticalTabsWidth);
+    .width(this.myUi.sideAreaShrunkSummarized ? defaultTabsVerticalShrunkWidth : this.verticalTabsWidth)
+    .onDrop((event) => {
+      this.myTabs.receiveTabFromMyAppTunnel();
+      event.setResult(DragResult.DRAG_SUCCESSFUL);
+      this.onDropMe();
+    });
   }
 
   /**

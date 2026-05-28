@@ -24,6 +24,8 @@ export struct DownloadsPanel {
   @Local myDawn: meowDawnloada = getMyDawn();
   // Local
   editingCustomDlUrl: string = '';
+  // Events
+  @Event onDropMe: () => void;
 
   build() {
     Column({ space: standardSpacing }) {
@@ -163,6 +165,9 @@ export struct DownloadsPanel {
           },
           onSubmit: () => {
             this.myDawn.startDownload(this.editingCustomDlUrl);
+          },
+          onDropMe: () => {
+            this.onDropMe();
           }
         });
         MooCapsuleButton({

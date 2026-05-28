@@ -1,8 +1,8 @@
-import { Want } from "@kit.AbilityKit";
-import { AppStorageV2, window } from "@kit.ArkUI";
-import { BusinessError } from "@kit.BasicServicesKit";
+import lazy { Want } from "@kit.AbilityKit";
+import lazy { AppStorageV2, window } from "@kit.ArkUI";
+import lazy { BusinessError } from "@kit.BasicServicesKit";
 import { meowLayout } from "../../../../catstypicalframework/hosts/meowLayout";
-import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import { ensureDirectoryExist, removeDir } from "../../../../catstypicalframework/utils/storage";
 import { getKeywordEntries, UnifiedDestinationResult, UnifiedDestinationResultType, unifyDestination } from "../../../../catstypicalframework/utils/url";
 import { meowThemeColorType, UnifiedButtonsType } from "../../../../components/constants";
@@ -17,7 +17,7 @@ import lazy { meowHistorian } from "../../../userdata/history/classes/meowHistor
 import lazy { meowHistoryEntry } from "../../../userdata/history/classes/meowHistoryEntry";
 import lazy { meowDialogManager } from "../../dialogs/classes/meowDialogManager";
 import lazy { AddressBarStatuses } from "../scripts/addressBarStatuses";
-import { getCreateMyApp } from "../scripts/helpers";
+import lazy { getCreateMyApp } from "../scripts/helpers";
 import lazy { meowAppMessage } from "./meowAppMessage";
 
 /**
@@ -30,7 +30,7 @@ export class meowUiHost {
   @Trace windowAlias: string = '';
   @Trace windowObj: window.Window | undefined;
   @Trace windowStage: window.WindowStage | undefined;
-  @Trace workingDir: string;
+  @Trace workingDir: string; // TODO: Should be changed after setting ON / OFF being a zone.
   @Trace isZone: boolean = false;
   // Wants
   launchWant: Want;

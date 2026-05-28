@@ -1,3 +1,4 @@
+import { meowTabInfo } from "../../../app/tabs/classes/meowTabInfo";
 import { MeowBookmarkDragInfo } from "../../../userdata/bookmarks/classes/meowBookmarkStash";
 import { meowAppMessage } from "./meowAppMessage";
 
@@ -21,6 +22,7 @@ export class meowAppHost {
   @Trace crossAppMessageTunnel: meowAppMessage | undefined = undefined; // The great tunnel for cross-window messaging! *TEMPORARY* but not cleared after reception.
   // Messaging (Dedicated)
   @Trace dataTunnelForBookmarks: MeowBookmarkDragInfo | undefined = undefined;
+  @Trace dataTunnelForTabs: meowTabInfo | undefined = undefined;
 
   /**
    * Report window focus event.

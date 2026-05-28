@@ -17,6 +17,7 @@ struct MooTextInputV2 {
   // Events
   @Event onChange: (c: string) => void;
   @Event onSubmit: () => void;
+  @Event onDropMe: () => void;
 
   build() {
     Row({ space: standardSpacing }) {
@@ -44,6 +45,9 @@ struct MooTextInputV2 {
         })
         .onSubmit(() => {
           this.onSubmit();
+        })
+        .onDrop(() => {
+          this.onDropMe();
         });
     }
     .layoutWeight(this.outerAutoExpand ? 1 : undefined)

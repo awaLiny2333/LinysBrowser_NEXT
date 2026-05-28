@@ -1,3 +1,4 @@
+import { unifiedDataChannel } from "@kit.ArkData";
 import { fastbuffer } from "@kit.ArkTS";
 import { AppStorageV2, UIContext } from "@kit.ArkUI";
 import { webview } from "@kit.ArkWeb";
@@ -10,13 +11,14 @@ import { defaultAnimation } from "../../../../components/settings";
 import { meowDialogManager, openDialogRequestType } from "../../../system/dialogs/classes/meowDialogManager";
 import { requestDialog } from "../../../system/dialogs/scripts/dialog";
 import { meowUiFullscreenStatus, meowUiHost } from "../../../system/windows/classes/meowUiHost";
+import { getCreateMyApp } from "../../../system/windows/scripts/helpers";
 import { globalMessage, meowAppMessageType } from "../../../system/windows/scripts/messaging";
 import { meowHistorian } from "../../../userdata/history/classes/meowHistorian";
 import { meowHistoryEntry } from "../../../userdata/history/classes/meowHistoryEntry";
 import { getMyDawn } from "../../downloads/scripts/helper";
 import { disableImages, disableJS, forceDark, viewableSchemes } from "../scripts/helpers";
 import { intelligentTrackingPrevention, recordNewHistoryFromSettings, useAdBlock, userHomeUrl, userNewTabUrl } from "../settings";
-import { meowTabsBunch } from "./meowTabsBunch";
+import { meowTabInfoUnifiedType, meowTabsBunch } from "./meowTabsBunch";
 import { TabNodeController } from "./WebNode";
 
 @ObservedV2
@@ -25,8 +27,8 @@ export class meowTabInfo {
   @Trace controller: WebviewController | undefined;
   @Trace node: TabNodeController | undefined;
   // Web States
+  webStateId: string;
   @Trace restoringWebState: boolean = false;
-  webStateId: string = 'meow_' + Date.now().toString(16).padStart(16, '0');
   @Trace saveWebStateTimeoutId: number | undefined;
   // UI info
   @Trace endOfLoadTimestamp: number = Number.MAX_VALUE; // Requests to save history / webstate after this time should be rejected.
@@ -74,6 +76,7 @@ export class meowTabInfo {
 
   constructor(myUi: meowUiHost) {
     this.myUi = myUi;
+    this.webStateId = this.refreshWebStateId();
   }
 
   // Statuses
@@ -98,7 +101,59 @@ export class meowTabInfo {
     }
   }
 
+  /**
+   * Drops this meowTabInfo into the dedicated tunnel in myApp.
+   *
+   * @returns unifiedData with applicationDefinedType of meowTabInfoUnifiedType.
+   */
+  dropIntoMyAppTunnel() {
+    getCreateMyApp().dataTunnelForTabs = this;
+
+    // Fill data :P
+    let unifiedData = new unifiedDataChannel.UnifiedData();
+
+    // Application defined item record
+    let r = new unifiedDataChannel.ApplicationDefinedRecord();
+    r.applicationDefinedType = meowTabInfoUnifiedType;
+    unifiedData.addRecord(r);
+
+    return unifiedData;
+  }
+
+  /**
+   * Called be the receipient window's meowTabsBunch.
+   * Includes some final stage preparations, before this.myUi is changed.
+   */
+  aboutToBeReceived() {
+    clearTimeout(this.saveHistoryTimeoutId);
+    clearTimeout(this.saveWebStateTimeoutId);
+    this.deleteWebState();
+
+    // ↓ Modified from closeTab() in meowTabsBunch.
+
+    if (this == this.myUi.myTabs.currentTab) {
+      this.myUi.myTabs.currentTab = undefined;
+    }
+    this.myUi.myTabs.updateSaveStat();
+
+    if (this.myUi.myTabs.tabs.length == 1) {
+      // Clear the url field
+      if (!this.myUi.addressBarFocused) {
+        this.myUi.setCurrentSearchContent('', true, true);
+      }
+    }
+  }
+
   // WEB STATES
+
+  /**
+   * Updates and also returns the new webstate id built based on current time.
+   * @returns The ID.
+   */
+  refreshWebStateId() {
+    this.webStateId = 'meow_' + Date.now().toString(16).padStart(16, '0');
+    return this.webStateId;
+  }
 
   /**
    * Tries to restore web state. Does nothing if no available state files exist.
@@ -153,7 +208,7 @@ export class meowTabInfo {
     let state: Uint8Array = new Uint8Array();
     const label = this.title || '';
     const url = this.url || '';
-    if (url != '' || this.canBack) {
+    if (url != '' || this.canBack || this.canForw) {
       try {
         state = this.controller?.serializeWebState() || new Uint8Array();
       } catch (e) {
@@ -635,7 +690,16 @@ export class meowTabInfo {
 
     // Restore if possible.
     // No effect for new tabs. Trust me :P
-    this.restoreWebState();
+    this.restoreWebState().then(() => {
+      if (!this.restoringWebState) {
+        return; // Nothing to maintain in this case.
+      }
+      if (this.url == '' && !this.canBack && !this.canForw) {
+        // Is Meow blank
+        this.restoringWebState = false;
+        meow(`Set this.restoringWebState = false; for a blank page!`, 'meowTabInfo][onControllerAttached');
+      }
+    });
   }
 
   requestLoad(event: OnLoadInterceptEvent) {

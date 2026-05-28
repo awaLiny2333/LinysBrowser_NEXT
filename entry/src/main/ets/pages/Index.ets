@@ -104,7 +104,12 @@ struct Index {
           // Sidebars
           Row({ space: standardSpacing }) {
             if (this.myUi.showingVerticalTabs) {
-              MeowTabsVertical({ myUi: this.myUi, myLayout: this.myLayout, myTabs: this.myTabs });
+              MeowTabsVertical({
+                myUi: this.myUi, myLayout: this.myLayout, myTabs: this.myTabs,
+                onDropMe: () => {
+                  this.onDropSideArea();
+                }
+              });
             }
             if (this.myUi.showSidebar) {
               MeowSidebar({
@@ -251,22 +256,6 @@ struct Index {
           .edgeEffect(EdgeEffect.Spring)
           .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
           .backgroundColor(getColor(meowThemeColorType.SECONDARY));
-          // .onTouch((event: TouchEvent) => {
-          //   // Drag
-          //   if (event.type === TouchType.Down) {
-          //     try {
-          //       if (canIUse('SystemCapability.Window.SessionManager') && this.myUi.windowObj) {
-          //         this.myUi.windowObj.startMoving().then(() => {
-          //           meow('Succeeded in starting moving window', 'Index][windowMove');
-          //         }).catch((err: BusinessError) => {
-          //           meow(`Failed to start moving. Cause code: ${err.code}, message: ${err.message}`, 'Index][windowMove', meowLevel.ERROR);
-          //         });
-          //       }
-          //     } catch (exception) {
-          //       meow(`Failed to start moving. Cause code: ${exception.code}, message: ${exception.message}`, 'Index][windowMove', meowLevel.ERROR);
-          //     }
-          //   }
-          // });
 
           // Window Top bar
           MeowTitleTop(this.myLayout, this.myUi, this.myApp, this.myTabs, this.getUIContext());
@@ -492,10 +481,10 @@ struct Index {
    * We switch the status back to a true expectation and release the drag block.
    */
   onDropSideArea() {
-    this.onDropAnyArea();
-    this.myUi.sideAreaShrunkExpect = false;
     setTimeout(() => {
       this.myUi.sideAreaShrinkBlock_drag = false;
+      this.onDropAnyArea();
+      this.myUi.sideAreaShrunkExpect = false;
     }, 10);
   }
 
@@ -523,6 +512,9 @@ struct Index {
     clearTimeout(this.myUi.dropHoverFlipTimeoutId);
     animateToImmediately(defaultAnimation(), () => {
       this.myUi.dropHover = false;
+      if (this.myUi.sideAreaShrinkBlock_drag) {
+        this.myUi.sideAreaShrinkBlock_drag = false;
+      }
     });
   }
 

@@ -43,6 +43,7 @@ struct HistoryPanel {
   // Events
   @Event requestVisit: (url: string) => void;
   @Event requestRefreshTitle: (text: string) => void;
+  @Event onDropMe: () => void;
   // Obj
   scroller: Scroller = new Scroller();
 
@@ -148,6 +149,9 @@ struct HistoryPanel {
           },
           onSubmit: () => {
             this.search();
+          },
+          onDropMe: () => {
+            this.onDropMe();
           }
         })
           .onAppear(() => {

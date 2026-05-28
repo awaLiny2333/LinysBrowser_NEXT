@@ -5,11 +5,20 @@ import lazy { listFilesUnderDir, readArrayBuffer, saveHybrid } from "../../../..
 import lazy { archiveWeb, printWeb } from "../../../../catstypicalframework/utils/web";
 import lazy { defaultAnimation } from "../../../../components/settings";
 import { meowUiHost } from "../../../system/windows/classes/meowUiHost";
+import { getCreateMyApp } from "../../../system/windows/scripts/helpers";
+import { getAllWindowIds } from "../../../system/windows/scripts/multiwindows";
 import { applyAdBlockerExceptions } from "../scripts/adBlocker";
 import { applyThirdPartyCookies } from "../scripts/cookies";
 import lazy { applyUserAgentFromSettings } from "../scripts/userAgents";
 import { meowTabInfo } from "./meowTabInfo";
 import lazy { TabNodeController } from "./WebNode";
+import { AppStorageV2 } from "@kit.ArkUI";
+
+/**
+ * The Unified Type name of meowTabInfo items.
+ * This is used to verify the dropped items to the window.
+ */
+export const meowTabInfoUnifiedType = 'ApplicationDefined.meowTabInfo.flag';
 
 @ObservedV2
 export class meowTabsBunch {
@@ -88,20 +97,23 @@ export class meowTabsBunch {
       meow(`Read stat failed: ${e}`, 'meowTabsBunch][loadAllStatesFromDir', meowLevel.ERROR);
     }
 
-    // Push and switch
-    if (baseFiles.length > 0) {
-      await new Promise<void>((resolve) => {
-        setTimeout(() => {
-          animateToImmediately(defaultAnimation(), () => {
-            this.tabs.push(...tabs2bAdded);
-            this.switchTo(switchTargetIdx);
-          });
-          resolve(); // 在这里 resolve，表示整个流程完成
-        }); // 延迟时间可根据需要调整，原代码未指定则默认为 0
-      });
+    if (baseFiles.length <= 0) {
+      // Nothing works
+      return;
     }
 
-    meow(`Loaded all web states in ${Date.now() - startTime} ms`, 'meowTabsBunch][loadAllStatesFromDir', meowLevel.WARN);
+    // Push and switch
+    // We need a setTimeout to make animation work.
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        animateToImmediately(defaultAnimation(), () => {
+          this.tabs.push(...tabs2bAdded);
+          this.switchTo(switchTargetIdx);
+        });
+        meow(`Loaded all web states in ${Date.now() - startTime} ms`, 'meowTabsBunch][loadAllStatesFromDir', meowLevel.WARN);
+        resolve();
+      });
+    });
   }
 
   /**
@@ -120,6 +132,64 @@ export class meowTabsBunch {
   }
 
   // ACTIONS
+
+  /**
+   * Receives a tabInfo from the dedicated MyApp tunnel
+   * and moves it from its original window to here.
+   */
+  receiveTabFromMyAppTunnel() {
+    const tabInfo = getCreateMyApp().dataTunnelForTabs;
+    if (!tabInfo) {
+      meow(`No tab info`, 'meowTabsBunch][receiveTabFromMyAppTunnel', meowLevel.WARN);
+      return;
+    }
+
+    meow(`Received tab info from MyApp tunnel`, 'meowTabsBunch][receiveTabFromMyAppTunnel', meowLevel.WARN);
+
+    // Process
+    const sourceTabs = tabInfo.myUi.myTabs;
+
+    if (tabInfo.node) {
+      tabInfo.node.detachWeb();
+      tabInfo.node.rebuild();
+    }
+
+    tabInfo.aboutToBeReceived();
+    // UI
+    tabInfo.myUi = this.myUi;
+
+    sourceTabs.tabs.splice(sourceTabs.tabs.indexOf(tabInfo), 1);
+    tabInfo.refreshWebStateId();
+    this.tabs.push(tabInfo);
+
+    this.switchTo(tabInfo);
+    tabInfo.saveWebState('move');
+    tabInfo.saveWebStateTimeoutId = undefined;
+
+    // UI
+    animateToImmediately(defaultAnimation(), () => {
+      this.myUi.dropHover = false;
+    });
+  }
+
+  /**
+   * Called when the tab is dropped to elsewhere.
+   */
+  sendFinish() {
+    // Clear tunnel.
+    getCreateMyApp().dataTunnelForTabs = undefined;
+    meow(`getCreateMyApp().dataTunnelForTabs = undefined`, 'meowTabInfo][didDrop', meowLevel.WARN);
+    // Clear hover state.
+    for (const wId of getAllWindowIds()) {
+      const thatUi = AppStorageV2.connect(meowUiHost, `meowUiHost_${wId}`);
+      if (thatUi) {
+        thatUi.dropHover = false;
+      }
+    }
+    if (this.currentTab == undefined) {
+      this.switchTo(0);
+    }
+  }
 
   /**
    * Ensures there is at least one tab.

@@ -1,11 +1,12 @@
 import { AppStorageV2 } from '@kit.ArkUI';
+import lazy { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
 import lazy { domainOf } from '../../../catstypicalframework/utils/url';
 import { meowTabsBunch } from '../../../hosts/app/tabs/classes/meowTabsBunch';
 import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import lazy { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
-import { ALL_WINDOW_ORIENTATIONS, meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
-import { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addressBarStatuses';
+import lazy { ALL_WINDOW_ORIENTATIONS, meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
+import lazy { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addressBarStatuses';
 import { defaultMooSymbolSize, fontSizeSymbol, getButtonIcon, meowThemeColorType, standardSpacing, UnifiedButtonsType } from '../../constants';
 import { defaultAnimation, getColor, getMySettings, useEffects } from '../../settings';
 
@@ -42,6 +43,21 @@ struct MeowButton {
         .bindMenu(this.hasMenu ? this.myMenu : undefined, {
           backgroundColor: useEffects() ? Color.Transparent : getColor(meowThemeColorType.PRIMARY),
           backgroundBlurStyle: useEffects() ? BlurStyle.COMPONENT_ULTRA_THICK : BlurStyle.NONE,
+        })
+        .onTouch((event: TouchEvent) => {
+          if (this.type != UnifiedButtonsType.MOVE) {
+            return;
+          }
+          // Drag
+          if (event.type === TouchType.Down) {
+            if (canIUse('SystemCapability.Window.SessionManager')) {
+              this.myUi.windowObj?.startMoving().then(() => {
+                meow('Succeeded in starting moving window', 'MeowButton');
+              }).catch((err: BusinessError) => {
+                meow(`Failed to start moving. Cause code: ${err.code}, message: ${err.message}`, 'MeowButton', meowLevel.ERROR);
+              });
+            }
+          }
         });
     }
   }

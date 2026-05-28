@@ -49,7 +49,12 @@ struct MeowSidebar {
           if (this.myUi.sidebarPage == UnifiedButtonsType.SCRATCHING_BOARD) {
             ScratchingBoardPanel({ myUi: this.myUi, needPadding: false });
           } else if (this.myUi.sidebarPage == UnifiedButtonsType.DOWNLOADS) {
-            DownloadsPanel({ needPadding: false });
+            DownloadsPanel({
+              needPadding: false,
+              onDropMe: () => {
+                this.onDropSidebar();
+              }
+            });
           } else if (this.myUi.sidebarPage == UnifiedButtonsType.HISTORIES) {
             // History
             HistoryPanel({
@@ -57,6 +62,9 @@ struct MeowSidebar {
               requestVisit: (url) => {
                 this.genericRequestVisit(url);
               },
+              onDropMe: () => {
+                this.onDropSidebar();
+              }
             });
           } else if (this.myUi.sidebarPage == UnifiedButtonsType.BOOKMARKS) {
             // Bookmarks
