@@ -1,24 +1,22 @@
-import { unifiedDataChannel } from "@kit.ArkData";
-import { fastbuffer } from "@kit.ArkTS";
+import lazy { fastbuffer } from "@kit.ArkTS";
 import { AppStorageV2, UIContext } from "@kit.ArkUI";
 import { webview } from "@kit.ArkWeb";
 import lazy { certificateManager, certificateManagerDialog } from "@kit.DeviceCertificateKit";
-import { image } from "@kit.ImageKit";
-import { scanBarcode } from "@kit.ScanKit";
-import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import lazy { image } from "@kit.ImageKit";
+import lazy { scanBarcode } from "@kit.ScanKit";
+import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import { addUnitsToSize, readArrayBuffer, saveHybrid, unlinkFile } from "../../../../catstypicalframework/utils/storage";
 import { defaultAnimation } from "../../../../components/settings";
 import { meowDialogManager, openDialogRequestType } from "../../../system/dialogs/classes/meowDialogManager";
-import { requestDialog } from "../../../system/dialogs/scripts/dialog";
+import lazy { requestDialog } from "../../../system/dialogs/scripts/dialog";
 import { meowUiFullscreenStatus, meowUiHost } from "../../../system/windows/classes/meowUiHost";
-import { getCreateMyApp } from "../../../system/windows/scripts/helpers";
-import { globalMessage, meowAppMessageType } from "../../../system/windows/scripts/messaging";
+import lazy { globalMessage, meowAppMessageType } from "../../../system/windows/scripts/messaging";
 import { meowHistorian } from "../../../userdata/history/classes/meowHistorian";
 import { meowHistoryEntry } from "../../../userdata/history/classes/meowHistoryEntry";
-import { getMyDawn } from "../../downloads/scripts/helper";
+import lazy { getMyDawn } from "../../downloads/scripts/helper";
 import { disableImages, disableJS, forceDark, viewableSchemes } from "../scripts/helpers";
 import { intelligentTrackingPrevention, recordNewHistoryFromSettings, useAdBlock, userHomeUrl, userNewTabUrl } from "../settings";
-import { meowTabInfoUnifiedType, meowTabsBunch } from "./meowTabsBunch";
+import { meowTabsBunch } from "./meowTabsBunch";
 import { TabNodeController } from "./WebNode";
 
 @ObservedV2
@@ -91,33 +89,19 @@ export class meowTabInfo {
 
   // LIFE CYCLES
 
-  callClose() {
+  /**
+   * Called when the tab is being closed.
+   */
+  onClose() {
     clearTimeout(this.saveHistoryTimeoutId);
     clearTimeout(this.saveWebStateTimeoutId);
     this.deleteWebState();
-    if (this.node) {
-      this.node.detachWeb();
-      this.node.dispose();
+
+    // Destroy the web node.
+    if (this.isActive) {
+      this.node!.detachWeb();
+      this.node!.dispose();
     }
-  }
-
-  /**
-   * Drops this meowTabInfo into the dedicated tunnel in myApp.
-   *
-   * @returns unifiedData with applicationDefinedType of meowTabInfoUnifiedType.
-   */
-  dropIntoMyAppTunnel() {
-    getCreateMyApp().dataTunnelForTabs = this;
-
-    // Fill data :P
-    let unifiedData = new unifiedDataChannel.UnifiedData();
-
-    // Application defined item record
-    let r = new unifiedDataChannel.ApplicationDefinedRecord();
-    r.applicationDefinedType = meowTabInfoUnifiedType;
-    unifiedData.addRecord(r);
-
-    return unifiedData;
   }
 
   /**
@@ -131,16 +115,20 @@ export class meowTabInfo {
 
     // ↓ Modified from closeTab() in meowTabsBunch.
 
+    if (this.isActive) {
+      this.node?.detachWeb();
+      this.node?.rebuild();
+    }
+
     if (this == this.myUi.myTabs.currentTab) {
       this.myUi.myTabs.currentTab = undefined;
     }
-    this.myUi.myTabs.updateSaveStat();
 
-    if (this.myUi.myTabs.tabs.length == 1) {
-      // Clear the url field
-      if (!this.myUi.addressBarFocused) {
-        this.myUi.setCurrentSearchContent('', true, true);
-      }
+    // Now only one tab (The tab about to be dragged away)
+    // So when it is dragged away, there won't be any left.
+    // So clear the url field.
+    if (this.myUi.myTabs.tabs.length == 1 && !this.myUi.addressBarFocused) {
+      this.myUi.setCurrentSearchContent('', true, true);
     }
   }
 
@@ -199,7 +187,7 @@ export class meowTabInfo {
    * @returns True if succeeded, false if failed.
    */
   async saveWebState(sourceInfo: string = 'x') {
-    if (!this.node) {
+    if (!this.isActive) {
       return false;
     }
     const startTime = Date.now();

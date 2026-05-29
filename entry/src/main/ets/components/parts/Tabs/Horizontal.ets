@@ -1,11 +1,7 @@
-import lazy { AppStorageV2 } from "@kit.ArkUI";
 import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
-import lazy { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { meowTabsBunch } from "../../../hosts/app/tabs/classes/meowTabsBunch";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
-import lazy { getCreateMyApp } from "../../../hosts/system/windows/scripts/helpers";
-import lazy { getAllWindowIds } from "../../../hosts/system/windows/scripts/multiwindows";
 import { MooSymbolButton } from "../../common/MooSymbolButton";
 import { MooSymbolButtonSmall } from "../../common/MooSymbolButtonSmall";
 import { MooTextModifier } from "../../common/MooTextModifier";
@@ -74,7 +70,7 @@ struct MeowTabsHorizontal {
               }
               .draggable(!item.item.restoringWebState)
               .onDragStart((event) => {
-                const unifiedData = item.item.dropIntoMyAppTunnel();
+                const unifiedData = this.myTabs.dropTabIntoMyAppTunnel(item.item);
                 event.setData(unifiedData);
               })
               .onDragEnd(() => {

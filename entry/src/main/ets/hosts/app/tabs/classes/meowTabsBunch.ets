@@ -13,6 +13,7 @@ import lazy { applyUserAgentFromSettings } from "../scripts/userAgents";
 import { meowTabInfo } from "./meowTabInfo";
 import lazy { TabNodeController } from "./WebNode";
 import { AppStorageV2 } from "@kit.ArkUI";
+import { unifiedDataChannel } from "@kit.ArkData";
 
 /**
  * The Unified Type name of meowTabInfo items.
@@ -48,7 +49,7 @@ export class meowTabsBunch {
     meow(`Initialized in ${Date.now() - startTime} ms`, 'meowTabsBunch][init', meowLevel.WARN);
   }
 
-  // WEB STATES
+  // WEBSTATES
 
   get workingDir() {
     return this.myUi.workingDir;
@@ -59,18 +60,21 @@ export class meowTabsBunch {
     if (!meowTabsBunch.initialized) {
       await meowTabsBunch.init();
     }
-    meow(`About to load all web states from [${dir}] to [${this.myUi.windowId}]!`, 'meowTabsBunch][loadAllStatesFromDir', meowLevel.WARN);
+    meow(`About to load all webstates from [${dir}] to [${this.myUi.windowId}]! (${Date.now() - startTime} ms)`, 'meowTabsBunch][loadAllStatesFromDir', meowLevel.WARN);
 
     // Read tabs
     const tabs2bAdded: meowTabInfo[] = [];
     const files = await listFilesUnderDir(dir) || [];
     const baseFiles = files.filter(name => (name[name.length - 1] !== 'l' && name != 'stat'));
     baseFiles.sort((a, b) => a.localeCompare(b));
-    for (const stateName of baseFiles) {
+    
+    // Use parallel promises to accelerate.
+    const readPromises = baseFiles.map(async (stateName) => {
       const newTab = new meowTabInfo(this.myUi);
       newTab.restoringWebState = true;
       newTab.webStateId = stateName;
       const labelPath = `${this.workingDir}/${stateName}_label`;
+
       try {
         const label = fastbuffer.from(await readArrayBuffer(labelPath)).toString();
         newTab.title = label;
@@ -78,8 +82,9 @@ export class meowTabsBunch {
       } catch (e) {
         meow(`Read label failed: ${e}`, 'meowTabsBunch][loadAllStatesFromDir', meowLevel.ERROR);
       }
-      tabs2bAdded.push(newTab);
-    }
+      return newTab;
+    });
+    tabs2bAdded.push(...await Promise.all(readPromises));
 
     // Read stat
     const statPath = `${this.workingDir}/stat`;
@@ -110,7 +115,7 @@ export class meowTabsBunch {
           this.tabs.push(...tabs2bAdded);
           this.switchTo(switchTargetIdx);
         });
-        meow(`Loaded all web states in ${Date.now() - startTime} ms`, 'meowTabsBunch][loadAllStatesFromDir', meowLevel.WARN);
+        meow(`Loaded all webstates in ${Date.now() - startTime} ms`, 'meowTabsBunch][loadAllStatesFromDir', meowLevel.WARN);
         resolve();
       });
     });
@@ -131,7 +136,28 @@ export class meowTabsBunch {
     await saveHybrid(statPath, stat, true);
   }
 
-  // ACTIONS
+  // DRAG & DROP
+
+  /**
+   * Drops a tab into the dedicated MyApp tunnel
+   * And packs a unifiedData.
+   *
+   * @param tab The meowTabInfo.
+   * @returns unifiedData with applicationDefinedType of meowTabInfoUnifiedType.
+   */
+  dropTabIntoMyAppTunnel(tab: meowTabInfo) {
+    getCreateMyApp().dataTunnelForTabs = tab;
+
+    // Fill data :P
+    let unifiedData = new unifiedDataChannel.UnifiedData();
+
+    // Application defined item record
+    let r = new unifiedDataChannel.ApplicationDefinedRecord();
+    r.applicationDefinedType = meowTabInfoUnifiedType;
+    unifiedData.addRecord(r);
+
+    return unifiedData;
+  }
 
   /**
    * Receives a tabInfo from the dedicated MyApp tunnel
@@ -149,17 +175,12 @@ export class meowTabsBunch {
     // Process
     const sourceTabs = tabInfo.myUi.myTabs;
 
-    if (tabInfo.node) {
-      tabInfo.node.detachWeb();
-      tabInfo.node.rebuild();
-    }
-
+    // Off-duty handover
     tabInfo.aboutToBeReceived();
-    // UI
     tabInfo.myUi = this.myUi;
+    tabInfo.refreshWebStateId();
 
     sourceTabs.tabs.splice(sourceTabs.tabs.indexOf(tabInfo), 1);
-    tabInfo.refreshWebStateId();
     this.tabs.push(tabInfo);
 
     this.switchTo(tabInfo);
@@ -174,22 +195,27 @@ export class meowTabsBunch {
 
   /**
    * Called when the tab is dropped to elsewhere.
+   * In the .onDropEnd() events from Tabs panels from where tabs are dragged away.
    */
   sendFinish() {
     // Clear tunnel.
     getCreateMyApp().dataTunnelForTabs = undefined;
     meow(`getCreateMyApp().dataTunnelForTabs = undefined`, 'meowTabInfo][didDrop', meowLevel.WARN);
-    // Clear hover state.
+    // Clear hover state of all app windows.
     for (const wId of getAllWindowIds()) {
       const thatUi = AppStorageV2.connect(meowUiHost, `meowUiHost_${wId}`);
       if (thatUi) {
         thatUi.dropHover = false;
       }
     }
+    // If I sent the tab currently viewing, then switch to another tab.
     if (this.currentTab == undefined) {
       this.switchTo(0);
     }
+    this.updateSaveStat();
   }
+
+  // ACTIONS
 
   /**
    * Ensures there is at least one tab.
@@ -271,7 +297,7 @@ export class meowTabsBunch {
     this.tabs.splice(idx, 1);
 
     // Delete web state
-    closedTab.callClose();
+    closedTab.onClose();
 
     if (closedTab == this.currentTab) {
       this.switchTo(this.tabs.length - 1);

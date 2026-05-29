@@ -69,7 +69,7 @@ struct MeowTabsVertical {
               }
               .draggable(!item.item.restoringWebState)
               .onDragStart((event) => {
-                const unifiedData = item.item.dropIntoMyAppTunnel();
+                const unifiedData = this.myTabs.dropTabIntoMyAppTunnel(item.item);
                 event.setData(unifiedData);
               })
               .onDragEnd(() => {
