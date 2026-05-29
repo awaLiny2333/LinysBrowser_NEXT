@@ -85,6 +85,7 @@ export enum UnifiedButtonsType {
   SAVE = 'SAV',
   ORIENTATION = 'ORN',
   SEARCH_IN_PAGE = 'SIP',
+  ZONES = 'ZON',
   EXTENSIONS = 'EXT'
 }
 
@@ -122,6 +123,7 @@ unifiedButtonIconMatches.set(UnifiedButtonsType.PRINT, $r('sys.symbol.printer'))
 unifiedButtonIconMatches.set(UnifiedButtonsType.SAVE, $r('sys.symbol.save'));
 unifiedButtonIconMatches.set(UnifiedButtonsType.ORIENTATION, $r('sys.symbol.rectangle_portrait_rotate'));
 unifiedButtonIconMatches.set(UnifiedButtonsType.SEARCH_IN_PAGE, $r('sys.symbol.doc_text_badge_magnifyingglass'));
+unifiedButtonIconMatches.set(UnifiedButtonsType.ZONES, $r('sys.symbol.square_stack_3d'));
 unifiedButtonIconMatches.set(UnifiedButtonsType.EXTENSIONS, $r('sys.symbol.root'));
 
 /**

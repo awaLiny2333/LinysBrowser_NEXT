@@ -2,6 +2,15 @@
 
 [中文](README.md) | [English](README_EN.md)
 
+## Things to consider when migrating to 2.0
+
+The App itself can be directly installed and updated, 
+but because some file structures have changed, BrowserCat 2.0 cannot directly inherit all previous data.
+
+1. The history index needs to be rebuilt manually.
+2. All previously opened web pages not in Zones will be lost.
+3. EasyList may need to be deleted and re-added, or it may not.
+
 ## Completely restructured?!
 
 Based on all the legacies, we decided to rebuild BrowserCat based on the modern HarmonyOS environment!

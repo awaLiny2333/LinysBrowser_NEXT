@@ -177,6 +177,9 @@ struct MeowButton {
       case UnifiedButtonsType.SAVE:
         this.myTabs.saveCurrent();
         break;
+      case UnifiedButtonsType.ZONES:
+        requestDialog(this.myDialog, openDialogRequestType.ZONES);
+        break;
       default:
         break;
     }
