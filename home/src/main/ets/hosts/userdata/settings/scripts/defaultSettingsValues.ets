@@ -61,14 +61,14 @@ export function defaultButtonsAddressBar() {
 }
 
 export function defaultButtonsTitle() {
-  return [UnifiedButtonsType.MORE, UnifiedButtonsType.SCRATCHING_BOARD, UnifiedButtonsType.TABS, UnifiedButtonsType.SIDEBAR, UnifiedButtonsType.BOOKMARKS, UnifiedButtonsType.DOWNLOADS, UnifiedButtonsType.SETTINGS].join('\n');
+  return [UnifiedButtonsType.MORE, UnifiedButtonsType.TABS, UnifiedButtonsType.SIDEBAR, UnifiedButtonsType.SETTINGS].join('\n');
 }
 
 /**
  * Returns the default buttons set up for More Panel. Contains no meowButtonsType.EXTENSIONS.
  * @returns The set up array.
  */
-export function defaltButtonsMore() {
+export function defaultButtonsMore() {
   return [UnifiedButtonsType.ORIENTATION, UnifiedButtonsType.SAVE, UnifiedButtonsType.PRINT, UnifiedButtonsType.DARK, UnifiedButtonsType.COOKIES, UnifiedButtonsType.IMAGES, UnifiedButtonsType.JAVASCRIPTS, UnifiedButtonsType.ADBLOCKER, UnifiedButtonsType.HISTORIES, UnifiedButtonsType.USERAGENTS, UnifiedButtonsType.QRCODE, UnifiedButtonsType.FULLSCREEN, UnifiedButtonsType.SEARCH_IN_PAGE].join('\n');
 }
 

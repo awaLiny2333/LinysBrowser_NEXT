@@ -1,5 +1,5 @@
 import { meowSettingsEntry, meowSettingsEntryType } from "../classes/meowSettingsEntry";
-import { defaltButtonsMore, defaultButtonsAddressBar, defaultButtonsAddressBarOnFocus, defaultButtonsControl, defaultButtonsSidebar, defaultButtonsTitle, defaultNewWindowName, defaultUserAgents, presetSearchEngines } from "./defaultSettingsValues";
+import { defaultButtonsMore, defaultButtonsAddressBar, defaultButtonsAddressBarOnFocus, defaultButtonsControl, defaultButtonsSidebar, defaultButtonsTitle, defaultNewWindowName, defaultUserAgents, presetSearchEngines } from "./defaultSettingsValues";
 
 /**
  * The default settings entries. ORDER MATTERS! ORDER MATTERS! ORDER MATTERS!
@@ -122,7 +122,7 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('buttons_address_bar_on_focus', meowSettingsEntryType.STRING_ARRAY, defaultButtonsAddressBarOnFocus()),
   new meowSettingsEntry('buttons_address_bar', meowSettingsEntryType.STRING_ARRAY, defaultButtonsAddressBar()),
   new meowSettingsEntry('buttons_title', meowSettingsEntryType.STRING_ARRAY, defaultButtonsTitle()),
-  new meowSettingsEntry('buttons_more', meowSettingsEntryType.STRING_ARRAY, defaltButtonsMore()),
+  new meowSettingsEntry('buttons_more', meowSettingsEntryType.STRING_ARRAY, defaultButtonsMore()),
   // Side bar / vertical tabs
   new meowSettingsEntry('buttons_sidebar', meowSettingsEntryType.STRING_ARRAY_PAIR, defaultButtonsSidebar()),
   new meowSettingsEntry('show_sidebar', meowSettingsEntryType.BOOLEAN, 'false'), // #82
