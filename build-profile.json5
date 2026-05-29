@@ -4,13 +4,13 @@
       {
         "name": "default",
         "material": {
-          "storePassword": "000000209F51880E6A5CDA6BAC06C740839F6B8FFA93C2909281B0C4C4A0B17D51ACEE0A741AAF53BC0DEBB115399B0C",
-          "certpath": "/storage/Users/currentUser/appdata/el2/base/com.huawei.devecostudio/files/ohos/config/default_BrowserCatNsVgnVqG8RTyymYbPJtlcIbSD8t54Zsk6RJCtPiApz8.cer",
+          "storePassword": "000000200A9F832A1D6562E2EF57AF6982CAAE6997B5E43366ED2D17A468B9EC6A83CF02AAEE51E3F6E23EC31CDD91F8",
+          "certpath": "/storage/Users/currentUser/appdata/el2/base/com.huawei.devecostudio/files/ohos/config/default_BrowserCatSumbB9HHa2l9a7uwUisdhFeuUgTANPNztPQYwPb1E4mzHg.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "000000209F51880E6A5CDA6BAC06C740839F6B8FFA93C2909281B0C4C4A0B17D51ACEE0A741AAF53BC0DEBB115399B0C",
-          "profile": "/storage/Users/currentUser/appdata/el2/base/com.huawei.devecostudio/files/ohos/config/default_BrowserCatNsVgnVqG8RTyymYbPJtlcIbSD8t54Zsk6RJCtPiApz8.p7b",
+          "keyPassword": "000000200A9F832A1D6562E2EF57AF6982CAAE6997B5E43366ED2D17A468B9EC6A83CF02AAEE51E3F6E23EC31CDD91F8",
+          "profile": "/storage/Users/currentUser/appdata/el2/base/com.huawei.devecostudio/files/ohos/config/default_BrowserCatSumbB9HHa2l9a7uwUisdhFeuUgTANPNztPQYwPb1E4mzHg.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "/storage/Users/currentUser/appdata/el2/base/com.huawei.devecostudio/files/ohos/config/default_BrowserCatNsVgnVqG8RTyymYbPJtlcIbSD8t54Zsk6RJCtPiApz8.p12"
+          "storeFile": "/storage/Users/currentUser/appdata/el2/base/com.huawei.devecostudio/files/ohos/config/default_BrowserCatSumbB9HHa2l9a7uwUisdhFeuUgTANPNztPQYwPb1E4mzHg.p12"
         },
         "type": "HarmonyOS"
       }
@@ -28,9 +28,7 @@
             "caseSensitiveCheck": true,
             "useNormalizedOHMUrl": true
           },
-          "arkOptions": {
-            // "autoLazyImport": true
-          }
+          "arkOptions": {}
         },
         "bundleName": "meow.liny.browser.cat.uwu.re"
       }
@@ -52,7 +50,7 @@
         {
           "name": "default",
           "applyToProducts": [
-            "default",
+            "default"
           ]
         }
       ]
