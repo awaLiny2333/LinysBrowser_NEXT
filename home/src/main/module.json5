@@ -1,6 +1,6 @@
 {
   "module": {
-    "name": "entry",
+    "name": "home",
     "type": "entry",
     "srcEntry": "./ets/entryabilitystage/EntryAbilityStage.ets",
     "description": "$string:module_desc",

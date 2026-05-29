@@ -1,6 +1,6 @@
 {
   "module": {
-    "name": "entry_test",
+    "name": "home_test",
     "type": "feature",
     "deviceTypes": [
       "phone",
