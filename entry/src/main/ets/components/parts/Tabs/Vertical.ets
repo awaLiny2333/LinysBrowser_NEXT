@@ -78,6 +78,7 @@ struct MeowTabsVertical {
             })
             .key((item) => item.webStateId);
         }
+        .direction(sidebarShouldBeOnTheRight() ? Direction.Rtl : Direction.Ltr)
         .borderRadius(defaultInnerRadius)
         .width('100%')
         .height('auto');
