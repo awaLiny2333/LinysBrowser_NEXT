@@ -2,14 +2,20 @@ import lazy { common } from "@kit.AbilityKit";
 import { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import { makeFilenameLegal } from "../../../../catstypicalframework/utils/storage";
 import { defaultInnerRadius, wideModeThreshold } from "../../../../catstypicalframework/utils/ui";
+import lazy { ErrorPromptDetails } from "../../../../dialogs/public/WoofErrorPrompt/errorPromptScripts";
+import lazy { canRenameZoneTo, deZone, enZone } from "../../../../hosts/app/tabs/scripts/zones";
+import lazy { requestDialogOnMostRecent } from "../../../../hosts/system/dialogs/scripts/dialog";
+import lazy { openDialogRequestType } from "../../../../hosts/system/dialogs/classes/meowDialogManager";
 import { meowUiHost } from "../../../../hosts/system/windows/classes/meowUiHost";
 import { newWindow } from "../../../../hosts/system/windows/scripts/multiwindows";
+import { MooCapsuleButton } from "../../../common/MooCapsuleButton";
 import { MooSymbolButton } from "../../../common/MooSymbolButton";
 import { MooTextButton } from "../../../common/MooTextButton";
 import lazy { MooTextInputV2 } from "../../../common/MooTextInputV2";
 import { MooTextModifier } from "../../../common/MooTextModifier";
 import { meowThemeColorType, standardSpacing } from "../../../constants";
 import { defaultAnimation, getColor, isPreferRightHand, getMySettings, useEffects } from "../../../settings";
+import lazy { globalMessage,meowAppMessageType } from "../../../../hosts/system/windows/scripts/messaging";
 
 @ComponentV2
 struct MeowWindowInfoBar {
@@ -50,14 +56,40 @@ struct MeowWindowInfoBar {
           onChange: (value: string) => {
             this.windowAliasEditing = value;
           },
-          onSubmit: () => {
+          onSubmit: async () => {
             const finalName = makeFilenameLegal(this.windowAliasEditing, '');
             this.windowAliasEditing = finalName;
-            this.myUi.setWindowAlias(finalName);
-            animateToImmediately(defaultAnimation(), () => {
-              this.isEditing = false;
+
+            // Prevent alias collision for zones.
+            if (this.myUi.isZone) {
+              if (await canRenameZoneTo(finalName) == false) {
+                meow(`Cannot rename zone to [${finalName}]`, 'MeowWindowInfoBar', meowLevel.ERROR);
+                return;
+              }
+              
+              // Reject if busy
+              const myTabs = this.myUi.myTabs;
+              if (myTabs.isBusy) {
+                meow(`Zone ${this.myUi.windowAlias} is busy.`, 'MeowWindowInfoBar', meowLevel.WARN);
+                return;
+              }
+            }
+
+            await this.myUi.setWindowAlias(finalName);
+            
+            if (this.myUi.isZone) {
+              globalMessage(meowAppMessageType.ZONES_REFRESH);
+            }
+
+            // UI update
+            setTimeout(() => {
+              animateToImmediately(defaultAnimation(), () => {
+                this.isEditing = false;
+              });
+              if (!this.myUi.isZone) {
+                getMySettings().setByIndex(26, finalName);
+              }
             });
-            getMySettings().setByIndex(26, finalName);
           }
         })
           .onAppear(() => {
@@ -66,6 +98,38 @@ struct MeowWindowInfoBar {
 
         // Notice about illegal chars
         Text($r('app.string.WindowAlias_illegalChars')).attributeModifier(new MooTextModifier()).padding(standardSpacing * 0.5);
+
+        if (this.myUi.isZone) {
+          MooCapsuleButton({
+            text: $r('app.string.Zones_deZone'),
+            clickAction: () => {
+              deZone(this.myUi).then((r) => {
+              if (!r) {
+                requestDialogOnMostRecent(openDialogRequestType.ERROR_PROMPT, {
+                  isError: true,
+                  title: $r('app.string.Zones_deZone_failed'),
+                  contents: $r('app.string.Zones_deZone_failed_desc'),
+                } as ErrorPromptDetails, true);
+              }
+            });
+            }
+          });
+        } else {
+          MooCapsuleButton({
+            text: $r('app.string.Zones_enZone'),
+            clickAction: () => {
+              enZone(this.myUi).then((r) => {
+                if (!r) {
+                  requestDialogOnMostRecent(openDialogRequestType.ERROR_PROMPT, {
+                    isError: true,
+                    title: $r('app.string.Zones_enZone_failed'),
+                    contents: $r('app.string.Zones_enZone_failed_desc'),
+                  } as ErrorPromptDetails, true);
+                }
+              });
+            }
+          });
+        }
       }
     }
     .constraintSize({ maxWidth: wideModeThreshold })

@@ -10,6 +10,7 @@ import lazy { WoofHistoryDialog } from '../../dialogs/parts/WoofHistory/WoofHist
 import lazy { WoofScratchingBoardDialog } from '../../dialogs/parts/WoofScratchingBoard/WoofScratchingBoard';
 import lazy { WoofSettingsDialog } from '../../dialogs/parts/WoofSettings/WoofSettings';
 import lazy { WoofUpdatesDialog } from '../../dialogs/parts/WoofUpdates/WoofUpdates';
+import lazy { WoofZonesDialog } from '../../dialogs/parts/WoofZones/WoofZones';
 import lazy { WoofColorPickerDialog } from '../../dialogs/public/WoofColorPicker/WoofColorPicker';
 import lazy { WoofErrorPromptDialog } from '../../dialogs/public/WoofErrorPrompt/WoofErrorPrompt';
 import lazy { WoofKeyShortcutPickerDialog } from '../../dialogs/public/WoofKeyShortcutPicker/WoofKeyShortcutPicker';
@@ -53,14 +54,12 @@ struct MeowPlaceForDialogs {
   @Param @Require myAvoid: meowAvoid;
   @Param @Require myMisc: meowMisc;
 
-  WoofErrorPromptDialogController: CustomDialogController = new CustomDialogController({
+  woofErrorPromptDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofErrorPromptDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
-  WoofCatsDevDialogController: CustomDialogController = new CustomDialogController({
+  woofCatsDevDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofCatsDevDialog({
       myDialog: this.myDialog,
       myLayout: this.myLayout,
@@ -68,15 +67,13 @@ struct MeowPlaceForDialogs {
       myMisc: this.myMisc
     }),
     alignment: DialogAlignment.Center,
-    width: '90%',
-    // height: '90%',
+    width: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofSettingsDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofSettingsDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
     alignment: DialogAlignment.Center,
     width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofColorPickerController: CustomDialogController = new CustomDialogController({
@@ -89,7 +86,6 @@ struct MeowPlaceForDialogs {
     }),
     alignment: DialogAlignment.Center,
     width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
     onDidDisappear: () => {
       localMessage(this.myUi, meowAppMessageType.COLOR_PICKER_CLOSED);
@@ -99,229 +95,181 @@ struct MeowPlaceForDialogs {
     builder: WoofBookmarksDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi, selectMode: false }),
     alignment: DialogAlignment.Center,
     width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofBookmarksPickerDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofBookmarksDialog({
       myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi, selectMode: true,
       onSelect: (folder, path) => {
-        if (folder) {
-          localMessage(this.myUi, meowAppMessageType.BOOKMARKS_PICKED, path);
-        }
+        if (folder) localMessage(this.myUi, meowAppMessageType.BOOKMARKS_PICKED, path);
       }
     }),
     alignment: DialogAlignment.Center,
     width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofHomepageDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofHomepageDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofAdBlockerDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofAdBlockerDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofAdBlockerRulesDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofAdBlockerRulesDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofWebImagesDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofWebImagesDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofJavaScriptsDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofJavaScriptsDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofDarkDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofDarkDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofKeyShortcutsDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofKeyShortcutsDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofKeyShortcutsPickerDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofKeyShortcutPickerDialog({
       myDialog: this.myDialog, myLayout: this.myLayout, onConfirm: (bind) => {
-        // meow(`Messaged ${bind}`);
         localMessage(this.myUi, meowAppMessageType.KEY_SHORTCUTS_PICKED, bind);
       }
     }),
     alignment: DialogAlignment.Center,
     width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofButtonsDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofButtonsDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofHistoryDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofHistoryDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
     alignment: DialogAlignment.Center,
     width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofCookiesDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofCookiesDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
     width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofFaultLogsDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofFaultLogsDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
     width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofUpdatesDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofUpdatesDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
     width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofQRDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofQRDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofQuickUADialogController: CustomDialogController = new CustomDialogController({
     builder: WoofQuickUADialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofQuickSEDialoController: CustomDialogController = new CustomDialogController({
     builder: WoofQuickSEDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofCreditsDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofCreditsDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
     width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofScratchingBoardDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofScratchingBoardDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
     alignment: DialogAlignment.Center,
     width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofDownloadsDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofDownloadsDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
     alignment: DialogAlignment.Center,
     width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofJumpDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofJumpDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofAlertDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofAlertDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofConfirmDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofConfirmDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofPromptDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofPromptDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofSslErrorDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofSslErrorDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofPermissionsDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofPermissionsDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofRequestScreenCaptureDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofRequestScreenCaptureDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofWebGeolocationDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofWebGeolocationDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofHttpAuthDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofHttpAuthDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
   woofDownloadAskDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofDownloadAskDialog({ myDialog: this.myDialog, myLayout: this.myLayout }),
     alignment: DialogAlignment.Center,
-    // width: '95%',
-    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
+  woofZonesDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofZonesDialog({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi }),
+    alignment: DialogAlignment.Center,
+    width: '95%',
+    height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
 
@@ -338,10 +286,10 @@ struct MeowPlaceForDialogs {
     }
     switch (lastRequest.target) {
       case openDialogRequestType.ERROR_PROMPT:
-        this.WoofErrorPromptDialogController.open();
+        this.woofErrorPromptDialogController.open();
         break;
       case openDialogRequestType.DEV:
-        this.WoofCatsDevDialogController.open();
+        this.woofCatsDevDialogController.open();
         break;
       case openDialogRequestType.SETTINGS:
         this.woofSettingsDialogController.open();
@@ -441,6 +389,9 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.HTTP_AUTH:
         this.woofHttpAuthDialogController.open();
+        break;
+      case openDialogRequestType.ZONES:
+        this.woofZonesDialogController.open();
         break;
       default:
         break;

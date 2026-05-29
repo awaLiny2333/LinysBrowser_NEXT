@@ -3,7 +3,7 @@ import lazy { AppStorageV2, window } from "@kit.ArkUI";
 import lazy { BusinessError } from "@kit.BasicServicesKit";
 import { meowLayout } from "../../../../catstypicalframework/hosts/meowLayout";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import { ensureDirectoryExist, removeDir } from "../../../../catstypicalframework/utils/storage";
+import lazy { ensureDirectoryExist, removeDir, renameFolder } from "../../../../catstypicalframework/utils/storage";
 import { getKeywordEntries, UnifiedDestinationResult, UnifiedDestinationResultType, unifyDestination } from "../../../../catstypicalframework/utils/url";
 import { meowThemeColorType, UnifiedButtonsType } from "../../../../components/constants";
 import { addressBarId } from "../../../../components/parts/Homepage/addressBar/MeowAddressBar";
@@ -115,12 +115,15 @@ export class meowUiHost {
     const isLastWindow = getCreateMyApp().windowIds.length == 0;
     const nextTimeNeed = startUpOptionFromSettings() == 'continue';
     // Remove if is either one of:
-    // 2. Not ZONE && not last window
-    // 3. Not ZONE && (IS last window &&) not next time need
+    // 1. Not ZONE && not last window
+    // 2. Not ZONE && (IS last window &&) not next time need
     if (!this.isZone && (!isLastWindow || !nextTimeNeed)) {
       await removeDir(this.workingDir);
       meow(`Removed directory [${this.workingDir}]. isLastWindow = [${isLastWindow}], nextTimeNeed = [${nextTimeNeed}].`, `meowUiHost][reportWindowClose][${this.windowId}`, meowLevel.WARN);
     } else {
+      // Is a zone, or is the last non-zone but next time need.
+      // Remove nothing.
+
       // These doesn't seem to work as intended... :(
       // Sometimes they are not triggered?
       // meow(`About to save all webStates to disk!`, `meowUiHost][reportWindowClose][${this.windowId}`, meowLevel.WARN);
@@ -264,8 +267,9 @@ export class meowUiHost {
    * Update the window title.
    */
   async updateWindowTitle() {
-    meow(`Update window title to: ${this.windowAlias}`, `meowUiHost][${this.windowId}][updateWindowTitle`, meowLevel.WARN);
-    this.windowObj?.setWindowTitle(this.windowAlias)
+    const alias = this.isZone? `󰙟 ${this.windowAlias}`:this.windowAlias;
+    meow(`Update window title to: ${alias}`, `meowUiHost][${this.windowId}][updateWindowTitle`, meowLevel.WARN);
+    this.windowObj?.setWindowTitle(alias)
       .catch((e: BusinessError) => {
         meow(`Failed to set window title: ${e.message}`, `meowUiHost][${this.windowId}][updateWindowTitle`, meowLevel.ERROR);
       });
@@ -305,10 +309,17 @@ export class meowUiHost {
   /**
    * Sets the alias of the window.
    */
-  setWindowAlias(newAlias: string) {
+  async setWindowAlias(newAlias: string) {
     this.windowAlias = newAlias;
-    this.updateWindowTitle();
-    // TODO: Deal with contents in continues.
+    await this.updateWindowTitle();
+    
+    // Zones names
+    if (this.isZone) {
+      // Replace the last part of current workingDir to the newAlias
+      const oldDir = this.workingDir;
+      this.workingDir = this.workingDir.replace(/\/[^/]+$/, `/${newAlias}`);
+      await renameFolder(oldDir, this.workingDir);
+    }
   }
 
   /**

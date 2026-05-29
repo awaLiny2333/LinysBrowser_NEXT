@@ -1,14 +1,14 @@
 import { common } from '@kit.AbilityKit';
-import { meow, meowLevel } from '../../catstypicalframework/utils/catsLogger';
-import { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
-import { requestDialog } from '../../hosts/system/dialogs/scripts/dialog';
-import { meowUiGoBackSource, meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
-import { newWindow } from '../../hosts/system/windows/scripts/multiwindows';
-import { meowKeyboardMan } from '../../hosts/userdata/keyshortcuts/classes/meowKeyboardMan';
-import { defaultAnimation, getMySettings } from '../settings';
 import { AppStorageV2 } from '@kit.ArkUI';
+import lazy { meow, meowLevel } from '../../catstypicalframework/utils/catsLogger';
 import { meowTabsBunch } from '../../hosts/app/tabs/classes/meowTabsBunch';
+import lazy { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
+import lazy { requestDialog } from '../../hosts/system/dialogs/scripts/dialog';
+import { meowUiGoBackSource, meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
+import lazy { newWindow } from '../../hosts/system/windows/scripts/multiwindows';
+import { meowKeyboardMan } from '../../hosts/userdata/keyshortcuts/classes/meowKeyboardMan';
 import { searchInPageInputId } from '../constants';
+import lazy { defaultAnimation, getMySettings } from '../settings';
 
 @Builder
 export function MeowPlaceForKeyShortcuts(
@@ -101,6 +101,7 @@ export function MeowPlaceForKeyShortcuts(
       meow(`Save Page!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
     });
     Blank().keyboardShortcut(myKey.zones.value, myKey.zones.keys, () => {
+      requestDialog(myDialog, openDialogRequestType.ZONES);
       meow(`Zones!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
     });
     Blank().keyboardShortcut(myKey.fullscreenWindowed.value, myKey.fullscreenWindowed.keys, () => {

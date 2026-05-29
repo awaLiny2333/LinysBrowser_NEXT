@@ -2,6 +2,8 @@ import lazy { common } from '@kit.AbilityKit';
 import { meowLayout } from '../../../../catstypicalframework/hosts/meowLayout';
 import { windowTopAvoidLeft, windowTopAvoidRight } from '../../../../catstypicalframework/utils/ui';
 import { meowTabsBunch } from '../../../../hosts/app/tabs/classes/meowTabsBunch';
+import lazy { openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
+import lazy { requestDialogOnMostRecent } from '../../../../hosts/system/dialogs/scripts/dialog';
 import { meowAppHost } from '../../../../hosts/system/windows/classes/meowAppHost';
 import { meowUiHost } from '../../../../hosts/system/windows/classes/meowUiHost';
 import lazy { newWindow } from '../../../../hosts/system/windows/scripts/multiwindows';
@@ -25,9 +27,15 @@ export function MeowTitleTop(
   Row({ space: 10 }) {
     // left button(s)
     if (myApp.freeWindow) {
-      MooSymbolButtonSmall($r('sys.symbol.square_stack_3d'), () => {
-        // TODO: Open zones panel.
-      }, HitTestMode.BLOCK_HIERARCHY);
+      if (myUi.isZone) {
+        MooSymbolButtonSmall($r('sys.symbol.briefcase'), () => {
+          requestDialogOnMostRecent(openDialogRequestType.ZONES);
+        }, HitTestMode.BLOCK_HIERARCHY);
+      } else {
+        MooSymbolButtonSmall($r('sys.symbol.square_stack_3d'), () => {
+          requestDialogOnMostRecent(openDialogRequestType.ZONES);
+        }, HitTestMode.BLOCK_HIERARCHY);
+      }
     }
 
     // Window Title Text

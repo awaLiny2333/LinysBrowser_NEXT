@@ -32,9 +32,10 @@ export function generateTimeBasedWindowId() {
  * Create a new window.
  * @param context The context.
  * @param windowId The window id. Have time based window id generation if left blank. YOU SHOULDN'T SET THIS MANUALLY IN MOST CASES!
+ * @param zoneAlias The alias of the zone, used to load zone from disk.
  * @returns True if ok, false if failed.
  */
-export async function newWindow(context: common.UIAbilityContext, windowId: string = generateTimeBasedWindowId()) {
+export async function newWindow(context: common.UIAbilityContext, windowId: string = generateTimeBasedWindowId(), zoneAlias: string = '') {
   let info: abilityManager.AbilityRunningInfo[] = [];
 
   try {
@@ -52,6 +53,7 @@ export async function newWindow(context: common.UIAbilityContext, windowId: stri
     abilityName: info[0].ability.abilityName,
     parameters: {
       instanceKey: windowId,
+      zoneAlias: zoneAlias
     }
   };
 

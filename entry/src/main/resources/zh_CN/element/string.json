@@ -1037,6 +1037,34 @@
       "value": "不支持特殊字符：\\ / : * ? \" < > |"
     },
     {
+      "name": "Zones_title",
+      "value": "工作区"
+    },
+    {
+      "name": "Zones_enZone",
+      "value": "󰙟  设为工作区"
+    },
+    {
+      "name": "Zones_deZone",
+      "value": "󰈳  取消设为工作区"
+    },
+    {
+      "name": "Zones_delete_failed",
+      "value": "删除失败"
+    },
+    {
+      "name": "Zones_delete_failed_desc",
+      "value": "无法删除已打开的工作区！"
+    },
+    {
+      "name": "Zones_enZone_failed",
+      "value": "设为工作区失败"
+    },
+    {
+      "name": "Zones_enZone_failed_desc",
+      "value": "检查是否已存在同名的工作区！\n或者，当前窗口正在保存某些内容？请稍等片刻再试！"
+    },
+    {
       "name": "Permission_reason_INTERNET",
       "value": "让冲浪喵访问互联网！"
     },

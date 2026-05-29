@@ -115,7 +115,8 @@ export enum openDialogRequestType {
   WEB_PERMISSIONS,
   SCREEN_CAPTURE,
   WEB_GEOLOCATION,
-  HTTP_AUTH
+  HTTP_AUTH,
+  ZONES
 }
 
 /**

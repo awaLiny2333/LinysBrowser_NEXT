@@ -20,7 +20,7 @@
 import { common, Configuration, ConfigurationConstant } from '@kit.AbilityKit';
 import lazy { AppStorageV2, window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
-import lazy Want from '@ohos.app.ability.Want';
+import lazy { Want } from "@kit.AbilityKit";
 import { defaultNewWindowAlias, getMySettings, isPreferRightHandFromSettings } from '../components/settings';
 import { meowDawnloada } from '../hosts/app/downloads/classes/meowDawnloada';
 import { meowBoardHolder } from '../hosts/app/scratchingboard/classes/meowBoardHolder';
@@ -95,7 +95,11 @@ export function earlyOnCreate(context: Context, launchWant: Want) {
   }
 
   // Window private hosts
-  AppStorageV2.connect(meowUiHost, `meowUiHost_${myWindowId}`, () => new meowUiHost(launchWant, myWindowId, `${context.filesDir}/continues/${myWindowId}`));
+  // myUi
+  const workingDir = launchWant.parameters?.zoneAlias ? `${context.filesDir}/zones/${launchWant.parameters?.zoneAlias}` : `${context.filesDir}/continues/${myWindowId}`;
+  AppStorageV2.connect(meowUiHost, `meowUiHost_${myWindowId}`, () => new meowUiHost(launchWant, myWindowId, workingDir))!;
+
+  // Other
   AppStorageV2.connect(meowDialogManager, `meowDialogManager_${myWindowId}`, () => new meowDialogManager());
   AppStorageV2.connect(meowMisc, `meowMisc_${myWindowId}`, () => new meowMisc());
   AppStorageV2.connect(meowAvoid, `meowAvoid_${myWindowId}`, () => new meowAvoid());
@@ -220,7 +224,13 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
   const myUi: meowUiHost = AppStorageV2.connect(meowUiHost, `meowUiHost_${myWindowId}`)!;
   myUi.windowStage = windowStage;
   myUi.windowObj = windowObj;
-  myUi.windowAlias = defaultNewWindowAlias(); // Automatically grab the alias last time set.
+  if (myUi.isZone) {
+    // Get from want params.
+    myUi.windowAlias = myUi.launchWant.parameters?.zoneAlias as string || '';
+  } else {
+    // Automatically grab the alias last time set. This has to be here instead of earlier processes because it requires the Settings to be initialized.
+    myUi.windowAlias = defaultNewWindowAlias();
+  }
   myUi.searchUnifyResult.url = concatSearchWithEngine('').result;
 
   // Init myLayout

@@ -1037,6 +1037,42 @@
       "value": "Special characters not supported: \\ / : * ? \" < > |"
     },
     {
+      "name": "Zones_title",
+      "value": "Zones"
+    },
+    {
+      "name": "Zones_enZone",
+      "value": "󰙟  Set as a Zone"
+    },
+    {
+      "name": "Zones_deZone",
+      "value": "󰈳  Exclude from Zones"
+    },
+    {
+      "name": "Zones_delete_failed",
+      "value": "Delete failed"
+    },
+    {
+      "name": "Zones_delete_failed_desc",
+      "value": "Opened Zones could not be deleted!"
+    },
+    {
+      "name": "Zones_enZone_failed",
+      "value": "Set as Zone failed"
+    },
+    {
+      "name": "Zones_enZone_failed_desc",
+      "value": "Check if there exist a Zone with an identical alias already!\nOr, is the current window saving something? Wait a while and try again!"
+    },
+    {
+      "name": "Zones_deZone_failed",
+      "value": "Exclude from Zones failed"
+    },
+    {
+      "name": "Zones_deZone_failed_desc",
+      "value": "Is the current window saving something? Wait a while and try again!"
+    },
+    {
       "name": "Permission_reason_INTERNET",
       "value": "Let the BrowserCat visit the web!"
     },

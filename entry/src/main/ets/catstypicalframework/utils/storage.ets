@@ -241,6 +241,19 @@ export async function saveHybrid(fullFilePath: string, content: string | ArrayBu
 }
 
 /**
+ * Rename a folder.
+ * @param folderPath The source path.
+ * @param newPath The destination path.
+ */
+export async function renameFolder(folderPath: string, newPath: string) {
+  await fileIo.rename(folderPath, newPath)
+    .catch((e: BusinessError) => {
+      console.error(`[renameFolder] rename folder ${folderPath} to ${newPath} failed: ${e}`);
+    });
+  console.info(`[renameFolder] rename folder ${folderPath} to ${newPath} succeed`);
+}
+
+/**
  * Save an image to album.
  * @param context The common.UIAbilityContext.
  * @param srcFilePath The source path.
@@ -356,6 +369,53 @@ export async function dirCopy(fullSourcePath: string, destParentFolderPath: stri
     return true;
   } catch (e) {
     console.error(`[dirCopy] fileIo.copyDir(${fullSourcePath}, ${destParentFolderPath}, ${overwrite}) failed: ${e}`);
+    return false;
+  }
+}
+
+/**
+ * Move a directory.
+ * @param fullSourcePath The source path.
+ * @param destParentFolderPath The destination folder path.
+ * @param overwrite Whether to overwrite the destination file if it exists.
+ * @returns true if succeed, false if failed, undefined if the file exists but not to overwrite.
+ */
+export async function dirMove(fullSourcePath: string, destParentFolderPath: string, overwrite: boolean) {
+  // Check source
+  const sourceName = fileNameOfPath(fullSourcePath);
+
+  try {
+    if (!(await fileIo.access(fullSourcePath))) {
+      console.error(`[dirMove] dirMove(${fullSourcePath}, ${destParentFolderPath}, ${overwrite}) test access failed: source dir ${fullSourcePath} doesn't exist`);
+      return false;
+    }
+  } catch (e) {
+    console.error(`[dirMove] dirMove(${fullSourcePath}, ${destParentFolderPath}, ${overwrite}) test source access failed: ${e}`);
+  }
+
+  // Check destination
+  try {
+    if (await fileIo.access(`${destParentFolderPath}/${sourceName}`)) {
+      if (!overwrite) {
+        return undefined;
+      } else {
+        // Overwrite
+        await fileIo.rmdir(`${destParentFolderPath}/${sourceName}`);
+        await fileIo.mkdir(`${destParentFolderPath}/${sourceName}`);
+        console.warn(`[dirMove] dir ${destParentFolderPath}/${sourceName} overwritten`);
+      }
+    }
+  } catch (e) {
+    console.error(`[dirMove] dirMove(${fullSourcePath}, ${destParentFolderPath}, ${overwrite}) test destination accessSync failed: ${e}`);
+  }
+
+  // Copy
+  try {
+    await fileIo.moveDir(fullSourcePath, destParentFolderPath);
+    console.info(`[dirMove] dir ${fullSourcePath} moved to ${destParentFolderPath}`);
+    return true;
+  } catch (e) {
+    console.error(`[dirMove] dirMove(${fullSourcePath}, ${destParentFolderPath}, ${overwrite}) failed: ${e}`);
     return false;
   }
 }

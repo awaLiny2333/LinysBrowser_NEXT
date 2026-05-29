@@ -67,7 +67,7 @@ export class meowTabsBunch {
     const files = await listFilesUnderDir(dir) || [];
     const baseFiles = files.filter(name => (name[name.length - 1] !== 'l' && name != 'stat'));
     baseFiles.sort((a, b) => a.localeCompare(b));
-    
+
     // Use parallel promises to accelerate.
     const readPromises = baseFiles.map(async (stateName) => {
       const newTab = new meowTabInfo(this.myUi);
@@ -426,6 +426,20 @@ export class meowTabsBunch {
   }
 
   // GETTERS
+
+  /**
+   * Gets if any of the tabs are doing a webstate saving or history punching.
+   */
+  get isBusy() {
+    let busy = false;
+    for (const tab of this.tabs) {
+      if (tab.saveWebStateTimeoutId != undefined || tab.saveHistoryTimeoutId != undefined) {
+        busy = true;
+        break;
+      }
+    }
+    return busy;
+  }
 
   get currentNode() {
     if (this.currentTab) {

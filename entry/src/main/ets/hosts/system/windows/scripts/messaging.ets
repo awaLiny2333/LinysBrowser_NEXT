@@ -16,6 +16,7 @@ export enum meowAppMessageType {
   HISTORY_DELETED,
   HISTORY_REFRESH,
   USE_EFFECTS_UPDATED,
+  ZONES_REFRESH,
 }
 
 /**

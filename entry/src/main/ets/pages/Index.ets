@@ -277,7 +277,7 @@ struct Index {
         if (showGiganticWindowTitle(this.myUi)) {
           Text(this.myUi.windowAlias)
             .attributeModifier(new MooTextModifier(mooTextType.TITLE))
-            .fontSize(128)
+            .fontSize(168)
             .width('100%')
             .height('100%')
             .textAlign(TextAlign.Center)
