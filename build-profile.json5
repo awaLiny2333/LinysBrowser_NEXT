@@ -30,6 +30,21 @@
           "arkOptions": {}
         },
         "bundleName": "meow.liny.browser.cat.uwu"
+      },
+      {
+        "name": "ohos",
+        "targetSdkVersion": 23,
+        "compileSdkVersion": 23,
+        "compatibleSdkVersion": 23,
+        "runtimeOS": "OpenHarmony",
+        "buildOption": {
+          "strictMode": {
+            "caseSensitiveCheck": true,
+            "useNormalizedOHMUrl": true
+          },
+          "arkOptions": {}
+        },
+        "bundleName": "meow.liny.browser.cat.uwu"
       }
     ],
     "buildModeSet": [
@@ -49,7 +64,8 @@
         {
           "name": "default",
           "applyToProducts": [
-            "default"
+            "default",
+            "ohos"
           ]
         }
       ]
