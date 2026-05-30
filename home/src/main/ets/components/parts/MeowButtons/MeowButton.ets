@@ -137,6 +137,7 @@ struct MeowButton {
             this.myUi.addressBarStatus = AddressBarStatuses.CAN_SHIFT;
           }
         });
+        this.myUi.requestHideAddressBarOverlay();
         if (needFocus) {
           this.myUi.requestAddressBarFocus(this.getUIContext());
         }
@@ -150,6 +151,7 @@ struct MeowButton {
           this.myUi.requestAddressBarFocus(this.getUIContext());
           this.myUi.setCurrentFieldContent(this.myUi.searchKeywordEntries[0][1]); // Or the last input field of keywords would set this, as its onChange callback would be triggered.
         }
+        this.myUi.requestHideAddressBarOverlay();
         break;
       case UnifiedButtonsType.SCRATCHING_BOARD:
         requestDialog(this.myDialog, openDialogRequestType.SCRATCHING_BOARD);
