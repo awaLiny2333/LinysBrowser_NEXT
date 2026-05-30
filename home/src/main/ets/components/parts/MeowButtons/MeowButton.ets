@@ -78,13 +78,21 @@ struct MeowButton {
       case UnifiedButtonsType.TABS:
         animateToImmediately(defaultAnimation(), () => {
           this.myUi.showTabs = !this.myUi.showTabs;
+          if (!this.myUi.myLayout.wideMode && this.myUi.showSidebar) {
+            this.myUi.showSidebar = false;
+          }
         });
         getMySettings().setByIndex(22, this.myUi.showTabs);
+        getMySettings().setByIndex(82, this.myUi.showSidebar);
         break;
       case UnifiedButtonsType.SIDEBAR:
         animateToImmediately(defaultAnimation(), () => {
           this.myUi.showSidebar = !this.myUi.showSidebar;
+          if (!this.myUi.myLayout.wideMode && this.myUi.showTabs) {
+            this.myUi.showTabs = false;
+          }
         });
+        getMySettings().setByIndex(22, this.myUi.showTabs);
         getMySettings().setByIndex(82, this.myUi.showSidebar);
         break;
       case UnifiedButtonsType.BOOKMARKS:
