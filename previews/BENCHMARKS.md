@@ -14,12 +14,6 @@ App versions:
 
 App settings: Full screen, no other tabs opened, no other Apps running in operating system background.
 
-## Launch and Restore Speed
-
-Tests were performed once, no retesting, subject to randomness — for reference only.
-
-https://github.com/user-attachments/assets/5a28a207-2632-4bc3-8378-8f1553274ead
-
 ## Web Permissions / API Compatibility
 
 https://permission.site/
