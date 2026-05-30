@@ -108,12 +108,18 @@ export class meowUiHost {
   }
 
   /**
+   * Does the cleaning jobs of this window. Is the very last method called in the window's life.
    * Removes the working directory if not isZone.
+   * And destroys the web nodes, and clears hosts from AppStorageV2.
    */
   async reportWindowClose() {
     meow(`Window [${this.windowId}] closed.`, `meowUiHost][reportWindowClose][${this.windowId}`, meowLevel.WARN);
     const isLastWindow = getCreateMyApp().windowIds.length == 0;
     const nextTimeNeed = startUpOptionFromSettings() == 'continue';
+
+    // Web nodes
+    this.myTabs.requestDestroy();
+
     // Remove if is either one of:
     // 1. Not ZONE && not last window
     // 2. Not ZONE && (IS last window &&) not next time need
@@ -129,6 +135,13 @@ export class meowUiHost {
       // meow(`About to save all webStates to disk!`, `meowUiHost][reportWindowClose][${this.windowId}`, meowLevel.WARN);
       // await Promise.all(this.myTabs.tabs.map((tab): Promise<boolean> => tab.saveWebState()));
     }
+
+    // Clear from AppStorageV2
+    AppStorageV2.remove(`meowTabsBunch_${this.windowId}`);
+    AppStorageV2.remove(`meowLayout_${this.windowId}`);
+    AppStorageV2.remove(`meowUiHost_${this.windowId}`);
+    AppStorageV2.remove(`meowAvoid_${this.windowId}`);
+    AppStorageV2.remove(`meowMisc_${this.windowId}`);
   }
 
   get myTabs() {
@@ -267,7 +280,7 @@ export class meowUiHost {
    * Update the window title.
    */
   async updateWindowTitle() {
-    const alias = this.isZone? `󰙟 ${this.windowAlias}`:this.windowAlias;
+    const alias = this.isZone ? `󰙟 ${this.windowAlias}` : this.windowAlias;
     meow(`Update window title to: ${alias}`, `meowUiHost][${this.windowId}][updateWindowTitle`, meowLevel.WARN);
     this.windowObj?.setWindowTitle(alias)
       .catch((e: BusinessError) => {
@@ -312,7 +325,7 @@ export class meowUiHost {
   async setWindowAlias(newAlias: string) {
     this.windowAlias = newAlias;
     await this.updateWindowTitle();
-    
+
     // Zones names
     if (this.isZone) {
       // Replace the last part of current workingDir to the newAlias

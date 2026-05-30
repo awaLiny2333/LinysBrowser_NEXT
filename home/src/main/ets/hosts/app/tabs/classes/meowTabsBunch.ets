@@ -49,6 +49,16 @@ export class meowTabsBunch {
     meow(`Initialized in ${Date.now() - startTime} ms`, 'meowTabsBunch][init', meowLevel.WARN);
   }
 
+  /**
+   * Called to destroy this tabsBunch. Usually used when the window is closed.
+   * Calls the tabs in this bunch to destroy themselves.
+   */
+  requestDestroy() {
+    for (const element of this.tabs) {
+      element.requestDestroyNode();
+    }
+  }
+
   // WEBSTATES
 
   get workingDir() {

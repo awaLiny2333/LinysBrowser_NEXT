@@ -370,10 +370,10 @@ export function onWindowStageWillDestroy(windowStage: window.WindowStage) {
   }
 
   if (targetUi) {
-    myApp.reportWindowClose(targetUi.windowId);
-    targetUi.reportWindowClose();
     offFocus(targetUi.windowObj!);
     offAvoid(targetUi.windowObj!);
     offWindowStatusChange(targetUi!.windowId);
+    myApp.reportWindowClose(targetUi.windowId);
+    targetUi.reportWindowClose();
   }
 }

@@ -99,9 +99,16 @@ export class meowTabInfo {
 
     // Destroy the web node.
     if (this.isActive) {
-      this.node!.detachWeb();
-      this.node!.dispose();
+      this.requestDestroyNode();
     }
+  }
+
+  /**
+   * Request the web to destroy itself (Majorly its nodes).
+   */
+  requestDestroyNode() {
+    this.node?.detachWeb();
+    this.node?.dispose();
   }
 
   /**
