@@ -29,8 +29,8 @@ struct UpdateRecords {
                 }); // Tags
               };
               // Desc
-              Text(item.item.description_zh).attributeModifier(new MooTextModifier());
-              Text(item.item.description_en).attributeModifier(new MooTextModifier()).opacity(0.7);
+              Text(item.item.description_zh).attributeModifier(new MooTextModifier()).width('100%');
+              Text(item.item.description_en).attributeModifier(new MooTextModifier()).opacity(0.7).width('100%');
             };
           }
           .padding({ left: standardSpacing, right: standardSpacing });
