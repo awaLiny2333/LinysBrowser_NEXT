@@ -115,7 +115,7 @@ struct SlotEditButton {
         }
       }
     }
-    .backgroundColor(getColor(meowThemeColorType.PRIMARY))
+    .backgroundColor(useEffects() ? Color.Transparent : getColor(meowThemeColorType.PRIMARY))
     .alignItems(HorizontalAlign.End)
     .onTouch((event) => {
       event.stopPropagation(); // Prevent event propagation, allowing the menu to remain open when clicked
