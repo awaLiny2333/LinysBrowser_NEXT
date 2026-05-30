@@ -296,6 +296,8 @@ export class meowTabInfo {
     if (!this.restoringWebState) {
       this.putBackupReq();
     }
+
+    this.updateWebSettings();
   }
 
   /**
@@ -320,6 +322,8 @@ export class meowTabInfo {
     setTimeout(() => {
       this.restoringWebState = false;
     });
+
+    this.updateWebSettings();
   }
 
   onTitle() {
@@ -344,10 +348,15 @@ export class meowTabInfo {
   onProgressChange() {
     try {
       let url = this.controller?.getUrl();
-      let title = this.controller?.getTitle();
+      if (url == this.url) {
+        return;
+      }
 
-      // Sign of no change.
-      if (url == this.url && this.title == title) {
+      // Update Settings
+      this.updateWebSettings();
+
+      let title = this.controller?.getTitle();
+      if (this.title == title) {
         return;
       }
 
@@ -356,7 +365,6 @@ export class meowTabInfo {
 
       // Web settings & BrowserCat UI
       this.syncUrlUI();
-      this.updateWebSettings();
 
     } catch (e) {
       meow(`this.url = this.controller?.getUrl(); failed: ${e}`, `meowTabInfo][onProgressChange`, meowLevel.ERROR);
