@@ -4,12 +4,23 @@
 
 ## Things to consider when migrating to 2.0
 
-The App itself can be directly installed and updated, 
-but because some file structures have changed, BrowserCat 2.0 cannot directly inherit all previous data.
+All v1.x codes are archived to the v1 tag.
+The App itself can be directly installed and updated, but because some file structures have changed, BrowserCat 2.0 cannot directly inherit all previous data.
 
 1. The history index needs to be rebuilt manually.
 2. All previously opened web pages not in Zones will be lost.
 3. EasyList may need to be deleted and re-added, or it may not.
+
+Function enhancements:
+
+1. Customizable buttons in the UI!
+2. Customizable sidebar!
+3. Better overall user experience!
+
+Features missing:
+
+1. HarmonyOS-specific connectivity features (continuation, grab and share...) are not yet complete.
+2. Some in-app features (not critical) are not yet complete.
 
 ## Completely restructured?!
 
@@ -20,21 +31,21 @@ such as ArkUI and ArkTS (such as state management V2)
 to reconstruct the new user interface (UI) and underlying systems (management cats) for the browser:
 
 1. History Management (meowHistorian):
-  a. Index rebuild time - 24.7%;
-  b. Index file space usage — 22.0%;
-  c. Used block indexing, loading time - 99.9% (pre-loading is no longer needed, 
-  because fastbuffer ensures efficiency & allows on-demand loading during queries)
+    a. Index rebuild time - 24.7%;
+    b. Index file space usage — 22.0%;
+    c. Used block indexing, loading time - 99.9% (pre-loading is no longer needed, 
+    because fastbuffer ensures efficiency & allows on-demand loading during queries)
 
 2. Settings Management (MeowManagedSettings):
-  a. Using the @ObservedV2 decorator allows direct perception of changes 
-  without intermediate state variables to communicate with the UI, 
-  improving development efficiency and performance (slightly);
+    a. Using the @ObservedV2 decorator allows direct perception of changes 
+    without intermediate state variables to communicate with the UI, 
+    improving development efficiency and performance (slightly);
 
 3. Bookmark Management (meowBookmarkStash):
-  a. With the help of experts like ChatGLM, a faster and safer HTML parser is rebuilt.
-  b. With optimized data structures, loading time - 86.0%;
-  c. Bookmark reading and writing uses TaskPool, which does not block the main thread 
-  (it is slightly slower by a few milliseconds :P).
+    a. With the help of experts like ChatGLM, a faster and safer HTML parser is rebuilt.
+    b. With optimized data structures, loading time - 86.0%;
+    c. Bookmark reading and writing uses TaskPool, which does not block the main thread 
+    (it is slightly slower by a few milliseconds :P).
 
 Also, due to the use of TaskPool, time taken from onCreate to Index render completion - 17.4% 
 (though not very noticeable) - is almost on par with an empty project.
@@ -64,3 +75,12 @@ Liny would feel so anxious that the update of this project would be selected to 
 Let's say: _Thank you, issues!_
 
 :3
+
+## Previews
+
+![Settings in normal mode](previews/Settings-normal.jpg)
+![Settings in advanced effects](previews/Settings-effects.jpg)
+
+## Benchmarks
+
+[BENCHMARKS](previews/BENCHMARKS.md)
