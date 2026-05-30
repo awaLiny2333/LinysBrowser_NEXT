@@ -27,8 +27,8 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('esc_to_access_backward', meowSettingsEntryType.BOOLEAN, 'false'), // #11
   new meowSettingsEntry('max_bookmark_suggest', meowSettingsEntryType.NUMBER, '5'), // #12
   new meowSettingsEntry('max_history_suggest', meowSettingsEntryType.NUMBER, '5'), // #13
-  new meowSettingsEntry('tabs_vertical_auto_hide', meowSettingsEntryType.BOOLEAN, 'true'), // #14
-  new meowSettingsEntry('tabs_vertical_auto_hide_button', meowSettingsEntryType.BOOLEAN, 'true'), // #15
+  new meowSettingsEntry('tabs_vertical_auto_hide', meowSettingsEntryType.BOOLEAN, 'false'), // #14
+  new meowSettingsEntry('tabs_vertical_auto_hide_button', meowSettingsEntryType.BOOLEAN, 'false'), // #15
   new meowSettingsEntry('web_context_menu_enabled', meowSettingsEntryType.BOOLEAN, 'true'), // #16
   new meowSettingsEntry('web_context_menu_image_preview', meowSettingsEntryType.BOOLEAN, 'true'),
   new meowSettingsEntry('web_context_menu_web_preview', meowSettingsEntryType.BOOLEAN, 'true'),
