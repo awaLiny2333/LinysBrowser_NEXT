@@ -1,17 +1,18 @@
 import { BuilderNode, FrameNode, NodeController, UIContext } from '@kit.ArkUI';
-import lazy { meow } from '../../../../catstypicalframework/utils/catsLogger';
+import lazy { meow, meowLevel } from '../../../../catstypicalframework/utils/catsLogger';
 import lazy { copyText } from '../../../../catstypicalframework/utils/clipboard';
 import lazy { defaultInnerRadius, measureTextWidth, meowPx2vp } from '../../../../catstypicalframework/utils/ui';
 import lazy { isLegalUrl } from '../../../../catstypicalframework/utils/url';
 import lazy { MooSoloWeb } from '../../../../components/common/MooSoloWeb';
 import lazy { MooSymbolButton } from '../../../../components/common/MooSymbolButton';
 import lazy { MooTextButton } from '../../../../components/common/MooTextButton';
-import lazy { fontSizeSmall, meowThemeColorType, standardSpacing } from '../../../../components/constants';
+import { MooTextModifier } from '../../../../components/common/MooTextModifier';
+import lazy { fontSizeSmall, meowThemeColorType, mooTextType, standardSpacing } from '../../../../components/constants';
 import lazy { oopsPreviewActionsImage } from '../../../../components/parts/WebContextMenu/oopsPreviewActionsImage';
 import lazy { oopsPreviewActionsText } from '../../../../components/parts/WebContextMenu/oopsPreviewActionsText';
 import lazy { oopsPreviewImage } from '../../../../components/parts/WebContextMenu/oopsPreviewImage';
 import lazy { oopsPreviewQrResults } from '../../../../components/parts/WebContextMenu/oopsPreviewQrResults';
-import lazy { defaultAnimation, getColor, useEffects } from '../../../../components/settings';
+import lazy { defaultAnimation, getColor, isPreferRightHand, useEffects } from '../../../../components/settings';
 import lazy { getCreateMyApp } from '../../../system/windows/scripts/helpers';
 import lazy { contextMenuImagePreview, contextMenuStripText, contextMenuWebHeight, contextMenuWebPreview } from '../settings';
 import { meowTabInfo } from './meowTabInfo';
@@ -21,146 +22,216 @@ struct MeowWeb {
   @Param @Require pk: meowTabInfo;
 
   build() {
-    Web({
-      src: this.pk.url || '',
-      controller: this.pk.controller
-    })
-      .mediaPlayGestureAccess(false)
-      .layoutWeight(1)
-      .geolocationAccess(true)
-      .databaseAccess(true)
-      .fileAccess(true)
-      .domStorageAccess(true)
-      .multiWindowAccess(true)
-      .mixedMode(MixedMode.All)
-      .allowWindowOpenMethod(true)
-      .mediaOptions({ audioExclusive: false })
-      .darkMode(WebDarkMode.Auto) // Dark mode!
-      .forceDarkAccess(this.pk.forceDark) // Force dark mode
-      .javaScriptAccess(!this.pk.xJS)
-      .imageAccess(!this.pk.xImage)
-      .onlineImageAccess(!this.pk.xImage)
-      .onDrop(() => {
-        clearTimeout(this.pk.myUi.dropHoverFlipTimeoutId);
-        animateToImmediately(defaultAnimation(), () => {
-          this.pk.myUi.dropHover = false;
+    Stack() {
+      Web({
+        src: this.pk.url || '',
+        controller: this.pk.controller
+      })
+        .mediaPlayGestureAccess(false)
+        .layoutWeight(1)
+        .geolocationAccess(true)
+        .databaseAccess(true)
+        .fileAccess(true)
+        .domStorageAccess(true)
+        .multiWindowAccess(true)
+        .mixedMode(MixedMode.All)
+        .allowWindowOpenMethod(true)
+        .mediaOptions({ audioExclusive: false })
+        .darkMode(WebDarkMode.Auto) // Dark mode!
+        .forceDarkAccess(this.pk.forceDark) // Force dark mode
+        .javaScriptAccess(!this.pk.xJS)
+        .imageAccess(!this.pk.xImage)
+        .onlineImageAccess(!this.pk.xImage)
+        .onDrop(() => {
+          clearTimeout(this.pk.myUi.dropHoverFlipTimeoutId);
+          animateToImmediately(defaultAnimation(), () => {
+            this.pk.myUi.dropHover = false;
+          });
+        })
+        .onControllerAttached(() => {
+          this.pk.onControllerAttached();
+        })
+        .onTitleReceive(() => {
+          this.pk.onTitle();
+        })
+        .onPageBegin(() => {
+          this.pk.onPageBegin();
+        })
+        .onPageEnd(() => {
+          this.pk.onPageEndLoadFinished();
+        })
+        .onLoadFinished(() => {
+          this.pk.onPageEndLoadFinished();
+        })
+        .onProgressChange((event) => {
+          this.pk.progress = event.newProgress;
+          if (this.pk.progress == 100) {
+            this.pk.progress = -1;
+            // onPageEnd or onLoadFinished (duringLoad()) will be triggered, so we don't need to do anything here.
+          } else {
+            this.pk.onProgressChange();
+          }
+        })
+        .onFullScreenEnter((event) => {
+          this.pk.requestFullScreen(event);
+        })
+        .onFullScreenExit(() => {
+          this.pk.requestFullScreenExit();
+        })
+        .onPrompt((e) => {
+          return this.pk.requestPrompt(e);
+        })
+        .onConfirm((e) => {
+          return this.pk.requestConfirm(e);
+        })
+        .onAlert((e) => {
+          return this.pk.requestAlert(e);
+        })
+        .onSslErrorEvent((e) => {
+          this.pk.requestSslError(e);
+        })
+        .onClientAuthenticationRequest((event) => {
+          this.pk.requestClientAuthentication(event);
+        })
+        .onVerifyPin((event) => {
+          this.pk.requestVerifyPin(event);
+        })
+        .onLoadIntercept((event) => {
+          return this.pk.requestLoad(event);
+        })
+        .onPermissionRequest((event) => {
+          this.pk.requestWebPermissions(event);
+        })
+        .onScreenCaptureRequest((event) => {
+          this.pk.requestScreenCapture(event);
+        })
+        .onGeolocationShow((event) => {
+          this.pk.requestGeolocation(event);
+        })
+        .onHttpAuthRequest((event) => {
+          this.pk.requestHttpAuth(event);
+          return true;
+        })
+        .onSearchResultReceive((result) => {
+          this.pk.receiveSearchResult(result);
+        })
+        .onActivateContent(() => {
+          this.pk.requestActivateContent();
+        })
+        .onWindowExit(() => {
+          this.pk.requestExit();
+        })
+        .onWindowNew((event) => {
+          if (!event) {
+            return;
+          }
+          if (event.isAlert) {
+            this.pk.requestNewPopup(event);
+            return;
+          }
+          const result = this.pk.requestNewTab(event.targetUrl);
+          setTimeout(() => {
+            meow(`onWindowNew: ${event.targetUrl} -> ${result}`, 'WebNode][onWindowNew');
+            event.handler.setWebController(this.pk.controller);
+          });
+          // TODO: This timeout is essential to not block the original web.
+          // But this would lead to the original web's misunderstanding that
+          // the new popup request failed and no controller was returned.
+          // So some sites may think that this browser has no popup permission.
+        })
+        .onContextMenuShow((event) => {
+          if (!event) {
+            return false;
+          }
+          // Data
+          this.pk.contextMenuResult = event.result;
+          this.pk.linkUrl = event.param.getLinkUrl();
+          this.pk.sourceUrl = event.param.getSourceUrl();
+          this.pk.unfilteredUrl = event.param.getUnfilteredLinkUrl();
+          this.pk.isEditable = event.param.isEditable();
+          this.pk.hasImage = event.param.existsImageContents();
+          let t = event.param.getSelectionText();
+          this.pk.selectedText = contextMenuStripText() ? t.trim() : t;
+          // Ui
+          this.pk.offsetX = meowPx2vp(event?.param.x() ?? 0);
+          this.pk.offsetY = meowPx2vp(event?.param.y() ?? 0);
+          this.pk.showMenu = true;
+          return true;
+        })
+        .bindContextMenu(this.pk.showMenu, this.MenuBuilder, {
+          enableArrow: false,
+          placement: Placement.BottomRight,
+          anchorPosition: { x: this.pk.offsetX, y: this.pk.offsetY },
+          onDidDisappear: () => {
+            this.pk.showMenu = false;
+            this.pk.contextMenuResult!.closeContextMenu();
+          },
+          backgroundColor: useEffects() ? Color.Transparent : getColor(meowThemeColorType.PRIMARY),
+          backgroundBlurStyle: useEffects() ? BlurStyle.COMPONENT_ULTRA_THICK : BlurStyle.NONE,
+          hapticFeedbackMode: HapticFeedbackMode.AUTO,
         });
-      })
-      .onControllerAttached(() => {
-        this.pk.onControllerAttached();
-      })
-      .onTitleReceive(() => {
-        this.pk.onTitle();
-      })
-      .onPageBegin(() => {
-        this.pk.onPageBegin();
-      })
-      .onPageEnd(() => {
-        this.pk.onPageEndLoadFinished();
-      })
-      .onLoadFinished(() => {
-        this.pk.onPageEndLoadFinished();
-      })
-      .onProgressChange((event) => {
-        this.pk.progress = event.newProgress;
-        if (this.pk.progress == 100) {
-          this.pk.progress = -1;
-          // onPageEnd or onLoadFinished (duringLoad()) will be triggered, so we don't need to do anything here.
-        } else {
-          this.pk.onProgressChange();
+
+      // Popup
+      if (this.pk.showingPopup) {
+        Stack() {
+          // Background padding.
+          Column()
+            .backgroundColor(Color.Black)
+            .opacity(0.75)
+            .width('100%')
+            .height('100%');
+
+          Column({ space: standardSpacing }) {
+            // Web.
+            MooSoloWeb({
+              url: '', controllerMeow: this.pk.popupController, onUrlUpdate: (url) => {
+                this.pk.popupUrl = url;
+                try {
+                  this.pk.popupTitle = this.pk.popupController?.getTitle() || '...';
+                } catch (e) {
+                  meow(`Error getting title: ${e}`, 'WebNode][onWindowNew', meowLevel.ERROR);
+                }
+              }, onWindowExit: () => {
+                animateToImmediately(defaultAnimation(), () => {
+                  this.pk.showingPopup = false;
+                });
+              }
+            })
+              .clip(true)
+              .border({ radius: defaultInnerRadius, width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth') })
+              .layoutWeight(1);
+
+            // Info & Control.
+            Row() {
+              Column({ space: standardSpacing * 0.75 }) {
+                Text(this.pk.popupTitle).attributeModifier(new MooTextModifier(mooTextType.TITLE)).maxLines(1).wordBreak(WordBreak.BREAK_ALL);
+                Text(this.pk.popupUrl).attributeModifier(new MooTextModifier()).maxLines(1).wordBreak(WordBreak.BREAK_ALL);
+              }
+              .padding(standardSpacing * 0.5)
+              .alignItems(isPreferRightHand() ? HorizontalAlign.Start : HorizontalAlign.End)
+              .layoutWeight(1);
+
+              MooSymbolButton({
+                icon: $r('sys.symbol.xmark'),
+                clickAction: () => {
+                  animateToImmediately(defaultAnimation(), () => {
+                    this.pk.showingPopup = false;
+                  });
+                }
+              });
+            }
+            .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl)
+            .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
+            .backgroundColor(getColor(meowThemeColorType.PRIMARY))
+            .border({ radius: defaultInnerRadius, width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth') })
+            .padding(standardSpacing);
+          }
+          .margin(this.pk.myUi.myLayout.wideMode ? standardSpacing * 6 : standardSpacing);
         }
-      })
-      .onFullScreenEnter((event) => {
-        this.pk.requestFullScreen(event);
-      })
-      .onFullScreenExit(() => {
-        this.pk.requestFullScreenExit();
-      })
-      .onPrompt((e) => {
-        return this.pk.requestPrompt(e);
-      })
-      .onConfirm((e) => {
-        return this.pk.requestConfirm(e);
-      })
-      .onAlert((e) => {
-        return this.pk.requestAlert(e);
-      })
-      .onSslErrorEvent((e) => {
-        this.pk.requestSslError(e);
-      })
-      .onClientAuthenticationRequest((event) => {
-        this.pk.requestClientAuthentication(event);
-      })
-      .onVerifyPin((event) => {
-        this.pk.requestVerifyPin(event);
-      })
-      .onLoadIntercept((event) => {
-        return this.pk.requestLoad(event);
-      })
-      .onPermissionRequest((event) => {
-        this.pk.requestWebPermissions(event);
-      })
-      .onScreenCaptureRequest((event) => {
-        this.pk.requestScreenCapture(event);
-      })
-      .onGeolocationShow((event) => {
-        this.pk.requestGeolocation(event);
-      })
-      .onHttpAuthRequest((event) => {
-        this.pk.requestHttpAuth(event);
-        return true;
-      })
-      .onSearchResultReceive((result) => {
-        this.pk.receiveSearchResult(result);
-      })
-      .onActivateContent(() => {
-        this.pk.requestActivateContent();
-      })
-      .onWindowExit(() => {
-        this.pk.requestExit();
-      })
-      .onWindowNew((event) => {
-        const result = this.pk.requestNewTab(event.targetUrl);
-        setTimeout(() => {
-          meow(`onWindowNew: ${event.targetUrl} -> ${result}`, 'WebNode][onWindowNew');
-          event.handler.setWebController(this.pk.controller);
-        });
-        // TODO: This timeout is essential to not block the original web.
-        // But this would lead to the original web's misunderstanding that
-        // the new popup request failed and no controller was returned.
-        // So some sites may think that this browser has no popup permission.
-      })
-      .onContextMenuShow((event) => {
-        if (!event) {
-          return false;
-        }
-        // Data
-        this.pk.contextMenuResult = event.result;
-        this.pk.linkUrl = event.param.getLinkUrl();
-        this.pk.sourceUrl = event.param.getSourceUrl();
-        this.pk.unfilteredUrl = event.param.getUnfilteredLinkUrl();
-        this.pk.isEditable = event.param.isEditable();
-        this.pk.hasImage = event.param.existsImageContents();
-        let t = event.param.getSelectionText();
-        this.pk.selectedText = contextMenuStripText() ? t.trim() : t;
-        // Ui
-        this.pk.offsetX = meowPx2vp(event?.param.x() ?? 0);
-        this.pk.offsetY = meowPx2vp(event?.param.y() ?? 0);
-        this.pk.showMenu = true;
-        return true;
-      })
-      .bindContextMenu(this.pk.showMenu, this.MenuBuilder, {
-        enableArrow: false,
-        placement: Placement.BottomRight,
-        anchorPosition: { x: this.pk.offsetX, y: this.pk.offsetY },
-        onDidDisappear: () => {
-          this.pk.showMenu = false;
-          this.pk.contextMenuResult!.closeContextMenu();
-        },
-        backgroundColor: useEffects() ? Color.Transparent : getColor(meowThemeColorType.PRIMARY),
-        backgroundBlurStyle: useEffects() ? BlurStyle.COMPONENT_ULTRA_THICK : BlurStyle.NONE,
-        hapticFeedbackMode: HapticFeedbackMode.AUTO,
-      });
+        .width('100%')
+        .height('100%');
+      }
+    };
   }
 
   @Builder

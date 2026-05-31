@@ -35,6 +35,11 @@ export class meowTabInfo {
   @Trace progress: number = -1; // -1 for not loading, other positive values from 0 ~ 100 is the progress for loading.
   @Trace canBack: boolean = false;
   @Trace canForw: boolean = false;
+  // Popup
+  @Trace showingPopup: boolean = false;
+  @Trace popupController: WebviewController | undefined;
+  @Trace popupUrl: string = '';
+  @Trace popupTitle: string = '';
   // Web settings
   @Trace forceDark: boolean = true;
   @Trace xJS: boolean = false;
@@ -737,6 +742,18 @@ export class meowTabInfo {
       result = myTabs.newTabBare(url).controller;
     });
     return result || null;
+  }
+
+  requestNewPopup(event: OnWindowNewEvent) {
+    // Show dialog.
+    if (!this.popupController) {
+      this.popupController = new webview.WebviewController();
+    }
+
+    animateToImmediately(defaultAnimation(), () => {
+      this.showingPopup = true;
+      event.handler.setWebController(this.popupController);
+    });
   }
 
   requestFullScreen(event: FullScreenEnterEvent) {

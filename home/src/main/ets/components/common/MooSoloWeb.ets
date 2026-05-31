@@ -21,9 +21,11 @@ export struct MooSoloWeb {
   // UI
   @Param radius: number = 0;
   // Web
-  @Param @Once controllerMeow: webview.WebviewController = new webview.WebviewController();
+  @Param controllerMeow: webview.WebviewController = new webview.WebviewController();
   // Events
   @Event onDropMe: () => void;
+  @Event onUrlUpdate: (url: string) => void;
+  @Event onWindowExit: () => void;
 
   build() {
     Web({ src: '', controller: this.controllerMeow })
@@ -100,6 +102,9 @@ export struct MooSoloWeb {
           }
         }
       })
+      .onWindowExit(() => {
+        this.onWindowExit();
+      })
       .borderRadius(this.radius);
   }
 
@@ -112,5 +117,6 @@ export struct MooSoloWeb {
     } catch (e) {
       console.error('[MooSoloWeb] onProgressChange error: ' + e);
     }
+    this.onUrlUpdate(this.realUrl);
   }
 }
