@@ -36,7 +36,7 @@ struct MeowTabsVertical {
                   Text(item.item.title || 'Meow').attributeModifier(new MooTextModifier()).maxLines(1).wordBreak(WordBreak.BREAK_ALL).layoutWeight(1).padding(standardSpacing * 0.5);
 
                   // Web state saving / history punching indicator
-                  if (item.item.saveWebStateTimeoutId != undefined || item.item.saveHistoryTimeoutId != undefined) {
+                  if (item.item.wsBackupReqTmId != undefined || item.item.saveHistoryTimeoutId != undefined) {
                     MooSymbolButtonSmall($r('sys.symbol.cup'), () => {
                       animateToImmediately(defaultAnimation(), () => {
                         this.myTabs.closeTab(item.index);

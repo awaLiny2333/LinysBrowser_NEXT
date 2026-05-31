@@ -27,7 +27,7 @@ export class meowTabInfo {
   // Web States
   webStateId: string;
   @Trace restoringWebState: boolean = false;
-  @Trace saveWebStateTimeoutId: number | undefined;
+  @Trace wsBackupReqTmId: number | undefined;
   // UI info
   @Trace endOfLoadTimestamp: number = Number.MAX_VALUE; // Requests to save history / webstate after this time should be rejected.
   @Trace title: string | undefined;
@@ -94,7 +94,7 @@ export class meowTabInfo {
    */
   onClose() {
     clearTimeout(this.saveHistoryTimeoutId);
-    clearTimeout(this.saveWebStateTimeoutId);
+    clearTimeout(this.wsBackupReqTmId);
     this.deleteWebState();
 
     // Destroy the web node.
@@ -117,7 +117,7 @@ export class meowTabInfo {
    */
   aboutToBeReceived() {
     clearTimeout(this.saveHistoryTimeoutId);
-    clearTimeout(this.saveWebStateTimeoutId);
+    clearTimeout(this.wsBackupReqTmId);
     this.deleteWebState();
 
     // ↓ Modified from closeTab() in meowTabsBunch.
@@ -250,23 +250,27 @@ export class meowTabInfo {
 
   // Events
 
+  /**
+   * BackupReq refers to the request to save webstates for a new loading page.
+   * This is like a backup strategy, as in extreme cases, the web may fail to load and fail to trigger any onProgressChange events.
+   */
   putBackupReq() {
-    clearTimeout(this.saveWebStateTimeoutId);
-    this.saveWebStateTimeoutId = setTimeout(() => {
+    clearTimeout(this.wsBackupReqTmId);
+    this.wsBackupReqTmId = setTimeout(() => {
       this.saveWebState('B').then(() => {
-        this.saveWebStateTimeoutId = undefined;
+        this.wsBackupReqTmId = undefined;
       });
     }, 1500);
-    const logTag = `meowTabInfo][putBackupReq][${this.saveWebStateTimeoutId}`;
+    const logTag = `meowTabInfo][putBackupReq][${this.wsBackupReqTmId}`;
     meow('WebState >', logTag, meowLevel.WARN);
     meow(`Request for backup WebState saving in ${1500} ms.`, logTag, meowLevel.WARN);
   }
 
   clearBackupReq(sourceInfo: string) {
-    if (this.saveWebStateTimeoutId) {
-      meow(`Cleared save webstate req.`, `meowTabInfo][clearBackupReq][${sourceInfo}][${this.saveWebStateTimeoutId}`);
-      clearTimeout(this.saveWebStateTimeoutId);
-      this.saveWebStateTimeoutId = undefined;
+    if (this.wsBackupReqTmId) {
+      meow(`Cleared save webstate req.`, `meowTabInfo][clearBackupReq][${sourceInfo}][${this.wsBackupReqTmId}`);
+      clearTimeout(this.wsBackupReqTmId);
+      this.wsBackupReqTmId = undefined;
     }
   }
 
@@ -290,7 +294,7 @@ export class meowTabInfo {
   onPageBegin() {
     // Do things.
     this.progress = 0;
-    this.endOfLoadTimestamp = Number.MAX_VALUE; // 封顶 by onPageEndLoadFinished
+    this.endOfLoadTimestamp = Number.MAX_VALUE; // then later truely set by onPageEndLoadFinished
 
     // Update addressbar overlay
     this.myUi.requestShowAddressBarOverlay();
@@ -304,6 +308,8 @@ export class meowTabInfo {
       this.putBackupReq();
     }
 
+    // Initial settings
+    this.getUrlTitleFromController();
     this.updateWebSettings();
   }
 
@@ -318,8 +324,10 @@ export class meowTabInfo {
       this.lastSavedHistoryEntries = [new meowHistoryEntry(this.title || '', this.url || '', Date.now())];
     }
 
+    // Final update settings
     this.getUrlTitleFromController();
-
+    this.updateWebSettings();
+    
     // Save history & web state
     this.tryPunchHistoryWebState(500, 'theEnd?');
 
@@ -329,14 +337,11 @@ export class meowTabInfo {
     setTimeout(() => {
       this.restoringWebState = false;
     });
-
-    this.updateWebSettings();
   }
 
   onTitle() {
     try {
       this.getUrlTitleFromController();
-
       this.syncUrlUI();
 
       // Save history & web state, majorly to update the title in history and the label of webstate.
@@ -360,19 +365,13 @@ export class meowTabInfo {
       }
 
       // Update Settings
+      this.getUrlTitleFromController(); // Update class attributes.
       this.updateWebSettings();
 
-      let title = this.controller?.getTitle();
-      if (this.title == title) {
-        return;
-      }
-
-      // Update info
-      this.getUrlTitleFromController();
-
-      // Web settings & BrowserCat UI
+      // Update info & UI
       this.syncUrlUI();
 
+      meow(`onProgressChange: [${this.title}](${this.url})`, `meowTabInfo][onProgressChange`);
     } catch (e) {
       meow(`this.url = this.controller?.getUrl(); failed: ${e}`, `meowTabInfo][onProgressChange`, meowLevel.ERROR);
     }

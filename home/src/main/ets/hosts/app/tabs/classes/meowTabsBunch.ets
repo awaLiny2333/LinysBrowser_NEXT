@@ -195,7 +195,7 @@ export class meowTabsBunch {
 
     this.switchTo(tabInfo);
     tabInfo.saveWebState('move');
-    tabInfo.saveWebStateTimeoutId = undefined;
+    tabInfo.wsBackupReqTmId = undefined;
 
     // UI
     animateToImmediately(defaultAnimation(), () => {
@@ -443,7 +443,7 @@ export class meowTabsBunch {
   get isBusy() {
     let busy = false;
     for (const tab of this.tabs) {
-      if (tab.saveWebStateTimeoutId != undefined || tab.saveHistoryTimeoutId != undefined) {
+      if (tab.wsBackupReqTmId != undefined || tab.saveHistoryTimeoutId != undefined) {
         busy = true;
         break;
       }
