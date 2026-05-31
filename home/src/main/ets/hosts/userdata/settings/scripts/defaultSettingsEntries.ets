@@ -128,4 +128,6 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('show_sidebar', meowSettingsEntryType.BOOLEAN, 'false'), // #82
   new meowSettingsEntry('sidebar_content', meowSettingsEntryType.STRING, 'HIS'), // #83
   new meowSettingsEntry('tabs_vertical_auto_hide_no_push', meowSettingsEntryType.BOOLEAN, 'true'), // #84
+  // Web
+  new meowSettingsEntry('domain_specific_user_agents', meowSettingsEntryType.STRING_ARRAY_PAIR, 'meow.net\nua'), // #85
 ];

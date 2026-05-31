@@ -1,19 +1,19 @@
+import lazy { unifiedDataChannel } from "@kit.ArkData";
 import lazy { fastbuffer } from "@kit.ArkTS";
+import { AppStorageV2 } from "@kit.ArkUI";
 import lazy { webview } from "@kit.ArkWeb";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import lazy { listFilesUnderDir, readArrayBuffer, saveHybrid } from "../../../../catstypicalframework/utils/storage";
 import lazy { archiveWeb, printWeb } from "../../../../catstypicalframework/utils/web";
 import lazy { defaultAnimation } from "../../../../components/settings";
 import { meowUiHost } from "../../../system/windows/classes/meowUiHost";
-import { getCreateMyApp } from "../../../system/windows/scripts/helpers";
-import { getAllWindowIds } from "../../../system/windows/scripts/multiwindows";
+import lazy { getCreateMyApp } from "../../../system/windows/scripts/helpers";
+import lazy { getAllWindowIds } from "../../../system/windows/scripts/multiwindows";
 import { applyAdBlockerExceptions } from "../scripts/adBlocker";
 import { applyThirdPartyCookies } from "../scripts/cookies";
 import lazy { applyUserAgentFromSettings } from "../scripts/userAgents";
 import { meowTabInfo } from "./meowTabInfo";
 import lazy { TabNodeController } from "./WebNode";
-import { AppStorageV2 } from "@kit.ArkUI";
-import { unifiedDataChannel } from "@kit.ArkData";
 
 /**
  * The Unified Type name of meowTabInfo items.
@@ -38,6 +38,7 @@ export class meowTabsBunch {
     const startTime = Date.now();
     // User agent
     applyUserAgentFromSettings();
+    // applyUserAgentRulesFromSettings();
     // Cookies
     applyThirdPartyCookies();
     // Ad blocks

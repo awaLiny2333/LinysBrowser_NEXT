@@ -80,6 +80,10 @@ export function userAgentList() {
   return getMySettings().settingsData[41].value as string[][];
 }
 
+export function userAgentRuleList() {
+  return getMySettings().settingsData[85].value as string[][];
+}
+
 export function userAgentSelected() {
   return getMySettings().settingsData[42].value as number;
 }

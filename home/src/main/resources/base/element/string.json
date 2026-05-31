@@ -161,6 +161,10 @@
       "value": "User-agents"
     },
     {
+      "name": "Settings_category_general_surf_userAgent_domain_rules",
+      "value": "Domain user-agent rules"
+    },
+    {
       "name": "Settings_category_general_surf_searchEngine",
       "value": "Search engines"
     },

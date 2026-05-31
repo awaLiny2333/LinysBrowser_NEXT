@@ -18,9 +18,9 @@
  */
 
 import { common, Configuration, ConfigurationConstant } from '@kit.AbilityKit';
+import lazy { Want } from "@kit.AbilityKit";
 import lazy { AppStorageV2, window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
-import lazy { Want } from "@kit.AbilityKit";
 import { defaultNewWindowAlias, getMySettings, isPreferRightHandFromSettings } from '../components/settings';
 import { meowDawnloada } from '../hosts/app/downloads/classes/meowDawnloada';
 import { meowBoardHolder } from '../hosts/app/scratchingboard/classes/meowBoardHolder';

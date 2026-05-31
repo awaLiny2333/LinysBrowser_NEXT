@@ -72,6 +72,29 @@ struct SettingsGeneral {
           }
         });
 
+        // Text($r('app.string.Settings_category_general_surf_userAgent_domain_rules')).attributeModifier(new MooTextModifier());
+        // MooStringPairArrayList({
+        //   showDefaultItem: false,
+        //   selectedIndex: -2,
+        //   array: this.getUArules(),
+        //   allowSelect: true,
+        //   onEdited: (index, newVal) => {
+        //     userAgentRuleList()[index] = newVal;
+        //     this.mySettings.requestSaveToDisk();
+        //     globalMessage(meowAppMessageType.SETTINGS_UA_REFRESH, this.selectedIndexUA);
+        //   },
+        //   onNew: () => {
+        //     userAgentRuleList().push(['meow.net', getCurrentAppUserAgent()]);
+        //     this.mySettings.requestSaveToDisk();
+        //     globalMessage(meowAppMessageType.SETTINGS_UA_REFRESH, this.selectedIndexUA);
+        //   },
+        //   onDelete: (n) => {
+        //     userAgentRuleList().splice(n, 1);
+        //     this.mySettings.requestSaveToDisk();
+        //     globalMessage(meowAppMessageType.SETTINGS_UA_REFRESH, this.selectedIndexUA);
+        //   }
+        // });
+
         Text($r('app.string.Settings_category_general_surf_searchEngine')).attributeModifier(new MooTextModifier());
         MooStringPairArrayList({
           defaultItem: ['Bing', defaultSearchEngine()],
@@ -143,6 +166,12 @@ struct SettingsGeneral {
     // meow(`getSEs!`, 'General', meowLevel.WARN);
     return Array.from(searchEngineList());
   }
+
+  // getUArules() {
+  //   this.refreshFlagUA;
+  //   // meow(`getUArules!`, 'General', meowLevel.WARN);
+  //   return Array.from(userAgentRuleList());
+  // }
 
   /**
    * Syncing the panels across windows.

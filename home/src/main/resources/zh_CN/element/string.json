@@ -161,6 +161,10 @@
       "value": "用户标识（UA）"
     },
     {
+      "name": "Settings_category_general_surf_userAgent_domain_rules",
+      "value": "域名 UA 规则"
+    },
+    {
       "name": "Settings_category_general_surf_searchEngine",
       "value": "搜索引擎"
     },

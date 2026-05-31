@@ -12,6 +12,7 @@ struct MooStringPairArrayList {
   @Param @Once allowAdd: boolean = true;
   @Param @Once allowEdit: boolean = true;
   @Param @Once maxheight: number | undefined = 240;
+  @Param @Once showDefaultItem: boolean = true;
   @Param @Once defaultItem: string[] = ['label', 'link'];
   // Data
   @Param selectedIndex: number = -1;
@@ -31,16 +32,18 @@ struct MooStringPairArrayList {
         alignItems: ItemAlign.Center
       }) {
         // The fixed default item
-        MooStringItem({
-          isSelected: this.selectedIndex == -1,
-          clickable: this.allowSelect,
-          item: this.defaultItem,
-          index: -1,
-          allowEdit: false,
-          clickAction: (n) => {
-            this.onSelect(n);
-          }
-        });
+        if (this.showDefaultItem) {
+          MooStringItem({
+            isSelected: this.selectedIndex == -1,
+            clickable: this.allowSelect,
+            item: this.defaultItem,
+            index: -1,
+            allowEdit: false,
+            clickAction: (n) => {
+              this.onSelect(n);
+            }
+          });
+        }
 
         // Main list
         Repeat(this.array)
@@ -78,7 +81,7 @@ struct MooStringPairArrayList {
                   this.onNew();
                 });
               }
-            })
+            });
           }.justifyContent(FlexAlign.End).width('100%');
         }
       };

@@ -327,7 +327,7 @@ export class meowTabInfo {
     // Final update settings
     this.getUrlTitleFromController();
     this.updateWebSettings();
-    
+
     // Save history & web state
     this.tryPunchHistoryWebState(500, 'theEnd?');
 
