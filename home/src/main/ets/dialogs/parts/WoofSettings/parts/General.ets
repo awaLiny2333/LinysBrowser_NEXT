@@ -6,7 +6,7 @@ import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { mooTextType, standardSpacing } from '../../../../components/constants';
 import { getMySettings } from '../../../../components/settings';
 import { applyUserAgentFromSettings } from '../../../../hosts/app/tabs/scripts/userAgents';
-import { searchEngineList, searchEngineSelected, userAgentList, userAgentSelected, userHomeUrl, userNewTabUrl } from '../../../../hosts/app/tabs/settings';
+import { getCurrentAppUserAgent, searchEngineList, searchEngineSelected, userAgentList, userAgentRuleList, userAgentSelected, userHomeUrl, userNewTabUrl } from '../../../../hosts/app/tabs/settings';
 import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
 import { meowAppHost } from '../../../../hosts/system/windows/classes/meowAppHost';
@@ -72,28 +72,28 @@ struct SettingsGeneral {
           }
         });
 
-        // Text($r('app.string.Settings_category_general_surf_userAgent_domain_rules')).attributeModifier(new MooTextModifier());
-        // MooStringPairArrayList({
-        //   showDefaultItem: false,
-        //   selectedIndex: -2,
-        //   array: this.getUArules(),
-        //   allowSelect: true,
-        //   onEdited: (index, newVal) => {
-        //     userAgentRuleList()[index] = newVal;
-        //     this.mySettings.requestSaveToDisk();
-        //     globalMessage(meowAppMessageType.SETTINGS_UA_REFRESH, this.selectedIndexUA);
-        //   },
-        //   onNew: () => {
-        //     userAgentRuleList().push(['meow.net', getCurrentAppUserAgent()]);
-        //     this.mySettings.requestSaveToDisk();
-        //     globalMessage(meowAppMessageType.SETTINGS_UA_REFRESH, this.selectedIndexUA);
-        //   },
-        //   onDelete: (n) => {
-        //     userAgentRuleList().splice(n, 1);
-        //     this.mySettings.requestSaveToDisk();
-        //     globalMessage(meowAppMessageType.SETTINGS_UA_REFRESH, this.selectedIndexUA);
-        //   }
-        // });
+        Text($r('app.string.Settings_category_general_surf_userAgent_domain_rules')).attributeModifier(new MooTextModifier());
+        MooStringPairArrayList({
+          showDefaultItem: false,
+          selectedIndex: -2,
+          array: this.getUArules(),
+          allowSelect: true,
+          onEdited: (index, newVal) => {
+            userAgentRuleList()[index] = newVal;
+            this.mySettings.requestSaveToDisk();
+            globalMessage(meowAppMessageType.SETTINGS_UA_REFRESH, this.selectedIndexUA);
+          },
+          onNew: () => {
+            userAgentRuleList().push(['meow.net', getCurrentAppUserAgent()]);
+            this.mySettings.requestSaveToDisk();
+            globalMessage(meowAppMessageType.SETTINGS_UA_REFRESH, this.selectedIndexUA);
+          },
+          onDelete: (n) => {
+            userAgentRuleList().splice(n, 1);
+            this.mySettings.requestSaveToDisk();
+            globalMessage(meowAppMessageType.SETTINGS_UA_REFRESH, this.selectedIndexUA);
+          }
+        });
 
         Text($r('app.string.Settings_category_general_surf_searchEngine')).attributeModifier(new MooTextModifier());
         MooStringPairArrayList({
@@ -167,11 +167,11 @@ struct SettingsGeneral {
     return Array.from(searchEngineList());
   }
 
-  // getUArules() {
-  //   this.refreshFlagUA;
-  //   // meow(`getUArules!`, 'General', meowLevel.WARN);
-  //   return Array.from(userAgentRuleList());
-  // }
+  getUArules() {
+    this.refreshFlagUA;
+    // meow(`getUArules!`, 'General', meowLevel.WARN);
+    return Array.from(userAgentRuleList());
+  }
 
   /**
    * Syncing the panels across windows.
