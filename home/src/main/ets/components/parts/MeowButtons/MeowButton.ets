@@ -134,6 +134,7 @@ struct MeowButton {
         requestDialog(this.myDialog, openDialogRequestType.QUICK_SE);
         break;
       case UnifiedButtonsType.GO:
+        this.myUi.submitSearchOrLoad();
         this.myUi.requestAddressBarBlur(this.getUIContext());
         break;
       case UnifiedButtonsType.ADDRESS_KEYWORD_SWITCH:

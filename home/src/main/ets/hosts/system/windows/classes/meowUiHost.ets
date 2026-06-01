@@ -271,7 +271,18 @@ export class meowUiHost {
    */
   private goBackWeb() {
     const myTabs: meowTabsBunch = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.windowId}`)!;
-    return myTabs.goBackCurrent();
+    const tabBackSuccessful = myTabs.goBackCurrent();
+    if (tabBackSuccessful) {
+      return true;
+    } else {
+      // Try close tab
+      if (myTabs.tabs.length > 0) {
+        myTabs.closeCurrent();
+        return true;
+      } else {
+        return false;
+      }
+    }
   }
 
   // WINDOW
