@@ -8,7 +8,7 @@ import { MooTabSegmentV2 } from "../../../../components/common/MooTabSegmentV2";
 import { MooTextModifier } from "../../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../../components/common/UniContentCard";
 import { meowThemeColorType, mooTextType, standardSpacing } from "../../../../components/constants";
-import { defaultAnimation, getColor, getMySettings, useEffects } from "../../../../components/settings";
+import { defaultAnimation, getColor, getMySettings, isTabsStyleVertical, useEffects } from "../../../../components/settings";
 import { forceWebDarkMode } from "../../../../hosts/app/tabs/settings";
 import { meowDialogManager, openDialogRequestType } from "../../../../hosts/system/dialogs/classes/meowDialogManager";
 import { requestDialog } from "../../../../hosts/system/dialogs/scripts/dialog";
@@ -81,7 +81,7 @@ struct SettingsAppearance {
         });
         Text($r('app.string.Settings_category_appearance_layout_tabsStyle_wide')).attributeModifier(new MooTextModifier());
         MooTabSegmentV2({
-          initSelected: this.selectedTabsStyleSlimFromSettings(),
+          initSelected: this.selectedTabsStyleWideFromSettings(),
           items: new SegmentButtonV2Items([{ text: '󰕥' }, { text: '󰕦' }]),
           onSelected: (index) => {
             // 'vertical' | 'horizontal'
@@ -99,7 +99,7 @@ struct SettingsAppearance {
         });
         Text($r('app.string.Settings_category_appearance_layout_tabsStyle_slim')).attributeModifier(new MooTextModifier());
         MooTabSegmentV2({
-          initSelected: this.selectedTabsStyleWideFromSettings(),
+          initSelected: this.selectedTabsStyleSlimFromSettings(),
           items: new SegmentButtonV2Items([{ text: '󰕥' }, { text: '󰕦' }]),
           onSelected: (index) => {
             // 'vertical' | 'horizontal'
@@ -112,6 +112,10 @@ struct SettingsAppearance {
                 break;
               default:
                 break;
+            }
+            // Avoid showing both sidebar and vertical tabs
+            if (!this.myUi.myLayout.wideMode && this.myUi.showSidebar && this.myUi.showTabs && isTabsStyleVertical(this.myUi.myLayout)) {
+              this.myUi.showSidebar = false;
             }
           }
         });
@@ -280,12 +284,12 @@ struct SettingsAppearance {
     const seq = ['top', 'bottom'];
     return seq.indexOf(value);
   }
-  selectedTabsStyleWideFromSettings() {
+  selectedTabsStyleSlimFromSettings() {
     const value = this.mySettings.settingsData[4].value as string;
     const seq = ['vertical', 'horizontal'];
     return seq.indexOf(value);
   }
-  selectedTabsStyleSlimFromSettings() {
+  selectedTabsStyleWideFromSettings() {
     const value = this.mySettings.settingsData[3].value as string;
     const seq = ['vertical', 'horizontal'];
     return seq.indexOf(value);

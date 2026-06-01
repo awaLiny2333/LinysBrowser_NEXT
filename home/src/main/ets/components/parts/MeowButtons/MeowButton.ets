@@ -78,11 +78,16 @@ struct MeowButton {
       case UnifiedButtonsType.TABS:
         animateToImmediately(defaultAnimation(), () => {
           this.myUi.showTabs = !this.myUi.showTabs;
-          if (!this.myUi.myLayout.wideMode && this.myUi.showSidebar) {
-            this.myUi.showSidebar = false;
-            if (this.myUi.showTabs) {
-              this.myUi.sideAreaShrinkExpect = false;
+          if (this.myUi.showTabs) {
+            // OFF => ON
+            if (!this.myUi.myLayout.wideMode && this.myUi.showSidebar && isTabsStyleVertical(this.myUi.myLayout)) {
+              this.myUi.showSidebar = false;
+              if (this.myUi.showTabs) {
+                this.myUi.sideAreaShrinkExpect = false;
+              }
             }
+          } else {
+            // ON => OFF
           }
         });
         getMySettings().setByIndex(22, this.myUi.showTabs);
@@ -91,11 +96,16 @@ struct MeowButton {
       case UnifiedButtonsType.SIDEBAR:
         animateToImmediately(defaultAnimation(), () => {
           this.myUi.showSidebar = !this.myUi.showSidebar;
-          if (!this.myUi.myLayout.wideMode && this.myUi.showTabs && isTabsStyleVertical(this.myUi.myLayout)) {
-            this.myUi.showTabs = false;
-            if (this.myUi.showSidebar) {
-              this.myUi.sideAreaShrinkExpect = false;
+          if (this.myUi.showSidebar) {
+            // OFF => ON
+            if (!this.myUi.myLayout.wideMode && this.myUi.showTabs && isTabsStyleVertical(this.myUi.myLayout)) {
+              this.myUi.showTabs = false;
+              if (this.myUi.showSidebar) {
+                this.myUi.sideAreaShrinkExpect = false;
+              }
             }
+          } else {
+            // ON => OFF
           }
         });
         getMySettings().setByIndex(22, this.myUi.showTabs);

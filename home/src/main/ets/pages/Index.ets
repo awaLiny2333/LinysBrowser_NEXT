@@ -333,6 +333,13 @@ struct Index {
       if (wideModeChanged) {
         animateToImmediately(defaultAnimation(), () => {
           this.myLayout.wideMode = newWideMode;
+          if (!newWideMode) {
+            // Wide => NonWide
+            if (this.myUi.showSidebar && this.myUi.showTabs && isTabsStyleVertical(this.myLayout)) {
+              // Showing both sidebar and vertical tabs
+              this.myUi.showSidebar = false;
+            }
+          }
         });
       }
       if (needRefocus) {
