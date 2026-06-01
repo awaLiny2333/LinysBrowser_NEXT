@@ -58,6 +58,11 @@ export class meowTabsBunch {
     for (const element of this.tabs) {
       element.requestDestroyNode();
     }
+    try {
+      webview.WebviewController.trimMemoryByPressureLevel(webview.PressureLevel.MEMORY_PRESSURE_LEVEL_CRITICAL);
+    } catch (e) {
+      meow(`webview.WebviewController.trimMemoryByPressureLevel(webview.PressureLevel.MEMORY_PRESSURE_LEVEL_CRITICAL); failed: ${e}`, 'meowTabsBunch][requestDestroy', meowLevel.ERROR);
+    }
   }
 
   // WEBSTATES
@@ -322,6 +327,13 @@ export class meowTabsBunch {
       if (!this.myUi.addressBarFocused) {
         this.myUi.setCurrentSearchContent('', true, true);
       }
+    }
+
+    // Request trim memory.
+    try {
+      webview.WebviewController.trimMemoryByPressureLevel(webview.PressureLevel.MEMORY_PRESSURE_LEVEL_CRITICAL);
+    } catch (e) {
+      meow(`webview.WebviewController.trimMemoryByPressureLevel(webview.PressureLevel.MEMORY_PRESSURE_LEVEL_CRITICAL); failed: ${e}`, 'meowTabsBunch][requestDestroy', meowLevel.ERROR);
     }
   }
 
