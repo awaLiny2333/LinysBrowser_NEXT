@@ -193,7 +193,7 @@ struct MeowSidebar {
                 this.myUi.sideAreaShrinkBlock_menu = true;
               },
               didHideMenu: () => {
-                this.myUi.sideAreaShrunkExpect = false;
+                this.myUi.sideAreaShrinkExpect = false;
                 this.myUi.sideAreaShrinkBlock_menu = false;
               },
               menuExtra: sidebarContentIconSet.has(item.item[1]) ? undefined : () => {
@@ -225,7 +225,7 @@ struct MeowSidebar {
                 this.myUi.sideAreaShrinkBlock_menu = true;
               },
               onDidDisappear: () => {
-                this.myUi.sideAreaShrunkExpect = false;
+                this.myUi.sideAreaShrinkExpect = false;
                 this.myUi.sideAreaShrinkBlock_menu = false;
                 this.showAdd = false;
               },

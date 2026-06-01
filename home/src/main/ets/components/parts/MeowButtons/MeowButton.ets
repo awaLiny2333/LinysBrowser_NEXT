@@ -8,7 +8,7 @@ import lazy { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog
 import lazy { ALL_WINDOW_ORIENTATIONS, meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import lazy { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addressBarStatuses';
 import { defaultMooSymbolSize, fontSizeSymbol, getButtonIcon, meowThemeColorType, standardSpacing, UnifiedButtonsType } from '../../constants';
-import { defaultAnimation, getColor, getMySettings, useEffects } from '../../settings';
+import { defaultAnimation, getColor, getMySettings, isTabsStyleVertical, useEffects } from '../../settings';
 
 @ComponentV2
 struct MeowButton {
@@ -80,6 +80,9 @@ struct MeowButton {
           this.myUi.showTabs = !this.myUi.showTabs;
           if (!this.myUi.myLayout.wideMode && this.myUi.showSidebar) {
             this.myUi.showSidebar = false;
+            if (this.myUi.showTabs) {
+              this.myUi.sideAreaShrinkExpect = false;
+            }
           }
         });
         getMySettings().setByIndex(22, this.myUi.showTabs);
@@ -88,8 +91,11 @@ struct MeowButton {
       case UnifiedButtonsType.SIDEBAR:
         animateToImmediately(defaultAnimation(), () => {
           this.myUi.showSidebar = !this.myUi.showSidebar;
-          if (!this.myUi.myLayout.wideMode && this.myUi.showTabs) {
+          if (!this.myUi.myLayout.wideMode && this.myUi.showTabs && isTabsStyleVertical(this.myUi.myLayout)) {
             this.myUi.showTabs = false;
+            if (this.myUi.showSidebar) {
+              this.myUi.sideAreaShrinkExpect = false;
+            }
           }
         });
         getMySettings().setByIndex(22, this.myUi.showTabs);

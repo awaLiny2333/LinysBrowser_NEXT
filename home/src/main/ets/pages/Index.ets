@@ -391,12 +391,12 @@ struct Index {
     // Auto shrink
     if (isHover) {
       animateToImmediately(defaultAnimation(), () => {
-        this.myUi.sideAreaShrunkExpect = false;
+        this.myUi.sideAreaShrinkExpect = false;
       });
     } else {
       setTimeout(() => {
         animateToImmediately(defaultAnimation(), () => {
-          this.myUi.sideAreaShrunkExpect = true;
+          this.myUi.sideAreaShrinkExpect = true;
         });
       }, 10);
     }
@@ -410,7 +410,7 @@ struct Index {
         if (this.myUi.sideAreaShrunkSummarized) {
           // Expand
           animateToImmediately(defaultAnimation(), () => {
-            this.myUi.sideAreaShrunkExpect = false;
+            this.myUi.sideAreaShrinkExpect = false;
           });
         }
       } else {
@@ -418,7 +418,7 @@ struct Index {
         if (!this.myUi.sideAreaShrunkSummarized) {
           // Shrink
           animateToImmediately(defaultAnimation(), () => {
-            this.myUi.sideAreaShrunkExpect = true;
+            this.myUi.sideAreaShrinkExpect = true;
           });
         }
       }
@@ -429,7 +429,7 @@ struct Index {
         if (!this.myUi.sideAreaShrunkSummarized) {
           // Shrink
           animateToImmediately(defaultAnimation(), () => {
-            this.myUi.sideAreaShrunkExpect = true;
+            this.myUi.sideAreaShrinkExpect = true;
           });
         }
       } else {
@@ -437,7 +437,7 @@ struct Index {
         if (this.myUi.sideAreaShrunkSummarized) {
           // Expand
           animateToImmediately(defaultAnimation(), () => {
-            this.myUi.sideAreaShrunkExpect = false;
+            this.myUi.sideAreaShrinkExpect = false;
           });
         }
       }
@@ -484,7 +484,7 @@ struct Index {
     setTimeout(() => {
       this.myUi.sideAreaShrinkBlock_drag = false;
       this.onDropAnyArea();
-      this.myUi.sideAreaShrunkExpect = false;
+      this.myUi.sideAreaShrinkExpect = false;
     }, 10);
   }
 

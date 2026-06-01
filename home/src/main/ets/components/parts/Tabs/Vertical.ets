@@ -62,7 +62,7 @@ struct MeowTabsVertical {
                   animateToImmediately(defaultAnimation(), () => {
                     this.myTabs.switchTo(item.index);
                     if (!this.myLayout.wideMode) {
-                      this.myUi.sideAreaShrunkExpect = true;
+                      this.myUi.sideAreaShrinkExpect = true;
                     }
                   });
                 });
@@ -99,7 +99,7 @@ struct MeowTabsVertical {
             animateToImmediately(defaultAnimation(), () => {
               this.myTabs.newTabWrapped();
               if (!this.myLayout.wideMode) {
-                this.myUi.sideAreaShrunkExpect = true;
+                this.myUi.sideAreaShrinkExpect = true;
               }
               this.listController.scrollToIndex(this.myTabs.tabs.length - 1);
             });

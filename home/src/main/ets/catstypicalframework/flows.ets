@@ -255,7 +255,7 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
   // Tabs
   const mySettings = getMySettings();
   myUi.showTabs = mySettings.settingsData[22].value as boolean;
-  myUi.sideAreaShrunkExpect = mySettings.settingsData[14].value as boolean;
+  myUi.sideAreaShrinkExpect = mySettings.settingsData[14].value as boolean;
 
   // Side bar
   myUi.showSidebar = mySettings.settingsData[82].value as boolean;

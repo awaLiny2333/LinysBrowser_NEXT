@@ -11,7 +11,7 @@ export function shrinkButton(myUi: meowUiHost) {
         return;
       }
       animateToImmediately(defaultAnimation(), () => {
-        myUi.sideAreaShrunkExpect = !myUi.sideAreaShrunkExpect;
+        myUi.sideAreaShrinkExpect = !myUi.sideAreaShrinkExpect;
       });
     }
   })

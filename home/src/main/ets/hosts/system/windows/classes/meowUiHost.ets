@@ -52,7 +52,7 @@ export class meowUiHost {
   @Trace sideAreaWidth: number = 0; // The side area includes all things (Vertical tabs, side bar panels)
   @Trace sideAreaShrinkBlock_menu: boolean = false; // When this is true, the side area should NOT auto shrink. This is currently only used by the sidebar button editor.
   @Trace sideAreaShrinkBlock_drag: boolean = false;
-  @Trace sideAreaShrunkExpect: boolean = false;
+  @Trace sideAreaShrinkExpect: boolean = false;
   // Search & Address bar
   @Trace addressBarContentMajor: string = '';
   @Trace addressBarContentCurrentField: string = ''; // The current focused field / TextInput content. Majorly used for suggesting things.
@@ -184,7 +184,7 @@ export class meowUiHost {
    * Whether the side area is shrunk. Takes the blocker into consideration.
    */
   get sideAreaShrunkSummarized() {
-    return this.sideAreaShrunkExpect && !this.sideAreaShrinkBlock_menu && !this.sideAreaShrinkBlock_drag;
+    return this.sideAreaShrinkExpect && !this.sideAreaShrinkBlock_menu && !this.sideAreaShrinkBlock_drag;
   }
 
   /**
@@ -238,9 +238,9 @@ export class meowUiHost {
     }
 
     // Have side area ENABLED & AUTOSHRINK & EXPANDED & NOT BLOCKED
-    if ((this.showSidebar || this.showingVerticalTabs) && sideAreaShrinkAuto() && !this.sideAreaShrunkExpect && !this.sideAreaShrinkBlock_menu) {
+    if ((this.showSidebar || this.showingVerticalTabs) && sideAreaShrinkAuto() && !this.sideAreaShrinkExpect && !this.sideAreaShrinkBlock_menu) {
       animateToImmediately(defaultAnimation(), () => {
-        this.sideAreaShrunkExpect = true;
+        this.sideAreaShrinkExpect = true;
       });
       meow(`Auto shrink vertical tabs.`, 'goBackUni');
       return true;
