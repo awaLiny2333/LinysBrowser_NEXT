@@ -1,7 +1,45 @@
-import lazy { meow, meowLevel } from '../../../../catstypicalframework/utils/catsLogger';
-import lazy { getFolderSizeSync } from '../../../../catstypicalframework/utils/storage';
-import lazy { webview } from '@kit.ArkWeb';
 import lazy { taskpool } from '@kit.ArkTS';
+import lazy { webview } from '@kit.ArkWeb';
+import { sendableImage } from '@kit.ImageKit';
+import lazy { meow, meowLevel } from '../../../../catstypicalframework/utils/catsLogger';
+import lazy { getFolderSizeSync, readArrayBuffer } from '../../../../catstypicalframework/utils/storage';
+
+/**
+ * Reads background image concurrently.
+ * @param path The image path.
+ * @returns The background image (sendableImage.PixelMap).
+ */
+@Concurrent
+export async function readBackgroundImage(path: string) {
+  const buf = await readArrayBuffer(path);
+  if (!buf) {
+    meow(`Failed from ${path}. Does it ever exist?`, 'meowResources][loadBackgroundImage', meowLevel.WARN);
+    return;
+  }
+  const backgroundImage = await sendableImage.createImageSource(buf).createPixelMap();
+  return backgroundImage;
+}
+
+/**
+ * Reads background image concurrently.
+ * @param path The image path.
+ * @returns The background image (image.PixelMap).
+ */
+export async function readBackgroundImageConcurrent(path: string) {
+  try {
+    const sendablePm = await taskpool.execute(readBackgroundImage, path) as sendableImage.PixelMap;
+    try {
+      const pm = sendableImage.convertToPixelMap(sendablePm);
+      return pm;
+    } catch (e) {
+      meow(`Failed to convert background image from ${path}.`, 'meowResources][loadBackgroundImage', meowLevel.ERROR);
+    }
+    return undefined;
+  } catch (error) {
+    meow(`Failed to read background image from ${path}.`, 'meowResources][loadBackgroundImage', meowLevel.ERROR);
+    return undefined;
+  }
+}
 
 /**
  * Gets the folder size.

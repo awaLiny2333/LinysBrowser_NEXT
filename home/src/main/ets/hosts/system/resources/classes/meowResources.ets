@@ -1,7 +1,8 @@
 import lazy { image } from "@kit.ImageKit";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import lazy { fileCopy, fileDocumentPick2Path, galleryPick2Path, readArrayBufferConcurrent } from "../../../../catstypicalframework/utils/storage";
+import lazy { fileCopy, fileDocumentPick2Path, galleryPick2Path } from "../../../../catstypicalframework/utils/storage";
 import lazy { defaultAnimation } from "../../../../components/settings";
+import { readBackgroundImageConcurrent } from "../scripts/storage";
 
 /**
  * The one who manages miscallaneous resources.
@@ -22,12 +23,11 @@ export class meowResources {
    * @param path The path.
    */
   async loadBackgroundImage() {
-    const buf = await readArrayBufferConcurrent(this.backgroundImagePath);
-    if (!buf) {
-      meow(`Failed from ${this.backgroundImagePath}. Does it ever exist?`, 'meowResources][loadBackgroundImage', meowLevel.WARN);
+    const backgroundImage = await readBackgroundImageConcurrent(this.backgroundImagePath);
+    if (!backgroundImage) {
+      meow(`NO background image read from ${this.backgroundImagePath}.`, 'meowResources][loadBackgroundImage', meowLevel.WARN);
       return;
     }
-    const backgroundImage = await image.createImageSource(buf).createPixelMap();
     setTimeout(() => {
       animateToImmediately(defaultAnimation(), () => {
         this.backgroundImage = backgroundImage;

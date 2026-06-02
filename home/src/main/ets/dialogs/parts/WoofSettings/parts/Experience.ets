@@ -95,22 +95,22 @@ struct SettingsExperience {
         });
       };
 
-      UniContentCard({ title: $r('app.string.Settings_category_experience_continuation'), icon: $r('sys.symbol.screen_witching') }) {
-        MooSwitch({
-          text: $r('app.string.Settings_category_experience_continuation_closeApp'),
-          isOn: this.mySettings.settingsData[27].value as boolean,
-          onChange: (r) => {
-            this.mySettings.setByIndex(27, r);
-          }
-        });
-        MooSwitch({
-          text: $r('app.string.Settings_category_experience_continuation_closeTab'),
-          isOn: this.mySettings.settingsData[28].value as boolean,
-          onChange: (r) => {
-            this.mySettings.setByIndex(28, r);
-          }
-        });
-      };
+      // UniContentCard({ title: $r('app.string.Settings_category_experience_continuation'), icon: $r('sys.symbol.screen_witching') }) {
+      //   MooSwitch({
+      //     text: $r('app.string.Settings_category_experience_continuation_closeApp'),
+      //     isOn: this.mySettings.settingsData[27].value as boolean,
+      //     onChange: (r) => {
+      //       this.mySettings.setByIndex(27, r);
+      //     }
+      //   });
+      //   MooSwitch({
+      //     text: $r('app.string.Settings_category_experience_continuation_closeTab'),
+      //     isOn: this.mySettings.settingsData[28].value as boolean,
+      //     onChange: (r) => {
+      //       this.mySettings.setByIndex(28, r);
+      //     }
+      //   });
+      // };
 
       UniContentCard({ title: $r('app.string.Settings_category_experience_suggestions'), icon: $r('sys.symbol.star_message') }) {
         Text($r('app.string.Settings_category_experience_suggestions_maxBookmark')).attributeModifier(new MooTextModifier());
