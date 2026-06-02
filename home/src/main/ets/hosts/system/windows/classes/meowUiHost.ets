@@ -55,7 +55,7 @@ export class meowUiHost {
   @Trace sideAreaShrinkExpect: boolean = false;
   // Search & Address bar
   @Trace addressBarContentMajor: string = '';
-  @Trace addressBarContentCurrentField: string = ''; // The current focused field / TextInput content. Majorly used for suggesting things.
+  @Trace addressBarContentCurrentField: string = ''; // The currently focused field / TextInput content. Majorly used for suggesting things.
   @Trace searchUnifyResult: UnifiedDestinationResult = { url: '', type: UnifiedDestinationResultType.URL_SCHEMED }; // this empty url is filled in flow.
   @Trace searchKeywordEntries: [string, string][] = [];
   @Trace searchKeywordEntriesExpanded: boolean = false;

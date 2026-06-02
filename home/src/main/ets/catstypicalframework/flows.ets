@@ -258,7 +258,14 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
   myUi.sideAreaShrinkExpect = mySettings.settingsData[14].value as boolean;
 
   // Side bar
-  myUi.showSidebar = mySettings.settingsData[82].value as boolean;
+  if (wideMode) {
+    myUi.showSidebar = mySettings.settingsData[82].value as boolean;
+  } else {
+    // Avoid showing both columns in non wide mode.
+    if (!myUi.showTabs) {
+      myUi.showSidebar = mySettings.settingsData[82].value as boolean;
+    }
+  }
   const selectedSidebarPage = mySettings.settingsData[83].value as string;
   myUi.sidebarPage = selectedSidebarPage || '';
 

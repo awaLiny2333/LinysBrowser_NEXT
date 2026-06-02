@@ -1,6 +1,6 @@
 import lazy { unifiedDataChannel } from "@kit.ArkData";
 import lazy { fastbuffer } from "@kit.ArkTS";
-import { AppStorageV2 } from "@kit.ArkUI";
+import lazy { AppStorageV2 } from "@kit.ArkUI";
 import lazy { webview } from "@kit.ArkWeb";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import lazy { listFilesUnderDir, readArrayBuffer, saveHybrid } from "../../../../catstypicalframework/utils/storage";
