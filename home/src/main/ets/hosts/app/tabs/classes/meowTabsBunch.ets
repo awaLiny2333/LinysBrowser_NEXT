@@ -281,11 +281,12 @@ export class meowTabsBunch {
   /**
    * Create a new tab, doesn't check initialization.
    * @param overwriteUrl A specific url to use?
+   * @param controller A pre-created controller to use?
    * @returns The new meowTabInfo.
    */
-  newTabBare(overwriteUrl?: string) {
+  newTabBare(overwriteUrl?: string, controller?: WebviewController) {
     const newTab = new meowTabInfo(this.myUi);
-    newTab.controller = new webview.WebviewController();
+    newTab.controller = controller || new webview.WebviewController();
     if (overwriteUrl) {
       newTab.url = overwriteUrl;
     }

@@ -735,13 +735,11 @@ export class meowTabInfo {
     meow(`Exit! ${this.url}`, 'WebNode][onWindowExit');
   }
 
-  requestNewTab(url: string): WebviewController | null {
+  requestNewTab(url: string, controller: WebviewController) {
     const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.myUi.windowId}`)!;
-    let result: WebviewController | undefined = undefined;
-    animateToImmediately(defaultAnimation(), () => {
-      result = myTabs.newTabBare(url).controller;
-    });
-    return result || null;
+    // animateToImmediately(defaultAnimation(), () => {
+    myTabs.newTabBare(url, controller);
+    // });
   }
 
   requestNewPopup(event: OnWindowNewEvent) {

@@ -16,6 +16,7 @@ import lazy { defaultAnimation, getColor, isPreferRightHand, useEffects } from '
 import lazy { getCreateMyApp } from '../../../system/windows/scripts/helpers';
 import lazy { contextMenuImagePreview, contextMenuStripText, contextMenuWebHeight, contextMenuWebPreview } from '../settings';
 import { meowTabInfo } from './meowTabInfo';
+import { webview } from '@kit.ArkWeb';
 
 @ComponentV2
 struct MeowWeb {
@@ -23,10 +24,7 @@ struct MeowWeb {
 
   build() {
     Stack() {
-      Web({
-        src: this.pk.url || '',
-        controller: this.pk.controller
-      })
+      Web({ src: this.pk.url || '', controller: this.pk.controller })
         .mediaPlayGestureAccess(false)
         .layoutWeight(1)
         .geolocationAccess(true)
@@ -129,10 +127,13 @@ struct MeowWeb {
             this.pk.requestNewPopup(event);
             return;
           }
-          const result = this.pk.requestNewTab(event.targetUrl);
+          
+          let popController: webview.WebviewController = new webview.WebviewController();
+          this.pk.requestNewTab(event.targetUrl, new webview.WebviewController());
+
           setTimeout(() => {
-            meow(`onWindowNew: ${event.targetUrl} -> ${result}`, 'WebNode][onWindowNew');
-            event.handler.setWebController(this.pk.controller);
+            event.handler.setWebController(popController);
+            meow(`onWindowNew: ${event.targetUrl} -> ${popController}`, 'WebNode][onWindowNew');
           });
           // TODO: This timeout is essential to not block the original web.
           // But this would lead to the original web's misunderstanding that
