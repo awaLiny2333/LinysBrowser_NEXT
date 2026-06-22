@@ -1,0 +1,12 @@
+**/resources
+**/oh_modules
+**/build
+**/.*
+**/*.ts
+**/examples
+**/docs
+**/doc
+**/tests
+**/test
+**/include
+tmp_build
