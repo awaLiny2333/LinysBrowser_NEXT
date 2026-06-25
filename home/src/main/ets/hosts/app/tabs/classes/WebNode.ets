@@ -127,18 +127,16 @@ struct MeowWeb {
             this.pk.requestNewPopup(event);
             return;
           }
-          
+
           let popController: webview.WebviewController = new webview.WebviewController();
-          this.pk.requestNewTab(event.targetUrl, new webview.WebviewController());
+          this.pk.requestNewTab(event.targetUrl, popController);
 
           setTimeout(() => {
             event.handler.setWebController(popController);
             meow(`onWindowNew: ${event.targetUrl} -> ${popController}`, 'WebNode][onWindowNew');
           });
-          // TODO: This timeout is essential to not block the original web.
-          // But this would lead to the original web's misunderstanding that
-          // the new popup request failed and no controller was returned.
-          // So some sites may think that this browser has no popup permission.
+          
+          // Does this timeout work?
         })
         .onContextMenuShow((event) => {
           if (!event) {
