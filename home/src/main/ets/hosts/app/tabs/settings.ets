@@ -88,8 +88,12 @@ export function userAgentSelected() {
   return getMySettings().settingsData[42].value as number;
 }
 
+export function userAgent4Slim() {
+  return getMySettings().settingsData[86].value as string;
+}
+
 /**
- * Get the current user agent aplied globally.
+ * Get the current user agent applied globally.
  * @returns The UA string, or an empty string if selected the default UA but webview.WebviewController.getDefaultUserAgent() returned nothing.
  */
 export function getCurrentAppUserAgent(): string {

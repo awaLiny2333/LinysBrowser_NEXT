@@ -130,4 +130,5 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   new meowSettingsEntry('tabs_vertical_auto_hide_no_push', meowSettingsEntryType.BOOLEAN, 'true'), // #84
   // Web
   new meowSettingsEntry('domain_specific_user_agents', meowSettingsEntryType.STRING_ARRAY_PAIR, 'meow.net\nua'), // #85
+  new meowSettingsEntry('slim_user_agent', meowSettingsEntryType.STRING, ''), // #86
 ];

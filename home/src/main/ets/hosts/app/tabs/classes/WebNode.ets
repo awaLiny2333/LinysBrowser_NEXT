@@ -1,4 +1,5 @@
 import { BuilderNode, FrameNode, NodeController, UIContext } from '@kit.ArkUI';
+import { webview } from '@kit.ArkWeb';
 import lazy { meow, meowLevel } from '../../../../catstypicalframework/utils/catsLogger';
 import lazy { copyText } from '../../../../catstypicalframework/utils/clipboard';
 import lazy { defaultInnerRadius, measureTextWidth, meowPx2vp } from '../../../../catstypicalframework/utils/ui';
@@ -16,11 +17,12 @@ import lazy { defaultAnimation, getColor, isPreferRightHand, useEffects } from '
 import lazy { getCreateMyApp } from '../../../system/windows/scripts/helpers';
 import lazy { contextMenuImagePreview, contextMenuStripText, contextMenuWebHeight, contextMenuWebPreview } from '../settings';
 import { meowTabInfo } from './meowTabInfo';
-import { webview } from '@kit.ArkWeb';
 
 @ComponentV2
 struct MeowWeb {
   @Param @Require pk: meowTabInfo;
+  // Local
+  @Local areaChangeTimeout: number | undefined = undefined;
 
   build() {
     Stack() {
@@ -135,7 +137,7 @@ struct MeowWeb {
             event.handler.setWebController(popController);
             meow(`onWindowNew: ${event.targetUrl} -> ${popController}`, 'WebNode][onWindowNew');
           });
-          
+
           // Does this timeout work?
         })
         .onContextMenuShow((event) => {
@@ -230,7 +232,16 @@ struct MeowWeb {
         .width('100%')
         .height('100%');
       }
-    };
+    }
+    .onAreaChange((o, n) => {
+      if ((o.width as number) == (n.width as number)) {
+        return;
+      }
+      clearTimeout(this.areaChangeTimeout);
+      this.areaChangeTimeout = setTimeout(() => {
+        this.pk.updateSlimUA();
+      }, 1000);
+    });
   }
 
   @Builder

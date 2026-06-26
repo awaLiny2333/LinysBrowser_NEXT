@@ -367,6 +367,9 @@ export class meowTabsBunch {
       const newNode = new TabNodeController(this.myUi.myTabs.uiContext, this.currentTab);
       this.currentTab.node = newNode;
     }
+    
+    // Update UA
+    this.currentTab.updateSlimUA();
 
     // Check and attach
     if (this.currentNode) {

@@ -165,6 +165,10 @@
       "value": "Domain user-agent rules"
     },
     {
+      "name": "Settings_category_general_surf_userAgent_non_widemode",
+      "value": "UA for slim windows"
+    },
+    {
       "name": "Settings_category_general_surf_searchEngine",
       "value": "Search engines"
     },

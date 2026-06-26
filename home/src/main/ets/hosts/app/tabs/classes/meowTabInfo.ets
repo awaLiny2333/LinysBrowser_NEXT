@@ -15,7 +15,7 @@ import { meowHistorian } from "../../../userdata/history/classes/meowHistorian";
 import { meowHistoryEntry } from "../../../userdata/history/classes/meowHistoryEntry";
 import lazy { getMyDawn } from "../../downloads/scripts/helper";
 import { disableImages, disableJS, forceDark, viewableSchemes } from "../scripts/helpers";
-import { intelligentTrackingPrevention, recordNewHistoryFromSettings, useAdBlock, userHomeUrl, userNewTabUrl } from "../settings";
+import { getCurrentAppUserAgent, intelligentTrackingPrevention, recordNewHistoryFromSettings, useAdBlock, userAgent4Slim, userHomeUrl, userNewTabUrl } from "../settings";
 import { meowTabsBunch } from "./meowTabsBunch";
 import { TabNodeController } from "./WebNode";
 
@@ -35,6 +35,7 @@ export class meowTabInfo {
   @Trace progress: number = -1; // -1 for not loading, other positive values from 0 ~ 100 is the progress for loading.
   @Trace canBack: boolean = false;
   @Trace canForw: boolean = false;
+  @Trace inSlim: boolean;
   // Popup
   @Trace showingPopup: boolean = false;
   @Trace popupController: WebviewController | undefined;
@@ -79,6 +80,7 @@ export class meowTabInfo {
 
   constructor(myUi: meowUiHost) {
     this.myUi = myUi;
+    this.inSlim = !this.myUi.myLayout.wideMode;
     this.webStateId = this.refreshWebStateId();
   }
 
@@ -279,6 +281,48 @@ export class meowTabInfo {
     }
   }
 
+  /**
+   * Updates the slim state and use the slim UA if possible.
+   */
+  updateSlimUA() {
+    // Do nothing if the tab is already set an override UA.
+    if (this.overrideUA != undefined) {
+      return;
+    }
+
+    const ua4s = userAgent4Slim();
+    if (!ua4s) {
+      return;
+    }
+
+    // Change UA according to slim UA.
+    if (this.myUi.myLayout.wideMode) {
+      if (this.inSlim) {
+        // Exit slim
+        this.inSlim = false;
+        meow(`deSLIM!`, 'WebNode][onAreaChange', meowLevel.WARN);
+        // UA
+        try {
+          this.controller?.setCustomUserAgent(getCurrentAppUserAgent());
+        } catch (e) {
+          meow(`Failed: ${e}`, 'WebNode][onAreaChange', meowLevel.ERROR);
+        }
+      }
+    } else {
+      if (!this.inSlim) {
+        // Use slim UA
+        this.inSlim = true;
+        meow(`SLIM! set UA to [${ua4s}]`, 'WebNode][onAreaChange', meowLevel.WARN);
+        // UAl
+        try {
+          this.controller?.setCustomUserAgent(ua4s);
+        } catch (e) {
+          meow(`Error setting slim UA: ${e}`, 'WebNode][onAreaChange', meowLevel.ERROR);
+        }
+      }
+    }
+  }
+  
   getUrlTitleFromController() {
     try {
       const title = this.controller?.getTitle() || '';
@@ -661,12 +705,24 @@ export class meowTabInfo {
   // Requests
 
   onControllerAttached() {
+    // Slim UA
+    if (this.inSlim) {
+      const ua4s = userAgent4Slim();
+      if (ua4s) {
+        try {
+          this.controller?.setCustomUserAgent(ua4s);
+        } catch (e) {
+          meow(`setCustomUserAgent failed: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
+        }
+      }
+    }
+
     // Ad blocker
     if (useAdBlock()) {
       try {
         this.controller!.enableAdsBlock(true);
       } catch (e) {
-        meow(`Failed: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
+        meow(`enableAdsBlock failed: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
       }
     }
 
@@ -674,7 +730,7 @@ export class meowTabInfo {
     try {
       this.controller!.setErrorPageEnabled(true);
     } catch (e) {
-      meow(`Failed: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
+      meow(`setErrorPageEnabled failed: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
     }
 
     // Set intelligent tracking prevention

@@ -6,7 +6,7 @@ import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { mooTextType, standardSpacing } from '../../../../components/constants';
 import { getMySettings } from '../../../../components/settings';
 import { applyUserAgentFromSettings } from '../../../../hosts/app/tabs/scripts/userAgents';
-import { getCurrentAppUserAgent, searchEngineList, searchEngineSelected, userAgentList, userAgentRuleList, userAgentSelected, userHomeUrl, userNewTabUrl } from '../../../../hosts/app/tabs/settings';
+import { getCurrentAppUserAgent, searchEngineList, searchEngineSelected, userAgent4Slim, userAgentList, userAgentRuleList, userAgentSelected, userHomeUrl, userNewTabUrl } from '../../../../hosts/app/tabs/settings';
 import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
 import { meowAppHost } from '../../../../hosts/system/windows/classes/meowAppHost';
@@ -24,6 +24,7 @@ struct SettingsGeneral {
   // Local
   @Local selectedIndexUA: number = userAgentSelected();
   @Local selectedIndexSE: number = searchEngineSelected();
+  @Local ua4Slim: string = userAgent4Slim();
   // UI
   @Local refreshFlagUA: boolean = false;
   @Local refreshFlagSE: boolean = false;
@@ -92,6 +93,18 @@ struct SettingsGeneral {
             userAgentRuleList().splice(n, 1);
             this.mySettings.requestSaveToDisk();
             globalMessage(meowAppMessageType.SETTINGS_UA_REFRESH, this.selectedIndexUA);
+          }
+        });
+
+        Text($r('app.string.Settings_category_general_surf_userAgent_non_widemode')).attributeModifier(new MooTextModifier());
+        MooTextInputV2({
+          text: this.ua4Slim,
+          onChange: (r) => {
+            this.ua4Slim = r;
+            this.mySettings.setByIndex(86, this.ua4Slim);
+          },
+          onSubmit: () => {
+            // Load.
           }
         });
 
