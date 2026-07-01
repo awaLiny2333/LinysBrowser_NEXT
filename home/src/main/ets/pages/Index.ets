@@ -730,7 +730,7 @@ struct Index {
     let right = sidebarOnR ? sideAreaShift : 0;
 
     const anythingSide = this.myUi.showingVerticalTabs || this.myUi.showSidebar;
-    if (!sideAreaShrinkAuto() && anythingSide) {
+    if (!sideAreaShrinkAuto() && anythingSide || !sideAreaShrinkExpandNoPush()) {
       if (sidebarShouldBeOnTheRight()) {
         right -= standardSpacing;
       } else {
