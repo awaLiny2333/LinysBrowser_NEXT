@@ -726,8 +726,10 @@ struct Index {
     const borderShift = useEffects() ? 1 : 0;
     let sideAreaShift = baseSideAreaWidth + borderShift;
 
+    // compensate the duplicated border width.
     const anythingSide = this.myUi.showingVerticalTabs || this.myUi.showSidebar;
-    if (!sideAreaShrinkAuto() && anythingSide || !sideAreaShrinkExpandNoPush()) {
+    const set = !sideAreaShrinkAuto() || !sideAreaShrinkExpandNoPush();
+    if (set && anythingSide && useEffects()) {
       sideAreaShift -= standardSpacing;
     }
 
