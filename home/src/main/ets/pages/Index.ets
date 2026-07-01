@@ -724,25 +724,21 @@ struct Index {
     const sidebarOnR = sidebarShouldBeOnTheRight();
     const baseSideAreaWidth = this.myUi.sideAreaWidth; // The base width of side area in an ideal way.
     const borderShift = useEffects() ? 1 : 0;
-    const sideAreaShift = baseSideAreaWidth + borderShift;
-
-    let left = sidebarOnR ? 0 : sideAreaShift;
-    let right = sidebarOnR ? sideAreaShift : 0;
+    let sideAreaShift = baseSideAreaWidth + borderShift;
 
     const anythingSide = this.myUi.showingVerticalTabs || this.myUi.showSidebar;
     if (!sideAreaShrinkAuto() && anythingSide || !sideAreaShrinkExpandNoPush()) {
-      if (sidebarShouldBeOnTheRight()) {
-        right -= standardSpacing;
-      } else {
-        left -= standardSpacing;
-      }
+      sideAreaShift -= standardSpacing;
     }
+
+    const left = sidebarOnR ? 0 : sideAreaShift;
+    const right = sidebarOnR ? sideAreaShift : 0;
 
     return {
       top: 0,
       bottom: 0,
-      left: left,
-      right: right,
+      left,
+      right,
     };
   }
 
