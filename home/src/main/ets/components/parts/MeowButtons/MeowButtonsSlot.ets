@@ -22,5 +22,6 @@ export function MeowButtonsSlot(
         });
     };
   }
+  .clip(false)
   .scrollBar(BarState.Off);
 }
