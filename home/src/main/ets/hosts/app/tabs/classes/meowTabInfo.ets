@@ -343,7 +343,7 @@ export class meowTabInfo {
 
   onPageBegin() {
     // Do things.
-    this.webScale = 100;
+    // this.webScale = 100;
     this.progress = 0;
     this.endOfLoadTimestamp = Number.MAX_VALUE; // then later truely set by onPageEndLoadFinished
 
@@ -676,10 +676,10 @@ export class meowTabInfo {
   }
 
   /**
-   * Zoom in/out.
+   * Zoom in / out using javaScript injection.
    * @param scale The scale number. The web would be zoomed to ${scale}%.
    */
-  zoom(scale: number) {
+  zoomByJs(scale: number) {
     meow(`Zoom to ${scale}%`, 'meowTabInfo][zoom', meowLevel.WARN);
     try {
       let jsCode = `document.body.style.zoom = '${scale}%';`;

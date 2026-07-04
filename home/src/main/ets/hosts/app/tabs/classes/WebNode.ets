@@ -27,9 +27,9 @@ struct MeowWeb {
   build() {
     Stack({ alignContent: Alignment.TopStart }) {
       Web({ src: this.pk.url || '', controller: this.pk.controller })
-        .scale({ x: 1, y: 1, z: 1, centerX: 0, centerY: 0 })
-        .width('100%')
-        .height('100%')
+        .scale({ x: this.pk.webScale / 100, y: this.pk.webScale / 100, z: 1, centerX: 0, centerY: 0 })
+        .width(`${10000 / this.pk.webScale}%`)
+        .height(`${10000 / this.pk.webScale}%`)
         .mediaPlayGestureAccess(false)
         .geolocationAccess(true)
         .databaseAccess(true)
