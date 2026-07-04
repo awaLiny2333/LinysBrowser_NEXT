@@ -25,10 +25,12 @@ struct MeowWeb {
   @Local areaChangeTimeout: number | undefined = undefined;
 
   build() {
-    Stack() {
+    Stack({ alignContent: Alignment.TopStart }) {
       Web({ src: this.pk.url || '', controller: this.pk.controller })
+        .scale({ x: 1, y: 1, z: 1, centerX: 0, centerY: 0 })
+        .width('100%')
+        .height('100%')
         .mediaPlayGestureAccess(false)
-        .layoutWeight(1)
         .geolocationAccess(true)
         .databaseAccess(true)
         .fileAccess(true)
