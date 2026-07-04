@@ -36,6 +36,7 @@ export class meowTabInfo {
   @Trace canBack: boolean = false;
   @Trace canForw: boolean = false;
   @Trace inSlim: boolean;
+  @Trace webScale: number = 100;
   // Popup
   @Trace showingPopup: boolean = false;
   @Trace popupController: WebviewController | undefined;
@@ -322,7 +323,7 @@ export class meowTabInfo {
       }
     }
   }
-  
+
   getUrlTitleFromController() {
     try {
       const title = this.controller?.getTitle() || '';
@@ -670,6 +671,40 @@ export class meowTabInfo {
       this.searchIsDone = true;
     } catch (e) {
       meow(`Failed to cancel for [${this.searchedSearchKey}]: ${e}`, 'meowTabInfo][currentTabSearchCancel', meowLevel.ERROR);
+    }
+  }
+
+  /**
+   * Zoom in/out.
+   * @param scale The scale number. The web would be zoomed to ${scale}%.l
+   */
+  zoom(scale: number) {
+    meow(`Zoom to ${scale}x`, 'meowTabInfo][zoom', meowLevel.WARN);
+    try {
+      // 方法一：修改viewport meta标签（推荐，布局自适应）
+      //   let jsCode = `
+      //   (function() {
+      //     var meta = document.querySelector('meta[name="viewport"]');
+      //     if (meta) {
+      //       meta.setAttribute('content',
+      //         'width=device-width, initial-scale=${scale}, maximum-scale=${scale}, user-scalable=yes');
+      //     } else {
+      //       // 如果页面没有viewport，动态创建一个
+      //       meta = document.createElement('meta');
+      //       meta.name = 'viewport';
+      //       meta.content = 'width=device-width, initial-scale=${scale}, maximum-scale=${scale}, user-scalable=yes';
+      //       document.head.appendChild(meta);
+      //     }
+      //   })();
+      // `;
+
+      let jsCode = `document.body.style.zoom = '${scale}%';`;
+
+      this.controller?.runJavaScript(jsCode).catch((e: BusinessError) => {
+        meow(`this.controller?.runJavaScript(jsCode) failed: ${e}`, 'meowTabInfo][zoom', meowLevel.ERROR);
+      });
+    } catch (e) {
+      meow(`zoom failed: ${e}`, 'meowTabInfo][zoom', meowLevel.ERROR);
     }
   }
 

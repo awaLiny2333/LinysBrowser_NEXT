@@ -329,6 +329,10 @@
       "value": "快捷键管理  󰌐"
     },
     {
+      "name": "Settings_category_accessibility_keyShortcuts_zoom_control_access",
+      "value": "允许快捷键缩放网页"
+    },
+    {
       "name": "Settings_category_appearance",
       "value": "外观"
     },

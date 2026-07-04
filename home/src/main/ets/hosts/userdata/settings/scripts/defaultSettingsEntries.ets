@@ -131,4 +131,5 @@ export let defaultSettingsEntries: meowSettingsEntry[] = [
   // Web
   new meowSettingsEntry('domain_specific_user_agents', meowSettingsEntryType.STRING_ARRAY_PAIR, 'meow.net\nua'), // #85
   new meowSettingsEntry('slim_user_agent', meowSettingsEntryType.STRING, ''), // #86
+  new meowSettingsEntry('zoom_control_access', meowSettingsEntryType.BOOLEAN, 'true'), // #87, allow ctrl + - mouse wheel zoom
 ];

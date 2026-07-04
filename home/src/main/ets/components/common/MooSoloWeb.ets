@@ -8,6 +8,7 @@ import lazy { meowDialogManager, openDialogRequestType } from '../../hosts/syste
 import lazy { requestDialog } from '../../hosts/system/dialogs/scripts/dialog';
 import lazy { getLastWindowId } from '../../hosts/system/windows/scripts/multiwindows';
 import lazy { sidebarContentIconSet } from '../constants';
+import { getMySettings } from '../settings';
 
 /**
  * The standalone web component that can hold some contents.
@@ -30,6 +31,7 @@ export struct MooSoloWeb {
   build() {
     Web({ src: '', controller: this.controllerMeow })
       .databaseAccess(true)
+      .zoomControlAccess(getMySettings().settingsData[87].value as boolean) // Block Ctrl + - and mouse wheel
       .fileAccess(true)
       .domStorageAccess(true)
       .mixedMode(MixedMode.All)

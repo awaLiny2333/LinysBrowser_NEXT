@@ -13,7 +13,7 @@ import lazy { oopsPreviewActionsImage } from '../../../../components/parts/WebCo
 import lazy { oopsPreviewActionsText } from '../../../../components/parts/WebContextMenu/oopsPreviewActionsText';
 import lazy { oopsPreviewImage } from '../../../../components/parts/WebContextMenu/oopsPreviewImage';
 import lazy { oopsPreviewQrResults } from '../../../../components/parts/WebContextMenu/oopsPreviewQrResults';
-import lazy { defaultAnimation, getColor, isPreferRightHand, useEffects } from '../../../../components/settings';
+import lazy { defaultAnimation, getColor, getMySettings, isPreferRightHand, useEffects } from '../../../../components/settings';
 import lazy { getCreateMyApp } from '../../../system/windows/scripts/helpers';
 import lazy { contextMenuImagePreview, contextMenuStripText, contextMenuWebHeight, contextMenuWebPreview } from '../settings';
 import { meowTabInfo } from './meowTabInfo';
@@ -42,6 +42,7 @@ struct MeowWeb {
         .javaScriptAccess(!this.pk.xJS)
         .imageAccess(!this.pk.xImage)
         .onlineImageAccess(!this.pk.xImage)
+        .zoomControlAccess(getMySettings().settingsData[87].value as boolean) // Block Ctrl + - and mouse wheel
         .onDrop(() => {
           clearTimeout(this.pk.myUi.dropHoverFlipTimeoutId);
           animateToImmediately(defaultAnimation(), () => {

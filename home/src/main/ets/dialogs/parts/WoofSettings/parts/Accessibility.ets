@@ -102,6 +102,14 @@ struct SettingsAccessibility {
             requestDialog(this.myDialog, openDialogRequestType.KEY_SHORTCUTS, undefined, true);
           }
         });
+
+        MooSwitch({
+          text: $r('app.string.Settings_category_accessibility_keyShortcuts_zoom_control_access'),
+          isOn: this.mySettings.settingsData[87].value as boolean,
+          onChange: (r) => {
+            this.mySettings.setByIndex(87, r);
+          }
+        });
       };
     };
   }

@@ -451,6 +451,20 @@ export class meowTabsBunch {
   saveCurrent() {
     archiveWeb(this.currentTab?.controller);
   }
+  
+  zoomInCurrent() {
+    if (this.currentTab && this.currentTab.webScale > 10) {
+      this.currentTab.webScale += 10;
+      this.currentTab.zoom(this.currentTab.webScale);
+    }
+  }
+
+  zoomOutCurrent() {
+    if (this.currentTab && this.currentTab.webScale < 1000) {
+      this.currentTab.webScale -= 10;
+      this.currentTab.zoom(this.currentTab.webScale);
+    }
+  }
 
   // GETTERS
 

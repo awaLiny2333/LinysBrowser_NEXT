@@ -207,6 +207,12 @@ struct MeowButton {
       case UnifiedButtonsType.ZONES:
         requestDialog(this.myDialog, openDialogRequestType.ZONES);
         break;
+      case UnifiedButtonsType.ZOOM_IN:
+        this.myTabs.zoomInCurrent();
+        break;
+      case UnifiedButtonsType.ZOOM_OUT:
+        this.myTabs.zoomOutCurrent();
+        break;
       default:
         break;
     }
@@ -266,6 +272,10 @@ struct MeowButton {
         return true;
       case UnifiedButtonsType.SEARCH_IN_PAGE:
         return this.myUi.inPageSearchShow;
+      case UnifiedButtonsType.ZOOM_IN:
+        return (this.myTabs.currentTab?.webScale || 100) > 100;
+      case UnifiedButtonsType.ZOOM_OUT:
+        return (this.myTabs.currentTab?.webScale || 100) < 100;
       default:
         return undefined;
     }
@@ -291,6 +301,10 @@ struct MeowButton {
       case UnifiedButtonsType.SAVE:
         return this.myTabs.currentTab != undefined;
       case UnifiedButtonsType.QRCODE:
+        return this.myTabs.currentTab != undefined;
+      case UnifiedButtonsType.ZOOM_IN:
+        return this.myTabs.currentTab != undefined;
+      case UnifiedButtonsType.ZOOM_OUT:
         return this.myTabs.currentTab != undefined;
       default:
         return true;

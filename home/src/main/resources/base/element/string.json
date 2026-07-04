@@ -329,6 +329,10 @@
       "value": "Manage shortcuts  󰌐"
     },
     {
+      "name": "Settings_category_accessibility_keyShortcuts_zoom_control_access",
+      "value": "Allow shortcuts web zoom"
+    },
+    {
       "name": "Settings_category_appearance",
       "value": "Appearence"
     },
