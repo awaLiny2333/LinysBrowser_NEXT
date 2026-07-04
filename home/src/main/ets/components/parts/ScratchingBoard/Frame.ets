@@ -1,6 +1,6 @@
-import { defaultInnerRadius } from "../../../../catstypicalframework/utils/ui";
-import { meowThemeColorType, standardSpacing } from "../../../constants";
-import { getColor, useEffects } from "../../../settings";
+import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
+import { meowThemeColorType, standardSpacing } from "../../constants";
+import { getColor, useEffects } from "../../settings";
 
 @ComponentV2
 export struct ScratchingBoardCardFrame {

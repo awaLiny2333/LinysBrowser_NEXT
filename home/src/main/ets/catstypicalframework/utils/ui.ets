@@ -400,8 +400,8 @@ export function offWindowStatusChange(windowId: string) {
  * Updates the navigation indicator status.
  * @param window The window.Window object.
  */
-export function updateNavigationIndicator(window: window.Window) {
-  window.setSpecificSystemBarEnabled('navigationIndicator', showNavigationIndicator())
+export async function updateNavigationIndicator(window: window.Window) {
+  await window.setSpecificSystemBarEnabled('navigationIndicator', showNavigationIndicator())
     .catch((e: BusinessError) => {
       meow(`Failed: ${e}`, 'setSpecificSystemBarEnabled', meowLevel.ERROR);
     });

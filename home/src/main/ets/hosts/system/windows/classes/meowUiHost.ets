@@ -54,7 +54,7 @@ export class meowUiHost {
   @Trace sideAreaShrinkBlock_drag: boolean = false;
   @Trace sideAreaShrinkExpect: boolean = false;
   // Search & Address bar
-  @Trace addressBarContentMajor: string = '';
+  @Trace addressBarContentMajor: string = ''; // The contents in the address bar.
   @Trace addressBarContentCurrentField: string = ''; // The currently focused field / TextInput content. Majorly used for suggesting things.
   @Trace searchUnifyResult: UnifiedDestinationResult = { url: '', type: UnifiedDestinationResultType.URL_SCHEMED }; // this empty url is filled in flow.
   @Trace searchKeywordEntries: [string, string][] = [];
@@ -87,62 +87,7 @@ export class meowUiHost {
     this.isZone = paths.pop() == 'zones'; // The zones folder name.
   }
 
-  /**
-   * Ensures the working directory exist and determines if isZone.
-   */
-  async initWorkingDir() {
-    const alreadyExist = await ensureDirectoryExist(this.workingDir); // Opened tabs for this window.
-    meow(`Ensured directory [${this.workingDir}]. isZone = [${this.isZone}]. alreadyExist = [${alreadyExist}].`, `meowUiHost][initWorkingDir][${this.windowId}`, meowLevel.WARN);
-
-    // Load something
-    const startUpOption = startUpOptionFromSettings();
-    if (startUpOption == 'continue') {
-      await this.myTabs.loadAllStatesFromDir(this.workingDir);
-    } else if (startUpOption == 'home') {
-      await this.myTabs.newTabWrapped(userHomeUrl());
-    } else if (startUpOption == 'new tab') {
-      await this.myTabs.newTabWrapped(userNewTabUrl());
-    } else {
-      // Do nothing
-    }
-  }
-
-  /**
-   * Does the cleaning jobs of this window. Is the very last method called in the window's life.
-   * Removes the working directory if not isZone.
-   * And destroys the web nodes, and clears hosts from AppStorageV2.
-   */
-  async reportWindowClose() {
-    meow(`Window [${this.windowId}] closed.`, `meowUiHost][reportWindowClose][${this.windowId}`, meowLevel.WARN);
-    const isLastWindow = getCreateMyApp().windowIds.length == 0;
-    const nextTimeNeed = startUpOptionFromSettings() == 'continue';
-
-    // Web nodes
-    this.myTabs.requestDestroy();
-
-    // Remove if is either one of:
-    // 1. Not ZONE && not last window
-    // 2. Not ZONE && (IS last window &&) not next time need
-    if (!this.isZone && (!isLastWindow || !nextTimeNeed)) {
-      await removeDir(this.workingDir);
-      meow(`Removed directory [${this.workingDir}]. isLastWindow = [${isLastWindow}], nextTimeNeed = [${nextTimeNeed}].`, `meowUiHost][reportWindowClose][${this.windowId}`, meowLevel.WARN);
-    } else {
-      // Is a zone, or is the last non-zone but next time need.
-      // Remove nothing.
-
-      // These doesn't seem to work as intended... :(
-      // Sometimes they are not triggered?
-      // meow(`About to save all webStates to disk!`, `meowUiHost][reportWindowClose][${this.windowId}`, meowLevel.WARN);
-      // await Promise.all(this.myTabs.tabs.map((tab): Promise<boolean> => tab.saveWebState()));
-    }
-
-    // Clear from AppStorageV2
-    AppStorageV2.remove(`meowTabsBunch_${this.windowId}`);
-    AppStorageV2.remove(`meowLayout_${this.windowId}`);
-    AppStorageV2.remove(`meowUiHost_${this.windowId}`);
-    AppStorageV2.remove(`meowAvoid_${this.windowId}`);
-    AppStorageV2.remove(`meowMisc_${this.windowId}`);
-  }
+  // Getters
 
   get myTabs() {
     const myTabs: meowTabsBunch = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.windowId}`)!;
@@ -189,9 +134,32 @@ export class meowUiHost {
 
   /**
    * Whether the side area is blocked from shrinking.
+   * E.g. dragging something over the area, or the edit menu of a button is opened.
    */
   get sideAreaShrunkBlocked() {
     return this.sideAreaShrinkBlock_menu || this.sideAreaShrinkBlock_drag;
+  }
+
+  // Methods
+
+  /**
+   * Ensures the working directory exist and determines if isZone.
+   */
+  async initWorkingDir() {
+    const alreadyExist = await ensureDirectoryExist(this.workingDir); // Opened tabs for this window.
+    meow(`Ensured directory [${this.workingDir}]. isZone = [${this.isZone}]. alreadyExist = [${alreadyExist}].`, `meowUiHost][initWorkingDir][${this.windowId}`, meowLevel.WARN);
+
+    // Load something
+    const startUpOption = startUpOptionFromSettings();
+    if (startUpOption == 'continue') {
+      await this.myTabs.loadAllStatesFromDir(this.workingDir);
+    } else if (startUpOption == 'home') {
+      await this.myTabs.newTabWrapped(userHomeUrl());
+    } else if (startUpOption == 'new tab') {
+      await this.myTabs.newTabWrapped(userNewTabUrl());
+    } else {
+      // Do nothing
+    }
   }
 
   /**
@@ -286,6 +254,43 @@ export class meowUiHost {
   }
 
   // WINDOW
+
+  /**
+   * Does the cleaning jobs of this window. Is the very last method called in the window's life.
+   * Removes the working directory if not isZone.
+   * And destroys the web nodes, and clears hosts from AppStorageV2.
+   */
+  async reportWindowClose() {
+    meow(`Window [${this.windowId}] closed.`, `meowUiHost][reportWindowClose][${this.windowId}`, meowLevel.WARN);
+    const isLastWindow = getCreateMyApp().windowIds.length == 0;
+    const nextTimeNeed = startUpOptionFromSettings() == 'continue';
+
+    // Web nodes
+    this.myTabs.requestDestroy();
+
+    // Remove if is either one of:
+    // 1. Not ZONE && not last window
+    // 2. Not ZONE && (IS last window &&) not next time need
+    if (!this.isZone && (!isLastWindow || !nextTimeNeed)) {
+      await removeDir(this.workingDir);
+      meow(`Removed directory [${this.workingDir}]. isLastWindow = [${isLastWindow}], nextTimeNeed = [${nextTimeNeed}].`, `meowUiHost][reportWindowClose][${this.windowId}`, meowLevel.WARN);
+    } else {
+      // Is a zone, or is the last non-zone but next time need.
+      // Remove nothing.
+
+      // These doesn't seem to work as intended... :(
+      // Sometimes they are not triggered?
+      // meow(`About to save all webStates to disk!`, `meowUiHost][reportWindowClose][${this.windowId}`, meowLevel.WARN);
+      // await Promise.all(this.myTabs.tabs.map((tab): Promise<boolean> => tab.saveWebState()));
+    }
+
+    // Clear from AppStorageV2
+    AppStorageV2.remove(`meowTabsBunch_${this.windowId}`);
+    AppStorageV2.remove(`meowLayout_${this.windowId}`);
+    AppStorageV2.remove(`meowUiHost_${this.windowId}`);
+    AppStorageV2.remove(`meowAvoid_${this.windowId}`);
+    AppStorageV2.remove(`meowMisc_${this.windowId}`);
+  }
 
   /**
    * Update the window title.
@@ -432,6 +437,9 @@ export class meowUiHost {
     }
   }
 
+  /**
+   * Hide the address bar overlay for a period.
+   */
   requestHideAddressBarOverlay() {
     if (this.showAddressBarOverlay) {
       animateToImmediately(defaultAnimation(), () => {
@@ -449,6 +457,9 @@ export class meowUiHost {
     }, 4399);
   }
 
+  /**
+   * Show the address bar overlay back.
+   */
   requestShowAddressBarOverlay() {
     clearTimeout(this.addressBarOverlayReShowTimeoutId);
     if (!this.showAddressBarOverlay) {
@@ -459,15 +470,6 @@ export class meowUiHost {
   }
 
   // FOCUS
-
-  /**
-   * Clear address bar focus.
-   * @param uiContext The uiContext.
-   */
-  requestAddressBarBlur(uiContext: UIContext) {
-    uiContext.getFocusController().clearFocus();
-    this.reportAddressBarBlur();
-  }
 
   /**
    * Focus address bar.
@@ -483,6 +485,15 @@ export class meowUiHost {
       meow(`Failed to request focus: ${e.message}`, `meowUiHost][${this.windowId}][focusAddressbar`, meowLevel.ERROR);
       return false;
     }
+  }
+
+  /**
+   * Clear address bar focus.
+   * @param uiContext The uiContext.
+   */
+  requestAddressBarBlur(uiContext: UIContext) {
+    uiContext.getFocusController().clearFocus();
+    this.reportAddressBarBlur();
   }
 
   /**
@@ -515,12 +526,12 @@ export class meowUiHost {
   // SEARCH
 
   /**
-   * Sets the current search content of the window.
+   * Sets the search content of the window.
    * Also refreshes the keyword entries and / or destination on demand (passed in args).
    * @param newContent The new search content.
    * @param doKeywordRefresh Whether to refresh the keyword entries.
    */
-  setCurrentSearchContent(newContent: string, doKeywordRefresh: boolean, doDestinationRefresh: boolean) {
+  setSearchContent(newContent: string, doKeywordRefresh: boolean, doDestinationRefresh: boolean) {
     this.addressBarContentMajor = newContent;
     if (doKeywordRefresh) {
       this.refreshKeywordEntries();

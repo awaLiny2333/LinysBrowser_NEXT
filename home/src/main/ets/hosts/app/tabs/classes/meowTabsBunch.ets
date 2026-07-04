@@ -326,7 +326,7 @@ export class meowTabsBunch {
       // No node, indicating that all tabs are closed.
       // Clear the url field
       if (!this.myUi.addressBarFocused) {
-        this.myUi.setCurrentSearchContent('', true, true);
+        this.myUi.setSearchContent('', true, true);
       }
     }
 

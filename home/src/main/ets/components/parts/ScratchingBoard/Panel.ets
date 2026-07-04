@@ -12,7 +12,7 @@ import { MooSymbolButtonMeow } from "../../common/MooSymbolButtonMeow";
 import { MooTextModifier } from "../../common/MooTextModifier";
 import { defaultMooSymbolSize, fontSizeSmall, mooTextType, standardComponentHeight, standardSpacing } from "../../constants";
 import { defaultAnimation, isPreferRightHand } from "../../settings";
-import { ScratchingBoardCardFrame } from "./cards/Frame";
+import { ScratchingBoardCardFrame } from "./Frame";
 
 @ComponentV2
 export struct ScratchingBoardPanel {

@@ -632,8 +632,9 @@ struct Index {
     this.myLayout.heightTitleArea = maxHeightTitleArea;
 
     // Title bar
-    const tabsComp = this.showingHorizontalTab ? textInputSlimHeight + standardSpacing : 0;
-    const newTitleHeight = tabsComp + (this.myLayout.wideMode ? textInputSlimHeight + standardSpacing : 2 * (textInputSlimHeight + standardSpacing));
+    const unitHeight = textInputSlimHeight + standardSpacing;
+    const tabsComp = this.showingHorizontalTab ? unitHeight : 0;
+    const newTitleHeight = tabsComp + (this.myLayout.wideMode ? unitHeight : 2 * unitHeight);
     if (newTitleHeight != this.myLayout.heightTitleBar) {
       this.myLayout.heightTitleBar = newTitleHeight;
     }

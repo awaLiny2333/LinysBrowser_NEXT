@@ -142,7 +142,7 @@ export class meowTabInfo {
     // So when it is dragged away, there won't be any left.
     // So clear the url field.
     if (this.myUi.myTabs.tabs.length == 1 && !this.myUi.addressBarFocused) {
-      this.myUi.setCurrentSearchContent('', true, true);
+      this.myUi.setSearchContent('', true, true);
     }
   }
 
@@ -522,7 +522,7 @@ export class meowTabInfo {
     if (!this.myUi.addressBarFocused) {
       const newUrl = this.url || '';
       if (this.myUi.addressBarContentMajor != newUrl) {
-        this.myUi.setCurrentSearchContent(newUrl, true, true);
+        this.myUi.setSearchContent(newUrl, true, true);
         this.myUi.tryAutoShift();
       }
     }
