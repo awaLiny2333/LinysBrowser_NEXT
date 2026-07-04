@@ -343,6 +343,7 @@ export class meowTabInfo {
 
   onPageBegin() {
     // Do things.
+    this.webScale = 100;
     this.progress = 0;
     this.endOfLoadTimestamp = Number.MAX_VALUE; // then later truely set by onPageEndLoadFinished
 
@@ -679,7 +680,7 @@ export class meowTabInfo {
    * @param scale The scale number. The web would be zoomed to ${scale}%.l
    */
   zoom(scale: number) {
-    meow(`Zoom to ${scale}x`, 'meowTabInfo][zoom', meowLevel.WARN);
+    meow(`Zoom to ${scale}%`, 'meowTabInfo][zoom', meowLevel.WARN);
     try {
       // 方法一：修改viewport meta标签（推荐，布局自适应）
       //   let jsCode = `

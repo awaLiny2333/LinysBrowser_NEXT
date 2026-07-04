@@ -367,7 +367,7 @@ export class meowTabsBunch {
       const newNode = new TabNodeController(this.myUi.myTabs.uiContext, this.currentTab);
       this.currentTab.node = newNode;
     }
-    
+
     // Update UA
     this.currentTab.updateSlimUA();
 
@@ -451,16 +451,16 @@ export class meowTabsBunch {
   saveCurrent() {
     archiveWeb(this.currentTab?.controller);
   }
-  
+
   zoomInCurrent() {
-    if (this.currentTab && this.currentTab.webScale > 10) {
+    if (this.currentTab && this.currentTab.webScale < 1000) {
       this.currentTab.webScale += 10;
       this.currentTab.zoom(this.currentTab.webScale);
     }
   }
 
   zoomOutCurrent() {
-    if (this.currentTab && this.currentTab.webScale < 1000) {
+    if (this.currentTab && this.currentTab.webScale > 10) {
       this.currentTab.webScale -= 10;
       this.currentTab.zoom(this.currentTab.webScale);
     }
