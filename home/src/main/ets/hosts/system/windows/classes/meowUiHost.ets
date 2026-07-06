@@ -176,6 +176,12 @@ export class meowUiHost {
       return true;
     }
 
+    const inFullscreen = this.fullscreenStatus != meowUiFullscreenStatus.NONE;
+    if (inFullscreen) {
+      this.fullscreenExit();
+      return true;
+    }
+
     // Back in web.
     if (source == meowUiGoBackSource.ESC) {
       if (webBackEsc()) {
@@ -221,12 +227,6 @@ export class meowUiHost {
       animateToImmediately(defaultAnimation(), () => {
         this.inPageSearchShow = false;
       });
-      return true;
-    }
-
-    const inFullscreen = this.fullscreenStatus != meowUiFullscreenStatus.NONE;
-    if (inFullscreen) {
-      this.fullscreenExit();
       return true;
     }
 
