@@ -318,6 +318,7 @@ export async function fileCopy(fullSourcePath: string, fullDestUri: string, over
   }
 
   // Copy
+  // TODO: Try to figure out a better way to copy with HarmonyOS APIs.
   const a = await readArrayBuffer(fullSourcePath);
   if (a == undefined) {
     console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestUri}, ${overwrite}) failed: arrayBuffer is undefined!`);

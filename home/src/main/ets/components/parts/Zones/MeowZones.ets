@@ -37,7 +37,7 @@ export struct MeowZones {
                   .each((gl) => {
                     Text(gl.item).attributeModifier(new MooTextModifier()).width('100%').opacity(0.75);
                   })
-                  .key((gl) => gl);
+                  .key((line) => line);
                 // Buttons
                 UniRowOfCapsuleButtons() {
                   MooCapsuleButton({
@@ -68,7 +68,7 @@ export struct MeowZones {
               };
             };
           })
-          .key((item) => item);
+          .key((i) => i);
       }
       .clip(false) // To eliminate the cuts on the edges
       .columnsTemplate(waterFlowColumnsTemplate(this.myLayout))
@@ -84,14 +84,19 @@ export struct MeowZones {
   scan() {
     // Discover zones from disk.
     discoverZones().then(async (r) => {
-      if (r) {
+      if (r != undefined) {
         // Glimpse
+        // this.glimpses = [];
+        const gls: string[][] = [];
         for (const zoneAlias of r) {
           const glimpse = await glimpseOnZone(zoneAlias);
-          if (glimpse) {
-            this.glimpses.push(glimpse);
+          if (glimpse != undefined) {
+            gls.push(glimpse);
+          } else {
+            gls.push([]);
           }
         }
+        this.glimpses = gls;
 
         // Use setTimeout to enable animation.
         setTimeout(() => {
