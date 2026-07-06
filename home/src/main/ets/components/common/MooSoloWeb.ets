@@ -25,6 +25,7 @@ export struct MooSoloWeb {
   @Param controllerMeow: webview.WebviewController = new webview.WebviewController();
   // Events
   @Event onDropMe: () => void;
+  @Event onDragLeaveMe: () => void;
   @Event onUrlUpdate: (url: string) => void;
   @Event onWindowExit: () => void;
 
@@ -57,6 +58,9 @@ export struct MooSoloWeb {
       })
       .onDrop(() => {
         this.onDropMe();
+      })
+      .onDragLeave(() => {
+        this.onDragLeaveMe();
       })
       .onProgressChange(() => {
         this.updateUrl();

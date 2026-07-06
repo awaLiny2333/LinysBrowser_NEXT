@@ -108,6 +108,9 @@ struct Index {
                 myUi: this.myUi, myLayout: this.myLayout, myTabs: this.myTabs,
                 onDropMe: () => {
                   this.onDropSideArea();
+                },
+                onDragLeaveSidebar: () => {
+                  this.onDragLeaveSideArea();
                 }
               });
             }
@@ -171,7 +174,7 @@ struct Index {
           );
         }
         .padding(this.isNotAnySortOfFullscreen ? this.outerFrameSpace : 0)
-        .animation(defaultAnimation())
+        .animation(defaultAnimation());
 
         if (this.isNotAnySortOfFullscreen) {
           // Title bar
@@ -509,10 +512,12 @@ struct Index {
 
   onDragLeaveAnyArea() {
     clearTimeout(this.myUi.dropHoverFlipTimeoutId);
+    meow('ovo1');
     this.myUi.dropHoverFlipTimeoutId = setTimeout(() => {
       animateToImmediately(defaultAnimation(), () => {
         this.myUi.dropHover = false;
       });
+      meow('ovo0');
     }, 10);
   }
 

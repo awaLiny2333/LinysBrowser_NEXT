@@ -18,6 +18,7 @@ struct MeowTabsVertical {
   listController: ListScroller = new ListScroller();
   // Event
   @Event onDropMe: () => void;
+  @Event onDragLeaveSidebar: () => void;
 
   build() {
     Column({ space: standardSpacing * 0.75 }) {
@@ -113,6 +114,9 @@ struct MeowTabsVertical {
     .alignItems(sidebarShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
     .height('100%')
     .width(this.myUi.sideAreaShrunkSummarized ? defaultTabsVerticalShrunkWidth : this.verticalTabsWidth)
+    .onDragLeave(() => {
+      this.onDragLeaveSidebar();
+    })
     .onDrop((event) => {
       this.myTabs.receiveTabFromMyAppTunnel();
       event.setResult(DragResult.DRAG_SUCCESSFUL);
