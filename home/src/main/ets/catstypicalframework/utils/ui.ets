@@ -1,4 +1,5 @@
-import { AppStorageV2, display, KeyboardAvoidMode, window } from '@kit.ArkUI';
+import { AppStorageV2, display, KeyboardAvoidMode, UIContext, window } from '@kit.ArkUI';
+import { common } from "@kit.AbilityKit";
 import lazy { deviceInfo, power, settings } from '@kit.BasicServicesKit';
 import lazy { motion } from '@kit.MultimodalAwarenessKit';
 import { defaultWindowTopDecorHeight } from '../../components/constants';
@@ -411,14 +412,19 @@ export async function updateNavigationIndicator(window: window.Window) {
 
 export const toastDuration: number = 5000;
 
-export function toast(UIContext: UIContext, msg: ResourceStr) {
+/**
+ * Shows a toast message.
+ * @param msg The message to show.
+ * @param uic The UIContext.
+ */
+export function toast(msg: ResourceStr, uic: UIContext | undefined = UIContext.getCallingScopeUIContext()) {
+  if (!uic) {
+    meow('UIContext is undefined!', 'ui][toast', meowLevel.ERROR);
+    return;
+  }
   try {
-    UIContext.getPromptAction()
-      .showToast({
-        message: msg,
-        duration: toastDuration
-      });
+    uic.getPromptAction().showToast({ message: msg, duration: toastDuration }); // Toast
   } catch (e) {
-    meow(`showToast failed: ${e}`, 'ui', meowLevel.ERROR);
+    meow(`showToast failed: ${e}`, 'ui][toast', meowLevel.ERROR);
   }
 }

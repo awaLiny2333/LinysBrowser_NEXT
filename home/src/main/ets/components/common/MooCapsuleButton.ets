@@ -1,5 +1,5 @@
 import { defaultInnerRadius } from "../../catstypicalframework/utils/ui";
-import { standardComponentHeight,meowThemeColorType } from "../constants";
+import { meowThemeColorType, standardComponentHeight } from "../constants";
 import { defaultAnimation, getColor, isPreferRightHand, useEffects } from "../settings";
 
 @ComponentV2
@@ -15,7 +15,8 @@ struct MooCapsuleButton {
   @Event clickAction: () => void;
 
   build() {
-    Button(this.text)
+    Button(this.lastChance ? $r('app.string.General_confirm') : this.text)
+      .fontColor(this.adjustedColorFont())
       .height(standardComponentHeight)
       .alignSelf(isPreferRightHand() ? ItemAlign.End : ItemAlign.Start)
       .border({
@@ -25,9 +26,8 @@ struct MooCapsuleButton {
       })
       .enabled(this.isEnabled)
       .brightness(this.lastChance ? 1.1 : 1)
-      .animation(defaultAnimation())
+      // .animation(defaultAnimation())
       .backgroundColor(this.adjustedColorBackground())
-      .fontColor(this.adjustedColorFont())
       .onClick(() => {
         // No double confirm
         if (!this.needDoubleConfirm) {
@@ -35,19 +35,23 @@ struct MooCapsuleButton {
           return;
         }
 
-        clearTimeout(this.lastChanceTimeout);
-
         // Need double confirm.
+        clearTimeout(this.lastChanceTimeout);
         if (this.lastChance) {
           this.clickAction();
-          this.lastChance = false;
+          animateToImmediately(defaultAnimation(), () => {
+            this.lastChance = false;
+          });
           return;
         }
-
         // First confirm.
-        this.lastChance = true;
+        animateToImmediately(defaultAnimation(), () => {
+          this.lastChance = true;
+        });
         this.lastChanceTimeout = setTimeout(() => {
-          this.lastChance = false;
+          animateToImmediately(defaultAnimation(), () => {
+            this.lastChance = false;
+          });
         }, 2000);
       })
       .opacity(0.9);

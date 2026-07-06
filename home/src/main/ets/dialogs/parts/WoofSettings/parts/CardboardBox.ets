@@ -3,7 +3,7 @@ import { MooSwitch } from '../../../../components/common/MooSwitch';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { mooTextType, standardSpacing } from '../../../../components/constants';
-import { getMySettings } from '../../../../components/settings';
+import { defaultAnimation, getMySettings } from '../../../../components/settings';
 import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
 import { exportEverything, exportSettings, importEverything, importResult, importSettings } from '../../../../hosts/system/resources/scripts/backup';
@@ -50,9 +50,15 @@ struct SettingsCardboardBox {
           text: this.myUi.isExportingData ? $r('app.string.General_wait') : $r('app.string.Settings_category_cardboardBox_backup_settings_export'),
           isEnabled: !this.myUi.isExportingData,
           clickAction: async () => {
-            this.myUi.isExportingData = true;
+            animateToImmediately(defaultAnimation(), () => {
+              this.myUi.isExportingData = true;
+            });
             await exportSettings();
-            this.myUi.isExportingData = false;
+            setTimeout(() => {
+              animateToImmediately(defaultAnimation(), () => {
+                this.myUi.isExportingData = false;
+              });
+            });
           }
         });
         MooCapsuleButton({
@@ -60,9 +66,15 @@ struct SettingsCardboardBox {
           isEnabled: !this.myUi.isExportingData,
           needDoubleConfirm: true,
           clickAction: async () => {
-            this.myUi.isExportingData = true;
+            animateToImmediately(defaultAnimation(), () => {
+              this.myUi.isExportingData = true;
+            });
             const result = await importSettings();
-            this.myUi.isExportingData = false;
+            setTimeout(() => {
+              animateToImmediately(defaultAnimation(), () => {
+                this.myUi.isExportingData = false;
+              });
+            });
 
             switch (result.result) {
               case importResult.PICK_FAIL:
@@ -87,9 +99,15 @@ struct SettingsCardboardBox {
           text: this.myUi.isExportingData ? $r('app.string.General_wait') : $r('app.string.Settings_category_cardboardBox_backup_everything_export'),
           isEnabled: !this.myUi.isExportingData,
           clickAction: async () => {
-            this.myUi.isExportingData = true;
+            animateToImmediately(defaultAnimation(), () => {
+              this.myUi.isExportingData = true;
+            });
             await exportEverything(this.getUIContext().getHostContext()!);
-            this.myUi.isExportingData = false;
+            setTimeout(() => {
+              animateToImmediately(defaultAnimation(), () => {
+                this.myUi.isExportingData = false;
+              });
+            });
           }
         });
         MooCapsuleButton({
@@ -97,9 +115,15 @@ struct SettingsCardboardBox {
           isEnabled: !this.myUi.isExportingData,
           needDoubleConfirm: true,
           clickAction: async () => {
-            this.myUi.isExportingData = true;
+            animateToImmediately(defaultAnimation(), () => {
+              this.myUi.isExportingData = true;
+            });
             const result = await importEverything(this.getUIContext().getHostContext()!);
-            this.myUi.isExportingData = false;
+            setTimeout(() => {
+              animateToImmediately(defaultAnimation(), () => {
+                this.myUi.isExportingData = false;
+              });
+            });
 
             // Build status list of files and folders:
             const FOLDER_ICON = '󰃅';
