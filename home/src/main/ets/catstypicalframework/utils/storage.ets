@@ -120,7 +120,7 @@ export async function fileDocumentPickCopySave(sourcePath: string, nameOverwrite
         fileSuffixChoices: [`.${ext}`]
       })
       .then(async (pickedUris) => {
-        await fileCopy(sourcePath, uri_2_path(pickedUris[0]), true);
+        await fileCopy(sourcePath, pickedUris[0], true);
         console.info(`[fileDocumentPickCopySave] DocumentViewPicker.save successfully, uris[0]: ${pickedUris[0]}`);
         return true;
       });
@@ -289,41 +289,41 @@ export async function saveImageToAlbum(srcFilePath: string, context: common.UIAb
 /**
  * Copy a file.
  * @param fullSourcePath The source path.
- * @param fullDestPath The destination path.
+ * @param fullDestUri The destination Uri.
  * @param overwrite Whether to overwrite the destination file if it exists.
  * @returns true if succeed, false if failed, undefined if the file exists but not to overwrite.
  */
-export async function fileCopy(fullSourcePath: string, fullDestPath: string, overwrite: boolean) {
+export async function fileCopy(fullSourcePath: string, fullDestUri: string, overwrite: boolean) {
+  console.log(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestUri}, ${overwrite})`);
+
   // Check source
   try {
     if (!(await fileIo.access(fullSourcePath))) {
-      console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestPath}, ${overwrite}) test accessSync failed: source file ${fullSourcePath} doesn't exist`);
+      console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestUri}, ${overwrite}) test accessSync failed: source file ${fullSourcePath} doesn't exist`);
       return false;
     }
   } catch (e) {
-    console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestPath}, ${overwrite}) test source accessSync failed: ${e}`);
+    console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestUri}, ${overwrite}) test source accessSync failed: ${e}`);
   }
 
   // Check destination
   try {
-    if (await fileIo.access(fullDestPath)) {
+    if (await fileIo.access(fullDestUri)) {
       if (!overwrite) {
         return undefined;
       }
     }
   } catch (e) {
-    console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestPath}, ${overwrite}) test destination accessSync failed: ${e}`);
+    console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestUri}, ${overwrite}) test destination accessSync failed: ${e}`);
   }
 
   // Copy
-  return fileIo.copyFile(fullSourcePath, fullDestPath)
-    .catch((e: BusinessError) => {
-      console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestPath}, ${overwrite}) failed: ${e}`);
-      return false;
-    })
-    .then(() => {
-      return true;
-    });
+  const a = await readArrayBuffer(fullSourcePath);
+  if (a == undefined) {
+    console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestUri}, ${overwrite}) failed: arrayBuffer is undefined!`);
+    return false;
+  }
+  return await saveHybrid(fullDestUri, a, true);
 }
 
 /**
