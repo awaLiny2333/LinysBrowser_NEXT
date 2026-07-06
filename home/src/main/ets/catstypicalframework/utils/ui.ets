@@ -1,5 +1,4 @@
 import { AppStorageV2, display, KeyboardAvoidMode, UIContext, window } from '@kit.ArkUI';
-import { common } from "@kit.AbilityKit";
 import lazy { deviceInfo, power, settings } from '@kit.BasicServicesKit';
 import lazy { motion } from '@kit.MultimodalAwarenessKit';
 import { defaultWindowTopDecorHeight } from '../../components/constants';
@@ -218,15 +217,19 @@ export function listenFreeWindowMode(context: Context) {
           myApp.freeWindow = free;
         }
 
-        // Update for all windows.
-        for (const windowId of myApp.windowIds) {
-          const myUi = AppStorageV2.connect(meowUiHost, `meowUiHost_${windowId}`)!;
-          if (free) {
-            setDecorHeight(myUi.windowObj!);
+        setTimeout(() => {
+          // Update for all windows.
+          for (const windowId of myApp.windowIds) {
+            const myUi = AppStorageV2.connect(meowUiHost, `meowUiHost_${windowId}`)!;
+            // Update UI
+            if (free) {
+              setDecorHeight(myUi.windowObj!);
+            }
+            updateNavigationIndicator(myUi.windowObj!);
+            updateAvoid(myUi.windowObj!, windowId);
           }
-          updateNavigationIndicator(myUi.windowObj!);
-        }
-        meow(`settings.getValueSync "window_pcmode_switch_status" = ${val}`, 'listenFreeWindowMode', meowLevel.INFO);
+          meow(`settings.getValueSync "window_pcmode_switch_status" = ${val}`, 'listenFreeWindowMode', meowLevel.INFO);
+        }, 1000);
       });
   });
 }

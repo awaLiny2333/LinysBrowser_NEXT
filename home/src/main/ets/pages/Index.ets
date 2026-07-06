@@ -170,7 +170,8 @@ struct Index {
               })
           );
         }
-        .padding(this.isNotAnySortOfFullscreen ? this.outerFrameSpace : 0);
+        .padding(this.isNotAnySortOfFullscreen ? this.outerFrameSpace : 0)
+        .animation(defaultAnimation())
 
         if (this.isNotAnySortOfFullscreen) {
           // Title bar
