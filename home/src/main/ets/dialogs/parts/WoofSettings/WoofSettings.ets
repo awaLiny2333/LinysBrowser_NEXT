@@ -30,7 +30,7 @@ struct WoofSettings {
           SettingsOnStartUp();
         };
         FlowItem() {
-          SettingsGeneral({ myDialog: this.myDialog });
+          SettingsGeneral({ myDialog: this.myDialog, myTabs: this.myUi.myTabs });
         };
         FlowItem() {
           SettingsExperience({ myDialog: this.myDialog });

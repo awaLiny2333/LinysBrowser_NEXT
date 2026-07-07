@@ -166,7 +166,7 @@
     },
     {
       "name": "Settings_category_general_surf_userAgent_non_widemode",
-      "value": "UA for slim windows"
+      "value": "Specific UA for slim windows / phones"
     },
     {
       "name": "Settings_category_general_surf_searchEngine",

@@ -166,7 +166,7 @@
     },
     {
       "name": "Settings_category_general_surf_userAgent_non_widemode",
-      "value": "为窄的窗口使用特定 UA"
+      "value": "为窄的窗口 / 手机使用特定 UA"
     },
     {
       "name": "Settings_category_general_surf_searchEngine",

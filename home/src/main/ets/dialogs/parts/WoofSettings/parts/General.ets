@@ -1,10 +1,12 @@
 import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton';
 import { MooStringPairArrayList } from '../../../../components/common/MooStringPairArrayList';
+import { MooSwitch } from '../../../../components/common/MooSwitch';
 import { MooTextInputV2 } from '../../../../components/common/MooTextInputV2';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { mooTextType, standardSpacing } from '../../../../components/constants';
-import { getMySettings } from '../../../../components/settings';
+import { defaultAnimation, getMySettings } from '../../../../components/settings';
+import { meowTabsBunch } from '../../../../hosts/app/tabs/classes/meowTabsBunch';
 import { applyUserAgentFromSettings } from '../../../../hosts/app/tabs/scripts/userAgents';
 import { getCurrentAppUserAgent, searchEngineList, searchEngineSelected, userAgent4Slim, userAgentList, userAgentRuleList, userAgentSelected, userHomeUrl, userNewTabUrl } from '../../../../hosts/app/tabs/settings';
 import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
@@ -19,6 +21,7 @@ import { defaultSearchEngine } from '../../../../hosts/userdata/settings/scripts
 struct SettingsGeneral {
   // Hosts
   @Param @Require myDialog: meowDialogManager;
+  @Param @Require myTabs: meowTabsBunch;
   @Local mySettings: meowManagedSettings = getMySettings();
   @Local myApp: meowAppHost = getCreateMyApp();
   // Local
@@ -96,7 +99,14 @@ struct SettingsGeneral {
           }
         });
 
-        Text($r('app.string.Settings_category_general_surf_userAgent_non_widemode')).attributeModifier(new MooTextModifier());
+        MooSwitch({
+          text: $r('app.string.Settings_category_general_surf_userAgent_non_widemode'),
+          isOn: this.mySettings.settingsData[88].value as boolean,
+          onChange: (r) => {
+            this.mySettings.setByIndex(88, r);
+            this.myTabs.currentTab?.updateSlimUA();
+          }
+        });
         MooTextInputV2({
           text: this.ua4Slim,
           onChange: (r) => {
@@ -105,8 +115,11 @@ struct SettingsGeneral {
           },
           onSubmit: () => {
             // Load.
+            this.myTabs.currentTab?.updateSlimUA();
           }
-        });
+        })
+          .opacity(this.mySettings.settingsData[88].value ? 1 : 0.5)
+          .animation(defaultAnimation());
 
         Text($r('app.string.Settings_category_general_surf_searchEngine')).attributeModifier(new MooTextModifier());
         MooStringPairArrayList({

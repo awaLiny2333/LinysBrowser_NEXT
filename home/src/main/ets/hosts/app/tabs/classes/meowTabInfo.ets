@@ -15,7 +15,7 @@ import { meowHistorian } from "../../../userdata/history/classes/meowHistorian";
 import { meowHistoryEntry } from "../../../userdata/history/classes/meowHistoryEntry";
 import lazy { getMyDawn } from "../../downloads/scripts/helper";
 import { disableImages, disableJS, forceDark, viewableSchemes } from "../scripts/helpers";
-import { getCurrentAppUserAgent, intelligentTrackingPrevention, recordNewHistoryFromSettings, useAdBlock, userAgent4Slim, userHomeUrl, userNewTabUrl } from "../settings";
+import { getCurrentAppUserAgent, intelligentTrackingPrevention, recordNewHistoryFromSettings, useAdBlock, userAgent4Slim, userAgent4SlimEnabled, userHomeUrl, userNewTabUrl } from "../settings";
 import { meowTabsBunch } from "./meowTabsBunch";
 import { TabNodeController } from "./WebNode";
 
@@ -288,6 +288,10 @@ export class meowTabInfo {
   updateSlimUA() {
     // Do nothing if the tab is already set an override UA.
     if (this.overrideUA != undefined) {
+      return;
+    }
+
+    if (!userAgent4SlimEnabled()) {
       return;
     }
 
@@ -724,7 +728,7 @@ export class meowTabInfo {
 
   onControllerAttached() {
     // Slim UA
-    if (this.inSlim) {
+    if (this.inSlim && userAgent4SlimEnabled()) {
       const ua4s = userAgent4Slim();
       if (ua4s) {
         try {
