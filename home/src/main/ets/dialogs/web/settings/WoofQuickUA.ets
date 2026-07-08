@@ -8,6 +8,7 @@ import { meowAppHost } from "../../../hosts/system/windows/classes/meowAppHost";
 import { getCreateMyApp } from "../../../hosts/system/windows/scripts/helpers";
 import { meowAppMessageType } from "../../../hosts/system/windows/scripts/messaging";
 import { WoofUniFrame } from "../../WoofUniFrame";
+import lazy { webview } from "@kit.ArkWeb";
 
 @ComponentV2
 struct WoofQuickUAPanel {
@@ -24,10 +25,24 @@ struct WoofQuickUAPanel {
       return userAgentSelected();
     };
     const tabInfo = this.myDialog.lastRequest.param as meowTabInfo;
-    if (tabInfo.overrideUA) {
-      return userAgentList().findIndex((ua) => ua[1] == tabInfo.overrideUA);
+    const tabUa = tabInfo.myUa;
+    if (tabUa) {
+      // Compare with the ArkWeb default.
+      const defaultUA = webview.WebviewController.getDefaultUserAgent(); // Is this method efficient enough?
+      if (tabUa == defaultUA) {
+        return -1;
+      }
+      // See which CUSTOM UA is selected.
+      const findIdx = userAgentList().findIndex((ua) => ua[1] == tabUa);
+      if (findIdx == -1) {
+        // NOT FOUND, return -2 so that none of them is highlighted.
+        return -2;
+      } else {
+        return findIdx;
+      }
     } else {
-      return userAgentSelected();
+      // Is this ever gonna happen?
+      return -2;
     }
   }
 
@@ -82,7 +97,10 @@ struct WoofQuickUADialog {
   }
 
   build() {
-    WoofUniFrame({ controller: this.controller, title: $r('app.string.QuickUA'), shiftBackgroundColor: true, myLayout: this.myLayout, myDialog: this.myDialog }) {
+    WoofUniFrame({
+      controller: this.controller, title: $r('app.string.QuickUA'), shiftBackgroundColor: true, myLayout: this.myLayout, myDialog: this.myDialog,
+      tutorial: `󰈈  ${this.targetTabInfo?.myUa}`, showTutorial: true
+    }) {
       WoofQuickUAPanel({
         myDialog: this.myDialog,
         onSelect: (n) => {

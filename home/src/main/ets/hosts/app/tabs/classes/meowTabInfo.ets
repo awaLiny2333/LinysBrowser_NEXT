@@ -85,7 +85,7 @@ export class meowTabInfo {
     this.webStateId = this.refreshWebStateId();
   }
 
-  // Statuses
+  // Statuses / getters
 
   get isLoading() {
     return this.progress != -1;
@@ -93,6 +93,23 @@ export class meowTabInfo {
 
   get isActive() {
     return this.node != undefined;
+  }
+
+  get myUa() {
+    // Return the override UA / slim UA.
+    try {
+      if (this.controller) {
+        const ua = this.controller.getCustomUserAgent();
+        if (ua) {
+          return ua;
+        }
+      }
+    } catch (e) {
+      meow(`this.targetTabInfo!.controller!.getCustomUserAgent(); failed!`, 'meowTabInfo][myUa', meowLevel.ERROR);
+    }
+
+    // Return the default UA.
+    return getCurrentAppUserAgent();
   }
 
   // LIFE CYCLES

@@ -16,6 +16,7 @@ import { MooTextModifier } from "../../../common/MooTextModifier";
 import { meowThemeColorType, standardSpacing } from "../../../constants";
 import { defaultAnimation, getColor, isPreferRightHand, getMySettings, useEffects } from "../../../settings";
 import lazy { globalMessage,meowAppMessageType } from "../../../../hosts/system/windows/scripts/messaging";
+import { getCreateMyApp } from "../../../../hosts/system/windows/scripts/helpers";
 
 @ComponentV2
 struct MeowWindowInfoBar {
@@ -148,6 +149,9 @@ struct MeowWindowInfoBar {
    * Focus input!
    */
   focusInput() {
+    if (!getCreateMyApp().freeWindow) {
+      return;
+    }
     try {
       this.getUIContext().getFocusController().requestFocus(this.searchInputId);
     } catch (e) {
