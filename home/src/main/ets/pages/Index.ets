@@ -185,51 +185,31 @@ struct Index {
                 MeowSuggestions({ myUi: this.myUi, myLayout: this.myLayout });
                 MeowDestination(this.myUi, this.getUIContext());
               }
+              if (this.myUi.showMore && titleBarPositionBottom()) {
+                this.morePanel();
+              }
+
               // Tabs (Horizontal)
               if (this.showingHorizontalTab) {
                 MeowTabsHorizontal({ myUi: this.myUi, myLayout: this.myLayout, myTabs: this.myTabs })
                   .padding(this.myUi.titleTopCanShift && !titleBarPositionBottom() ? titleTopLeftRightMargin : 0);
               }
-              // Title bar
-              MeowTitleBar(this.myUi, this.myLayout, this.myDialog);
-              // Address
+              MeowTitleBar(this.myUi, this.myLayout, this.myDialog); // Title bar
               if (!this.myLayout.wideMode) {
                 if (this.myUi.dropHover) {
                   Text($r('app.string.ScratchingBoard_drop')).attributeModifier(new MooTextModifier()).width('100%').textAlign(TextAlign.Center);
                 } else {
-                  MeowAddressBar({ myUi: this.myUi, myLayout: this.myLayout, myDialog: this.myDialog, });
+                  MeowAddressBar({ myUi: this.myUi, myLayout: this.myLayout, myDialog: this.myDialog, }); // Address (Non wide mode)
                 }
               }
+
               // Additionals for top title bar
               if (this.myUi.addressBarFocused && !titleBarPositionBottom()) {
                 MeowDestination(this.myUi, this.getUIContext());
                 MeowSuggestions({ myUi: this.myUi, myLayout: this.myLayout });
               }
-              // Info
-              if (this.myUi.showMore && this.myTabs.currentTab?.url) {
-                MeowPageInfo({
-                  title: this.myTabs.currentTab.title, url: this.myTabs.currentTab.url, requestCopy: (content) => {
-                    copyText(content);
-                  }
-                });
-              }
-              // More
-              if (this.myUi.showMore) {
-                // Meow buttons
-                if (meowButtonsMore().length > 0) {
-                  Scroll() {
-                    MeowButtonsSlot(this.myUi, this.myDialog, 80);
-                  }
-                  .scrollBar(BarState.Off)
-                  .scrollable(ScrollDirection.Horizontal)
-                  .edgeEffect(EdgeEffect.Spring);
-                }
-                // Majorly the window alias
-                MeowWindowInfoBar({ myUi: this.myUi });
-                // Resource monitor
-                if (showResourceMonitor()) {
-                  MeowResMonitor();
-                }
+              if (this.myUi.showMore && !titleBarPositionBottom()) {
+                this.morePanel();
               }
             }
             .opacity(this.myUi.dropHover ? 0.5 : 1)
@@ -310,6 +290,33 @@ struct Index {
     .onAreaChange((o, n) => {
       this.actionsOnBaseAreaChange(o, n);
     });
+  }
+
+  @Builder
+  morePanel() {
+    // Info
+    if (this.myTabs.currentTab?.url) {
+      MeowPageInfo({
+        title: this.myTabs.currentTab.title, url: this.myTabs.currentTab.url, requestCopy: (content) => {
+          copyText(content);
+        }
+      });
+    }
+    // Meow buttons
+    if (meowButtonsMore().length > 0) {
+      Scroll() {
+        MeowButtonsSlot(this.myUi, this.myDialog, 80);
+      }
+      .scrollBar(BarState.Off)
+      .scrollable(ScrollDirection.Horizontal)
+      .edgeEffect(EdgeEffect.Spring);
+    }
+    // Majorly the window alias
+    MeowWindowInfoBar({ myUi: this.myUi });
+    // Resource monitor
+    if (showResourceMonitor()) {
+      MeowResMonitor();
+    }
   }
 
   // Actions

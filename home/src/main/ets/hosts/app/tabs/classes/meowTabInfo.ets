@@ -96,16 +96,14 @@ export class meowTabInfo {
   }
 
   get myUa() {
-    // Return the override UA / slim UA.
-    try {
-      if (this.controller) {
-        const ua = this.controller.getCustomUserAgent();
-        if (ua) {
-          return ua;
-        }
-      }
-    } catch (e) {
-      meow(`this.targetTabInfo!.controller!.getCustomUserAgent(); failed!`, 'meowTabInfo][myUa', meowLevel.ERROR);
+    // Return the override UA.
+    if (this.overrideUA) {
+      return this.overrideUA;
+    }
+
+    // Slim UA.
+    if (this.inSlim) {
+      return userAgent4Slim();
     }
 
     // Return the default UA.
@@ -305,42 +303,35 @@ export class meowTabInfo {
   updateSlimUA() {
     // Do nothing if the tab is already set an override UA.
     if (this.overrideUA != undefined) {
+      this.inSlim = false;
       return;
     }
 
+    // Feature not enabled.
     if (!userAgent4SlimEnabled()) {
-      return;
-    }
-
-    const ua4s = userAgent4Slim();
-    if (!ua4s) {
+      this.inSlim = false;
       return;
     }
 
     // Change UA according to slim UA.
     if (this.myUi.myLayout.wideMode) {
-      if (this.inSlim) {
-        // Exit slim
-        this.inSlim = false;
-        meow(`deSLIM!`, 'WebNode][onAreaChange', meowLevel.WARN);
-        // UA
-        try {
-          this.controller?.setCustomUserAgent(getCurrentAppUserAgent());
-        } catch (e) {
-          meow(`Failed: ${e}`, 'WebNode][onAreaChange', meowLevel.ERROR);
-        }
+      // Exit slim
+      this.inSlim = false;
+      meow(`deSLIM!`, 'updateSlimUA', meowLevel.WARN);
+      try {
+        this.controller?.setCustomUserAgent(getCurrentAppUserAgent());
+      } catch (e) {
+        meow(`deSLIM Failed: ${e}`, 'updateSlimUA', meowLevel.ERROR);
       }
     } else {
-      if (!this.inSlim) {
-        // Use slim UA
-        this.inSlim = true;
-        meow(`SLIM! set UA to [${ua4s}]`, 'WebNode][onAreaChange', meowLevel.WARN);
-        // UAl
-        try {
-          this.controller?.setCustomUserAgent(ua4s);
-        } catch (e) {
-          meow(`Error setting slim UA: ${e}`, 'WebNode][onAreaChange', meowLevel.ERROR);
-        }
+      // Use slim UA
+      const ua4s = userAgent4Slim();
+      this.inSlim = true;
+      meow(`enSLIM! set UA to [${ua4s}]`, 'updateSlimUA', meowLevel.WARN);
+      try {
+        this.controller?.setCustomUserAgent(ua4s);
+      } catch (e) {
+        meow(`enSLIM Error setting slim UA: ${e}`, 'updateSlimUA', meowLevel.ERROR);
       }
     }
   }

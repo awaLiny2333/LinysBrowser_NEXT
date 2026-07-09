@@ -41,7 +41,7 @@ struct WoofDownloadAskPanel {
       // Info of download
       Column({ space: standardSpacing }) {
         Column({ space: standardSpacing }) {
-          Text(this.webDlItem?.getUrl()).attributeModifier(new MooTextModifier()).opacity(0.75);
+          Text(this.webDlItem?.getUrl()).attributeModifier(new MooTextModifier()).opacity(0.75).maxLines(3);
           Text(this.webDlItem?.getMimeType()).attributeModifier(new MooTextModifier()).opacity(0.75);
           Text(addUnitsToSize(this.webDlItem?.getTotalBytes() || 0)).attributeModifier(new MooTextModifier()).fontWeight(FontWeight.Bold);
         }
