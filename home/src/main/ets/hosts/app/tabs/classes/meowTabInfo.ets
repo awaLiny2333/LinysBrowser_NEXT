@@ -309,30 +309,42 @@ export class meowTabInfo {
 
     // Feature not enabled.
     if (!userAgent4SlimEnabled()) {
-      this.inSlim = false;
+      this.deSlim();
       return;
     }
 
     // Change UA according to slim UA.
     if (this.myUi.myLayout.wideMode) {
-      // Exit slim
-      this.inSlim = false;
-      meow(`deSLIM!`, 'updateSlimUA', meowLevel.WARN);
-      try {
-        this.controller?.setCustomUserAgent(getCurrentAppUserAgent());
-      } catch (e) {
-        meow(`deSLIM Failed: ${e}`, 'updateSlimUA', meowLevel.ERROR);
-      }
+      this.deSlim();
     } else {
-      // Use slim UA
-      const ua4s = userAgent4Slim();
-      this.inSlim = true;
-      meow(`enSLIM! set UA to [${ua4s}]`, 'updateSlimUA', meowLevel.WARN);
-      try {
-        this.controller?.setCustomUserAgent(ua4s);
-      } catch (e) {
-        meow(`enSLIM Error setting slim UA: ${e}`, 'updateSlimUA', meowLevel.ERROR);
-      }
+      this.enSlim();
+    }
+  }
+
+  /**
+   * Exit SLIM mode and use the default UA.
+   */
+  private deSlim() {
+    this.inSlim = false;
+    meow(`deSLIM!`, 'updateSlimUA', meowLevel.WARN);
+    try {
+      this.controller?.setCustomUserAgent(getCurrentAppUserAgent());
+    } catch (e) {
+      meow(`deSLIM Failed: ${e}`, 'updateSlimUA', meowLevel.ERROR);
+    }
+  }
+
+  /**
+   * Enter SLIM mode and use the specific UA.
+   */
+  private enSlim() {
+    const ua4s = userAgent4Slim();
+    this.inSlim = true;
+    meow(`enSLIM! set UA to [${ua4s}]`, 'updateSlimUA', meowLevel.WARN);
+    try {
+      this.controller?.setCustomUserAgent(ua4s);
+    } catch (e) {
+      meow(`enSLIM Error setting slim UA: ${e}`, 'updateSlimUA', meowLevel.ERROR);
     }
   }
 
