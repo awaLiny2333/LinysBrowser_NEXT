@@ -34,6 +34,7 @@ struct WoofLocationPanel {
       },
       onCancel: () => {
         this.data?.geolocation.invoke(this.data.origin, false, false);
+        this.controller.close();
       },
       aboutToClose: () => {
         this.data?.geolocation.invoke(this.data.origin, false, false);
