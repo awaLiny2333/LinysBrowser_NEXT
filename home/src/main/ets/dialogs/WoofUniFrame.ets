@@ -12,8 +12,8 @@ import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogMan
 @ComponentV2
 struct WoofUniFrame {
   // Config
+  @Param tutorial: ResourceStr | undefined = undefined;
   @Param @Once shiftBackgroundColor: boolean = false;
-  @Param @Once tutorial: ResourceStr | undefined = undefined;
   @Param @Once showConfirmButton: boolean = false;
   @Param @Once showCancelButton: boolean = false;
   @Param @Once doubleConfirm: boolean = false;

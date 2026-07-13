@@ -6,6 +6,7 @@ import lazy { image } from "@kit.ImageKit";
 import lazy { scanBarcode } from "@kit.ScanKit";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import { addUnitsToSize, readArrayBuffer, saveHybrid, unlinkFile } from "../../../../catstypicalframework/utils/storage";
+import { domainOf } from "../../../../catstypicalframework/utils/url";
 import { defaultAnimation } from "../../../../components/settings";
 import { meowDialogManager, openDialogRequestType } from "../../../system/dialogs/classes/meowDialogManager";
 import lazy { requestDialog } from "../../../system/dialogs/scripts/dialog";
@@ -15,7 +16,7 @@ import { meowHistorian } from "../../../userdata/history/classes/meowHistorian";
 import { meowHistoryEntry } from "../../../userdata/history/classes/meowHistoryEntry";
 import lazy { getMyDawn } from "../../downloads/scripts/helper";
 import { disableImages, disableJS, forceDark, viewableSchemes } from "../scripts/helpers";
-import { getCurrentAppUserAgent, intelligentTrackingPrevention, recordNewHistoryFromSettings, useAdBlock, userAgent4Slim, userAgent4SlimEnabled, userHomeUrl, userNewTabUrl } from "../settings";
+import { getCurrentAppUserAgent, intelligentTrackingPrevention, recordNewHistoryFromSettings, useAdBlock, userAgent4Slim, userAgent4SlimEnabled, userAgentRuleList, userHomeUrl, userNewTabUrl } from "../settings";
 import { meowTabsBunch } from "./meowTabsBunch";
 import { TabNodeController } from "./WebNode";
 
@@ -95,19 +96,18 @@ export class meowTabInfo {
     return this.node != undefined;
   }
 
-  get myUa() {
-    // Return the override UA.
-    if (this.overrideUA) {
-      return this.overrideUA;
+  async myUa() {
+    let ua = '';
+    try {
+      const raw = await this.controller?.runJavaScript('navigator.userAgent');
+      // raw 形如:  "Mozilla/5.0 ..."
+      ua = JSON.parse(raw || ''); // Parse and get real string.
+    } catch (e) {
+      meow(`runJavaScript failed: ${e}`, 'meowTabInfo][myUa', meowLevel.ERROR);
+      ua = '';
     }
-
-    // Slim UA.
-    if (this.inSlim) {
-      return userAgent4Slim();
-    }
-
-    // Return the default UA.
-    return getCurrentAppUserAgent();
+    meow(`User agent is [${ua}]!`, 'meowTabInfo][myUa', meowLevel.WARN);
+    return ua;
   }
 
   // LIFE CYCLES
@@ -303,6 +303,17 @@ export class meowTabInfo {
   updateSlimUA() {
     // Do nothing if the tab is already set an override UA.
     if (this.overrideUA != undefined) {
+      this.inSlim = false;
+      return;
+    }
+
+    // Do nothing if domain is in the specific rules.
+    const domain = domainOf(this.url);
+    if (!domain) {
+      return;
+    }
+    const rules = userAgentRuleList(); // [[domain, ua], [domain, ua], ...]
+    if (rules.some(rule => rule[0] == domain)) {
       this.inSlim = false;
       return;
     }
@@ -748,16 +759,7 @@ export class meowTabInfo {
 
   onControllerAttached() {
     // Slim UA
-    if (this.inSlim && userAgent4SlimEnabled()) {
-      const ua4s = userAgent4Slim();
-      if (ua4s) {
-        try {
-          this.controller?.setCustomUserAgent(ua4s);
-        } catch (e) {
-          meow(`setCustomUserAgent failed: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
-        }
-      }
-    }
+    this.updateSlimUA();
 
     // Ad blocker
     if (useAdBlock()) {

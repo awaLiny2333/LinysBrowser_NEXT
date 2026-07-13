@@ -414,7 +414,8 @@ export class meowTabsBunch {
    * Refresh or stop the current tab.
    */
   refreshStopCurrent() {
-    if (!this.currentTab) {
+    if (this.currentTab == undefined) {
+      meow(`refreshStopCurrent: currentTab is undefined`, 'meowTabsBunch][refreshStopCurrent', meowLevel.ERROR);
       return;
     }
     if (this.currentTab.isLoading) {
