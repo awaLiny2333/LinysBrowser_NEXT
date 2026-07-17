@@ -132,6 +132,7 @@ struct Index {
               });
             }
           }
+          .visibility(this.myUi.showingVerticalTabs || this.myUi.showSidebar ? Visibility.Visible : Visibility.Hidden)
           .direction(sidebarShouldBeOnTheRight() ? Direction.Ltr : Direction.Rtl)
           .justifyContent(FlexAlign.Center)
           // NOTE: We add the padding and then translate this a unit of standardSpacing
@@ -737,8 +738,7 @@ struct Index {
     // side bar compensation
     const sidebarOnR = sidebarShouldBeOnTheRight();
     const baseSideAreaWidth = this.myUi.sideAreaWidth; // The base width of side area in an ideal way.
-    const borderShift = useEffects() ? 1 : 0;
-    let sideAreaShift = baseSideAreaWidth + borderShift;
+    let sideAreaShift = baseSideAreaWidth;
 
     // compensate the duplicated border width.
     const anythingSide = this.myUi.showingVerticalTabs || this.myUi.showSidebar;
