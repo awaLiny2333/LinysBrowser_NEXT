@@ -25,7 +25,7 @@ import lazy { MeowPlaceForKeyShortcuts } from '../components/parts/MeowPlaceForK
 import lazy { MeowSidebar } from '../components/parts/Sidebar/MeowSidebar';
 import lazy { MeowTabsHorizontal } from '../components/parts/Tabs/Horizontal';
 import lazy { MeowTabsVertical } from '../components/parts/Tabs/Vertical';
-import lazy { defaultAnimation, getColor, isPreferRightHand, isTabsStyleVertical, meowButtonsMore, showBottomAvoid, showGiganticWindowTitle, showResourceMonitor, sideAreaShrinkAuto, sideAreaShrinkExpandNoPush, sidebarButtons, sidebarShouldBeOnTheRight, titleBarPositionBottom, useEffects } from '../components/settings';
+import lazy { defaultAnimation, getColor, isPreferRightHand, isTabsStyleVertical, meowButtonsMore, showBottomAvoid, showGiganticWindowTitle, showResourceMonitor, sideAreaShrinkAuto, sideAreaShrinkExpandNoPush, sidebarButtons, sideareaShouldBeOnTheRight, titleBarPositionBottom, useEffects } from '../components/settings';
 import lazy { getMyBoard } from '../hosts/app/scratchingboard/scripts/helpers';
 import { meowTabsBunch } from '../hosts/app/tabs/classes/meowTabsBunch';
 import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
@@ -73,7 +73,7 @@ struct Index {
         MeowPlaceForKeyShortcuts(this.myDialog, this.myUi, this.myKey, this.myTabs, this.getUIContext());
 
         // Main frame
-        Stack({ alignContent: sidebarShouldBeOnTheRight() ? Alignment.End : Alignment.Start }) {
+        Stack({ alignContent: sideareaShouldBeOnTheRight() ? Alignment.End : Alignment.Start }) {
           // Web frame
           Stack() {
             // Backdrop
@@ -133,13 +133,13 @@ struct Index {
             }
           }
           .visibility(this.myUi.showingVerticalTabs || this.myUi.showSidebar ? Visibility.Visible : Visibility.Hidden)
-          .direction(sidebarShouldBeOnTheRight() ? Direction.Ltr : Direction.Rtl)
+          .direction(sideareaShouldBeOnTheRight() ? Direction.Ltr : Direction.Rtl)
           .justifyContent(FlexAlign.Center)
           // NOTE: We add the padding and then translate this a unit of standardSpacing
           // to catch the cursor's hover action when it is swung brainlessly to the edge of the screen
           // in order to expand the vertical tabs.
           .padding(this.sideAreaPadding)
-          .translate(useEffects() && this.isNotAnySortOfFullscreen ? (sidebarShouldBeOnTheRight() ? { x: standardSpacing } : { x: -standardSpacing }) : undefined)
+          .translate(useEffects() && this.isNotAnySortOfFullscreen ? (sideareaShouldBeOnTheRight() ? { x: standardSpacing } : { x: -standardSpacing }) : undefined)
           // END NOTE
           .height('100%')
           .backgroundColor(useEffects() ? getColor(meowThemeColorType.SECONDARY) : getColor(meowThemeColorType.PRIMARY))
@@ -422,7 +422,7 @@ struct Index {
   }
 
   actionsOnSideAreaPanGestureEnd() {
-    if (sidebarShouldBeOnTheRight()) {
+    if (sideareaShouldBeOnTheRight()) {
       // meow(`Pan gesture END. Sidebar on the right, pan_x = ${this.pan_x}`, 'Index', meowLevel.WARN);
       if (this.pan_x < 0) {
         // ←
@@ -624,7 +624,7 @@ struct Index {
       return 0;
     }
     if (useEffects() && this.isNotAnySortOfFullscreen) {
-      if (sidebarShouldBeOnTheRight()) {
+      if (sideareaShouldBeOnTheRight()) {
         return { left: standardSpacing - 1, right: standardSpacing };
       } else {
         return { right: standardSpacing - 1, left: standardSpacing };
@@ -735,18 +735,19 @@ struct Index {
    * The side area and stuffs are between them.
    */
   get mainFrameSpace(): Margin {
+    const anythingSide = this.myUi.showingVerticalTabs || this.myUi.showSidebar;
+
     // side bar compensation
-    const sidebarOnR = sidebarShouldBeOnTheRight();
-    const baseSideAreaWidth = this.myUi.sideAreaWidth; // The base width of side area in an ideal way.
+    const baseSideAreaWidth = anythingSide ? this.myUi.sideAreaWidth : 0; // The base width of side area in an ideal way.
     let sideAreaShift = baseSideAreaWidth;
 
     // compensate the duplicated border width.
-    const anythingSide = this.myUi.showingVerticalTabs || this.myUi.showSidebar;
     const set = !sideAreaShrinkAuto() || !sideAreaShrinkExpandNoPush();
     if (set && anythingSide && useEffects()) {
       sideAreaShift -= standardSpacing;
     }
 
+    const sidebarOnR = sideareaShouldBeOnTheRight(); // Is the side area / bar on the right
     const left = sidebarOnR ? 0 : sideAreaShift;
     const right = sidebarOnR ? sideAreaShift : 0;
 

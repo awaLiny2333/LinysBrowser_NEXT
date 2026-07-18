@@ -6,7 +6,7 @@ import { MooSymbolButton } from "../../common/MooSymbolButton";
 import { MooSymbolButtonSmall } from "../../common/MooSymbolButtonSmall";
 import { MooTextModifier } from "../../common/MooTextModifier";
 import { defaultTabsVerticalShrunkWidth, defaultTabsVerticalWidth, meowThemeColorType, standardSpacing } from "../../constants";
-import { defaultAnimation, getColor, sideAreaShrinkButton, sidebarShouldBeOnTheRight, titleBarPositionBottom, useEffects } from "../../settings";
+import { defaultAnimation, getColor, sideAreaShrinkButton, sideareaShouldBeOnTheRight, titleBarPositionBottom, useEffects } from "../../settings";
 import { shrinkButton } from "../Sidebar/SidebarShrinkButton";
 
 @ComponentV2
@@ -79,13 +79,13 @@ struct MeowTabsVertical {
             })
             .key((item) => item.webStateId);
         }
-        .direction(sidebarShouldBeOnTheRight() ? Direction.Rtl : Direction.Ltr)
+        .direction(sideareaShouldBeOnTheRight() ? Direction.Rtl : Direction.Ltr)
         .borderRadius(defaultInnerRadius)
         .width('100%')
         .height('auto');
       }
       .justifyContent(FlexAlign.End)
-      .alignItems(sidebarShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
+      .alignItems(sideareaShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
       .width(this.verticalTabsWidth)
       .layoutWeight(1);
 
@@ -108,10 +108,10 @@ struct MeowTabsVertical {
         });
       }
       .width('100%')
-      .justifyContent(sidebarShouldBeOnTheRight() ? FlexAlign.End : FlexAlign.Start);
+      .justifyContent(sideareaShouldBeOnTheRight() ? FlexAlign.End : FlexAlign.Start);
     }
     .clip(true)
-    .alignItems(sidebarShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
+    .alignItems(sideareaShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
     .height('100%')
     .width(this.myUi.sideAreaShrunkSummarized ? defaultTabsVerticalShrunkWidth : this.verticalTabsWidth)
     .onDragLeave(() => {

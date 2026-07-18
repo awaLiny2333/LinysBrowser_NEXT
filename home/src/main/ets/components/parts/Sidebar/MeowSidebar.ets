@@ -12,7 +12,7 @@ import lazy { MooTextInputV2 } from "../../common/MooTextInputV2";
 import lazy { MooTextModifier } from "../../common/MooTextModifier";
 import lazy { SlotEditButton, symbolIconOptions } from "../../common/SlotEditButton";
 import { defaultMooSymbolSize, defaultSidebarShrunkWidth, defaultSidebarWidth, getButtonIcon, meowThemeColorType, sidebarContentIconArray, sidebarContentIconSet, standardSpacing, UnifiedButtonsType } from "../../constants";
-import { defaultAnimation, getColor, getMySettings, isPreferRightHand, sideAreaShrinkButton, sidebarButtons, sidebarShouldBeOnTheRight, titleBarPositionBottom, useEffects } from "../../settings";
+import { defaultAnimation, getColor, getMySettings, isPreferRightHand, sideAreaShrinkButton, sidebarButtons, sideareaShouldBeOnTheRight, titleBarPositionBottom, useEffects } from "../../settings";
 import lazy { MeowBookmarksPanel } from "../Bookmarks/Panel";
 import lazy { DownloadsPanel } from "../Downloads/Panel";
 import lazy { HistoryPanel } from "../History/Panel";
@@ -116,7 +116,7 @@ struct MeowSidebar {
         });
       }, 100);
     })
-    .alignItems(sidebarShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
+    .alignItems(sideareaShouldBeOnTheRight() ? HorizontalAlign.Start : HorizontalAlign.End)
     .width(this.myUi.sideAreaShrunkSummarized ? defaultSidebarShrunkWidth : this.sidebarWidth)
     .height('100%');
   }

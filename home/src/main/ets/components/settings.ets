@@ -252,12 +252,12 @@ export function sideAreaShrinkExpandNoPush() {
  * Check the settings and see if the sidebar should be on the right.
  * @returns True if the sidebar should be on the right, false otherwise.
  */
-export function sidebarShouldBeOnTheRight() {
-  const reverseSidebar = getMySettings().settingsData[49].value as boolean;
+export function sideareaShouldBeOnTheRight() {
+  const reverseSidebars = getMySettings().settingsData[49].value as boolean;
   if (isPreferRightHand()) {
-    return !reverseSidebar;
+    return !reverseSidebars;
   } else {
-    return reverseSidebar;
+    return reverseSidebars;
   }
 }
 
