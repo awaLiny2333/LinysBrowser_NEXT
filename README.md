@@ -1,5 +1,7 @@
 # Liny 的冲浪喵（全新重构）！
 
+![图标](home/src/main/resources/base/media/startIcon.png)
+
 [中文](README.md) | [English](README_EN.md)
 
 ## 迁移到 2.0 的注意事项

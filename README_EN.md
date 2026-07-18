@@ -1,5 +1,7 @@
 # Liny's BrowserCat (Brand New Re-imagined)！
 
+![Icon](home/src/main/resources/base/media/startIcon.png)
+
 [中文](README.md) | [English](README_EN.md)
 
 ## Things to consider when migrating to 2.0
