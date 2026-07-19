@@ -26,6 +26,8 @@
         "removeMissionAfterTerminate": true,
         "exported": true,
         "orientation": "auto_rotation_restricted",
+        "minWindowWidth": 320,
+        "minWindowHeight": 180,
         "skills": [
           {
             "entities": [

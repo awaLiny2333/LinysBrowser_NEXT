@@ -12,6 +12,7 @@ import lazy { defaultSidebarShrunkWidth, defaultSidebarWidth, defaultTabsVertica
 import lazy { MeowAddressBar } from '../components/parts/Homepage/addressBar/MeowAddressBar';
 import lazy { MeowDestination } from '../components/parts/Homepage/addressBar/MeowDestination';
 import lazy { MeowSuggestions } from '../components/parts/Homepage/addressBar/MeowSuggestions';
+import { MeowOverlays } from '../components/parts/Homepage/frame/MeowOverlays';
 import lazy { MeowSearchInPage } from '../components/parts/Homepage/frame/MeowSearchInPage';
 import lazy { MeowShortcutsPanel } from '../components/parts/Homepage/frame/MeowShortcuts';
 import lazy { MeowTitleBar } from '../components/parts/Homepage/frame/MeowTitleBar';
@@ -95,86 +96,92 @@ struct Index {
             }
             // Progress bar
             MooProgress({ show: (this.myTabs.currentTab?.progress || -1) > 0, percentage: (this.myTabs.currentTab?.progress || -1) });
+            // Control buttons overlay for windowed fullscreens.
+            if (!this.isNotAnySortOfFullscreen && this.myApp.freeWindow) {
+              MeowOverlays(this.myUi);
+            }
           }
           .alignContent(Alignment.TopStart)
           .margin(this.mainFrameSpace)
           .border(useEffects() && this.isNotAnySortOfFullscreen ? { radius: defaultInnerRadius, width: 1, color: $r('sys.color.icon_fourth') } : { width: 0, radius: 0 })
           .clip(true);
 
-          // Sidebars
-          Row({ space: standardSpacing }) {
-            if (this.myUi.showingVerticalTabs) {
-              MeowTabsVertical({
-                myUi: this.myUi, myLayout: this.myLayout, myTabs: this.myTabs,
-                onDropMe: () => {
-                  this.onDropSideArea();
-                },
-                onDragLeaveSidebar: () => {
-                  this.onDragLeaveSideArea();
-                }
-              });
+          if (this.isNotAnySortOfFullscreen) {
+            // Sidebars
+            Row({ space: standardSpacing }) {
+              if (this.myUi.showingVerticalTabs) {
+                MeowTabsVertical({
+                  myUi: this.myUi, myLayout: this.myLayout, myTabs: this.myTabs,
+                  onDropMe: () => {
+                    this.onDropSideArea();
+                  },
+                  onDragLeaveSidebar: () => {
+                    this.onDragLeaveSideArea();
+                  }
+                });
+              }
+              if (this.myUi.showSidebar) {
+                MeowSidebar({
+                  myLayout: this.myLayout, myUi: this.myUi,
+                  onItemDragStart: () => {
+                    this.onDragFromSideArea();
+                  },
+                  onDropSidebar: () => {
+                    this.onDropSideArea();
+                  },
+                  onDragEnterSidebar: () => {
+                    this.onDragEnterSideArea();
+                  },
+                  onDragLeaveSidebar: () => {
+                    this.onDragLeaveSideArea();
+                  }
+                });
+              }
             }
-            if (this.myUi.showSidebar) {
-              MeowSidebar({
-                myLayout: this.myLayout, myUi: this.myUi,
-                onItemDragStart: () => {
-                  this.onDragFromSideArea();
-                },
-                onDropSidebar: () => {
-                  this.onDropSideArea();
-                },
-                onDragEnterSidebar: () => {
-                  this.onDragEnterSideArea();
-                },
-                onDragLeaveSidebar: () => {
-                  this.onDragLeaveSideArea();
-                }
-              });
-            }
+            .visibility((this.myUi.showingVerticalTabs || this.myUi.showSidebar) ? Visibility.Visible : Visibility.Hidden)
+            .direction(sideareaShouldBeOnTheRight() ? Direction.Ltr : Direction.Rtl)
+            .justifyContent(FlexAlign.Center)
+            // NOTE: We add the padding and then translate this a unit of standardSpacing
+            // to catch the cursor's hover action when it is swung brainlessly to the edge of the screen
+            // in order to expand the vertical tabs.
+            .padding(this.sideAreaPadding)
+            .translate(useEffects() ? (sideareaShouldBeOnTheRight() ? { x: standardSpacing } : { x: -standardSpacing }) : undefined)
+            // END NOTE
+            .height('100%')
+            .backgroundColor(useEffects() ? getColor(meowThemeColorType.SECONDARY) : getColor(meowThemeColorType.PRIMARY))
+            .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
+            .onAreaChange((o, n) => {
+              this.actionsOnSideAreaChange(o, n);
+            })
+            .onHover((isHover) => {
+              this.actionsOnSideAreaHover(isHover);
+            })
+            .onDrop((e) => {
+              this.onDropSideArea();
+              this.dropToScratchingBoard(e);
+              this.checkShowScratchingBoard();
+            })
+            .onDragEnter(() => {
+              this.onDragEnterSideArea();
+            })
+            .onDragLeave(() => {
+              this.onDragLeaveSideArea();
+            })
+            .gesture(
+              PanGesture({ direction: PanDirection.Left | PanDirection.Right })
+                .onActionStart(() => {
+                  this.pan_x = 0;
+                })
+                .onActionUpdate((e) => {
+                  this.pan_x = e.offsetX;
+                })
+                .onActionEnd(() => {
+                  this.actionsOnSideAreaPanGestureEnd();
+                })
+            );
           }
-          .visibility(this.myUi.showingVerticalTabs || this.myUi.showSidebar ? Visibility.Visible : Visibility.Hidden)
-          .direction(sideareaShouldBeOnTheRight() ? Direction.Ltr : Direction.Rtl)
-          .justifyContent(FlexAlign.Center)
-          // NOTE: We add the padding and then translate this a unit of standardSpacing
-          // to catch the cursor's hover action when it is swung brainlessly to the edge of the screen
-          // in order to expand the vertical tabs.
-          .padding(this.sideAreaPadding)
-          .translate(useEffects() && this.isNotAnySortOfFullscreen ? (sideareaShouldBeOnTheRight() ? { x: standardSpacing } : { x: -standardSpacing }) : undefined)
-          // END NOTE
-          .height('100%')
-          .backgroundColor(useEffects() ? getColor(meowThemeColorType.SECONDARY) : getColor(meowThemeColorType.PRIMARY))
-          .useEffect(useEffects(), EffectType.WINDOW_EFFECT)
-          .onAreaChange((o, n) => {
-            this.actionsOnSideAreaChange(o, n);
-          })
-          .onHover((isHover) => {
-            this.actionsOnSideAreaHover(isHover);
-          })
-          .onDrop((e) => {
-            this.onDropSideArea();
-            this.dropToScratchingBoard(e);
-            this.checkShowScratchingBoard();
-          })
-          .onDragEnter(() => {
-            this.onDragEnterSideArea();
-          })
-          .onDragLeave(() => {
-            this.onDragLeaveSideArea();
-          })
-          .gesture(
-            PanGesture({ direction: PanDirection.Left | PanDirection.Right })
-              .onActionStart(() => {
-                this.pan_x = 0;
-              })
-              .onActionUpdate((e) => {
-                this.pan_x = e.offsetX;
-              })
-              .onActionEnd(() => {
-                this.actionsOnSideAreaPanGestureEnd();
-              })
-          );
         }
-        .padding(this.isNotAnySortOfFullscreen ? this.outerFrameSpace : 0)
+        .padding(this.outerFrameSpace)
         .animation(defaultAnimation());
 
         if (this.isNotAnySortOfFullscreen) {
@@ -620,7 +627,7 @@ struct Index {
    * The padding for the side area.
    */
   get sideAreaPadding(): Padding | number {
-    if (!(this.myUi.showingVerticalTabs || this.myUi.showSidebar)) {
+    if (!(this.myUi.showingVerticalTabs || this.myUi.showSidebar) || !this.isNotAnySortOfFullscreen) {
       return 0;
     }
     if (useEffects() && this.isNotAnySortOfFullscreen) {
@@ -675,7 +682,11 @@ struct Index {
   /**
    * The space between the outer window border and the main frame.
    */
-  get outerFrameSpace(): Margin {
+  get outerFrameSpace(): Margin | number {
+    if (!this.isNotAnySortOfFullscreen) {
+      return 0;
+    }
+
     // Vertical
     let top: number;
     let bottom: number;
@@ -735,7 +746,7 @@ struct Index {
    * The side area and stuffs are between them.
    */
   get mainFrameSpace(): Margin {
-    const anythingSide = this.myUi.showingVerticalTabs || this.myUi.showSidebar;
+    const anythingSide = (this.myUi.showingVerticalTabs || this.myUi.showSidebar) && this.isNotAnySortOfFullscreen;
 
     // side bar compensation
     const baseSideAreaWidth = anythingSide ? this.myUi.sideAreaWidth : 0; // The base width of side area in an ideal way.
