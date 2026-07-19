@@ -1,5 +1,8 @@
 import { AppStorageV2 } from '@kit.ArkUI';
+import lazy { Context } from '@ohos.abilityAccessCtrl';
 import lazy { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
+import lazy { pinShortcut } from '../../../catstypicalframework/utils/shortcuts';
+import lazy { packToFileFromPixelMap } from '../../../catstypicalframework/utils/storage';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
 import lazy { domainOf } from '../../../catstypicalframework/utils/url';
 import { meowTabsBunch } from '../../../hosts/app/tabs/classes/meowTabsBunch';
@@ -213,6 +216,36 @@ struct MeowButton {
       case UnifiedButtonsType.ZOOM_OUT:
         this.myTabs.zoomOutCurrent();
         break;
+      case UnifiedButtonsType.SHORTCUT:
+        // Grab basic info.
+        if (!this.myTabs.currentTab) {
+          return;
+        }
+        const url = this.myTabs.currentTab.url;
+        if (!url) {
+          return;
+        }
+        let title = this.myTabs.currentTab.title;
+        if (!title) {
+          const r = domainOf(url);
+          title = r;
+        }
+        // Grab image
+        try {
+          const icon = this.myTabs.currentTab.controller?.getFavicon();
+          if (!icon) {
+            break;
+          }
+          packToFileFromPixelMap(this.getUIContext().getHostContext() as Context, icon).then((p) => {
+            if (p) {
+              // Pin
+              pinShortcut(url, title || 'meow', p);
+            }
+          });
+        } catch (e) {
+          // Do nothing.
+        }
+        break;
       default:
         break;
     }
@@ -305,6 +338,8 @@ struct MeowButton {
       case UnifiedButtonsType.ZOOM_IN:
         return this.myTabs.currentTab != undefined;
       case UnifiedButtonsType.ZOOM_OUT:
+        return this.myTabs.currentTab != undefined;
+      case UnifiedButtonsType.SHORTCUT:
         return this.myTabs.currentTab != undefined;
       default:
         return true;

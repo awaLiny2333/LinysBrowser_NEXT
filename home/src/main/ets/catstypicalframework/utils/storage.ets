@@ -893,6 +893,27 @@ export function arrayBuffer_2_pixelMap(buf: ArrayBuffer) {
     });
 }
 
+/**
+ * Packs a PixelMap to a file.
+ * @param context The context.
+ * @param pixelMap The pixel map.
+ * @returns Promise of the path if successful.
+ */
+export async function packToFileFromPixelMap(context: Context, pixelMap: image.PixelMap) {
+  const imagePackerApi = image.createImagePacker();
+  let packOpts: image.PackingOption = { format: 'image/png', quality: 100 };
+  const path: string = context.tempDir + '/shortcut.png';
+  try {
+    let file = fileIo.openSync(path, fileIo.OpenMode.CREATE | fileIo.OpenMode.READ_WRITE);
+    await imagePackerApi.packToFile(pixelMap, file.fd, packOpts);
+    return path;
+  } catch (error) {
+    console.error('Failed to pack the pixelMap to file. And the error is: ' + error);
+  }
+  return undefined;
+}
+
+
 // Others
 
 /**

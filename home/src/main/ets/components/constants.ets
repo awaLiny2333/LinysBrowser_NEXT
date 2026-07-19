@@ -86,9 +86,10 @@ export enum UnifiedButtonsType {
   ORIENTATION = 'ORN',
   SEARCH_IN_PAGE = 'SIP',
   ZONES = 'ZON',
-  EXTENSIONS = 'EXT',
   ZOOM_IN = 'ZIN',
-  ZOOM_OUT = 'ZOU'
+  ZOOM_OUT = 'ZOU',
+  SHORTCUT = 'SCT',
+  EXTENSIONS = 'EXT',
 }
 
 /**
@@ -126,9 +127,10 @@ unifiedButtonIconMatches.set(UnifiedButtonsType.SAVE, $r('sys.symbol.save'));
 unifiedButtonIconMatches.set(UnifiedButtonsType.ORIENTATION, $r('sys.symbol.rectangle_portrait_rotate'));
 unifiedButtonIconMatches.set(UnifiedButtonsType.SEARCH_IN_PAGE, $r('sys.symbol.doc_text_badge_magnifyingglass'));
 unifiedButtonIconMatches.set(UnifiedButtonsType.ZONES, $r('sys.symbol.square_stack_3d'));
-unifiedButtonIconMatches.set(UnifiedButtonsType.EXTENSIONS, $r('sys.symbol.root'));
 unifiedButtonIconMatches.set(UnifiedButtonsType.ZOOM_IN, $r('sys.symbol.plus'));
 unifiedButtonIconMatches.set(UnifiedButtonsType.ZOOM_OUT, $r('sys.symbol.minus'));
+unifiedButtonIconMatches.set(UnifiedButtonsType.SHORTCUT, $r('sys.symbol.plus_viewfinder'));
+unifiedButtonIconMatches.set(UnifiedButtonsType.EXTENSIONS, $r('sys.symbol.root'));
 
 /**
  * Gets the icon of a button.

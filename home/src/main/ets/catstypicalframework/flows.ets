@@ -332,8 +332,9 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
  * @param want The want.
  */
 export function onWant(want: Want, source: wantSource) {
+  const shortcutUrl = want.parameters?.url as string;
   meow(`onWant! want info: ${JSON.stringify(want)}, source: ${source}`, 'init][onWant', meowLevel.INFO);
-  const uri = want.uri;
+  const uri = shortcutUrl || want.uri;
   if (uri) {
     const lastTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${getCreateMyApp().lastFocusedWindowId}`);
     lastTabs?.newTabWrapped(uri);
