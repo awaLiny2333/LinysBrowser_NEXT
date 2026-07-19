@@ -80,10 +80,11 @@ export class meowTabInfo {
   @Trace imageInfo: image.ImageInfo | undefined;
   @Trace imageQrResults: scanBarcode.ScanResult[] | undefined;
 
-  constructor(myUi: meowUiHost) {
+  constructor(myUi: meowUiHost, controller?: WebviewController) {
     this.myUi = myUi;
     this.inSlim = !this.myUi.myLayout.wideMode;
     this.webStateId = this.refreshWebStateId();
+    this.controller = controller;
   }
 
   // Statuses / getters
@@ -835,11 +836,10 @@ export class meowTabInfo {
     meow(`Exit! ${this.url}`, 'WebNode][onWindowExit');
   }
 
-  requestNewTab(url: string, controller: WebviewController) {
-    const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.myUi.windowId}`)!;
-    // animateToImmediately(defaultAnimation(), () => {
-    myTabs.newTabBare(url, controller);
-    // });
+  requestNewTab(url: string, controller: WebviewController, delaySwitch: boolean = false) {
+    animateToImmediately(defaultAnimation(), () => {
+      this.myUi.myTabs.newTabBare(url, controller, delaySwitch);
+    });
   }
 
   requestNewPopup(event: OnWindowNewEvent) {

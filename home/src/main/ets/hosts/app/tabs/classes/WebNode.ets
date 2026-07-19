@@ -128,20 +128,20 @@ struct MeowWeb {
           if (!event) {
             return;
           }
+
+          // Overlay alert / dialog
           if (event.isAlert) {
             this.pk.requestNewPopup(event);
             return;
           }
 
+          // Non-alert webs
           let popController: webview.WebviewController = new webview.WebviewController();
-          this.pk.requestNewTab(event.targetUrl, popController);
+          event.handler.setWebController(popController);
+          this.pk.requestNewTab(event.targetUrl, popController, true);
 
-          setTimeout(() => {
-            event.handler.setWebController(popController);
-            meow(`onWindowNew: ${event.targetUrl} -> ${popController}`, 'WebNode][onWindowNew');
-          });
-
-          // Does this timeout work?
+          // Meow
+          meow(`onWindowNew: ${event.targetUrl} -> ${popController}`, 'WebNode][onWindowNew');
         })
         .onContextMenuShow((event) => {
           if (!event) {
@@ -462,7 +462,7 @@ export class TabNodeController extends NodeController {
     if (this.builderNode) {
       let frameNode: FrameNode | null = this.builderNode.getFrameNode();
       if (frameNode?.getParent() != null) {
-        meow(`[WebNode][attachWeb] Failed! FrameNode already has a parent!`);
+        console.error(`[WebNode][attachWeb] Failed! FrameNode already has a parent!`);
         return;
       }
       this.rootNode = this.builderNode.getFrameNode();
@@ -472,17 +472,6 @@ export class TabNodeController extends NodeController {
   // 卸载Webview
   detachWeb(): void {
     this.rootNode = null;
-  }
-
-  // Update
-  update(pk: meowTabInfo) {
-    if (this.builderNode) {
-      try {
-        this.builderNode.update(pk);
-      } catch (e) {
-        console.error(`[WebNode][update] Failed: ${e}!`);
-      }
-    }
   }
 
   // 解除当前builderNode与后端实体的引用关系

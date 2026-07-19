@@ -284,7 +284,7 @@ export class meowTabsBunch {
    * @param controller A pre-created controller to use?
    * @returns The new meowTabInfo.
    */
-  newTabBare(overwriteUrl?: string, controller?: WebviewController) {
+  newTabBare(overwriteUrl?: string, controller?: WebviewController, delaySwitch: boolean = false) {
     const newTab = new meowTabInfo(this.myUi);
     newTab.controller = controller || new webview.WebviewController();
     if (overwriteUrl) {
@@ -293,11 +293,21 @@ export class meowTabsBunch {
     const newNode = new TabNodeController(this.uiContext, newTab);
     newTab.node = newNode;
     this.tabs.push(newTab);
-    this.switchTo(this.tabs.length - 1);
     if (newTab.url == '') {
       // meow(`New tab created with empty url. Calling requestWebStateUpdate!`, 'meowTabsBunch][newTabBare', meowLevel.WARN);
       newTab.saveWebState('newEmptyTab');
     }
+
+    // Show
+    if (delaySwitch) {
+      setTimeout(() => {
+        this.switchTo(this.tabs.length - 1);
+      }, 100); // TODO: We have to wait a while before the original web finishes processing something... THIS IS NOT ELEGANT
+    } else {
+      this.switchTo(this.tabs.length - 1);
+    }
+
+    // Return the meowTabInfo.
     return newTab;
   }
 
