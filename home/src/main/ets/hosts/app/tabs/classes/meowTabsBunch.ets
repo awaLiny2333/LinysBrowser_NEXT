@@ -302,7 +302,7 @@ export class meowTabsBunch {
     if (delaySwitch) {
       setTimeout(() => {
         this.switchTo(this.tabs.length - 1);
-      }, 100); // TODO: We have to wait a while before the original web finishes processing something... THIS IS NOT ELEGANT
+      }, 200); // TODO: We have to wait a while before the original web finishes processing something... THIS IS NOT ELEGANT
     } else {
       this.switchTo(this.tabs.length - 1);
     }
