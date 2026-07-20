@@ -97,7 +97,7 @@ struct Index {
             // Progress bar
             MooProgress({ show: (this.myTabs.currentTab?.progress || -1) > 0, percentage: (this.myTabs.currentTab?.progress || -1) });
             // Control buttons overlay for windowed fullscreens.
-            if (!this.isNotAnySortOfFullscreen && this.myApp.freeWindow) {
+            if (this.myUi.fullscreenStatus == meowUiFullscreenStatus.FULLSCREEN_WINDOWED && this.myApp.freeWindow) {
               MeowOverlays(this.myUi);
             }
           }

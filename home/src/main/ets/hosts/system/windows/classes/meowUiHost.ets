@@ -356,26 +356,23 @@ export class meowUiHost {
    */
   async fullscreenWindowed() {
     this.showMore = false;
-    switch (this.fullscreenStatus) {
-      case meowUiFullscreenStatus.NONE:
-        animateToImmediately(defaultAnimation(), () => {
-          this.fullscreenStatus = meowUiFullscreenStatus.FULLSCREEN_WINDOWED;
-        });
-        break;
-      case meowUiFullscreenStatus.FULLSCREEN_WINDOWED:
-        animateToImmediately(defaultAnimation(), () => {
-          this.fullscreenStatus = meowUiFullscreenStatus.NONE;
-        });
-        this.webFullscreenHandler?.exitFullScreen();
-        break;
-      case meowUiFullscreenStatus.FULLSCREEN_FULL:
-        // Exit fullscreen
-        this.windowObj?.recover().catch((e: BusinessError) => {
-          meow(`Failed to recover window: ${e.message}`, `meowUiHost][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
-        });
-        this.fullscreenStatus = meowUiFullscreenStatus.FULLSCREEN_WINDOWED;
-        break;
+
+    // Exit if is already in windowed fullscreen.
+    if (this.fullscreenStatus === meowUiFullscreenStatus.FULLSCREEN_WINDOWED) {
+      this.fullscreenExit();
+      return;
     }
+
+    // For NONE & FULLSCREEN_FULL, enter windowed fullscreen.
+    animateToImmediately(defaultAnimation(), () => {
+      this.fullscreenStatus = meowUiFullscreenStatus.FULLSCREEN_WINDOWED;
+    });
+    this.windowObj?.recover().catch((e: BusinessError) => {
+      meow(`Failed to recover window: ${e.message}`, `meowUiHost][${this.windowId}][fullscreenWindowed`, meowLevel.ERROR);
+    });
+    this.windowObj?.setSpecificSystemBarEnabled('status', true).catch((e: BusinessError) => {
+      meow(`Failed to show status: ${e.message}`, `meowUiHost][${this.windowId}][fullscreenWindowed`, meowLevel.ERROR);
+    });
   }
 
   /**
@@ -383,25 +380,23 @@ export class meowUiHost {
    */
   async fullscreenFull() {
     this.showMore = false;
-    switch (this.fullscreenStatus) {
-      case meowUiFullscreenStatus.NONE:
-        this.fullscreenStatus = meowUiFullscreenStatus.FULLSCREEN_FULL; // Put this line first to avoid render / display flaws. // This seems helpless to the issue :P
-        // Enter fullscreen
-        this.windowObj?.maximize().catch((e: BusinessError) => {
-          meow(`Failed to maximize window: ${e.message}`, `meowUiHost][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
-        });
-        break;
-      case meowUiFullscreenStatus.FULLSCREEN_WINDOWED:
-        this.fullscreenStatus = meowUiFullscreenStatus.FULLSCREEN_FULL;
-        // Enter fullscreen
-        this.windowObj?.maximize().catch((e: BusinessError) => {
-          meow(`Failed to maximize window: ${e.message}`, `meowUiHost][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
-        });
-        break;
-      case meowUiFullscreenStatus.FULLSCREEN_FULL:
-        this.fullscreenExit();
-        break;
+
+    // Exit if is already in full fullscreen.
+    if (this.fullscreenStatus === meowUiFullscreenStatus.FULLSCREEN_FULL) {
+      this.fullscreenExit();
+      return;
     }
+
+    // For NONE & FULLSCREEN_WINDOWED, enter full fullscreen.
+    animateToImmediately(defaultAnimation(), () => {
+      this.fullscreenStatus = meowUiFullscreenStatus.FULLSCREEN_FULL;
+    });
+    this.windowObj?.maximize().catch((e: BusinessError) => {
+      meow(`Failed to maximize window: ${e.message}`, `meowUiHost][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
+    });
+    this.windowObj?.setSpecificSystemBarEnabled('status', false).catch((e: BusinessError) => {
+      meow(`Failed to hide status: ${e.message}`, `meowUiHost][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
+    });
   }
 
   /**
@@ -410,7 +405,10 @@ export class meowUiHost {
   fullscreenExit() {
     this.webFullscreenHandler?.exitFullScreen();
     this.windowObj?.recover().catch((e: BusinessError) => {
-      meow(`Failed to recover window: ${e.message}`, `meowUiHost][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
+      meow(`Failed to recover window: ${e.message}`, `meowUiHost][${this.windowId}][fullscreenExit`, meowLevel.ERROR);
+    });
+    this.windowObj?.setSpecificSystemBarEnabled('status', true).catch((e: BusinessError) => {
+      meow(`Failed to show status: ${e.message}`, `meowUiHost][${this.windowId}][fullscreenExit`, meowLevel.ERROR);
     });
     animateToImmediately(defaultAnimation(), () => {
       this.fullscreenStatus = meowUiFullscreenStatus.NONE;
