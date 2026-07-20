@@ -87,7 +87,7 @@ export class meowTabsBunch {
     // Use parallel promises to accelerate.
     const readPromises = baseFiles.map(async (stateName) => {
       const newTab = new meowTabInfo(this.myUi);
-      newTab.restoringWebState = true;
+      newTab.restoringWebState = true; // Mark the tab to be restored / restorable?
       newTab.webStateId = stateName;
       const labelPath = `${this.workingDir}/${stateName}_label`;
 
@@ -150,6 +150,23 @@ export class meowTabsBunch {
     }
     const statPath = `${this.workingDir}/stat`;
     await saveHybrid(statPath, stat, true);
+  }
+
+  /**
+   * Requests a tab to sleep.
+   * @param index The index of the tab to sleep.
+   */
+  async requestSleep(index: number) {
+    await this.tabs[index].requestSleep();
+    // Set UI correctly if closing the current-viewing tab.
+    if (this.tabs[index] == this.currentTab) {
+      setTimeout(() => {
+        animateToImmediately(defaultAnimation(), () => {
+          this.currentTab = undefined; // Leave current tab.
+          this.myUi.setAddressBarContent('', true, true); // Update address bar.
+        });
+      }); // Use timeout to protect animation.
+    }
   }
 
   // DRAG & DROP
@@ -336,7 +353,7 @@ export class meowTabsBunch {
       // No node, indicating that all tabs are closed.
       // Clear the url field
       if (!this.myUi.addressBarFocused) {
-        this.myUi.setSearchContent('', true, true);
+        this.myUi.setAddressBarContent('', true, true);
       }
     }
 

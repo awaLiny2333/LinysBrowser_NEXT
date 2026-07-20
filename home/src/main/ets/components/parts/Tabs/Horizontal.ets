@@ -63,6 +63,12 @@ struct MeowTabsHorizontal {
                   ? { width: 2, color: getColor(meowThemeColorType.FONT), radius: defaultInnerRadius }
                   : { width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth'), radius: defaultInnerRadius })
                 .onClick(() => {
+                  // SLEEP
+                  if (this.myUi.tabsSelectingSleep) {
+                    this.myTabs.requestSleep(item.index);
+                    return;
+                  }
+                  // SWITCH
                   animateToImmediately(defaultAnimation(), () => {
                     this.myTabs.switchTo(item.index);
                   });
@@ -79,21 +85,36 @@ struct MeowTabsHorizontal {
             })
             .key((item) => item.webStateId);
         }
+        .clip(false)
         .scrollBar(BarState.Off)
         .alignListItem(ListItemAlign.Center)
         .height('100%')
         .width('auto')
         .listDirection(Axis.Horizontal);
+
+        Row(); // Space
       }
-      // New tab
-      MooSymbolButton({
-        icon: $r('sys.symbol.plus_square'),
-        clickAction: () => {
-          animateToImmediately(defaultAnimation(), () => {
-            this.myTabs.newTabWrapped();
-          });
-        }
-      });
+      // Buttons
+      Row({ space: standardSpacing * 0.25 }) {
+        // New tab
+        MooSymbolButton({
+          icon: $r('sys.symbol.plus_square'),
+          clickAction: () => {
+            animateToImmediately(defaultAnimation(), () => {
+              this.myTabs.newTabWrapped();
+            });
+          }
+        });
+        // Sleep
+        MooSymbolButton({
+          icon: $r('sys.symbol.moon_z'),
+          onHold: this.myUi.tabsSelectingSleep,
+          clickAction: () => {
+            // Enter sleep select mode.
+            this.myUi.tabsSelectingSleep = !this.myUi.tabsSelectingSleep;
+          }
+        });
+      };
     }
     .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl)
     .justifyContent(FlexAlign.End)
@@ -114,7 +135,7 @@ struct MeowTabsHorizontal {
 
   @Computed
   get widthEachTab() {
-    return (this.myWidth - defaultMooSymbolSize) / this.myTabs.tabs.length;
+    return (this.myWidth - defaultMooSymbolSize * 2 - this.mySpacing) / this.myTabs.tabs.length;
   }
 
   get tight() {

@@ -45,6 +45,7 @@ export class meowUiHost {
   dropHoverFlipTimeoutId: number | undefined = undefined;
   @Trace showAddressBarOverlay: boolean = false;
   addressBarOverlayReShowTimeoutId: number | undefined = undefined;
+  @Trace tabsSelectingSleep: boolean = false; // Whether is selecting tabs to be put into sleep.
   // Side area
   @Trace showTabs: boolean = false;
   @Trace sidebarPage: string = UnifiedButtonsType.HISTORIES;
@@ -521,15 +522,15 @@ export class meowUiHost {
     this.requestHideAddressBarOverlay();
   }
 
-  // SEARCH
+  // SEARCH / ADDRESS BAR
 
   /**
-   * Sets the search content of the window.
+   * Sets the address bar content of the window.
    * Also refreshes the keyword entries and / or destination on demand (passed in args).
    * @param newContent The new search content.
    * @param doKeywordRefresh Whether to refresh the keyword entries.
    */
-  setSearchContent(newContent: string, doKeywordRefresh: boolean, doDestinationRefresh: boolean) {
+  setAddressBarContent(newContent: string, doKeywordRefresh: boolean, doDestinationRefresh: boolean) {
     this.addressBarContentMajor = newContent;
     if (doKeywordRefresh) {
       this.refreshKeywordEntries();

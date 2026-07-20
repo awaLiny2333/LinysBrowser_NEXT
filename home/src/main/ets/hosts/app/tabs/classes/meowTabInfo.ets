@@ -27,7 +27,7 @@ export class meowTabInfo {
   @Trace node: TabNodeController | undefined;
   // Web States
   webStateId: string;
-  @Trace restoringWebState: boolean = false;
+  @Trace restoringWebState: boolean = false; // Will be initially set true if this tab needs restoration.
   @Trace wsBackupReqTmId: number | undefined;
   // UI info
   @Trace endOfLoadTimestamp: number = Number.MAX_VALUE; // Requests to save history / webstate after this time should be rejected.
@@ -159,8 +159,43 @@ export class meowTabInfo {
     // So when it is dragged away, there won't be any left.
     // So clear the url field.
     if (this.myUi.myTabs.tabs.length == 1 && !this.myUi.addressBarFocused) {
-      this.myUi.setSearchContent('', true, true);
+      this.myUi.setAddressBarContent('', true, true);
     }
+  }
+
+  /**
+   * Request this tab to sleep.
+   */
+  async requestSleep() {
+    if (this.restoringWebState) {
+      return;
+    }
+    if (!this.isActive) {
+      return;
+    }
+
+    // Save current webstate
+    await this.saveWebState('sleep');
+
+    clearTimeout(this.saveHistoryTimeoutId);
+    clearTimeout(this.wsBackupReqTmId);
+    this.requestDestroyNode();
+
+    setTimeout(() => {
+      animateToImmediately(defaultAnimation(), () => {
+        this.saveHistoryTimeoutId = undefined;
+        this.wsBackupReqTmId = undefined;
+
+        // Clear objects.
+        this.popupController = undefined;
+        this.showingPopup = false;
+        this.node = undefined;
+        this.controller = undefined;
+
+        // Mark
+        this.restoringWebState = true;
+      });
+    }); // Use timeout to protect animation.
   }
 
   // WEB STATES
@@ -560,7 +595,7 @@ export class meowTabInfo {
     if (!this.myUi.addressBarFocused) {
       const newUrl = this.url || '';
       if (this.myUi.addressBarContentMajor != newUrl) {
-        this.myUi.setSearchContent(newUrl, true, true);
+        this.myUi.setAddressBarContent(newUrl, true, true);
         this.myUi.tryAutoShift();
       }
     }

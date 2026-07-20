@@ -6,7 +6,7 @@ import { MooSymbolButton } from "../../common/MooSymbolButton";
 import { MooSymbolButtonSmall } from "../../common/MooSymbolButtonSmall";
 import { MooTextModifier } from "../../common/MooTextModifier";
 import { defaultTabsVerticalShrunkWidth, defaultTabsVerticalWidth, meowThemeColorType, standardSpacing } from "../../constants";
-import { defaultAnimation, getColor, sideAreaShrinkButton, sideareaShouldBeOnTheRight, titleBarPositionBottom, useEffects } from "../../settings";
+import { defaultAnimation, getColor, sideAreaShrinkButton, sideareaShouldBeOnTheRight, titleBarPositionBottom, useEffects, sideAreaShrinkAuto } from "../../settings";
 import { shrinkButton } from "../Sidebar/SidebarShrinkButton";
 
 @ComponentV2
@@ -60,10 +60,21 @@ struct MeowTabsVertical {
                   ? { width: 2, color: getColor(meowThemeColorType.FONT), radius: defaultInnerRadius }
                   : { width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth'), radius: defaultInnerRadius })
                 .onClick(() => {
+                  // SLEEP
+                  if (this.myUi.tabsSelectingSleep) {
+                    this.myTabs.requestSleep(item.index);
+                    return;
+                  }
+                  // SWITCH
                   animateToImmediately(defaultAnimation(), () => {
                     this.myTabs.switchTo(item.index);
+                    // For slim (phone) views
                     if (!this.myLayout.wideMode) {
-                      this.myUi.sideAreaShrinkExpect = true;
+                      if (sideAreaShrinkAuto()) {
+                        this.myUi.sideAreaShrinkExpect = true; // Auto shrink.
+                      } else {
+                        this.myUi.showTabs = false; // Auto close.
+                      }
                     }
                   });
                 });
@@ -94,6 +105,18 @@ struct MeowTabsVertical {
         if (sideAreaShrinkButton() && titleBarPositionBottom()) {
           shrinkButton(this.myUi);
         }
+        // Sleep
+        if (!this.myUi.sideAreaShrunkSummarized) {
+          MooSymbolButton({
+            icon: $r('sys.symbol.moon_z'),
+            onHold: this.myUi.tabsSelectingSleep,
+            clickAction: () => {
+              // Enter sleep select mode.
+              this.myUi.tabsSelectingSleep = !this.myUi.tabsSelectingSleep;
+            }
+          });
+        }
+        // New tab
         MooSymbolButton({
           icon: $r('sys.symbol.plus_square'),
           clickAction: () => {

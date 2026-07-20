@@ -106,7 +106,7 @@ struct MeowAddressBar {
                     // The safest way to do so...
                     const newUrl = url.URL.parseURL(this.myUi.addressBarContentMajor);
                     newUrl.params.set(it.item[0], c);
-                    this.myUi.setSearchContent(newUrl.toString(), false, true);
+                    this.myUi.setAddressBarContent(newUrl.toString(), false, true);
                   } catch (e) {
                     meow(`Invalid URL: ${this.myUi.addressBarContentMajor}`, 'MeowAddressBar][Keyword][onChange', meowLevel.WARN);
                   }
@@ -148,7 +148,7 @@ struct MeowAddressBar {
           this.myUi.reportAddressBarBlur();
         })
         .onChange((c) => {
-          this.myUi.setSearchContent(c, true, true);
+          this.myUi.setAddressBarContent(c, true, true);
           this.myUi.setCurrentFieldContent(c);
         })
         .onSubmit(() => this.go());
