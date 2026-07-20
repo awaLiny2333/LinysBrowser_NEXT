@@ -4,6 +4,7 @@ import lazy { BusinessError } from "@kit.BasicServicesKit";
 import { meowLayout } from "../../../../catstypicalframework/hosts/meowLayout";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import lazy { ensureDirectoryExist, removeDir, renameFolder } from "../../../../catstypicalframework/utils/storage";
+import lazy { updateNavigationIndicator } from "../../../../catstypicalframework/utils/ui";
 import { getKeywordEntries, UnifiedDestinationResult, UnifiedDestinationResultType, unifyDestination } from "../../../../catstypicalframework/utils/url";
 import { meowThemeColorType, UnifiedButtonsType } from "../../../../components/constants";
 import { addressBarId } from "../../../../components/parts/Homepage/addressBar/MeowAddressBar";
@@ -398,6 +399,9 @@ export class meowUiHost {
     this.windowObj?.setSpecificSystemBarEnabled('status', false).catch((e: BusinessError) => {
       meow(`Failed to hide status: ${e.message}`, `meowUiHost][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
     });
+    this.windowObj?.setSpecificSystemBarEnabled('navigationIndicator', false).catch((e: BusinessError) => {
+      meow(`Failed to hide navigationIndicator: ${e.message}`, `meowUiHost][${this.windowId}][fullscreenFull`, meowLevel.ERROR);
+    });
   }
 
   /**
@@ -411,6 +415,7 @@ export class meowUiHost {
     this.windowObj?.setSpecificSystemBarEnabled('status', true).catch((e: BusinessError) => {
       meow(`Failed to show status: ${e.message}`, `meowUiHost][${this.windowId}][fullscreenExit`, meowLevel.ERROR);
     });
+    updateNavigationIndicator(this.windowObj!);
     animateToImmediately(defaultAnimation(), () => {
       this.fullscreenStatus = meowUiFullscreenStatus.NONE;
     });

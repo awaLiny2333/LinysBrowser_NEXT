@@ -239,7 +239,7 @@ struct MeowButton {
           packToFileFromPixelMap(this.getUIContext().getHostContext() as Context, icon).then((p) => {
             if (p) {
               // Pin
-              pinShortcut(url, title || 'meow', p);
+              pinShortcut(url, `󰊴 ${title || 'meow'}`, p);
             }
           });
         } catch (e) {

@@ -12,7 +12,7 @@ import lazy { defaultSidebarShrunkWidth, defaultSidebarWidth, defaultTabsVertica
 import lazy { MeowAddressBar } from '../components/parts/Homepage/addressBar/MeowAddressBar';
 import lazy { MeowDestination } from '../components/parts/Homepage/addressBar/MeowDestination';
 import lazy { MeowSuggestions } from '../components/parts/Homepage/addressBar/MeowSuggestions';
-import { MeowOverlays } from '../components/parts/Homepage/frame/MeowOverlays';
+import lazy { MeowOverlays } from '../components/parts/Homepage/frame/MeowOverlays';
 import lazy { MeowSearchInPage } from '../components/parts/Homepage/frame/MeowSearchInPage';
 import lazy { MeowShortcutsPanel } from '../components/parts/Homepage/frame/MeowShortcuts';
 import lazy { MeowTitleBar } from '../components/parts/Homepage/frame/MeowTitleBar';
