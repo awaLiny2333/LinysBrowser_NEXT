@@ -10,7 +10,7 @@ import { getColor } from '../settings';
 @Builder
 export function MooSymbolButtonSmall(icon: Resource, clickAction?: () => void, myHitTestMode?: HitTestMode, myPadding?: Padding | number) {
   SymbolGlyph(icon)
-    .padding(myPadding || 7)
+    .padding(myPadding || 6.5)
     .borderRadius(defaultItemRadius)
     .hoverEffect(HoverEffect.Highlight)
     .onClick(() => {
