@@ -295,12 +295,19 @@ export class meowUiHost {
       // await Promise.all(this.myTabs.tabs.map((tab): Promise<boolean> => tab.saveWebState()));
     }
 
+    // Clear timeouts
+    clearTimeout(this.dropHoverFlipTimeoutId);
+    clearTimeout(this.addressBarOverlayReShowTimeoutId);
+    clearTimeout(this.addressBarBlurTimeoutId);
+    clearTimeout(this.suggestionsRefreshTimeoutId);
+
     // Clear from AppStorageV2
     AppStorageV2.remove(`meowTabsBunch_${this.windowId}`);
     AppStorageV2.remove(`meowLayout_${this.windowId}`);
-    AppStorageV2.remove(`meowUiHost_${this.windowId}`);
     AppStorageV2.remove(`meowAvoid_${this.windowId}`);
     AppStorageV2.remove(`meowMisc_${this.windowId}`);
+    AppStorageV2.remove(`meowDialogManager_${this.windowId}`);
+    AppStorageV2.remove(`meowUiHost_${this.windowId}`);
   }
 
   /**
@@ -424,7 +431,7 @@ export class meowUiHost {
     this.windowObj?.setSpecificSystemBarEnabled('status', true).catch((e: BusinessError) => {
       meow(`Failed to show status: ${e.message}`, `meowUiHost][${this.windowId}][fullscreenExit`, meowLevel.ERROR);
     });
-    updateNavigationIndicator(this.windowObj!);
+    if (this.windowObj) updateNavigationIndicator(this.windowObj); // Even though this.windowObj MUST exist at this moment... We choose the safe way ovo.
     animateToImmediately(defaultAnimation(), () => {
       this.fullscreenStatus = meowUiFullscreenStatus.NONE;
     });

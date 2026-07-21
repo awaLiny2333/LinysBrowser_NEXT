@@ -86,7 +86,7 @@ export function hsv2hex(hsv: number[]) {
  * @param hex A string, in the format of #______.
  * @returns [r, g, b] if success.
  * */
-export function hex2rgb(hex: ResourceColor) {
+export function hex2rgb(hex: string) {
   hex = (hex as string).toLowerCase();
   let rgb: number[] = [];
   for (let i = 1; i < 7; i += 2) {
@@ -152,8 +152,8 @@ export function rgb2hsv(r: number, g: number, b: number) {
  * @param hex A string, the hex color.
  * @returns A number[] array, [h, s, v].
  * */
-export function hex2hsv(hex: ResourceColor) {
-  let rgb: number[] = hex2rgb(hex as string);
+export function hex2hsv(hex: string) {
+  let rgb: number[] = hex2rgb(hex);
   let hsv = rgb2hsv(rgb[0], rgb[1], rgb[2]);
   return hsv;
 }
@@ -164,14 +164,14 @@ const HEX_REGEX = /^#[0-9A-Fa-f]{6}$/;
  * Examines a string and check if it is a legal #______ hex color.
  * @param hex A color string.
  * */
-export function isLegalHexColor(hex: ResourceColor): boolean {
-  return HEX_REGEX.test(hex as string);
+export function isLegalHexColor(hex: string): boolean {
+  return HEX_REGEX.test(hex);
 }
 
 /**
- * Adds transparency (0-255) to a ResourceColor
+ * Adds transparency (0-255) to a string hex color.
  * */
-export function addTransparency(color: ResourceColor, transparency: number) {
+export function addTransparency(color: string, transparency: number) {
   let transparency_hex = ((255 - transparency) & 0xff).toString(16).padStart(2, '0');
-  return '#' + transparency_hex + (color as string).substring(1);
+  return '#' + transparency_hex + color.substring(1);
 }

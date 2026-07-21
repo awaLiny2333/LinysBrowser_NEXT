@@ -35,7 +35,9 @@ export function archiveWeb(controller: WebviewController | undefined) {
   const context = UIContext.getLastFocusedUIContext()?.getHostContext()!;
   const tempName = `archiveWeb_${Date.now().toFixed(16)}.mht`;
   try {
-    const overwriteName = makeFilenameLegal(`${controller.getTitle().substring(0, 32)} - ${controller.getUrl().substring(0, 32)}.mht`);
+    const title = controller.getTitle() || 'Untitled';
+    const url = controller.getUrl() || 'unknown';
+    const overwriteName = makeFilenameLegal(`${title.substring(0, 32)} - ${url.substring(0, 32)}.mht`);
     controller.storeWebArchive(`${context.tempDir}/${tempName}`, false)
       .then(() => {
         fileDocumentPickCopySave(`${context.tempDir}/${tempName}`, overwriteName);

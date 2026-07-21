@@ -39,6 +39,6 @@ export default class EntryAbilityStage extends AbilityStage {
 
     getCreateMyApp().lastCreatedInstanceKey = instanceKey; // So that the flow in EntryAbility can grab this key and use it as its windowId.
 
-    return instanceKey;
+    return instanceKey; // According to the HarmonyOS API, if the instanceKey is found to be held by one of the current window, no new window would be created and that window would receive the want.
   }
 }

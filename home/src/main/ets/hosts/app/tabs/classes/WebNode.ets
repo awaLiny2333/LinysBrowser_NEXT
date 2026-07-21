@@ -385,7 +385,7 @@ struct MeowWeb {
           }
         });
 
-        // The row of copu image, save and things.s
+        // The row of copy image, save and things.
         oopsPreviewActionsImage({
           tabInfo: this.pk, content: source,
           requestVisit: (url) => {
@@ -396,6 +396,9 @@ struct MeowWeb {
           },
           requestCopyImage: () => {
             this.pk.contextMenuResult?.copyImage();
+          },
+          requestCopyUrl: () => {
+            copyText(source);
           }
         });
 

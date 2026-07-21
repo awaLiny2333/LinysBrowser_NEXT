@@ -260,9 +260,9 @@ export class meowTabInfo {
     let state: Uint8Array = new Uint8Array();
     const label = this.title || '';
     const url = this.url || '';
-    if (url != '' || this.canBack || this.canForw) {
+    if (this.controller && (url != '' || this.canBack || this.canForw)) {
       try {
-        state = this.controller?.serializeWebState() || new Uint8Array();
+        state = this.controller.serializeWebState();
       } catch (e) {
         meow(`this.controller?.serializeWebState() failed: ${e}. Put a new Uint8Array().`, `meowTabInfo][saveWebState][${sourceInfo}`, meowLevel.ERROR);
       }

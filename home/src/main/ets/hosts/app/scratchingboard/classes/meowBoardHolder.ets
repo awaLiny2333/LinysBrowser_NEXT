@@ -1,4 +1,5 @@
 import { unifiedDataChannel } from '@kit.ArkData';
+import { defaultAnimation } from '../../../../components/settings';
 import lazy { unifiedRecord2BoardData } from '../scripts/data';
 
 export enum MeowScratchingBoardDataType {
@@ -29,5 +30,26 @@ export class meowBoardHolder {
   async addEntries(records: unifiedDataChannel.UnifiedRecord[], imgTempDir: string) {
     const newRecords: MeowScratchingBoardData[] = await unifiedRecord2BoardData(records, true, imgTempDir);
     this.records.unshift(...newRecords);
+  }
+
+  /**
+   * Clears everything in the board. Releases all pixelMaps.
+   * @author DeepSeek Web @ Jul 21 2026.
+   */
+  async clearBoard(): Promise<void> {
+    // 显式声明为 Promise<void>[]，通过条件过滤掉所有非法的项
+    const releaseTasks: Promise<void>[] = [];
+    for (const rec of this.records) {
+      if (rec.type === MeowScratchingBoardDataType.IMAGE && rec.payload?.[1]?.release) {
+        // 这里确保 release 存在，push 的必定是 Promise<void>
+        releaseTasks.push(rec.payload[1].release());
+      }
+    }
+
+    await Promise.allSettled(releaseTasks);
+
+    animateToImmediately(defaultAnimation(), () => {
+      this.records = [];
+    });
   }
 }

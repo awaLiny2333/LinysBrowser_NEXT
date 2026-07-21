@@ -11,7 +11,7 @@ import { MooSymbolButton } from "../../common/MooSymbolButton";
 import { MooSymbolButtonMeow } from "../../common/MooSymbolButtonMeow";
 import { MooTextModifier } from "../../common/MooTextModifier";
 import { defaultMooSymbolSize, fontSizeSmall, mooTextType, standardComponentHeight, standardSpacing } from "../../constants";
-import { defaultAnimation, isPreferRightHand } from "../../settings";
+import { isPreferRightHand } from "../../settings";
 import { ScratchingBoardCardFrame } from "./Frame";
 
 @ComponentV2
@@ -61,9 +61,7 @@ export struct ScratchingBoardPanel {
           text: $r('app.string.General_clear'),
           needDoubleConfirm: true,
           clickAction: () => {
-            animateToImmediately(defaultAnimation(), () => {
-              this.myBoard.records = [];
-            });
+            this.myBoard.clearBoard();
           }
         });
       } else {

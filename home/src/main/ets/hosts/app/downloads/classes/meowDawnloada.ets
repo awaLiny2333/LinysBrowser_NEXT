@@ -2,7 +2,7 @@ import lazy { common } from "@kit.AbilityKit";
 import lazy { AppStorageV2, UIContext } from "@kit.ArkUI";
 import lazy { webview } from "@kit.ArkWeb";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import lazy { retrieveDownloadDirectory, showInFiles, uri_2_path } from "../../../../catstypicalframework/utils/storage";
+import lazy { fileDirExist, makeFilenameLegal, retrieveDownloadDirectory, showInFiles, uri_2_path } from "../../../../catstypicalframework/utils/storage";
 import lazy { defaultAnimation } from "../../../../components/settings";
 import lazy { openDialogRequestType } from "../../../system/dialogs/classes/meowDialogManager";
 import lazy { requestDialogOnMostRecent } from "../../../system/dialogs/scripts/dialog";
@@ -76,11 +76,21 @@ export class meowDawnloada {
       item.cancel();
       return; // Context not found, stop the script. This is not likely to happen...
     }
-    return retrieveDownloadDirectory(context!).then((dlDir) => {
+    return retrieveDownloadDirectory(context!).then(async (dlDir) => {
       // Construct a meowDawnloadaItem and push it to the class-managed list.
       const meowItem = new meowDawnloadaItem(item);
+      filename = makeFilenameLegal(filename); // Eliminate illegal chars, e.g. "/" or "?" input by the user.
       meowItem.fileName = filename;
       const targetPath = uri_2_path(`${dlDir}/${filename}`);
+
+      // Check if the file already exists.
+      if (await fileDirExist(targetPath)) {
+        meow(`File already exists: [${targetPath}]`, 'meowDawnloada][confirmDownload', meowLevel.WARN);
+        item.cancel();
+        return;
+      }
+
+      // LINKSTART
       item.start(targetPath);
       meow(`confirmDownload: [${item.getGuid()}][${item.getUrl()}] → [${targetPath}]`, 'meowDawnloada][confirmDownload', meowLevel.WARN);
       setTimeout(() => {
@@ -135,7 +145,12 @@ export class meowDawnloada {
       if (meowItem.state != webview.WebDownloadState.IN_PROGRESS && meowItem.state != webview.WebDownloadState.PAUSED && meowItem.state != webview.WebDownloadState.COMPLETED) {
         continue; // Skip invalid tasks.
       }
-      this.totalSize += meowItem.item.getTotalBytes();
+      const total = meowItem.item.getTotalBytes();
+      if (total > 0) {
+        this.totalSize += total;
+      } else {
+        this.totalSize += meowItem.item.getReceivedBytes(); // For cases in which the server doesn't report Content-Length, getTotalBytes() = -1. We put the receivedBytes instead here.
+      }
       this.currentSize += meowItem.item.getReceivedBytes();
       this.currentSpeed += meowItem.item.getCurrentSpeed();
     }

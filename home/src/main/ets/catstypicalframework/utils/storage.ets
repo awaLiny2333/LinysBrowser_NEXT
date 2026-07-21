@@ -365,6 +365,8 @@ export async function saveImageToAlbum(srcFilePath: string, context: common.UIAb
   const ext = extensionOfName(srcFilePath);
   console.info('[saveImageToAlbum] Source URI: ' + srcFileUri);
 
+  let desFile: fileIo.File | undefined;
+  let srcFile: fileIo.File | undefined;
   try {
     // Show dialog to ask for permission and get destination url.
     let phAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
@@ -372,16 +374,21 @@ export async function saveImageToAlbum(srcFilePath: string, context: common.UIAb
     console.info(`[saveImageToAlbum] Destination URIs: ${desFileUris}`);
 
     // Copy there
-    let desFile: fileIo.File = await fileIo.open(desFileUris[0], fileIo.OpenMode.WRITE_ONLY);
-    let srcFile: fileIo.File = await fileIo.open(srcFileUri, fileIo.OpenMode.READ_ONLY);
+    desFile = await fileIo.open(desFileUris[0], fileIo.OpenMode.WRITE_ONLY);
+    srcFile = await fileIo.open(srcFileUri, fileIo.OpenMode.READ_ONLY);
     await fileIo.copyFile(srcFile.fd, desFile.fd);
     fileIo.closeSync(srcFile);
     fileIo.closeSync(desFile);
     console.info('[saveImageToAlbum] create asset by dialog successfully');
 
-    unlinkFile(srcFilePath); // Clear
     return true;
   } catch (err) {
+    try {
+      if (desFile) fileIo.closeSync(desFile);
+      if (srcFile) fileIo.closeSync(srcFile);
+    } catch (e) {
+      // No other thing we can do. Give up 2 fds.
+    }
     console.error(`[saveImageToAlbum] failed to create asset by dialog, errCode is: ${err.code}, ${err.message}`);
     return false;
   }
@@ -857,6 +864,15 @@ export function makeFilenameLegal(filename: string, rep: string = '_'): string {
   if (legal.length === 0) {
     legal = 'meow';
   }
+  // 4. 如果文件名太长，进行限制。保留文件扩展名，从后向前截取。
+  if (legal.length > 255) {
+    const lastDotIndex = legal.lastIndexOf('.');
+    if (lastDotIndex > 0) {
+      legal = legal.slice(0, 255 - (255 - lastDotIndex)) + legal.slice(lastDotIndex);
+    } else {
+      legal = legal.slice(0, 255);
+    }
+  }
   return legal;
 }
 
@@ -1004,11 +1020,18 @@ export async function packToFileFromPixelMap(context: Context, pixelMap: image.P
   const imagePackerApi = image.createImagePacker();
   let packOpts: image.PackingOption = { format: 'image/png', quality: 100 };
   const path: string = context.tempDir + '/shortcut.png';
+  let file: fileIo.File | undefined;
   try {
-    let file = fileIo.openSync(path, fileIo.OpenMode.CREATE | fileIo.OpenMode.READ_WRITE);
+    file = fileIo.openSync(path, fileIo.OpenMode.CREATE | fileIo.OpenMode.READ_WRITE);
     await imagePackerApi.packToFile(pixelMap, file.fd, packOpts);
+    await fileIo.close(file);
     return path;
   } catch (error) {
+    try {
+      if (file) fileIo.closeSync(file);
+    } catch (e) {
+      // No other thing we can do. Give up 1 fd.
+    }
     console.error('Failed to pack the pixelMap to file. And the error is: ' + error);
   }
   return undefined;

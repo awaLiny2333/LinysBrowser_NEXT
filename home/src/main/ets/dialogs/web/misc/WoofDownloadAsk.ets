@@ -58,6 +58,7 @@ struct WoofDownloadAskPanel {
           }
         })
           .padding(1);
+        Text($r('app.string.WindowAlias_illegalChars')).attributeModifier(new MooTextModifier()).padding(standardSpacing * 0.5);
       }
       .onAppear(() => {
         focusControl.requestFocus(this.inputId);

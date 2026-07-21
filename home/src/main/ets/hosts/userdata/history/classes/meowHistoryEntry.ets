@@ -43,9 +43,11 @@ export class meowHistoryEntry {
    */
   toString(): string {
     // trim if too long
-    if (this.url.length > 32) this.url = this.url.substring(0, 32) + ' ...';
-    if (this.title.length > 32) this.title = this.title.substring(0, 32) + ' ...';
-    return `[${this.url}] ${this.title} @ ${this.time} (${new Date(this.time).toLocaleString()})`;
+    let url = this.url;
+    if (url.length > 32) url = this.url.substring(0, 32) + ' ...';
+    let title = this.title;
+    if (title.length > 32) title = this.title.substring(0, 32) + ' ...';
+    return `[${url}] ${title} @ ${this.time} (${new Date(this.time).toLocaleString()})`;
   }
 
   /**

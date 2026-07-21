@@ -16,6 +16,7 @@ export struct oopsPreviewActionsImage {
   @Event requestCloseMenu: () => void;
   @Event requestVisit: (link: string) => void;
   @Event requestCopyImage: () => void;
+  @Event requestCopyUrl: () => void;
 
   aboutToAppear(): void {
     this.get().then((r) => {
@@ -58,11 +59,17 @@ export struct oopsPreviewActionsImage {
       Row()
       {
         MooSymbolButton({
-          icon: $r('sys.symbol.plus_square_on_square'), clickAction: () => {
+          icon: $r('sys.symbol.picture_2'), clickAction: () => {
             this.requestCopyImage();
             this.requestCloseMenu();
           }
-        }); // Copy
+        }); // Copy image
+        MooSymbolButton({
+          icon: $r('sys.symbol.plus_square_on_square'), clickAction: () => {
+            this.requestCopyUrl();
+            this.requestCloseMenu();
+          }
+        }); // Copy url
         MooSymbolButton({
           icon: $r('sys.symbol.arrow_up_right'), clickAction: () => {
             this.requestVisit(this.content);
