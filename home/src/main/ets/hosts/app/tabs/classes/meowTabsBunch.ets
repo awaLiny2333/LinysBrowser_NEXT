@@ -3,7 +3,7 @@ import lazy { fastbuffer } from "@kit.ArkTS";
 import lazy { AppStorageV2 } from "@kit.ArkUI";
 import lazy { webview } from "@kit.ArkWeb";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import lazy { listFilesUnderDir, readArrayBuffer, saveHybrid } from "../../../../catstypicalframework/utils/storage";
+import lazy { listFilesUnderDir, readArrayBuffer, saveHybridSafe } from "../../../../catstypicalframework/utils/storage";
 import lazy { archiveWeb, printWeb } from "../../../../catstypicalframework/utils/web";
 import lazy { defaultAnimation } from "../../../../components/settings";
 import { meowUiHost } from "../../../system/windows/classes/meowUiHost";
@@ -149,7 +149,7 @@ export class meowTabsBunch {
       stat = `${this.tabs.indexOf(this.currentTab)}`;
     }
     const statPath = `${this.workingDir}/stat`;
-    await saveHybrid(statPath, stat, true);
+    await saveHybridSafe(statPath, stat, true);
   }
 
   /**

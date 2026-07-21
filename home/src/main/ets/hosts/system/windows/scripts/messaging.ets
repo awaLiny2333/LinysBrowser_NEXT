@@ -6,16 +6,16 @@ export enum meowAppMessageType {
   SETTINGS_UA_REFRESH,
   SETTINGS_SE_REFRESH,
   SETTINGS_EASYLIST_REFRESH,
-  SETTINGS_NAV_INDICATOR_UPDATE,
+  SETTINGS_NAV_INDICATOR_UPDATE, // When the user flips the toggle of Settings - Appearance - Navigation Indicator.
   BOOKMARKS_REFRESH, // See entry/src/main/ets/components/parts/Bookmarks/MeowBookmarksPanel.ets
   BOOKMARKS_PICKED,
   BOOKMARKS_DRAGGED,
   COLOR_PICKED,
   COLOR_PICKER_CLOSED,
-  KEY_SHORTCUTS_PICKED, 
+  KEY_SHORTCUTS_PICKED,
   HISTORY_DELETED,
-  HISTORY_REFRESH,
-  USE_EFFECTS_UPDATED,
+  HISTORY_ADDED,
+  USE_EFFECTS_UPDATED, // Majorly used to notify background color update.
   ZONES_REFRESH,
 }
 

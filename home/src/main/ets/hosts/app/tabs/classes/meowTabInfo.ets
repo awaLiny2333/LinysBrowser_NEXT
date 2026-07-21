@@ -561,7 +561,7 @@ export class meowTabInfo {
             this.lastSavedHistoryEntries.shift();
           }
           // Broadcast sync UI.
-          globalMessage(meowAppMessageType.HISTORY_REFRESH);
+          globalMessage(meowAppMessageType.HISTORY_ADDED);
         });
       } else {
         if (this.url && recordNewHistoryFromSettings()) {

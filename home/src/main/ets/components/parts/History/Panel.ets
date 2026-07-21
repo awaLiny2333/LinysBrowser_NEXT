@@ -291,7 +291,7 @@ struct HistoryPanel {
       const duration = Date.now() - startTime;
       this.refreshInfo(duration);
 
-    } else if (msg.type == meowAppMessageType.HISTORY_REFRESH) {
+    } else if (msg.type == meowAppMessageType.HISTORY_ADDED) {
       if (this.isSelecting) {
         return; // Do nothing.
       }

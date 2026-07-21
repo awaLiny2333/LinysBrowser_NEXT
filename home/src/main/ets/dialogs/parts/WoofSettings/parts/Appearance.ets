@@ -233,7 +233,7 @@ struct SettingsAppearance {
               animateToImmediately(defaultAnimation(), () => {
                 this.mySettings.setByIndex(7, r);
               });
-              globalMessage(meowAppMessageType.USE_EFFECTS_UPDATED, r); // Majorly used to notify background color update.
+              globalMessage(meowAppMessageType.USE_EFFECTS_UPDATED, r);
             }
           }
         });
@@ -351,5 +351,6 @@ struct ColorDemoBlock {
         this.pendingColorDialog = false;
       }
     }
+    // The listening mechanism is designed to avoid duplicated settings modification (?)
   }
 }
