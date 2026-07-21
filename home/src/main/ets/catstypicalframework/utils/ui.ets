@@ -53,7 +53,7 @@ export function measureTextHeight(text: string, uiContext: UIContext, fontSize: 
   return meowPx2vp(uiContext
     .getMeasureUtils()
     .measureTextSize({ textContent: text, fontSize: fontSize, fontWeight: fontWeight })
-    .width as number);
+    .height as number);
 }
 
 /**
@@ -140,8 +140,6 @@ export function listenAvoid(windowId: string) {
       if (data.type == window.AvoidAreaType.TYPE_CUTOUT) {
         let left = meowPx2vp(data.area.leftRect.width);
         myAvoid.left = Math.max(8, left);
-      }
-      if (data.type == window.AvoidAreaType.TYPE_CUTOUT) {
         let right = meowPx2vp(data.area.rightRect.width);
         myAvoid.right = Math.max(8, right);
       }
@@ -192,7 +190,7 @@ export function updateAvoid(windowObj: window.Window, windowId: string) {
     }
 
     avoid.left = Math.max(meowPx2vp(avoidArea.leftRect.width), 8);
-    avoid.right = Math.max(8, meowPx2vp(avoidArea.rightRect.width));
+    avoid.right = Math.max(meowPx2vp(avoidArea.rightRect.width), 8);
 
   } catch (e) {
     meow(`windowClass.getWindowAvoidArea Failed: ${e}`, 'getUpdateAvoid', meowLevel.ERROR);

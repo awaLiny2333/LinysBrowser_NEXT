@@ -101,7 +101,7 @@
         "usedScene": {
           "when": "inuse",
           "abilities": [
-            "HomeAbility"
+            "EntryAbility"
           ]
         }
       },

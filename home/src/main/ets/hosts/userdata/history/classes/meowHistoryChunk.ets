@@ -20,14 +20,14 @@
  * [HAS A] meowHistoryEntry (in collections.Array<meowHistoryEntry>)
  */
 
-import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import lazy { readArrayBufferConcurrent, saveHybrid } from "../../../../catstypicalframework/utils/storage";
 import { collections, fastbuffer } from "@kit.ArkTS";
-import lazy { buildIndexToDisk, loadIndexFromDisk } from "../scripts/indexing";
+import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import lazy { readArrayBufferConcurrent, saveHybridSafe } from "../../../../catstypicalframework/utils/storage";
+import { isMatchFast, tokenize } from "../../../../catstypicalframework/utils/strings";
 import lazy { binarySearch, loadChunkFromDisk } from "../scripts/helpers";
+import lazy { buildIndexToDisk, loadIndexFromDisk } from "../scripts/indexing";
 import { meowHistoryEntry } from "./meowHistoryEntry";
 import { meowHistoryIndexFileBundle } from "./meowHistoryIndexFileBundle";
-import { isMatchFast, tokenize } from "../../../../catstypicalframework/utils/strings";
 
 @Sendable
 export class meowHistoryChunk {
@@ -263,7 +263,7 @@ export class meowHistoryChunk {
     }
 
     // Write.
-    const saveResult = await saveHybrid(this.chunkPath, kept.join('\n'), true) || true; // In fact this line won't return undefined in any case. Because we have set overwrite to true.
+    const saveResult = await saveHybridSafe(this.chunkPath, kept.join('\n'), true) as boolean; // In fact this line won't return undefined in any case. Because we have set overwrite to true.
 
     // Index
     await buildIndexToDisk(this.indexBasePath, this, false);

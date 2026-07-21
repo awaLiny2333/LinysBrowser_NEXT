@@ -5,7 +5,7 @@ import lazy { certificateManager, certificateManagerDialog } from "@kit.DeviceCe
 import lazy { image } from "@kit.ImageKit";
 import lazy { scanBarcode } from "@kit.ScanKit";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import { addUnitsToSize, readArrayBuffer, saveHybrid, unlinkFile } from "../../../../catstypicalframework/utils/storage";
+import { addUnitsToSize, readArrayBuffer, saveHybridSafe, unlinkFile } from "../../../../catstypicalframework/utils/storage";
 import { domainOf } from "../../../../catstypicalframework/utils/url";
 import { defaultAnimation } from "../../../../components/settings";
 import { meowDialogManager, openDialogRequestType } from "../../../system/dialogs/classes/meowDialogManager";
@@ -278,9 +278,9 @@ export class meowTabInfo {
     // NOTE: Notice that labelPath and urlPath both ends with letter 'l'!
 
     await Promise.all([
-      saveHybrid(statePath, state.buffer, true),
-      saveHybrid(labelPath, label, true),
-      saveHybrid(urlPath, url, true)
+      saveHybridSafe(statePath, state.buffer, true),
+      saveHybridSafe(labelPath, label, true),
+      saveHybridSafe(urlPath, url, true)
     ]);
 
     meow(`Saved webstate to disk:       [${label}](${url}) (${Date.now() - startTime} ms)`, `meowTabInfo][saveWebState][${sourceInfo}`, meowLevel.WARN);

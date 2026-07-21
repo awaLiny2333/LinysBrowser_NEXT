@@ -6,13 +6,11 @@ import { meow, meowLevel } from './catsLogger';
  * @returns The bundle name of the current ability, or undefined if failed.
  */
 export async function getBundleName() {
-  try {
-    const info = await abilityManager.getAbilityRunningInfos(); // We don't need this permission, as all we require is the current ability's info. But it will still exist as a warning! :O
-    return info[0].ability.bundleName;
-  } catch (e) {
-    meow(`abilityManager.getAbilityRunningInfos() Failed! ${e}`, 'getBundleName', meowLevel.ERROR);
+  const info = await getAbilityRunningInfos();
+  if (info == undefined) {
     return undefined;
   }
+  return info[0].ability.bundleName;
 }
 
 /**
@@ -20,13 +18,11 @@ export async function getBundleName() {
  * @returns The module name of the current ability, or undefined if failed.
  */
 export async function getModuleName() {
-  try {
-    const info = await abilityManager.getAbilityRunningInfos(); // We don't need this permission, as all we require is the current ability's info. But it will still exist as a warning! :O
-    return info[0].ability.moduleName;
-  } catch (e) {
-    meow(`abilityManager.getAbilityRunningInfos() Failed! ${e}`, 'getModuleName', meowLevel.ERROR);
+  const info = await getAbilityRunningInfos();
+  if (info == undefined) {
     return undefined;
   }
+  return info[0].ability.moduleName;
 }
 
 /**
@@ -34,11 +30,26 @@ export async function getModuleName() {
  * @returns The ability name of the current ability, or undefined if failed.
  */
 export async function getAbilityName() {
+  const info = await getAbilityRunningInfos();
+  if (info == undefined) {
+    return undefined;
+  }
+  return info[0].ability.abilityName;
+}
+
+/**
+ * Get the ability running infos of the current ability.
+ * @returns The ability running infos of the current ability, or undefined if failed.
+ */
+export async function getAbilityRunningInfos() {
   try {
     const info = await abilityManager.getAbilityRunningInfos(); // We don't need this permission, as all we require is the current ability's info. But it will still exist as a warning! :O
-    return info[0].ability.abilityName;
+    if (info.length == 0) {
+      return undefined;
+    }
+    return info;
   } catch (e) {
-    meow(`abilityManager.getAbilityRunningInfos() Failed! ${e}`, 'getAbilityName', meowLevel.ERROR);
+    meow(`abilityManager.getAbilityRunningInfos() Failed! ${e}`, 'getAbilityRunningInfos', meowLevel.ERROR);
     return undefined;
   }
 }

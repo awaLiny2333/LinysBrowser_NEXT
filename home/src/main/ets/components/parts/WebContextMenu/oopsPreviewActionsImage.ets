@@ -100,7 +100,7 @@ export struct oopsPreviewActionsImage {
    * @returns The getImageResult in a promise.
    */
   async get(): Promise<getImageResult> {
-    let arrayBuffer: ArrayBuffer;
+    let arrayBuffer: ArrayBuffer | undefined;
     // Get arrayBuffer
     if (this.content.startsWith('http')) {
       arrayBuffer = await downloadFileHttp(this.content);

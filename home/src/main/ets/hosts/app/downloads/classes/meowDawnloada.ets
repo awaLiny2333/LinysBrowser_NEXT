@@ -74,6 +74,7 @@ export class meowDawnloada {
     if (!context) {
       meow(`Fetch UIContext failed for download item: [${item.getGuid()}][${item.getUrl()}]`, 'meowDawnloada][confirmDownload', meowLevel.ERROR);
       item.cancel();
+      return; // Context not found, stop the script. This is not likely to happen...
     }
     return retrieveDownloadDirectory(context!).then((dlDir) => {
       // Construct a meowDawnloadaItem and push it to the class-managed list.
@@ -138,6 +139,10 @@ export class meowDawnloada {
       this.currentSize += meowItem.item.getReceivedBytes();
       this.currentSpeed += meowItem.item.getCurrentSpeed();
     }
+    if (this.totalSize === 0) {
+      this.progress = 100;
+      return;
+    }
     this.progress = Math.round(this.currentSize / this.totalSize * 100);
   }
 
@@ -161,7 +166,7 @@ export class meowDawnloada {
         }
       }
     }
-    
+
     // Fallback. This is not elegant... :O
     const randomTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${getLastWindowId()}`);
     if (randomTabs) {

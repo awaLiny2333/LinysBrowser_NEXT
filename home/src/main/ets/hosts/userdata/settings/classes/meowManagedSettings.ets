@@ -15,7 +15,7 @@
 
 import lazy { fastbuffer } from "@kit.ArkTS";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import lazy { readArrayBufferConcurrent, saveHybrid } from "../../../../catstypicalframework/utils/storage";
+import lazy { readArrayBufferConcurrent, saveHybrid, saveHybridSafe } from "../../../../catstypicalframework/utils/storage";
 import { compareDiff } from "../../../../catstypicalframework/utils/strings";
 import { importResult } from "../../../system/resources/scripts/backup";
 import lazy { defaultSettingsEntries } from "../scripts/defaultSettingsEntries";
@@ -203,6 +203,6 @@ export class meowManagedSettings {
     const jsonResult = this.toString(true);
     meow(`Generated JSON lines. (${Date.now() - startTime} ms)`, 'meowSettings][saveToDisk', meowLevel.INFO);
     // Save to disk...
-    await saveHybrid(this.settingsFileSavePath, jsonResult, true);
+    await saveHybridSafe(this.settingsFileSavePath, jsonResult, true);
   }
 }

@@ -31,11 +31,12 @@ export function archiveWeb(controller: WebviewController | undefined) {
     return;
   }
   const context = UIContext.getLastFocusedUIContext()?.getHostContext()!;
+  const tempName = `archiveWeb_${Date.now().toFixed(16)}.mht`;
   try {
     const overwriteName = makeFilenameLegal(`${controller.getTitle().substring(0, 32)} - ${controller.getUrl().substring(0, 32)}.mht`);
-    controller.storeWebArchive(`${context.tempDir}/archiveWeb.mht`, false)
+    controller.storeWebArchive(`${context.tempDir}/${tempName}`, false)
       .then(() => {
-        fileDocumentPickCopySave(`${context.tempDir}/archiveWeb.mht`, overwriteName);
+        fileDocumentPickCopySave(`${context.tempDir}/${tempName}`, overwriteName);
       })
       .catch((error: BusinessError) => {
         meow(`Failed to archive web: ${error.message}`, 'archiveWeb', meowLevel.ERROR);

@@ -1,9 +1,9 @@
-import { meowBookmarkItem } from "./meowBookmarkItem";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import lazy { fileDocumentPick2Path, fileDocumentPickSave, saveHybrid } from "../../../../catstypicalframework/utils/storage";
-import lazy { parseBookmarksConcurrent, parseToHTMLConcurrent } from "../scripts/parser";
-import lazy { nowHtmlTimestamp } from "../scripts/helpers";
+import lazy { fileDocumentPick2Path, fileDocumentPickSave, saveHybridSafe } from "../../../../catstypicalframework/utils/storage";
 import lazy { isMatchFast, tokenize } from "../../../../catstypicalframework/utils/strings";
+import lazy { nowHtmlTimestamp } from "../scripts/helpers";
+import lazy { parseBookmarksConcurrent, parseToHTMLConcurrent } from "../scripts/parser";
+import { meowBookmarkItem } from "./meowBookmarkItem";
 export interface MeowBookmarkDragInfo {
   item: meowBookmarkItem;
   parent: meowBookmarkItem;
@@ -219,7 +219,7 @@ export class meowBookmarkStash {
       meow(`Failed to export HTML to documents. htmlText is empty!`, 'meowBookmarkStash][exportHTMLtoDocuments', meowLevel.WARN);
       return;
     }
-    await saveHybrid(this.defaultBookmarksPath, htmlText, true);
+    await saveHybridSafe(this.defaultBookmarksPath, htmlText, true);
     this.lastSaveTimeCost = Date.now() - startTime;
     meow(`Successfully saved bookmarks to disk. (${Date.now() - startTime} ms)`, 'meowBookmarkStash][saveToDisk', meowLevel.INFO);
   }

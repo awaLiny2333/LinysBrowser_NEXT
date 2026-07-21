@@ -1,5 +1,6 @@
-import lazy { abilityManager, common, Want } from "@kit.AbilityKit";
+import lazy { common, Want } from "@kit.AbilityKit";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
+import { getAbilityRunningInfos } from "../../../../catstypicalframework/utils/environment";
 import lazy { getCreateMyApp } from "./helpers";
 
 /**
@@ -36,12 +37,10 @@ export function generateTimeBasedWindowId() {
  * @returns True if ok, false if failed.
  */
 export async function newWindow(context: common.UIAbilityContext, windowId: string = generateTimeBasedWindowId(), zoneAlias: string = '') {
-  let info: abilityManager.AbilityRunningInfo[] = [];
+  const info = await getAbilityRunningInfos();
 
-  try {
-    info = await abilityManager.getAbilityRunningInfos(); // We don't need this permission, as all we require is the current ability's info. But it will still exist as a warning! :O
-  } catch (e) {
-    meow(`abilityManager.getAbilityRunningInfos() Failed! ${e}`, 'newWindow', meowLevel.ERROR);
+  // Info not successfully got
+  if (info == undefined) {
     return false;
   }
 

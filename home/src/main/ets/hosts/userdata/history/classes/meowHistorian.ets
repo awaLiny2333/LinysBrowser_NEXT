@@ -115,7 +115,12 @@ export class meowHistorian {
     if (chunkFileExist) {
       result = await appendTextToEndOfFile(chunkFilePath, `\n${newHistoryEntry.title}\n${newHistoryEntry.url}\n${newHistoryEntry.time}`); // Append to file.
     } else {
-      result = await saveHybrid(chunkFilePath, `${newHistoryEntry.title}\n${newHistoryEntry.url}\n${newHistoryEntry.time}`, true) || true; // Create file.
+      let createResult = await saveHybrid(chunkFilePath, `${newHistoryEntry.title}\n${newHistoryEntry.url}\n${newHistoryEntry.time}`, true); // Create file.
+      if (createResult == undefined) {
+        // File already exist, but this is not really gonna happen. Because we already asks the saveHybrid to overwrite.
+        createResult = true;
+      }
+      result = createResult;
       this.chunks.unshift(new meowHistoryChunk(this.chunkBasePath, this.indexBasePath, this.historyChunkName(newHistoryEntry.time))); // Record it to the head of the list (latest).
     }
 

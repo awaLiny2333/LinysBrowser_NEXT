@@ -1,8 +1,8 @@
-import { UIContext } from "@kit.ArkUI";
 import { common, Want } from "@kit.AbilityKit";
 import { productViewManager } from "@kit.AppGalleryKit";
+import { UIContext } from "@kit.ArkUI";
 import { BusinessError } from "@kit.BasicServicesKit";
-import { getAbilityName, getBundleName, getModuleName } from "./environment";
+import { getAbilityRunningInfos } from "./environment";
 
 /**
  * Pin a shortcut to the desktop.
@@ -22,13 +22,18 @@ export async function pinShortcut(url: string, label: string, icon: string): Pro
   }
 
   // Assemble key information
-  const bundleName = await getBundleName();
+  const infos = await getAbilityRunningInfos();
+  if (!infos) {
+    console.error(`pinShortcut failed: infos [${infos}] is empty.`);
+    return false;
+  }
+  const bundleName = infos[0].ability.bundleName;
   if (!bundleName) {
     console.error(`pinShortcut failed: bundleName [${bundleName}] is empty.`);
     return false;
   }
-  const moduleName = await getModuleName();
-  const abilityName = await getAbilityName();
+  const moduleName = infos[0].ability.moduleName;
+  const abilityName = infos[0].ability.abilityName;
   if (!abilityName) {
     console.error(`pinShortcut failed: abilityName [${abilityName}] is empty.`);
     return false;

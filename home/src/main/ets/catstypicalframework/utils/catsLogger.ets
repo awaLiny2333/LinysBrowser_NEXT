@@ -98,9 +98,9 @@ Log_over_limit: ${eventInfo.params['log_over_limit']}
 Page_switch_log: ${JSON.stringify(eventInfo.params['page_switch_log'])}
 Test_data: ${eventInfo.params['test_data']}
 
-${eventInfo.params['exception'].message}
-${eventInfo.params['exception'].name}
-${eventInfo.params['exception'].stack}`.trimEnd();
+${eventInfo.params['exception']?.message}
+${eventInfo.params['exception']?.name}
+${eventInfo.params['exception']?.stack}`.trimEnd();
 }
 
 /**

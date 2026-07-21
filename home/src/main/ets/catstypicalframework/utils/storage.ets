@@ -200,15 +200,18 @@ export async function pickDirectory(): Promise<string | undefined> {
  * @param fullFilePath The destination path or uri.
  * @param content A string or an ArrayBuffer, fills the file's content.
  * @param overwrite overwrite or not. Default is false.
+ * @author awa_Liny and enhanced by DeepSeek Web @ Jul 21 2026.
  * */
 export async function saveHybrid(fullFilePath: string, content: string | ArrayBuffer | undefined, overwrite = false) {
   const startTime = Date.now();
-  if (content == undefined) {
+  if (content === undefined) {
     console.error(`[saveHybrid][${fullFilePath}] content is undefined.`);
     return false;
   }
 
+  let file: fileIo.File | undefined;
   try {
+    // Check if file exists
     if (await fileIo.access(fullFilePath)) {
       if (overwrite) {
         await fileIo.unlink(fullFilePath);
@@ -218,24 +221,122 @@ export async function saveHybrid(fullFilePath: string, content: string | ArrayBu
       }
     }
 
-    let file = fileIo.openSync(fullFilePath, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
-    return fileIo.write(file.fd, content)
-      .then((writeLen) => {
-        console.info(`[saveHybrid] write to file ${fullFilePath} succeed, size = ${writeLen} (${Date.now() - startTime} ms)`);
-        return true;
-      })
-      .catch((e: BusinessError) => {
-        console.error(`[saveHybrid] fileIo.write(file.fd, content) to file ${fullFilePath} failed: ${e} (${Date.now() - startTime} ms)`);
-        return false;
-      })
-      .finally(() => {
-        fileIo.close(file)
-          .catch((e: BusinessError) => {
-            console.error(`[saveHybrid] fileIo.close(file) file ${fullFilePath} failed: ${e} (${Date.now() - startTime} ms)`);
-          });
-      });
+    file = fileIo.openSync(
+      fullFilePath,
+      fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE
+    );
+
+    // WRITE
+    let writeSuccess = false;
+    try {
+      const writeLen = await fileIo.write(file.fd, content);
+      console.info(`[saveHybrid] write to file ${fullFilePath} succeed, size = ${writeLen} (${Date.now() - startTime} ms)`);
+      writeSuccess = true;
+    } catch (e) {
+      console.error(`[saveHybrid] fileIo.write(file.fd, content) to file ${fullFilePath} failed: ${e} (${Date.now() - startTime} ms)`);
+      writeSuccess = false;
+    }
+
+    // CLOSE
+    let closeSuccess = false;
+    try {
+      await fileIo.close(file);
+      closeSuccess = true;
+    } catch (e) {
+      console.error(`[saveHybrid] fileIo.close(file) file ${fullFilePath} failed: ${e} (${Date.now() - startTime} ms)`);
+      closeSuccess = false;
+    }
+
+    // Return true only if both WRITE and CLOSE success.
+    return writeSuccess && closeSuccess;
   } catch (e) {
     console.error(`[saveHybrid] write to file ${fullFilePath} failed: ${e} (${Date.now() - startTime} ms)`);
+    // Close even on error as long as a file is opened.
+    if (file) {
+      try {
+        await fileIo.close(file);
+      } catch (closeErr) {
+        console.error(`[saveHybrid] fileIo.close(file) after error failed: ${closeErr} (${Date.now() - startTime} ms)`); // 没招了 🤪
+      }
+    }
+    return false;
+  }
+}
+
+/**
+ * Save a file atomically using the write-to-temp + rename pattern.
+ *
+ * Guarantees that the target file is never observed in a corrupted or
+ * partially-written state — even if the process crashes mid-write:
+ *   1. Content is fully written to a uniquely-named temporary file.
+ *   2. On success, the temp file is atomically renamed over the target,
+ *      replacing it in a single kernel-level operation.
+ *   3. On any failure the temp file is cleaned up.
+ *
+ * Because rename(2) is atomic on POSIX filesystems (ext4, f2fs, …),
+ * the target path always points to a complete, valid file — either the
+ * old version or the new one — never to an empty or half-written file.
+ *
+ * This is the recommended method for persisting state that must survive
+ * a crash, such as settings, bookmarks, or history.
+ *
+ * @param fullFilePath The destination path.
+ * @param content      A string or an ArrayBuffer.
+ * @param overwrite    Whether to replace an existing file. Default true.
+ * @returns true if saved, false on failure, undefined if overwrite=false
+ *          and the target already exists.
+ * @author DeepSeek V4 @ Jul 21 2026s
+ */
+export async function saveHybridSafe(fullFilePath: string, content: string | ArrayBuffer | undefined, overwrite = true) {
+  const startTime = Date.now();
+  if (content === undefined) {
+    console.error(`[saveHybridSafe][${fullFilePath}] content is undefined.`);
+    return false;
+  }
+
+  // Unique temp name — guards against concurrent writes to the same target
+  const tmpPath = `${fullFilePath}.tmp.${Date.now().toString(36)}.${Math.random().toString(36).substring(2, 6)}`;
+
+  // 1. Write content fully to the temp file
+  const writeOk = await saveHybrid(tmpPath, content, true);
+  if (!writeOk) {
+    try {
+      await fileIo.unlink(tmpPath);
+    } catch (_) {
+      /* best effort */
+    }
+    console.error(`[saveHybridSafe] temp write failed (${Date.now() - startTime} ms)`);
+    return false;
+  }
+
+  // 2. Respect overwrite policy
+  if (!overwrite) {
+    try {
+      if (await fileIo.access(fullFilePath)) {
+        try {
+          await fileIo.unlink(tmpPath);
+        } catch (_) {
+          /* best effort */
+        }
+        console.warn(`[saveHybridSafe] exists & overwrite=false → kept old file (${Date.now() - startTime} ms)`);
+        return undefined;
+      }
+    } catch (_) { /* access failed → file does not exist → proceed */
+    }
+  }
+
+  // 3. Atomically swap in the new file
+  try {
+    await fileIo.rename(tmpPath, fullFilePath);
+    console.info(`[saveHybridSafe] [${fullFilePath}] OK (${Date.now() - startTime} ms)`);
+    return true;
+  } catch (e) {
+    console.error(`[saveHybridSafe] rename failed: ${e} (${Date.now() - startTime} ms)`);
+    try {
+      await fileIo.unlink(tmpPath);
+    } catch (_) {
+      /* best effort */
+    }
     return false;
   }
 }
@@ -619,7 +720,7 @@ export async function readArrayBuffer(fullFilePath: string, offset?: number, len
   }
 
   try {
-    let file = await fileIo.open(fullFilePath, fileIo.OpenMode.READ_WRITE);
+    let file = await fileIo.open(fullFilePath, fileIo.OpenMode.READ_ONLY);
     let stat = await fileIo.stat(fullFilePath);
 
     // Read to ArrayBuffer
@@ -939,14 +1040,14 @@ export function showInFiles(path: string, context: common.UIAbilityContext) {
 
 // Download
 
-/**
-* Download a file from url.
-* @param url The url.
-* @returns Promise of the ArrayBuffer.
-* */
-export async function downloadFileHttp(url: string): Promise<ArrayBuffer> {
-  return new Promise((resolve, reject) => {
-    const httpRequest = http.createHttp();
+export async function downloadFileHttp(url: string): Promise<ArrayBuffer | undefined> {
+  if (!url.startsWith('http')) {
+    return undefined;
+  }
+
+  const httpRequest = http.createHttp(); // Create HTTP request task.
+
+  const promise = new Promise<ArrayBuffer>((resolve, reject) => {
     httpRequest.request(url, {
       method: http.RequestMethod.GET,
       expectDataType: http.HttpDataType.ARRAY_BUFFER
@@ -957,14 +1058,18 @@ export async function downloadFileHttp(url: string): Promise<ArrayBuffer> {
         meow(`Failed: ${e}`, 'downloadFileHttp', meowLevel.ERROR);
         return;
       }
-      if (data && data.result) {
+      if (data?.result) {
         resolve(data.result as ArrayBuffer);
-        meow(`RESOLVED!`, 'downloadFileHttp');
+        meow('RESOLVED!', 'downloadFileHttp');
       } else {
         const e = new Error('No data received!');
         meow(`Failed: ${e}`, 'downloadFileHttp', meowLevel.ERROR);
         reject(e);
       }
     });
+  });
+
+  return promise.finally(() => {
+    httpRequest.destroy();
   });
 }

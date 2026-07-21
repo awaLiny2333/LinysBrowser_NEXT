@@ -71,6 +71,7 @@ export class meowUiHost {
   @Trace suggestionsHistories: meowHistoryEntry[] = [];
   @Trace suggestionsBookmarks: meowBookmarkItem[] = [];
   suggestionsRefreshTimeoutId: number | undefined = undefined;
+  suggestionsRefreshId: number = 0; //
   // Settings
   @Trace isExportingData: boolean = false;
   // MeowBookmarksPanel
@@ -549,7 +550,7 @@ export class meowUiHost {
    * Sets the current field content of the address bar.
    * @param newContent The new field content.
    */
-  setCurrentFieldContent(newContent: string, timeout: number = 1) {
+  setCurrentFieldContent(newContent: string, timeout: number = 10) {
     if (this.addressBarContentCurrentField != newContent) {
       this.addressBarContentCurrentField = newContent;
       // Refresh suggestions
@@ -567,7 +568,7 @@ export class meowUiHost {
     if (this.addressBarStatus == AddressBarStatuses.NO_SHIFT) {
       return;
     }
-    if (preferedKeysSet.has(this.searchKeywordEntries[0][0])) {
+    if (this.searchKeywordEntries.length > 0 && preferedKeysSet.has(this.searchKeywordEntries[0][0])) {
       // Shift to search keyword entries.
       if (this.addressBarStatus == AddressBarStatuses.CAN_SHIFT) {
         animateToImmediately(defaultAnimation(), () => {
@@ -627,6 +628,11 @@ export class meowUiHost {
    * Refreshes the suggestions.
    */
   refreshSuggestions() {
+    // Generation ID
+    this.suggestionsRefreshId += 1; // Iterate this ID.
+    const myGeneration = this.suggestionsRefreshId;
+
+    // User-set Limits
     const maxResultsBookmarks = maxSuggestionsBookmark();
     const maxResultsHistorian = maxSuggestionsHistory();
 
@@ -634,6 +640,10 @@ export class meowUiHost {
     if (this.addressBarContentCurrentField.length > 0 && maxResultsHistorian > 0) {
       const myHistorian = AppStorageV2.connect(meowHistorian)!;
       myHistorian.lookUpHistoryEntries(this.addressBarContentCurrentField, maxResultsHistorian, false, 0.8, true).then((resultsHistories) => {
+        // Not the latest request, drop.
+        if (myGeneration !== this.suggestionsRefreshId) {
+          return;
+        }
         animateToImmediately(defaultAnimation(), () => {
           this.suggestionsHistories = resultsHistories;
         });

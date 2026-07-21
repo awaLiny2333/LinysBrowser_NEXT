@@ -1,6 +1,6 @@
 {
   "modelVersion": "6.0.0",
-  "description": "Please describe the basic information.",
+  "description": "Meow.",
   "dependencies": {},
   "devDependencies": {
     "@ohos/hypium": "1.0.19",
