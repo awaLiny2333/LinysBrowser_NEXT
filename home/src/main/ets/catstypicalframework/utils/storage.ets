@@ -412,6 +412,7 @@ export async function fileCopy(fullSourcePath: string, fullDestUri: string, over
     }
   } catch (e) {
     console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestUri}, ${overwrite}) test source accessSync failed: ${e}`);
+    return false;
   }
 
   // Check destination
@@ -423,6 +424,7 @@ export async function fileCopy(fullSourcePath: string, fullDestUri: string, over
     }
   } catch (e) {
     console.error(`[fileCopy] fileIo.copyFile(${fullSourcePath}, ${fullDestUri}, ${overwrite}) test destination accessSync failed: ${e}`);
+    return false;
   }
 
   // Copy
@@ -684,26 +686,50 @@ export async function listFilesUnderDir(dirPath: string) {
  * Calculate the size of a folder and its containing items recursively in a sync way.
  * @param path A string, the path of the folder.
  * @returns A number, the size of that folder.
- * @throws Whatever the file apis would throw. Please handle this at usage side / in wrappers.
  * */
-export function getFolderSizeSync(path: string) {
+export function getFolderSizeSync(path: string): number {
+  return _getFolderSizeSync(path, new Set<bigint>());
+}
+
+/**
+ * The real function to do the job safely.
+ * @author DeepSeek V4 API @ Jul 21 2026.
+ */
+function _getFolderSizeSync(path: string, visited: Set<bigint>) {
+  let dirStat: fileIo.Stat;
+  try {
+    dirStat = fileIo.statSync(path);
+  } catch (_) {
+    return 0; // Skip unaccessible dirs.
+  }
+
+  if (visited.has(dirStat.ino)) {
+    return 0; // Accessed, this is a loop! skip!
+  }
+  visited.add(dirStat.ino);
+
   let sum = 0;
-  // try {
-  let dir_list = fileIo.listFileSync(path);
-  for (let index = 0; index < dir_list.length; index++) {
-    const fileStat = fileIo.statSync(path + '/' + dir_list[index]);
-    if (fileStat.isFile()) {
-      sum += fileStat.size;
-    } else if (fileStat.isDirectory()) {
-      sum += getFolderSizeSync(path + '/' + dir_list[index]);
+  let dir_list: string[];
+  try {
+    dir_list = fileIo.listFileSync(path);
+  } catch (_) {
+    return sum; // Skip failed directories.
+  }
+
+  for (let i = 0; i < dir_list.length; i++) {
+    let fileStat: fileIo.Stat;
+    try {
+      fileStat = fileIo.statSync(path + '/' + dir_list[i]);
+      if (fileStat.isFile()) {
+        sum += fileStat.size;
+      } else if (fileStat.isDirectory()) {
+        sum += _getFolderSizeSync(path + '/' + dir_list[i], visited);
+      }
+    } catch (_) {
+      continue; // Skip single failures.
     }
   }
   return sum;
-  // } catch (e) {
-  //   // Do nothing and skip that.
-  //   meow(`fileIo.listFileSync(${path}) failed: ${e}`, 'storage][getFolderSizeSync', meowLevel.ERROR);
-  //   return 0;
-  // }
 }
 
 /**
@@ -715,49 +741,79 @@ export function getFolderSizeSync(path: string) {
 export async function readArrayBuffer(fullFilePath: string, offset?: number, length?: number) {
   const startTime: number = Date.now();
 
+  // 1. 文件存在性检查
+  let exists: boolean;
   try {
-    if (!(await fileIo.access(fullFilePath))) {
-      // file doesn't exist
-      console.warn(`[readArrayBuffer][${fullFilePath}] doesn't exist`);
-      return undefined;
-    }
+    exists = await fileIo.access(fullFilePath);
   } catch (e) {
-    console.error(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] fileIo.accessSync(filePath) check failed: ${e}`);
+    console.error(`[readArrayBuffer][${fullFilePath}] access failed: ${e}`);
+    return undefined;
+  }
+  if (!exists) {
+    console.warn(`[readArrayBuffer][${fullFilePath}] doesn't exist`);
     return undefined;
   }
 
+  // 2. 获取文件大小
+  let stat: fileIo.Stat;
   try {
-    let file = await fileIo.open(fullFilePath, fileIo.OpenMode.READ_ONLY);
-    let stat = await fileIo.stat(fullFilePath);
-
-    // Read to ArrayBuffer
-    let buf: ArrayBuffer = new ArrayBuffer(length || stat.size);
-    let readLen = await fileIo.read(file.fd, buf, { offset: offset, length: length });
-
-    let result = (length || stat.size) == readLen ? buf : buf.slice(0, readLen); // Copy?
-    fileIo.close(file)
-      .catch((e: BusinessError) => {
-        console.error(`[readArrayBuffer] fileIo.close(file) failed: ${e}`);
-      });
-
-    // console.info(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] OK. ArrayBuffer size = ${length || stat.size}, readLen = ${readLen}, (length || stat.size) == readLen: ${readLen == (length || stat.size)} (${Date.now() - startTime} ms)`);
-    return result;
+    stat = await fileIo.stat(fullFilePath);
   } catch (e) {
-    console.error(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] file operation failed: ${e} (${Date.now() - startTime} ms). Return undefined.`);
+    console.error(`[readArrayBuffer][${fullFilePath}] stat failed: ${e}`);
     return undefined;
+  }
+
+  // 3. 计算读参数（刻意用 ?? 而非 ||，让 0 保持原值）
+  const filePos = offset ?? 0;
+  const requested = length ?? (stat.size - filePos);
+
+  if (requested <= 0) {
+    return new ArrayBuffer(0);
+  }
+  
+  const MAX_READ = 2147483647; // about 2 GB
+
+  // Block too large files.
+  if (requested > MAX_READ) {
+    console.error(`[readArrayBuffer][${fullFilePath}] too large: ${requested} > ${MAX_READ}`);
+    return undefined;
+  }
+
+  // 4. 分配缓冲区
+  const buf = new ArrayBuffer(requested);
+  let file: fileIo.File | undefined;
+
+  try {
+    file = await fileIo.open(fullFilePath, fileIo.OpenMode.READ_ONLY);
+    const actual = await fileIo.read(file.fd, buf, {
+      offset: filePos, // 文件内偏移
+      length: requested // 最多读多少
+    });
+    console.log(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] succeed! (${Date.now() - startTime} ms)`);
+    return actual === requested ? buf : buf.slice(0, actual);
+  } catch (e) {
+    console.error(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] read failed: ${e}`);
+    return undefined;
+  } finally {
+    if (file !== undefined) {
+      await fileIo.close(file).catch((e: BusinessError) => {
+        console.error(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] close failed: ${e}`);
+      });
+    }
   }
 }
 
 /**
  * Read an ArrayBuffer file from storage in a task pool way.
  * @param fullFilePath the file path
- * @param context the context
+ * @param offset The offset of where to begin reading. If this is set, then the length must be set.
+ * @param length The length of the file to read.
  * @returns An ArrayBuffer, of the requested file's content or undefined if the file doesn't exist.
  * */
 export async function readArrayBufferConcurrent(fullFilePath: string, offset?: number, length?: number) {
   // const startTime: number = Date.now();
   let task: taskpool.Task;
-  if (offset) {
+  if (offset !== undefined) {
     task = new taskpool.Task(readArrayBuffer, fullFilePath, offset!, length!);
   } else {
     task = new taskpool.Task(readArrayBuffer, fullFilePath);

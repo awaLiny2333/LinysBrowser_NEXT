@@ -68,10 +68,19 @@ export function searchEngineSelected() {
  * Gets the default search engine from settings.
  * @returns The default search engine set in meowManagedSettings or the defaultSearchEngine if not set.
  */
-export function getSearchEngineFromSettings() {
-  const seSelected = searchEngineSelected();
-  const se = seSelected == -1 ? defaultSearchEngine() : searchEngineList()[seSelected][1];
-  return se;
+export function getSearchEngineFromSettings(): string {
+  const seSelectedIdx = searchEngineSelected();
+  // The default SE.
+  if (seSelectedIdx == -1) {
+    return defaultSearchEngine();
+  }
+  // Custom SE.
+  try {
+    return searchEngineList()[seSelectedIdx][1];
+  } catch (e) {
+    // Is there even a chance of this exception? Perhaps? But doing so is indeed safer.
+    return defaultSearchEngine();
+  }
 }
 
 // User Agents
@@ -101,9 +110,18 @@ export function userAgent4SlimEnabled() {
  * @returns The UA string, or an empty string if selected the default UA but webview.WebviewController.getDefaultUserAgent() returned nothing.
  */
 export function getCurrentAppUserAgent(): string {
-  const uaSelected = userAgentSelected();
-  const uaDefault = webview.WebviewController.getDefaultUserAgent();
-  return uaSelected == -1 ? uaDefault : userAgentList()[uaSelected][1];
+  const uaSelectedIdx = userAgentSelected();
+  // The default UA.
+  if (uaSelectedIdx == -1) {
+    return webview.WebviewController.getDefaultUserAgent();
+  }
+  // Custom UA.
+  try {
+    return userAgentList()[uaSelectedIdx][1];
+  } catch (e) {
+    // Is there even a chance of this exception? Perhaps? But doing so is indeed safer.
+    return webview.WebviewController.getDefaultUserAgent();
+  }
 }
 
 // SITE

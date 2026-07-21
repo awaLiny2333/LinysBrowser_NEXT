@@ -26,7 +26,7 @@ export function getAllWindowIds() {
  * @returns The id.
  */
 export function generateTimeBasedWindowId() {
-  return `meow_${Date.now().toString(16)}`;
+  return `meow_${Date.now().toString(16)}_${Math.random().toString(36).substring(2, 6)}`;
 }
 
 /**

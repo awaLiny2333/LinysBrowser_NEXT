@@ -32,7 +32,7 @@ export function concatSearchWithEngine(query: string, engine: string = getSearch
 
   // Has %s
   try {
-    const result = engine.replace('%s', encodeURIComponent(query));
+    const result = engine.replaceAll('%s', encodeURIComponent(query));
     // meow(`Successfully encoded query: ${query}`, 'searchEngines', meowLevel.INFO);
     return {
       status: concatSeStatus.SUCCESS,
@@ -42,7 +42,7 @@ export function concatSearchWithEngine(query: string, engine: string = getSearch
     meow(`Failed to encode query: ${e}`, 'searchEngines', meowLevel.ERROR);
     return {
       status: concatSeStatus.ENCODE_FAIL,
-      result: engine.replace('%s', query)
+      result: engine.replace('%s', query) // In what case?
     };
   }
 }

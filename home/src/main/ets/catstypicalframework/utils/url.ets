@@ -122,8 +122,8 @@ const PORT_REGEX = /^\d{1,5}$/; // Port number format ( 1-5 digits )
 
 // Matches for tail elimination: if it ends with ) ' " and there is no corresponding opening symbol before it
 const UNMATCHED_CLOSING_PAREN_REGEX = /^[^(]*\)$/;
-const UNMATCHED_CLOSING_QUOTE_REGEX = /^[^']*$'$/;
-const UNMATCHED_CLOSING_DOUBLE_QUOTE_REGEX = /^[^"]*"$"/;
+const UNMATCHED_CLOSING_QUOTE_REGEX = /^[^']*'$/;
+const UNMATCHED_CLOSING_DOUBLE_QUOTE_REGEX = /^[^"]*"$/;
 
 /**
  * Check if a string is a valid IPv4 address.

@@ -30,6 +30,11 @@ export async function applyEasyListFromDisk() {
   if (!context) return;
 
   const filePath = await combineEasyListToDisk(context.filesDir, context.tempDir);
+
+  if (filePath === undefined) {
+    return;
+  }
+
   try {
     webview.AdsBlockManager.setAdsBlockRules(filePath, true);
   } catch (e) {
@@ -49,28 +54,32 @@ export async function applyEasyListFromDisk() {
  */
 async function combineEasyListToDisk(filesDir: string, tempDir: string) {
   // 1. Get the list of rule files, sorted for a predictable merge order
-  const lists = await listFilesUnderDir(filesDir + '/easylist');
-  if (!lists || lists.length === 0) return;
-
+  const lists = await listFilesUnderDir(filesDir + '/easylist') || [];
   lists.sort(); // consistent ordering
+  let allLines: string[] = [];
 
-  // 2. Read all files concurrently – much faster than reading one by one
-  const contents = await Promise.all(
-    lists.map(async (file) => {
-      const fullPath = filesDir + '/easylist/' + file;
-      try {
-        const paraBuf = await readArrayBufferConcurrent(fullPath);
-        if (!paraBuf) return '';
-        return fastbuffer.from(paraBuf).toString();
-      } catch (e) {
-        meow(`Failed to read [${file}]: ${e}`, 'applyEasyList', meowLevel.ERROR);
-        return '';
-      }
-    })
-  );
-
-  // 3. Split combined content into individual lines
-  const allLines = contents.filter(text => text !== '').join('\n').split('\n');
+  // Read all lines.
+  if (lists.length === 0) {
+    // No files of easyLists.
+    // Do nothing.
+  } else {
+    // 2. Read all files concurrently – much faster than reading one by one
+    const contents = await Promise.all(
+      lists.map(async (file) => {
+        const fullPath = filesDir + '/easylist/' + file;
+        try {
+          const paraBuf = await readArrayBufferConcurrent(fullPath);
+          if (!paraBuf) return '';
+          return fastbuffer.from(paraBuf).toString();
+        } catch (e) {
+          meow(`Failed to read [${file}]: ${e}`, 'applyEasyList', meowLevel.ERROR);
+          return '';
+        }
+      })
+    );
+    // 3. Split combined content into individual lines
+    allLines = contents.filter(text => text !== '').join('\n').split('\n');
+  }
 
   // 4. Deduplicate lines, preserving metadata (comments/headers)
   const seen = new Set<string>();
@@ -101,7 +110,7 @@ async function combineEasyListToDisk(filesDir: string, tempDir: string) {
   const droppedLines = totalLines - savedLines;
   meow(
     `Saved easylist to ${filePath}! ` +
-    `Total lines: ${totalLines}, kept: ${savedLines}, duplicates dropped: ${droppedLines} (${(droppedLines / totalLines * 100).toFixed(2)}%).`,
+    `Total lines: ${totalLines}, kept: ${savedLines}, duplicates dropped: ${droppedLines} (${totalLines > 0 ? (droppedLines / totalLines * 100).toFixed(2) : '0.00'}%).`,
     'applyEasyList'
   );
 
