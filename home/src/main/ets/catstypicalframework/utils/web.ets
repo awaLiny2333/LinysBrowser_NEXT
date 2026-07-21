@@ -13,7 +13,9 @@ export function printWeb(controller: WebviewController | undefined) {
     return;
   }
   try {
-    const fileName = makeFilenameLegal(`${controller.getTitle().substring(0, 32)} - ${controller.getUrl().substring(0, 32)}.pdf`);
+    const title = controller.getTitle() || 'Untitled';
+    const url = controller.getUrl() || 'unknown';
+    const fileName = makeFilenameLegal(`${title.substring(0, 32)} - ${url.substring(0, 32)}.pdf`);
     let webPrintDocadapter = controller.createWebPrintDocumentAdapter(fileName);
     print.print(`BrowseerCat_${fileName}`, webPrintDocadapter, null, UIContext.getLastFocusedUIContext()?.getHostContext());
   } catch (e) {

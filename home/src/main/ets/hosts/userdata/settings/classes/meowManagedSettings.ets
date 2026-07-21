@@ -15,7 +15,7 @@
 
 import lazy { fastbuffer } from "@kit.ArkTS";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import lazy { readArrayBufferConcurrent, saveHybrid, saveHybridSafe } from "../../../../catstypicalframework/utils/storage";
+import lazy { readArrayBufferConcurrent, saveHybridSafe } from "../../../../catstypicalframework/utils/storage";
 import { compareDiff } from "../../../../catstypicalframework/utils/strings";
 import { importResult } from "../../../system/resources/scripts/backup";
 import lazy { defaultSettingsEntries } from "../scripts/defaultSettingsEntries";
@@ -77,6 +77,7 @@ export class meowManagedSettings {
 
     if (!re.success) {
       meow(`[initFrom] settingsParserJSON failed. Rejected.`, 'meowSettings][initFrom', meowLevel.WARN);
+      this.ready = true;
       return { result: importResult.DECODE_FAIL, changes: [] };
     }
 
@@ -123,7 +124,7 @@ export class meowManagedSettings {
       meow(`Rejected. Index out of range`, 'meowSettings][set', meowLevel.WARN);
       return;
     }
-    if (this.settingsData[index].value == value) {
+    if (this.settingsData[index].value === value) {
       return;
     } // Reject for a not changing value. Note that this may be not correct for arrays!
     let timeout: number = 500;

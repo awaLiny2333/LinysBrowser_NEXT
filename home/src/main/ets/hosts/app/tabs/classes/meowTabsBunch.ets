@@ -254,9 +254,9 @@ export class meowTabsBunch {
    * Ensures there is at least one tab.
    * @returns True if a new tab was created, false if nothing done.
    */
-  private ensureTheresOneTab(overwriteUrl?: string) {
+  private async ensureTheresOneTab(overwriteUrl?: string) {
     if (this.tabs.length == 0) {
-      this.newTabWrapped(overwriteUrl);
+      await this.newTabWrapped(overwriteUrl);
       this.switchTo(0);
       return true;
     }
@@ -267,8 +267,8 @@ export class meowTabsBunch {
    * Loads an url on current tab.
    * @param url
    */
-  loadOnCurrentTab(url: string) {
-    const hasCreated = this.ensureTheresOneTab(url);
+  async loadOnCurrentTab(url: string) {
+    const hasCreated = await this.ensureTheresOneTab(url);
     if (hasCreated) {
       // Do nothing
     } else {
@@ -375,7 +375,7 @@ export class meowTabsBunch {
    * Switch to a tab. Auto calls the tab to restore web state if it is not active.
    * @param target The tab index or the meowTabInfo itself.
    */
-  async switchTo(target: number | meowTabInfo) {
+  switchTo(target: number | meowTabInfo) {
     if (this.currentNode) {
       this.currentNode.detachWeb();
       this.currentNode.rebuild();

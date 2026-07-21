@@ -516,12 +516,10 @@ struct Index {
 
   onDragLeaveAnyArea() {
     clearTimeout(this.myUi.dropHoverFlipTimeoutId);
-    meow('ovo1');
     this.myUi.dropHoverFlipTimeoutId = setTimeout(() => {
       animateToImmediately(defaultAnimation(), () => {
         this.myUi.dropHover = false;
       });
-      meow('ovo0');
     }, 10);
   }
 
@@ -698,6 +696,7 @@ struct Index {
       if (this.myUi.titleTopCanShift) {
         top -= this.topAvoidHeight - standardSpacing;
       }
+      top = Math.max(0, top); // Keep this safe.
       bottom = bottomAvoid;
       if (useEffects()) {
         if (bottomAvoid == 0) {

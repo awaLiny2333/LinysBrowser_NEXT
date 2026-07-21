@@ -686,10 +686,11 @@ export class meowUiHost {
       this.refreshKeywordEntries();
       this.refreshDestination();
     }
-    const target = this.searchUnifyResult?.url || concatSearchWithEngine('').result;
-    this.myTabs.loadOnCurrentTab(target);
     // SEARCH / LOAD!
-    meow(`Visit / load [${target}]!`, 'meowUiHost][submitSearchOrLoad', meowLevel.WARN);
+    const target = this.searchUnifyResult?.url || concatSearchWithEngine('').result;
+    this.myTabs.loadOnCurrentTab(target).then(() => {
+      meow(`Visit / load [${target}]!`, 'meowUiHost][submitSearchOrLoad', meowLevel.WARN);
+    });
   }
 
   /**

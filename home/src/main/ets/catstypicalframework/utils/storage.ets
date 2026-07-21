@@ -221,7 +221,7 @@ export async function saveHybrid(fullFilePath: string, content: string | ArrayBu
       }
     }
 
-    file = fileIo.openSync(
+    file = await fileIo.open(
       fullFilePath,
       fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE
     );

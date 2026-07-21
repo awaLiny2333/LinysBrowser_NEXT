@@ -4,11 +4,11 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { aboutToLoadContent, earlyOnCreate, earlyOnWindowStageCreate as onWindowStageCreate, onConfigUpdate, onLoadContent, onWant, onWindowStageWillDestroy, wantSource } from '../catstypicalframework/flows';
 import { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
 
-const DOMAIN = 0x0000;
+const DOMAIN = 0x2333;
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
-    hilog.warn(DOMAIN, 'testTag', '%{public}s', ` \nAbility onCreate, launchParam: ${launchParam}`);
+    hilog.warn(DOMAIN, 'purrrr', '%{public}s', ` \nAbility onCreate, launchParam: ${launchParam}`);
 
     earlyOnCreate(this.context, want);
 
@@ -18,18 +18,18 @@ export default class EntryAbility extends UIAbility {
     // try {
     //   this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
     // } catch (err) {
-    //   hilog.error(DOMAIN, 'testTag', 'Failed to set colorMode. Cause: %{public}s', JSON.stringify(err));
+    //   hilog.error(DOMAIN, 'purrrr', 'Failed to set colorMode. Cause: %{public}s', JSON.stringify(err));
     // }
   }
 
   onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {
-    hilog.warn(DOMAIN, 'testTag', '%{public}s', `Ability onNewWant, launchParam: ${launchParam}`);
+    hilog.warn(DOMAIN, 'purrrr', '%{public}s', `Ability onNewWant, launchParam: ${launchParam}`);
     onWant(want, wantSource.RUNTIME);
   }
 
   async onWindowStageCreate(windowStage: window.WindowStage): Promise<void> {
     // Main window is created, set main page for this ability
-    hilog.warn(DOMAIN, 'testTag', '%{public}s', ' \nAbility onWindowStageCreate');
+    hilog.warn(DOMAIN, 'purrrr', '%{public}s', ' \nAbility onWindowStageCreate');
     await onWindowStageCreate(this.context); // Start this loading in an early stage. Does this make a difference?
 
     try {
@@ -38,10 +38,10 @@ export default class EntryAbility extends UIAbility {
 
       windowStage.loadContent('pages/Index', (err) => {
         if (err.code) {
-          hilog.error(DOMAIN, 'testTag', ' \nFailed to load the content. Cause: %{public}s', JSON.stringify(err));
+          hilog.error(DOMAIN, 'purrrr', ' \nFailed to load the content. Cause: %{public}s', JSON.stringify(err));
           return;
         }
-        hilog.warn(DOMAIN, 'testTag', ' \nMeow onLoadContent');
+        hilog.warn(DOMAIN, 'purrrr', ' \nMeow onLoadContent');
         onLoadContent(windowStage, mainWindow, this.context);
       });
 
@@ -59,18 +59,18 @@ export default class EntryAbility extends UIAbility {
   }
 
   onDestroy(): void {
-    hilog.warn(DOMAIN, 'testTag', '%{public}s', ' \nAbility onDestroy');
+    hilog.warn(DOMAIN, 'purrrr', '%{public}s', ' \nAbility onDestroy');
   }
 
   onWindowStageDestroy(): void {
-    hilog.warn(DOMAIN, 'testTag', '%{public}s', ' \nAbility onWindowStageDestroy');
+    hilog.warn(DOMAIN, 'purrrr', '%{public}s', ' \nAbility onWindowStageDestroy');
   }
 
   onForeground(): void {
-    hilog.warn(DOMAIN, 'testTag', '%{public}s', 'Ability onForeground');
+    hilog.warn(DOMAIN, 'purrrr', '%{public}s', 'Ability onForeground');
   }
 
   onBackground(): void {
-    hilog.warn(DOMAIN, 'testTag', '%{public}s', ' \nAbility onBackground');
+    hilog.warn(DOMAIN, 'purrrr', '%{public}s', ' \nAbility onBackground');
   }
 }

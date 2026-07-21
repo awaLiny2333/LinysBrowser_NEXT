@@ -39,11 +39,11 @@ export function listenCrash(logDir: string) {
     ],
     // 开发者可以自行实现订阅实时回调函数，以便对订阅获取到的事件数据进行自定义处理
     onReceive: (domain: string, appEventGroups: Array<hiAppEvent.AppEventGroup>) => {
-      hilog.warn(0x0000, 'meowTag', ' \n[listenCrash] Last crash:');
-      hilog.warn(0x0000, 'meowTag', `HiAppEvent onReceive: domain=${domain}, let me tell you about it ／(=∵=)＼\n `);
+      hilog.warn(0x2333, 'meowTag', ' \n[listenCrash] Last crash:');
+      hilog.warn(0x2333, 'meowTag', `HiAppEvent onReceive: domain=${domain}, let me tell you about it ／(=∵=)＼\n `);
       for (const eventGroup of appEventGroups) {
         // 开发者可以根据事件集合中的事件名称区分不同的系统事件
-        hilog.warn(0x0000, 'meowTag', `> HiAppEvent eventName=${eventGroup.name}\n `);
+        hilog.warn(0x2333, 'meowTag', `> HiAppEvent eventName=${eventGroup.name}\n `);
 
         // Infos
         for (const eventInfo of eventGroup.appEventInfos) {
@@ -54,12 +54,12 @@ export function listenCrash(logDir: string) {
           saveHybrid(eventLogFilePath, eventLogString, true);
 
           // Log
-          hilog.warn(0x0000, 'meowTag', `Saved to [${eventLogFilePath}]:`);
-          hilog.warn(0x0000, 'meowTag', eventLogString);
-          hilog.warn(0x0000, 'meowTag', ' '); // End
+          hilog.warn(0x2333, 'meowTag', `Saved to [${eventLogFilePath}]:`);
+          hilog.warn(0x2333, 'meowTag', eventLogString);
+          hilog.warn(0x2333, 'meowTag', ' '); // End
         }
       }
-      hilog.warn(0x0000, 'meowTag', ' '); // End
+      hilog.warn(0x2333, 'meowTag', ' '); // End
     }
   };
   try {

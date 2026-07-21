@@ -170,7 +170,7 @@ export async function earlyOnWindowStageCreate(context: Context) {
  * @param context common.UIAbilityContext
  * */
 export async function aboutToLoadContent(windowStage: window.WindowStage, windowObj: window.Window, context: Context) {
-  console.log(`aboutToLoadContent: windowStage = ${windowStage}, windowObj = ${windowObj}, context = ${context}`); // Just to USE them so that it won't be markded as unused and give me a yellow <!>.
+  console.log(`aboutToLoadContent: windowStage = ${windowStage}, windowObj = ${windowObj}, context = ${context}`);
 }
 
 /**
@@ -279,9 +279,9 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
     // UI
     setKeyboardAvoidResize(windowObj);
     setDecorHeight(windowObj);
+    updateNavigationIndicator(windowObj); // Navigation indicator
     myUi.updateWindowBackgroundColor();
     myUi.updateWindowTitle();
-    updateNavigationIndicator(windowObj); // Navigation indicator
   }, 1);
 
   // TABS
