@@ -159,6 +159,17 @@ export function nowHtmlTimestamp(): number {
  * @author ChatGLM @ Apr 6 2026
  */
 export function buildNodeHTML(node: meowBookmarkItem, indent: string): string {
+  return _buildNodeHTML(node, indent, new Set<meowBookmarkItem>());
+}
+
+/**
+ * Set a mechanism to avoid running into loops. This is not really gonna happen, I think, but this makes things safer, doesn't it?
+ * @author ChatGLM @ Apr 6 2026 and enhanced by DeepSeek V4 API @ Jul 22 2026.
+ */
+function _buildNodeHTML(node: meowBookmarkItem, indent: string, visited: Set<meowBookmarkItem>): string {
+  if (visited.has(node)) return ''; // Cycle detected — skip
+  visited.add(node);
+
   let result = "";
 
   if (node.isFolder) {
@@ -174,7 +185,7 @@ export function buildNodeHTML(node: meowBookmarkItem, indent: string): string {
     if (node.children && node.children.length > 0) {
       const childIndent = indent + "    ";
       for (let i = 0; i < node.children.length; i++) {
-        result += buildNodeHTML(node.children[i], childIndent);
+        result += _buildNodeHTML(node.children[i], childIndent, visited);
       }
     }
 
