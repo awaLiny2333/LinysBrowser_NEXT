@@ -1,22 +1,20 @@
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
+import { common } from "@kit.AbilityKit";
 import { jumpUrl } from "../../../catstypicalframework/utils/url";
 import { MooTextAreaV2 } from "../../../components/common/MooTextAreaV2";
 import { standardSpacing } from "../../../components/constants";
-import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { WoofUniFrame } from "../../WoofUniFrame";
-import { common } from "@kit.AbilityKit";
 
 @ComponentV2
 struct WoofJumpPanel {
   @Param @Require controller: CustomDialogController;
-  @Param @Require myLayout: meowLayout;
-  @Param @Require myDialog: meowDialogManager;
+  @Param @Require myUi: meowUiHost;
   // Info
   @Local source: string = '';
   @Local url: string = '';
 
   aboutToAppear(): void {
-    const req = this.myDialog.lastRequest;
+    const req = this.myUi.myDialog.lastRequest;
     if (req) {
       this.source = (req.param as [string, string])[0];
       this.url = (req.param as [string, string])[1];
@@ -25,7 +23,7 @@ struct WoofJumpPanel {
 
   build() {
     WoofUniFrame({
-      controller: this.controller, title: $r('app.string.Jump_title'), myLayout: this.myLayout, myDialog: this.myDialog, showConfirmButton: true, showCancelButton: true, shiftBackgroundColor: true,
+      controller: this.controller, title: $r('app.string.Jump_title'), myUi: this.myUi, showConfirmButton: true, showCancelButton: true, shiftBackgroundColor: true,
       onConfirm: () => {
         jumpUrl(this.url, this.getUIContext().getHostContext()! as common.UIAbilityContext);
         this.controller.close();
@@ -48,10 +46,9 @@ struct WoofJumpPanel {
 @CustomDialog
 export struct WoofJumpDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
+  @Require myUi: meowUiHost;
 
   build() {
-    WoofJumpPanel({ controller: this.controller, myLayout: this.myLayout, myDialog: this.myDialog });
+    WoofJumpPanel({ controller: this.controller, myUi: this.myUi });
   }
 }

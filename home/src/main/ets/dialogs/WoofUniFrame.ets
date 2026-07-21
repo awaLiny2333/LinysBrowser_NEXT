@@ -1,4 +1,3 @@
-import { meowLayout } from '../catstypicalframework/hosts/meowLayout';
 import { resource2String } from '../catstypicalframework/utils/resource';
 import { defaultInnerRadius } from '../catstypicalframework/utils/ui';
 import { MooCapsuleButton } from '../components/common/MooCapsuleButton';
@@ -7,7 +6,7 @@ import { MooTextModifier } from '../components/common/MooTextModifier';
 import { UniContentCard } from '../components/common/UniContentCard';
 import { meowThemeColorType, mooTextType, standardComponentHeight, standardSpacing } from '../components/constants';
 import { defaultAnimation, getColor, isPreferRightHand, useEffects } from '../components/settings';
-import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
+import { meowUiHost } from '../hosts/system/windows/classes/meowUiHost';
 
 @ComponentV2
 struct WoofUniFrame {
@@ -18,8 +17,7 @@ struct WoofUniFrame {
   @Param @Once showCancelButton: boolean = false;
   @Param @Once doubleConfirm: boolean = false;
   // Env
-  @Param @Require myDialog: meowDialogManager;
-  @Param @Require myLayout: meowLayout;
+  @Param @Require myUi: meowUiHost;
   // This
   @Param @Require controller: CustomDialogController;
   @Param title: ResourceStr = 'Title';
@@ -36,9 +34,9 @@ struct WoofUniFrame {
   aboutToAppear(): void {
     if (this.controller) {
       if (typeof this.title == 'string') {
-        this.myDialog.registerOpenDialog(this.controller, this.title);
+        this.myUi.myDialog.registerOpenDialog(this.controller, this.title);
       } else {
-        this.myDialog.registerOpenDialog(this.controller, resource2String(this.title, this.getUIContext().getHostContext()!));
+        this.myUi.myDialog.registerOpenDialog(this.controller, resource2String(this.title, this.getUIContext().getHostContext()!));
       }
     }
   }
@@ -47,16 +45,16 @@ struct WoofUniFrame {
     this.aboutToClose();
     if (this.controller) {
       if (typeof this.title == 'string') {
-        this.myDialog.registerCloseDialog(this.controller, this.title);
+        this.myUi.myDialog.registerCloseDialog(this.controller, this.title);
       } else {
-        this.myDialog.registerCloseDialog(this.controller, resource2String(this.title, this.getUIContext().getHostContext()!));
+        this.myUi.myDialog.registerCloseDialog(this.controller, resource2String(this.title, this.getUIContext().getHostContext()!));
       }
     }
   }
 
   build() {
     Stack({ alignContent: Alignment.TopStart }) {
-      if (!this.myLayout.shortMode) {
+      if (!this.myUi.myLayout.shortMode) {
         Column() {
           // Title bar
           Row({ space: standardSpacing * 0.125 }) {
@@ -112,7 +110,7 @@ struct WoofUniFrame {
       Column() {
         this.contentsBuilder();
       }
-      .margin({ top: this.myLayout.shortMode ? 0 : (41 + (this.showTutorial ? this.tutorialHeight + standardSpacing : 0)), bottom: this.showConfirmButton ? standardComponentHeight + standardSpacing + 1 : 0 });
+      .margin({ top: this.myUi.myLayout.shortMode ? 0 : (41 + (this.showTutorial ? this.tutorialHeight + standardSpacing : 0)), bottom: this.showConfirmButton ? standardComponentHeight + standardSpacing + 1 : 0 });
 
       // Confirm / Deny buttons
       if (this.showConfirmButton) {

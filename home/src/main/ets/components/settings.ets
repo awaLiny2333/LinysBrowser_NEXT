@@ -24,7 +24,6 @@
 
 import { AppStorageV2 } from "@kit.ArkUI";
 import Curves from '@ohos.curves';
-import { meowLayout } from "../catstypicalframework/hosts/meowLayout";
 import { meowUiHost } from "../hosts/system/windows/classes/meowUiHost";
 import { getCreateMyApp } from "../hosts/system/windows/scripts/helpers";
 import { meowManagedSettings } from "../hosts/userdata/settings/classes/meowManagedSettings";
@@ -84,8 +83,8 @@ export function defaultAnimation() {
  * Gets the columns template for the water flow layout.
  * @returns The columns template for the water flow layout.
  */
-export function waterFlowColumnsTemplate(layout: meowLayout) {
-  return "1fr ".repeat(Math.ceil(layout.width / minimumCardWidth));
+export function waterFlowColumnsTemplate(myUi: meowUiHost) {
+  return "1fr ".repeat(Math.ceil(myUi.myLayout.width / minimumCardWidth));
 }
 
 /**
@@ -110,8 +109,8 @@ export function inDarkMode() {
  * Gets if the user wants to show the window title.
  * @returns true if the user wants to show the window title, false otherwise.
  */
-export function showWindowTitle(layout: meowLayout) {
-  if (layout.wideMode) {
+export function showWindowTitle(myUi: meowUiHost) {
+  if (myUi.myLayout.wideMode) {
     return getMySettings().settingsData[23].value as boolean;
   }
   return getMySettings().settingsData[24].value as boolean;
@@ -220,11 +219,11 @@ export function isSmartReachabilityOn() {
 
 /**
  * Check the settings and see if the current tabs style is vertical, taking into consideration the current layout wide mode status.
- * @param myLayout The layout of the current window.
+ * @param myUi The meowUiHost of the current window.
  * @returns True if the current tabs style is vertical, false otherwise.
  */
-export function isTabsStyleVertical(myLayout: meowLayout) {
-  return getMySettings().settingsData[myLayout.wideMode ? 3 : 4].value as string == 'vertical';
+export function isTabsStyleVertical(myUi: meowUiHost) {
+  return getMySettings().settingsData[myUi.myLayout.wideMode ? 3 : 4].value as string == 'vertical';
 }
 
 /**

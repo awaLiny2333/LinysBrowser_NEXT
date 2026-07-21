@@ -4,13 +4,14 @@ import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { mooTextType, standardSpacing } from '../../../../components/constants';
 import { getMySettings } from '../../../../components/settings';
-import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
+import { openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
+import { meowUiHost } from '../../../../hosts/system/windows/classes/meowUiHost';
 import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
 
 @ComponentV2
 struct SettingsSecurity {
-  @Param @Require myDialog: meowDialogManager;
+  @Param @Require myUi: meowUiHost;
   @Local mySettings: meowManagedSettings = getMySettings();
 
   build() {
@@ -39,7 +40,7 @@ struct SettingsSecurity {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_security_cookies_viewManage'),
           clickAction: () => {
-            requestDialog(this.myDialog, openDialogRequestType.COOKIES, undefined, true); // Go with no params.
+            requestDialog(this.myUi.myDialog, openDialogRequestType.COOKIES, undefined, true); // Go with no params.
           }
         });
       };

@@ -1,11 +1,11 @@
-import { meowLayout } from '../../../../catstypicalframework/hosts/meowLayout';
 import { standardSpacing } from '../../../../components/constants';
+import { meowUiHost } from '../../../../hosts/system/windows/classes/meowUiHost';
 import { userCredits } from '../creditDetails';
 import { CreditUser } from './CreditUser';
 
 @ComponentV2
 struct UserCredits {
-  @Param @Require myLayout: meowLayout;
+  @Param @Require myUi: meowUiHost;
   // Events
   @Event requestVisit: (url: string) => void;
 
@@ -16,7 +16,7 @@ struct UserCredits {
       Repeat(userCredits)
         .each((item) => {
           CreditUser({
-            myLayout: this.myLayout,
+            myUi: this.myUi,
             details: item.item,
             requestVisit: (url) => {
               this.requestVisit(url);

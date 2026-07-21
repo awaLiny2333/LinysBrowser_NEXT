@@ -1,15 +1,13 @@
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { MooTextInputV2 } from "../../../components/common/MooTextInputV2";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { standardSpacing } from "../../../components/constants";
-import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
 struct WoofHttpAuthPanel {
   @Param @Require controller: CustomDialogController;
-  @Param @Require myLayout: meowLayout;
-  @Param @Require myDialog: meowDialogManager;
+  @Param @Require myUi: meowUiHost;
   // Info
   @Local data: OnHttpAuthRequestEvent | undefined;
   @Local username: string = '';
@@ -19,7 +17,7 @@ struct WoofHttpAuthPanel {
   passwordInputId: string = `WoofHttpAuthPanel_password_${Date.now().toString(16)}`;
 
   aboutToAppear(): void {
-    const req = this.myDialog.lastRequest;
+    const req = this.myUi.myDialog.lastRequest;
     if (req) {
       this.data = req.param as OnHttpAuthRequestEvent;
     }
@@ -27,7 +25,7 @@ struct WoofHttpAuthPanel {
 
   build() {
     WoofUniFrame({
-      controller: this.controller, title: $r('app.string.HttpAuth_title'), myLayout: this.myLayout, myDialog: this.myDialog, shiftBackgroundColor: true,
+      controller: this.controller, title: $r('app.string.HttpAuth_title'), myUi: this.myUi, shiftBackgroundColor: true,
       showConfirmButton: true, showCancelButton: true,
       onConfirm: () => {
         this.confirm();
@@ -88,10 +86,9 @@ struct WoofHttpAuthPanel {
 @CustomDialog
 export struct WoofHttpAuthDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
+  @Require myUi: meowUiHost;
 
   build() {
-    WoofHttpAuthPanel({ controller: this.controller, myLayout: this.myLayout, myDialog: this.myDialog });
+    WoofHttpAuthPanel({ controller: this.controller, myUi: this.myUi });
   }
 }

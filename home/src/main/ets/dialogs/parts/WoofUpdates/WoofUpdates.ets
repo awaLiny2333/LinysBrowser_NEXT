@@ -1,8 +1,7 @@
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
 import { meowFlexOptions, mooTextType, standardSpacing } from "../../../components/constants";
-import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { WoofUniFrame } from "../../WoofUniFrame";
 import { updateHistories } from "./updateHistories";
 
@@ -48,14 +47,10 @@ struct UpdateRecords {
 @CustomDialog
 struct WoofUpdatesDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
+  @Require myUi: meowUiHost;
 
   build() {
-    WoofUniFrame({
-      controller: this.controller, myDialog: this.myDialog, myLayout: this.myLayout,
-      title: $r('app.string.Updates'),
-    }) {
+    WoofUniFrame({ controller: this.controller, myUi: this.myUi, title: $r('app.string.Updates') }) {
       UpdateRecords();
     };
   }

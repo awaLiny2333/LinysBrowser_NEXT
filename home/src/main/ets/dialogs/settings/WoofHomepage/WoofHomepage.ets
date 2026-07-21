@@ -1,4 +1,3 @@
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { meow } from "../../../catstypicalframework/utils/catsLogger";
 import { unlinkFile } from "../../../catstypicalframework/utils/storage";
 import { MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
@@ -7,7 +6,7 @@ import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
 import { standardSpacing } from "../../../components/constants";
 import { defaultAnimation, getMySettings, shortcutsHeight, shortcutsPath } from "../../../components/settings";
-import { meowDialogManager, openDialogRequestType } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { openDialogRequestType } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { requestDialog } from "../../../hosts/system/dialogs/scripts/dialog";
 import { getMyResource } from "../../../hosts/system/resources/scripts/helpers";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
@@ -16,7 +15,6 @@ import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
 struct WoofHomepage {
-  @Param @Require myDialog: meowDialogManager;
   @Param @Require myUi: meowUiHost;
 
   build() {
@@ -55,7 +53,7 @@ struct WoofHomepage {
           MooCapsuleButton({
             text: $r('app.string.General_select'),
             clickAction: () => {
-              requestDialog(this.myDialog, openDialogRequestType.BOOKMARKS_PICKER, undefined, true);
+              requestDialog(this.myUi.myDialog, openDialogRequestType.BOOKMARKS_PICKER, undefined, true);
             }
           });
           MooCapsuleButton({
@@ -99,13 +97,11 @@ struct WoofHomepage {
 @CustomDialog
 struct WoofHomepageDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
   @Require myUi: meowUiHost;
 
   build() {
-    WoofUniFrame({ controller: this.controller, title: $r('app.string.Homepage'), myLayout: this.myLayout, myDialog: this.myDialog }) {
-      WoofHomepage({ myDialog: this.myDialog, myUi: this.myUi });
+    WoofUniFrame({ controller: this.controller, title: $r('app.string.Homepage'), myUi: this.myUi }) {
+      WoofHomepage({ myUi: this.myUi });
     };
   }
 }

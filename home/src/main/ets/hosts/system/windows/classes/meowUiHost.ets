@@ -1,7 +1,9 @@
 import lazy { Want } from "@kit.AbilityKit";
 import lazy { AppStorageV2, window } from "@kit.ArkUI";
 import lazy { BusinessError } from "@kit.BasicServicesKit";
+import { meowAvoid } from "../../../../catstypicalframework/hosts/meowAvoid";
 import { meowLayout } from "../../../../catstypicalframework/hosts/meowLayout";
+import { meowMisc } from "../../../../catstypicalframework/hosts/meowMisc";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import lazy { ensureDirectoryExist, removeDir, renameFolder } from "../../../../catstypicalframework/utils/storage";
 import lazy { updateNavigationIndicator } from "../../../../catstypicalframework/utils/ui";
@@ -92,14 +94,24 @@ export class meowUiHost {
 
   // Getters
 
+  get myDialog() {
+    return AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.windowId}`)!;
+  }
+
   get myTabs() {
-    const myTabs: meowTabsBunch = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.windowId}`)!;
-    return myTabs;
+    return AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.windowId}`)!;
   }
 
   get myLayout() {
-    const myLayout: meowLayout = AppStorageV2.connect(meowLayout, `meowLayout_${this.windowId}`)!;
-    return myLayout;
+    return AppStorageV2.connect(meowLayout, `meowLayout_${this.windowId}`)!;
+  }
+
+  get myAvoid() {
+    return AppStorageV2.connect(meowAvoid, `meowAvoid_${this.windowId}`)!;
+  }
+
+  get myMisc() {
+    return AppStorageV2.connect(meowMisc, `meowMisc_${this.windowId}`)!;
   }
 
   /**
@@ -113,7 +125,7 @@ export class meowUiHost {
    * Whether there is nothing in the major title top area.
    */
   get titleTopEmpty() {
-    if (windowTitleOnAddressBar() || !showWindowTitle(this.myLayout)) {
+    if (windowTitleOnAddressBar() || !showWindowTitle(this)) {
       return true;
     } else {
       return false;
@@ -124,8 +136,7 @@ export class meowUiHost {
    * Whether to show vertical tabs.
    */
   get showingVerticalTabs() {
-    const myLayout = AppStorageV2.connect(meowLayout, `meowLayout_${this.windowId}`)!;
-    return this.showTabs && isTabsStyleVertical(myLayout);
+    return this.showTabs && isTabsStyleVertical(this);
   }
 
   /**
@@ -173,9 +184,8 @@ export class meowUiHost {
   goBackUni(source: meowUiGoBackSource, uiContext: UIContext) {
 
     // Close dialogs.
-    const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.windowId}`)!;
-    if (!myDialog.isEmpty()) {
-      myDialog.requestCloseTop();
+    if (!this.myDialog.isEmpty()) {
+      this.myDialog.requestCloseTop();
       return true;
     }
 
@@ -225,8 +235,7 @@ export class meowUiHost {
 
     // In-page search
     if (this.inPageSearchShow) {
-      const myTabs: meowTabsBunch = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.windowId}`)!;
-      myTabs.currentTabSearchCancel();
+      this.myTabs.currentTabSearchCancel();
       animateToImmediately(defaultAnimation(), () => {
         this.inPageSearchShow = false;
       });
@@ -241,14 +250,13 @@ export class meowUiHost {
    * @returns if go back is successful. E.g. if there is no backward page, then we cannot go back, return false.
    */
   private goBackWeb() {
-    const myTabs: meowTabsBunch = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.windowId}`)!;
-    const tabBackSuccessful = myTabs.goBackCurrent();
+    const tabBackSuccessful = this.myTabs.goBackCurrent();
     if (tabBackSuccessful) {
       return true;
     } else {
       // Try close tab
-      if (myTabs.tabs.length > 0) {
-        myTabs.closeCurrent();
+      if (this.myTabs.tabs.length > 0) {
+        this.myTabs.closeCurrent();
         return true;
       } else {
         return false;
@@ -679,8 +687,7 @@ export class meowUiHost {
       this.refreshDestination();
     }
     const target = this.searchUnifyResult?.url || concatSearchWithEngine('').result;
-    const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.windowId}`)!;
-    myTabs.loadOnCurrentTab(target);
+    this.myTabs.loadOnCurrentTab(target);
     // SEARCH / LOAD!
     meow(`Visit / load [${target}]!`, 'meowUiHost][submitSearchOrLoad', meowLevel.WARN);
   }
@@ -690,8 +697,7 @@ export class meowUiHost {
    * @param url The URL.
    */
   openNewTab(url: string) {
-    const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.windowId}`)!;
-    myTabs.newTabWrapped(url);
+    this.myTabs.newTabWrapped(url);
   }
 
   /**
@@ -699,8 +705,7 @@ export class meowUiHost {
    * @param url The URL.
    */
   openUrlAuto(url: string) {
-    const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.windowId}`)!;
-    if (myTabs.currentTab?.url) {
+    if (this.myTabs.currentTab?.url) {
       // Current tab is not empty.
       this.openNewTab(url);
     } else {

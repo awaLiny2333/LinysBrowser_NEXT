@@ -1,12 +1,11 @@
-import lazy { AppStorageV2 } from '@kit.ArkUI';
 import lazy { webview } from '@kit.ArkWeb';
 import lazy { meow, meowLevel } from '../../catstypicalframework/utils/catsLogger';
 import lazy { getMyDawn } from '../../hosts/app/downloads/scripts/helper';
 import lazy { disableImages, disableJS, forceDark, viewableSchemes } from '../../hosts/app/tabs/scripts/helpers';
 import lazy { intelligentTrackingPrevention, useAdBlock } from '../../hosts/app/tabs/settings';
-import lazy { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
+import lazy { openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import lazy { requestDialog } from '../../hosts/system/dialogs/scripts/dialog';
-import lazy { getLastWindowId } from '../../hosts/system/windows/scripts/multiwindows';
+import { meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
 import lazy { sidebarContentIconSet } from '../constants';
 import { getMySettings } from '../settings';
 
@@ -20,6 +19,7 @@ export struct MooSoloWeb {
   @Param @Require url: string;
   @Local realUrl: string = this.url;
   // UI
+  @Param @Require myUi: meowUiHost;
   @Param radius: number = 0;
   // Web
   @Param controllerMeow: webview.WebviewController = new webview.WebviewController();
@@ -51,8 +51,7 @@ export struct MooSoloWeb {
           intercept = true;
           // Ask for decision from the user to jump or not.
           meow(`Jump to [${url}]?`, 'MooSoloWeb][requestload');
-          const myDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${getLastWindowId()}`)!;
-          requestDialog(myDialog, openDialogRequestType.JUMP, [this.url, event.data.getRequestUrl()], true);
+          requestDialog(this.myUi.myDialog, openDialogRequestType.JUMP, [this.url, event.data.getRequestUrl()], true);
         }
         return intercept;
       })

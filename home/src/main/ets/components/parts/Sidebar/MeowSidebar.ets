@@ -1,5 +1,4 @@
 import lazy { webview } from "@kit.ArkWeb";
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { domainOf, unifyDestination } from "../../../catstypicalframework/utils/url";
@@ -12,7 +11,7 @@ import lazy { MooTextInputV2 } from "../../common/MooTextInputV2";
 import lazy { MooTextModifier } from "../../common/MooTextModifier";
 import lazy { SlotEditButton, symbolIconOptions } from "../../common/SlotEditButton";
 import { defaultMooSymbolSize, defaultSidebarShrunkWidth, defaultSidebarWidth, getButtonIcon, meowThemeColorType, sidebarContentIconArray, sidebarContentIconSet, standardSpacing, UnifiedButtonsType } from "../../constants";
-import { defaultAnimation, getColor, getMySettings, isPreferRightHand, sideAreaShrinkButton, sidebarButtons, sideareaShouldBeOnTheRight, titleBarPositionBottom, useEffects } from "../../settings";
+import { defaultAnimation, getColor, getMySettings, isPreferRightHand, sideareaShouldBeOnTheRight, sideAreaShrinkButton, sidebarButtons, titleBarPositionBottom, useEffects } from "../../settings";
 import lazy { MeowBookmarksPanel } from "../Bookmarks/Panel";
 import lazy { DownloadsPanel } from "../Downloads/Panel";
 import lazy { HistoryPanel } from "../History/Panel";
@@ -21,7 +20,6 @@ import lazy { shrinkButton } from "./SidebarShrinkButton";
 
 @ComponentV2
 struct MeowSidebar {
-  @Param @Require myLayout: meowLayout;
   @Param @Require myUi: meowUiHost;
   // Local
   @Local showAdd: boolean = false;
@@ -58,7 +56,7 @@ struct MeowSidebar {
           } else if (this.myUi.sidebarPage == UnifiedButtonsType.HISTORIES) {
             // History
             HistoryPanel({
-              myLayout: this.myLayout, allowEdit: false, needPadding: false, lite: true, autoFocus: false,
+              myUi: this.myUi, allowEdit: false, needPadding: false, lite: true, autoFocus: false,
               requestVisit: (url) => {
                 this.genericRequestVisit(url);
               },
@@ -90,7 +88,7 @@ struct MeowSidebar {
 
           // Custom Web
           MooSoloWeb({
-            controllerMeow: this.controllerMeow, url: this.myUi.sidebarPage, radius: useEffects() ? defaultInnerRadius : 0,
+            controllerMeow: this.controllerMeow, url: this.myUi.sidebarPage, radius: useEffects() ? defaultInnerRadius : 0, myUi: this.myUi,
             onDropMe: () => {
               this.onDropSidebar();
             },
@@ -129,7 +127,7 @@ struct MeowSidebar {
    * The width of the sidebar.
    */
   get sidebarWidth() {
-    return this.myLayout.wideMode ? defaultSidebarWidth : Math.round((this.myLayout.width - 2 * standardSpacing) * 0.9);
+    return this.myUi.myLayout.wideMode ? defaultSidebarWidth : Math.round((this.myUi.myLayout.width - 2 * standardSpacing) * 0.9);
   }
 
   /**

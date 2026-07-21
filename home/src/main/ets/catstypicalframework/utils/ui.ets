@@ -5,7 +5,6 @@ import { defaultWindowTopDecorHeight } from '../../components/constants';
 import lazy { defaultAnimation, isSmartReachabilityOn, showNavigationIndicator } from '../../components/settings';
 import { meowUiFullscreenStatus, meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
 import { getCreateMyApp } from '../../hosts/system/windows/scripts/helpers';
-import lazy { meowAvoid } from '../hosts/meowAvoid';
 import lazy { meow, meowLevel } from './catsLogger';
 
 export const wideModeThreshold = 700;
@@ -116,7 +115,7 @@ export function listenAvoid(windowId: string) {
     const myUi = AppStorageV2.connect(meowUiHost, `meowUiHost_${windowId}`)!;
     myUi.windowObj!.on('avoidAreaChange', (data) => {
       // meow('Changes on avoid areas!', 'avoidAreaChange', meowLevel.INFO);
-      const myAvoid = AppStorageV2.connect(meowAvoid, `meowAvoid_${windowId}`)!;
+      const myAvoid = myUi.myAvoid;
       const myApp = getCreateMyApp();
 
       if (data.type == window.AvoidAreaType.TYPE_SYSTEM) {
@@ -168,7 +167,8 @@ export function offAvoid(windowObj: window.Window) {
 export function updateAvoid(windowObj: window.Window, windowId: string) {
   try {
     let avoidArea: window.AvoidArea;
-    const avoid = AppStorageV2.connect(meowAvoid, `meowAvoid_${windowId}`)!;
+    const myUi = AppStorageV2.connect(meowUiHost, `meowUiHost_${windowId}`)!;
+    const avoid = myUi.myAvoid;
     const myApp = getCreateMyApp();
 
     // Get

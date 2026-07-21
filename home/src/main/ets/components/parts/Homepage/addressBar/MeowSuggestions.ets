@@ -1,4 +1,3 @@
-import { meowLayout } from "../../../../catstypicalframework/hosts/meowLayout";
 import { resource2String } from "../../../../catstypicalframework/utils/resource";
 import { defaultInnerRadius, shortModeThreshold } from "../../../../catstypicalframework/utils/ui";
 import { meowUiHost } from "../../../../hosts/system/windows/classes/meowUiHost";
@@ -12,11 +11,10 @@ import { SuggestionEntryButton } from "./MeowSuggestionEntry";
 @ComponentV2
 struct MeowSuggestions {
   @Param @Require myUi: meowUiHost;
-  @Param @Require myLayout: meowLayout;
 
   build() {
     if (this.myUi.suggestionsHistories.length + this.myUi.suggestionsBookmarks.length > 0) {
-      if (this.myLayout.wideMode) {
+      if (this.myUi.myLayout.wideMode) {
         Row({ space: standardSpacing }) {
           this.contents();
         }.alignItems(VerticalAlign.Top);
@@ -37,17 +35,15 @@ struct MeowSuggestions {
   @Builder
   contents() {
     SuggestionsFrame({
-      needScroll: this.myLayout.wideMode,
-      myUi: this.myUi,
-      myLayout: this.myLayout, title: resource2String($r('app.string.Settings_category_history'), this.getUIContext().getHostContext()!), list: this.myUi.suggestionsHistories,
+      needScroll: this.myUi.myLayout.wideMode, myUi: this.myUi,
+      title: resource2String($r('app.string.Settings_category_history'), this.getUIContext().getHostContext()!), list: this.myUi.suggestionsHistories,
       clickAction: (url) => {
         this.visit(url);
       }
     });
     SuggestionsFrame({
-      needScroll: this.myLayout.wideMode,
-      myUi: this.myUi,
-      myLayout: this.myLayout, title: resource2String($r('app.string.Bookmarks'), this.getUIContext().getHostContext()!), list: this.myUi.suggestionsBookmarks,
+      needScroll: this.myUi.myLayout.wideMode, myUi: this.myUi,
+      title: resource2String($r('app.string.Bookmarks'), this.getUIContext().getHostContext()!), list: this.myUi.suggestionsBookmarks,
       clickAction: (url) => {
         this.visit(url);
       }
@@ -67,7 +63,7 @@ struct MeowSuggestions {
    * Get the max height of the suggestions frame in non-wide mode.
    */
   get maxHeightNonWideMode() {
-    const maxH = this.myLayout.heightTitleArea - this.myLayout.heightTitleBar - standardComponentHeight - 2 * standardSpacing;
+    const maxH = this.myUi.myLayout.heightTitleArea - this.myUi.myLayout.heightTitleBar - standardComponentHeight - 2 * standardSpacing;
     if (maxH > shortModeThreshold) {
       return maxH * 0.75;
     }
@@ -82,7 +78,6 @@ struct SuggestionsFrame {
   // Config
   @Param @Require @Once needScroll: boolean;
   // Params
-  @Param @Require myLayout: meowLayout;
   @Param @Require myUi: meowUiHost;
   @Param @Require title: string;
   @Param @Require list: Array<meowBookmarkItem | meowHistoryEntry>;
@@ -100,13 +95,13 @@ struct SuggestionsFrame {
           .borderRadius(defaultInnerRadius)
           .edgeEffect(EdgeEffect.Spring)
           .scrollable(ScrollDirection.Vertical)
-          .constraintSize(this.myLayout.wideMode ? { maxHeight: this.maxHeightPart } : undefined);
+          .constraintSize(this.myUi.myLayout.wideMode ? { maxHeight: this.maxHeightPart } : undefined);
         } else {
           this.coreRepeat();
         }
       }
       .alignItems(HorizontalAlign.Start)
-      .layoutWeight(this.myLayout.wideMode ? 1 : undefined);
+      .layoutWeight(this.myUi.myLayout.wideMode ? 1 : undefined);
     }
   }
 
@@ -116,7 +111,7 @@ struct SuggestionsFrame {
       Repeat(this.list)
         .each((item) => {
           SuggestionEntryButton({
-            myLayout: this.myLayout,
+            myUi: this.myUi,
             item: item.item,
             clickAction: () => {
               this.clickAction(item.item.url);
@@ -133,7 +128,7 @@ struct SuggestionsFrame {
    * Get the max height of the suggestions frame.
    */
   get maxHeightPart() {
-    const maxH = this.myLayout.heightTitleArea - this.myLayout.heightTitleBar - standardComponentHeight - 20 - 3 * standardSpacing;
+    const maxH = this.myUi.myLayout.heightTitleArea - this.myUi.myLayout.heightTitleBar - standardComponentHeight - 20 - 3 * standardSpacing;
     if (maxH > shortModeThreshold) {
       return maxH * 0.75;
     }

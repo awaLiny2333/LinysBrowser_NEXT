@@ -1,21 +1,19 @@
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
 import { standardSpacing } from "../../../components/constants";
-import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
 struct WoofRequestScreenCapturePanel {
   @Param @Require controller: CustomDialogController;
-  @Param @Require myLayout: meowLayout;
-  @Param @Require myDialog: meowDialogManager;
+  @Param @Require myUi: meowUiHost;
   // Info
   @Local data: OnScreenCaptureRequestEvent | undefined;
 
   aboutToAppear(): void {
-    const req = this.myDialog.lastRequest;
+    const req = this.myUi.myDialog.lastRequest;
     if (req) {
       this.data = req.param as OnScreenCaptureRequestEvent;
     }
@@ -23,7 +21,7 @@ struct WoofRequestScreenCapturePanel {
 
   build() {
     WoofUniFrame({
-      controller: this.controller, title: $r('app.string.ScreenCapture_title'), myLayout: this.myLayout, myDialog: this.myDialog,
+      controller: this.controller, title: $r('app.string.ScreenCapture_title'), myUi: this.myUi,
       showConfirmButton: true, showCancelButton: true, doubleConfirm: true,
       onConfirm: () => {
         this.data?.handler.grant({ captureMode: WebCaptureMode.HOME_SCREEN });
@@ -49,10 +47,9 @@ struct WoofRequestScreenCapturePanel {
 @CustomDialog
 export struct WoofRequestScreenCaptureDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
+  @Require myUi: meowUiHost;
 
   build() {
-    WoofRequestScreenCapturePanel({ controller: this.controller, myLayout: this.myLayout, myDialog: this.myDialog });
+    WoofRequestScreenCapturePanel({ controller: this.controller, myUi: this.myUi });
   }
 }

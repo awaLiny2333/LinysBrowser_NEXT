@@ -1,19 +1,15 @@
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
-import { meowTabsBunch } from "../../../hosts/app/tabs/classes/meowTabsBunch";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { MooSymbolButton } from "../../common/MooSymbolButton";
 import { MooSymbolButtonSmall } from "../../common/MooSymbolButtonSmall";
 import { MooTextModifier } from "../../common/MooTextModifier";
 import { defaultTabsVerticalShrunkWidth, defaultTabsVerticalWidth, meowThemeColorType, standardSpacing } from "../../constants";
-import { defaultAnimation, getColor, sideAreaShrinkButton, sideareaShouldBeOnTheRight, titleBarPositionBottom, useEffects, sideAreaShrinkAuto } from "../../settings";
+import { defaultAnimation, getColor, sideareaShouldBeOnTheRight, sideAreaShrinkAuto, sideAreaShrinkButton, titleBarPositionBottom, useEffects } from "../../settings";
 import { shrinkButton } from "../Sidebar/SidebarShrinkButton";
 
 @ComponentV2
 struct MeowTabsVertical {
   @Param @Require myUi: meowUiHost;
-  @Param @Require myLayout: meowLayout;
-  @Param @Require myTabs: meowTabsBunch;
   // Local
   listController: ListScroller = new ListScroller();
   // Event
@@ -29,7 +25,7 @@ struct MeowTabsVertical {
 
       Column() {
         List({ space: standardSpacing * 0.75, scroller: this.listController }) {
-          Repeat(this.myTabs.tabs)
+          Repeat(this.myUi.myTabs.tabs)
             .each((item) => {
               ListItem() {
                 // Tab item
@@ -40,14 +36,14 @@ struct MeowTabsVertical {
                   if (item.item.wsBackupReqTmId != undefined || item.item.saveHistoryTimeoutId != undefined) {
                     MooSymbolButtonSmall($r('sys.symbol.cup'), () => {
                       animateToImmediately(defaultAnimation(), () => {
-                        this.myTabs.closeTab(item.index);
+                        this.myUi.myTabs.closeTab(item.index);
                       });
                     }, undefined, 6);
                   } else {
                     // Close
                     MooSymbolButtonSmall($r('sys.symbol.xmark'), () => {
                       animateToImmediately(defaultAnimation(), () => {
-                        this.myTabs.closeTab(item.index);
+                        this.myUi.myTabs.closeTab(item.index);
                       });
                     }, undefined, 6);
                   }
@@ -56,20 +52,20 @@ struct MeowTabsVertical {
                 .hoverEffect(HoverEffect.Highlight)
                 .padding(standardSpacing * 0.5)
                 .backgroundColor(useEffects() ? getColor(meowThemeColorType.PRIMARY) : getColor(meowThemeColorType.SECONDARY))
-                .border(this.myTabs.currentTab == item.item
+                .border(this.myUi.myTabs.currentTab == item.item
                   ? { width: 2, color: getColor(meowThemeColorType.FONT), radius: defaultInnerRadius }
                   : { width: useEffects() ? 1 : 0, color: $r('sys.color.icon_fourth'), radius: defaultInnerRadius })
                 .onClick(() => {
                   // SLEEP
                   if (this.myUi.tabsSelectingSleep) {
-                    this.myTabs.requestSleep(item.index);
+                    this.myUi.myTabs.requestSleep(item.index);
                     return;
                   }
                   // SWITCH
                   animateToImmediately(defaultAnimation(), () => {
-                    this.myTabs.switchTo(item.index);
+                    this.myUi.myTabs.switchTo(item.index);
                     // For slim (phone) views
-                    if (!this.myLayout.wideMode) {
+                    if (!this.myUi.myLayout.wideMode) {
                       if (sideAreaShrinkAuto()) {
                         this.myUi.sideAreaShrinkExpect = true; // Auto shrink.
                       } else {
@@ -81,11 +77,11 @@ struct MeowTabsVertical {
               }
               .draggable(!item.item.restoringWebState)
               .onDragStart((event) => {
-                const unifiedData = this.myTabs.dropTabIntoMyAppTunnel(item.item);
+                const unifiedData = this.myUi.myTabs.dropTabIntoMyAppTunnel(item.item);
                 event.setData(unifiedData);
               })
               .onDragEnd(() => {
-                this.myTabs.sendFinish();
+                this.myUi.myTabs.sendFinish();
               });
             })
             .key((item) => item.webStateId);
@@ -121,11 +117,11 @@ struct MeowTabsVertical {
           icon: $r('sys.symbol.plus_square'),
           clickAction: () => {
             animateToImmediately(defaultAnimation(), () => {
-              this.myTabs.newTabWrapped();
-              if (!this.myLayout.wideMode) {
+              this.myUi.myTabs.newTabWrapped();
+              if (!this.myUi.myLayout.wideMode) {
                 this.myUi.sideAreaShrinkExpect = true;
               }
-              this.listController.scrollToIndex(this.myTabs.tabs.length - 1);
+              this.listController.scrollToIndex(this.myUi.myTabs.tabs.length - 1);
             });
           }
         });
@@ -141,7 +137,7 @@ struct MeowTabsVertical {
       this.onDragLeaveSidebar();
     })
     .onDrop((event) => {
-      this.myTabs.receiveTabFromMyAppTunnel();
+      this.myUi.myTabs.receiveTabFromMyAppTunnel();
       event.setResult(DragResult.DRAG_SUCCESSFUL);
       this.onDropMe();
     });
@@ -151,7 +147,7 @@ struct MeowTabsVertical {
    * The width of the vertical tab.
    */
   get verticalTabsWidth() {
-    return this.myLayout.wideMode ? defaultTabsVerticalWidth : Math.round((this.myLayout.width - 2 * standardSpacing) * 0.9);
+    return this.myUi.myLayout.wideMode ? defaultTabsVerticalWidth : Math.round((this.myUi.myLayout.width - 2 * standardSpacing) * 0.9);
   }
 }
 

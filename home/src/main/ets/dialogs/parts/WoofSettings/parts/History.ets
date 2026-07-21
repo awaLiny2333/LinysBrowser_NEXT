@@ -1,18 +1,19 @@
 import { AppStorageV2 } from '@kit.ArkUI';
-import { meowHistorian } from '../../../../hosts/userdata/history/classes/meowHistorian';
-import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
-import { mooTextType, standardSpacing } from '../../../../components/constants';
 import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton';
 import { MooSwitch } from '../../../../components/common/MooSwitch';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
-import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
-import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
+import { mooTextType, standardSpacing } from '../../../../components/constants';
 import { getMySettings } from '../../../../components/settings';
+import { openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
+import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
+import { meowUiHost } from '../../../../hosts/system/windows/classes/meowUiHost';
+import { meowHistorian } from '../../../../hosts/userdata/history/classes/meowHistorian';
+import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
 
 @ComponentV2
 struct SettingsHistory {
-  @Param @Require myDialog: meowDialogManager;
+  @Param @Require myUi: meowUiHost;
   @Local mySettings: meowManagedSettings = getMySettings();
   @Local myMeowHistorian: meowHistorian = AppStorageV2.connect(meowHistorian)!;
 
@@ -38,7 +39,7 @@ struct SettingsHistory {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_history_view'),
           clickAction: () => {
-            requestDialog(this.myDialog, openDialogRequestType.HISTORY, undefined, true);
+            requestDialog(this.myUi.myDialog, openDialogRequestType.HISTORY, undefined, true);
           }
         });
         MooCapsuleButton({

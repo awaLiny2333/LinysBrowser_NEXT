@@ -1,22 +1,22 @@
-import { meowLayout } from '../../../../catstypicalframework/hosts/meowLayout';
 import { defaultInnerRadius, defaultRoundedRadius, measureTextWidth } from '../../../../catstypicalframework/utils/ui';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { fontSizeSmall, meowThemeColorType, minimumCardWidth, mooTextType, standardSpacing } from '../../../../components/constants';
 import { getColor, useEffects } from '../../../../components/settings';
+import { meowUiHost } from '../../../../hosts/system/windows/classes/meowUiHost';
 import { Contribution } from '../creditDetails';
 
 @ReusableV2
 @ComponentV2
 struct CreditCard {
   @Param @Require item: Contribution;
-  @Param @Require myLayout: meowLayout;
+  @Param @Require myUi: meowUiHost;
   // Events
   @Event requestVisit: (url: string) => void;
 
   build() {
     Column({ space: standardSpacing }) {
       Text(`#${this.item.id}`).attributeModifier(new MooTextModifier(mooTextType.TITLE)).opacity(0.9);
-      Text(this.item.desc).attributeModifier(new MooTextModifier()).layoutWeight(this.myLayout.wideMode ? 1 : undefined);
+      Text(this.item.desc).attributeModifier(new MooTextModifier()).layoutWeight(this.myUi.myLayout.wideMode ? 1 : undefined);
 
       // Tags
       Row({ space: standardSpacing }) {
@@ -49,7 +49,7 @@ struct CreditCard {
   }
 
   cardWidth() {
-    if (this.myLayout.wideMode) {
+    if (this.myUi.myLayout.wideMode) {
       return minimumCardWidth / 2 * this.widthMultiplier + standardSpacing * (this.widthMultiplier - 1);
     } else {
       return '100%';
@@ -57,7 +57,7 @@ struct CreditCard {
   }
 
   cardHeight() {
-    if (this.myLayout.wideMode) {
+    if (this.myUi.myLayout.wideMode) {
       return minimumCardWidth * 0.3;
     } else {
       return undefined;

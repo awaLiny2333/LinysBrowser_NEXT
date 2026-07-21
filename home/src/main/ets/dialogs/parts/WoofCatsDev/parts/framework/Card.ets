@@ -1,10 +1,8 @@
-import { UniContentCard } from '../../../../../components/common/UniContentCard';
-import { meowMisc } from '../../../../../catstypicalframework/hosts/meowMisc';
-import { meowFlexOptions } from '../../../../../components/constants';
 import { hintGC } from '../../../../../catstypicalframework/utils/performance';
-import { meowAvoid } from '../../../../../catstypicalframework/hosts/meowAvoid';
-import { meowLayout } from '../../../../../catstypicalframework/hosts/meowLayout';
+import { UniContentCard } from '../../../../../components/common/UniContentCard';
+import { meowFlexOptions } from '../../../../../components/constants';
 import { meowAppHost } from '../../../../../hosts/system/windows/classes/meowAppHost';
+import { meowUiHost } from '../../../../../hosts/system/windows/classes/meowUiHost';
 import { getCreateMyApp } from '../../../../../hosts/system/windows/scripts/helpers';
 
 /**
@@ -12,10 +10,7 @@ import { getCreateMyApp } from '../../../../../hosts/system/windows/scripts/help
  */
 @ComponentV2
 struct CatsTypicalFrameworkDevCard {
-  // catsTypicalFramework
-  @Param @Require myLayout: meowLayout;
-  @Param @Require myAvoid: meowAvoid;
-  @Param @Require myMisc: meowMisc;
+  @Param @Require myUi: meowUiHost;
   @Local myApp: meowAppHost = getCreateMyApp();
 
   build() {
@@ -28,7 +23,7 @@ struct CatsTypicalFrameworkDevCard {
 
         Button('Toggle Wide')
           .onClick(() => {
-            this.myLayout.wideMode = !this.myLayout.wideMode;
+            this.myUi.myLayout.wideMode = !this.myUi.myLayout.wideMode;
           });
 
         Button('Hint GC')
@@ -38,10 +33,10 @@ struct CatsTypicalFrameworkDevCard {
       };
 
       Flex(meowFlexOptions) {
-        Text(`[launchTimeUsage] ${this.myMisc.launchEndTime - this.myMisc.launchStartTime} ms`);
+        Text(`[launchTimeUsage] ${this.myUi.myMisc.launchEndTime - this.myUi.myMisc.launchStartTime} ms`);
         Text(`[Free Window Mode] ${this.myApp.freeWindow ? ' 󰀓 ' : ' 󰁖 '}`);
-        Text(`[Wide / Tablet Mode] ${this.myLayout.wideMode ? ' 󰀓 ' : ' 󰁖 '}`);
-        Text(`[Avoids]  ↑${this.myAvoid.top}  ↓${this.myAvoid.bottom}  ←${this.myAvoid.left}  →${this.myAvoid.right}`);
+        Text(`[Wide / Tablet Mode] ${this.myUi.myLayout.wideMode ? ' 󰀓 ' : ' 󰁖 '}`);
+        Text(`[Avoids]  ↑${this.myUi.myAvoid.top}  ↓${this.myUi.myAvoid.bottom}  ←${this.myUi.myAvoid.left}  →${this.myUi.myAvoid.right}`);
       };
     };
   }

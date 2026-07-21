@@ -3,11 +3,11 @@
  */
 
 import { AppStorageV2 } from '@kit.ArkUI';
-import { meowLayout } from '../../../../catstypicalframework/hosts/meowLayout';
 import { defaultInnerRadius } from '../../../../catstypicalframework/utils/ui';
-import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
+import { openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
 import { meowAppHost } from '../../../../hosts/system/windows/classes/meowAppHost';
+import { meowUiHost } from '../../../../hosts/system/windows/classes/meowUiHost';
 import { getCreateMyApp } from '../../../../hosts/system/windows/scripts/helpers';
 import { meowAppMessageType } from '../../../../hosts/system/windows/scripts/messaging';
 import { meowBookmarkItem } from '../../../../hosts/userdata/bookmarks/classes/meowBookmarkItem';
@@ -18,8 +18,7 @@ import { defaultAnimation, getColor, inDarkMode, shortcutsHeight, shortcutsPath,
 
 @ComponentV2
 struct MeowShortcutsPanel {
-  @Param @Require myLayout: meowLayout;
-  @Param @Require myDialog: meowDialogManager;
+  @Param @Require myUi: meowUiHost;
   // Host
   @Local myBookmarks: meowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
   @Local myApp: meowAppHost = getCreateMyApp(); // For event receiving.
@@ -41,7 +40,7 @@ struct MeowShortcutsPanel {
             });
           });
       }
-      .padding({ top: (1 - (shortcutsHeight() / 100)) * this.myLayout.height });
+      .padding({ top: (1 - (shortcutsHeight() / 100)) * this.myUi.myLayout.height });
     }
     .scrollBar(BarState.Off)
     .align(Alignment.Bottom)
@@ -50,7 +49,7 @@ struct MeowShortcutsPanel {
     .edgeEffect(EdgeEffect.Spring)
     .padding(standardSpacing)
     .onClick(() => {
-      requestDialog(this.myDialog, openDialogRequestType.HOMEPAGE);
+      requestDialog(this.myUi.myDialog, openDialogRequestType.HOMEPAGE);
     });
   }
 

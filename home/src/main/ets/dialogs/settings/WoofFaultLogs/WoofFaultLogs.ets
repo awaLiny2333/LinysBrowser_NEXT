@@ -1,5 +1,4 @@
 import lazy { fastbuffer } from "@kit.ArkTS";
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import lazy { meow } from "../../../catstypicalframework/utils/catsLogger";
 import { fileDocumentPickSave, listFilesUnderDir, readArrayBufferConcurrent } from "../../../catstypicalframework/utils/storage";
 import { defaultRoundedRadius } from "../../../catstypicalframework/utils/ui";
@@ -9,7 +8,7 @@ import lazy { MooTextModifier } from "../../../components/common/MooTextModifier
 import lazy { UniContentCard } from "../../../components/common/UniContentCard";
 import { standardSpacing } from "../../../components/constants";
 import { defaultAnimation } from "../../../components/settings";
-import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { WoofUniFrame } from "../../WoofUniFrame";
 interface faultLogInfo {
   name: string;
@@ -97,15 +96,10 @@ struct FaultLogsEntry {
 @CustomDialog
 struct WoofFaultLogsDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
+  @Require myUi: meowUiHost;
 
   build() {
-    WoofUniFrame({
-      controller: this.controller,
-      title: $r('app.string.FaultLogs'),
-      myDialog: this.myDialog, myLayout: this.myLayout,
-    }) {
+    WoofUniFrame({ controller: this.controller, title: $r('app.string.FaultLogs'), myUi: this.myUi }) {
       FaultLogsPanel();
     };
   }

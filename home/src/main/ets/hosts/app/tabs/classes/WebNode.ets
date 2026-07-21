@@ -188,6 +188,7 @@ struct MeowWeb {
           Column({ space: standardSpacing }) {
             // Web.
             MooSoloWeb({
+              myUi: this.pk.myUi,
               url: '', controllerMeow: this.pk.popupController, onUrlUpdate: (url) => {
                 this.pk.popupUrl = url;
                 try {
@@ -363,7 +364,7 @@ struct MeowWeb {
 
       // Web preview
       if (isLegalUrl(content)[0] && contextMenuWebPreview()) {
-        MooSoloWeb({ url: content, radius: defaultInnerRadius - standardSpacing * 0.25 })
+        MooSoloWeb({myUi: this.pk.myUi, url: content, radius: defaultInnerRadius - standardSpacing * 0.25 })
           .hoverEffect(HoverEffect.Highlight)
           .height(contextMenuWebHeight())
           .padding(standardSpacing * 0.5)

@@ -1,10 +1,8 @@
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 import { MooStringPairArrayList } from "../../../components/common/MooStringPairArrayList";
 import { standardSpacing } from "../../../components/constants";
 import { concatSearchWithEngine, concatSeStatus } from "../../../hosts/app/tabs/scripts/searchEngines";
 import { searchEngineList } from "../../../hosts/app/tabs/settings";
-import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { meowAppHost } from "../../../hosts/system/windows/classes/meowAppHost";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { getCreateMyApp } from "../../../hosts/system/windows/scripts/helpers";
@@ -14,7 +12,6 @@ import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
 struct WoofQuickSEPanel {
-  @Param @Require myDialog: meowDialogManager;
   @Local myApp: meowAppHost = getCreateMyApp();
   // Local
   @Local selectedIndexSE: number = -2; // show no selection
@@ -61,17 +58,14 @@ struct WoofQuickSEPanel {
 @CustomDialog
 struct WoofQuickSEDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
   @Require myUi: meowUiHost;
-  @Require myLayout: meowLayout;
 
   build() {
     WoofUniFrame({
-      controller: this.controller, title: $r('app.string.QuickSE'), shiftBackgroundColor: true, myLayout: this.myLayout, myDialog: this.myDialog,
+      controller: this.controller, title: $r('app.string.QuickSE'), shiftBackgroundColor: true, myUi: this.myUi,
       tutorial: `󰀩  ${this.searchQuery()}`, showTutorial: true
     }) {
       WoofQuickSEPanel({
-        myDialog: this.myDialog,
         onSelect: (n) => {
           const targetSE = n >= 0 ? searchEngineList()[n][1] : undefined;
           const concatSearchR = concatSearchWithEngine(this.searchQuery(), targetSE);

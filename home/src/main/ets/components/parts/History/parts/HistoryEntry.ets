@@ -1,6 +1,6 @@
-import { meowLayout } from '../../../../catstypicalframework/hosts/meowLayout';
 import { isBlank } from '../../../../catstypicalframework/utils/strings';
 import { defaultItemRadius } from '../../../../catstypicalframework/utils/ui';
+import { meowUiHost } from '../../../../hosts/system/windows/classes/meowUiHost';
 import { meowHistoryEntry } from '../../../../hosts/userdata/history/classes/meowHistoryEntry';
 import { MooTextModifier } from '../../../common/MooTextModifier';
 import { standardSpacing } from '../../../constants';
@@ -10,7 +10,7 @@ struct HistoryEntry {
   // Params
   @Param @Require item: meowHistoryEntry;
   // Host
-  @Param @Require myLayout: meowLayout;
+  @Param @Require myUi: meowUiHost;
   // Environments
   @Param @Require isSelected: boolean;
   @Param @Require isSelecting: boolean;
@@ -18,7 +18,7 @@ struct HistoryEntry {
   @Event clickAction: () => void;
 
   build() {
-    if (this.myLayout.wideMode) {
+    if (this.myUi.myLayout.wideMode) {
       this.rowLayout();
     } else {
       this.colLayout();

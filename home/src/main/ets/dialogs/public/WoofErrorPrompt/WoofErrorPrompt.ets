@@ -1,5 +1,4 @@
 import { LengthMetrics } from "@kit.ArkUI";
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { MeowLinks } from "../../../catstypicalframework/utils/meow";
 import { isBlank } from "../../../catstypicalframework/utils/strings";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
@@ -7,7 +6,6 @@ import { MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
 import { standardSpacing } from "../../../components/constants";
-import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { WoofUniFrame } from "../../WoofUniFrame";
 import { ErrorPromptDetails } from "./errorPromptScripts";
@@ -15,8 +13,6 @@ import { ErrorPromptDetails } from "./errorPromptScripts";
 @ComponentV2
 struct WoofPrompt {
   @Param @Require controller: CustomDialogController;
-  @Param @Require myDialog: meowDialogManager;
-  @Param @Require myLayout: meowLayout;
   @Param @Require myUi: meowUiHost;
   // Configs
   @Local isError: boolean = false;
@@ -27,7 +23,7 @@ struct WoofPrompt {
   myDefaultRadius: number = defaultInnerRadius + 2;
 
   aboutToAppear(): void {
-    const req = this.myDialog.lastRequest;
+    const req = this.myUi.myDialog.lastRequest;
     if (req) {
       const details = req.param as ErrorPromptDetails;
       this.isError = details.isError;
@@ -38,7 +34,7 @@ struct WoofPrompt {
   }
 
   build() {
-    WoofUniFrame({ controller: this.controller, title: this.title, myLayout: this.myLayout, myDialog: this.myDialog }) {
+    WoofUniFrame({ controller: this.controller, title: this.title, myUi: this.myUi }) {
       // Texts
       Scroll() {
         Column({ space: standardSpacing * 1 }) {
@@ -64,7 +60,7 @@ struct WoofPrompt {
             .borderRadius(this.myDefaultRadius)
             .width('100%')
             .height('auto')
-            .constraintSize({ maxHeight: this.myLayout.height * 0.5 });
+            .constraintSize({ maxHeight: this.myUi.myLayout.height * 0.5 });
           }
 
           // Confirm
@@ -83,21 +79,21 @@ struct WoofPrompt {
                 text: $r('app.string.Settings_category_about_site_bilibili'),
                 clickAction: () => {
                   this.myUi.openUrlAuto(MeowLinks.BILI);
-                  this.myDialog.closeAll();
+                  this.myUi.myDialog.closeAll();
                 }
               });
               MooCapsuleButton({
                 text: $r('app.string.Settings_category_about_site_github'),
                 clickAction: () => {
                   this.myUi.openUrlAuto(MeowLinks.GITHUB);
-                  this.myDialog.closeAll();
+                  this.myUi.myDialog.closeAll();
                 }
               });
               MooCapsuleButton({
                 text: $r('app.string.Settings_category_about_site_gitee'),
                 clickAction: () => {
                   this.myUi.openUrlAuto(MeowLinks.GITEE);
-                  this.myDialog.closeAll();
+                  this.myUi.myDialog.closeAll();
                 }
               });
             };
@@ -116,11 +112,9 @@ struct WoofPrompt {
 @CustomDialog
 export struct WoofErrorPromptDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
   @Require myUi: meowUiHost;
 
   build() {
-    WoofPrompt({ controller: this.controller, myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi });
+    WoofPrompt({ controller: this.controller, myUi: this.myUi });
   }
 }

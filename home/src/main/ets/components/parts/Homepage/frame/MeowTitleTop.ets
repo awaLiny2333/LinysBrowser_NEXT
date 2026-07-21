@@ -1,7 +1,5 @@
 import lazy { common } from '@kit.AbilityKit';
-import { meowLayout } from '../../../../catstypicalframework/hosts/meowLayout';
 import { windowTopAvoidLeft, windowTopAvoidRight } from '../../../../catstypicalframework/utils/ui';
-import { meowTabsBunch } from '../../../../hosts/app/tabs/classes/meowTabsBunch';
 import lazy { openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 import lazy { requestDialogOnMostRecent } from '../../../../hosts/system/dialogs/scripts/dialog';
 import { meowAppHost } from '../../../../hosts/system/windows/classes/meowAppHost';
@@ -17,13 +15,7 @@ import { showWindowTitle, windowTitleOnAddressBar, windowTitlePosition } from '.
  * Note that if the window is not in free window mode, the extra buttons won't be displayed.
  */
 @Builder
-export function MeowTitleTop(
-  myLayout: meowLayout,
-  myUi: meowUiHost,
-  myApp: meowAppHost,
-  myTabs: meowTabsBunch,
-  context: UIContext
-) {
+export function MeowTitleTop(myUi: meowUiHost, myApp: meowAppHost, context: UIContext) {
   Row({ space: 10 }) {
     // left button(s)
     if (myApp.freeWindow) {
@@ -39,7 +31,7 @@ export function MeowTitleTop(
     }
 
     // Window Title Text
-    Text(showWindowTitle(myLayout) && !windowTitleOnAddressBar() ? `${myTabs.currentTab?.title || 'Meow'}｜${myUi.windowAlias}` : '')
+    Text(showWindowTitle(myUi) && !windowTitleOnAddressBar() ? `${myUi.myTabs.currentTab?.title || 'Meow'}｜${myUi.windowAlias}` : '')
       .attributeModifier(new MooTextModifier())
       .textAlign(windowTitlePosition())
       .layoutWeight(1)

@@ -1,6 +1,5 @@
 import lazy { webview } from "@kit.ArkWeb";
 import lazy { BusinessError } from "@kit.BasicServicesKit";
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import lazy { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 import { copyText } from "../../../catstypicalframework/utils/clipboard";
 import { isBlank } from "../../../catstypicalframework/utils/strings";
@@ -8,14 +7,14 @@ import { MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
 import { MooTextButton } from "../../../components/common/MooTextButton";
 import { MooTextInputV2 } from "../../../components/common/MooTextInputV2";
 import { standardComponentHeight, standardSpacing } from "../../../components/constants";
-import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { getCreateMyApp } from "../../../hosts/system/windows/scripts/helpers";
 import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
 struct CookiesPanel {
   // Hosts
-  @Param @Require myDialog: meowDialogManager;
+  @Param @Require myUi: meowUiHost;
   // Local
   @Local cookies: string[] = [];
   @Local searchKey: string = '';
@@ -23,8 +22,8 @@ struct CookiesPanel {
 
   aboutToAppear(): void {
     // If with params (Opened this when browsing something)
-    if (this.myDialog.lastRequest && this.myDialog.lastRequest.param) {
-      this.searchKey = this.myDialog.lastRequest.param as string;
+    if (this.myUi.myDialog.lastRequest && this.myUi.myDialog.lastRequest.param) {
+      this.searchKey = this.myUi.myDialog.lastRequest.param as string;
       this.search();
     }
   }
@@ -127,17 +126,11 @@ struct CookiesPanel {
 @CustomDialog
 struct WoofCookiesDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
+  @Require myUi: meowUiHost;
 
   build() {
-    WoofUniFrame({
-      controller: this.controller,
-      title: $r('app.string.Cookies'),
-      shiftBackgroundColor: true,
-      myDialog: this.myDialog, myLayout: this.myLayout,
-    }) {
-      CookiesPanel({ myDialog: this.myDialog });
+    WoofUniFrame({ controller: this.controller, title: $r('app.string.Cookies'), shiftBackgroundColor: true, myUi: this.myUi, }) {
+      CookiesPanel({ myUi: this.myUi });
     };
   }
 }

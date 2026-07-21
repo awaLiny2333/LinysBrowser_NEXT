@@ -1,18 +1,16 @@
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
 import { standardSpacing, UnifiedButtonsType } from "../../../components/constants";
 import { defaultAnimation, getMySettings, isPreferRightHand, meowButtonsAddressBarAlways, meowButtonsAddressBarOnFocus, meowButtonsControl, meowButtonsMore, meowButtonsTitle } from "../../../components/settings";
-import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { WoofUniFrame } from "../../WoofUniFrame";
 import { ButtonSlot } from "./ButtonSlot";
 
 @ComponentV2
 struct ButtonsManager {
   @Param @Require controller: CustomDialogController;
-  @Param @Require myDialog: meowDialogManager;
-  @Param @Require myLayout: meowLayout;
+  @Param @Require myUi: meowUiHost;
   // Temp copies
   @Local tempButtonsControl: UnifiedButtonsType[] = Array.from(meowButtonsControl());
   @Local tempButtonsAddressBarOnFocus: UnifiedButtonsType[] = Array.from(meowButtonsAddressBarOnFocus());
@@ -24,7 +22,7 @@ struct ButtonsManager {
 
   build() {
     WoofUniFrame({
-      controller: this.controller, myDialog: this.myDialog, myLayout: this.myLayout, shiftBackgroundColor: true,
+      controller: this.controller, myUi: this.myUi, shiftBackgroundColor: true,
       title: $r('app.string.Buttons'),
       showConfirmButton: true, showCancelButton: true,
       onConfirm: () => {
@@ -119,15 +117,10 @@ struct ButtonsManager {
 @CustomDialog
 struct WoofButtonsDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
+  @Require myUi: meowUiHost;
 
   build() {
-    ButtonsManager({
-      controller: this.controller,
-      myDialog: this.myDialog,
-      myLayout: this.myLayout,
-    });
+    ButtonsManager({ controller: this.controller, myUi: this.myUi });
   }
 }
 

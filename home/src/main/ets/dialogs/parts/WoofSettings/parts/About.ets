@@ -5,14 +5,13 @@ import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { mooTextType, standardSpacing } from '../../../../components/constants';
 import { defaultAnimation, getMySettings } from '../../../../components/settings';
-import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
+import { openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
 import { meowUiHost } from '../../../../hosts/system/windows/classes/meowUiHost';
 
 @ComponentV2
 struct SettingsAbout {
   // Hosts
-  @Param @Require myDialog: meowDialogManager;
   @Param @Require myUi: meowUiHost;
   // Local
   @Local clickCount: number = 0;
@@ -51,21 +50,21 @@ struct SettingsAbout {
           text: $r('app.string.Settings_category_about_site_bilibili'),
           clickAction: () => {
             this.myUi.openUrlAuto(MeowLinks.BILI);
-            this.myDialog.closeAll();
+            this.myUi.myDialog.closeAll();
           }
         });
         MooCapsuleButton({
           text: $r('app.string.Settings_category_about_site_github'),
           clickAction: () => {
             this.myUi.openUrlAuto(MeowLinks.GITHUB);
-            this.myDialog.closeAll();
+            this.myUi.myDialog.closeAll();
           }
         });
         MooCapsuleButton({
           text: $r('app.string.Settings_category_about_site_gitee'),
           clickAction: () => {
             this.myUi.openUrlAuto(MeowLinks.GITEE);
-            this.myDialog.closeAll();
+            this.myUi.myDialog.closeAll();
           }
         });
 
@@ -74,7 +73,7 @@ struct SettingsAbout {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_about_credits'),
           clickAction: () => {
-            requestDialog(this.myDialog, openDialogRequestType.CREDITS, undefined, true);
+            requestDialog(this.myUi.myDialog, openDialogRequestType.CREDITS, undefined, true);
           }
         });
       };
@@ -84,7 +83,7 @@ struct SettingsAbout {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_about_update_history'),
           clickAction: () => {
-            requestDialog(this.myDialog, openDialogRequestType.UPDATES, undefined, true);
+            requestDialog(this.myUi.myDialog, openDialogRequestType.UPDATES, undefined, true);
           }
         });
       };

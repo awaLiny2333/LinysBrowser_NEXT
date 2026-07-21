@@ -3,7 +3,6 @@
  */
 
 import { common } from "@kit.AbilityKit";
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 import { requestUserPermissionFromProtectedResourceTypes } from "../../../catstypicalframework/utils/permission";
 import { MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
@@ -13,14 +12,13 @@ import { UniRowOfCapsuleButtons } from "../../../components/common/UniRowOfCapsu
 import { standardSpacing } from "../../../components/constants";
 import { defaultAnimation } from "../../../components/settings";
 import { meowTabInfo } from "../../../hosts/app/tabs/classes/meowTabInfo";
-import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
 struct WoofPermissionsPanel {
   @Param @Require controller: CustomDialogController;
-  @Param @Require myLayout: meowLayout;
-  @Param @Require myDialog: meowDialogManager;
+  @Param @Require myUi: meowUiHost;
   // Info
   data: OnPermissionRequestEvent | undefined;
   tabInfo: meowTabInfo | undefined;
@@ -29,7 +27,7 @@ struct WoofPermissionsPanel {
   @Local denied: string[] = [];
 
   aboutToAppear(): void {
-    const req = this.myDialog.lastRequest;
+    const req = this.myUi.myDialog.lastRequest;
     if (req) {
       this.data = (req.param as [OnPermissionRequestEvent, meowTabInfo])[0];
       this.tabInfo = (req.param as [OnPermissionRequestEvent, meowTabInfo])[1];
@@ -41,7 +39,7 @@ struct WoofPermissionsPanel {
 
   build() {
     WoofUniFrame({
-      controller: this.controller, title: $r('app.string.WebPermissions_title'), myLayout: this.myLayout, myDialog: this.myDialog,
+      controller: this.controller, title: $r('app.string.WebPermissions_title'), myUi: this.myUi,
       aboutToClose: () => {
         if (this.desc.length > 0) {
           // Throw all remainings into denied
@@ -123,10 +121,9 @@ struct WoofPermissionsPanel {
 @CustomDialog
 export struct WoofPermissionsDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
+  @Require myUi: meowUiHost;
 
   build() {
-    WoofPermissionsPanel({ controller: this.controller, myLayout: this.myLayout, myDialog: this.myDialog });
+    WoofPermissionsPanel({ controller: this.controller, myUi: this.myUi });
   }
 }

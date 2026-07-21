@@ -1,8 +1,5 @@
-import { meowAvoid } from '../../../catstypicalframework/hosts/meowAvoid';
-import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
-import { meowMisc } from '../../../catstypicalframework/hosts/meowMisc';
 import { standardSpacing } from '../../../components/constants';
-import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
+import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { WoofUniFrame } from '../../WoofUniFrame';
 import { BookmarksDevCard } from './parts/bookmarks/Card';
 import { CatsTypicalFrameworkDevCard } from './parts/framework/Card';
@@ -12,19 +9,13 @@ import { SettingsDevCard } from './parts/settings/Card';
 
 @ComponentV2
 struct CatsDevCards {
-  @Param @Require myLayout: meowLayout;
-  @Param @Require myAvoid: meowAvoid;
-  @Param @Require myMisc: meowMisc;
+  @Param @Require myUi: meowUiHost;
 
   build() {
     Scroll() {
       Column({ space: 5 }) {
         SettingsDevCard();
-        CatsTypicalFrameworkDevCard({
-          myLayout: this.myLayout,
-          myAvoid: this.myAvoid,
-          myMisc: this.myMisc
-        });
+        CatsTypicalFrameworkDevCard({ myUi: this.myUi });
         BookmarksDevCard();
         ResourcesDevCard();
         HistoryDevCard();
@@ -41,18 +32,11 @@ struct CatsDevCards {
 @CustomDialog
 struct WoofCatsDevDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
-  @Require myAvoid: meowAvoid;
-  @Require myMisc: meowMisc;
+  @Require myUi: meowUiHost;
 
   build() {
-    WoofUniFrame({ controller: this.controller, title: 'CatsDev', myLayout: this.myLayout, myDialog: this.myDialog }) {
-      CatsDevCards({
-        myLayout: this.myLayout,
-        myAvoid: this.myAvoid,
-        myMisc: this.myMisc
-      });
+    WoofUniFrame({ controller: this.controller, title: 'CatsDev', myUi: this.myUi }) {
+      CatsDevCards({ myUi: this.myUi });
     };
   }
 }

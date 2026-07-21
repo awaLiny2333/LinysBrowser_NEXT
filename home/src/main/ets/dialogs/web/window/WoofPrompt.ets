@@ -1,20 +1,18 @@
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { MooTextInputV2 } from "../../../components/common/MooTextInputV2";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { standardSpacing } from "../../../components/constants";
-import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
 struct WoofPromptPanel {
   @Param @Require controller: CustomDialogController;
-  @Param @Require myLayout: meowLayout;
-  @Param @Require myDialog: meowDialogManager;
+  @Param @Require myUi: meowUiHost;
   // Info
   @Local data: OnPromptEvent | undefined;
 
   aboutToAppear(): void {
-    const req = this.myDialog.lastRequest;
+    const req = this.myUi.myDialog.lastRequest;
     if (req) {
       this.data = req.param as OnPromptEvent;
     }
@@ -22,7 +20,7 @@ struct WoofPromptPanel {
 
   build() {
     WoofUniFrame({
-      controller: this.controller, title: this.data?.url, myLayout: this.myLayout, myDialog: this.myDialog, shiftBackgroundColor: true,
+      controller: this.controller, title: this.data?.url, myUi: this.myUi, shiftBackgroundColor: true,
       showConfirmButton: true, showCancelButton: true, doubleConfirm: true,
       onConfirm: () => {
         this.data?.result.handlePromptConfirm(this.data?.value || '');
@@ -58,10 +56,9 @@ struct WoofPromptPanel {
 @CustomDialog
 export struct WoofPromptDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
+  @Require myUi: meowUiHost;
 
   build() {
-    WoofPromptPanel({ controller: this.controller, myLayout: this.myLayout, myDialog: this.myDialog });
+    WoofPromptPanel({ controller: this.controller, myUi: this.myUi });
   }
 }

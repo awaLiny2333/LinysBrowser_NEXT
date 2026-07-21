@@ -1,13 +1,13 @@
-import { meowLayout } from '../../../../catstypicalframework/hosts/meowLayout';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { meowFlexOptions, mooTextType, standardSpacing } from '../../../../components/constants';
-import { CreditCard } from './CreditCard';
+import { meowUiHost } from '../../../../hosts/system/windows/classes/meowUiHost';
 import { CreditDetails } from '../creditDetails';
+import { CreditCard } from './CreditCard';
 
 @ComponentV2
 struct CreditUser {
   @Param @Require details: CreditDetails;
-  @Param @Require myLayout: meowLayout;
+  @Param @Require myUi: meowUiHost;
   // Events
   @Event requestVisit: (url: string) => void;
 
@@ -19,7 +19,7 @@ struct CreditUser {
       Flex(meowFlexOptions) {
         Repeat(this.details.contributions).each((con) => {
           CreditCard({
-            myLayout: this.myLayout,
+            myUi: this.myUi,
             item: con.item,
             requestVisit: (url: string) => {
               this.requestVisit(url);

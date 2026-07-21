@@ -1,29 +1,27 @@
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
+import { Context } from "@ohos.abilityAccessCtrl";
 import { resource2String } from "../../../catstypicalframework/utils/resource";
 import { MooCapsuleButton } from "../../../components/common/MooCapsuleButton";
 import { UniRowOfCapsuleButtons } from "../../../components/common/UniRowOfCapsuleButtons";
 import { standardSpacing } from "../../../components/constants";
-import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { WoofUniFrame } from "../../WoofUniFrame";
 import { Keyboard } from "./parts/Keyboard";
-import { Context } from "@ohos.abilityAccessCtrl";
 
 @CustomDialog
 struct WoofKeyShortcutPickerDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
+  @Require myUi: meowUiHost;
   selected: string[] = [];
   onConfirm: (bind: string[]) => void = () => {
     // Do nothing by default;
   };
 
   build() {
-    WoofUniFrame({ controller: this.controller, title: this.getTitle(), myLayout: this.myLayout, myDialog: this.myDialog, shiftBackgroundColor: true }) {
+    WoofUniFrame({ controller: this.controller, title: this.getTitle(), myUi: this.myUi, shiftBackgroundColor: true }) {
       Scroll() {
         Column({ space: standardSpacing }) {
           Keyboard({
-            initialSelected: (this.myDialog.lastRequest!.param as object[])[1] as string[], // How ugly
+            initialSelected: (this.myUi.myDialog.lastRequest!.param as object[])[1] as string[], // How ugly
             onKeyChange: (c) => {
               // meow(`Keyboard gave ${c}`);
               this.selected = c;
@@ -59,7 +57,7 @@ struct WoofKeyShortcutPickerDialog {
   getTitle() {
     const context: Context = this.getUIContext().getHostContext()!;
     // const dialogTitle = resource2String($r('app.string.KeyShortcuts_picker'), this.context);
-    const shortcutName = resource2String((this.myDialog.lastRequest!.param as object[])[0] as ResourceStr as Resource, context);
+    const shortcutName = resource2String((this.myUi.myDialog.lastRequest!.param as object[])[0] as ResourceStr as Resource, context);
     return `${shortcutName}`;
   }
 }

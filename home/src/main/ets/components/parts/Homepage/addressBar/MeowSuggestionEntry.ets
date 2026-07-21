@@ -3,22 +3,22 @@
  *
  * @see entry/src/main/ets/dialogs/parts/WoofHistory/parts/HistoryEntry.ets
  */
-import { meowLayout } from "../../../../catstypicalframework/hosts/meowLayout";
 import { isBlank } from "../../../../catstypicalframework/utils/strings";
 import { defaultItemRadius } from "../../../../catstypicalframework/utils/ui";
+import { meowUiHost } from "../../../../hosts/system/windows/classes/meowUiHost";
 import { meowBookmarkItem } from "../../../../hosts/userdata/bookmarks/classes/meowBookmarkItem";
 import { meowHistoryEntry } from "../../../../hosts/userdata/history/classes/meowHistoryEntry";
 import { MooTextModifier } from "../../../common/MooTextModifier";
-import { standardSpacing, meowFlexOptions } from "../../../constants";
+import { meowFlexOptions, standardSpacing } from "../../../constants";
 
 @ComponentV2
 struct SuggestionEntryButton {
-  @Param @Require myLayout: meowLayout;
+  @Param @Require myUi: meowUiHost;
   @Param @Require item: meowHistoryEntry | meowBookmarkItem;
   @Event clickAction: () => void;
 
   build() {
-    if (this.myLayout.wideMode) {
+    if (this.myUi.myLayout.wideMode) {
       this.rowLayout();
     } else {
       this.flexLayout();

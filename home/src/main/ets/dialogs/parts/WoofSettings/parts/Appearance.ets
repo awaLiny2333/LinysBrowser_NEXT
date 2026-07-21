@@ -10,7 +10,7 @@ import { UniContentCard } from "../../../../components/common/UniContentCard";
 import { meowThemeColorType, mooTextType, standardSpacing } from "../../../../components/constants";
 import { defaultAnimation, getColor, getMySettings, isTabsStyleVertical, useEffects } from "../../../../components/settings";
 import { forceWebDarkMode } from "../../../../hosts/app/tabs/settings";
-import { meowDialogManager, openDialogRequestType } from "../../../../hosts/system/dialogs/classes/meowDialogManager";
+import { openDialogRequestType } from "../../../../hosts/system/dialogs/classes/meowDialogManager";
 import { requestDialog } from "../../../../hosts/system/dialogs/scripts/dialog";
 import { meowAppHost } from "../../../../hosts/system/windows/classes/meowAppHost";
 import { meowUiHost } from "../../../../hosts/system/windows/classes/meowUiHost";
@@ -24,7 +24,6 @@ struct SettingsAppearance {
   @Local mySettings: meowManagedSettings = getMySettings();
   @Param myApp: meowAppHost = getCreateMyApp();
   @Param @Require myUi: meowUiHost;
-  @Param @Require myDialog: meowDialogManager;
 
   build() {
     Column({ space: standardSpacing }) {
@@ -58,7 +57,7 @@ struct SettingsAppearance {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_appearance_layout_editButtons'),
           clickAction: () => {
-            requestDialog(this.myDialog, openDialogRequestType.BUTTONS, undefined, true);
+            requestDialog(this.myUi.myDialog, openDialogRequestType.BUTTONS, undefined, true);
           }
         });
         Text($r('app.string.Settings_category_appearance_layout_titleBarPosition')).attributeModifier(new MooTextModifier());
@@ -114,7 +113,7 @@ struct SettingsAppearance {
                 break;
             }
             // Avoid showing both sidebar and vertical tabs
-            if (!this.myUi.myLayout.wideMode && this.myUi.showSidebar && this.myUi.showTabs && isTabsStyleVertical(this.myUi.myLayout)) {
+            if (!this.myUi.myLayout.wideMode && this.myUi.showSidebar && this.myUi.showTabs && isTabsStyleVertical(this.myUi)) {
               this.myUi.showSidebar = false;
             }
           }
@@ -240,17 +239,17 @@ struct SettingsAppearance {
 
         Text($r('app.string.Settings_category_appearance_colors_light')).attributeModifier(new MooTextModifier());
         Row({ space: standardSpacing * 0.75 }) {
-          ColorDemoBlock({ myDialog: this.myDialog, myUi: this.myUi, color: this.mySettings.settingsData[62].value as string, settingsId: 62, showBorder: !this.myApp.dark });
-          ColorDemoBlock({ myDialog: this.myDialog, myUi: this.myUi, color: this.mySettings.settingsData[63].value as string, settingsId: 63, showBorder: !this.myApp.dark });
-          ColorDemoBlock({ myDialog: this.myDialog, myUi: this.myUi, color: this.mySettings.settingsData[64].value as string, settingsId: 64, showBorder: !this.myApp.dark });
+          ColorDemoBlock({ myUi: this.myUi, color: this.mySettings.settingsData[62].value as string, settingsId: 62, showBorder: !this.myApp.dark });
+          ColorDemoBlock({ myUi: this.myUi, color: this.mySettings.settingsData[63].value as string, settingsId: 63, showBorder: !this.myApp.dark });
+          ColorDemoBlock({ myUi: this.myUi, color: this.mySettings.settingsData[64].value as string, settingsId: 64, showBorder: !this.myApp.dark });
         }
         .opacity(useEffects() ? 0.5 : 1);
 
         Text($r('app.string.Settings_category_appearance_colors_dark')).attributeModifier(new MooTextModifier());
         Row({ space: standardSpacing * 0.75 }) {
-          ColorDemoBlock({ myDialog: this.myDialog, myUi: this.myUi, color: this.mySettings.settingsData[65].value as string, settingsId: 65, showBorder: this.myApp.dark });
-          ColorDemoBlock({ myDialog: this.myDialog, myUi: this.myUi, color: this.mySettings.settingsData[66].value as string, settingsId: 66, showBorder: this.myApp.dark });
-          ColorDemoBlock({ myDialog: this.myDialog, myUi: this.myUi, color: this.mySettings.settingsData[67].value as string, settingsId: 67, showBorder: this.myApp.dark });
+          ColorDemoBlock({ myUi: this.myUi, color: this.mySettings.settingsData[65].value as string, settingsId: 65, showBorder: this.myApp.dark });
+          ColorDemoBlock({ myUi: this.myUi, color: this.mySettings.settingsData[66].value as string, settingsId: 66, showBorder: this.myApp.dark });
+          ColorDemoBlock({ myUi: this.myUi, color: this.mySettings.settingsData[67].value as string, settingsId: 67, showBorder: this.myApp.dark });
         }
         .opacity(useEffects() ? 0.5 : 1);
 
@@ -272,7 +271,7 @@ struct SettingsAppearance {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_appearance_colors_forceDarkMode_manage'),
           clickAction: () => {
-            requestDialog(this.myDialog, openDialogRequestType.DARK, undefined, true);
+            requestDialog(this.myUi.myDialog, openDialogRequestType.DARK, undefined, true);
           }
         });
       };
@@ -306,7 +305,6 @@ export { SettingsAppearance };
 @ComponentV2
 struct ColorDemoBlock {
   // Hosts
-  @Param @Require myDialog: meowDialogManager;
   @Param @Require myUi: meowUiHost;
   // Data
   @Param @Require color: ResourceColor;
@@ -330,7 +328,7 @@ struct ColorDemoBlock {
       })
       .onClick(() => {
         this.pendingColorDialog = true;
-        requestDialog(this.myDialog, openDialogRequestType.COLOR_PICKER, this.color as string, true);
+        requestDialog(this.myUi.myDialog, openDialogRequestType.COLOR_PICKER, this.color as string, true);
       });
       Text(this.color as string).attributeModifier(new MooTextModifier());
     }

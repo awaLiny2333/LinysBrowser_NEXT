@@ -5,13 +5,14 @@ import { MooTextModifier } from "../../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../../components/common/UniContentCard";
 import { mooTextType, standardSpacing } from "../../../../components/constants";
 import { getMySettings } from "../../../../components/settings";
-import { meowDialogManager, openDialogRequestType } from "../../../../hosts/system/dialogs/classes/meowDialogManager";
+import { openDialogRequestType } from "../../../../hosts/system/dialogs/classes/meowDialogManager";
 import { requestDialog } from "../../../../hosts/system/dialogs/scripts/dialog";
+import { meowUiHost } from "../../../../hosts/system/windows/classes/meowUiHost";
 import { meowManagedSettings } from "../../../../hosts/userdata/settings/classes/meowManagedSettings";
 
 @ComponentV2
 struct SettingsExperience {
-  @Param @Require myDialog: meowDialogManager;
+  @Param @Require myUi: meowUiHost;
   @Local mySettings: meowManagedSettings = getMySettings();
 
   build() {
@@ -79,13 +80,6 @@ struct SettingsExperience {
       };
 
       UniContentCard({ title: $r('app.string.Settings_category_experience_downloads'), icon: $r('sys.symbol.download') }) {
-        // MooSwitch({
-        //   text: $r('app.string.Settings_category_experience_downloads_directSave'),
-        //   isOn: this.mySettings.settingsData[72].value as boolean,
-        //   onChange: (r) => {
-        //     this.mySettings.setByIndex(72, r);
-        //   }
-        // });
         MooSwitch({
           text: $r('app.string.Settings_category_experience_downloads_openOnFinish'),
           isOn: this.mySettings.settingsData[73].value as boolean,
@@ -146,13 +140,13 @@ struct SettingsExperience {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_experience_advanced_adblocker_manage'),
           clickAction: () => {
-            requestDialog(this.myDialog, openDialogRequestType.ADBLOCKER, undefined, true);
+            requestDialog(this.myUi.myDialog, openDialogRequestType.ADBLOCKER, undefined, true);
           }
         });
         MooCapsuleButton({
           text: $r('app.string.Settings_category_experience_advanced_adblocker_rules'),
           clickAction: () => {
-            requestDialog(this.myDialog, openDialogRequestType.ADBLOCKER_RULES, undefined, true);
+            requestDialog(this.myUi.myDialog, openDialogRequestType.ADBLOCKER_RULES, undefined, true);
           }
         });
         MooSwitch({
@@ -165,7 +159,7 @@ struct SettingsExperience {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_experience_advanced_webImages_manage'),
           clickAction: () => {
-            requestDialog(this.myDialog, openDialogRequestType.WEB_IMAGES, undefined, true);
+            requestDialog(this.myUi.myDialog, openDialogRequestType.WEB_IMAGES, undefined, true);
           }
         });
         MooSwitch({
@@ -178,7 +172,7 @@ struct SettingsExperience {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_experience_advanced_Js_manage'),
           clickAction: () => {
-            requestDialog(this.myDialog, openDialogRequestType.WEB_JAVASCRIPTS, undefined, true);
+            requestDialog(this.myUi.myDialog, openDialogRequestType.WEB_JAVASCRIPTS, undefined, true);
           }
         });
       };

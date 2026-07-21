@@ -1,19 +1,17 @@
 import { webview } from "@kit.ArkWeb";
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { symbolForFileType } from "../../../catstypicalframework/utils/resource";
 import { addUnitsToSize } from "../../../catstypicalframework/utils/storage";
 import { MooTextInputV2 } from "../../../components/common/MooTextInputV2";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { standardSpacing } from "../../../components/constants";
 import { getMyDawn } from "../../../hosts/app/downloads/scripts/helper";
-import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
 struct WoofDownloadAskPanel {
   @Param @Require controller: CustomDialogController;
-  @Param @Require myLayout: meowLayout;
-  @Param @Require myDialog: meowDialogManager;
+  @Param @Require myUi: meowUiHost;
   // Info
   @Local webDlItem: webview.WebDownloadItem | undefined;
   @Local filename: string = '';
@@ -21,7 +19,7 @@ struct WoofDownloadAskPanel {
   inputId: string = `WoofDownloadAsk_filename_${Date.now().toString(16)}`;
 
   aboutToAppear(): void {
-    const req = this.myDialog.lastRequest;
+    const req = this.myUi.myDialog.lastRequest;
     if (req) {
       this.webDlItem = req.param as webview.WebDownloadItem;
       this.filename = this.webDlItem?.getSuggestedFileName() || 'file';
@@ -30,7 +28,7 @@ struct WoofDownloadAskPanel {
 
   build() {
     WoofUniFrame({
-      controller: this.controller, title: $r('app.string.Downloads_title'), myLayout: this.myLayout, myDialog: this.myDialog, showConfirmButton: true, showCancelButton: true, shiftBackgroundColor: true,
+      controller: this.controller, title: $r('app.string.Downloads_title'), myUi: this.myUi, showConfirmButton: true, showCancelButton: true, shiftBackgroundColor: true,
       onConfirm: () => {
         this.submit();
       },
@@ -80,10 +78,9 @@ struct WoofDownloadAskPanel {
 @CustomDialog
 export struct WoofDownloadAskDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
+  @Require myUi: meowUiHost;
 
   build() {
-    WoofDownloadAskPanel({ controller: this.controller, myLayout: this.myLayout, myDialog: this.myDialog });
+    WoofDownloadAskPanel({ controller: this.controller, myUi: this.myUi });
   }
 }

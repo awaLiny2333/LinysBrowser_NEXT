@@ -1,19 +1,17 @@
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { standardSpacing } from "../../../components/constants";
-import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
 struct WoofAlertPanel {
   @Param @Require controller: CustomDialogController;
-  @Param @Require myLayout: meowLayout;
-  @Param @Require myDialog: meowDialogManager;
+  @Param @Require myUi: meowUiHost;
   // Info
   @Local data: OnAlertEvent | undefined;
 
   aboutToAppear(): void {
-    const req = this.myDialog.lastRequest;
+    const req = this.myUi.myDialog.lastRequest;
     if (req) {
       this.data = req.param as OnAlertEvent;
     }
@@ -21,7 +19,7 @@ struct WoofAlertPanel {
 
   build() {
     WoofUniFrame({
-      controller: this.controller, title: this.data?.url, myLayout: this.myLayout, myDialog: this.myDialog, showConfirmButton: true,
+      controller: this.controller, title: this.data?.url, myUi: this.myUi, showConfirmButton: true,
       onConfirm: () => {
         this.data?.result.handleConfirm();
         this.controller.close();
@@ -38,10 +36,9 @@ struct WoofAlertPanel {
 @CustomDialog
 export struct WoofAlertDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
+  @Require myUi: meowUiHost;
 
   build() {
-    WoofAlertPanel({ controller: this.controller, myLayout: this.myLayout, myDialog: this.myDialog });
+    WoofAlertPanel({ controller: this.controller, myUi: this.myUi });
   }
 }

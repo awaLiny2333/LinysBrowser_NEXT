@@ -4,17 +4,18 @@ import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton
 import { MooSwitch } from '../../../../components/common/MooSwitch';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
-import { standardSpacing,mooTextType } from '../../../../components/constants';
+import { mooTextType, standardSpacing } from '../../../../components/constants';
 import { defaultAnimation, getMySettings } from '../../../../components/settings';
-import lazy { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
+import lazy { openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 import lazy { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
+import { meowUiHost } from '../../../../hosts/system/windows/classes/meowUiHost';
 import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
 
 @ComponentV2
 struct SettingsDeveowlopers {
   // Hosts
   @Local mySettings: meowManagedSettings = getMySettings();
-  @Param @Require myDialog: meowDialogManager;
+  @Param @Require myUi: meowUiHost;
   // Information
   @Local versionName: string = "Version Name";
   @Local versionNo: number = 0;
@@ -54,7 +55,7 @@ struct SettingsDeveowlopers {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_deveowlopers_openPanel'),
           clickAction: () => {
-            requestDialog(this.myDialog, openDialogRequestType.DEV, undefined, true);
+            requestDialog(this.myUi.myDialog, openDialogRequestType.DEV, undefined, true);
           }
         });
         MooCapsuleButton({

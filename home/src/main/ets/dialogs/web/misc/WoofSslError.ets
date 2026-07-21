@@ -1,20 +1,18 @@
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { standardSpacing } from "../../../components/constants";
-import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
 struct WoofSslErrorPanel {
   @Param @Require controller: CustomDialogController;
-  @Param @Require myLayout: meowLayout;
-  @Param @Require myDialog: meowDialogManager;
+  @Param @Require myUi: meowUiHost;
   // Info
   data: SslErrorEvent | undefined;
   @Local desc: string = '';
 
   aboutToAppear(): void {
-    const req = this.myDialog.lastRequest;
+    const req = this.myUi.myDialog.lastRequest;
     if (req) {
       this.data = req.param as SslErrorEvent;
       if (this.data) {
@@ -25,7 +23,7 @@ struct WoofSslErrorPanel {
 
   build() {
     WoofUniFrame({
-      controller: this.controller, title: $r('app.string.SslError_title'), myLayout: this.myLayout, myDialog: this.myDialog,
+      controller: this.controller, title: $r('app.string.SslError_title'), myUi: this.myUi,
       showConfirmButton: true, showCancelButton: true, doubleConfirm: true,
       onConfirm: () => {
         this.data?.handler.handleConfirm();
@@ -57,10 +55,9 @@ isMainFrame: ${e.isMainFrame}`;
 @CustomDialog
 export struct WoofSslErrorDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
+  @Require myUi: meowUiHost;
 
   build() {
-    WoofSslErrorPanel({ controller: this.controller, myLayout: this.myLayout, myDialog: this.myDialog });
+    WoofSslErrorPanel({ controller: this.controller, myUi: this.myUi });
   }
 }

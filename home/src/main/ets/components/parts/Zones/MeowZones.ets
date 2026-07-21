@@ -1,9 +1,9 @@
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { ErrorPromptDetails } from "../../../dialogs/public/WoofErrorPrompt/errorPromptScripts";
 import lazy { deleteZone, discoverZones, glimpseOnZone, openZone } from "../../../hosts/app/tabs/scripts/zones";
 import { openDialogRequestType } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { requestDialogOnMostRecent } from "../../../hosts/system/dialogs/scripts/dialog";
 import { meowAppHost } from "../../../hosts/system/windows/classes/meowAppHost";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { getCreateMyApp } from "../../../hosts/system/windows/scripts/helpers";
 import lazy { meowAppMessageType } from "../../../hosts/system/windows/scripts/messaging";
 import { MooCapsuleButton } from "../../common/MooCapsuleButton";
@@ -15,7 +15,7 @@ import { defaultAnimation, waterFlowColumnsTemplate } from "../../settings";
 
 @ComponentV2
 export struct MeowZones {
-  @Param @Require myLayout: meowLayout;
+  @Param @Require myUi: meowUiHost;
   @Local myApp: meowAppHost = getCreateMyApp();
   // Local
   @Local zones: string[] = [];
@@ -71,7 +71,7 @@ export struct MeowZones {
           .key((i) => i);
       }
       .clip(false) // To eliminate the cuts on the edges
-      .columnsTemplate(waterFlowColumnsTemplate(this.myLayout))
+      .columnsTemplate(waterFlowColumnsTemplate(this.myUi))
       .columnsGap(standardSpacing)
       .rowsGap(standardSpacing);
     }

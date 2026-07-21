@@ -1,7 +1,6 @@
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { hex2hsv, hsv2hex } from "../../../catstypicalframework/utils/colors";
 import { standardSpacing } from "../../../components/constants";
-import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { WoofUniFrame } from "../../WoofUniFrame";
 import { DemoPanel } from "./parts/DemoPanel";
 import { EditPanel } from "./parts/EditPanel";
@@ -10,11 +9,10 @@ import { EditPanel } from "./parts/EditPanel";
 struct WoofColorPicker {
   @Param @Require controller: CustomDialogController;
   // Host
-  @Param @Require myLayout: meowLayout;
-  @Param @Require myDialog: meowDialogManager;
+  @Param @Require myUi: meowUiHost;
   // Data
   // @Local settingsId: number = -1;
-  @Local hex: string = this.myDialog.lastRequest?.param as string;
+  @Local hex: string = this.myUi.myDialog.lastRequest?.param as string;
   @Local h: number = -1;
   @Local s: number = -1;
   @Local v: number = -1;
@@ -30,7 +28,7 @@ struct WoofColorPicker {
 
   build() {
     Column() {
-      if (this.myLayout.wideMode) {
+      if (this.myUi.myLayout.wideMode) {
         Row({ space: standardSpacing }) {
           DemoPanel({ hex: this.hex });
           EditPanel({
@@ -64,7 +62,7 @@ struct WoofColorPicker {
       } else {
         // Vertical
         Column({ space: standardSpacing }) {
-          if (!this.myLayout.shortMode) {
+          if (!this.myUi.myLayout.shortMode) {
             DemoPanel({ hex: this.hex });
           }
           EditPanel({
@@ -105,16 +103,15 @@ struct WoofColorPicker {
 @CustomDialog
 struct WoofColorPickerDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
+  @Require myUi: meowUiHost;
   onConfirm: (hex: string) => void = () => {
     // Do nothing by default;
   };
 
   build() {
-    WoofUniFrame({ controller: this.controller, title: $r('app.string.Settings_category_appearance_colors'), myLayout: this.myLayout, myDialog: this.myDialog }) {
+    WoofUniFrame({ controller: this.controller, title: $r('app.string.Settings_category_appearance_colors'), myUi: this.myUi }) {
       WoofColorPicker({
-        controller: this.controller, myLayout: this.myLayout, myDialog: this.myDialog, onConfirm: (hex: string) => {
+        controller: this.controller, myUi: this.myUi, onConfirm: (hex: string) => {
           this.onConfirm(hex);
         }
       });

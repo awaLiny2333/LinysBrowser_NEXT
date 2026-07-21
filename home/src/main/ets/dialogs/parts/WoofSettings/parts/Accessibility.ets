@@ -1,19 +1,20 @@
-import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
 import { SegmentButtonV2Items } from '@kit.ArkUI';
-import { defaultAnimation, getMySettings } from '../../../../components/settings';
+import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton';
 import { MooSwitch } from '../../../../components/common/MooSwitch';
+import { MooTabSegmentV2 } from '../../../../components/common/MooTabSegmentV2';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
-import { MooTabSegmentV2 } from '../../../../components/common/MooTabSegmentV2';
-import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton';
+import { mooTextType, standardSpacing } from '../../../../components/constants';
+import { defaultAnimation, getMySettings } from '../../../../components/settings';
+import { openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
-import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
-import { standardSpacing, mooTextType } from '../../../../components/constants';
+import { meowUiHost } from '../../../../hosts/system/windows/classes/meowUiHost';
+import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
 
 @ComponentV2
 struct SettingsAccessibility {
   @Local mySettings: meowManagedSettings = getMySettings();
-  @Param @Require myDialog: meowDialogManager;
+  @Param @Require myUi: meowUiHost;
 
   build() {
     Column({ space: standardSpacing }) {
@@ -99,7 +100,7 @@ struct SettingsAccessibility {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_accessibility_keyShortcuts_manage'),
           clickAction: () => {
-            requestDialog(this.myDialog, openDialogRequestType.KEY_SHORTCUTS, undefined, true);
+            requestDialog(this.myUi.myDialog, openDialogRequestType.KEY_SHORTCUTS, undefined, true);
           }
         });
         MooSwitch({

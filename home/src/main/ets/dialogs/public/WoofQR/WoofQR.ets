@@ -1,20 +1,18 @@
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
-import { standardSpacing, meowThemeColorType, mooTextType } from "../../../components/constants";
+import { meowThemeColorType, mooTextType, standardSpacing } from "../../../components/constants";
 import { getColor } from "../../../components/settings";
-import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
 struct WoofQR {
-  @Param @Require myDialog: meowDialogManager;
-  @Param @Require myLayout: meowLayout;
+  @Param @Require myUi: meowUiHost;
   // Local
   @Local title: string = 'Title';
   @Local url: string = 'Link';
 
   aboutToAppear(): void {
-    const req = this.myDialog.lastRequest;
+    const req = this.myUi.myDialog.lastRequest;
     if (req) {
       this.title = (req.param as string[])[0];
       this.url = (req.param as string[])[1];
@@ -22,12 +20,12 @@ struct WoofQR {
   }
 
   build() {
-    Column({ space: this.myLayout.wideMode ? standardSpacing : standardSpacing * 0.25 }) {
+    Column({ space: this.myUi.myLayout.wideMode ? standardSpacing : standardSpacing * 0.25 }) {
       // QR
       QRCode(this.url).color(getColor(meowThemeColorType.FONT)).backgroundColor('transparent').width('100%');
 
       // Texts
-      if (!this.myLayout.shortMode) {
+      if (!this.myUi.myLayout.shortMode) {
         Blank().height(standardSpacing); // Visual balance
         Column({ space: standardSpacing }) {
           Text(this.title).attributeModifier(new MooTextModifier(mooTextType.TITLE)).maxLines(3).wordBreak(WordBreak.BREAK_ALL);
@@ -38,19 +36,18 @@ struct WoofQR {
       }
     }
     .width('100%')
-    .padding(this.myLayout.shortMode ? standardSpacing * 2 : standardSpacing * 3);
+    .padding(this.myUi.myLayout.shortMode ? standardSpacing * 2 : standardSpacing * 3);
   }
 }
 
 @CustomDialog
 struct WoofQRDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
+  @Require myUi: meowUiHost;
 
   build() {
-    WoofUniFrame({ controller: this.controller, title: $r('app.string.QR'), myLayout: this.myLayout, myDialog: this.myDialog }) {
-      WoofQR({ myDialog: this.myDialog, myLayout: this.myLayout });
+    WoofUniFrame({ controller: this.controller, title: $r('app.string.QR'), myUi: this.myUi }) {
+      WoofQR({ myUi: this.myUi });
     };
   }
 }

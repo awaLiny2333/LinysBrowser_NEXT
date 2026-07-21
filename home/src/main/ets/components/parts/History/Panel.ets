@@ -1,9 +1,9 @@
 import { AppStorageV2 } from "@kit.ArkUI";
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 import { isBlank } from "../../../catstypicalframework/utils/strings";
 import { defaultInnerRadius, defaultItemRadius } from "../../../catstypicalframework/utils/ui";
 import { meowAppHost } from "../../../hosts/system/windows/classes/meowAppHost";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { getCreateMyApp } from "../../../hosts/system/windows/scripts/helpers";
 import { globalMessage, meowAppMessageType } from "../../../hosts/system/windows/scripts/messaging";
 import { meowHistorian } from "../../../hosts/userdata/history/classes/meowHistorian";
@@ -26,7 +26,7 @@ struct HistoryPanel {
   @Param @Once lite: boolean = false;
   @Param @Once needPadding: boolean = true;
   // Host
-  @Param @Require myLayout: meowLayout;
+  @Param @Require myUi: meowUiHost;
   @Local myMeowHistorian: meowHistorian = AppStorageV2.connect<meowHistorian>(meowHistorian)!;
   @Local myApp: meowAppHost = getCreateMyApp();
   // Display
@@ -188,13 +188,13 @@ struct HistoryPanel {
           });
         }
 
-        if (this.isSelecting && this.myLayout.wideMode) {
+        if (this.isSelecting && this.myUi.myLayout.wideMode) {
           this.editBar();
         }
       }
       .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl);
 
-      if (this.isSelecting && !this.myLayout.wideMode) {
+      if (this.isSelecting && !this.myUi.myLayout.wideMode) {
         this.editBar();
       }
     }
@@ -220,7 +220,7 @@ struct HistoryPanel {
         .hoverEffect(HoverEffect.Highlight);
     } else {
       HistoryEntry({
-        myLayout: this.myLayout,
+        myUi: this.myUi,
         isSelected: this.selectedTimeStamps.has(obj.item.time),
         isSelecting: this.isSelecting,
         item: obj.item,

@@ -1,20 +1,18 @@
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
+import lazy { webview } from "@kit.ArkWeb";
 import { MooStringPairArrayList } from "../../../components/common/MooStringPairArrayList";
 import { standardSpacing } from "../../../components/constants";
 import { meowTabInfo } from "../../../hosts/app/tabs/classes/meowTabInfo";
 import { userAgentList, userAgentSelected } from "../../../hosts/app/tabs/settings";
-import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { meowAppHost } from "../../../hosts/system/windows/classes/meowAppHost";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { getCreateMyApp } from "../../../hosts/system/windows/scripts/helpers";
 import { meowAppMessageType } from "../../../hosts/system/windows/scripts/messaging";
 import { WoofUniFrame } from "../../WoofUniFrame";
-import lazy { webview } from "@kit.ArkWeb";
 
 @ComponentV2
 struct WoofQuickUAPanel {
   @Param @Require controller: CustomDialogController;
-  @Param @Require myDialog: meowDialogManager;
-  @Param @Require myLayout: meowLayout;
+  @Param @Require myUi: meowUiHost;
   @Local myApp: meowAppHost = getCreateMyApp();
   // Local
   @Local selectedIndexUA: number = -2;
@@ -25,12 +23,12 @@ struct WoofQuickUAPanel {
 
   async getCurrentWebUAIndex(): Promise<number> {
     // This won't happen, will it?
-    if (!this.myDialog.lastRequest) {
+    if (!this.myUi.myDialog.lastRequest) {
       return userAgentSelected();
     };
 
     // 99.9% of cases
-    const tabInfo = this.myDialog.lastRequest.param as meowTabInfo;
+    const tabInfo = this.myUi.myDialog.lastRequest.param as meowTabInfo;
     this.tabUa = await tabInfo.myUa();
     if (this.tabUa) {
       // See which CUSTOM UA is selected.
@@ -60,7 +58,7 @@ struct WoofQuickUAPanel {
 
   build() {
     WoofUniFrame({
-      controller: this.controller, title: $r('app.string.QuickUA'), shiftBackgroundColor: true, myLayout: this.myLayout, myDialog: this.myDialog,
+      controller: this.controller, title: $r('app.string.QuickUA'), shiftBackgroundColor: true, myUi: this.myUi,
       tutorial: `󰈈  ${this.tabUa}`, showTutorial: true
     }) {
       MooStringPairArrayList({
@@ -102,15 +100,14 @@ struct WoofQuickUAPanel {
 @CustomDialog
 struct WoofQuickUADialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
+  @Require myUi: meowUiHost;
   // TabInfo
   targetTabInfo: meowTabInfo | undefined;
   @State ua: string = '';
 
   aboutToAppear(): void {
     // Get the meowTabInfo from the tunnel
-    const req = this.myDialog.lastRequest;
+    const req = this.myUi.myDialog.lastRequest;
     this.targetTabInfo = req?.param as meowTabInfo;
     // Get UA.
     this.targetTabInfo.myUa().then((ua) => {
@@ -121,8 +118,7 @@ struct WoofQuickUADialog {
   build() {
     WoofQuickUAPanel({
       controller: this.controller,
-      myDialog: this.myDialog,
-      myLayout: this.myLayout,
+      myUi: this.myUi,
       onSelect: (n) => {
         if (this.targetTabInfo) {
           if (n < 0) {

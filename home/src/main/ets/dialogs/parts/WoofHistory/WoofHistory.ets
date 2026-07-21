@@ -1,7 +1,5 @@
-import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import { resource2String } from '../../../catstypicalframework/utils/resource';
 import { HistoryPanel } from '../../../components/parts/History/Panel';
-import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { WoofUniFrame } from '../../WoofUniFrame';
 
@@ -12,8 +10,6 @@ import { WoofUniFrame } from '../../WoofUniFrame';
 @ComponentV2
 struct HistoryPanelWrapped {
   @Param @Require controller: CustomDialogController;
-  @Param @Require myDialog: meowDialogManager;
-  @Param @Require myLayout: meowLayout;
   @Param @Require myUi: meowUiHost;
   // Local
   @Local info: string = 'meow';
@@ -23,10 +19,10 @@ struct HistoryPanelWrapped {
       controller: this.controller,
       shiftBackgroundColor: true,
       title: `${resource2String($r('app.string.History'), this.getUIContext().getHostContext()!)} ${this.info}`,
-      myDialog: this.myDialog, myLayout: this.myLayout,
+      myUi: this.myUi
     }) {
       HistoryPanel({
-        myLayout: this.myLayout,
+        myUi: this.myUi,
         requestRefreshTitle: (info: string) => {
           this.info = info;
         },
@@ -43,17 +39,10 @@ struct HistoryPanelWrapped {
 @CustomDialog
 struct WoofHistoryDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
   @Require myUi: meowUiHost;
 
   build() {
-    HistoryPanelWrapped({
-      controller: this.controller,
-      myDialog: this.myDialog,
-      myLayout: this.myLayout,
-      myUi: this.myUi,
-    });
+    HistoryPanelWrapped({ controller: this.controller, myUi: this.myUi });
   }
 }
 

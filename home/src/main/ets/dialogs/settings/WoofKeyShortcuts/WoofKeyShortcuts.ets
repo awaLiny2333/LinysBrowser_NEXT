@@ -1,11 +1,10 @@
 import { AppStorageV2 } from "@kit.ArkUI";
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { meow } from "../../../catstypicalframework/utils/catsLogger";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
 import { standardSpacing } from "../../../components/constants";
-import { meowDialogManager, openDialogRequestType } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { openDialogRequestType } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { requestDialog } from "../../../hosts/system/dialogs/scripts/dialog";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { meowAppMessageType } from "../../../hosts/system/windows/scripts/messaging";
@@ -14,7 +13,6 @@ import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
 struct KeyShortcutsPanel {
-  @Require @Param myDialog: meowDialogManager;
   @Require @Param myUi: meowUiHost;
   @Local myKey: meowKeyboardMan = AppStorageV2.connect(meowKeyboardMan)!;
   @Local lastListenerIndex: number = -1;
@@ -28,7 +26,7 @@ struct KeyShortcutsPanel {
               UniContentCard({
                 roundedRadius: defaultInnerRadius, clickAction: () => {
                   this.lastListenerIndex = item.index;
-                  requestDialog(this.myDialog, openDialogRequestType.KEY_SHORTCUTS_PICKER, [this.myKey.shortcutsStrings[item.index], item.item.toArray()], true);
+                  requestDialog(this.myUi.myDialog, openDialogRequestType.KEY_SHORTCUTS_PICKER, [this.myKey.shortcutsStrings[item.index], item.item.toArray()], true);
                 }
               }) {
                 Row() {
@@ -68,16 +66,14 @@ struct KeyShortcutsPanel {
 @CustomDialog
 struct WoofKeyShortcutsDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
   @Require myUi: meowUiHost;
-  @Require myLayout: meowLayout;
 
   build() {
     WoofUniFrame({
-      controller: this.controller, myDialog: this.myDialog, myLayout: this.myLayout,
+      controller: this.controller, myUi: this.myUi,
       title: $r('app.string.KeyShortcuts'),
     }) {
-      KeyShortcutsPanel({ myDialog: this.myDialog, myUi: this.myUi });
+      KeyShortcutsPanel({ myUi: this.myUi });
     };
   }
 }

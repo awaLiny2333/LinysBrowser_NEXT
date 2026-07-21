@@ -1,8 +1,6 @@
 import { common } from '@kit.AbilityKit';
-import { AppStorageV2 } from '@kit.ArkUI';
 import lazy { meow, meowLevel } from '../../catstypicalframework/utils/catsLogger';
-import { meowTabsBunch } from '../../hosts/app/tabs/classes/meowTabsBunch';
-import lazy { meowDialogManager, openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
+import lazy { openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import lazy { requestDialog } from '../../hosts/system/dialogs/scripts/dialog';
 import { meowUiGoBackSource, meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
 import lazy { newWindow } from '../../hosts/system/windows/scripts/multiwindows';
@@ -12,10 +10,8 @@ import lazy { defaultAnimation, getMySettings } from '../settings';
 
 @Builder
 export function MeowPlaceForKeyShortcuts(
-  myDialog: meowDialogManager,
   myUi: meowUiHost,
   myKey: meowKeyboardMan,
-  myTabs: meowTabsBunch,
   context: UIContext
 ) {
   Row() {
@@ -30,16 +26,14 @@ export function MeowPlaceForKeyShortcuts(
     });
     Blank().keyboardShortcut(myKey.newTab.value, myKey.newTab.keys, () => {
       meow(`New Tab!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
-      const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${myUi.windowId}`)!;
       animateToImmediately(defaultAnimation(), () => {
-        myTabs.newTabWrapped();
+        myUi.myTabs.newTabWrapped();
       });
     });
     Blank().keyboardShortcut(myKey.closeTab.value, myKey.closeTab.keys, () => {
       meow(`Close Tab!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
-      const myTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${myUi.windowId}`)!;
       animateToImmediately(defaultAnimation(), () => {
-        myTabs.closeCurrent();
+        myUi.myTabs.closeCurrent();
       });
     });
     Blank().keyboardShortcut(myKey.showTabs.value, myKey.showTabs.keys, () => {
@@ -77,16 +71,16 @@ export function MeowPlaceForKeyShortcuts(
       meow(`Fullscreen!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
     });
     Blank().keyboardShortcut(myKey.history.value, myKey.history.keys, () => {
-      requestDialog(myDialog, openDialogRequestType.HISTORY);
+      requestDialog(myUi.myDialog, openDialogRequestType.HISTORY);
       meow(`History!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
     });
     Blank().keyboardShortcut(myKey.refresh.value, myKey.refresh.keys, () => {
-      myTabs.refreshStopCurrent();
+      myUi.myTabs.refreshStopCurrent();
       meow(`Refresh!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
     });
     Blank().keyboardShortcut(myKey.print.value, myKey.print.keys, () => {
       meow(`Print Page!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
-      myTabs.printCurrent();
+      myUi.myTabs.printCurrent();
     });
     Blank().keyboardShortcut(myKey.newWindow.value, myKey.newWindow.keys, () => {
       newWindow(context.getHostContext() as common.UIAbilityContext);
@@ -97,11 +91,11 @@ export function MeowPlaceForKeyShortcuts(
       meow(`Pin window to top!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
     });
     Blank().keyboardShortcut(myKey.save.value, myKey.save.keys, () => {
-      myTabs.saveCurrent();
+      myUi.myTabs.saveCurrent();
       meow(`Save Page!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
     });
     Blank().keyboardShortcut(myKey.zones.value, myKey.zones.keys, () => {
-      requestDialog(myDialog, openDialogRequestType.ZONES);
+      requestDialog(myUi.myDialog, openDialogRequestType.ZONES);
       meow(`Zones!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
     });
     Blank().keyboardShortcut(myKey.fullscreenWindowed.value, myKey.fullscreenWindowed.keys, () => {

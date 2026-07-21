@@ -1,23 +1,21 @@
 import { common } from "@kit.AbilityKit";
-import { meowLayout } from "../../../catstypicalframework/hosts/meowLayout";
 import { requestUserPermission } from "../../../catstypicalframework/utils/permission";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
 import { standardSpacing } from "../../../components/constants";
-import { meowDialogManager } from "../../../hosts/system/dialogs/classes/meowDialogManager";
+import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { WoofUniFrame } from "../../WoofUniFrame";
 
 @ComponentV2
 struct WoofLocationPanel {
   @Param @Require controller: CustomDialogController;
-  @Param @Require myLayout: meowLayout;
-  @Param @Require myDialog: meowDialogManager;
+  @Param @Require myUi: meowUiHost;
   // Info
   @Local data: OnGeolocationShowEvent | undefined;
 
   aboutToAppear(): void {
-    const req = this.myDialog.lastRequest;
+    const req = this.myUi.myDialog.lastRequest;
     if (req) {
       this.data = req.param as OnGeolocationShowEvent;
     }
@@ -25,7 +23,7 @@ struct WoofLocationPanel {
 
   build() {
     WoofUniFrame({
-      controller: this.controller, title: $r('app.string.Geolocation_title'), myLayout: this.myLayout, myDialog: this.myDialog,
+      controller: this.controller, title: $r('app.string.Geolocation_title'), myUi: this.myUi,
       showConfirmButton: true, showCancelButton: true, doubleConfirm: true,
       onConfirm: async () => {
         await this.requestPermissionFromSystem();
@@ -56,10 +54,9 @@ struct WoofLocationPanel {
 @CustomDialog
 export struct WoofWebGeolocationDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
+  @Require myUi: meowUiHost;
 
   build() {
-    WoofLocationPanel({ controller: this.controller, myLayout: this.myLayout, myDialog: this.myDialog });
+    WoofLocationPanel({ controller: this.controller, myUi: this.myUi });
   }
 }

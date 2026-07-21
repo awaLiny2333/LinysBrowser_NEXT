@@ -1,12 +1,10 @@
-import { AppStorageV2 } from '@kit.ArkUI';
 import lazy { Context } from '@ohos.abilityAccessCtrl';
 import lazy { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
 import lazy { pinShortcut } from '../../../catstypicalframework/utils/shortcuts';
 import lazy { packToFileFromPixelMap } from '../../../catstypicalframework/utils/storage';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
 import lazy { domainOf } from '../../../catstypicalframework/utils/url';
-import { meowTabsBunch } from '../../../hosts/app/tabs/classes/meowTabsBunch';
-import { meowDialogManager, openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
+import { openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import lazy { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
 import lazy { ALL_WINDOW_ORIENTATIONS, meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import lazy { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addressBarStatuses';
@@ -18,9 +16,7 @@ struct MeowButton {
   // Config
   @Param @Require type: string;
   // Hosts
-  @Param @Require myDialog: meowDialogManager;
   @Param @Require myUi: meowUiHost;
-  @Param myTabs: meowTabsBunch = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.myUi.windowId}`)!;
 
   build() {
     if (this.showMe) {
@@ -83,7 +79,7 @@ struct MeowButton {
           this.myUi.showTabs = !this.myUi.showTabs;
           if (this.myUi.showTabs) {
             // OFF => ON
-            if (!this.myUi.myLayout.wideMode && this.myUi.showSidebar && isTabsStyleVertical(this.myUi.myLayout)) {
+            if (!this.myUi.myLayout.wideMode && this.myUi.showSidebar && isTabsStyleVertical(this.myUi)) {
               this.myUi.showSidebar = false;
               if (this.myUi.showTabs) {
                 this.myUi.sideAreaShrinkExpect = false;
@@ -101,7 +97,7 @@ struct MeowButton {
           this.myUi.showSidebar = !this.myUi.showSidebar;
           if (this.myUi.showSidebar) {
             // OFF => ON
-            if (!this.myUi.myLayout.wideMode && this.myUi.showTabs && isTabsStyleVertical(this.myUi.myLayout)) {
+            if (!this.myUi.myLayout.wideMode && this.myUi.showTabs && isTabsStyleVertical(this.myUi)) {
               this.myUi.showTabs = false;
               if (this.myUi.showSidebar) {
                 this.myUi.sideAreaShrinkExpect = false;
@@ -115,42 +111,42 @@ struct MeowButton {
         getMySettings().setByIndex(82, this.myUi.showSidebar);
         break;
       case UnifiedButtonsType.BOOKMARKS:
-        requestDialog(this.myDialog, openDialogRequestType.BOOKMARKS);
+        requestDialog(this.myUi.myDialog, openDialogRequestType.BOOKMARKS);
         break;
       case UnifiedButtonsType.DOWNLOADS:
-        requestDialog(this.myDialog, openDialogRequestType.DOWNLOADS);
+        requestDialog(this.myUi.myDialog, openDialogRequestType.DOWNLOADS);
         break;
       case UnifiedButtonsType.SETTINGS:
-        requestDialog(this.myDialog, openDialogRequestType.SETTINGS);
+        requestDialog(this.myUi.myDialog, openDialogRequestType.SETTINGS);
         break;
       case UnifiedButtonsType.ADBLOCKER:
-        requestDialog(this.myDialog, openDialogRequestType.ADBLOCKER, domainOf(this.myTabs.currentTab?.url));
+        requestDialog(this.myUi.myDialog, openDialogRequestType.ADBLOCKER, domainOf(this.myUi.myTabs.currentTab?.url));
         break;
       case UnifiedButtonsType.JAVASCRIPTS:
-        requestDialog(this.myDialog, openDialogRequestType.WEB_JAVASCRIPTS, domainOf(this.myTabs.currentTab?.url));
+        requestDialog(this.myUi.myDialog, openDialogRequestType.WEB_JAVASCRIPTS, domainOf(this.myUi.myTabs.currentTab?.url));
         break;
       case UnifiedButtonsType.IMAGES:
-        requestDialog(this.myDialog, openDialogRequestType.WEB_IMAGES, domainOf(this.myTabs.currentTab?.url));
+        requestDialog(this.myUi.myDialog, openDialogRequestType.WEB_IMAGES, domainOf(this.myUi.myTabs.currentTab?.url));
         break;
       case UnifiedButtonsType.DARK:
-        requestDialog(this.myDialog, openDialogRequestType.DARK, domainOf(this.myTabs.currentTab?.url));
+        requestDialog(this.myUi.myDialog, openDialogRequestType.DARK, domainOf(this.myUi.myTabs.currentTab?.url));
         break;
       case UnifiedButtonsType.HISTORIES:
-        requestDialog(this.myDialog, openDialogRequestType.HISTORY);
+        requestDialog(this.myUi.myDialog, openDialogRequestType.HISTORY);
         break;
       case UnifiedButtonsType.COOKIES:
-        requestDialog(this.myDialog, openDialogRequestType.COOKIES, domainOf(this.myTabs.currentTab?.url));
+        requestDialog(this.myUi.myDialog, openDialogRequestType.COOKIES, domainOf(this.myUi.myTabs.currentTab?.url));
         break;
       case UnifiedButtonsType.QRCODE:
-        requestDialog(this.myDialog, openDialogRequestType.QR, [this.myTabs.currentTab?.title || 'Title', this.myTabs.currentTab?.url || 'URL']);
+        requestDialog(this.myUi.myDialog, openDialogRequestType.QR, [this.myUi.myTabs.currentTab?.title || 'Title', this.myUi.myTabs.currentTab?.url || 'URL']);
         break;
       case UnifiedButtonsType.USERAGENTS:
         this.myUi.requestAddressBarBlur(this.getUIContext());
-        requestDialog(this.myDialog, openDialogRequestType.QUICK_UA, this.myTabs.currentTab);
+        requestDialog(this.myUi.myDialog, openDialogRequestType.QUICK_UA, this.myUi.myTabs.currentTab);
         break;
       case UnifiedButtonsType.RE_SEARCH:
         this.myUi.requestAddressBarBlur(this.getUIContext());
-        requestDialog(this.myDialog, openDialogRequestType.QUICK_SE);
+        requestDialog(this.myUi.myDialog, openDialogRequestType.QUICK_SE);
         break;
       case UnifiedButtonsType.GO:
         this.myUi.submitSearchOrLoad();
@@ -182,19 +178,19 @@ struct MeowButton {
         this.myUi.requestHideAddressBarOverlay();
         break;
       case UnifiedButtonsType.SCRATCHING_BOARD:
-        requestDialog(this.myDialog, openDialogRequestType.SCRATCHING_BOARD);
+        requestDialog(this.myUi.myDialog, openDialogRequestType.SCRATCHING_BOARD);
         break;
       case UnifiedButtonsType.BACKWARD:
-        this.myTabs.goBackCurrent();
+        this.myUi.myTabs.goBackCurrent();
         break;
       case UnifiedButtonsType.FORWARD:
-        this.myTabs.goForwardCurrent();
+        this.myUi.myTabs.goForwardCurrent();
         break;
       case UnifiedButtonsType.REFRESH:
-        this.myTabs.refreshStopCurrent();
+        this.myUi.myTabs.refreshStopCurrent();
         break;
       case UnifiedButtonsType.HOME:
-        this.myTabs.goHomeCurrent();
+        this.myUi.myTabs.goHomeCurrent();
         break;
       case UnifiedButtonsType.SEARCH_IN_PAGE:
         animateToImmediately(defaultAnimation(), () => {
@@ -202,37 +198,37 @@ struct MeowButton {
         });
         break;
       case UnifiedButtonsType.PRINT:
-        this.myTabs.printCurrent();
+        this.myUi.myTabs.printCurrent();
         break;
       case UnifiedButtonsType.SAVE:
-        this.myTabs.saveCurrent();
+        this.myUi.myTabs.saveCurrent();
         break;
       case UnifiedButtonsType.ZONES:
-        requestDialog(this.myDialog, openDialogRequestType.ZONES);
+        requestDialog(this.myUi.myDialog, openDialogRequestType.ZONES);
         break;
       case UnifiedButtonsType.ZOOM_IN:
-        this.myTabs.zoomInCurrent();
+        this.myUi.myTabs.zoomInCurrent();
         break;
       case UnifiedButtonsType.ZOOM_OUT:
-        this.myTabs.zoomOutCurrent();
+        this.myUi.myTabs.zoomOutCurrent();
         break;
       case UnifiedButtonsType.SHORTCUT:
         // Grab basic info.
-        if (!this.myTabs.currentTab) {
+        if (!this.myUi.myTabs.currentTab) {
           return;
         }
-        const url = this.myTabs.currentTab.url;
+        const url = this.myUi.myTabs.currentTab.url;
         if (!url) {
           return;
         }
-        let title = this.myTabs.currentTab.title;
+        let title = this.myUi.myTabs.currentTab.title;
         if (!title) {
           const r = domainOf(url);
           title = r;
         }
         // Grab image
         try {
-          const icon = this.myTabs.currentTab.controller?.getFavicon();
+          const icon = this.myUi.myTabs.currentTab.controller?.getFavicon();
           if (!icon) {
             break;
           }
@@ -281,7 +277,7 @@ struct MeowButton {
       case UnifiedButtonsType.ADDRESS_KEYWORD_EXPAND:
         return this.myUi.searchKeywordEntriesExpanded ? $r('sys.symbol.line') : getButtonIcon(this.type);
       case UnifiedButtonsType.REFRESH:
-        return this.myTabs.currentTab?.isLoading ? $r('sys.symbol.xmark') : getButtonIcon(this.type);
+        return this.myUi.myTabs.currentTab?.isLoading ? $r('sys.symbol.xmark') : getButtonIcon(this.type);
       default:
         return getButtonIcon(this.type);
     }
@@ -306,9 +302,9 @@ struct MeowButton {
       case UnifiedButtonsType.SEARCH_IN_PAGE:
         return this.myUi.inPageSearchShow;
       case UnifiedButtonsType.ZOOM_IN:
-        return (this.myTabs.currentTab?.webScale || 100) > 100;
+        return (this.myUi.myTabs.currentTab?.webScale || 100) > 100;
       case UnifiedButtonsType.ZOOM_OUT:
-        return (this.myTabs.currentTab?.webScale || 100) < 100;
+        return (this.myUi.myTabs.currentTab?.webScale || 100) < 100;
       default:
         return undefined;
     }
@@ -324,23 +320,23 @@ struct MeowButton {
       case UnifiedButtonsType.EXTENSIONS:
         return false;
       case UnifiedButtonsType.BACKWARD:
-        return this.myTabs.currentTabCanBack;
+        return this.myUi.myTabs.currentTabCanBack;
       case UnifiedButtonsType.FORWARD:
-        return this.myTabs.currentTabCanForw;
+        return this.myUi.myTabs.currentTabCanForw;
       case UnifiedButtonsType.PRINT:
-        return this.myTabs.currentTab != undefined;
+        return this.myUi.myTabs.currentTab != undefined;
       case UnifiedButtonsType.USERAGENTS:
-        return this.myTabs.currentTab != undefined;
+        return this.myUi.myTabs.currentTab != undefined;
       case UnifiedButtonsType.SAVE:
-        return this.myTabs.currentTab != undefined;
+        return this.myUi.myTabs.currentTab != undefined;
       case UnifiedButtonsType.QRCODE:
-        return this.myTabs.currentTab != undefined;
+        return this.myUi.myTabs.currentTab != undefined;
       case UnifiedButtonsType.ZOOM_IN:
-        return this.myTabs.currentTab != undefined;
+        return this.myUi.myTabs.currentTab != undefined;
       case UnifiedButtonsType.ZOOM_OUT:
-        return this.myTabs.currentTab != undefined;
+        return this.myUi.myTabs.currentTab != undefined;
       case UnifiedButtonsType.SHORTCUT:
-        return this.myTabs.currentTab != undefined;
+        return this.myUi.myTabs.currentTab != undefined;
       default:
         return true;
     }

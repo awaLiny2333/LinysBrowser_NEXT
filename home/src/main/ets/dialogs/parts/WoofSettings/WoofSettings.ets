@@ -1,7 +1,5 @@
-import { meowLayout } from '../../../catstypicalframework/hosts/meowLayout';
 import { standardSpacing } from '../../../components/constants';
 import { waterFlowColumnsTemplate } from '../../../components/settings';
-import { meowDialogManager } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import { getDevMode } from '../../../hosts/system/resources/settings';
 import { meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import { WoofUniFrame } from '../../WoofUniFrame';
@@ -19,8 +17,6 @@ import { SettingsStorage } from './parts/Storage';
 
 @ComponentV2
 struct WoofSettings {
-  @Param @Require myDialog: meowDialogManager;
-  @Param @Require myLayout: meowLayout;
   @Param @Require myUi: meowUiHost;
 
   build() {
@@ -30,40 +26,40 @@ struct WoofSettings {
           SettingsOnStartUp();
         };
         FlowItem() {
-          SettingsGeneral({ myDialog: this.myDialog, myTabs: this.myUi.myTabs });
+          SettingsGeneral({ myUi: this.myUi });
         };
         FlowItem() {
-          SettingsExperience({ myDialog: this.myDialog });
+          SettingsExperience({ myUi: this.myUi });
         };
         FlowItem() {
-          SettingsAccessibility({ myDialog: this.myDialog });
+          SettingsAccessibility({ myUi: this.myUi });
         };
         FlowItem() {
-          SettingsAppearance({ myDialog: this.myDialog, myUi: this.myUi });
+          SettingsAppearance({ myUi: this.myUi });
         };
         FlowItem() {
-          SettingsHistory({ myDialog: this.myDialog });
+          SettingsHistory({ myUi: this.myUi });
         };
         FlowItem() {
           SettingsStorage();
         };
         FlowItem() {
-          SettingsSecurity({ myDialog: this.myDialog });
+          SettingsSecurity({ myUi: this.myUi });
         };
         FlowItem() {
-          SettingsCardboardBox({ myDialog: this.myDialog, myUi: this.myUi });
+          SettingsCardboardBox({ myUi: this.myUi });
         };
         FlowItem() {
-          SettingsAbout({ myDialog: this.myDialog, myUi: this.myUi });
+          SettingsAbout({ myUi: this.myUi });
         };
         if (getDevMode()) {
           FlowItem() {
-            SettingsDeveowlopers({ myDialog: this.myDialog });
+            SettingsDeveowlopers({ myUi: this.myUi });
           };
         }
       }
       .clip(false) // To eliminate the cuts on the edges
-      .columnsTemplate(waterFlowColumnsTemplate(this.myLayout))
+      .columnsTemplate(waterFlowColumnsTemplate(this.myUi))
       .columnsGap(standardSpacing)
       .rowsGap(standardSpacing);
     }
@@ -75,13 +71,11 @@ struct WoofSettings {
 @CustomDialog
 struct WoofSettingsDialog {
   controller: CustomDialogController;
-  @Require myDialog: meowDialogManager;
-  @Require myLayout: meowLayout;
   @Require myUi: meowUiHost;
 
   build() {
-    WoofUniFrame({ controller: this.controller, title: $r('app.string.Settings'), myDialog: this.myDialog, myLayout: this.myLayout }) {
-      WoofSettings({ myDialog: this.myDialog, myLayout: this.myLayout, myUi: this.myUi });
+    WoofUniFrame({ controller: this.controller, title: $r('app.string.Settings'), myUi: this.myUi }) {
+      WoofSettings({ myUi: this.myUi });
     };
   }
 }

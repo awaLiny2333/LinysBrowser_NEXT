@@ -1,8 +1,6 @@
 import lazy { url } from '@kit.ArkTS';
-import { meowLayout } from '../../../../catstypicalframework/hosts/meowLayout';
 import lazy { meow, meowLevel } from '../../../../catstypicalframework/utils/catsLogger';
 import lazy { measureTextWidth } from '../../../../catstypicalframework/utils/ui';
-import { meowDialogManager } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 import { meowUiHost } from '../../../../hosts/system/windows/classes/meowUiHost';
 import { AddressBarStatuses } from '../../../../hosts/system/windows/scripts/addressBarStatuses';
 import { MooTextModifier } from '../../../common/MooTextModifier';
@@ -19,15 +17,13 @@ import { MeowButtonsSlot } from '../../MeowButtons/MeowButtonsSlot';
 struct MeowAddressBar {
   // Hosts
   @Param @Require myUi: meowUiHost;
-  @Param @Require myLayout: meowLayout;
-  @Param @Require myDialog: meowDialogManager;
   // Local
   @Local barWidth: number = 10;
   focusBlurTimeoutId: number | undefined = undefined;
 
   build() {
     Row() {
-      if (this.myUi.showAddressBarOverlay && windowTitleOnAddressBar() && showWindowTitle(this.myLayout) && this.myUi.myTabs.currentTab?.url) {
+      if (this.myUi.showAddressBarOverlay && windowTitleOnAddressBar() && showWindowTitle(this.myUi) && this.myUi.myTabs.currentTab?.url) {
         // Overlay title
         Text(`${this.myUi.myTabs.currentTab?.title || 'Meow'}｜${this.myUi.windowAlias}`)
           .opacity(0.9)
@@ -36,13 +32,13 @@ struct MeowAddressBar {
           .padding(standardSpacing).borderRadius(standardSpacing).maxLines(1)
           .hoverEffect(HoverEffect.Highlight)
           .height(useEffects() ? textInputSlimHeight - 1 : textInputSlimHeight)
-          .margin(this.myLayout.wideMode ? { left: standardSpacing * 0.5, right: standardSpacing * 0.5 } : 0)
+          .margin(this.myUi.myLayout.wideMode ? { left: standardSpacing * 0.5, right: standardSpacing * 0.5 } : 0)
           .onClick(() => {
             this.myUi.requestHideAddressBarOverlay();
           });
       } else {
         // Space
-        if (this.myLayout.wideMode) {
+        if (this.myUi.myLayout.wideMode) {
           Blank().width(standardSpacing * 0.75);
         }
 
@@ -59,19 +55,19 @@ struct MeowAddressBar {
 
         // On focus
         if (this.showOnFocusButtons) {
-          MeowButtonsSlot(this.myUi, this.myDialog, 77);
+          MeowButtonsSlot(this.myUi, 77);
         }
         // Always on
         if (this.showAlwaysOnButtons) {
-          MeowButtonsSlot(this.myUi, this.myDialog, 78);
+          MeowButtonsSlot(this.myUi, 78);
         }
 
-        if (!(this.showOnFocusButtons || this.showAlwaysOnButtons) && this.myLayout.wideMode) {
+        if (!(this.showOnFocusButtons || this.showAlwaysOnButtons) && this.myUi.myLayout.wideMode) {
           Blank().width(standardSpacing * 0.75);
         }
       }
     }
-    .layoutWeight(this.myLayout.wideMode ? 1 : undefined)
+    .layoutWeight(this.myUi.myLayout.wideMode ? 1 : undefined)
     .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl);
   }
 

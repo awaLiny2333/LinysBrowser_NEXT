@@ -4,7 +4,7 @@ import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { mooTextType, standardSpacing } from '../../../../components/constants';
 import { defaultAnimation, getMySettings } from '../../../../components/settings';
-import { meowDialogManager, openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
+import { openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
 import { exportEverything, exportSettings, importEverything, importResult, importSettings } from '../../../../hosts/system/resources/scripts/backup';
 import { meowUiHost } from '../../../../hosts/system/windows/classes/meowUiHost';
@@ -13,7 +13,6 @@ import { ErrorPromptDetails } from '../../../public/WoofErrorPrompt/errorPromptS
 
 @ComponentV2
 struct SettingsCardboardBox {
-  @Param @Require myDialog: meowDialogManager;
   @Param @Require myUi: meowUiHost;
   @Local mySettings: meowManagedSettings = getMySettings();
 
@@ -37,7 +36,7 @@ struct SettingsCardboardBox {
         MooCapsuleButton({
           text: $r('app.string.Settings_category_cardboardBox_debug_faultLogs'),
           clickAction: () => {
-            requestDialog(this.myDialog, openDialogRequestType.FAULTLOGS, undefined, true);
+            requestDialog(this.myUi.myDialog, openDialogRequestType.FAULTLOGS, undefined, true);
           }
         });
       };
@@ -80,7 +79,7 @@ struct SettingsCardboardBox {
               case importResult.PICK_FAIL:
                 break;
               case importResult.OK:
-                requestDialog(this.myDialog, openDialogRequestType.ERROR_PROMPT, {
+                requestDialog(this.myUi.myDialog, openDialogRequestType.ERROR_PROMPT, {
                   isError: false,
                   title: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok'),
                   contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok_desc'),
@@ -141,7 +140,7 @@ struct SettingsCardboardBox {
               case importResult.PICK_FAIL:
                 break; // Do nothing. The user may selected nothing.
               case importResult.OK:
-                requestDialog(this.myDialog, openDialogRequestType.ERROR_PROMPT, {
+                requestDialog(this.myUi.myDialog, openDialogRequestType.ERROR_PROMPT, {
                   isError: false,
                   title: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok'),
                   contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok_desc'),
@@ -149,7 +148,7 @@ struct SettingsCardboardBox {
                 } as ErrorPromptDetails, true);
                 break;
               case importResult.PARTIAL_OK:
-                requestDialog(this.myDialog, openDialogRequestType.ERROR_PROMPT, {
+                requestDialog(this.myUi.myDialog, openDialogRequestType.ERROR_PROMPT, {
                   isError: true,
                   title: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok_partial'),
                   contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_ok_partial_desc'),
@@ -157,7 +156,7 @@ struct SettingsCardboardBox {
                 } as ErrorPromptDetails, true);
                 break;
               case importResult.DECOMPRESS_FAIL:
-                requestDialog(this.myDialog, openDialogRequestType.ERROR_PROMPT, {
+                requestDialog(this.myUi.myDialog, openDialogRequestType.ERROR_PROMPT, {
                   isError: true,
                   title: $r('app.string.Settings_category_cardboardBox_backup_import_result_fail'),
                   contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_fail_extract'),
@@ -174,7 +173,7 @@ struct SettingsCardboardBox {
   }
 
   requestDecodeError() {
-    requestDialog(this.myDialog, openDialogRequestType.ERROR_PROMPT, {
+    requestDialog(this.myUi.myDialog, openDialogRequestType.ERROR_PROMPT, {
       isError: true,
       title: $r('app.string.Settings_category_cardboardBox_backup_import_result_fail'),
       contents: $r('app.string.Settings_category_cardboardBox_backup_import_result_fail_decode'),
