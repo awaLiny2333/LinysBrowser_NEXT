@@ -65,13 +65,20 @@ export class meowHistorian {
     const latestArrayBuffer = await readArrayBufferConcurrent(`${this.chunkBasePath}/${latestChunkName}`);
     try {
       const latestContent = fastbuffer.from(latestArrayBuffer).toString();
-      const lastUpdate = latestContent.slice(-13);
-      if (lastUpdate) {
-        this.lastUpdate = parseInt(lastUpdate);
+
+      // Look for the last \n and pick the contents after. If there is no \n then we pick the entire file.
+      const lastNewline = latestContent.lastIndexOf('\n');
+      const rawTsString = lastNewline >= 0 ? latestContent.slice(lastNewline + 1).trim() : latestContent;
+      const timeStampNum = parseInt(rawTsString, 10);
+
+      // timeStampNum must > 1000000000000 (about 2001) to prevent NaN and values too small.
+      if (!Number.isNaN(timeStampNum) && timeStampNum > 1000000000000) {
+        this.lastUpdate = timeStampNum;
         meow(`Last update: ${this.lastUpdate} in file ${latestChunkName}, and in human readable time, that is ${new Date(this.lastUpdate).toLocaleString()}`, 'meowHistorian][init', meowLevel.INFO);
       } else {
-        meow(`No last update found in file ${latestChunkName}. What an empty month!`, 'meowHistorian][init', meowLevel.WARN);
+        meow(`No valid last update found in ${latestChunkName}. rawTs = [${rawTsString}], num = [${timeStampNum}]`, 'meowHistorian][init', meowLevel.WARN);
       }
+
     } catch (e) {
       meow(`Error loading latest file: ${e}`, 'meowHistorian][init', meowLevel.ERROR);
     }
@@ -112,33 +119,45 @@ export class meowHistorian {
 
     // Directly append to file. Avoid loading anything from the disk again.
     let result = true;
+    let newChunkCreated = false;
     if (chunkFileExist) {
       result = await appendTextToEndOfFile(chunkFilePath, `\n${newHistoryEntry.title}\n${newHistoryEntry.url}\n${newHistoryEntry.time}`); // Append to file.
     } else {
       let createResult = await saveHybrid(chunkFilePath, `${newHistoryEntry.title}\n${newHistoryEntry.url}\n${newHistoryEntry.time}`, true); // Create file.
       if (createResult == undefined) {
         // File already exist, but this is not really gonna happen. Because we already asks the saveHybrid to overwrite.
+        // What's more, overwriting in fact WON'T ever happen because chunkFileExist == FALSE in this branch!
         createResult = true;
       }
       result = createResult;
-      this.chunks.unshift(new meowHistoryChunk(this.chunkBasePath, this.indexBasePath, this.historyChunkName(newHistoryEntry.time))); // Record it to the head of the list (latest).
+      if (result) {
+        newChunkCreated = true;
+      }
     }
 
-    // File operations failed.
+    // File write failed.
     if (!result) {
       meow(`Failed to push history: ["${newHistoryEntry.url}", "${newHistoryEntry.title}", ${newHistoryEntry.time}] One of the storing methods failed.`, 'meowHistorian][pushHistory', meowLevel.ERROR);
       this.busy = false;
       return false;
     }
 
+    // Sign up the new chunk in this.chunks.s
+    if (newChunkCreated) {
+      this.chunks.unshift(new meowHistoryChunk(this.chunkBasePath, this.indexBasePath, this.historyChunkName(newHistoryEntry.time))); // Record it to the head of the list (latest).
+    }
+
     // (Re) Build index of this chunk.
-    let affectedChunk = this.chunks[0]; // Because the latest chunk is always the 0th chunk in list.
+    let affectedChunk = this.chunks[0]; // Because the latest chunk is always the 0th chunk in list. And no matter what there must be >= 1 element in this.chunks as long as we can get here.
     try {
       affectedChunk.entries?.push(newHistoryEntry);
+      await buildIndexToDisk(this.indexBasePath, affectedChunk, false); // Would utilize existing entries and won't read from disk.
     } catch (e) {
       meow(`Error pushing history ${newHistoryEntry}: ${e}`, 'meowHistorian][pushHistory', meowLevel.ERROR);
-    } // Direct and manually update entry ↓.
-    await buildIndexToDisk(`${this.indexBasePath}`, affectedChunk, false); // Would utilize existing entries and won't read from disk.
+      await buildIndexToDisk(this.indexBasePath, affectedChunk, true); // File write OK, but entries push failed.
+      // We use clean rebuild to load histories (naturally including the new entry added in the former codes) and build the index again.
+      // This is low efficient but this would only happen in really extreme cases.
+    }
     await affectedChunk.loadIndexFromDisk(true); // Load built index.
     meow(`Built index of chunk #${0} (${Date.now() - startTime} ms)`, 'meowHistorian][pushHistory', meowLevel.INFO);
 
@@ -184,8 +203,12 @@ export class meowHistorian {
     const tasks: Promise<boolean>[] = [];
     pathTsMap.forEach((tsSet: Set<string>, filePath: string) => {
       let chunkIndex: number = this.chunks.findIndex(ck => ck.chunkPath == filePath);
-      let theChunk = this.chunks[chunkIndex]; // Find the object of that chunk.
-      tasks.push(theChunk.deleteHistory(tsSet));
+      if (chunkIndex >= 0) {
+        let theChunk = this.chunks[chunkIndex]; // Find the object of that chunk.
+        tasks.push(theChunk.deleteHistory(tsSet));
+      } else {
+        // No chunk is of this path... Is this really gonna happen?
+      }
     });
     await Promise.all(tasks);
 
@@ -215,6 +238,7 @@ export class meowHistorian {
       meow(`Busy. Rejected history: ["${index}"]`, 'meowHistorian][getHistoryEntries', meowLevel.WARN);
       return [];
     }
+    if (index < 0 || index >= this.chunks.length) return []; // Illegal range.
 
     await this.chunks[index].loadEntriesFromDisk();
     const result = Array.from(this.chunks[index].entries || []);
@@ -237,7 +261,7 @@ export class meowHistorian {
 
     await clearDirectory(`${this.indexBasePath}`); // Clear all built index files.
     await buildAllIndexToDisk(`${this.indexBasePath}`, this.chunks, true); // BUILD!
-    
+
     this.isRebuilding = false;
     return true;
   }

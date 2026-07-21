@@ -194,11 +194,12 @@ export class meowHistoryChunk {
 
     // Search in reversed order
     const results: meowHistoryEntry[] = [];
+    const queryTokens = tokenize(query);
     for (let i = this.entries.length - 1; i >= 0; i--) {
       const entry = this.entries[i];
       const url = entry.url.toLowerCase();
       const title = entry.title.toLowerCase();
-      if (isMatchFast(url + ' ' + title, tokenize(query), minHitRate)) {
+      if (isMatchFast(url + ' ' + title, queryTokens, minHitRate)) {
         results.push(entry);
         if (results.length >= maxResults) {
           break;
@@ -250,25 +251,32 @@ export class meowHistoryChunk {
 
     meow(`Filter OK in chunk ${this.chunkPath} (${Date.now() - startTime} ms))`, 'meowHistoryChunk][deleteHistory', meowLevel.INFO);
 
-    // Sort from largest to smallest and delete to avoid index offset.
-    if (this.entries && indicesToDelete.length > 0) {
-      indicesToDelete.sort((a, b) => b - a);
-      for (const idx of indicesToDelete) {
-        try {
-          this.entries.splice(idx, 1);
-        } catch (e) {
-          meow(`Failed to delete history entry at index ${idx} in chunk ${this.chunkPath}: ${e}`, 'meowHistoryChunk][deleteHistory', meowLevel.ERROR);
-        }
-      }
-    }
-
     // Write.
     const saveResult = await saveHybridSafe(this.chunkPath, kept.join('\n'), true) as boolean; // In fact this line won't return undefined in any case. Because we have set overwrite to true.
 
-    // Index
-    await buildIndexToDisk(this.indexBasePath, this, false);
-    await this.loadIndexFromDisk(true); // Load built index.
-    meow(`Deleted ${timestampsToDelete.size} items in [${this.chunkPath}] (${Date.now() - startTime} ms)`, 'meowHistoryChunk][deleteHistory', meowLevel.INFO);
+    if (!saveResult) {
+      meow(`Failed to save chunk ${this.chunkPath} after deletion`, 'meowHistoryChunk][deleteHistory', meowLevel.ERROR);
+    } else {
+      meow(`Saved chunk ${this.chunkPath} after deletion`, 'meowHistoryChunk][deleteHistory', meowLevel.INFO);
+
+      // Sort from largest to smallest and delete to avoid index offset.
+      if (this.entries && indicesToDelete.length > 0) {
+        indicesToDelete.sort((a, b) => b - a);
+        for (const idx of indicesToDelete) {
+          try {
+            this.entries.splice(idx, 1);
+          } catch (e) {
+            meow(`Failed to delete history entry at index ${idx} in chunk ${this.chunkPath}: ${e}`, 'meowHistoryChunk][deleteHistory', meowLevel.ERROR);
+          }
+        }
+      }
+
+      // Index
+      await buildIndexToDisk(this.indexBasePath, this, false);
+      await this.loadIndexFromDisk(true); // Load built index.
+      meow(`Deleted ${timestampsToDelete.size} items in [${this.chunkPath}] (${Date.now() - startTime} ms)`, 'meowHistoryChunk][deleteHistory', meowLevel.INFO);
+    }
+
     return saveResult;
   }
 

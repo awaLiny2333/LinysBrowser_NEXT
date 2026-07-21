@@ -532,21 +532,61 @@ export async function dirMove(fullSourcePath: string, destParentFolderPath: stri
 }
 
 /**
- * Append a string to the end of a file.
- * @param filePath The file path.
- * @param str The string to append.
- * @returns true if succeed, false if failed.
+ * Append a string to the end of a file — absolutely reliable edition.
+ *
+ * Guarantees:
+ *   • Short-write detection and retry (iterates until all bytes land on disk).
+ *   • Uses a TextEncoder → ArrayBuffer so byte offsets are always
+ *     consistent, even in the presence of multi-byte UTF-8 characters.
+ *   • File descriptor is always closed via try / finally, regardless of
+ *     whether write or close throws.
+ *   • Empty-string writes are a no-op success (no file is opened).
+ *
+ * @param filePath The file path. Created if it does not exist.
+ * @param str      The string to append.
+ * @returns true if every byte was written and the file was closed cleanly.
  */
-export async function appendTextToEndOfFile(filePath: string, str: string) {
-  try {
-    let file = await fileIo.open(filePath, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.APPEND | fileIo.OpenMode.CREATE); // 设置以追加方式打开文件
-    let writeLen = await fileIo.write(file.fd, str); // 向文件内写入内容，返回值为写入内容的长度
-    console.log(`[appendTextToEndOfFile] appended content [${str}] to file ${filePath}, length = ${writeLen}`);
-    await fileIo.close(file); // 关闭文件
+export async function appendTextToEndOfFile(filePath: string, str: string): Promise<boolean> {
+  if (!str) {
+    console.warn(`[appendTextToEndOfFile] str is empty; nothing to append.`);
     return true;
+  }
+
+  let file: fileIo.File | undefined;
+  try {
+    file = await fileIo.open(
+      filePath,
+      fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.APPEND | fileIo.OpenMode.CREATE
+    );
+
+    // Encode once so byte offsets never drift from character offsets.
+    const encoded = new util.TextEncoder().encodeInto(str);
+    const total = encoded.byteLength;
+    let offset = 0;
+
+    while (offset < total) {
+      const written = await fileIo.write(file.fd, encoded.buffer.slice(offset));
+      if (written <= 0) {
+        throw new Error(`write returned ${written} at byte ${offset} / ${total}`);
+      }
+      offset += written;
+    }
+
+    console.log(`[appendTextToEndOfFile] appended ${total} bytes to ${filePath}`);
+    return true;
+
   } catch (e) {
-    console.error(`[appendTextToEndOfFile] fileIo.write(file.fd, ${str}) of file ${filePath} failed: ${e}`);
+    console.error(`[appendTextToEndOfFile] failed: ${e}`);
     return false;
+
+  } finally {
+    if (file !== undefined) {
+      try {
+        await fileIo.close(file);
+      } catch (closeErr) {
+        console.error(`[appendTextToEndOfFile] close failed (data already on disk): ${closeErr}`);
+      }
+    }
   }
 }
 

@@ -31,36 +31,28 @@ export async function loadChunkFromDisk(chunkPath: string) {
 
   const text = fastbuffer.from(buffer).toString();
   const len = text.length;
+
   let pos = 0;
-
   while (pos < len) {
-    let fields: string[] = [];
+    // Try to read three consecutive lines starting at pos.
+    let nl1 = text.indexOf('\n', pos);
+    if (nl1 === -1) break;
+    let nl2 = text.indexOf('\n', nl1 + 1);
+    if (nl2 === -1) break;
+    let nl3 = text.indexOf('\n', nl2 + 1); // may be -1 for the very last line
 
-    // Try to extract exactly three lines
-    for (let i = 0; i < 3; i++) {
-      let nextNl = text.indexOf('\n', pos);
-      if (nextNl === -1) {
-        // No more newlines; the rest of the text is the last line
-        if (pos < len && i === 2) {
-          // Only accept if we're on the third field and there is content
-          fields.push(text.substring(pos));
-          pos = len;
-        }
-        // In any other case, the entry is incomplete – stop.
-        break;
-      }
-      fields.push(text.substring(pos, nextNl));
-      // Skip the newline; if it's \r\n we might need to strip \r, but for now assume \n
-      pos = nextNl + 1;
-    }
+    const field1 = text.substring(pos, nl1);
+    const field2 = text.substring(nl1 + 1, nl2);
+    const field3 = nl3 === -1 ? text.substring(nl2 + 1) : text.substring(nl2 + 1, nl3);
+    const ts = parseInt(field3, 10);
 
-    if (fields.length === 3) {
-      const arg3 = parseInt(fields[2], 10);
-      // Optional: validate arg3 is a finite number if needed
-      history.push(new meowHistoryEntry(fields[0], fields[1], arg3));
+    if (!Number.isNaN(ts)) {
+      // Three valid fields — push and advance to the next entry.
+      history.push(new meowHistoryEntry(field1, field2, ts));
+      pos = nl3 === -1 ? len : nl3 + 1;
     } else {
-      // Incomplete last entry – break out of the main loop
-      break;
+      // Desync — discard just ONE line and retry from the next.
+      pos = nl1 + 1;
     }
   }
 

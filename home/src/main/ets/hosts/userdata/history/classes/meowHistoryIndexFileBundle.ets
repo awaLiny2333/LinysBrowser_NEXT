@@ -87,11 +87,11 @@ export class meowHistoryIndexFileBundle {
         this.indexKeyHeaders.set(key, new meowHistoryIndexHeader(positionStart, length));
       }
 
+      this.ready = true;
     } catch (e) {
       meow(`Failed to parse index file ${this.indexFilePath}: ${e}`, 'meowHistoryIndexFileBundle', meowLevel.ERROR);
+      this.indexKeyHeaders.clear();
     }
-    
-    this.ready = true;
   }
 
   /**

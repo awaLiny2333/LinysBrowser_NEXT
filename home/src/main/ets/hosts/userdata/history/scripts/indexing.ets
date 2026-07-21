@@ -1,6 +1,6 @@
 import lazy { taskpool } from "@kit.ArkTS";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import lazy { saveHybrid } from "../../../../catstypicalframework/utils/storage";
+import lazy { saveHybridSafe } from "../../../../catstypicalframework/utils/storage";
 import lazy { meowHistoryChunk } from "../classes/meowHistoryChunk";
 import lazy { meowHistoryIndexFileBundle } from "../classes/meowHistoryIndexFileBundle";
 
@@ -79,8 +79,8 @@ async function buildIndexToDiskSync(indexBasePath: string, chunk: meowHistoryChu
   const indexText = indexLines.join('\n');
 
   // Save files
-  await saveHybrid(`${indexChunkPath}.v2.index`, indexText, true);
-  await saveHybrid(`${indexChunkPath}.v2.data`, dataBuffer, true);
+  await saveHybridSafe(`${indexChunkPath}.v2.index`, indexText, true);
+  await saveHybridSafe(`${indexChunkPath}.v2.data`, dataBuffer, true);
 
   meow(`Built index ${chunk.year}-${chunk.month} to disk @[${indexChunkPath}] (${Date.now() - startTime} ms)`, 'indexing][buildIndexToDiskSync', meowLevel.INFO);
 }
@@ -89,7 +89,7 @@ async function buildIndexToDiskSync(indexBasePath: string, chunk: meowHistoryChu
  * Builds the index for ONE given chunk concurrently. You shouldn't call this directly. Use the Historian!
  * @param indexBasePath The base path for the index files. This method would read ${indexBasePath}/history_yyyy_mm.txt.index and .data.
  * @param chunk The chunk to build the index for.
- * @param cleanRebuild Whether to clean rebuild the index. (Discard existing entries and reset exising indexBudle)
+ * @param cleanRebuild Whether to clean rebuild the index. (Discard existing entries and reset exising indexBundle)
  */
 export async function buildIndexToDisk(indexBasePath: string, chunk: meowHistoryChunk, cleanRebuild: boolean) {
   try {

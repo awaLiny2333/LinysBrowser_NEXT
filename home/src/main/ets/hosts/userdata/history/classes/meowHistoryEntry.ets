@@ -66,7 +66,6 @@ export class meowHistoryEntry {
       try {
         decodedUrl = decodeURI(this.url.replaceAll('%S', ''));
         meow(`Troubles in decoding URL: ${this.url}, error: ${e}, but it worked after trying to replace %S with ''!`, 'meowHistoryEntry][tokenizeSelf', meowLevel.WARN);
-        decodedUrl = this.url;
       } catch (e) {
         meow(`Failed to decode URL: ${this.url}, error: ${e}, replacing %S didn't save it so we are going to use the original (encoded) url directly.`, 'meowHistoryEntry][tokenizeSelf', meowLevel.WARN);
         decodedUrl = this.url;
