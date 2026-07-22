@@ -810,7 +810,7 @@ export async function readArrayBuffer(fullFilePath: string, offset?: number, len
   if (requested <= 0) {
     return new ArrayBuffer(0);
   }
-  
+
   const MAX_READ = 2147483647; // about 2 GB
 
   // Block too large files.
@@ -1160,7 +1160,7 @@ export function showInFiles(path: string, context: common.UIAbilityContext) {
 // Download
 
 export async function downloadFileHttp(url: string): Promise<ArrayBuffer | undefined> {
-  if (!url.startsWith('http')) {
+  if (!/^https?:\/\//i.test(url)) {
     return undefined;
   }
 

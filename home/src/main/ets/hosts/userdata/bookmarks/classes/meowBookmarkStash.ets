@@ -47,7 +47,11 @@ export class meowBookmarkStash {
 
     // Search
     const results: meowBookmarkItem[] = [];
+    const visited = new Set<meowBookmarkItem>();
     const search = (node: meowBookmarkItem) => {
+      if (visited.has(node)) return; // Cycle guard
+      visited.add(node);
+
       if (node.isFolder) {
         for (const child of node.children) {
           if (results.length >= maxResults) break;

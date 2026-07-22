@@ -158,7 +158,11 @@ export function nowHtmlTimestamp(): number {
  * @returns The HTML string chunk for this node and its children.
  * @author ChatGLM @ Apr 6 2026
  */
-export function buildNodeHTML(node: meowBookmarkItem, indent: string): string {
+export function buildNodeHTML(node: meowBookmarkItem, indent: string, visited?: Set<meowBookmarkItem>): string {
+  if (!visited) visited = new Set<meowBookmarkItem>();
+  if (visited.has(node)) return ''; // Cycle guard
+  visited.add(node);
+
   let result = "";
 
   if (node.isFolder) {
@@ -174,7 +178,7 @@ export function buildNodeHTML(node: meowBookmarkItem, indent: string): string {
     if (node.children && node.children.length > 0) {
       const childIndent = indent + "    ";
       for (let i = 0; i < node.children.length; i++) {
-        result += buildNodeHTML(node.children[i], childIndent);
+        result += buildNodeHTML(node.children[i], childIndent, visited);
       }
     }
 
