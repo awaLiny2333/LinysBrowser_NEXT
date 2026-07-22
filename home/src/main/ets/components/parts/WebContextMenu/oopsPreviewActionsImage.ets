@@ -2,7 +2,7 @@ import { common } from '@kit.AbilityKit';
 import { UIContext } from '@kit.ArkUI';
 import { image } from '@kit.ImageKit';
 import { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
-import { addUnitsToSize, arrayBuffer_2_pixelMap, base64_2_arrayBuffer, downloadFileHttp, fileDocumentPickSave, saveHybrid, saveImageToAlbum, scanQrFromPath } from '../../../catstypicalframework/utils/storage';
+import { addUnitsToSize, arrayBuffer_2_pixelMap, base64_2_arrayBuffer, downloadFileHttp, fileDocumentPickSave, readArrayBuffer, saveHybrid, saveImageToAlbum, scanQrFromPath, uri_2_path } from '../../../catstypicalframework/utils/storage';
 import { meowTabInfo } from '../../../hosts/app/tabs/classes/meowTabInfo';
 import { MooSymbolButton } from '../../common/MooSymbolButton';
 import { MooTextButton } from '../../common/MooTextButton';
@@ -109,10 +109,14 @@ export struct oopsPreviewActionsImage {
   async get(): Promise<getImageResult> {
     let arrayBuffer: ArrayBuffer | undefined;
     // Get arrayBuffer
-    if (this.content.startsWith('http')) {
+    const contentLower = this.content.toLowerCase();
+    if (contentLower.startsWith('http')) {
       arrayBuffer = await downloadFileHttp(this.content);
-    } else if (this.content.startsWith('data:')) {
+    } else if (contentLower.startsWith('data:')) {
       arrayBuffer = await base64_2_arrayBuffer(this.content.split(',')[1]);
+    } else if (contentLower.startsWith('file:///')) {
+      const path = uri_2_path(this.content);
+      arrayBuffer = await readArrayBuffer(path);
     } else {
       return { ok: false };
     }
