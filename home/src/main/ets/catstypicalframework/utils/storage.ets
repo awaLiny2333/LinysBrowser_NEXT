@@ -107,7 +107,7 @@ export async function fileDocumentPick2Path(fileSuffixFilters: string[] = [".meo
  */
 export async function fileDocumentPickCopySave(sourcePath: string, nameOverwrite?: string) {
   if (!canIUse("SystemCapability.FileManagement.UserFileService")) {
-    console.error('[fileDocumentPick2Path] DocumentViewPicker.select failed. canIUse("SystemCapability.FileManagement.UserFileService") is false!');
+    console.error('[fileDocumentPickCopySave] DocumentViewPicker.select failed. canIUse("SystemCapability.FileManagement.UserFileService") is false!');
     return true;
   }
 
@@ -200,22 +200,30 @@ export async function pickDirectory(): Promise<string | undefined> {
  * @param fullFilePath The destination path or uri.
  * @param content A string or an ArrayBuffer, fills the file's content.
  * @param overwrite overwrite or not. Default is false.
- * @author awa_Liny and enhanced by DeepSeek Web @ Jul 21 2026.
+ * @param fsync Call fsync or not. Default is false (as this impacts I/O performance).
+ * @author awa_Liny and enhanced by DeepSeek V4 API @ Jul 22 2026.
  * */
-export async function saveHybrid(fullFilePath: string, content: string | ArrayBuffer | undefined, overwrite = false) {
+export async function saveHybrid(fullFilePath: string, content: string | ArrayBuffer | undefined, overwrite = false, fsync = false) {
   const startTime = Date.now();
   if (content === undefined) {
     console.error(`[saveHybrid][${fullFilePath}] content is undefined.`);
+    return false;
+  }
+  if (!fullFilePath) {
+    console.error(`[saveHybrid][${fullFilePath}] fullFilePath is empty.`);
     return false;
   }
 
   let file: fileIo.File | undefined;
   try {
     // Check if file exists
-    if (await fileIo.access(fullFilePath)) {
-      if (overwrite) {
-        await fileIo.unlink(fullFilePath);
-      } else {
+    if (overwrite) {
+      // OVERWRITE
+      // await fileIo.unlink(fullFilePath); // We use OpenMode.READ_WRITE | OpenMode.CREATE | OpenMode.TRUNC below to directly overwrite.
+    } else {
+      // NO OVERWRITE
+      // Check if file exist. If exist, stop script.
+      if (await fileIo.access(fullFilePath)) {
         console.warn(`[saveHybrid] file ${fullFilePath} exist! Returned. (${Date.now() - startTime} ms)`);
         return undefined;
       }
@@ -223,43 +231,49 @@ export async function saveHybrid(fullFilePath: string, content: string | ArrayBu
 
     file = await fileIo.open(
       fullFilePath,
-      fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE
+      fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE | fileIo.OpenMode.TRUNC // Ensures the files is empty when opened.
     );
 
-    // WRITE
-    let writeSuccess = false;
-    try {
-      const writeLen = await fileIo.write(file.fd, content);
-      console.info(`[saveHybrid] write to file ${fullFilePath} succeed, size = ${writeLen} (${Date.now() - startTime} ms)`);
-      writeSuccess = true;
-    } catch (e) {
-      console.error(`[saveHybrid] fileIo.write(file.fd, content) to file ${fullFilePath} failed: ${e} (${Date.now() - startTime} ms)`);
-      writeSuccess = false;
+    const contentBytes = typeof content === 'string' ? new util.TextEncoder().encodeInto(content) : new Uint8Array(content);
+    const total = contentBytes.byteLength;
+    let offset = 0;
+
+    while (offset < total) {
+      let chunk: ArrayBuffer;
+      if (offset === 0 && content instanceof ArrayBuffer) {
+        chunk = content; // No copy, pass in directly
+      } else if (offset === 0 && contentBytes.byteOffset === 0 && contentBytes.buffer.byteLength === total) {
+        chunk = contentBytes.buffer as ArrayBuffer; // offset = 0, is the first try. Avoid copying anything.
+      } else {
+        chunk = contentBytes.buffer.slice(contentBytes.byteOffset + offset, contentBytes.byteOffset + total);
+      }
+      const written = await fileIo.write(file.fd, chunk);
+      if (written <= 0) {
+        throw new Error(`short write: ${written} at byte ${offset}/${total}`);
+      }
+      offset += written;
     }
 
-    // CLOSE
-    let closeSuccess = false;
-    try {
-      await fileIo.close(file);
-      closeSuccess = true;
-    } catch (e) {
-      console.error(`[saveHybrid] fileIo.close(file) file ${fullFilePath} failed: ${e} (${Date.now() - startTime} ms)`);
-      closeSuccess = false;
-    }
-
-    // Return true only if both WRITE and CLOSE success.
-    return writeSuccess && closeSuccess;
+    console.info(`[saveHybrid] write to file ${fullFilePath} succeed, size = ${total} (${Date.now() - startTime} ms)`);
+    return true;
   } catch (e) {
     console.error(`[saveHybrid] write to file ${fullFilePath} failed: ${e} (${Date.now() - startTime} ms)`);
-    // Close even on error as long as a file is opened.
-    if (file) {
+    return false;
+  } finally {
+    if (file !== undefined) {
+      if (fsync) {
+        try {
+          await fileIo.fsync(file.fd);
+        } catch (fsyncErr) {
+          console.error(`[saveHybrid] fileIo.fsync(file.fd) file ${fullFilePath} failed: ${fsyncErr} (${Date.now() - startTime} ms)`);
+        }
+      }
       try {
         await fileIo.close(file);
       } catch (closeErr) {
-        console.error(`[saveHybrid] fileIo.close(file) after error failed: ${closeErr} (${Date.now() - startTime} ms)`); // 没招了 🤪
+        console.error(`[saveHybrid] fileIo.close(file) file ${fullFilePath} failed: ${closeErr} (${Date.now() - startTime} ms)`);
       }
     }
-    return false;
   }
 }
 
@@ -283,22 +297,37 @@ export async function saveHybrid(fullFilePath: string, content: string | ArrayBu
  * @param fullFilePath The destination path.
  * @param content      A string or an ArrayBuffer.
  * @param overwrite    Whether to replace an existing file. Default true.
+ * @param fsync Call fsync or not. Default is false (as this impacts I/O performance).
  * @returns true if saved, false on failure, undefined if overwrite=false
  *          and the target already exists.
  * @author DeepSeek V4 @ Jul 21 2026s
  */
-export async function saveHybridSafe(fullFilePath: string, content: string | ArrayBuffer | undefined, overwrite = true) {
+export async function saveHybridSafe(fullFilePath: string, content: string | ArrayBuffer | undefined, overwrite = true, fsync = false) {
   const startTime = Date.now();
   if (content === undefined) {
     console.error(`[saveHybridSafe][${fullFilePath}] content is undefined.`);
     return false;
   }
 
-  // Unique temp name — guards against concurrent writes to the same target
-  const tmpPath = `${fullFilePath}.tmp.${Date.now().toString(36)}.${Math.random().toString(36).substring(2, 6)}`;
+  // [前置] 如果不覆盖且目标已存在，提前退出——避免无用的 temp 写入
+  if (!overwrite) {
+    try {
+      if (await fileIo.access(fullFilePath)) {
+        console.warn(`[saveHybridSafe] exists & overwrite=false → kept old file (${Date.now() - startTime} ms)`);
+        return undefined;
+      }
+    } catch (_) {
+      // Cannot confirm file status, give up.
+      console.error(`[saveHybridSafe] access failed, aborting (${Date.now() - startTime} ms)`);
+      return false;
+    }
+  }
+
+  // Unique temp name
+  const tmpPath = `${fullFilePath}.tmp.${Date.now().toString(36)}.${util.generateRandomUUID()}`;
 
   // 1. Write content fully to the temp file
-  const writeOk = await saveHybrid(tmpPath, content, true);
+  const writeOk = await saveHybrid(tmpPath, content, true, fsync);
   if (!writeOk) {
     try {
       await fileIo.unlink(tmpPath);
@@ -309,23 +338,7 @@ export async function saveHybridSafe(fullFilePath: string, content: string | Arr
     return false;
   }
 
-  // 2. Respect overwrite policy
-  if (!overwrite) {
-    try {
-      if (await fileIo.access(fullFilePath)) {
-        try {
-          await fileIo.unlink(tmpPath);
-        } catch (_) {
-          /* best effort */
-        }
-        console.warn(`[saveHybridSafe] exists & overwrite=false → kept old file (${Date.now() - startTime} ms)`);
-        return undefined;
-      }
-    } catch (_) { /* access failed → file does not exist → proceed */
-    }
-  }
-
-  // 3. Atomically swap in the new file
+  // 2. Atomically swap in the new file
   try {
     await fileIo.rename(tmpPath, fullFilePath);
     console.info(`[saveHybridSafe] [${fullFilePath}] OK (${Date.now() - startTime} ms)`);
@@ -345,22 +358,26 @@ export async function saveHybridSafe(fullFilePath: string, content: string | Arr
  * Rename a folder.
  * @param folderPath The source path.
  * @param newPath The destination path.
+ * @returns True if success, false otherwise.
  */
 export async function renameFolder(folderPath: string, newPath: string) {
-  await fileIo.rename(folderPath, newPath)
-    .catch((e: BusinessError) => {
-      console.error(`[renameFolder] rename folder ${folderPath} to ${newPath} failed: ${e}`);
-    });
-  console.info(`[renameFolder] rename folder ${folderPath} to ${newPath} succeed`);
+  try {
+    await fileIo.rename(folderPath, newPath);
+    console.info(`[renameFolder] rename folder ${folderPath} to ${newPath} succeed`);
+    return true;
+  } catch (e) {
+    console.error(`[renameFolder] rename folder ${folderPath} to ${newPath} failed: ${e}`);
+    return false;
+  }
 }
 
 /**
  * Save an image to album.
  * @param context The common.UIAbilityContext.
  * @param srcFilePath The source path.
+ * @author awa_Liny and enhanced by DeepSeek V4 API @ Jul 22 2026.
  */
 export async function saveImageToAlbum(srcFilePath: string, context: common.UIAbilityContext): Promise<boolean> {
-  // Then save to gallery
   const srcFileUri = path_2_uri(srcFilePath);
   const ext = extensionOfName(srcFilePath);
   console.info('[saveImageToAlbum] Source URI: ' + srcFileUri);
@@ -368,31 +385,39 @@ export async function saveImageToAlbum(srcFilePath: string, context: common.UIAb
   let desFile: fileIo.File | undefined;
   let srcFile: fileIo.File | undefined;
   try {
-    // Show dialog to ask for permission and get destination url.
     let phAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
-    let desFileUris: string[] = await phAccessHelper.showAssetsCreationDialog([srcFileUri], [{ fileNameExtension: ext, photoType: photoAccessHelper.PhotoType.IMAGE }]);
+    let desFileUris: string[] = await phAccessHelper.showAssetsCreationDialog(
+      [srcFileUri],
+      [{ fileNameExtension: ext, photoType: photoAccessHelper.PhotoType.IMAGE }]
+    );
     console.info(`[saveImageToAlbum] Destination URIs: ${desFileUris}`);
 
-    // Copy there
     desFile = await fileIo.open(desFileUris[0], fileIo.OpenMode.WRITE_ONLY);
     srcFile = await fileIo.open(srcFileUri, fileIo.OpenMode.READ_ONLY);
     await fileIo.copyFile(srcFile.fd, desFile.fd);
-    fileIo.closeSync(srcFile);
-    fileIo.closeSync(desFile);
     console.info('[saveImageToAlbum] create asset by dialog successfully');
-
     return true;
   } catch (err) {
-    try {
-      if (desFile) fileIo.closeSync(desFile);
-      if (srcFile) fileIo.closeSync(srcFile);
-    } catch (e) {
-      // No other thing we can do. Give up 2 fds.
-    }
     console.error(`[saveImageToAlbum] failed to create asset by dialog, errCode is: ${err.code}, ${err.message}`);
     return false;
+  } finally {
+    // always attempt close regardless of success/failure
+    if (srcFile) {
+      try {
+        fileIo.closeSync(srcFile);
+      } catch (_) {
+        /* best effort */
+      }
+    }
+    if (desFile) {
+      try {
+        fileIo.closeSync(desFile);
+      } catch (_) {
+        /* best effort */
+      }
+    }
   }
-};
+}
 
 /**
  * Copy a file.
@@ -455,6 +480,7 @@ export async function dirCopy(fullSourcePath: string, destParentFolderPath: stri
     }
   } catch (e) {
     console.error(`[dirCopy] fileIo.copyFile(${fullSourcePath}, ${destParentFolderPath}, ${overwrite}) test source accessSync failed: ${e}`);
+    return false;
   }
 
   // Check destination
@@ -471,11 +497,12 @@ export async function dirCopy(fullSourcePath: string, destParentFolderPath: stri
     }
   } catch (e) {
     console.error(`[dirCopy] fileIo.copyFile(${fullSourcePath}, ${destParentFolderPath}, ${overwrite}) test destination accessSync failed: ${e}`);
+    return false;
   }
 
   // Copy
   try {
-    await fileIo.copyDir(fullSourcePath, destParentFolderPath);
+    await fileIo.copyDir(fullSourcePath, destParentFolderPath, 1); // 1 for force overwrite. But in most normal cases, the destDir should be empty. This is only an insurance.
     console.info(`[dirCopy] dir ${fullSourcePath} copied to ${destParentFolderPath}`);
     return true;
   } catch (e) {
@@ -502,6 +529,7 @@ export async function dirMove(fullSourcePath: string, destParentFolderPath: stri
     }
   } catch (e) {
     console.error(`[dirMove] dirMove(${fullSourcePath}, ${destParentFolderPath}, ${overwrite}) test source access failed: ${e}`);
+    return false;
   }
 
   // Check destination
@@ -518,6 +546,7 @@ export async function dirMove(fullSourcePath: string, destParentFolderPath: stri
     }
   } catch (e) {
     console.error(`[dirMove] dirMove(${fullSourcePath}, ${destParentFolderPath}, ${overwrite}) test destination accessSync failed: ${e}`);
+    return false;
   }
 
   // Copy
@@ -775,13 +804,19 @@ function _getFolderSizeSync(path: string, visited: Set<bigint>) {
 /**
  * Read an ArrayBuffer file from storage in an async way.
  * @param fullFilePath the file path
- * @returns An ArrayBuffer, of the requested file's content or undefined if the file doesn't exist.
+ * @param offset       The offset from which to start reading. Defaults to 0.
+ * @param length       The maximum number of bytes to read. Defaults to
+ *                     the remaining bytes from offset to end-of-file.
+ * @returns An ArrayBuffer containing the requested data,
+ *          or undefined if the file doesn't exist, is too large
+ *          (< 2 GB), or was truncated between stat and read (very low odds).
+ * @author awa_Liny and enhanced by DeepSeek V4 API @ Jul 22 2026.
  * */
 @Concurrent
 export async function readArrayBuffer(fullFilePath: string, offset?: number, length?: number) {
   const startTime: number = Date.now();
 
-  // 1. 文件存在性检查
+  // 1. Check file existence.
   let exists: boolean;
   try {
     exists = await fileIo.access(fullFilePath);
@@ -794,7 +829,7 @@ export async function readArrayBuffer(fullFilePath: string, offset?: number, len
     return undefined;
   }
 
-  // 2. 获取文件大小
+  // 2. Get file size.
   let stat: fileIo.Stat;
   try {
     stat = await fileIo.stat(fullFilePath);
@@ -803,7 +838,7 @@ export async function readArrayBuffer(fullFilePath: string, offset?: number, len
     return undefined;
   }
 
-  // 3. 计算读参数（刻意用 ?? 而非 ||，让 0 保持原值）
+  // 3. Compute read parameters (?? instead of || so that 0 is kept as-is).
   const filePos = offset ?? 0;
   const requested = length ?? (stat.size - filePos);
 
@@ -819,18 +854,32 @@ export async function readArrayBuffer(fullFilePath: string, offset?: number, len
     return undefined;
   }
 
-  // 4. 分配缓冲区
+  // 4. Allocate buffer and read.
   const buf = new ArrayBuffer(requested);
   let file: fileIo.File | undefined;
 
   try {
     file = await fileIo.open(fullFilePath, fileIo.OpenMode.READ_ONLY);
     const actual = await fileIo.read(file.fd, buf, {
-      offset: filePos, // 文件内偏移
-      length: requested // 最多读多少
+      offset: filePos, // file offset
+      length: requested // max bytes to read
     });
-    console.log(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] succeed! (${Date.now() - startTime} ms)`);
-    return actual === requested ? buf : buf.slice(0, actual);
+
+    // 5. Tell "request went past EOF" from "file was truncated".
+    if (actual < requested) {
+      if (filePos + actual >= stat.size) {
+        // Reached (or passed) EOF → caller's length exceeded file size, it's OK & accept.
+        console.warn(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] read to EOF: ${actual}/${requested} bytes, stat.size=${stat.size} (${Date.now() - startTime} ms)`);
+        return buf.slice(0, actual);
+      } else {
+        // Did not reach EOF → file was truncated between stat and read, abnormal.
+        console.error(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] unexpected short read: file truncated? ${actual}/${requested} bytes, stat.size=${stat.size} (${Date.now() - startTime} ms)`);
+        return undefined;
+      }
+    }
+
+    console.log(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] succeed! ${actual} bytes (${Date.now() - startTime} ms)`);
+    return buf;
   } catch (e) {
     console.error(`[readArrayBuffer][${fullFilePath}][${offset}, ${length}] read failed: ${e}`);
     return undefined;
@@ -868,59 +917,6 @@ export async function readArrayBufferConcurrent(fullFilePath: string, offset?: n
   }
 }
 
-// Operations
-
-/**
- * Creates a directory in sandbox directory
- * @param dirPath The folder path
- * @param context The context
- * @param overwrite Overwrite or not, default false
- * @returns The promise?
- * */
-export function sandboxCreateDir(dirPath: string, context: Context, overwrite = false) {
-  let filesDir: string = context.filesDir;
-  let fullFilePath = filesDir + '/' + dirPath;
-  if (fullFilePath.substring(fullFilePath.length - 1) != '/') {
-    fullFilePath = fullFilePath + '/';
-  }
-  console.log(`[sandboxCreateDir] mkdirSync ${fullFilePath} GO.`);
-
-  return fileIo.access(fullFilePath, fileIo.AccessModeType.EXIST)
-    .then((r) => {
-      if (r) {
-        if (overwrite) {
-          return fileIo.rmdir(fullFilePath)
-            .then(() => {
-              return fileIo.mkdir(fullFilePath)
-                .then(() => {
-                  console.log(`[sandboxCreateDir][r] mkdirSync ${dirPath} OK.`);
-                })
-                .catch((e: BusinessError) => {
-                  console.error(`[sandboxCreateDir][r] mkdirSync ${dirPath} return fileIo.mkdir(fullFilePath) failed: ${e}`);
-                });
-            })
-            .catch((e: BusinessError) => {
-              console.error(`[sandboxCreateDir][r] mkdirSync ${dirPath} return fileIo.rmdir(fullFilePath) failed: ${e}`);
-            });
-        } else {
-          console.warn(`[sandboxCreateDir][r] directory ${dirPath} exist! Returned.`);
-          return;
-        }
-      } else {
-        return fileIo.mkdir(fullFilePath)
-          .then(() => {
-            console.log(`[sandboxCreateDir][new] mkdirSync ${dirPath} OK.`);
-          })
-          .catch((e: BusinessError) => {
-            console.error(`[sandboxCreateDir][new] mkdirSync ${dirPath} return fileIo.mkdir(fullFilePath) failed: ${e}`);
-          });
-      }
-    })
-    .catch((e: BusinessError) => {
-      console.error(`[sandboxCreateDir] mkdirSync ${dirPath} fileIo.access(fullFilePath, fileIo.AccessModeType.EXIST) failed: ${e}`);
-    });
-}
-
 // Utils
 
 /**
@@ -954,8 +950,8 @@ export function path_2_uri(path: string) {
 export function makeFilenameLegal(filename: string, rep: string = '_'): string {
   // 1. 替换非法字符 + 控制字符
   let legal = filename.replace(/[\\/:*?"<>|\x00-\x1F\x7F]/g, rep);
-  // 2. 修剪首尾空格和点号（根据需求可选，建议保留）
-  legal = legal.trim().replace(/^\.+/, '').replace(/[.\s]+$/, '');
+  // 2. 修剪尾部空格和点号
+  legal = legal.trim().replace(/[.\s]+$/, ''); // 只去尾部，不去首部
   // 3. 如果结果为空，给一个默认名
   if (legal.length === 0) {
     legal = 'meow';
@@ -964,7 +960,8 @@ export function makeFilenameLegal(filename: string, rep: string = '_'): string {
   if (legal.length > 255) {
     const lastDotIndex = legal.lastIndexOf('.');
     if (lastDotIndex > 0) {
-      legal = legal.slice(0, 255 - (255 - lastDotIndex)) + legal.slice(lastDotIndex);
+      const extLen = legal.length - lastDotIndex;
+      legal = legal.slice(0, 255 - extLen) + legal.slice(lastDotIndex);
     } else {
       legal = legal.slice(0, 255);
     }
@@ -1015,7 +1012,7 @@ export function addUnitsToSize(size_in_bytes: number | bigint) {
   let units = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
   let result = BigInt(size_in_bytes);
   let unit = 0;
-  while (result > 1000 * 1000 && unit < units.length - 2) {
+  while (result >= 1000 * 1000 && unit < units.length - 2) {
     result /= 1000n;
     unit += 1;
   }
@@ -1070,8 +1067,14 @@ export function mimeOfFileName(fileName: string): string {
  * @returns The file name.
  */
 export function fileNameOfPath(path: string) {
-  const sp = path.split('/');
-  return sp[sp.length - 1];
+  // Skip the slash at the very end.
+  let end = path.length;
+  while (end > 0 && path[end - 1] === '/') {
+    end--;
+  }
+  if (end === 0) return '';
+  const lastSlash = path.lastIndexOf('/', end - 1);
+  return lastSlash >= 0 ? path.slice(lastSlash + 1, end) : path.slice(0, end);
 }
 
 /**
@@ -1095,14 +1098,15 @@ export function arrayBuffer_2_pixelMap(buf: ArrayBuffer) {
   console.log('[arrayBuffer_2_pixelMap] imageSource: ' + JSON.stringify(imageSource));
   return imageSource.createPixelMap({})
     .then((pm) => {
-      let pixelMap = pm;
-      imageSource.release();
       console.log('[arrayBuffer_2_pixelMap][A] Released imageSource!');
-      return pixelMap;
+      return pm;
     })
     .catch((e: BusinessError) => {
       console.error(`[arrayBuffer_2_pixelMap][A] createPixelMap failed: ${e}`);
       return undefined;
+    })
+    .finally(() => {
+      imageSource.release();
     });
 }
 
@@ -1120,15 +1124,16 @@ export async function packToFileFromPixelMap(context: Context, pixelMap: image.P
   try {
     file = fileIo.openSync(path, fileIo.OpenMode.CREATE | fileIo.OpenMode.READ_WRITE);
     await imagePackerApi.packToFile(pixelMap, file.fd, packOpts);
-    await fileIo.close(file);
     return path;
   } catch (error) {
+    console.error('Failed to pack the pixelMap to file. And the error is: ' + error);
+  } finally {
     try {
       if (file) fileIo.closeSync(file);
     } catch (e) {
       // No other thing we can do. Give up 1 fd.
     }
-    console.error('Failed to pack the pixelMap to file. And the error is: ' + error);
+    imagePackerApi.release();
   }
   return undefined;
 }
@@ -1169,7 +1174,9 @@ export async function downloadFileHttp(url: string): Promise<ArrayBuffer | undef
   const promise = new Promise<ArrayBuffer>((resolve, reject) => {
     httpRequest.request(url, {
       method: http.RequestMethod.GET,
-      expectDataType: http.HttpDataType.ARRAY_BUFFER
+      expectDataType: http.HttpDataType.ARRAY_BUFFER,
+      connectTimeout: 15000, // 15s
+      readTimeout: 30000, // 30s
     }, (err, data) => {
       if (err) {
         const e = new Error(`Request failed: ${err.message}`);
@@ -1177,6 +1184,14 @@ export async function downloadFileHttp(url: string): Promise<ArrayBuffer | undef
         meow(`Failed: ${e}`, 'downloadFileHttp', meowLevel.ERROR);
         return;
       }
+      // Check status code.
+      if (!data || data.responseCode < 200 || data.responseCode >= 300) {
+        const e = new Error(`Bad response: ${data?.responseCode ?? 'no response!'}`);
+        reject(e);
+        meow(`Failed: ${e}`, 'downloadFileHttp', meowLevel.ERROR);
+        return;
+      }
+      // Check result.
       if (data?.result) {
         resolve(data.result as ArrayBuffer);
         meow('RESOLVED!', 'downloadFileHttp');
@@ -1189,6 +1204,10 @@ export async function downloadFileHttp(url: string): Promise<ArrayBuffer | undef
   });
 
   return promise.finally(() => {
-    httpRequest.destroy();
+    try {
+      httpRequest.destroy();
+    } catch (e) {
+      meow(`httpRequest.destroy() failed: ${e}`, 'downloadFileHttp', meowLevel.WARN); // Is this try-catch necessary? Will httpRequest.destroy(); really throw anything?
+    }
   });
 }

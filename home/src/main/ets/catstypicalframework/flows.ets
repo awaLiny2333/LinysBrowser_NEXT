@@ -40,7 +40,7 @@ import { meowAvoid } from './hosts/meowAvoid';
 import { meowLayout } from './hosts/meowLayout';
 import { meowMisc } from './hosts/meowMisc';
 import { listenCrash, meow, meowLevel } from './utils/catsLogger';
-import { clearDirectory, ensureDirectoryExist, listFilesUnderDir, removeDir } from './utils/storage';
+import { clearDirectory, ensureDirectoryExist, listFilesUnderDir, makeFilenameLegal, removeDir } from './utils/storage';
 import { listenAvoid, listenFocus, listenFreeWindowMode, listenSmartReachability, listenWindowStatusChange, meowPx2vp, offAvoid, offFocus, offWindowStatusChange, setDecorHeight, setKeyboardAvoidResize, shortModeThreshold, updateAvoid, updateFreeWindowMode, updateNavigationIndicator, wideModeThreshold } from './utils/ui';
 
 // Enums
@@ -50,6 +50,31 @@ import { listenAvoid, listenFocus, listenFreeWindowMode, listenSmartReachability
 export enum wantSource {
   ONCREATE = 'ONCREATE',
   RUNTIME = 'RUNTIME'
+}
+
+// Helpers
+
+/**
+ * Gets the proposed zone alias from a Want in a really safe way.
+ * @param want The Want object.
+ * @returns A string, the alias.
+ */
+function getZoneAliasFromWant(want: Want) {
+  let wantZoneAlias = want.parameters?.zoneAlias;
+  if (wantZoneAlias === undefined) {
+    wantZoneAlias = '';
+  } else {
+    if (typeof wantZoneAlias === 'string') {
+      if ((wantZoneAlias as string).length == 0) {
+        return ''; // directly pass empty strings.
+      }
+    } else {
+      // Not a string... How could this happen??
+      wantZoneAlias = `${wantZoneAlias}`;
+    }
+    wantZoneAlias = makeFilenameLegal(wantZoneAlias as string, ''); // Safety insurance.
+  }
+  return wantZoneAlias as string;
 }
 
 // Flows
@@ -96,7 +121,8 @@ export function earlyOnCreate(context: Context, launchWant: Want) {
 
   // Window private hosts
   // myUi
-  const workingDir = launchWant.parameters?.zoneAlias ? `${context.filesDir}/zones/${launchWant.parameters?.zoneAlias}` : `${context.filesDir}/continues/${myWindowId}`;
+  const wantZoneAlias = getZoneAliasFromWant(launchWant);
+  const workingDir = wantZoneAlias ? `${context.filesDir}/zones/${wantZoneAlias}` : `${context.filesDir}/continues/${myWindowId}`;
   AppStorageV2.connect(meowUiHost, `meowUiHost_${myWindowId}`, () => new meowUiHost(launchWant, myWindowId, workingDir))!;
 
   // Other
@@ -226,7 +252,7 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
   myUi.windowObj = windowObj;
   if (myUi.isZone) {
     // Get from want params.
-    myUi.windowAlias = myUi.launchWant.parameters?.zoneAlias as string || '';
+    myUi.windowAlias = getZoneAliasFromWant(myUi.launchWant);
   } else {
     // Automatically grab the alias last time set. This has to be here instead of earlier processes because it requires the Settings to be initialized.
     myUi.windowAlias = defaultNewWindowAlias();

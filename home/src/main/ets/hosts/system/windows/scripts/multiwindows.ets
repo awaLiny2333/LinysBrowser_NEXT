@@ -2,6 +2,7 @@ import lazy { common, Want } from "@kit.AbilityKit";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import { getAbilityRunningInfos } from "../../../../catstypicalframework/utils/environment";
 import lazy { getCreateMyApp } from "./helpers";
+import lazy { util } from "@kit.ArkTS";
 
 /**
  * Get the last window id.
@@ -26,7 +27,7 @@ export function getAllWindowIds() {
  * @returns The id.
  */
 export function generateTimeBasedWindowId() {
-  return `meow_${Date.now().toString(16)}_${Math.random().toString(36).substring(2, 6)}`;
+  return `meow_${Date.now().toString(16)}_${util.generateRandomUUID()}`;
 }
 
 /**
