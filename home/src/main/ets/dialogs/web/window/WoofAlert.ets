@@ -9,6 +9,7 @@ struct WoofAlertPanel {
   @Param @Require myUi: meowUiHost;
   // Info
   @Local data: OnAlertEvent | undefined;
+  @Local alreadyResolved: boolean = false;
 
   aboutToAppear(): void {
     const req = this.myUi.myDialog.lastRequest;
@@ -22,9 +23,11 @@ struct WoofAlertPanel {
       controller: this.controller, title: this.data?.url, myUi: this.myUi, showConfirmButton: true,
       onConfirm: () => {
         this.data?.result.handleConfirm();
+        this.alreadyResolved = true;
         this.controller.close();
       },
       aboutToClose: () => {
+        if (this.alreadyResolved) return;
         this.data?.result.handleCancel();
       }
     }) {

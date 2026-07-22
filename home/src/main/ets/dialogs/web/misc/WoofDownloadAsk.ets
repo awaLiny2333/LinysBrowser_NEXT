@@ -15,6 +15,7 @@ struct WoofDownloadAskPanel {
   // Info
   @Local webDlItem: webview.WebDownloadItem | undefined;
   @Local filename: string = '';
+  @Local alreadyResolved: boolean = false;
   // UI
   inputId: string = `WoofDownloadAsk_filename_${Date.now().toString(16)}`;
 
@@ -34,6 +35,10 @@ struct WoofDownloadAskPanel {
       },
       onCancel: () => {
         this.controller.close();
+      },
+      aboutToClose: () => {
+        if (this.alreadyResolved) return;
+        this.webDlItem?.cancel();
       }
     }) {
       // Info of download
@@ -72,6 +77,7 @@ struct WoofDownloadAskPanel {
     if (this.webDlItem) {
       getMyDawn().confirmDownload(this.webDlItem, this.filename);
     }
+    this.alreadyResolved = true;
     this.controller.close();
   }
 }

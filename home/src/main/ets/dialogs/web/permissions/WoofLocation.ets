@@ -13,6 +13,7 @@ struct WoofLocationPanel {
   @Param @Require myUi: meowUiHost;
   // Info
   @Local data: OnGeolocationShowEvent | undefined;
+  @Local alreadyResolved: boolean = false;
 
   aboutToAppear(): void {
     const req = this.myUi.myDialog.lastRequest;
@@ -28,13 +29,16 @@ struct WoofLocationPanel {
       onConfirm: async () => {
         await this.requestPermissionFromSystem();
         this.data?.geolocation.invoke(this.data.origin, true, false);
+        this.alreadyResolved = true;
         this.controller.close();
       },
       onCancel: () => {
         this.data?.geolocation.invoke(this.data.origin, false, false);
+        this.alreadyResolved = true;
         this.controller.close();
       },
       aboutToClose: () => {
+        if (this.alreadyResolved) return;
         this.data?.geolocation.invoke(this.data.origin, false, false);
       }
     }) {

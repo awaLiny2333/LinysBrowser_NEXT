@@ -37,13 +37,13 @@ struct WoofColorPicker {
             v: this.v,
             hex: this.hex,
             onHsvChange: (h: number | undefined, s: number | undefined, v: number | undefined) => {
-              if (h) {
+              if (h !== undefined) {
                 this.h = h;
               }
-              if (s) {
+              if (s !== undefined) {
                 this.s = s;
               }
-              if (v) {
+              if (v !== undefined) {
                 this.v = v;
               }
               this.hex = hsv2hex([this.h, this.s, this.v]);
@@ -72,13 +72,13 @@ struct WoofColorPicker {
             v: this.v,
             hex: this.hex,
             onHsvChange: (h: number | undefined, s: number | undefined, v: number | undefined) => {
-              if (h) {
+              if (h !== undefined) {
                 this.h = h;
               }
-              if (s) {
+              if (s !== undefined) {
                 this.s = s;
               }
-              if (v) {
+              if (v !== undefined) {
                 this.v = v;
               }
               this.hex = hsv2hex([this.h, this.s, this.v]);

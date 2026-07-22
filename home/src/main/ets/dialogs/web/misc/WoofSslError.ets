@@ -10,6 +10,7 @@ struct WoofSslErrorPanel {
   // Info
   data: SslErrorEvent | undefined;
   @Local desc: string = '';
+  @Local alreadyResolved: boolean = false;
 
   aboutToAppear(): void {
     const req = this.myUi.myDialog.lastRequest;
@@ -27,13 +28,16 @@ struct WoofSslErrorPanel {
       showConfirmButton: true, showCancelButton: true, doubleConfirm: true,
       onConfirm: () => {
         this.data?.handler.handleConfirm();
+        this.alreadyResolved = true;
         this.controller.close();
       },
       onCancel: () => {
         this.data?.handler.handleCancel();
+        this.alreadyResolved = true;
         this.controller.close();
       },
       aboutToClose: () => {
+        if (this.alreadyResolved) return;
         this.data?.handler.handleCancel();
       }
     }) {

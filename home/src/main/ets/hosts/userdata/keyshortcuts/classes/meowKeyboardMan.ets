@@ -21,6 +21,8 @@ export class meowKeyboardMan {
   @Trace fullscreenWindowed: meowKeyBind = new meowKeyBind(FunctionKey.F11, [ModifierKey.SHIFT]);
   @Trace esc: meowKeyBind = new meowKeyBind(FunctionKey.ESC, []);
   @Trace sidebar: meowKeyBind = new meowKeyBind('z', [ModifierKey.CTRL, ModifierKey.SHIFT]);
+  // Runtime
+  applyKeysTimeoutId: number | undefined;
 
   // Put them all in one place
   @Trace shortcuts: meowKeyBind[] = [
@@ -88,7 +90,8 @@ export class meowKeyboardMan {
     }
 
     this.shortcuts[index].fromArray([]); // Unbind existing key binds
-    setTimeout(() => {
+    clearTimeout(this.applyKeysTimeoutId);
+    this.applyKeysTimeoutId = setTimeout(() => {
       this.shortcuts[index].fromArray(fromStrings);
       this.saveToSettings();
     }, 100);

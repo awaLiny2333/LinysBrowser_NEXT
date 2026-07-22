@@ -27,7 +27,11 @@ export struct oopsPreviewActionsImage {
       const context = UIContext.getLastFocusedUIContext()?.getHostContext();
       if (!context) return;
       const path = `${context.tempDir}/${r.filename!}`;
+      const target = this.tabInfo.imageUriOrData;
       saveHybrid(path, r.buffer!, true).then(() => {
+        if (target != this.tabInfo.imageUriOrData) {
+          return;
+        }
         // Set
         this.tabInfo.imageFilename = r.filename!;
         this.tabInfo.imagePath = path;
@@ -46,6 +50,7 @@ export struct oopsPreviewActionsImage {
 
   aboutToDisappear(): void {
     // Set
+    this.tabInfo.imageUriOrData = '';
     this.tabInfo.imageFilename = '';
     this.tabInfo.imagePath = '';
     this.tabInfo.imageArrayBuffer = undefined;
@@ -108,6 +113,8 @@ export struct oopsPreviewActionsImage {
    */
   async get(): Promise<getImageResult> {
     let arrayBuffer: ArrayBuffer | undefined;
+    // Mark content uri
+    this.tabInfo.imageUriOrData = this.content;
     // Get arrayBuffer
     const contentLower = this.content.toLowerCase();
     if (contentLower.startsWith('http')) {

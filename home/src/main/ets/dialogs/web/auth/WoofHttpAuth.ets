@@ -12,6 +12,7 @@ struct WoofHttpAuthPanel {
   @Local data: OnHttpAuthRequestEvent | undefined;
   @Local username: string = '';
   @Local password: string = '';
+  @Local alreadyResolved: boolean = false;
   // UI
   usernameInputId: string = `WoofHttpAuthPanel_username_${Date.now().toString(16)}`;
   passwordInputId: string = `WoofHttpAuthPanel_password_${Date.now().toString(16)}`;
@@ -32,9 +33,11 @@ struct WoofHttpAuthPanel {
       },
       onCancel: () => {
         this.data?.handler.cancel();
+        this.alreadyResolved = true;
         this.controller.close();
       },
       aboutToClose: () => {
+        if (this.alreadyResolved) return;
         this.data?.handler.cancel();
       }
     }) {
@@ -79,6 +82,7 @@ struct WoofHttpAuthPanel {
 
   confirm() {
     this.data?.handler.confirm(this.username, this.password);
+    this.alreadyResolved = true;
     this.controller.close();
   }
 }

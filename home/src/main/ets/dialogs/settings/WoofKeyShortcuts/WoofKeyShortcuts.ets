@@ -52,7 +52,7 @@ struct KeyShortcutsPanel {
   receiveMessage() {
     if (this.myUi.localMessageTunnel?.type == meowAppMessageType.KEY_SHORTCUTS_PICKED) {
       const newBind = this.myUi.localMessageTunnel?.payload as string[];
-      if (newBind.length == 0) {
+      if (newBind.length == 0 || this.lastListenerIndex < 0) {
         meow(`No key shortcut picked or no changes made.`, 'WoofKeyShortcuts');
         return;
       }

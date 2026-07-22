@@ -9,6 +9,7 @@ struct WoofConfirmPanel {
   @Param @Require myUi: meowUiHost;
   // Info
   @Local data: OnConfirmEvent | undefined;
+  @Local alreadyResolved: boolean = false;
 
   aboutToAppear(): void {
     const req = this.myUi.myDialog.lastRequest;
@@ -23,13 +24,16 @@ struct WoofConfirmPanel {
       showConfirmButton: true, showCancelButton: true, doubleConfirm: true,
       onConfirm: () => {
         this.data?.result.handleConfirm();
+        this.alreadyResolved = true;
         this.controller.close();
       },
       onCancel: () => {
         this.data?.result.handleCancel();
+        this.alreadyResolved = true;
         this.controller.close();
       },
       aboutToClose: () => {
+        if (this.alreadyResolved) return;
         this.data?.result.handleCancel();
       }
     }) {

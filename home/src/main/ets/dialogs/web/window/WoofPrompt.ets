@@ -10,6 +10,7 @@ struct WoofPromptPanel {
   @Param @Require myUi: meowUiHost;
   // Info
   @Local data: OnPromptEvent | undefined;
+  @Local alreadyResolved: boolean = false;
 
   aboutToAppear(): void {
     const req = this.myUi.myDialog.lastRequest;
@@ -24,13 +25,16 @@ struct WoofPromptPanel {
       showConfirmButton: true, showCancelButton: true, doubleConfirm: true,
       onConfirm: () => {
         this.data?.result.handlePromptConfirm(this.data?.value || '');
+        this.alreadyResolved = true;
         this.controller.close();
       },
       onCancel: () => {
         this.data?.result.handleCancel();
+        this.alreadyResolved = true;
         this.controller.close();
       },
       aboutToClose: () => {
+        if (this.alreadyResolved) return;
         this.data?.result.handleCancel();
       }
     }) {
@@ -45,6 +49,7 @@ struct WoofPromptPanel {
           },
           onSubmit: () => {
             this.data?.result.handlePromptConfirm(this.data?.value || '');
+            this.alreadyResolved = true;
             this.controller.close();
           }
         });

@@ -32,7 +32,8 @@ export function archiveWeb(controller: WebviewController | undefined) {
     meow('Rejected: controller is undefined', 'printWeb', meowLevel.WARN);
     return;
   }
-  const context = UIContext.getLastFocusedUIContext()?.getHostContext()!;
+  const context = UIContext.getAllUIContexts()[0].getHostContext();
+  if (!context) return; // No context got.
   const tempName = `archiveWeb_${Date.now().toFixed(16)}.mht`;
   try {
     const title = controller.getTitle() || 'Untitled';

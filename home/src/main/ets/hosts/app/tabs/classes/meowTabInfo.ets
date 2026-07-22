@@ -72,6 +72,7 @@ export class meowTabInfo {
   @Trace isEditable: boolean = false;
   // Context menu image
   @Trace hasImage: boolean = false;
+  @Trace imageUriOrData: string = '';
   @Trace imageArrayBuffer: ArrayBuffer | undefined;
   @Trace imagePixelMap: image.PixelMap | undefined;
   @Trace imageFilename: string = '';
@@ -1013,6 +1014,9 @@ export class meowTabInfo {
   }
 
   receiveSearchResult(result: OnSearchResultReceiveEvent) {
+    if (!this.isSearching) {
+      return;
+    }
     this.currentSearchResultIdx = result.activeMatchOrdinal;
     this.searchResultCount = result.numberOfMatches;
     this.searchIsDone = result.isDoneCounting;

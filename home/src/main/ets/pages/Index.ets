@@ -636,8 +636,8 @@ struct Index {
     // Total area
     const avoids = this.bottomAvoidHeight + this.topAvoidHeight;
     const effectsCorrection = useEffects() ? standardSpacing : 0;
-    const maxHeightTitleArea = this.myUi.myLayout.height - avoids + effectsCorrection;
-    this.myUi.myLayout.heightTitleArea = maxHeightTitleArea;
+    const area = this.myUi.myLayout.height - avoids + effectsCorrection;
+    this.myUi.myLayout.heightTitleArea = area;
 
     // Title bar
     const unitHeight = textInputSlimHeight + standardSpacing;
@@ -647,7 +647,7 @@ struct Index {
       this.myUi.myLayout.heightTitleBar = newTitleHeight;
     }
 
-    return maxHeightTitleArea;
+    return area;
   }
 
   /**
