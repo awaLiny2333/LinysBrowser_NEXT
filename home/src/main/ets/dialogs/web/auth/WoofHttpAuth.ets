@@ -43,7 +43,7 @@ struct WoofHttpAuthPanel {
     }) {
       Column({ space: standardSpacing }) {
         Text(`Host: ${this.data?.host}`).attributeModifier(new MooTextModifier()).width('100%').padding({ left: standardSpacing * 0.5, right: standardSpacing * 0.5 });
-        Text(`Realm: ${this.data?.host}`).attributeModifier(new MooTextModifier()).width('100%').padding({ left: standardSpacing * 0.5, right: standardSpacing * 0.5 });
+        Text(`Realm: ${this.data?.realm}`).attributeModifier(new MooTextModifier()).width('100%').padding({ left: standardSpacing * 0.5, right: standardSpacing * 0.5 });
         MooTextInputV2({
           type: InputType.USER_NAME,
           text: this.username,

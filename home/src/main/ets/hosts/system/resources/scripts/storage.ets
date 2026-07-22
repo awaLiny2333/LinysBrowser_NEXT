@@ -16,7 +16,9 @@ export async function readBackgroundImage(path: string) {
     meow(`Failed from ${path}. Does it ever exist?`, 'meowResources][loadBackgroundImage', meowLevel.WARN);
     return;
   }
-  const backgroundImage = await sendableImage.createImageSource(buf).createPixelMap();
+  const imgSource = sendableImage.createImageSource(buf);
+  const backgroundImage = await imgSource.createPixelMap();
+  imgSource.release(); // No await, impacts performance.
   return backgroundImage;
 }
 

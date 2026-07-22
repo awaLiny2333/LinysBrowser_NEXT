@@ -186,7 +186,6 @@ export struct ScratchingBoardPanel {
   }
 
   imagePayload(payload: object | undefined) {
-    return payload as [ArrayBuffer, image.PixelMap, string, image.ImageInfo];
+    return payload as [ArrayBuffer, image.PixelMap, string, image.ImageInfo]; // We trust this.
   }
-
 }

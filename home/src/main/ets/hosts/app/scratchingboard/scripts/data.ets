@@ -82,7 +82,9 @@ export async function unifiedRecord2BoardData(records: unifiedDataChannel.Unifie
           const newUri = path_2_uri(newPath);
           // Read, copy and get info.
           const buffer = await readArrayBufferConcurrent(originalPath);
-          const pixelMap = await image.createImageSource(buffer).createPixelMap();
+          const imgSource = image.createImageSource(buffer);
+          const pixelMap = await imgSource.createPixelMap();
+          imgSource.release();
           const info = await pixelMap.getImageInfo();
           await saveHybrid(newPath, buffer);
           // Push to new record list!

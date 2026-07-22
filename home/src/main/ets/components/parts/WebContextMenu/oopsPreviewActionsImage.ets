@@ -54,6 +54,7 @@ export struct oopsPreviewActionsImage {
     this.tabInfo.imageFilename = '';
     this.tabInfo.imagePath = '';
     this.tabInfo.imageArrayBuffer = undefined;
+    this.tabInfo.imagePixelMap?.release();
     this.tabInfo.imagePixelMap = undefined;
     this.tabInfo.imageInfo = undefined;
     this.tabInfo.imageQrResults = undefined;
