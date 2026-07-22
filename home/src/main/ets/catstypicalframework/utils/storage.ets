@@ -35,7 +35,7 @@ export async function retrieveDownloadDirectory(context: Context) {
  * @param content A string or an ArrayBuffer, fills the file's content.
  * @returns If succeeded.
  */
-export async function fileDocumentPickSave(fileName: string, content: string | ArrayBuffer): Promise<boolean | void | undefined> {
+export async function fileDocumentPickSave(fileName: string, content: string | ArrayBuffer): Promise<boolean | undefined> {
   try {
     const ext = extensionOfName(fileName);
     return (new picker.DocumentViewPicker())
@@ -390,6 +390,10 @@ export async function saveImageToAlbum(srcFilePath: string, context: common.UIAb
       [srcFileUri],
       [{ fileNameExtension: ext, photoType: photoAccessHelper.PhotoType.IMAGE }]
     );
+    if (!desFileUris || desFileUris.length === 0) {
+      console.info('[saveImageToAlbum] User cancelled or no URI returned');
+      return false;
+    }
     console.info(`[saveImageToAlbum] Destination URIs: ${desFileUris}`);
 
     desFile = await fileIo.open(desFileUris[0], fileIo.OpenMode.WRITE_ONLY);
@@ -404,14 +408,14 @@ export async function saveImageToAlbum(srcFilePath: string, context: common.UIAb
     // always attempt close regardless of success/failure
     if (srcFile) {
       try {
-        fileIo.closeSync(srcFile);
+        await fileIo.close(srcFile);
       } catch (_) {
         /* best effort */
       }
     }
     if (desFile) {
       try {
-        fileIo.closeSync(desFile);
+        await fileIo.close(desFile);
       } catch (_) {
         /* best effort */
       }
@@ -977,7 +981,10 @@ export function makeFilenameLegal(filename: string, rep: string = '_'): string {
 export function base64_2_arrayBuffer(base64Str: string): Promise<ArrayBuffer> {
   let base64 = new util.Base64Helper();
   return base64.decode(base64Str).then((uint8Array) => {
-    return uint8Array.buffer.slice(0, uint8Array.byteLength);
+    if (uint8Array.byteOffset === 0 && uint8Array.byteLength === uint8Array.buffer.byteLength) {
+      return uint8Array.buffer as ArrayBuffer; // Total align, no need to copy.
+    }
+    return uint8Array.buffer.slice(uint8Array.byteOffset, uint8Array.byteOffset + uint8Array.byteLength);
   });
 }
 
@@ -1001,7 +1008,7 @@ export async function scanQrFromPath(path: string, ignoreCanIUse: boolean = fals
 }
 
 /**
- * Adds a unit to a size in bytes.
+ * Adds a unit to a size in bytes. Note that the smallest unit is KB.
  * @param size_in_bytes A number or bigint, the size in bytes.
  * @returns A string, the connected result of a number of size and its unit.
  * */
@@ -1009,14 +1016,14 @@ export function addUnitsToSize(size_in_bytes: number | bigint) {
   if (size_in_bytes == undefined || size_in_bytes == null) {
     return 'No Bytes!';
   }
-  let units = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  let units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
   let result = BigInt(size_in_bytes);
   let unit = 0;
   while (result >= 1000 * 1000 && unit < units.length - 2) {
     result /= 1000n;
     unit += 1;
   }
-  // To keep decimal places
+  // To keep decimal places.
   let numberResult = Number(result);
   numberResult /= 1000;
   unit += 1;

@@ -19,7 +19,6 @@ struct MeowAddressBar {
   @Param @Require myUi: meowUiHost;
   // Local
   @Local barWidth: number = 10;
-  focusBlurTimeoutId: number | undefined = undefined;
 
   build() {
     Row() {
