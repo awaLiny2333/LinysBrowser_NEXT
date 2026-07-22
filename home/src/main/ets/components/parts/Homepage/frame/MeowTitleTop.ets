@@ -61,5 +61,5 @@ export function MeowTitleTop(myUi: meowUiHost, myApp: meowAppHost, context: UICo
   .justifyContent(FlexAlign.Center)
   .alignItems(VerticalAlign.Top)
   .width('100%')
-  .padding(myApp.freeWindow ? { right: windowTopAvoidRight, left: windowTopAvoidLeft, top: 11.5 } : { top: 11.5 });
+  .padding(myApp.freeWindow ? { right: windowTopAvoidRight, left: windowTopAvoidLeft, top: 11.5 } : { top: 4 });
 }

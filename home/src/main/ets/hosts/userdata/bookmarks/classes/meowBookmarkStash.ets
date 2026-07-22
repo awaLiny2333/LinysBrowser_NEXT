@@ -47,10 +47,7 @@ export class meowBookmarkStash {
 
     // Search
     const results: meowBookmarkItem[] = [];
-    const visited = new Set<meowBookmarkItem>(); // I don't really think we are going to meet any loops... But this makes things safer, doesn't it?
     const search = (node: meowBookmarkItem) => {
-      if (visited.has(node)) return; // Cycle detected — skip
-      visited.add(node);
       if (node.isFolder) {
         for (const child of node.children) {
           if (results.length >= maxResults) break;

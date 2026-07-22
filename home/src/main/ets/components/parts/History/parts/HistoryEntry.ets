@@ -122,7 +122,11 @@ struct HistoryEntry {
 
   // @Computed
   get myDate() {
-    return new Date(this.item.time).toLocaleTimeString().padStart(11, '0');
+    const d = new Date(this.item.time);
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    const ss = String(d.getSeconds()).padStart(2, '0');
+    return `${hh}:${mm}:${ss}`;
   }
 }
 

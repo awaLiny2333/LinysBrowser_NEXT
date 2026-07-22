@@ -13,7 +13,7 @@ import { MooCapsuleButton } from "../../common/MooCapsuleButton";
 import { MooSymbolButton } from "../../common/MooSymbolButton";
 import { MooTextInputV2 } from "../../common/MooTextInputV2";
 import { MooTextModifier } from "../../common/MooTextModifier";
-import { meowThemeColorType, mooTextType, standardSpacing } from "../../constants";
+import { fontSizeSymbol, meowThemeColorType, mooTextType, standardSpacing } from "../../constants";
 import { defaultAnimation, getColor, isPreferRightHand, useEffects } from "../../settings";
 import { HistoryEntry } from "./parts/HistoryEntry";
 import { defaultMonthButtonHeight, MonthButton } from "./parts/MonthButton";
@@ -68,8 +68,10 @@ struct HistoryPanel {
             if (obj.index == 0 || (obj.item.dateKey != this.myEntries[obj.index - 1]?.dateKey)) {
               // Title
               Column() {
-                Text(`${new Date(obj.item.time).toLocaleDateString()}`)
+                Text(`${new Date(obj.item.time).getDate()}`)
                   .attributeModifier(new MooTextModifier(mooTextType.TITLE))
+                  .fontSize(fontSizeSymbol * 1.5)
+                  .opacity(0.5)
                   .padding(standardSpacing * 0.75);
                 this.entry(obj);
               }

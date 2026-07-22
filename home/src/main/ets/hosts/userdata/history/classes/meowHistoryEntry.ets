@@ -19,7 +19,6 @@
 import { collections } from "@kit.ArkTS";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import lazy { tokenize } from "../../../../catstypicalframework/utils/strings";
-import { DAY_MS } from "../scripts/helpers";
 
 @Sendable
 export class meowHistoryEntry {
@@ -34,7 +33,9 @@ export class meowHistoryEntry {
     this.title = title;
     this.url = url;
     this.time = time;
-    this.dateKey = Math.floor(this.time / DAY_MS);
+    // this.dateKey = Math.floor(this.time / DAY_MS);
+    const d = new Date(this.time);
+    this.dateKey = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
   }
 
   /**
