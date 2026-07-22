@@ -30,6 +30,7 @@ export class meowResources {
     }
     setTimeout(() => {
       animateToImmediately(defaultAnimation(), () => {
+        this.backgroundImage?.release();
         this.backgroundImage = backgroundImage;
       });
     });

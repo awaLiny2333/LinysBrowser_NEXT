@@ -196,6 +196,7 @@ struct MeowWeb {
                   meow(`Error getting title: ${e}`, 'WebNode][onWindowNew', meowLevel.ERROR);
                 }
               }, onWindowExit: () => {
+                this.pk.popupController = undefined;
                 animateToImmediately(defaultAnimation(), () => {
                   this.pk.showingPopup = false;
                 });
@@ -221,6 +222,7 @@ struct MeowWeb {
                   animateToImmediately(defaultAnimation(), () => {
                     this.pk.showingPopup = false;
                   });
+                  this.pk.popupController = undefined;
                 }
               });
             }

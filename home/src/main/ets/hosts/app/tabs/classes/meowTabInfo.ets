@@ -181,21 +181,22 @@ export class meowTabInfo {
     clearTimeout(this.wsBackupReqTmId);
     this.requestDestroyNode();
 
-    setTimeout(() => {
-      animateToImmediately(defaultAnimation(), () => {
-        this.saveHistoryTimeoutId = undefined;
-        this.wsBackupReqTmId = undefined;
+    // setTimeout(() => {
+    // animateToImmediately(defaultAnimation(), () => {
+    this.saveHistoryTimeoutId = undefined;
+    this.wsBackupReqTmId = undefined;
 
-        // Clear objects.
-        this.popupController = undefined;
-        this.showingPopup = false;
-        this.node = undefined;
-        this.controller = undefined;
+    // Clear objects.
+    this.popupController = undefined;
+    this.showingPopup = false;
+    this.node = undefined;
+    this.controller = undefined;
 
-        // Mark
-        this.restoringWebState = true;
-      });
-    }); // Use timeout to protect animation.
+    // Mark
+    this.restoringWebState = true;
+    // });
+    // }); // Use timeout to protect animation.
+    // Give up animation in trade of safety.
   }
 
   // WEB STATES
@@ -863,6 +864,7 @@ export class meowTabInfo {
   requestExit() {
     const myTabs = this.myUi.myTabs;
     myTabs.closeTab(myTabs.tabs.indexOf(this));
+    this.popupController = undefined;
     meow(`Exit! ${this.url}`, 'WebNode][onWindowExit');
   }
 

@@ -5,7 +5,7 @@ import { meowAvoid } from "../../../../catstypicalframework/hosts/meowAvoid";
 import { meowLayout } from "../../../../catstypicalframework/hosts/meowLayout";
 import { meowMisc } from "../../../../catstypicalframework/hosts/meowMisc";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import lazy { ensureDirectoryExist, removeDir, renameFolder } from "../../../../catstypicalframework/utils/storage";
+import lazy { ensureDirectoryExist, makeFilenameLegal, removeDir, renameFolder } from "../../../../catstypicalframework/utils/storage";
 import lazy { updateNavigationIndicator } from "../../../../catstypicalframework/utils/ui";
 import { getKeywordEntries, UnifiedDestinationResult, UnifiedDestinationResultType, unifyDestination } from "../../../../catstypicalframework/utils/url";
 import { meowThemeColorType, UnifiedButtonsType } from "../../../../components/constants";
@@ -357,6 +357,7 @@ export class meowUiHost {
    * Sets the alias of the window.
    */
   async setWindowAlias(newAlias: string) {
+    newAlias = makeFilenameLegal(newAlias, ''); // Double insurance!
     this.windowAlias = newAlias;
     await this.updateWindowTitle();
 

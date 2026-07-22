@@ -189,6 +189,7 @@ export function updateAvoid(windowObj: window.Window, windowId: string) {
       avoid.bottom = 0; // No bottom avoid for free windows.
     }
 
+    avoidArea = windowObj.getWindowAvoidArea(window.AvoidAreaType.TYPE_CUTOUT);
     avoid.left = Math.max(meowPx2vp(avoidArea.leftRect.width), 8);
     avoid.right = Math.max(meowPx2vp(avoidArea.rightRect.width), 8);
 
@@ -218,13 +219,20 @@ export function listenFreeWindowMode(context: Context) {
         setTimeout(() => {
           // Update for all windows.
           for (const windowId of myApp.windowIds) {
-            const myUi = AppStorageV2.connect(meowUiHost, `meowUiHost_${windowId}`)!;
-            // Update UI
-            if (free) {
-              setDecorHeight(myUi.windowObj!);
+            try {
+              const myUi = AppStorageV2.connect(meowUiHost, `meowUiHost_${windowId}`);
+              if (!myUi?.windowObj) continue;
+              // Update UI
+              if (free) {
+                setDecorHeight(myUi.windowObj!);
+              }
+              updateNavigationIndicator(myUi.windowObj!);
+              updateAvoid(myUi.windowObj!, windowId);
+            } catch (e) {
+              // We set this try-catch to prevent AppStorageV2.connect(meowUiHost, `meowUiHost_${windowId}`);
+              // from crashing if it finds that `meowUiHost_${windowId}` connects to nothing.
+              // Would it crash like this instead of returning an undefined?
             }
-            updateNavigationIndicator(myUi.windowObj!);
-            updateAvoid(myUi.windowObj!, windowId);
           }
           meow(`settings.getValueSync "window_pcmode_switch_status" = ${val}`, 'listenFreeWindowMode', meowLevel.INFO);
         }, 1000);

@@ -111,6 +111,7 @@ export class meowTabsBunch {
         const statParts = stat.split(' ');
         if (statParts.length > 0) {
           switchTargetIdx = Number.parseInt(statParts[0]);
+          if (isNaN(switchTargetIdx)) switchTargetIdx = 0; // If the file is broken?
           meow(`Switching to tab ${switchTargetIdx} based on stat file`, 'meowTabsBunch][loadAllStatesFromDir', meowLevel.WARN);
         }
       }
