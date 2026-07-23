@@ -35,7 +35,6 @@ export class meowTabInfo {
   @Trace progress: number = -1; // -1 for not loading, other positive values from 0 ~ 100 is the progress for loading.
   @Trace canBack: boolean = false;
   @Trace canForw: boolean = false;
-  @Trace inSlim: boolean;
   @Trace webScale: number = 100;
   // Popup
   @Trace showingPopup: boolean = false;
@@ -46,7 +45,9 @@ export class meowTabInfo {
   @Trace forceDark: boolean = true;
   @Trace xJS: boolean = false;
   @Trace xImage: boolean = false;
-  @Trace overrideUA: string | undefined;
+  @Trace lockedOverrideUA: string | undefined; // The UA with highest priority.
+  @Trace inHostUA: boolean = false; // Secont priority.
+  @Trace inSlimUA: boolean = false; // Third priority.
   // Permissions
   allowedWebPermissions: string[] = [];
   // History
@@ -82,7 +83,7 @@ export class meowTabInfo {
 
   constructor(myUi: meowUiHost, controller?: WebviewController) {
     this.myUi = myUi;
-    this.inSlim = !this.myUi.myLayout.wideMode;
+    // this.inSlimUA = !this.myUi.myLayout.wideMode;
     this.webStateId = this.refreshWebStateId();
     this.controller = controller;
   }
@@ -334,23 +335,26 @@ export class meowTabInfo {
   /**
    * Updates the slim state and use the slim UA if possible.
    */
-  updateSlimUA() {
+  updateSlimOrHostUA() {
     // Do nothing if the tab is already set an override UA.
-    if (this.overrideUA != undefined) {
-      this.inSlim = false;
+    if (this.lockedOverrideUA != undefined) {
+      this.inSlimUA = false;
       return;
     }
 
-    // Do nothing if domain is in the specific rules.
+    // Set rule based UA if domain is in the specific rules.
     const domain = domainOf(this.url);
-    if (!domain) {
-      return;
-    }
     const rules = userAgentRuleList(); // [[domain, ua], [domain, ua], ...]
-    if (rules.some(rule => rule[0] == domain)) {
-      this.inSlim = false;
-      return;
+    let matchedRuleUA: string | undefined = undefined;
+    for (const r of rules) {
+      if (r[0] == domain) {
+        matchedRuleUA = r[1];
+        this.deSlim(matchedRuleUA);
+        this.inHostUA = true;
+        return;
+      }
     }
+    this.inHostUA = false;
 
     // Feature not enabled.
     if (!userAgent4SlimEnabled()) {
@@ -369,11 +373,12 @@ export class meowTabInfo {
   /**
    * Exit SLIM mode and use the default UA.
    */
-  private deSlim() {
-    this.inSlim = false;
-    meow(`deSLIM!`, 'updateSlimUA', meowLevel.WARN);
+  private deSlim(targetUA?: string) {
+    const ua = targetUA !== undefined ? targetUA : getCurrentAppUserAgent();
+    this.inSlimUA = false;
+    meow(`deSLIM! set UA to [${ua}]`, 'updateSlimUA', meowLevel.WARN);
     try {
-      this.controller?.setCustomUserAgent(getCurrentAppUserAgent());
+      this.controller?.setCustomUserAgent(ua);
     } catch (e) {
       meow(`deSLIM Failed: ${e}`, 'updateSlimUA', meowLevel.ERROR);
     }
@@ -384,7 +389,7 @@ export class meowTabInfo {
    */
   private enSlim() {
     const ua4s = userAgent4Slim();
-    this.inSlim = true;
+    this.inSlimUA = true;
     meow(`enSLIM! set UA to [${ua4s}]`, 'updateSlimUA', meowLevel.WARN);
     try {
       this.controller?.setCustomUserAgent(ua4s);
@@ -412,6 +417,7 @@ export class meowTabInfo {
 
   onPageBegin() {
     // Do things.
+
     // this.webScale = 100;
     this.progress = 0;
     this.endOfLoadTimestamp = Number.MAX_VALUE; // then later truely set by onPageEndLoadFinished
@@ -430,6 +436,9 @@ export class meowTabInfo {
 
     // Initial settings
     this.getUrlTitleFromController();
+
+    // Update UA & settings
+    this.updateSlimOrHostUA();
     this.updateWebSettings();
   }
 
@@ -498,6 +507,7 @@ export class meowTabInfo {
       // Update Settings
       this.getUrlTitleFromController(); // Update class attributes.
       this.updateWebSettings();
+      this.updateSlimOrHostUA();
 
       // Update info & UI
       this.syncUrlUI();
@@ -777,7 +787,7 @@ export class meowTabInfo {
    * @param newUA The new user agent.
    */
   overrideTabUA(newUA: string) {
-    this.overrideUA = newUA;
+    this.lockedOverrideUA = newUA;
     try {
       this.controller?.setCustomUserAgent(newUA);
       meow(`Override tab user agent to: ${newUA}`, 'meowTabInfo][overrideTabUA');
@@ -787,10 +797,10 @@ export class meowTabInfo {
   }
 
   /**
-   * Resets the tab user agent.
+   * Resets the tab user agent to the default of the system (HarmonyOS Default).
    */
   resetTabUA() {
-    this.overrideUA = undefined;
+    this.lockedOverrideUA = undefined;
     try {
       this.controller?.setCustomUserAgent(webview.WebviewController.getDefaultUserAgent());
       meow(`Reset tab user agent`, 'meowTabInfo][resetTabUA');
@@ -803,7 +813,7 @@ export class meowTabInfo {
 
   onControllerAttached() {
     // Slim UA
-    this.updateSlimUA();
+    this.updateSlimOrHostUA();
 
     // Ad blocker
     if (useAdBlock()) {

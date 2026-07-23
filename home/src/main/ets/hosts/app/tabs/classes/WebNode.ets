@@ -249,7 +249,7 @@ struct MeowWeb {
       }
       clearTimeout(this.areaChangeTimeout);
       this.areaChangeTimeout = setTimeout(() => {
-        this.pk.updateSlimUA();
+        this.pk.updateSlimOrHostUA();
       }, 1000);
     });
   }

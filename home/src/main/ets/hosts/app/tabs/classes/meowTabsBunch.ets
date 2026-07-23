@@ -11,7 +11,7 @@ import lazy { getCreateMyApp } from "../../../system/windows/scripts/helpers";
 import lazy { getAllWindowIds } from "../../../system/windows/scripts/multiwindows";
 import { applyAdBlockerExceptions } from "../scripts/adBlocker";
 import { applyThirdPartyCookies } from "../scripts/cookies";
-import lazy { applyUserAgentFromSettings, applyUserAgentRulesFromSettings } from "../scripts/userAgents";
+import lazy { applyUserAgentFromSettings } from "../scripts/userAgents";
 import { meowTabInfo } from "./meowTabInfo";
 import lazy { TabNodeController } from "./WebNode";
 
@@ -44,7 +44,6 @@ export class meowTabsBunch {
       const startTime = Date.now();
       // User agent
       applyUserAgentFromSettings();
-      applyUserAgentRulesFromSettings();
       // Cookies
       applyThirdPartyCookies();
       // Ad blocks
@@ -423,7 +422,7 @@ export class meowTabsBunch {
     }
 
     // Update UA
-    this.currentTab.updateSlimUA();
+    this.currentTab.updateSlimOrHostUA();
 
     // Check and attach
     if (this.currentNode) {

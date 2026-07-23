@@ -103,7 +103,7 @@ struct SettingsGeneral {
           isOn: this.mySettings.settingsData[88].value as boolean,
           onChange: (r) => {
             this.mySettings.setByIndex(88, r);
-            this.myUi.myTabs.currentTab?.updateSlimUA();
+            this.myUi.myTabs.currentTab?.updateSlimOrHostUA();
           }
         });
         MooTextInputV2({
@@ -114,7 +114,7 @@ struct SettingsGeneral {
           },
           onSubmit: () => {
             // Load.
-            this.myUi.myTabs.currentTab?.updateSlimUA();
+            this.myUi.myTabs.currentTab?.updateSlimOrHostUA();
           }
         })
           .opacity(this.mySettings.settingsData[88].value ? 1 : 0.5)
