@@ -6,7 +6,7 @@ import lazy { dirMove, listFilesUnderDir, readArrayBuffer, removeDir, renameFold
 import lazy { meowUiHost } from "../../../system/windows/classes/meowUiHost";
 import lazy { getCreateMyApp } from "../../../system/windows/scripts/helpers";
 import lazy { globalMessage, meowAppMessageType } from "../../../system/windows/scripts/messaging";
-import lazy { generateTimeBasedWindowId, newWindow } from "../../../system/windows/scripts/multiwindows";
+import lazy { generateTimeBasedWindowId, newOrCallWindow } from "../../../system/windows/scripts/multiwindows";
 
 /**
  * Discovers zones from the disk.
@@ -105,11 +105,11 @@ export async function openZone(zoneAlias: string) {
     meow(`Zone [${zoneAlias}] is already opened. Jumping to [${thatWindowId}]`, 'openZone', meowLevel.WARN);
   }
 
-  await newWindow(context as common.UIAbilityContext, thatWindowId || generateTimeBasedWindowId(), zoneAlias);
+  await newOrCallWindow(context as common.UIAbilityContext, thatWindowId || generateTimeBasedWindowId(), zoneAlias);
 }
 
 /**
- * Checks if a zone is opened.
+ * Checks if a zone is opened, and returns the windowId if it is.
  * @param zoneAlias The alias of the zone.
  * @returns The zone's windowId if the zone is opened, false otherwise.
  */

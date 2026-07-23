@@ -31,13 +31,19 @@ export function generateTimeBasedWindowId() {
 }
 
 /**
- * Create a new window.
+ * Create a new window, if the window with the instanceKey (windowId) is not already running.
+ *
+ * In detail:
+ * We check the instanceKey (windowId), if there is no window with the instanceKey (windowId) running, we create a new window.
+ * The new window would try to load the zone with zoneAlias from the disk.
+ * If there is an existing window with the instanceKey (windowId), we call and switch to it.
+ *
  * @param context The context.
  * @param windowId The window id. Have time based window id generation if left blank. YOU SHOULDN'T SET THIS MANUALLY IN MOST CASES!
  * @param zoneAlias The alias of the zone, used to load zone from disk.
  * @returns True if ok, false if failed.
  */
-export async function newWindow(context: common.UIAbilityContext, windowId: string = generateTimeBasedWindowId(), zoneAlias: string = '') {
+export async function newOrCallWindow(context: common.UIAbilityContext, windowId: string = generateTimeBasedWindowId(), zoneAlias: string = '') {
   const info = await getAbilityRunningInfos();
 
   // Info not successfully got

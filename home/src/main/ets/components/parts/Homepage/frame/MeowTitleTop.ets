@@ -4,7 +4,7 @@ import lazy { openDialogRequestType } from '../../../../hosts/system/dialogs/cla
 import lazy { requestDialogOnMostRecent } from '../../../../hosts/system/dialogs/scripts/dialog';
 import { meowAppHost } from '../../../../hosts/system/windows/classes/meowAppHost';
 import { meowUiHost } from '../../../../hosts/system/windows/classes/meowUiHost';
-import lazy { newWindow } from '../../../../hosts/system/windows/scripts/multiwindows';
+import lazy { newOrCallWindow } from '../../../../hosts/system/windows/scripts/multiwindows';
 import { MooSymbolButtonSmall } from '../../../common/MooSymbolButtonSmall';
 import { MooTextModifier } from '../../../common/MooTextModifier';
 import { showWindowTitle, windowTitleOnAddressBar, windowTitlePosition } from '../../../settings';
@@ -53,7 +53,7 @@ export function MeowTitleTop(myUi: meowUiHost, myApp: meowAppHost, context: UICo
         }, HitTestMode.BLOCK_HIERARCHY);
       }
       MooSymbolButtonSmall($r('sys.symbol.plus'), () => {
-        newWindow(context.getHostContext() as common.UIAbilityContext);
+        newOrCallWindow(context.getHostContext() as common.UIAbilityContext);
       }, HitTestMode.BLOCK_HIERARCHY);
     }
   } // Title bar

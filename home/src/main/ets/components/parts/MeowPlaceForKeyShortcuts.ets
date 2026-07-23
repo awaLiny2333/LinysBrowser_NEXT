@@ -3,7 +3,7 @@ import lazy { meow, meowLevel } from '../../catstypicalframework/utils/catsLogge
 import lazy { openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import lazy { requestDialog } from '../../hosts/system/dialogs/scripts/dialog';
 import { meowUiGoBackSource, meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
-import lazy { newWindow } from '../../hosts/system/windows/scripts/multiwindows';
+import lazy { newOrCallWindow } from '../../hosts/system/windows/scripts/multiwindows';
 import { meowKeyboardMan } from '../../hosts/userdata/keyshortcuts/classes/meowKeyboardMan';
 import { searchInPageInputId } from '../constants';
 import lazy { defaultAnimation, getMySettings } from '../settings';
@@ -83,7 +83,7 @@ export function MeowPlaceForKeyShortcuts(
       myUi.myTabs.printCurrent();
     });
     Blank().keyboardShortcut(myKey.newWindow.value, myKey.newWindow.keys, () => {
-      newWindow(context.getHostContext() as common.UIAbilityContext);
+      newOrCallWindow(context.getHostContext() as common.UIAbilityContext);
       meow(`New Window!`, `MeowPlaceForShortcuts`, meowLevel.WARN);
     });
     Blank().keyboardShortcut(myKey.pin.value, myKey.pin.keys, () => {

@@ -7,7 +7,7 @@ import lazy { canRenameZoneTo, deZone, enZone } from "../../../../hosts/app/tabs
 import lazy { requestDialogOnMostRecent } from "../../../../hosts/system/dialogs/scripts/dialog";
 import lazy { openDialogRequestType } from "../../../../hosts/system/dialogs/classes/meowDialogManager";
 import { meowUiHost } from "../../../../hosts/system/windows/classes/meowUiHost";
-import { newWindow } from "../../../../hosts/system/windows/scripts/multiwindows";
+import { newOrCallWindow } from "../../../../hosts/system/windows/scripts/multiwindows";
 import { MooCapsuleButton } from "../../../common/MooCapsuleButton";
 import { MooSymbolButton } from "../../../common/MooSymbolButton";
 import { MooTextButton } from "../../../common/MooTextButton";
@@ -43,7 +43,7 @@ struct MeowWindowInfoBar {
           icon: $r('sys.symbol.plus'),
           clickAction: () => {
             // New window
-            newWindow(this.getUIContext().getHostContext() as common.UIAbilityContext);
+            newOrCallWindow(this.getUIContext().getHostContext() as common.UIAbilityContext);
           }
         });
       }
