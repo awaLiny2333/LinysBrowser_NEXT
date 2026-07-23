@@ -163,8 +163,7 @@ export class meowTabsBunch {
     if (this.tabs[index] == this.currentTab) {
       setTimeout(() => {
         animateToImmediately(defaultAnimation(), () => {
-          this.currentTab = undefined; // Leave current tab.
-          this.myUi.setAddressBarContent('', true, true); // Update address bar.
+          this.switchTo(undefined);
         });
       }); // Use timeout to protect animation.
     }
@@ -345,7 +344,11 @@ export class meowTabsBunch {
     closedTab.onClose();
 
     if (closedTab == this.currentTab) {
-      this.switchTo(this.tabs.length - 1);
+      if (this.tabs.length == 0) {
+        this.switchTo(undefined);
+      } else {
+        this.switchTo(this.tabs.length - 1);
+      }
     } else {
       this.updateSaveStat();
     }
@@ -376,11 +379,18 @@ export class meowTabsBunch {
    * Switch to a tab. Auto calls the tab to restore web state if it is not active.
    * @param target The tab index or the meowTabInfo itself.
    */
-  switchTo(target: number | meowTabInfo) {
+  switchTo(target: number | meowTabInfo | undefined) {
     if (this.currentNode) {
       this.currentNode.detachWeb();
       this.currentNode.rebuild();
     }
+
+    // Switch to nothing...
+    if (target === undefined) {
+      this.currentTab = undefined;
+      return;
+    }
+
     if (typeof target == 'number') {
       this.currentTab = this.tabs[Math.min(target, this.tabs.length - 1)];
     } else {
