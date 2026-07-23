@@ -28,6 +28,8 @@ export class meowTabsBunch {
   static initialized: boolean = false;
   @Trace tabs: meowTabInfo[] = [];
   @Trace currentTab: meowTabInfo | undefined = undefined;
+  // Promise lock
+  private static initPromise: Promise<void> | undefined = undefined;
 
   constructor(uiContext: UIContext, myUi: meowUiHost) {
     this.uiContext = uiContext;
@@ -35,19 +37,25 @@ export class meowTabsBunch {
   }
 
   static async init() {
-    const startTime = Date.now();
-    // User agent
-    applyUserAgentFromSettings();
-    applyUserAgentRulesFromSettings();
-    // Cookies
-    applyThirdPartyCookies();
-    // Ad blocks
-    applyAdBlockerExceptions();
-    // await applyEasyListFromDisk();
-    "设置的自定义规则文件在应用进程内对所有的Web组件生效，是一个应用级全局配置文件，并将持久化，应用重启后可继续工作。";
-    // Finish
-    meowTabsBunch.initialized = true;
-    meow(`Initialized in ${Date.now() - startTime} ms`, 'meowTabsBunch][init', meowLevel.WARN);
+    if (meowTabsBunch.initialized) return;
+    if (meowTabsBunch.initPromise) return meowTabsBunch.initPromise;
+
+    meowTabsBunch.initPromise = (async () => {
+      const startTime = Date.now();
+      // User agent
+      applyUserAgentFromSettings();
+      applyUserAgentRulesFromSettings();
+      // Cookies
+      applyThirdPartyCookies();
+      // Ad blocks
+      applyAdBlockerExceptions();
+      // await applyEasyListFromDisk();
+      "设置的自定义规则文件在应用进程内对所有的Web组件生效，是一个应用级全局配置文件，并将持久化，应用重启后可继续工作。";
+      // Finish
+      meowTabsBunch.initialized = true;
+      meow(`Initialized in ${Date.now() - startTime} ms`, 'meowTabsBunch][init', meowLevel.WARN);
+    })();
+    return meowTabsBunch.initPromise;
   }
 
   /**
@@ -81,7 +89,7 @@ export class meowTabsBunch {
     // Read tabs
     const tabs2bAdded: meowTabInfo[] = [];
     const files = await listFilesUnderDir(dir) || [];
-    const baseFiles = files.filter(name => (name[name.length - 1] !== 'l' && name != 'stat'));
+    const baseFiles = files.filter(name => (!name.endsWith('l') && name != 'stat')); // Filter out 'url' and 'label', which both end with 'l'.
     baseFiles.sort((a, b) => a.localeCompare(b));
 
     // Use parallel promises to accelerate.
@@ -158,6 +166,10 @@ export class meowTabsBunch {
    * @param index The index of the tab to sleep.
    */
   async requestSleep(index: number) {
+    if (index < 0 || index >= this.tabs.length) {
+      meow(`Index ${index} out of bounds!`, 'meowTabsBunch][requestSleep', meowLevel.ERROR);
+      return;
+    }
     await this.tabs[index].requestSleep();
     // Set UI correctly if closing the current-viewing tab.
     if (this.tabs[index] == this.currentTab) {
@@ -233,7 +245,7 @@ export class meowTabsBunch {
   sendFinish() {
     // Clear tunnel.
     getCreateMyApp().dataTunnelForTabs = undefined;
-    meow(`getCreateMyApp().dataTunnelForTabs = undefined`, 'meowTabInfo][didDrop', meowLevel.WARN);
+    meow(`getCreateMyApp().dataTunnelForTabs = undefined`, 'meowTabsBunch][sendFinish', meowLevel.WARN);
     // Clear hover state of all app windows.
     for (const wId of getAllWindowIds()) {
       const thatUi = AppStorageV2.connect(meowUiHost, `meowUiHost_${wId}`);
@@ -337,6 +349,11 @@ export class meowTabsBunch {
    * @param idx The tab index.
    */
   closeTab(idx: number) {
+    if (idx < 0 || idx >= this.tabs.length) {
+      meow(`Index ${idx} out of bounds!`, 'meowTabsBunch][closeTab', meowLevel.ERROR);
+      return;
+    }
+
     const closedTab = this.tabs[idx];
     if (!closedTab?.node) {
       meow(`closedTab?.node is undefined`, 'meowTabsBunch][closeTab', meowLevel.WARN);
@@ -355,14 +372,6 @@ export class meowTabsBunch {
       }
     } else {
       this.updateSaveStat();
-    }
-
-    if (this.tabs.length == 0) {
-      // No node, indicating that all tabs are closed.
-      // Clear the url field
-      if (!this.myUi.addressBarFocused) {
-        this.myUi.setAddressBarContent('', true, true);
-      }
     }
 
     // Request trim memory.
@@ -392,6 +401,9 @@ export class meowTabsBunch {
     // Switch to nothing...
     if (target === undefined || this.tabs.length == 0) {
       this.currentTab = undefined;
+      if (!this.myUi.addressBarFocused) {
+        this.myUi.setAddressBarContent('', true, true);
+      }
       return;
     }
 

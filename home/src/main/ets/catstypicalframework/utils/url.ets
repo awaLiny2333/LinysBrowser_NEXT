@@ -58,7 +58,7 @@ export function domainOf(sourceUrl?: string): string {
   if (!sourceUrl) return '';
   try {
     const theUrl = url.URL.parseURL(sourceUrl);
-    let host = theUrl.host;
+    let host = theUrl.hostname;
     if (host && host.startsWith('www.')) {
       host = host.slice(4); // remove 'www.'
     }

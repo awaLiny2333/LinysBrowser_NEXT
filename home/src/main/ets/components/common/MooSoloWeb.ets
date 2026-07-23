@@ -76,34 +76,34 @@ export struct MooSoloWeb {
           try {
             this.controllerMeow.enableAdsBlock(true);
           } catch (e) {
-            meow(`Failed: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
+            meow(`Failed: ${e}`, 'MooSoloWeb][onControllerAttached', meowLevel.ERROR);
           }
         }
         // bind download delegate
         try {
           this.controllerMeow.setDownloadDelegate(getMyDawn().delegate);
-          meow(`setDownloadDelegate for the new tab!`, 'meowTabInfo][onControllerAttached');
+          meow(`setDownloadDelegate for the new tab!`, 'MooSoloWeb][onControllerAttached');
         } catch (e) {
-          meow(`setDownloadDelegate error: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
+          meow(`setDownloadDelegate error: ${e}`, 'MooSoloWeb][onControllerAttached', meowLevel.ERROR);
         }
         // Set Default error page
         try {
           this.controllerMeow.setErrorPageEnabled(true);
         } catch (e) {
-          meow(`Failed: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
+          meow(`Failed: ${e}`, 'MooSoloWeb][onControllerAttached', meowLevel.ERROR);
         }
         // Set intelligent tracking prevention
         try {
           this.controllerMeow.enableIntelligentTrackingPrevention(intelligentTrackingPrevention());
         } catch (e) {
-          meow(`enableIntelligentTrackingPrevention error: ${e}`, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
+          meow(`enableIntelligentTrackingPrevention error: ${e}`, 'MooSoloWeb][onControllerAttached', meowLevel.ERROR);
         }
         // Load if is a web.
         if (!sidebarContentIconSet.has(this.url)) {
           try {
             this.controllerMeow.loadUrl(this.url);
           } catch (e) {
-            meow('[MooSoloWeb] onControllerAttached loadUrl error: ' + e, 'meowTabInfo][onControllerAttached', meowLevel.ERROR);
+            meow('[MooSoloWeb] onControllerAttached loadUrl error: ' + e, 'MooSoloWeb][onControllerAttached', meowLevel.ERROR);
           }
         }
       })

@@ -479,9 +479,20 @@ export class meowTabInfo {
    */
   onProgressChange() {
     try {
-      let url = this.controller?.getUrl();
-      if (url == this.url) {
+      const urlOld = this.url;
+      const urlNew = this.controller?.getUrl();
+
+      // No change.
+      if (urlNew == urlOld) {
         return;
+      }
+
+      // Update allowed permissions.
+      // Clear the list if origin is new.
+      const domainOld = domainOf(urlOld);
+      const domainNew = domainOf(urlNew);
+      if (domainOld != domainNew) {
+        this.allowedWebPermissions = [];
       }
 
       // Update Settings
@@ -981,6 +992,11 @@ export class meowTabInfo {
         // Note that if no certificate is available on the device, this would throw ↓ and this is normal. Just install a certificate and the dialog would show.
         // 29700001: Internal error. Possible causes: 1. IPC communication failed; 2. Memory operation error; 3. File operation error.
         meow(`openAuthorizeDialog request cred auth failed, err: ${JSON.stringify(err)}`, 'requestClientAuthentication', meowLevel.ERROR);
+        try {
+          event.handler.cancel();
+        } catch (_) {
+          /* best effort */
+        }
       });
   }
 

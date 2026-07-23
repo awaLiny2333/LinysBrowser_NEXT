@@ -171,7 +171,8 @@ struct MeowWeb {
           anchorPosition: { x: this.pk.offsetX, y: this.pk.offsetY },
           onDidDisappear: () => {
             this.pk.showMenu = false;
-            this.pk.contextMenuResult!.closeContextMenu();
+            this.pk.contextMenuResult?.closeContextMenu();
+            this.pk.contextMenuResult = undefined;
           },
           backgroundColor: useEffects() ? Color.Transparent : getColor(meowThemeColorType.PRIMARY),
           backgroundBlurStyle: useEffects() ? BlurStyle.COMPONENT_ULTRA_THICK : BlurStyle.NONE,
