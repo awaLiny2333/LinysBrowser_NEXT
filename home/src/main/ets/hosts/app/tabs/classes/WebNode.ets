@@ -24,6 +24,10 @@ struct MeowWeb {
   // Local
   @Local areaChangeTimeout: number | undefined = undefined;
 
+  aboutToDisappear(): void {
+    clearTimeout(this.areaChangeTimeout); // Clear the area change timeout on disappear.
+  }
+
   build() {
     Stack({ alignContent: Alignment.TopStart }) {
       Web({ src: this.pk.url || '', controller: this.pk.controller })

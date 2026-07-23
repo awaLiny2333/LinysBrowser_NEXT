@@ -95,7 +95,7 @@ export async function deleteZone(zoneAlias: string) {
 export async function openZone(zoneAlias: string) {
   const context = UIContext.getLastFocusedUIContext()?.getHostContext();
   if (!context) {
-    meow(`No UI context found.`, 'deleteZone', meowLevel.ERROR);
+    meow(`No UI context found.`, 'openZone', meowLevel.ERROR);
     return;
   }
 

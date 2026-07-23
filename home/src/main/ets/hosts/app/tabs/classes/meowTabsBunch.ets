@@ -243,7 +243,11 @@ export class meowTabsBunch {
     }
     // If I sent the tab currently viewing, then switch to another tab.
     if (this.currentTab == undefined) {
-      this.switchTo(0);
+      if (this.tabs.length == 0) {
+        this.switchTo(undefined);
+      } else {
+        this.switchTo(0);
+      }
     }
     this.updateSaveStat();
   }
@@ -386,7 +390,7 @@ export class meowTabsBunch {
     }
 
     // Switch to nothing...
-    if (target === undefined) {
+    if (target === undefined || this.tabs.length == 0) {
       this.currentTab = undefined;
       return;
     }
