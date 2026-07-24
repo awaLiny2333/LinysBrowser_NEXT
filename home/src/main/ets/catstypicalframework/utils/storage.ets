@@ -1118,15 +1118,13 @@ export function arrayBuffer_2_pixelMap(buf: ArrayBuffer) {
 }
 
 /**
- * Packs a PixelMap to a file.
- * @param context The context.
+ * Packs a PixelMap to a file at expected path.
  * @param pixelMap The pixel map.
  * @returns Promise of the path if successful.
  */
-export async function packToFileFromPixelMap(context: Context, pixelMap: image.PixelMap) {
+export async function packToFileFromPixelMap(pixelMap: image.PixelMap, path: string) {
   const imagePackerApi = image.createImagePacker();
   let packOpts: image.PackingOption = { format: 'image/png', quality: 100 };
-  const path: string = context.tempDir + '/shortcut.png';
   let file: fileIo.File | undefined;
   try {
     file = fileIo.openSync(path, fileIo.OpenMode.CREATE | fileIo.OpenMode.READ_WRITE);

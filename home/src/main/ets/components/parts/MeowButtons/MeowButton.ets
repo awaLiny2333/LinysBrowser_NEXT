@@ -1,7 +1,7 @@
 import lazy { Context } from '@ohos.abilityAccessCtrl';
 import lazy { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
 import lazy { pinShortcut } from '../../../catstypicalframework/utils/shortcuts';
-import lazy { packToFileFromPixelMap } from '../../../catstypicalframework/utils/storage';
+import { unlinkFile } from '../../../catstypicalframework/utils/storage';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
 import lazy { domainOf } from '../../../catstypicalframework/utils/url';
 import { openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
@@ -66,7 +66,7 @@ struct MeowButton {
   /**
    * Different things to happen after clicking the button.
    */
-  myClickAction() {
+  async myClickAction() {
     // To be continued...
     switch (this.type) {
       case UnifiedButtonsType.MORE:
@@ -214,33 +214,21 @@ struct MeowButton {
         break;
       case UnifiedButtonsType.SHORTCUT:
         // Grab basic info.
-        if (!this.myUi.myTabs.currentTab) {
-          return;
-        }
+        if (!this.myUi.myTabs.currentTab) return;
         const url = this.myUi.myTabs.currentTab.url;
-        if (!url) {
-          return;
+        if (!url) return;
+        let title = this.myUi.myTabs.currentTab.title || domainOf(url);
+
+        // Grab icon path.
+        const iconPath = await this.myUi.myTabs.currentTab.pathOfShortcutIcon(this.getUIContext().getHostContext() as Context);
+        if (!iconPath) {
+          meow(`!iconPath, what happened?`, 'MeowButton', meowLevel.ERROR);
+          break;
         }
-        let title = this.myUi.myTabs.currentTab.title;
-        if (!title) {
-          const r = domainOf(url);
-          title = r;
-        }
-        // Grab image
-        try {
-          const icon = this.myUi.myTabs.currentTab.controller?.getFavicon();
-          if (!icon) {
-            break;
-          }
-          packToFileFromPixelMap(this.getUIContext().getHostContext() as Context, icon).then((p) => {
-            if (p) {
-              // Pin
-              pinShortcut(url, `󰊴 ${title || 'meow'}`, p);
-            }
-          });
-        } catch (e) {
-          // Do nothing.
-        }
+
+        // Add and clean.
+        await pinShortcut(url, `󰊴 ${title || 'meow'}`, iconPath);
+        await unlinkFile(iconPath);
         break;
       default:
         break;
@@ -336,7 +324,7 @@ struct MeowButton {
       case UnifiedButtonsType.ZOOM_OUT:
         return this.myUi.myTabs.currentTab != undefined;
       case UnifiedButtonsType.SHORTCUT:
-        return this.myUi.myTabs.currentTab != undefined;
+        return this.myUi.myTabs.currentTab != undefined && !this.myUi.myTabs.currentTab?.fetchingShortcutIcon;
       default:
         return true;
     }

@@ -1,11 +1,13 @@
-import lazy { fastbuffer } from "@kit.ArkTS";
+import { common } from "@kit.AbilityKit";
+import lazy { fastbuffer, util } from "@kit.ArkTS";
 import { AppStorageV2, UIContext } from "@kit.ArkUI";
 import { webview } from "@kit.ArkWeb";
 import lazy { certificateManager, certificateManagerDialog } from "@kit.DeviceCertificateKit";
 import lazy { image } from "@kit.ImageKit";
 import lazy { scanBarcode } from "@kit.ScanKit";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import { addUnitsToSize, readArrayBuffer, saveHybridSafe, unlinkFile } from "../../../../catstypicalframework/utils/storage";
+import { icoArrayBufferToPixelMap } from "../../../../catstypicalframework/utils/resource";
+import { addUnitsToSize, downloadFileHttp, packToFileFromPixelMap, readArrayBuffer, saveHybridSafe, unlinkFile } from "../../../../catstypicalframework/utils/storage";
 import { domainOf } from "../../../../catstypicalframework/utils/url";
 import { defaultAnimation } from "../../../../components/settings";
 import { openDialogRequestType } from "../../../system/dialogs/classes/meowDialogManager";
@@ -80,6 +82,8 @@ export class meowTabInfo {
   @Trace imagePath: string = '';
   @Trace imageInfo: image.ImageInfo | undefined;
   @Trace imageQrResults: scanBarcode.ScanResult[] | undefined;
+  // Fav icon
+  @Trace fetchingShortcutIcon: boolean = false;
 
   constructor(myUi: meowUiHost, controller?: WebviewController) {
     this.myUi = myUi;
@@ -110,6 +114,79 @@ export class meowTabInfo {
     }
     meow(`User agent is [${ua}]!`, 'meowTabInfo][myUa', meowLevel.WARN);
     return ua;
+  }
+
+  /**
+   * Resolve a shortcut icon file path for this tab, with layered fallback.
+   *
+   * Layer 1 — the page's declared favicon (via getFavicon()).
+   * Layer 2 — the well-known /favicon.ico at the page's origin.
+   * Layer 3 — the App's own startIcon as last-resort fallback.
+   *
+   * @param context The UIAbilityContext for temp-file writes.
+   * @returns The file-system path to a usable icon, or undefined if all layers fail.
+   */
+  async pathOfShortcutIcon(context: Context): Promise<string | undefined> {
+    this.fetchingShortcutIcon = true;
+    const tempDir = context.tempDir;
+    const targetPath = `${tempDir}/shortcut_${util.generateRandomUUID()}.png`;
+
+    // ── Layer 1: declared favicon ──
+    let imgPixelMap: image.PixelMap | undefined;
+    try {
+      imgPixelMap = this.controller?.getFavicon();
+    } catch (e) {
+      meow(`favPm = this.controller?.getFavicon(); failed: ${e}`, 'resolveShortcutIcon', meowLevel.WARN);
+    }
+    if (imgPixelMap) {
+      const p = await packToFileFromPixelMap(imgPixelMap, targetPath);
+      if (p) {
+        meow(`Shortcut icon resolved via getFavicon() → ${p}`, 'resolveShortcutIcon');
+        this.fetchingShortcutIcon = false;
+        return p;
+      }
+    }
+
+    // ── Layer 2: /favicon.ico ──
+    const origin = domainOf(this.url || '');
+    if (origin) {
+      const icoUrl = `https://${origin}/favicon.ico`;
+      const buf = await downloadFileHttp(icoUrl);
+      if (buf && buf.byteLength > 0) {
+        imgPixelMap = await icoArrayBufferToPixelMap(buf);
+        if (imgPixelMap) {
+          const p = await packToFileFromPixelMap(imgPixelMap, targetPath);
+          imgPixelMap.release();
+          if (p) {
+            meow(`Shortcut icon resolved via const buf = await downloadFileHttp(icoUrl); → ${p}`, 'resolveShortcutIcon');
+            this.fetchingShortcutIcon = false;
+            return p;
+          }
+        }
+      }
+    }
+
+    // ── Layer 3: App's own startIcon ──
+    let drawableDesc: DrawableDescriptor | undefined;
+    try {
+      drawableDesc = (context as common.UIAbilityContext).resourceManager.getDrawableDescriptor($r('app.media.startIcon').id);
+    } catch (e) {
+      meow(`Layer-3 startIcon fallback failed: ${e}`, 'resolveShortcutIcon', meowLevel.ERROR);
+    }
+    if (drawableDesc) {
+      imgPixelMap = drawableDesc.getPixelMap();
+      const p = await packToFileFromPixelMap(imgPixelMap, targetPath);
+      imgPixelMap.release();
+      if (p) {
+        meow(`Shortcut icon resolved via ctx.resourceManager.getDrawableDescriptor($r('app.media.startIcon').id); → ${p}`, 'resolveShortcutIcon');
+        this.fetchingShortcutIcon = false;
+        return p;
+      }
+    }
+
+    // Give up.l
+    this.fetchingShortcutIcon = false;
+    return undefined;
   }
 
   // LIFE CYCLES
