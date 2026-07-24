@@ -783,29 +783,16 @@ export class meowTabInfo {
   // Web settings
 
   /**
-   * Override tab user agent.
+   * Override tab user agent. If param is omitted, this would use the system default UA.
    * @param newUA The new user agent.
    */
-  overrideTabUA(newUA: string) {
+  overrideTabUA(newUA: string = webview.WebviewController.getDefaultUserAgent()) {
     this.lockedOverrideUA = newUA;
     try {
       this.controller?.setCustomUserAgent(newUA);
       meow(`Override tab user agent to: ${newUA}`, 'meowTabInfo][overrideTabUA');
     } catch (e) {
       meow(`Failed: ${e}`, 'meowTabInfo][overrideTabUA', meowLevel.ERROR);
-    }
-  }
-
-  /**
-   * Resets the tab user agent to the default of the system (HarmonyOS Default).
-   */
-  resetTabUA() {
-    this.lockedOverrideUA = undefined;
-    try {
-      this.controller?.setCustomUserAgent(webview.WebviewController.getDefaultUserAgent());
-      meow(`Reset tab user agent`, 'meowTabInfo][resetTabUA');
-    } catch (e) {
-      meow(`Failed: ${e}`, 'meowTabInfo][resetTabUA', meowLevel.ERROR);
     }
   }
 

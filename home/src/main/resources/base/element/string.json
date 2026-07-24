@@ -945,6 +945,10 @@
       "value": "Quick UA Switch"
     },
     {
+      "name": "QuickUA_enableOverride",
+      "value": "Force Temp Override"
+    },
+    {
       "name": "QuickSE",
       "value": "Re-Search On"
     },

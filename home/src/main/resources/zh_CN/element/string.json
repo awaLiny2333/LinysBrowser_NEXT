@@ -945,6 +945,10 @@
       "value": "用户代理切换"
     },
     {
+      "name": "QuickUA_enableOverride",
+      "value": "强制临时用户代理"
+    },
+    {
       "name": "QuickSE",
       "value": "重新搜索于"
     },
