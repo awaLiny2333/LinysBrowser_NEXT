@@ -1,6 +1,5 @@
 import { common, Want } from "@kit.AbilityKit";
 import { productViewManager } from "@kit.AppGalleryKit";
-import { UIContext } from "@kit.ArkUI";
 import { BusinessError } from "@kit.BasicServicesKit";
 import { getAbilityRunningInfos } from "./environment";
 
@@ -13,9 +12,8 @@ import { getAbilityRunningInfos } from "./environment";
  * @returns True if succeeded, false otherwise.
  * @author awa_Liny adapted from https://developer.huawei.com/consumer/cn/doc/doccenter-capabilities/api/store-productviewmanager, enhanced by DeepSeek Web @ Jul 19 2026.
  */
-export async function pinShortcut(url: string, label: string, icon: string): Promise<boolean> {
+export async function pinShortcut(uiContext: common.UIAbilityContext, url: string, label: string, icon: string): Promise<boolean> {
   // Get UIContext
-  const uiContext = UIContext.getCallingScopeUIContext()?.getHostContext() as common.UIAbilityContext;
   if (!uiContext) {
     console.error('pinShortcut failed: uiContext is null, please call in UIAbility context.');
     return false;

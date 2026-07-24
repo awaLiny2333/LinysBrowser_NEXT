@@ -10,6 +10,7 @@ import lazy { ALL_WINDOW_ORIENTATIONS, meowUiHost } from '../../../hosts/system/
 import lazy { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addressBarStatuses';
 import { defaultMooSymbolSize, fontSizeSymbol, getButtonIcon, meowThemeColorType, standardSpacing, UnifiedButtonsType } from '../../constants';
 import { defaultAnimation, getColor, getMySettings, isTabsStyleVertical, useEffects } from '../../settings';
+import { common } from '@kit.AbilityKit';
 
 @ComponentV2
 struct MeowButton {
@@ -227,7 +228,7 @@ struct MeowButton {
         }
 
         // Add and clean.
-        await pinShortcut(url, `󰊴 ${title || 'meow'}`, iconPath);
+        await pinShortcut(this.getUIContext().getHostContext() as common.UIAbilityContext, url, `󰊴 ${title || 'meow'}`, iconPath);
         await unlinkFile(iconPath);
         break;
       default:
