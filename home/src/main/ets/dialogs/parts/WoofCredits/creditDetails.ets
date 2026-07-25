@@ -65,7 +65,11 @@ const c85: Contribution = { id: 85, tags: [CTag.DEBUG], desc: 'Link jump prompt 
 const c86: Contribution = { id: 86, tags: [CTag.FEAT], desc: 'Pin more buttons to the Title Bar', site: CSites.GITHUB };
 const c87: Contribution = { id: 87, tags: [CTag.FEAT], desc: 'Copy download url in download dialog', site: CSites.GITHUB };
 const c94: Contribution = { id: 94, tags: [CTag.DEBUG], desc: 'Failure in restoring too long web states', site: CSites.GITHUB };
-const c98: Contribution = { id: 98, tags: [CTag.MEOW, CTag.FEAT], desc: 'Failure in restoring too long web states', site: CSites.GITHUB };
+const c98: Contribution = { id: 98, tags: [CTag.MEOW, CTag.DEBUG, CTag.FEAT], desc: 'Failure in restoring too long web states', site: CSites.GITHUB };
+const c99: Contribution = { id: 99, tags: [CTag.MEOW, CTag.FEAT], desc: 'Password vault & autofill support for HTTP basic auth', site: CSites.GITHUB };
+const c103: Contribution = { id: 103, tags: [CTag.DEBUG], desc: 'Side panel display flaw', site: CSites.GITHUB };
+const c106: Contribution = { id: 106, tags: [CTag.DEBUG], desc: 'Failure to export all data', site: CSites.GITHUB };
+const c113: Contribution = { id: 113, tags: [CTag.DEBUG], desc: 'Open new tab web permission / behaviour error', site: CSites.GITHUB };
 
 /**
  * All user credits!
@@ -88,7 +92,9 @@ export const userCredits: CreditDetails[] = [
   { name: 'YukiNo420', contributions: [c53, c56] },
   { name: 'wangfh5', contributions: [c52] },
   { name: 'CoyoteRover', contributions: [c82] },
-  { name: 'gfhdhytghd', contributions: [c85, c86] },
+  { name: 'gfhdhytghd', contributions: [c85, c86, c103] },
   { name: 'xccxxcys', contributions: [c87] },
-  { name: 'alex3236', contributions: [c98] }
+  { name: 'alex3236', contributions: [c98] },
+  { name: 'glowmiao', contributions: [c99] },
+  { name: 'yixiaocom', contributions: [c106, c113] },
 ];

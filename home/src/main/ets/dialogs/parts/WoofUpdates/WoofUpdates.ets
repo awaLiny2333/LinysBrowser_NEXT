@@ -1,6 +1,6 @@
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
-import { meowFlexOptions, mooTextType, standardSpacing } from "../../../components/constants";
+import { mooTextType, standardSpacing } from "../../../components/constants";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { WoofUniFrame } from "../../WoofUniFrame";
 import { updateHistories } from "./updateHistories";
@@ -17,16 +17,20 @@ struct UpdateRecords {
           ListItem() {
             UniContentCard({ space: standardSpacing * 1.618 }) {
               // Title & Tags
-              Flex(meowFlexOptions) {
+              Row() {
                 Column() {
                   Text(item.item.version).attributeModifier(new MooTextModifier(mooTextType.TITLE));
                   Text(item.item.date).attributeModifier(new MooTextModifier()).opacity(0.5);
                 }.alignItems(HorizontalAlign.Start); // Title
-                Blank(); // Spacing
-                Repeat(item.item.tag).each((tag) => {
-                  Text(tag.item).attributeModifier(new MooTextModifier(mooTextType.TITLE)).padding(standardSpacing * 0.5).opacity(0.5);
-                }); // Tags
-              };
+                Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.End }) {
+                  Repeat(item.item.tag)
+                    .each((tag) => {
+                      Text(tag.item).attributeModifier(new MooTextModifier(mooTextType.TITLE)).padding(standardSpacing * 0.75).opacity(0.5);
+                    }); // Tags
+                }.layoutWeight(1);
+              }
+              .alignItems(VerticalAlign.Top)
+              .width('100%');
               // Desc
               Text(item.item.description_zh).attributeModifier(new MooTextModifier()).width('100%');
               Text(item.item.description_en).attributeModifier(new MooTextModifier()).opacity(0.7).width('100%');
