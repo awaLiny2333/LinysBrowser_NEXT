@@ -68,15 +68,24 @@ export function getColor(type: meowThemeColorType): ResourceColor {
   return getMySettings().settingsData[getCreateMyApp().dark ? 65 + type : 62 + type].value as string;
 }
 
+let cachedAnim: AnimateParam | undefined;
+let cachedResponse: number = -1;
+let cachedDamping: number = -1;
+
 /**
  * Gets the default animation param.
  * @returns The default animation param.
  */
-export function defaultAnimation() {
-  const animation_damping_coefficient = getMySettings().settingsData[40].value as number;
-  const animation_response = getMySettings().settingsData[39].value as number;
-  const ap: AnimateParam = { curve: Curves.springMotion(animation_response / 100, (100 - animation_damping_coefficient) / 100) };
-  return ap;
+export function defaultAnimation(): AnimateParam {
+  const response = getMySettings().settingsData[39].value as number;
+  const damping = getMySettings().settingsData[40].value as number;
+  if (response === cachedResponse && damping === cachedDamping && cachedAnim) {
+    return cachedAnim; // Use cache, no extra object creation.
+  }
+  cachedResponse = response;
+  cachedDamping = damping;
+  cachedAnim = { curve: Curves.springMotion(response / 100, (100 - damping) / 100) };
+  return cachedAnim;
 }
 
 /**

@@ -24,7 +24,7 @@ struct MeowAddressBar {
     Row() {
       if (this.myUi.showAddressBarOverlay && windowTitleOnAddressBar() && showWindowTitle(this.myUi) && this.myUi.myTabs.currentTab?.url) {
         // Overlay title
-        Text(`${this.myUi.myTabs.currentTab?.title || 'Meow'}｜${this.myUi.windowAlias}`)
+        Text(this.myUi.myTabs.currentTab?.oneLineDesc)
           .opacity(0.9)
           .backgroundColor(getColor(meowThemeColorType.PRIMARY))
           .textAlign(TextAlign.Center).layoutWeight(1).attributeModifier(new MooTextModifier())

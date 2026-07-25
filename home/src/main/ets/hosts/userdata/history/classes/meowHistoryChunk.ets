@@ -100,7 +100,7 @@ export class meowHistoryChunk {
    * @param maxResults The maximum number of results to return.
    * @returns A promise that resolves to an array of meowHistory objects, in descending order.
    */
-  async lookUpHistoryEntries(query: string, maxResults: number = 20): Promise<meowHistoryEntry[]> {
+  async lookUpHistoryEntries(query: string | collections.Set<string>, maxResults: number = 20): Promise<meowHistoryEntry[]> {
     // const startTime = Date.now();
 
     // Get index bundles.
@@ -117,18 +117,34 @@ export class meowHistoryChunk {
       return [];
     }
 
-    if (query === '') {
+    // Early break & tokenize.
+    let isQueryEmpty = false;
+    let queryTokens: collections.Set<string>;
+    if (typeof query === 'string') {
+      if (query === '') {
+        isQueryEmpty = true;
+      } else {
+        queryTokens = tokenize(query);
+        if (queryTokens.size == 0) {
+          isQueryEmpty = true;
+        }
+      }
+    } else {
+      if (query.size === 0) {
+        isQueryEmpty = true;
+      } else {
+        queryTokens = query;
+      }
+    }
+    if (isQueryEmpty) {
       return Array.from(this.entries).reverse();
     }
-
-    // Tokenize query
-    const queryTokens = tokenize(query);
 
     // Find intersection of all timestamp arrays
     // CodeGenie in DevEco Studio Preview wrote this @ April 1 2026. Let's trust her... for now. :)
     let firstFilled = false;
     let intersectionOfEntries = new collections.Set<number>();
-    for (const token of queryTokens) {
+    for (const token of queryTokens!) {
       const numberArray = await this.indexBundle.getEntriesForKey(token);
       if (!numberArray) continue;
       if (!firstFilled) {
@@ -179,7 +195,7 @@ export class meowHistoryChunk {
    * @param maxResults The maximum number of results to return.
    * @returns A promise that resolves to an array of meowHistory objects, in descending order.
    */
-  async lookUpHistoryEntriesBruteForce(query: string, minHitRate: number = 0.8, maxResults: number = 20) {
+  async lookUpHistoryEntriesBruteForce(query: string | collections.Set<string>, minHitRate: number = 0.8, maxResults: number = 20) {
     // Get history entries.
     await this.loadEntriesFromDisk();
     if (!this.entries) {
@@ -187,19 +203,36 @@ export class meowHistoryChunk {
       return [];
     }
 
-    // Early break
-    if (query === '') {
+    // Early break & tokenize.
+    let isQueryEmpty = false;
+    let queryTokens: collections.Set<string>;
+    if (typeof query === 'string') {
+      if (query === '') {
+        isQueryEmpty = true;
+      } else {
+        queryTokens = tokenize(query);
+        if (queryTokens.size == 0) {
+          isQueryEmpty = true;
+        }
+      }
+    } else {
+      if (query.size === 0) {
+        isQueryEmpty = true;
+      } else {
+        queryTokens = query;
+      }
+    }
+    if (isQueryEmpty) {
       return Array.from(this.entries).reverse();
     }
 
     // Search in reversed order
     const results: meowHistoryEntry[] = [];
-    const queryTokens = tokenize(query);
     for (let i = this.entries.length - 1; i >= 0; i--) {
       const entry = this.entries[i];
       const url = entry.url.toLowerCase();
       const title = entry.title.toLowerCase();
-      if (isMatchFast(url + ' ' + title, queryTokens, minHitRate)) {
+      if (isMatchFast(url + ' ' + title, queryTokens!, minHitRate)) {
         results.push(entry);
         if (results.length >= maxResults) {
           break;

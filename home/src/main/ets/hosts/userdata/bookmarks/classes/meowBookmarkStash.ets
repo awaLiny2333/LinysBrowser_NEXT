@@ -4,6 +4,7 @@ import lazy { isMatchFast, tokenize } from "../../../../catstypicalframework/uti
 import lazy { nowHtmlTimestamp } from "../scripts/helpers";
 import lazy { parseBookmarksConcurrent, parseToHTMLConcurrent } from "../scripts/parser";
 import { meowBookmarkItem } from "./meowBookmarkItem";
+import collections from "@arkts.collections";
 export interface MeowBookmarkDragInfo {
   item: meowBookmarkItem;
   parent: meowBookmarkItem;
@@ -31,15 +32,28 @@ export class meowBookmarkStash {
    * @returns The search results.
    * @author CodeGenie in DevEco Studio Preview @ May 7 2026, help refined by DeepSeek Web and awa_Liny itself! :P
    */
-  lookUpBookmarksEntries(query: string, maxResults: number, minHitRate = 0.8): meowBookmarkItem[] {
-    if (query == '') {
-      return [];
+  lookUpBookmarksEntries(query: string | collections.Set<string>, maxResults: number, minHitRate = 0.8): meowBookmarkItem[] {
+
+    // Early break & tokenize.
+    let isQueryEmpty = false;
+    let queryTokens: collections.Set<string>;
+    if (typeof query === 'string') {
+      if (query === '') {
+        isQueryEmpty = true;
+      } else {
+        queryTokens = tokenize(query);
+        if (queryTokens.size == 0) {
+          isQueryEmpty = true;
+        }
+      }
+    } else {
+      if (query.size === 0) {
+        isQueryEmpty = true;
+      } else {
+        queryTokens = query;
+      }
     }
-
-    // Tokenize query
-    const queryTokens = tokenize(query);
-
-    if (queryTokens.size == 0) {
+    if (isQueryEmpty) {
       return [];
     }
 

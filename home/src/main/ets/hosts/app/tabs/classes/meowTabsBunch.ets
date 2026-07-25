@@ -4,6 +4,7 @@ import lazy { AppStorageV2 } from "@kit.ArkUI";
 import lazy { webview } from "@kit.ArkWeb";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import lazy { listFilesUnderDir, readArrayBuffer, saveHybridSafe } from "../../../../catstypicalframework/utils/storage";
+import lazy { domainOf } from "../../../../catstypicalframework/utils/url";
 import lazy { archiveWeb, printWeb } from "../../../../catstypicalframework/utils/web";
 import lazy { defaultAnimation } from "../../../../components/settings";
 import { meowUiHost } from "../../../system/windows/classes/meowUiHost";
@@ -321,6 +322,7 @@ export class meowTabsBunch {
     newTab.controller = controller || new webview.WebviewController();
     if (overwriteUrl) {
       newTab.url = overwriteUrl;
+      newTab.domain = domainOf(overwriteUrl);
     }
     const newNode = new TabNodeController(this.uiContext, newTab);
     newTab.node = newNode;

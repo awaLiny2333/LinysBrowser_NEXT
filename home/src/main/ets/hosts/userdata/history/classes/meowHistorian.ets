@@ -17,6 +17,7 @@ import lazy { appendTextToEndOfFile, clearDirectory, listFilesUnderDir, readArra
 import lazy { buildAllIndexToDisk, buildIndexToDisk } from "../scripts/indexing";
 import { meowHistoryChunk } from "./meowHistoryChunk";
 import lazy { meowHistoryEntry } from "./meowHistoryEntry";
+import collections from "@arkts.collections";
 
 @ObservedV2
 export class meowHistorian {
@@ -281,7 +282,7 @@ export class meowHistorian {
    * @param unique Whether to return unique results only.
    * @returns The query results.
    */
-  async lookUpHistoryEntries(query: string, maxResults: number, bruteForce: boolean, minHitRate = 0.8, unique = false) {
+  async lookUpHistoryEntries(query: string | collections.Set<string>, maxResults: number, bruteForce: boolean, minHitRate = 0.8, unique = false) {
     if (!this.tryLock()) {
       meow(`Busy. Rejected history: ["${query}", ${maxResults}]`, 'meowHistorian][lookUpHistoryEntries', meowLevel.WARN);
       return [];
@@ -358,7 +359,7 @@ export class meowHistorian {
    * @param minHitRate The minimum keyword hit rate for brute force.
    * @returns The query results.
    */
-  async lookUpHistoryEntriesFromChunk(chunk: meowHistoryChunk, query: string, maxResults: number, bruteForce: boolean, minHitRate: number = 0.8) {
+  async lookUpHistoryEntriesFromChunk(chunk: meowHistoryChunk, query: string | collections.Set<string>, maxResults: number, bruteForce: boolean, minHitRate: number = 0.8) {
     if (bruteForce) {
       return await chunk.lookUpHistoryEntriesBruteForce(query, minHitRate, maxResults) ?? [];
     } else {

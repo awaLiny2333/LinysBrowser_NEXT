@@ -6,6 +6,7 @@ import { meowLayout } from "../../../../catstypicalframework/hosts/meowLayout";
 import { meowMisc } from "../../../../catstypicalframework/hosts/meowMisc";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import lazy { ensureDirectoryExist, makeFilenameLegal, removeDir, renameFolder } from "../../../../catstypicalframework/utils/storage";
+import { tokenize } from "../../../../catstypicalframework/utils/strings";
 import lazy { updateNavigationIndicator } from "../../../../catstypicalframework/utils/ui";
 import { getKeywordEntries, UnifiedDestinationResult, UnifiedDestinationResultType, unifyDestination } from "../../../../catstypicalframework/utils/url";
 import { meowThemeColorType, UnifiedButtonsType } from "../../../../components/constants";
@@ -566,7 +567,7 @@ export class meowUiHost {
    * Sets the current field content of the address bar.
    * @param newContent The new field content.
    */
-  setCurrentFieldContent(newContent: string, timeout: number = 10) {
+  setCurrentFieldContent(newContent: string, timeout: number = 60) {
     if (this.addressBarContentCurrentField != newContent) {
       this.addressBarContentCurrentField = newContent;
       // Refresh suggestions
@@ -602,29 +603,21 @@ export class meowUiHost {
   }
 
   /**
-   * Refreshes the keyword entries.
+   * Refreshes the keyword entries (the queries in the url).
+   * @author awa_Liny and enhanced by DeepSeek V4 APi @ Jul 25 2026.s
    */
   refreshKeywordEntries() {
     const entries = getKeywordEntries(this.addressBarContentMajor);
-    if (entries.length > 0) {
-      // Put the prefered keys to the beginning
-      let matched: [string, string][] = [];
-      let unmatched: [string, string][] = [];
-      for (let i = 0; i < entries.length; i++) {
-        let entry = entries[i];
-        if (preferedKeysSet.has(entry[0])) {
-          matched.push(entry);
-        } else {
-          unmatched.push(entry);
-        }
-      }
-      // const matched = entries.filter(([key]) => keySet.has(key));
-      // const unmatched = entries.filter(([key]) => !keySet.has(key));
-      const entriesSorted = [...matched, ...unmatched];
-      this.searchKeywordEntries = entriesSorted;
 
-      // Switch state.
-      if (this.addressBarStatus == AddressBarStatuses.NO_SHIFT) {
+    if (entries.length > 0) {
+      entries.sort((a, b) => {
+        const aIsPreferred = preferedKeysSet.has(a[0]) ? 0 : 1;
+        const bIsPreferred = preferedKeysSet.has(b[0]) ? 0 : 1;
+        return aIsPreferred - bIsPreferred;
+      });
+      this.searchKeywordEntries = entries;
+
+      if (this.addressBarStatus === AddressBarStatuses.NO_SHIFT) {
         this.addressBarStatus = AddressBarStatuses.CAN_SHIFT;
       }
     } else {
@@ -652,18 +645,21 @@ export class meowUiHost {
     const maxResultsBookmarks = maxSuggestionsBookmark();
     const maxResultsHistorian = maxSuggestionsHistory();
 
+    // Tokenize
+    const queryTokens = tokenize(this.addressBarContentCurrentField);
+
     // History
-    if (this.addressBarContentCurrentField.length > 0 && maxResultsHistorian > 0) {
+    if (queryTokens.size > 0 && maxResultsHistorian > 0) {
       const myHistorian = AppStorageV2.connect(meowHistorian)!;
-      myHistorian.lookUpHistoryEntries(this.addressBarContentCurrentField, maxResultsHistorian, false, 0.8, true).then((resultsHistories) => {
-        // Not the latest request, drop.
-        if (myGeneration !== this.suggestionsRefreshId) {
-          return;
-        }
-        animateToImmediately(defaultAnimation(), () => {
-          this.suggestionsHistories = resultsHistories;
+      myHistorian.lookUpHistoryEntries(queryTokens, maxResultsHistorian, false, 0.8, true)
+        .then((resultsHistories) => {
+          if (myGeneration !== this.suggestionsRefreshId) {
+            return; // Not the latest request, drop.
+          }
+          animateToImmediately(defaultAnimation(), () => {
+            this.suggestionsHistories = resultsHistories;
+          });
         });
-      });
     } else {
       animateToImmediately(defaultAnimation(), () => {
         this.suggestionsHistories = [];
@@ -673,8 +669,8 @@ export class meowUiHost {
     // Bookmarks
     let newSuggestionsBookmarks: meowBookmarkItem[];
     const myBookmarks = AppStorageV2.connect(meowBookmarkStash)!;
-    if (this.addressBarContentCurrentField.length > 0 && maxResultsBookmarks > 0) {
-      const resultsBookmarks = myBookmarks.lookUpBookmarksEntries(this.addressBarContentCurrentField, maxResultsBookmarks, 0.8);
+    if (queryTokens.size > 0 && maxResultsBookmarks > 0) {
+      const resultsBookmarks = myBookmarks.lookUpBookmarksEntries(queryTokens, maxResultsBookmarks, 0.8);
       newSuggestionsBookmarks = resultsBookmarks;
     } else {
       newSuggestionsBookmarks = [];

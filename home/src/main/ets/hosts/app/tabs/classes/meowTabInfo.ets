@@ -6,20 +6,20 @@ import lazy { certificateManager, certificateManagerDialog } from "@kit.DeviceCe
 import lazy { image } from "@kit.ImageKit";
 import lazy { scanBarcode } from "@kit.ScanKit";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import { icoArrayBufferToPixelMap } from "../../../../catstypicalframework/utils/resource";
-import { addUnitsToSize, downloadFileHttp, packToFileFromPixelMap, readArrayBuffer, saveHybridSafe, unlinkFile } from "../../../../catstypicalframework/utils/storage";
-import { domainOf } from "../../../../catstypicalframework/utils/url";
-import { defaultAnimation } from "../../../../components/settings";
-import { openDialogRequestType } from "../../../system/dialogs/classes/meowDialogManager";
+import lazy { icoArrayBufferToPixelMap } from "../../../../catstypicalframework/utils/resource";
+import lazy { addUnitsToSize, downloadFileHttp, packToFileFromPixelMap, readArrayBuffer, saveHybridSafe, unlinkFile } from "../../../../catstypicalframework/utils/storage";
+import lazy { domainOf } from "../../../../catstypicalframework/utils/url";
+import lazy { defaultAnimation } from "../../../../components/settings";
+import lazy { openDialogRequestType } from "../../../system/dialogs/classes/meowDialogManager";
 import lazy { requestDialog } from "../../../system/dialogs/scripts/dialog";
-import { meowUiFullscreenStatus, meowUiHost } from "../../../system/windows/classes/meowUiHost";
+import lazy { meowUiFullscreenStatus, meowUiHost } from "../../../system/windows/classes/meowUiHost";
 import lazy { globalMessage, meowAppMessageType } from "../../../system/windows/scripts/messaging";
-import { meowHistorian } from "../../../userdata/history/classes/meowHistorian";
-import { meowHistoryEntry } from "../../../userdata/history/classes/meowHistoryEntry";
+import lazy { meowHistorian } from "../../../userdata/history/classes/meowHistorian";
+import lazy { meowHistoryEntry } from "../../../userdata/history/classes/meowHistoryEntry";
 import lazy { getMyDawn } from "../../downloads/scripts/helper";
-import { disableImages, disableJS, forceDark, viewableSchemes } from "../scripts/helpers";
-import { getCurrentAppUserAgent, intelligentTrackingPrevention, recordNewHistoryFromSettings, useAdBlock, userAgent4Slim, userAgent4SlimEnabled, userAgentRuleList, userHomeUrl, userNewTabUrl } from "../settings";
-import { TabNodeController } from "./WebNode";
+import lazy { disableImages, disableJS, forceDark, viewableSchemes } from "../scripts/helpers";
+import lazy { getCurrentAppUserAgent, intelligentTrackingPrevention, recordNewHistoryFromSettings, useAdBlock, userAgent4Slim, userAgent4SlimEnabled, userAgentRuleList, userHomeUrl, userNewTabUrl } from "../settings";
+import lazy { TabNodeController } from "./WebNode";
 
 @ObservedV2
 export class meowTabInfo {
@@ -34,6 +34,7 @@ export class meowTabInfo {
   @Trace endOfLoadTimestamp: number = Number.MAX_VALUE; // Requests to save history / webstate after this time should be rejected.
   @Trace title: string | undefined;
   @Trace url: string | undefined = userNewTabUrl();
+  @Trace domain: string | undefined;
   @Trace progress: number = -1; // -1 for not loading, other positive values from 0 ~ 100 is the progress for loading.
   @Trace canBack: boolean = false;
   @Trace canForw: boolean = false;
@@ -102,6 +103,14 @@ export class meowTabInfo {
     return this.node != undefined;
   }
 
+  get oneLineDesc() {
+    return `${this.title || 'Meow'}｜${this.domain}｜${this.myUi.windowAlias}`;
+  }
+
+  /**
+   * Uses a JavaScript run to get the REAL navigator.userAgent from the tab.
+   * @returns The UA string.
+   */
   async myUa() {
     let ua = '';
     try {
@@ -148,9 +157,8 @@ export class meowTabInfo {
     }
 
     // ── Layer 2: /favicon.ico ──
-    const origin = domainOf(this.url || '');
-    if (origin) {
-      const icoUrl = `https://${origin}/favicon.ico`;
+    if (this.domain) {
+      const icoUrl = `https://${this.domain}/favicon.ico`;
       const buf = await downloadFileHttp(icoUrl);
       if (buf && buf.byteLength > 0) {
         imgPixelMap = await icoArrayBufferToPixelMap(buf);
@@ -317,6 +325,7 @@ export class meowTabInfo {
     if (urlBuffer) {
       try {
         this.url = fastbuffer.from(urlBuffer).toString();
+        this.domain = domainOf(this.url);
         this.controller?.loadUrl(this.url);
         return true;
       } catch (e) {
@@ -420,11 +429,10 @@ export class meowTabInfo {
     }
 
     // Set rule based UA if domain is in the specific rules.
-    const domain = domainOf(this.url);
     const rules = userAgentRuleList(); // [[domain, ua], [domain, ua], ...]
     let matchedRuleUA: string | undefined = undefined;
     for (const r of rules) {
-      if (r[0] == domain) {
+      if (r[0] == this.domain) {
         matchedRuleUA = r[1];
         this.deSlim(matchedRuleUA);
         this.inHostUA = true;
@@ -479,6 +487,7 @@ export class meowTabInfo {
     try {
       const title = this.controller?.getTitle() || '';
       const url = this.controller?.getUrl() || '';
+      const urlOld = this.url;
       // Filter blank page.
       if (url.startsWith('resource://')) {
         this.url = '';
@@ -486,6 +495,9 @@ export class meowTabInfo {
       } else {
         this.url = url;
         this.title = title;
+      }
+      if (this.url != urlOld) {
+        this.domain = domainOf(this.url);
       }
     } catch (e) {
       meow(`this.controller?.getTitle() failed: ${e}`, `meowTabInfo][getUrlTitleFromController`, meowLevel.ERROR);
@@ -575,14 +587,14 @@ export class meowTabInfo {
 
       // Update allowed permissions.
       // Clear the list if origin is new.
-      const domainOld = domainOf(urlOld);
-      const domainNew = domainOf(urlNew);
+      const domainOld = this.domain;
+      this.getUrlTitleFromController(); // Update class attributes.
+      const domainNew = this.domain;
       if (domainOld != domainNew) {
-        this.allowedWebPermissions = [];
+        this.allowedWebPermissions = []; // Reset permissions
       }
 
       // Update Settings
-      this.getUrlTitleFromController(); // Update class attributes.
       this.updateWebSettings();
       this.updateSlimOrHostUA();
 

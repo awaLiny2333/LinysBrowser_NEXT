@@ -31,7 +31,7 @@ export function MeowTitleTop(myUi: meowUiHost, myApp: meowAppHost, context: UICo
     }
 
     // Window Title Text
-    Text(showWindowTitle(myUi) && !windowTitleOnAddressBar() ? `${myUi.myTabs.currentTab?.title || 'Meow'}｜${myUi.windowAlias}` : '')
+    Text(showWindowTitle(myUi) && !windowTitleOnAddressBar() ? myUi.myTabs.currentTab?.oneLineDesc : '')
       .attributeModifier(new MooTextModifier())
       .textAlign(windowTitlePosition())
       .layoutWeight(1)
