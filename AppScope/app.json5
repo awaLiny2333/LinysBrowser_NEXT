@@ -2,8 +2,8 @@
   "app": {
     "bundleName": "meow.liny.browser.cat.uwu",
     "vendor": "Linys Workshop of Cats and Catzardry",
-    "versionCode": 1000030,
-    "versionName": "2.0.0",
+    "versionCode": 1000031,
+    "versionName": "2.1.0",
     "icon": "$media:layered_image",
     "label": "$string:app_name",
     // "appPreloadPhase": "windowStageCreated", // Let's GOOOO :O
