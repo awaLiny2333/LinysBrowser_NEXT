@@ -1,7 +1,7 @@
 import { AbilityConstant, Configuration, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { aboutToLoadContent, earlyOnCreate, earlyOnWindowStageCreate as onWindowStageCreate, onConfigUpdate, onLoadContent, onWant, onWindowStageWillDestroy, wantSource } from '../catstypicalframework/flows';
+import { earlyOnCreate, earlyOnWindowStageCreate as onWindowStageCreate, onConfigUpdate, onLoadContent, onWant, onWindowStageWillDestroy, wantSource } from '../catstypicalframework/flows';
 import { meow, meowLevel } from '../catstypicalframework/utils/catsLogger';
 
 const DOMAIN = 0x2333;
@@ -34,8 +34,6 @@ export default class EntryAbility extends UIAbility {
 
     try {
       let mainWindow = await windowStage.getMainWindow();
-      await aboutToLoadContent(windowStage, mainWindow, this.context);
-
       windowStage.loadContent('pages/Index', (err) => {
         if (err.code) {
           hilog.error(DOMAIN, 'purrrr', ' \nFailed to load the content. Cause: %{public}s', JSON.stringify(err));

@@ -5,6 +5,7 @@ import lazy { nowHtmlTimestamp } from "../scripts/helpers";
 import lazy { parseBookmarksConcurrent, parseToHTMLConcurrent } from "../scripts/parser";
 import { meowBookmarkItem } from "./meowBookmarkItem";
 import collections from "@arkts.collections";
+import { defaultAnimation } from "../../../../components/settings";
 export interface MeowBookmarkDragInfo {
   item: meowBookmarkItem;
   parent: meowBookmarkItem;
@@ -207,7 +208,11 @@ export class meowBookmarkStash {
     }
 
     this.lastImportTimeCost = parseBookmarksResult.time;
-    this.root = parseBookmarksResult.root;
+    setTimeout(() => {
+      animateToImmediately(defaultAnimation(), () => {
+        this.root = parseBookmarksResult.root;
+      });
+    });
     meow(`Successfully loaded bookmarks from disk. (${Date.now() - startTime} ms)`, 'meowBookmarkStash][loadFromDisk', meowLevel.INFO);
     return true;
   }

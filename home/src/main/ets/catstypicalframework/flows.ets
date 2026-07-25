@@ -158,13 +158,14 @@ export async function earlyOnWindowStageCreate(context: Context) {
   await getMySettings().initFrom(`${filesDir}/settings.json.browsercatsettings.txt`); // This can ONLY be initialized here as it requires async - await processing.
 
   // Ensure directory
-  await ensureDirectoryExist(`${filesDir}/continues`); // Last opened tabs
-  await ensureDirectoryExist(`${filesDir}/easylist`); // Ad blocker rules
-  await ensureDirectoryExist(`${filesDir}/faultlogs`); // fault logs
-  await ensureDirectoryExist(`${filesDir}/history`); // History chunk files
-  await ensureDirectoryExist(`${filesDir}/history-index`); // History index files
-  await ensureDirectoryExist(`${filesDir}/zones`); // Zones
-  // await ensureDirectoryExist(`${tempDir}/dragdrop-temp`); // Drag drop temps
+  await Promise.all([
+    ensureDirectoryExist(`${filesDir}/continues`), // Last opened tabs
+    ensureDirectoryExist(`${filesDir}/easylist`), // Ad blocker rules
+    ensureDirectoryExist(`${filesDir}/faultlogs`), // fault logs
+    ensureDirectoryExist(`${filesDir}/history`), // History chunk files
+    ensureDirectoryExist(`${filesDir}/history-index`), // History index files
+    ensureDirectoryExist(`${filesDir}/zones`) // Zones
+  ]);
 
   // Continue
   const restoreLastTabs = startUpOptionFromSettings() == 'continue';
@@ -187,16 +188,6 @@ export async function earlyOnWindowStageCreate(context: Context) {
   }
 
   meow(`Finished in ${Date.now() - startTime} ms.`, 'earlyOnWindowStageCreate', meowLevel.WARN);
-}
-
-/**
- * Called in onWindowStageCreate, before windowStage.LoadContent, for EVERY WINDOW.
- * @param windowStage window.WindowStage
- * @param windowObj window.Window
- * @param context common.UIAbilityContext
- * */
-export async function aboutToLoadContent(windowStage: window.WindowStage, windowObj: window.Window, context: Context) {
-  console.log(`aboutToLoadContent: windowStage = ${windowStage}, windowObj = ${windowObj}, context = ${context}`);
 }
 
 /**
@@ -330,24 +321,27 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
   // SHARED USER DATA & LISTENERS
 
   if (isNewWindow) {
-    // Init History
-    let myMeowHistorian = AppStorageV2.connect(meowHistorian)!;
-    myMeowHistorian.init();
-
-    // Load bookmarks
-    let myMeowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
-    myMeowBookmarkStash.loadFromDisk();
-
     // Key shortcuts
     const myKey = AppStorageV2.connect(meowKeyboardMan)!;
     myKey.initFromSettings();
+
+    // Inits involving I/O use. Delay 50 ms.
+    setTimeout(() => {
+      // Init History
+      let myMeowHistorian = AppStorageV2.connect(meowHistorian)!;
+      myMeowHistorian.init();
+
+      // Load bookmarks
+      let myMeowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
+      myMeowBookmarkStash.loadFromDisk();
+    }, 50);
 
     // App level Listen
     setTimeout(() => {
       listenFreeWindowMode(context);
       listenSmartReachability();
       listenCrash(`${context.filesDir}/faultlogs`);
-    }, 50);
+    }, 80);
   }
   const myMisc = AppStorageV2.connect(meowMisc, `meowMisc_${myWindowId}`)!;
   meow(`Stage finished in ${Date.now() - startTime} ms, since Misc ${Date.now() - myMisc.launchStartTime} ms.`, `onLoadContent][${myWindowId}`, meowLevel.WARN);
