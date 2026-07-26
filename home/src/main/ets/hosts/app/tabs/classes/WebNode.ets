@@ -193,14 +193,18 @@ struct MeowWeb {
             // Web.
             MooSoloWeb({
               myUi: this.pk.myUi,
-              url: '', controllerMeow: this.pk.popupController, onUrlUpdate: (url) => {
+              userAgent: this.pk.uaInTheory,
+              url: '',
+              controllerMeow: this.pk.popupController,
+              onUrlUpdate: (url) => {
                 this.pk.popupUrl = url;
                 try {
                   this.pk.popupTitle = this.pk.popupController?.getTitle() || '...';
                 } catch (e) {
                   meow(`Error getting title: ${e}`, 'WebNode][onWindowNew', meowLevel.ERROR);
                 }
-              }, onWindowExit: () => {
+              },
+              onWindowExit: () => {
                 this.pk.popupController = undefined;
                 animateToImmediately(defaultAnimation(), () => {
                   this.pk.showingPopup = false;

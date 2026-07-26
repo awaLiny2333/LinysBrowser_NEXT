@@ -34,7 +34,8 @@ export class meowTabInfo {
   @Trace endOfLoadTimestamp: number = Number.MAX_VALUE; // Requests to save history / webstate after this time should be rejected.
   @Trace title: string | undefined;
   @Trace url: string | undefined = userNewTabUrl();
-  @Trace domain: string | undefined;
+  @Trace domain: string | undefined; // Updated with url.
+  @Trace uaInTheory: string = getCurrentAppUserAgent();
   @Trace progress: number = -1; // -1 for not loading, other positive values from 0 ~ 100 is the progress for loading.
   @Trace canBack: boolean = false;
   @Trace canForw: boolean = false;
@@ -464,6 +465,7 @@ export class meowTabInfo {
     meow(`deSLIM! set UA to [${ua}]`, 'updateSlimUA', meowLevel.WARN);
     try {
       this.controller?.setCustomUserAgent(ua);
+      this.uaInTheory = ua;
     } catch (e) {
       meow(`deSLIM Failed: ${e}`, 'updateSlimUA', meowLevel.ERROR);
     }
@@ -478,6 +480,7 @@ export class meowTabInfo {
     meow(`enSLIM! set UA to [${ua4s}]`, 'updateSlimUA', meowLevel.WARN);
     try {
       this.controller?.setCustomUserAgent(ua4s);
+      this.uaInTheory = ua4s;
     } catch (e) {
       meow(`enSLIM Error setting slim UA: ${e}`, 'updateSlimUA', meowLevel.ERROR);
     }
@@ -879,6 +882,7 @@ export class meowTabInfo {
     this.lockedOverrideUA = newUA;
     try {
       this.controller?.setCustomUserAgent(newUA);
+      this.uaInTheory = newUA;
       meow(`Override tab user agent to: ${newUA}`, 'meowTabInfo][overrideTabUA');
     } catch (e) {
       meow(`Failed: ${e}`, 'meowTabInfo][overrideTabUA', meowLevel.ERROR);

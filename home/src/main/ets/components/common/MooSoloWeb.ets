@@ -6,7 +6,6 @@ import lazy { intelligentTrackingPrevention, useAdBlock } from '../../hosts/app/
 import lazy { openDialogRequestType } from '../../hosts/system/dialogs/classes/meowDialogManager';
 import lazy { requestDialog } from '../../hosts/system/dialogs/scripts/dialog';
 import { meowUiHost } from '../../hosts/system/windows/classes/meowUiHost';
-import lazy { sidebarContentIconSet } from '../constants';
 import { getMySettings } from '../settings';
 
 /**
@@ -17,6 +16,9 @@ import { getMySettings } from '../settings';
 export struct MooSoloWeb {
   // Params
   @Param @Require url: string;
+  // The main purpose is to auto load the web in the side bar after app start. If this web component is called from a onNewWindow event, the url should be automatically loaded and we don't need to do anything.
+  @Param autoLoadUrlOnControllerAttached: boolean = false;
+  @Param userAgent: string = '';
   @Local realUrl: string = this.url;
   // UI
   @Param @Require myUi: meowUiHost;
@@ -71,12 +73,20 @@ export struct MooSoloWeb {
         this.updateUrl();
       })
       .onControllerAttached(() => {
+        // Set UserAgent
+        if (this.userAgent) {
+          try {
+            this.controllerMeow.setCustomUserAgent(this.userAgent);
+          } catch (e) {
+            meow(`this.controllerMeow.setCustomUserAgent(this.userAgent); Failed: ${e}`, 'MooSoloWeb][setUserAgent', meowLevel.ERROR);
+          }
+        }
         // Ad blocker
         if (useAdBlock()) {
           try {
             this.controllerMeow.enableAdsBlock(true);
           } catch (e) {
-            meow(`Failed: ${e}`, 'MooSoloWeb][onControllerAttached', meowLevel.ERROR);
+            meow(`this.controllerMeow.enableAdsBlock(true); Failed: ${e}`, 'MooSoloWeb][onControllerAttached', meowLevel.ERROR);
           }
         }
         // bind download delegate
@@ -98,12 +108,12 @@ export struct MooSoloWeb {
         } catch (e) {
           meow(`enableIntelligentTrackingPrevention error: ${e}`, 'MooSoloWeb][onControllerAttached', meowLevel.ERROR);
         }
-        // Load if is a web.
-        if (!sidebarContentIconSet.has(this.url)) {
+        // Load if is a web (Not sidebar panels).
+        if (this.autoLoadUrlOnControllerAttached) {
           try {
             this.controllerMeow.loadUrl(this.url);
           } catch (e) {
-            meow('[MooSoloWeb] onControllerAttached loadUrl error: ' + e, 'MooSoloWeb][onControllerAttached', meowLevel.ERROR);
+            meow('onControllerAttached loadUrl error: ' + e, 'MooSoloWeb][onControllerAttached', meowLevel.ERROR);
           }
         }
       })

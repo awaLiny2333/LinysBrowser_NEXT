@@ -88,7 +88,11 @@ struct MeowSidebar {
 
           // Custom Web
           MooSoloWeb({
-            controllerMeow: this.controllerMeow, url: this.myUi.sidebarPage, radius: useEffects() ? defaultInnerRadius : 0, myUi: this.myUi,
+            myUi: this.myUi,
+            controllerMeow: this.controllerMeow,
+            url: this.myUi.sidebarPage,
+            autoLoadUrlOnControllerAttached: !sidebarContentIconSet.has(this.myUi.sidebarPage),
+            radius: useEffects() ? defaultInnerRadius : 0,
             onDropMe: () => {
               this.onDropSidebar();
             },
