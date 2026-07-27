@@ -90,7 +90,11 @@ export class meowHistoryIndexFileBundle {
       this.ready = true;
     } catch (e) {
       meow(`Failed to parse index file ${this.indexFilePath}: ${e}`, 'meowHistoryIndexFileBundle', meowLevel.ERROR);
-      this.indexKeyHeaders.clear();
+      try {
+        this.indexKeyHeaders.clear();
+      } catch (e) {
+        meow(`Failed to this.indexKeyHeaders.clear(); ${e}`, 'meowHistoryIndexFileBundle', meowLevel.ERROR);
+      }
     }
   }
 
