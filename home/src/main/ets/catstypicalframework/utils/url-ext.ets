@@ -5,6 +5,118 @@ export const SINGLE_LABEL_ALLOWLIST: Set<string> = new Set([
   'WPAD', // Web Proxy Auto-Discovery 保留名
 ]);
 
+
+/**
+ * Punycode (RFC 3492) Bootstring 参数常量
+ */
+const PUNYCODE_BASE = 36;
+const PUNYCODE_TMIN = 1;
+const PUNYCODE_TMAX = 26;
+const PUNYCODE_SKEW = 38;
+const PUNYCODE_DAMP = 700;
+const PUNYCODE_INITIAL_BIAS = 72;
+const PUNYCODE_INITIAL_N = 128;
+
+/** 检测是否含非 ASCII 字符 */
+export const HAS_NON_ASCII_REGEX = /[^\x00-\x7f]/;
+
+/**
+ * 将含 Unicode 的 hostname 转为 Punycode（RFC 3492）。
+ * ASCII 标签原样返回。
+ *
+ * @author DeepSeek @ May 6 2026
+ */
+export function punycodeEncode(hostname: string): string {
+  if (!HAS_NON_ASCII_REGEX.test(hostname)) {
+    return hostname;
+  }
+  return hostname.split('.').map(label => punycodeEncodeLabel(label)).join('.');
+}
+
+function adaptBias(delta: number, numPoints: number, firstTime: boolean): number {
+  let k = 0;
+  delta = firstTime ? Math.floor(delta / PUNYCODE_DAMP) : Math.floor(delta / 2);
+  delta += Math.floor(delta / numPoints);
+  while (delta > ((PUNYCODE_BASE - PUNYCODE_TMIN) * PUNYCODE_TMAX) / 2) {
+    delta = Math.floor(delta / (PUNYCODE_BASE - PUNYCODE_TMIN));
+    k += PUNYCODE_BASE;
+  }
+  return k + Math.floor(((PUNYCODE_BASE - PUNYCODE_TMIN + 1) * delta) / (delta + PUNYCODE_SKEW));
+}
+
+const PUNYCODE_DIGITS = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+function encodeDigit(d: number): string {
+  return PUNYCODE_DIGITS.charAt(d);
+}
+
+function punycodeEncodeLabel(input: string): string {
+  // 预计算码点数组，分离基本/扩展字符
+  const codePoints: number[] = [];
+  let basicStr = '';
+  const extended: number[] = [];
+
+  for (const ch of Array.from(input)) {
+    const cp = ch.codePointAt(0)!;
+    codePoints.push(cp);
+    if (cp < 0x80) {
+      basicStr += ch;
+    } else {
+      extended.push(cp);
+    }
+  }
+
+  const b = basicStr.length;
+  const outputParts: string[] = basicStr ? [basicStr] : [];
+
+  if (extended.length === 0) {
+    return basicStr;
+  }
+
+  if (b > 0) {
+    outputParts.push('-');
+  }
+
+  extended.sort((a, b) => a - b);
+
+  let n = PUNYCODE_INITIAL_N;
+  let delta = 0;
+  let bias = PUNYCODE_INITIAL_BIAS;
+  let h = b;
+  const total = codePoints.length;
+
+  while (h < total) {
+    const m = extended[0];
+    delta += (m - n) * (h + 1);
+    n = m;
+
+    for (const c of codePoints) {
+      if (c < n) {
+        delta++;
+      } else if (c === n) {
+        let q = delta;
+        for (let k = PUNYCODE_BASE; ; k += PUNYCODE_BASE) {
+          const t = k <= bias ? PUNYCODE_TMIN
+            : k >= bias + PUNYCODE_TMAX ? PUNYCODE_TMAX
+              : k - bias;
+          if (q < t) break;
+          outputParts.push(encodeDigit(t + ((q - t) % (PUNYCODE_BASE - t))));
+          q = Math.floor((q - t) / (PUNYCODE_BASE - t));
+        }
+        outputParts.push(encodeDigit(q));
+        bias = adaptBias(delta, h + 1, h === b);
+        delta = 0;
+        h++;
+        extended.shift();
+      }
+    }
+    delta++;
+    n++;
+  }
+
+  return 'xn--' + outputParts.join('');
+}
+
 /**
  * All legal top domains admitted by ICANN (Updated Jan 28 2026)
  * THIS IS NOT ELEGANT BUT IT JUST WORKS :P

@@ -1,8 +1,8 @@
+import { common, Want } from '@kit.AbilityKit';
 import lazy { url } from '@kit.ArkTS';
-import lazy { concatSearchWithEngine } from '../../hosts/app/tabs/scripts/searchEngines';
-import lazy { SINGLE_LABEL_ALLOWLIST, LEGAL_TOP_LEVEL_DOMAINS } from './url-ext';
-import { Want, common } from '@kit.AbilityKit';
 import { UIContext } from '@kit.ArkUI';
+import lazy { concatSearchWithEngine } from '../../hosts/app/tabs/scripts/searchEngines';
+import lazy { HAS_NON_ASCII_REGEX, LEGAL_TOP_LEVEL_DOMAINS, punycodeEncode, SINGLE_LABEL_ALLOWLIST } from './url-ext';
 
 /**
  * Get keyword entries from a URL.
@@ -111,11 +111,11 @@ export function unifyDestination(content: string, useHttps: boolean): UnifiedDes
 // Constants of regex for some parts of url validation
 const IPV4_MATCH_REGEX = /(.*):((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))$/;
 const IPV6_PREFIX_MATCH_REGEX = /^[0-9a-fA-F]{1,4}$/;
-const IS_VALID_DOMAIN_ASCII_REGEX = /^[A-Z0-9]([A-Z0-9-]*[A-Z0-9])?$/;
+const IS_VALID_DOMAIN_ASCII_REGEX = /^[A-Z0-9]([A-Z0-9-_]*[A-Z0-9])?$/; // Allow under score.
 const IS_VALID_DOMAIN_LOOSE_REGEX = /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/;
 
 // More
-const LEGAL_CHARACTERS_REGEX = /^[A-Za-z0-9\-._~:/?#[\]@!$&'()*+,;=%]+$/; // RFC 3986 allowed chars
+const ILLEGAL_CHARACTERS_REGEX = /[<>"{}\|\\^`\x00-\x1f\x7f\x80-\x9f]/;
 const INVALID_PERCENT_ENCODING_REGEX = /%(?![0-9A-Fa-f]{2})/; // Illegal percent encoding ( % not followed by two hex characters )
 const SCHEME_REGEX = /^([a-zA-Z][a-zA-Z0-9+\-.]*):/; // Extract Scheme ( protocol name )
 const PORT_REGEX = /^\d{1,5}$/; // Port number format ( 1-5 digits )
@@ -141,7 +141,7 @@ export function isValidIPv4(ip: string): boolean {
     const num = parseInt(part, 10);
     if (num < 0 || num > 255) return false;
     // 禁止前导零，例如 "01"
-    if (part.length > 1 && part[0] === '0') return false;
+    if (part.length > 1 && part.charAt(0) === '0') return false;
   }
   return true;
 }
@@ -340,7 +340,7 @@ function validateUrlCore(url: string, domainValidator: (host: string) => boolean
   if (typeof url !== 'string' || url.length === 0) return [false, false];
   if (url.trim() !== url) return [false, false];
 
-  if (!LEGAL_CHARACTERS_REGEX.test(url)) return [false, false]; // 合法字符白名单 (拒绝双引号、尖括号等非法字符)
+  if (ILLEGAL_CHARACTERS_REGEX.test(url)) return [false, false];
   if (INVALID_PERCENT_ENCODING_REGEX.test(url)) return [false, false]; // 严格的百分号编码校验
 
   // 【新增】启发式脏数据拦截：防止从自然语言文本中错误提取的尾部标点
@@ -418,7 +418,8 @@ function validateUrlCore(url: string, domainValidator: (host: string) => boolean
     if (!host.endsWith(']')) return [false, hasScheme];
     if (!isValidIPv6(host.substring(1, host.length - 1))) return [false, hasScheme];
   } else {
-    if (!isValidIPv4(host) && !domainValidator(host)) return [false, hasScheme];
+    const checkHost = HAS_NON_ASCII_REGEX.test(host) ? punycodeEncode(host) : host;
+    if (!isValidIPv4(checkHost) && !domainValidator(checkHost)) return [false, hasScheme];
   }
 
   // 6. 校验端口
