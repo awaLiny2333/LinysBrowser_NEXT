@@ -2,6 +2,7 @@ import { wantAgent, WantAgent } from "@kit.AbilityKit";
 import { UIContext } from "@kit.ArkUI";
 import { backgroundTaskManager } from "@kit.BackgroundTasksKit";
 import { notificationManager } from "@kit.NotificationKit";
+import { openDialogRequestType } from "../../hosts/system/dialogs/classes/meowDialogManager";
 import { getAbilityName, getBundleName } from "./environment";
 import { toast } from "./ui";
 
@@ -32,32 +33,25 @@ export async function requestBackgroundDataTransfer(context?: Context) {
   const aN = await getAbilityName();
 
   let wantAgentInfo: wantAgent.WantAgentInfo = {
-    // 点击通知后，将要执行的动作列表
     wants: [
       {
         bundleName: bN,
-        abilityName: aN
+        abilityName: aN,
+        parameters: {
+          meowTarget: openDialogRequestType.DOWNLOADS
+        }
       }
     ],
-    // 点击通知后，动作类型
     actionType: wantAgent.OperationType.START_ABILITY,
-    // 使用者自定义的一个私有值
-    requestCode: 233,
-    // 点击通知后，动作执行属性
-    wantAgentFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
+    requestCode: 233
   };
 
   try {
-    // 通过wantAgent模块下getWantAgent方法获取WantAgent对象
-    // 在元服务中，请使用wantAgent.getWantAgent(wantAgentInfo).then((wantAgentObj: object) => {替换下面一行代码
     wantAgent.getWantAgent(wantAgentInfo).then((wantAgentObj: WantAgent) => {
       try {
-        // 当长时任务类型包含数据传输(dataTransfer)时，应用需要更新进度，其他类型不需要
         let list: Array<string> = ["dataTransfer"];
-        // 在元服务中，let list: Array<string> = ["audioPlayback"];
         backgroundTaskManager.startBackgroundRunning(context, list, wantAgentObj).then((res: backgroundTaskManager.ContinuousTaskNotification) => {
           console.warn("[requestBackgroundDataTransfer] Operation startBackgroundRunning succeeded");
-          // 对于上传下载类的长时任务，应用可以使用res中返回的notificationId来更新通知，比如发送带进度条的模板通知
           backgroundNotificationId = res.notificationId;
           backgroundTaskId = res.continuousTaskId;
         }).catch((error: BusinessError) => {

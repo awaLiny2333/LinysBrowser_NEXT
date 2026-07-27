@@ -123,20 +123,6 @@ struct WoofSomeDialog {
 - **`fastbuffer`** — used for binary reads (settings, history chunks).
 - Settings save is **debounced** (batched writes, not per-change).
 
-## Linting
-
-Config: `code-linter.json5`. Applies to `**/*.ets`, ignores test/build/oh_modules.
-Rule sets: `@performance/recommended`, `@typescript-eslint/recommended`.
-Security rules enforced: no unsafe AES, hash, MAC, DH, DSA, ECDSA, RSA, 3DES.
-
-## Key Permissions
-
-- `ohos.permission.INTERNET` — required for web loading
-- `ohos.permission.CAMERA` / `ohos.permission.MICROPHONE` — web permission prompts
-- `ohos.permission.WINDOW_TOPMOST` — free-window mode (2in1)
-- `ohos.permission.ACCELEROMETER` / `ohos.permission.GYROSCOPE`
-- `ohos.permission.LOCATION` / `ohos.permission.APPROXIMATELY_LOCATION`
-
 ## Gotchas
 
 - **Single page only** — do NOT add router pages; use dialogs.
@@ -147,3 +133,11 @@ Security rules enforced: no unsafe AES, hash, MAC, DH, DSA, ECDSA, RSA, 3DES.
 - **Theme with effects** — when `useEffects()` is true, `getColor()` returns blur/transparent resource colors, not user-chosen colors.
 - **Free window on 2in1** — detected via `window_pcmode_switch_status`, changes decor height and layout.
 - **`.clang-format`** at root is for the language server config only — there are no `.cpp` files.
+
+## Notes
+
+Currently, the wants passed to this app has these major *parameters*:
+
+- **`want.parameters?.url`** The url to open. This field (if exists) has a higher priority than want.uri, and is currently used by the desktop shortcuts part.
+- **`want.parameters?.meowTarget`** The landing target. For instance, it can be set to 'downloads' to open the downloads dialog after showing in foreground.
+- **`want.parameters.instanceKey`** The HarmonyOS predefined field to determine the target instance. Usage see home/src/main/ets/entryabilitystage/EntryAbilityStage.ets.

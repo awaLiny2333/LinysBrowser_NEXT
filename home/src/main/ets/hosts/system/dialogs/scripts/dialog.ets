@@ -6,8 +6,8 @@ import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/cat
 /**
  * Request an opening of a dialog.
  * @param type The type of the dialog.
- * @param param Anything to be passed to the dialog.
- * @param ignoreOpened Whether to ignore the opened dialogs.
+ * @param param Anything to be passed to the dialog, '' by default.
+ * @param ignoreOpened Whether to ignore the opened dialogs, false by default.
  */
 export function requestDialog(myDialog: meowDialogManager, type: openDialogRequestType, param: string | number | boolean | object = '', ignoreOpened: boolean = false) {
   myDialog.requestOpen(new openDialogRequest(type, param, ignoreOpened));

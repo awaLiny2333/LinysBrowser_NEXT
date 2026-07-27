@@ -27,7 +27,8 @@ import { meowBoardHolder } from '../hosts/app/scratchingboard/classes/meowBoardH
 import { meowTabsBunch } from '../hosts/app/tabs/classes/meowTabsBunch';
 import { concatSearchWithEngine } from '../hosts/app/tabs/scripts/searchEngines';
 import { startUpOptionFromSettings } from '../hosts/app/tabs/settings';
-import { meowDialogManager } from '../hosts/system/dialogs/classes/meowDialogManager';
+import { isOpenDialogType, meowDialogManager, openDialogRequestType } from '../hosts/system/dialogs/classes/meowDialogManager';
+import { requestDialog } from '../hosts/system/dialogs/scripts/dialog';
 import { meowResources } from '../hosts/system/resources/classes/meowResources';
 import { meowUiHost } from '../hosts/system/windows/classes/meowUiHost';
 import { getCreateMyApp } from '../hosts/system/windows/scripts/helpers';
@@ -352,12 +353,23 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
  * @param want The want.
  */
 export function onWant(want: Want, source: wantSource) {
-  const shortcutUrl = want.parameters?.url as string;
   meow(`onWant! want info: ${JSON.stringify(want)}, source: ${source}`, 'init][onWant', meowLevel.INFO);
+
+  // Process URL
+  const shortcutUrl = want.parameters?.url as string;
   const uri = shortcutUrl || want.uri;
   if (uri) {
     const lastTabs = AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${getCreateMyApp().lastFocusedWindowId}`);
     lastTabs?.newTabWrapped(uri);
+  }
+
+  // Process target
+  const landingTarget = want.parameters?.meowTarget as string;
+  if (isOpenDialogType(landingTarget)) {
+    const lastDialog = AppStorageV2.connect(meowDialogManager, `meowDialogManager_${getCreateMyApp().lastFocusedWindowId}`);
+    if (lastDialog) {
+      requestDialog(lastDialog, landingTarget as openDialogRequestType);
+    }
   }
 }
 
