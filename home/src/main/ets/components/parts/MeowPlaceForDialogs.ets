@@ -178,7 +178,7 @@ struct MeowPlaceForDialogs {
     alignment: DialogAlignment.Center,
     cornerRadius: defaultRoundedRadius + 4,
   });
-  woofQuickSEDialoController: CustomDialogController = new CustomDialogController({
+  woofQuickSEDialogController: CustomDialogController = new CustomDialogController({
     builder: WoofQuickSEDialog({ myUi: this.myUi }),
     alignment: DialogAlignment.Center,
     cornerRadius: defaultRoundedRadius + 4,
@@ -335,7 +335,7 @@ struct MeowPlaceForDialogs {
         this.woofQuickUADialogController.open();
         break;
       case openDialogRequestType.QUICK_SE:
-        this.woofQuickSEDialoController.open();
+        this.woofQuickSEDialogController.open();
         break;
       case openDialogRequestType.CREDITS:
         this.woofCreditsDialogController.open();

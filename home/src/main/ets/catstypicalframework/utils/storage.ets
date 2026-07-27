@@ -598,7 +598,7 @@ export async function appendTextToEndOfFile(filePath: string, str: string): Prom
     let offset = 0;
 
     while (offset < total) {
-      const written = await fileIo.write(file.fd, encoded.buffer.slice(offset));
+      const written = await fileIo.write(file.fd, encoded.buffer.slice(encoded.byteOffset + offset));
       if (written <= 0) {
         throw new Error(`write returned ${written} at byte ${offset} / ${total}`);
       }

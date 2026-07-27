@@ -3,7 +3,7 @@ import lazy { AppStorageV2, UIContext } from "@kit.ArkUI";
 import lazy { webview } from "@kit.ArkWeb";
 import { isBackgroundDataTransferRunning, requestBackgroundDataTransfer, stopBackgroundDataTransfer, updateBackgroundDataTransferProcess } from "../../../../catstypicalframework/utils/background";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import lazy { addUnitsToSize, fileDirExist, makeFilenameLegal, retrieveDownloadDirectory, showInFiles, uri_2_path } from "../../../../catstypicalframework/utils/storage";
+import lazy { addUnitsToSize, makeFilenameLegal, retrieveDownloadDirectory, showInFiles, uri_2_path } from "../../../../catstypicalframework/utils/storage";
 import lazy { defaultAnimation } from "../../../../components/settings";
 import lazy { openDialogRequestType } from "../../../system/dialogs/classes/meowDialogManager";
 import lazy { requestDialogOnMostRecent } from "../../../system/dialogs/scripts/dialog";
@@ -84,12 +84,21 @@ export class meowDawnloada {
       meowItem.fileName = filename;
       const targetPath = uri_2_path(`${dlDir}/${filename}`);
 
-      // Check if the file already exists.
-      if (await fileDirExist(targetPath)) {
-        meow(`File already exists: [${targetPath}]`, 'meowDawnloada][confirmDownload', meowLevel.WARN);
-        item.cancel();
-        return;
-      }
+      // // Check if the file already exists.
+      // if (await fileDirExist(targetPath)) {
+      //   meow(`File already exists: [${targetPath}]`, 'meowDawnloada][confirmDownload', meowLevel.WARN);
+      //   item.cancel();
+      //   return;
+      // }
+
+      // Here's the thing:
+      // When download is finished, the web download delegate would directly MOVE the downloaded file
+      // from the dedicated cache directory to the destination position (e.g. the user's downloads directory).
+      // Therefore, the final move is atomic.
+      // And we don't need to worry about mutually overwriting downloaded files.
+      // The last download ALWAYS overwrites.
+
+      // TODO: this is not good for user experience. Make a dialog to prompt the user!
 
       // LINKSTART
       item.start(targetPath);
