@@ -1,8 +1,9 @@
 import lazy { common } from "@kit.AbilityKit";
 import lazy { AppStorageV2, UIContext } from "@kit.ArkUI";
 import lazy { webview } from "@kit.ArkWeb";
+import { isBackgroundDataTransferRunning, requestBackgroundDataTransfer, stopBackgroundDataTransfer, updateBackgroundDataTransferProcess } from "../../../../catstypicalframework/utils/background";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import lazy { fileDirExist, makeFilenameLegal, retrieveDownloadDirectory, showInFiles, uri_2_path } from "../../../../catstypicalframework/utils/storage";
+import lazy { addUnitsToSize, fileDirExist, makeFilenameLegal, retrieveDownloadDirectory, showInFiles, uri_2_path } from "../../../../catstypicalframework/utils/storage";
 import lazy { defaultAnimation } from "../../../../components/settings";
 import lazy { openDialogRequestType } from "../../../system/dialogs/classes/meowDialogManager";
 import lazy { requestDialogOnMostRecent } from "../../../system/dialogs/scripts/dialog";
@@ -98,6 +99,11 @@ export class meowDawnloada {
           this.items.push(meowItem);
         });
       });
+
+      // Call background task.
+      if (!isBackgroundDataTransferRunning()) {
+        requestBackgroundDataTransfer();
+      }
     });
   }
 
@@ -138,12 +144,20 @@ export class meowDawnloada {
    * Updates the overall download statuses by examining all the download items in list.
    */
   statusUpdate() {
+    let noWorking = true; // No active download task in the list.
+    let fileNameRepresentative: string = '';
+
+    // Stats
     this.totalSize = 0;
     this.currentSize = 0;
     this.currentSpeed = 0;
     for (const meowItem of this.items) {
       if (meowItem.state != webview.WebDownloadState.IN_PROGRESS && meowItem.state != webview.WebDownloadState.PAUSED && meowItem.state != webview.WebDownloadState.COMPLETED) {
         continue; // Skip invalid tasks.
+      }
+      if (meowItem.state == webview.WebDownloadState.IN_PROGRESS || meowItem.state == webview.WebDownloadState.PAUSED) {
+        fileNameRepresentative = meowItem.fileName;
+        noWorking = false; // There is a task working... Aha!
       }
       const total = meowItem.item.getTotalBytes();
       if (total > 0) {
@@ -154,11 +168,20 @@ export class meowDawnloada {
       this.currentSize += meowItem.item.getReceivedBytes();
       this.currentSpeed += meowItem.item.getCurrentSpeed();
     }
+
+    // Progress
     if (this.totalSize === 0) {
       this.progress = 100;
-      return;
+    } else {
+      this.progress = Math.round(this.currentSize / this.totalSize * 100);
     }
-    this.progress = Math.round(this.currentSize / this.totalSize * 100);
+
+    // Update background task.
+    updateBackgroundDataTransferProcess(`󰏯 ${this.progress}% (${addUnitsToSize(this.currentSpeed)}/s)`, `${fileNameRepresentative} ...`, 'meow', this.progress);
+    // Stop background task.
+    if (noWorking) {
+      stopBackgroundDataTransfer();
+    }
   }
 
   /**

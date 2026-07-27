@@ -1147,6 +1147,10 @@
     {
       "name": "Permission_reason_PRINT",
       "value": "Let web pages in BrowserCat use the printers!"
+    },
+    {
+      "name": "Permission_reason_KEEP_BACKGROUND_RUNNING",
+      "value": "Keep BrowserCat running in the background to download / process files!"
     }
   ]
 }

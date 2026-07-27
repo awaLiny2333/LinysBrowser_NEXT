@@ -28,6 +28,9 @@
         "orientation": "auto_rotation_restricted",
         "minWindowWidth": 320,
         "minWindowHeight": 180,
+        "backgroundModes": [
+          "dataTransfer"
+        ],
         "skills": [
           {
             "entities": [
@@ -238,6 +241,16 @@
       {
         "name": "ohos.permission.PRINT",
         "reason": "$string:Permission_reason_PRINT",
+        "usedScene": {
+          "when": "inuse",
+          "abilities": [
+            "EntryAbility"
+          ]
+        }
+      },
+      {
+        "name": "ohos.permission.KEEP_BACKGROUND_RUNNING",
+        "reason": "$string:Permission_reason_KEEP_BACKGROUND_RUNNING",
         "usedScene": {
           "when": "inuse",
           "abilities": [
