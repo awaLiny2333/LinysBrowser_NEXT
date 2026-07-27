@@ -374,7 +374,7 @@ struct MeowWeb {
 
       // Web preview
       if (isLegalUrl(content)[0] && contextMenuWebPreview()) {
-        MooSoloWeb({ myUi: this.pk.myUi, url: content, radius: defaultInnerRadius - standardSpacing * 0.25 })
+        MooSoloWeb({ myUi: this.pk.myUi, url: content, radius: defaultInnerRadius - standardSpacing * 0.25, autoLoadUrlOnControllerAttached: true })
           .hoverEffect(HoverEffect.Highlight)
           .height(contextMenuWebHeight())
           .padding(standardSpacing * 0.5)
