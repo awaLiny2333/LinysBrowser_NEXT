@@ -1,11 +1,10 @@
+import collections from "@arkts.collections";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
 import lazy { fileDocumentPick2Path, fileDocumentPickSave, saveHybridSafe } from "../../../../catstypicalframework/utils/storage";
 import lazy { isMatchFast, tokenize } from "../../../../catstypicalframework/utils/strings";
 import lazy { nowHtmlTimestamp } from "../scripts/helpers";
 import lazy { parseBookmarksConcurrent, parseToHTMLConcurrent } from "../scripts/parser";
 import { meowBookmarkItem } from "./meowBookmarkItem";
-import collections from "@arkts.collections";
-import { defaultAnimation } from "../../../../components/settings";
 export interface MeowBookmarkDragInfo {
   item: meowBookmarkItem;
   parent: meowBookmarkItem;
@@ -208,11 +207,7 @@ export class meowBookmarkStash {
     }
 
     this.lastImportTimeCost = parseBookmarksResult.time;
-    setTimeout(() => {
-      animateToImmediately(defaultAnimation(), () => {
-        this.root = parseBookmarksResult.root;
-      });
-    });
+    this.root = parseBookmarksResult.root;
     meow(`Successfully loaded bookmarks from disk. (${Date.now() - startTime} ms)`, 'meowBookmarkStash][loadFromDisk', meowLevel.INFO);
     return true;
   }

@@ -326,7 +326,7 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
     const myKey = AppStorageV2.connect(meowKeyboardMan)!;
     myKey.initFromSettings();
 
-    // Inits involving I/O use. Delay 50 ms.
+    // Inits involving I/O use. Delay 5 ms.
     setTimeout(() => {
       // Init History
       let myMeowHistorian = AppStorageV2.connect(meowHistorian)!;
@@ -335,7 +335,7 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
       // Load bookmarks
       let myMeowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
       myMeowBookmarkStash.loadFromDisk();
-    }, 50);
+    }, 5);
 
     // App level Listen
     setTimeout(() => {
