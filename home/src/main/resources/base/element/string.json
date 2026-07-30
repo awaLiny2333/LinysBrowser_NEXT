@@ -109,6 +109,14 @@
       "value": "󰒛  Password"
     },
     {
+      "name": "General_url",
+      "value": "󰊡  URL"
+    },
+    {
+      "name": "General_label",
+      "value": "󰈈  Label"
+    },
+    {
       "name": "General_empty",
       "value": "Nothing here. ヽ（´ー｀）┌"
     },
@@ -1003,6 +1011,10 @@
     {
       "name": "HttpAuth_title",
       "value": "Log in to"
+    },
+    {
+      "name": "PinShortcut_title",
+      "value": "Pin to desktop"
     },
     {
       "name": "Downloads_title",

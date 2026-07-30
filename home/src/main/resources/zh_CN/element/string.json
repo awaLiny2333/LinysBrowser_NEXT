@@ -109,6 +109,14 @@
       "value": "󰒛  密码"
     },
     {
+      "name": "General_url",
+      "value": "󰊡  链接"
+    },
+    {
+      "name": "General_label",
+      "value": "󰈈  标签"
+    },
+    {
       "name": "General_empty",
       "value": "空空如也。ヽ（´ー｀）┌"
     },
@@ -1003,6 +1011,10 @@
     {
       "name": "HttpAuth_title",
       "value": "登录"
+    },
+    {
+      "name": "PinShortcut_title",
+      "value": "固定到桌面"
     },
     {
       "name": "Downloads_title",

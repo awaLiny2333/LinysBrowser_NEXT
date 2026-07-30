@@ -22,9 +22,10 @@ import lazy { WoofJavaScriptsDialog } from '../../dialogs/settings/WoofJavaScrip
 import lazy { WoofKeyShortcutsDialog } from '../../dialogs/settings/WoofKeyShortcuts/WoofKeyShortcuts';
 import lazy { WoofButtonsDialog } from '../../dialogs/settings/WoofMeowButtons/ButtonsManager';
 import lazy { WoofWebImagesDialog } from '../../dialogs/settings/WoofWebImages/WoofWebImages';
-import lazy { WoofHttpAuthDialog } from '../../dialogs/web/auth/WoofHttpAuth';
 import lazy { WoofDownloadAskDialog } from '../../dialogs/web/misc/WoofDownloadAsk';
+import lazy { WoofHttpAuthDialog } from '../../dialogs/web/misc/WoofHttpAuth';
 import lazy { WoofJumpDialog } from '../../dialogs/web/misc/WoofJump';
+import lazy { WoofPinShortcutDialog } from '../../dialogs/web/misc/WoofPinShortcut';
 import lazy { WoofSslErrorDialog } from '../../dialogs/web/misc/WoofSslError';
 import lazy { WoofWebGeolocationDialog } from '../../dialogs/web/permissions/WoofLocation';
 import lazy { WoofPermissionsDialog } from '../../dialogs/web/permissions/WoofPermissions';
@@ -258,7 +259,12 @@ struct MeowPlaceForDialogs {
     height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
-
+  woofPinShortcutDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofPinShortcutDialog({ myUi: this.myUi }),
+    alignment: DialogAlignment.Center,
+    cornerRadius: defaultRoundedRadius + 4,
+  });
+  
 
   build() {
     // Nothing
@@ -378,6 +384,9 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.ZONES:
         this.woofZonesDialogController.open();
+        break;
+      case openDialogRequestType.PIN_SHORTCUT:
+        this.woofPinShortcutDialogController.open();
         break;
       default:
         break;

@@ -1,7 +1,5 @@
 import lazy { Context } from '@ohos.abilityAccessCtrl';
 import lazy { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
-import lazy { pinShortcut } from '../../../catstypicalframework/utils/shortcuts';
-import { unlinkFile } from '../../../catstypicalframework/utils/storage';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
 import lazy { domainOf } from '../../../catstypicalframework/utils/url';
 import { openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
@@ -10,7 +8,6 @@ import lazy { ALL_WINDOW_ORIENTATIONS, meowUiHost } from '../../../hosts/system/
 import lazy { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addressBarStatuses';
 import { defaultMooSymbolSize, fontSizeSymbol, getButtonIcon, meowThemeColorType, standardSpacing, UnifiedButtonsType } from '../../constants';
 import { defaultAnimation, getColor, getMySettings, isTabsStyleVertical, useEffects } from '../../settings';
-import { common } from '@kit.AbilityKit';
 
 @ComponentV2
 struct MeowButton {
@@ -219,17 +216,13 @@ struct MeowButton {
         const url = this.myUi.myTabs.currentTab.url;
         if (!url) return;
         let title = this.myUi.myTabs.currentTab.title || domainOf(url);
-
         // Grab icon path.
         const iconPath = await this.myUi.myTabs.currentTab.pathOfShortcutIcon(this.getUIContext().getHostContext() as Context);
         if (!iconPath) {
           meow(`!iconPath, what happened?`, 'MeowButton', meowLevel.ERROR);
           break;
         }
-
-        // Add and clean.
-        await pinShortcut(this.getUIContext().getHostContext() as common.UIAbilityContext, url, `󰊴 ${title || 'meow'}`, iconPath);
-        await unlinkFile(iconPath);
+        requestDialog(this.myUi.myDialog, openDialogRequestType.PIN_SHORTCUT, [url, `󰊴 ${title}`, iconPath], true);
         break;
       default:
         break;
