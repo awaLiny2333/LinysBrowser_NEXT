@@ -93,26 +93,31 @@ export class meowUiHost {
     this.isZone = paths.pop() == 'zones'; // The zones folder name.
   }
 
-  // Getters
+  // Cached per-window host accessors (lazy-init avoids repeated AppStorageV2.connect)
+  private _$myDialog?: meowDialogManager;
+  private _$myTabs?: meowTabsBunch;
+  private _$myLayout?: meowLayout;
+  private _$myAvoid?: meowAvoid;
+  private _$myMisc?: meowMisc;
 
   get myDialog() {
-    return AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.windowId}`)!;
+    return this._$myDialog ??= AppStorageV2.connect(meowDialogManager, `meowDialogManager_${this.windowId}`)!;
   }
 
   get myTabs() {
-    return AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.windowId}`)!;
+    return this._$myTabs ??= AppStorageV2.connect(meowTabsBunch, `meowTabsBunch_${this.windowId}`)!;
   }
 
   get myLayout() {
-    return AppStorageV2.connect(meowLayout, `meowLayout_${this.windowId}`)!;
+    return this._$myLayout ??= AppStorageV2.connect(meowLayout, `meowLayout_${this.windowId}`)!;
   }
 
   get myAvoid() {
-    return AppStorageV2.connect(meowAvoid, `meowAvoid_${this.windowId}`)!;
+    return this._$myAvoid ??= AppStorageV2.connect(meowAvoid, `meowAvoid_${this.windowId}`)!;
   }
 
   get myMisc() {
-    return AppStorageV2.connect(meowMisc, `meowMisc_${this.windowId}`)!;
+    return this._$myMisc ??= AppStorageV2.connect(meowMisc, `meowMisc_${this.windowId}`)!;
   }
 
   /**
