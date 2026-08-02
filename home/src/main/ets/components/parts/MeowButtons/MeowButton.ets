@@ -210,7 +210,7 @@ struct MeowButton {
       case UnifiedButtonsType.ZOOM_OUT:
         this.myUi.myTabs.zoomOutCurrent();
         break;
-      case UnifiedButtonsType.SHORTCUT:
+      case UnifiedButtonsType.PIN_SHORTCUT:
         // Grab basic info.
         if (!this.myUi.myTabs.currentTab) return;
         const url = this.myUi.myTabs.currentTab.url;
@@ -223,6 +223,10 @@ struct MeowButton {
           break;
         }
         requestDialog(this.myUi.myDialog, openDialogRequestType.PIN_SHORTCUT, [url, `󰊴 ${title}`, iconPath], true);
+        break;
+      case UnifiedButtonsType.WEB_STORAGE:
+        // Open storage management page.
+        requestDialog(this.myUi.myDialog, openDialogRequestType.WEB_STORAGE, domainOf(this.myUi.myTabs.currentTab?.url));
         break;
       default:
         break;
@@ -317,7 +321,7 @@ struct MeowButton {
         return this.myUi.myTabs.currentTab != undefined;
       case UnifiedButtonsType.ZOOM_OUT:
         return this.myUi.myTabs.currentTab != undefined;
-      case UnifiedButtonsType.SHORTCUT:
+      case UnifiedButtonsType.PIN_SHORTCUT:
         return this.myUi.myTabs.currentTab != undefined && !this.myUi.myTabs.currentTab?.fetchingShortcutIcon;
       default:
         return true;

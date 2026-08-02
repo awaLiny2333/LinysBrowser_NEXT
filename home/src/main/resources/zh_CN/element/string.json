@@ -497,6 +497,10 @@
       "value": "Web 缓存"
     },
     {
+      "name": "Settings_category_storage_webCache_webStorage",
+      "value": "网页存储  󰃟"
+    },
+    {
       "name": "Settings_category_storage_historyIndex",
       "value": "历史索引文件"
     },
@@ -831,6 +835,14 @@
     {
       "name": "Cookies_clearAll",
       "value": "清除【所有】域名的曲奇  󰀁"
+    },
+    {
+      "name": "WebStorage",
+      "value": "网页存储"
+    },
+    {
+      "name": "WebStorage_clearAll",
+      "value": "清除【所有】域名的网页存储  󰀁"
     },
     {
       "name": "ResMonitor_CPU",

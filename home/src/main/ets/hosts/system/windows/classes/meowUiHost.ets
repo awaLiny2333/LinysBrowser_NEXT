@@ -74,7 +74,7 @@ export class meowUiHost {
   @Trace suggestionsHistories: meowHistoryEntry[] = [];
   @Trace suggestionsBookmarks: meowBookmarkItem[] = [];
   suggestionsRefreshTimeoutId: number | undefined = undefined;
-  suggestionsRefreshId: number = 0; //
+  suggestionsRefreshId: number = 0; // To keep suggestions up to date. By tracking this ID, we can abandon outdated / delayed suggestion results.
   // Settings
   @Trace isExportingData: boolean = false;
   // MeowBookmarksPanel

@@ -497,6 +497,10 @@
       "value": "Web cache"
     },
     {
+      "name": "Settings_category_storage_webCache_webStorage",
+      "value": "Web Storage  󰃟"
+    },
+    {
       "name": "Settings_category_storage_historyIndex",
       "value": "History index files"
     },
@@ -831,6 +835,14 @@
     {
       "name": "Cookies_clearAll",
       "value": "Clear ALL cookies of ALL domains  󰀁"
+    },
+    {
+      "name": "WebStorage",
+      "value": "Web Storage"
+    },
+    {
+      "name": "WebStorage_clearAll",
+      "value": "Clear ALL storage of ALL domains  󰀁"
     },
     {
       "name": "ResMonitor_CPU",

@@ -118,6 +118,7 @@ export enum openDialogRequestType {
   HTTP_AUTH = 'HTTP_AUTH',
   ZONES = 'ZONES',
   PIN_SHORTCUT = 'PIN_SHORTCUT',
+  WEB_STORAGE = 'WEB_STORAGE',
 }
 
 // This should be carefully maintained each time we mess around with dialogs!!
@@ -129,7 +130,8 @@ const OPEN_DIALOG_REQUEST_TYPE_VALUES = [
   'COOKIES', 'FAULTLOGS', 'UPDATES', 'CREDITS', 'QUICK_UA',
   'QUICK_SE', 'QR', 'DOWNLOADS', 'DOWNLOAD_ASK', 'SCRATCHING_BOARD',
   'JUMP', 'ALERT', 'PROMPT', 'CONFIRM', 'SSL_ERROR', 'WEB_PERMISSIONS',
-  'SCREEN_CAPTURE', 'WEB_GEOLOCATION', 'HTTP_AUTH', 'ZONES', 'PIN_SHORTCUT'
+  'SCREEN_CAPTURE', 'WEB_GEOLOCATION', 'HTTP_AUTH', 'ZONES', 'PIN_SHORTCUT',
+  'WEB_STORAGE'
 ];
 
 /**

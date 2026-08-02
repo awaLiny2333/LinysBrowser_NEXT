@@ -88,7 +88,8 @@ export enum UnifiedButtonsType {
   ZONES = 'ZON',
   ZOOM_IN = 'ZIN',
   ZOOM_OUT = 'ZOU',
-  SHORTCUT = 'SCT',
+  PIN_SHORTCUT = 'SCT',
+  WEB_STORAGE = 'STG',
   EXTENSIONS = 'EXT',
 }
 
@@ -129,7 +130,8 @@ unifiedButtonIconMatches.set(UnifiedButtonsType.SEARCH_IN_PAGE, $r('sys.symbol.d
 unifiedButtonIconMatches.set(UnifiedButtonsType.ZONES, $r('sys.symbol.square_stack_3d'));
 unifiedButtonIconMatches.set(UnifiedButtonsType.ZOOM_IN, $r('sys.symbol.plus'));
 unifiedButtonIconMatches.set(UnifiedButtonsType.ZOOM_OUT, $r('sys.symbol.minus'));
-unifiedButtonIconMatches.set(UnifiedButtonsType.SHORTCUT, $r('sys.symbol.plus_viewfinder'));
+unifiedButtonIconMatches.set(UnifiedButtonsType.PIN_SHORTCUT, $r('sys.symbol.plus_viewfinder'));
+unifiedButtonIconMatches.set(UnifiedButtonsType.WEB_STORAGE, $r('sys.symbol.externaldrive'));
 unifiedButtonIconMatches.set(UnifiedButtonsType.EXTENSIONS, $r('sys.symbol.root'));
 
 /**

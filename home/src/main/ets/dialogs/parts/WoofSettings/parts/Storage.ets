@@ -1,18 +1,23 @@
 import lazy { addUnitsToSize } from '../../../../catstypicalframework/utils/storage';
+import { domainOf } from '../../../../catstypicalframework/utils/url';
 import { MooCapsuleButton } from '../../../../components/common/MooCapsuleButton';
 import { MooTextModifier } from '../../../../components/common/MooTextModifier';
 import { UniContentCard } from '../../../../components/common/UniContentCard';
 import { UniRowOfCapsuleButtons } from '../../../../components/common/UniRowOfCapsuleButtons';
 import lazy { mooTextType, standardSpacing } from '../../../../components/constants';
 import { getMySettings } from '../../../../components/settings';
+import { requestDialog } from '../../../../hosts/system/dialogs/scripts/dialog';
+import { openDialogRequestType } from '../../../../hosts/system/dialogs/classes/meowDialogManager';
 import lazy { removeWebCache, scanWebCacheSize } from '../../../../hosts/system/resources/scripts/storage';
 import { meowAppHost } from '../../../../hosts/system/windows/classes/meowAppHost';
 import { getCreateMyApp } from '../../../../hosts/system/windows/scripts/helpers';
 import lazy { scanHistoryIndexSize } from '../../../../hosts/userdata/history/scripts/storage';
 import { meowManagedSettings } from '../../../../hosts/userdata/settings/classes/meowManagedSettings';
+import { meowUiHost } from '../../../../hosts/system/windows/classes/meowUiHost';
 
 @ComponentV2
 struct SettingsStorage {
+  @Param @Require myUi: meowUiHost;
   @Local mySettings: meowManagedSettings = getMySettings();
   @Local myApp: meowAppHost = getCreateMyApp();
 
@@ -44,6 +49,13 @@ struct SettingsStorage {
             }
           });
         };
+        // Web storage
+        MooCapsuleButton({
+          text: $r('app.string.Settings_category_storage_webCache_webStorage'),
+          clickAction: () => {
+            requestDialog(this.myUi.myDialog, openDialogRequestType.WEB_STORAGE, domainOf(this.myUi.myTabs.currentTab?.url), true);
+          }
+        });
       };
 
       // History index

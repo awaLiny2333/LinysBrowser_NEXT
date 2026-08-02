@@ -22,6 +22,7 @@ import lazy { WoofJavaScriptsDialog } from '../../dialogs/settings/WoofJavaScrip
 import lazy { WoofKeyShortcutsDialog } from '../../dialogs/settings/WoofKeyShortcuts/WoofKeyShortcuts';
 import lazy { WoofButtonsDialog } from '../../dialogs/settings/WoofMeowButtons/ButtonsManager';
 import lazy { WoofWebImagesDialog } from '../../dialogs/settings/WoofWebImages/WoofWebImages';
+import lazy { WoofWebStorageDialog } from '../../dialogs/settings/WoofWebStorage/WoofWebStorage';
 import lazy { WoofDownloadAskDialog } from '../../dialogs/web/misc/WoofDownloadAsk';
 import lazy { WoofHttpAuthDialog } from '../../dialogs/web/misc/WoofHttpAuth';
 import lazy { WoofJumpDialog } from '../../dialogs/web/misc/WoofJump';
@@ -264,7 +265,13 @@ struct MeowPlaceForDialogs {
     alignment: DialogAlignment.Center,
     cornerRadius: defaultRoundedRadius + 4,
   });
-  
+  woofWebStorageDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofWebStorageDialog({ myUi: this.myUi }),
+    alignment: DialogAlignment.Center,
+    width: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
+
 
   build() {
     // Nothing
@@ -387,6 +394,9 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.PIN_SHORTCUT:
         this.woofPinShortcutDialogController.open();
+        break;
+      case openDialogRequestType.WEB_STORAGE:
+        this.woofWebStorageDialogController.open();
         break;
       default:
         break;

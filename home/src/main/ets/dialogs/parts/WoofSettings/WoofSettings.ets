@@ -41,7 +41,7 @@ struct WoofSettings {
           SettingsHistory({ myUi: this.myUi });
         };
         FlowItem() {
-          SettingsStorage();
+          SettingsStorage({ myUi: this.myUi });
         };
         FlowItem() {
           SettingsSecurity({ myUi: this.myUi });
