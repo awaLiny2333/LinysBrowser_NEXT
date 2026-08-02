@@ -81,6 +81,14 @@
       "value": "收起  󰃘"
     },
     {
+      "name": "General_next",
+      "value": "下一个  󰃛"
+    },
+    {
+      "name": "General_last",
+      "value": "上一个  󰃘"
+    },
+    {
       "name": "General_export",
       "value": "导出  󰃕"
     },

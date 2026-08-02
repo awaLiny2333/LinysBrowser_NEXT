@@ -81,6 +81,14 @@
       "value": "Collapse  󰃘"
     },
     {
+      "name": "General_next",
+      "value": "Next  󰃛"
+    },
+    {
+      "name": "General_last",
+      "value": "Last  󰃘"
+    },
+    {
       "name": "General_export",
       "value": "Export  󰃕"
     },

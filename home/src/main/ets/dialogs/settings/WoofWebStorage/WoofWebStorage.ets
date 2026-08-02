@@ -8,6 +8,7 @@ import { MooTextButton } from "../../../components/common/MooTextButton";
 import { MooTextInputV2 } from "../../../components/common/MooTextInputV2";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
 import { UniContentCard } from "../../../components/common/UniContentCard";
+import { UniRowOfCapsuleButtons } from "../../../components/common/UniRowOfCapsuleButtons";
 import { standardComponentHeight, standardSpacing } from "../../../components/constants";
 import { defaultAnimation } from "../../../components/settings";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
@@ -23,6 +24,7 @@ struct WebStoragePanel {
   @Local searchKey: string = '';
   searchInputId: string = `WoofWebStorage_search_${Date.now().toString(16)}`;
   listScroller: Scroller = new Scroller();
+  firstVisibleIndex: number = 0; // The index of the currently topmost visible item, updated by List.onScrollIndex.
 
   aboutToAppear(): void {
     // If with params (Opened this when browsing something)
@@ -31,7 +33,8 @@ struct WebStoragePanel {
     }
     this.getAll().then(() => {
       setTimeout(() => {
-        this.search();
+        // Locate the current site from the list head when opening; stay put on empty key.
+        this.jumpToFirst();
       }, 10);
     });
   }
@@ -71,7 +74,10 @@ struct WebStoragePanel {
       .borderRadius(defaultRoundedRadius)
       .height('auto')
       .width('100%')
-      .margin({ bottom: standardComponentHeight * 2 + standardSpacing * 2 });
+      .margin({ bottom: (standardComponentHeight + standardSpacing) * (this.myUi.myLayout.wideMode ? 2 : 3) })
+      .onScrollIndex((start: number) => {
+        this.firstVisibleIndex = start; // Keep the topmost visible item up to date.
+      });
 
       // Bottom bar
       Column({ space: standardSpacing }) {
@@ -83,27 +89,41 @@ struct WebStoragePanel {
           myId: this.searchInputId,
           onChange: (value) => {
             this.searchKey = value;
-            // this.search();
+            // this.searchNext();
           },
           onSubmit: () => {
-            this.search();
+            this.searchNext();
             setTimeout(() => {
               this.focusInput();
             }, 10);
           }
         });
 
-        // Clear
-        MooCapsuleButton({
-          text: $r('app.string.WebStorage_clearAll'),
-          needDoubleConfirm: true,
-          clickAction: () => {
-            // Clear all WebStorage
-            webview.WebStorage.deleteAllData();
-            this.WebStorage = [];
-            meow(`webview.WebStorage.deleteAllData(true) succeeded`, 'WoofWebStorageDialog', meowLevel.INFO);
+        UniRowOfCapsuleButtons() {
+          // Next
+          MooCapsuleButton({
+            text: $r('app.string.General_next'),
+            clickAction: () => {
+              this.searchNext();
+            }
+          });
+          // Last
+          MooCapsuleButton({
+            text: $r('app.string.General_last'),
+            clickAction: () => {
+              this.searchLast();
+            }
+          });
+          if (this.myUi.myLayout.wideMode) {
+            // Clear
+            this.clearAllButton();
           }
-        });
+        };
+
+        if (!this.myUi.myLayout.wideMode) {
+          // Clear
+          this.clearAllButton();
+        }
       }.alignItems(HorizontalAlign.Start);
     }
     .onAppear(() => {
@@ -114,16 +134,71 @@ struct WebStoragePanel {
   }
 
   /**
-   * Search!
+   * The "Clear ALL web storage" button, with double confirm.
    */
-  async search() {
-    let index = 0;
-    for (const storage of this.WebStorage) {
-      if (storage[0].includes(this.searchKey)) {
-        this.listScroller.scrollToIndex(index, true);
-        break;
+  @Builder
+  clearAllButton() {
+    MooCapsuleButton({
+      text: $r('app.string.WebStorage_clearAll'),
+      needDoubleConfirm: true,
+      clickAction: () => {
+        // Clear all WebStorage
+        webview.WebStorage.deleteAllData();
+        this.WebStorage = [];
+        meow(`webview.WebStorage.deleteAllData(true) succeeded`, 'WoofWebStorageDialog', meowLevel.INFO);
       }
-      index += 1;
+    });
+  }
+
+  /**
+   * Search for the next match below the currently topmost visible item.
+   * Does nothing when the search key is empty or no further match exists.
+   */
+  searchNext() {
+    if (!this.searchKey) {
+      return;
+    }
+    const startFrom = this.firstVisibleIndex + 1;
+    for (let i = startFrom; i < this.WebStorage.length; i++) {
+      if (this.WebStorage[i][0].includes(this.searchKey)) {
+        this.listScroller.scrollToIndex(i, true, ScrollAlign.START);
+        return;
+      }
+    }
+    // No further match: do nothing.
+  }
+
+  /**
+   * Search for the previous match above the currently topmost visible item.
+   * Does nothing when the search key is empty or no further match exists.
+   */
+  searchLast() {
+    if (!this.searchKey) {
+      return;
+    }
+    const startFrom = this.firstVisibleIndex - 1;
+    for (let i = startFrom; i >= 0; i--) {
+      if (this.WebStorage[i][0].includes(this.searchKey)) {
+        this.listScroller.scrollToIndex(i, true, ScrollAlign.START);
+        return;
+      }
+    }
+    // No previous match: do nothing.
+  }
+
+  /**
+   * Locate the first match from the list head. Used when the dialog opens with a domain param.
+   * Does nothing when the search key is empty.
+   */
+  jumpToFirst() {
+    if (!this.searchKey) {
+      return;
+    }
+    for (let i = 0; i < this.WebStorage.length; i++) {
+      if (this.WebStorage[i][0].includes(this.searchKey)) {
+        this.listScroller.scrollToIndex(i, true, ScrollAlign.START);
+        return;
+      }
     }
   }
 
