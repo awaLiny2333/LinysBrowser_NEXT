@@ -269,6 +269,7 @@ struct MeowPlaceForDialogs {
     builder: WoofWebStorageDialog({ myUi: this.myUi }),
     alignment: DialogAlignment.Center,
     width: '95%',
+    height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
 

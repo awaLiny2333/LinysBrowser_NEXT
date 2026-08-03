@@ -1,5 +1,4 @@
 import lazy { webview } from "@kit.ArkWeb";
-import lazy { BusinessError } from "@kit.BasicServicesKit";
 import lazy { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 import { addUnitsToSize } from "../../../catstypicalframework/utils/storage";
 import { defaultRoundedRadius } from "../../../catstypicalframework/utils/ui";
@@ -20,7 +19,7 @@ struct WebStoragePanel {
   // Hosts
   @Param @Require myUi: meowUiHost;
   // Local
-  @Local WebStorage: [string, number, number][] = []; // [Domain, Usage, Quota]
+  @Local webStorageList: [string, number, number][] = []; // [Domain, Usage, Quota]
   @Local searchKey: string = '';
   searchInputId: string = `WoofWebStorage_search_${Date.now().toString(16)}`;
   listScroller: Scroller = new Scroller();
@@ -32,10 +31,8 @@ struct WebStoragePanel {
       this.searchKey = this.myUi.myDialog.lastRequest.param as string;
     }
     this.getAll().then(() => {
-      setTimeout(() => {
-        // Locate the current site from the list head when opening; stay put on empty key.
-        this.jumpToFirst();
-      }, 10);
+      // Locate the current site from the list head when opening; stay put on empty key.
+      this.jumpToFirst();
     });
   }
 
@@ -43,8 +40,8 @@ struct WebStoragePanel {
     Stack() {
       // WebStorage
       List({ space: standardSpacing, scroller: this.listScroller }) {
-        if (this.WebStorage.length > 0) {
-          Repeat(this.WebStorage)
+        if (this.webStorageList.length > 0) {
+          Repeat(this.webStorageList)
             .each((item) => {
               ListItem() {
                 UniContentCard({ title: item.item[0], icon: $r('sys.symbol.archivebox'), expanded: true }) {
@@ -57,7 +54,7 @@ struct WebStoragePanel {
                       try {
                         webview.WebStorage.deleteOrigin(item.item[0]);
                         animateToImmediately(defaultAnimation(), () => {
-                          this.WebStorage.splice(item.index, 1);
+                          this.webStorageList.splice(item.index, 1);
                         });
                       } catch (e) {
                         meow(`webview.WebStorage.deleteOrigin("${item.item[0]}"); failed! ${e}`, 'WoofWebStorageDialog', meowLevel.ERROR);
@@ -144,7 +141,7 @@ struct WebStoragePanel {
       clickAction: () => {
         // Clear all WebStorage
         webview.WebStorage.deleteAllData();
-        this.WebStorage = [];
+        this.webStorageList = [];
         meow(`webview.WebStorage.deleteAllData(true) succeeded`, 'WoofWebStorageDialog', meowLevel.INFO);
       }
     });
@@ -159,8 +156,8 @@ struct WebStoragePanel {
       return;
     }
     const startFrom = this.firstVisibleIndex + 1;
-    for (let i = startFrom; i < this.WebStorage.length; i++) {
-      if (this.WebStorage[i][0].includes(this.searchKey)) {
+    for (let i = startFrom; i < this.webStorageList.length; i++) {
+      if (this.webStorageList[i][0].includes(this.searchKey)) {
         this.listScroller.scrollToIndex(i, true, ScrollAlign.START);
         return;
       }
@@ -178,7 +175,7 @@ struct WebStoragePanel {
     }
     const startFrom = this.firstVisibleIndex - 1;
     for (let i = startFrom; i >= 0; i--) {
-      if (this.WebStorage[i][0].includes(this.searchKey)) {
+      if (this.webStorageList[i][0].includes(this.searchKey)) {
         this.listScroller.scrollToIndex(i, true, ScrollAlign.START);
         return;
       }
@@ -194,30 +191,30 @@ struct WebStoragePanel {
     if (!this.searchKey) {
       return;
     }
-    for (let i = 0; i < this.WebStorage.length; i++) {
-      if (this.WebStorage[i][0].includes(this.searchKey)) {
+    for (let i = 0; i < this.webStorageList.length; i++) {
+      if (this.webStorageList[i][0].includes(this.searchKey)) {
         this.listScroller.scrollToIndex(i, true, ScrollAlign.START);
         return;
       }
     }
   }
 
+  /**
+   * Get all origins and their statuses, and replace the current WebStorageList with the new list.
+   */
   async getAll() {
     const newWebStorageList: [string, number, number][] = [];
-    await webview.WebStorage.getOrigins()
-      .then((results) => {
-        for (const ori of results) {
-          newWebStorageList.push([ori.origin, ori.usage, ori.quota]);
-        }
-      })
-      .catch((e: BusinessError) => {
-        meow(`webview.WebStorage.getOrigins() failed: ${e.code}: ${e.message}`, 'WoofWebStorageDialog', meowLevel.ERROR);
-      });
-    setTimeout(() => {
-      animateToImmediately(defaultAnimation(), () => {
-        this.WebStorage = newWebStorageList;
-      });
-    });
+    try {
+      const results = await webview.WebStorage.getOrigins();
+      for (const ori of results) {
+        newWebStorageList.push([ori.origin, ori.usage, ori.quota]);
+      }
+    } catch (e) {
+      meow(`webview.WebStorage.getOrigins() failed: ${e.code}: ${e.message}`, 'WoofWebStorageDialog', meowLevel.ERROR);
+    }
+    // Sort by usage descending (largest first).
+    newWebStorageList.sort((a, b) => b[1] - a[1]);
+    this.webStorageList = newWebStorageList;
   }
 
   /**
