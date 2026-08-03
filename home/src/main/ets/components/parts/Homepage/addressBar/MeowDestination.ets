@@ -33,6 +33,7 @@ export function MeowDestination(myUi: meowUiHost, uiContext: UIContext) {
         icon: $r('sys.symbol.plus_square_on_square'),
         clickAction: () => {
           copyText(myUi.searchUnifyResult.url);
+          myUi.requestAddressBarBlur(uiContext);
         }
       });
       SymbolButton({

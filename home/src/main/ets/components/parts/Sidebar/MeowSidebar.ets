@@ -124,7 +124,7 @@ struct MeowSidebar {
   }
 
   genericRequestVisit(url: string) {
-    this.myUi.submitSearchOrLoad(url);
+    this.myUi.openNewTab(url);
   }
 
   /**
