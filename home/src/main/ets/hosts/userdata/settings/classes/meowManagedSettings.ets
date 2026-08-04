@@ -15,7 +15,7 @@
 
 import lazy { fastbuffer } from "@kit.ArkTS";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import lazy { readArrayBufferConcurrent, saveHybridSafe } from "../../../../catstypicalframework/utils/storage";
+import lazy { readArrayBuffer, saveHybridSafe } from "../../../../catstypicalframework/utils/storage";
 import { compareDiff } from "../../../../catstypicalframework/utils/strings";
 import { importResult } from "../../../system/resources/scripts/backup";
 import lazy { defaultSettingsEntries } from "../scripts/defaultSettingsEntries";
@@ -55,7 +55,7 @@ export class meowManagedSettings {
     const startTime = Date.now();
 
     try {
-      settingsText = fastbuffer.from(await readArrayBufferConcurrent(settingsFilePath)).toString();
+      settingsText = fastbuffer.from(await readArrayBuffer(settingsFilePath)).toString();
       meow(`Read settingsText from ${settingsFilePath} (${Date.now() - startTime} ms)`, 'meowSettings][initFrom', meowLevel.INFO);
       this.prebuiltReadOnly = settingsText; // Sets prebuiltReadOnly with the directly read settingsText for showcase.
     } catch (e) {
