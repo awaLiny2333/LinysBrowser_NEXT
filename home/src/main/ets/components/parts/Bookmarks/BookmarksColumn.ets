@@ -179,6 +179,7 @@ struct BookmarksColumn {
               onEdited: (newValues) => {
                 item.item.title = newValues[0];
                 item.item.url = newValues[1];
+                item.item.searchKey = `${item.item.url.toLowerCase()}|${item.item.title.toLowerCase()}`;
                 item.item.date_modified = nowHtmlTimestamp();
                 // meow(`heard this.onEdit(${index}, [${newValues[0]}, ${newValues[1]}])`, 'BookmarksColumn][onEdit', meowLevel.WARN);
                 this.requestSaveAndBroadcastSync();

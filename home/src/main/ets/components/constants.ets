@@ -37,18 +37,6 @@ export enum meowThemeColorType {
   FONT = 2,
 }
 
-// Tabs
-
-/**
- * Default width for vertical tabs.
- */
-export const defaultTabsVerticalWidth = 260;
-
-/**
- * Default width for vertical tabs when shrunk.
- */
-export const defaultTabsVerticalShrunkWidth = 32;
-
 // Buttons
 
 /**
@@ -159,7 +147,29 @@ export const defaultMooSymbolSize = 31;
  */
 export const meowButtonsIconArray: [string, Resource][] = Array.from(unifiedButtonIconMatches.entries());
 
+// Tabs
+
+/**
+ * Default width for vertical tabs.
+ */
+export const defaultTabsVerticalWidth = 260;
+
+/**
+ * Default width for vertical tabs when shrunk.
+ */
+export const defaultTabsVerticalShrunkWidth = 32;
+
 // Side bar
+
+/**
+ * Default sidebar width.
+ */
+export const defaultSidebarWidth = 380;
+
+/**
+ * Default sidebar width when shrunk.
+ */
+export const defaultSidebarShrunkWidth = 32;
 
 /**
  * All available pre-set content / panels for the sidebar.
@@ -172,16 +182,6 @@ export const sidebarContentIconArray: string[] = [
 ];
 
 export const sidebarContentIconSet = new Set(sidebarContentIconArray);
-
-/**
- * Default sidebar width.
- */
-export const defaultSidebarWidth = 380;
-
-/**
- * Default sidebar width when shrunk.
- */
-export const defaultSidebarShrunkWidth = 32;
 
 // Search in page
 

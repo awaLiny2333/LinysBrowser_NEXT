@@ -24,7 +24,7 @@ export const meowBoardHolderAccepteTypesSet = new Set<string>([
 export async function unifiedRecord2BoardData(records: unifiedDataChannel.UnifiedRecord[], unique: boolean, imgTempDir: string) {
   const newRecords: MeowScratchingBoardData[] = [];
   let lastAdd = '';
-  ensureDirectoryExist(imgTempDir);
+  await ensureDirectoryExist(imgTempDir);
 
   for (const rec of records) {
     const type = rec.getType();

@@ -394,9 +394,18 @@ struct Index {
       }
     }
 
+    newW = Math.ceil(Math.max(0, newW));
+
+    // Early break. Avoid update UI.
+    if (this.myUi.sideAreaWidth == newW) {
+      return;
+    }
+
+    // Update!
     animateToImmediately(defaultAnimation(), () => {
-      this.myUi.sideAreaWidth = Math.ceil(Math.max(0, newW));
+      this.myUi.sideAreaWidth = newW;
     });
+    // meow(`New sideAreaWidth: ${this.myUi.sideAreaWidth}`, 'index][actionsOnSideAreaChange', meowLevel.INFO);
   }
 
   actionsOnSideAreaHover(isHover: boolean) {
@@ -636,18 +645,21 @@ struct Index {
     // Total area
     const avoids = this.bottomAvoidHeight + this.topAvoidHeight;
     const effectsCorrection = useEffects() ? standardSpacing : 0;
-    const area = this.myUi.myLayout.height - avoids + effectsCorrection;
-    this.myUi.myLayout.heightTitleArea = area;
+    const areaHeight = this.myUi.myLayout.height - avoids + effectsCorrection;
+    if (areaHeight != this.myUi.myLayout.heightTitleArea) {
+      this.myUi.myLayout.heightTitleArea = areaHeight;
+    }
 
     // Title bar
     const unitHeight = textInputSlimHeight + standardSpacing;
-    const tabsComp = this.showingHorizontalTab ? unitHeight : 0;
+    const tabsComp = this.showingHorizontalTab ? unitHeight : 0; // Compensation for tabs.
     const newTitleHeight = tabsComp + (this.myUi.myLayout.wideMode ? unitHeight : 2 * unitHeight);
     if (newTitleHeight != this.myUi.myLayout.heightTitleBar) {
       this.myUi.myLayout.heightTitleBar = newTitleHeight;
     }
 
-    return area;
+    // meow(`maxHeightTitleArea!`, 'index][maxHeightTitleArea', meowLevel.WARN);
+    return areaHeight;
   }
 
   /**
@@ -726,6 +738,8 @@ struct Index {
       left = 0;
       right = 0;
     }
+
+    // meow(`outerFrameSpace!`, 'index][outerFrameSpace', meowLevel.WARN);
     return { top, bottom, left, right };
   }
 
@@ -734,15 +748,12 @@ struct Index {
    * The side area and stuffs are between them.
    */
   get mainFrameSpace(): Margin {
-    const anythingSide = (this.myUi.showingVerticalTabs || this.myUi.showSidebar) && this.isNotAnySortOfFullscreen;
-
-    // side bar compensation
-    const baseSideAreaWidth = anythingSide ? this.myUi.sideAreaWidth : 0; // The base width of side area in an ideal way.
-    let sideAreaShift = baseSideAreaWidth;
+    let sideAreaShift = this.myUi.sideAreaWidth; // The base width of side area in an ideal way.
+    const anythingOnSide = sideAreaShift > 0; // If there is a side bar / vertical tab showing.
 
     // compensate the duplicated border width.
     const set = !sideAreaShrinkAuto() || !sideAreaShrinkExpandNoPush();
-    if (set && anythingSide && useEffects()) {
+    if (set && anythingOnSide && useEffects()) {
       sideAreaShift -= standardSpacing;
     }
 
@@ -750,12 +761,8 @@ struct Index {
     const left = sidebarOnR ? 0 : sideAreaShift;
     const right = sidebarOnR ? sideAreaShift : 0;
 
-    return {
-      top: 0,
-      bottom: 0,
-      left,
-      right,
-    };
+    // meow(`mainFrameSpace!`, 'index][mainFrameSpace', meowLevel.WARN);
+    return { top: 0, bottom: 0, left, right };
   }
 
   // LISTENERS

@@ -33,7 +33,8 @@ export class meowBookmarkStash {
    * @author CodeGenie in DevEco Studio Preview @ May 7 2026, help refined by DeepSeek Web and awa_Liny itself! :P
    */
   lookUpBookmarksEntries(query: string | collections.Set<string>, maxResults: number, minHitRate = 0.8): meowBookmarkItem[] {
-
+    // const timeStart = Date.now();
+    
     // Early break & tokenize.
     let isQueryEmpty = false;
     let queryTokens: collections.Set<string>;
@@ -76,17 +77,15 @@ export class meowBookmarkStash {
         if (results.length >= maxResults) {
           return; // Enough
         }
-        const url = node.url.toLowerCase();
-        const title = node.title.toLowerCase();
-        const key = `${url}|${title}`;
-        if (!addedKeys.has(key) && isMatchFast(key, queryTokens, minHitRate)) {
+        if (!addedKeys.has(node.searchKey) && isMatchFast(node.searchKey, queryTokens, minHitRate)) {
           results.push(node);
-          addedKeys.add(key);
+          addedKeys.add(node.searchKey);
         }
       }
     };
     search(this.root);
 
+    // meow(`Search for ${query} done in ${Date.now() - timeStart} ms!`, 'meowBookmarkStash][lookUpBookmarksEntries', meowLevel.INFO);
     // Limit results
     return results;
   }

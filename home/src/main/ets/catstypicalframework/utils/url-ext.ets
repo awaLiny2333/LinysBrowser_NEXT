@@ -50,26 +50,97 @@ function encodeDigit(d: number): string {
   return PUNYCODE_DIGITS.charAt(d);
 }
 
-function punycodeEncodeLabel(input: string): string {
-  // 预计算码点数组，分离基本/扩展字符
-  const codePoints: number[] = [];
-  let basicStr = '';
-  const extended: number[] = [];
-
-  for (const ch of Array.from(input)) {
-    const cp = ch.codePointAt(0)!;
-    codePoints.push(cp);
-    if (cp < 0x80) {
-      basicStr += ch;
+/**
+ * 二分查找：有序数组中 < value 的元素个数。
+ */
+function _countLessThan(sorted: number[], value: number): number {
+  let lo = 0;
+  let hi = sorted.length;
+  while (lo < hi) {
+    const mid = (lo + hi) >>> 1;
+    if (sorted[mid] < value) {
+      lo = mid + 1;
     } else {
-      extended.push(cp);
+      hi = mid;
+    }
+  }
+  return lo;
+}
+
+/**
+ * 二分查找：有序数组中 <= value 的元素个数。
+ */
+function _countNotAfter(sorted: number[], value: number): number {
+  let lo = 0;
+  let hi = sorted.length;
+  while (lo < hi) {
+    const mid = (lo + hi) >>> 1;
+    if (sorted[mid] <= value) {
+      lo = mid + 1;
+    } else {
+      hi = mid;
+    }
+  }
+  return lo;
+}
+
+/**
+ * 归并两个已排序数组（调用方负责释放旧数组引用）。
+ */
+function _mergeSorted(a: number[], b: number[]): number[] {
+  const result = new Array<number>(a.length + b.length);
+  let ai = 0;
+  let bi = 0;
+  let ri = 0;
+  while (ai < a.length && bi < b.length) {
+    result[ri++] = a[ai] < b[bi] ? a[ai++] : b[bi++];
+  }
+  while (ai < a.length) {
+    result[ri++] = a[ai++];
+  }
+  while (bi < b.length) {
+    result[ri++] = b[bi++];
+  }
+  return result;
+}
+
+/**
+ * 单标签 Punycode 编码（RFC 3492）。
+ *
+ * 预处理使用 Array.from 处理代理对，正确性等同于原实现。
+ * 核心优化：用「有序位置数组 + 二分查找 + 归并插入」替代原 O(n·d)
+ * 全量扫描 + O(d²) shift()，将编码阶段复杂度从 O(n·d + d²) 降为
+ * O(n + d log n)。
+ */
+function punycodeEncodeLabel(input: string): string {
+  // Phase 1: 单遍收集码点、分离 basic / 按值分组扩展码点位置
+  const chars = Array.from(input);
+  const total = chars.length;
+  let basicStr = '';
+  const positions: Map<number, number[]> = new Map();
+  const basicPositions: number[] = [];
+  let extCount = 0;
+
+  for (let i = 0; i < total; i++) {
+    const cp = chars[i].codePointAt(0)!;
+    if (cp < 0x80) {
+      basicStr += chars[i];
+      basicPositions.push(i);
+    } else {
+      let arr = positions.get(cp);
+      if (!arr) {
+        arr = [];
+        positions.set(cp, arr);
+      }
+      arr.push(i);
+      extCount++;
     }
   }
 
   const b = basicStr.length;
   const outputParts: string[] = basicStr ? [basicStr] : [];
 
-  if (extended.length === 0) {
+  if (extCount === 0) {
     return basicStr;
   }
 
@@ -77,39 +148,59 @@ function punycodeEncodeLabel(input: string): string {
     outputParts.push('-');
   }
 
-  extended.sort((a, b) => a - b);
+  // Phase 2: 初始化 processed = basic 码点位置（已天然有序）
+  let processed = basicPositions;
+  // Phase 3: 扩展码点值升序
+  const sortedCPs = Array.from(positions.keys()).sort((a, b) => a - b);
 
   let n = PUNYCODE_INITIAL_N;
   let delta = 0;
   let bias = PUNYCODE_INITIAL_BIAS;
   let h = b;
-  const total = codePoints.length;
 
-  while (h < total) {
-    const m = extended[0];
+  // Phase 4: 按码点值递增加密
+  for (const m of sortedCPs) {
+    const occs = positions.get(m)!;
+
     delta += (m - n) * (h + 1);
     n = m;
 
-    for (const c of codePoints) {
-      if (c < n) {
-        delta++;
-      } else if (c === n) {
-        let q = delta;
-        for (let k = PUNYCODE_BASE; ; k += PUNYCODE_BASE) {
-          const t = k <= bias ? PUNYCODE_TMIN
-            : k >= bias + PUNYCODE_TMAX ? PUNYCODE_TMAX
-              : k - bias;
-          if (q < t) break;
-          outputParts.push(encodeDigit(t + ((q - t) % (PUNYCODE_BASE - t))));
-          q = Math.floor((q - t) / (PUNYCODE_BASE - t));
+    let lastPos = -1;
+    for (let j = 0; j < occs.length; j++) {
+      const pos = occs[j];
+
+      // 二分计算 (lastPos, pos) 区间内已处理位置数 → delta 增量
+      const beforeCurr = _countLessThan(processed, pos);
+      const beforeLast = lastPos < 0 ? 0 : _countNotAfter(processed, lastPos);
+      delta += beforeCurr - beforeLast;
+
+      // 编码 delta（与原实现一致）
+      let q = delta;
+      let k = PUNYCODE_BASE;
+      while (true) {
+        const t = k <= bias ? PUNYCODE_TMIN
+          : k >= bias + PUNYCODE_TMAX ? PUNYCODE_TMAX
+            : k - bias;
+        if (q < t) {
+          break;
         }
-        outputParts.push(encodeDigit(q));
-        bias = adaptBias(delta, h + 1, h === b);
-        delta = 0;
-        h++;
-        extended.shift();
+        outputParts.push(encodeDigit(t + ((q - t) % (PUNYCODE_BASE - t))));
+        q = Math.floor((q - t) / (PUNYCODE_BASE - t));
+        k += PUNYCODE_BASE;
       }
+      outputParts.push(encodeDigit(q));
+      bias = adaptBias(delta, h + 1, h === b);
+      delta = 0;
+      h++;
+      lastPos = pos;
     }
+
+    // 将本轮编码位置之后剩余的已处理位置计入下一次外迭代的 delta
+    delta += processed.length - _countNotAfter(processed, lastPos);
+
+    // 归并插入本轮位置到 processed
+    processed = _mergeSorted(processed, occs);
+
     delta++;
     n++;
   }

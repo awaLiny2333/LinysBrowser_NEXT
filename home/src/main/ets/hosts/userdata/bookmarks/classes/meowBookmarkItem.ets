@@ -11,6 +11,7 @@ export class meowBookmarkItem {
   isFolder: boolean;
   title: string;
   url: string;
+  searchKey: string; // To accelerate search.
   date_added: number;
   date_modified: number;
   children: collections.Array<meowBookmarkItem> = new collections.Array<meowBookmarkItem>();
@@ -19,6 +20,7 @@ export class meowBookmarkItem {
     this.isFolder = isFolder;
     this.title = title;
     this.url = url;
+    this.searchKey = `${this.url.toLowerCase()}|${this.title.toLowerCase()}`;
     this.date_added = date_added || nowHtmlTimestamp();
     this.date_modified = date_modified || nowHtmlTimestamp();
   }
