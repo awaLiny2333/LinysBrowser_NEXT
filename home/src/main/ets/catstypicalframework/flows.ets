@@ -332,16 +332,16 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
       // Load bookmarks
       let myMeowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
       myMeowBookmarkStash.loadFromDisk();
+
+      // Init History
+      let myMeowHistorian = AppStorageV2.connect(meowHistorian)!;
+      myMeowHistorian.init();
     }, delayL0);
 
     setTimeout(() => {
       // Key shortcuts
       const myKey = AppStorageV2.connect(meowKeyboardMan)!;
       myKey.initFromSettings();
-
-      // Init History
-      let myMeowHistorian = AppStorageV2.connect(meowHistorian)!;
-      myMeowHistorian.init();
 
       // App level Listen
       listenFreeWindowMode(context);
