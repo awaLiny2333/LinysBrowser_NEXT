@@ -34,7 +34,7 @@ export class meowBookmarkStash {
    */
   lookUpBookmarksEntries(query: string | collections.Set<string>, maxResults: number, minHitRate = 0.8): meowBookmarkItem[] {
     // const timeStart = Date.now();
-    
+
     // Early break & tokenize.
     let isQueryEmpty = false;
     let queryTokens: collections.Set<string>;
@@ -206,6 +206,11 @@ export class meowBookmarkStash {
     }
 
     this.lastImportTimeCost = parseBookmarksResult.time;
+    // setTimeout(() => {
+    //   animateToImmediately(defaultAnimation(), () => {
+    //     this.root = parseBookmarksResult.root;
+    //   });
+    // });
     this.root = parseBookmarksResult.root;
     meow(`Successfully loaded bookmarks from disk. (${Date.now() - startTime} ms)`, 'meowBookmarkStash][loadFromDisk', meowLevel.INFO);
     return true;

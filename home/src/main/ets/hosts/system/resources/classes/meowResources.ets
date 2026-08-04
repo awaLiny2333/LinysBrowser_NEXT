@@ -33,7 +33,7 @@ export class meowResources {
         this.backgroundImage?.release();
         this.backgroundImage = backgroundImage;
       });
-    });
+    }, 100);
   }
 
   /**

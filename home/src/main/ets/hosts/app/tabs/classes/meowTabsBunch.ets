@@ -3,7 +3,7 @@ import lazy { fastbuffer } from "@kit.ArkTS";
 import lazy { AppStorageV2 } from "@kit.ArkUI";
 import lazy { webview } from "@kit.ArkWeb";
 import lazy { meow, meowLevel } from "../../../../catstypicalframework/utils/catsLogger";
-import lazy { listFilesUnderDir, readArrayBuffer, saveHybridSafe } from "../../../../catstypicalframework/utils/storage";
+import lazy { listFilesUnderDir, readArrayBufferConcurrent, saveHybridSafe } from "../../../../catstypicalframework/utils/storage";
 import lazy { domainOf } from "../../../../catstypicalframework/utils/url";
 import lazy { archiveWeb, printWeb } from "../../../../catstypicalframework/utils/web";
 import lazy { defaultAnimation } from "../../../../components/settings";
@@ -100,7 +100,7 @@ export class meowTabsBunch {
       const labelPath = `${this.workingDir}/${stateName}_label`;
 
       try {
-        const label = fastbuffer.from(await readArrayBuffer(labelPath)).toString();
+        const label = fastbuffer.from(await readArrayBufferConcurrent(labelPath)).toString();
         newTab.title = label;
         meow(`Read label: [${label}] from [${labelPath}]`, 'meowTabsBunch][loadAllStatesFromDir');
       } catch (e) {
@@ -114,7 +114,7 @@ export class meowTabsBunch {
     const statPath = `${this.workingDir}/stat`;
     let switchTargetIdx = 0;
     try {
-      const stat = fastbuffer.from(await readArrayBuffer(statPath)).toString();
+      const stat = fastbuffer.from(await readArrayBufferConcurrent(statPath)).toString();
       if (stat) {
         const statParts = stat.split(' ');
         if (statParts.length > 0) {

@@ -329,7 +329,7 @@ struct Index {
       animateToImmediately(defaultAnimation(), () => {
         this.render = true;
       });
-    }, 10);
+    }, 1);
   }
 
   actionsOnBaseAreaChange(o: Area, n: Area) {

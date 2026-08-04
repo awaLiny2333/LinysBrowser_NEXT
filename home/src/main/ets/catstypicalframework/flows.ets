@@ -44,6 +44,11 @@ import { listenCrash, meow, meowLevel } from './utils/catsLogger';
 import { clearDirectory, ensureDirectoryExist, listFilesUnderDir, makeFilenameLegal, removeDir } from './utils/storage';
 import { listenAvoid, listenFocus, listenFreeWindowMode, listenSmartReachability, listenWindowStatusChange, meowPx2vp, offAvoid, offFocus, offWindowStatusChange, setDecorHeight, setKeyboardAvoidResize, shortModeThreshold, updateAvoid, updateFreeWindowMode, updateNavigationIndicator, wideModeThreshold } from './utils/ui';
 
+// CONSTANTS
+const delayL0 = 80;
+const delayL1 = 140;
+const delayL2 = 300;
+
 // Enums
 /**
  * The sources of wants.
@@ -155,20 +160,18 @@ export async function earlyOnWindowStageCreate(context: Context) {
 
   // ONLY FOR NEW WINDOW (NEW LAUNCHES):
 
-  // Settings
-  await getMySettings().initFrom(`${filesDir}/settings.json.browsercatsettings.txt`); // This can ONLY be initialized here as it requires async - await processing.
-
   // Ensure directory
   await Promise.all([
-    ensureDirectoryExist(`${filesDir}/continues`), // Last opened tabs
+    getMySettings().initFrom(`${filesDir}/settings.json.browsercatsettings.txt`), // This can ONLY be initialized here as it requires async - await processing.
     ensureDirectoryExist(`${filesDir}/easylist`), // Ad blocker rules
     ensureDirectoryExist(`${filesDir}/faultlogs`), // fault logs
     ensureDirectoryExist(`${filesDir}/history`), // History chunk files
     ensureDirectoryExist(`${filesDir}/history-index`), // History index files
-    ensureDirectoryExist(`${filesDir}/zones`) // Zones
+    ensureDirectoryExist(`${filesDir}/zones`), // Zones
+    ensureDirectoryExist(`${context.filesDir}/continues`), // Last opened tabs
   ]);
 
-  // Continue
+  // CONTINUE
   const restoreLastTabs = startUpOptionFromSettings() == 'continue';
   if (!restoreLastTabs) {
     await clearDirectory(`${context.filesDir}/continues`);
@@ -300,7 +303,7 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
     updateNavigationIndicator(windowObj); // Navigation indicator
     myUi.updateWindowBackgroundColor();
     myUi.updateWindowTitle();
-  }, 1);
+  }, delayL2);
 
   // TABS
 
@@ -317,32 +320,34 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
     myUi.initWorkingDir().then(() => {
       onWant(myUi.launchWant, wantSource.ONCREATE); // Want
     });
-  }, 20);
+  }, delayL1);
 
   // SHARED USER DATA & LISTENERS
 
   if (isNewWindow) {
-    // Key shortcuts
-    const myKey = AppStorageV2.connect(meowKeyboardMan)!;
-    myKey.initFromSettings();
 
-    // Inits involving I/O use. Delay 5 ms.
+    // Delay to reduce I/O conjestion, and computing pressure.
+
     setTimeout(() => {
+      // Load bookmarks
+      let myMeowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
+      myMeowBookmarkStash.loadFromDisk();
+    }, delayL0);
+
+    setTimeout(() => {
+      // Key shortcuts
+      const myKey = AppStorageV2.connect(meowKeyboardMan)!;
+      myKey.initFromSettings();
+
       // Init History
       let myMeowHistorian = AppStorageV2.connect(meowHistorian)!;
       myMeowHistorian.init();
 
-      // Load bookmarks
-      let myMeowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
-      myMeowBookmarkStash.loadFromDisk();
-    }, 5);
-
-    // App level Listen
-    setTimeout(() => {
+      // App level Listen
       listenFreeWindowMode(context);
       listenSmartReachability();
       listenCrash(`${context.filesDir}/faultlogs`);
-    }, 80);
+    }, delayL2);
   }
   const myMisc = AppStorageV2.connect(meowMisc, `meowMisc_${myWindowId}`)!;
   meow(`Stage finished in ${Date.now() - startTime} ms, since Misc ${Date.now() - myMisc.launchStartTime} ms.`, `onLoadContent][${myWindowId}`, meowLevel.WARN);
