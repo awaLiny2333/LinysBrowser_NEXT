@@ -164,7 +164,7 @@ export const defaultTabsVerticalShrunkWidth = 32;
 /**
  * Default sidebar width.
  */
-export const defaultSidebarWidth = 380;
+export const defaultSidebarWidth = 376;
 
 /**
  * Default sidebar width when shrunk.

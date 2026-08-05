@@ -334,14 +334,10 @@ struct HistoryPanel {
     meow(`Looked up history: ["${this.searchKey}", ${Number.MAX_VALUE}], result length ${res.length} (${Date.now() - startTime} ms)`, 'WoofHistory][Panel', meowLevel.WARN);
 
     // this.myEntries = await this.myMeowHistorian.lookUpHistoryEntries(this.searchKey, Number.MAX_VALUE) ?? [];
-    setTimeout(() => {
-      animateToImmediately(defaultAnimation(), () => {
-        this.myEntries = res;
-        this.isSearching = false;
-      });
-      const duration = Date.now() - startTime;
-      this.refreshInfo(duration);
-    });
+    this.myEntries = res;
+    this.isSearching = false;
+    const duration = Date.now() - startTime;
+    this.refreshInfo(duration);
   }
 
   selectDeselectItem(item: meowHistoryEntry) {
