@@ -290,21 +290,6 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
   const selectedSidebarPage = mySettings.settingsData[83].value as string;
   myUi.sidebarPage = selectedSidebarPage || '';
 
-  // Listen for focus, window status (myUi) and avoid (myAvoid)
-  // And other delayable jobs
-  setTimeout(() => {
-    // Listen
-    listenWindowStatusChange(myWindowId); // Listen window status
-    listenFocus(myWindowId);
-    listenAvoid(myWindowId);
-    // UI
-    setKeyboardAvoidResize(windowObj);
-    setDecorHeight(windowObj);
-    updateNavigationIndicator(windowObj); // Navigation indicator
-    myUi.updateWindowBackgroundColor();
-    myUi.updateWindowTitle();
-  }, delayL2);
-
   // TABS
 
   // Try for windowObj.getUIContext()
@@ -321,6 +306,21 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
       onWant(myUi.launchWant, wantSource.ONCREATE); // Want
     });
   }, delayL1);
+  // Listen for focus, window status (myUi) and avoid (myAvoid)
+  // And other delayable jobs
+
+  setTimeout(() => {
+    // Listen
+    listenWindowStatusChange(myWindowId); // Listen window status
+    listenFocus(myWindowId);
+    listenAvoid(myWindowId);
+    // UI
+    setKeyboardAvoidResize(windowObj);
+    setDecorHeight(windowObj);
+    updateNavigationIndicator(windowObj); // Navigation indicator
+    myUi.updateWindowBackgroundColor();
+    myUi.updateWindowTitle();
+  }, delayL2);
 
   // SHARED USER DATA & LISTENERS
 
@@ -332,13 +332,13 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
       // Load bookmarks
       let myMeowBookmarkStash = AppStorageV2.connect(meowBookmarkStash)!;
       myMeowBookmarkStash.loadFromDisk();
-
-      // Init History
-      let myMeowHistorian = AppStorageV2.connect(meowHistorian)!;
-      myMeowHistorian.init();
     }, delayL0);
 
     setTimeout(() => {
+      // Init History
+      let myMeowHistorian = AppStorageV2.connect(meowHistorian)!;
+      myMeowHistorian.init();
+
       // Key shortcuts
       const myKey = AppStorageV2.connect(meowKeyboardMan)!;
       myKey.initFromSettings();
@@ -349,6 +349,7 @@ export function onLoadContent(windowStage: window.WindowStage, windowObj: window
       listenCrash(`${context.filesDir}/faultlogs`);
     }, delayL2);
   }
+
   const myMisc = AppStorageV2.connect(meowMisc, `meowMisc_${myWindowId}`)!;
   meow(`Stage finished in ${Date.now() - startTime} ms, since Misc ${Date.now() - myMisc.launchStartTime} ms.`, `onLoadContent][${myWindowId}`, meowLevel.WARN);
 }

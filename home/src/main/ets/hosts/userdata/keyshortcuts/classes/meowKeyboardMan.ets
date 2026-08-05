@@ -50,6 +50,9 @@ export class meowKeyboardMan {
     $r('app.string.KeyShortcuts_showSidebar'),
   ];
 
+  // Statuses
+  @Trace initialized: boolean = false;
+
   /**
    * Load from settings.
    */
@@ -60,18 +63,28 @@ export class meowKeyboardMan {
       return;
     }
 
-    // Process each shortcut.
     for (let i = 0; i < settingsStrings.length; i++) {
-      const settingsString = settingsStrings[i].split(' ');
-      this.shortcuts[i].fromArray(settingsString);
-      meow(`#${i}: ${settingsString} => ${this.shortcuts[i]}`, 'meowKeyboardMan][initFromSettings', meowLevel.INFO);
+      this.shortcuts[i].fromArray([]); // Unbind existing key binds
     }
+
+    setTimeout(() => {
+      // Process each shortcut.
+      for (let i = 0; i < settingsStrings.length; i++) {
+        const settingsString = settingsStrings[i].split(' ');
+        this.shortcuts[i].fromArray(settingsString);
+        meow(`#${i}: ${settingsString} => ${this.shortcuts[i]}`, 'meowKeyboardMan][initFromSettings', meowLevel.INFO);
+      }
+      this.initialized = true;
+    }, 100);
   }
 
   /**
    * Save to settings.
    */
   private saveToSettings() {
+    if (!this.initialized) {
+      return;
+    }
     const mySettings = getMySettings();
     const newSettingsStrings = this.shortcuts.map(shortcut => shortcut.toArray().join(' '));
     mySettings.setByIndex(29, newSettingsStrings);
@@ -84,6 +97,9 @@ export class meowKeyboardMan {
    * as it needs some time to flush (unbind) the existing component key shortcuts.
    */
   apply(index: number, fromStrings: string[]) {
+    if (!this.initialized) {
+      return;
+    }
     if (fromStrings.length == 0) {
       meow(`fromStrings is empty. meowKeyboardMan.apply() REJECTED!`, 'meowKeyboardMan][apply', meowLevel.WARN);
       return;

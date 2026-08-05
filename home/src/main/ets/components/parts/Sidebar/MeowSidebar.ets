@@ -1,9 +1,11 @@
+import { AppStorageV2 } from "@kit.ArkUI";
 import lazy { webview } from "@kit.ArkWeb";
 import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
 import { domainOf, unifyDestination } from "../../../catstypicalframework/utils/url";
 import { userNewTabUrl } from "../../../hosts/app/tabs/settings";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
+import { meowHistorian } from "../../../hosts/userdata/history/classes/meowHistorian";
 import { MooSoloWeb } from "../../common/MooSoloWeb";
 import lazy { MooSymbolButton } from "../../common/MooSymbolButton";
 import lazy { MooTextButton } from "../../common/MooTextButton";
@@ -21,6 +23,7 @@ import lazy { shrinkButton } from "./SidebarShrinkButton";
 @ComponentV2
 struct MeowSidebar {
   @Param @Require myUi: meowUiHost;
+  @Local myMeowHistorian: meowHistorian = AppStorageV2.connect<meowHistorian>(meowHistorian)!;
   // Local
   @Local showAdd: boolean = false;
   @Local isEditing: boolean = false;
@@ -55,15 +58,17 @@ struct MeowSidebar {
             });
           } else if (this.myUi.sidebarPage == UnifiedButtonsType.HISTORIES) {
             // History
-            HistoryPanel({
-              myUi: this.myUi, allowEdit: false, needPadding: false, lite: true, autoFocus: false,
-              requestVisit: (url) => {
-                this.genericRequestVisit(url);
-              },
-              onDropMe: () => {
-                this.onDropSidebar();
-              }
-            });
+            if (this.myMeowHistorian.initialized) {
+              HistoryPanel({
+                myUi: this.myUi, allowEdit: false, needPadding: false, lite: true, autoFocus: false,
+                requestVisit: (url) => {
+                  this.genericRequestVisit(url);
+                },
+                onDropMe: () => {
+                  this.onDropSidebar();
+                }
+              });
+            }
           } else if (this.myUi.sidebarPage == UnifiedButtonsType.BOOKMARKS) {
             // Bookmarks
             MeowBookmarksPanel({

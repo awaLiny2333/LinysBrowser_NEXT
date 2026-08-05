@@ -25,6 +25,7 @@ export class meowHistorian {
   chunkBasePath: string;
   indexBasePath: string;
   @Trace lastUpdate: number = Date.now(); // Would be overwritten if init() succeeded.
+  @Trace initialized: boolean = false;
   @Trace busy: boolean = true; // Initially true, Would be set to false after init().
   @Trace isRebuilding: boolean = false;
   @Trace private chunks: meowHistoryChunk[] = [];
@@ -50,6 +51,7 @@ export class meowHistorian {
     // Jump out
     if (!chunkNames || chunkNames.length == 0) {
       meow(`No history files found in ${this.chunkBasePath}`, 'meowHistorian][init', meowLevel.WARN);
+      this.initialized = true;
       this.busy = false;
       return;
     }
@@ -83,6 +85,7 @@ export class meowHistorian {
     } catch (e) {
       meow(`Error loading latest file: ${e}`, 'meowHistorian][init', meowLevel.ERROR);
     }
+    this.initialized = true;
     this.busy = false;
   }
 

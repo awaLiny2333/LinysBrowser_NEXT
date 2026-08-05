@@ -83,7 +83,7 @@ struct HistoryPanel {
           .virtualScroll();
 
         // Placeholder for empty result
-        if (this.myEntries.length == 0) {
+        if (this.myEntries.length == 0 || !this.myMeowHistorian.initialized) {
           ListItem() {
             Text(this.isSearching ? $r('app.string.General_wait') : $r('app.string.General_empty'))
               .attributeModifier(new MooTextModifier())
@@ -311,9 +311,7 @@ struct HistoryPanel {
   async search() {
     const startTime = Date.now();
     const global = this.myHistoryChunk == undefined;
-    animateToImmediately(defaultAnimation(), () => {
-      this.isSearching = true;
-    });
+    this.isSearching = true;
 
     // Search
     let res: meowHistoryEntry[];
@@ -336,12 +334,14 @@ struct HistoryPanel {
     meow(`Looked up history: ["${this.searchKey}", ${Number.MAX_VALUE}], result length ${res.length} (${Date.now() - startTime} ms)`, 'WoofHistory][Panel', meowLevel.WARN);
 
     // this.myEntries = await this.myMeowHistorian.lookUpHistoryEntries(this.searchKey, Number.MAX_VALUE) ?? [];
-    animateToImmediately(defaultAnimation(), () => {
-      this.myEntries = res;
-      this.isSearching = false;
+    setTimeout(() => {
+      animateToImmediately(defaultAnimation(), () => {
+        this.myEntries = res;
+        this.isSearching = false;
+      });
+      const duration = Date.now() - startTime;
+      this.refreshInfo(duration);
     });
-    const duration = Date.now() - startTime;
-    this.refreshInfo(duration);
   }
 
   selectDeselectItem(item: meowHistoryEntry) {
