@@ -747,7 +747,7 @@ struct Index {
    * The space between the main frame and the available web frame.
    * The side area and stuffs are between them.
    */
-  get mainFrameSpace(): Margin {
+  get mainFrameSpace(): Margin | number {
     let sideAreaShift = this.myUi.sideAreaWidth; // The base width of side area in an ideal way.
     const anythingOnSide = sideAreaShift > 0; // If there is a side bar / vertical tab showing.
 
@@ -756,6 +756,13 @@ struct Index {
     if (set && anythingOnSide && useEffects()) {
       sideAreaShift -= standardSpacing;
     }
+
+    // Early exit of fullscreen
+    if (!this.isNotAnySortOfFullscreen) {
+      return 0;
+    }
+    
+    // Normal view
 
     const sidebarOnR = sideareaShouldBeOnTheRight(); // Is the side area / bar on the right
     const left = sidebarOnR ? 0 : sideAreaShift;
