@@ -346,12 +346,13 @@ struct MeowButton {
       if (this.type == UnifiedButtonsType.ORIENTATION) {
         Repeat(ALL_WINDOW_ORIENTATIONS).each((ori) => {
           MenuItem({
-            content: $r('app.string.Orientation_select_'.concat(ori.index.toString())),
+            content: $r('app.string.Orientation_select_'.concat(ori.index.toString()))
           })
+            .contentFont({ weight: ori.item == this.myUi.orientation ? FontWeight.Bold : FontWeight.Normal })
             .onClick(() => {
               this.myUi.setOrientation(ori.item);
             })
-            .backgroundColor(ori.item == this.myUi.orientation ? getColor(meowThemeColorType.SECONDARY) : undefined);
+            .backgroundColor(ori.item == this.myUi.orientation ? (useEffects() ? getColor(meowThemeColorType.PRIMARY) : getColor(meowThemeColorType.SECONDARY)) : undefined);
         });
       } else if (this.type == UnifiedButtonsType.FULLSCREEN) {
         MenuItem({

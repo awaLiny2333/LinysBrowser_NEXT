@@ -54,9 +54,15 @@ struct WoofUniFrame {
 
   build() {
     Stack({ alignContent: Alignment.TopStart }) {
+      // Contents
+      Column() {
+        this.contentsBuilder();
+      }
+      .margin({ top: this.myUi.myLayout.shortMode ? 0 : (42 + (this.showTutorial ? this.tutorialHeight + standardSpacing : 0)), bottom: this.showConfirmButton ? standardComponentHeight + standardSpacing + 1 : 0 });
+
+      // Title bar
       if (!this.myUi.myLayout.shortMode) {
         Column() {
-          // Title bar
           Row({ space: standardSpacing * 0.125 }) {
             Text(this.title)
               .attributeModifier(new MooTextModifier(mooTextType.TITLE))
@@ -84,9 +90,7 @@ struct WoofUniFrame {
               }
             });
           }
-          .padding({ left: 12, right: 10, top: 10, bottom: 7 })
-          .backgroundColor(getColor(this.shiftBackgroundColor && !useEffects() ? meowThemeColorType.PRIMARY : meowThemeColorType.SECONDARY))
-          .useEffect(useEffects(), EffectType.WINDOW_EFFECT);
+          .padding({ left: 12, right: 10, top: 10, bottom: 7 });
           // Tutorial. This nesting is ugly :O but we have no other simpler ways to put paddings here.
           if (this.showTutorial) {
             Column() {
@@ -105,12 +109,6 @@ struct WoofUniFrame {
           }
         };
       }
-
-      // Contents
-      Column() {
-        this.contentsBuilder();
-      }
-      .margin({ top: this.myUi.myLayout.shortMode ? 0 : (41 + (this.showTutorial ? this.tutorialHeight + standardSpacing : 0)), bottom: this.showConfirmButton ? standardComponentHeight + standardSpacing + 1 : 0 });
 
       // Confirm / Deny buttons
       if (this.showConfirmButton) {
