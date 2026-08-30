@@ -30,7 +30,10 @@ struct MeowTabsVertical {
               ListItem() {
                 // Tab item
                 Row() {
-                  Text(item.item.title || 'Meow').attributeModifier(new MooTextModifier()).maxLines(1).wordBreak(WordBreak.BREAK_ALL).layoutWeight(1).padding(standardSpacing * 0.5);
+                  Text(item.item.title || 'Meow')
+                    .attributeModifier(new MooTextModifier())
+                    .textAlign(sideareaShouldBeOnTheRight() ? TextAlign.Start : TextAlign.End)
+                    .maxLines(1).wordBreak(WordBreak.BREAK_ALL).layoutWeight(1).padding(standardSpacing * 0.5);
 
                   // Web state saving / history punching indicator
                   if (item.item.wsBackupReqTmId != undefined || item.item.saveHistoryTimeoutId != undefined) {
@@ -48,6 +51,7 @@ struct MeowTabsVertical {
                     }, undefined, 6);
                   }
                 }
+                .direction(sideareaShouldBeOnTheRight() ? Direction.Ltr : Direction.Rtl)
                 .opacity(item.item.isActive ? 1 : 0.5)
                 .hoverEffect(HoverEffect.Highlight)
                 .padding(standardSpacing * 0.5)
