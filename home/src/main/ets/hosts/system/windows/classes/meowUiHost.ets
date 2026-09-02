@@ -712,6 +712,8 @@ export class meowUiHost {
 
   /**
    * Open a URL in the current tab or a new tab depending on the current tab's state.
+   * If the current tab is empty, then the url is loaded on current tab.
+   * If there are already contents in this tab, then the url is loaded in a new tab.
    * @param url The URL.
    */
   openUrlAuto(url: string) {

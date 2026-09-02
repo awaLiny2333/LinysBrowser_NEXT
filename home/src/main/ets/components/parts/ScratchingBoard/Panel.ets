@@ -22,7 +22,7 @@ export struct ScratchingBoardPanel {
   // Local
   @Local panelWidth: number = 0;
   // Events
-  @Event onSearchSubmitOrLoad: () => void; // Majorly to notify the parent level about the event, like to close the dialog or things.
+  @Event requestClose: () => void; // Majorly to notify the parent level to close itself. E.g. click the url => Load and close the panel.
 
   build() {
     Stack({ alignContent: isPreferRightHand() ? Alignment.BottomEnd : Alignment.BottomStart }) {
@@ -98,15 +98,13 @@ export struct ScratchingBoardPanel {
         .width('100%')
         .fontWeight(FontWeight.Bold)
         .onClick(() => {
-          this.myUi.submitSearchOrLoad(item.item.textContent);
-          this.onSearchSubmitOrLoad();
+          this.activateUrl(item.item.textContent);
         });
       Row() {
         MooSymbolButton({
           icon: $r('sys.symbol.arrow_up_right'),
           clickAction: () => {
-            this.myUi.submitSearchOrLoad(item.item.textContent);
-            this.onSearchSubmitOrLoad();
+            this.activateUrl(item.item.textContent);
           }
         });
         MooSymbolButtonMeow({
@@ -125,14 +123,12 @@ export struct ScratchingBoardPanel {
           .layoutWeight(1)
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
-            this.myUi.submitSearchOrLoad(item.item.textContent);
-            this.onSearchSubmitOrLoad();
+            this.activateUrl(item.item.textContent);
           });
         MooSymbolButton({
           icon: $r('sys.symbol.arrow_up_right'),
           clickAction: () => {
-            this.myUi.submitSearchOrLoad(item.item.textContent);
-            this.onSearchSubmitOrLoad();
+            this.activateUrl(item.item.textContent);
           }
         });
         MooSymbolButtonMeow({
@@ -145,7 +141,12 @@ export struct ScratchingBoardPanel {
       .direction(isPreferRightHand() ? Direction.Ltr : Direction.Rtl)
       .width('100%');
     }
+  }
 
+  activateUrl(url: string) {
+    this.myUi.openUrlAuto(url);
+    // Close the panel dialog / side bar if available (decided by parent component).
+    this.requestClose();
   }
 
   @Builder

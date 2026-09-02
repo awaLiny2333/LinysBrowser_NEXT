@@ -11,7 +11,7 @@ export struct WoofScratchingBoardDialog {
     WoofUniFrame({ controller: this.controller, shiftBackgroundColor: true, title: $r('app.string.ScratchingBoard_drop'), myUi: this.myUi }) {
       ScratchingBoardPanel({
         myUi: this.myUi,
-        onSearchSubmitOrLoad: () => {
+        requestClose: () => {
           this.controller.close();
         }
       });
