@@ -8,6 +8,7 @@ import lazy { openDialogRequestType } from '../../../hosts/system/dialogs/classe
 import lazy { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
 import lazy { ALL_WINDOW_ORIENTATIONS, meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import lazy { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addressBarStatuses';
+import { getCreateMyApp } from '../../../hosts/system/windows/scripts/helpers';
 import { defaultMooSymbolSize, fontSizeSymbol, getButtonIcon, meowThemeColorType, standardSpacing, UnifiedButtonsType } from '../../constants';
 import { defaultAnimation, getColor, getMySettings, isTabsStyleVertical, useEffects } from '../../settings';
 
@@ -346,6 +347,8 @@ struct MeowButton {
         return this.myUi.myTabs.currentTab != undefined;
       case UnifiedButtonsType.PIN_SHORTCUT:
         return this.myUi.myTabs.currentTab != undefined && !this.myUi.myTabs.currentTab?.fetchingShortcutIcon;
+      case UnifiedButtonsType.SCAN:
+        return !getCreateMyApp().isCustomScanning; // Allow only one use of camera at a single moment.
       default:
         return true;
     }
