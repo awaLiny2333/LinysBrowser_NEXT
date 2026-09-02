@@ -4,19 +4,16 @@ import { meow, meowLevel } from "../../../catstypicalframework/utils/catsLogger"
 import { copyText } from "../../../catstypicalframework/utils/clipboard";
 import { requestUserPermission } from "../../../catstypicalframework/utils/permission";
 import { defaultInnerRadius } from "../../../catstypicalframework/utils/ui";
-import { isLegalUrl } from "../../../catstypicalframework/utils/url";
 import { MooSymbolButton } from "../../../components/common/MooSymbolButton";
 import { MooSymbolButtonMeow } from "../../../components/common/MooSymbolButtonMeow";
-import { MooSymbolButtonSmall } from "../../../components/common/MooSymbolButtonSmall";
 import { MooTextModifier } from "../../../components/common/MooTextModifier";
-import { meowFlexOptions, meowThemeColorType, standardSpacing } from "../../../components/constants";
+import { meowThemeColorType, standardSpacing } from "../../../components/constants";
 import { defaultAnimation, getColor, isPreferRightHand, useEffects } from "../../../components/settings";
 import { openDialogRequestType } from "../../../hosts/system/dialogs/classes/meowDialogManager";
 import { requestDialog } from "../../../hosts/system/dialogs/scripts/dialog";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
 import { getCreateMyApp } from "../../../hosts/system/windows/scripts/helpers";
 import { WoofUniFrame } from "../../WoofUniFrame";
-import { LengthMetrics } from "@kit.ArkUI";
 
 @ComponentV2
 struct WoofCustomScan {
