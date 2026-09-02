@@ -12,7 +12,7 @@ import lazy { WoofColorPickerDialog } from '../../dialogs/public/WoofColorPicker
 import lazy { WoofErrorPromptDialog } from '../../dialogs/public/WoofErrorPrompt/WoofErrorPrompt';
 import lazy { WoofKeyShortcutPickerDialog } from '../../dialogs/public/WoofKeyShortcutPicker/WoofKeyShortcutPicker';
 import lazy { WoofQRDialog } from '../../dialogs/public/WoofQR/WoofQR';
-import { WoofCustomScanDialog } from '../../dialogs/public/WoofScan/WoofCustomScan';
+import lazy { WoofCustomScanDialog } from '../../dialogs/public/WoofScan/WoofCustomScan';
 import lazy { WoofAdBlockerDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlocker';
 import lazy { WoofAdBlockerRulesDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlockerRules';
 import lazy { WoofCookiesDialog } from '../../dialogs/settings/WoofCookies/WoofCookies';

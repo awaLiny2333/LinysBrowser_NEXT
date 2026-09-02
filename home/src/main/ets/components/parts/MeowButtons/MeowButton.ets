@@ -1,10 +1,10 @@
 import lazy { Context } from '@ohos.abilityAccessCtrl';
 import lazy { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
-import { scanDefault } from '../../../catstypicalframework/utils/scan';
-import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
+import lazy { scanDefault } from '../../../catstypicalframework/utils/scan';
+import lazy { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
 import lazy { domainOf, isLegalUrl } from '../../../catstypicalframework/utils/url';
-import { scanCustom } from '../../../dialogs/public/WoofScan/WoofCustomScan';
-import { openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
+import lazy { scanCustom } from '../../../dialogs/public/WoofScan/WoofCustomScan';
+import lazy { openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import lazy { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
 import lazy { ALL_WINDOW_ORIENTATIONS, meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
 import lazy { AddressBarStatuses } from '../../../hosts/system/windows/scripts/addressBarStatuses';
