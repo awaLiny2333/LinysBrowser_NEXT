@@ -1,7 +1,8 @@
 import lazy { Context } from '@ohos.abilityAccessCtrl';
 import lazy { meow, meowLevel } from '../../../catstypicalframework/utils/catsLogger';
+import { scanDefault } from '../../../catstypicalframework/utils/scan';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
-import lazy { domainOf } from '../../../catstypicalframework/utils/url';
+import lazy { domainOf, isLegalUrl } from '../../../catstypicalframework/utils/url';
 import { openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import lazy { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
 import lazy { ALL_WINDOW_ORIENTATIONS, meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
@@ -227,6 +228,22 @@ struct MeowButton {
       case UnifiedButtonsType.WEB_STORAGE:
         // Open storage management page.
         requestDialog(this.myUi.myDialog, openDialogRequestType.WEB_STORAGE, domainOf(this.myUi.myTabs.currentTab?.url));
+        break;
+      case UnifiedButtonsType.SCAN:
+        // Request scan.
+        scanDefault(this.getUIContext()).then((scanResultData) => {
+          if (!scanResultData) {
+            return; // Nothing scanned, nothing happens.
+          }
+          if (scanResultData.originalValue) {
+            if (isLegalUrl(scanResultData.originalValue)) {
+              meow(`[URL] scanResultData.originalValue = [${scanResultData.originalValue}]!`, 'MeowButton][Scan', meowLevel.WARN);
+              this.myUi.myTabs.newTabWrapped(scanResultData.originalValue);
+            } else {
+              meow(`[TXT] scanResultData.originalValue = [${scanResultData.originalValue}]!`, 'MeowButton][Scan', meowLevel.WARN);
+            }
+          }
+        });
         break;
       default:
         break;
