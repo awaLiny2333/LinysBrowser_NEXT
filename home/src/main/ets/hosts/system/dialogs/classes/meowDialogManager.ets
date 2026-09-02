@@ -119,6 +119,7 @@ export enum openDialogRequestType {
   ZONES = 'ZONES',
   PIN_SHORTCUT = 'PIN_SHORTCUT',
   WEB_STORAGE = 'WEB_STORAGE',
+  SCAN = 'SCAN',
 }
 
 // This should be carefully maintained each time we mess around with dialogs!!
@@ -131,7 +132,7 @@ const OPEN_DIALOG_REQUEST_TYPE_VALUES = [
   'QUICK_SE', 'QR', 'DOWNLOADS', 'DOWNLOAD_ASK', 'SCRATCHING_BOARD',
   'JUMP', 'ALERT', 'PROMPT', 'CONFIRM', 'SSL_ERROR', 'WEB_PERMISSIONS',
   'SCREEN_CAPTURE', 'WEB_GEOLOCATION', 'HTTP_AUTH', 'ZONES', 'PIN_SHORTCUT',
-  'WEB_STORAGE'
+  'WEB_STORAGE', 'SCAN'
 ];
 
 /**

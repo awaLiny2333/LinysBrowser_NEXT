@@ -969,6 +969,10 @@
       "value": "QR Code"
     },
     {
+      "name": "QR_scan",
+      "value": "Scan Code"
+    },
+    {
       "name": "QuickUA",
       "value": "Quick UA Switch"
     },

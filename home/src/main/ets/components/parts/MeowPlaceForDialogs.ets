@@ -12,6 +12,7 @@ import lazy { WoofColorPickerDialog } from '../../dialogs/public/WoofColorPicker
 import lazy { WoofErrorPromptDialog } from '../../dialogs/public/WoofErrorPrompt/WoofErrorPrompt';
 import lazy { WoofKeyShortcutPickerDialog } from '../../dialogs/public/WoofKeyShortcutPicker/WoofKeyShortcutPicker';
 import lazy { WoofQRDialog } from '../../dialogs/public/WoofQR/WoofQR';
+import { WoofCustomScanDialog } from '../../dialogs/public/WoofScan/WoofCustomScan';
 import lazy { WoofAdBlockerDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlocker';
 import lazy { WoofAdBlockerRulesDialog } from '../../dialogs/settings/WoofAdBlocker/WoofAdBlockerRules';
 import lazy { WoofCookiesDialog } from '../../dialogs/settings/WoofCookies/WoofCookies';
@@ -272,7 +273,13 @@ struct MeowPlaceForDialogs {
     height: '95%',
     cornerRadius: defaultRoundedRadius + 4,
   });
-
+  woofCustomScanDialogController: CustomDialogController = new CustomDialogController({
+    builder: WoofCustomScanDialog({ myUi: this.myUi }),
+    alignment: DialogAlignment.Center,
+    // width: '95%',
+    // height: '95%',
+    cornerRadius: defaultRoundedRadius + 4,
+  });
 
   build() {
     // Nothing
@@ -398,6 +405,9 @@ struct MeowPlaceForDialogs {
         break;
       case openDialogRequestType.WEB_STORAGE:
         this.woofWebStorageDialogController.open();
+        break;
+      case openDialogRequestType.SCAN:
+        this.woofCustomScanDialogController.open();
         break;
       default:
         break;

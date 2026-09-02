@@ -2,6 +2,7 @@ import { common, Want } from '@kit.AbilityKit';
 import lazy { url } from '@kit.ArkTS';
 import { UIContext } from '@kit.ArkUI';
 import lazy { concatSearchWithEngine } from '../../hosts/app/tabs/scripts/searchEngines';
+import { getAbilityName, getBundleName } from './environment';
 import lazy { HAS_NON_ASCII_REGEX, LEGAL_TOP_LEVEL_DOMAINS, punycodeEncode, SINGLE_LABEL_ALLOWLIST } from './url-ext';
 
 /**
@@ -71,21 +72,22 @@ export function domainOf(sourceUrl?: string): string {
 
 /**
  * Jumps to an external link using want.
- * @param url the link
+ * @param uri the link
  * */
-export function jumpUrl(url: string, context?: common.UIAbilityContext) {
-  const want: Want = {
-    uri: url
-  };
+export async function jumpExternalUri(uri: string, context?: common.UIAbilityContext) {
+  const isHttp = uri.startsWith('http://') || uri.startsWith('https://');
+  const abN = await getBundleName();
+  const abilityTarget = isHttp && abN ? abN : undefined;
+  const want: Want = { bundleName: abilityTarget, uri: uri };
   if (!context) {
     context = UIContext.getLastFocusedUIContext()?.getHostContext() as common.UIAbilityContext;
   }
   context.startAbility(want).then(() => {
     // Pull up success
-    console.log('[Meow][jumpUrl] Pull up application for want ' + url + ' Success!');
+    console.log('[Meow][jumpUrl] Pull up application for want ' + uri + ' Success!');
   }).catch(() => {
     // Pull up failure
-    console.error('[Meow][jumpUrl] Pull up application for want ' + url + ' Failed!');
+    console.error('[Meow][jumpUrl] Pull up application for want ' + uri + ' Failed!');
   });
 }
 

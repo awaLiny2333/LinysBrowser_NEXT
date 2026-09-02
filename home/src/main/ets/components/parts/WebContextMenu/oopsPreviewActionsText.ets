@@ -1,5 +1,5 @@
 import { copyText } from '../../../catstypicalframework/utils/clipboard';
-import { isLegalUrl, jumpUrl } from '../../../catstypicalframework/utils/url';
+import { isLegalUrl, jumpExternalUri } from '../../../catstypicalframework/utils/url';
 import { concatSearchWithEngine } from '../../../hosts/app/tabs/scripts/searchEngines';
 import { MooSymbolButton } from '../../common/MooSymbolButton';
 
@@ -38,7 +38,7 @@ export struct oopsPreviewActionsText {
           icon: $r('sys.symbol.bookmark_book_closed'), clickAction: () => {
             let link: string = 'dictionary://' + this.text;
             try {
-              jumpUrl(link);
+              jumpExternalUri(link);
             } catch (e) {
               console.error(`[linysPreviewTextActions] Search ${link} in dictionary openlink failed: ${e}`);
             }

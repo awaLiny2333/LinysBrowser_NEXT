@@ -1,5 +1,5 @@
 import { common } from "@kit.AbilityKit";
-import { jumpUrl } from "../../../catstypicalframework/utils/url";
+import { jumpExternalUri } from "../../../catstypicalframework/utils/url";
 import { MooTextAreaV2 } from "../../../components/common/MooTextAreaV2";
 import { standardSpacing } from "../../../components/constants";
 import { meowUiHost } from "../../../hosts/system/windows/classes/meowUiHost";
@@ -11,13 +11,13 @@ struct WoofJumpPanel {
   @Param @Require myUi: meowUiHost;
   // Info
   @Local source: string = '';
-  @Local url: string = '';
+  @Local uri: string = '';
 
   aboutToAppear(): void {
     const req = this.myUi.myDialog.lastRequest;
     if (req) {
       this.source = (req.param as [string, string])[0];
-      this.url = (req.param as [string, string])[1];
+      this.uri = (req.param as [string, string])[1];
     }
   }
 
@@ -25,19 +25,27 @@ struct WoofJumpPanel {
     WoofUniFrame({
       controller: this.controller, title: $r('app.string.Jump_title'), myUi: this.myUi, showConfirmButton: true, showCancelButton: true, shiftBackgroundColor: true,
       onConfirm: () => {
-        jumpUrl(this.url, this.getUIContext().getHostContext()! as common.UIAbilityContext);
+        jumpExternalUri(this.uri, this.getUIContext().getHostContext()! as common.UIAbilityContext);
         this.controller.close();
       },
       onCancel: () => {
         this.controller.close();
       }
     }) {
+      // Column({ space: standardSpacing }) {
       MooTextAreaV2({
-        text: this.url,
+        text: this.uri,
         onChange: (value: string) => {
-          this.url = value;
+          this.uri = value;
         }
       })
+        // MooCapsuleButton({
+        //   text: $r('app.string.General_copyLink'),
+        //   clickAction: () => {
+        //     copyText(this.uri);
+        //   }
+        // });
+        // }
         .padding(standardSpacing);
     };
   }

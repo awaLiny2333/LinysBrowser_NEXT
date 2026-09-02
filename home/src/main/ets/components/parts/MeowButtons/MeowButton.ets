@@ -3,6 +3,7 @@ import lazy { meow, meowLevel } from '../../../catstypicalframework/utils/catsLo
 import { scanDefault } from '../../../catstypicalframework/utils/scan';
 import { defaultInnerRadius } from '../../../catstypicalframework/utils/ui';
 import lazy { domainOf, isLegalUrl } from '../../../catstypicalframework/utils/url';
+import { scanCustom } from '../../../dialogs/public/WoofScan/WoofCustomScan';
 import { openDialogRequestType } from '../../../hosts/system/dialogs/classes/meowDialogManager';
 import lazy { requestDialog } from '../../../hosts/system/dialogs/scripts/dialog';
 import lazy { ALL_WINDOW_ORIENTATIONS, meowUiHost } from '../../../hosts/system/windows/classes/meowUiHost';
@@ -230,20 +231,25 @@ struct MeowButton {
         requestDialog(this.myUi.myDialog, openDialogRequestType.WEB_STORAGE, domainOf(this.myUi.myTabs.currentTab?.url));
         break;
       case UnifiedButtonsType.SCAN:
-        // Request scan.
-        scanDefault(this.getUIContext()).then((scanResultData) => {
-          if (!scanResultData) {
-            return; // Nothing scanned, nothing happens.
+        if (canIUse("SystemCapability.Multimedia.Scan.ScanBarcode")) {
+          // Request default scan.
+          const result = await scanDefault(this.getUIContext());
+          let scanUrl = '';
+          if (result) {
+            scanUrl = result.originalValue;
           }
-          if (scanResultData.originalValue) {
-            if (isLegalUrl(scanResultData.originalValue)) {
-              meow(`[URL] scanResultData.originalValue = [${scanResultData.originalValue}]!`, 'MeowButton][Scan', meowLevel.WARN);
-              this.myUi.myTabs.newTabWrapped(scanResultData.originalValue);
+          if (scanUrl) {
+            if (isLegalUrl(scanUrl)[0]) {
+              meow(`[URL] scanResultData.originalValue = [${scanUrl}]!`, 'MeowButton][Scan', meowLevel.WARN);
+              requestDialog(this.myUi.myDialog, openDialogRequestType.JUMP, ['', scanUrl], true);
             } else {
-              meow(`[TXT] scanResultData.originalValue = [${scanResultData.originalValue}]!`, 'MeowButton][Scan', meowLevel.WARN);
+              meow(`[TXT] scanResultData.originalValue = [${scanUrl}]!`, 'MeowButton][Scan', meowLevel.WARN);
             }
           }
-        });
+        } else {
+          // Request custom scan.
+          scanCustom(this.myUi);
+        }
         break;
       default:
         break;
