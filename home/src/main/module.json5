@@ -77,10 +77,12 @@
                 "linkFeature": "FileOpen"
               },
               {
-                "scheme": "https"
+                "scheme": "https",
+                "linkFeature": "FileOpen"
               },
               {
-                "scheme": "http"
+                "scheme": "http",
+                "linkFeature": "FileOpen"
               }
             ]
           }
