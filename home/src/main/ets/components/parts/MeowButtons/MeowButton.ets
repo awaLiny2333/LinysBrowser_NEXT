@@ -240,12 +240,8 @@ struct MeowButton {
             scanUrl = result.originalValue;
           }
           if (scanUrl) {
-            if (isLegalUrl(scanUrl)[0]) {
-              meow(`[URL] scanResultData.originalValue = [${scanUrl}]!`, 'MeowButton][Scan', meowLevel.WARN);
-              requestDialog(this.myUi.myDialog, openDialogRequestType.JUMP, ['', scanUrl], true);
-            } else {
-              meow(`[TXT] scanResultData.originalValue = [${scanUrl}]!`, 'MeowButton][Scan', meowLevel.WARN);
-            }
+            requestDialog(this.myUi.myDialog, openDialogRequestType.JUMP, ['', scanUrl], true);
+            meow(`scanResultData.originalValue = [${scanUrl}]!`, 'MeowButton][Scan', meowLevel.WARN);
           }
         } else {
           // Request custom scan.
