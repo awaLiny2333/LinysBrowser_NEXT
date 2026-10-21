@@ -4,13 +4,13 @@
       {
         "name": "default",
         "material": {
-          "storePassword": "000000209A3600915CD539A7F7ACB38EA63531DC1AC35D524963B1602865442128461F05DA7C6E0D45E38AE312F69F37",
-          "certpath": "/storage/Users/currentUser/appdata/el2/base/com.huawei.devecostudio/files/ohos/config/default_BrowserCatSumbB9HHa2l9a7uwUisdhFeuUgTANPNztPQYwPb1E4mzHg.cer",
+          "storePassword": "000000208F9DEBE625C8449BA9D4A57BA3E2CEE31FF556198E0900B5F5307B70FCFBE199F06406D644E07718AAA97E78",
+          "certpath": "/storage/Users/currentUser/.ohos/config/default_BrowserCatSumHAANck2nDcq2pJ-CrKpbhnBS5WnPC5YDpCZAhgQyalc.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "000000209A3600915CD539A7F7ACB38EA63531DC1AC35D524963B1602865442128461F05DA7C6E0D45E38AE312F69F37",
-          "profile": "/storage/Users/currentUser/appdata/el2/base/com.huawei.devecostudio/files/ohos/config/default_BrowserCatSumbB9HHa2l9a7uwUisdhFeuUgTANPNztPQYwPb1E4mzHg.p7b",
+          "keyPassword": "000000208F9DEBE625C8449BA9D4A57BA3E2CEE31FF556198E0900B5F5307B70FCFBE199F06406D644E07718AAA97E78",
+          "profile": "/storage/Users/currentUser/.ohos/config/default_BrowserCatSumHAANck2nDcq2pJ-CrKpbhnBS5WnPC5YDpCZAhgQyalc.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "/storage/Users/currentUser/appdata/el2/base/com.huawei.devecostudio/files/ohos/config/default_BrowserCatSumbB9HHa2l9a7uwUisdhFeuUgTANPNztPQYwPb1E4mzHg.p12"
+          "storeFile": "/storage/Users/currentUser/.ohos/config/default_BrowserCatSumHAANck2nDcq2pJ-CrKpbhnBS5WnPC5YDpCZAhgQyalc.p12"
         },
         "type": "HarmonyOS"
       }
@@ -22,21 +22,6 @@
         "targetSdkVersion": "6.1.0(23)",
         "compatibleSdkVersion": "6.1.0(23)",
         "runtimeOS": "HarmonyOS",
-        "buildOption": {
-          "strictMode": {
-            "caseSensitiveCheck": true,
-            "useNormalizedOHMUrl": true
-          },
-          "arkOptions": {}
-        },
-        "bundleName": "meow.liny.browser.cat.uwu"
-      },
-      {
-        "name": "ohos",
-        "targetSdkVersion": 23,
-        "compileSdkVersion": 23,
-        "compatibleSdkVersion": 23,
-        "runtimeOS": "OpenHarmony",
         "buildOption": {
           "strictMode": {
             "caseSensitiveCheck": true,
@@ -64,8 +49,7 @@
         {
           "name": "default",
           "applyToProducts": [
-            "default",
-            "ohos"
+            "default"
           ]
         }
       ]

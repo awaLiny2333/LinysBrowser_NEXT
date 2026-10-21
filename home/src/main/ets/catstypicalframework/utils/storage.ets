@@ -234,7 +234,22 @@ export async function saveHybrid(fullFilePath: string, content: string | ArrayBu
       fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE | fileIo.OpenMode.TRUNC // Ensures the files is empty when opened.
     );
 
-    const contentBytes = typeof content === 'string' ? new util.TextEncoder().encodeInto(content) : new Uint8Array(content);
+    // NOTE: util.TextEncoder.encodeInto('') returns undefined (documented behaviour), so an empty string
+    // must be normalised to a zero-length Uint8Array. Otherwise reading .byteLength below throws
+    // "Cannot read property byteLength of undefined" — which is exactly what happened when the whole
+    // monthly history chunk (or its index) was deleted and an empty string had to be written.
+    let contentBytes: Uint8Array = new Uint8Array(0);
+    if (typeof content === 'string') {
+      if (content.length > 0) {
+        const encoded = new util.TextEncoder().encodeInto(content);
+        if (encoded !== undefined) {
+          contentBytes = encoded;
+        }
+      }
+      // Empty string → keep the zero-length array; the TRUNC flag above already emptied the file.
+    } else {
+      contentBytes = new Uint8Array(content);
+    }
     const total = contentBytes.byteLength;
     let offset = 0;
 
