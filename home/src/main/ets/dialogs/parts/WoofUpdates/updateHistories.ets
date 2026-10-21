@@ -20,6 +20,13 @@ enum updateTag {
  */
 export const updateHistories: updateHistory[] = [
   {
+    version: '2.1.1',
+    date: '2026 10',
+    tag: [updateTag.FIX, updateTag.BETA],
+    description_zh: '作为近年末的累计更新，修复了若干问题，比如没有办法全部删除某个月的全部历史记录之类的。',
+    description_en: 'As a cumulative update near the end of the year, fixed several issues. E.g. cannot delete all history entries of a month.',
+  },
+  {
     version: '2.1.0',
     date: '2026 07',
     tag: [updateTag.FIX, updateTag.MEOW, updateTag.BETA],
